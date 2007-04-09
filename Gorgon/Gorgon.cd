@@ -1,0 +1,1227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Font Name="Arial" Size="8.25" />
+  <Class Name="GorgonLibrary.Graphics.Animations.Animation" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Animation.cs</FileName>
+      <HashCode>AAAAwACIACAQBYAAAAAEAABAkSAAUBQQpAAAgDAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.AnimationList" Collapsed="true">
+    <Position X="21.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\AnimationList.cs</FileName>
+      <HashCode>AAIAgAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.Track&lt;T&gt;" Collapsed="true">
+    <Position X="13" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Track.cs</FileName>
+      <HashCode>AABQgACCAAAIAAAACAgEAAAAABAAAAAAQCAAAAAAkAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.TrackList&lt;T&gt;" Collapsed="true">
+    <Position X="11" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\TrackList.cs</FileName>
+      <HashCode>AAAAgACAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.KeyColor" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="23.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\KeyColor.cs</FileName>
+      <HashCode>AAAAgACAAAAIIEAQAACAEAAAAAAAAAEAAAEAgAAAIRA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.KeyFrame" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="25.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\KeyFrame.cs</FileName>
+      <HashCode>AAAAgACAAAAAMEAQAAAAECAAAAAAAAAAAAAAgAAAIRE=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.KeyTransform" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="27" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\KeyTransform.cs</FileName>
+      <HashCode>AAAAgACBACAAocA0KAJAGgAABAAAAAEAAAAAggIEITQ=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.TrackColor" Collapsed="true">
+    <Position X="10.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\TrackColor.cs</FileName>
+      <HashCode>AAAAAAAAAAAIAAAACABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.TrackColorList" Collapsed="true">
+    <Position X="8.75" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\TrackColorList.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.TrackFrame" Collapsed="true">
+    <Position X="13" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\TrackFrame.cs</FileName>
+      <HashCode>AAAAAAAAAAAIAAAACABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.TrackFrameList" Collapsed="true">
+    <Position X="11" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\TrackFrameList.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.TrackTransform" Collapsed="true">
+    <Position X="15.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\TrackTransform.cs</FileName>
+      <HashCode>AAAAAAAAAAAIAAAACABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.TrackTransformList" Collapsed="true">
+    <Position X="13.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\TrackTransformList.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Animations.AnimationAdvanceEventArgs" Collapsed="true">
+    <Position X="20" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\AnimationEvents.cs</FileName>
+      <HashCode>QAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.DataBuffer" Collapsed="true">
+    <Position X="14.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Buffers\Buffer.cs</FileName>
+      <HashCode>gAAAAAABACBAABBACAIEAAAAACIQAQACAAAAQAIAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Internal.IndexBuffer" Collapsed="true">
+    <Position X="13.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Buffers\IndexBuffer.cs</FileName>
+      <HashCode>gAAQAAMBACBCAABAAAIAAAAgAQAQAgAAAgAIABAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.VertexBuffer" Collapsed="true">
+    <Position X="15.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Buffers\VertexBuffer.cs</FileName>
+      <HashCode>gCAQAAAAACBAAABAAAIAgAEkAAARAIAAAAAAABAAABg=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.Converter" Collapsed="true">
+    <Position X="23.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Converter.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAgAAoAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.DeviceStateList" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="27" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Device\DeviceStateList.cs</FileName>
+      <HashCode>AAIAAAAAACAAAAAAAAAABAAAAAAAAQAAgBAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Internal.ImageList" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Imaging\ImageCache.cs</FileName>
+      <HashCode>AAIAAAAAACAAAAAACAAABAAAAAAAAAAAAAAAAABQAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Internal.ImageLayerStates" Collapsed="true">
+    <Position X="27" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Imaging\ImageLayerState.cs</FileName>
+      <HashCode>CAAAxAEjNggIggAQkFwAECACYgAQAEAEAEAIACCCAZQ=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.Manager&lt;T&gt;" Collapsed="true">
+    <Position X="4" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Manager.cs</FileName>
+      <HashCode>IAQAAAAAAAAAAAAACAAAAAAABAAAAAAEAABAAAAQAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.Renderable&lt;V&gt;" Collapsed="true">
+    <Position X="6.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\Renderable.cs</FileName>
+      <HashCode>agmUlogLBFEc04iwmgPsxVlVLhIkyjwQGAmig9MGKCQ=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Internal.Renderer" Collapsed="true">
+    <Position X="27" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\Renderer.cs</FileName>
+      <HashCode>AABAAQAhACCAiYAAglAAA4MQAICoAwDCSBAAAI1ERKA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.RenderObjectList&lt;T&gt;" Collapsed="true">
+    <Position X="28.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\RenderObjectList.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.RenderStates" Collapsed="true">
+    <Position X="30.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\RenderStates.cs</FileName>
+      <HashCode>rwCatHIFgAQgggiQsgMAihzQQBSB0RATElAqImEkg8Q=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.StateManager" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\StateManager.cs</FileName>
+      <HashCode>IEAAhwAAFCgCAijAIxZwgItGChIHAAgBABBgwAAEGHA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Internal.IndexCache&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="30.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Vertex Data\IndexCache.cs</FileName>
+      <HashCode>ACwACAAUCCAAAAACABAAEIYIAAQgAoAAABAIQBAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Internal.VertexCache&lt;V&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Vertex Data\VertexCache.cs</FileName>
+      <HashCode>AA4ACAAEACAAAAACABAAQIQgAARgAIAAABgARBAAFAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Internal.VertexField" Collapsed="true">
+    <Position X="20" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Vertex Data\VertexField.cs</FileName>
+      <HashCode>AAAAAAAAAgAABAQAoAAgAAAAAAAIAIAAAQEIAAIAgnA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Internal.VertexType" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="21.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Vertex Data\VertexType.cs</FileName>
+      <HashCode>ACCACgAEACEAAAgIjACAhAQAAAAAgIAAAAAAAEAQABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Internal.VertexTypes" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="23.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Vertex Data\VertexTypes.cs</FileName>
+      <HashCode>AAAAAAIAACAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Driver" Collapsed="true">
+    <Position X="28.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Device\Driver.cs</FileName>
+      <HashCode>pnBAFAAETYEi6IIGIAmhQhEAQcQQkKZOgbRowSkwADk=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.DriverList" Collapsed="true">
+    <Position X="20" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Device\DriverList.cs</FileName>
+      <HashCode>AAAAAAAAAABAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.RenderWindow" Collapsed="true">
+    <Position X="0.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Device\RenderWindow.cs</FileName>
+      <HashCode>JEQ0gAGAiKAIAgCEwFQAQIQAAIQCkAAIAZAIAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.VideoModeList" Collapsed="true">
+    <Position X="25.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Device\VideoModeList.cs</FileName>
+      <HashCode>AAAEAAAAAARAABAACAAAABAQAAAEEAAABIAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.DriverChangingArgs" Collapsed="true">
+    <Position X="18.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\DriverChangeEvent.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAACAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.DriverChangedArgs" Collapsed="true">
+    <Position X="30.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\DriverChangeEvent.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Gorgon" Collapsed="true">
+    <Position X="21.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Main.cs</FileName>
+      <HashCode>BAgkAFAEBCI+A2BkBlCgQaTTUMgEyRkAIASEUYAFARI=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Fonts.Font" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Fonts\Font.cs</FileName>
+      <HashCode>CCIArZAAQDAA51AkOAKAGIwMBgFghCAIkIQBBAASOAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Fonts.FontManager" Collapsed="true">
+    <Position X="3" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Fonts\FontManager.cs</FileName>
+      <HashCode>AAIAAAAAACAIAAAAAAgABAAAAAAAAAAEAABAgBBAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.FrameEventArgs" Collapsed="true">
+    <Position X="20" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\FrameEvents.cs</FileName>
+      <HashCode>AAAAAAECAAAAAAAAAAEAEAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Image" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="25.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Imaging\Image.cs</FileName>
+      <HashCode>AQgAAIAUBCDAQQRkEBAAQMAMAxoACAEAgJAAsABAAEE=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.ImageManager" Collapsed="true">
+    <Position X="7.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Imaging\ImageManager.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAAAAAABAQABAAAAEAEAABAABBAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.RenderImage" Collapsed="true">
+    <Position X="2.75" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Imaging\RenderImage.cs</FileName>
+      <HashCode>IEgAAAABDCgIAAAAABAAAMEAAAgAABAAABAAAAAAAEA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.RenderableChildren" Collapsed="true">
+    <Position X="25.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\RenderableChildren.cs</FileName>
+      <HashCode>AAIAgAAAAAAAAAAACAACBAAAQAAAAAAEAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.RenderTarget" Collapsed="true">
+    <Position X="1.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\RenderTarget.cs</FileName>
+      <HashCode>sVyEp5arDqDOEhYFsxPqSNLIChigjdESABgglcVFGgw=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.RenderTargetList" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\RenderTargetList.cs</FileName>
+      <HashCode>QAAAAACAACAAAAAADAAQBBAAQIAAAAAAAAAACABQAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Sprite" Collapsed="true">
+    <Position X="5.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Sprites\Sprite.cs</FileName>
+      <HashCode>AAAAsIACACAAQwCACCIAABAkBAAEAAAAiAgAgBBEIAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.SpriteManager" Collapsed="true">
+    <Position X="0.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Sprites\SpriteManager.cs</FileName>
+      <HashCode>AAIAAAAAAAAAAAAAAAAABAAAAAAAAAAEAABAABBAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.TextSprite" Collapsed="true">
+    <Position X="7.75" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Sprites\TextSprite.cs</FileName>
+      <HashCode>AAAAMQAChAAghwCgACIIBFAIBACEgYAIABAAjIAGIAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.TextSpriteManager" Collapsed="true">
+    <Position X="5.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Sprites\TextSpriteManager.cs</FileName>
+      <HashCode>AAIAAAAAAAAAAAAAAAAABAAAAAAAAAAAAABAAABAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Viewport" Collapsed="true">
+    <Position X="27" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Viewports\Viewport.cs</FileName>
+      <HashCode>AIgAEAARBABQAAAIAgAAAFIAAABJAAAMSAABAAwAgCA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Input.MouseInputEventArgs" Collapsed="true">
+    <Position X="28.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\InputEvents.cs</FileName>
+      <HashCode>AAAQAAJAgAAgAAAhAAAIAACAAIAAEBAAAAAAggAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Input.KeyboardInputEventArgs" Collapsed="true">
+    <Position X="21.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\InputEvents.cs</FileName>
+      <HashCode>AAAAAAIAAIAAAEwAAACAEAAAAAAAAAAAAqAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Input.InputDevices" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Input\Input.cs</FileName>
+      <HashCode>AAgAgwAAASAAgREAQBEEAABAAAAAAAAAEQAFiAAEAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Input.InputDevice" Collapsed="true">
+    <Position X="3" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Input\InputDevice.cs</FileName>
+      <HashCode>AAAAiAAAICAAAAQAEgAAIAAAAAEIACAAAAAAARAAAgA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Input.Joystick" Collapsed="true">
+    <Position X="0.75" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Input\Joystick.cs</FileName>
+      <HashCode>EEFAMAABgASCAQMAQAAgAAQBYgADRDICABAMABIIYAE=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Input.JoystickList" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Input\JoystickList.cs</FileName>
+      <HashCode>AAAAgACAACBAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Input.Keyboard" Collapsed="true">
+    <Position X="3" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Input\Keyboard.cs</FileName>
+      <HashCode>AAAQCAAAAACAgAAICAgAAAAAAAIAAAACBAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Input.Mouse" Collapsed="true">
+    <Position X="5.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Input\Mouse.cs</FileName>
+      <HashCode>AGAUCABEAAAAAEAgQgAFAIAAINADcggQMBAMgACCAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.PlugIns.PlugIn" Collapsed="true">
+    <Position X="30.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Plugin\PlugIn.cs</FileName>
+      <HashCode>BAAAAAAAACAIAIAAAAAAAAQAAAAgAAAAAQAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.PlugIns.PlugInAttribute" Collapsed="true">
+    <Position X="18.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Plugin\PlugInAttribute.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.PlugIns.PlugInManager" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Plugin\PlugInManager.cs</FileName>
+      <HashCode>AAAAgACAACAAAACACAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.PlugIns.PlugInModuleList" Collapsed="true">
+    <Position X="21.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Plugin\PlugInModuleList.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAAAAAGAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.Shader" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="27" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\Shader.cs</FileName>
+      <HashCode>EAAAAMCQACCEQQQAABAAAIAAAAABAAAAkpACgAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.ShaderList" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\ShaderList.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAACAAABAAAAAAAAEAEAABAABBQAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.ShaderParameter" Collapsed="true">
+    <Position X="30.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\ShaderParameter.cs</FileName>
+      <HashCode>AAAAgESAIAAAAgAAAAAAAAgAAAgQAAAAAAABAEAAEIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.ShaderParameterList" Collapsed="true">
+    <Position X="18.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\ShaderParameterList.cs</FileName>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.ShaderPass" Collapsed="true">
+    <Position X="20" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\ShaderPass.cs</FileName>
+      <HashCode>AAAAgACAAAAAAAAAAAAAAAgAAAAAAAAEAAABAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.ShaderPassList" Collapsed="true">
+    <Position X="21.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\ShaderPassList.cs</FileName>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.ShaderTechnique" Collapsed="true">
+    <Position X="23.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\ShaderTechnique.cs</FileName>
+      <HashCode>AAAggACAAAAEAAAIAAAAAQgAAAAAAAAAAIABBAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.ShaderTechniqueList" Collapsed="true">
+    <Position X="25.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\ShaderTechniqueList.cs</FileName>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Graphics.Shaders.ShaderValue&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="27" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\ShaderValue.cs</FileName>
+      <HashCode>CAAAAIAAAAIAAAQAAAAAAIAAAAgQAAAAAQAgAAIAAEA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FileExtensionList" Collapsed="true">
+    <Position X="21.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileExtensionList.cs</FileName>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FileSystem" Collapsed="true">
+    <Position X="13.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileSystem.cs</FileName>
+      <HashCode>BAgQgkCQgCQQIiMAACEEAQAACgERAAgAgAYACAAAAgA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FileSystemEntry" Collapsed="true">
+    <Position X="23.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileSystemEntry.cs</FileName>
+      <HashCode>AAAAIAAEAAACQAYIAAAAAAQAAAAAAQAAAYAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FileSystemEntryManager" Collapsed="true">
+    <Position X="25.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileSystemEntryManager.cs</FileName>
+      <HashCode>AAAAgAAAAAAAAAAACAAAAQQAAAAAAAAEAAAAAAAQAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FileSystemFailedList" Collapsed="true">
+    <Position X="27" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileSystemFailedList.cs</FileName>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FileSystemManager" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileSystemManager.cs</FileName>
+      <HashCode>ABAAAAAAACAAAAAACAAAIAAAQAAAAAAEAEAAAAAQAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FileType" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileType.cs</FileName>
+      <HashCode>AAAABIACIAAAAEAAAAAAAAAABCAAAAAAAIgIAAAABAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FileTypeList" Collapsed="true">
+    <Position X="30.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileTypeList.cs</FileName>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.BinaryDataType" Collapsed="true">
+    <Position X="1" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileTypes\BinaryDataType.cs</FileName>
+      <HashCode>AAAAAIAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.FontDataType" Collapsed="true">
+    <Position X="3.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileTypes\FontDataType.cs</FileName>
+      <HashCode>AAAAAIAAIAAAAAAAAAAAAAAAAACAAAAAAAAAAAAABAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.ImageDataType" Collapsed="true">
+    <Position X="5.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileTypes\ImageDataType.cs</FileName>
+      <HashCode>AAAAAIAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.ShaderDataType" Collapsed="true">
+    <Position X="7.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileTypes\ShaderDataType.cs</FileName>
+      <HashCode>AAAAAIAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.SpriteDataType" Collapsed="true">
+    <Position X="10" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileTypes\SpriteDataType.cs</FileName>
+      <HashCode>AAIAAIAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.StringDataType" Collapsed="true">
+    <Position X="12.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FileTypes\StringDataType.cs</FileName>
+      <HashCode>AAAAAIAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Serialization.BinarySerializer" Collapsed="true">
+    <Position X="5.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\BinarySerializer.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAgACBAAAAABAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Serialization.ImageSerializer" Collapsed="true">
+    <Position X="7.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\ImageSerializer.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAACBAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Serialization.SerializationParameter" Collapsed="true">
+    <Position X="21.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\SerializationParameter.cs</FileName>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Serialization.SerializationParameterList" Collapsed="true">
+    <Position X="23.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\SerializationParameterList.cs</FileName>
+      <HashCode>AEAQAAAAAAAAAAAAAAAAAAACAAABAAAAAAAAAABQAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Serialization.Serializer&lt;R, W&gt;" Collapsed="true">
+    <Position X="4" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\Serializer.cs</FileName>
+      <HashCode>AAEAAQAAACAGAAIBAAAAAAAgACBIAABABJCAAAEAAJA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Serialization.ShaderSerializer" Collapsed="true">
+    <Position X="0.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\ShaderSerializer.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAACBAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GorgonLibrary.Serialization.XMLSerializer" Collapsed="true">
+    <Position X="3" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\XMLSerializer.cs</FileName>
+      <HashCode>AAAAAQAAACACAAIBAAAAAAAgACBAAAAABAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FileSystems.Folder.FolderFileSystem" Collapsed="true">
+    <Position X="13.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>FileSystem\FolderFileSystem\FolderFileSystem.cs</FileName>
+      <HashCode>AAAAAEAAgAAAAAIAACAAAAAAAAEQAAgAAAAAAAAABAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Framework.DeviceInformationDialog" Collapsed="true">
+    <Position X="25.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Framework\DeviceInformationDialog.cs</FileName>
+      <HashCode>AAAAAAgABKAAABAAAACAAAACkGgAAkAAKAABAAQAAAQ=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Framework.GorgonApplicationWindow" Collapsed="true">
+    <Position X="23.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Framework\GorgonApplication.cs</FileName>
+      <HashCode>OEACEAjADYAAAQIGEBACCICCAEgIABkAEAACAAAgAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Framework.SetupDialog" Collapsed="true">
+    <Position X="25.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Framework\SetupDialog.cs</FileName>
+      <HashCode>ADJEAggAAKQQABACBwSCAQCmkEACwoBAIRABAQBAAQI=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Properties.Resources" Collapsed="true">
+    <Position X="20" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAkAAAEAAFIAAAAAQABEUABAQAAAAAAAAAAAAACAOA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Timing.PreciseTimer" Collapsed="true">
+    <Position X="23.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Timing\Timer.cs</FileName>
+      <HashCode>AQAAGAAgIACQBAAAQAAAAAACAAAACgIAUAABAAAAIAg=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.Timing.TimingData" Collapsed="true">
+    <Position X="30.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Timing\TimingData.cs</FileName>
+      <HashCode>AEMAEAAAAIBgFAAAAAAAAACJAABAAAACABAIAQAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="GorgonLibrary.Graphics.Animations.Frame" Collapsed="true">
+    <Position X="18.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\Types\Frame.cs</FileName>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAABAAAAAAAAAAgAA=</HashCode>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GorgonLibrary.VideoMode" Collapsed="true">
+    <Position X="20" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Device\VideoMode.cs</FileName>
+      <HashCode>AAAAAAAABAAAAAgEgAAAAEAAAAgAAIAAAAABAAAAAyA=</HashCode>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="GorgonLibrary.Graphics.Animations.IKey&lt;K&gt;" Collapsed="true">
+    <Position X="21.75" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Animation\IKey.cs</FileName>
+      <HashCode>AAAAAACAABAAACAQAAAAAAAAAAAAAAAAAAAAAAAAIRA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.Internal.IDataCache&lt;T&gt;" Collapsed="true">
+    <Position X="18.25" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Buffers\IDataCache.cs</FileName>
+      <HashCode>AAwACAAEAAAAAAACAAAAAAQAAAAgAAAAAAAAQBAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.Internal.IDeviceStateObject" Collapsed="true">
+    <Position X="20" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Device\IDeviceStateObject.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAABAAAIAAAAAAAAAAABAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.Internal.IAnimatable" Collapsed="true">
+    <Position X="10.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\IAnimatable.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQACAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.Internal.IMoveable" Collapsed="true">
+    <Position X="10.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\IMoveable.cs</FileName>
+      <HashCode>AAAAAAAAAAAAgYAgCAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.Internal.IRenderable" Collapsed="true">
+    <Position X="10.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Rendering\IRenderable.cs</FileName>
+      <HashCode>YgEAlgAIBEAAQgiAAgakQA0ACBAAiBAAAEAggMAEKAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.PlugIns.IPlugIn" Collapsed="true">
+    <Position X="23.5" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Plugin\IPlugIn.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.PlugIns.IPlugInEntry" Collapsed="true">
+    <Position X="25.25" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Plugin\IPlugInEntry.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAABAAEAAAQAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.Graphics.Shaders.IShaderValue" Collapsed="true">
+    <Position X="30.5" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Shaders\IShaderValue.cs</FileName>
+      <HashCode>AAAAAAAAAAIAAAAAAAAAAAAAAAgQAAAAAQAAAAAAAEA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.Serialization.ISerializable" Collapsed="true">
+    <Position X="27" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\ISerializable.cs</FileName>
+      <HashCode>AAAAAAAAAAABQAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GorgonLibrary.Serialization.ISerializer" Collapsed="true">
+    <Position X="28.75" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Serialization\ISerializer.cs</FileName>
+      <HashCode>AAAAAQAAAAACAAIBAAAAAAAgACBIAAAABICAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="GorgonLibrary.Graphics.Animations.InterpolationMode" Collapsed="true">
+    <Position X="23.5" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\AnimationEnums.cs</FileName>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.VertexFieldContext" Collapsed="true">
+    <Position X="27" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AEAAAAAAAAAAEAAgAgIAAAAAACAJAAACAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.VertexFieldType" Collapsed="true">
+    <Position X="28.75" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAABAAAAAAAAAAAgAAgAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.DrawingMode" Collapsed="true">
+    <Position X="27" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AAAAAgAAAAAAgAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.ShadingMode" Collapsed="true">
+    <Position X="18.25" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAEAAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.PrimitiveStyle" Collapsed="true">
+    <Position X="21.75" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>BAIAAAAAEAAAAAAAACAAAAAAACAAAAAAAQAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.CullingMode" Collapsed="true">
+    <Position X="21.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AAAAgAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.BufferUsage" Collapsed="true">
+    <Position X="30.5" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAABAAAAEAAAAAAQAAAg=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.BufferLockFlags" Collapsed="true">
+    <Position X="27" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAIAAAAAAQIAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.IndexBufferType" Collapsed="true">
+    <Position X="20" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.BufferTypes" Collapsed="true">
+    <Position X="28.75" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InternalEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAABAAAAAAAAAAAAAAAAABAAAAEAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.RendererErrors" Collapsed="true">
+    <Position X="23.5" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\RenderingException.cs</FileName>
+      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAEACAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Internal.VertexErrors" Collapsed="true">
+    <Position X="25.25" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\VertexDataException.cs</FileName>
+      <HashCode>AAIASCAAACAgAAAAAAAAQAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.CompareFunctions" Collapsed="true">
+    <Position X="20" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\Enums.cs</FileName>
+      <HashCode>ACAAAAAAAAAAAAAAgAEAAAAAAAAAAAAAAAAgAQRAACA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.VSyncIntervals" Collapsed="true">
+    <Position X="18.25" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\Enums.cs</FileName>
+      <HashCode>AAAAAAAAQAEAAAAAAAAAAABAAAAAAACAAAAAAIAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.ClearTargets" Collapsed="true">
+    <Position X="18.25" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\Enums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAFBAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.BackBufferFormats" Collapsed="true">
+    <Position X="23.5" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\Enums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAABAEAAAAAAgCAAAAAAQAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.DepthBufferFormats" Collapsed="true">
+    <Position X="23.5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\Enums.cs</FileName>
+      <HashCode>AAAAAAQAQAAAAAAAAAAAAAAAAAAAAACIABAAAAABIKg=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.AnimationErrors" Collapsed="true">
+    <Position X="21.75" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\AnimationException.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAQAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.DeviceErrors" Collapsed="true">
+    <Position X="25.25" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\DeviceException.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAQAAAUAQAgAAAEAACAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.ResourceErrors" Collapsed="true">
+    <Position X="25.25" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\ResourceException.cs</FileName>
+      <HashCode>AAAACgAAAAAEABAACABAAAAIEAAAAAAIAAAAAAAAAQA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.NotImplementedTypes" Collapsed="true">
+    <Position X="30.5" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>GorgonException.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.GenericErrors" Collapsed="true">
+    <Position X="18.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>GorgonException.cs</FileName>
+      <HashCode>AAAAEAKAAAAAAAAAAAAAAAAAAAAAAIAAAAACAAAEAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.Fonts.FontShadowDirection" Collapsed="true">
+    <Position X="30.5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\FontEnums.cs</FileName>
+      <HashCode>AAAAAgAAAAAAAACAACAAAEBQAAAAAAAAAAgAAQAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.ImageBufferFormats" Collapsed="true">
+    <Position X="21.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>0SAABgQSpkGAAUABAEYEwAAAEDCQjAJCQAAAAAABAKg=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.ImageOperations" Collapsed="true">
+    <Position X="30.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>BAAABAAA0AAcAAAAAAkKAEAAAAgADBABgAAkADAAAiA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.ImageOperationArguments" Collapsed="true">
+    <Position X="28.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AEAAAAAAAAAAAAAABgCAAAAAQAAAAAgAAAIQgAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.ImageFilters" Collapsed="true">
+    <Position X="27" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAgBCCAAAAAAAAAAAAAAAAAQAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.ImageType" Collapsed="true">
+    <Position X="18.25" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAABIAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.ImageAddressing" Collapsed="true">
+    <Position X="20" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AAAAAAABAAAAAAAAAEAAAAAAgAAAEAAAAAACAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.ImageFileFormat" Collapsed="true">
+    <Position X="25.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>CAAACAAAAgAAAAAEAIAAABAAAEAAEAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.VertexLocations" Collapsed="true">
+    <Position X="30.5" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAQAAAAAAAAAAgAAQAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.Blending" Collapsed="true">
+    <Position X="25.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AEAAAAAAAgCAAAAAAAgAAAAAAAAIAAAAIAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.Smoothing" Collapsed="true">
+    <Position X="20" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.Alignment" Collapsed="true">
+    <Position X="18.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAACAEAAAAAEQAAAAAAAACAiAAQAIAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.StencilOperations" Collapsed="true">
+    <Position X="23.5" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AAAAAEAIAAAAAAAAJAAAAAAAAQAAIAAAAAAAAAACACA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.AlphaBlendOperation" Collapsed="true">
+    <Position X="20" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\GraphicsEnums.cs</FileName>
+      <HashCode>AhAAAAAAAMAAIEAAAAAAAAAAASAgAAAAQAAQAAAACIA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.ImageErrors" Collapsed="true">
+    <Position X="23.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\ImageException.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAACAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.SpriteErrors" Collapsed="true">
+    <Position X="21.75" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\SpriteException.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Input.MouseButton" Collapsed="true">
+    <Position X="28.75" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InputEnums.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAwDgAAAAAAAAACACQAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Input.KeyboardKeys" Collapsed="true">
+    <Position X="27" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InputEnums.cs</FileName>
+      <HashCode>A5ru5//VY8ooSswJUzETACoVGk1c1BsayKGo////aWM=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Input.JoystickDirection" Collapsed="true">
+    <Position X="25.25" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\InputEnums.cs</FileName>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAYAAAAAAAAAACACAAAAIAAI=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Input.InputErrors" Collapsed="true">
+    <Position X="21.75" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\InputException.cs</FileName>
+      <HashCode>AAAIAAAAAAIAAAAAAAAAAAAABAAAAAAAAAIAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.PlugIns.PlugInType" Collapsed="true">
+    <Position X="20" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\PlugInTypeEnums.cs</FileName>
+      <HashCode>AAAAAACAAAAAAAAAEAAAAAAAFAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.PlugIns.PlugInErrors" Collapsed="true">
+    <Position X="18.25" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\PlugInException.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAJAAAAAAAAgIA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.Shaders.ShaderParameterType" Collapsed="true">
+    <Position X="30.5" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Enums\ShaderEnums.cs</FileName>
+      <HashCode>AAAAAAAAAQAABABAQAAAAAAAAAAgAhAAAAAAgAAgABA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Graphics.Shaders.ShaderErrors" Collapsed="true">
+    <Position X="28.75" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\ShaderException.cs</FileName>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAABIAAAACAAAAAABAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.FileSystems.FileSystemErrors" Collapsed="true">
+    <Position X="28.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\FileSystemException.cs</FileName>
+      <HashCode>AACAAAAAAAAAAAAEAAiAAAAAEAgAAEAAAwABAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GorgonLibrary.Serialization.SerializerErrors" Collapsed="true">
+    <Position X="27" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Exceptions\SerializerException.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAgAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Delegate Name="GorgonLibrary.Graphics.Animations.AnimationAdvanceHandler" Collapsed="true">
+    <Position X="18.25" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\AnimationEvents.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAIAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="GorgonLibrary.DriverChangingHandler" Collapsed="true">
+    <Position X="21.75" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\DriverChangeEvent.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAEAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="GorgonLibrary.DriverChangedHandler" Collapsed="true">
+    <Position X="20" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\DriverChangeEvent.cs</FileName>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="GorgonLibrary.Graphics.FrameEventHandler" Collapsed="true">
+    <Position X="23.5" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\FrameEvents.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAQAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="GorgonLibrary.Input.MouseInputEvent" Collapsed="true">
+    <Position X="27" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\InputEvents.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAABAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="GorgonLibrary.Input.KeyboardInputEvent" Collapsed="true">
+    <Position X="25.25" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Events\InputEvents.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAIAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Delegate>
+</ClassDiagram>
