@@ -1,0 +1,192 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7E160353-1E30-46D1-BB80-96C837DD0C92}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GorgonLibrary.FileSystems.Tools</RootNamespace>
+    <AssemblyName>FileSystemEditor</AssemblyName>
+    <ApplicationIcon>GorFS.ico</ApplicationIcon>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SharpUtilities, Version=2.1.2878.2791, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\SharpUtilities.2.1.2878\Assemblies\SharpUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ABOOT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABOOT.Designer.cs">
+      <DependentUpon>ABOOT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formComment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formComment.Designer.cs">
+      <DependentUpon>formComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formFileSystems.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formFileSystems.Designer.cs">
+      <DependentUpon>formFileSystems.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formFileSystemWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formFileSystemWindow.Designer.cs">
+      <DependentUpon>formFileSystemWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formMain.Designer.cs">
+      <DependentUpon>formMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formNewFileSystem.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formNewFileSystem.Designer.cs">
+      <DependentUpon>formNewFileSystem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formOpenFileSystem.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formOpenFileSystem.Designer.cs">
+      <DependentUpon>formOpenFileSystem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formPathNameInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formPathNameInput.Designer.cs">
+      <DependentUpon>formPathNameInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ABOOT.resx">
+      <DependentUpon>ABOOT.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formComment.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formFileSystems.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formFileSystems.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formFileSystemWindow.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formFileSystemWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formMain.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formNewFileSystem.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formNewFileSystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formOpenFileSystem.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formOpenFileSystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formPathNameInput.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formPathNameInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GorFS.ico" />
+    <None Include="Resources\GorFS64x64.png" />
+    <None Include="Resources\GorgonTextureLogo.png" />
+    <None Include="Resources\GorFS_16.png" />
+    <None Include="Resources\disk_blue1.png" />
+    <None Include="Resources\error.png" />
+    <None Include="Resources\document_dirty.png" />
+    <None Include="Resources\document_edit.png" />
+    <None Include="Resources\delete1.png" />
+    <None Include="Resources\add.png" />
+    <None Include="Resources\folder_delete.png" />
+    <None Include="Resources\folder_add.png" />
+    <None Include="Resources\delete.png" />
+    <None Include="Resources\check.png" />
+    <None Include="Resources\folder_cubes.png" />
+    <None Include="Resources\disk_blue.png" />
+    <None Include="Resources\folder_out.png" />
+    <None Include="Resources\document_plain_new.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
+      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
+      <Name>Gorgon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
