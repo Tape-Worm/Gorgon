@@ -1,0 +1,238 @@
+#region LGPL.
+// 
+// Gorgon.
+// Copyright (C) 2007 Michael Winsor
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// 
+// Created: Friday, May 18, 2007 2:42:31 AM
+// 
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Drawing = System.Drawing;
+using SharpUtilities;
+using SharpUtilities.Mathematics;
+using SharpUtilities.Utility;
+
+namespace GorgonLibrary.Graphics.Tools
+{
+	/// <summary>
+	/// Object representing a zooming window.
+	/// </summary>
+	public class Zoomer
+	{
+		#region Variables.
+		private formMain _owner = null;							// Owning form.
+		private Sprite _zoomerSprite = null;					// Zoomer sprite.
+		private TextSprite _zoomerCaption = null;				// Zoomer caption.
+		private float _zoomerScale = 1.5f;						// Zoomer scale.
+		private bool _zoomerFollows = true;						// Flag to indicate that the zoomer follows the cursor.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the zoom amount.
+		/// </summary>
+		public float ZoomAmount
+		{
+			get
+			{
+				return _zoomerScale;
+			}
+			set
+			{
+				_zoomerScale = value;
+
+				if (_zoomerScale < 0.1f)
+					_zoomerScale = 0.1f;
+				if (_zoomerScale > 16.0f)
+					_zoomerScale = 16.0f;
+
+				_zoomerCaption.Text = "Zoomer - " + _zoomerScale.ToString("0.0") + "x";
+
+				Settings.Root = "Zoomer";
+				Settings.SetSetting("ZoomerScale", _zoomerScale.ToString("0.0"));
+				Settings.Root = null;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the zoomer will follow the cursor or snap to the sides.
+		/// </summary>
+		public bool IsZoomerFollowingCursor
+		{
+			get
+			{
+				return _zoomerFollows;
+			}
+			set
+			{
+				_zoomerFollows = value;
+
+				Settings.Root = "Zoomer";
+				Settings.SetSetting("ZoomerFollowsCursor", _zoomerFollows.ToString());
+				Settings.Root = null;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve stored settings.
+		/// </summary>
+		public void GetSettings()
+		{
+			try
+			{
+				Settings.Root = "Zoomer";
+				_zoomerScale = Convert.ToSingle(Settings.GetSetting("ZoomerScale", "1.5"));
+				_zoomerCaption.Text = "Zoomer - " + _zoomerScale.ToString("0.0") + "x";
+				_zoomerFollows = string.Compare(Settings.GetSetting("ZoomerFollowsCursor", "true"), "true", true) == 0;
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(_owner, "Unable to read the settings file.", ex);
+			}
+			finally
+			{
+				Settings.Root = null;
+				_owner.ValidateForm();
+			}
+		}
+
+		/// <summary>
+		/// Function to draw the zoomer.
+		/// </summary>
+		/// <param name="cursorPosition">Cursor position.</param>
+		public void Draw(Vector2D cursorPosition)
+		{
+			try
+			{
+				Vector2D newPosition = Vector2D.Unit;							// New position.
+				Drawing.RectangleF zoomWindow = Drawing.RectangleF.Empty;		// Zoom window dimensions.
+				Vector2D bufferSize = Vector2D.Zero;							// Buffer size.
+				Vector2D offset = Vector2D.Zero;								// Offset vector.
+				Vector2D scale = Vector2D.Zero;									// Scale of zoomer.
+
+				// Grab back buffer bounds.
+				bufferSize = _owner.DisplayDimensions;
+				newPosition = _zoomerSprite.Position;
+
+				// Perform scaling.
+				scale.X = 192.0f / _zoomerScale;
+				scale.Y = 192.0f / _zoomerScale;
+
+				// Update the zoomer sprite.
+				_zoomerSprite.ImageRegion = new Drawing.RectangleF(cursorPosition.X - (scale.X / 2.0f), cursorPosition.Y - (scale.Y / 2.0f), scale.X, scale.Y);
+				_zoomerSprite.UniformScale = 192.0f / _zoomerSprite.Width;
+
+				if (!_zoomerFollows)
+				{
+					// Snap to corners.
+					zoomWindow = new Drawing.RectangleF(0, 0, _zoomerSprite.ScaledWidth + 2, _zoomerSprite.ScaledHeight + 2 + _zoomerCaption.Height);
+					if (zoomWindow.Contains(cursorPosition))
+					{
+						newPosition.X = bufferSize.X - _zoomerSprite.ScaledWidth - 1;
+						newPosition.Y = bufferSize.Y - _zoomerSprite.ScaledHeight - 1;
+					}
+					else
+					{
+						newPosition.X = 1;
+						newPosition.Y = _zoomerCaption.Height + 1;
+					}
+				}
+				else
+				{
+					// Default offset.
+					offset.X = 16.0f;
+					offset.Y = 32.0f;
+
+					// Move the zoomer to outside of the fixed clip range.
+					if (_owner.Clipper.IsFixedDimensions)
+					{
+						offset.X += _owner.Clipper.FixedSize.X;
+						offset.Y += _owner.Clipper.FixedSize.Y;
+					}
+
+					// Update the position.
+					newPosition = cursorPosition + offset;
+
+					// Adjust for boundaries.
+					if (newPosition.X >= bufferSize.X - _zoomerSprite.ScaledWidth - 1)
+						newPosition.X = cursorPosition.X - 16.0f - _zoomerSprite.ScaledWidth;
+					if (newPosition.Y >= bufferSize.Y - _zoomerCaption.Height - _zoomerSprite.ScaledHeight - 1)
+						newPosition.Y = cursorPosition.Y - 20.0f - _zoomerSprite.ScaledHeight;
+
+					// Don't go offscreen.
+					if (newPosition.X >= bufferSize.X - _zoomerSprite.ScaledWidth - 16.0f)
+						newPosition.X = bufferSize.X - _zoomerSprite.ScaledWidth - 16.0f;
+					if (newPosition.X <= 1.0f)
+						newPosition.X = 1.0f;
+					if (newPosition.Y >= bufferSize.Y - _zoomerSprite.ScaledHeight - 16.0f)
+						newPosition.Y = bufferSize.Y - _zoomerSprite.ScaledHeight - 20.0f;
+					if (newPosition.Y <= 1.0f)
+						newPosition.Y = 1.0f;
+				}
+
+				_zoomerSprite.Position = newPosition;
+				_zoomerSprite.Draw();
+
+				// Draw border.
+				Gorgon.Screen.BlendingMode = BlendingModes.Inverted;
+				Gorgon.Screen.Rectangle(newPosition.X - 1, newPosition.Y - 1 - _zoomerCaption.Height, _zoomerSprite.ScaledWidth + 2, _zoomerSprite.ScaledHeight + 2 + _zoomerCaption.Height, Drawing.Color.Blue);
+				Gorgon.Screen.BlendingMode = BlendingModes.Modulated;
+				Gorgon.Screen.FilledRectangle(newPosition.X, newPosition.Y - _zoomerCaption.Height, _zoomerSprite.ScaledWidth, _zoomerCaption.Height, Drawing.Color.Black);
+				_zoomerCaption.SetPosition(newPosition.X + 3, newPosition.Y - _zoomerCaption.Height + 1);
+				_zoomerCaption.Draw();
+			}
+			catch (SharpException sEx)
+			{
+				UI.ErrorBox(_owner, "Unable to draw the zoom window.", sEx.ErrorLog);
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(_owner, ex);
+			}
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="owner">Form that owns this object.</param>
+		public Zoomer(formMain owner)
+		{
+			_owner = owner;
+
+			// Create the zoomer sprite.
+			_zoomerSprite = new Sprite("ZoomerSprite", _owner.BackBuffer);
+			_zoomerSprite.Position = new Vector2D(1, 1);
+			_zoomerSprite.AlphaMaskFunction = CompareFunctions.Always;
+			_zoomerSprite.BlendingMode = BlendingModes.None;
+			_zoomerSprite.WrapMode = ImageAddressing.Border;
+			_zoomerSprite.Smoothing = Smoothing.None;
+			_zoomerSprite.Width = 192.0f;
+			_zoomerSprite.Height = 192.0f;
+
+			// Create zoomer window caption.
+			_zoomerCaption = new TextSprite("ZoomerCaption", "Zoomer - " + _zoomerScale.ToString("0.0") + "x", formMain.MainFont);
+		}
+		#endregion
+	}
+}
