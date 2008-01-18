@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="GorgonSettings" targetNamespace="http://tempuri.org/GorgonSettings.xsd" xmlns:mstns="http://tempuri.org/GorgonSettings.xsd" xmlns="http://tempuri.org/GorgonSettings.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="GorgonSettings" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="GorgonSettings" msprop:Generator_DataSetName="GorgonSettings" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Paths" msprop:Generator_UserTableName="Paths" msprop:Generator_RowDeletedName="PathsRowDeleted" msprop:Generator_RowChangedName="PathsRowChanged" msprop:Generator_RowClassName="PathsRow" msprop:Generator_RowChangingName="PathsRowChanging" msprop:Generator_RowEvArgName="PathsRowChangeEvent" msprop:Generator_RowEvHandlerName="PathsRowChangeEventHandler" msprop:Generator_TableClassName="PathsDataTable" msprop:Generator_TableVarName="tablePaths" msprop:Generator_RowDeletingName="PathsRowDeleting" msprop:Generator_TablePropName="Paths">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PathName" msprop:Generator_UserColumnName="PathName" msprop:Generator_ColumnVarNameInTable="columnPathName" msprop:Generator_ColumnPropNameInRow="PathName" msprop:Generator_ColumnPropNameInTable="PathNameColumn" type="xs:string" />
+              <xs:element name="Path" msprop:Generator_UserColumnName="Path" msprop:nullValue="_empty" msprop:Generator_ColumnVarNameInTable="columnPath" msprop:Generator_ColumnPropNameInTable="PathColumn" msprop:Generator_ColumnPropNameInRow="Path" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="PlugIns" msprop:Generator_UserTableName="PlugIns" msprop:Generator_RowDeletedName="PlugInsRowDeleted" msprop:Generator_RowChangedName="PlugInsRowChanged" msprop:Generator_RowClassName="PlugInsRow" msprop:Generator_RowChangingName="PlugInsRowChanging" msprop:Generator_RowEvArgName="PlugInsRowChangeEvent" msprop:Generator_RowEvHandlerName="PlugInsRowChangeEventHandler" msprop:Generator_TableClassName="PlugInsDataTable" msprop:Generator_TableVarName="tablePlugIns" msprop:Generator_RowDeletingName="PlugInsRowDeleting" msprop:Generator_TablePropName="PlugIns">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PlugInName" msprop:Generator_UserColumnName="PlugInName" msprop:Generator_ColumnVarNameInTable="columnPlugInName" msprop:Generator_ColumnPropNameInRow="PlugInName" msprop:Generator_ColumnPropNameInTable="PlugInNameColumn" type="xs:string" />
+              <xs:element name="PlugInDLL" msprop:Generator_UserColumnName="PlugInDLL" msprop:nullValue="_empty" msprop:Generator_ColumnVarNameInTable="columnPlugInDLL" msprop:Generator_ColumnPropNameInTable="PlugInDLLColumn" msprop:Generator_ColumnPropNameInRow="PlugInDLL" type="xs:string" minOccurs="0" />
+              <xs:element name="PlugInEnabled" msprop:Generator_UserColumnName="PlugInEnabled" msprop:nullValue="_throw" msprop:Generator_ColumnVarNameInTable="columnPlugInEnabled" msprop:Generator_ColumnPropNameInTable="PlugInEnabledColumn" msprop:Generator_ColumnPropNameInRow="PlugInEnabled" type="xs:boolean" default="false" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="FileSystems" msprop:Generator_UserTableName="FileSystems" msprop:Generator_RowDeletedName="FileSystemsRowDeleted" msprop:Generator_RowChangedName="FileSystemsRowChanged" msprop:Generator_RowClassName="FileSystemsRow" msprop:Generator_RowChangingName="FileSystemsRowChanging" msprop:Generator_RowEvArgName="FileSystemsRowChangeEvent" msprop:Generator_RowEvHandlerName="FileSystemsRowChangeEventHandler" msprop:Generator_TableClassName="FileSystemsDataTable" msprop:Generator_TableVarName="tableFileSystems" msprop:Generator_RowDeletingName="FileSystemsRowDeleting" msprop:Generator_TablePropName="FileSystems">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="FileSystemName" msprop:Generator_UserColumnName="FileSystemName" msprop:Generator_ColumnVarNameInTable="columnFileSystemName" msprop:Generator_ColumnPropNameInRow="FileSystemName" msprop:Generator_ColumnPropNameInTable="FileSystemNameColumn" type="xs:string" />
+              <xs:element name="FileSystemProviderDLL" msprop:Generator_UserColumnName="FileSystemProviderDLL" msprop:nullValue="_empty" msprop:Generator_ColumnVarNameInTable="columnFileSystemProviderDLL" msprop:Generator_ColumnPropNameInTable="FileSystemProviderDLLColumn" msprop:Generator_ColumnPropNameInRow="FileSystemProviderDLL" type="xs:string" minOccurs="0" />
+              <xs:element name="FileSystemRoot" msprop:Generator_UserColumnName="FileSystemRoot" msprop:nullValue="_empty" msprop:Generator_ColumnVarNameInTable="columnFileSystemRoot" msprop:Generator_ColumnPropNameInTable="FileSystemRootColumn" msprop:Generator_ColumnPropNameInRow="FileSystemRoot" type="xs:string" minOccurs="0" />
+              <xs:element name="FileSystemProviderName" msprop:Generator_UserColumnName="FileSystemProviderName" msprop:nullValue="_empty" msprop:Generator_ColumnVarNameInTable="columnFileSystemProviderName" msprop:Generator_ColumnPropNameInTable="FileSystemProviderNameColumn" msprop:Generator_ColumnPropNameInRow="FileSystemProviderName" type="xs:string" minOccurs="0" />
+              <xs:element name="FileSystemEnabled" msprop:Generator_UserColumnName="FileSystemEnabled" msprop:Generator_ColumnPropNameInRow="FileSystemEnabled" msprop:Generator_ColumnVarNameInTable="columnFileSystemEnabled" msprop:Generator_ColumnPropNameInTable="FileSystemEnabledColumn" type="xs:boolean" default="false" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="InputPlugIns" msprop:Generator_UserTableName="InputPlugIns" msprop:Generator_RowDeletedName="InputPlugInsRowDeleted" msprop:Generator_RowChangedName="InputPlugInsRowChanged" msprop:Generator_RowClassName="InputPlugInsRow" msprop:Generator_RowChangingName="InputPlugInsRowChanging" msprop:Generator_RowEvArgName="InputPlugInsRowChangeEvent" msprop:Generator_RowEvHandlerName="InputPlugInsRowChangeEventHandler" msprop:Generator_TableClassName="InputPlugInsDataTable" msprop:Generator_TableVarName="tableInputPlugIns" msprop:Generator_RowDeletingName="InputPlugInsRowDeleting" msprop:Generator_TablePropName="InputPlugIns">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="InputPlugInDLL" msprop:Generator_UserColumnName="InputPlugInDLL" msprop:nullValue="_empty" msprop:Generator_ColumnVarNameInTable="columnInputPlugInDLL" msprop:Generator_ColumnPropNameInTable="InputPlugInDLLColumn" msprop:Generator_ColumnPropNameInRow="InputPlugInDLL" type="xs:string" minOccurs="0" />
+              <xs:element name="InputPlugInName" msprop:Generator_UserColumnName="InputPlugInName" msprop:Generator_ColumnVarNameInTable="columnInputPlugInName" msprop:Generator_ColumnPropNameInRow="InputPlugInName" msprop:Generator_ColumnPropNameInTable="InputPlugInNameColumn" type="xs:string" />
+              <xs:element name="InputEnabled" msprop:Generator_UserColumnName="InputEnabled" msprop:Generator_ColumnVarNameInTable="columnInputEnabled" msprop:Generator_ColumnPropNameInRow="InputEnabled" msprop:Generator_ColumnPropNameInTable="InputEnabledColumn" type="xs:boolean" default="false" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:Paths" />
+      <xs:field xpath="mstns:PathName" />
+    </xs:unique>
+    <xs:unique name="PlugInsKey1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:PlugIns" />
+      <xs:field xpath="mstns:PlugInName" />
+    </xs:unique>
+    <xs:unique name="FileSystems_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:FileSystems" />
+      <xs:field xpath="mstns:FileSystemName" />
+    </xs:unique>
+    <xs:unique name="InputPlugInsKey1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:InputPlugIns" />
+      <xs:field xpath="mstns:InputPlugInName" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

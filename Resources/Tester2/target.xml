@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--Gorgon Sprite - Target-->
+<!--Written by Michael Winsor (Tape_Worm) for the Gorgon library.-->
+<!--Use at your own peril.-->
+<GorgonSprite>
+  <Header>
+    <HeaderValue>GORSPR1</HeaderValue>
+  </Header>
+  <MetaData>
+    <Name>Target</Name>
+  </MetaData>
+  <Sprite>
+    <Image>
+      <HasImage>True</HasImage>
+      <IsRenderTarget>True</IsRenderTarget>
+      <Format>38</Format>
+      <SizeWidth>800</SizeWidth>
+      <SizeHeight>600</SizeHeight>
+      <TargetPriority>-1</TargetPriority>
+      <HasDepthBuffer>True</HasDepthBuffer>
+      <HasStencilBuffer>True</HasStencilBuffer>
+      <ImageName>TargetImage</ImageName>
+    </Image>
+    <!--These settings are used to determine if the sprite will inherit settings-->
+    <!--from its layer.-->
+    <InheritedSettings>
+      <AlphaMaskFunction>True</AlphaMaskFunction>
+      <AlphaMaskValue>True</AlphaMaskValue>
+      <BlendingMode>True</BlendingMode>
+      <HorizontalWrapping>True</HorizontalWrapping>
+      <Smoothing>True</Smoothing>
+      <StencilCompare>True</StencilCompare>
+      <StencilEnabled>True</StencilEnabled>
+      <StencilFailOperation>True</StencilFailOperation>
+      <StencilMask>True</StencilMask>
+      <StencilPassOperation>True</StencilPassOperation>
+      <StencilReference>True</StencilReference>
+      <StencilZFailOperation>True</StencilZFailOperation>
+      <VerticalWrapping>True</VerticalWrapping>
+    </InheritedSettings>
+    <!--Dimensions and offsets of the sprite.-->
+    <Dimensions>
+      <Width>800</Width>
+      <Height>600</Height>
+      <OffsetX>0</OffsetX>
+      <OffsetY>0</OffsetY>
+      <AxisX>0</AxisX>
+      <AxisY>0</AxisY>
+      <Vertex1OffsetX>0</Vertex1OffsetX>
+      <Vertex1OffsetY>0</Vertex1OffsetY>
+      <Vertex2OffsetX>0</Vertex2OffsetX>
+      <Vertex2OffsetY>0</Vertex2OffsetY>
+      <Vertex3OffsetX>0</Vertex3OffsetX>
+      <Vertex3OffsetY>0</Vertex3OffsetY>
+      <Vertex4OffsetX>0</Vertex4OffsetX>
+      <Vertex4OffsetY>0</Vertex4OffsetY>
+    </Dimensions>
+    <!--Effects on the sprite.-->
+    <Effects>
+      <UpperLeftColor>-1</UpperLeftColor>
+      <UpperRightColor>-1</UpperRightColor>
+      <LowerLeftColor>-1</LowerLeftColor>
+      <LowerRightColor>-1</LowerRightColor>
+      <HasShader>True</HasShader>
+      <ShaderIsResource>False</ShaderIsResource>
+      <ShaderPath>..\..\..\..\Resources\Tester2\</ShaderPath>
+      <ShaderName>postprocess.fx</ShaderName>
+      <HasTechnique>True</HasTechnique>
+      <Technique>Blur</Technique>
+    </Effects>
+  </Sprite>
+</GorgonSprite>
