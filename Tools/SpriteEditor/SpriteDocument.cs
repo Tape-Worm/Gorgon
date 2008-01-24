@@ -335,7 +335,7 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			get
 			{
-				return _sprite.GetSpriteVertexPosition(VertexLocations.UpperLeft);
+				return _sprite.GetSpriteVertexOffset(VertexLocations.UpperLeft);
 			}
 			set
 			{
@@ -353,7 +353,7 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			get
 			{
-				return _sprite.GetSpriteVertexPosition(VertexLocations.UpperRight);
+				return _sprite.GetSpriteVertexOffset(VertexLocations.UpperRight);
 			}
 			set
 			{
@@ -371,7 +371,7 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			get
 			{
-				return _sprite.GetSpriteVertexPosition(VertexLocations.LowerLeft);
+				return _sprite.GetSpriteVertexOffset(VertexLocations.LowerLeft);
 			}
 			set
 			{
@@ -389,7 +389,7 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			get
 			{
-				return _sprite.GetSpriteVertexPosition(VertexLocations.LowerRight);
+				return _sprite.GetSpriteVertexOffset(VertexLocations.LowerRight);
 			}
 			set
 			{
