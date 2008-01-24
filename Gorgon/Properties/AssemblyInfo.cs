@@ -21,6 +21,8 @@
 // 
 #endregion
 
+#define BETA
+
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -34,12 +36,22 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 //
 #if DEBUG
+#if BETA
+[assembly: AssemblyTitle("Gorgon - BETA - DEVELOPMENT VERSION")]
+[assembly: AssemblyDescription("DirectX based 2D graphics library. - DEVELOPMENT VERSION - BETA")]
+#else
 [assembly: AssemblyTitle("Gorgon - DEVELOPMENT VERSION")]
 [assembly: AssemblyDescription("DirectX based 2D graphics library. - DEVELOPMENT VERSION")]
+#endif
 [assembly: AssemblyConfiguration("DEBUG")]
+#else
+#if BETA
+[assembly: AssemblyTitle("Gorgon - BETA VERSION")]
+[assembly: AssemblyDescription("DirectX based 2D graphics library. - BETA VERSION")]
 #else
 [assembly: AssemblyTitle("Gorgon")]
 [assembly: AssemblyDescription("DirectX based 2D graphics library.")]
+#endif
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
@@ -73,5 +85,5 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.0.2932.40179")]
-[assembly: AssemblyFileVersion("1.0.2932.40179")]
+[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
