@@ -6,7 +6,7 @@
   </Paths>
   <Paths>
     <PathName>PlugInPathX86</PathName>
-    <Path>..\..\..\..\PlugIns\bin\Debug</Path>
+    <Path>..\..\..\..\PlugIns\bin\Release</Path>
   </Paths>
   <Paths>
     <PathName>PlugInPathX64</PathName>
