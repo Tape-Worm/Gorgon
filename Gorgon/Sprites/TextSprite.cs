@@ -158,7 +158,7 @@ namespace GorgonLibrary.Graphics
 				if (_autoAdjustCRLF != value)
 				{
 					_autoAdjustCRLF = value;
-					FormatText(_originalText.ToString());
+					FormatText(_text, _lines, _originalText.ToString(), _wordWrap, Bounds.Dimensions);
 
 					UpdateAABB();
 					IsSizeUpdated = true;
@@ -203,7 +203,7 @@ namespace GorgonLibrary.Graphics
 				if (_wordWrap != value)
 				{
 					_wordWrap = value;
-					FormatText(_originalText.ToString());
+					FormatText(_text, _lines, _originalText.ToString(), _wordWrap, Bounds.Dimensions);
 
 					UpdateAABB();
 					IsSizeUpdated = true;
@@ -252,7 +252,7 @@ namespace GorgonLibrary.Graphics
 				{
 					_alignment = value;
 
-					FormatText(_originalText.ToString());
+					FormatText(_text, _lines, _originalText.ToString(), _wordWrap, Bounds.Dimensions);
 
 					UpdateAABB();
 					IsSizeUpdated = true;
@@ -351,7 +351,7 @@ namespace GorgonLibrary.Graphics
 				if ((value != null) && (value.Length != 0))
 					_originalText.Append(value);
 
-				FormatText(_originalText.ToString());
+				FormatText(_text, _lines, _originalText.ToString(), _wordWrap, Bounds.Dimensions);
 				UpdateAABB();
 				IsSizeUpdated = true;
 				IsImageUpdated = true;
@@ -545,13 +545,14 @@ namespace GorgonLibrary.Graphics
         /// <summary>
 		/// Property to return post-formatted text.
 		/// </summary>
+		/// <param name="formattedOutput">String builder that will contain the formatted text.</param>
+		/// <param name="lines">A collection of formatted lines from the text.</param>
 		/// <param name="text">Text to format.</param>
-		private void FormatText(string text)
+		/// <param name="wordWrap">TRUE to enforce word wrapping, FALSE to leave as is.</param>
+		/// <param name="bounds">Boundaries for word wrapping.</param>
+		private void FormatText(StringBuilder formattedOutput, StringCollection lines, string text, bool wordWrap, Drawing.RectangleF bounds)
 		{
-			Drawing.RectangleF bounds = Drawing.RectangleF.Empty;		// Boundaries.
 			int previousLength = 0;										// Previous text length.
-
-			bounds = Bounds.Dimensions;
 
 			// Reformat carriage returns and linefeeds.
 			if (_autoAdjustCRLF)
@@ -560,24 +561,24 @@ namespace GorgonLibrary.Graphics
 				text = text.Replace("\n\r", "\n");
 			}
 						
-			previousLength = _text.Length;
+			previousLength = formattedOutput.Length;
 			
-			_text.Length = 0;
-			if (_wordWrap)
-				_text.Append(WordWrapText(text, bounds));
+			formattedOutput.Length = 0;
+			if (wordWrap)
+				formattedOutput.Append(WordWrapText(text, bounds));
 			else
-				_text.Append(text);
+				formattedOutput.Append(text);
 
-			if (_text.Length > previousLength)
+			if (formattedOutput.Length > previousLength)
 				_colorUpdated = true;
 
 			// Get the lines.
-			_lines.Clear();
-			_lines.AddRange(_text.ToString().Split('\n'));
-			for (int i = 0; i < _lines.Count; i++)
+			lines.Clear();
+			lines.AddRange(formattedOutput.ToString().Split('\n'));
+			for (int i = 0; i < lines.Count; i++)
 			{
-				_lines[i] = _lines[i].Replace("\r", string.Empty);
-				_lines[i] = _lines[i].Replace("\n", string.Empty);
+				lines[i] = lines[i].Replace("\r", string.Empty);
+				lines[i] = lines[i].Replace("\n", string.Empty);
 			}
 		}
 
@@ -1020,7 +1021,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_originalText.Append(text);
 
-				FormatText(_originalText.ToString());
+				FormatText(_text, _lines, _originalText.ToString(), _wordWrap, Bounds.Dimensions);
 				UpdateAABB();
 
 				IsSizeUpdated = true;
@@ -1046,7 +1047,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_originalText.Insert(position, text);
 
-				FormatText(_originalText.ToString());
+				FormatText(_text, _lines, _originalText.ToString(), _wordWrap, Bounds.Dimensions);
 				UpdateAABB();
 
 				IsSizeUpdated = true;
@@ -1094,7 +1095,7 @@ namespace GorgonLibrary.Graphics
 
 			_originalText.Remove(position, length);
 
-			FormatText(_originalText.ToString());
+			FormatText(_text, _lines, _originalText.ToString(), _wordWrap, Bounds.Dimensions);
 			UpdateAABB();
 
 			IsSizeUpdated = true;
@@ -1106,9 +1107,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="text">Text to examine.</param>
 		/// <param name="desiredWidth">Ideal width of the rectangle, only applies of wrap is set to TRUE.</param>
-		/// <param name="wrap">TRUE to wrap text at the desired rectangle width, FALSE to let it continue.</param>
+		/// <param name="wordWrap">TRUE to word wrap text at the desired rectangle width, FALSE to let it continue.</param>
 		/// <returns>Rectangle that will contain the text.</returns>
-		public Drawing.RectangleF MeasureText(StringBuilder text, float desiredWidth, bool wrap)
+		public Drawing.RectangleF MeasureText(StringBuilder text, float desiredWidth, bool wordWrap)
 		{
 			Drawing.RectangleF result = Drawing.RectangleF.Empty;			// Resulting rectangle.
 			float maxWidth = 0.0f;											// Maximum width.
@@ -1123,22 +1124,17 @@ namespace GorgonLibrary.Graphics
 
 			// Turn off wrapping if the desired rectangle is empty.
 			if (desiredWidth < 0.0f)
-				wrap = false;
+				wordWrap = false;
 
-			if (!wrap)
+			if (!wordWrap)
 				desiredWidth = 0.0f;
 
 			// Check for the maximum width and height.
             // Get the lines.            
             if (!text.Equals(_text))
             {
-                lines = new StringCollection();
-                lines.AddRange(text.ToString().Split('\n'));
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    lines[i] = lines[i].Replace("\r", string.Empty);
-                    lines[i] = lines[i].Replace("\n", string.Empty);
-                }
+				lines = new StringCollection();
+				FormatText(text, lines, text.ToString(), wordWrap, new Drawing.RectangleF(0, 0, desiredWidth, float.MaxValue - 1));
             }
             else
                 lines = _lines;
@@ -1387,7 +1383,7 @@ namespace GorgonLibrary.Graphics
 			if ((text != null) && (text.Length != 0))
 			{
 				_originalText.Append(text);
-				FormatText(text);
+				FormatText(_text, _lines, text, _wordWrap, Bounds.Dimensions);
 			}
 
 			IsSizeUpdated = true;
