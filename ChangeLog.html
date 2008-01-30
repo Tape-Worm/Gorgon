@@ -86,6 +86,9 @@
 	<pre>
 January 30/2008 - Version - Current.
 ===============
+* Updated yet another bug in TextSprite.MeasureText() where the function would 
+  ignore the wordWrap parameter.
+  
 * Updated a bug in TextSprite.MeasureText().  The function was reading the wrong
   string buffer when measuring the text.  It should have been measuring the text
   in the parameter, instead it was measuring the internal text buffer.
