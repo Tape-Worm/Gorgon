@@ -84,8 +84,12 @@
 <div>
 	<h1>Change Log (mm/dd/yyyy)</h1><hr>
 	<pre>
-January 23/2008 - Version - Current.
+January 30/2008 - Version - Current.
 ===============
+* Updated a bug in TextSprite.MeasureText().  The function was reading the wrong
+  string buffer when measuring the text.  It should have been measuring the text
+  in the parameter, instead it was measuring the internal text buffer.
+  
 * Updated a bug in the sprite editor where the vertex offsets were returning the 
   vertex world position and not the relative offset positioning.
   

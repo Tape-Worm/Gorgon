@@ -505,7 +505,44 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to measure the length of the line in pixels.
+        /// </summary>
+        /// <param name="line">Line to read.</param>
+        /// <returns>The length of the line in pixels.</returns>
+        private float MeasureLine(string line)
+        {
+            float length = 0.0f;						// Length of the line.
+            Glyph glyph;								// Glyph info.
+            float startX = 0.0f;						// Start position.
+            float endX = 0.0f;							// End position.
+
+            if (_font.NeedsUpdate)
+                _font.Refresh();
+
+            // Calculate width.
+            for (int i = 0; i < line.Length; i++)
+            {
+                glyph = _font.GetGlyph(line[i]);
+
+                if (line[i] != '\t')
+                {
+                    endX = startX + glyph.GlyphDimensions.Width;
+                    startX += glyph.Size.Width;
+                }
+                else
+                {
+                    endX = (startX + glyph.GlyphDimensions.Width) * _tabSpaces;
+                    startX += (glyph.Size.Width * _tabSpaces);
+                }
+
+                length = endX;
+            }
+
+            return length;
+        }
+        
+        /// <summary>
 		/// Property to return post-formatted text.
 		/// </summary>
 		/// <param name="text">Text to format.</param>
@@ -631,41 +668,13 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to measure the length of the line in pixels.
+		/// Function to measure the length of the line in pixels.
 		/// </summary>
 		/// <param name="line">Line index to read.</param>
 		/// <returns>The length of the line in pixels.</returns>
 		public float MeasureLine(int line)
 		{
-			string lineText = GetLine(line);			// Line text.
-			float length = 0.0f;						// Length of the line.
-			Glyph glyph;								// Glyph info.
-			float startX = 0.0f;						// Start position.
-			float endX = 0.0f;							// End position.
-
-			if (_font.NeedsUpdate)
-				_font.Refresh();
-						
-			// Calculate width.
-			for(int i = 0; i < lineText.Length; i++)
-			{
-				glyph = _font.GetGlyph(lineText[i]);
-
-				if (lineText[i] != '\t')
-				{
-					endX = startX + glyph.GlyphDimensions.Width;
-					startX += glyph.Size.Width;					
-				}
-				else
-				{
-					endX = (startX + glyph.GlyphDimensions.Width) * _tabSpaces;
-					startX += (glyph.Size.Width * _tabSpaces);
-				}
-
-				length = endX;
-			}
-
-			return length;
+            return MeasureLine(GetLine(line));
 		}
 
 		/// <summary>
@@ -1104,6 +1113,7 @@ namespace GorgonLibrary.Graphics
 			Drawing.RectangleF result = Drawing.RectangleF.Empty;			// Resulting rectangle.
 			float maxWidth = 0.0f;											// Maximum width.
 			float maxHeight = 0.0f;											// Maximum height.
+            StringCollection lines = null;                                  // Lines for the text.
 
 			if ((_font == null) || (text.Length == 0))
 				return Drawing.RectangleF.Empty;
@@ -1119,10 +1129,27 @@ namespace GorgonLibrary.Graphics
 				desiredWidth = 0.0f;
 
 			// Check for the maximum width and height.
-			maxHeight = _font.CharacterHeight * _lines.Count;
-			for (int i = 0; i < _lines.Count; i++)
-			{			
-				maxWidth = MathUtility.Max(maxWidth, MeasureLine(i));
+            // Get the lines.            
+            if (!text.Equals(_text))
+            {
+                lines = new StringCollection();
+                lines.AddRange(text.ToString().Split('\n'));
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    lines[i] = lines[i].Replace("\r", string.Empty);
+                    lines[i] = lines[i].Replace("\n", string.Empty);
+                }
+            }
+            else
+                lines = _lines;
+
+			maxHeight = _font.CharacterHeight * lines.Count;
+			for (int i = 0; i < lines.Count; i++)
+			{
+                if (text.Equals(_text))
+				    maxWidth = MathUtility.Max(maxWidth, MeasureLine(i));
+                else
+                    maxWidth = MathUtility.Max(maxWidth, MeasureLine(lines[i]));
 				if ((maxWidth > desiredWidth) && (desiredWidth != 0.0f))
 					maxWidth = desiredWidth;
 			}
