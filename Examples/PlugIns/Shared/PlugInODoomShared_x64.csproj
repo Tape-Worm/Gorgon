@@ -52,9 +52,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Gorgon\bin64\Release\Gorgon.dll</HintPath>
     </Reference>
-    <Reference Include="SharpUtilities, Version=2.1.2878.2791, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
+    <Reference Include="SharpUtilities, Version=2.1.2955.5969, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\SharpUtilities.2.1.2878\Assemblies\SharpUtilities.dll</HintPath>
+      <HintPath>..\..\..\Dependencies\SharpUtilities.2.1.2955\Assemblies\SharpUtilities.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
