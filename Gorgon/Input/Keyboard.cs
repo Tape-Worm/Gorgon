@@ -432,7 +432,9 @@ namespace GorgonLibrary.InputDevices
 			_keyMap.Add(KeyboardKeys.Add, "+", "+");
 			_keyMap.Add(KeyboardKeys.Subtract, "-", "-");
 			_keyMap.Add(KeyboardKeys.Divide, "/", "/");
-			_keyMap.Add(KeyboardKeys.Oem1, ":", ":");
+            _keyMap.Add(KeyboardKeys.OemPipe, @"\", "|");
+			_keyMap.Add(KeyboardKeys.Oem1, ";", ":");
+            _keyMap.Add(KeyboardKeys.OemSemicolon, ";", ":");
 			_keyMap.Add(KeyboardKeys.Oemplus, "=", "+");
 			_keyMap.Add(KeyboardKeys.Oemcomma, ",", "<");
 			_keyMap.Add(KeyboardKeys.OemMinus, "-", "_");
