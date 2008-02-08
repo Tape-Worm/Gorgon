@@ -108,14 +108,14 @@ namespace GorgonLibrary.InputDevices
                 get
                 {
                     if (!_keys.ContainsKey(key))
-                        throw new KeyNotFoundException("Keybaord key '" + key.ToString() + "' has not been assigned to a mapping.");
+                        throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
 
                     return _keys[key];
                 }
                 set
                 {
                     if (!_keys.ContainsKey(key))
-                        throw new KeyNotFoundException("Keybaord key '" + key.ToString() + "' has not been assigned to a mapping.");
+                        throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
 
                     _keys[key] = value;
                 }
@@ -154,7 +154,7 @@ namespace GorgonLibrary.InputDevices
             public void Remove(KeyboardKeys key)
             {
                 if (!_keys.ContainsKey(key))
-                    throw new KeyNotFoundException("Keybaord key '" + key.ToString() + "' has not been assigned to a mapping.");
+                    throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
 
                 _keys.Remove(key);
             }
@@ -246,7 +246,7 @@ namespace GorgonLibrary.InputDevices
             /// <summary>
             /// Initializes a new instance of the <see cref="KeyStateCollection"/> class.
             /// </summary>
-            internal KeyStateCollection()
+            public KeyStateCollection()
             {
                 _keys = new SortedDictionary<KeyboardKeys, KeyState>();
             }
