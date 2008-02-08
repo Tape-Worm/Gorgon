@@ -84,8 +84,23 @@
 <div>
 	<h1>Change Log (mm/dd/yyyy)</h1><hr>
 	<pre>
-February 2/2008 - Version - Current
+February 8/2008 - Version - Current
 ===============
++ Added a KeyMapCollection object which maps the keyboard keys to their 
+  respective display characters.  This key map can be customized by the user
+  for maximum flexibility.
+  
+* Changed the Keyboard.KeyMappings property to return a KeyMapCollection object 
+  instead of a SortedList&lt;KeyboardKeys, KeyCharMap&gt; object.  This could 
+  <u>possibly</u> break some things, so I apologize for that.
+  
++ Added a KeyState property in the Keyboard object.  This is a KeyStateCollection 
+  object that will record the states of various keys.  Unlike the obsolete
+  indexer property, this will allow the user to set the key state as well.
+  
+- Obsoleted the Keyboard indexer (Keyboard[KeyboardKeys]), and will be removed 
+  in the next release.
+  
 * Updated a bug regarding sorted collections in the Sharp Utilities dependency.
 
 January 30/2008 - Version 1.0.2951.19564

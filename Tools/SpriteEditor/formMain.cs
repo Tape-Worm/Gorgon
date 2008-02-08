@@ -778,12 +778,12 @@ namespace GorgonLibrary.Graphics.Tools
 			// Constrain the axes.
 			if (_clipper.IsClippingStarted)
 			{
-				if (_input.Keyboard[KeyboardKeys.ShiftKey])
+				if (_input.Keyboard.KeyStates[KeyboardKeys.ShiftKey] == KeyState.Down)
 					_constrainX = true;
 				else
 					_constrainX = false;
 
-				if (_input.Keyboard[KeyboardKeys.ControlKey])
+				if (_input.Keyboard.KeyStates[KeyboardKeys.ControlKey] == KeyState.Down)
 					_constrainY = true;
 				else
 					_constrainY = false;
