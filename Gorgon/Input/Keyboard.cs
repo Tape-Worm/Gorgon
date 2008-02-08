@@ -132,9 +132,9 @@ namespace GorgonLibrary.InputDevices
             public void Add(KeyboardKeys key, string value, string shiftedValue)
             {
                 if (_keys.ContainsKey(key))
-                    throw new SharpUtilities.Collections.DuplicateObjectException(key.ToString());
-
-                _keys.Add(key, new KeyCharMap(key, value, shiftedValue));
+                    _keys[key] = new KeyCharMap(key, value, shiftedValue);
+                else
+                    _keys.Add(key, new KeyCharMap(key, value, shiftedValue));
             }
 
             /// <summary>
