@@ -34,9 +34,9 @@ namespace GorgonLibrary.InputDevices
 	/// </summary>
 	public abstract class Input
 		: IDisposable
-	{
-		#region Variables.
-		private Forms.Control _owner = null;					// Window that will own this input instance.
+    {
+        #region Variables.
+        private Forms.Control _owner = null;					// Window that will own this input instance.
 		private bool _bindForm;									// We're bound to the form.
 		private InputPlugIn _plugIn = null;						// Plug-in that this object is created from.
 		private bool _disposed;									// Flag to indicate that the object is disposed.
