@@ -36,7 +36,7 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
     /// Object representing a standard disk based filesystem.
     /// </summary>
-	[FileSystemInfo("Folder File System", false, false)]
+	[FileSystemInfo("Folder File System", false, false, "GORFLDRFS1.0")]
     public class FolderFileSystem
         : FileSystem
 	{
@@ -50,7 +50,7 @@ namespace GorgonLibrary.FileSystems
 			get 
 			{
 				// We don't need one for this.
-				return string.Empty;
+				return "GORFLDRFS1.0";
 			}
 		}
 
