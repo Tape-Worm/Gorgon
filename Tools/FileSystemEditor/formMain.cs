@@ -376,6 +376,84 @@ namespace GorgonLibrary.FileSystems.Tools
 		}
 
 		/// <summary>
+		/// Function to retrive the file system type from a file system file.
+		/// </summary>
+		/// <param name="filePath">Path to the file system.</param>
+		/// <param name="newFileSystem">Newly loaded file system.</param>
+		/// <returns>TRUE if we can load the file system, FALSE if not.</returns>
+		private bool GetFileSystemFromFile(string filePath, out FileSystem newFileSystem)
+		{
+			BinaryReader reader = null;			// Header reader.
+			Stream headerStream = null;			// Stream for reading the header.
+			string headerValue = string.Empty;	// Header value.
+			string fsName = string.Empty;		// File system name.
+
+			Cursor.Current = Cursors.WaitCursor;
+			newFileSystem = null;
+			try
+			{
+				// Open the selector.
+				if (string.IsNullOrEmpty(filePath))
+					return true;
+
+				if (!File.Exists(filePath))
+				{
+					UI.ErrorBox(this, "The file system '" + filePath + "' does not exist.");					
+					return false;
+				}
+
+				// Open the file and read the header ID.
+				headerStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+				reader = new BinaryReader(headerStream, Encoding.UTF8);
+				headerValue = reader.ReadString();
+
+				// Try to match up the header.
+				foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
+				{
+					if (string.Compare(provider.ID, headerValue, true) == 0)
+					{
+						if (!provider.IsPackedFile)
+							fsName = Path.GetDirectoryName(filePath);
+						else
+							fsName = Path.GetFileNameWithoutExtension(filePath);
+
+						// Do nothing if this file system is loaded already.
+						if (FileSystemCache.FileSystems.Contains(fsName))
+							return false;
+
+						newFileSystem = FileSystem.Create(fsName, provider);
+						if (!provider.IsPackedFile)
+							newFileSystem.Root = Path.GetDirectoryName(filePath);
+						else
+							newFileSystem.Root = filePath;
+						break;
+					}
+				}
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (newFileSystem != null)
+					newFileSystem.Dispose();
+				newFileSystem = null;
+
+				UI.ErrorBox(this, "There was an error trying to open the file system '" + filePath + "'.", ex);
+				return false;
+			}
+			finally
+			{
+				if (headerStream != null)
+					headerStream.Dispose();
+				headerStream = null;
+				if (reader != null)
+					reader.Close();
+				reader = null;
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Function to open a file.
 		/// </summary>
 		/// <param name="rootPath">Path to the root of the file system.</param>
@@ -383,25 +461,33 @@ namespace GorgonLibrary.FileSystems.Tools
 		{
 			formOpenFileSystem formOpen = null;		// Open file system form.			
 			formFileSystemWindow newFS = null;		// File system window.
+			FileSystem fileSystem = null;			// File system to load.
 
 			try
 			{
-				formOpen = new formOpenFileSystem();
+				// Do nothing if we fail to open the file system.
+				if (!GetFileSystemFromFile(rootPath, out fileSystem))
+					return;
 
-				if (rootPath != string.Empty)
+				// Fall back to the selection method.
+				if ((fileSystem == null) || (string.IsNullOrEmpty(rootPath)))
+				{
+					formOpen = new formOpenFileSystem();
 					formOpen.FileSystemRootPath = rootPath;
 
-				if (formOpen.ShowDialog(this) == DialogResult.OK)
-				{
-					// Create file system window.
-					newFS = new formFileSystemWindow();
-					newFS.MdiParent = this;
-					newFS.FileSystem = formOpen.ActiveFileSystemType;
-					// Mount the file system.
-					newFS.FileSystem.Mount(@"\", true);
-					newFS.RootPath = formOpen.FileSystemRootPath;
-					newFS.Show();
+					if (formOpen.ShowDialog(this) == DialogResult.OK)
+						fileSystem = formOpen.ActiveFileSystemType;
+					else
+						return;
 				}
+
+				// Add a new file system window containing the loaded file system.
+				newFS = new formFileSystemWindow();
+				newFS.MdiParent = this;
+				newFS.FileSystem = fileSystem;
+				newFS.RootPath = fileSystem.Root;
+				newFS.FileSystem.Mount(@"\", true);
+				newFS.Show();
 			}
 			catch (Exception ex)
 			{
@@ -428,106 +514,10 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemOpen_Click(object sender, EventArgs e)
 		{
-			OpenFile(string.Empty);
-		}
-
-		/// <summary>
-		/// Function to write out the settings.
-		/// </summary>
-		private void WriteSettings()
-		{
-			XmlDocument fsTypes = null;						// File system types.
-			XmlProcessingInstruction instruction = null;	// Processing instruction.
-			XmlElement elementRoot = null;					// Root element.
-			XmlElement elementXMLRoot = null;				// Root of the document.
-			XmlAttribute attribute = null;					// Attribute.
-			XmlElement element = null;						// Element.
-
-			try
+			if (dialogOpenFileSystem.ShowDialog(this) == DialogResult.OK)
 			{
-				// If the directory does not exist, then create it and leave.
-				if (!Directory.Exists(_dataPath))
-					Directory.CreateDirectory(_dataPath);
-
-				// Set up the config file.
-				fsTypes = new XmlDocument();
-				instruction = fsTypes.CreateProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
-				fsTypes.AppendChild(instruction);
-
-				elementXMLRoot = fsTypes.CreateElement("FileSystemEditorSettings");
-				fsTypes.AppendChild(elementXMLRoot);
-				elementRoot = fsTypes.CreateElement("FileSystemTypes");
-				elementXMLRoot.AppendChild(elementRoot);
-
-				// Get all previous file systems.
-				foreach (FileSystemProvider fsInfo in FileSystemProviderCache.Providers)
-				{
-					element = fsTypes.CreateElement("FileSystemType");
-					// Set the name as an attribute.
-					attribute = fsTypes.CreateAttribute("Name");
-					attribute.Value = fsInfo.Name;
-					element.Attributes.Append(attribute);
-
-					// Get provider plug-in name.
-					attribute = fsTypes.CreateAttribute("PlugInName");
-					attribute.Value = fsInfo.ProviderPlugInName;
-					element.Attributes.Append(attribute);
-
-					// Set the location.
-					if (fsInfo.IsPlugIn)
-						element.InnerText = fsInfo.PlugInPath;
-					elementRoot.AppendChild(element);
-				}
-
-				// Write misc. settings.
-				elementRoot = fsTypes.CreateElement("Settings");
-				elementXMLRoot.AppendChild(elementRoot);
-
-				// Write out last used file system.
-				element = fsTypes.CreateElement("LastUsedFS");
-				element.InnerText = _lastUsed.Name;
-				elementRoot.AppendChild(element);
-
-				// Write out misc. settings.
-				element = fsTypes.CreateElement("LastOpenPath");
-				element.InnerText = _lastOpenDir;
-				elementRoot.AppendChild(element);
-
-				element = fsTypes.CreateElement("LastSavePath");
-				element.InnerText = _lastSaveDir;
-				elementRoot.AppendChild(element);
-
-				element = fsTypes.CreateElement("LastViewType");
-				element.InnerText = _lastViewSetting;
-				elementRoot.AppendChild(element);
-
-				// Write out window information.
-				if (WindowState != FormWindowState.Normal)
-					WindowState = FormWindowState.Normal;
-
-				element = fsTypes.CreateElement("WindowX");
-				element.InnerText = this.Left.ToString();
-				elementRoot.AppendChild(element);
-				element = fsTypes.CreateElement("WindowY");
-				element.InnerText = this.Top.ToString();
-				elementRoot.AppendChild(element);
-				element = fsTypes.CreateElement("WindowWidth");
-				element.InnerText = this.Width.ToString();
-				elementRoot.AppendChild(element);
-				element = fsTypes.CreateElement("WindowHeight");
-				element.InnerText = this.Height.ToString();
-				elementRoot.AppendChild(element);				
-
-				// Finally write the config document.
-				fsTypes.Save(_dataPath + "Config.xml");
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(this, ex);
+				foreach(string fileName in dialogOpenFileSystem.FileNames)
+					OpenFile(fileName);
 			}
 		}
 
@@ -636,6 +626,34 @@ namespace GorgonLibrary.FileSystems.Tools
 
 				if (settingNode != null)
 					Height = Convert.ToInt32(settingNode.InnerText);
+
+				// Load last open file systems.
+				nodes = fsTypes.SelectNodes("//LastOpen/File");
+
+				if (nodes != null)
+				{
+					// Load each file system.
+					foreach (XmlNode node in nodes)
+					{
+						XmlAttribute isFolder = null;		// Is folder attribute.
+
+						if (!string.IsNullOrEmpty(node.InnerText))
+						{
+							isFolder = node.Attributes["IsFolder"];
+
+							if (string.Compare(isFolder.Value, "Yes", true) == 0)
+							{
+								if (File.Exists(node.InnerText + @"\header.folderSystem")) 
+									OpenFile(node.InnerText + @"\header.folderSystem");
+							}
+							else
+							{
+								if (File.Exists(node.InnerText))
+									OpenFile(node.InnerText);
+							}
+						}
+					}
+				}
 			}
 			catch (SharpException sEx)
 			{
@@ -711,7 +729,13 @@ namespace GorgonLibrary.FileSystems.Tools
 				if ((commandArgs != null) && (commandArgs.Length > 1))
 				{
 					Visible = true;
-					OpenFile(string.Empty);
+
+					// Open several file systems if we've asked for it.
+					for (int i = 1; i < commandArgs.Length; i++)
+					{
+						if (!string.IsNullOrEmpty(commandArgs[i]))
+							OpenFile(commandArgs[i]);
+					}
 				}
 			}
 			catch (SharpException sEx)
@@ -754,7 +778,6 @@ namespace GorgonLibrary.FileSystems.Tools
 					return;
 				}
 
-				// Write out configuration.
 				WriteSettings();
 
 				Gorgon.Terminate();
@@ -767,6 +790,127 @@ namespace GorgonLibrary.FileSystems.Tools
 			{
 				// Reset the confirmation result.
 				_confirmResult = ConfirmationResult.None;
+			}
+		}
+
+		/// <summary>
+		/// Function to write out the settings.
+		/// </summary>
+		public void WriteSettings()
+		{
+			XmlDocument fsTypes = null;						// File system types.
+			XmlProcessingInstruction instruction = null;	// Processing instruction.
+			XmlElement elementRoot = null;					// Root element.
+			XmlElement elementXMLRoot = null;				// Root of the document.
+			XmlAttribute attribute = null;					// Attribute.
+			XmlElement element = null;						// Element.
+
+			try
+			{
+				// If the directory does not exist, then create it and leave.
+				if (!Directory.Exists(_dataPath))
+					Directory.CreateDirectory(_dataPath);
+
+				// Set up the config file.
+				fsTypes = new XmlDocument();
+				instruction = fsTypes.CreateProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
+				fsTypes.AppendChild(instruction);
+
+				elementXMLRoot = fsTypes.CreateElement("FileSystemEditorSettings");
+				fsTypes.AppendChild(elementXMLRoot);
+				elementRoot = fsTypes.CreateElement("FileSystemTypes");
+				elementXMLRoot.AppendChild(elementRoot);
+
+				// Get all previous file systems.
+				foreach (FileSystemProvider fsInfo in FileSystemProviderCache.Providers)
+				{
+					element = fsTypes.CreateElement("FileSystemType");
+					// Set the name as an attribute.
+					attribute = fsTypes.CreateAttribute("Name");
+					attribute.Value = fsInfo.Name;
+					element.Attributes.Append(attribute);
+
+					// Get provider plug-in name.
+					attribute = fsTypes.CreateAttribute("PlugInName");
+					attribute.Value = fsInfo.ProviderPlugInName;
+					element.Attributes.Append(attribute);
+
+					// Set the location.
+					if (fsInfo.IsPlugIn)
+						element.InnerText = fsInfo.PlugInPath;
+					elementRoot.AppendChild(element);
+				}
+
+				// Write misc. settings.
+				elementRoot = fsTypes.CreateElement("Settings");
+				elementXMLRoot.AppendChild(elementRoot);
+
+				// Write out last used file system.
+				element = fsTypes.CreateElement("LastUsedFS");
+				element.InnerText = _lastUsed.Name;
+				elementRoot.AppendChild(element);
+
+				// Write out misc. settings.
+				element = fsTypes.CreateElement("LastOpenPath");
+				element.InnerText = _lastOpenDir;
+				elementRoot.AppendChild(element);
+
+				element = fsTypes.CreateElement("LastSavePath");
+				element.InnerText = _lastSaveDir;
+				elementRoot.AppendChild(element);
+
+				element = fsTypes.CreateElement("LastViewType");
+				element.InnerText = _lastViewSetting;
+				elementRoot.AppendChild(element);
+
+				// Write out window information.
+				if (WindowState != FormWindowState.Normal)
+					WindowState = FormWindowState.Normal;
+
+				element = fsTypes.CreateElement("WindowX");
+				element.InnerText = this.Left.ToString();
+				elementRoot.AppendChild(element);
+				element = fsTypes.CreateElement("WindowY");
+				element.InnerText = this.Top.ToString();
+				elementRoot.AppendChild(element);
+				element = fsTypes.CreateElement("WindowWidth");
+				element.InnerText = this.Width.ToString();
+				elementRoot.AppendChild(element);
+				element = fsTypes.CreateElement("WindowHeight");
+				element.InnerText = this.Height.ToString();
+				elementRoot.AppendChild(element);
+
+				elementRoot = fsTypes.CreateElement("LastOpen");
+				elementXMLRoot.AppendChild(elementRoot);
+				
+				// Now we need to write out the last open file systems.
+				foreach (FileSystem fileSystem in FileSystemCache.FileSystems)
+				{
+					XmlAttribute isFolder = null;		// Folder attribute.
+
+					// Determine if this is a folder.
+					isFolder = fsTypes.CreateAttribute("IsFolder");
+					if (!fileSystem.Provider.IsPackedFile)
+						isFolder.Value = "Yes";
+					else
+						isFolder.Value = "No";
+					
+					element = fsTypes.CreateElement("File");
+					element.Attributes.Append(isFolder);
+					element.InnerText = fileSystem.Root;
+					elementRoot.AppendChild(element);
+				}
+
+				// Finally write the config document.
+				fsTypes.Save(_dataPath + "Config.xml");
+			}
+			catch (SharpException sEx)
+			{
+				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(this, ex);
 			}
 		}
 
@@ -903,6 +1047,8 @@ namespace GorgonLibrary.FileSystems.Tools
 				menuItemSaveAs_Click(this, EventArgs.Empty);
 			else
 				menuItemSave_Click(this, EventArgs.Empty);
+
+			WriteSettings();
 		}
 		#endregion
 

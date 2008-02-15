@@ -85,6 +85,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.buttonSaveFS = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton4 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonEditFS = new System.Windows.Forms.ToolStripButton();
+			this.dialogOpenFileSystem = new System.Windows.Forms.OpenFileDialog();
 			this.menuMain.SuspendLayout();
 			this.statusMain.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
@@ -115,7 +116,7 @@ namespace GorgonLibrary.FileSystems.Tools
             this.toolStripSeparator2,
             this.menuItemExit});
 			this.menuItemFile.Name = "menuItemFile";
-			this.menuItemFile.Size = new System.Drawing.Size(35, 20);
+			this.menuItemFile.Size = new System.Drawing.Size(37, 20);
 			this.menuItemFile.Text = "&File";
 			// 
 			// menuItemNew
@@ -123,7 +124,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.menuItemNew.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.document_plain_new;
 			this.menuItemNew.Name = "menuItemNew";
 			this.menuItemNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.menuItemNew.Size = new System.Drawing.Size(194, 22);
+			this.menuItemNew.Size = new System.Drawing.Size(187, 22);
 			this.menuItemNew.Text = "&New...";
 			this.menuItemNew.Click += new System.EventHandler(this.menuItemNew_Click);
 			// 
@@ -132,7 +133,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.menuItemOpen.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_out;
 			this.menuItemOpen.Name = "menuItemOpen";
 			this.menuItemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.menuItemOpen.Size = new System.Drawing.Size(194, 22);
+			this.menuItemOpen.Size = new System.Drawing.Size(187, 22);
 			this.menuItemOpen.Text = "&Open...";
 			this.menuItemOpen.Click += new System.EventHandler(this.menuItemOpen_Click);
 			// 
@@ -142,7 +143,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.menuItemSave.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.disk_blue;
 			this.menuItemSave.Name = "menuItemSave";
 			this.menuItemSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.menuItemSave.Size = new System.Drawing.Size(194, 22);
+			this.menuItemSave.Size = new System.Drawing.Size(187, 22);
 			this.menuItemSave.Text = "&Save";
 			this.menuItemSave.Click += new System.EventHandler(this.menuItemSave_Click);
 			// 
@@ -150,34 +151,34 @@ namespace GorgonLibrary.FileSystems.Tools
 			// 
 			this.menuItemSaveAs.Enabled = false;
 			this.menuItemSaveAs.Name = "menuItemSaveAs";
-			this.menuItemSaveAs.Size = new System.Drawing.Size(194, 22);
+			this.menuItemSaveAs.Size = new System.Drawing.Size(187, 22);
 			this.menuItemSaveAs.Text = "Save &As...";
 			this.menuItemSaveAs.Click += new System.EventHandler(this.menuItemSaveAs_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(191, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(184, 6);
 			// 
 			// menuItemFileSystems
 			// 
 			this.menuItemFileSystems.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_cubes;
 			this.menuItemFileSystems.Name = "menuItemFileSystems";
 			this.menuItemFileSystems.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-			this.menuItemFileSystems.Size = new System.Drawing.Size(194, 22);
+			this.menuItemFileSystems.Size = new System.Drawing.Size(187, 22);
 			this.menuItemFileSystems.Text = "File Systems...";
 			this.menuItemFileSystems.Click += new System.EventHandler(this.menuItemFileSystems_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(191, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(184, 6);
 			// 
 			// menuItemExit
 			// 
 			this.menuItemExit.Name = "menuItemExit";
 			this.menuItemExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.menuItemExit.Size = new System.Drawing.Size(194, 22);
+			this.menuItemExit.Size = new System.Drawing.Size(187, 22);
 			this.menuItemExit.Text = "E&xit";
 			this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
 			// 
@@ -190,55 +191,55 @@ namespace GorgonLibrary.FileSystems.Tools
             this.menuItemArrangeIcons,
             this.toolStripMenuItem1});
 			this.menuItemWindow.Name = "menuItemWindow";
-			this.menuItemWindow.Size = new System.Drawing.Size(57, 20);
+			this.menuItemWindow.Size = new System.Drawing.Size(63, 20);
 			this.menuItemWindow.Text = "Window";
 			// 
 			// menuItemTileHorizontal
 			// 
 			this.menuItemTileHorizontal.Name = "menuItemTileHorizontal";
-			this.menuItemTileHorizontal.Size = new System.Drawing.Size(206, 22);
+			this.menuItemTileHorizontal.Size = new System.Drawing.Size(212, 22);
 			this.menuItemTileHorizontal.Text = "Tile Windows Horizontally";
 			this.menuItemTileHorizontal.Click += new System.EventHandler(this.menuItemTileHorizontal_Click);
 			// 
 			// menuItemTileVertical
 			// 
 			this.menuItemTileVertical.Name = "menuItemTileVertical";
-			this.menuItemTileVertical.Size = new System.Drawing.Size(206, 22);
+			this.menuItemTileVertical.Size = new System.Drawing.Size(212, 22);
 			this.menuItemTileVertical.Text = "Tile Windows Vertically";
 			this.menuItemTileVertical.Click += new System.EventHandler(this.menuItemTileVertical_Click);
 			// 
 			// menuItemCascade
 			// 
 			this.menuItemCascade.Name = "menuItemCascade";
-			this.menuItemCascade.Size = new System.Drawing.Size(206, 22);
+			this.menuItemCascade.Size = new System.Drawing.Size(212, 22);
 			this.menuItemCascade.Text = "Cascade Windows";
 			this.menuItemCascade.Click += new System.EventHandler(this.menuItemCascade_Click);
 			// 
 			// menuItemArrangeIcons
 			// 
 			this.menuItemArrangeIcons.Name = "menuItemArrangeIcons";
-			this.menuItemArrangeIcons.Size = new System.Drawing.Size(206, 22);
+			this.menuItemArrangeIcons.Size = new System.Drawing.Size(212, 22);
 			this.menuItemArrangeIcons.Text = "Arrange Icons";
 			this.menuItemArrangeIcons.Click += new System.EventHandler(this.menuItemArrangeIcons_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(203, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(209, 6);
 			// 
 			// menuItemHelp
 			// 
 			this.menuItemHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemAbout});
 			this.menuItemHelp.Name = "menuItemHelp";
-			this.menuItemHelp.Size = new System.Drawing.Size(40, 20);
+			this.menuItemHelp.Size = new System.Drawing.Size(44, 20);
 			this.menuItemHelp.Text = "&Help";
 			// 
 			// menuItemAbout
 			// 
 			this.menuItemAbout.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.GorFS_16;
 			this.menuItemAbout.Name = "menuItemAbout";
-			this.menuItemAbout.Size = new System.Drawing.Size(152, 22);
+			this.menuItemAbout.Size = new System.Drawing.Size(116, 22);
 			this.menuItemAbout.Text = "&About...";
 			this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
 			// 
@@ -367,6 +368,15 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.buttonEditFS.Text = "Load file system plug-in(s).";
 			this.buttonEditFS.Click += new System.EventHandler(this.menuItemFileSystems_Click);
 			// 
+			// dialogOpenFileSystem
+			// 
+			this.dialogOpenFileSystem.DefaultExt = "gorPack";
+			this.dialogOpenFileSystem.Filter = "Gorgon packed file systems (*.gorPack)|*.gorPack|Gorgon folder file system.|heade" +
+				"r.folderSystem";
+			this.dialogOpenFileSystem.InitialDirectory = ".\\";
+			this.dialogOpenFileSystem.Multiselect = true;
+			this.dialogOpenFileSystem.Title = "Open a file system...";
+			// 
 			// formMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -428,6 +438,7 @@ namespace GorgonLibrary.FileSystems.Tools
 		private System.Windows.Forms.ToolStripButton buttonSaveFS;
 		private System.Windows.Forms.ToolStripSeparator toolStripButton4;
 		private System.Windows.Forms.ToolStripButton buttonEditFS;
+		private System.Windows.Forms.OpenFileDialog dialogOpenFileSystem;
 	}
 }
 

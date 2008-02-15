@@ -157,6 +157,17 @@ namespace GorgonLibrary.FileSystems
 				return _info.IsCompressed;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the ID of the file system.
+		/// </summary>
+		public string ID
+		{
+			get
+			{
+				return _info.ID;
+			}
+		}
 		#endregion
 
 		#region Methods.
