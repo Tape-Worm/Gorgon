@@ -84,8 +84,18 @@
 <div>
 	<h1>Change Log (mm/dd/yyyy)</h1><hr>
 	<pre>
-February 8/2008 - Version - Current
+February 14/2008 - Version - Current
 ===============
+* Fixed a bug in the Sprite Editor in which the current directory wasn't being
+  set when opening a project.
+  
+* Fixed a bug in the Sprite Editor where the input plug-in would fail to load 
+  because the editor was launched without setting a working directory.  Initially 
+  it attempted to load the input plug-in from the current directory.
+  
++ Added the ability to open a sprite project from the command line.
+  (i.e. SpriteEditor "c:\my sprites\myspriteProject.sprProj")
+
 * Updated default key/char map to add some missing keys (not quotes): ";|\"
 
 + Added a KeyMapCollection object which maps the keyboard keys to their 
