@@ -1654,8 +1654,9 @@ namespace GorgonLibrary.Graphics.Tools
 				fileName += ".sprProj";
 
 
-			// Open the document.
+			// Open the document.			
 			projectDocument.Load(fileName);
+			Directory.SetCurrentDirectory(Path.GetDirectoryName(fileName));
 
 			// Get header.
 			header = projectDocument.SelectSingleNode("//Header");
@@ -2016,6 +2017,8 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
+			string[] args = null;							// Command line arguments.
+			string applicationDirectory = string.Empty;		// Application dir.
 			base.OnLoad(e);
 
 			try
@@ -2023,11 +2026,17 @@ namespace GorgonLibrary.Graphics.Tools
 				// Leave design mode out of this.
 				if (!DesignMode)
 				{
+					args = Environment.GetCommandLineArgs();
+
 					// Initialize Gorgon.
 					Gorgon.Initialize(true, true);
 
 					// Load the input plug-in.
-					_input = Input.LoadInputPlugIn(Environment.CurrentDirectory + @"\GorgonInput.dll", "Gorgon.RawInput");
+					if (args.Length > 0)
+						applicationDirectory = Path.GetDirectoryName(args[0]);
+					else
+						applicationDirectory = Environment.CurrentDirectory;
+					_input = Input.LoadInputPlugIn(applicationDirectory + @"\GorgonInput.dll", "Gorgon.RawInput");
 
 					// Initialize and bind the main panel.
 					_input.Bind(panelGorgon);
@@ -2090,6 +2099,16 @@ namespace GorgonLibrary.Graphics.Tools
 					_projectName = "Untitled";
 
 					ValidateForm();
+
+					try
+					{
+						if ((args.Length > 1) && (!string.IsNullOrEmpty(args[1])))
+							OpenProject(args[1]);
+					}
+					catch (Exception ex)
+					{
+						UI.ErrorBox(this, "There was an error opening the file '" + args[1] + "'.");
+					}
 				}
 			}
 			catch (Exception ex)
