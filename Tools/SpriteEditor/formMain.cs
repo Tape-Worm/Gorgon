@@ -2098,8 +2098,6 @@ namespace GorgonLibrary.Graphics.Tools
 					// Set default project name.
 					_projectName = "Untitled";
 
-					ValidateForm();
-
 					try
 					{
 						if ((args.Length > 1) && (!string.IsNullOrEmpty(args[1])))
@@ -2107,8 +2105,10 @@ namespace GorgonLibrary.Graphics.Tools
 					}
 					catch (Exception ex)
 					{
-						UI.ErrorBox(this, "There was an error opening the file '" + args[1] + "'.");
+						UI.ErrorBox(this, "There was an error opening the file '" + args[1] + "'.", ex);
 					}
+
+					ValidateForm();
 				}
 			}
 			catch (Exception ex)
