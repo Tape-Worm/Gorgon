@@ -84,8 +84,35 @@
 <div>
 	<h1>Change Log (mm/dd/yyyy)</h1><hr>
 	<pre>
-February 14/2008 - Version - Current
+February 15/2008 - Version - Current
 ===============
++ Added the ability to open file systems from the command line with the file
+  system editor.  This can open several file systems at the same time.
+  
++ Added the ability to automatically re-open the last file systems loaded
+  when the file system editor is launched.
+  
+* Changed the open command to use a common file dialog to open file system types.
+  This change will alter how folder file systems are opened.  Folder file systems
+  must now have the file "header.folderSystem" present in the root.  If you have
+  created folder file systems, you will not be able to open them with the file system
+  editor without first adding this file to the file system root.  
+  
+  <strong><u>The following will fix the older folder file systems:</u></strong>
+  1. Locate the header.folderSystem file in <i>{Your Gorgon Install Directory}</i>\Redist\Patch
+  2. Copy this file into the root of any folder file system you may have.
+  
+  This should allow the file system editor to open any previous folder file system.
+  
+* Modified the FolderFileSystem and GorgonBZip2FileSystem object to now output a file 
+  system type ID.  This ID is used by the editor to determine the type of file system
+  when loading.  Furthermore, the FolderFileSystem object will write out a header.folderSystem
+  file in the root of the folder file system.  Any file system objects implementing a
+  folder file system MUST be sure to output this file.
+  
+* Modified the file system attribute to include an ID to identify the file system type
+  so that the file system editor can open the file correctly.
+  
 * Fixed a bug in the Sprite Editor in which the current directory wasn't being
   set when opening a project.
   

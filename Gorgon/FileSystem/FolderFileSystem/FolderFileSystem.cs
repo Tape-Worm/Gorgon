@@ -36,7 +36,7 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
     /// Object representing a standard disk based filesystem.
     /// </summary>
-	[FileSystemInfo("Folder File System", false, false, "GORFLDRFS1.0")]
+	[FileSystemInfo("Folder File System", false, false, "GORPACK1.GorgonFolderSystem")]
     public class FolderFileSystem
         : FileSystem
 	{
@@ -50,7 +50,7 @@ namespace GorgonLibrary.FileSystems
 			get 
 			{
 				// We don't need one for this.
-				return "GORFLDRFS1.0";
+				return "GORPACK1.GorgonFolderSystem";
 			}
 		}
 
@@ -182,6 +182,9 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="filePath">Root of the file system on the disk.</param>
 		protected override void SaveIndex(string filePath)
 		{
+			BinaryWriter writer = null;		// Writer for header.
+			Stream outStream = null;		// File stream for header.
+
 			if ((filePath == string.Empty) || (filePath == null))
 				throw new ArgumentNullException("filePath");
 
@@ -192,7 +195,28 @@ namespace GorgonLibrary.FileSystems
 			if (filePath == null)
 				throw new FileSystemPathInvalidException();
 
-			// Save the index.
+			// Write out the header ID.
+			try
+			{
+				outStream = File.Open(filePath + @"\Header.folderSystem", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+				writer = new BinaryWriter(outStream, Encoding.UTF8);
+				writer.Write(FileSystemHeader);
+			}
+			catch
+			{
+				throw;
+			}
+			finally
+			{
+				if (outStream != null)
+					outStream.Dispose();
+				if (writer != null)
+					writer.Close();
+
+				outStream = null;
+				writer = null;
+			}
+
 			FileIndexXML.Save(filePath + @"\FileSystem.Index.xml");
 		}
 
