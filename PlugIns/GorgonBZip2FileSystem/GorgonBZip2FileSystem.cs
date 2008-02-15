@@ -37,7 +37,7 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
 	/// Object representing a packed file system compressed with SharpZip.854's BZip2 compression.
     /// </summary>
-	[FileSystemInfo("SharpZip.BZip2 File System", true, true)]
+	[FileSystemInfo("SharpZip.BZip2 File System", true, true, "GORPACK1.SharpZip.BZ2")]
     public class GorgonBZip2FileSystem
         : FileSystem
     {

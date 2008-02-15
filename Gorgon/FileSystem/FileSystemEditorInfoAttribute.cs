@@ -38,9 +38,22 @@ namespace GorgonLibrary.FileSystems
 		private string _typeName = string.Empty;			// File system type name.
 		private bool _isCompressed = false;					// Flag to indicate whether a file system is compressed or not.
 		private bool _isPackFile = false;					// Flag to indicate whether a file system is a pack file or a folder system.
+        private string _ID = string.Empty;                  // ID for the file system type.
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the ID of the file system type.
+        /// </summary>
+        /// <remarks>The ID of the file system is used to determine which file system provider should be used.  This ID is hardcoded to each provider plug-in, and is written to the file system header.</remarks>
+        public string ID
+        {
+            get
+            {
+                return _ID;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the name of the file system type.
 		/// </summary>
@@ -82,11 +95,19 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="typename">Name of the filesystem type.</param>
 		/// <param name="iscompressed">TRUE if the file system compresses its data, FALSE if not.</param>
 		/// <param name="ispackfile">TRUE if the file system is a pack file, FALSE if folder based.</param>
-		public FileSystemInfoAttribute(string typename, bool iscompressed, bool ispackfile)
+        /// <param name="fileSystemID">ID of the file system.</param>
+		public FileSystemInfoAttribute(string typename, bool iscompressed, bool ispackfile, string fileSystemID)
 		{
+            if (string.IsNullOrEmpty(typename))
+                throw new ArgumentNullException("typename");
+
+            if (string.IsNullOrEmpty(fileSystemID))
+                throw new ArgumentNullException("fileSystemID");
+
 			_typeName = typename;
 			_isCompressed = iscompressed;
 			_isPackFile = ispackfile;
+            _ID = fileSystemID;
 		}
 		#endregion
 	}
