@@ -139,10 +139,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			try
 			{
 				if (!FileSystemProviderCache.Providers.Contains(comboFileSystemType.Text))
-				{
-					UI.ErrorBox(this, "The file system type is not available.");
 					return;
-				}
 
 				// Get file system information.
 				fsInfo = FileSystemProviderCache.Providers[comboFileSystemType.Text];

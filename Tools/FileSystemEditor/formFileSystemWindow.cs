@@ -2156,6 +2156,9 @@ namespace GorgonLibrary.FileSystems.Tools
 			_rootPath = filePath;
 			IsNew = false;
 			IsChanged = false;
+
+			// Write the settings file.
+			_parentWindow.WriteSettings();
 		}
 		#endregion
 
