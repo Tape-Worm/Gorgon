@@ -255,18 +255,18 @@ namespace GorgonLibrary.Graphics
 				if (_lockStream != null)
 					Unlock();
 
-				try
+                if (_image.ImageType == ImageType.RenderTarget)
+                    throw new CannotLockException("Cannot lock a render target.");
+
+                if (_image.D3DTexture == null)
+                    throw new CannotLockException("No backing resource found for this image.");
+
+                if ((_image.Pool == D3D9.Pool.Default) && (_image.ImageType != ImageType.Dynamic))
+                    throw new CannotLockException("The image is not a dynamic image and cannot be locked.");
+
+                try
 				{
 					D3D9.LockFlags flags = D3D9.LockFlags.None;		// Lock flags.
-
-					if (_image.ImageType == ImageType.RenderTarget)
-						throw new GorgonException("Cannot lock a rendering image.");
-
-					if (_image.D3DTexture == null)
-						throw new GorgonException("No D3D texture allocated.");
-
-					if ((_image.Pool == D3D9.Pool.Default) && (_image.ImageType != ImageType.Dynamic))
-						throw new GorgonException("This image is not dynamic, and cannot be locked.");
 
 					if (_readOnly)
 						flags |= D3D9.LockFlags.ReadOnly;

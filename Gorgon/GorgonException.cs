@@ -45,38 +45,39 @@ namespace GorgonLibrary
 	}
 	#endregion	
 
-	/// <summary>
-	/// Base exception class for Gorgon.
-	/// </summary>
-	/// <remarks>All exceptions for Gorgon will be derived from this.</remarks>
-	public class GorgonException
+    /// <summary>
+    /// Base exception class for Gorgon.
+    /// </summary>
+    /// <remarks>All exceptions for Gorgon are derived from this base exception.</remarks>
+    public abstract class GorgonException
 		: SharpException
 	{
 		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Message for the exception.</param>
-		/// <param name="ex">Exception that spawned this exception.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonException"/> class.
+        /// </summary>
+        /// <param name="message">Display message for the exception.</param>
+        /// <param name="ex">The inner exception for this exception.</param>
 		public GorgonException(string message, Exception ex)
 			: base(message, ex)
 		{
 		}
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Message for the exception.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonException"/> class.
+        /// </summary>
+        /// <param name="message">Display message for the exception.</param>
 		public GorgonException(string message)
 			: this(message, null)
 		{
 		}
 		#endregion
 	}
-	
-	/// <summary>
-	///	Library not initialized.
-	/// </summary>
+
+    /// <summary>
+    /// Library not initialized exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when a method is called from the <see cref="GorgonLibrary.Gorgon">Gorgon</see> and <see cref="GorgonLibrary.Gorgon.Initialize()">has not yet been called.</see></remarks>
 	public class NotInitializedException 
 		: GorgonException
 	{
@@ -100,9 +101,10 @@ namespace GorgonLibrary
 		#endregion
 	}
 
-	/// <summary>
-	/// Cannot enumerate.
-	/// </summary>
+    /// <summary>
+    /// Cannot enumerate.
+    /// </summary>
+    /// <remarks>This exception is thrown when there's a failure to enumerate a list of objects in the system.  This is usually thrown by the <see cref="GorgonLibrary.DriverList">DriverList</see> or the <see cref="GorgonLibrary.VideoModeList">VideoModeList</see> objects.</remarks>
 	public class CannotEnumerateException
 		: GorgonException
 	{
@@ -122,54 +124,65 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="enumObject">Object/device that is being enumerated.</param>
 		public CannotEnumerateException(string enumObject)
-			: this(enumObject, null)
+			: this(enumObject, null as Exception)
 		{
 		}
-		#endregion
-	}
 
-	/// <summary>
-	/// Cannot create exception.
-	/// </summary>
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="enumObject">Object/device that is being enumerated.</param>
+        /// <param name="message">Message to accompany the default message.</param>
+        public CannotEnumerateException(string enumObject, string message)
+            : base("Cannot enumerate the " + enumObject + ".\n" + message, null)
+        {
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// Cannot create exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when an object creation fails.</remarks>
 	public class CannotCreateException
 		: GorgonException
 	{
 		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		/// <param name="ex">Source exception.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CannotCreateException"/> class.
+        /// </summary>
+        /// <param name="message">Custom error message to display for this exception.</param>
+        /// <param name="ex">Inner exception for this exception.</param>
 		public CannotCreateException(string message, Exception ex)
 			: base(message, ex)
 		{
 		}
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CannotCreateException"/> class.
+        /// </summary>
+        /// <param name="message">Custom error message to display for this exception.</param>
 		public CannotCreateException(string message)
 			: base(message, null)
 		{
 		}
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="name">Name of the object.</param>
-		/// <param name="resourceType">Type of resource.</param>
-		/// <param name="ex">Source exception.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CannotCreateException"/> class.
+        /// </summary>
+        /// <param name="name">Name of the object that could not be created.</param>
+        /// <param name="resourceType">Type of object that failed in creation.</param>
+        /// <param name="ex">Inner exception for this exception.</param>
 		public CannotCreateException(string name, Type resourceType, Exception ex)
 			: base("Could not create " + resourceType.Name + (name == string.Empty ? string.Empty : " '" + name + "'") + ".", ex)
 		{
 		}
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="name">Name of the object.</param>
-		/// <param name="resourceType">Type of resource.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CannotCreateException"/> class.
+        /// </summary>
+        /// <param name="name">Name of the object that could not be created.</param>
+        /// <param name="resourceType">Type of object that failed in creation.</param>
 		public CannotCreateException(string name, Type resourceType)
 			: base("Could not create " + resourceType.Name + (name == string.Empty ? string.Empty : " '" + name + "'") + ".", null)
 		{
@@ -177,9 +190,10 @@ namespace GorgonLibrary
 		#endregion
 	}
 
-	/// <summary>
-	/// Cannot update exception.
-	/// </summary>
+    /// <summary>
+    /// Cannot update exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when an object fails to be updated.</remarks>
 	public class CannotUpdateException
 		: GorgonException
 	{
@@ -227,9 +241,10 @@ namespace GorgonLibrary
 		#endregion
 	}
 
-	/// <summary>
-	/// Cannot load exception.
-	/// </summary>
+    /// <summary>
+    /// Cannot load exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when there's a failure to read the object from a storage medium (e.g. disk or memory).</remarks>
 	public class CannotLoadException
 		: GorgonException
 	{
@@ -276,9 +291,10 @@ namespace GorgonLibrary
 		#endregion
 	}
 
-	/// <summary>
-	/// Cannot save exception.
-	/// </summary>
+    /// <summary>
+    /// Cannot save exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when an attempt to save a object to a storage medium fails.</remarks>
 	public class CannotSaveException
 		: GorgonException
 	{
@@ -325,9 +341,10 @@ namespace GorgonLibrary
 		#endregion
 	}
 
-	/// <summary>
-	/// Image buffer format not supported exception.
-	/// </summary>
+    /// <summary>
+    /// Image buffer format not supported exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when an invalid image buffer format is encountered.</remarks>
 	public class FormatNotSupportedException
 		: GorgonException
 	{
@@ -408,9 +425,10 @@ namespace GorgonLibrary
 		#endregion
 	}
 
-	/// <summary>
-	/// Not locked exception.
-	/// </summary>
+    /// <summary>
+    /// Not locked exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when an attempt is made to write/read an object that requires a lock but no lock is applied.</remarks>
 	public class NotLockedException
 		: GorgonException
 	{
@@ -455,9 +473,10 @@ namespace GorgonLibrary
 		#endregion
 	}
 
-	/// <summary>
-	/// Cannot lock exception.
-	/// </summary>
+    /// <summary>
+    /// Cannot lock exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when there's an attempt to lock an object but that lock fails to be acquired.</remarks>
 	public class CannotLockException
 		: GorgonException
 	{
@@ -502,9 +521,10 @@ namespace GorgonLibrary
 		#endregion
 	}
 
-	/// <summary>
-	/// Cannot read exception.
-	/// </summary>
+    /// <summary>
+    /// Cannot read exception.
+    /// </summary>
+    /// <remarks>This exception is thrown when there was an attempt to read an objects data but there was a failure to do so.</remarks>
 	public class CannotReadException
 		: GorgonException
 	{
