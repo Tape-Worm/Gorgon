@@ -599,10 +599,10 @@ namespace GorgonLibrary.FileSystems
 					{
 						// Get file path.
 						fileProperty = fileNode.SelectSingleNode("Filename");
-						if ((fileProperty != null) && (fileProperty.InnerText != string.Empty))
-							filePath = fileProperty.InnerText;
-						else
-							throw new GorgonException("File system corrupted.  Invalid filename in index table.");
+                        if ((fileProperty != null) && (fileProperty.InnerText != string.Empty))
+                            filePath = fileProperty.InnerText;
+                        else
+                            throw new FileSystemIndexReadException();
 
 						fileProperty = fileNode.SelectSingleNode("Extension");
 						if (fileProperty != null)
@@ -1103,20 +1103,20 @@ namespace GorgonLibrary.FileSystems
 			if ((filePath == string.Empty) || (filePath == null))
 				throw new ArgumentNullException("filePath");
 
-			try
+            // Get all the file entries.
+            allFiles = Paths.GetFiles();
+
+            // Reset the XML index.
+            RebuildIndex();
+
+            // Get the file system node.
+            fsElement = _fileIndex.SelectSingleNode("//FileSystem") as XmlElement;
+
+            if (fsElement == null)
+                throw new FileSystemIndexReadException();
+            
+            try
 			{
-				// Get all the file entries.
-				allFiles = Paths.GetFiles();
-
-				// Reset the XML index.
-				RebuildIndex();
-
-				// Get the file system node.
-				fsElement = (XmlElement)_fileIndex.SelectSingleNode("//FileSystem");
-
-				if (fsElement == null)
-					throw new GorgonException("File system is corrupt.");
-
 				// Update the file offsets.
 				foreach (FileSystemFile file in allFiles)
 				{
@@ -1140,7 +1140,7 @@ namespace GorgonLibrary.FileSystems
 				foreach (FileSystemFile file in allFiles)
 				{
 					if (file.Data == null)
-						throw new GorgonException("File has no data.");
+                        throw new Exception("File has no data.");
 
 					SaveFileData(filePath, file);
 

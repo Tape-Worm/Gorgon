@@ -74,13 +74,12 @@ namespace GorgonLibrary.FileSystems
 				
 				base.Root = value;
 
-				try
+                // Load the index file.
+                if (!File.Exists(Root + "FileSystem.Index.xml"))
+                    throw new FileSystemIndexReadException();
+                
+                try
 				{
-					// Load the index file.
-					if (!File.Exists(Root + "FileSystem.Index.xml"))
-						throw new GorgonException("Cannot locate the file system index.");
-
-
 					FileIndexXML.Load(Root + "FileSystem.Index.xml");
 				}
 				catch (Exception ex)
@@ -147,11 +146,11 @@ namespace GorgonLibrary.FileSystems
 		{
 			Stream stream = null;					// File stream.
 
-			try
-			{
-				if (!File.Exists(Root + file.FullPath))
-					throw new GorgonException("There is no file named '" + Root + file.FullPath + "' on the physical file system.");
+            if (!File.Exists(Root + file.FullPath))
+                throw new CannotLoadException("File '" + Root + file.FullPath + "' was not found in the file system.");
 
+            try
+			{
 				// Open the file.
 				stream = File.Open(Root + file.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 				file.Data = new byte[stream.Length];

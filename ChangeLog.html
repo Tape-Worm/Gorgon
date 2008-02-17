@@ -54,6 +54,18 @@
 	font-size: x-small;
 	color: #008000;
 }
+.style2 {
+	background-color: #808080;
+}
+.style4 {
+	text-align: center;
+	border: 1px solid #000000;
+}
+.style5 {
+	border-collapse: collapse;
+	font-size: x-small;
+	border: 1px solid #000000;
+}
 </style>
 </head>
 <body>
@@ -79,13 +91,42 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA<br>
 // <br>
 </span>
-<span class="region">#endregion</span></div>
+<span class="region">#endregion<br><br>
+<table style="width: 30%" cellspacing="1" class="style5">
+	<tr>
+		<td class="style2">Legend</td>
+	</tr>
+	<tr>
+		<td>
+		<table style="width: 100%" cellspacing="1" class="style5" align="center">
+			<tr>
+				<td class="style4">*</td>
+				<td class="style4">Modification</td>
+			</tr>
+			<tr>
+				<td class="style4">-</td>
+				<td class="style4">Feature removed</td>
+			</tr>
+			<tr>
+				<td class="style4">+</td>
+				<td class="style4">Feature added</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+</span></div>
 
 <div>
-	<h1>Change Log (mm/dd/yyyy)</h1><hr>
+	<h1>Gorgon Change Log</h1><hr>
 	<pre>
-February 15/2008 - Version - Current
-===============
+February 16/2008 - Version - Current
+================
+* Changed the base GorgonException class to be abstract.  Modified any attempts
+  to throw the base class as an exception.
+  
+* Changes/additions to the documentation.  
+
 + Added the ability to open file systems from the command line with the file
   system editor.  This can open several file systems at the same time.
   
@@ -96,7 +137,7 @@ February 15/2008 - Version - Current
   This change will alter how folder file systems are opened.  Folder file systems
   must now have the file "header.folderSystem" present in the root.  If you have
   created folder file systems, you will not be able to open them with the file system
-  editor without first adding this file to the file system root.  
+  editor without first adding this file to the file system root.
   
   <strong><u>The following will fix the older folder file systems:</u></strong>
   1. Locate the header.folderSystem file in <i>{Your Gorgon Install Directory}</i>\Redist\Patch

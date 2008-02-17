@@ -35,7 +35,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;DEBUG;INCLUDE_D3DREF PLATFORM_X64</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;INCLUDE_D3DREF</DefineConstants>
     <DocumentationFile>bin64\Debug\Gorgon.XML</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
@@ -59,7 +59,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;PLATFORM_X64</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin64\Release\Gorgon.XML</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>

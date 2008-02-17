@@ -103,17 +103,16 @@ namespace GorgonLibrary
 						Gorgon.Log.Print("DriverList", "Driver information for {0} retrieved.", LoggingLevel.Intermediate, Items[Count - 1].Description);
 					}
 				}
-
-				// If we didn't find any adapters that met the hardware only criteria, then quit out.
-				if (Count == 0)
-					throw new GorgonException("No hardware accelerated devices present in the system.");
-
 				Gorgon.Log.Print("DriverList", "{0} drivers enumerated.", LoggingLevel.Simple, Count);
 			}
 			catch (Exception ex)
 			{
 				throw new CannotEnumerateException("video devices", ex);
 			}
+
+            // If we didn't find any adapters that met the hardware only criteria, then quit out.
+            if (Count == 0)
+                throw new CannotEnumerateException("video devices", "No hardware accelerated devices present in the system.");
 		}
 		#endregion
 

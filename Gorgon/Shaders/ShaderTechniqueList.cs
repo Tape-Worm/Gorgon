@@ -43,13 +43,16 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="shader">Shader owner.</param>
 		internal void Add(Shader shader)
-		{			
-			try
+		{
+            if (shader == null)
+                throw new ArgumentNullException("shader");
+
+            if (shader.D3DEffect.Description.Techniques < 1)
+                throw new ShaderCannotGetTechniquesException(shader.Name);
+                        
+            try
 			{
 				ShaderTechnique newTechnique = null;			// Technique.
-
-				if (shader.D3DEffect.Description.Techniques < 1)
-					throw new GorgonException(shader.Name + " has no techniques.");
 
 				// Get technique handle.
 				for (int i = 0;i < shader.D3DEffect.Description.Techniques;i++)

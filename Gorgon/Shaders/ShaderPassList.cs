@@ -44,14 +44,16 @@ namespace GorgonLibrary.Graphics
 		/// <param name="technique">Technique to use.</param>
 		internal void Add(ShaderTechnique technique)
 		{
-			try
+            D3D9.TechniqueDescription techniqueInfo;		// Technique information.
+
+            if (technique == null)
+                throw new ArgumentNullException("technique");
+            
+            try
 			{
 				ShaderPass newPass = null;						// Pass.
-				D3D9.TechniqueDescription techniqueInfo;		// Technique information.
 
 				techniqueInfo = technique.Owner.D3DEffect.GetTechniqueDescription(technique.D3DEffectHandle);
-				if (techniqueInfo.Passes < 1)
-					throw new GorgonException("No passes found in the technique.");
 
 				// Get technique handle.
 				for (int i = 0; i < techniqueInfo.Passes; i++)
@@ -69,7 +71,10 @@ namespace GorgonLibrary.Graphics
 			{
 				throw new ShaderCannotGetTechniquesException(technique.Owner.Name, ex);
 			}
-		}
+
+            if (techniqueInfo.Passes < 1)
+                throw new ShaderCannotGetPassesException(technique);
+        }
 		#endregion
 
 		#region Constructor/Destructor.
