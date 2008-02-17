@@ -229,17 +229,21 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return the platform that this instance of Gorgon was compiled for.
 		/// </summary>
-		/// <remarks>When the library is compiled for 64-bit processors, then this will read x64, otherwise it'll be x86.  If the platform cannot be determine it will return unknown.</remarks>
+		/// <remarks>When the library is compiled for 64-bit processors, then this will read x64, otherwise it'll be x86.  If the platform cannot be determined it will return unknown.</remarks>
 		public static PlatformID Platform
 		{
 			get
 			{
 				// Set the platform ID here.
-#if PLATFORM_X86
-				return PlatformID.x86;
-#else
-				return PlatformID.x64;
-#endif
+                switch (IntPtr.Size)
+                {
+                    case 4:
+                        return PlatformID.x86;
+                    case 8:
+                        return PlatformID.x64;
+                    default:
+                        return PlatformID.Unknown;
+                }
 			}
 		}
 
@@ -263,7 +267,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to set or return whether the frame statistics text color should be inverted or not.
 		/// </summary>
-		/// <remarks>This only applies if <see cref="GorgonLibrary.Gorgon.FrameStatsVisible">FrameStatsVisible</see> is TRUE.</remarks>
+		/// <remarks>This only applies if <see cref="GorgonLibrary.Gorgon.FrameStatsVisible">FrameStatsVisible</see> is TRUE.<para>If this is set to FALSE, then the text is drawn on a window that darkens the background so the text can be more readable.  This however has the disadvantage of slowing down the rendering and thus throwing the frame statistics out a little.</para></remarks>
 		/// <value>TRUE to invert the color of the text, FALSE to draw with the specific color used in <see cref="GorgonLibrary.Gorgon.FrameStatsTextColor">FrameStatsTextColor</see>.</value>
 		public static bool InvertFrameStatsTextColor
 		{
@@ -658,7 +662,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return the logging object.
 		/// </summary>
-		/// <remarks></remarks>
+		/// <remarks>Usage of this property will require the SharpUtilities library and the SharpUtilities.Utility namespace.</remarks>
 		/// <value>The internal logging interface used by the library.</value>
 		public static Logger Log
 		{
