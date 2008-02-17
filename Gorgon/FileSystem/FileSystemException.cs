@@ -168,6 +168,32 @@ namespace GorgonLibrary.FileSystems
 		#endregion
 	}
 
+    /// <summary>
+    /// File system index reading exception.
+    /// </summary>
+    public class FileSystemIndexReadException
+        : GorgonException
+    {
+		#region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileSystemIndexReadException"/> class.
+        /// </summary>
+        /// <param name="ex">Source exception.</param>
+		public FileSystemIndexReadException(Exception ex)
+			: base("The was an error in the file system index.", ex)
+		{
+		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileSystemIndexReadException"/> class.
+        /// </summary>
+        public FileSystemIndexReadException()
+			: this(null)
+		{
+		}
+		#endregion
+    }
+
 	/// <summary>
 	/// File system root path is invalid.
 	/// </summary>

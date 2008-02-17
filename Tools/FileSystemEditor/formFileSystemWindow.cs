@@ -206,10 +206,10 @@ namespace GorgonLibrary.FileSystems.Tools
 			}
 			set
 			{
-				_fileSystem = value;
+                if (value == null)
+                    throw new ArgumentNullException("value");
 
-				if (value == null)
-					throw new GorgonException("Invalid file system.");
+                _fileSystem = value;
 
 				_fileSystem.FileWrite += new FileSystemReadWriteHandler(fileSystem_FileWrite);
 				UpdateCaption();
@@ -710,16 +710,16 @@ namespace GorgonLibrary.FileSystems.Tools
 			source = FileSystem.FullPathName(source);
 
 			if (!FileSystemPath.ValidPath(source))
-				throw new GorgonException("The source path contains invalid characters.");
+                throw new IOException("The source path contains invalid characters.");
 
 			destination = FileSystem.FullPathName(destination);
 
 			if (!FileSystemPath.ValidPath(destination))
-				throw new GorgonException("The destination path contains invalid characters.");
+				throw new IOException("The destination path contains invalid characters.");
 
 			// Don't allow us to move into the same node.
 			if (source.ToLower() == destination.ToLower())
-				throw new GorgonException("Cannot move the entries.  The source and destination path are the same.");
+				throw new IOException("Cannot move the entries.  The source and destination path are the same.");
 
 			// Move the node.
 			path = _fileSystem.GetPath(source);
@@ -753,12 +753,12 @@ namespace GorgonLibrary.FileSystems.Tools
 			oldName = FileSystem.FullPathName(oldName);
 
 			if (!FileSystemPath.ValidPath(oldName))
-				throw new GorgonException("The source path contains invalid characters.");
+				throw new IOException("The source path contains invalid characters.");
 
 			newName = FileSystem.FullPathName(newName);
 
 			if (!FileSystemPath.ValidPath(newName))
-				throw new GorgonException("The destination path contains invalid characters.");
+                throw new IOException("The destination path contains invalid characters.");
 
 			// Don't allow us to move into the same node.
 			if (newName.ToLower() == oldName.ToLower())
@@ -766,7 +766,7 @@ namespace GorgonLibrary.FileSystems.Tools
 
 			// Ensure the path doesn't already exist.
 			if (_fileSystem.PathExists(newName))
-				throw new GorgonException("There is already a path with the name '" + newName + "'.");
+                throw new IOException("There is already a path with the name '" + newName + "'.");
 
 			// Move the node.				
 			path = _fileSystem.GetPath(oldName);
