@@ -10,7 +10,8 @@
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>Gorgon</AssemblyName>
-    <AssemblyOriginatorKeyFile>GorgonFull.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -24,7 +25,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -291,7 +292,6 @@
     <Compile Include="Vertex Data\VertexField.cs" />
     <Compile Include="Vertex Data\VertexType.cs" />
     <None Include="Gorgon.cd" />
-    <None Include="GorgonFull.snk" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Framework\DeviceInformationDialog.resx">

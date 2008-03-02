@@ -11,8 +11,9 @@
     <AssemblyName>SpriteEditor</AssemblyName>
     <ApplicationIcon>GorSprite.ico</ApplicationIcon>
     <StartupObject>GorgonLibrary.Graphics.Tools.Program</StartupObject>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>GorgonFull.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -305,7 +306,6 @@
     <Compile Include="TypeEditors\GorgonImageTypeEditor.cs" />
     <Compile Include="TypeEditors\GorgonPointFConverter.cs" />
     <Compile Include="Zoomer.cs" />
-    <None Include="GorgonFull.snk" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorSprite.ico" />
