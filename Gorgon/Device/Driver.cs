@@ -405,19 +405,19 @@ namespace GorgonLibrary
 			{
 				VSyncIntervals result = VSyncIntervals.IntervalNone;		// No support.
 
-				if (((_caps.PresentInterval & D3D9.PresentInterval.Default) != 0) || ((_caps.PresentInterval & D3D9.PresentInterval.Immediate) != 0))
+				if (((_caps.PresentationIntervals & D3D9.PresentInterval.Default) != 0) || ((_caps.PresentationIntervals & D3D9.PresentInterval.Immediate) != 0))
 					result |= VSyncIntervals.IntervalNone;
 
-				if ((_caps.PresentInterval & D3D9.PresentInterval.One) != 0)
+				if ((_caps.PresentationIntervals & D3D9.PresentInterval.One) != 0)
 					result |= VSyncIntervals.IntervalOne;
 
-				if ((_caps.PresentInterval & D3D9.PresentInterval.Two) != 0)
+				if ((_caps.PresentationIntervals & D3D9.PresentInterval.Two) != 0)
 					result |= VSyncIntervals.IntervalTwo;
 
-				if ((_caps.PresentInterval & D3D9.PresentInterval.Three) != 0)
+				if ((_caps.PresentationIntervals & D3D9.PresentInterval.Three) != 0)
 					result |= VSyncIntervals.IntervalThree;
 
-				if ((_caps.PresentInterval & D3D9.PresentInterval.Four) != 0)
+				if ((_caps.PresentationIntervals & D3D9.PresentInterval.Four) != 0)
 					result |= VSyncIntervals.IntervalFour;
 
 				return result;
@@ -475,7 +475,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return (_caps.DeviceCaps & D3D9.DeviceCaps.SeparateTextureMemories) == D3D9.DeviceCaps.SeparateTextureMemories;
+				return (_caps.DeviceCaps & D3D9.DeviceCaps.SeparateTextureMemory) == D3D9.DeviceCaps.SeparateTextureMemory;
 			}
 		}
 
@@ -597,7 +597,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BlendFactor) & (_caps.DestBlendCaps & D3D9.BlendCaps.BlendFactor)) == D3D9.BlendCaps.BlendFactor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BlendFactor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.BlendFactor)) == D3D9.BlendCaps.BlendFactor;
 			}
 		}
 
@@ -608,7 +608,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BothInvSourceAlpha) & (_caps.DestBlendCaps & D3D9.BlendCaps.BothInvSourceAlpha)) == D3D9.BlendCaps.BothInvSourceAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BothInvSourceAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.BothInvSourceAlpha)) == D3D9.BlendCaps.BothInvSourceAlpha;
 			}
 		}
 
@@ -619,7 +619,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.DestAlpha) & (_caps.DestBlendCaps & D3D9.BlendCaps.DestAlpha)) == D3D9.BlendCaps.DestAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.DestinationAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.DestinationAlpha)) == D3D9.BlendCaps.DestinationAlpha;
 			}
 		}
 
@@ -630,7 +630,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.DestColor) & (_caps.DestBlendCaps & D3D9.BlendCaps.DestColor)) == D3D9.BlendCaps.DestColor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.DestinationColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.DestinationColor)) == D3D9.BlendCaps.DestinationColor;
 			}
 		}
 
@@ -641,7 +641,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvDestAlpha) & (_caps.DestBlendCaps & D3D9.BlendCaps.InvDestAlpha)) == D3D9.BlendCaps.InvDestAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvDestinationAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvDestinationAlpha)) == D3D9.BlendCaps.InvDestinationAlpha;
 			}
 		}
 
@@ -652,7 +652,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvDestColor) & (_caps.DestBlendCaps & D3D9.BlendCaps.InvDestColor)) == D3D9.BlendCaps.InvDestColor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvDestinationColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvDestinationColor)) == D3D9.BlendCaps.InvDestinationColor;
 			}
 		}
 
@@ -663,7 +663,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvSourceColor) & (_caps.DestBlendCaps & D3D9.BlendCaps.InvSourceColor)) == D3D9.BlendCaps.InvSourceColor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvSourceColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvSourceColor)) == D3D9.BlendCaps.InvSourceColor;
 			}
 		}
 
@@ -674,7 +674,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.One) & (_caps.DestBlendCaps & D3D9.BlendCaps.One)) == D3D9.BlendCaps.One;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.One) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.One)) == D3D9.BlendCaps.One;
 			}
 		}
 
@@ -685,7 +685,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.Zero) & (_caps.DestBlendCaps & D3D9.BlendCaps.Zero)) == D3D9.BlendCaps.Zero;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.Zero) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.Zero)) == D3D9.BlendCaps.Zero;
 			}
 		}
 
@@ -696,7 +696,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.SourceAlpha) & (_caps.DestBlendCaps & D3D9.BlendCaps.SourceAlpha)) == D3D9.BlendCaps.SourceAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.SourceAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.SourceAlpha)) == D3D9.BlendCaps.SourceAlpha;
 			}
 		}
 
@@ -707,7 +707,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.SourceColor) & (_caps.DestBlendCaps & D3D9.BlendCaps.SourceColor)) == D3D9.BlendCaps.SourceColor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.SourceColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.SourceColor)) == D3D9.BlendCaps.SourceColor;
 			}
 		}
 
@@ -718,7 +718,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.SrcAlphaSat) & (_caps.DestBlendCaps & D3D9.BlendCaps.SrcAlphaSat)) == D3D9.BlendCaps.SrcAlphaSat;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.SourceAlphaSaturated) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.SourceAlphaSaturated)) == D3D9.BlendCaps.SourceAlphaSaturated;
 			}
 		}
 
@@ -918,7 +918,7 @@ namespace GorgonLibrary
 			_driverName = adapterData.Details.DriverName;
 			_version = adapterData.Details.DriverVersion;
 			_revision = adapterData.Details.Revision;
-			_subSystem = adapterData.Details.SubSystemId;
+			_subSystem = adapterData.Details.SubsystemId;
 			_vendor = adapterData.Details.VendorId;
 			_supportStencil = FindStencil();
 

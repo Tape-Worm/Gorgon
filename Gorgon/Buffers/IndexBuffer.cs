@@ -139,7 +139,7 @@ namespace GorgonLibrary.Internal
 			try
 			{
 				if ((BufferUsage & BufferUsages.UseSystemMemory) != 0)
-					pool = D3D9.Pool.SystemMem;
+					pool = D3D9.Pool.SystemMemory;
 				else
 				{
 					// If we're using a dynamic buffer, then put it into the default memory pool.
