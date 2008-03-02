@@ -24,7 +24,6 @@
 using System;
 using SharpUtilities.Mathematics;
 using DX = SlimDX;
-using D3D = SlimDX.Direct3D;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Graphics;
 
@@ -42,11 +41,11 @@ namespace GorgonLibrary.Internal
 		/// </summary>
 		/// <param name="viewport">Viewport to convert.</param>
 		/// <returns>A D3D viewport.</returns>
-		static public D3D.Viewport Convert(Viewport viewport)
+		static public DX.Viewport Convert(Viewport viewport)
 		{
-			D3D.Viewport result;			// Resultant viewport.
+			DX.Viewport result;			// Resultant viewport.
 
-			result = new D3D.Viewport();
+			result = new DX.Viewport();
 			result.X = viewport.View.Left;
 			result.Y = viewport.View.Top;
 			result.Width = viewport.View.Width;
@@ -247,15 +246,15 @@ namespace GorgonLibrary.Internal
 				case AlphaBlendOperation.BothInverseSourceAlpha:
 					return D3D9.Blend.BothInvSourceAlpha;
 				case AlphaBlendOperation.DestinationAlpha:
-					return D3D9.Blend.DestAlpha;
+					return D3D9.Blend.DestinationAlpha;
 				case AlphaBlendOperation.DestinationColor:
-					return D3D9.Blend.DestColor;
+					return D3D9.Blend.DestinationColor;
 				case AlphaBlendOperation.InverseBlendFactor:
 					return D3D9.Blend.InvBlendFactor;
 				case AlphaBlendOperation.InverseDestinationAlpha:
-					return D3D9.Blend.InvDestAlpha;
+					return D3D9.Blend.InvDestinationAlpha;
 				case AlphaBlendOperation.InverseDestinationColor:
-					return D3D9.Blend.InvDestColor;
+					return D3D9.Blend.InvDestinationColor;
 				case AlphaBlendOperation.InverseSourceAlpha:
 					return D3D9.Blend.InvSourceAlpha;
 				case AlphaBlendOperation.InverseSourceColor:
@@ -504,7 +503,7 @@ namespace GorgonLibrary.Internal
 			switch (cullmode)
 			{
 				case CullingMode.CounterClockwise:
-					return D3D9.Cull.CounterClockwise;
+					return D3D9.Cull.Counterclockwise;
 				case CullingMode.Clockwise:
 					return D3D9.Cull.Clockwise;
 				default:
@@ -523,7 +522,7 @@ namespace GorgonLibrary.Internal
 			{
 				case D3D9.Cull.Clockwise:
 					return CullingMode.Clockwise;
-				case D3D9.Cull.CounterClockwise:
+				case D3D9.Cull.Counterclockwise:
 					return CullingMode.CounterClockwise;
 				default:
 					return CullingMode.None;
@@ -1034,9 +1033,9 @@ namespace GorgonLibrary.Internal
 				case ImageOperations.BumpDotProduct:
 					return D3D9.TextureOperation.DotProduct3;
 				case ImageOperations.BumpEnvironmentMap:
-					return D3D9.TextureOperation.BumpEnvMap;
+					return D3D9.TextureOperation.BumpEnvironmentMap;
 				case ImageOperations.BumpEnvironmentMapLuminance:
-					return D3D9.TextureOperation.BumpEnvMapLuminance;
+					return D3D9.TextureOperation.BumpEnvironmentMapLuminance;
 				case ImageOperations.Lerp:
 					return D3D9.TextureOperation.Lerp;
 				case ImageOperations.Modulate:
@@ -1131,13 +1130,13 @@ namespace GorgonLibrary.Internal
 			switch (operation)
 			{
 				case StencilOperations.Decrement:
-					return D3D9.StencilOperation.Decr;
+					return D3D9.StencilOperation.Decrement;
 				case StencilOperations.DecrementSaturate:
-					return D3D9.StencilOperation.DecrSat;
+					return D3D9.StencilOperation.DecrementSaturate;
 				case StencilOperations.Increment:
-					return D3D9.StencilOperation.Incr;
+					return D3D9.StencilOperation.Increment;
 				case StencilOperations.IncrementSaturate:
-					return D3D9.StencilOperation.IncrSat;
+					return D3D9.StencilOperation.IncrementSaturate;
 				case StencilOperations.Invert:
 					return D3D9.StencilOperation.Invert;
 				case StencilOperations.Replace:

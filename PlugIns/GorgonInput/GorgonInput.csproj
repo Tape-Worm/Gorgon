@@ -10,9 +10,8 @@
     <RootNamespace>GorgonLibrary.Input</RootNamespace>
     <AssemblyName>GorgonInput</AssemblyName>
     <ApplicationIcon>GorInput.ico</ApplicationIcon>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>GorgonFull.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -56,6 +55,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <None Include="GorgonFull.snk" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Devices\GorgonJoystick.cs" />
