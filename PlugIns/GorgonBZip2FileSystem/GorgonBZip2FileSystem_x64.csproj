@@ -10,8 +10,9 @@
     <RootNamespace>GorgonLibrary.FileSystems</RootNamespace>
     <AssemblyName>GorgonBZip2FileSystem</AssemblyName>
     <ApplicationIcon>GorSharpZip.ico</ApplicationIcon>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>GorgonFull.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -57,7 +58,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
-    <None Include="GorgonFull.snk" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BZip2PlugInEntry.cs" />
