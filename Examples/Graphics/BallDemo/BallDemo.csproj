@@ -11,9 +11,8 @@
     <AssemblyName>BallDemo</AssemblyName>
     <StartupObject>GorgonLibrary.Example.Program</StartupObject>
     <ApplicationIcon>AmigaBall.ico</ApplicationIcon>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>GorgonFull.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -84,6 +83,7 @@
     <None Include="BallDemo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="GorgonFull.snk" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">

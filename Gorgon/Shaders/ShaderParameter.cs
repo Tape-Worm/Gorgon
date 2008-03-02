@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using DX = SlimDX;
-using D3D = SlimDX.Direct3D;
 using D3D9 = SlimDX.Direct3D9;
 using SharpUtilities;
 using SharpUtilities.Mathematics;
@@ -329,14 +328,14 @@ namespace GorgonLibrary.Graphics
 			if ((count > ArrayLength) || (count < 1))
 				count = ArrayLength;
 
-			Color[] colors = new Color[count];		// Drawing colors			
-			DX.ColorValue[] d3dColors;				// D3D color values.
+			Color[] colors = new Color[count];		// Drawing colors
+            DX.Color4[] d3dColors;                  // D3D color values.
 
 			// Get colors.
 			d3dColors = _owner.D3DEffect.GetColorArray(_effectHandle, count);
 
 			for (int i = 0; i < count; i++)
-				colors[i] = Color.FromArgb(d3dColors[i].ToArgb());
+				colors[i] = d3dColors[i].ToColor();
 
 			return colors;
 		}
@@ -514,7 +513,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">A color value.</param>
 		public void SetValue(Color value)
 		{
-			_owner.D3DEffect.SetValue(_effectHandle, new DX.ColorValue(value));
+			_owner.D3DEffect.SetValue(_effectHandle, new DX.Color4(value));
 		}
 
 		/// <summary>
@@ -523,11 +522,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">An array of color values.</param>
 		public void SetValue(Color[] value)
 		{
-			DX.ColorValue[] colors = new DX.ColorValue[value.Length];		// Color values.
+			DX.Color4[] colors = new DX.Color4[value.Length];		// Color values.
 
 			// Convert the array.
 			for (int i = 0; i < value.Length; i++)
-				colors[i] = new DX.ColorValue(value[i]);
+				colors[i] = new DX.Color4(value[i]);
 
 			_owner.D3DEffect.SetValue(_effectHandle, colors);
 		}

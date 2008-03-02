@@ -10,8 +10,7 @@
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>Gorgon</AssemblyName>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>GorgonFull.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -25,7 +24,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -80,7 +79,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\SharpUtilities.2.1.2955\Assemblies\SharpUtilities.dll</HintPath>
     </Reference>
-    <Reference Include="SlimDX, Version=1.0.2897.17275, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="SlimDX, Version=1.0.2982.42096, Culture=neutral, PublicKeyToken=5a7e35f0f7a29e88, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\SlimDX\x64\Release\SlimDX.dll</HintPath>
     </Reference>
@@ -292,6 +291,7 @@
     <Compile Include="Vertex Data\VertexField.cs" />
     <Compile Include="Vertex Data\VertexType.cs" />
     <None Include="Gorgon.cd" />
+    <None Include="GorgonFull.snk" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Framework\DeviceInformationDialog.resx">

@@ -16,10 +16,9 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>GorgonFull.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,9 +46,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon, Version=1.0.2900.15917, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="Gorgon, Version=1.0.2983.14, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
+      <HintPath>..\..\..\Gorgon\bin\Debug\Gorgon.dll</HintPath>
     </Reference>
     <Reference Include="SharpUtilities, Version=2.1.2955.5969, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -58,6 +57,7 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <None Include="GorgonFull.snk" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainForm.cs">
