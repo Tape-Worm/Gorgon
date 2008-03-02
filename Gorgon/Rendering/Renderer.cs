@@ -31,7 +31,6 @@ using SharpUtilities.Utility;
 using SharpUtilities.Mathematics;
 using Microsoft.Win32;
 using DX = SlimDX;
-using D3D = SlimDX.Direct3D;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
 
@@ -337,9 +336,9 @@ namespace GorgonLibrary.Graphics
 			if (D3DDevice == null)
 				return;
 
-			DX.DirectXException.EnableExceptions = false;
+			DX.Configuration.AlwaysThrowOnError = false;
 			D3DDevice.BeginScene();
-			DX.DirectXException.EnableExceptions = true;
+			DX.Configuration.AlwaysThrowOnError = true;
 		}
 
 		/// <summary>
@@ -504,10 +503,15 @@ namespace GorgonLibrary.Graphics
 				if (target != null)
 					target.D3DFlip();
 			}
-			catch (D3D9.DeviceLostException)
+			catch (D3D9.Direct3D9Exception d3dEx)
 			{
-				if (!Gorgon.Screen.DeviceNotReset)
-					Gorgon.Screen.ResetLostDevice();
+                if (d3dEx.ResultCode == D3D9.Error.DeviceLost)
+                {
+                    if (!Gorgon.Screen.DeviceNotReset)
+                        Gorgon.Screen.ResetLostDevice();
+                }
+                else
+                    throw d3dEx;               
 			}
 		}
 
@@ -565,12 +569,12 @@ namespace GorgonLibrary.Graphics
 					if (shaderEffect != null)
 						shaderEffect.BeginPass(pass);
 
-					DX.DirectXException.EnableExceptions = false;
+					DX.Configuration.AlwaysThrowOnError = false;
 					if ((Geometry.UseIndices) && (Geometry.IndicesWritten > 0))
 						D3DDevice.DrawIndexedPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, 0, Geometry.VerticesWritten, Geometry.IndexOffset, CalculateIndices(true, 0, Geometry.IndicesWritten, Geometry.PrimitiveStyle));
 					else
 						D3DDevice.DrawPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, CalculateIndices(false, Geometry.VerticesWritten, 0, Geometry.PrimitiveStyle));
-					DX.DirectXException.EnableExceptions = true;
+					DX.Configuration.AlwaysThrowOnError = true;
 
 					if (shaderEffect != null)
 						shaderEffect.EndPass();

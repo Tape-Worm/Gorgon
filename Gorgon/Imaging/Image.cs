@@ -32,7 +32,6 @@ using SharpUtilities;
 using SharpUtilities.Mathematics;
 using SharpUtilities.Utility;
 using DX = SlimDX;
-using D3D = SlimDX.Direct3D;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
@@ -246,7 +245,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="discard">TRUE to discard the data, FALSE to leave alone.</param>
 			public void Lock(bool discard)
 			{
-				D3D.LockedRect lockData;		// Lock data.
+                DX.DataRectangle lockData;  // Lock data.
 
 				if (Gorgon.Screen.DeviceNotReset)
 					return;

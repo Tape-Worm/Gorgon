@@ -334,7 +334,7 @@ namespace GorgonLibrary.Graphics
 				{
 					if (_convertBuffer != null)
 						_convertBuffer.Dispose();
-					_convertBuffer = D3D9.Surface.CreateOffscreenPlain(Gorgon.Screen.Device, Width, Height, Converter.Convert(targetFormat), D3D9.Pool.SystemMem);
+					_convertBuffer = D3D9.Surface.CreateOffscreenPlain(Gorgon.Screen.Device, Width, Height, Converter.Convert(targetFormat), D3D9.Pool.SystemMemory);
 				}
 
 				Gorgon.Screen.Device.GetRenderTargetData(SurfaceBuffer, _convertBuffer);

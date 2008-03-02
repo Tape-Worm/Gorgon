@@ -47,6 +47,7 @@ namespace GorgonLibrary.Timing
 		private float _lowestFps;									// Lowest FPS.
 		private float _currentFps;									// Current FPS.
 		private long _frameCount;									// Frame count.
+        private long _totalFrameCount;                              // Total frame count.
 		private PreciseTimer _timer;								// FPS timer.
 		private int _frameAvgCounter;								// Counter for frame average.
 		private double _frameAvgSum;								// Frame average sum.
@@ -127,7 +128,7 @@ namespace GorgonLibrary.Timing
 		{
 			get
 			{
-				return _frameCount;
+				return _totalFrameCount;
 			}
 		}
 		#endregion
@@ -139,6 +140,7 @@ namespace GorgonLibrary.Timing
 		private void GetFps()
 		{
 			_frameCount++;
+            _totalFrameCount++;
 
 			if ((_lastFrameTime - _lastFPSFrameTime) >= 1000)
 			{
@@ -183,6 +185,7 @@ namespace GorgonLibrary.Timing
 			_frameDrawTime = 0.0;
 			_frameAvgCounter = 0;
 			_frameAvgSum = 0.0;
+            _totalFrameCount = 0;
 		}
 
 		/// <summary>

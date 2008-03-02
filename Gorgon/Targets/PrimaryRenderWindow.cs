@@ -29,7 +29,6 @@ using Drawing = System.Drawing;
 using SharpUtilities;
 using SharpUtilities.Utility;
 using DX = SlimDX;
-using D3D = SlimDX.Direct3D;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
 
@@ -396,11 +395,16 @@ namespace GorgonLibrary.Graphics
 				for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
 					Gorgon.Renderer.ImageLayerStates[i].SetStates();
 			}
-			catch (D3D9.DeviceLostException)
+			catch (D3D9.Direct3D9Exception d3dEx)
 			{
-				// If we lose the device for some reason, flag it so on the next frame we can check for
-				// device availability.
-				_deviceWasLost = true;
+                if (d3dEx.ResultCode == D3D9.Error.DeviceLost)
+                {
+                    // If we lose the device for some reason, flag it so on the next frame we can check for
+                    // device availability.
+                    _deviceWasLost = true;
+                }
+                else
+                    throw d3dEx;
 			}
 			catch (Exception ex)
 			{
@@ -424,7 +428,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected internal override void D3DFlip()
 		{
-			_device.Present();
+            _device.Present();
 		}
 
 		/// <summary>
@@ -439,16 +443,19 @@ namespace GorgonLibrary.Graphics
 			{
 				if ((!Gorgon.FastResize) && (_device != null))
 				{
-					D3D9.CooperativeLevel level = D3D9.CooperativeLevel.Ok;		// Cooperative level.
+                    DX.Result level;                // Cooperative level.
 
-					level = Device.CheckCooperativeLevel();
+                    DX.Configuration.AlwaysThrowOnError = false;
+                    level = Device.TestCooperativeLevel();
+                    DX.Configuration.AlwaysThrowOnError = true;
 
 					// Ensure we -can- reset.
-					if ((level == D3D9.CooperativeLevel.DeviceNotReset) || (level == D3D9.CooperativeLevel.Ok))
+					if ((level == D3D9.Error.DeviceNotReset) || (level.IsSuccess))
 					{
 						DeviceLost();
 						ResetMode(true, _owner.ClientSize.Width, _owner.ClientSize.Height);
 					}
+
 				}
 
 				Refresh();
@@ -774,23 +781,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void ResetLostDevice()
 		{
-			D3D9.CooperativeLevel coopLevel;		// Cooperative level.
+            DX.Result coopLevel;                    // Cooperative level.
 
 			// Get the cooperative level.
-			coopLevel = _device.CheckCooperativeLevel();
+            DX.Configuration.AlwaysThrowOnError = false;
+            coopLevel = _device.TestCooperativeLevel();
+            DX.Configuration.AlwaysThrowOnError = true;
 
-			_deviceWasLost = true;
-			switch (coopLevel)
-			{
-				case D3D9.CooperativeLevel.Ok:
-					_deviceWasLost = false;
-					break;
-				case D3D9.CooperativeLevel.DeviceNotReset:
-					ResetMode(false, 0, 0);
-					break;
-				case D3D9.CooperativeLevel.DriverInternalError:
-					throw new DeviceCannotResetException(true);
-			}
+			_deviceWasLost = false;
+            if (coopLevel == D3D9.Error.DeviceNotReset)
+            {
+                _deviceWasLost = true;
+                ResetMode(false, 0, 0);
+            }
+            if (coopLevel == D3D9.Error.DriverInternalError)
+                throw new DeviceCannotResetException(true);
 		}
 
 		/// <summary>

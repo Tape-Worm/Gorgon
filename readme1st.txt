@@ -1,7 +1,12 @@
-This is the first BETA release.  Expect problems.
+Just because we're out of BETA status, doesn't mean we're out of the woods.  There still may be
+issues.  If so, please contact me at: tape.wyrm@gmail.com or go to the Gorgon website at 
+http://www.tape-worm.net
 
 Please note that you will need Visual Studio 2008 in order to compile Gorgon, its tools and the examples.
 
 There are x86 and x64 versions of the projects included.  The x64 projects are suffixed with '_x64'.
 
-x64 Note:  If you see warning messages regarding mscorlib or system.somethingoranother claiming that it's for a different processor, please don't panic.  It's normal.  The runtime will automatically know which version of these assemblies to load (although those of you who've already done x64 code will probably know that already).
+x64 Note:  If you see warning messages regarding mscorlib or system.somethingoranother claiming that 
+it's for a different processor, please don't panic.  It's normal.  The runtime will automatically know
+which version of these assemblies to load (although those of you who've already done x64 code will 
+probably know that already).
