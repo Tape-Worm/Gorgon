@@ -120,12 +120,8 @@
 <div>
 	<h1>Gorgon Change Log</h1><hr>
 	<pre>
-March 2/2008 - Version - Current
+March 3/2008 - Version - Current
 ================
-* Updated an issue in the TimingData structure where the framecount is returning 0
-  all time.  That just ain't right.  It was returning the wrong frame counter and
-  consequently was always being reset to 0 after a FPS update.
-  
 * Updated the version of SlimDX to the most current version as of March 2/2008.
   Modified Gorgon accordingly to handle the breaking changes introduced.  Gorgon
   will have a release (and an exit from BETA I'm thinking) when the new version of
@@ -137,6 +133,10 @@ March 2/2008 - Version - Current
   SlimDX source code at http://slimdx.googlecode.com/svn/trunk. (Note: you'll <u>need</u>
   a subversion client like <a href="http://tortoisesvn.tigris.org/">TortoiseSVN</a> or something).
 
+* Updated an issue in the TimingData structure where the framecount is returning 0
+  all time.  That just ain't right.  It was returning the wrong frame counter and
+  consequently was always being reset to 0 after a FPS update.
+  
 + Added file type registration to installer.  .gorPack, and header.folderSystem
   file types will be opened by FileSystemEditor and .sprProj will be opened by
   SpriteEditor.
