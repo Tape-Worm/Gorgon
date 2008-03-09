@@ -365,7 +365,7 @@ namespace GorgonLibrary.Graphics
 
 				// Get the depth buffer.
 				if (_presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
-					SetDepthBuffer(_device.GetDepthStencilSurface());
+					SetDepthBuffer(_device.DepthStencilSurface);
 				else
 					SetDepthBuffer(null);
 
@@ -445,9 +445,9 @@ namespace GorgonLibrary.Graphics
 				{
                     DX.Result level;                // Cooperative level.
 
-                    DX.Configuration.AlwaysThrowOnError = false;
+                    DX.Configuration.ThrowOnError = false;
                     level = Device.TestCooperativeLevel();
-                    DX.Configuration.AlwaysThrowOnError = true;
+                    DX.Configuration.ThrowOnError = true;
 
 					// Ensure we -can- reset.
 					if ((level == D3D9.Error.DeviceNotReset) || (level.IsSuccess))
@@ -750,7 +750,7 @@ namespace GorgonLibrary.Graphics
 
 				// Get the depth buffer.
 				if (this._presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
-					SetDepthBuffer(_device.GetDepthStencilSurface());
+					SetDepthBuffer(_device.DepthStencilSurface);
 				else
 					SetDepthBuffer(null);
 
@@ -784,9 +784,9 @@ namespace GorgonLibrary.Graphics
             DX.Result coopLevel;                    // Cooperative level.
 
 			// Get the cooperative level.
-            DX.Configuration.AlwaysThrowOnError = false;
+            DX.Configuration.ThrowOnError = false;
             coopLevel = _device.TestCooperativeLevel();
-            DX.Configuration.AlwaysThrowOnError = true;
+            DX.Configuration.ThrowOnError = true;
 
 			_deviceWasLost = false;
             if (coopLevel == D3D9.Error.DeviceNotReset)

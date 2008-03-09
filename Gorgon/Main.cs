@@ -558,7 +558,7 @@ namespace GorgonLibrary
 							_renderer.RenderStates.ScissorTesting = false;
 
 						_screen.Device.SetRenderTarget(0, value.SurfaceBuffer);
-						_screen.Device.SetDepthStencilSurface(value.DepthBuffer);
+                        _screen.Device.DepthStencilSurface = value.DepthBuffer;
 
 						// Reset the active view.
 						_currentTarget = value;
