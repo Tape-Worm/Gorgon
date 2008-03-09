@@ -678,10 +678,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetScissorTest(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.ScissorTestEnable, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -690,10 +690,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Rectangle to use for scissor testing.</param>
 		private void SetScissorRectangle(Drawing.Rectangle value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.ScissorRect = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -702,10 +702,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Function used for testing.</param>
 		private void SetAlphaTestFunction(CompareFunctions value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.Compare>(D3D9.RenderState.AlphaFunc, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -714,10 +714,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Value to use for testing.</param>
 		private void SetAlphaTestValue(int value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.AlphaRef, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -726,10 +726,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetAlphaTestEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.AlphaTestEnable, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -738,10 +738,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Blend operation for the source.</param>
 		private void SetSourceAlphaOperation(AlphaBlendOperation value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.Blend>(D3D9.RenderState.SourceBlend, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -750,10 +750,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Blend operation for the destination.</param>
 		private void SetDestinationAlphaOperation(AlphaBlendOperation value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.Blend>(D3D9.RenderState.DestinationBlend, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -762,10 +762,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetAlphaBlendEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.AlphaBlendEnable, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -774,10 +774,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Culling mode to set.</param>
 		private void SetCullMode(CullingMode value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.Cull>(D3D9.RenderState.CullMode, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -786,10 +786,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Size of the vertex point.</param>
 		private void SetVertexPointSize(float value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.PointSize, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -798,10 +798,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to renormalize the normals, FALSE to leave them alone.</param>
 		private void SetNormalize(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.NormalizeNormals, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -810,7 +810,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetDepthBufferEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 			{
 				if (value)
@@ -818,7 +818,7 @@ namespace GorgonLibrary.Internal
 				else
 					Device.SetRenderState<D3D9.ZBufferType>(D3D9.RenderState.ZEnable, D3D9.ZBufferType.DontUseZBuffer);
 			}
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -827,10 +827,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Shading mode.</param>
 		private void SetShadingMode(ShadingMode value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.ShadeMode>(D3D9.RenderState.ShadeMode, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -839,10 +839,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetDepthBufferWriteEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.ZWriteEnable, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -851,10 +851,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetLightingEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.Lighting, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -863,10 +863,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetSpecularEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.SpecularEnable, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -875,7 +875,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetWBufferEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if ((Gorgon.Screen != null) && (Gorgon.Screen.UseDepthBuffer))
 			{
 
@@ -887,7 +887,7 @@ namespace GorgonLibrary.Internal
 				if (DeviceReady)
 					Device.SetRenderState<D3D9.ZBufferType>(D3D9.RenderState.ZEnable, D3D9.ZBufferType.UseWBuffer);
 			}
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -896,10 +896,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Depth buffer bias value.</param>
 		private void SetDepthBufferBias(float value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.DepthBias, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -908,10 +908,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Depth buffer comparison function.</param>
 		private void SetDepthBufferCompareFunction(CompareFunctions value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.Compare>(D3D9.RenderState.ZFunc, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -920,10 +920,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">The triangle drawing mode.</param>
 		private void SetDrawingMode(DrawingMode value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.FillMode>(D3D9.RenderState.FillMode, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -932,10 +932,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetDrawLastPixel(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.LastPixel, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -944,10 +944,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE if not.</param>
 		private void SetStencilEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.StencilEnable, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -956,10 +956,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Reference value for the stencil buffer.</param>
 		private void SetStencilReference(int value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.StencilRef, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -968,10 +968,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Mask value for the stencil buffer.</param>
 		private void SetStencilMask(int value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.StencilMask, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -980,10 +980,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation for pass.</param>
 		private void SetStencilPassOperation(StencilOperations value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.StencilOperation>(D3D9.RenderState.StencilPass, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -992,10 +992,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation for fail.</param>
 		private void SetStencilFailOperation(StencilOperations value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.StencilOperation>(D3D9.RenderState.StencilFail, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -1004,10 +1004,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation for z-fail.</param>
 		private void SetStencilZFailOperation(StencilOperations value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.StencilOperation>(D3D9.RenderState.StencilZFail, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -1016,10 +1016,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Comparison operation.</param>
 		private void SetStencilCompare(CompareFunctions value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState<D3D9.Compare>(D3D9.RenderState.StencilFunc, Converter.Convert(value));
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -1028,10 +1028,10 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">TRUE to enable, FALSE to disable.</param>
 		private void SetDitherEnabled(bool value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetRenderState(D3D9.RenderState.DitherEnable, value);
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
