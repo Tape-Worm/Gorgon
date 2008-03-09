@@ -114,28 +114,28 @@ namespace GorgonLibrary.Example
 			if (Input == null)
 				return;
 
-			if (Input.Keyboard[KeyboardKeys.Left])
+            if (Input.Keyboard.KeyStates[KeyboardKeys.Left] == KeyState.Down)
 				_smallShip.Angle += 2.5f;
-			
-			if (Input.Keyboard[KeyboardKeys.Right])
+
+            if (Input.Keyboard.KeyStates[KeyboardKeys.Right] == KeyState.Down)
 				_smallShip.Angle -= 2.5f;
-			
-			if (Input.Keyboard[KeyboardKeys.Up])
+
+            if (Input.Keyboard.KeyStates[KeyboardKeys.Up] == KeyState.Down)			
 			{
 				_smallShip.Velocity += 2.5f;
 				_slowDown = false;
 			}
 
-			if (Input.Keyboard[KeyboardKeys.Down])
+            if (Input.Keyboard.KeyStates[KeyboardKeys.Down] == KeyState.Down)
 			{
 				_smallShip.Velocity -= 2.5f;
 				_slowDown = false;
 			}
 
-			if (Input.Keyboard[KeyboardKeys.Back])
+            if (Input.Keyboard.KeyStates[KeyboardKeys.Back] == KeyState.Down)
 				_slowDown = true;
 
-			if (Input.Keyboard[KeyboardKeys.C])
+            if (Input.Keyboard.KeyStates[KeyboardKeys.C] == KeyState.Down)
 			{
 				if (_camera.Target == null)
 					_camera.Target = _smallShip;

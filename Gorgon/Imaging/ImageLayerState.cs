@@ -334,11 +334,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation to use.</param>
 		private void SetAlphaOperation(ImageOperations value)
 		{            
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.AlphaOperation, Converter.Convert(value));
 			_alphaOperation = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -347,11 +347,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation argument to use.</param>
 		private void SetAlphaOperationArgument0(ImageOperationArguments value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.AlphaArg0, Converter.Convert(value));
 			_alphaArgument0 = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -360,11 +360,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation argument to use.</param>
 		private void SetAlphaOperationArgument1(ImageOperationArguments value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.AlphaArg1, Converter.Convert(value));
 			_alphaArgument1 = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -373,11 +373,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation argument to use.</param>
 		private void SetAlphaOperationArgument2(ImageOperationArguments value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.AlphaArg2, Converter.Convert(value));
 			_alphaArgument2 = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -386,11 +386,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation to use.</param>
 		private void SetColorOperation(ImageOperations value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.ColorOperation, Converter.Convert(value));
 			_colorOperation = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -399,11 +399,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation argument to use.</param>
 		private void SetColorOperationArgument0(ImageOperationArguments value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.ColorArg0, Converter.Convert(value));
 			_colorArgument0 = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -412,11 +412,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation argument to use.</param>
 		private void SetColorOperationArgument1(ImageOperationArguments value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.ColorArg1, Converter.Convert(value));
 			_colorArgument1 = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -425,11 +425,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Operation argument to use.</param>
 		private void SetColorOperationArgument2(ImageOperationArguments value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.ColorArg2, Converter.Convert(value));
 			_colorArgument2 = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -438,11 +438,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Color to use.</param>
 		private void SetConstantColor(Color value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetTextureStageState(_imageLayerIndex, D3D9.TextureStage.Constant, value.ToArgb());
 			_constantColor = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -451,11 +451,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Filter to use.</param>
 		private void SetImageMagFilter(ImageFilters value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetSamplerState(_imageLayerIndex, D3D9.SamplerState.MagFilter, Converter.Convert(value));
 			_imageMagFilters = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -464,11 +464,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Filter to use.</param>
 		private void SetImageMinFilter(ImageFilters value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetSamplerState(_imageLayerIndex, D3D9.SamplerState.MinFilter, Converter.Convert(value));
 			_imageMinFilters = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -477,11 +477,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Border color</param>
 		private void SetBorderColor(Color value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetSamplerState(_imageLayerIndex, D3D9.SamplerState.BorderColor, value.ToArgb());
 			_borderColor = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -490,11 +490,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Addressing mode.</param>
 		private void SetUAddressing(ImageAddressing value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetSamplerState(_imageLayerIndex, D3D9.SamplerState.AddressU, Converter.Convert(value));
 			_Uaddress = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -503,11 +503,11 @@ namespace GorgonLibrary.Internal
 		/// <param name="value">Addressing mode.</param>
 		private void SetVAddressing(ImageAddressing value)
 		{
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
 				Device.SetSamplerState(_imageLayerIndex, D3D9.SamplerState.AddressV, Converter.Convert(value));
 			_Vaddress = value;
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>

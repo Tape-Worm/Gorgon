@@ -101,6 +101,7 @@ To learn more about shading, shaders, and to bounce ideas off other shader
 // Redefine these before including "Quad.fxh" if you want
 //	to use a type other than "half" for these data or just
 //	define the symbol QUAD_FLOAT to use "floats"
+#define QUAD_FLOAT
 #ifndef QUAD_REAL
 #ifdef QUAD_FLOAT
 #define QUAD_REAL float

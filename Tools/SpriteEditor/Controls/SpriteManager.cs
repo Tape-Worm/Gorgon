@@ -108,6 +108,7 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				{
 					_current = value;
 					listSprites.Items[value.Name].Selected = true;
+                    UpdatePropertyGrid();
 				}
 			}
 		}
@@ -193,6 +194,7 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					{
 						MainForm.SpriteManager.Selected.Clear();
 						MainForm.SpriteManager.Items[lastDocument.Name].Selected = true;
+                        MainForm.SpriteManager.UpdatePropertyGrid();
 					}
 
 					MainForm.ProjectChanged = true;
@@ -899,6 +901,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					listSprites.SelectedItems.Clear();
 					listSprites.Items[sprite.Name].Selected = true;
 
+                    // Ensure the property grid has updated.
+                    UpdatePropertyGrid();
+
 					// Bind to the sprite changed event.
 					sprite.SpriteChanged += new EventHandler(sprite_SpriteChanged);
 
@@ -962,8 +967,11 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					_spriteDocs.Remove(listSprites.SelectedItems);
 
 				// Select the first item.
-				if (listSprites.Items.Count > 0)
-					listSprites.Items[0].Selected = true;
+                if (listSprites.Items.Count > 0)
+                {
+                    listSprites.Items[0].Selected = true;
+                    UpdatePropertyGrid();
+                }
 
 				MainForm.ProjectChanged = true;
 			}

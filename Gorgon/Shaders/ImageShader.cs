@@ -92,7 +92,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_root = shader;
 				byteCode = shader.GetShaderFunction(functionName);
-				_functionData = byteCode.GetData();
+                _functionData = byteCode.Data;
 				_shader = new D3D9.TextureShader(_functionData);
 
 				ImageShaderCache.ImageShaders.Add(this);
