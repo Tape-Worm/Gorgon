@@ -1737,8 +1737,11 @@ namespace GorgonLibrary.Graphics.Tools
 			_renderTargetManager.RefreshList();
 
 			// Select the first sprite if we can.
-			if (_spriteManager.Items.Count != 0)
-				_spriteManager.Items[0].Selected = true;
+            if (_spriteManager.Items.Count != 0)
+            {
+                _spriteManager.Items[0].Selected = true;
+                _spriteManager.UpdatePropertyGrid();
+            }
 
 			_projectName = Path.GetFileNameWithoutExtension(fileName);
 			_projectPath = fileName;

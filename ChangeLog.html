@@ -120,8 +120,24 @@
 <div>
 	<h1>Gorgon Change Log</h1><hr>
 	<pre>
-March 3/2008 - Version - Current
+March 9/2008 - Version - Current
 ================
+* Updated to the most current version of SlimDX.  Modified for any breaking changes.
+  This release uses the March release of DirectX.  There was also a breaking change
+  made in the HLSL compiler where half types cannot be global (I think that's what it
+  was) and this broke the ShadersInSpaaaaace example.  The solution was to change 
+  the type to a float.  This will likely be the initial NON-BETA release for Gorgon.
+  As soon as the March version of SlimDX is released I will release a new (non-beta) 
+  version of Gorgon shortly after (given time to update for breaking changes and the like)
+  and I will release updated versions of the demo programs as well.
+
+* Fixed an issue with the sprite editor.  When a project is loaded and the first 
+  sprite selected the properties for that sprite did not show up.  The same issue
+  affected new sprites, where after a new sprite was created the properties for
+  the previously selected sprite would show instead of the new sprite (which is
+  selected).  Traced this to the .Selected property of a list view item not firing
+  the AfterSelected event in the list view control.
+  
 * Updated the version of SlimDX to the most current version as of March 2/2008.
   Modified Gorgon accordingly to handle the breaking changes introduced.  Gorgon
   will have a release (and an exit from BETA I'm thinking) when the new version of

@@ -302,8 +302,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="indices">The index buffer.</param>
 		public void SetIndexBuffer(IndexBuffer indices)
 		{
-			if (D3DDevice != null)
-				D3DDevice.SetIndices(indices.D3DIndexBuffer);
+            if (D3DDevice != null)
+                D3DDevice.Indices = indices.D3DIndexBuffer;
 		}
 
 		/// <summary>
@@ -336,9 +336,9 @@ namespace GorgonLibrary.Graphics
 			if (D3DDevice == null)
 				return;
 
-			DX.Configuration.AlwaysThrowOnError = false;
+			DX.Configuration.ThrowOnError = false;
 			D3DDevice.BeginScene();
-			DX.Configuration.AlwaysThrowOnError = true;
+			DX.Configuration.ThrowOnError = true;
 		}
 
 		/// <summary>
@@ -569,12 +569,12 @@ namespace GorgonLibrary.Graphics
 					if (shaderEffect != null)
 						shaderEffect.BeginPass(pass);
 
-					DX.Configuration.AlwaysThrowOnError = false;
+					DX.Configuration.ThrowOnError = false;
 					if ((Geometry.UseIndices) && (Geometry.IndicesWritten > 0))
 						D3DDevice.DrawIndexedPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, 0, Geometry.VerticesWritten, Geometry.IndexOffset, CalculateIndices(true, 0, Geometry.IndicesWritten, Geometry.PrimitiveStyle));
 					else
 						D3DDevice.DrawPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, CalculateIndices(false, Geometry.VerticesWritten, 0, Geometry.PrimitiveStyle));
-					DX.Configuration.AlwaysThrowOnError = true;
+					DX.Configuration.ThrowOnError = true;
 
 					if (shaderEffect != null)
 						shaderEffect.EndPass();
