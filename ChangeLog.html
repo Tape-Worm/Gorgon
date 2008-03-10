@@ -122,6 +122,14 @@
 	<pre>
 March 9/2008 - Version - Current
 ================
+* Updated an issue with the sprite editor.  Launching the image editor failed with
+  a relative path.  Forcing the path to be decoded into an absolute path solved this
+  issue.
+  
+* Updated an issue in the sprite editor where an edited image would become unbound from
+  the sprites but still claim to be bound in the property listing.  This was corrected
+  by re-assigning the image to the sprites after it had changed.
+  
 * Updated to the most current version of SlimDX.  Modified for any breaking changes.
   This release uses the March release of DirectX.  There was also a breaking change
   made in the HLSL compiler where half types cannot be global (I think that's what it
