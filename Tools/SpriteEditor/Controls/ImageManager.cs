@@ -461,13 +461,15 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 			string imageName = string.Empty;		// Image file name.
 			ProcessStartInfo startInfo;				// Process start info.
 			Image editImage = null;					// Edit image.
+            DateTime originalTime;                  // Original file time.
+            DateTime updateTime;                    // Last update time.
 
 			try
 			{
 				Cursor.Current = Cursors.WaitCursor;
 				// Get the image filename.
 				editImage = ImageCache.Images[listImages.SelectedItems[0].Name];
-				imageName = editImage.Filename;
+				imageName = Path.GetFullPath(editImage.Filename);
 
 				if (!File.Exists(_imageEditorPath))
 				{
@@ -481,7 +483,8 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					return;
 				}
 
-				startInfo = new ProcessStartInfo("\"" + _imageEditorPath + "\"");
+                updateTime = originalTime = File.GetLastWriteTimeUtc(imageName);
+                startInfo = new ProcessStartInfo("\"" + _imageEditorPath + "\"");
 				startInfo.Arguments = "\"" + imageName + "\"";
 				startInfo.WorkingDirectory = Path.GetDirectoryName(imageName);
 				Process.Start(startInfo).WaitForExit();
@@ -489,11 +492,22 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				// Reload this image.
 				if (editImage != null)
 				{
-					// Destroy the previous image.
-					editImage.Dispose();
+                    updateTime = File.GetLastWriteTimeUtc(imageName);
+                    if (updateTime > originalTime)
+                    {
+                        // Destroy the previous image.
+                        editImage.Dispose();
 
-					// Re-load it.
-					editImage = Image.FromFile(imageName);
+                        // Re-load it.
+                        editImage = Image.FromFile(imageName);
+
+                        // Reassociate with the sprites.
+                        foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
+                        {
+                            if (string.Compare(sprite.Sprite.Image.Name, editImage.Name) == 0)
+                                sprite.Sprite.Image = editImage;
+                        }
+                    }
 				}
 
 				// Refresh the image.
