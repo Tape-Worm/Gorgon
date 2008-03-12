@@ -122,6 +122,10 @@
 	<pre>
 March 9/2008 - Version - Current
 ================
+* Updated an issue with Vertex/Index buffer creation on cards/chipsets without hardware
+  transform and lighting (yeah, I didn't think they existed any more either).  The buffer
+  would get created before it should have due to the detection of a non-hardware T&amp;L card.
+  
 * Updated an issue with the sprite editor.  Launching the image editor failed with
   a relative path.  Forcing the path to be decoded into an absolute path solved this
   issue.
