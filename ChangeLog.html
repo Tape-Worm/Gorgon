@@ -122,6 +122,10 @@
 	<pre>
 March 9/2008 - Version - Current
 ================
+* Changing file system editor to prompt with the plug-in locator if a plug-in cannot be
+  found.  Current it opens the old file open dialog, this is pointless if it cannot load
+  the plug-in.
+
 * Updated an issue with Vertex/Index buffer creation on cards/chipsets without hardware
   transform and lighting (yeah, I didn't think they existed any more either).  The buffer
   would get created before it should have due to the detection of a non-hardware T&amp;L card.
