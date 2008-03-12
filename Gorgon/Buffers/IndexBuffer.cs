@@ -138,12 +138,12 @@ namespace GorgonLibrary.Internal
 
 			try
 			{
-				if ((BufferUsage & BufferUsages.UseSystemMemory) != 0)
+				if ((BufferUsage & BufferUsages.UseSystemMemory) == BufferUsages.UseSystemMemory)
 					pool = D3D9.Pool.SystemMemory;
 				else
 				{
 					// If we're using a dynamic buffer, then put it into the default memory pool.
-					if ((BufferUsage & BufferUsages.Dynamic) != 0)
+					if ((BufferUsage & BufferUsages.Dynamic) == BufferUsages.Dynamic)
 						pool = D3D9.Pool.Default;
 					else
 						pool = D3D9.Pool.Managed;
@@ -287,15 +287,16 @@ namespace GorgonLibrary.Internal
 
 				_indexType = typeof(uint);
 			}
-			_indexCount = numindices;			
-			_indexLockOffset = -1;
-
-			// Force software processing if no transform/lighting acceleration is present.
+            
+            // Force software processing if no transform/lighting acceleration is present.
 			if (!Gorgon.CurrentDriver.HardwareTransformAndLighting)
 				BufferUsage |= BufferUsages.ForceSoftware;
+        
+            _indexCount = numindices;
+            _indexLockOffset = -1;
 
-			BufferSize = Marshal.SizeOf(_indexType) * _indexCount;
-		}
+            BufferSize = Marshal.SizeOf(_indexType) * _indexCount;
+        }
 
 		/// <summary>
 		/// Function to perform clean up.
