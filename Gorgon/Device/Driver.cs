@@ -224,7 +224,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return (_caps.DeviceCaps & D3D9.DeviceCaps.HWTransformAndLight) == D3D9.DeviceCaps.HWTransformAndLight;
+				return (_caps.DeviceCaps & D3D9.DeviceCaps.HWTransformAndLight) != D3D9.DeviceCaps.HWTransformAndLight;
 			}
 		}
 
