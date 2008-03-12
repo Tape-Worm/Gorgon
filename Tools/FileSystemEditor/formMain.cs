@@ -430,6 +430,9 @@ namespace GorgonLibrary.FileSystems.Tools
 					}
 				}
 
+                if (newFileSystem == null)
+                    return false;
+
 				return true;
 			}
 			catch (Exception ex)
@@ -466,8 +469,11 @@ namespace GorgonLibrary.FileSystems.Tools
 			try
 			{
 				// Do nothing if we fail to open the file system.
-				if (!GetFileSystemFromFile(rootPath, out fileSystem))
-					return;
+                if (!GetFileSystemFromFile(rootPath, out fileSystem))
+                {
+                    UI.ErrorBox(this, "Cannot load '" + rootPath + "'.  There is no file system provider plug-in that can handle this format.");
+                    return;
+                }
 
 				// Fall back to the selection method.
 				if ((fileSystem == null) || (string.IsNullOrEmpty(rootPath)))
@@ -521,7 +527,63 @@ namespace GorgonLibrary.FileSystems.Tools
 			}
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to check whether a file system provider exists for the file system.
+        /// </summary>
+        /// <param name="filePath">Path to the file system.</param>
+        /// <returns>TRUE to continue, FALSE to cancel.</returns>
+        private bool CheckForFileSystemProvider(string filePath)
+        {
+            BinaryReader reader = null;			// Header reader.
+            Stream headerStream = null;			// Stream for reading the header.
+            string headerValue = string.Empty;	// Header value.
+
+            Cursor.Current = Cursors.WaitCursor;
+
+            try
+            {
+                // Open the selector.
+                if (string.IsNullOrEmpty(filePath))
+                    return true;
+
+                if (!File.Exists(filePath))
+                {
+                    UI.ErrorBox(this, "The file system '" + filePath + "' does not exist.");
+                    return true;
+                }
+
+                // Open the file and read the header ID.
+                headerStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                reader = new BinaryReader(headerStream, Encoding.UTF8);
+                headerValue = reader.ReadString();
+
+                // Try to match up the header.
+                foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
+                {
+                    if (string.Compare(provider.ID, headerValue, true) == 0)
+                        return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                UI.ErrorBox(this, "There was an error trying to find file system provider for '" + filePath + "'.", ex);
+                return false;
+            }
+            finally
+            {
+                if (headerStream != null)
+                    headerStream.Dispose();
+                headerStream = null;
+                if (reader != null)
+                    reader.Close();
+                reader = null;
+                Cursor.Current = Cursors.Default;
+            }
+        }
+        
+        /// <summary>
 		/// Function to retrieve the settings.
 		/// </summary>
 		private void GetSettings()
@@ -568,9 +630,7 @@ namespace GorgonLibrary.FileSystems.Tools
 					// Check to see if the file system plug-in exists.
 					if ((fsPath != string.Empty) && (!string.IsNullOrEmpty(fsProvider)))
 					{
-						if ((!Directory.Exists(Path.GetDirectoryName(fsPath))) || (!File.Exists(fsPath)))
-							UI.ErrorBox(this, "The file system plug-in '" + fsPath + "' could not be located.");
-						else
+						if ((Directory.Exists(Path.GetDirectoryName(fsPath))) && (File.Exists(fsPath)))
 							fsPlugIn = FileSystemProvider.Load(fsPath, fsProvider);
 					}
 				}
@@ -640,16 +700,36 @@ namespace GorgonLibrary.FileSystems.Tools
 						if (!string.IsNullOrEmpty(node.InnerText))
 						{
 							isFolder = node.Attributes["IsFolder"];
-
-							if (string.Compare(isFolder.Value, "Yes", true) == 0)
+                                                        
+							if ((isFolder != null) && (string.Compare(isFolder.Value, "Yes", true) == 0))
 							{
-								if (File.Exists(node.InnerText + @"\header.folderSystem")) 
-									OpenFile(node.InnerText + @"\header.folderSystem");
+                                if (File.Exists(node.InnerText + @"\header.folderSystem"))
+                                {
+                                    if (!CheckForFileSystemProvider(node.InnerText + @"\header.folderSystem"))
+                                    {
+                                        if (UI.ConfirmBox(this, "Cannot open '" + node.InnerText + "' because there was no file system provider plug-in that can handle its format.") == ConfirmationResult.No)
+                                            continue;
+                                        else
+                                            menuItemFileSystems.PerformClick();
+                                    }
+
+                                    OpenFile(node.InnerText + @"\header.folderSystem");
+                                }
 							}
 							else
 							{
-								if (File.Exists(node.InnerText))
-									OpenFile(node.InnerText);
+                                if (File.Exists(node.InnerText))
+                                {
+                                    if (!CheckForFileSystemProvider(node.InnerText))
+                                    {
+                                        if (UI.ConfirmBox(this, "Cannot open '" + node.InnerText + "' because there was no file system provider plug-in that can handle its format.\n\nWould you like to try and find the plug-in provider?") == ConfirmationResult.No)
+                                            continue;                                            
+                                        else
+                                            menuItemFileSystems.PerformClick();                                            
+                                    }
+                                    
+                                    OpenFile(node.InnerText);
+                                }
 							}
 						}
 					}
