@@ -28,7 +28,6 @@ using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary;
-using GorgonLibrary.Timing;
 using GorgonLibrary.Graphics;
 using SharpUtilities;
 using SharpUtilities.Mathematics;

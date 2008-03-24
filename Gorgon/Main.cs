@@ -40,7 +40,6 @@ using DX = SlimDX;
 using GorgonLibrary.FileSystems;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Timing;
 using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary
@@ -614,7 +613,7 @@ namespace GorgonLibrary
 		/// Property to return the current frame timing stats.
 		/// </summary>
 		/// <remarks>This is usually used for internal purposes, please use the <see cref="GorgonLibrary.Graphics.FrameEventArgs">FrameEventArgs</see> timing information in the <see cref="M:GorgonLibrary.Idle">Idle event</see> instead.</remarks>
-		/// <value>Returns a <see cref="GorgonLibrary.Timing.TimingData">TimingData</see> object containing information about the most current frame statistics.</value>
+		/// <value>Returns a <see cref="GorgonLibrary.TimingData">TimingData</see> object containing information about the most current frame statistics.</value>
 		public static TimingData FrameStats
 		{
 			get
@@ -838,7 +837,7 @@ namespace GorgonLibrary
 		/// </example>
 		/// <remarks>
 		/// This can be used as a frame rate limiting mechanism.  By stalling for the appropriate number of milliseconds before the frame is rendered the frame rate can be kept at a desired level.
-		/// <para>The static function <see cref="GorgonLibrary.Timing.PreciseTimer.FpsToMilliseconds">PreciseTimer.FpsToMilliseconds</see> can be used to determine how many milliseconds are required for a particular frame rate.</para>
+		/// <para>The static function <see cref="GorgonLibrary.PreciseTimer.FpsToMilliseconds">PreciseTimer.FpsToMilliseconds</see> can be used to determine how many milliseconds are required for a particular frame rate.</para>
 		/// </remarks>
 		/// <value>This number will pause the renderer for the number of milliseconds requested before rendering the frame.  The lowest value that can be set is 0.001.</value>
 		public static double MinimumFrameTime

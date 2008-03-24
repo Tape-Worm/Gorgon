@@ -419,24 +419,19 @@ namespace GorgonLibrary.Graphics
 				Vertices[0].Position.Y = posY1;
 				Vertices[1].Position.X = posX2;
 				Vertices[1].Position.Y = posY1;
-				Vertices[2].Position.X = posX2;
+                Vertices[2].Position.X = posX2;
 				Vertices[2].Position.Y = posY2;
-				Vertices[3].Position.X = posX1;
+                Vertices[3].Position.X = posX1;
 				Vertices[3].Position.Y = posY2;
-			}
+            }
 
 			// Translate.
 			if (FinalPosition.X != 0.0f)
 			{
-				Vertices[0].Position.X += FinalPosition.X;
-				Vertices[1].Position.X += FinalPosition.X;
-				Vertices[2].Position.X += FinalPosition.X;
-				Vertices[3].Position.X += FinalPosition.X;
-			}
-			else
-			{
-				int i = 0;
-				i++;
+                Vertices[0].Position.X += FinalPosition.X;
+                Vertices[1].Position.X += FinalPosition.X;
+                Vertices[2].Position.X += FinalPosition.X;
+                Vertices[3].Position.X += FinalPosition.X;
 			}
 
 			if (FinalPosition.Y != 0.0f)
@@ -446,21 +441,21 @@ namespace GorgonLibrary.Graphics
                 Vertices[2].Position.Y += FinalPosition.Y;
                 Vertices[3].Position.Y += FinalPosition.Y;
 			}
-			else
-			{
-				int i = 0;
-				i++;
-			}
 
 			// Adjust vertex offsets.
+            Vertices[0].Position.Z = -1.0f;
+            Vertices[1].Position.Z = -1.0f;
+            Vertices[2].Position.Z = -1.0f;
+            Vertices[3].Position.Z = -1.0f;
+
 			Vertices[0].Position.X += _vertexOffsets[0].X;
-			Vertices[0].Position.Y += _vertexOffsets[0].Y;
-			Vertices[1].Position.X += _vertexOffsets[1].X;
-			Vertices[1].Position.Y += _vertexOffsets[1].Y;
-			Vertices[2].Position.X += _vertexOffsets[2].X;
-			Vertices[2].Position.Y += _vertexOffsets[2].Y;
-			Vertices[3].Position.X += _vertexOffsets[3].X;
-			Vertices[3].Position.Y += _vertexOffsets[3].Y;
+            Vertices[0].Position.Y += _vertexOffsets[0].Y;
+            Vertices[1].Position.X += _vertexOffsets[1].X;
+            Vertices[1].Position.Y += _vertexOffsets[1].Y;
+            Vertices[2].Position.X += _vertexOffsets[2].X;
+            Vertices[2].Position.Y += _vertexOffsets[2].Y;
+            Vertices[3].Position.X += _vertexOffsets[3].X;
+            Vertices[3].Position.Y += _vertexOffsets[3].Y;
 		}
 
 		/// <summary>
@@ -1193,12 +1188,6 @@ namespace GorgonLibrary.Graphics
 			_imagePosition = imageOffset;
 			// Set sprite colors.
 			Vertices[3].Color = Vertices[2].Color = Vertices[1].Color = Vertices[0].Color = Drawing.Color.White.ToArgb();
-
-			// Set to -1.0 Z.
-			Vertices[0].Position.Z = -0.5f;
-			Vertices[1].Position.Z = -0.5f;
-			Vertices[2].Position.Z = -0.5f;
-			Vertices[3].Position.Z = -0.5f;
 		}
 
 		/// <summary>

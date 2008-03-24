@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Text;
 using SharpUtilities.Native.Win32;
 
-namespace GorgonLibrary.Timing
+namespace GorgonLibrary
 {
 	/// <summary>
 	/// Object for timing data like FPS, # of frames, etc...

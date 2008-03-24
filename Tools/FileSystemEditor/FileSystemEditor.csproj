@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -90,12 +90,6 @@
     <Compile Include="formNewFileSystem.Designer.cs">
       <DependentUpon>formNewFileSystem.cs</DependentUpon>
     </Compile>
-    <Compile Include="formOpenFileSystem.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="formOpenFileSystem.Designer.cs">
-      <DependentUpon>formOpenFileSystem.cs</DependentUpon>
-    </Compile>
     <Compile Include="formPathNameInput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,10 +121,6 @@
     <EmbeddedResource Include="formNewFileSystem.resx">
       <SubType>Designer</SubType>
       <DependentUpon>formNewFileSystem.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="formOpenFileSystem.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>formOpenFileSystem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formPathNameInput.resx">
       <SubType>Designer</SubType>
