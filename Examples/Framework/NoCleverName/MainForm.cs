@@ -32,7 +32,6 @@ using SharpUtilities;
 using SharpUtilities.Mathematics;
 using SharpUtilities.Utility;
 using GorgonLibrary;
-using GorgonLibrary.Timing;
 using GorgonLibrary.Framework;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.InputDevices;

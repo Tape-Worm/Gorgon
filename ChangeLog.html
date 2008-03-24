@@ -120,10 +120,50 @@
 <div>
 	<h1>Gorgon Change Log</h1><hr>
 	<pre>
-March 9/2008 - Version - Current
+March 23/2008 - Version - Current
 ================
+* Corrected the BZipFileSystemOPower example to match the blur effect timing of the 
+  FolderFileSystemOPower example.  It was previously set to dec/increment by 1 every second, 
+  while the folder example was set to dec/increment by 5.
+  
+- Removed the Timing namespace and moved the TimingData and PreciseTimer classes into the 
+  GorgonLibrary namespace.  This may break some code, sorry :(  It was an utterly useless 
+  namespace.
+  
+* Modified the StaticTextSprite to show shadowing on the text.  This set of properties must
+  have been accidentally forgotten.
+  
+* FileSystemEditor was modified to reflect the aforementioned changes.
+  
++ Added a Description property to the FileSystemProvider to return a description of the provider
+  plug-in.
+  
+* Modified the FileSystemProvider Name property to use the name of the plug-in and not the 
+  description.  This was an oversight on my part.  Consequently, the FileSystemProviderCache
+  object now takes the name of the plug-in as the provider key name:
+  (i.e. FileSystemProviderCache.Providers["Gorgon.BZip2FileSystem"])  This could possibly break
+  some code if you were using the name of the provider.
+  
+* Fixed an issue with the file system editor.  When loading a file system from the command line
+  or via file association and the plug-in for that file could not be loaded it would just error
+  out.  Now it will ask the user to load the plug-in first and then error out only if it cannot
+  get the proper provider after that.
+  
+* Fixed an issue in the GetSettings() function of the file system editor.  When a file system
+  provider plug-in failed to load the function would cease to read the rest of the configuration.
+  This caused portions of the program to reset to its defaults.  Now if the plug-in cannot load it
+  will display an error and then continue.
+  
++ Added a new object to allow plug-in developers access to the internal Direct 3D objects used by
+  Gorgon.  Developers need to be very careful with this as it can cause issues if used incorrectly.
+  Since this is only meant for plug-in developers you can only access it from your PlugInEntryPoint
+  super class as a protected member.
+  
+* Changed the Converter class to be public.  This was done to help facilitate plug-in development
+  and to allow raw access to Direct 3D.
+
 * Changing file system editor to prompt with the plug-in locator if a plug-in cannot be
-  found.  Current it opens the old file open dialog, this is pointless if it cannot load
+  found.  Currently it opens the old file open dialog, this is pointless if it cannot load
   the plug-in.
 
 * Updated an issue with Vertex/Index buffer creation on cards/chipsets without hardware

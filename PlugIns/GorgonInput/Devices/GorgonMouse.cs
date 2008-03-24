@@ -29,7 +29,6 @@ using Forms = System.Windows.Forms;
 using SharpUtilities.Native.Win32;
 using SharpUtilities.Mathematics;
 using GorgonLibrary;
-using GorgonLibrary.Timing;
 
 namespace GorgonLibrary.InputDevices
 {

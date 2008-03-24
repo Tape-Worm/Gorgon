@@ -34,7 +34,6 @@ using SharpUtilities.Mathematics;
 using Drawing = System.Drawing;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Timing;
 using GorgonLibrary.FileSystems;
 using GorgonLibrary.InputDevices;
 using GorgonLibrary.PlugIns;

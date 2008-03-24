@@ -817,10 +817,10 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Set the Z position, although we don't really need it, it may fuck something up if we don't.
-			Vertices[charIndex].Position.Z = -0.5f;
-			Vertices[charIndex+1].Position.Z = -0.5f;
-			Vertices[charIndex+2].Position.Z = -0.5f;
-			Vertices[charIndex+3].Position.Z = -0.5f;
+			Vertices[charIndex].Position.Z = -1.0f;
+			Vertices[charIndex+1].Position.Z = -1.0f;
+			Vertices[charIndex+2].Position.Z = -1.0f;
+			Vertices[charIndex+3].Position.Z = -1.0f;
 
 			// Set rotation.
 			if (FinalRotation != 0.0f)

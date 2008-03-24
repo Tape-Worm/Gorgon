@@ -22,7 +22,6 @@
 #endregion
 
 using System;
-using GorgonLibrary.Timing;
 
 namespace GorgonLibrary.Graphics
 {

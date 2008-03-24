@@ -79,6 +79,82 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Property to show a shadow under the text.
+        /// </summary>
+        public bool Shadowed
+        {
+            get
+            {
+                return _textSprite.Shadowed;
+            }
+            set
+            {
+                if (_textSprite.Shadowed != value)
+                {
+                    _textSprite.Shadowed = value;
+                    _initialized = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the color of the shadow.
+        /// </summary>
+        public Drawing.Color ShadowColor
+        {
+            get
+            {
+                return _textSprite.ShadowColor;
+            }
+            set
+            {
+                if (_textSprite.ShadowColor != value)
+                {
+                    _textSprite.ShadowColor = value;
+                    _initialized = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the direction of the shadow.
+        /// </summary>
+        public FontShadowDirection ShadowDirection
+        {
+            get
+            {
+                return _textSprite.ShadowDirection;
+            }
+            set
+            {
+                if (_textSprite.ShadowDirection != value)
+                {
+                    _textSprite.ShadowDirection = value;
+                    _initialized = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the offset between the shadow and the text.
+        /// </summary>
+        public Vector2D ShadowOffset
+        {
+            get
+            {
+                return _textSprite.ShadowOffset;
+            }
+            set
+            {
+                if (_textSprite.ShadowOffset != value)
+                {
+                    _textSprite.ShadowOffset = value;
+                    _initialized = false;
+                }
+            }
+        }
+
 		/// <summary>
 		/// Property to set or return whether this object will translate the CR/LF characters into a CR.
 		/// </summary>
