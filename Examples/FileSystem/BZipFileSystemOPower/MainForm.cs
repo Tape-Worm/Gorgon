@@ -96,9 +96,9 @@ namespace GorgonLibrary.Example
 				_mother2.Opacity = (byte)(34.0f * _blurAmount);
 
 			if (!_blurBounce)
-				_blurAmount += 1.0f * e.FrameDeltaTime;
-			else
-				_blurAmount -= 1.0f * e.FrameDeltaTime;
+                _blurAmount += 5.0f * e.FrameDeltaTime;
+            else
+                _blurAmount -= 5.0f * e.FrameDeltaTime;
 
 			if ((_blurAmount >= 7.5f) || (_blurAmount <= 0.5f))
 				_blurBounce = !_blurBounce;
@@ -141,7 +141,7 @@ namespace GorgonLibrary.Example
 				FileSystemProvider.Load(@"..\..\..\..\PlugIns\bin64\Release\GorgonBZip2FileSystem.dll");
 
 			// Create the bzip file system.
-			_bzipFS = FileSystem.Create("SomeBZipFileSystem", FileSystemProviderCache.Providers["SharpZip.BZip2 File System"]);
+            _bzipFS = FileSystem.Create("SomeBZipFileSystem", FileSystemProviderCache.Providers["Gorgon.BZip2FileSystem"]);
 
 			// Mount the file system.
 			_bzipFS.Root = @"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack";

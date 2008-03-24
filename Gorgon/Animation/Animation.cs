@@ -28,7 +28,6 @@ using System.Drawing;
 using SharpUtilities;
 using SharpUtilities.Mathematics;
 using GorgonLibrary.Internal;
-using GorgonLibrary.Timing;
 using GorgonLibrary.Serialization;
 
 namespace GorgonLibrary.Graphics

@@ -85,10 +85,10 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="plugIn">Plug-in used by the file system.</param>
 		internal void Add(FileSystemPlugIn plugIn)
 		{
-			if (Contains(plugIn.FileSystemInfo.TypeName))
-				throw new DuplicateObjectException(plugIn.FileSystemInfo.TypeName);
+			if (Contains(plugIn.Name))
+				throw new DuplicateObjectException(plugIn.Name);
 
-			AddItem(plugIn.FileSystemInfo.TypeName, new FileSystemProvider(plugIn));
+			AddItem(plugIn.Name, new FileSystemProvider(plugIn));
 		}
 
 		/// <summary>

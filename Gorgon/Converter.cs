@@ -32,8 +32,8 @@ namespace GorgonLibrary.Internal
 	/// <summary>
 	/// Class used to perform conversion between various components and Gorgon.
 	/// </summary>
-	/// <remarks>This class is used internally by Gorgon.  Do not use.</remarks>
-	internal static class Converter
+	/// <remarks>This class is used to convert between Direct 3D data types and Gorgon's data types.</remarks>
+	public static class Converter
 	{
 		#region Methods.
 		/// <summary>

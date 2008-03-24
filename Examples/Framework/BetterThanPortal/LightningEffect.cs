@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using GorgonLibrary;
-using GorgonLibrary.Graphics;using GorgonLibrary.Timing;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Example
 {
