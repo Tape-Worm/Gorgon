@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using SharpUtilities;
 using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.FileSystems
@@ -33,7 +34,7 @@ namespace GorgonLibrary.FileSystems
 	/// Object containing file system type information.
 	/// </summary>
 	public class FileSystemProvider
-		: IDisposable
+		: NamedObject, IDisposable
 	{
 		#region Variables.
 		private FileSystemPlugIn _fileSystemPlugIn;			// File system plug-in.
@@ -125,18 +126,18 @@ namespace GorgonLibrary.FileSystems
 			}
 		}
 
-		/// <summary>
-		/// Property to return the file system provider name.
-		/// </summary>
-		public string Name
-		{
-			get
-			{
-				return _info.TypeName;
-			}
-		}
+        /// <summary>
+        /// Property to return the description of the file system.
+        /// </summary>
+        public string Description
+        {
+            get
+            {
+                return _info.Description;
+            }
+        }
 
-		/// <summary>
+        /// <summary>
 		/// Property to return whether this provider uses a packed file or loose files.
 		/// </summary>
 		public bool IsPackedFile
@@ -212,7 +213,6 @@ namespace GorgonLibrary.FileSystems
 		public static FileSystemProvider Load(string providerPlugInPath, string plugInName)
 		{
 			FileSystemPlugIn plugIn = null;					// File system plug-in.
-			FileSystemInfoAttribute info = null;			// File system information.
 
 			if (string.IsNullOrEmpty(providerPlugInPath))
 				throw new ArgumentNullException("providerPlugInPath");
@@ -226,11 +226,10 @@ namespace GorgonLibrary.FileSystems
 				if ((plugIn == null) || (plugIn.PlugInType != PlugInType.FileSystem))
 					throw new ApplicationException("The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
 
-				info = plugIn.FileSystemInfo;
-				if (!FileSystemProviderCache.Providers.Contains(info.TypeName))
+				if (!FileSystemProviderCache.Providers.Contains(plugInName))
 					FileSystemProviderCache.Providers.Add(plugIn);
 
-				return FileSystemProviderCache.Providers[info.TypeName];
+				return FileSystemProviderCache.Providers[plugInName];
 			}
 			catch (Exception ex)
 			{
@@ -246,7 +245,6 @@ namespace GorgonLibrary.FileSystems
 		public static void Load(string providerPlugInPath)
 		{
 			FileSystemPlugIn plugIn = null;					// File system plug-in.
-			FileSystemInfoAttribute info = null;			// File system information.
 
 			if (string.IsNullOrEmpty(providerPlugInPath))
 				throw new ArgumentNullException("providerPlugInPath");
@@ -265,8 +263,7 @@ namespace GorgonLibrary.FileSystems
 						if (plugIn.PlugInType != PlugInType.FileSystem)
 							throw new ApplicationException("The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
 
-						info = plugIn.FileSystemInfo;
-						if (!FileSystemProviderCache.Providers.Contains(info.TypeName))
+						if (!FileSystemProviderCache.Providers.Contains(plugIn.Name))
 							FileSystemProviderCache.Providers.Add(plugIn);
 					}
 				}
@@ -312,6 +309,7 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="plugin">Plug-in to use for the file system.</param>
 		internal FileSystemProvider(FileSystemPlugIn plugin)
+            : base(plugin.Name)
 		{
 			_info = plugin.FileSystemInfo;
 			_fileSystemPlugIn = plugin;
@@ -323,6 +321,7 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="fileSystemType">File system type.</param>
 		internal FileSystemProvider(Type fileSystemType)
+            : base(fileSystemType.Name)
 		{
 			object[] attributes = null;		// File system type attributes.
 

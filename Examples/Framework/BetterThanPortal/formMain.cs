@@ -31,7 +31,6 @@ using System.Windows.Forms;
 using SharpUtilities.Mathematics;
 using GorgonLibrary;
 using GorgonLibrary.InputDevices;
-using GorgonLibrary.Timing;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Framework;
 

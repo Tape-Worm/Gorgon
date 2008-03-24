@@ -27,7 +27,7 @@ using SharpUtilities;
 using SharpUtilities.Utility;
 using SharpUtilities.Native.Win32;
 
-namespace GorgonLibrary.Timing
+namespace GorgonLibrary
 {
 	/// <summary>
 	/// Object to handle timing operations.

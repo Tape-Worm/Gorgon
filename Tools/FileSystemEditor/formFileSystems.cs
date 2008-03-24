@@ -65,7 +65,7 @@ namespace GorgonLibrary.FileSystems.Tools
 				// Only add plug-ins.
 				if (fsType.IsPlugIn)
 				{
-					newItem = new ListViewItem(fsType.Name);
+					newItem = new ListViewItem(fsType.Description + " (" + fsType.Name + ")");
 					newItem.SubItems.Add(fsType.PlugInPath);
 					newItem.Name = fsType.Name;
 					listPlugIns.Items.Add(newItem);
@@ -121,15 +121,15 @@ namespace GorgonLibrary.FileSystems.Tools
 					// Begin closing any associated file systems.
 					foreach (formFileSystemWindow window in owner.MdiChildren)
 					{
-						if (window.FileSystem.Provider.Name.ToLower() == item.Text.ToLower())
+                        if (string.Compare(window.FileSystem.Provider.Name, item.Name, true) == 0)
 							window.Close();
 					}
 
 					// Reset the last used if we've closed this plug-in.
-					if (owner.LastUsed == FileSystemProviderCache.Providers[item.Text])
+					if (owner.LastUsed == FileSystemProviderCache.Providers[item.Name])
 						owner.LastUsed = FileSystemProviderCache.Providers[typeof(FolderFileSystem)];
 
-					FileSystemProviderCache.Providers[item.Text].Dispose();
+					FileSystemProviderCache.Providers[item.Name].Dispose();
 				}
 				
 				FillList();

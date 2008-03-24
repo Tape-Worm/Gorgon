@@ -418,8 +418,11 @@ namespace GorgonLibrary.FileSystems.Tools
 							fsName = Path.GetFileNameWithoutExtension(filePath);
 
 						// Do nothing if this file system is loaded already.
-						if (FileSystemCache.FileSystems.Contains(fsName))
-							return false;
+                        if (FileSystemCache.FileSystems.Contains(fsName))
+                        {
+                            newFileSystem = null;
+                            return true;
+                        }
 
 						newFileSystem = FileSystem.Create(fsName, provider);
 						if (!provider.IsPackedFile)
@@ -462,7 +465,6 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// <param name="rootPath">Path to the root of the file system.</param>
 		private void OpenFile(string rootPath)
 		{
-			formOpenFileSystem formOpen = null;		// Open file system form.			
 			formFileSystemWindow newFS = null;		// File system window.
 			FileSystem fileSystem = null;			// File system to load.
 
@@ -476,16 +478,8 @@ namespace GorgonLibrary.FileSystems.Tools
                 }
 
 				// Fall back to the selection method.
-				if ((fileSystem == null) || (string.IsNullOrEmpty(rootPath)))
-				{
-					formOpen = new formOpenFileSystem();
-					formOpen.FileSystemRootPath = rootPath;
-
-					if (formOpen.ShowDialog(this) == DialogResult.OK)
-						fileSystem = formOpen.ActiveFileSystemType;
-					else
-						return;
-				}
+                if ((fileSystem == null) || (string.IsNullOrEmpty(rootPath)))
+                    return;
 
 				// Add a new file system window containing the loaded file system.
 				newFS = new formFileSystemWindow();
@@ -506,9 +500,6 @@ namespace GorgonLibrary.FileSystems.Tools
 			}
 			finally
 			{
-				if (formOpen != null)
-					formOpen.Dispose();
-				formOpen = null;
 				ValidateForm();
 			}
 		}
@@ -544,12 +535,12 @@ namespace GorgonLibrary.FileSystems.Tools
             {
                 // Open the selector.
                 if (string.IsNullOrEmpty(filePath))
-                    return true;
+                    return false;
 
                 if (!File.Exists(filePath))
                 {
                     UI.ErrorBox(this, "The file system '" + filePath + "' does not exist.");
-                    return true;
+                    return false;
                 }
 
                 // Open the file and read the header ID.
@@ -630,8 +621,15 @@ namespace GorgonLibrary.FileSystems.Tools
 					// Check to see if the file system plug-in exists.
 					if ((fsPath != string.Empty) && (!string.IsNullOrEmpty(fsProvider)))
 					{
-						if ((Directory.Exists(Path.GetDirectoryName(fsPath))) && (File.Exists(fsPath)))
-							fsPlugIn = FileSystemProvider.Load(fsPath, fsProvider);
+                        try
+                        {
+                            if ((Directory.Exists(Path.GetDirectoryName(fsPath))) && (File.Exists(fsPath)))
+                                fsPlugIn = FileSystemProvider.Load(fsPath, fsProvider);
+                        }
+                        catch (Exception ex)
+                        {
+                            UI.ErrorBox(this, "There was an error attempting to load the file system provider '" + fsProvider + "'.", ex);
+                        }
 					}
 				}
 
@@ -707,7 +705,7 @@ namespace GorgonLibrary.FileSystems.Tools
                                 {
                                     if (!CheckForFileSystemProvider(node.InnerText + @"\header.folderSystem"))
                                     {
-                                        if (UI.ConfirmBox(this, "Cannot open '" + node.InnerText + "' because there was no file system provider plug-in that can handle its format.") == ConfirmationResult.No)
+                                        if (UI.ConfirmBox(this, "Cannot open '" + node.InnerText + "' because there was no file system provider plug-in that can handle its format.\n\nWould you like to try and find the plug-in provider?") == ConfirmationResult.No)
                                             continue;
                                         else
                                             menuItemFileSystems.PerformClick();
@@ -813,8 +811,19 @@ namespace GorgonLibrary.FileSystems.Tools
 					// Open several file systems if we've asked for it.
 					for (int i = 1; i < commandArgs.Length; i++)
 					{
-						if (!string.IsNullOrEmpty(commandArgs[i]))
-							OpenFile(commandArgs[i]);
+                        if (!string.IsNullOrEmpty(commandArgs[i]))
+                        {
+                            if (!CheckForFileSystemProvider(commandArgs[i]))
+                            {
+                                if (UI.ConfirmBox("The file '" + commandArgs[i] + "' could not be opened because a file system provider plug-in was not found for it.\n\nWould you like to try and find it?") == ConfirmationResult.Yes)
+                                {
+                                    menuItemFileSystems.PerformClick();
+                                    OpenFile(commandArgs[i]);
+                                }
+                            }
+                            else
+                                OpenFile(commandArgs[i]);
+                        }
 					}
 				}
 			}

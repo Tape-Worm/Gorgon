@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SharpUtilities;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.PlugIns
 {
@@ -38,6 +39,7 @@ namespace GorgonLibrary.PlugIns
 		#region Variables.
 		private PlugInType _type = PlugInType.UserDefined;		// Plug-in type.
 		private string _plugInPath = string.Empty;				// Plug-in path.
+        private D3DObjects _d3dobjects = null;                  // Direct 3D object interface.
 		#endregion
 
 		#region Properties.
@@ -71,6 +73,24 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="parameters">Parameters to pass.</param>
 		/// <returns>The new object.</returns>
 		protected abstract internal object CreateImplementation(object[] parameters);
+
+        /// <summary>
+        /// Function to return an interface to Gorgon's Direct 3D objects.
+        /// </summary>
+        /// <returns>An instance of the D3D objects interface.</returns>
+        protected D3DObjects GetD3DObjects()
+        {
+            if (!Gorgon.IsInitialized)
+                return null;
+
+            if (Gorgon.Screen == null)
+                return null;
+
+            if (_d3dobjects == null)
+                _d3dobjects = new D3DObjects();
+
+            return _d3dobjects;
+        }
 		#endregion
 
 		#region Constructor/Destructor.

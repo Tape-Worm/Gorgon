@@ -32,7 +32,6 @@ using SharpUtilities.Mathematics;
 using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Timing;
 
 namespace GorgonLibrary.Example
 {

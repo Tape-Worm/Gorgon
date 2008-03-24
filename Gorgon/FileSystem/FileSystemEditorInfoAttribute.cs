@@ -35,7 +35,7 @@ namespace GorgonLibrary.FileSystems
 		: Attribute
 	{
 		#region Variables.
-		private string _typeName = string.Empty;			// File system type name.
+		private string _description = string.Empty;			// File system description.
 		private bool _isCompressed = false;					// Flag to indicate whether a file system is compressed or not.
 		private bool _isPackFile = false;					// Flag to indicate whether a file system is a pack file or a folder system.
         private string _ID = string.Empty;                  // ID for the file system type.
@@ -55,13 +55,13 @@ namespace GorgonLibrary.FileSystems
         }
 
 		/// <summary>
-		/// Property to return the name of the file system type.
+		/// Property to return the name of the file system description.
 		/// </summary>
-		public string TypeName
+		public string Description
 		{
 			get
 			{
-				return _typeName;
+				return _description;
 			}
 		}
 
@@ -92,19 +92,19 @@ namespace GorgonLibrary.FileSystems
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="typename">Name of the filesystem type.</param>
+		/// <param name="description">Description of the filesystem type.</param>
 		/// <param name="iscompressed">TRUE if the file system compresses its data, FALSE if not.</param>
 		/// <param name="ispackfile">TRUE if the file system is a pack file, FALSE if folder based.</param>
         /// <param name="fileSystemID">ID of the file system.</param>
-		public FileSystemInfoAttribute(string typename, bool iscompressed, bool ispackfile, string fileSystemID)
+		public FileSystemInfoAttribute(string description, bool iscompressed, bool ispackfile, string fileSystemID)
 		{
-            if (string.IsNullOrEmpty(typename))
-                throw new ArgumentNullException("typename");
+            if (string.IsNullOrEmpty(description))
+                throw new ArgumentNullException("description");
 
             if (string.IsNullOrEmpty(fileSystemID))
                 throw new ArgumentNullException("fileSystemID");
 
-			_typeName = typename;
+			_description = description;
 			_isCompressed = iscompressed;
 			_isPackFile = ispackfile;
             _ID = fileSystemID;
