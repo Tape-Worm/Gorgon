@@ -85,5 +85,5 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.0.3004.43003")]
-[assembly: AssemblyFileVersion("1.0.3004.43003")]
+[assembly: AssemblyVersion("1.0.3008.00001")]
+[assembly: AssemblyFileVersion("1.0.3008.00001")]
