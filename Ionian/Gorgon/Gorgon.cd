@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="GorgonLibrary.Gorgon" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>BAFEAJFEBCCsA3RmBBABQaDTUEgEgBwBKBSkRQSBARo=</HashCode>
+      <FileName>Main.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.GorgonException" Collapsed="true">
+    <Position X="12.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.NotInitializedException" Collapsed="true">
+    <Position X="11.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.CannotEnumerateException" Collapsed="true">
+    <Position X="18.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.CannotCreateException">
+    <Position X="2.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.CannotUpdateException" Collapsed="true">
+    <Position X="7" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.CannotLoadException" Collapsed="true">
+    <Position X="13.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.CannotSaveException" Collapsed="true">
+    <Position X="20.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.FormatNotSupportedException" Collapsed="true">
+    <Position X="4.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.NotLockedException" Collapsed="true">
+    <Position X="9.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.CannotLockException" Collapsed="true">
+    <Position X="16" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GorgonLibrary.CannotReadException" Collapsed="true">
+    <Position X="22.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="GorgonLibrary.NotImplementedTypes" Collapsed="true">
+    <Position X="25.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>GorgonException.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Arial" Size="8.25" />
+</ClassDiagram>
