@@ -2002,6 +2002,7 @@ namespace GorgonLibrary.FileSystems.Tools
 							// Make the image square.
 							pictureImage.Height = pictureImage.Width;
 						}
+                        pictureImage.Visible = true;
 						break;
 				}
 				return;
