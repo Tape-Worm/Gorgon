@@ -626,7 +626,7 @@ namespace GorgonLibrary.FileSystems
 						// Get file date.
 						fileProperty = fileNode.SelectSingleNode("FileDate");
 						if (fileProperty != null)
-							fileDate = Convert.ToDateTime(fileProperty.InnerText);
+							fileDate = Convert.ToDateTime(fileProperty.InnerText, System.Globalization.DateTimeFormatInfo.InvariantInfo);
 
 						// Get encrypted flag.
 						fileProperty = fileNode.SelectSingleNode("Encrypted");
