@@ -36,7 +36,7 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
     /// Object representing a standard disk based filesystem.
     /// </summary>
-	[FileSystemInfo("Folder File System", false, false, "GORPACK1.GorgonFolderSystem")]
+	[FileSystemInfo("Folder File System", false, false, false, "GORPACK1.GorgonFolderSystem")]
     public class FolderFileSystem
         : FileSystem
 	{

@@ -159,6 +159,17 @@ namespace GorgonLibrary.FileSystems
 			}
 		}
 
+        /// <summary>
+        /// Property to return whether this provider uses encryption or not.
+        /// </summary>
+        public bool IsEncrypted
+        {
+            get
+            {
+                return _info.IsEncrypted;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the ID of the file system.
 		/// </summary>

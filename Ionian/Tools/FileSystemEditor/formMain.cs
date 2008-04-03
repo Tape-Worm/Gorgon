@@ -390,63 +390,83 @@ namespace GorgonLibrary.FileSystems.Tools
 
 			Cursor.Current = Cursors.WaitCursor;
 			newFileSystem = null;
-			try
-			{
-				// Open the selector.
-				if (string.IsNullOrEmpty(filePath))
-					return true;
+            try
+            {
+                // Open the selector.
+                if (string.IsNullOrEmpty(filePath))
+                    return true;
 
-				if (!File.Exists(filePath))
-				{
-					UI.ErrorBox(this, "The file system '" + filePath + "' does not exist.");					
-					return false;
-				}
+                if (!File.Exists(filePath))
+                {
+                    UI.ErrorBox(this, "The file system '" + filePath + "' does not exist.");
+                    return false;
+                }
 
-				// Open the file and read the header ID.
-				headerStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-				reader = new BinaryReader(headerStream, Encoding.UTF8);
-				headerValue = reader.ReadString();
+                // Open the file and read the header ID.
+                headerStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                reader = new BinaryReader(headerStream, Encoding.UTF8);
+                headerValue = reader.ReadString();
 
-				// Try to match up the header.
-				foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
-				{
-					if (string.Compare(provider.ID, headerValue, true) == 0)
-					{
-						if (!provider.IsPackedFile)
-							fsName = Path.GetDirectoryName(filePath);
-						else
-							fsName = Path.GetFileNameWithoutExtension(filePath);
+                // Try to match up the header.
+                foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
+                {
+                    if (string.Compare(provider.ID, headerValue, true) == 0)
+                    {
+                        if (!provider.IsPackedFile)
+                            fsName = Path.GetDirectoryName(filePath);
+                        else
+                            fsName = Path.GetFileNameWithoutExtension(filePath);
 
-						// Do nothing if this file system is loaded already.
+                        // Do nothing if this file system is loaded already.
                         if (FileSystemCache.FileSystems.Contains(fsName))
                         {
                             newFileSystem = null;
                             return true;
                         }
 
-						newFileSystem = FileSystem.Create(fsName, provider);
-						if (!provider.IsPackedFile)
-							newFileSystem.Root = Path.GetDirectoryName(filePath);
-						else
-							newFileSystem.Root = filePath;
-						break;
-					}
-				}
+                        newFileSystem = FileSystem.Create(fsName, provider);
+                        // If the file system provider is encrypted, then we need access.
+                        if (provider.IsEncrypted)
+                        {
+                            if (newFileSystem.GetAuthorization(this) == 0)
+                            {
+                                UI.ErrorBox(this, "This file system needs authorization to open.");
+                                newFileSystem.Dispose();
+                                newFileSystem = null;
+                                return true;
+                            }
+                        }
+                        if (!provider.IsPackedFile)
+                            newFileSystem.Root = Path.GetDirectoryName(filePath);
+                        else
+                            newFileSystem.Root = filePath;
+                        break;
+                    }
+                }
 
                 if (newFileSystem == null)
                     return false;
 
-				return true;
-			}
-			catch (Exception ex)
-			{
-				if (newFileSystem != null)
-					newFileSystem.Dispose();
-				newFileSystem = null;
+                return true;
+            }
+            catch (FileSystemAccessDeniedException)
+            {
+                if (newFileSystem != null)
+                    newFileSystem.Dispose();
+                newFileSystem = null;
 
-				UI.ErrorBox(this, "There was an error trying to open the file system '" + filePath + "'.", ex);
-				return false;
-			}
+                UI.ErrorBox(this, "Access to the filesystem '" + filePath + "' is denied.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (newFileSystem != null)
+                    newFileSystem.Dispose();
+                newFileSystem = null;
+
+                UI.ErrorBox(this, "There was an error trying to open the file system '" + filePath + "'.", ex);
+                return false;
+            }
 			finally
 			{
 				if (headerStream != null)

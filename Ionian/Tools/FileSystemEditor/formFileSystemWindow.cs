@@ -275,6 +275,11 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// </summary>
 		private void UpdateCaption()
 		{
+            if ((_fileSystem != null) && (_fileSystem.Provider.IsEncrypted))
+                buttonChangeAuth.Enabled = true;
+            else
+                buttonChangeAuth.Enabled = false;
+
 			if ((_fileSystem != null) && (_rootPath != string.Empty))
 				Text = "File System - " + _rootPath + " [" + _fileSystem.Provider.Name + "]";
 			else
@@ -516,10 +521,19 @@ namespace GorgonLibrary.FileSystems.Tools
 				item.SubItems.Add(file.Extension);
 				item.SubItems.Add(file.DateTime.ToString());
 				item.SubItems.Add(Utilities.FormatByteUnits((ulong)file.Size));
+                item.ForeColor = Color.Black;
+                if (_fileSystem.Provider.IsEncrypted)
+                {
+                    item.ForeColor = Color.Green;
+                    if (!viewFiles.Columns.ContainsKey("headerEncrypted"))
+                        viewFiles.Columns.Add("headerEncrypted", "Encrypted?");
+                    item.SubItems.Add(file.IsEncrypted.ToString());
+                }
 
 				// Add compression information.
 				if (_fileSystem.Provider.IsCompressed)
 				{
+                    item.ForeColor = Color.Blue;
 					if (!viewFiles.Columns.ContainsKey("headerCompressed"))
 						viewFiles.Columns.Add("headerCompressed", "Compressed?");
 					if (!viewFiles.Columns.ContainsKey("headerCompressedSize"))
@@ -1893,8 +1907,8 @@ namespace GorgonLibrary.FileSystems.Tools
 				ValidatePopup();
 			}
 		}
-
-		/// <summary>
+       
+        /// <summary>
 		/// Function to retrieve file properties.
 		/// </summary>
 		private void GetFileProperties()
@@ -2002,6 +2016,7 @@ namespace GorgonLibrary.FileSystems.Tools
 							// Make the image square.
 							pictureImage.Height = pictureImage.Width;
 						}
+                        pictureImage.Visible = true;
 						break;
 				}
 				return;
@@ -2031,7 +2046,7 @@ namespace GorgonLibrary.FileSystems.Tools
 				if (compressedFiles)
 					properties += "Some/all files are compressed.\r\n";
 				if (encryptedFiles)
-					properties += "Some/all files are encrypted.\r\n";
+					properties += "Files are encrypted.\r\n";
 
 				// Update properties box.
 				if (properties != string.Empty)
@@ -2057,7 +2072,26 @@ namespace GorgonLibrary.FileSystems.Tools
 			}
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Handles the Click event of the buttonChangeAuth control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void buttonChangeAuth_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_fileSystem.CreateAuthorization(this) != 0)
+                    _isChanged = true;
+                UpdateCaption();
+            }
+            catch (Exception ex)
+            {
+                UI.ErrorBox(this, "Error trying to alter the authentication.", ex);
+            }
+        }
+        
+        /// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
@@ -2143,12 +2177,29 @@ namespace GorgonLibrary.FileSystems.Tools
 				_parentWindow = null;
 		}
 
+        /// <summary>
+        /// Function to change the authentication.
+        /// </summary>
+        public void ChangeAuthentication()
+        {
+            buttonChangeAuth.PerformClick();
+        }
+
 		/// <summary>
 		/// Function to save the file system.
 		/// </summary>
 		/// <param name="filePath">Path or file to save the file system into.</param>
 		public void Save(string filePath)
 		{
+            if ((_fileSystem.Provider.IsEncrypted) && (_fileSystem.AuthenticationData == null))
+            {
+                if (_fileSystem.CreateAuthorization(this) == 0)
+                {
+                    UI.ErrorBox(this, "The file system is encrypted and requires authorization.  Please provide credentials.");
+                    return;
+                }
+            }
+
 			// Save to the path.
 			_fileSystem.Save(filePath);
 

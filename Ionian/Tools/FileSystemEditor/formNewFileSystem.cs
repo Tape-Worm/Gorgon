@@ -173,6 +173,16 @@ namespace GorgonLibrary.FileSystems.Tools
 				// Create the file system object.
 				_newFS = FileSystem.Create(_newName, fsInfo);
 
+                if (_newFS.Provider.IsEncrypted)
+                {
+                    if (_newFS.CreateAuthorization(this) == 0)
+                    {
+                        UI.ErrorBox(this, "This file system is encrypted and requires authorization parameters.");
+                        _newFS.Dispose();
+                        return;
+                    }
+                }
+
 				// Save the last used file system.
 				((formMain)Owner).LastUsed = _lastUsed;
 

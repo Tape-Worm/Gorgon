@@ -268,8 +268,8 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="data">Data for the file.</param>
 		/// <param name="originalSize">Original file size.</param>
 		/// <param name="compressedSize">Compressed size if compressed.</param>
-		/// <param name="encrypted">TRUE if encrypted, FALSE if not.</param>
-		/// <param name="dateTime">File create/update date and time.</param>
+        /// <param name="dateTime">File create/update date and time.</param>
+        /// <param name="encrypted">TRUE if encrypted, FALSE if not.</param>
 		internal FileSystemFile(FileSystemPath owner, string name, byte[] data, int originalSize, int compressedSize, DateTime dateTime, bool encrypted)
 			: base(name)
 		{

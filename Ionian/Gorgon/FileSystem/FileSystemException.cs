@@ -609,4 +609,32 @@ namespace GorgonLibrary.FileSystems
 		}
 		#endregion
 	}
+
+    /// <summary>
+    /// File system access denied exception.
+    /// </summary>
+    public class FileSystemAccessDeniedException
+        : GorgonException
+    {
+        #region Constructor.
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="fileSystemName">Name of the file system that previously existed.</param>
+        /// <param name="ex">Source exception.</param>
+        public FileSystemAccessDeniedException(string fileSystemName, Exception ex)
+            : base("Access denied to '" + fileSystemName + "'!", ex)
+        {
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="fileSystemName">Name of the file system that previously existed.</param>
+        public FileSystemAccessDeniedException(string fileSystemName)
+            : this(fileSystemName, null)
+        {
+        }
+        #endregion
+    }
 }
