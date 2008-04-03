@@ -1251,6 +1251,8 @@ namespace GorgonLibrary
 			// Initialize.
 #if DEBUG
             DX.Configuration.EnableObjectTracking = true;
+#else
+            DX.Configuration.EnableObjectTracking = false;
 #endif
 			D3D9.Direct3D.Initialize();
 			D3D9.Direct3D.CheckWhql = checkDriverWHQL;
