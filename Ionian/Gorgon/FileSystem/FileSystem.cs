@@ -65,9 +65,29 @@ namespace GorgonLibrary.FileSystems
 		private XmlDocument _fileIndex = null;								// XML file containing the directory and file list.
 		private FileSystemPath _rootPath = new FileSystemPath(null, @"\");	// File system root path object.
 		private string _root = string.Empty;								// Root file path for the physical file system.
+        private IAuthData _authData = null;                                 // Authentication data.
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the authentication data for the file system.
+        /// </summary>
+        public IAuthData AuthenticationData
+        {
+            get
+            {
+                return _authData;
+            }
+            set
+            {
+                if (this.Provider.IsEncrypted)
+                {
+                    _authData = value;
+                    InitializeSecurity();
+                }
+            }
+        }
+
 		/// <summary>
 		/// Property to return the XML document containing the file index list.
 		/// </summary>
@@ -228,7 +248,7 @@ namespace GorgonLibrary.FileSystems
 
 				// Add the file date and time.
 				propertyElement = _fileIndex.CreateElement("FileDate");
-				propertyElement.InnerText = file.DateTime.ToString(System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat);
+				propertyElement.InnerText = file.DateTime.ToString();
 				fileElement.AppendChild(propertyElement);
 
 				// Add the encrypted flag.
@@ -260,6 +280,14 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="filePath">Root of the file system on the disk.</param>
 		/// <param name="file">File to save.</param>
 		protected abstract void SaveFileData(string filePath, FileSystemFile file);
+
+        /// <summary>
+        /// Function to initialize any security for the encrypted data.
+        /// </summary>
+        protected virtual void InitializeSecurity()
+        {
+            // Initialize our security for an encrypted file system.
+        }
 
 		/// <summary>
 		/// Function to fire the file read event.
@@ -403,6 +431,28 @@ namespace GorgonLibrary.FileSystems
 		protected virtual void SaveInitialize(string filePath)
 		{
 		}
+
+        /// <summary>
+        /// Function used to create a user friendly authorization interface.
+        /// </summary>
+        /// <param name="owner">Form that would potentially own any dialogs we create.</param>
+        /// <returns>A code to indicate the status.</returns>
+        /// <remarks>You'd typically use this to create a login screen or file browser or whatever to define the authorization for the user.</remarks>
+        public virtual int CreateAuthorization(System.Windows.Forms.Form owner)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// Function user to get the authorization from the user.
+        /// </summary>
+        /// <param name="owner">Form that would potentially own any dialogs we create.</param>
+        /// <returns>A code to indicate the status.</returns>
+        /// <remarks>You'd typically use this to create a login screen or file browser or whatever to define the authorization for the user.</remarks>
+        public virtual int GetAuthorization(System.Windows.Forms.Form owner)
+        {
+            return 0;
+        }
 
 		/// <summary>
 		/// Function to create a file system.
@@ -625,8 +675,8 @@ namespace GorgonLibrary.FileSystems
 
 						// Get file date.
 						fileProperty = fileNode.SelectSingleNode("FileDate");
-                        if (fileProperty != null)
-                            DateTime.TryParse(fileProperty.InnerText, System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat, System.Globalization.DateTimeStyles.None, out fileDate);
+						if (fileProperty != null)
+							fileDate = Convert.ToDateTime(fileProperty.InnerText, System.Globalization.DateTimeFormatInfo.InvariantInfo);
 
 						// Get encrypted flag.
 						fileProperty = fileNode.SelectSingleNode("Encrypted");
