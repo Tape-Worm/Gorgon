@@ -262,7 +262,7 @@ namespace GorgonLibrary.FileSystems
         /// <summary>
         /// Function to make the encryption key based on our authorization data.
         /// </summary>
-        protected override void  InitializeSecurity()
+        protected override void InitializeSecurity()
         {
             byte[] oldKey = _fileKey;       // Old file key.
 
