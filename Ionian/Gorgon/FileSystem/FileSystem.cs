@@ -248,7 +248,7 @@ namespace GorgonLibrary.FileSystems
 
 				// Add the file date and time.
 				propertyElement = _fileIndex.CreateElement("FileDate");
-				propertyElement.InnerText = file.DateTime.ToString();
+				propertyElement.InnerText = file.DateTime.ToString(System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat);
 				fileElement.AppendChild(propertyElement);
 
 				// Add the encrypted flag.
@@ -675,8 +675,8 @@ namespace GorgonLibrary.FileSystems
 
 						// Get file date.
 						fileProperty = fileNode.SelectSingleNode("FileDate");
-						if (fileProperty != null)
-							fileDate = Convert.ToDateTime(fileProperty.InnerText, System.Globalization.DateTimeFormatInfo.InvariantInfo);
+                        if (fileProperty != null)
+                            DateTime.TryParse(fileProperty.InnerText, System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat, System.Globalization.DateTimeStyles.None, out fileDate);
 
 						// Get encrypted flag.
 						fileProperty = fileNode.SelectSingleNode("Encrypted");
