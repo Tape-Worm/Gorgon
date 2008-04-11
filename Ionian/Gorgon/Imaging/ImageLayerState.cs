@@ -54,6 +54,7 @@ namespace GorgonLibrary.Internal
 		private ImageAddressing _Uaddress;								// Horizontal addressing.
 		private ImageAddressing _Vaddress;								// Vertical addressing.
 		private D3D9.Device _device = null;								// D3D device object.
+        private bool _enableStateSetting = true;                        // Flag to indicate that we should enable/disable setting the states.
 		#endregion
 
 		#region Properties.
@@ -64,7 +65,7 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				if (Device == null)
+				if ((Device == null) || (!_enableStateSetting))
 					return false;
 
 				return !Gorgon.Screen.DeviceNotReset;
@@ -87,6 +88,21 @@ namespace GorgonLibrary.Internal
 				return _device;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return whether the properties will affect the texture stage states.
+        /// </summary>
+        internal bool PropertyShouldSetState
+        {
+            get
+            {
+                return _enableStateSetting;
+            }
+            set
+            {
+                _enableStateSetting = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return the alpha operation.
@@ -510,6 +526,30 @@ namespace GorgonLibrary.Internal
 			DX.Configuration.ThrowOnError = true;
 		}
 
+        /// <summary>
+        /// Function to copy the image layer states.
+        /// </summary>
+        /// <param name="copy">Image layer states to copy.</param>
+        internal void CopyStates(ImageLayerStates copy)
+        {
+            // Set values for each stage.
+            _imageLayerIndex = copy._imageLayerIndex;
+            ColorOperationArgument0 = copy.ColorOperationArgument0;
+            ColorOperationArgument1 = copy.ColorOperationArgument1;
+            ColorOperationArgument2 = copy.ColorOperationArgument2;
+            AlphaOperationArgument0 = copy.AlphaOperationArgument0;
+            AlphaOperationArgument1 = copy.AlphaOperationArgument1;
+            AlphaOperationArgument2 = copy.AlphaOperationArgument2;
+            ColorOperation = copy.ColorOperation;
+            AlphaOperation = copy.AlphaOperation;
+            ConstantColor = copy.ConstantColor;
+            MagnificationFilter = copy.MagnificationFilter;
+            MinificationFilter = copy.MinificationFilter;
+            BorderColor = copy.BorderColor;
+            HorizontalAddressing = copy.HorizontalAddressing;
+            VerticalAddressing = copy.VerticalAddressing;
+        }
+
 		/// <summary>
 		/// Function to set the render states.
 		/// </summary>
@@ -555,6 +595,16 @@ namespace GorgonLibrary.Internal
 			_Uaddress = ImageAddressing.Wrapping;
 			_Vaddress = ImageAddressing.Wrapping;
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageLayerStates"/> class.
+        /// </summary>
+        /// <param name="copy">The image layer states to copy.</param>
+        internal ImageLayerStates(ImageLayerStates copy)
+        {            
+            _enableStateSetting = false;
+            CopyStates(copy);
+        }
 		#endregion
 	}
 }

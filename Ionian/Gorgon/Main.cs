@@ -953,19 +953,6 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to force a rendering pipeline flush.
-		/// </summary>
-		public static void Flush()
-		{
-			if (!_initialized)
-				throw new NotInitializedException();
-			if (Gorgon.Screen == null)
-				return;
-
-			Renderer.Render();
-		}
-
-		/// <summary>
 		/// Function to close the currently active video mode.
 		/// </summary>
 		/// <remarks>Some resources may have to be re-loaded or re-created when this function is called and another call to SetMode is made.</remarks>

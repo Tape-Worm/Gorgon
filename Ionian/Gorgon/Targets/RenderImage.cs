@@ -42,10 +42,10 @@ namespace GorgonLibrary.Graphics
 		: RenderTarget, IDeviceStateObject
 	{
 		#region Variables.
-		private Image _renderTarget;						// Image used as a render target.
-		private ImageBufferFormats _format;					// Format of the image.
-		private DepthBufferFormats _depthFormat;			// Depth buffer format.
-		private Sprite _blitter = null;						// Sprite blitter.
+		private Image _renderTarget;						            // Image used as a render target.
+		private ImageBufferFormats _format;					            // Format of the image.
+		private DepthBufferFormats _depthFormat;			            // Depth buffer format.
+		private Sprite _blitter = null;						            // Sprite blitter.
 		#endregion
 
 		#region Properties.
@@ -295,8 +295,17 @@ namespace GorgonLibrary.Graphics
 		/// <param name="y">Top position of the blit.</param>
 		/// <param name="width">Width to blit with.</param>
 		/// <param name="height">Height to blit with.</param>
-		/// <param name="scale">TRUE to scale the blit, FALSE to crop.</param>
-		public void Blit(float x, float y, float width, float height, bool scale)
+        /// <param name="color">Color to modulate with the image.</param>
+        /// <param name="mode">Mode to define how to handle dimensions that are smaller/larger than the image.</param>
+        /// <remarks>Mode is used to either crop or scale the image when the dimensions are larger or smaller than the source image.  It can be one of:
+        /// <para>
+        /// <list type="table">
+        /// <item><term>Scale</term><description>Scale the image up or down to match the width and height parameters.</description></item>
+        /// <item><term>Crop</term><description>Clip the image if it's larger than the width and height passed.  If the image is smaller, then the image will be handled according to the
+        /// <see cref="GorgonLibrary.Graphics.RenderTarget.HorizontalWrapMode">HorizontalWrapMode</see> or the
+        /// <see cref="GorgonLibrary.Graphics.RenderTarget.VerticalWrapMode">VerticalWrapMode</see>.</description></item></list>
+        /// </para></remarks>
+        public void Blit(float x, float y, float width, float height, Drawing.Color color, BlitterSizeMode mode)
 		{
 			// We shouldn't blit to ourselves.
 			if (Gorgon.CurrentRenderTarget == this)
@@ -306,8 +315,11 @@ namespace GorgonLibrary.Graphics
 			if (_blitter == null)
 				_blitter = new Sprite("Blitter", this);
 
+            if (color != _blitter.Color)
+                _blitter.Color = color;
+
 			// Perform scale.
-			if (scale)
+			if (mode == BlitterSizeMode.Scale)
 			{
 				// Calculate the new scale.
 				Vector2D newScale = new Vector2D(width / (float)Width, height / (float)Height);
@@ -373,7 +385,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="height">Height to blit with.</param>
 		public void Blit(float x, float y, float width, float height)
 		{
-			Blit(x, y, width, height, true);
+            Blit(x, y, width, height, Drawing.Color.White, BlitterSizeMode.Scale);
 		}
 
 		/// <summary>
@@ -383,7 +395,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="y">Top position of the blit.</param>
 		public void Blit(float x, float y)
 		{
-			Blit(x, y, Width, Height, false);
+            Blit(x, y, Width, Height, Drawing.Color.White, BlitterSizeMode.Crop);
 		}
 
 		/// <summary>
@@ -391,7 +403,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Blit()
 		{
-			Blit(0, 0, Width, Height, false);
+            Blit(0, 0, Width, Height, Drawing.Color.White, BlitterSizeMode.Crop);
 		}
 
 		/// <summary>

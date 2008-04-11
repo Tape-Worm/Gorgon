@@ -120,8 +120,16 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr>
 	<pre>
-April 7/2008 - Version - Current
+April 11/2008 - Version - Current
 ================================
+* Modified the Blit() methods to take a BlitterSizeMode enumeration instead of a boolean
+  as the scaling parameter.  This was done to be explicit about the case of size
+  mismatch between the image and the parameters passed in to the blitter.
+  
+* Modified the Direct 3D plug-in interface to expose a method to flush the rendering
+  pipeline.  This should be called before rendering your 3D scene or else you may get
+  odd behaviour from the previous render setup used by Gorgon. 
+  
 + Added an example that will allow us to expose SlimDX's Direct 3D interfaces to
   our application via a plug-in.  This will allow us to mix in a 3D scene with our
   2D stuff.

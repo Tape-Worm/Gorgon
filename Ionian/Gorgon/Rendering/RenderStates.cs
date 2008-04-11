@@ -68,6 +68,7 @@ namespace GorgonLibrary.Internal
 		private CompareFunctions _stencilCompare;				// Stencil testing function.
 		private bool _ditherEnabled;                            // Flag to indicate whether dithering is enabled or not.
 		private D3D9.Device _device = null;						// D3D device object.
+        private bool _enableStateSetting = true;                // Flag to indicate that we should enable/disable setting the states.
 		#endregion
 
 		#region Properties.
@@ -78,7 +79,7 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				if (Device == null)
+				if ((Device == null) || (!_enableStateSetting))
 					return false;
 
 				return !Gorgon.Screen.DeviceNotReset;
@@ -101,6 +102,21 @@ namespace GorgonLibrary.Internal
 				return _device;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return whether setting the properties should affect the states or not.
+        /// </summary>
+        internal bool PropertyShouldSetState
+        {
+            get
+            {
+                return _enableStateSetting;
+            }
+            set
+            {
+                _enableStateSetting = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return whether to enable the stencil buffer or not.
@@ -1059,6 +1075,43 @@ namespace GorgonLibrary.Internal
 				_useWBuffer = false;
 		}
 
+        /// <summary>
+        /// Function to copy the render states from another render state object.
+        /// </summary>
+        /// <param name="copy">Object to copy.</param>
+        internal void CopyStates(RenderStates copy)
+        {
+            CullingMode = copy.CullingMode;
+            PointSize = copy.PointSize;
+            Normalize = copy.Normalize;
+            SetWBufferEnabled(copy._useWBuffer);
+            SpecularEnabled = copy.SpecularEnabled;
+            DepthBufferEnabled = copy.DepthBufferEnabled;
+            DepthBufferWriteEnabled = copy.DepthBufferWriteEnabled;
+            DepthBias = copy.DepthBias;
+            DepthTestFunction = copy.DepthTestFunction;
+            ShadingMode = copy.ShadingMode;
+            DrawingMode = copy.DrawingMode;
+            AlphaBlendEnabled = copy.AlphaBlendEnabled;
+            LightingEnabled = copy.LightingEnabled;
+            SourceAlphaBlendOperation = copy.SourceAlphaBlendOperation;
+            DestinationAlphaBlendOperation = copy.DestinationAlphaBlendOperation;
+            AlphaTestEnabled = copy.AlphaTestEnabled;
+            AlphaTestFunction = copy.AlphaTestFunction;
+            AlphaTestValue = copy.AlphaTestValue;
+            DrawLastPixel = copy.DrawLastPixel;
+            ScissorTesting = copy.ScissorTesting;
+            ScissorRectangle = copy.ScissorRectangle;
+            StencilCompare = copy.StencilCompare;
+            StencilEnable = copy.StencilEnable;
+            StencilFailOperation = copy.StencilFailOperation;
+            StencilMask = copy.StencilMask;
+            StencilPassOperation = copy.StencilPassOperation;
+            StencilReference = copy.StencilReference;
+            StencilZFailOperation = copy.StencilZFailOperation;
+            DitheringEnabled = copy.DitheringEnabled;
+        }
+
 		/// <summary>
 		/// Function to set the render states.
 		/// </summary>
@@ -1120,6 +1173,16 @@ namespace GorgonLibrary.Internal
 			_stencilCompare = CompareFunctions.Always;
 			_stencilMask = -1;
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderStates"/> class.
+        /// </summary>
+        /// <param name="copy">The renderstates to copy into this object.</param>
+        internal RenderStates(RenderStates copy)
+        {
+            _enableStateSetting = false;
+            CopyStates(copy);
+        }
 		#endregion
-	}
+    }
 }

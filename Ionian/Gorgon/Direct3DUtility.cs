@@ -40,7 +40,10 @@ namespace GorgonLibrary.Internal
         : IDeviceStateObject, IDisposable
     {
         #region Variables.
-        private bool _disposed = false;             // Flag to indicate that the object is disposed.
+        private bool _disposed = false;                                         // Flag to indicate that the object is disposed.
+        private RenderStates _renderStates = null;                              // Backed up render states.
+        private ImageLayerStates[] _imageStates = null;                         // Backed up image states.
+        private Image _lastImage = null;                                        // Last image used.
         #endregion
 
         #region Events.
@@ -146,6 +149,14 @@ namespace GorgonLibrary.Internal
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to force a rendering pipeline flush.
+        /// </summary>
+        public void Flush()
+        {
+            Gorgon.Renderer.Render();
+        }
+
         /// <summary>
         /// Function to reset the projection and view states.
         /// </summary>
@@ -257,6 +268,56 @@ namespace GorgonLibrary.Internal
                 return null;
 
             return target.SwapChain;
+        }
+
+        /// <summary>
+        /// Function to store the last set of states.
+        /// </summary>
+        public void PushStates()
+        {
+            _lastImage = GetImage(0);
+
+            if (_renderStates == null)
+                _renderStates = new RenderStates(Gorgon.Renderer.RenderStates);
+            else
+                _renderStates.CopyStates(Gorgon.Renderer.RenderStates);
+
+            if (_imageStates == null)
+            {
+                _imageStates = new ImageLayerStates[Gorgon.CurrentDriver.MaximumTextureStages];
+                for (int i = 0; i < _imageStates.Length; i++)
+                    _imageStates[i] = new ImageLayerStates(Gorgon.Renderer.ImageLayerStates[i]);
+            }
+            else
+            {
+                for (int i = 0; i < _imageStates.Length; i++)
+                    _imageStates[i].CopyStates(Gorgon.Renderer.ImageLayerStates[i]);
+            }
+
+            Flush();
+        }
+
+        /// <summary>
+        /// Function to restore the last set of states.
+        /// </summary>
+        public void PopStates()
+        {
+            Device.SetTransform(D3D9.TransformState.World, SlimDX.Matrix.Identity);
+            Device.SetTransform(D3D9.TransformState.View, SlimDX.Matrix.Identity);
+            ResetProjectionViewState();
+
+            SetImage(0, _lastImage);
+            Device.VertexDeclaration = SystemVertexType;
+            Device.SetStreamSource(0, SystemVertexBuffer, 0, SystemVertexSize);
+            Device.Indices = SystemIndexBuffer;
+
+            if (_renderStates != null)
+                Gorgon.Renderer.RenderStates.CopyStates(_renderStates);
+            if (_imageStates != null)
+            {
+                for (int i = 0; i < _imageStates.Length - 1; i++)
+                    _imageStates[i].CopyStates(Gorgon.Renderer.ImageLayerStates[i]);
+            }
         }
         #endregion
 

@@ -346,20 +346,20 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private string _filename;					// Filename of the image.				
-		private D3D9.Texture _d3dImage = null;		// Direct 3D image.
-		private int _width;							// Width of the image.		
-		private int _height;						// Height of the image.		
-		private ImageBufferFormats _format;			// Format of the image.		
-		private int _actualWidth;					// Actual width of the image.		
-		private int _actualHeight;					// Actual height of the image.
-		private ImageType _imageType;				// Type of image this object represents.
-		private Drawing.Color _fillColor;			// Color used to fill a texture.
-		private bool _isResource;					// Image is a resource object.
-		private List<ImageLockBox> _locks;			// Image locks.
-		private bool _clearOnInit;					// Flag to clear the image upon initialization.
-		private Sprite _blitter = null;				// Blitter sprite.
-		private bool _disposed = false;				// Flag to indicate whether an object is disposed already or not.
+		private string _filename;					                    // Filename of the image.				
+		private D3D9.Texture _d3dImage = null;		                    // Direct 3D image.
+		private int _width;							                    // Width of the image.		
+		private int _height;						                    // Height of the image.		
+		private ImageBufferFormats _format;			                    // Format of the image.		
+		private int _actualWidth;					                    // Actual width of the image.		
+		private int _actualHeight;					                    // Actual height of the image.
+		private ImageType _imageType;				                    // Type of image this object represents.
+		private Drawing.Color _fillColor;			                    // Color used to fill a texture.
+		private bool _isResource;					                    // Image is a resource object.
+		private List<ImageLockBox> _locks;			                    // Image locks.
+		private bool _clearOnInit;					                    // Flag to clear the image upon initialization.
+		private Sprite _blitter = null;				                    // Blitter sprite.
+		private bool _disposed = false;				                    // Flag to indicate whether an object is disposed already or not.
 		#endregion
 
 		#region Properties.
@@ -428,7 +428,7 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Property to return the render image that uses this image.
 		/// </summary>
 		public RenderImage RenderImage
@@ -1415,15 +1415,26 @@ namespace GorgonLibrary.Graphics
 		/// <param name="y">Vertical position.</param>
 		/// <param name="width">Width of the blit area.</param>
 		/// <param name="height">Height of the blit area.</param>
-		/// <param name="scale">TRUE to scale if the width and height are larger or smaller, FALSE to clip.</param>
-		public void Blit(float x, float y, float width, float height, bool scale)
+        /// <param name="color">Color to modulate with the image.</param>
+		/// <param name="mode">Mode to define how to handle dimensions that are smaller/larger than the image.</param>
+        /// <remarks>Mode is used to either crop or scale the image when the dimensions are larger or smaller than the source image.  It can be one of:
+        /// <para>
+        /// <list type="table">
+        /// <item><term>Scale</term><description>Scale the image up or down to match the width and height parameters.</description></item>
+        /// <item><term>Crop</term><description>Clip the image if it's larger than the width and height passed.  If the image is smaller, then the image will be handled according to the
+        /// <see cref="GorgonLibrary.Graphics.RenderTarget.HorizontalWrapMode">Gorgon.CurrentRenderTarget.HorizontalWrapMode</see> or the
+        /// <see cref="GorgonLibrary.Graphics.RenderTarget.VerticalWrapMode">Gorgon.CurrentRenderTarget.VerticalWrapMode</see>.</description></item></list>
+        /// </para></remarks>
+		public void Blit(float x, float y, float width, float height, Drawing.Color color, BlitterSizeMode mode)
 		{
 			// If the blitter object doesn't already exist, then create it.
 			if (_blitter == null)
 				_blitter = new Sprite("ImageBlitter", this);
+            if (color != _blitter.Color)
+                _blitter.Color = color;
 			
 			// Perform scale.
-			if (scale)
+			if (mode == BlitterSizeMode.Scale)
 			{
 				// Calculate the new scale.
 				Vector2D newScale = new Vector2D(width / (float)Width, height / (float)Height);
@@ -1489,7 +1500,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="height">Height to blit with.</param>
 		public void Blit(float x, float y, float width, float height)
 		{
-			Blit(x, y, width, height, true);
+            Blit(x, y, width, height, Drawing.Color.White, BlitterSizeMode.Scale);
 		}
 
 		/// <summary>
@@ -1499,7 +1510,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="y">Top position of the blit.</param>
 		public void Blit(float x, float y)
 		{
-			Blit(x, y, Width, Height, false);
+            Blit(x, y, Width, Height, Drawing.Color.White, BlitterSizeMode.Crop);
 		}
 
 		/// <summary>
@@ -1507,7 +1518,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Blit()
 		{
-			Blit(0, 0, Width, Height, false);
+            Blit(0, 0, Width, Height, Drawing.Color.White, BlitterSizeMode.Crop);
 		}
 		
 		/// <summary>

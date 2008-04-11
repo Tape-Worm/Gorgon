@@ -28,6 +28,21 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
+    /// Enumeration containing modes for the blitters on the image/render image objects.
+    /// </summary>
+    public enum BlitterSizeMode
+    {
+        /// <summary>
+        /// Scale the image based on the width and height passed to the blitter.
+        /// </summary>
+        Scale = 0,
+        /// <summary>
+        /// Crop the image based on the width and height passed to the blitter.
+        /// </summary>
+        Crop = 1
+    }
+
+    /// <summary>
     /// Enumeration for image formats.
     /// </summary>
     public enum ImageBufferFormats

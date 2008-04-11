@@ -66,13 +66,13 @@ namespace GorgonLibrary.Example
 
             Gorgon.CurrentRenderTarget = null;
 
-			_target.Smoothing = Smoothing.Smooth;
 			_target.BlendingMode = BlendingModes.None;
+            _target.Smoothing = Gorgon.GlobalStateSettings.GlobalSmoothing;
             _target.AlphaMaskFunction = CompareFunctions.GreaterThanOrEqual;
             _target.AlphaMaskValue = 1;
-            _target.Blit(32, 32, 64, 64);
-            _target.Blit(32, 32, 128, 128);
-            _target.Blit(32, 32, 256, 256);
+            _target.Blit(32, Gorgon.Screen.Height - 70, 64, 64, Drawing.Color.Red, BlitterSizeMode.Scale);
+            _target.Blit(32, Gorgon.Screen.Height - 134, 128, 128, Drawing.Color.Green, BlitterSizeMode.Scale);
+            _target.Blit(32, Gorgon.Screen.Height - 262, 256, 256, Drawing.Color.Blue, BlitterSizeMode.Scale);
 
 			Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
 			_renderer.Begin();
@@ -104,6 +104,14 @@ namespace GorgonLibrary.Example
 
             if (e.KeyCode == Keys.Escape)
                 Close();
+
+            if (e.KeyCode == Keys.F)
+            {
+                if (Gorgon.GlobalStateSettings.GlobalSmoothing == Smoothing.None)
+                    Gorgon.GlobalStateSettings.GlobalSmoothing = Smoothing.Smooth;
+                else
+                    Gorgon.GlobalStateSettings.GlobalSmoothing = Smoothing.None;
+            }
 
             if (e.KeyCode == Keys.S)
                 Gorgon.FrameStatsVisible = !Gorgon.FrameStatsVisible;

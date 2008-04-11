@@ -70,11 +70,8 @@ namespace GorgonLibrary.Example
         private SlimDX.Matrix _projection = SlimDX.Matrix.Identity;         // Projection matrix.
         private SlimDX.Matrix _view = SlimDX.Matrix.Identity;               // View matrix.
         private SlimDX.Direct3D9.Light _light;                              // Our global light.
-        private Image _lastImage = null;                                    // Last image to use.
         private float _angle = 0.0f;                                        // Angle in degrees.
         private Cube _cube = null;                                          // Our cube object.
-        private Random _rndChan = new Random();                             // Random number generator.
-        private Random _rndDir = new Random();                              // Random number generator.
         private SlimDX.Color4 _cubeColor;                                   // Cube color.
         private Font _font = null;                                          // Text font.
         private TextSprite _text = null;                                    // Text to display.
@@ -124,8 +121,10 @@ namespace GorgonLibrary.Example
             if (_d3dObjects.DeviceNeedsReset)
                 return;
 
-			// Force a pipeline flush.  This way we get our 2D stuff drawn with the proper states.
-			Gorgon.Flush();
+            // Store our state and flush the rendering pipeline.
+            _d3dObjects.PushStates();
+
+            // Define our 3D states.
             _d3dObjects.Device.SetTransform(SlimDX.Direct3D9.TransformState.Projection, _projection);
             _d3dObjects.Device.SetTransform(SlimDX.Direct3D9.TransformState.View, _view);
             _d3dObjects.RenderStates.ShadingMode = ShadingMode.Gouraud;
@@ -133,13 +132,12 @@ namespace GorgonLibrary.Example
             _d3dObjects.RenderStates.LightingEnabled = true;
             _d3dObjects.RenderStates.CullingMode = CullingMode.None;
             _d3dObjects.RenderStates.AlphaBlendEnabled = true;
-            _d3dObjects.RenderStates.SourceAlphaBlendOperation = Gorgon.CurrentRenderTarget.SourceBlend;
-            _d3dObjects.RenderStates.DestinationAlphaBlendOperation = Gorgon.CurrentRenderTarget.DestinationBlend;
+            _d3dObjects.RenderStates.SourceAlphaBlendOperation = AlphaBlendOperation.SourceAlpha;
+            _d3dObjects.RenderStates.DestinationAlphaBlendOperation = AlphaBlendOperation.InverseSourceAlpha;
 			_d3dObjects.ImageStates[0].MagnificationFilter = ImageFilters.Point;
-			_d3dObjects.ImageStates[0].MinificationFilter = ImageFilters.Point;
-            
-            _lastImage = _d3dObjects.GetImage(0);
+			_d3dObjects.ImageStates[0].MinificationFilter = ImageFilters.Point;            
 
+            // Ensure the light is setup.
             _d3dObjects.Device.SetLight(0, _light);
             _d3dObjects.Device.EnableLight(0, true);
 
@@ -152,57 +150,12 @@ namespace GorgonLibrary.Example
         /// <param name="frameTime">Frame delta time.</param>
         public void Render(float frameTime)
         {       
-            int chan = _rndChan.Next(3000);                                         // Random channel.
-            float delta = (float)(_rndChan.NextDouble()) * (frameTime * 250.0f);    // Random delta.
-
             if (_d3dObjects.DeviceNeedsReset)
                 return;
-          
+
             _angle -= 15.0f * frameTime;
-
-            if ((chan >= 0) && (chan <= 1000))
-            {
-                if (_rndDir.Next(1000) > _rndChan.Next(500))
-                {
-                    if ((_cubeColor.Red - delta) > 0.0f)
-                        _cubeColor.Red -= delta;
-                }
-                else
-                {
-                    if ((_cubeColor.Red + delta) < 1.0f)
-                        _cubeColor.Red += delta;
-                }
-            }
-
-            if ((chan > 1000) && (chan <= 2000))
-            {
-                if (_rndDir.Next(1000) > _rndChan.Next(500))
-                {
-                    if ((_cubeColor.Green - delta) > 0.0f)
-                        _cubeColor.Green -= delta;
-                }
-                else
-                {
-                    if ((_cubeColor.Green + delta) < 1.0f)
-                        _cubeColor.Green += delta;
-                }
-            }
-
-
-            if ((chan > 1000) && (chan <= 3000))
-            {
-                if (_rndDir.Next(1000) > _rndChan.Next(500))
-                {
-                    if ((_cubeColor.Blue - delta) > 0.0f)
-                        _cubeColor.Blue -= delta;
-                }
-                else
-                {
-                    if ((_cubeColor.Blue + delta) < 1.0f)
-                        _cubeColor.Blue += delta;
-                }
-            }
-
+            if (_angle < -359.9999f)
+                _angle = 0.0f;
             _cube.Diffuse = _cubeColor;
             _cube.RotateXYZ(_angle, _angle, _angle);
             _cube.Draw();            
@@ -216,23 +169,14 @@ namespace GorgonLibrary.Example
             if (_d3dObjects.DeviceNeedsReset)
                 return;
 
-            _d3dObjects.Device.SetTransform(SlimDX.Direct3D9.TransformState.World, SlimDX.Matrix.Identity);
-            _d3dObjects.Device.SetTransform(SlimDX.Direct3D9.TransformState.View, SlimDX.Matrix.Identity);
-            _d3dObjects.RenderStates.CullingMode = CullingMode.Clockwise;
-            _d3dObjects.RenderStates.LightingEnabled = false;
-            _d3dObjects.RenderStates.ShadingMode = ShadingMode.Flat;
-            _d3dObjects.RenderStates.SpecularEnabled = false;
             _d3dObjects.Device.EndScene();
 
-            // Reset back to the Gorgon buffers and states - if we don't do this then Gorgon will unaware of any changes and things
-            // will look odd.
-            _d3dObjects.SetImage(0, _lastImage);
-            _d3dObjects.Device.VertexDeclaration = _d3dObjects.SystemVertexType;
-            _d3dObjects.Device.SetStreamSource(0, _d3dObjects.SystemVertexBuffer, 0, _d3dObjects.SystemVertexSize);
-            _d3dObjects.Device.Indices = _d3dObjects.SystemIndexBuffer;
-            _d3dObjects.ResetProjectionViewState();
+            // Restore the Gorgon states.
+            _d3dObjects.PopStates();
 
-            _text.Text = "Cube color ->\n\tR: " + _cubeColor.Red.ToString("0.000") + "\n\tG: " + _cubeColor.Green.ToString("0.000") + "\n\tB: " + _cubeColor.Blue.ToString("0.000");
+            _text.Smoothing = Smoothing.Smooth;
+            _text.Text = "Cube Angle: " + _angle.ToString("0.000") + "\nHit F to toggle smoothing " + 
+                ((Gorgon.GlobalStateSettings.GlobalSmoothing == Smoothing.None) ? "On" : "Off") + ".";
             _text.Draw();
         }
 
