@@ -1205,10 +1205,6 @@ namespace GorgonLibrary.Graphics
 
 				_initialized = true;
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				Gorgon.CurrentRenderTarget = lastTarget;

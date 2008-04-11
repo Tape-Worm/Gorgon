@@ -828,10 +828,6 @@ namespace GorgonLibrary.Graphics
 				stream = File.OpenRead(filename);
 				return ImageFromStream(filename, null, null, stream, false, width, height, -1, format, colorKey);
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if (stream != null)
@@ -866,10 +862,6 @@ namespace GorgonLibrary.Graphics
 				stream = new MemoryStream(fileSystem.ReadFile(filename));
 
 				return ImageFromStream(filename, fileSystem, null, stream, false, width, height, -1, format, colorKey);
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{
@@ -1031,10 +1023,6 @@ namespace GorgonLibrary.Graphics
 				imageData.Save(memStream, Drawing.Imaging.ImageFormat.Png);
 				memStream.Position = 0;
 				return ImageFromStream(name, null, resourceManager, memStream, false, width, height, -1, format, colorKey);
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{
@@ -1959,10 +1947,6 @@ namespace GorgonLibrary.Graphics
 
 				return Drawing.Image.FromStream(stream);
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if (stream != null)
@@ -2039,10 +2023,6 @@ namespace GorgonLibrary.Graphics
 				_filename = filename;
 				_isResource = false;
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if (stream != null)
@@ -2067,10 +2047,6 @@ namespace GorgonLibrary.Graphics
 
 				_filename = filename;
 				_isResource = false;
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{
@@ -2438,10 +2414,6 @@ namespace GorgonLibrary.Graphics
 				data = new byte[dxStream.Length];
 				dxStream.Read(data, 0, (int)dxStream.Length);
 				serializer.Write(string.Empty, data, 0, data.Length);
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{

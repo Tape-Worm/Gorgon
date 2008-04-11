@@ -314,10 +314,6 @@ namespace GorgonLibrary.Graphics.Tools
 					}
 				}				
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if ((bmpData != null) && (_image != null))
@@ -349,34 +345,27 @@ namespace GorgonLibrary.Graphics.Tools
 			if ((constraint.Height == 0) || (constraint.Bottom > _image.Height))
 				constraint.Height = _image.Height - constraint.Top;
 
-			try
-			{
-				rectangles = new List<System.Drawing.RectangleF>();
+			rectangles = new List<System.Drawing.RectangleF>();
 
-				// Create the rectangle list.
-				if (!_topToBottom)
-				{
-					for (int x = constraint.Left; x < constraint.Right; x += ((int)_gridCellSpacing.X) + ((int)_gridCell.X))
-					{
-						for (int y = constraint.Top; y < constraint.Bottom; y += ((int)_gridCellSpacing.Y) + ((int)_gridCell.Y))
-							rectangles.Add(new Drawing.RectangleF(x, y, _gridCell.X, _gridCell.Y));
-					}
-				}
-				else
+			// Create the rectangle list.
+			if (!_topToBottom)
+			{
+				for (int x = constraint.Left; x < constraint.Right; x += ((int)_gridCellSpacing.X) + ((int)_gridCell.X))
 				{
 					for (int y = constraint.Top; y < constraint.Bottom; y += ((int)_gridCellSpacing.Y) + ((int)_gridCell.Y))
-					{
-						for (int x = constraint.Left; x < constraint.Right; x += ((int)_gridCellSpacing.X) + ((int)_gridCell.X))						
-							rectangles.Add(new Drawing.RectangleF(x, y, _gridCell.X, _gridCell.Y));
-					}
+						rectangles.Add(new Drawing.RectangleF(x, y, _gridCell.X, _gridCell.Y));
 				}
-
-				return rectangles.ToArray();
 			}
-			catch
+			else
 			{
-				throw;
+				for (int y = constraint.Top; y < constraint.Bottom; y += ((int)_gridCellSpacing.Y) + ((int)_gridCell.Y))
+				{
+					for (int x = constraint.Left; x < constraint.Right; x += ((int)_gridCellSpacing.X) + ((int)_gridCell.X))						
+						rectangles.Add(new Drawing.RectangleF(x, y, _gridCell.X, _gridCell.Y));
+				}
 			}
+
+			return rectangles.ToArray();
 		}
 
 		/// <summary>
@@ -443,10 +432,6 @@ namespace GorgonLibrary.Graphics.Tools
 				}
 
 				return rectangles.ToArray();
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{

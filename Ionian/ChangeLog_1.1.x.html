@@ -122,6 +122,15 @@
 	<pre>
 April 11/2008 - Version - Current
 ================================
+* Did some code clean up to break some silly habits (like catch { throw; } finally).
+
++ Added Save(stream), OpenRootFromStream() methods and IsRootInStream property to 
+  facilitate loading a file system object from a stream.  This way we can put packed 
+  file systems into other packed file systems, or load a file system from a binary 
+  data blob (e.g. imagine loading your file system from a database field).  Also
+  added a FileSystemStreamOffset property to set or show where the file system is
+  located.  
+  
 * Modified the Blit() methods to take a BlitterSizeMode enumeration instead of a boolean
   as the scaling parameter.  This was done to be explicit about the case of size
   mismatch between the image and the parameters passed in to the blitter.

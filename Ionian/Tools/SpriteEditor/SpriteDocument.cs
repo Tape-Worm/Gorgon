@@ -1303,10 +1303,6 @@ namespace GorgonLibrary.Graphics.Tools
 				_changed = false;
 				_owner.SpriteManager.RefreshPropertyGrid();
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if (stream != null)
@@ -1323,26 +1319,19 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="boundImage">Image to bind.</param>
 		public void Create(Image boundImage)
 		{
-			try
+			if (boundImage != null)
 			{
-				if (boundImage != null)
-				{
-					if (boundImage.ImageType == ImageType.RenderTarget)
-						_sprite = new Sprite(_objectName, boundImage.RenderImage, boundImage.RenderImage.Width, boundImage.RenderImage.Height);
-					else
-						_sprite = new Sprite(_objectName, boundImage, new Vector2D(boundImage.Width, boundImage.Height));
-				}
+				if (boundImage.ImageType == ImageType.RenderTarget)
+					_sprite = new Sprite(_objectName, boundImage.RenderImage, boundImage.RenderImage.Width, boundImage.RenderImage.Height);
 				else
-					_sprite = new Sprite(_objectName);
-
-				RefreshProperties();
-
-				Changed = true;
+					_sprite = new Sprite(_objectName, boundImage, new Vector2D(boundImage.Width, boundImage.Height));
 			}
-			catch
-			{
-				throw;
-			}
+			else
+				_sprite = new Sprite(_objectName);
+
+			RefreshProperties();
+
+			Changed = true;
 		}
 
 		/// <summary>

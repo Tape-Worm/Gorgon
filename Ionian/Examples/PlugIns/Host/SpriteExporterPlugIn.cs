@@ -94,10 +94,6 @@ namespace GorgonLibrary.Example
                 // Write out the image.
                 Save(spriteImage.Image, path);
             }
-            catch
-            {
-                throw;
-            }
             finally
             {
                 if (spriteImage != null)

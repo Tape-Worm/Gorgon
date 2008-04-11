@@ -28,23 +28,6 @@ using SharpUtilities;
 
 namespace GorgonLibrary
 {
-	#region Enumerator.
-	/// <summary>
-	/// Enumeration for types of members that are throwing the not implemented exception.
-	/// </summary>
-	public enum NotImplementedTypes
-	{
-		/// <summary>
-		/// Property is not implemented.
-		/// </summary>
-		Property = 0,
-		/// <summary>
-		/// Method is not implemented.
-		/// </summary>
-		Method = 1
-	}
-	#endregion	
-
     /// <summary>
     /// Base exception class for Gorgon.
     /// </summary>

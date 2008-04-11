@@ -55,6 +55,32 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
+		/// Property to return the offset of the file system within the stream.
+		/// </summary>
+		public override long FileSystemStreamOffset
+		{
+			get 
+			{
+				return -1;	
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the root of the file system is a stream or not.
+		/// </summary>
+		/// <value></value>
+		public override bool IsRootInStream
+		{
+			get 
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the root path of the file system.
 		/// </summary>
 		public override string Root
@@ -201,10 +227,6 @@ namespace GorgonLibrary.FileSystems
 				writer = new BinaryWriter(outStream, Encoding.UTF8);
 				writer.Write(FileSystemHeader);
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if (outStream != null)
@@ -252,10 +274,6 @@ namespace GorgonLibrary.FileSystems
 				// Write.
 				fileStream.Write(file.Data, 0, file.Data.Length);
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				// Clean up.
@@ -263,6 +281,24 @@ namespace GorgonLibrary.FileSystems
 					fileStream.Dispose();
 				fileStream = null;
 			}
+		}
+
+		/// <summary>
+		/// Function to bind the root of the file system to a stream.
+		/// </summary>
+		/// <param name="fileSystemRoot">Stream that contains the file system root.</param>
+		public override void OpenRootFromStream(Stream fileSystemRoot)
+		{
+			throw new NotImplementedException("Folder based file systems cannot be rooted from a stream.");
+		}
+
+		/// <summary>
+		/// Function to save the file system to a stream.
+		/// </summary>
+		/// <param name="fileSystemStream">Stream to save into.</param>
+		public override void Save(Stream fileSystemStream)
+		{
+			throw new NotImplementedException("Folder based file systems cannot be saved to a stream.");
 		}
         #endregion
 

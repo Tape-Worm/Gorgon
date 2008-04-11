@@ -350,10 +350,6 @@ namespace GorgonLibrary.Graphics
 				// Send the render target data to the surface.
 				Gorgon.Screen.Device.UpdateSurface(_convertBuffer, sourceRect, imageSurface, Drawing.Point.Empty);
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if (imageSurface != null)

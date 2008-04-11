@@ -608,10 +608,6 @@ namespace GorgonLibrary.Graphics
 				_isResource = false;
 				_fileName = filename;
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if (stream != null)
@@ -673,10 +669,6 @@ namespace GorgonLibrary.Graphics
 
 				_isResource = false;
 				_fileName = filename;
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{

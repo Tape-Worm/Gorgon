@@ -51,7 +51,9 @@ namespace GorgonLibrary.FileSystems
         private byte[] _fileKey = null;                         // File encryption key.
         private byte[] _IV = null;                              // Initialization vector.
         private Random _rnd = new Random();                     // Random data.
-        #endregion
+		private bool _streamIsRoot = false;				// Flag to indicate that the root of the file system is from a stream.
+		private long _fileSystemOffset = 0;				// Offset within the file system.
+		#endregion
 
 		#region Properties.
 		/// <summary>
@@ -62,6 +64,39 @@ namespace GorgonLibrary.FileSystems
 			get 
 			{
 				return "GORPACK1.3DES";
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the root of the file system is a stream or not.
+		/// </summary>
+		/// <value></value>
+		public override bool IsRootInStream
+		{
+			get
+			{
+				return _streamIsRoot;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the offset of the file system within the stream.
+		/// </summary>
+		public override long FileSystemStreamOffset
+		{
+			get
+			{
+				if (!IsRootInStream)
+					return -1;
+
+				return _fileSystemOffset;
+			}
+			set
+			{
+				if (!IsRootInStream)
+					return;
+
+				_fileSystemOffset = value;
 			}
 		}
 
@@ -83,6 +118,14 @@ namespace GorgonLibrary.FileSystems
 				int indexSize = 0;							// Size of the directory index.
                 byte[] authCompare;                         // Authorization bytes to compare.
                 int encryptedSize = 0;                      // Encrypted data size.
+
+				// Disable the root/stream binding.
+				if ((IsRootInStream) && (_fileStream != null))
+				{
+					_fileSystemOffset = 0;
+					_fileStream = null;
+					_streamIsRoot = false;
+				}
 
 				if (value == null)
 					value = string.Empty;
@@ -223,10 +266,6 @@ namespace GorgonLibrary.FileSystems
 
                 return encryptedData;
             }
-            catch
-            {
-                throw;
-            }
             finally
             {
                 if (cryptStream != null)
@@ -345,25 +384,27 @@ namespace GorgonLibrary.FileSystems
 		protected override void Load(FileSystemFile file)
 		{
 			BinaryReaderEx reader = null;				// Binary data reader.
-			Stream stream = null;						// File stream.
 
 			try
 			{
 				// Open the archive for reading.
-				stream = File.Open(Root, FileMode.Open, FileAccess.Read, FileShare.Read);
-				reader = new BinaryReaderEx(stream, false);
+				if (IsRootInStream)
+					reader = new BinaryReaderEx(_fileStream, true);
+				else
+					reader = new BinaryReaderEx(File.Open(Root, FileMode.Open, FileAccess.Read, FileShare.Read), false);				
 
 				// Move to the data.
-				reader.BaseStream.Position = _fileOffset + file.Offset;
+				if (!IsRootInStream)
+					reader.BaseStream.Position = _fileOffset + file.Offset;
+				else
+					reader.BaseStream.Position = _fileSystemOffset + _fileOffset + file.Offset;
+
 				file.Data = reader.ReadBytes(file.Size);
 
 				// Close the file to get around concurrency issues.
 				if (reader != null)
 					reader.Close();
 				reader = null;
-				if (stream != null)
-					stream.Dispose();
-				stream = null;
 
 				if ((file.Data == null) || (file.Data.Length != file.Size))
 					throw new Exception("Failure reading file system file.");
@@ -380,9 +421,6 @@ namespace GorgonLibrary.FileSystems
 				if (reader != null)
 					reader.Close();
 				reader = null;
-				if (stream != null)
-					stream.Dispose();
-				stream = null;
 			}
 		}
 
@@ -392,18 +430,15 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="filePath">Path to the file system location.</param>
 		protected override void SaveInitialize(string filePath)
 		{
-			if ((filePath.Length == 0) || (filePath == null))
-				throw new Exception("Path is empty.");
-
-			if (Path.GetFileName(filePath) == string.Empty)
-				throw new Exception("Invalid file name.");
-
 			// Append the file system extension.
-			if (Path.GetExtension(filePath) == string.Empty)
+			if ((Path.GetExtension(filePath) == string.Empty) && (!IsRootInStream))
 				filePath += ".gorPack";
 
 			// Open the stream for writing.
-			_fileStream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+			if (!IsRootInStream)
+				_fileStream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+			else
+				_fileStream.Position = _fileSystemOffset;
 		}
 
 		/// <summary>
@@ -412,6 +447,12 @@ namespace GorgonLibrary.FileSystems
 		/// <remarks>This function is called at the end of the save function, regardless of whether the save was successful or not.</remarks>
 		protected override void SaveFinalize()
 		{
+			if (IsRootInStream)
+			{
+				_fileStream.Position = _fileSystemOffset;
+				return;
+			}
+
 			if (_fileStream != null)
 				_fileStream.Dispose();
 			_fileStream = null;
@@ -449,10 +490,6 @@ namespace GorgonLibrary.FileSystems
                 encrypted = TransformData(Encoding.UTF8.GetBytes(FileIndexXML.OuterXml), _fileKey, false);
                 writer.Write(encrypted.Length);
                 writer.Write(encrypted);
-			}
-			catch
-			{
-				throw;
 			}
 			finally			
 			{
@@ -535,7 +572,106 @@ namespace GorgonLibrary.FileSystems
 
             return 1;
         }
-        #endregion
+
+		/// <summary>
+		/// Function to save the file system to a stream.
+		/// </summary>
+		/// <param name="fileSystemStream">Stream to save into.</param>
+		public override void Save(Stream fileSystemStream)
+		{
+			if (fileSystemStream == null)
+				throw new ArgumentNullException("fileSystemStream");
+
+			_streamIsRoot = true;
+			_fileSystemOffset = fileSystemStream.Position;
+			_fileStream = fileSystemStream;
+
+			base.Save(string.Empty);
+		}
+
+		/// <summary>
+		/// Function to save the file system.
+		/// </summary>
+		/// <param name="filePath">Path to save the file system into.</param>
+		public override void Save(string filePath)
+		{
+			_streamIsRoot = false;
+			_fileStream = null;
+
+			base.Save(filePath);
+		}
+
+		/// <summary>
+		/// Function to bind the root of the file system to a stream.
+		/// </summary>
+		/// <param name="fileSystemRoot">Stream that contains the file system root.</param>
+		public override void OpenRootFromStream(Stream fileSystemRoot)
+		{
+			BinaryReaderEx reader = null;               // Binary reader.			
+			string xmlData = string.Empty;				// String to contain the XML data.
+			string header = string.Empty;               // Header text.
+			int indexSize = 0;							// Size of the directory index.
+			byte[] authCompare;                         // Authorization bytes to compare.
+			int encryptedSize = 0;                      // Encrypted data size.
+
+			if (fileSystemRoot == null)
+				throw new ArgumentNullException("fileSystemRoot");
+
+			try
+			{
+				base.Root = "[FileSystem.Stream]";
+
+				// Open the archive file.
+				_fileSystemOffset = fileSystemRoot.Position;
+				reader = new BinaryReaderEx(fileSystemRoot, true);
+
+				// Read the header.
+				header = reader.ReadString();
+				if (string.Compare(header, FileSystemHeader, true) != 0)
+					throw new Exception("Invalid pack file format.");
+
+				// Load in our authorization data.
+				encryptedSize = reader.ReadInt32();
+				authCompare = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
+
+				if (authCompare.Length != AuthenticationData.Data.Length)
+					throw new FileSystemAccessDeniedException(Name);
+
+				// Ensure the data is the same.
+				for (int i = 0; i < authCompare.Length; i++)
+				{
+					if (authCompare[i] != AuthenticationData.Data[i])
+						throw new FileSystemAccessDeniedException(Name);
+				}
+
+				// Try to load the file key.
+				encryptedSize = reader.ReadInt32();
+				_fileKey = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
+
+				// Get the index size (encrypted).
+				indexSize = reader.ReadInt32();
+
+				// Get the XML.
+				xmlData = Encoding.UTF8.GetString(TransformData(reader.ReadBytes(indexSize), _fileKey, true));
+
+				// Load into the XML document object.
+				FileIndexXML.LoadXml(xmlData);
+
+				ValidateIndexXML();
+
+				// Get the file offset.				
+				_fileOffset = fileSystemRoot.Position - _fileSystemOffset;
+				_fileStream = fileSystemRoot;
+				_streamIsRoot = true;
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+				reader = null;
+			}
+		}
+		#endregion
 
         #region Constructor.
         /// <summary>

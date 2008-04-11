@@ -508,10 +508,6 @@ namespace GorgonLibrary.Graphics
 				BlendingMode = BlendingModes.None;
 				image.Blit();
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				// Restore.

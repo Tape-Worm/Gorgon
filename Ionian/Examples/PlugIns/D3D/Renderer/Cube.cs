@@ -291,10 +291,6 @@ namespace GorgonLibrary.Example
                 lockData = _vertexBuffer.Lock(0, _vertexByteSize * _vertices.Length, SlimDX.Direct3D9.LockFlags.None);
                 lockData.WriteRange<D3DRenderer.Vertex>(_vertices);
             }
-            catch
-            {
-                throw;
-            }
             finally
             {
                 if (lockData != null)
@@ -309,10 +305,6 @@ namespace GorgonLibrary.Example
             {
                 lockData = _indexBuffer.Lock(0, _indexByteSize * _indices.Length, SlimDX.Direct3D9.LockFlags.None);
                 lockData.WriteRange<short>(_indices);
-            }
-            catch
-            {
-                throw;
             }
             finally
             {

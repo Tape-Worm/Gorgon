@@ -97,10 +97,6 @@ namespace GorgonLibrary.Graphics
 
 				ImageShaderCache.ImageShaders.Add(this);
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if (byteCode != null)

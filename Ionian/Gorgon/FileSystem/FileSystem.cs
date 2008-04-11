@@ -69,25 +69,6 @@ namespace GorgonLibrary.FileSystems
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to set or return the authentication data for the file system.
-        /// </summary>
-        public IAuthData AuthenticationData
-        {
-            get
-            {
-                return _authData;
-            }
-            set
-            {
-                if (this.Provider.IsEncrypted)
-                {
-                    _authData = value;
-                    InitializeSecurity();
-                }
-            }
-        }
-
 		/// <summary>
 		/// Property to return the XML document containing the file index list.
 		/// </summary>
@@ -127,6 +108,42 @@ namespace GorgonLibrary.FileSystems
 			{
 				return _provider;
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return the authentication data for the file system.
+		/// </summary>
+		public IAuthData AuthenticationData
+		{
+			get
+			{
+				return _authData;
+			}
+			set
+			{
+				if (this.Provider.IsEncrypted)
+				{
+					_authData = value;
+					InitializeSecurity();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the root of the file system is a stream or not.
+		/// </summary>
+		public abstract bool IsRootInStream
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to set or return the offset of the file system within the stream.
+		/// </summary>
+		public abstract long FileSystemStreamOffset
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -990,6 +1007,12 @@ namespace GorgonLibrary.FileSystems
 			return OpenFileStream(filePath, false);
 		}
 
+		/// <summary>
+		/// Function to bind the root of the file system to a stream.
+		/// </summary>
+		/// <param name="fileSystemRoot">Stream that contains the file system root.</param>
+		public abstract void OpenRootFromStream(Stream fileSystemRoot);
+
         /// <summary>
         /// Function to remove a file from the file system.
         /// </summary>
@@ -1141,31 +1164,37 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
+		/// Function to save the file system to a stream.
+		/// </summary>
+		/// <param name="fileSystemStream">Stream to save into.</param>
+		public abstract void Save(Stream fileSystemStream);
+		
+		/// <summary>
 		/// Function to save the file system.
 		/// </summary>
 		/// <param name="filePath">Path to save the file system into.</param>
-		public void Save(string filePath)
+		public virtual void Save(string filePath)
 		{
 			XmlElement fsElement = null;				// File system.
 			long offset = 0;							// File offset.
 			FileList allFiles = null;					// All files.
-						
-			if ((filePath == string.Empty) || (filePath == null))
+
+			if (((filePath == string.Empty) || (filePath == null)) && (!IsRootInStream))
 				throw new ArgumentNullException("filePath");
 
-            // Get all the file entries.
-            allFiles = Paths.GetFiles();
+			// Get all the file entries.
+			allFiles = Paths.GetFiles();
 
-            // Reset the XML index.
-            RebuildIndex();
+			// Reset the XML index.
+			RebuildIndex();
 
-            // Get the file system node.
-            fsElement = _fileIndex.SelectSingleNode("//FileSystem") as XmlElement;
+			// Get the file system node.
+			fsElement = _fileIndex.SelectSingleNode("//FileSystem") as XmlElement;
 
-            if (fsElement == null)
-                throw new FileSystemIndexReadException();
-            
-            try
+			if (fsElement == null)
+				throw new FileSystemIndexReadException();
+
+			try
 			{
 				// Update the file offsets.
 				foreach (FileSystemFile file in allFiles)
@@ -1190,7 +1219,7 @@ namespace GorgonLibrary.FileSystems
 				foreach (FileSystemFile file in allFiles)
 				{
 					if (file.Data == null)
-                        throw new Exception("File has no data.");
+						throw new Exception("File has no data.");
 
 					SaveFileData(filePath, file);
 

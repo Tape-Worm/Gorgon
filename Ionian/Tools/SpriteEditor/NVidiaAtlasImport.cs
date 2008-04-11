@@ -202,10 +202,6 @@ namespace GorgonLibrary.Graphics.Tools
 					GetSpriteData(path, line);
 				}
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				Directory.SetCurrentDirectory(oldPath);
