@@ -123,6 +123,9 @@ namespace GorgonLibrary.Example
         {
             if (_d3dObjects.DeviceNeedsReset)
                 return;
+
+			// Force a pipeline flush.  This way we get our 2D stuff drawn with the proper states.
+			Gorgon.Flush();
             _d3dObjects.Device.SetTransform(SlimDX.Direct3D9.TransformState.Projection, _projection);
             _d3dObjects.Device.SetTransform(SlimDX.Direct3D9.TransformState.View, _view);
             _d3dObjects.RenderStates.ShadingMode = ShadingMode.Gouraud;
@@ -132,6 +135,8 @@ namespace GorgonLibrary.Example
             _d3dObjects.RenderStates.AlphaBlendEnabled = true;
             _d3dObjects.RenderStates.SourceAlphaBlendOperation = Gorgon.CurrentRenderTarget.SourceBlend;
             _d3dObjects.RenderStates.DestinationAlphaBlendOperation = Gorgon.CurrentRenderTarget.DestinationBlend;
+			_d3dObjects.ImageStates[0].MagnificationFilter = ImageFilters.Point;
+			_d3dObjects.ImageStates[0].MinificationFilter = ImageFilters.Point;
             
             _lastImage = _d3dObjects.GetImage(0);
 

@@ -280,6 +280,13 @@ namespace GorgonLibrary.Graphics
 				Gorgon.Log.Print("RenderImage", "No acceptable depth/stencil buffer found or requested.  Driver may use alternate form of HSR.", LoggingLevel.Verbose);
 		}
 
+		/// <summary>
+		/// Function to render the scene for this target.
+		/// </summary>
+		public override void Update()
+		{
+			Gorgon.Renderer.Render();
+		}
 
 		/// <summary>
 		/// Function to draw this render image to the current render target.

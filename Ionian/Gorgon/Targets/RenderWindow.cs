@@ -452,7 +452,7 @@ namespace GorgonLibrary.Graphics
 		{
 			RenderTarget previousTarget = null;		// Previous render target.
 
-			base.Update();
+			Gorgon.Renderer.Render();
 
 			// Switch to the proper render target.
 			if ((Gorgon.CurrentRenderTarget != this) || ((Gorgon.CurrentRenderTarget == null) && (this == Gorgon.Screen)))

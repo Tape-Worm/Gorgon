@@ -66,18 +66,19 @@ namespace GorgonLibrary.Example
 
             Gorgon.CurrentRenderTarget = null;
 
-            _target.BlendingMode = BlendingModes.None;
+			_target.Smoothing = Smoothing.Smooth;
+			_target.BlendingMode = BlendingModes.None;
             _target.AlphaMaskFunction = CompareFunctions.GreaterThanOrEqual;
             _target.AlphaMaskValue = 1;
-            //_target.Blit(89, 12, 500, 500);
+            _target.Blit(32, 32, 64, 64);
+            _target.Blit(32, 32, 128, 128);
             _target.Blit(32, 32, 256, 256);
-            //_target.Blit(192, 180, 300, 300);
-            
-            Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
-            _renderer.Begin();
-            _renderer.Render(e.FrameDeltaTime);
-            _renderer.End();
-        }
+
+			Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
+			_renderer.Begin();
+			_renderer.Render(e.FrameDeltaTime);
+			_renderer.End();
+		}
 
         /// <summary>
         /// Function to provide initialization for our example.
