@@ -39,7 +39,6 @@ namespace GorgonLibrary.PlugIns
 		#region Variables.
 		private PlugInType _type = PlugInType.UserDefined;		// Plug-in type.
 		private string _plugInPath = string.Empty;				// Plug-in path.
-        private D3DObjects _d3dobjects = null;                  // Direct 3D object interface.
 		#endregion
 
 		#region Properties.
@@ -80,16 +79,7 @@ namespace GorgonLibrary.PlugIns
         /// <returns>An instance of the D3D objects interface.</returns>
         protected D3DObjects GetD3DObjects()
         {
-            if (!Gorgon.IsInitialized)
-                return null;
-
-            if (Gorgon.Screen == null)
-                return null;
-
-            if (_d3dobjects == null)
-                _d3dobjects = new D3DObjects();
-
-            return _d3dobjects;
+            return new D3DObjects();
         }
 		#endregion
 

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -70,9 +70,9 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared\PlugInODoomShared_x64.csproj">
-      <Project>{8EB85AC8-FEB2-4C48-AD47-0A0DBABE8447}</Project>
-      <Name>PlugInODoomShared_x64</Name>
+    <ProjectReference Include="..\Host\PlugInODoomHost_x64.csproj">
+      <Project>{4427BACC-063C-42FD-8DFA-FC3EBA3C151C}</Project>
+      <Name>PlugInODoomHost_x64</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

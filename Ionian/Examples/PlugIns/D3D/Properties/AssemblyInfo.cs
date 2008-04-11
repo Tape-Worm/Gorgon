@@ -1,7 +1,7 @@
 ﻿#region LGPL.
 // 
-// Gorgon.
-// Copyright (C) 2007 Michael Winsor
+// Examples.
+// Copyright (C) 2008 Michael Winsor
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,33 +17,25 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Saturday, October 27, 2007 11:21:52 PM
+// Created: Monday, April 07, 2008 8:15:14 PM
 // 
 #endregion
 
-using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Permissions;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Plug-In O' Doom.")]
-[assembly: AssemblyDescription("Shared data for the plug-in and host.")]
+[assembly: AssemblyTitle("D3D")]
+[assembly: AssemblyDescription("A sample showing how to access Direct3D through a plug-in interface.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyProduct("Gorgon Graphics Library.")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2007")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: CLSCompliant(false)]
-[assembly: FileIOPermission(SecurityAction.RequestMinimum, AllFiles = FileIOPermissionAccess.AllAccess)]
-[assembly: ReflectionPermission(SecurityAction.RequestMinimum, Flags = ReflectionPermissionFlag.MemberAccess)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]
-
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -51,7 +43,7 @@ using System.Security.Permissions;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9db6bac3-0b0d-437f-b7e8-2fa6ce2bb33d")]
+[assembly: Guid("38580825-e6f2-4ebc-bc15-03f505102b15")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -60,5 +52,8 @@ using System.Security.Permissions;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.3014.31665")]
-[assembly: AssemblyFileVersion("1.0.3014.31665")]
+// You can specify all the values or you can default the Build and Revision Numbers 
+// by using the '*' as shown below:
+// [assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.1.*")]
+[assembly: AssemblyFileVersion("1.1.0.0")]

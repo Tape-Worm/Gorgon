@@ -37,8 +37,36 @@ namespace GorgonLibrary.Internal
     /// <para>Since this is strictly for plug-ins, this class can only be accessed from the <see cref="GorgonLibrary.PlugIns.PlugInEntryPoint">PlugInEntryPoint</see> superclass as the protected method <see cref="GorgonLibrary.PlugIns.PlugInEntryPoint.GetD3DObjects">GetD3DObjects()</see>.</para>
     /// <para>BE VERY CAREFUL WITH THIS OBJECT!  It cannot be stressed enough, you will be messing with the guts of Gorgon and as such you can easily cause it to crash by doing something wrong.</para></remarks>
     public class D3DObjects
+        : IDeviceStateObject, IDisposable
     {
+        #region Variables.
+        private bool _disposed = false;             // Flag to indicate that the object is disposed.
+        #endregion
+
+        #region Events.
+        /// <summary>
+        /// Event fired during a device lost state.
+        /// </summary>
+        public event EventHandler DeviceLostState;
+
+        /// <summary>
+        /// Event fired during a device reset state.
+        /// </summary>
+        public event EventHandler DeviceResetState;
+        #endregion
+
         #region Properties.
+        /// <summary>
+        /// Property to return whether the device needs a reset or not.
+        /// </summary>
+        public bool DeviceNeedsReset
+        {
+            get
+            {
+                return Gorgon.Screen.DeviceNotReset;
+            }
+        }
+
         /// <summary>
         /// Property to return the Direct 3D device object used by Gorgon.
         /// </summary>
@@ -82,9 +110,78 @@ namespace GorgonLibrary.Internal
                 return Gorgon.Renderer.VertexTypes[0].D3DVertexDeclaration;
             }
         }
+
+        /// <summary>
+        /// Property to return the size of the system vertices in bytes.
+        /// </summary>
+        public int SystemVertexSize
+        {
+            get
+            {
+                return Gorgon.Renderer.VertexTypes[0].VertexSize(0);
+            }
+        }
+
+        /// <summary>
+        /// Property to return a list of render states.
+        /// </summary>
+        public RenderStates RenderStates
+        {
+            get
+            {
+                return Gorgon.Renderer.RenderStates;
+            }
+        }
+
+        /// <summary>
+        /// Property to return a list of image states.
+        /// </summary>
+        public ImageLayerStates[] ImageStates
+        {
+            get
+            {
+                return Gorgon.Renderer.ImageLayerStates;
+            }
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to reset the projection and view states.
+        /// </summary>
+        public void ResetProjectionViewState()
+        {
+            if (!Gorgon.Screen.DeviceNotReset)
+            {
+                // Reset.
+                Gorgon.Renderer.CurrentViewport = Gorgon.CurrentRenderTarget.DefaultView;
+                Gorgon.Renderer.CurrentProjectionMatrix = Gorgon.CurrentRenderTarget.ProjectionMatrix;
+
+                // Change the clipper to the render target dimensions.
+                Gorgon.CurrentClippingViewport = Gorgon.CurrentRenderTarget.DefaultView;
+            }
+        }
+
+        /// <summary>
+        /// Function to set the current image.
+        /// </summary>
+        /// <param name="stage">Image stage to set.</param>
+        /// <param name="image">Image to set.</param>
+        public void SetImage(int stage, Image image)
+        {
+            Gorgon.Renderer.SetImage(stage, image);
+        }
+
+        /// <summary>
+        /// Function to return the current image.
+        /// </summary>
+        /// <param name="stage">Image stage to return.</param>
+        /// <returns>The currently set image at the specified stage.</returns>
+        public Image GetImage(int stage)
+        {
+            return Gorgon.Renderer.GetImage(stage);
+        }        
+
         /// <summary>
         /// Function to retrieve the Direct 3D texture object from an image object.
         /// </summary>
@@ -174,6 +271,70 @@ namespace GorgonLibrary.Internal
 
             if (Gorgon.Screen == null)
                 throw new DeviceNotValidException();
+
+            DeviceStateList.Add(this);
+        }
+
+        /// <summary>
+        /// Releases unmanaged resources and performs other cleanup operations before the
+        /// <see cref="D3DObjects"/> is reclaimed by garbage collection.
+        /// </summary>
+        ~D3DObjects()
+        {
+            Dispose(false);
+        }
+        #endregion
+
+        #region IDeviceStateObject Members
+        /// <summary>
+        /// Function called when the device is in a lost state.
+        /// </summary>
+        public void DeviceLost()
+        {
+            if (DeviceLostState != null)
+                DeviceLostState(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Function called when the device is reset.
+        /// </summary>
+        public void DeviceReset()
+        {
+            if (DeviceResetState != null)
+                DeviceResetState(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Function to force the loss of the objects data.
+        /// </summary>
+        public void ForceRelease()
+        {
+            DeviceLost();
+        }
+        #endregion
+
+        #region IDisposable Members
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        private void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (DeviceStateList.Contains(this))
+                    DeviceStateList.Remove(this);
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <head>
 <title>Gorgon Change Log</title>
 <style type="text/css">
@@ -120,8 +120,20 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr>
 	<pre>
-April 2/2008 - Version - Current
+April 7/2008 - Version - Current
 ================================
++ Added an example that will allow us to expose SlimDX's Direct 3D interfaces to
+  our application via a plug-in.  This will allow us to mix in a 3D scene with our
+  2D stuff.
+  
+- Dropped the shared plug-in project from the examples.  We no longer require (and
+  honestly, never did require) a proxy DLL to host our base/abstract plug-in
+  interface(s).  This opens up a great deal of flexibility, the reason for the proxy 
+  DLL in the previous version was due to a circular dependency issue which has since 
+  been resolved.  Now the user can add the host assembly (e.g. My2DWorldBuilder.exe)
+  as a reference and use the interfaces exposed by that.  Of course, you can still
+  use a proxy DLL if you wish.
+  
 * Updated the file system editor to preview sprites and images when double clicked.
 
 * Updated the file system editor to handle encrypted files.

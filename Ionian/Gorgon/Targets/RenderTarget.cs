@@ -1614,10 +1614,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to render the scene for this target.
 		/// </summary>
-		public virtual void Update()
-		{
-			Gorgon.Renderer.Render();
-		}
+		public abstract void Update();
 
 		/// <summary>
 		/// Function to copy the render target into a render target image.
