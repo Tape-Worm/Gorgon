@@ -1007,6 +1007,10 @@ namespace GorgonLibrary.FileSystems
 			return OpenFileStream(filePath, false);
 		}
 
+        public virtual void AssignRoot(string path)
+        {
+        }
+
 		/// <summary>
 		/// Function to bind the root of the file system to a stream.
 		/// </summary>
