@@ -101,111 +101,156 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
-		/// Property to set or return the root path of the file system.
+		/// Function to read the file system index.
 		/// </summary>
-		public override string Root
+		/// <param name="fileSystemStream">Stream from which to read to the index.</param>
+		private void ReadIndex(Stream fileSystemStream)
 		{
-			get
-			{
-				return base.Root;
-			}
-			set
-			{
-				FileStream stream = null;					// File stream.
-				BinaryReaderEx reader = null;               // Binary reader.			
-				string xmlData = string.Empty;				// String to contain the XML data.
-				string header = string.Empty;               // Header text.
-				int indexSize = 0;							// Size of the directory index.
-                byte[] authCompare;                         // Authorization bytes to compare.
-                int encryptedSize = 0;                      // Encrypted data size.
+			BinaryReaderEx reader = null;               // Binary reader.			
+			string xmlData = string.Empty;				// String to contain the XML data.
+			string header = string.Empty;               // Header text.
+			int indexSize = 0;							// Size of the directory index.
+			byte[] authCompare;                         // Authorization bytes to compare.
+			int encryptedSize = 0;                      // Encrypted data size.
 
+			try
+			{
+				reader = new BinaryReaderEx(fileSystemStream, true);
+
+				// Read the header.
+				header = reader.ReadString();
+				if (string.Compare(header, FileSystemHeader, true) != 0)
+					throw new Exception("Invalid pack file format.");
+
+				// Load in our authorization data.
+				encryptedSize = reader.ReadInt32();
+				authCompare = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
+
+				if (authCompare.Length != AuthenticationData.Data.Length)
+					throw new FileSystemAccessDeniedException(Name);
+
+				// Ensure the data is the same.
+				for (int i = 0; i < authCompare.Length; i++)
+				{
+					if (authCompare[i] != AuthenticationData.Data[i])
+						throw new FileSystemAccessDeniedException(Name);
+				}
+
+				// Try to load the file key.
+				encryptedSize = reader.ReadInt32();
+				_fileKey = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
+
+				// Get the index size (encrypted).
+				indexSize = reader.ReadInt32();
+
+				// Get the XML.
+				xmlData = Encoding.UTF8.GetString(TransformData(reader.ReadBytes(indexSize), _fileKey, true));
+
+				// Load into the XML document object.
+				FileIndexXML.LoadXml(xmlData);
+
+				// Get the file offset.				
+				_fileOffset = fileSystemStream.Position - _fileSystemOffset;
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+				reader = null;
+			}
+		}
+
+		/// <summary>
+		/// Function to assign the root of this file system.
+		/// </summary>
+		/// <param name="fileSystemStream">The file stream that will contain the file system.</param>
+		/// <remarks>Due to the nature of a file stream, the file system within the stream must be a packed file system.</remarks>
+		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
+		public override void AssignRoot(Stream fileSystemStream)
+		{
+			if (fileSystemStream == null)
+				throw new ArgumentNullException("fileSystemStream");
+
+			base.AssignRoot(fileSystemStream);
+			InitializeIndex("[Stream]->" + Provider.Name + "." + Name);
+
+			// Set up stream binding information.
+			_fileStream = fileSystemStream;
+			_fileSystemOffset = fileSystemStream.Position;
+			_streamIsRoot = true;
+
+			try
+			{
+				ReadIndex(fileSystemStream);
+			}
+			catch (Exception ex)
+			{
+				_fileStream = null;
+				_fileSystemOffset = 0;
+				_streamIsRoot = false;
+				throw new FileSystemRootIsInvalidException("File stream [" + fileSystemStream.ToString() + "]", ex);
+			}
+
+			// Validate the index XML.
+			ValidateIndexXML();
+		}
+
+		/// <summary>
+		/// Function to assign the root of this file system.
+		/// </summary>
+		/// <param name="path">Path to the root of the file system.</param>
+		/// <remarks>Path can be a folder that contains the file system XML index for a folder file system or a file (typically
+		/// ending with extension .gorPack) for a packed file system.</remarks>
+		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
+		public override void AssignRoot(string path)
+		{
+			FileStream stream = null;					// File stream.
+
+			if (path == null)
+				path = string.Empty;
+
+			// Append default extension.
+			if (Path.GetExtension(path) == string.Empty)
+				path = Path.ChangeExtension(path, ".gorPack");
+
+			InitializeIndex(path);
+			
+			// Check for the archive file.
+			if (!File.Exists(Root))
+				throw new FileSystemRootIsInvalidException(Root);
+
+            if (AuthenticationData == null)
+                throw new InvalidAuthenticationDataException(Name);
+
+            try
+            {
 				// Disable the root/stream binding.
-				if ((IsRootInStream) && (_fileStream != null))
-				{
-					_fileSystemOffset = 0;
-					_fileStream = null;
-					_streamIsRoot = false;
-				}
-
-				if (value == null)
-					value = string.Empty;
-
-				// Append default extension.
-				if (Path.GetExtension(value) == string.Empty)
-					value += ".gorPack";
-
-				base.Root = value;
+				_fileSystemOffset = 0;
+				_fileStream = null;
+				_streamIsRoot = false;
 				
-				// Check for the archive file.
-				if (!File.Exists(Root))
-					throw new FileSystemRootIsInvalidException(Root);
-
-                if (AuthenticationData == null)
-                    throw new InvalidAuthenticationDataException(Name);
-
-                try
-                {
-                    // Open the archive file.
-                    stream = File.OpenRead(Root);
-                    reader = new BinaryReaderEx(stream, true);
-
-                    // Read the header.
-                    header = reader.ReadString();
-                    if (string.Compare(header, FileSystemHeader, true) != 0)
-                        throw new Exception("Invalid pack file format.");
-
-                    // Load in our authorization data.
-                    encryptedSize = reader.ReadInt32();
-                    authCompare = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
-
-                    if (authCompare.Length != AuthenticationData.Data.Length)
-                        throw new FileSystemAccessDeniedException(Name);
-
-                    // Ensure the data is the same.
-                    for (int i = 0; i < authCompare.Length; i++)
-                    {
-                        if (authCompare[i] != AuthenticationData.Data[i])
-                            throw new FileSystemAccessDeniedException(Name);
-                    }
-
-                    // Try to load the file key.
-                    encryptedSize = reader.ReadInt32();
-                    _fileKey = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
-
-                    // Get the index size (encrypted).
-                    indexSize = reader.ReadInt32();
-                    
-                    // Get the XML.
-                    xmlData = Encoding.UTF8.GetString(TransformData(reader.ReadBytes(indexSize), _fileKey, true));
-
-                    // Load into the XML document object.
-                    FileIndexXML.LoadXml(xmlData);
-
-                    // Get the file offset.				
-                    _fileOffset = stream.Position;
-                }
-                catch (FileSystemAccessDeniedException adex)
-                {
-                    throw adex;
-                }
-                catch (Exception ex)
-                {
-                    throw new FileSystemRootIsInvalidException(value, ex);
-                }
-				finally
-				{
-					// Clean up.
-					if (reader != null)
-						reader.Close();
-					reader = null;
-					if (stream != null)
-						stream.Dispose();
-					stream = null;
-				}
-
-				// Validate the index XML.
-				ValidateIndexXML();
+				// Open the archive file.
+	            stream = File.OpenRead(Root);
+				ReadIndex(stream);
+            }
+            catch (FileSystemAccessDeniedException adex)
+            {
+                throw adex;
+            }
+            catch (Exception ex)
+            {
+                throw new FileSystemRootIsInvalidException(path, ex);
+            }
+			finally
+			{
+				// Clean up.
+				if (stream != null)
+					stream.Dispose();
+				stream = null;
 			}
+
+			// Validate the index XML.
+			ValidateIndexXML();
 		}
 		#endregion
 
@@ -599,77 +644,6 @@ namespace GorgonLibrary.FileSystems
 			_fileStream = null;
 
 			base.Save(filePath);
-		}
-
-		/// <summary>
-		/// Function to bind the root of the file system to a stream.
-		/// </summary>
-		/// <param name="fileSystemRoot">Stream that contains the file system root.</param>
-		public override void OpenRootFromStream(Stream fileSystemRoot)
-		{
-			BinaryReaderEx reader = null;               // Binary reader.			
-			string xmlData = string.Empty;				// String to contain the XML data.
-			string header = string.Empty;               // Header text.
-			int indexSize = 0;							// Size of the directory index.
-			byte[] authCompare;                         // Authorization bytes to compare.
-			int encryptedSize = 0;                      // Encrypted data size.
-
-			if (fileSystemRoot == null)
-				throw new ArgumentNullException("fileSystemRoot");
-
-			try
-			{
-				base.Root = "[FileSystem.Stream]";
-
-				// Open the archive file.
-				_fileSystemOffset = fileSystemRoot.Position;
-				reader = new BinaryReaderEx(fileSystemRoot, true);
-
-				// Read the header.
-				header = reader.ReadString();
-				if (string.Compare(header, FileSystemHeader, true) != 0)
-					throw new Exception("Invalid pack file format.");
-
-				// Load in our authorization data.
-				encryptedSize = reader.ReadInt32();
-				authCompare = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
-
-				if (authCompare.Length != AuthenticationData.Data.Length)
-					throw new FileSystemAccessDeniedException(Name);
-
-				// Ensure the data is the same.
-				for (int i = 0; i < authCompare.Length; i++)
-				{
-					if (authCompare[i] != AuthenticationData.Data[i])
-						throw new FileSystemAccessDeniedException(Name);
-				}
-
-				// Try to load the file key.
-				encryptedSize = reader.ReadInt32();
-				_fileKey = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
-
-				// Get the index size (encrypted).
-				indexSize = reader.ReadInt32();
-
-				// Get the XML.
-				xmlData = Encoding.UTF8.GetString(TransformData(reader.ReadBytes(indexSize), _fileKey, true));
-
-				// Load into the XML document object.
-				FileIndexXML.LoadXml(xmlData);
-
-				ValidateIndexXML();
-
-				// Get the file offset.				
-				_fileOffset = fileSystemRoot.Position - _fileSystemOffset;
-				_fileStream = fileSystemRoot;
-				_streamIsRoot = true;
-			}
-			finally
-			{
-				if (reader != null)
-					reader.Close();
-				reader = null;
-			}
 		}
 		#endregion
 

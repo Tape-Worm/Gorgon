@@ -53,70 +53,6 @@ namespace GorgonLibrary.FileSystems
 				return "GORPACK1.GorgonFolderSystem";
 			}
 		}
-
-		/// <summary>
-		/// Property to return the offset of the file system within the stream.
-		/// </summary>
-		public override long FileSystemStreamOffset
-		{
-			get 
-			{
-				return -1;	
-			}
-			set
-			{
-			}
-		}
-
-		/// <summary>
-		/// Property to return whether the root of the file system is a stream or not.
-		/// </summary>
-		/// <value></value>
-		public override bool IsRootInStream
-		{
-			get 
-			{
-				return false;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the root path of the file system.
-		/// </summary>
-		public override string Root
-		{
-			get
-			{
-				return base.Root;
-			}
-			set
-			{
-				if (value == null)
-					value = string.Empty;
-
-				// Append a path separator.
-				if (!value.EndsWith(@"\"))
-					value += @"\";
-				
-				base.Root = value;
-
-                // Load the index file.
-                if (!File.Exists(Root + "FileSystem.Index.xml"))
-                    throw new FileSystemIndexReadException();
-                
-                try
-				{
-					FileIndexXML.Load(Root + "FileSystem.Index.xml");
-				}
-				catch (Exception ex)
-				{
-					throw new FileSystemRootIsInvalidException(Root, ex);
-				}
-
-				// Validate the index XML.
-				ValidateIndexXML();
-			}
-		}
 		#endregion
 
 		#region Methods.
@@ -284,23 +220,43 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
-		/// Function to bind the root of the file system to a stream.
+		/// Function to assign the root of this file system.
 		/// </summary>
-		/// <param name="fileSystemRoot">Stream that contains the file system root.</param>
-		public override void OpenRootFromStream(Stream fileSystemRoot)
+		/// <param name="path">Path to the root of the file system.</param>
+		/// <remarks>Path can be a folder that contains the file system XML index for a folder file system or a file (typically
+		/// ending with extension .gorPack) for a packed file system.</remarks>
+		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
+		public override void AssignRoot(string path)
 		{
-			throw new NotImplementedException("Folder based file systems cannot be rooted from a stream.");
-		}
+			if (path == null)
+				path = string.Empty;
 
-		/// <summary>
-		/// Function to save the file system to a stream.
-		/// </summary>
-		/// <param name="fileSystemStream">Stream to save into.</param>
-		public override void Save(Stream fileSystemStream)
-		{
-			throw new NotImplementedException("Folder based file systems cannot be saved to a stream.");
+			// Append the directory seperator character.
+			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				path += Path.DirectorySeparatorChar;
+
+			if (!Directory.Exists(path))
+				throw new DirectoryNotFoundException("The folder file system path '" + path + "' was not found.");
+
+			InitializeIndex(path);
+
+			// Load the index file.
+			if (!File.Exists(Root + "FileSystem.Index.xml"))
+				throw new FileSystemIndexReadException();
+
+			try
+			{
+				FileIndexXML.Load(Root + "FileSystem.Index.xml");
+			}
+			catch (Exception ex)
+			{
+				throw new FileSystemRootIsInvalidException(Root, ex);
+			}
+
+			// Validate the index XML.
+			ValidateIndexXML();
 		}
-        #endregion
+		#endregion
 
         #region Constructor.
         /// <summary>

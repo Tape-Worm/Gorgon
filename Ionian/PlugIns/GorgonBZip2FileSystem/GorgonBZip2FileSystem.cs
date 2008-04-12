@@ -93,90 +93,48 @@ namespace GorgonLibrary.FileSystems
 				_fileSystemOffset = value;
 			}
 		}
-
-		/// <summary>
-		/// Property to set or return the root path of the file system.
-		/// </summary>
-		public override string Root
-		{
-			get
-			{
-				return base.Root;
-			}
-			set
-			{
-				FileStream stream = null;					// File stream.
-				BinaryReaderEx reader = null;               // Binary reader.			
-				string xmlData = string.Empty;				// String to contain the XML data.
-				string header = string.Empty;               // Header text.
-				int indexSize = 0;							// Size of the directory index.
-
-				// Disable the root/stream binding.
-				if ((IsRootInStream) && (_fileStream != null))
-				{
-					_fileSystemOffset = 0;
-					_fileStream = null;
-					_streamIsRoot = false;
-				}
-
-				if (value == null)
-					value = string.Empty;
-
-				// Append default extension.
-				if (Path.GetExtension(value) == string.Empty)
-					value += ".gorPack";
-
-				base.Root = value;
-				
-				// Check for the archive file.
-				if (!File.Exists(Root))
-					throw new FileSystemRootIsInvalidException(Root);
-
-				try
-				{
-					// Open the archive file.
-					stream = File.OpenRead(Root);
-					reader = new BinaryReaderEx(stream, true);
-
-					// Read the header.
-					header = reader.ReadString();
-					if (string.Compare(header, FileSystemHeader, true) != 0)
-						throw new Exception("Invalid pack file format.");
-
-					// Get the index size (compressed).
-					indexSize = reader.ReadInt32();
-
-					// Get the XML.
-					xmlData = Encoding.UTF8.GetString(DecompressData(reader.ReadBytes(indexSize)));
-
-					// Load into the XML document object.
-					FileIndexXML.LoadXml(xmlData);
-
-					// Get the file offset.				
-					_fileOffset = stream.Position;
-				}
-				catch (Exception ex)
-				{
-					throw new FileSystemRootIsInvalidException(value, ex);
-				}
-				finally
-				{
-					// Clean up.
-					if (reader != null)
-						reader.Close();
-					reader = null;
-					if (stream != null)
-						stream.Dispose();
-					stream = null;
-				}
-
-				// Validate the index XML.
-				ValidateIndexXML();
-			}
-		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to read the file system index.
+		/// </summary>
+		/// <param name="fileSystemStream">Stream that contains the index.</param>
+		private void ReadIndex(Stream fileSystemStream)
+		{
+			BinaryReaderEx reader = null;		// Binary reader.
+			string xmlData = string.Empty;		// String to contain the XML data.
+			string header = string.Empty;       // Header text.
+			int indexSize = 0;					// Size of the directory index.
+
+			try
+			{
+				reader = new BinaryReaderEx(fileSystemStream, true);
+
+				// Read the header.
+				header = reader.ReadString();
+				if (string.Compare(header, FileSystemHeader, true) != 0)
+					throw new Exception("Invalid pack file format.");
+
+				// Get the index size (compressed).
+				indexSize = reader.ReadInt32();
+
+				// Get the XML.
+				xmlData = Encoding.UTF8.GetString(DecompressData(reader.ReadBytes(indexSize)));
+
+				// Load into the XML document object.
+				FileIndexXML.LoadXml(xmlData);
+
+				// Get the file offset.				
+				_fileOffset = fileSystemStream.Position - _fileSystemOffset;
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+			}
+		}
+
 		/// <summary>
 		/// Function to compress a block of data.
 		/// </summary>
@@ -455,56 +413,88 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
-		/// Function to bind the root of the file system to a stream.
+		/// Function to assign the root of this file system.
 		/// </summary>
-		/// <param name="fileSystemRoot">Stream that contains the file system root.</param>
-		public override void OpenRootFromStream(Stream fileSystemRoot)
+		/// <param name="fileSystemStream">The file stream that will contain the file system.</param>
+		/// <remarks>Due to the nature of a file stream, the file system within the stream must be a packed file system.</remarks>
+		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
+		public override void AssignRoot(Stream fileSystemStream)
 		{
-			BinaryReaderEx reader = null;               // Binary reader.			
-			string xmlData = string.Empty;				// String to contain the XML data.
-			string header = string.Empty;               // Header text.
-			int indexSize = 0;							// Size of the directory index.
+			if (fileSystemStream == null)
+				throw new ArgumentNullException("fileSystemStream");
 
-			if (fileSystemRoot == null)
-				throw new ArgumentNullException("fileSystemRoot");
+			base.AssignRoot(fileSystemStream);
+			InitializeIndex("[Stream]->" + Provider.Name + "." + Name);
+
+			// Set up stream binding information.
+			_fileStream = fileSystemStream;
+			_fileSystemOffset = fileSystemStream.Position;
+			_streamIsRoot = true;
 
 			try
 			{
-				base.Root = "[FileSystem.Stream]";
+				ReadIndex(fileSystemStream);
+			}
+			catch (Exception ex)
+			{
+				_fileStream = null;
+				_fileSystemOffset = 0;
+				_streamIsRoot = false;
+				throw new FileSystemRootIsInvalidException("File stream [" + fileSystemStream.ToString() + "]", ex);
+			}
+
+			// Validate the index XML.
+			ValidateIndexXML();
+		}
+
+		/// <summary>
+		/// Function to assign the root of this file system.
+		/// </summary>
+		/// <param name="path">Path to the root of the file system.</param>
+		/// <remarks>Path can be a folder that contains the file system XML index for a folder file system or a file (typically
+		/// ending with extension .gorPack) for a packed file system.</remarks>
+		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
+		public override void AssignRoot(string path)
+		{
+			FileStream stream = null;					// File stream.
+
+			if (path == null)
+				path = string.Empty;
+
+			// Append default extension.
+			if (Path.GetExtension(path) == string.Empty)
+				path = Path.ChangeExtension(path, ".gorPack");
+
+			InitializeIndex(path);
+
+			// Check for the archive file.
+			if (!File.Exists(Root))
+				throw new FileSystemRootIsInvalidException(Root);
+
+			try
+			{
+				// Unbind from any stream.
+				_fileSystemOffset = 0;
+				_fileStream = null;
+				_streamIsRoot = false;
 
 				// Open the archive file.
-				_fileSystemOffset = fileSystemRoot.Position;
-				reader = new BinaryReaderEx(fileSystemRoot, true);
-
-				// Read the header.
-				header = reader.ReadString();
-				if (string.Compare(header, FileSystemHeader, true) != 0)
-					throw new Exception("Invalid pack file format.");
-
-				// Get the index size (compressed).
-				indexSize = reader.ReadInt32();
-
-				// Get the XML.
-				xmlData = Encoding.UTF8.GetString(DecompressData(reader.ReadBytes(indexSize)));
-
-				// Load into the XML document object.
-				FileIndexXML.LoadXml(xmlData);
-
-				// Get the file offset.				
-				_fileOffset = reader.BaseStream.Position - _fileSystemOffset;
-
-				// Validate the index XML.
-				ValidateIndexXML();
-
-				_fileStream = fileSystemRoot;
-				_streamIsRoot = true;
+				stream = File.OpenRead(Root);
+				ReadIndex(stream);
+			}
+			catch (Exception ex)
+			{
+				throw new FileSystemRootIsInvalidException(path, ex);
 			}
 			finally
 			{
-				if (reader != null)
-					reader.Close();
-				reader = null;
+				if (stream != null)
+					stream.Dispose();
+				stream = null;
 			}
+
+			// Validate the index XML.
+			ValidateIndexXML();
 		}
         #endregion
 

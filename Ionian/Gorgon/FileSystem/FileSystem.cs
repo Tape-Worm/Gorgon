@@ -132,18 +132,26 @@ namespace GorgonLibrary.FileSystems
 		/// <summary>
 		/// Property to return whether the root of the file system is a stream or not.
 		/// </summary>
-		public abstract bool IsRootInStream
+		public virtual bool IsRootInStream
 		{
-			get;
+			get
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the offset of the file system within the stream.
 		/// </summary>
-		public abstract long FileSystemStreamOffset
+		public virtual long FileSystemStreamOffset
 		{
-			get;
-			set;
+			get
+			{
+				return -1;
+			}
+			set
+			{
+			}
 		}
 
 		/// <summary>
@@ -179,28 +187,12 @@ namespace GorgonLibrary.FileSystems
         /// <summary>
         /// Property to set or return the root path of the file system.
         /// </summary>
-        public virtual string Root
+        public string Root
         {
             get
             {
                 return _root;
-            }
-            set
-            {
-				if ((value == null) || (value == string.Empty))
-					throw new FileSystemRootIsInvalidException();
-
-				// Use standard separators
-				value = value.Replace("/", @"\");
-
-				// Add the file index.
-				_fileIndex = new XmlDocument();
-
-				// Remove all entries.
-				Clear();
-
-				_root = value;
-			}
+            } 
         }
         #endregion
 
@@ -449,7 +441,21 @@ namespace GorgonLibrary.FileSystems
 		{
 		}
 
-        /// <summary>
+		/// <summary>
+		/// Function to initialize the file system indexing.
+		/// </summary>
+		/// <param name="rootPath">Path to the root of the file system.</param>
+		protected void InitializeIndex(string rootPath)
+		{
+			if (string.IsNullOrEmpty(rootPath))
+				throw new FileSystemRootIsInvalidException();
+
+			_fileIndex = new XmlDocument();
+			Clear();
+			_root = rootPath;
+		}
+		
+		/// <summary>
         /// Function used to create a user friendly authorization interface.
         /// </summary>
         /// <param name="owner">Form that would potentially own any dialogs we create.</param>
@@ -1007,15 +1013,26 @@ namespace GorgonLibrary.FileSystems
 			return OpenFileStream(filePath, false);
 		}
 
-        public virtual void AssignRoot(string path)
-        {
-        }
+		/// <summary>
+		/// Function to assign the root of this file system.
+		/// </summary>
+		/// <param name="path">Path to the root of the file system.</param>
+		/// <remarks>Path can be a folder that contains the file system XML index for a folder file system or a file (typically 
+		/// ending with extension .gorPack) for a packed file system.</remarks>
+		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
+        public abstract void AssignRoot(string path);
 
 		/// <summary>
-		/// Function to bind the root of the file system to a stream.
+		/// Function to assign the root of this file system.
 		/// </summary>
-		/// <param name="fileSystemRoot">Stream that contains the file system root.</param>
-		public abstract void OpenRootFromStream(Stream fileSystemRoot);
+		/// <param name="fileSystemStream">The file stream that will contain the file system.</param>
+		/// <remarks>Due to the nature of a file stream, the file system within the stream must be a packed file system.</remarks>
+		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
+		public virtual void AssignRoot(Stream fileSystemStream)
+		{
+			if (!Provider.IsPackedFile)
+				throw new FileSystemTypeInvalidException(Provider.Name);
+		}
 
         /// <summary>
         /// Function to remove a file from the file system.
@@ -1171,7 +1188,11 @@ namespace GorgonLibrary.FileSystems
 		/// Function to save the file system to a stream.
 		/// </summary>
 		/// <param name="fileSystemStream">Stream to save into.</param>
-		public abstract void Save(Stream fileSystemStream);
+		public virtual void Save(Stream fileSystemStream)
+		{
+			if (!Provider.IsPackedFile)
+				throw new FileSystemTypeInvalidException(Provider.Name);
+		}
 		
 		/// <summary>
 		/// Function to save the file system.

@@ -776,7 +776,7 @@ namespace GorgonLibrary.Framework
 						if (System.IO.Path.GetDirectoryName(row.FileSystemRoot) != string.Empty)
 							rootPath += ValidatePath(System.IO.Path.GetDirectoryName(row.FileSystemRoot));
 						rootPath += System.IO.Path.GetFileName(row.FileSystemRoot);
-						fileSystem.Root = rootPath;
+						fileSystem.AssignRoot(rootPath);
 					}
 
 					_fileSystems.Add(fileSystem.Name, fileSystem);

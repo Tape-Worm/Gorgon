@@ -436,10 +436,10 @@ namespace GorgonLibrary.FileSystems.Tools
                                 return true;
                             }
                         }
-                        if (!provider.IsPackedFile)
-                            newFileSystem.Root = Path.GetDirectoryName(filePath);
-                        else
-                            newFileSystem.Root = filePath;
+						if (!provider.IsPackedFile)
+							newFileSystem.AssignRoot(Path.GetDirectoryName(filePath));
+						else
+							newFileSystem.AssignRoot(filePath);
                         break;
                     }
                 }

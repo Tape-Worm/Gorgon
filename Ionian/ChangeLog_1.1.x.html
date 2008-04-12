@@ -122,18 +122,21 @@
 	<pre>
 April 11/2008 - Version - Current
 ================================
-* Did some code clean up to break some silly habits (like catch { throw; } finally).
+* Did some code clean up to break some silly habits (like catch { throw; } finally { }).
 
-+ Added Save(stream), OpenRootFromStream() methods and IsRootInStream property to 
-  facilitate loading a file system object from a stream.  This way we can put packed 
++ Added Save(stream), AssignRoot(string/Stream) methods and IsRootInStream property to 
+  facilitate loading a file system object from a stream.  With this we can put packed 
   file systems into other packed file systems, or load a file system from a binary 
-  data blob (e.g. imagine loading your file system from a database field).  Also
-  added a FileSystemStreamOffset property to set or show where the file system is
-  located.  
+  data blob (e.g. imagine loading your file system from a database field).  Or even stream
+  in a file system from a network connection.  Also added a FileSystemStreamOffset property 
+  to set or show where the file system is located within a stream. Removed the setter 
+  accessor on the Root property since we can now set it via the AssignRoot function.
   
 * Modified the Blit() methods to take a BlitterSizeMode enumeration instead of a boolean
   as the scaling parameter.  This was done to be explicit about the case of size
-  mismatch between the image and the parameters passed in to the blitter.
+  mismatch between the image and the parameters passed in to the blitter.  Added Color
+  parameter to the blitter that will allow us to alter the color of the blitted target
+  or image.
   
 * Modified the Direct 3D plug-in interface to expose a method to flush the rendering
   pipeline.  This should be called before rendering your 3D scene or else you may get
@@ -151,8 +154,6 @@ April 11/2008 - Version - Current
   as a reference and use the interfaces exposed by that.  Of course, you can still
   use a proxy DLL if you wish.
   
-* Updated the file system editor to preview sprites and images when double clicked.
-
 * Updated the file system editor to handle encrypted files.
 
 + Added a new encrypted file system plug-in.  This is a test plug-in, and should

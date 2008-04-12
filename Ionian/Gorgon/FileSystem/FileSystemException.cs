@@ -29,6 +29,34 @@ using SharpUtilities;
 namespace GorgonLibrary.FileSystems
 {
 	/// <summary>
+	/// File system type is invalid for the operation specified.
+	/// </summary>
+	public class FileSystemTypeInvalidException
+		: GorgonException
+	{
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileSystemTypeInvalidException"/> class.
+		/// </summary>
+		/// <param name="fileSystemType">Type of the file system that is invalid for the operation.</param>
+		/// <param name="ex">The inner exception.</param>
+		public FileSystemTypeInvalidException(string fileSystemType, Exception ex)
+			: base("The operation is not valid for file systems of the type '" + fileSystemType + "'.", ex)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileSystemTypeInvalidException"/> class.
+		/// </summary>
+		/// <param name="fileSystemType">Type of the file system that is invalid for the operation.</param>
+		public FileSystemTypeInvalidException(string fileSystemType)
+			: this(fileSystemType, null)
+		{
+		}
+		#endregion
+	}
+
+	/// <summary>
 	/// File system already exists.
 	/// </summary>
 	public class FileSystemExistsException
