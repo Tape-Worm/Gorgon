@@ -69,36 +69,19 @@
 </style>
 </head>
 <body>
-<div style="text-align: center"><img alt="" src="Resources/Misc/GorgonLogo2.png"></div><div>
-<span class="region">#region LGPL.</span><br>
+<div style="text-align: center"><img alt="" src="Resources/Misc/GorgonLogo2.png" /></div><div>
+<span class="region">#region LGPL.</span><br/>
 <span class="comment">
-//<br>
-// Gorgon.<br>
-// Copyright (C) 2007 Michael Winsor<br>
-// <br>
-// This library is free software; you can redistribute it and/or<br>
-// modify it under the terms of the GNU Lesser General Public<br>
-// License as published by the Free Software Foundation; either<br>
-// version 2.1 of the License, or (at your option) any later version.<br>
-// <br>
-// This library is distributed in the hope that it will be useful,<br>
-// but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU<br>
-// Lesser General Public License for more details.<br>
-// <br>
-// You should have received a copy of the GNU Lesser General Public<br>
-// License along with this library; if not, write to the Free Software<br>
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA<br>
-// <br>
-</span>
-<span class="region">#endregion<br><br>
-<table style="width: 30%" cellspacing="1" class="style5">
+//<br/>
+// Gorgon.<br/>
+// Copyright (C) 2007 Michael Winsor<br/>// <br/>// This library is free software; you can redistribute it and/or<br/>// modify it under the terms of the GNU Lesser General Public<br/>// License as published by the Free Software Foundation; either<br/>// version 2.1 of the License, or (at your option) any later version.<br/>// <br/>// This library is distributed in the hope that it will be useful,<br/>// but WITHOUT ANY WARRANTY; without even the implied warranty of<br/>// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU<br/>// Lesser General Public License for more details.<br/>// <br/>// You should have received a copy of the GNU Lesser General Public<br/>// License along with this library; if not, write to the Free Software<br/>// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA<br/>// <br/></span>
+<span class="region">#endregion<br/><br/></span><table class="region" style="width: 30%" cellspacing="1">
 	<tr>
 		<td class="style2">Legend</td>
 	</tr>
 	<tr>
 		<td>
-		<table style="width: 100%" cellspacing="1" class="style5" align="center">
+		<table style="text-align: center; width: 100%" cellspacing="1" class="style5">
 			<tr>
 				<td class="style4">*</td>
 				<td class="style4">Modification</td>
@@ -115,13 +98,17 @@
 		</td>
 	</tr>
 </table>
-</span></div>
+</div>
 
 <div>
-	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr>
+	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
 April 11/2008 - Version - Current
 ================================
++ Added new code to the PlugInFactory static object to check for signed assemblies.
+  Also added code to compare the assembly public key with the users public key so
+  that the user application can only load plug-ins that are signed by the user.
+  
 * Did some code clean up to break some silly habits (like catch { throw; } finally { }).
 
 + Added Save(stream), AssignRoot(string/Stream) methods and IsRootInStream property to 

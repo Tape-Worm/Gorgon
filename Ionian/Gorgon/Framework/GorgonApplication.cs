@@ -76,6 +76,7 @@ namespace GorgonLibrary.Framework
 		private bool _showLogo = true;							// Flag to show the logo.
 		private bool _escapeCloses = true;						// Flag to indicate that the escape key will close the application.
 		private Font _defaultFont = null;						// Default font.
+		private bool _requireSignedPlugIns = false;				// Flag to indicate that plug-ins should be signed.
 		#endregion
 
         #region Properties.
@@ -99,6 +100,22 @@ namespace GorgonLibrary.Framework
 			get
 			{
 				return _defaultFont;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether custom plug-ins should be signed or not.
+		/// </summary>
+		[Browsable(true), Category("Framework"), Description("Sets whether or not to require that custom plug-ins should be signed."),DefaultValue(false)]
+		public bool RequireSignedPlugIns
+		{
+			get
+			{
+				return _requireSignedPlugIns;
+			}
+			set
+			{
+				_requireSignedPlugIns = value;
 			}
 		}
 
@@ -746,9 +763,9 @@ namespace GorgonLibrary.Framework
 				if ((row.PlugInEnabled) && (row.PlugInDLL != string.Empty))
 				{
 					if (row.PlugInName == string.Empty)
-						PlugInFactory.Load(row.PlugInDLL);
+						PlugInFactory.Load(row.PlugInDLL, _requireSignedPlugIns);
 					else
-						PlugInFactory.Load(row.PlugInDLL, row.PlugInName);
+						PlugInFactory.Load(row.PlugInDLL, row.PlugInName, _requireSignedPlugIns);
 				}
 			}
 		}

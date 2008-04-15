@@ -41,6 +41,11 @@ namespace GorgonLibrary.FileSystems
 		private FileSystemInfoAttribute _info;				// File system information.
 		private Type _fileSystemType;						// File system type.
 		private bool _isDisposed = false;					// Flag to indicate whether this object is disposed already or not.
+#if DEBUG
+		private static bool _requireSignedPlugIns = false;	// Flag to indicate that we require signed provider plug-ins.
+#else
+		private static bool _requireSignedPlugIns = true;	// Flag to indicate that we require signed provider plug-ins.
+#endif
 		#endregion
 
 		#region Properties.
@@ -72,6 +77,21 @@ namespace GorgonLibrary.FileSystems
 			get
 			{				
 				return _fileSystemPlugIn;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether provider plug-ins need to be signed or not.
+		/// </summary>
+		public static bool RequireSignedProviderPlugIns
+		{
+			get
+			{
+				return _requireSignedPlugIns;
+			}
+			set
+			{
+				_requireSignedPlugIns = value;
 			}
 		}
 
@@ -228,24 +248,17 @@ namespace GorgonLibrary.FileSystems
 			if (string.IsNullOrEmpty(providerPlugInPath))
 				throw new ArgumentNullException("providerPlugInPath");
 
-			try
-			{
-				// Load the plug-in.
-				plugIn = PlugInFactory.Load(providerPlugInPath, plugInName) as FileSystemPlugIn;
+			// Load the plug-in.
+			plugIn = PlugInFactory.Load(providerPlugInPath, plugInName, _requireSignedPlugIns) as FileSystemPlugIn;
 
-				// Add each plug-in (if it doesn't already exist).
-				if ((plugIn == null) || (plugIn.PlugInType != PlugInType.FileSystem))
-					throw new ApplicationException("The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
+			// Add each plug-in (if it doesn't already exist).
+			if ((plugIn == null) || (plugIn.PlugInType != PlugInType.FileSystem))
+				throw new FileSystemPlugInLoadException(providerPlugInPath, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
 
-				if (!FileSystemProviderCache.Providers.Contains(plugInName))
-					FileSystemProviderCache.Providers.Add(plugIn);
+			if (!FileSystemProviderCache.Providers.Contains(plugInName))
+				FileSystemProviderCache.Providers.Add(plugIn);
 
-				return FileSystemProviderCache.Providers[plugInName];
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemPlugInLoadException(providerPlugInPath, ex);
-			}
+			return FileSystemProviderCache.Providers[plugInName];
 		}
 
 		/// <summary>
@@ -260,28 +273,21 @@ namespace GorgonLibrary.FileSystems
 			if (string.IsNullOrEmpty(providerPlugInPath))
 				throw new ArgumentNullException("providerPlugInPath");
 
-			try
-			{
-				// Load the plug-in.
-				PlugInFactory.Load(providerPlugInPath);
+			// Load the plug-in.
+			PlugInFactory.Load(providerPlugInPath, _requireSignedPlugIns);
 
-				// Add each plug-in (if it doesn't already exist).
-				foreach (PlugInEntryPoint plugInItem in PlugInFactory.PlugIns)
+			// Add each plug-in (if it doesn't already exist).
+			foreach (PlugInEntryPoint plugInItem in PlugInFactory.PlugIns)
+			{
+				plugIn = plugInItem as FileSystemPlugIn;
+				if (plugIn != null)
 				{
-					plugIn = plugInItem as FileSystemPlugIn;
-					if (plugIn != null)
-					{
-						if (plugIn.PlugInType != PlugInType.FileSystem)
-							throw new ApplicationException("The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
+					if (plugIn.PlugInType != PlugInType.FileSystem)
+						throw new FileSystemPlugInLoadException(providerPlugInPath, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
 
-						if (!FileSystemProviderCache.Providers.Contains(plugIn.Name))
-							FileSystemProviderCache.Providers.Add(plugIn);
-					}
+					if (!FileSystemProviderCache.Providers.Contains(plugIn.Name))
+						FileSystemProviderCache.Providers.Add(plugIn);
 				}
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemPlugInLoadException(providerPlugInPath, ex);
 			}
 		}
 
@@ -296,21 +302,14 @@ namespace GorgonLibrary.FileSystems
 			if (providerType == null)
 				throw new ArgumentNullException("providerType");
 
-			try
-			{
-				if (!providerType.IsSubclassOf(typeof(FileSystem)))
-					throw new TypeLoadException("The provider type is not a file system.");
+			if (!providerType.IsSubclassOf(typeof(FileSystem)))
+				throw new TypeLoadException("The provider type is not a file system.");
 
-				// Add the type.
-				if (!FileSystemProviderCache.Providers.Contains(providerType))
-					FileSystemProviderCache.Providers.Add(providerType);
+			// Add the type.
+			if (!FileSystemProviderCache.Providers.Contains(providerType))
+				FileSystemProviderCache.Providers.Add(providerType);
 
-				return FileSystemProviderCache.Providers[providerType];
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemPlugInLoadException(providerType.FullName, ex);
-			}
+			return FileSystemProviderCache.Providers[providerType];
 		}
 		#endregion
 

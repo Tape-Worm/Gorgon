@@ -78,7 +78,7 @@ namespace GorgonLibrary.FileSystems
 			}
 			catch (Exception ex)
 			{
-				throw new FileSystemPlugInLoadException(parameters[0].ToString(), ex);
+				throw new FileSystemPlugInLoadException(parameters[0].ToString(), ex.Message, ex);
 			}			
 		}
         #endregion		

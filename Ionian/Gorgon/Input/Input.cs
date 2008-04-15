@@ -43,6 +43,11 @@ namespace GorgonLibrary.InputDevices
 		private JoystickList _joysticks = null;					// Joystick list.
 		private Mouse _mouse = null;							// Interface for mouse data.
 		private Keyboard _keyboard = null;						// Interface for keyboard data.
+#if DEBUG
+		private static bool _requireSigned = false;				// Flag to require a signed plug-in.
+#else
+		private static bool _requireSigned = true;				// Flag to require a signed plug-in.
+#endif
 		#endregion
 
 		#region Properties.
@@ -54,6 +59,21 @@ namespace GorgonLibrary.InputDevices
 			get
 			{
 				return _plugIn;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the input plug-in requires signing.
+		/// </summary>
+		public static bool RequireSignedPlugIn
+		{
+			get
+			{
+				return _requireSigned;
+			}
+			set
+			{
+				_requireSigned = value;
 			}
 		}
 
@@ -164,7 +184,7 @@ namespace GorgonLibrary.InputDevices
 			if (string.IsNullOrEmpty(plugInName))
 				throw new ArgumentNullException("plugInName");
 
-			plugIn = PlugInFactory.Load(plugInPath, plugInName) as InputPlugIn;
+			plugIn = PlugInFactory.Load(plugInPath, plugInName, _requireSigned) as InputPlugIn;
 
 			if ((plugIn == null) || (plugIn.PlugInType != PlugInType.Input))
 				throw new InputPlugInInvalidType(plugInPath);

@@ -169,6 +169,34 @@ namespace GorgonLibrary.PlugIns
 	}
 
 	/// <summary>
+	/// Plug-in not signed or not signed correctly.
+	/// </summary>
+	public class PlugInSigningException
+		: GorgonException
+	{
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PlugInSigningException"/> class.
+		/// </summary>
+		/// <param name="moduleName">Name of the module that caused the signing exception.</param>
+		/// <param name="ex">Inner exception.</param>
+		public PlugInSigningException(string moduleName, Exception ex)
+			: base("Plug-in '" + moduleName + "' is not signed or not signed with a valid key.", ex)
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PlugInSigningException"/> class.
+		/// </summary>
+		/// <param name="moduleName">Name of the module that caused the signing exception.</param>
+		public PlugInSigningException(string moduleName)
+			: this(moduleName, null)
+		{
+		}
+		#endregion
+	}
+
+	/// <summary>
 	/// Plug-in already loaded exception.
 	/// </summary>
 	public class PlugInAlreadyLoadedException

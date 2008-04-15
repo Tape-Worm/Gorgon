@@ -123,9 +123,10 @@ namespace GorgonLibrary.FileSystems
 		/// Constructor.
 		/// </summary>
 		/// <param name="plugInPath">Path and filename of the plug-in that failed to load.</param>
+		/// <param name="message">Exception information.</param>
 		/// <param name="ex">Source exception.</param>
-		public FileSystemPlugInLoadException(string plugInPath, Exception ex)
-			: base("The file system plug-in '" + plugInPath + "' failed to load.", ex)
+		public FileSystemPlugInLoadException(string plugInPath, string message, Exception ex)
+			: base("The file system plug-in '" + plugInPath + "' failed to load.\n" + message, ex)
 		{
 		}
 
@@ -133,8 +134,9 @@ namespace GorgonLibrary.FileSystems
 		/// Constructor.
 		/// </summary>
 		/// <param name="plugInPath">Path and filename of the plug-in that failed to load.</param>
-		public FileSystemPlugInLoadException(string plugInPath)
-			: this(plugInPath, null)
+		/// <param name="message">Exception information.</param>
+		public FileSystemPlugInLoadException(string plugInPath, string message)
+			: this(plugInPath, message, null)
 		{
 		}
 		#endregion
