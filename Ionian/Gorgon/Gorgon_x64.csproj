@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.21022</ProductVersion>
@@ -76,10 +76,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpUtilities, Version=2.1.2955.5969, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\SharpUtilities.2.1.2955\Assemblies\SharpUtilities.dll</HintPath>
-    </Reference>
     <Reference Include="SlimDX, Version=1.0.2982.42096, Culture=neutral, PublicKeyToken=5a7e35f0f7a29e88, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\SlimDX\x64\Release\SlimDX.dll</HintPath>
@@ -121,6 +117,9 @@
     <Compile Include="Buffers\VertexBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Collections\Collection.cs" />
+    <Compile Include="Collections\Dictionary.cs" />
+    <Compile Include="Collections\DynamicArray.cs" />
     <Compile Include="Device\DeviceException.cs" />
     <Compile Include="Direct3DUtility.cs" />
     <Compile Include="Enums\AnimationEnums.cs" />
@@ -164,12 +163,6 @@
     <Compile Include="Fonts\FontList.cs" />
     <Compile Include="Fonts\Glyph.cs" />
     <Compile Include="Fonts\GlyphTree.cs" />
-    <Compile Include="Framework\GorgonAppSettings.cs" />
-    <Compile Include="Framework\GorgonSettings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GorgonSettings.xsd</DependentUpon>
-    </Compile>
     <Compile Include="Imaging\ImageCache.cs" />
     <Compile Include="Imaging\ImageException.cs" />
     <Compile Include="Imaging\ImageList.cs" />
@@ -182,6 +175,16 @@
     <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Math\MathUtility.cs" />
+    <Compile Include="Math\Matrix.cs" />
+    <Compile Include="Math\MinMaxRange.cs" />
+    <Compile Include="Math\Quaternion.cs" />
+    <Compile Include="Math\Spline.cs" />
+    <Compile Include="Math\Vector2D.cs" />
+    <Compile Include="Math\Vector3D.cs" />
+    <Compile Include="Math\Vector4D.cs" />
+    <Compile Include="Native\Win32API.cs" />
+    <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="Plugin\PlugInEntryPoint.cs" />
     <Compile Include="Plugin\PlugInException.cs" />
     <Compile Include="Plugin\PlugInFactory.cs" />
@@ -199,6 +202,10 @@
     <Compile Include="Rendering\Renderable.cs" />
     <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Rendering\RenderingException.cs" />
+    <Compile Include="Serialization\BinaryReaderEx.cs" />
+    <Compile Include="Serialization\BinaryWriterEx.cs" />
+    <Compile Include="Serialization\StreamReaderEx.cs" />
+    <Compile Include="Serialization\StreamWriterEx.cs" />
     <Compile Include="Shaders\ImageShader.cs" />
     <Compile Include="Shaders\ImageShaderCache.cs" />
     <Compile Include="Shaders\ImageShaderList.cs" />
@@ -232,6 +239,9 @@
     <Compile Include="Targets\RenderImage.cs" />
     <Compile Include="Targets\RenderWindow.cs" />
     <Compile Include="Timing\TimingData.cs" />
+    <Compile Include="Utility\Logger.cs" />
+    <Compile Include="Utility\LoggerExceptions.cs" />
+    <Compile Include="Utility\NamedObject.cs" />
     <Compile Include="Vertex Data\VertexDataException.cs" />
     <Compile Include="Vertex Data\VertexTypeList.cs" />
     <Compile Include="Viewports\Viewport.cs">
@@ -240,24 +250,6 @@
     <Compile Include="Buffers\IDataCache.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Enums\PlugInTypeEnums.cs" />
-    <Compile Include="Framework\DeviceInformationDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Framework\DeviceInformationDialog.Designer.cs">
-      <DependentUpon>DeviceInformationDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Framework\GorgonApplication.Designer.cs">
-      <DependentUpon>GorgonApplication.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Framework\SetupDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Framework\SetupDialog.Designer.cs">
-      <DependentUpon>SetupDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Framework\GorgonApplication.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Plugin\PlugInAttribute.cs" />
     <Compile Include="Plugin\PlugInList.cs">
       <SubType>Code</SubType>
@@ -306,18 +298,6 @@
       <DependentUpon>formAuthentication.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Framework\DeviceInformationDialog.resx">
-      <DependentUpon>DeviceInformationDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Framework\SetupDialog.resx">
-      <DependentUpon>SetupDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Framework\GorgonApplication.resx">
-      <DependentUpon>GorgonApplication.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
@@ -326,17 +306,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
-    <None Include="Framework\GorgonSettings.xsc">
-      <DependentUpon>GorgonSettings.xsd</DependentUpon>
-    </None>
-    <None Include="Framework\GorgonSettings.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>GorgonSettings.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Framework\GorgonSettings.xss">
-      <DependentUpon>GorgonSettings.xsd</DependentUpon>
-    </None>
     <None Include="Resources\Arial_9pt_bold.gorFont" />
     <None Include="Resources\Blur.fx" />
     <None Include="Resources\GorIcon.ico" />

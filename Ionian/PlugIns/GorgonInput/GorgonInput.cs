@@ -26,9 +26,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using Forms = System.Windows.Forms;
-using SharpUtilities.Native.Win32;
 using GorgonLibrary;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.InputDevices.Internal;
 
 namespace GorgonLibrary.InputDevices
 {

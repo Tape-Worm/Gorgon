@@ -80,7 +80,7 @@ namespace GorgonLibrary.Framework
 			// 
 			this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
 			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.pictureBox1.Image = global::GorgonLibrary.Properties.Resources.GorgonLogo;
+			this.pictureBox1.Image = global::GorgonLibrary.Framework.Properties.Resources.GorgonLogo;
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(346, 86);
@@ -135,7 +135,7 @@ namespace GorgonLibrary.Framework
 			this.OK.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
 			this.OK.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.OK.ForeColor = System.Drawing.Color.Black;
-			this.OK.Image = global::GorgonLibrary.Properties.Resources.check;
+			this.OK.Image = global::GorgonLibrary.Framework.Properties.Resources.check;
 			this.OK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.OK.Location = new System.Drawing.Point(212, 182);
 			this.OK.Name = "OK";
@@ -153,7 +153,7 @@ namespace GorgonLibrary.Framework
 			this.cancel.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
 			this.cancel.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cancel.ForeColor = System.Drawing.Color.Black;
-			this.cancel.Image = global::GorgonLibrary.Properties.Resources.delete;
+			this.cancel.Image = global::GorgonLibrary.Framework.Properties.Resources.delete;
 			this.cancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.cancel.Location = new System.Drawing.Point(273, 182);
 			this.cancel.Name = "cancel";
@@ -169,7 +169,7 @@ namespace GorgonLibrary.Framework
 			this.deviceInfo.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
 			this.deviceInfo.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.deviceInfo.ForeColor = System.Drawing.Color.Black;
-			this.deviceInfo.Image = global::GorgonLibrary.Properties.Resources.monitor_rgb;
+			this.deviceInfo.Image = global::GorgonLibrary.Framework.Properties.Resources.monitor_rgb;
 			this.deviceInfo.Location = new System.Drawing.Point(316, 106);
 			this.deviceInfo.Name = "deviceInfo";
 			this.deviceInfo.Size = new System.Drawing.Size(28, 28);
@@ -190,7 +190,7 @@ namespace GorgonLibrary.Framework
 			this.windowed.Appearance = System.Windows.Forms.Appearance.Button;
 			this.windowed.BackColor = System.Drawing.Color.Transparent;
 			this.windowed.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.windowed.Image = global::GorgonLibrary.Properties.Resources.FullScreen16x16;
+			this.windowed.Image = global::GorgonLibrary.Framework.Properties.Resources.FullScreen16x16;
 			this.windowed.Location = new System.Drawing.Point(316, 148);
 			this.windowed.Name = "windowed";
 			this.windowed.Size = new System.Drawing.Size(28, 28);
@@ -204,7 +204,7 @@ namespace GorgonLibrary.Framework
 			this.checkAdvanced.Appearance = System.Windows.Forms.Appearance.Button;
 			this.checkAdvanced.BackColor = System.Drawing.Color.Transparent;
 			this.checkAdvanced.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.checkAdvanced.Image = global::GorgonLibrary.Properties.Resources.DoubleDown;
+			this.checkAdvanced.Image = global::GorgonLibrary.Framework.Properties.Resources.DoubleDown;
 			this.checkAdvanced.Location = new System.Drawing.Point(7, 182);
 			this.checkAdvanced.Name = "checkAdvanced";
 			this.checkAdvanced.Size = new System.Drawing.Size(27, 26);

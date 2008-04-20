@@ -23,8 +23,6 @@
 
 using System;
 using System.Reflection;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;

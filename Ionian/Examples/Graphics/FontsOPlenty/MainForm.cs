@@ -27,11 +27,9 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
+using Dialogs;
 
 namespace GorgonLibrary.Example
 {
@@ -179,7 +177,7 @@ namespace GorgonLibrary.Example
 			{
 				_scrollScale.X = 64 / _scrollText.Width;
 				_scrollScale.Y = (64 / _scrollText.Height) * (_scrollText.Height / _scrollText.Width);
-				_scrollText.Scale = _scrollScale * (_rnd.Next(15) + 2.0f);
+                _scrollText.Scale = Vector2D.Multiply(_scrollScale, _rnd.Next(15) + 2.0f);
 				_scrollText.Color = Drawing.Color.FromArgb(_rnd.Next(64, 255), _rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255));
 				_scrollPosition.Y = ((float)_rnd.NextDouble() * Gorgon.Screen.Height) - _scrollText.ScaledDimensions.Y;
 				_scrollPosition.X = -_scrollText.Scale.X * _scrollText.Width;

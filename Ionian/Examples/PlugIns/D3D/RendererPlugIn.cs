@@ -54,7 +54,7 @@ namespace GorgonLibrary.Example
         {
             RendererPlugIn rendererPlugIn = null;         // Plug in.
 
-            rendererPlugIn = PlugInFactory.Load(path, "D3DRenderer") as RendererPlugIn;
+            rendererPlugIn = PlugInFactory.Load(path, "D3DRenderer", false) as RendererPlugIn;
 
             return rendererPlugIn.CreateRenderer();
         }

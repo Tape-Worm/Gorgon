@@ -26,7 +26,6 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-using SharpUtilities.Controls;
 using GorgonLibrary;
 
 namespace GorgonLibrary.Framework
@@ -63,8 +62,8 @@ namespace GorgonLibrary.Framework
 			_groupHeaderFont = new Font("Tahoma", 8.25f);
 
 			// Get resources.
-			_yesImage = global::GorgonLibrary.Properties.Resources.YesImage2;
-			_noImage = global::GorgonLibrary.Properties.Resources.NoImage2;
+			_yesImage = global::GorgonLibrary.Framework.Properties.Resources.YesImage2;
+			_noImage = global::GorgonLibrary.Framework.Properties.Resources.NoImage2;
 		}
 		#endregion
 

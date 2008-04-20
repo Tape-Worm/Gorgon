@@ -24,8 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpUtilities;
-using SharpUtilities.Collections;
 using GorgonLibrary.FileSystems;
 using GorgonLibrary.PlugIns;
 
@@ -62,7 +60,7 @@ namespace GorgonLibrary.FileSystems
 			get
 			{
 				if ((index < 0) || (index >= Count))
-					throw new IndexOutOfBoundsException(index);
+                    throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
 
 				return GetItem(index);
 			}

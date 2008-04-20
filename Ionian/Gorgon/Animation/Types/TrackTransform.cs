@@ -23,8 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using SharpUtilities.Collections;
-using SharpUtilities.Mathematics;
 
 namespace GorgonLibrary.Graphics
 {

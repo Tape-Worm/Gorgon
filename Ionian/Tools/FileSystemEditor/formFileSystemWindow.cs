@@ -30,11 +30,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.IO;
-using SharpUtilities.Utility;
-using SharpUtilities.Native.Win32;
+using GorgonLibrary.Serialization;
 using GorgonLibrary.FileSystems;
+using Dialogs;
 
 namespace GorgonLibrary.FileSystems.Tools
 {
@@ -487,7 +485,7 @@ namespace GorgonLibrary.FileSystems.Tools
 				viewFiles.SmallImageList.Images.Add(extension, Utilities.IconFromExtension(extension, ShellIconSize.Small).ToBitmap());
 
 			if (!viewFiles.LargeImageList.Images.ContainsKey(extension))
-				viewFiles.LargeImageList.Images.Add(extension, Utilities.IconFromExtension(extension, ShellIconSize.Large).ToBitmap());
+                viewFiles.LargeImageList.Images.Add(extension, Utilities.IconFromExtension(extension, ShellIconSize.Large).ToBitmap());
 
 			fileItem.ImageKey = extension;
 		}
@@ -855,11 +853,6 @@ namespace GorgonLibrary.FileSystems.Tools
 				treePaths.LabelEdit = false;
 
 				IsChanged = true;
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
-				e.CancelEdit = true;
 			}
 			catch (Exception ex)
 			{
@@ -1263,10 +1256,6 @@ namespace GorgonLibrary.FileSystems.Tools
 			{
 				UI.ErrorBox(this, "The path '" + sourcePath.Name + "' already exists under '" + path.Name + "'.");
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(this, ex);
@@ -1546,10 +1535,6 @@ namespace GorgonLibrary.FileSystems.Tools
 					GetFiles(treePaths.SelectedNode);
 					IsChanged = _isChanged;
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

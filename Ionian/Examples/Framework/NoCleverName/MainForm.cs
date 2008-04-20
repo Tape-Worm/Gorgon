@@ -28,13 +28,11 @@ using System.Runtime.InteropServices;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Framework;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.InputDevices;
+using Dialogs;
 
 namespace GorgonLibrary.Example
 {
@@ -457,7 +455,7 @@ namespace GorgonLibrary.Example
 			: base(@".\NoCleverNameSettings.xml")
 		{
 			InitializeComponent();
-		}
+ 		}
 		#endregion
 	}
 }

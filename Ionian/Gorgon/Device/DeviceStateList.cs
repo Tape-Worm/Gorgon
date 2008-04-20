@@ -24,8 +24,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SharpUtilities;
-using SharpUtilities.Utility;
 
 namespace GorgonLibrary.Internal
 {
@@ -84,7 +82,7 @@ namespace GorgonLibrary.Internal
 		public static IDeviceStateObject Item(int index)
 		{
 			if ((index < 0) || (index >= _list.Count))
-				throw new SharpUtilities.Collections.IndexOutOfBoundsException(index);
+                throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
 
 			return _list[index];
 		}

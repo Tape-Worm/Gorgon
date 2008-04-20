@@ -25,9 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 

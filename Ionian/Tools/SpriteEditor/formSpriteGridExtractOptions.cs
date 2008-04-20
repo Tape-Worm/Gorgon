@@ -28,10 +28,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Controls;
-using SharpUtilities.Mathematics;
+using GorgonLibrary.Graphics.Tools;
 using GorgonLibrary.Graphics.Tools.Controls;
 
 namespace GorgonLibrary.Graphics.Tools

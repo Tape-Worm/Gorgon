@@ -25,8 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
 using GorgonLibrary.Internal;
 
@@ -665,7 +663,7 @@ namespace GorgonLibrary.Graphics
 
                 // Get the scale.
 				if (_inheritScale)
-					_finalScale = _scale * _parentScale;
+					_finalScale = Vector2D.Multiply(_scale, _parentScale);
 				else
 					_finalScale = _scale;
 
@@ -676,7 +674,7 @@ namespace GorgonLibrary.Graphics
 					_finalRotation = _rotation;
 
                 // Update the translation.
-                _finalPosition += _parentPosition;
+                _finalPosition = Vector2D.Add(_finalPosition, _parentPosition);
             }
 
             _needParentUpdate = false;

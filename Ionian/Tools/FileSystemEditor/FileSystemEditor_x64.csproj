@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -44,11 +44,8 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpUtilities, Version=2.1.2955.5969, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpUtilities.2.1.2955\Assemblies\SharpUtilities.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -145,6 +142,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorFS.ico" />
@@ -153,6 +151,10 @@
     <ProjectReference Include="..\..\Gorgon\Gorgon_x64.csproj">
       <Project>{14CD80B4-7278-44AE-B60F-6A94341A6C99}</Project>
       <Name>Gorgon_x64</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DialogHelper\DialogHelper.csproj">
+      <Project>{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}</Project>
+      <Name>DialogHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

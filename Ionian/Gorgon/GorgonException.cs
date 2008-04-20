@@ -24,7 +24,6 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using SharpUtilities;
 
 namespace GorgonLibrary
 {
@@ -33,9 +32,26 @@ namespace GorgonLibrary
     /// </summary>
     /// <remarks>All exceptions for Gorgon are derived from this base exception.</remarks>
     public abstract class GorgonException
-		: SharpException
+		: Exception
 	{
 		#region Constructor.
+		/// <summary>
+		/// Serialized constructor.
+		/// </summary>
+		/// <param name="info">Serialization info.</param>
+		/// <param name="context">Serialization context.</param>
+		protected GorgonException(SerializationInfo info, StreamingContext context) : base(info,context)
+		{
+		}
+
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+        public GorgonException()
+            : base("An unknown exception has occured.", null)
+		{
+		}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonException"/> class.
         /// </summary>

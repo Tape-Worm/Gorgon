@@ -28,10 +28,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Controls;
+using GorgonLibrary.Graphics.Tools;
 using GorgonLibrary.Graphics.Tools.Controls;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -93,10 +92,6 @@ namespace GorgonLibrary.Graphics.Tools
 						_finder.MaskColor = Color.FromArgb(255, _finder.MaskColor);
 					UpdateInterface();
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "There was an error trying to retrieve the masking color.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

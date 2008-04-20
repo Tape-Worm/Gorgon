@@ -26,8 +26,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
-using SharpUtilities.IO;
-using SharpUtilities.Collections;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Serialization;
 using ICSharpCode.SharpZipLib.BZip2;
@@ -337,10 +335,7 @@ namespace GorgonLibrary.FileSystems
 		protected override void SaveFinalize()
 		{
 			if (IsRootInStream)
-			{
-				_fileStream.Position = _fileSystemOffset;
 				return;
-			}
 
 			if (_fileStream != null)
 				_fileStream.Dispose();

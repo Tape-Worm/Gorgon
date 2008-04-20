@@ -30,7 +30,6 @@ using System.ComponentModel.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.ComponentModel;
 using System.Windows.Forms.Design;
-using SharpUtilities;
 
 namespace GorgonLibrary.Graphics.Tools
 {

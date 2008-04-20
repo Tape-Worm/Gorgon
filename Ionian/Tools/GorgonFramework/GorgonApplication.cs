@@ -29,15 +29,13 @@ using System.Collections.Generic;
 using Forms = System.Windows.Forms;
 using System.Reflection;
 using System.ComponentModel;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
 using Drawing = System.Drawing;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.FileSystems;
 using GorgonLibrary.InputDevices;
 using GorgonLibrary.PlugIns;
-
+using Dialogs;
 
 namespace GorgonLibrary.Framework
 {

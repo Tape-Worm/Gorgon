@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Text;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
-using SharpUtilities;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
 {
@@ -65,7 +65,7 @@ namespace GorgonLibrary.Graphics
 			{
 				// Get handle and name.
 				_effectHandle = _owner.Owner.D3DEffect.GetPass(_owner.D3DEffectHandle, index);
-				_objectName = _owner.Owner.D3DEffect.GetPassDescription(_effectHandle).Name;
+				SetName(_owner.Owner.D3DEffect.GetPassDescription(_effectHandle).Name);
 			}
 			catch (Exception ex)
 			{

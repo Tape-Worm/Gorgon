@@ -26,9 +26,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -173,7 +170,7 @@ namespace GorgonLibrary.Graphics
 				if (_renderTarget == null)
 				{
 					// Create the image.
-					_renderTarget = new Image("@RenderImage." + _objectName, ImageType.RenderTarget, Width, Height, format, false, true);
+					_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, false, true);
 					DeviceStateList.Remove(_renderTarget);
 				}
 				else
@@ -211,9 +208,9 @@ namespace GorgonLibrary.Graphics
 
 				Refresh();
 			}
-			catch (SharpException sEx)
+			catch (GorgonException)
 			{
-				throw sEx;
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -564,7 +561,7 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)
 			{
-				Gorgon.Log.Print("RenderImage", "Destroying render image '{0}'.", LoggingLevel.Intermediate, _objectName);
+				Gorgon.Log.Print("RenderImage", "Destroying render image '{0}'.", LoggingLevel.Intermediate, Name);
 
 				SetColorBuffer(null);
 				Gorgon.Log.Print("RenderImage", "Releasing color buffer.", LoggingLevel.Verbose);
@@ -573,7 +570,7 @@ namespace GorgonLibrary.Graphics
 				if (_renderTarget != null)
 					_renderTarget.Dispose();
 
-				Gorgon.Log.Print("RenderImage", "Render Image '{0}' destroyed.", LoggingLevel.Intermediate, _objectName);
+				Gorgon.Log.Print("RenderImage", "Render Image '{0}' destroyed.", LoggingLevel.Intermediate, Name);
 			}
 
 			_renderTarget = null;

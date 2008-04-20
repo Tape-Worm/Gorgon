@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpUtilities.Native.Win32;
+using GorgonLibrary.Internal.Native;
 
 namespace GorgonLibrary
 {

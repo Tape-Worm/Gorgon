@@ -28,10 +28,9 @@ using System.Data;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -155,9 +154,9 @@ namespace GorgonLibrary.Graphics.Tools
 
 				ValidateForm();
 			}
-			catch (SharpException sEx)
+			catch (Exception ex)
 			{
-				UI.ErrorBox(this, "Unable to retrieve render target format list.", sEx.ErrorLog);
+				UI.ErrorBox(this, "Unable to retrieve render target format list.", ex);
 			}
 			finally
 			{
@@ -279,13 +278,9 @@ namespace GorgonLibrary.Graphics.Tools
 				Settings.Root = null;
 				Settings.SetSetting("LastRenderTargetFormat", comboFormats.Text);
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "Unable to create the render target.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(this, ex);
+				UI.ErrorBox(this, "Error creating the render target.", ex);
 			}			
 		}
 

@@ -25,9 +25,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Collections;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics

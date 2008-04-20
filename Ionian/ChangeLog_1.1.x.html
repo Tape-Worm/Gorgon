@@ -103,8 +103,26 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-April 11/2008 - Version - Current
+April 19/2008 - Version - Current
 ================================
++ Added a framework DLL to help simplify development of applications in Gorgon.  This
+  framework DLL is what used to be the framework in the Gorgon Library itself.  If your
+  code is broken by the framework code removal from Gorgon, then adding this assembly 
+  to your project should fix it.
+  
++ Added a dialogs helper which is just a small DLL that gives extended dialog boxes
+  for errors, confirmation and information.  This is the same as the dialogs in the
+  SharpUtilities dependency.  However, unlike the SharpUtilities it is NOT required by
+  Gorgon and as such you are free to not use it if you choose.
+  
+- Removed framework code from Gorgon and moved it into its own DLL.  This will break things
+  if you are using the framework code.  
+  
+- Removing dependency on SharpUtilities.  This library has run its course and it's a
+  pain for distributing projects using it when it's been updated.  All Native code and
+  math functions are to be moved into Gorgon.  This will break things if you're using
+  SharpUtilities.
+  
 + Added new code to the PlugInFactory static object to check for signed assemblies.
   Also added code to compare the assembly public key with the users public key so
   that the user application can only load plug-ins that are signed by the user.

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -47,10 +47,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpUtilities, Version=2.1.2955.5969, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpUtilities.2.1.2955\Assemblies\SharpUtilities.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -79,6 +75,16 @@
     <Compile Include="Controls\colorAnimation.Designer.cs">
       <DependentUpon>colorAnimation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ColorChangedEventArgs.cs" />
+    <Compile Include="Controls\ColorChooser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\ColorChooser.designer.cs">
+      <DependentUpon>ColorChooser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ColorHandler.cs" />
+    <Compile Include="Controls\ColorPicker.cs" />
+    <Compile Include="Controls\ColorWheel.cs" />
     <Compile Include="Controls\transformAnimation.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -208,6 +214,10 @@
       <DependentUpon>colorAnimation.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ColorChooser.resx">
+      <DependentUpon>ColorChooser.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\transformAnimation.resx">
       <DependentUpon>transformAnimation.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -306,19 +316,23 @@
     <Compile Include="TypeEditors\GorgonImageTypeConverter.cs" />
     <Compile Include="TypeEditors\GorgonImageTypeEditor.cs" />
     <Compile Include="TypeEditors\GorgonPointFConverter.cs" />
+    <Compile Include="Utilities.cs" />
     <Compile Include="Zoomer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorSprite.ico" />
+    <None Include="Resources\buttonBack.png" />
+    <None Include="Resources\alphaPicker.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
+    <ProjectReference Include="..\DialogHelper\DialogHelper.csproj">
+      <Project>{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}</Project>
+      <Name>DialogHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

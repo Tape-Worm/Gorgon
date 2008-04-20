@@ -26,9 +26,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using Forms = System.Windows.Forms;
-using SharpUtilities.Native.Win32;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
+using GorgonLibrary.InputDevices.Internal;
 
 namespace GorgonLibrary.InputDevices
 {
@@ -127,7 +126,7 @@ namespace GorgonLibrary.InputDevices
 		/// Function to retrieve and parse the raw mouse data.
 		/// </summary>
 		/// <param name="mouseData">Data to examine.</param>
-		public void GetRawData(RAWINPUTMOUSE mouseData)
+		internal void GetRawData(RAWINPUTMOUSE mouseData)
 		{
 			// Do nothing if we're outside and we have exclusive mode turned off.
 			if (!_exclusive)

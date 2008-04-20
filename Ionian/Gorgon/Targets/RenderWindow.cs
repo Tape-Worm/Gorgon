@@ -24,9 +24,6 @@
 using System;
 using Drawing = System.Drawing;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -383,9 +380,9 @@ namespace GorgonLibrary.Graphics
 				throw new DeviceVideoModeNotValidException(Gorgon.DesktopVideoMode);
 
 			if (!resize)
-				Gorgon.Log.Print("RenderWindow", "Setting swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, mode.Width, mode.Height, mode.Bpp, mode.Format.ToString(), _objectName);
+				Gorgon.Log.Print("RenderWindow", "Setting swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, mode.Width, mode.Height, mode.Bpp, mode.Format.ToString(), Name);
 			else
-				Gorgon.Log.Print("RenderWindow", "Resizing swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, resizewidth, resizeheight, mode.Bpp, mode.Format.ToString(), _objectName);
+				Gorgon.Log.Print("RenderWindow", "Resizing swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, resizewidth, resizeheight, mode.Bpp, mode.Format.ToString(), Name);
 
 			// Don't go too small.
 			if (resizewidth < 32)
@@ -675,7 +672,7 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)			
 			{
-				Gorgon.Log.Print("RenderWindow", "Destroying render window '{0}'...", LoggingLevel.Intermediate, _objectName);
+				Gorgon.Log.Print("RenderWindow", "Destroying render window '{0}'...", LoggingLevel.Intermediate, Name);
 
 				// Remove resizing handler.
 				_owner.Resize -= new EventHandler(OnOwnerResized);
@@ -697,7 +694,7 @@ namespace GorgonLibrary.Graphics
 				if (Gorgon.CurrentRenderTarget == this)
 					Gorgon.CurrentRenderTarget = null;
 
-				Gorgon.Log.Print("RenderWindow", "Render window '{0}' destroyed.", LoggingLevel.Intermediate, _objectName);
+				Gorgon.Log.Print("RenderWindow", "Render window '{0}' destroyed.", LoggingLevel.Intermediate, Name);
 			}			
 
 			// Do unmanaged clean up.

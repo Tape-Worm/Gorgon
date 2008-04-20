@@ -23,9 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Collections;
 
 namespace GorgonLibrary.Graphics
 {
@@ -337,7 +334,7 @@ namespace GorgonLibrary.Graphics
 		public Key GetKeyAtIndex(int index)
 		{
 			if ((index < 0) || (index >= _keys.Count))
-				throw new IndexOutOfBoundsException(index);
+                throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
 			return _keys[_keys.Keys[index]];
 		}
 
@@ -357,7 +354,7 @@ namespace GorgonLibrary.Graphics
 		public void RemoveKeyAtIndex(int index)
 		{
 			if ((index < 0) || (index >= _keys.Count))
-				throw new IndexOutOfBoundsException(index);
+                throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
 
 			// Remove the key.
 			_keys.RemoveAt(index);

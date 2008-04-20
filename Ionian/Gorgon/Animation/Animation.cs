@@ -25,8 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
 
@@ -116,10 +114,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (value == string.Empty)
-					throw new InvalidNameException();
-
-				_objectName = value;
+                base.SetName(value);
 			}
 		}
 
@@ -462,7 +457,7 @@ namespace GorgonLibrary.Graphics
             serializer.WriteGroupBegin("Animation");
 
             // Write animation data.
-            serializer.Write("Name", _objectName);
+            serializer.Write("Name", Name);
             serializer.Write("Length", _length);
             serializer.Write("Looping", _loop);
             serializer.Write("Enabled", _enabled);
@@ -551,7 +546,7 @@ namespace GorgonLibrary.Graphics
         void ISerializable.ReadData(Serializer serializer)
         {
             // Write animation data.
-            _objectName = serializer.ReadString("Name");
+            Name = serializer.ReadString("Name");
             _length = serializer.ReadSingle("Length");
             _loop = serializer.ReadBool("Looping");
             _enabled = serializer.ReadBool("Enabled");
@@ -655,7 +650,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public object Clone()
 		{
-			Animation clone = new Animation(_objectName, _owner, _length);			
+			Animation clone = new Animation(Name, _owner, _length);			
 
 			clone._currentTime = _currentTime;
 			clone._enabled = _enabled;

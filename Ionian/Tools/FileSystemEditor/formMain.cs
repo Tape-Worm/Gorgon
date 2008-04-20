@@ -29,11 +29,10 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.FileSystems;
+using Dialogs;
 
 namespace GorgonLibrary.FileSystems.Tools
 {
@@ -753,10 +752,6 @@ namespace GorgonLibrary.FileSystems.Tools
 					}
 				}
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(this, ex);
@@ -846,11 +841,6 @@ namespace GorgonLibrary.FileSystems.Tools
                         }
 					}
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, ErrorDialogIcons.Bug, sEx.Message, sEx.ErrorLog);
-				Application.Exit();
 			}
 			catch (Exception ex)
 			{
@@ -1012,10 +1002,6 @@ namespace GorgonLibrary.FileSystems.Tools
 
 				// Finally write the config document.
 				fsTypes.Save(_dataPath + "Config.xml");
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

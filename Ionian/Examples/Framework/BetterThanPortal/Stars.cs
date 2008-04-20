@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 
@@ -124,7 +123,7 @@ namespace GorgonLibrary.Example
 		{
 			for (int i = 0; i < _stars.Length; i++)
 			{
-				_stars[i].Position -= (camera.Heading * frameTime) * _stars[i].Distance;
+                _stars[i].Position = Vector2D.Subtract(_stars[i].Position, Vector2D.Multiply(Vector2D.Multiply(camera.Heading, frameTime), _stars[i].Distance));
 
 				if (_stars[i].Position.X < 0)
 				{

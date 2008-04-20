@@ -28,7 +28,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using SharpUtilities.Utility;
+using Dialogs;
 
 namespace GorgonLibrary.FileSystems.Tools
 {

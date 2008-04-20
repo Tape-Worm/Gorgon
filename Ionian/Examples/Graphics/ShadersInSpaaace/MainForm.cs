@@ -27,9 +27,7 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
+using Dialogs;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 
@@ -140,11 +138,11 @@ namespace GorgonLibrary.Example
 
 			scale.X = (float)Gorgon.Screen.Width / _background.Image.Width;
 			scale.Y = (float)Gorgon.Screen.Height / _background.Image.Height;
-			
-			_background.Axis = _ship.Position / scale;
+
+            _background.Axis = Vector2D.Divide(_ship.Position, scale);
 			_background.Position = _ship.Axis;
 			_background.Rotation = -_degrees;
-			_background.Scale = (Vector2D.Unit / _ship.Scale) * scale;
+            _background.Scale = Vector2D.Divide(scale, _ship.Scale);
 			_background.Draw();
 			Gorgon.CurrentRenderTarget = _finalBuffer;
 

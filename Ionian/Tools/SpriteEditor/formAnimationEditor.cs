@@ -28,8 +28,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -224,10 +223,6 @@ namespace GorgonLibrary.Graphics.Tools
 					// Reset time.
 					_transformEditor.CurrentTrack = CurrentAnimation.TransformationTrack;
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "Error while trying to open the track.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

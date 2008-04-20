@@ -26,8 +26,6 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
 using GorgonLibrary.Internal;
 
@@ -1286,7 +1284,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override object Clone()
 		{
-			TextSprite clone = new TextSprite(_objectName + ".Clone", _text.ToString(), _font);		// Create clone.
+			TextSprite clone = new TextSprite(Name + ".Clone", _text.ToString(), _font);		// Create clone.
 
 			for (int i = 0; i < Vertices.Length; i++)
 				clone.Vertices[i] = Vertices[i];

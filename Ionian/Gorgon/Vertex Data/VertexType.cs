@@ -24,7 +24,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SharpUtilities.Collections;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Graphics;
 
@@ -202,7 +201,7 @@ namespace GorgonLibrary.Internal
 		public void UpdateField(short stream,int fieldIndex,short fieldOffset, VertexFieldContext context, VertexFieldType fieldType, byte index)
 		{
 			if ((fieldIndex < 0) || (fieldIndex >= _fields.Count))
-				throw new IndexOutOfBoundsException(index);
+                throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
 
 			_fields[fieldIndex] = new VertexField(stream,fieldOffset, context, fieldType, index);
 
@@ -451,7 +450,7 @@ namespace GorgonLibrary.Internal
 						return field;
 				}
 
-				throw new IndexOutOfBoundsException(index);
+				throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
 			}
 		}
 

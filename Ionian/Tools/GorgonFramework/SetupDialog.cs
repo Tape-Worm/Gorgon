@@ -24,12 +24,11 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Collections;
-using SharpUtilities.Utility;
 using GorgonLibrary;
+using Dialogs;
 
 namespace GorgonLibrary.Framework
 {
@@ -167,11 +166,6 @@ namespace GorgonLibrary.Framework
 
 				FillVSyncIntervals();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
-				Close();
-			}
 			catch (Exception Ex)
 			{
 				// Error message.
@@ -255,7 +249,7 @@ namespace GorgonLibrary.Framework
 				modeStr = modeStr.Substring(modeStr.IndexOf(") ") + 2);
 				_mode.RefreshRate = Convert.ToInt32(modeStr);
 			}
-			catch (IndexOutOfBoundsException)
+			catch (IndexOutOfRangeException)
 			{
 				// Default to first video mode.
 				_mode = _driver.VideoModes[0];
@@ -287,10 +281,6 @@ namespace GorgonLibrary.Framework
 
 				deviceInfo = new DeviceInformationDialog(_driver);
 				deviceInfo.ShowDialog(this);
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "Unable to retrieve the device capabilities.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

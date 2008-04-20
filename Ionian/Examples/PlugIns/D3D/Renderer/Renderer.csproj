@@ -42,13 +42,13 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DialogHelper, Version=1.0.3031.30561, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
+    </Reference>
     <Reference Include="Gorgon, Version=1.0.3022.39457, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpUtilities, Version=2.1.2955.5969, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Dependencies\SharpUtilities.2.1.2955\Assemblies\SharpUtilities.dll</HintPath>
     </Reference>
     <Reference Include="SlimDX, Version=2.0.3.37, Culture=neutral, PublicKeyToken=5a7e35f0f7a29e88, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>

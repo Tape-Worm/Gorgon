@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using SharpUtilities.IO;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Serialization

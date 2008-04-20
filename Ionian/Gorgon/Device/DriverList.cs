@@ -22,9 +22,8 @@
 #endregion
 
 using System;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Graphics;
@@ -40,7 +39,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return a driver by its index.
 		/// </summary>
-		/// <exception cref="IndexOutOfBoundsException">Thrown when the index of the driver falls outside of the list range.</exception>
+		/// <exception cref="System.IndexOutOfRangeException">Thrown when the index of the driver falls outside of the list range.</exception>
 		public Driver this[int index]
 		{
 			get
@@ -52,7 +51,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return a driver by its name.
 		/// </summary>
-		/// <exception cref="KeyNotFoundException">Thrown when the name of the driver does not exist within the list.</exception>
+		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the name of the driver does not exist within the list.</exception>
 		public Driver this[string driverName]
 		{
 			get
@@ -63,7 +62,8 @@ namespace GorgonLibrary
 					if (driverName.ToLower() == drv.DriverName.ToLower())
 						return drv;
 				}
-				throw new KeyNotFoundException(driverName);
+
+                throw new KeyNotFoundException("The driver '" + driverName + "' was not found in this list.");
 			}
 		}
 		#endregion

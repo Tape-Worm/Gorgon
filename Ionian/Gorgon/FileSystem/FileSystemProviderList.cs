@@ -24,8 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpUtilities;
-using SharpUtilities.Collections;
 
 namespace GorgonLibrary.FileSystems
 {
@@ -73,7 +71,7 @@ namespace GorgonLibrary.FileSystems
 						return info;
 				}
 
-				throw new SharpUtilities.Collections.KeyNotFoundException(type.Name);
+                throw new KeyNotFoundException("The provider type '" + type.Name + "' was not found.");
 			}
 		}
 		#endregion
@@ -85,8 +83,11 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="plugIn">Plug-in used by the file system.</param>
 		internal void Add(FileSystemPlugIn plugIn)
 		{
-			if (Contains(plugIn.Name))
-				throw new DuplicateObjectException(plugIn.Name);
+            if (plugIn == null)
+                throw new ArgumentNullException("plugIn");
+
+            if (Contains(plugIn.Name))
+                throw new ArgumentException("The provider plug-in '" + plugIn.Name + "' is already loaded.");
 
 			AddItem(plugIn.Name, new FileSystemProvider(plugIn));
 		}
@@ -99,8 +100,11 @@ namespace GorgonLibrary.FileSystems
 		{
 			FileSystemProvider fsType = null;		// File system type information.
 
+            if (typeInfo == null)
+                throw new ArgumentNullException("typeInfo");
+
 			if (Contains(typeInfo))
-				throw new DuplicateObjectException(this[typeInfo].Name);
+                throw new ArgumentException("The provider with type '" + typeInfo.Name + "' is already loaded.");
 
 			fsType = new FileSystemProvider(typeInfo);
 

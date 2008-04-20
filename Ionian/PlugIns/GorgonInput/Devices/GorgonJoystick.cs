@@ -26,9 +26,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Native.Win32;
 using GorgonLibrary;
+using GorgonLibrary.InputDevices.Internal;
 
 namespace GorgonLibrary.InputDevices
 {
@@ -319,7 +318,7 @@ namespace GorgonLibrary.InputDevices
 		/// <param name="caps">Capabilities of the joystick.</param>
 		/// <param name="threshold">Threshold of the joystick deadzone.</param>
 		/// <param name="owner">Input interface that owns this joystick.</param>
-		public GorgonJoystick(int ID, string name, JOYCAPS caps, int threshold, Input owner)
+		internal GorgonJoystick(int ID, string name, JOYCAPS caps, int threshold, Input owner)
 			: base(name, owner)
 		{
 			// Get joystick info.

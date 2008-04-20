@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using SharpUtilities.Collections;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -60,7 +59,7 @@ namespace GorgonLibrary.Graphics
             Animation newAnimation = null;          // Animation.
 
             if (Contains(name))
-                throw new DuplicateObjectException(name);
+                throw new ArgumentException("The animation '" + name + "' already exists.");
 
             newAnimation = new Animation(name, _owner, length);
 			AddItem(name, newAnimation);
@@ -82,10 +81,10 @@ namespace GorgonLibrary.Graphics
 			if (string.IsNullOrEmpty(newName))
 				throw new ArgumentNullException("newName");
 
-			if (!Contains(oldName))
-				throw new SharpUtilities.Collections.KeyNotFoundException(oldName);
-			if (Contains(newName))
-				throw new DuplicateObjectException(newName);
+            if (!Contains(oldName))
+                throw new KeyNotFoundException("The animation '" + oldName + "' does not exist.");
+            if (Contains(newName))
+                throw new ArgumentException("The animation '" + newName + "' already exists.");
 
 			// Create a copy.
 			newAnimation = (Animation)this[oldName].Clone();

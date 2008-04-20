@@ -25,9 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 
@@ -106,7 +103,7 @@ namespace GorgonLibrary.Example
 		{
 			for (int i = 0; i < StarCount; i++)
 			{
-				_stars[i].Position += new Vector2D(0, (_stars[i].YVelocity + (velocityMod * 2)) * frameTime);
+                _stars[i].Position = Vector2D.Add(_stars[i].Position, new Vector2D(0, (_stars[i].YVelocity + (velocityMod * 2)) * frameTime));
 
 				if (_stars[i].Position.Y > Gorgon.Screen.Height)
 				{

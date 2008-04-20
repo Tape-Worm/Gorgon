@@ -27,11 +27,10 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
 using GorgonLibrary.Graphics.Tools.PropBag;
 using Flobbster.Windows.Forms;
+using GorgonLibrary.Internal;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -109,10 +108,8 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			set
 			{
-				if (string.IsNullOrEmpty(value))
-					throw new InvalidNameException();
-
-				_sprite.Name = _objectName = value;
+                SetName(value);
+                _sprite.Name = value;
 				Changed = true;
 			}
 		}
@@ -1259,9 +1256,9 @@ namespace GorgonLibrary.Graphics.Tools
 				_sprite.Save(fileName, xml);
 				_xml = xml;
 			}
-			catch (SharpException sEx)
+			catch (Exception ex)
 			{
-				UI.ErrorBox(_owner, "Unable to save '" + fileName + "'.", sEx.ErrorLog);
+				UI.ErrorBox(_owner, "Unable to save '" + fileName + "'.", ex);
 			}
 		}
 
@@ -1296,7 +1293,7 @@ namespace GorgonLibrary.Graphics.Tools
 
 				// Read the sprite from the stream.
 				_sprite = GorgonLibrary.Graphics.Sprite.FromStream(stream, _xml);
-				_objectName = _sprite.Name;
+				SetName(_sprite.Name);
 
 				RefreshProperties();
 
@@ -1322,12 +1319,12 @@ namespace GorgonLibrary.Graphics.Tools
 			if (boundImage != null)
 			{
 				if (boundImage.ImageType == ImageType.RenderTarget)
-					_sprite = new Sprite(_objectName, boundImage.RenderImage, boundImage.RenderImage.Width, boundImage.RenderImage.Height);
+					_sprite = new Sprite(Name, boundImage.RenderImage, boundImage.RenderImage.Width, boundImage.RenderImage.Height);
 				else
-					_sprite = new Sprite(_objectName, boundImage, new Vector2D(boundImage.Width, boundImage.Height));
+					_sprite = new Sprite(Name, boundImage, new Vector2D(boundImage.Width, boundImage.Height));
 			}
 			else
-				_sprite = new Sprite(_objectName);
+				_sprite = new Sprite(Name);
 
 			RefreshProperties();
 
@@ -1356,9 +1353,9 @@ namespace GorgonLibrary.Graphics.Tools
 				_sprite.Refresh();
 				Changed = true;
 			}
-			catch (SharpException sEx)
+			catch (Exception ex)
 			{
-				UI.ErrorBox(_owner, "Unable to bind the requested image to '" + _objectName + "'.", sEx.ErrorLog);
+				UI.ErrorBox(_owner, "Unable to bind the requested image to '" + Name + "'.", ex);
 			}
 		}
 		#endregion
@@ -1392,7 +1389,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// </returns>
 		public object Clone()
 		{
-			SpriteDocument clone = new SpriteDocument(_objectName + ".Clone", _owner);	// Clone of the document.
+			SpriteDocument clone = new SpriteDocument(Name + ".Clone", _owner);	// Clone of the document.
 
 			clone._sprite = (Sprite)_sprite.Clone();
 			clone._changed = true;

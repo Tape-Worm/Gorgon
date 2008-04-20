@@ -24,8 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpUtilities;
-using SharpUtilities.Collections;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 

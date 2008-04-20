@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -48,10 +48,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpUtilities, Version=2.1.2955.5969, Culture=neutral, PublicKeyToken=dabd783c80b90881, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpUtilities.2.1.2955\Assemblies\SharpUtilities.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -62,8 +58,12 @@
     <Compile Include="Devices\GorgonJoystickList.cs" />
     <Compile Include="Devices\GorgonKeyboard.cs" />
     <Compile Include="Devices\GorgonMouse.cs" />
+    <Compile Include="Devices\JoystickExceptions.cs" />
     <Compile Include="Events\InputEvents.cs" />
     <Compile Include="GorgonInput.cs" />
+    <Compile Include="Native\Win32API.cs" />
+    <Compile Include="Native\Win32Enums.cs" />
+    <Compile Include="Native\Win32Types.cs" />
     <Compile Include="PluginEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

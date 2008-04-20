@@ -28,8 +28,6 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Tools.Controls;

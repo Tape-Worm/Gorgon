@@ -30,9 +30,7 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {

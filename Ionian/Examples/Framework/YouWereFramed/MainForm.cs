@@ -27,9 +27,6 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Framework;
 using GorgonLibrary.Graphics;
@@ -69,7 +66,7 @@ namespace GorgonLibrary.Example
 			base.OnMouseMovement(e);
 
 			_text.Text = "Mouse X: " + e.Position.X.ToString("0.0") + " Y: " + e.Position.Y.ToString("0.0");
-			_text.Position = e.Position + new Vector2D(6, 20);
+            _text.Position = Vector2D.Add(e.Position, new Vector2D(6, 20));
 		}
 
 		/// <summary>

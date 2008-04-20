@@ -27,8 +27,6 @@ using System.Text;
 using System.Drawing;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -375,7 +373,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>An image value.</returns>
 		public Image GetImage()
 		{
-			Image newImage = new Image("ShaderParameter." + _objectName + ".Image", ImageType.Normal, 1, 1, ImageBufferFormats.BufferUnknown, false, false);	// Empty image.			
+			Image newImage = new Image("ShaderParameter." + Name + ".Image", ImageType.Normal, 1, 1, ImageBufferFormats.BufferUnknown, false, false);	// Empty image.			
 
 			GetImage(newImage);
 

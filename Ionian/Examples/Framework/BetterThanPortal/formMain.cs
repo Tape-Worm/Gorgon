@@ -28,7 +28,6 @@ using System.Data;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
 using GorgonLibrary.InputDevices;
 using GorgonLibrary.Graphics;

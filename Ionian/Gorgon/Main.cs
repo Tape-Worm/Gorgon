@@ -31,14 +31,11 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Threading;
 using Microsoft.Win32;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Native;
-using SharpUtilities.Native.Win32;
 using D3D9 = SlimDX.Direct3D9;
 using DX = SlimDX;
 using GorgonLibrary.FileSystems;
 using GorgonLibrary.Internal;
+using GorgonLibrary.Internal.Native;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.PlugIns;
 
@@ -1289,13 +1286,13 @@ namespace GorgonLibrary
 				{
 					_log.Open();
 				}
-				catch(SharpException sEx)
+				catch(GorgonException gEx)
 				{
 #if DEBUG
 					// By rights, we should never see this error.  Better safe than sorry.
-					UI.ErrorBox(null, "Could not create the log file.",sEx.ErrorLog);
+                    System.Windows.Forms.MessageBox.Show("Could not create a log file.\n" + gEx.Message, "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 #else
-					Debug.WriteLine("Error opening log.\n" + sEx.ErrorLog);
+					Debug.WriteLine("Error opening log.\n" + gEx.Message);
 #endif
 				}
 

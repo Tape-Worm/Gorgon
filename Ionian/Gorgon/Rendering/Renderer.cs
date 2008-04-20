@@ -26,9 +26,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
 using Microsoft.Win32;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
@@ -105,7 +102,7 @@ namespace GorgonLibrary.Graphics
 #endif
 				{
 #if DEBUG
-					UI.ErrorBox(null, "Unable to determine Direct3D runtime settings.", ex.Message);
+                    MessageBox.Show("Unable to determine Direct 3D runtime settings.", ex.Message);
 #endif
 				}
 				finally

@@ -51,7 +51,7 @@ namespace GorgonLibrary.Example
         {
             SpriteExportPlugIn plugIn = null;		// Plug-in.
 
-            PlugInFactory.Load(path);
+            PlugInFactory.Load(path, false);
 
             // Get the first plug-in.
             // We can actually host several plug-ins within a single DLL if necessary.

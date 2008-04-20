@@ -29,10 +29,8 @@ using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {

@@ -22,6 +22,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon3DESFileSystem", "Plu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestEncryptFS", "Examples\TestEncryptFS\TestEncryptFS.csproj", "{F8B45588-DFDF-4F3C-A0E1-17C00C524A1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogHelper", "Tools\DialogHelper\DialogHelper.csproj", "{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework", "Tools\GorgonFramework\GorgonFramework.csproj", "{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +64,14 @@ Global
 		{F8B45588-DFDF-4F3C-A0E1-17C00C524A1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8B45588-DFDF-4F3C-A0E1-17C00C524A1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8B45588-DFDF-4F3C-A0E1-17C00C524A1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

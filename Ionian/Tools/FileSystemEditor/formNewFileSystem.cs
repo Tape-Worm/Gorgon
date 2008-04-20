@@ -28,9 +28,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using GorgonLibrary.FileSystems;
+using Dialogs;
 
 namespace GorgonLibrary.FileSystems.Tools
 {
@@ -187,11 +186,6 @@ namespace GorgonLibrary.FileSystems.Tools
 				((formMain)Owner).LastUsed = _lastUsed;
 
 				DialogResult = DialogResult.OK;
-			}
-			catch (SharpException sEx)
-			{
-				_newFS = null;
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

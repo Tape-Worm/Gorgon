@@ -26,9 +26,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using Forms = System.Windows.Forms;
-using SharpUtilities.Native.Win32;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
+using GorgonLibrary.InputDevices.Internal;
 
 namespace GorgonLibrary.InputDevices
 {
@@ -47,7 +46,7 @@ namespace GorgonLibrary.InputDevices
 		/// Function to retrieve and parse the raw keyboard data.
 		/// </summary>
 		/// <param name="keyboardData">Data to examine.</param>
-		public void GetRawData(RAWINPUTKEYBOARD keyboardData)
+		internal void GetRawData(RAWINPUTKEYBOARD keyboardData)
 		{
 			int keyCode = 0;		// Virtual key code.
 			int secCode = -1;		// Secondary code.

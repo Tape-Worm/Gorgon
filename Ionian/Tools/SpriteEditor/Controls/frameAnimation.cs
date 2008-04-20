@@ -30,9 +30,7 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -363,10 +361,6 @@ namespace GorgonLibrary.Graphics.Tools
 					else
 						listFrames.Items[0].Selected = true;
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(ParentForm, "Error retrieving sprite list.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

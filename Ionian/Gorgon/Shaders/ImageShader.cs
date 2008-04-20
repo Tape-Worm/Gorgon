@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Text;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
-using SharpUtilities;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics

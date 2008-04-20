@@ -23,9 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Collections;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -78,11 +75,8 @@ namespace GorgonLibrary.Graphics
         /// <param name="child">Child object to remove.</param>
         public void Remove(IMoveable child)
         {
-            if (!Contains(child.Name))
-                throw new SharpUtilities.Collections.KeyNotFoundException(child.Name);
-
-            child.SetParent(null);
 			RemoveItem(child.Name);
+            child.SetParent(null);
         }
 
         /// <summary>
@@ -96,7 +90,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("child");
 
             if (Contains(child.Name))
-                throw new DuplicateObjectException(child.Name);
+                throw new ArgumentException("The child object '" + child.Name + "' is already attached");
 
             // Add the child object.            
 			AddItem(child.Name, child);

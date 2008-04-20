@@ -30,9 +30,7 @@ using System.Text;
 using System.Windows.Forms.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using Dialogs;
 using ControlExtenders;
 using Flobbster.Windows.Forms;
 
@@ -141,10 +139,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					}
 				}
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "There was an error attempting to save the selected sprite(s).", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "There was an error attempting to save the selected sprite(s).", ex);
@@ -199,10 +193,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 					MainForm.ProjectChanged = true;
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "There was an error attempting to open the sprite(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -302,10 +292,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 				RefreshList();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to clone the selected sprite(s).", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "Unable to clone the selected sprite(s).", ex);
@@ -336,10 +322,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				RefreshList();
 				RefreshPropertyGrid();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to flip the selected sprite(s).", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "Unable to flip the selected sprite(s).", ex);
@@ -369,10 +351,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 				RefreshList();
 				RefreshPropertyGrid();
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to flip the selected sprite(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -423,10 +401,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					RefreshList();
 					RefreshPropertyGrid();
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -484,10 +458,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 					ValidateForm();
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to add the animation.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -555,10 +525,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				listAnimations.Items[e.Item].Name = e.Label;
 				_current.Sprite.Animations.Rename(oldName, e.Label);
 				_current.Changed = true;
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to rename the animation.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -676,10 +642,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					RefreshAnimationList();
 				}
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to edit the animation.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "Unable to edit the animation.", ex);
@@ -745,10 +707,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					// Force the main window to have focus.
 					Focus();
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to update sprite image binding(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -850,10 +808,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				_spriteDocs.Rename(_spriteDocs[oldName], e.Label);
 
 				RefreshPropertyGrid();
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to rename the sprite.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -1336,13 +1290,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				// Validate the form.
 				ValidateForm();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to enumerate the sprite animations.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(MainForm, ex);
+				UI.ErrorBox(MainForm, "Unable to enumerate the sprite animations.", ex);
 			}
 		}
 
@@ -1408,13 +1358,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				// Validate the form.
 				ValidateForm();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to enumerate the sprites.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(MainForm, ex);
+				UI.ErrorBox(MainForm, "Unable to enumerate the sprites.", ex);
 			}
 		}
 		#endregion

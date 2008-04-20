@@ -26,8 +26,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
-using SharpUtilities;
-using SharpUtilities.Collections;
 using GorgonLibrary.FileSystems;
 using GorgonLibrary.Serialization;
 

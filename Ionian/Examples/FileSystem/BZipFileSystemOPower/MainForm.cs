@@ -27,8 +27,7 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using Dialogs;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.FileSystems;
@@ -144,7 +143,7 @@ namespace GorgonLibrary.Example
             _bzipFS = FileSystem.Create("SomeBZipFileSystem", FileSystemProviderCache.Providers["Gorgon.BZip2FileSystem"]);
 
 			// Mount the file system.
-			_bzipFS.Root = @"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack";
+			_bzipFS.AssignRoot(@"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack");
 
 			// Mount the root, but do not recurse.
 			_bzipFS.Mount(@"\", false);

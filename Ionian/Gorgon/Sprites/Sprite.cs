@@ -29,8 +29,6 @@ using System.Runtime.InteropServices;
 using System.Resources;
 using System.Reflection;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
 using GorgonLibrary.FileSystems;
@@ -263,10 +261,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (string.IsNullOrEmpty(value))
-					throw new InvalidNameException();
-
-				_objectName = value;
+                SetName(value);
 			}
 		}
 		#endregion
@@ -289,44 +284,44 @@ namespace GorgonLibrary.Graphics
 			string imageName = string.Empty;			// Image name.
 			string spritePath = string.Empty;			// Path to the sprite.
 
-			try
-			{
-				// Get the filename if this is a file stream.
-				if (stream is FileStream)
-					spritePath = ((FileStream)stream).Name;
-				else
-					spritePath = name;
+            try
+            {
+                // Get the filename if this is a file stream.
+                if (stream is FileStream)
+                    spritePath = ((FileStream)stream).Name;
+                else
+                    spritePath = name;
 
-				// Create the sprite object.
-				newSprite = new Sprite(name);
-				((ISerializable)newSprite).Filename = spritePath;
+                // Create the sprite object.
+                newSprite = new Sprite(name);
+                ((ISerializable)newSprite).Filename = spritePath;
 
-				// Open the file for reading.
-				if (isXML)
-					spriteSerializer = new XMLSerializer(newSprite, stream);
-				else
-					spriteSerializer = new BinarySerializer(newSprite, stream);
+                // Open the file for reading.
+                if (isXML)
+                    spriteSerializer = new XMLSerializer(newSprite, stream);
+                else
+                    spriteSerializer = new BinarySerializer(newSprite, stream);
 
-				if (resources != null)
-					spriteSerializer.Parameters["ResourceManager"] = resources;
+                if (resources != null)
+                    spriteSerializer.Parameters["ResourceManager"] = resources;
 
-				// Don't close the underlying stream.
-				spriteSerializer.DontCloseStream = true;
+                // Don't close the underlying stream.
+                spriteSerializer.DontCloseStream = true;
 
-				// Set the image parameters.
-				if (alternateImage != null)
-					spriteSerializer.Parameters["Image"] = alternateImage;
+                // Set the image parameters.
+                if (alternateImage != null)
+                    spriteSerializer.Parameters["Image"] = alternateImage;
 
-				spriteSerializer.Deserialize();
-			}
-			catch (SharpException sEx)
-			{
-				throw sEx;
-			}
-			catch (Exception ex)
-			{
-				throw new CannotLoadException(newSprite.Name, typeof(Sprite), ex);
-			}
+                spriteSerializer.Deserialize();
+            }
+            catch (GorgonException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotLoadException(newSprite.Name, typeof(Sprite), ex);
+            }
 			finally
 			{
 				if (spriteSerializer != null)
@@ -555,9 +550,9 @@ namespace GorgonLibrary.Graphics
 				else
 					return SpriteFromStream(path, fileSystem, null, stream, false, alternateImage);
 			}
-			catch (SharpException sEx)
+			catch (GorgonException)
 			{
-				throw sEx;
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -603,9 +598,9 @@ namespace GorgonLibrary.Graphics
 				else
 					return SpriteFromStream(spritePath, null, null, spriteStream, false, alternateImage);
 			}
-			catch (SharpException sEx)
+			catch (GorgonException)
 			{
-				throw sEx;
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -664,9 +659,9 @@ namespace GorgonLibrary.Graphics
 
 				return SpriteFromStream("@SpriteResource.", null, resourceManager, stream, isXML, alternateImage);
 			}
-			catch (SharpException sEx)
+			catch (GorgonException)
 			{
-				throw sEx;
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -1088,7 +1083,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override object Clone()
 		{
-			Sprite clone = new Sprite(_objectName + ".Clone", Image, ImageOffset, Size, Axis, Position, Rotation, Scale);		// Create clone.
+			Sprite clone = new Sprite(Name + ".Clone", Image, ImageOffset, Size, Axis, Position, Rotation, Scale);		// Create clone.
 
 			// Copy properties.
 			for (int i = 0; i < _spriteCorners.Length; i++)
@@ -1608,7 +1603,7 @@ namespace GorgonLibrary.Graphics
 		{
 			int[] vertexColor = new int[4];				// Vertex colors.
 
-			writer.WriteComment("Gorgon Sprite - " + _objectName);
+			writer.WriteComment("Gorgon Sprite - " + Name);
 			writer.WriteComment("Written by Michael Winsor (Tape_Worm) for the Gorgon library.");
 			writer.WriteComment("Use at your own peril.");
 
@@ -1624,7 +1619,7 @@ namespace GorgonLibrary.Graphics
 			writer.WriteGroupBegin("MetaData");
 
 			// Write name
-			writer.Write("Name", _objectName);
+			writer.Write("Name", Name);
 
 			writer.WriteGroupEnd();
 
@@ -1787,7 +1782,7 @@ namespace GorgonLibrary.Graphics
 				throw new SpriteNotValidException();
 
 			// Get sprite data.
-			_objectName = reader.ReadString("Name");
+			Name = reader.ReadString("Name");
 
 			// We have an alternate image, so use that instead.
 			if (reader.Parameters.ContainsKey("Image"))

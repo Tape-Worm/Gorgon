@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 
@@ -119,7 +118,7 @@ namespace GorgonLibrary.Example
 			_heading.Y = (MathUtility.Cos(rads) * (_velocity));
 
 			// Calculate the current position.
-			Position += _heading * frameTime;
+			Position = Vector2D.Add(Position, Vector2D.Multiply(_heading, frameTime));
 
 			// Convert to screen space.
 			Sprite.Rotation = 180.0f - _angle;

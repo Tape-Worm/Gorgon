@@ -56,7 +56,7 @@ namespace GorgonLibrary.Framework
 			this.listCaps = new System.Windows.Forms.ListView();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader("(none)");
 			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-			this.labelCardName = new SharpUtilities.Controls.GradientLabel();
+			this.labelCardName = new System.Windows.Forms.Label();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.OK = new System.Windows.Forms.Button();
 			this.panel1.SuspendLayout();
@@ -110,7 +110,6 @@ namespace GorgonLibrary.Framework
 			this.labelCardName.Dock = System.Windows.Forms.DockStyle.Top;
 			this.labelCardName.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelCardName.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.labelCardName.GradientAngle = 45F;
 			this.labelCardName.Location = new System.Drawing.Point(0, 0);
 			this.labelCardName.Name = "labelCardName";
 			this.labelCardName.Size = new System.Drawing.Size(482, 24);
@@ -133,7 +132,7 @@ namespace GorgonLibrary.Framework
 			this.OK.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.OK.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.OK.ForeColor = System.Drawing.Color.Black;
-			this.OK.Image = global::GorgonLibrary.Properties.Resources.check;
+			this.OK.Image = global::GorgonLibrary.Framework.Properties.Resources.check;
 			this.OK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.OK.Location = new System.Drawing.Point(413, 7);
 			this.OK.Name = "OK";
@@ -167,11 +166,11 @@ namespace GorgonLibrary.Framework
 
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.ListView listCaps;
-		private SharpUtilities.Controls.GradientLabel labelCardName;
 		private System.Windows.Forms.ColumnHeader columnHeader1;
 		private System.Windows.Forms.ColumnHeader columnHeader2;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.Button OK;
+        private System.Windows.Forms.Label labelCardName;
 
 
 	}

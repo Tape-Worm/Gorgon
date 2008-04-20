@@ -28,8 +28,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -319,10 +318,6 @@ namespace GorgonLibrary.Graphics.Tools
 					else
 						_owner.SpriteManager.Sprites[item.Name].Bind(ImageCache.Images[comboImages.Text]);
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "Unable to re-bind the sprite.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

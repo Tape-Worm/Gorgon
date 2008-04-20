@@ -28,9 +28,6 @@ using System.Resources;
 using System.IO;
 using System.Reflection;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -596,7 +593,7 @@ namespace GorgonLibrary.Graphics
 					_d3dImage.Dispose();
 				_d3dImage = null;
 
-				Gorgon.Log.Print("Image", "Creating image \"{0}\": {1}x{2}, Format: {3}.", LoggingLevel.Simple, _objectName, _width, _height, _format.ToString());
+				Gorgon.Log.Print("Image", "Creating image \"{0}\": {1}x{2}, Format: {3}.", LoggingLevel.Simple, Name, _width, _height, _format.ToString());
 
 				// Start out with the same size.
 				_actualWidth = _width;
@@ -623,7 +620,7 @@ namespace GorgonLibrary.Graphics
 
 				// Ensure the image is the correct size.
 				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-					throw new ImageSizeException(_objectName, _actualWidth, _actualHeight, Gorgon.CurrentDriver.MaximumTextureWidth, Gorgon.CurrentDriver.MaximumTextureHeight, null);
+					throw new ImageSizeException(Name, _actualWidth, _actualHeight, Gorgon.CurrentDriver.MaximumTextureWidth, Gorgon.CurrentDriver.MaximumTextureHeight, null);
 
 				// If we specified unknown for the buffer format, assume 32 bit.
 				if (_format == ImageBufferFormats.BufferUnknown)
@@ -652,20 +649,19 @@ namespace GorgonLibrary.Graphics
 				_format = Converter.ConvertD3DImageFormat(surfaceDesc.Format);
 				_filename = string.Empty;
 				_isResource = false;
-				Gorgon.Log.Print("Image", "Image \"{0}\" created: {1}x{2} (actual texture size: {4}x{5}), Format: {3}.", LoggingLevel.Simple, _objectName, _width, _height, _format.ToString(), _actualWidth, _actualHeight);
+				Gorgon.Log.Print("Image", "Image \"{0}\" created: {1}x{2} (actual texture size: {4}x{5}), Format: {3}.", LoggingLevel.Simple, Name, _width, _height, _format.ToString(), _actualWidth, _actualHeight);
 
 				// Clear the buffer.
 				if (_clearOnInit)
 					Clear(Drawing.Color.FromArgb(255, 0, 255));
 			}
-			catch (SharpException sEx)
+			catch (GorgonException)
 			{
-				// Pass the error on if it's a sharp exception.
-				throw sEx;
+				throw;
 			}
 			catch (Exception ex)
 			{
-				throw new CannotCreateException(_objectName, GetType(), ex);
+				throw new CannotCreateException(Name, GetType(), ex);
 			}
 		}
 
@@ -1598,7 +1594,7 @@ namespace GorgonLibrary.Graphics
 				if (newImage != null)
 					newImage.Dispose();
 
-				throw new CannotUpdateException(_objectName, GetType(), ex);
+				throw new CannotUpdateException(Name, GetType(), ex);
 			}
 			finally
 			{
@@ -1724,7 +1720,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (Exception ex)
 			{
-				throw new CannotLoadException(_objectName, GetType(), ex);
+				throw new CannotLoadException(Name, GetType(), ex);
 			}
 			finally
 			{
@@ -1887,7 +1883,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (Exception ex)
 			{
-				throw new CannotLoadException(_objectName, GetType(), ex);
+				throw new CannotLoadException(Name, GetType(), ex);
 			}
 			finally
 			{
@@ -1980,7 +1976,7 @@ namespace GorgonLibrary.Graphics
 				if (stream is FileStream)
 					filename = ((FileStream)stream).Name;
 				else
-					filename = _objectName;
+					filename = Name;
 
 				// Open the serializer.
 				serializer = new ImageSerializer(this, stream);

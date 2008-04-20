@@ -23,7 +23,6 @@
 
 using System;
 using System.Runtime.InteropServices;
-using SharpUtilities;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 

@@ -27,9 +27,7 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
+using Dialogs;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 

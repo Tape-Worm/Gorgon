@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities.Mathematics;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 
@@ -314,7 +313,7 @@ namespace GorgonLibrary.Example
 		{
 			if (_allowScale)
 			{
-				_scale += _scaleVelocity * frameTime;
+                _scale = Vector2D.Add(_scale, Vector2D.Multiply(_scaleVelocity, frameTime));
 
 				if ((_scale.X < _initialScale.X) || (_offset.X > _initialScale.X + _scaleRange.X))
 				{
@@ -338,7 +337,7 @@ namespace GorgonLibrary.Example
 
 			if (_allowTranslate)
 			{
-				_offset += _offsetVelocity * frameTime;
+                _offset = Vector2D.Add(_offset, Vector2D.Multiply(_offsetVelocity, frameTime));
 
 				if ((_offset.X < -_offsetRange.X) || (_offset.X > _offsetRange.X))
 				{

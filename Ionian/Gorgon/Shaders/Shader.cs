@@ -28,7 +28,6 @@ using System.Text;
 using System.Resources;
 using System.IO;
 using System.Reflection;
-using SharpUtilities;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -150,7 +149,7 @@ namespace GorgonLibrary.Graphics
 					if (_effect != null)
 						_effect.Dispose();
 
-					throw new ShaderCompilerErrorException(_objectName, errors, ex);
+					throw new ShaderCompilerErrorException(Name, errors, ex);
 				}
 				finally
 				{
@@ -226,7 +225,7 @@ namespace GorgonLibrary.Graphics
 					return;
 
 				if (_techniques.Count == 0)
-					throw new ShaderHasNoTechniquesException(_objectName);
+					throw new ShaderHasNoTechniquesException(Name);
 
 				// Don't set the same technique.
 				if (value == _activeTechnique)
@@ -396,9 +395,9 @@ namespace GorgonLibrary.Graphics
 				stream = File.OpenRead(filename);
 				return ShaderFromStream(filename, null, null, stream, binary, (int)stream.Length);
 			}
-			catch (SharpException sEx)
+			catch (GorgonException)
 			{
-				throw sEx;
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -448,9 +447,9 @@ namespace GorgonLibrary.Graphics
 				stream = new MemoryStream(fileSystem.ReadFile(filename));
 				return ShaderFromStream(filename, null, null, stream, binary, (int)stream.Length);
 			}
-			catch (SharpException sEx)
+			catch (GorgonException)
 			{
-				throw sEx;
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -495,9 +494,9 @@ namespace GorgonLibrary.Graphics
 				stream = new MemoryStream(Encoding.UTF8.GetBytes(effect));
 				return ShaderFromStream(name, null, resourceManager, stream, binary, (int)stream.Length);
 			}
-			catch (SharpException sEx)
+			catch (GorgonException)
 			{
-				throw sEx;
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -559,7 +558,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (Exception ex)
 			{
-				throw new CannotSaveException(_objectName, GetType(), ex);
+				throw new CannotSaveException(Name, GetType(), ex);
 			}
 			finally
 			{

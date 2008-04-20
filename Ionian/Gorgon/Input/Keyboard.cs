@@ -28,8 +28,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Forms = System.Windows.Forms;
 using GorgonLibrary;
-using SharpUtilities.Native.Win32;
-using SharpUtilities.Mathematics;
+using GorgonLibrary.Internal.Native;
 
 namespace GorgonLibrary.InputDevices
 {

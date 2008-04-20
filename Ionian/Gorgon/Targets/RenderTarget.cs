@@ -24,9 +24,6 @@
 using System;
 using System.Windows.Forms;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
 

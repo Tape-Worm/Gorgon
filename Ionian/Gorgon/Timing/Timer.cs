@@ -23,9 +23,7 @@
 
 using System;
 using System.Diagnostics;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Native.Win32;
+using GorgonLibrary.Internal.Native;
 
 namespace GorgonLibrary
 {

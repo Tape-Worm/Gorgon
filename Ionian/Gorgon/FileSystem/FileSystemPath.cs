@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using SharpUtilities;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.FileSystems
 {
@@ -183,12 +183,9 @@ namespace GorgonLibrary.FileSystems
 		/// Function to assist with renaming.
 		/// </summary>
 		/// <param name="newName">New name.</param>
-		internal void SetName(string newName)
+		protected internal override void SetName(string newName)
 		{
-			if ((newName == null) || (newName == string.Empty))
-				throw new ArgumentNullException("newName");
-
-			_objectName = newName;
+            base.SetName(newName);
 			FilesUpdated();
 		}
 

@@ -30,15 +30,12 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
-using SharpUtilities.Native.Win32;
 using GorgonLibrary;
 using GorgonLibrary.InputDevices;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Tools.Controls;
 using ControlExtenders;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -525,10 +522,6 @@ namespace GorgonLibrary.Graphics.Tools
 
 				return true;
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "Error clearing the data.", sEx);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(this, "Error clearing the data.", ex);
@@ -585,10 +578,6 @@ namespace GorgonLibrary.Graphics.Tools
 				_gorgonLogo.Smoothing = Smoothing.Smooth;
 				_gorgonLogo.UniformScale = mode.Width / 568.0f;
 				_gorgonLogo.Draw();
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, ErrorDialogIcons.Bug, sEx.Message, sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -666,7 +655,7 @@ namespace GorgonLibrary.Graphics.Tools
 			newPosition = Vector2D.Zero;
 			newPosition.X = MathUtility.Round((panelSize.X / 2.0f) - (_spriteManager.CurrentSprite.Sprite.ScaledWidth / 2.0f));
 			newPosition.Y = MathUtility.Round((panelSize.Y / 2.0f) - (_spriteManager.CurrentSprite.Sprite.ScaledHeight / 2.0f));
-			newPosition += oldAxis;
+            newPosition = Vector2D.Add(newPosition, oldAxis);
 
 
 			// If bound to a render target, then update the temp image.
@@ -687,7 +676,7 @@ namespace GorgonLibrary.Graphics.Tools
 					_spriteManager.CurrentSprite.Sprite.AABB.Width, _spriteManager.CurrentSprite.Sprite.AABB.Height, Drawing.Color.Red);
 			Gorgon.Screen.EndDrawing();
 
-			_spriteManager.CurrentSprite.Sprite.Position = newPosition - oldAxis;
+			_spriteManager.CurrentSprite.Sprite.Position = Vector2D.Subtract(newPosition, oldAxis);
 			_spriteManager.CurrentSprite.Sprite.Draw();
 
 			// Draw a pointer to the hot-spot.
@@ -982,10 +971,6 @@ namespace GorgonLibrary.Graphics.Tools
 				_backBufferSprite.SetImageRegion(0, 0, Gorgon.CurrentVideoMode.Width, Gorgon.CurrentVideoMode.Height);
 				_clipView = new Viewport(8, 8, Gorgon.CurrentVideoMode.Width - 17, Gorgon.CurrentVideoMode.Height - 17);
 				panelGorgon.BringToFront();
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "Error resetting the video device.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -1626,10 +1611,6 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				SaveProject(_projectPath);
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "There was an error trying to save the project.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(this, "There was an error trying to save the project.", ex);
@@ -1940,11 +1921,6 @@ namespace GorgonLibrary.Graphics.Tools
 
 					SaveProject(dialogSave.FileName);
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "There was an error trying to save the project.", sEx.ErrorLog);
-				_projectPath = string.Empty;
 			}
 			catch (Exception ex)
 			{

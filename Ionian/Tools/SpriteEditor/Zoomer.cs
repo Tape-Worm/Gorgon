@@ -25,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -170,7 +168,7 @@ namespace GorgonLibrary.Graphics.Tools
 					}
 
 					// Update the position.
-					newPosition = cursorPosition + offset;
+					newPosition = Vector2D.Add(cursorPosition, offset);
 
 					// Adjust for boundaries.
 					if (newPosition.X >= bufferSize.X - _zoomerSprite.ScaledWidth - 1)
@@ -200,13 +198,9 @@ namespace GorgonLibrary.Graphics.Tools
 				_zoomerCaption.SetPosition(newPosition.X + 3, newPosition.Y - _zoomerCaption.Height + 1);
 				_zoomerCaption.Draw();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(_owner, "Unable to draw the zoom window.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(_owner, ex);
+				UI.ErrorBox(_owner, "Error drawing the zoom window.", ex);
 			}
 		}
 		#endregion

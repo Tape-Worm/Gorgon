@@ -25,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Collections;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -225,9 +223,9 @@ namespace GorgonLibrary.Graphics.Tools
 				if (selectedSprite != string.Empty)
 					_owner.SpriteManager.CurrentSprite = null;
 			}
-			catch (SharpException sEx)
+			catch (Exception ex)
 			{
-				UI.ErrorBox(_owner, "Unable to remove the selected sprites.", sEx.ErrorLog);
+				UI.ErrorBox(_owner, "Unable to remove the selected sprites.", ex);
 			}
 		}
 

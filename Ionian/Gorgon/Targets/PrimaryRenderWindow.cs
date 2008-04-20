@@ -26,8 +26,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -512,12 +510,12 @@ namespace GorgonLibrary.Graphics
 			if (!resize)
 			{
 				if (!usewindow)
-					Gorgon.Log.Print("RenderWindow", "Setting fullscreen mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), _objectName);
+					Gorgon.Log.Print("RenderWindow", "Setting fullscreen mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 				else
-					Gorgon.Log.Print("RenderWindow", "Setting windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), _objectName);
+					Gorgon.Log.Print("RenderWindow", "Setting windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 			}
 			else
-				Gorgon.Log.Print("RenderWindow", "Resizing windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, resizewidth, resizeheight, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), _objectName);
+				Gorgon.Log.Print("RenderWindow", "Resizing windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, resizewidth, resizeheight, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 
 			// Don't go too small.
 			if (resizewidth < 32)

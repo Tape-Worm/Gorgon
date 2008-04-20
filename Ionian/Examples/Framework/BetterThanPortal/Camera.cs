@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpUtilities.Mathematics;
 
 namespace GorgonLibrary.Example
 {
@@ -47,7 +46,7 @@ namespace GorgonLibrary.Example
 			get
 			{
 				if (_target != null)
-					return -_target.Position;
+					return Vector2D.Negate(_target.Position);
 
 				return _position;
 			}
@@ -55,7 +54,7 @@ namespace GorgonLibrary.Example
 			{
 				if (_target != null)
 				{
-					_target.Position = -value;
+					_target.Position = Vector2D.Negate(value);
 					return;
 				}
 				_position = value;
@@ -102,7 +101,7 @@ namespace GorgonLibrary.Example
 		{
 			Vector2D screenSpace = new Vector2D(Gorgon.Screen.Width / 2.0f, Gorgon.Screen.Height / 2.0f);			// Screen area.
 
-			return (local + Position) + screenSpace;
+			return Vector2D.Add(Vector2D.Add(local, Position), screenSpace);
 		}
 		#endregion
 

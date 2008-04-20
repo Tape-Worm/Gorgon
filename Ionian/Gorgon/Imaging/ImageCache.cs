@@ -24,8 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpUtilities;
-using SharpUtilities.Collections;
 
 namespace GorgonLibrary.Graphics
 {

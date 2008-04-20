@@ -27,8 +27,7 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using Dialogs;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.FileSystems;
@@ -135,7 +134,7 @@ namespace GorgonLibrary.Example
 			_folderFS = new FolderFileSystem("SomeFolderFileSystem", FileSystemProvider.Create(typeof(FolderFileSystem)));
 
 			// Mount the file system.
-			_folderFS.Root = @"..\..\..\..\Resources\FileSystems\FolderSystem";
+			_folderFS.AssignRoot(@"..\..\..\..\Resources\FileSystems\FolderSystem");
 
 			// Mount the root, but do not recurse.
 			_folderFS.Mount(@"\", false);

@@ -30,9 +30,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools.Controls
 {
@@ -158,7 +156,7 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 			}
 			catch (CannotLoadException cEx)
 			{
-				UI.ErrorBox(MainForm, "Could not load the image file '" + fileName + "'.\nIt may be corrupt or an unknown format.", cEx.ErrorLog);
+				UI.ErrorBox(MainForm, "Could not load the image file '" + fileName + "'.\nIt may be corrupt or an unknown format.", cEx);
 			}
 			catch (ImageAlreadyLoadedException)
 			{
@@ -408,13 +406,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				if (listImages.SelectedItems.Count > 0)
 					GetSelectedImage();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to enumerate the images.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(MainForm, ex);
+				UI.ErrorBox(MainForm, "Unable to enumerate the images.", ex);
 			}
 		}
 		#endregion
@@ -665,10 +659,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					MainForm.SpriteManager.RefreshList();
 				}
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", ex);
@@ -711,10 +701,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				}
 
 				GetSelectedImage();
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to refresh the selected images.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -787,10 +773,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 					MainForm.SpriteManager.RefreshList();
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

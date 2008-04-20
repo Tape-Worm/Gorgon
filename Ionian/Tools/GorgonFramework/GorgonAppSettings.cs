@@ -27,7 +27,7 @@ using System.Text;
 using System.Xml;
 using System.Windows.Forms;
 using System.IO;
-using SharpUtilities.Utility;
+using Dialogs;
 
 namespace GorgonLibrary.Framework
 {

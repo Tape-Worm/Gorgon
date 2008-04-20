@@ -22,7 +22,6 @@
 #endregion
 
 using System;
-using SharpUtilities.Mathematics;
 using System.Drawing;
 using GorgonLibrary.Internal;
 

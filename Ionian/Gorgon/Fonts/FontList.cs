@@ -28,7 +28,6 @@ using System.Resources;
 using System.IO;
 using System.Reflection;
 using Drawing = System.Drawing;
-using SharpUtilities.Collections;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
 using GorgonLibrary.FileSystems;

@@ -27,7 +27,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities.Utility;
 using GorgonLibrary.FileSystems.Design;
 
 namespace GorgonLibrary.FileSystems
@@ -59,7 +58,7 @@ namespace GorgonLibrary.FileSystems
             }
             catch (Exception ex)
             {
-                UI.ErrorBox(this, "The password is not valid.\n" + ex.Message);
+                MessageBox.Show(this, "The password is not valid.\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
         }
 

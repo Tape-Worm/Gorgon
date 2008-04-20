@@ -30,8 +30,7 @@ using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.ComponentModel;
 using System.Windows.Forms.Design;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -67,10 +66,6 @@ namespace GorgonLibrary.Graphics.Tools
 				}
 
 				return value;
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(null, "Unable to bind the image.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

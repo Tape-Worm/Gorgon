@@ -25,8 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
-using SharpUtilities;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.FileSystems
 {

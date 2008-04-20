@@ -25,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -356,18 +354,19 @@ namespace GorgonLibrary.Graphics.Tools
 		private void DrawPreviousSelectionRectangle(float renderTime)
 		{
 			Drawing.RectangleF clipRect = Drawing.RectangleF.Empty;		// Rectangle to draw.
+            float scrollRate = -8 * renderTime;                         // Scrolling rate.
 
 			if (_updateRectangle == Drawing.RectangleF.Empty)
 				return;
 			
 			clipRect = _updateRectangle;
-			clipRect.Offset(-_owner.ScrollOffset);
+			clipRect.Offset(Vector2D.Negate(_owner.ScrollOffset));
 			clipRect.Offset(8.0f, 8.0f);
 
 			Gorgon.Screen.BlendingMode = BlendingModes.Modulated;
 			Gorgon.Screen.DrawingPattern = _patternImage;
 			Gorgon.Screen.WrapMode = ImageAddressing.Wrapping;
-			_updatePatternOffset += new Vector2D(-8 * renderTime, -8 * renderTime);
+            _updatePatternOffset = Vector2D.Add(_updatePatternOffset, new Vector2D(scrollRate, scrollRate));
 			if (_updatePatternOffset.X < -1024.0f)
 				_updatePatternOffset.X = 0;
 			if (_updatePatternOffset.Y < -1024.0f)
@@ -398,20 +397,21 @@ namespace GorgonLibrary.Graphics.Tools
 		private void DrawSelectionRectangle(Vector2D cursorPosition, float renderTime)
 		{
 			Drawing.RectangleF clipRect = Drawing.RectangleF.Empty;		// Rectangle to draw.
+            float scrollRate = 16 * renderTime;                         // Scrolling rate.
 
 			if ((!_inSelection) && (!_fixedDimensions))
 				return;
 
 			// Get the visible clipping region.
-			clipRect = GetClipDimensions(cursorPosition + _owner.ScrollOffset);
+			clipRect = GetClipDimensions(Vector2D.Add(cursorPosition, _owner.ScrollOffset));
 
 			// Convert to screen coordinates.
-			clipRect.Offset(-_owner.ScrollOffset);
+			clipRect.Offset(Vector2D.Negate(_owner.ScrollOffset));
 
 			Gorgon.Screen.BlendingMode = BlendingModes.Modulated;
 			Gorgon.Screen.DrawingPattern = _patternImage;
 			Gorgon.Screen.WrapMode = ImageAddressing.Wrapping;
-			_selectPatternOffset += new Vector2D(16 * renderTime, 16 * renderTime);
+            _selectPatternOffset = Vector2D.Add(_selectPatternOffset, new Vector2D(scrollRate, scrollRate));
 			if (_selectPatternOffset.X > 1024.0f)
 				_selectPatternOffset.X = 0;
 			if (_selectPatternOffset.Y > 1024.0f)
@@ -454,10 +454,6 @@ namespace GorgonLibrary.Graphics.Tools
 				// Draw the selection rectangle.
 				DrawPreviousSelectionRectangle(renderTime);
 				DrawSelectionRectangle(cursorPosition, renderTime);
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(_owner, "Unable to draw the cursor.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

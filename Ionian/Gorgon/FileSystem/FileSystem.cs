@@ -27,10 +27,9 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using System.Reflection;
-using SharpUtilities;
-using SharpUtilities.Collections;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Serialization;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.FileSystems
 {

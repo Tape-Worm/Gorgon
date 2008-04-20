@@ -27,11 +27,9 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Dialogs;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 
 namespace GorgonLibrary.Example
 {
@@ -116,7 +114,7 @@ namespace GorgonLibrary.Example
 			for (int i = 0; i < _ballCount; i++)
 			{
 				currentBall = _balls[i];
-				currentBall.Position += currentBall.PositionDelta * e.FrameDeltaTime;
+                currentBall.Position = Vector2D.Add(currentBall.Position, Vector2D.Multiply(currentBall.PositionDelta, e.FrameDeltaTime));
 				currentBall.Scale += currentBall.ScaleDelta * e.FrameDeltaTime;
 				currentBall.Rotation += currentBall.RotationDelta * e.FrameDeltaTime;
 				currentBall.Opacity += currentBall.OpacityDelta * e.FrameDeltaTime;

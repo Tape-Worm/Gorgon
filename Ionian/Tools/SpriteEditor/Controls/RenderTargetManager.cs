@@ -28,8 +28,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools.Controls
 {
@@ -387,13 +386,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				RefreshList();
 				MainForm.ProjectChanged = true;
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to delete the render targets.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(MainForm, ex);
+				UI.ErrorBox(MainForm, "Unable to delete the render targets.", ex);
 			}
 			finally
 			{
@@ -465,13 +460,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 				MainForm.ProjectChanged = true;
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to rename this render target.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(MainForm, ex);
+				UI.ErrorBox(MainForm, "Unable to rename this render target.", ex);
 			}
 			finally
 			{

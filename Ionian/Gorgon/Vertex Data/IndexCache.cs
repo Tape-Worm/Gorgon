@@ -24,8 +24,6 @@
 using System;
 using System.Runtime.InteropServices;
 using DX = SlimDX;
-using SharpUtilities;
-using SharpUtilities.Native;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Internal

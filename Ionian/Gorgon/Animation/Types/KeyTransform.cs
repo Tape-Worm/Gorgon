@@ -22,7 +22,6 @@
 #endregion
 
 using System;
-using SharpUtilities.Mathematics;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -234,13 +233,13 @@ namespace GorgonLibrary.Graphics
 
 					// Do translation.
 					position = previous.Position;
-					_position = (position + ((next._position - position) * Time));
+                    _position = Vector2D.Add(position, Vector2D.Multiply(Vector2D.Subtract(next._position, position), Time));
 					_position.X = (float)Math.Round(_position.X);
 					_position.Y = (float)Math.Round(_position.Y);
 
 					// Do scale.
 					scale = previous.Scale;
-					_scale = (scale + ((next._scale - scale) * Time));
+                    _scale = Vector2D.Add(scale, Vector2D.Multiply(Vector2D.Subtract(next._scale, scale), Time));
 
 					// Do rotation.
 					rotation = previous.Rotation;
@@ -248,19 +247,19 @@ namespace GorgonLibrary.Graphics
 
 					// Perform axis shifting.
 					axis = previous.Axis;
-					_axis = (axis + ((next._axis - axis) * Time));
+                    _axis = Vector2D.Add(axis, Vector2D.Multiply(Vector2D.Subtract(next._axis, axis), Time));
 					_axis.X = (float)Math.Round(_axis.X);
 					_axis.Y = (float)Math.Round(_axis.Y);
 
 					// Change image size.
 					size = previous.Size;
-					_size = (size + ((next._size - size) * Time));
+                    _size = Vector2D.Add(size, Vector2D.Multiply(Vector2D.Subtract(next._size, size), Time));
 					_size.X = (float)Math.Round(_size.X);
 					_size.Y = (float)Math.Round(_size.Y);
 
 					// Change image offset.
 					offset = previous.ImageOffset;
-					_offset = (offset + ((next._offset - offset) * Time));
+                    _offset = Vector2D.Add(offset, Vector2D.Multiply(Vector2D.Subtract(next._offset, offset), Time));
 					_offset.X = (float)Math.Round(_offset.X);
 					_offset.Y = (float)Math.Round(_offset.Y);
 				}

@@ -26,10 +26,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Windows.Forms;
 using System.Security.Cryptography;
-using SharpUtilities.Utility;
-using SharpUtilities.IO;
-using SharpUtilities.Collections;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Serialization;
 
@@ -171,6 +169,9 @@ namespace GorgonLibrary.FileSystems
 			if (fileSystemStream == null)
 				throw new ArgumentNullException("fileSystemStream");
 
+            if (AuthenticationData == null)
+                throw new InvalidAuthenticationDataException(Name);
+
 			base.AssignRoot(fileSystemStream);
 			InitializeIndex("[Stream]->" + Provider.Name + "." + Name);
 
@@ -206,7 +207,10 @@ namespace GorgonLibrary.FileSystems
 		{
 			FileStream stream = null;					// File stream.
 
-			if (path == null)
+            if (AuthenticationData == null)
+                throw new InvalidAuthenticationDataException(Name);
+            
+            if (path == null)
 				path = string.Empty;
 
 			// Append default extension.
@@ -493,10 +497,7 @@ namespace GorgonLibrary.FileSystems
 		protected override void SaveFinalize()
 		{
 			if (IsRootInStream)
-			{
-				_fileStream.Position = _fileSystemOffset;
 				return;
-			}
 
 			if (_fileStream != null)
 				_fileStream.Dispose();
@@ -575,7 +576,7 @@ namespace GorgonLibrary.FileSystems
             }
             catch (Exception ex)
             {
-                UI.ErrorBox(owner, "Error changing the password.", ex);
+                MessageBox.Show("Error changing the password.\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return 0;
             }
 
@@ -605,7 +606,7 @@ namespace GorgonLibrary.FileSystems
             }
             catch (Exception ex)
             {
-                UI.ErrorBox(owner, "Error getting the authorization from the user.", ex);
+                MessageBox.Show("Error retrieving the authorization from the user.\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return 0;
             }
             finally
@@ -624,7 +625,10 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="fileSystemStream">Stream to save into.</param>
 		public override void Save(Stream fileSystemStream)
 		{
-			if (fileSystemStream == null)
+            if (AuthenticationData == null)
+                throw new InvalidAuthenticationDataException(Name);
+            
+            if (fileSystemStream == null)
 				throw new ArgumentNullException("fileSystemStream");
 
 			_streamIsRoot = true;
@@ -640,7 +644,10 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="filePath">Path to save the file system into.</param>
 		public override void Save(string filePath)
 		{
-			_streamIsRoot = false;
+            if (AuthenticationData == null)
+                throw new InvalidAuthenticationDataException(Name);
+            
+            _streamIsRoot = false;
 			_fileStream = null;
 
 			base.Save(filePath);
