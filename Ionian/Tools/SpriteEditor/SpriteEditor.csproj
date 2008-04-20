@@ -321,8 +321,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorSprite.ico" />
-    <None Include="Resources\buttonBack.png" />
-    <None Include="Resources\alphaPicker.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
