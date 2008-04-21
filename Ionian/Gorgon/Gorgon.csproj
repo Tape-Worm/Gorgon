@@ -291,7 +291,6 @@
     <Compile Include="Vertex Data\VertexCache.cs" />
     <Compile Include="Vertex Data\VertexField.cs" />
     <Compile Include="Vertex Data\VertexType.cs" />
-    <None Include="Gorgon.cd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FileSystem\Design\formAuthentication.resx">

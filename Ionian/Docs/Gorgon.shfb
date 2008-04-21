@@ -1,0 +1,70 @@
+﻿<project schemaVersion="1.6.0.2">
+    <assemblies>
+        <assembly assemblyPath="..\Gorgon\bin\Debug\Gorgon.dll" xmlCommentsPath="..\Gorgon\bin\Debug\Gorgon.xml" commentsOnly="False" />
+    </assemblies>
+    <namespaceSummaries>
+        <namespaceSummaryItem name="" isDocumented="False" />
+        <namespaceSummaryItem name="GorgonLibrary" isDocumented="True">This is the primary namespace for Gorgon.  It contains the core functionality for the library.</namespaceSummaryItem>
+        <namespaceSummaryItem name="GorgonLibrary.FileSystems" isDocumented="True">This namespace contains objects dealing with virtual file systems.</namespaceSummaryItem>
+        <namespaceSummaryItem name="GorgonLibrary.FileSystems.Design" isDocumented="True">This namespace contains objects dealing with virtual file interfaces for use with the File System Editor.</namespaceSummaryItem>
+        <namespaceSummaryItem name="GorgonLibrary.Graphics" isDocumented="True">This namespace contains graphics related objects such as sprites, text &amp;amp; font functionality, and more.</namespaceSummaryItem>
+        <namespaceSummaryItem name="GorgonLibrary.InputDevices" isDocumented="True">This namespace contains objects relating to user input devices such as keyboards, mice and joysticks/joypads</namespaceSummaryItem>
+        <namespaceSummaryItem name="GorgonLibrary.Internal" isDocumented="True">"These aren't the droids you're looking for.  He can move along." 
+
+"These aren't the droids we're looking for.  Move along.  Move along." 
+
+But really, these are internal functions for use by Gorgon only.  They should rarely, if ever, be needed by the user.</namespaceSummaryItem>
+        <namespaceSummaryItem name="GorgonLibrary.Internal.Native" isDocumented="False" />
+        <namespaceSummaryItem name="GorgonLibrary.PlugIns" isDocumented="True">This namespace contains functionality for use in building and using plug-ins.</namespaceSummaryItem>
+        <namespaceSummaryItem name="GorgonLibrary.Properties" isDocumented="False" />
+        <namespaceSummaryItem name="GorgonLibrary.Serialization" isDocumented="True">This namespace contains objects to serialize and/or deserialize objects to and from a storage medium.</namespaceSummaryItem>
+    </namespaceSummaries>
+    <additionalContent>
+        <contentItem sourcePath=".\Content\*.*" destPath="Content\" excludeItems="False" />
+    </additionalContent>
+    <dependencies>
+        <dependencyItem depPath="..\Dependencies\SlimDX\x86\Release\SlimDX.dll" />
+    </dependencies>
+    <componentConfigurations>
+        <component id="Cached MSDN URL References" enabled="True" configuration="&lt;component id=&quot;Cached MSDN URL References&quot; type=&quot;SandcastleBuilder.Components.CachedResolveReferenceLinksComponent&quot; assembly=&quot;{@SHFBFolder}SandcastleBuilder.Components.dll&quot;&gt;&#xD;&#xA;&#xD;&#xA;            &lt;cache filename=&quot;{@ComponentsFolder}Cache\MsdnUrl.cache&quot; /&gt;&#xD;&#xA;            &lt;targets base=&quot;{@SandcastlePath}Data\Reflection&quot; recurse=&quot;true&quot; files=&quot;*.xml&quot; type=&quot;{@SDKLinks}&quot; /&gt;&#xD;&#xA;            &lt;targets files=&quot;reflection.xml&quot; type=&quot;{@ProjectLinks}&quot; /&gt;&#xD;&#xA;        &#xD;&#xA;&lt;/component&gt;" />
+        <component id="Code Block Component" enabled="True" configuration="&lt;component id=&quot;Code Block Component&quot; type=&quot;SandcastleBuilder.Components.CodeBlockComponent&quot; assembly=&quot;{@SHFBFolder}SandcastleBuilder.Components.dll&quot;&gt;&lt;!-- Base path for relative filenames in source attributes&#xD;&#xA;                 (optional) --&gt;&lt;basePath value=&quot;{@ProjectFolder}&quot; /&gt;&lt;!-- Connect to language filter (optional).  If omitted,&#xD;&#xA;                 language filtering is enabled by default. --&gt;&lt;languageFilter value=&quot;true&quot; /&gt;&lt;!-- Code colorizer options (required).&#xD;&#xA;                 Attributes:&#xD;&#xA;                    Language syntax configuration file (required)&#xD;&#xA;                    XSLT style file (required)&#xD;&#xA;                    &quot;Copy&quot; image file URL (required)&#xD;&#xA;                    Default language (optional)&#xD;&#xA;                    Enable line numbering (optional)&#xD;&#xA;                    Enable outlining (optional)&#xD;&#xA;                    Tab size override (optional, 0 = Use syntax file setting)&#xD;&#xA;                    Use language name as default title (optional) --&gt;&lt;colorizer syntaxFile=&quot;{@SHFBFolder}Colorizer\highlight.xml&quot; styleFile=&quot;{@SHFBFolder}Colorizer\highlight.xsl&quot; copyImageUrl=&quot;../icons/CopyCode.gif&quot; language=&quot;cs&quot; numberLines=&quot;true&quot; outlining=&quot;true&quot; tabSize=&quot;0&quot; defaultTitle=&quot;true&quot; /&gt;&lt;/component&gt;" />
+        <component id="Post-transform Component" enabled="True" configuration="&lt;component id=&quot;Post-transform Component&quot; type=&quot;SandcastleBuilder.Components.PostTransformComponent&quot; assembly=&quot;{@SHFBFolder}SandcastleBuilder.Components.dll&quot;&gt;&lt;!-- Code colorizer files (required).&#xD;&#xA;                 Attributes:&#xD;&#xA;                    Stylesheet file (required)&#xD;&#xA;                    Script file (required)&#xD;&#xA;                    &quot;Copy&quot; image file (required) --&gt;&lt;colorizer stylesheet=&quot;{@SHFBFolder}Colorizer\highlight.css&quot; scriptFile=&quot;{@SHFBFolder}Colorizer\highlight.js&quot; copyImage=&quot;{@SHFBFolder}Colorizer\CopyCode.gif&quot; /&gt;&lt;!-- Base output path for the files (required).  This should match&#xD;&#xA;                 the parent folder of the output path of the HTML files (see&#xD;&#xA;                 SaveComponent). --&gt;&lt;outputPath value=&quot;Output\&quot; /&gt;&lt;!-- Logo image file (optional).  Filename is required. The height,&#xD;&#xA;                 width, altText, placement, and alignment attributes are&#xD;&#xA;                 optional. --&gt;&lt;logoFile filename=&quot;C:\code\gorgonlib\Docs\Content\GorgonLogo3.jpg&quot; height=&quot;0&quot; width=&quot;0&quot; altText=&quot;&quot; placement=&quot;left&quot; alignment=&quot;left&quot; /&gt;&lt;/component&gt;" />
+    </componentConfigurations>
+    <ProjectSummary />
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors</MissingTags>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <HtmlHelp1xCompilerPath path="" />
+    <HtmlHelp2xCompilerPath path="" />
+    <OutputPath>.\Help\</OutputPath>
+    <SandcastlePath path="" />
+    <WorkingPath path="" />
+    <CleanIntermediates>True</CleanIntermediates>
+    <KeepLogFile>True</KeepLogFile>
+    <HelpFileFormat>HtmlHelp1x</HelpFileFormat>
+    <PurgeDuplicateTopics>True</PurgeDuplicateTopics>
+    <CppCommentsFixup>False</CppCommentsFixup>
+    <FrameworkVersion>2.0.50727</FrameworkVersion>
+    <BinaryTOC>True</BinaryTOC>
+    <IncludeFavorites>True</IncludeFavorites>
+    <Preliminary>True</Preliminary>
+    <RootNamespaceContainer>True</RootNamespaceContainer>
+    <RootNamespaceTitle>Reference</RootNamespaceTitle>
+    <HelpTitle>Gorgon</HelpTitle>
+    <HtmlHelpName>Gorgon</HtmlHelpName>
+    <Language>en-US</Language>
+    <CopyrightHref>http://www.gnu.org/copyleft/lesser.html</CopyrightHref>
+    <CopyrightText>Copyright © 2007 - Licensed under the LGPL by Michael Winsor (Tape_Worm)</CopyrightText>
+    <FeedbackEMailAddress>tape_worm@tape-worm.net</FeedbackEMailAddress>
+    <HeaderText />
+    <FooterText>Gorgon v1.1.x</FooterText>
+    <ProjectLinkType>Local</ProjectLinkType>
+    <SdkLinkType>Msdn</SdkLinkType>
+    <SdkLinkTarget>Blank</SdkLinkTarget>
+    <PresentationStyle>hana</PresentationStyle>
+    <NamingMethod>Guid</NamingMethod>
+    <SyntaxFilters>Standard</SyntaxFilters>
+    <ShowFeedbackControl>True</ShowFeedbackControl>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <ContentSiteMap path=".\HelpMap.sitemap" />
+    <TopicFileTransform path="" />
+</project>
