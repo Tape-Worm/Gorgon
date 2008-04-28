@@ -433,6 +433,7 @@ namespace GorgonLibrary.Graphics
 				_font = value;
 				IsSizeUpdated = true;
 				IsImageUpdated = true;
+				UpdateAABB();
 			}
 		}
 
