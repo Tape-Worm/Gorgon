@@ -431,6 +431,7 @@ namespace GorgonLibrary.Graphics
 				_font = value;
 				IsSizeUpdated = true;
 				IsImageUpdated = true;
+				UpdateAABB();
 			}
 		}
 
@@ -815,10 +816,10 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Set the Z position, although we don't really need it, it may fuck something up if we don't.
-			Vertices[charIndex].Position.Z = -1.0f;
-			Vertices[charIndex+1].Position.Z = -1.0f;
-			Vertices[charIndex+2].Position.Z = -1.0f;
-			Vertices[charIndex+3].Position.Z = -1.0f;
+			Vertices[charIndex].Position.Z = -Depth;
+			Vertices[charIndex + 1].Position.Z = -Depth;
+			Vertices[charIndex + 2].Position.Z = -Depth;
+			Vertices[charIndex + 3].Position.Z = -Depth;
 
 			// Set rotation.
 			if (FinalRotation != 0.0f)

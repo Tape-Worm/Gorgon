@@ -63,7 +63,6 @@ namespace GorgonLibrary.Example
 			this.ClientSize = new System.Drawing.Size(640, 480);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.InvertFrameStatsColor = false;
 			this.MaximizeBox = false;
 			this.Name = "MainForm";
 			this.RenderWindow = this;

@@ -117,11 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Blur" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Blur.fx;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-    <comment>Blur shader</comment>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="GorgonLogo3" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -493,26 +488,8 @@
         hc+MLQwLd6xTGFaZlVS3km17kdf4a0b0H3SW/wG+CU4gv4cvFAAAAABJRU5ErkJggg==
 </value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="GorIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GorIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="__Cursor" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAuFJREFUWEe9lz9I
-        G1Ecx7V/ImpNdWhtmxpoowYnnVykJIXaLQQCJ6GLQrqUFkJNt2ARHBQptGbR6JSlDoouLinaE0UIiKJD
-        GyIVHESsFa0VIdHAt993xIA1MV7x3sGHHLm79/u83++9d++Ki4qKHhIbuUbi5CcBkXY4KioqPlZXV0eq
-        qqq8jPqA3JAWnYEUq9WqOp3O362trVGev+R/j8hNWRKK3W5XfT4furu7/7S1tX2tqal5xeCPZUkodXV1
-        ant7O8LhMIaHhw87OjpmKfE6MzYMz4RSW1urKoqCoaEhLC0tYWpqSqpEVmBgYAArKyvY3t6WKpEV6Onp
-        EYGxs7OD/f19aRJZga6uLkQiESQSCaRSKWkSZwQGBwcxPz+vBReHjEycEQiFQloZNjY2cHx8LEXinMDY
-        2BiWl5dxcHCgCRidiXMCo6OjWFhYwO7ublbASImcAnNzc9ja2sLJyYnhEjkFpqensba2hqOjozMCRmQi
-        p0A0GsXq6ir29vaQTqcNlcgrIJblzc1NJJPJcwJXmYm8AouLi9p0zFWGq5wdFwqsr69r0zFXGa5K4kIB
-        sSzH43HEYjGoqpqXyclJdHZ2HtbX18/yNa7rVZ5XYGZmBhMTE+jv74fX64XD4biQxsZGVFZWHlLgC3lB
-        7pDiQjurnALj4+Po6+uD2+1GQ0NDymw2/2JDP8h38q0AUV5/k9naXdctMDIygmAwiJaWFnDDmmQDCfKZ
-        vCdvib8APl53krtEn0Bvby/8fj+am5tRXl4ugovehoiL2ImF3C+ACHybmHSVIBAIQOwNm5qaUFZWdhr8
-        Ext5lumN2B+K7wdR18tQKPvadW0MuFwueDweUW+UlpbmC36pBvXepFgsFlX02mazoaSkRGpwLQPsscrB
-        BpPJJD24EHhKwkRMrxj58E/N9WZU9/33+MRz8o6IufuEiAXE8A+SU1Mxmm8RawYzf6V+nAoRISGCnk4z
-        3Wn83wf+Aj7HE9x4xLtLAAAAAElFTkSuQmCC
-</value>
   </data>
 </root>

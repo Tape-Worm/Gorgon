@@ -60,19 +60,6 @@ namespace GorgonLibrary.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap @__Cursor {
-            get {
-                object obj = ResourceManager.GetObject("__Cursor", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static string Blur {
-            get {
-                return ResourceManager.GetString("Blur", resourceCulture);
-            }
-        }
-        
         internal static System.Drawing.Bitmap GorgonLogo3 {
             get {
                 object obj = ResourceManager.GetObject("GorgonLogo3", resourceCulture);

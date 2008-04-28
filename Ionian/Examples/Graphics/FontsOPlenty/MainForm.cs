@@ -196,8 +196,6 @@ namespace GorgonLibrary.Example
 		/// </summary>
 		private void Initialize()
 		{
-			Gorgon.InvertFrameStatsTextColor = false;
-						
 			_timer = new PreciseTimer();
 			_fontList = new List<Font>();
 

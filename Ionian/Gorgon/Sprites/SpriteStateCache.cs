@@ -48,6 +48,9 @@ namespace GorgonLibrary.Graphics
 		private StencilOperations _globalStencilFailOperation;						// Stencil fail operation.
 		private StencilOperations _globalStencilZFailOperation;						// Stencil Z fail operation.
 		private CompareFunctions _globalStencilCompare;								// Stencil compare operation.
+		private bool _globalDepthWriteEnabled;										// Depth buffer writing enabled.
+		private float _globalDepthBias;												// Depth buffer bias.
+		private CompareFunctions _globalDepthTestFunction;							// Depth buffer testing function.
 		private int _globalStencilReference;										// Stencil reference value.
 		private int _globalStencilMask;												// Stencil mask value.
 		private bool _globalUseStencil;												// Flag to indicate whether to use the stencil or not.
@@ -58,6 +61,28 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return whether the depth buffer (if applicable) is enabled or not.
+		/// </summary>
+		/// <remarks>If the current render target does not have a depth buffer attached (i.e. <see cref="GorgonLibrary.Graphics.RenderTarget.UseDepthBuffer">RenderTarget.Graphics.RenderTarget</see>=false) then this property will always return FALSE.</remarks>
+		public bool DepthBufferEnabled
+		{
+			get
+			{
+				if ((Gorgon.CurrentRenderTarget == null) || (!Gorgon.CurrentRenderTarget.UseDepthBuffer))
+					return false;
+
+				return Gorgon.Renderer.RenderStates.DepthBufferEnabled;
+			}
+			set
+			{
+				if ((Gorgon.CurrentRenderTarget == null) || (!Gorgon.CurrentRenderTarget.UseDepthBuffer))
+					return;
+
+				Gorgon.Renderer.RenderStates.DepthBufferEnabled = true;
+			}
+		}
+		
 		/// <summary>
 		/// Property to set or return the maximum number of sprites per batch.
 		/// </summary>
@@ -120,6 +145,51 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				_globalSourceBlend = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the depth buffer writing (if applicable) is enabled or not.
+		/// </summary>
+		public bool GlobalDepthWriteEnabled
+		{
+			get
+			{
+				return _globalDepthWriteEnabled;
+			}
+			set
+			{
+				_globalDepthWriteEnabled = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the depth buffer bias (if applicable).
+		/// </summary>
+		public float GlobalDepthBufferBias
+		{
+			get
+			{
+				return _globalDepthBias;
+			}
+			set
+			{
+				_globalDepthBias = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the depth buffer test function (if applicable) is enabled or not.
+		/// </summary>
+		public CompareFunctions GlobalDepthBufferTestFunction
+		{
+			get
+			{
+				return _globalDepthTestFunction;
+			}
+			set
+			{
+				_globalDepthTestFunction = value;
 			}
 		}
 
@@ -431,7 +501,7 @@ namespace GorgonLibrary.Graphics
 			}
 			_lastSmooth = renderObject.Smoothing;
 
-			// Set stencil _renderStates.
+			// Set stencil render states.
 			_renderStates.StencilEnable = renderObject.StencilEnabled;
 			_renderStates.StencilCompare = renderObject.StencilCompare;
 			_renderStates.StencilFailOperation = renderObject.StencilFailOperation;
@@ -439,6 +509,11 @@ namespace GorgonLibrary.Graphics
 			_renderStates.StencilPassOperation = renderObject.StencilPassOperation;
 			_renderStates.StencilZFailOperation = renderObject.StencilZFailOperation;
 			_renderStates.StencilReference = renderObject.StencilReference;
+
+			// Set depth render states.
+			_renderStates.DepthBias = renderObject.DepthBufferBias;
+			_renderStates.DepthBufferWriteEnabled = renderObject.DepthWriteEnabled;
+			_renderStates.DepthTestFunction = renderObject.DepthTestFunction;
 
 			// Set the currently active shader.
 			Gorgon.Renderer.CurrentShader = renderObject.Shader;
@@ -515,6 +590,15 @@ namespace GorgonLibrary.Graphics
 			if (renderObject.Smoothing != _lastSmooth)
 				result = true;
 
+			if (renderObject.DepthTestFunction != states.DepthTestFunction)
+				result = true;
+
+			if (renderObject.DepthWriteEnabled != states.DepthBufferWriteEnabled)
+				result = true;
+
+			if (renderObject.DepthBufferBias != states.DepthBias)
+				result = true;
+
 			if (Geometry.PrimitiveStyle != renderObject.PrimitiveStyle)
 				result = true;
 
@@ -554,6 +638,9 @@ namespace GorgonLibrary.Graphics
 			_globalStencilFailOperation = StencilOperations.Keep;
 			_globalStencilZFailOperation = StencilOperations.Keep;
 			_globalStencilMask = -1;
+			_globalDepthBias = 0.0f;
+			_globalDepthTestFunction = CompareFunctions.LessThanOrEqual;
+			_globalDepthWriteEnabled = true;
 			_renderStates = Gorgon.Renderer.RenderStates;
 			_imageStates = Gorgon.Renderer.ImageLayerStates[0];
 

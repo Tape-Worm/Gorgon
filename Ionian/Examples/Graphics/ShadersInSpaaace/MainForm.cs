@@ -363,8 +363,7 @@ namespace GorgonLibrary.Example
 				// Display the logo.
 				Gorgon.LogoVisible = true;
 				Gorgon.FrameStatsVisible = false;
-				Gorgon.InvertFrameStatsTextColor = false;
-
+				
 				if (Gorgon.CurrentDriver.PixelShaderVersion < new Version(2, 0))
 				{
 					UI.ErrorBox(this, "This example requires a shader model 2 capable video card.\nSee details for more information.", "Required pixel shader version: 2.0\n" + Gorgon.CurrentDriver.Description + " pixel shader version: " + Gorgon.CurrentDriver.PixelShaderVersion.ToString());

@@ -182,7 +182,6 @@ namespace GorgonLibrary.Example
 				// Display the logo and frame stats.
 				Gorgon.LogoVisible = true;
 				Gorgon.FrameStatsVisible = false;
-				Gorgon.InvertFrameStatsTextColor = false;
 
 				// Set the video mode to match the form client area.
 				Gorgon.SetMode(this, 640, 480, BackBufferFormats.BufferRGB888, true);

@@ -88,6 +88,7 @@ namespace GorgonLibrary.Example
 		private RenderImage _counterImage = null;									// Frame counter image.
 		private StringBuilder _fpsString = null;									// FPS string.
 		private Font _font = null;													// Text font.
+		private bool _showHelp = true;												// Flag to show help.
         #endregion
 
         #region Methods.
@@ -162,8 +163,30 @@ namespace GorgonLibrary.Example
 			_window.Draw();
 			_fpsString.Length = 0;
 			_fpsString.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.0}ms\nBall count: {2}", e.TimingData.AverageFps, e.TimingData.FrameDrawTime, _ballCount);
+			_text.Color = Drawing.Color.White;
+			_text.Shadowed = false;
+			_text.Position = new Vector2D(0, 0);
 			_text.Text = _fpsString.ToString();
 			_text.Draw();
+
+			if (_showHelp)
+			{
+				_text.Position = new Vector2D(0, _text.Height + 8.0f);
+				_text.Shadowed = true;
+				_text.Color = Drawing.Color.Yellow;
+				_fpsString.Length = 0;
+				_fpsString.Append("Help:\nF1 - Show or hide this help message.\n\u2191 (up arrow) - Increase the ball count by 1 ball.\n");
+				_fpsString.Append("\u2193 (down arrow) - Decrease the ball count by 1 ball.\nShift + \u2191 (up arrow) - Increase the ball count by 100 balls.\n");
+				_fpsString.Append("Shift + \u2193 (down arrow) - Decrease the ball count by 100 balls.\nCtrl + \u2191 (up arrow) - Increase the ball count by 1000 balls.\n");
+				_fpsString.Append("Ctrl + \u2193 (down arrow) - Decrease the ball count by 1000 balls.\n");
+				if (Gorgon.Screen.Windowed)
+					_fpsString.Append("Alt + Enter - Switch to fullscreen.\n");
+				else
+					_fpsString.Append("Alt + Enter - Switch to windowed.\n");
+				_fpsString.Append("ESC - Exit.");
+				_text.Text = _fpsString.ToString();
+				_text.Draw();
+			}
 		}
 
         /// <summary>
@@ -234,6 +257,7 @@ namespace GorgonLibrary.Example
 
 				// Create font.
 				_font = new Font("Arial9pt", "Arial", 9.0f, true, true);
+				_font.CharacterList += "\u2191\u2193";
 
                 // Get the ball image.
                 _ballImage = Image.FromFile("BallDemo.png");
@@ -352,6 +376,9 @@ namespace GorgonLibrary.Example
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
+
+			if (e.KeyCode == Keys.F1)
+				_showHelp = !_showHelp;
 
 			if (e.KeyCode == Keys.Up)
 			{

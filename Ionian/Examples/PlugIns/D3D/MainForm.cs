@@ -86,7 +86,6 @@ namespace GorgonLibrary.Example
         {
             // Set smoothing mode to all the sprites.
             Gorgon.GlobalStateSettings.GlobalSmoothing = Smoothing.Smooth;
-            Gorgon.InvertFrameStatsTextColor = false;
 
             if (_target != null)
                 _target.Dispose();

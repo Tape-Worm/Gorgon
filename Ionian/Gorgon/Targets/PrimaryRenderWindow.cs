@@ -215,23 +215,24 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void DrawStats()
 		{
-			Viewport lastClip = null;	// Last clipping view.
-			BlendingModes lastBlend;	// Last blending mode.
+			Viewport lastClip = null;				// Last clipping view.
+			BlendingModes lastBlend;				// Last blending mode.
+			CompareFunctions lastDepthCompare;		// Last depth buffer comparison function.
 
 			if (_logoStats == null)
 				return;
 
 			// Draw background.
-			if (!Gorgon.InvertFrameStatsTextColor)
-			{
-				Gorgon.CurrentRenderTarget.BeginDrawing();
-				lastBlend = Gorgon.CurrentRenderTarget.BlendingMode;
-				Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
-				Gorgon.CurrentRenderTarget.FilledRectangle(0, 0, Gorgon.CurrentRenderTarget.Width, 80, Drawing.Color.FromArgb(160, Drawing.Color.Black));
-				Gorgon.CurrentRenderTarget.HorizontalLine(0, 80, Gorgon.CurrentRenderTarget.Width, Drawing.Color.White);
-				Gorgon.CurrentRenderTarget.BlendingMode = lastBlend;
-				Gorgon.CurrentRenderTarget.EndDrawing();
-			}
+			Gorgon.CurrentRenderTarget.BeginDrawing();
+			lastBlend = Gorgon.CurrentRenderTarget.BlendingMode;
+			lastDepthCompare = Gorgon.CurrentRenderTarget.DepthTestFunction;
+			Gorgon.CurrentRenderTarget.DepthTestFunction = CompareFunctions.Always;
+			Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
+			Gorgon.CurrentRenderTarget.FilledRectangle(0, 0, Gorgon.CurrentRenderTarget.Width, 80, Drawing.Color.FromArgb(160, Drawing.Color.Black));
+			Gorgon.CurrentRenderTarget.HorizontalLine(0, 80, Gorgon.CurrentRenderTarget.Width, Drawing.Color.White);
+			Gorgon.CurrentRenderTarget.BlendingMode = lastBlend;
+			Gorgon.CurrentRenderTarget.DepthTestFunction = lastDepthCompare;
+			Gorgon.CurrentRenderTarget.EndDrawing();
 
 			// Reset the clipping view.			
 			if (Gorgon.CurrentClippingViewport != DefaultView)
@@ -242,20 +243,17 @@ namespace GorgonLibrary.Graphics
 
 			if (_logoStats.Color != Gorgon.FrameStatsTextColor)
 				_logoStats.Color = Gorgon.FrameStatsTextColor;
-			if (Gorgon.InvertFrameStatsTextColor)
-				_logoStats.BlendingMode = BlendingModes.Inverted;
-			else
-				_logoStats.BlendingMode = BlendingModes.Modulated;
 			_logoStats.Text = "Frame draw time: " + Convert.ToSingle(Gorgon.FrameStats.FrameDrawTime).ToString("0.0") + "ms\n" +
 								"Current FPS: " + Gorgon.FrameStats.CurrentFps.ToString("0.0") + "\n" +
 								"Average FPS: " + Gorgon.FrameStats.AverageFps.ToString("0.0") + "\n" +
 								"Highest FPS: " + Gorgon.FrameStats.HighestFps.ToString("0.0") + "\n" +
 								"Lowest FPS: " + Gorgon.FrameStats.LowestFps.ToString("0.0") + "\n";
+			_logoStats.DepthTestFunction = CompareFunctions.Always;
 			_logoStats.Draw();
 
 			// Reset the clipper to the previous value.
 			if (lastClip != null)
-				Gorgon.CurrentClippingViewport = lastClip;
+				Gorgon.CurrentClippingViewport = lastClip;			
 		}
 
 		/// <summary>
@@ -279,6 +277,7 @@ namespace GorgonLibrary.Graphics
 			_logoSprite.AlphaMaskFunction = CompareFunctions.Always;
 			_logoSprite.BlendingMode = BlendingModes.Modulated;
 			_logoSprite.Opacity = 225;
+			_logoSprite.DepthTestFunction = CompareFunctions.Always;
 			_logoSprite.Draw();
 
 			// Reset the clipper to the previous value.
@@ -748,9 +747,15 @@ namespace GorgonLibrary.Graphics
 
 				// Get the depth buffer.
 				if (this._presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
+				{
 					SetDepthBuffer(_device.DepthStencilSurface);
+					Gorgon.Renderer.RenderStates.DepthBufferEnabled = true;
+				}
 				else
+				{
 					SetDepthBuffer(null);
+					Gorgon.Renderer.RenderStates.DepthBufferEnabled = false;
+				}
 
 				// Set the view matrix.
 				_device.SetTransform(D3D9.TransformState.View, DX.Matrix.Identity);

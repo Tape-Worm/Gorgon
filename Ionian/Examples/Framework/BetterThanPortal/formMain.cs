@@ -59,6 +59,7 @@ namespace GorgonLibrary.Example
 		private Random _rnd = new Random();							// Random numbers.
 		private bool _slowDown = false;								// Flag to indicate that we're slowing down.
 		private PreciseTimer _slowDownTimer;						// Slowdown timer.
+		private bool _showHelp = true;								// Flag to show help.
 		#endregion
 
 		#region Methods.
@@ -111,6 +112,9 @@ namespace GorgonLibrary.Example
 			// If we don't have an input interface, then leave.
 			if (Input == null)
 				return;
+
+			if (Input.Keyboard.KeyStates[KeyboardKeys.F1] == KeyState.Down)
+				_showHelp = !_showHelp;
 
             if (Input.Keyboard.KeyStates[KeyboardKeys.Left] == KeyState.Down)
 				_smallShip.Angle += 2.5f;
@@ -250,11 +254,14 @@ namespace GorgonLibrary.Example
 				_text.Text = string.Format("{0:000.0} / {1:000.0}", currentVelocity, maxVelocity);
 				_text.Draw();
 			}
-			
-			_text.SetPosition(0, FrameworkFont.CharacterHeight * 3.0f);
-			_text.Color = Drawing.Color.White;
-			_text.Text = "Press 'C' to switch camera views.\nPress ← or → to turn.\nPress ↓ or ↑ to accelerate or decelerate.\nPress Backspace to set velocity to 0";
-			_text.Draw();
+
+			if (_showHelp)
+			{
+				_text.SetPosition(0, FrameworkFont.CharacterHeight * 3.0f);
+				_text.Color = Drawing.Color.White;
+				_text.Text = "Hit F1 to show or hide this text.\nPress 'C' to switch camera views.\nPress \u2190 or \u2192 to turn.\nPress \u2191 or \u2193 to accelerate or decelerate.\nPress Backspace to set velocity to 0.\nPress ESC to quit.";
+				_text.Draw();
+			}
 		}
 
 		/// <summary>
@@ -267,7 +274,6 @@ namespace GorgonLibrary.Example
 			base.Initialize();
 
 			Gorgon.GlobalStateSettings.GlobalSmoothing = Smoothing.Smooth;
-			Gorgon.InvertFrameStatsTextColor = false;
 
 			_lightningFX = new LightningEffect(Drawing.Color.FromArgb(212, 133, 179), Drawing.Color.White, BlendingModes.Additive);
 			_camera = new Camera(Vector2D.Zero);
@@ -340,7 +346,7 @@ namespace GorgonLibrary.Example
 			_stars = new Stars(FileSystems[ApplicationName], 16);
 
 			// Create text.			
-			FrameworkFont.CharacterList += "←→↓↑";
+			FrameworkFont.CharacterList += "\u2190\u2191\u2192\u2193";
 			FrameworkFont.Bold = true;
 			// Add some padding.
 			FrameworkFont.GlyphWidthPadding = 1;

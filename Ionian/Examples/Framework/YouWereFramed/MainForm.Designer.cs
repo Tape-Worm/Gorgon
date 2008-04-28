@@ -63,7 +63,6 @@ namespace GorgonLibrary.Example
 			this.ClientSize = new System.Drawing.Size(284, 264);
 			this.CursorSpriteVisible = true;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.InvertFrameStatsColor = false;
 			this.Name = "MainForm";
 			this.RenderWindow = this;
 			this.Text = "Framework Example - You were framed.";

@@ -74,7 +74,11 @@ namespace GorgonLibrary.Framework
 		private bool _showLogo = true;							// Flag to show the logo.
 		private bool _escapeCloses = true;						// Flag to indicate that the escape key will close the application.
 		private Font _defaultFont = null;						// Default font.
+#if DEBUG
 		private bool _requireSignedPlugIns = false;				// Flag to indicate that plug-ins should be signed.
+#else
+		private bool _requireSignedPlugIns = true;				// Flag to indicate that plug-ins should be signed.
+#endif
 		#endregion
 
         #region Properties.
@@ -104,7 +108,11 @@ namespace GorgonLibrary.Framework
 		/// <summary>
 		/// Property to set or return whether custom plug-ins should be signed or not.
 		/// </summary>
+#if DEBUG
 		[Browsable(true), Category("Framework"), Description("Sets whether or not to require that custom plug-ins should be signed."),DefaultValue(false)]
+#else
+		[Browsable(true), Category("Framework"), Description("Sets whether or not to require that custom plug-ins should be signed."), DefaultValue(true)]
+#endif
 		public bool RequireSignedPlugIns
 		{
 			get
@@ -114,6 +122,46 @@ namespace GorgonLibrary.Framework
 			set
 			{
 				_requireSignedPlugIns = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the file system providers should be signed.
+		/// </summary>
+#if DEBUG
+		[Browsable(true), Category("Framework"), Description("Sets whether or not to require signed file system provider plug-ins."), DefaultValue(false)]
+#else
+		[Browsable(true), Category("Framework"), Description("Sets whether or not to require signed file system provider plug-ins."), DefaultValue(true)]
+#endif
+		public bool RequiredSignedFileSystemProvider
+		{
+			get
+			{
+				return FileSystemProvider.RequireSignedProviderPlugIns;
+			}
+			set
+			{
+				FileSystemProvider.RequireSignedProviderPlugIns = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the input plug-ins should be signed.
+		/// </summary>
+#if DEBUG
+		[Browsable(true), Category("Framework"), Description("Sets whether or not to require signed input plug-ins."), DefaultValue(false)]
+#else
+		[Browsable(true), Category("Framework"), Description("Sets whether or not to require signed input plug-ins."), DefaultValue(true)]
+#endif
+		public bool RequiredSignedInputPlugIn
+		{
+			get
+			{
+				return Input.RequireSignedPlugIn;
+			}
+			set
+			{
+				Input.RequireSignedPlugIn = value;
 			}
 		}
 
@@ -130,22 +178,6 @@ namespace GorgonLibrary.Framework
 			set
 			{
 				_escapeCloses = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether to invert the frame stats text color.
-		/// </summary>
-		[Browsable(true), Category("Gorgon"), Description("Sets whether the frame statistics text color is inverted, or whether it shows up as the intended color over a tinted background.  The latter is a slower method."), DefaultValue(true)]
-		public bool InvertFrameStatsColor
-		{
-			get
-			{
-				return Gorgon.InvertFrameStatsTextColor;
-			}
-			set
-			{
-				Gorgon.InvertFrameStatsTextColor = value;
 			}
 		}
 

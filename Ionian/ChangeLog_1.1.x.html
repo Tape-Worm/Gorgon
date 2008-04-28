@@ -105,6 +105,21 @@
 	<pre>
 April 19/2008 - Version - Current
 ================================
+- Removed InvertFrameStatsColor from Gorgon.  Seemed kind of pointless really.
+
++ Added a Depth (and PrimitiveDepth to render targets) property to all Sprite types.
+  This depth function will respect the Z-Buffer if one is set up via SetMode.  With this
+  the user will be able to sort out which sprites get rendered before other sprites by
+  using the Z-Buffer to test for occlusion regardless of the order of drawing.
+
++ Added new Depth buffer testing and writing properties to renderable objects.  And added
+  global depth buffer test/writing properties as well.
+  
+- Took out a dumb restriction on the sprites that required the shader and/or image that 
+  a sprite was bound with to be loaded BEFORE the sprite is loaded.  Now the system will 
+  defer the binding of the image/shader until they're loaded into the Image/ShaderCache
+  objects.
+  
 + Added a framework DLL to help simplify development of applications in Gorgon.  This
   framework DLL is what used to be the framework in the Gorgon Library itself.  If your
   code is broken by the framework code removal from Gorgon, then adding this assembly 

@@ -143,7 +143,6 @@ namespace GorgonLibrary.Example
 				// Display the logo.
 				Gorgon.LogoVisible = true;
 				Gorgon.FrameStatsVisible = false;
-				Gorgon.InvertFrameStatsTextColor = false;						
 
 				// Set the video mode.
 				ClientSize = new Drawing.Size(640, 480);

@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Redistribution</title>
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+
+.blueBox {
+	margin: 8px;
+	width: 95%;
+	border: 1px navy dashed;
+	background-color: #D7EBFF;
+	padding: 8px;
+	overflow: auto;
+}
+</style>
+</head>
+
+<body style="font-family: Arial, Helvetica, sans-serif, 'Lucida Console'; font-size: small">
+		<img alt="" src="GorgonLogo3.jpg" width="200" height="56" /><hr/>
+		<h1 class="style1">Redistribution</h1>
+		<div id="bodyContent">
+			<p>So you've written this bang up game and now you need to send it to someone and you're asking "How do I do this?"  Well, an installer program like 
+			<a href="http://nsis.sourceforge.net/Main_Page" class="external text" title="http://nsis.sourceforge.net/Main_Page" rel="nofollow">
+			NSIS</a> will help greatly.  But what you'll really need is to know what files to include with your game or application.  And without further ado:
+</p>
+			<h2>Prerequisite packages for distribution:</h2>
+<div class="blueBox">
+<p>These packages are installers that deliver required files for use by Gorgon and should be included with and executed by your installer package (at the very least your victims need to be informed that they need to install these items before running your application).
+</p>
+<ul><li><a href="http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF&amp;displaylang=en|The" title="http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF&amp;displaylang=en|The" rel="nofollow">
+	visual C++ 2008 runtime</a> - This is required by the version of SlimDX that Gorgon uses.  If you're using an x64 OS you'll need
+	<a href="http://www.microsoft.com/downloads/details.aspx?familyid=BD2A6171-E2D6-4230-B809-9A8D7548C1B6&amp;displaylang=en|the" title="http://www.microsoft.com/downloads/details.aspx?familyid=BD2A6171-E2D6-4230-B809-9A8D7548C1B6&amp;displaylang=en|the" rel="nofollow">
+	x64 version of the runtime</a>(this is only necessary with an x64 version of your application).
+</li><li> <a href="http://www.microsoft.com/downloads/details.aspx?familyid=2da43d38-db71-4c1b-bc6a-9b6652cd92a3&amp;displaylang=en|The" class="external text" title="http://www.microsoft.com/downloads/details.aspx?familyid=2da43d38-db71-4c1b-bc6a-9b6652cd92a3&amp;displaylang=en|The" rel="nofollow">
+	latest and greatest version of the DirectX runtime</a> - This should be fairly obvious.
+</li><li> Windows XP or better.</li></ul></div>
+<p>Along with those packages you will need be sure that your applications bundles the following with its own installer:</p>
+<strong>Assembly (DLL/Executable) files required by Gorgon applications:</strong>
+<div class="blueBox">
+<ul><li> Gorgon.dll - This should, again, be obvious.
+</li><li> SharpUtilities.dll - This is required by Gorgon.
+</li><li> SlimDX.dll - This is required by Gorgon.
+</li></ul>
+</div><br /><strong>Required if you're using the compressed file system (BZip 2 compressed file system):
+			</strong>
+<div class="blueBox">
+<ul><li> GorgonBZip2FileSystem.dll 
+</li><li>ICSharpCode.SharpZipLib.dll - If you're using the BZip2 compressed file system plug-in above, this DLL will need to be in the same directory as your application executable (<em>yeah, it's not good that it doesn't work from the directory of the plug-in - I'm looking into it</em> - Tape).
+
+</li>
+</ul>
+</div>
+			<br />
+			<strong>Required if you're using the raw input interface plug-in:
+			</strong>
+<div class="blueBox">
+<ul><li>GorgonInput.dll
+</li></ul>
+</div>
+<p>Also, keep in mind that if you're developing for an x64 (64-bit) operating system like Windows XP 64 or Vista x64 that your code will 
+<strong>not run</strong> on x86 (32-bit) 
+operating systems. This is unlike 32 bit binaries which do run on a x64 
+operating systems.
+</p>
+</div>
+</body>
+</html>

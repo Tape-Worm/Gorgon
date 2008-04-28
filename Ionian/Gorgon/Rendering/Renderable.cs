@@ -52,6 +52,12 @@ namespace GorgonLibrary.Graphics
 		private bool _inheritUseStencil;					// Flag to indicate that we inherit the stencil enabled flag from the layer.
 		private bool _inheritRotation;						// Flag to indicate that we inherit rotation from a parent renderable.
 		private bool _inheritScale;							// Flag to indicate that we inherit scale from a parent renderable.
+		private bool _inheritDepthWriteEnable;				// Flag to indicate that we inherit the depth buffer write flag.
+		private bool _inheritDepthBias;						// Flag to indicate that we inherit the depth bias.
+		private bool _inheritDepthTestCompare;				// Flag to indicate that we inherit the depth testing comparison operator.
+		private float _depthBias;							// Depth bias.
+		private bool _depthWriteEnabled;					// Depth writing enabled flag.
+		private CompareFunctions _depthCompare;				// Depth test comparison function.
 		private BlendingModes _blending;					// Blending mode.
 		private AlphaBlendOperation _sourceBlend;			// Source blending operation.
 		private AlphaBlendOperation _destBlend;				// Destination blending operation.
@@ -88,6 +94,7 @@ namespace GorgonLibrary.Graphics
 		private Vector2D _parentPosition = Vector2D.Zero;	// Parent position.
 		private Vector2D _parentScale = Vector2D.Zero;		// Parent scale.
 		private float _parentRotation = 0;					// Parent rotation.
+		private float _depth = 0.0f;						// Depth level of the renderable.
 
 		private VertexTypeList.PositionDiffuse2DTexture1[] _vertices;	// Vertices for the object.
         #endregion
@@ -202,6 +209,26 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				return Geometry.VertexCount;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth of the renderable object.
+		/// </summary>
+		public virtual float Depth
+		{
+			get
+			{
+				return _depth;
+			}
+			set
+			{
+				if (value < 0.0f)
+					value = 0.0f;
+				if (value > 1.0f)
+					value = 1.0f;
+
+				_depth = value;
 			}
 		}
 
@@ -845,6 +872,9 @@ namespace GorgonLibrary.Graphics
 			_inheritUseStencil = true;
 			_inheritRotation = true;
 			_inheritScale = true;
+			_inheritDepthWriteEnable = true;
+			_inheritDepthBias = true;
+			_inheritDepthTestCompare = true;
 			_wrapHMode = ImageAddressing.Clamp;
 			_wrapVMode = ImageAddressing.Clamp;
 			_stencilCompare = CompareFunctions.Always;
@@ -854,6 +884,9 @@ namespace GorgonLibrary.Graphics
 			_stencilZFailOperation = StencilOperations.Keep;
 			_stencilReference = 0;
 			_stencilMask = -1;
+			_depthBias = 0.0f;
+			_depthWriteEnabled = true;
+			_depthCompare = CompareFunctions.LessThanOrEqual;
             _parent = null;
             _children = new RenderableChildren(this);
 			_animations = new AnimationList(this);
@@ -1352,6 +1385,51 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return whether we inherit the depth bias.
+		/// </summary>
+		public virtual bool InheritDepthBias
+		{
+			get
+			{
+				return _inheritDepthBias;
+			}
+			set
+			{
+				_inheritDepthBias = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether we inherit the depth writing enabled flag.
+		/// </summary>
+		public virtual bool InheritDepthWriteEnabled
+		{
+			get
+			{
+				return _inheritDepthWriteEnable;
+			}
+			set
+			{
+				_inheritDepthWriteEnable = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether we inherit the depth testing function.
+		/// </summary>
+		public virtual bool InheritDepthTestFunction
+		{
+			get
+			{
+				return _inheritDepthTestCompare;
+			}
+			set
+			{
+				_inheritDepthTestCompare = value;
+			}
+		}
+		
+		/// <summary>
 		/// Property to set or return the type of smoothing for the sprites.
 		/// </summary>
 		public virtual Smoothing Smoothing
@@ -1425,6 +1503,63 @@ namespace GorgonLibrary.Graphics
 				_blending = value;
 				_inheritBlending = false;
 				SetBlendMode(value);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to enable the depth buffer (if applicable) writing or not.
+		/// </summary>
+		public virtual bool DepthWriteEnabled
+		{
+			get
+			{
+				if (_inheritDepthWriteEnable)
+					return Gorgon.GlobalStateSettings.GlobalDepthWriteEnabled;
+				else
+					return _depthWriteEnabled;
+			}
+			set
+			{
+				_depthWriteEnabled = value;
+				_inheritDepthWriteEnable = false;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return (if applicable) the depth buffer bias.
+		/// </summary>
+		public virtual float DepthBufferBias
+		{
+			get
+			{
+				if (_inheritDepthBias)
+					return Gorgon.GlobalStateSettings.GlobalDepthBufferBias;
+				else
+					return _depthBias;
+			}
+			set
+			{
+				_depthBias = value;
+				_inheritDepthBias = false;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth buffer (if applicable) testing comparison function.
+		/// </summary>
+		public virtual CompareFunctions DepthTestFunction
+		{
+			get
+			{
+				if (_inheritDepthTestCompare)
+					return Gorgon.GlobalStateSettings.GlobalDepthBufferTestFunction;
+				else
+					return _depthCompare;
+			}
+			set
+			{
+				_depthCompare = value;
+				_inheritDepthTestCompare = false;
 			}
 		}
 

@@ -49,10 +49,12 @@ namespace GorgonLibrary.Example
 		private string _text = string.Empty;				// Text to display.
 		private TextSprite _textSprite = null;				// Text sprite.
 		private Font _textFont = null;						// Font for the text.
+		private Font _helpFont = null;						// Font for the help text.
 		private float _textY = 0.0f;						// Text vertical positioning.
 		private Shader _blur = null;						// Blur shader.
 		private bool _blurBounce = false;					// Blur bounce flag.
 		private float _blurAmount = 1.0f;					// Blur amount.
+		private bool _showHelp = true;						// Flag to show help.
 		#endregion
 
 		#region Methods.
@@ -63,6 +65,8 @@ namespace GorgonLibrary.Example
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (e.KeyCode == Keys.F1)
+				_showHelp = !_showHelp;
 			if (e.KeyCode == Keys.Escape)
 				Close();
 			if (e.KeyCode == Keys.S)
@@ -112,6 +116,19 @@ namespace GorgonLibrary.Example
 
 			_mother2.SetPosition(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2);
 			_mother2.Draw();
+			if (_showHelp)
+			{
+				_textSprite.SetPosition(0, 0);
+				_textSprite.Font = _helpFont;
+				_textSprite.Color = Drawing.Color.Blue;
+				_textSprite.Text = "F1 - Show/hide this help text.\nS - Show frame statistics.\nESC - Exit.";
+				_textSprite.Draw();
+
+				// Reset our text.
+				_textSprite.Color = Drawing.Color.Black;
+				_textSprite.Text = _text;
+				_textSprite.Font = _textFont;
+			}
 		}
 
 		/// <summary>
@@ -132,6 +149,7 @@ namespace GorgonLibrary.Example
 		{
 			// Create font.
 			_textFont = new Font("Gigi_24pt", "Gigi", 24.0f, true);
+			_helpFont = new Font("Arial_9pt", "Arial", 10.0f, true, true);
 
 			// Get the file system provider.
 			if (Gorgon.Platform == PlatformID.x86)
@@ -194,7 +212,6 @@ namespace GorgonLibrary.Example
 				// Display the logo and frame stats.
 				Gorgon.LogoVisible = true;
 				Gorgon.FrameStatsVisible = false;
-				Gorgon.InvertFrameStatsTextColor = false;
 
 				// Set the video mode to match the form client area.
 				Gorgon.SetMode(this, 640, 480, BackBufferFormats.BufferRGB888, true);

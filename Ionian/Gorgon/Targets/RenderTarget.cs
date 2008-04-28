@@ -61,6 +61,7 @@ namespace GorgonLibrary.Graphics
 		private StencilOperations _stencilFailOperation;	// Stencil fail operation.
 		private StencilOperations _stencilZFailOperation;	// Stencil Z fail operation.
 		private CompareFunctions _stencilCompare;			// Stencil compare operation.
+		private float _primitiveDepth = 0.0f;				// Depth of the primitive.
 		private int _stencilReference;						// Stencil reference value.
 		private int _stencilMask;							// Stencil mask value.
 		private bool _useStencil;							// Flag to indicate whether to use the stencil or not.
@@ -75,6 +76,9 @@ namespace GorgonLibrary.Graphics
 		private D3D9.Surface _colorBuffer;					// Color buffer from the render target.
 		private D3D9.Surface _depthBuffer;					// Depth buffer to use.
 		private D3D9.Surface _convertBuffer;				// Conversion buffer.
+		private float _depthBias;							// Depth bias.
+		private bool _depthWriteEnabled;					// Depth writing enabled flag.
+		private CompareFunctions _depthCompare;				// Depth test comparison function.
 		#endregion
 
 		#region Properties.
@@ -264,6 +268,25 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				_backColor = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth value for primitives being drawn.
+		/// </summary>
+		public float PrimitiveDepth
+		{
+			get
+			{
+				return _primitiveDepth;
+			}
+			set
+			{
+				if (value < 0.0f)
+					value = 0.0f;
+				if (value > 1.0f)
+					value = 1.0f;
+				_primitiveDepth = value;
 			}
 		}
 		#endregion
@@ -496,7 +519,7 @@ namespace GorgonLibrary.Graphics
 				// Build end points.
 				pointVertex[0].Position.X = (int)x;
 				pointVertex[0].Position.Y = (int)y;
-				pointVertex[0].Position.Z = -0.5f;
+				pointVertex[0].Position.Z = -PrimitiveDepth;
                 pointVertex[0].Color = color.ToArgb();
 
 				if (_drawingPattern == null)
@@ -700,35 +723,35 @@ namespace GorgonLibrary.Graphics
 			// Build end points.
 			rectVertex[0].Position.X = x;
 			rectVertex[0].Position.Y = y;
-			rectVertex[0].Position.Z = -0.5f;
+			rectVertex[0].Position.Z = -PrimitiveDepth;
 
 			rectVertex[1].Position.X = x + width - 1;
 			rectVertex[1].Position.Y = y;
-			rectVertex[1].Position.Z = -0.5f;
+			rectVertex[1].Position.Z = -PrimitiveDepth;
 
 			rectVertex[2].Position.X = x + width - 1;
 			rectVertex[2].Position.Y = y;
-			rectVertex[2].Position.Z = -0.5f;
+			rectVertex[2].Position.Z = -PrimitiveDepth;
 
 			rectVertex[3].Position.X = x + width - 1;
 			rectVertex[3].Position.Y = y + height - 1;
-			rectVertex[3].Position.Z = -0.5f;
+			rectVertex[3].Position.Z = -PrimitiveDepth;
 
 			rectVertex[4].Position.X = x + width - 1;
 			rectVertex[4].Position.Y = y + height - 1;
-			rectVertex[4].Position.Z = -0.5f;
+			rectVertex[4].Position.Z = -PrimitiveDepth;
 
 			rectVertex[5].Position.X = x;
 			rectVertex[5].Position.Y = y + height - 1;
-			rectVertex[5].Position.Z = -0.5f;
+			rectVertex[5].Position.Z = -PrimitiveDepth;
 
 			rectVertex[6].Position.X = x;
 			rectVertex[6].Position.Y = y + height - 1;
-			rectVertex[6].Position.Z = -0.5f;
+			rectVertex[6].Position.Z = -PrimitiveDepth;
 
 			rectVertex[7].Position.X = x;
 			rectVertex[7].Position.Y = y;
-			rectVertex[7].Position.Z = -0.5f;
+			rectVertex[7].Position.Z = -PrimitiveDepth;
 
 			rectVertex[0].Color = color.ToArgb();
 			rectVertex[1].Color = color.ToArgb();
@@ -814,16 +837,16 @@ namespace GorgonLibrary.Graphics
 			// Build end points.
 			lineVertex[0].Position.X = (int)x;
 			lineVertex[0].Position.Y = (int)y;
-			lineVertex[0].Position.Z = -0.5f;
+			lineVertex[0].Position.Z = -PrimitiveDepth;
 			lineVertex[1].Position.X = (int)(x + width);
 			lineVertex[1].Position.Y = (int)y;
-			lineVertex[1].Position.Z = -0.5f;
+			lineVertex[1].Position.Z = -PrimitiveDepth;
 			lineVertex[2].Position.X = (int)(x + width);
 			lineVertex[2].Position.Y = (int)(y + height);
-			lineVertex[2].Position.Z = -0.5f;
+			lineVertex[2].Position.Z = -PrimitiveDepth;
 			lineVertex[3].Position.X = (int)x;
 			lineVertex[3].Position.Y = (int)(y + height);
-			lineVertex[3].Position.Z = -0.5f;
+			lineVertex[3].Position.Z = -PrimitiveDepth;
 
 			lineVertex[0].Color = color.ToArgb();
 			lineVertex[1].Color = color.ToArgb();
@@ -889,10 +912,10 @@ namespace GorgonLibrary.Graphics
 				// Build end points.
 				lineVertex[0].Position.X = (int)x;
 				lineVertex[0].Position.Y = (int)y;
-				lineVertex[0].Position.Z = -0.5f;
+				lineVertex[0].Position.Z = -PrimitiveDepth;
 				lineVertex[1].Position.X = (int)(x + width);
 				lineVertex[1].Position.Y = (int)y;
-				lineVertex[1].Position.Z = -0.5f;
+				lineVertex[1].Position.Z = -PrimitiveDepth;
 				lineVertex[0].Color = color.ToArgb();
 				lineVertex[1].Color = color.ToArgb();
 
@@ -969,10 +992,10 @@ namespace GorgonLibrary.Graphics
 				// Build end points.
 				lineVertex[0].Position.X = (int)x;
 				lineVertex[0].Position.Y = (int)y;
-				lineVertex[0].Position.Z = -0.5f;
+				lineVertex[0].Position.Z = -PrimitiveDepth;
 				lineVertex[1].Position.X = (int)x;
 				lineVertex[1].Position.Y = (int)(y + height);
-				lineVertex[1].Position.Z = -0.5f;
+				lineVertex[1].Position.Z = -PrimitiveDepth;
 				lineVertex[0].Color = color.ToArgb();
 				lineVertex[1].Color = color.ToArgb();
 
@@ -1651,6 +1674,9 @@ namespace GorgonLibrary.Graphics
 			_wrapVMode = ImageAddressing.Clamp;
 			_sourceBlend = AlphaBlendOperation.One;
 			_destBlend = AlphaBlendOperation.Zero;
+			_depthBias = 0.0f;
+			_depthCompare = CompareFunctions.LessThanOrEqual;
+			_depthWriteEnabled = true;
 
 			// Create a default window.
 			_defaultView = new Viewport(0, 0, 1, 1);
@@ -1725,6 +1751,51 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region ICommonRenderable Members
+		/// <summary>
+		/// Property to set or return whether to enable the depth buffer (if applicable) writing or not.
+		/// </summary>
+		public virtual bool DepthWriteEnabled
+		{
+			get
+			{
+				return _depthWriteEnabled;
+			}
+			set
+			{
+				_depthWriteEnabled = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return (if applicable) the depth buffer bias.
+		/// </summary>
+		public virtual float DepthBufferBias
+		{
+			get
+			{
+				return _depthBias;
+			}
+			set
+			{
+				_depthBias = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth buffer (if applicable) testing comparison function.
+		/// </summary>
+		public virtual CompareFunctions DepthTestFunction
+		{
+			get
+			{
+				return _depthCompare;
+			}
+			set
+			{
+				_depthCompare = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the wrapping mode to use.
 		/// </summary>

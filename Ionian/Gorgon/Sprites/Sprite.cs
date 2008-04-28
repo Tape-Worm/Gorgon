@@ -48,9 +48,55 @@ namespace GorgonLibrary.Graphics
 		private string _spritePath;								// Path to the loaded/saved sprite.
 		private bool _flipHorizontal = false;					// Flag to flip horizontally.
 		private bool _flipVertical = false;						// Flag to flip vertically.
+		private string _deferredImage = string.Empty;			// Name of the deferred image to bind.
+		private string _deferredShader = string.Empty;			// Name of the deferred shader to bind.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the image that this object is bound with.
+		/// </summary>
+		public override Image Image
+		{
+			get
+			{
+				if ((_deferredImage != string.Empty) && (base.Image == null))
+				{
+					if (ImageCache.Images.Contains(_deferredImage))
+						Image = ImageCache.Images[_deferredImage];
+				}
+
+				return base.Image;
+			}
+			set
+			{
+				_deferredImage = string.Empty;
+				base.Image = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return a shader effect for this object.
+		/// </summary>
+		public override Shader Shader
+		{
+			get
+			{
+				if ((_deferredShader != string.Empty) && (base.Shader == null))
+				{
+					if (ShaderCache.Shaders.Contains(_deferredShader))
+						Shader = ShaderCache.Shaders[_deferredShader];
+				}
+
+				return base.Shader;
+			}
+			set
+			{
+				_deferredShader = string.Empty;
+				base.Shader = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return whether the sprite is flipped horizontally or not.
 		/// </summary>
@@ -438,10 +484,10 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Adjust vertex offsets.
-            Vertices[0].Position.Z = -1.0f;
-            Vertices[1].Position.Z = -1.0f;
-            Vertices[2].Position.Z = -1.0f;
-            Vertices[3].Position.Z = -1.0f;
+            Vertices[0].Position.Z = -Depth;
+			Vertices[1].Position.Z = -Depth;
+			Vertices[2].Position.Z = -Depth;
+			Vertices[3].Position.Z = -Depth;
 
 			Vertices[0].Position.X += _vertexOffsets[0].X;
             Vertices[0].Position.Y += _vertexOffsets[0].Y;
@@ -1612,7 +1658,7 @@ namespace GorgonLibrary.Graphics
 
 			// Write header.
 			writer.WriteGroupBegin("Header");
-			writer.Write("HeaderValue", "GORSPR1");
+			writer.Write("HeaderValue", "GORSPR1.1");
 			writer.WriteGroupEnd();
 
 			// Write meta data.
@@ -1665,6 +1711,9 @@ namespace GorgonLibrary.Graphics
 			writer.Write("StencilReference", InheritStencilReference);
 			writer.Write("StencilZFailOperation", InheritStencilZFailOperation);
 			writer.Write("VerticalWrapping", InheritVerticalWrapping);
+			writer.Write("DepthBias", InheritDepthBias);
+			writer.Write("DepthFunction", InheritDepthTestFunction);
+			writer.Write("DepthWrite", InheritDepthWriteEnabled);
 			writer.WriteGroupEnd();
 
 			// Write dimensions.
@@ -1738,6 +1787,13 @@ namespace GorgonLibrary.Graphics
 				writer.Write("StencilZFailOperation", (int)StencilZFailOperation);
 			if (!InheritVerticalWrapping)
 				writer.Write("VerticalWrapping", (int)VerticalWrapMode);
+			if (!InheritDepthBias)
+				writer.Write("DepthBias", DepthBufferBias);
+			if (!InheritDepthTestFunction)
+				writer.Write("DepthCompare", (int)DepthTestFunction);
+			if (!InheritDepthWriteEnabled)
+				writer.Write("DepthWrite", DepthWriteEnabled);
+
 			// Write flipped flags.
 			writer.Write("HorizontallyFlipped", _flipHorizontal);
 			writer.Write("VerticallyFlipped", _flipVertical);
@@ -1770,16 +1826,28 @@ namespace GorgonLibrary.Graphics
 			string header = string.Empty;										// Header.
 			bool hasImage = false;												// Flag to indicate whether an image is bound.
 			bool hasShader = false;												// Flag to indicate whether a shader is bound.
+			Version spriteVersion = new Version(1, 0);							// Sprite versioning.
 
 			// Mark the sprite as changed.
 			IsImageUpdated = true;
 			IsSizeUpdated = true;
 			IsAABBUpdated = true;
+			_deferredImage = string.Empty;
+			_deferredShader = string.Empty;
 
 			header = reader.ReadString("HeaderValue");
 
-			if (header.ToLower() != "gorspr1")
-				throw new SpriteNotValidException();
+			switch (header.ToLower())
+			{
+				case "gorspr1":
+					spriteVersion = new Version(1, 0);
+					break;
+				case "gorspr1.1":
+					spriteVersion = new Version(1, 1);
+					break;
+				default:
+					throw new SpriteNotValidException();
+			}
 
 			// Get sprite data.
 			Name = reader.ReadString("Name");
@@ -1834,6 +1902,8 @@ namespace GorgonLibrary.Graphics
 					// If an image is loaded with this name, use it.
 					if ((Image == null) && (ImageCache.Images.Contains(imageName)))
 						Image = ImageCache.Images[imageName];
+					else
+						_deferredImage = imageName;
 				}
 			}
           
@@ -1851,6 +1921,14 @@ namespace GorgonLibrary.Graphics
 			InheritStencilReference = reader.ReadBool("StencilReference");
 			InheritStencilZFailOperation = reader.ReadBool("StencilZFailOperation");
 			InheritVerticalWrapping = reader.ReadBool("VerticalWrapping");
+			// Get version 1.1 fields.
+			if (spriteVersion == new Version(1, 1))
+			{
+				InheritDepthBias = reader.ReadBool("DepthBias");
+				InheritDepthTestFunction = reader.ReadBool("DepthFunction");
+				InheritDepthWriteEnabled = reader.ReadBool("DepthWrite");
+			}
+
 
 			// Get dimensions.
 			Size = new Vector2D(reader.ReadSingle("Width"), reader.ReadSingle("Height"));
@@ -1890,6 +1968,8 @@ namespace GorgonLibrary.Graphics
 					if (Shader.Techniques.Contains(technique))
 						Shader.ActiveTechnique = Shader.Techniques[technique];
 				}
+				else
+					_deferredShader = shaderName;
 			}
 
 			if (!InheritAlphaMaskFunction)
@@ -1929,6 +2009,17 @@ namespace GorgonLibrary.Graphics
 				StencilZFailOperation = (StencilOperations)reader.ReadInt32("StencilZFailOperation");
 			if (!InheritVerticalWrapping)
 				VerticalWrapMode = (ImageAddressing)reader.ReadInt32("VerticalWrapping");
+
+			// Get version 1.1 fields.
+			if (spriteVersion == new Version(1, 1))
+			{
+				if (!InheritDepthBias)
+					DepthBufferBias = reader.ReadSingle("DepthBias");
+				if (!InheritDepthTestFunction)
+					DepthTestFunction = (CompareFunctions)reader.ReadInt32("DepthCompare");
+				if (!InheritDepthWriteEnabled)
+					DepthWriteEnabled = reader.ReadBool("DepthWrite");
+			}
 
 			// Set flipping flags.
 			_flipHorizontal = reader.ReadBool("HorizontallyFlipped");

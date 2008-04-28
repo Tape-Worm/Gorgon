@@ -164,7 +164,6 @@ namespace GorgonLibrary
 		private static ClearTargets _clearTargets;						// Target buffers to clear.
 		private static Viewport _clippingView = null;					// Clipping viewport.
 		private static Color _statsTextColor = Color.White;				// Frame statistics text color.
-		private static bool _invertStatsTextColor = true;				// Invert the statistics text color.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
 #if INCLUDE_D3DREF
 		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
@@ -257,23 +256,6 @@ namespace GorgonLibrary
 			set
 			{
 				_statsTextColor = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether the frame statistics text color should be inverted or not.
-		/// </summary>
-		/// <remarks>This only applies if <see cref="GorgonLibrary.Gorgon.FrameStatsVisible">FrameStatsVisible</see> is TRUE.<para>If this is set to FALSE, then the text is drawn on a window that darkens the background so the text can be more readable.  This however has the disadvantage of slowing down the rendering and thus throwing the frame statistics out a little.</para></remarks>
-		/// <value>TRUE to invert the color of the text, FALSE to draw with the specific color used in <see cref="GorgonLibrary.Gorgon.FrameStatsTextColor">FrameStatsTextColor</see>.</value>
-		public static bool InvertFrameStatsTextColor
-		{
-			get
-			{
-				return _invertStatsTextColor;
-			}
-			set
-			{
-				_invertStatsTextColor = value;
 			}
 		}
 

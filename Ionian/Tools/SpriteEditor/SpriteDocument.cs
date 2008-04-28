@@ -582,7 +582,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite alpha masking function is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Alpha Masking"), PropertyDescription("Sets whether to inherit the alpha mask function from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Alpha Masking"), PropertyDescription("Sets whether to inherit the alpha mask function from the global states."), PropertyDefault(true)]
 		public bool InheritAlphaMaskFunction
 		{
 			get
@@ -601,7 +601,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite alpha masking value is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Alpha Masking"), PropertyDescription("Sets whether to inherit the alpha mask value from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Alpha Masking"), PropertyDescription("Sets whether to inherit the alpha mask value from the global states."), PropertyDefault(true)]
 		public bool InheritAlphaMaskValue
 		{
 			get
@@ -663,7 +663,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite blending mode is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Blending"), PropertyDescription("Sets whether to inherit the blending values from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Blending"), PropertyDescription("Sets whether to inherit the blending values from the global states."), PropertyDefault(true)]
 		public bool InheritBlending
 		{
 			get
@@ -741,7 +741,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite smoothing mode is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Smoothing"), PropertyDescription("Sets whether to inherit the smoothing value from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Smoothing"), PropertyDescription("Sets whether to inherit the smoothing value from the global states."), PropertyDefault(true)]
 		public bool InheritSmoothing
 		{
 			get
@@ -779,7 +779,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite horizontal wrapping mode is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Wrapping"), PropertyDescription("Sets whether to inherit the horizontal wrapping mode from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Wrapping"), PropertyDescription("Sets whether to inherit the horizontal wrapping mode from the global states."), PropertyDefault(true)]
 		public bool InheritHorizontalWrapping
 		{
 			get
@@ -798,7 +798,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite vertical wrapping mode is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Wrapping"), PropertyDescription("Sets whether to inherit the vertical wrapping mode from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Wrapping"), PropertyDescription("Sets whether to inherit the vertical wrapping mode from the global states."), PropertyDefault(true)]
 		public bool InheritVerticalWrapping
 		{
 			get
@@ -853,9 +853,117 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Property to set or return whether to inherit the depth testing function.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets whether to inherit the depth test function from the global states."), PropertyDefault(true)]
+		public bool InheritDepthTestFunction
+		{
+			get
+			{
+				return _sprite.InheritDepthTestFunction;
+			}
+			set
+			{
+				_sprite.InheritDepthTestFunction = value;
+				SetSpecReadOnly(_bag.Properties["DepthTestFunction"], value);
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to inherit the depth bias.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets whether to inherit the depth bias from the global states."), PropertyDefault(true)]
+		public bool InheritDepthBias
+		{
+			get
+			{
+				return _sprite.InheritDepthBias;
+			}
+			set
+			{
+				_sprite.InheritDepthBias = value;
+				SetSpecReadOnly(_bag.Properties["DepthBufferBias"], value);
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to inherit the depth write enabled flag.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets whether to inherit the depth write enabled flag from the global states."), PropertyDefault(true)]
+		public bool InheritDepthWriteEnabled
+		{
+			get
+			{
+				return _sprite.InheritDepthWriteEnabled;
+			}
+			set
+			{
+				_sprite.InheritDepthWriteEnabled = value;
+				SetSpecReadOnly(_bag.Properties["DepthWriteEnabled"], value);
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth testing function.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets the depth test function for the sprite."), PropertyDefault(true)]
+		public CompareFunctions DepthTestFunction
+		{
+			get
+			{
+				return _sprite.DepthTestFunction;
+			}
+			set
+			{
+				_sprite.DepthTestFunction = value;
+				_owner.SpriteManager.RefreshPropertyGrid();
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth buffer bias.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets the depth bias for the sprite."), PropertyDefault(true)]
+		public float DepthBufferBias
+		{
+			get
+			{
+				return _sprite.DepthBufferBias;
+			}
+			set
+			{
+				_sprite.DepthBufferBias = value;
+				_owner.SpriteManager.RefreshPropertyGrid();
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth write flag.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets the depth write enabled flag for the sprite."), PropertyDefault(true)]
+		public bool DepthWriteEnabled
+		{
+			get
+			{
+				return _sprite.DepthWriteEnabled;
+			}
+			set
+			{
+				_sprite.DepthWriteEnabled = value;
+				_owner.SpriteManager.RefreshPropertyGrid();
+				Changed = true;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return whether the sprite stencil enable flag is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil enabled flag from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil enabled flag from the global states."), PropertyDefault(true)]
 		public bool InheritStencilEnabled
 		{
 			get
@@ -875,7 +983,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil fail operation is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil fail operation from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil fail operation from the global states."), PropertyDefault(true)]
 		public bool InheritStencilFailOperation
 		{
 			get
@@ -895,7 +1003,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil mask value is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil masking value from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil masking value from the global states."), PropertyDefault(true)]
 		public bool InheritStencilMask
 		{
 			get
@@ -915,7 +1023,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil pass operation is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil pass operation from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil pass operation from the global states."), PropertyDefault(true)]
 		public bool InheritStencilPassOperation
 		{
 			get
@@ -935,7 +1043,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil reference value is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil reference value from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil reference value from the global states."), PropertyDefault(true)]
 		public bool InheritStencilRefValue
 		{
 			get
@@ -955,7 +1063,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil Z-fail operation is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil z-fail operation from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil z-fail operation from the global states."), PropertyDefault(true)]
 		public bool InheritStencilZFailOperation
 		{
 			get
@@ -975,7 +1083,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil compare operation is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil compare operation from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil compare operation from the global states."), PropertyDefault(true)]
 		public bool InheritStencilCompareOperation
 		{
 			get

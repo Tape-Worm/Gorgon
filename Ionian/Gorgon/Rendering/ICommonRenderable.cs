@@ -201,5 +201,32 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return whether to enable the depth buffer (if applicable) writing or not.
+		/// </summary>
+		bool DepthWriteEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the depth buffer (if applicable) testing comparison function.
+		/// </summary>
+		CompareFunctions DepthTestFunction
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return (if applicable) the depth buffer bias.
+		/// </summary>
+		float DepthBufferBias
+		{
+			get;
+			set;
+		}
 	}
 }
