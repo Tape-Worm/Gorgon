@@ -273,7 +273,7 @@ namespace GorgonLibrary.Graphics
 				base.Scale = value;
 
 				if (Children.Count > 0)
-                    ((IRenderable)this).UpdateChildren();
+                    ((Renderable)this).UpdateChildren();
 			}
 		}
 
@@ -1143,7 +1143,7 @@ namespace GorgonLibrary.Graphics
 
 			clone._imagePosition = _imagePosition;
 			clone._spritePath = string.Empty;
-			((IRenderable)clone).SetParent(Parent);
+			clone.SetParent(Parent);
 			clone.Size = Size;
 			clone.Position = Position;
 			clone.Rotation = Rotation;

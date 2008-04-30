@@ -1,7 +1,7 @@
-#region LGPL.
+﻿#region LGPL.
 // 
 // Gorgon.
-// Copyright (C) 2007 Michael Winsor
+// Copyright (C) 2008 Michael Winsor
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Saturday, January 06, 2007 2:18:45 PM
+// Created: Wednesday, April 30, 2008 9:32:46 AM
 // 
 #endregion
 
@@ -28,25 +28,38 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Interface for animated renderable objects.
+	/// Attribute to define if a property can be animated or not.
 	/// </summary>
-	public interface IRenderableAnimated
+	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+	public class AnimatedAttribute
+		: Attribute
 	{
+		#region Variables.
+		private Type _dataType = null;			// Data type.
+		#endregion
+
 		#region Properties.
 		/// <summary>
-		/// Property to set or return animations for the object.
+		/// Property to return the data type to be animated.
 		/// </summary>
-		AnimationList Animations
+		public Type DataType
 		{
-			get;
+			get
+			{
+				return _dataType;
+			}
 		}
 		#endregion
 
-		#region Methods.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Function to apply animations to the object.
+		/// Initializes a new instance of the <see cref="AnimatedAttribute"/> class.
 		/// </summary>
-		void ApplyAnimations();
+		/// <param name="dataType">Type of the data for the property.</param>
+		public AnimatedAttribute(Type dataType)			
+		{
+			_dataType = dataType;
+		}
 		#endregion
 	}
 }

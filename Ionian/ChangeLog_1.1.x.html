@@ -103,8 +103,18 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-April 19/2008 - Version - Current
+April 30/2008 - Version - Current
 ================================
+* Changed ScaledWidth/ScaledHeight so that the user can now set the scaled size of
+  the renderable object in the context of absolute width and height.  Prior to this
+  the user could only set the scale relatively via the Scale or UniformScale 
+  properties.
+  
+* Changed ICommonRenderable to IRenderableStates, since this is what this interface
+  actually contained.
+  
+- Removed IMovable, IAnimatable, IRenderable.  These really served no purpose.
+  
 - Removed InvertFrameStatsColor from Gorgon.  Seemed kind of pointless really.
 
 + Added a Depth (and PrimitiveDepth to render targets) property to all Sprite types.

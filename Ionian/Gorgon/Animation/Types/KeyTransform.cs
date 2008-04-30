@@ -289,7 +289,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to use the key data to update a layer object.
 		/// </summary>
 		/// <param name="layerObject">Layer object to update.</param>
-		protected internal override void UpdateLayerObject(IAnimatable layerObject)
+		protected internal override void UpdateLayerObject(Renderable layerObject)
 		{
 			layerObject.Position = _position;
 			layerObject.Scale = _scale;

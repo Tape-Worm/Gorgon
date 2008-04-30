@@ -23,6 +23,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
 {
@@ -30,7 +32,7 @@ namespace GorgonLibrary.Graphics
     /// Object representing a track in an animation.
     /// </summary>
     public abstract class Track
-        : IEnumerable<Key>
+        : NamedObject, IEnumerable<Key>
     {
         #region Value Types.
         /// <summary>
@@ -228,6 +230,7 @@ namespace GorgonLibrary.Graphics
 		private Animation _owner = null;					// Animation that owns the track.
 		private SortedList<float, Key> _keys = null;		// List of key frames.
 		private bool _keysUpdated = true;					// Flag to indicate that the keys had been updated.
+		private PropertyInfo _property = null;				// Property on the owner object to update.
         #endregion
 
         #region Properties.
@@ -239,6 +242,21 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				return _keys;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the bound property.
+		/// </summary>
+		internal PropertyInfo BoundProperty
+		{
+			get
+			{
+				return _property;
+			}
+			set
+			{
+				_property = value;
 			}
 		}
 
@@ -400,16 +418,32 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Constructor/Destructor.
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Track"/> class.
+		/// </summary>
 		/// <param name="owner">Animation that owns this track.</param>
-        internal Track(Animation owner)
-        {
+		/// <param name="name">Name of the track.</param>
+		protected Track(Animation owner, string name)
+			: base(name)
+		{
+			if (owner == null)
+				throw new ArgumentNullException("owner");
 			_owner = owner;
 			_sorter = new FrameTimeSort();
 			_keys = new SortedList<float, Key>(_sorter);
-        }
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Track"/> class.
+		/// </summary>
+		/// <param name="owner">Animation that owns this track.</param>
+		/// <param name="name">Name of the track.</param>
+		/// <param name="property">Property that is bound to the track.</param>
+        internal Track(Animation owner, PropertyInfo property)
+			: this(owner, property.Name)
+        {
+			_property = property;
+		}
         #endregion
 
 		#region IEnumerable<T> Members

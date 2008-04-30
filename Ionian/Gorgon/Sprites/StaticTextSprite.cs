@@ -1221,7 +1221,7 @@ namespace GorgonLibrary.Graphics
 
 			// Apply animations.
 			if (Animations.Count > 0)
-				((IAnimatable)this).ApplyAnimations();
+				((Renderable)this).ApplyAnimations();
 
 			_displaySprite.Draw(flush);			
 		}

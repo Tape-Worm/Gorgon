@@ -163,7 +163,7 @@ namespace GorgonLibrary.Graphics
 					IsImageUpdated = true;
 
 					if (Children.Count > 0)
-						((IRenderable)this).UpdateChildren();
+						((Renderable)this).UpdateChildren();
 				}
 			}
 		}
@@ -208,7 +208,7 @@ namespace GorgonLibrary.Graphics
 					IsImageUpdated = true;
 
 					if (Children.Count > 0)
-						((IRenderable)this).UpdateChildren();
+						((Renderable)this).UpdateChildren();
 				}
 			}
 		}
@@ -257,7 +257,7 @@ namespace GorgonLibrary.Graphics
 					IsImageUpdated = true;
 
 					if (Children.Count > 0)
-						((IRenderable)this).UpdateChildren();
+						((Renderable)this).UpdateChildren();
 				}
 			}
 		}
@@ -294,7 +294,7 @@ namespace GorgonLibrary.Graphics
 				base.Scale = value;
 
                 if (Children.Count > 0)
-					((IRenderable)this).UpdateChildren();
+					((Renderable)this).UpdateChildren();
 			}
 		}
 
@@ -355,7 +355,7 @@ namespace GorgonLibrary.Graphics
 				IsImageUpdated = true;
 
                 if (Children.Count > 0)
-					((IRenderable)this).UpdateChildren();
+					((Renderable)this).UpdateChildren();
 			}
 		}
 
@@ -1028,7 +1028,7 @@ namespace GorgonLibrary.Graphics
 				_colorUpdated = true;
 
                 if (Children.Count > 0)
-					((IRenderable)this).UpdateChildren();
+					((Renderable)this).UpdateChildren();
 			}
 		}
 
@@ -1290,7 +1290,7 @@ namespace GorgonLibrary.Graphics
 			for (int i = 0; i < Vertices.Length; i++)
 				clone.Vertices[i] = Vertices[i];
 
-			((IRenderable)clone).SetParent(Parent);
+			clone.SetParent(Parent);
 			clone.Size = Size;
 			clone.Position = Position;
 			clone.Rotation = Rotation;

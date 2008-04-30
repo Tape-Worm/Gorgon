@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics
         : Collection<Animation>
     {
         #region Variables.
-        private IAnimatable _owner = null;          // Owner for the animation list.
+        private Renderable _owner = null;          // Owner for the animation list.
         #endregion
 
         #region Methods.
@@ -115,7 +115,7 @@ namespace GorgonLibrary.Graphics
         /// Constructor.
         /// </summary>
         /// <param name="owner">Owner of this animation list.</param>
-        internal AnimationList(IAnimatable owner)
+        internal AnimationList(Renderable owner)
         {
             _owner = owner;
         }

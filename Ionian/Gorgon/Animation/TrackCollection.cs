@@ -1,7 +1,7 @@
-#region LGPL.
+﻿#region LGPL.
 // 
 // Gorgon.
-// Copyright (C) 2007 Michael Winsor
+// Copyright (C) 2008 Michael Winsor
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Saturday, January 06, 2007 2:15:25 PM
+// Created: Wednesday, April 30, 2008 10:53:15 AM
 // 
 #endregion
 
@@ -28,63 +28,35 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Interface to represent a moveable object.
+	/// A collection of animation tracks.
 	/// </summary>
-	public interface IRenderableTransform
+	public class TrackCollection
+		: Collection<Track>
 	{
-		#region Properties.
+		#region Methods.
 		/// <summary>
-		/// Property to set or return the position of the object.
+		/// Function to add a new track to the collection.
 		/// </summary>
-		Vector2D Position
+		/// <param name="track">Track to add.</param>
+		public void Add(Track track)
 		{
-			get;
-			set;
-		}
+			if (track == null)
+				throw new ArgumentNullException("track");
+			if (Contains(track.Name))
+				throw new AnimationTrackAlreadyExistsException(track.Name);
 
-		/// <summary>
-		/// Property to set or return the scale of the sprite.
-		/// </summary>
-		Vector2D Scale
-		{
-			get;
-			set;
+			AddItem(track.Name, track);
 		}
+		#endregion
 
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Property to set or return the rotation angle in degrees.
+		/// Initializes a new instance of the <see cref="TrackCollection"/> class.
 		/// </summary>
-		float Rotation
+		internal TrackCollection()
+			: base(8, false)
 		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the size of the object.
-		/// </summary>
-		Vector2D Size
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the axis of the sprite.
-		/// </summary>
-		Vector2D Axis
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the offset within the source image to start drawing from.
-		/// </summary>
-		Vector2D ImageOffset
-		{
-			get;
-			set;
+			
 		}
 		#endregion
 	}

@@ -1071,7 +1071,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the size of the object with scaling applied.
+		/// Property to set or return the size of the object with scaling applied.
 		/// </summary>
 		public virtual Vector2D ScaledDimensions
 		{
@@ -1079,10 +1079,14 @@ namespace GorgonLibrary.Graphics
 			{
 				return new Vector2D(_scale.X * _size.X, _scale.Y * _size.Y);
 			}
+			set
+			{
+				Scale = value / _size;
+			}
 		}
 
 		/// <summary>
-		/// Property to return the width of the object after scaling is applied.
+		/// Property to set or return the scaled width of the object.
 		/// </summary>
 		public virtual float ScaledWidth
 		{
@@ -1090,16 +1094,24 @@ namespace GorgonLibrary.Graphics
 			{
 				return _scale.X * _size.X;
 			}
+			set
+			{
+				SetScale(value / _size.X, _scale.Y);
+			}
 		}
 
 		/// <summary>
-		/// Property to return the height of the object after scaling is applied.
+		/// Property to set or return the scaled height of the object.
 		/// </summary>
 		public virtual float ScaledHeight
 		{
 			get
 			{
 				return _scale.Y * _size.Y;
+			}
+			set
+			{
+				SetScale(_scale.X, value / _size.Y);
 			}
 		}
 

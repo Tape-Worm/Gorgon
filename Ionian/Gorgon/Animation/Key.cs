@@ -113,7 +113,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to use the key data to update a layer object.
 		/// </summary>
 		/// <param name="layerObject">Layer object to update.</param>
-		protected internal abstract void UpdateLayerObject(IAnimatable layerObject);
+		protected internal abstract void UpdateLayerObject(Renderable layerObject);
 
 		/// <summary>
 		/// Function to copy this key into a new time.

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.21022</ProductVersion>
@@ -96,10 +96,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\AnimatedAttribute.cs" />
     <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\AnimationException.cs" />
     <Compile Include="Animation\AnimationList.cs" />
     <Compile Include="Animation\Key.cs" />
+    <Compile Include="Animation\TrackCollection.cs" />
     <Compile Include="Animation\Types\Frame.cs" />
     <Compile Include="Animation\Types\KeyFrame.cs" />
     <Compile Include="Animation\Types\TrackFrame.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="Animation\Types\KeyTransform.cs" />
     <Compile Include="Animation\Track.cs" />
     <Compile Include="Animation\Types\TrackTransform.cs" />
+    <Compile Include="Animation\Types\TrackVector2D.cs" />
     <Compile Include="Buffers\Buffer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -193,10 +196,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\IAnimatable.cs" />
-    <Compile Include="Rendering\ICommonRenderable.cs" />
-    <Compile Include="Rendering\IMoveable.cs" />
-    <Compile Include="Rendering\IRenderable.cs" />
+    <Compile Include="Rendering\IRenderableStates.cs" />
     <Compile Include="Rendering\RenderableChildren.cs" />
     <Compile Include="Rendering\Renderable.cs" />
     <Compile Include="Rendering\Renderer.cs" />

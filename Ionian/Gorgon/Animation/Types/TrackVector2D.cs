@@ -1,0 +1,61 @@
+﻿#region LGPL.
+// 
+// Gorgon.
+// Copyright (C) 2008 Michael Winsor
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// 
+// Created: Wednesday, April 30, 2008 10:50:41 AM
+// 
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Reflection;
+
+namespace GorgonLibrary.Graphics
+{
+	/// <summary>
+	/// Animation track used to animate 2D vector properties.
+	/// </summary>
+	public class TrackVector2D
+		: Track
+	{
+		#region Variables.
+
+		#endregion
+
+		#region Properties.
+
+		#endregion
+
+		#region Methods.
+
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TrackVector2D"/> class.
+		/// </summary>
+		/// <param name="owner">Animation that owns this track.</param>
+		/// <param name="property">Property that is bound to the track.</param>
+		internal TrackVector2D(Animation owner, PropertyInfo property)
+			: base(owner, property)
+		{
+		}
+		#endregion
+	}
+}

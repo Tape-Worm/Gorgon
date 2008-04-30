@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+using System.ComponentModel;
+using System.Reflection;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
 
@@ -70,21 +72,21 @@ namespace GorgonLibrary.Graphics
 	/// 		</item>
 	/// 	</list>
 	/// </para>
-	/// The animation object is only applied to objects which implement the <see cref="GorgonLibrary.Graphics.IAnimatable">IAnimatable</see> interface.
 	/// </remarks>
     public class Animation
         : NamedObject, ISerializable, ICloneable
     {
         #region Variables.
-        private IAnimatable _owner = null;						// Object that owns this animation.        
-        private float _length = 1000;							// Length of the track in milliseconds.
-        private bool _loop;										// Flag to indicate that this animation should loop.
-        private float _currentTime;								// Current time.
-        private bool _enabled;									// Flag to indicate whether the animation is enabled or not.
-		private AnimationState _state = AnimationState.Playing;	// State of action for the animation.
-		private TrackTransform _transforms = null;				// Transformation track.
-		private TrackColor _colors = null;						// Color track.
-		private TrackFrame _frames = null;						// Frame track.
+        private Renderable _owner = null;							// Object that owns this animation.        
+        private float _length = 1000;								// Length of the track in milliseconds.
+        private bool _loop;											// Flag to indicate that this animation should loop.
+        private float _currentTime;									// Current time.
+        private bool _enabled;										// Flag to indicate whether the animation is enabled or not.
+		private AnimationState _state = AnimationState.Playing;		// State of action for the animation.
+		private TrackTransform _transforms = null;					// Transformation track.
+		private TrackColor _colors = null;							// Color track.
+		private TrackFrame _frames = null;							// Frame track.
+		private TrackCollection _tracks = null;						// Tracks.
         #endregion
 
         #region Events.
@@ -154,7 +156,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the owner of this animation.
         /// </summary>
-        public IAnimatable Owner
+        public Renderable Owner
         {
             get
             {
@@ -192,6 +194,18 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				return _frames;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the collection of tracks for this animation.
+		/// </summary>
+		/// <remarks>Each track corresponds to an animation property on the owner object (typically a <see cref="GorgonLibrary.Graphics.Renderable"/>)<para>Custom tracks can be added to this collection as well.</para></remarks>
+		public TrackCollection Tracks
+		{
+			get
+			{
+				return _tracks;
 			}
 		}
 
@@ -311,8 +325,43 @@ namespace GorgonLibrary.Graphics
 		/// Function to set the owner for this animation.
 		/// </summary>
 		/// <param name="owner">Owner for the animation.</param>
-		protected internal void SetOwner(IAnimatable owner)
+		protected internal void SetOwner(Renderable owner)
 		{
+			Attribute[] attributes = null;						// List of attributes for the target object.
+			PropertyInfo[] properties = null;					// List of properties on the renderable.
+
+			if (owner == null)
+				throw new ArgumentNullException(owner);
+
+			properties = owner.GetType().GetProperties();
+
+			if (properties.Length == 0)
+				throw new AnimationOwnerInvalidException(owner.Name);
+
+			_tracks.Clear();
+
+			// Find all the properties that are animated and make tracks for those properties.
+			foreach (PropertyInfo property in properties)
+			{
+				attributes = property.GetCustomAttributes(typeof(AnimatedAttribute), true);
+
+				foreach (AnimatedAttribute attribute in attributes)
+				{
+					switch (attribute.DataType.Name.ToLower())
+					{
+						case "vector2d":
+							_tracks.Add(new TrackVector2D(this, property));
+							break;
+						default:
+							// If we don't know the type that's being added, then don't bother.
+							break;
+					}
+				}
+			}
+
+			if (_tracks.Count == 0)
+				throw new AnimationOwnerInvalidException(owner.Name);
+			
 			_owner = owner;
 		}
 
@@ -420,10 +469,11 @@ namespace GorgonLibrary.Graphics
         /// <param name="name">Name of the animation.</param>
         /// <param name="owner">Owner of this animation.</param>
         /// <param name="length">Length of the animation in milliseconds.</param>
-        internal Animation(string name, IAnimatable owner, float length)
+        internal Animation(string name, Renderable owner, float length)
             : base(name)
         {
-            _owner = owner;
+			_tracks = new TrackCollection();
+			SetOwner(owner);
 			_transforms = new TrackTransform(this);
 			_colors = new TrackColor(this);
 			_frames = new TrackFrame(this);

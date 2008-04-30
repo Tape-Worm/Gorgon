@@ -25,7 +25,35 @@ using System;
 
 namespace GorgonLibrary.Graphics
 {
-    /// <summary>
+	/// <summary>
+	/// Track already exists.
+	/// </summary>
+	public class AnimationTrackAlreadyExistsException
+		: GorgonException
+	{
+		#region Constructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="trackName">Name of the track.</param>
+		/// <param name="ex">Exception source.</param>
+		public AnimationTrackAlreadyExistsException(string trackName, Exception ex)
+			: base("The track '" + trackName + "' already exists.", ex)
+		{
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="trackName">Name of the track.</param>
+		public AnimationTrackAlreadyExistsException(string trackName)
+			: this(trackName, null)
+		{
+		}
+		#endregion
+	}
+	
+	/// <summary>
     /// No keys found in the track.
     /// </summary>
     public class AnimationTrackHasNoKeysException
@@ -139,5 +167,33 @@ namespace GorgonLibrary.Graphics
         {
         }
         #endregion
+	}
+
+	/// <summary>
+	/// Animation owner is invalid.
+	/// </summary>
+	public class AnimationOwnerInvalidException
+		: GorgonException
+	{
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AnimationOwnerInvalidException"/> class.
+		/// </summary>
+		/// <param name="ownerName">Name of the owner.</param>
+		/// <param name="ex">The inner exception.</param>
+		public AnimationOwnerInvalidException(string ownerName, Exception ex)
+			: base("The object '" + ownerName + "' cannot be animated.", ex)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AnimationOwnerInvalidException"/> class.
+		/// </summary>
+		/// <param name="ownerName">Name of the owner.</param>
+		public AnimationOwnerInvalidException(string ownerName)
+			: this(ownerName, null)
+		{
+		}
+		#endregion
 	}
 }

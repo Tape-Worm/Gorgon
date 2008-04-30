@@ -433,7 +433,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to set specific render states per sprite.
 		/// </summary>
 		/// <param name="renderObject">Cache to retrieve states from.</param>
-		protected internal virtual void SetStates(ICommonRenderable renderObject)
+		protected internal virtual void SetStates(IRenderableStates renderObject)
 		{
 			// Set the wrapping mode.
 			_imageStates.HorizontalAddressing = renderObject.HorizontalWrapMode;
@@ -530,7 +530,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="renderObject">Cache to retrieve states from.</param>
 		/// <param name="image">Image used by the renderable.</param>
 		/// <returns>TRUE if the state has changed, FALSE if not.</returns>
-		protected internal virtual bool StateChanged(ICommonRenderable renderObject, Image image)
+		protected internal virtual bool StateChanged(IRenderableStates renderObject, Image image)
 		{
 			bool result = false;			// Result.
 			RenderStates states;			// Render states.

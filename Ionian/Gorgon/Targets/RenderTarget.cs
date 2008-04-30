@@ -38,7 +38,7 @@ namespace GorgonLibrary.Graphics
 	/// This is accomplished through the use of render targets.  
 	/// </remarks>
 	public abstract class RenderTarget 
-		: NamedObject, IDisposable, IDeviceStateObject, ICommonRenderable
+		: NamedObject, IDisposable, IDeviceStateObject, IRenderableStates
 	{
 		#region Variables.
 		private bool _inheritClearTargets;					// Flag to indicate that we will inherit the clear targets from Gorgon.
