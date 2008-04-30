@@ -33,7 +33,7 @@ namespace GorgonLibrary.Graphics
 	/// Interface for renderable objects.
 	/// </summary>
 	public interface IRenderable
-		: ICommonRenderable
+		: IRenderableStates
 	{
 		#region Properties.
 		/// <summary>
