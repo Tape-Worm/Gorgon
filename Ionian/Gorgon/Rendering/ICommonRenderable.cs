@@ -31,7 +31,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Interface containing common renderable properties.
 	/// </summary>
-	public interface ICommonRenderable
+	public interface IRenderableStates
 	{
 		/// <summary>
 		/// Property to set or return the horizontal wrapping mode to use.
