@@ -30,8 +30,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Interface for animated renderable objects.
 	/// </summary>
-	public interface IAnimatable
-		: IRenderableTransform
+	public interface IRenderableAnimated
 	{
 		#region Properties.
 		/// <summary>

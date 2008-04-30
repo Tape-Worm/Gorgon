@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics
 	/// Object representing a renderable object.
 	/// </summary>
 	public abstract class Renderable
-		: NamedObject, IAnimatable, ICloneable
+		: NamedObject, IRenderableStates, ICloneable
 	{
 		#region Variables.
 		private bool _inheritSmoothing;						// Flag to indicate that we inherit smoothing settings from the layer.
@@ -77,7 +77,7 @@ namespace GorgonLibrary.Graphics
 		private Image _image = null;						// Image that this object is bound with.		        
         private bool _needParentUpdate = true;				// Flag to indicate that parent information needs updating.
 		private bool _needAABBUpdate = true;				// Flag to indicate that the AABB needs updating.
-		private IRenderable _parent = null;					// Object that is the parent of this object.
+		private Renderable _parent = null;					// Object that is the parent of this object.
 		private RenderableChildren _children = null;		// Children for this object.		
 		private AnimationList _animations = null;			// Animation list.
 		private Drawing.RectangleF _AABB;					// Axis aligned bounding box for the object.
@@ -212,691 +212,6 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
-		/// <summary>
-		/// Property to set or return the depth of the renderable object.
-		/// </summary>
-		public virtual float Depth
-		{
-			get
-			{
-				return _depth;
-			}
-			set
-			{
-				if (value < 0.0f)
-					value = 0.0f;
-				if (value > 1.0f)
-					value = 1.0f;
-
-				_depth = value;
-			}
-		}
-
-        /// <summary>
-        /// Property to set or return animations for the object.
-        /// </summary>        
-        public AnimationList Animations
-        {
-            get 
-            {
-                return _animations;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the final position.
-        /// </summary>
-        public Vector2D FinalPosition
-        {
-            get
-            {
-                GetParentTransform();
-                return _finalPosition;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the final scale.
-        /// </summary>
-        public Vector2D FinalScale
-        {
-            get
-            {
-                GetParentTransform();
-                return _finalScale;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the final rotation.
-        /// </summary>
-        public float FinalRotation
-        {
-            get
-            {
-                GetParentTransform();
-                return _finalRotation;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the parent of this object.
-        /// </summary>
-        public IRenderable Parent
-        {
-            get
-            {
-                return _parent;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the children of this object.
-        /// </summary>
-        public RenderableChildren Children
-        {
-            get
-            {
-                return _children;
-            }
-        }
-
-		/// <summary>
-		/// Property to set or return a uniform scale across the X and Y axis.
-		/// </summary>
-		public abstract float UniformScale
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the primitive style for the object.
-		/// </summary>
-		public abstract PrimitiveStyle PrimitiveStyle
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return whether to use an index buffer or not.
-		/// </summary>
-		public abstract bool UseIndices
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to set or return the color.
-		/// </summary>
-		public abstract Drawing.Color Color
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the opacity.
-		/// </summary>
-		public abstract byte Opacity
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the axis of the sprite.
-		/// </summary>
-		public virtual Vector2D Axis
-		{
-			get
-			{
-				return _axis;
-			}
-			set
-			{
-				_axis = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the scale of the sprite.
-		/// </summary>
-		public virtual Vector2D Scale
-		{
-			get
-			{
-				return _scale;
-			}
-			set
-			{
-				// Don't allow 0 scale.
-				if ((value.X == 0.0f) && (value.Y == 0.0f))
-					return;
-
-				_scale = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the size of the object with scaling applied.
-		/// </summary>
-		public virtual Vector2D ScaledDimensions
-		{
-			get
-			{
-				return new Vector2D(_scale.X * _size.X, _scale.Y * _size.Y);
-			}
-		}
-
-		/// <summary>
-		/// Property to return the width of the object after scaling is applied.
-		/// </summary>
-		public virtual float ScaledWidth
-		{
-			get
-			{
-				return _scale.X * _size.X;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the height of the object after scaling is applied.
-		/// </summary>
-		public virtual float ScaledHeight
-		{
-			get
-			{
-				return _scale.Y * _size.Y;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the image that this object is bound with.
-		/// </summary>
-		public virtual Image Image
-		{
-			get
-			{
-				return _image;
-			}
-			set
-			{
-				_image = value;
-				_imageCoordinatesChanged = true;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the position of the object.
-		/// </summary>
-		public virtual Vector2D Position
-		{
-			get
-			{
-				return _position;
-			}
-			set
-			{
-				_needAABBUpdate = true;
-                _needParentUpdate = true;
-				_position = value;
-
-                if (_children.Count > 0)
-                    ((IRenderable)this).UpdateChildren();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the rotation angle in degrees.
-		/// </summary>
-		public virtual float Rotation
-		{
-			get
-			{
-				return _rotation;
-			}
-			set
-			{
-				_needAABBUpdate = true;
-                _needParentUpdate = true;
-				_rotation = value;
-
-                if (_children.Count > 0)
-                    ((IRenderable)this).UpdateChildren();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the size of the object.
-		/// </summary>
-		public virtual Vector2D Size
-		{
-			get
-			{
-				return _size;
-			}
-			set
-			{
-				// Do nothing if there's no change.
-				if (value == _size)
-					return;
-
-				_size = value;
-				_needAABBUpdate = true;
-				_dimensionsChanged = true;
-				_imageCoordinatesChanged = true;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the width of the object.
-		/// </summary>
-		public virtual float Width
-		{
-			get
-			{
-				return _size.X;
-			}
-			set
-			{
-				_needAABBUpdate = true;
-				Size = new Vector2D(value, _size.Y);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the height of the object.
-		/// </summary>
-		public virtual float Height
-		{
-			get
-			{
-				return _size.Y;
-			}
-			set
-			{
-				_needAABBUpdate = true;
-				Size = new Vector2D(_size.X, value);
-			}
-		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to set the AABB for the object.
-		/// </summary>
-		/// <param name="min">Minimum coordinates for the AABB.</param>
-		/// <param name="max">Maximum coordinates for the AABB.</param>
-		protected void SetAABB(Vector2D min, Vector2D max)
-		{
-			_AABB.X = min.X;
-			_AABB.Y = min.Y;
-			_AABB.Width = max.X - min.X;
-			_AABB.Height = max.Y - min.Y;
-		}
-
-		/// <summary>
-		/// Function to set the AABB for the object.
-		/// </summary>
-		/// <param name="rect">The rectangle to use as the AABB.</param>
-		protected void SetAABB(Drawing.RectangleF rect)
-		{
-			_AABB = rect;
-		}
-
-		/// <summary>
-		/// Function to initialize the vertices for the object.
-		/// </summary>
-		/// <param name="vertexCount">Number of vertices for the object.</param>
-		protected void InitializeVertices(int vertexCount)
-		{
-			if (vertexCount < 0)
-				_vertices = null;
-			else
-				_vertices = new VertexTypeList.PositionDiffuse2DTexture1[vertexCount];
-		}
-
-		/// <summary>
-		/// Function to notify that we need an update from the parent.
-		/// </summary>
-		protected void NotifyParent()
-		{
-			_needParentUpdate = true;
-		}
-
-		/// <summary>
-		/// Function to return whether the specified image is currently set.
-		/// </summary>
-		/// <param name="image">Image to test.</param>
-		/// <returns>TRUE if set, FALSE if not.</returns>
-		protected bool IsImageCurrent(Image image)
-		{
-			return image == Gorgon.Renderer.GetImage(0);
-		}
-
-		/// <summary>
-		/// Function to set the current image.
-		/// </summary>
-		/// <param name="image">Image to set.</param>
-		protected void SetCurrentImage(Image image)
-		{
-			Gorgon.Renderer.SetImage(0, image);
-		}
-
-		/// <summary>
-		/// Function to start the rendering process.
-		/// </summary>
-		/// <param name="flush">TRUE to flush the contents of the child renderable buffers immediately after rendering is complete, FALSE to hold the contents until the end of frame or state change.</param>
-		/// <remarks>Setting flush to TRUE can slow the rendering process down significantly, only use when absolutely necessary.</remarks>
-		protected void BeginRendering(bool flush)
-		{
-			IAnimatable child = null;								// Child object.
-			bool stateChanged = false;								// Flag to indicate that the state has changed.
-			int vertexCount = 0;									// Number of vertices to render.
-
-			if (Children.Count > 0)
-			{
-				for (int i = 0; i < Children.Count; i++)
-				{
-					child = Children[i] as IAnimatable;
-					if (child != null)
-						child.Draw(flush);
-				}
-			}
-
-			if (Vertices != null)
-				vertexCount = Vertices.Length + Geometry.VerticesWritten;
-			else
-				vertexCount = Geometry.VerticesWritten;
-
-			stateChanged = Gorgon.GlobalStateSettings.StateChanged(this, Image);
-			if (((vertexCount >= Geometry.VertexCount) || (stateChanged)) && (Geometry.VerticesWritten != 0))
-				Gorgon.Renderer.Render();
-
-			// Apply animations.
-			if (Animations.Count > 0)
-				((IAnimatable)this).ApplyAnimations();
-
-			// Set states.
-			if (stateChanged)
-			{
-				Gorgon.GlobalStateSettings.SetStates(this);
-				// Set the currently active image.
-				Gorgon.Renderer.SetImage(0, Image);
-			}
-		}
-
-		/// <summary>
-		/// Function to flush queued data to the renderer.
-		/// </summary>
-		protected void FlushToRenderer()
-		{
-			Gorgon.Renderer.Render();
-		}
-
-		/// <summary>
-		/// Function to write the vertex data to the buffer.
-		/// </summary>
-		/// <param name="start">Starting index.</param>
-		/// <param name="length">Number of vertices.</param>
-		/// <returns>The number of vertices written to the buffer thus far.</returns>
-		protected int WriteVertexData(int start, int length)
-		{
-			if (length == 0)
-				return 0;
-
-			// Write the vertices.
-			Geometry.VertexCache.WriteData(start, Geometry.VertexOffset + Geometry.VerticesWritten, length, Vertices);
-
-			return Geometry.VerticesWritten;
-		}
-
-		/// <summary>
-		/// Function to end the rendering process.
-		/// </summary>
-		/// <param name="flush">TRUE to flush the contents of the buffers immediately after rendering is complete, FALSE to hold the contents until the end of frame or state change.</param>
-		/// <remarks>Setting flush to TRUE can slow the rendering process down significantly, only use when absolutely necessary.</remarks>
-		protected void EndRendering(bool flush)
-		{
-			if (flush)
-				Gorgon.Renderer.Render();
-		}
-
-
-        /// <summary>
-        /// Function to get the parent transform.
-        /// </summary>
-        protected void GetParentTransform()
-        {
-            if (!_needParentUpdate)
-                return;
-
-            if (_parent == null)
-            {
-                _finalPosition = _position;
-                _finalRotation = _rotation;
-                _finalScale = _scale;
-            }
-            else
-            {
-                float angle = MathUtility.Radians(_parentRotation);     // Angle in radians.
-                float cos = MathUtility.Cos(angle);                     // Cached cosine.
-                float sin = MathUtility.Sin(angle);                     // Cached sine.
-
-                // Rotate around the offset from the parent.
-                _finalPosition.X = ((_position.X * _parentScale.X) * cos) - ((_position.Y * _parentScale.Y) * sin);
-                _finalPosition.Y = ((_position.X * _parentScale.X) * sin) + ((_position.Y * _parentScale.Y) * cos);
-
-                // Get the scale.
-				if (_inheritScale)
-					_finalScale = Vector2D.Multiply(_scale, _parentScale);
-				else
-					_finalScale = _scale;
-
-                // Get the rotation.
-				if (_inheritRotation)
-					_finalRotation = _parentRotation + _rotation;
-				else
-					_finalRotation = _rotation;
-
-                // Update the translation.
-                _finalPosition = Vector2D.Add(_finalPosition, _parentPosition);
-            }
-
-            _needParentUpdate = false;
-        }
-
-		/// <summary>
-		/// Function to update the dimensions for an object.
-		/// </summary>
-		protected abstract void UpdateDimensions();
-
-		/// <summary>
-		/// Function to update a transformation to the object.
-		/// </summary>
-		protected virtual void UpdateTransform()
-		{
-		}
-
-        /// <summary>
-        /// Function to set the blending modes.
-        /// </summary>
-        /// <param name="value">Blending value.</param>
-        protected virtual void SetBlendMode(BlendingModes value)
-		{
-			switch (value & ~BlendingModes.ColorAdditive)
-			{
-				case BlendingModes.Additive:
-					_sourceBlend = AlphaBlendOperation.SourceAlpha;
-					_destBlend = AlphaBlendOperation.One;
-					break;
-				case BlendingModes.Color:
-					_sourceBlend = AlphaBlendOperation.SourceColor;
-					_destBlend = AlphaBlendOperation.DestinationColor;
-					break;
-				case BlendingModes.ModulatedInverse:
-					_sourceBlend = AlphaBlendOperation.InverseSourceAlpha;
-					_destBlend = AlphaBlendOperation.SourceAlpha;
-					break;
-				case BlendingModes.None:
-					_sourceBlend = AlphaBlendOperation.One;
-					_destBlend = AlphaBlendOperation.Zero;
-					break;				
-				case BlendingModes.Modulated:
-					_sourceBlend = AlphaBlendOperation.SourceAlpha;
-					_destBlend = AlphaBlendOperation.InverseSourceAlpha;
-					break;
-                case BlendingModes.PreMultiplied:
-                    _sourceBlend = AlphaBlendOperation.One;
-                    _destBlend = AlphaBlendOperation.InverseSourceAlpha;
-                    break;
-				case BlendingModes.Inverted:
-					_sourceBlend = AlphaBlendOperation.InverseDestinationColor;
-					_destBlend = AlphaBlendOperation.InverseSourceColor;
-					break;
-			}
-		}
-
-		/// <summary>
-		/// Function to update the source image positioning.
-		/// </summary>
-		protected virtual void UpdateImageLayer()
-		{
-		}
-
-		/// <summary>
-		/// Function to set the anchor axis of the sprite.
-		/// </summary>
-		/// <param name="x">Horizontal position.</param>
-		/// <param name="y">Vertical position.</param>
-		public virtual void SetAxis(float x, float y)
-		{
-			Axis = new Vector2D(x, y);
-		}
-
-		/// <summary>
-		/// Function to set the scale of the sprite.
-		/// </summary>
-		/// <param name="x">Horizontal scale.</param>
-		/// <param name="y">Vertical scale.</param>
-		public virtual void SetScale(float x, float y)
-		{
-			Scale = new Vector2D(x, y);
-		}
-
-		/// <summary>
-		/// Function to update the object position.
-		/// </summary>
-		/// <param name="x">Horizontal position of the object.</param>
-		/// <param name="y">Vertical position of the object.</param>
-		public virtual void SetPosition(float x,float y)
-		{
-			Position = new Vector2D(x, y);
-		}
-
-		/// <summary>
-		/// Function to update the size of the object.
-		/// </summary>
-		/// <param name="width">Width of the object.</param>
-		/// <param name="height">Height of the object.</param>
-		public virtual void SetSize(float width, float height)
-		{
-			Size = new Vector2D(width, height);
-		}
-
-		/// <summary>
-		/// Function to draw the object.
-		/// </summary>
-		/// <param name="flush">TRUE to flush the buffers after drawing, FALSE to only flush on state change.</param>
-		public abstract void Draw(bool flush);
-
-		/// <summary>
-		/// Function to draw the object.
-		/// </summary>
-		public virtual void Draw()
-		{
-			Draw(false);
-		}
-
-		/// <summary>
-		/// Function to force an update on the object.
-		/// </summary>
-		public virtual void Refresh()
-		{
-			_needAABBUpdate = true;
-			_needParentUpdate = true;
-			_imageCoordinatesChanged = true;
-			_dimensionsChanged = true;
-		}
-
-		/// <summary>
-		/// Function to update AABB.
-		/// </summary>
-		public virtual void UpdateAABB()
-		{
-			_AABB = new Drawing.RectangleF(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="name">Name of the object.</param>
-		protected Renderable(string name) 
-			: base(name)
-		{
-			_size = new Vector2D(1.0f, 1.0f);
-			_position = Vector2D.Zero;
-			_rotation = 0.0f;
-			_vertices = null;
-			_dimensionsChanged = true;
-			_imageCoordinatesChanged = true;
-			BlendingMode = BlendingModes.Modulated;
-			_maskValue = 1;
-			_maskFunction = CompareFunctions.GreaterThan;
-			_smoothing = Smoothing.None;
-			_inheritBlending = true;
-			_inheritMaskFunction = true;
-			_inheritMaskValue = true;
-			_inheritSmoothing = true;
-			_inheritHorizontalWrap = true;
-			_inheritVerticalWrap = true;
-			_inheritStencilPassOperation = true;
-			_inheritStencilFailOperation = true;
-			_inheritStencilZFailOperation = true;
-			_inheritStencilCompare = true;
-			_inheritStencilReference = true;
-			_inheritStencilMask = true;
-			_inheritUseStencil = true;
-			_inheritRotation = true;
-			_inheritScale = true;
-			_inheritDepthWriteEnable = true;
-			_inheritDepthBias = true;
-			_inheritDepthTestCompare = true;
-			_wrapHMode = ImageAddressing.Clamp;
-			_wrapVMode = ImageAddressing.Clamp;
-			_stencilCompare = CompareFunctions.Always;
-			_useStencil = false;
-			_stencilPassOperation = StencilOperations.Keep;
-			_stencilFailOperation = StencilOperations.Keep;
-			_stencilZFailOperation = StencilOperations.Keep;
-			_stencilReference = 0;
-			_stencilMask = -1;
-			_depthBias = 0.0f;
-			_depthWriteEnabled = true;
-			_depthCompare = CompareFunctions.LessThanOrEqual;
-            _parent = null;
-            _children = new RenderableChildren(this);
-			_animations = new AnimationList(this);
-			
-			_axis = new Vector2D(1.0f, 1.0f);
-			_AABB = new Drawing.RectangleF(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
-		}
-		#endregion
-
-		#region IRenderable Members
 		/// <summary>
 		/// Property to set or return whether to enable the use of the stencil buffer or not.
 		/// </summary>
@@ -1428,7 +743,7 @@ namespace GorgonLibrary.Graphics
 				_inheritDepthTestCompare = value;
 			}
 		}
-		
+
 		/// <summary>
 		/// Property to set or return the type of smoothing for the sprites.
 		/// </summary>
@@ -1587,52 +902,608 @@ namespace GorgonLibrary.Graphics
 			{
 			}
 		}
-		
+
 		/// <summary>
-        /// Function to set the parent of this object.
-        /// </summary>
-        /// <param name="parent">Parent of the object.</param>
-        void IRenderable.SetParent(IRenderable parent)
+		/// Property to set or return the depth of the renderable object.
+		/// </summary>
+		public virtual float Depth
+		{
+			get
+			{
+				return _depth;
+			}
+			set
+			{
+				if (value < 0.0f)
+					value = 0.0f;
+				if (value > 1.0f)
+					value = 1.0f;
+
+				_depth = value;
+			}
+		}
+
+        /// <summary>
+        /// Property to set or return animations for the object.
+        /// </summary>        
+        public AnimationList Animations
         {
-            _parent = parent;
+            get 
+            {
+                return _animations;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the final position.
+        /// </summary>
+        public Vector2D FinalPosition
+        {
+            get
+            {
+                GetParentTransform();
+                return _finalPosition;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the final scale.
+        /// </summary>
+        public Vector2D FinalScale
+        {
+            get
+            {
+                GetParentTransform();
+                return _finalScale;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the final rotation.
+        /// </summary>
+        public float FinalRotation
+        {
+            get
+            {
+                GetParentTransform();
+                return _finalRotation;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the parent of this object.
+        /// </summary>
+        public Renderable Parent
+        {
+            get
+            {
+                return _parent;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the children of this object.
+        /// </summary>
+        public RenderableChildren Children
+        {
+            get
+            {
+                return _children;
+            }
+        }
+
+		/// <summary>
+		/// Property to set or return a uniform scale across the X and Y axis.
+		/// </summary>
+		public abstract float UniformScale
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the primitive style for the object.
+		/// </summary>
+		public abstract PrimitiveStyle PrimitiveStyle
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return whether to use an index buffer or not.
+		/// </summary>
+		public abstract bool UseIndices
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to set or return the color.
+		/// </summary>
+		public abstract Drawing.Color Color
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the opacity.
+		/// </summary>
+		public abstract byte Opacity
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the axis of the sprite.
+		/// </summary>
+		public virtual Vector2D Axis
+		{
+			get
+			{
+				return _axis;
+			}
+			set
+			{
+				_axis = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scale of the sprite.
+		/// </summary>
+		[Animated(typeof(Vector2D))]
+		public virtual Vector2D Scale
+		{
+			get
+			{
+				return _scale;
+			}
+			set
+			{
+				// Don't allow 0 scale.
+				if ((value.X == 0.0f) && (value.Y == 0.0f))
+					return;
+
+				_scale = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the size of the object with scaling applied.
+		/// </summary>
+		public virtual Vector2D ScaledDimensions
+		{
+			get
+			{
+				return new Vector2D(_scale.X * _size.X, _scale.Y * _size.Y);
+			}
+		}
+
+		/// <summary>
+		/// Property to return the width of the object after scaling is applied.
+		/// </summary>
+		public virtual float ScaledWidth
+		{
+			get
+			{
+				return _scale.X * _size.X;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the height of the object after scaling is applied.
+		/// </summary>
+		public virtual float ScaledHeight
+		{
+			get
+			{
+				return _scale.Y * _size.Y;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the image that this object is bound with.
+		/// </summary>
+		public virtual Image Image
+		{
+			get
+			{
+				return _image;
+			}
+			set
+			{
+				_image = value;
+				_imageCoordinatesChanged = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the position of the object.
+		/// </summary>
+		[Animated(typeof(Vector2D))]
+		public virtual Vector2D Position
+		{
+			get
+			{
+				return _position;
+			}
+			set
+			{
+				_needAABBUpdate = true;
+                _needParentUpdate = true;
+				_position = value;
+
+                if (_children.Count > 0)
+                    ((Renderable)this).UpdateChildren();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the rotation angle in degrees.
+		/// </summary>
+		[Animated(typeof(float))]
+		public virtual float Rotation
+		{
+			get
+			{
+				return _rotation;
+			}
+			set
+			{
+				_needAABBUpdate = true;
+                _needParentUpdate = true;
+				_rotation = value;
+
+                if (_children.Count > 0)
+                    ((Renderable)this).UpdateChildren();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the size of the object.
+		/// </summary>
+		public virtual Vector2D Size
+		{
+			get
+			{
+				return _size;
+			}
+			set
+			{
+				// Do nothing if there's no change.
+				if (value == _size)
+					return;
+
+				_size = value;
+				_needAABBUpdate = true;
+				_dimensionsChanged = true;
+				_imageCoordinatesChanged = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the width of the object.
+		/// </summary>
+		public virtual float Width
+		{
+			get
+			{
+				return _size.X;
+			}
+			set
+			{
+				_needAABBUpdate = true;
+				Size = new Vector2D(value, _size.Y);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the height of the object.
+		/// </summary>
+		public virtual float Height
+		{
+			get
+			{
+				return _size.Y;
+			}
+			set
+			{
+				_needAABBUpdate = true;
+				Size = new Vector2D(_size.X, value);
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to set the AABB for the object.
+		/// </summary>
+		/// <param name="min">Minimum coordinates for the AABB.</param>
+		/// <param name="max">Maximum coordinates for the AABB.</param>
+		protected void SetAABB(Vector2D min, Vector2D max)
+		{
+			_AABB.X = min.X;
+			_AABB.Y = min.Y;
+			_AABB.Width = max.X - min.X;
+			_AABB.Height = max.Y - min.Y;
+		}
+
+		/// <summary>
+		/// Function to set the AABB for the object.
+		/// </summary>
+		/// <param name="rect">The rectangle to use as the AABB.</param>
+		protected void SetAABB(Drawing.RectangleF rect)
+		{
+			_AABB = rect;
+		}
+
+		/// <summary>
+		/// Function to initialize the vertices for the object.
+		/// </summary>
+		/// <param name="vertexCount">Number of vertices for the object.</param>
+		protected void InitializeVertices(int vertexCount)
+		{
+			if (vertexCount < 0)
+				_vertices = null;
+			else
+				_vertices = new VertexTypeList.PositionDiffuse2DTexture1[vertexCount];
+		}
+
+		/// <summary>
+		/// Function to notify that we need an update from the parent.
+		/// </summary>
+		protected void NotifyParent()
+		{
+			_needParentUpdate = true;
+		}
+
+		/// <summary>
+		/// Function to return whether the specified image is currently set.
+		/// </summary>
+		/// <param name="image">Image to test.</param>
+		/// <returns>TRUE if set, FALSE if not.</returns>
+		protected bool IsImageCurrent(Image image)
+		{
+			return image == Gorgon.Renderer.GetImage(0);
+		}
+
+		/// <summary>
+		/// Function to set the current image.
+		/// </summary>
+		/// <param name="image">Image to set.</param>
+		protected void SetCurrentImage(Image image)
+		{
+			Gorgon.Renderer.SetImage(0, image);
+		}
+
+		/// <summary>
+		/// Function to start the rendering process.
+		/// </summary>
+		/// <param name="flush">TRUE to flush the contents of the child renderable buffers immediately after rendering is complete, FALSE to hold the contents until the end of frame or state change.</param>
+		/// <remarks>Setting flush to TRUE can slow the rendering process down significantly, only use when absolutely necessary.</remarks>
+		protected void BeginRendering(bool flush)
+		{
+			Renderable child = null;								// Child object.
+			bool stateChanged = false;								// Flag to indicate that the state has changed.
+			int vertexCount = 0;									// Number of vertices to render.
+
+			if (Children.Count > 0)
+			{
+				for (int i = 0; i < Children.Count; i++)
+				{
+					child = Children[i] as Renderable;
+					if (child != null)
+						child.Draw(flush);
+				}
+			}
+
+			if (Vertices != null)
+				vertexCount = Vertices.Length + Geometry.VerticesWritten;
+			else
+				vertexCount = Geometry.VerticesWritten;
+
+			stateChanged = Gorgon.GlobalStateSettings.StateChanged(this, Image);
+			if (((vertexCount >= Geometry.VertexCount) || (stateChanged)) && (Geometry.VerticesWritten != 0))
+				Gorgon.Renderer.Render();
+
+			// Apply animations.
+			if (Animations.Count > 0)
+				((Renderable)this).ApplyAnimations();
+
+			// Set states.
+			if (stateChanged)
+			{
+				Gorgon.GlobalStateSettings.SetStates(this);
+				// Set the currently active image.
+				Gorgon.Renderer.SetImage(0, Image);
+			}
+		}
+
+		/// <summary>
+		/// Function to flush queued data to the renderer.
+		/// </summary>
+		protected void FlushToRenderer()
+		{
+			Gorgon.Renderer.Render();
+		}
+
+		/// <summary>
+		/// Function to write the vertex data to the buffer.
+		/// </summary>
+		/// <param name="start">Starting index.</param>
+		/// <param name="length">Number of vertices.</param>
+		/// <returns>The number of vertices written to the buffer thus far.</returns>
+		protected int WriteVertexData(int start, int length)
+		{
+			if (length == 0)
+				return 0;
+
+			// Write the vertices.
+			Geometry.VertexCache.WriteData(start, Geometry.VertexOffset + Geometry.VerticesWritten, length, Vertices);
+
+			return Geometry.VerticesWritten;
+		}
+
+		/// <summary>
+		/// Function to end the rendering process.
+		/// </summary>
+		/// <param name="flush">TRUE to flush the contents of the buffers immediately after rendering is complete, FALSE to hold the contents until the end of frame or state change.</param>
+		/// <remarks>Setting flush to TRUE can slow the rendering process down significantly, only use when absolutely necessary.</remarks>
+		protected void EndRendering(bool flush)
+		{
+			if (flush)
+				Gorgon.Renderer.Render();
+		}
+
+
+        /// <summary>
+        /// Function to get the parent transform.
+        /// </summary>
+        protected void GetParentTransform()
+        {
+            if (!_needParentUpdate)
+                return;
+
+            if (_parent == null)
+            {
+                _finalPosition = _position;
+                _finalRotation = _rotation;
+                _finalScale = _scale;
+            }
+            else
+            {
+                float angle = MathUtility.Radians(_parentRotation);     // Angle in radians.
+                float cos = MathUtility.Cos(angle);                     // Cached cosine.
+                float sin = MathUtility.Sin(angle);                     // Cached sine.
+
+                // Rotate around the offset from the parent.
+                _finalPosition.X = ((_position.X * _parentScale.X) * cos) - ((_position.Y * _parentScale.Y) * sin);
+                _finalPosition.Y = ((_position.X * _parentScale.X) * sin) + ((_position.Y * _parentScale.Y) * cos);
+
+                // Get the scale.
+				if (_inheritScale)
+					_finalScale = Vector2D.Multiply(_scale, _parentScale);
+				else
+					_finalScale = _scale;
+
+                // Get the rotation.
+				if (_inheritRotation)
+					_finalRotation = _parentRotation + _rotation;
+				else
+					_finalRotation = _rotation;
+
+                // Update the translation.
+                _finalPosition = Vector2D.Add(_finalPosition, _parentPosition);
+            }
+
+            _needParentUpdate = false;
+        }
+
+		/// <summary>
+		/// Function to update the dimensions for an object.
+		/// </summary>
+		protected abstract void UpdateDimensions();
+
+		/// <summary>
+		/// Function to update a transformation to the object.
+		/// </summary>
+		protected virtual void UpdateTransform()
+		{
+		}
+
+        /// <summary>
+        /// Function to set the blending modes.
+        /// </summary>
+        /// <param name="value">Blending value.</param>
+        protected virtual void SetBlendMode(BlendingModes value)
+		{
+			switch (value & ~BlendingModes.ColorAdditive)
+			{
+				case BlendingModes.Additive:
+					_sourceBlend = AlphaBlendOperation.SourceAlpha;
+					_destBlend = AlphaBlendOperation.One;
+					break;
+				case BlendingModes.Color:
+					_sourceBlend = AlphaBlendOperation.SourceColor;
+					_destBlend = AlphaBlendOperation.DestinationColor;
+					break;
+				case BlendingModes.ModulatedInverse:
+					_sourceBlend = AlphaBlendOperation.InverseSourceAlpha;
+					_destBlend = AlphaBlendOperation.SourceAlpha;
+					break;
+				case BlendingModes.None:
+					_sourceBlend = AlphaBlendOperation.One;
+					_destBlend = AlphaBlendOperation.Zero;
+					break;				
+				case BlendingModes.Modulated:
+					_sourceBlend = AlphaBlendOperation.SourceAlpha;
+					_destBlend = AlphaBlendOperation.InverseSourceAlpha;
+					break;
+                case BlendingModes.PreMultiplied:
+                    _sourceBlend = AlphaBlendOperation.One;
+                    _destBlend = AlphaBlendOperation.InverseSourceAlpha;
+                    break;
+				case BlendingModes.Inverted:
+					_sourceBlend = AlphaBlendOperation.InverseDestinationColor;
+					_destBlend = AlphaBlendOperation.InverseSourceColor;
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Function to update the source image positioning.
+		/// </summary>
+		protected virtual void UpdateImageLayer()
+		{
+		}
+
+		/// <summary>
+		/// Function to set the parent of this object.
+		/// </summary>
+		/// <param name="parent">Parent of the object.</param>
+		protected internal void SetParent(Renderable parent)
+		{
+			_parent = parent;
 
 			if (parent != null)
 			{
 				_needParentUpdate = true;
 				parent.UpdateChildren();
 			}
-        }
+		}
 
-        /// <summary>
-        /// Function to update children.
-        /// </summary>
-        void IRenderable.UpdateChildren()
-        {
-            Renderable child = null;        // Child object.
+		/// <summary>
+		/// Function to update children.
+		/// </summary>
+		public void UpdateChildren()
+		{
+			Renderable child = null;        // Child object.
 
-            if (_children.Count < 1)
-                return;
+			if (_children.Count < 1)
+				return;
 
-            // Update children.
-            for (int i = 0; i < _children.Count; i++)
-            {
-                child = (Renderable)_children[i];
-                if (child != null)
-                {
-                    child._needParentUpdate = true;
+			// Update children.
+			for (int i = 0; i < _children.Count; i++)
+			{
+				child = (Renderable)_children[i];
+				if (child != null)
+				{
+					child._needParentUpdate = true;
 
-                    child._parentPosition = FinalPosition;
-                    child._parentRotation = FinalRotation;
-                    child._parentScale = FinalScale;
-                    _children[i].UpdateChildren();
-                }
-            }
-        }
+					child._parentPosition = FinalPosition;
+					child._parentRotation = FinalRotation;
+					child._parentScale = FinalScale;
+					_children[i].UpdateChildren();
+				}
+			}
+		}
 
 		/// <summary>
 		/// Function to apply animations to the object.
 		/// </summary>
-		void IAnimatable.ApplyAnimations()
+		public void ApplyAnimations()
 		{
 			if (_animations == null)
 				return;
@@ -1641,7 +1512,137 @@ namespace GorgonLibrary.Graphics
 			for (int i = 0; i < _animations.Count; i++)
 				_animations[i].ApplyAnimation();
 		}
-        #endregion
+
+		/// <summary>
+		/// Function to set the anchor axis of the sprite.
+		/// </summary>
+		/// <param name="x">Horizontal position.</param>
+		/// <param name="y">Vertical position.</param>
+		public virtual void SetAxis(float x, float y)
+		{
+			Axis = new Vector2D(x, y);
+		}
+
+		/// <summary>
+		/// Function to set the scale of the sprite.
+		/// </summary>
+		/// <param name="x">Horizontal scale.</param>
+		/// <param name="y">Vertical scale.</param>
+		public virtual void SetScale(float x, float y)
+		{
+			Scale = new Vector2D(x, y);
+		}
+
+		/// <summary>
+		/// Function to update the object position.
+		/// </summary>
+		/// <param name="x">Horizontal position of the object.</param>
+		/// <param name="y">Vertical position of the object.</param>
+		public virtual void SetPosition(float x,float y)
+		{
+			Position = new Vector2D(x, y);
+		}
+
+		/// <summary>
+		/// Function to update the size of the object.
+		/// </summary>
+		/// <param name="width">Width of the object.</param>
+		/// <param name="height">Height of the object.</param>
+		public virtual void SetSize(float width, float height)
+		{
+			Size = new Vector2D(width, height);
+		}
+
+		/// <summary>
+		/// Function to draw the object.
+		/// </summary>
+		/// <param name="flush">TRUE to flush the buffers after drawing, FALSE to only flush on state change.</param>
+		public abstract void Draw(bool flush);
+
+		/// <summary>
+		/// Function to draw the object.
+		/// </summary>
+		public virtual void Draw()
+		{
+			Draw(false);
+		}
+
+		/// <summary>
+		/// Function to force an update on the object.
+		/// </summary>
+		public virtual void Refresh()
+		{
+			_needAABBUpdate = true;
+			_needParentUpdate = true;
+			_imageCoordinatesChanged = true;
+			_dimensionsChanged = true;
+		}
+
+		/// <summary>
+		/// Function to update AABB.
+		/// </summary>
+		public virtual void UpdateAABB()
+		{
+			_AABB = new Drawing.RectangleF(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="name">Name of the object.</param>
+		protected Renderable(string name) 
+			: base(name)
+		{
+			_size = new Vector2D(1.0f, 1.0f);
+			_position = Vector2D.Zero;
+			_rotation = 0.0f;
+			_vertices = null;
+			_dimensionsChanged = true;
+			_imageCoordinatesChanged = true;
+			BlendingMode = BlendingModes.Modulated;
+			_maskValue = 1;
+			_maskFunction = CompareFunctions.GreaterThan;
+			_smoothing = Smoothing.None;
+			_inheritBlending = true;
+			_inheritMaskFunction = true;
+			_inheritMaskValue = true;
+			_inheritSmoothing = true;
+			_inheritHorizontalWrap = true;
+			_inheritVerticalWrap = true;
+			_inheritStencilPassOperation = true;
+			_inheritStencilFailOperation = true;
+			_inheritStencilZFailOperation = true;
+			_inheritStencilCompare = true;
+			_inheritStencilReference = true;
+			_inheritStencilMask = true;
+			_inheritUseStencil = true;
+			_inheritRotation = true;
+			_inheritScale = true;
+			_inheritDepthWriteEnable = true;
+			_inheritDepthBias = true;
+			_inheritDepthTestCompare = true;
+			_wrapHMode = ImageAddressing.Clamp;
+			_wrapVMode = ImageAddressing.Clamp;
+			_stencilCompare = CompareFunctions.Always;
+			_useStencil = false;
+			_stencilPassOperation = StencilOperations.Keep;
+			_stencilFailOperation = StencilOperations.Keep;
+			_stencilZFailOperation = StencilOperations.Keep;
+			_stencilReference = 0;
+			_stencilMask = -1;
+			_depthBias = 0.0f;
+			_depthWriteEnabled = true;
+			_depthCompare = CompareFunctions.LessThanOrEqual;
+            _parent = null;
+            _children = new RenderableChildren(this);
+			_animations = new AnimationList(this);
+			
+			_axis = new Vector2D(1.0f, 1.0f);
+			_AABB = new Drawing.RectangleF(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
+		}
+		#endregion
 
 		#region ICloneable Members
 		/// <summary>

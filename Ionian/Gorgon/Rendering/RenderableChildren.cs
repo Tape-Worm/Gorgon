@@ -31,10 +31,10 @@ namespace GorgonLibrary.Graphics
     /// Object representing a list of child objects for sprites.
     /// </summary>
     public class RenderableChildren
-        : Collection<IRenderableTransform>
+        : Collection<Renderable>
     {
         #region Variables.
-        private IRenderableTransform _owner;      // Owner object.
+        private Renderable _owner;      // Owner object.
         #endregion
 
         #region Methods.
@@ -43,7 +43,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         protected override void ClearItems()
         {
-            foreach (IRenderableTransform child in this)
+            foreach (Renderable child in this)
                 child.SetParent(null);
 
             base.ClearItems();
@@ -73,7 +73,7 @@ namespace GorgonLibrary.Graphics
         /// Function to remove an object from the list by reference.
         /// </summary>
         /// <param name="child">Child object to remove.</param>
-        public void Remove(IRenderableTransform child)
+        public void Remove(Renderable child)
         {
 			RemoveItem(child.Name);
             child.SetParent(null);
@@ -84,7 +84,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
 		/// <param name="child">Child to add.</param>
         /// <param name="offset">Offset of the child from the parent.</param>        
-        public void Add(IRenderableTransform child, Vector2D offset)
+        public void Add(Renderable child, Vector2D offset)
         {
             if (child == null)
                 throw new ArgumentNullException("child");
@@ -103,7 +103,7 @@ namespace GorgonLibrary.Graphics
         /// Function to add a child object.
         /// </summary>
         /// <param name="child">Child to add.</param>
-        public void Add(IRenderableTransform child)
+        public void Add(Renderable child)
         {
             Add(child, child.Position);
         }
@@ -114,7 +114,7 @@ namespace GorgonLibrary.Graphics
         /// Constructor.
         /// </summary>
         /// <param name="owner">Owning object.</param>
-        public RenderableChildren(IRenderableTransform owner)
+        public RenderableChildren(Renderable owner)
         {
             _owner = owner;
         }

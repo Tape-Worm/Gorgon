@@ -31,7 +31,6 @@ namespace GorgonLibrary.Graphics
 	/// Interface to represent a moveable object.
 	/// </summary>
 	public interface IRenderableTransform
-		: IRenderable
 	{
 		#region Properties.
 		/// <summary>
