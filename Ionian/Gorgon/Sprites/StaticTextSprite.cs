@@ -1083,7 +1083,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public override object Clone()
+		public override Renderable Clone()
 		{
 			StaticTextSprite clone = null;			// Clone.
 

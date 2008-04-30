@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics
 	/// Object representing a renderable object.
 	/// </summary>
 	public abstract class Renderable
-		: NamedObject, IRenderableStates, ICloneable
+		: NamedObject, IRenderableStates, ICloneable<Renderable>
 	{
 		#region Variables.
 		private bool _inheritSmoothing;						// Flag to indicate that we inherit smoothing settings from the layer.
@@ -1517,9 +1517,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void ApplyAnimations()
 		{
-			if (_animations == null)
-				return;
-
 			// Update animations.
 			for (int i = 0; i < _animations.Count; i++)
 				_animations[i].ApplyAnimation();
@@ -1656,14 +1653,14 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region ICloneable Members
+		#region ICloneable<T> Members
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
 		/// </summary>
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public abstract object Clone();
+		public abstract Renderable Clone();
 		#endregion
 	}
 }

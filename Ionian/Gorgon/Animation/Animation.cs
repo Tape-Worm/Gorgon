@@ -74,7 +74,7 @@ namespace GorgonLibrary.Graphics
 	/// </para>
 	/// </remarks>
     public class Animation
-        : NamedObject, ISerializable, ICloneable
+        : NamedObject, ISerializable, ICloneable<Animation>
     {
         #region Variables.
         private object _owner = null;								// Object that owns this animation.        
@@ -690,17 +690,18 @@ namespace GorgonLibrary.Graphics
         }
         #endregion
 
-		#region ICloneable Members
+		#region ICloneable<T> Members
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
 		/// </summary>
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public object Clone()
+		public Animation Clone()
 		{
-			Animation clone = new Animation(Name, _owner, _length);			
+			Animation clone = new Animation(Name, _length);
 
+			clone.SetOwner(_owner);
 			clone._currentTime = _currentTime;
 			clone._enabled = _enabled;
 			clone._state = _state;
@@ -708,15 +709,15 @@ namespace GorgonLibrary.Graphics
 
 			// Add transforms.
 			foreach (KeyTransform key in _transforms)
-				clone.TransformationTrack.AddKey((KeyTransform)key.Clone());
+				clone.TransformationTrack.AddKey(key.Clone());
 
 			// Add colors.
 			foreach (KeyColor key in _colors)
-				clone.ColorTrack.AddKey((KeyColor)key.Clone());
+				clone.ColorTrack.AddKey(key.Clone());
 
 			// Add frames.
 			foreach (KeyFrame key in _frames)
-				clone.FrameTrack.AddKey((KeyFrame)key.Clone());
+				clone.FrameTrack.AddKey(key.Clone());
 
 			return clone;
 		}

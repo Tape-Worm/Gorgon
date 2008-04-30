@@ -104,6 +104,7 @@
     <Compile Include="Animation\TrackCollection.cs" />
     <Compile Include="Animation\Types\Frame.cs" />
     <Compile Include="Animation\Types\KeyFrame.cs" />
+    <Compile Include="Animation\Types\KeyVector2D.cs" />
     <Compile Include="Animation\Types\TrackFrame.cs" />
     <Compile Include="Animation\Types\KeyColor.cs" />
     <Compile Include="Animation\Types\TrackColor.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Targets\RenderWindow.cs" />
     <Compile Include="Timing\TimingData.cs" />
     <Compile Include="Math\MinMaxRange.cs" />
+    <Compile Include="Utility\ICloneable.cs" />
     <Compile Include="Utility\Logger.cs" />
     <Compile Include="Utility\LoggerExceptions.cs" />
     <Compile Include="Utility\NamedObject.cs" />

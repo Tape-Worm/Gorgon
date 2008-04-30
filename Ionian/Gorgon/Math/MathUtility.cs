@@ -89,6 +89,39 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to round a vector value's components.
+		/// </summary>
+		/// <param name="value">The vector to round.</param>
+		/// <param name="decimalPlaceCount">Number of decimal places to keep.</param>
+		/// <param name="rounding">Determines how to round mid point numbers.</param>
+		/// <returns>A vector with its component values rounded.</returns>
+		public static Vector2D Round(Vector2D value, int decimalPlaceCount, MidpointRounding rounding)
+		{
+			return new Vector2D(Round(value.X, decimalPlaceCount, rounding), Round(value.Y, decimalPlaceCount, rounding));
+		}
+
+		/// <summary>
+		/// Function to round a vector value's components.
+		/// </summary>
+		/// <param name="value">The vector to round.</param>
+		/// <param name="decimalPlaceCount">Number of decimal places to keep.</param>
+		/// <returns>A vector with its component values rounded.</returns>
+		public static Vector2D Round(Vector2D value, int decimalPlaceCount)
+		{
+			return new Vector2D(Round(value.X, decimalPlaceCount), Round(value.Y, decimalPlaceCount));
+		}
+
+		/// <summary>
+		/// Function to round a vector value's components.
+		/// </summary>
+		/// <param name="value">The vector to round.</param>
+		/// <returns>A vector with its component values rounded.</returns>
+		public static Vector2D Round(Vector2D value)
+		{
+			return new Vector2D(Round(value.X), Round(value.Y));
+		}
+
+		/// <summary>
 		/// Function to return the cosine of an angle in radians.
 		/// </summary>
 		/// <param name="radians">Angle in radians.</param>

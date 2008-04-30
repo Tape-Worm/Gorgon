@@ -28,6 +28,34 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Track already exists.
 	/// </summary>
+	public class AnimationAlreadyExistsException
+		: GorgonException
+	{
+		#region Constructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="animationName">Name of the animation.</param>
+		/// <param name="ex">Exception source.</param>
+		public AnimationAlreadyExistsException(string animationName, Exception ex)
+			: base("The animation '" + animationName + "' already exists.", ex)
+		{
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="animationName">Name of the animation.</param>
+		public AnimationAlreadyExistsException(string animationName)
+			: this(animationName, null)
+		{
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Track already exists.
+	/// </summary>
 	public class AnimationTrackAlreadyExistsException
 		: GorgonException
 	{

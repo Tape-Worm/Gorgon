@@ -42,30 +42,16 @@ namespace GorgonLibrary.Graphics
         /// Function to add an animation.
         /// </summary>
         /// <param name="animation">Animation to add.</param>
-        internal void Add(Animation animation)
+        public void Add(Animation animation)
         {
-			animation.SetOwner(_owner);
+			if (animation == null)
+				throw new ArgumentNullException("animation");
+
+			if (Contains(animation.Name))
+				throw new AnimationAlreadyExistsException(animation);
+			
 			AddItem(animation.Name, animation);
-        }
-
-        /// <summary>
-        /// Function to create an animation.
-        /// </summary>
-        /// <param name="name">Name of the animation.</param>
-        /// <param name="length">Length of the animation in milliseconds.</param>
-        /// <returns>A new animation.</returns>
-        public Animation Create(string name, float length)
-        {
-            Animation newAnimation = null;          // Animation.
-
-            if (Contains(name))
-                throw new ArgumentException("The animation '" + name + "' already exists.");
-
-            newAnimation = new Animation(name, _owner, length);
-			AddItem(name, newAnimation);
-            newAnimation.Length = length;
-
-            return newAnimation;
+			animation.SetOwner(_owner);
         }
 
 		/// <summary>
@@ -116,6 +102,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="owner">Owner of this animation list.</param>
         public AnimationList(object owner)
+			: base(false)
         {
             _owner = owner;
         }

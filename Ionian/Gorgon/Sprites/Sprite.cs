@@ -1127,7 +1127,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public override object Clone()
+		public override Renderable Clone()
 		{
 			Sprite clone = new Sprite(Name + ".Clone", Image, ImageOffset, Size, Axis, Position, Rotation, Scale);		// Create clone.
 

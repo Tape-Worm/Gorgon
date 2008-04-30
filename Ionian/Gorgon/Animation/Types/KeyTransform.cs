@@ -303,7 +303,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to clone this key.
 		/// </summary>
 		/// <returns>A clone of this key.</returns>
-		public override object Clone()
+		public override Key Clone()
 		{
 			KeyTransform newKey = null;         // Cloned key.
 

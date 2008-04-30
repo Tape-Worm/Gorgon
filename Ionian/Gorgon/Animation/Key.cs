@@ -31,7 +31,7 @@ namespace GorgonLibrary.Graphics
 	/// Abstract object representing an animation key.
 	/// </summary>
 	public abstract class Key
-		: ICloneable
+		: ICloneable<Key>
 	{
 		#region Variables.
 		private Track _owner = null;				// Track that owns this key.
@@ -116,6 +116,11 @@ namespace GorgonLibrary.Graphics
 		protected internal abstract void UpdateLayerObject(Renderable layerObject);
 
 		/// <summary>
+		/// Function to perform an update of the bound property.
+		/// </summary>
+		public abstract void Update();
+
+		/// <summary>
 		/// Function to copy this key into a new time.
 		/// </summary>
 		/// <param name="newTime">Time index to place the copy into.</param>
@@ -146,14 +151,14 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region ICloneable Members
+		#region ICloneable<T> Members
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
 		/// </summary>
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public abstract object Clone();
+		public abstract Key Clone();
 		#endregion
 	}
 }
