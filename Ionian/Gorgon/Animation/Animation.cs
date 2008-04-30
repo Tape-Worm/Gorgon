@@ -77,7 +77,7 @@ namespace GorgonLibrary.Graphics
         : NamedObject, ISerializable, ICloneable
     {
         #region Variables.
-        private Renderable _owner = null;							// Object that owns this animation.        
+        private object _owner = null;								// Object that owns this animation.        
         private float _length = 1000;								// Length of the track in milliseconds.
         private bool _loop;											// Flag to indicate that this animation should loop.
         private float _currentTime;									// Current time.
@@ -156,7 +156,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the owner of this animation.
         /// </summary>
-        public Renderable Owner
+        public object Owner
         {
             get
             {
@@ -200,7 +200,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the collection of tracks for this animation.
 		/// </summary>
-		/// <remarks>Each track corresponds to an animation property on the owner object (typically a <see cref="GorgonLibrary.Graphics.Renderable"/>)<para>Custom tracks can be added to this collection as well.</para></remarks>
+		/// <remarks>Each track corresponds to an animation property on the owner object.<para>Custom tracks can be added to this collection as well.</para></remarks>
 		public TrackCollection Tracks
 		{
 			get
@@ -325,7 +325,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to set the owner for this animation.
 		/// </summary>
 		/// <param name="owner">Owner for the animation.</param>
-		protected internal void SetOwner(Renderable owner)
+		protected internal void SetOwner(object owner)
 		{
 			Attribute[] attributes = null;						// List of attributes for the target object.
 			PropertyInfo[] properties = null;					// List of properties on the renderable.
@@ -467,13 +467,12 @@ namespace GorgonLibrary.Graphics
         /// Constructor.
         /// </summary>
         /// <param name="name">Name of the animation.</param>
-        /// <param name="owner">Owner of this animation.</param>
         /// <param name="length">Length of the animation in milliseconds.</param>
-        internal Animation(string name, Renderable owner, float length)
+        protected Animation(string name, float length)
             : base(name)
         {
+			_owner = null;
 			_tracks = new TrackCollection();
-			SetOwner(owner);
 			_transforms = new TrackTransform(this);
 			_colors = new TrackColor(this);
 			_frames = new TrackFrame(this);
