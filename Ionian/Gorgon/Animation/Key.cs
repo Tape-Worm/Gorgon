@@ -30,8 +30,8 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Abstract object representing an animation key.
 	/// </summary>
-	public abstract class Key
-		: ICloneable<Key>
+	public abstract class KeyFrame
+		: ICloneable<KeyFrame>
 	{
 		#region Variables.
 		private Track _owner = null;				// Track that owns this key.
@@ -54,7 +54,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_interpolation = value;
 				if (_owner != null)
-					_owner.Update();
+					_owner.NeedsUpdate = true;
 			}
 		}
 
@@ -66,6 +66,14 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				return _owner;
+			}
+			set
+			{
+				if (_owner != null)
+					_owner.NeedsUpdate = true;
+				_owner = value;
+				if (_owner != null)
+					_owner.NeedsUpdate = true;
 			}
 		}
 
@@ -82,38 +90,19 @@ namespace GorgonLibrary.Graphics
 			{
 				_frameTime = value;
 				if (_owner != null)
-					_owner.Update();
+					_owner.NeedsUpdate = true;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to assign this key to a track.
-		/// </summary>
-		/// <param name="trackOwner">Track that will own this key.</param>
-		protected virtual internal void AssignToTrack(Track trackOwner)
-		{
-			if (trackOwner == null)
-				throw new ArgumentNullException("trackOwner");
-
-			_owner = trackOwner;
-			_owner.Update();
-		}
-
-		/// <summary>
-		/// Function to apply key information to the owning object of the animation.
+		/// Function to update the data within the key frame.
 		/// </summary>
 		/// <param name="prevKeyIndex">Previous key index.</param>
 		/// <param name="previousKey">Key prior to this one.</param>
 		/// <param name="nextKey">Key after this one.</param>
-		protected internal abstract void Apply(int prevKeyIndex, Key previousKey, Key nextKey);
-
-		/// <summary>
-		/// Function to use the key data to update a layer object.
-		/// </summary>
-		/// <param name="layerObject">Layer object to update.</param>
-		protected internal abstract void UpdateLayerObject(Renderable layerObject);
+		protected internal abstract void UpdateKeyData(int prevKeyIndex, KeyFrame previousKey, KeyFrame nextKey);
 
 		/// <summary>
 		/// Function to perform an update of the bound property.
@@ -125,13 +114,15 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="newTime">Time index to place the copy into.</param>
 		/// <returns>The copy of the this key.</returns>
-		public virtual Key CopyTo(float newTime)
+		public virtual KeyFrame CopyTo(float newTime)
 		{
-			Key copy = (Key)Clone();		// Create a copy.
+			KeyFrame copy = Clone();		// Create a copy.
 
 			// Assign the time and owner.
 			copy.Time = newTime;
-			Owner.AddKey(copy);
+
+			if (Owner != null)
+				Owner.AddKey(copy);
 
 			return copy;
 		}
@@ -141,11 +132,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="trackOwner">Track that owns this key.</param>
 		/// <param name="time">Time at which this key will reside.</param>
-		protected Key(Track trackOwner, float time)
+		protected KeyFrame(float time)
 		{
-			_owner = trackOwner;
+			_owner = null;
 			Time = time;
 			_interpolation = InterpolationMode.None;
 		}
@@ -158,7 +148,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public abstract Key Clone();
+		public abstract KeyFrame Clone();
 		#endregion
 	}
 }
