@@ -65,7 +65,7 @@ namespace GorgonLibrary.Graphics
             {
                 _frame = value;
                 if (Owner != null)
-					Owner.Update();
+					Owner.NeedsUpdate = true;
             }
         }
 		#endregion
