@@ -785,6 +785,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the alpha value used for alpha masking.
 		/// </summary>
+		[Animated(typeof(int))]
 		public virtual int AlphaMaskValue
 		{
 			get
@@ -892,6 +893,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the offset within the source image to start drawing from.
 		/// </summary>
+		[Animated(typeof(Vector2D))]
 		public virtual Vector2D ImageOffset
 		{
 			get
@@ -995,6 +997,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return a uniform scale across the X and Y axis.
 		/// </summary>
+		[Animated(typeof(float))]
 		public abstract float UniformScale
 		{
 			get;
@@ -1038,6 +1041,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the axis of the sprite.
 		/// </summary>
+		[Animated(typeof(Vector2D))]
 		public virtual Vector2D Axis
 		{
 			get
@@ -1062,10 +1066,6 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				// Don't allow 0 scale.
-				if ((value.X == 0.0f) && (value.Y == 0.0f))
-					return;
-
 				_scale = value;
 			}
 		}
@@ -1073,21 +1073,23 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the size of the object with scaling applied.
 		/// </summary>
+		[Animated(typeof(Vector2D))]
 		public virtual Vector2D ScaledDimensions
 		{
 			get
 			{
-				return new Vector2D(_scale.X * _size.X, _scale.Y * _size.Y);
+				return Vector2D.Multiply(_scale, _size);
 			}
 			set
 			{
-				Scale = value / _size;
+				Scale = Vector2D.Divide(value, _size);
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the scaled width of the object.
 		/// </summary>
+		[Animated(typeof(float))]
 		public virtual float ScaledWidth
 		{
 			get
@@ -1103,6 +1105,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the scaled height of the object.
 		/// </summary>
+		[Animated(typeof(float))]
 		public virtual float ScaledHeight
 		{
 			get
@@ -1176,6 +1179,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the size of the object.
 		/// </summary>
+		[Animated(typeof(Vector2D))]
 		public virtual Vector2D Size
 		{
 			get
@@ -1198,6 +1202,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the width of the object.
 		/// </summary>
+		[Animated(typeof(float))]
 		public virtual float Width
 		{
 			get
@@ -1214,6 +1219,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the height of the object.
 		/// </summary>
+		[Animated(typeof(float))]
 		public virtual float Height
 		{
 			get

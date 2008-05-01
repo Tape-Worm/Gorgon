@@ -32,7 +32,7 @@ namespace GorgonLibrary.Graphics
     /// Object representing a track in an animation.
     /// </summary>
     public abstract class Track
-        : NamedObject, IEnumerable<Key>
+        : NamedObject, IEnumerable<KeyFrame>
     {
         #region Value Types.
         /// <summary>
@@ -42,8 +42,8 @@ namespace GorgonLibrary.Graphics
         {
             #region Variables.
             private float _timePosition;            // Time position within the track that lies between the two keys.
-            private Key _previousKey;				// Keyframe prior to the time position.
-            private Key _nextKey;					// Keyframe after the time position.
+            private KeyFrame _previousKey;				// Keyframe prior to the time position.
+            private KeyFrame _nextKey;					// Keyframe after the time position.
             private float _keyTimeDelta;            // Distance between the previous and next keyframes, 0 if equal to the previous, 1 if equal to the next.
             private int _previousKeyIndex;          // Previous key index.
             private int _nextKeyIndex;              // Next key index.
@@ -64,7 +64,7 @@ namespace GorgonLibrary.Graphics
             /// <summary>
             /// Property to return the previous key to the time position.
             /// </summary>
-            public Key PreviousKey
+            public KeyFrame PreviousKey
             {
                 get
                 {
@@ -75,7 +75,7 @@ namespace GorgonLibrary.Graphics
             /// <summary>
             /// Property to return the next key from the time position.
             /// </summary>
-			public Key NextKey
+			public KeyFrame NextKey
             {
                 get
                 {
@@ -228,16 +228,29 @@ namespace GorgonLibrary.Graphics
         #region Variables.
 		private FrameTimeSort _sorter = null;				// Frame time sorter.
 		private Animation _owner = null;					// Animation that owns the track.
-		private SortedList<float, Key> _keys = null;		// List of key frames.
+		private SortedList<float, KeyFrame> _keys = null;	// List of key frames.
 		private bool _keysUpdated = true;					// Flag to indicate that the keys had been updated.
 		private PropertyInfo _property = null;				// Property on the owner object to update.
+		private InterpolationMode _interpolation;			// Interpolation mode.
+		private Type _dataType = null;						// Data type represented by the track.
         #endregion
 
         #region Properties.
 		/// <summary>
+		/// Property to return the type used by the track.
+		/// </summary>
+		protected internal Type DataType
+		{
+			get
+			{
+				return _dataType;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the key list.
 		/// </summary>
-		protected SortedList<float, Key> KeyList
+		protected SortedList<float, KeyFrame> KeyList
 		{
 			get
 			{
@@ -261,13 +274,32 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return whether the track needs updating.
+		/// Property to set or return the interpolation mode for the track.
+		/// </summary>
+		public InterpolationMode InterpolationMode
+		{
+			get
+			{
+				return _interpolation;
+			}
+			set
+			{
+				_interpolation = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the track needs updating.
 		/// </summary>
 		public bool NeedsUpdate
 		{
 			get
 			{
 				return _keysUpdated;
+			}
+			set
+			{
+				_keysUpdated = value;
 			}
 		}
 
@@ -298,7 +330,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="timeIndex">Frame time index to retrieve.</param>
         /// <returns>A key containing interpolated keyframe data.</returns>
-		public abstract Key this[float timeIndex]
+		public abstract KeyFrame this[float timeIndex]
 		{
 			get;
 		}
@@ -306,11 +338,12 @@ namespace GorgonLibrary.Graphics
 
         #region Methods.
 		/// <summary>
-		/// Function to set the track into an updated mode.
+		/// Function to set an animation as the owner of this track.
 		/// </summary>
-		public void Update()
+		/// <param name="owner">Owner of the animation.</param>
+		internal void SetAnimationOwner(Animation owner)
 		{
-			_keysUpdated = true;
+			_owner = owner;
 		}
 
 		/// <summary>
@@ -319,7 +352,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="scaleValue">Value to scale by.</param>
 		public void ScaleKeys(float scaleValue)
 		{
-			Key[] keys;		// Key values.
+			KeyFrame[] keys;		// Key values.
 
 			if (scaleValue < 0.0001f)
 				return;
@@ -328,7 +361,7 @@ namespace GorgonLibrary.Graphics
 				return;
 
 			// Create key array.
-			keys = new Key[_keys.Count];
+			keys = new KeyFrame[_keys.Count];
 
 			// Copy.
 			for (int i = 0; i < _keys.Count; i++)
@@ -340,7 +373,7 @@ namespace GorgonLibrary.Graphics
 			_keys.Clear();
 
 			// Re-add to collection.
-			foreach (Key key in keys)
+			foreach (KeyFrame key in keys)
 				_keys.Add(key.Time, key);
 			_keysUpdated = true;
 		}
@@ -349,7 +382,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to return the key at the index.
 		/// </summary>
 		/// <param name="index">Index of the key to retrieve.</param>
-		public Key GetKeyAtIndex(int index)
+		public KeyFrame GetKeyAtIndex(int index)
 		{
 			if ((index < 0) || (index >= _keys.Count))
                 throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
@@ -404,7 +437,17 @@ namespace GorgonLibrary.Graphics
 		/// Function to add a key to the track.
 		/// </summary>
 		/// <param name="key">Key to add.</param>
-		public abstract void AddKey(Key key);
+		public void AddKey(KeyFrame key)
+		{
+			if (key == null)
+				throw new ArgumentNullException("key");
+
+			key.Owner = this;
+			if (!Contains(key.Time))
+				KeyList.Add(key.Time, key);
+			else
+				KeyList[key.Time] = key;
+		}
 
 		/// <summary>
 		/// Function to find the nearest keys given frame time index.
@@ -421,26 +464,24 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Track"/> class.
 		/// </summary>
-		/// <param name="owner">Animation that owns this track.</param>
 		/// <param name="name">Name of the track.</param>
-		protected Track(Animation owner, string name)
+		/// <param name="type">Type represented by the track.</param>
+		protected Track(string name, Type type)
 			: base(name)
 		{
-			if (owner == null)
-				throw new ArgumentNullException("owner");
-			_owner = owner;
+			_owner = null;
+			_dataType = type;
 			_sorter = new FrameTimeSort();
-			_keys = new SortedList<float, Key>(_sorter);
+			_keys = new SortedList<float, KeyFrame>(_sorter);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Track"/> class.
 		/// </summary>
-		/// <param name="owner">Animation that owns this track.</param>
-		/// <param name="name">Name of the track.</param>
 		/// <param name="property">Property that is bound to the track.</param>
-        internal Track(Animation owner, PropertyInfo property)
-			: this(owner, property.Name)
+		/// <param name="type">Type represented by the track.</param>
+        internal Track(PropertyInfo property, Type type)
+			: this(property.Name, type)
         {
 			_property = property;
 		}
@@ -453,12 +494,11 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
 		/// </returns>
-		public IEnumerator<Key> GetEnumerator()
+		public IEnumerator<KeyFrame> GetEnumerator()
 		{
-			foreach (KeyValuePair<float, Key> key in _keys)
+			foreach (KeyValuePair<float, KeyFrame> key in _keys)
 				yield return key.Value;
 		}
-
 		#endregion
 
 		#region IEnumerable Members

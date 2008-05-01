@@ -31,11 +31,11 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// A key frame 
 	/// </summary>
-	public class KeyVector2D
+	public class KeyInt32
 		: KeyFrame
 	{
 		#region Variables.
-		private Vector2D _value = Vector2D.Zero;			// Value of the key.
+		private int _value = 0;								// Value of the key.
 		private Spline _splineValue = null;					// Splined value.
 		#endregion
 
@@ -43,7 +43,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the value of the key.
 		/// </summary>
-		public Vector2D Value
+		public int Value
 		{
 			get
 			{
@@ -68,8 +68,8 @@ namespace GorgonLibrary.Graphics
 			// Add points to the spline.
 			for (int i = 0; i < Owner.KeyCount; i++)
 			{
-				KeyVector2D key = Owner.GetKeyAtIndex(i) as KeyVector2D;
-				_splineValue.AddPoint(key.Value);
+				KeyInt32 key = Owner.GetKeyAtIndex(i) as KeyInt32;
+				_splineValue.AddPoint(new Vector2D(key.Value, 0.0f));
 			}
 
 			// Recalculate tangents.
@@ -83,14 +83,14 @@ namespace GorgonLibrary.Graphics
 		protected internal override void UpdateKeyData(Track.NearestKeys keyData)
 		{
 			// Cast to the appropriate types.
-			KeyVector2D previous = keyData.PreviousKey as KeyVector2D;
-			KeyVector2D next = keyData.NextKey as KeyVector2D;
+			KeyInt32 previous = keyData.PreviousKey as KeyInt32;
+			KeyInt32 next = keyData.NextKey as KeyInt32;
 
 			if (previous == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyVector2D", keyData.PreviousKey.GetType().Name);
+				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyInt32", keyData.PreviousKey.GetType().Name);
 
 			if (next == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyVector2D", keyData.NextKey.GetType().Name);
+				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyInt32", keyData.NextKey.GetType().Name);
 
 			// Copy if we're at the same frame.
 			if ((Time == 0) || (previous.Owner.InterpolationMode == InterpolationMode.None))
@@ -99,7 +99,8 @@ namespace GorgonLibrary.Graphics
 			{
 				// Calculate linear values.
 				if (Owner.InterpolationMode == InterpolationMode.Linear)
-					_value = MathUtility.Round(Vector2D.Add(previous.Value, Vector2D.Multiply(Vector2D.Subtract(next.Value, previous.Value), Time)));
+					_value = _value + (int)(Time * (float)(next.Value - previous.Value));
+					//_value = (int)MathUtility.Round((float)_value + (Time * ((float)next.Value - (float)previous.Value)));					
 				else
 				{
 					// Calculate spline values.
@@ -107,8 +108,10 @@ namespace GorgonLibrary.Graphics
 						SetupSplines();
 
 					// Calculate transforms.
-					_value = _splineValue[keyData.PreviousKeyIndex, Time];
+					_value = (int)MathUtility.Round(_splineValue[keyData.PreviousKeyIndex, Time].X);
 				}
+				if (next.Value - previous.Value < 0)
+					_value = _value;
 			}
 
 			Owner.NeedsUpdate = true;
@@ -121,7 +124,10 @@ namespace GorgonLibrary.Graphics
 		{
 			if (Owner == null)
 				return;
-			Owner.BoundProperty.SetValue(Owner.Owner.Owner, _value, null);
+			if (Owner.BoundProperty.PropertyType != typeof(Int32))
+				Owner.BoundProperty.SetValue(Owner.Owner.Owner, Convert.ChangeType(_value, Owner.BoundProperty.PropertyType), null);
+			else
+				Owner.BoundProperty.SetValue(Owner.Owner.Owner, _value, null);
 		}
 
 		/// <summary>
@@ -132,9 +138,9 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override KeyFrame Clone()
 		{
-			KeyVector2D clone = null;			// Cloned key.
+			KeyInt32 clone = null;			// Cloned key.
 
-			clone = new KeyVector2D(Time);
+			clone = new KeyInt32(Time);
 			clone.Value = _value;
 
 			return clone;
@@ -143,10 +149,10 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="KeyVector2D"/> class.
+		/// Initializes a new instance of the <see cref="KeyInt32"/> class.
 		/// </summary>
 		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
-		public KeyVector2D(float time)
+		public KeyInt32(float time)
 			: base(time)
 		{
 			_splineValue = new Spline();

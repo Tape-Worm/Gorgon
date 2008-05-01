@@ -29,9 +29,9 @@ using System.Reflection;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Animation track used to animate 2D vector properties.
+	/// Animation track used to animate floating point properties.
 	/// </summary>
-	public class TrackVector2D
+	public class TrackFloat
 		: Track
 	{
 		#region Properties.
@@ -43,7 +43,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				KeyVector2D newKey = null;				// Key information.
+				KeyFloat newKey = null;					// Key information.
 				NearestKeys keyData;					// Nearest key information.
 
 				// If we specify the exact key, then return it.
@@ -58,7 +58,7 @@ namespace GorgonLibrary.Graphics
 				keyData = FindNearest(timeIndex);
 
 				// Get an instance of the key.
-				newKey = new KeyVector2D(keyData.KeyTimeDelta);
+				newKey = new KeyFloat(keyData.KeyTimeDelta);
 				newKey.Owner = this;				
 
 				// Apply the transformation.
@@ -74,8 +74,8 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="TrackVector2D"/> class.
 		/// </summary>
 		/// <param name="property">Property that is bound to the track.</param>
-		internal TrackVector2D(PropertyInfo property)
-			: base(property, typeof(Vector2D))
+		internal TrackFloat(PropertyInfo property)
+			: base(property, typeof(float))
 		{
 		}
 		#endregion

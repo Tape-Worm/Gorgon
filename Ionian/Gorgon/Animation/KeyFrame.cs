@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Reflection;
 
 namespace GorgonLibrary.Graphics
 {
@@ -36,32 +37,27 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private Track _owner = null;				// Track that owns this key.
 		private float _frameTime;					// Frame time.
-		private InterpolationMode _interpolation;	// Interpolation mode.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the interpolation mode.
+		/// Property to return the bound property for the owner track.
 		/// </summary>
-		/// <value></value>
-		public virtual InterpolationMode InterpolationMode
+		private PropertyInfo BoundProperty
 		{
 			get
 			{
-				return _interpolation;
-			}
-			set
-			{
-				_interpolation = value;
-				if (_owner != null)
-					_owner.NeedsUpdate = true;
+				if (Owner == null)
+					return null;
+
+				return Owner.BoundProperty;
 			}
 		}
 
 		/// <summary>
-		/// Property to return the track that owns this key.
+		/// Property to set or return the track that owns this key.
 		/// </summary>
-		public Track Owner
+		public virtual Track Owner
 		{
 			get
 			{
@@ -99,10 +95,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to update the data within the key frame.
 		/// </summary>
-		/// <param name="prevKeyIndex">Previous key index.</param>
-		/// <param name="previousKey">Key prior to this one.</param>
-		/// <param name="nextKey">Key after this one.</param>
-		protected internal abstract void UpdateKeyData(int prevKeyIndex, KeyFrame previousKey, KeyFrame nextKey);
+		/// <param name="keyData">Interpolated key data used to help calculate data between keys.</param>
+		protected internal abstract void UpdateKeyData(Track.NearestKeys keyData);
 
 		/// <summary>
 		/// Function to perform an update of the bound property.
@@ -137,7 +131,6 @@ namespace GorgonLibrary.Graphics
 		{
 			_owner = null;
 			Time = time;
-			_interpolation = InterpolationMode.None;
 		}
 		#endregion
 

@@ -35,7 +35,8 @@ namespace GorgonLibrary.Graphics
 		: Attribute
 	{
 		#region Variables.
-		private Type _dataType = null;			// Data type.
+		private Type _dataType = null;					// Data type.
+		private InterpolationMode _interpolation;		// Interpolation mode.
 		#endregion
 
 		#region Properties.
@@ -49,6 +50,17 @@ namespace GorgonLibrary.Graphics
 				return _dataType;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the interpolation mode.
+		/// </summary>
+		public InterpolationMode InterpolationMode
+		{
+			get
+			{
+				return _interpolation;
+			}
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -56,9 +68,20 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="AnimatedAttribute"/> class.
 		/// </summary>
 		/// <param name="dataType">Type of the data for the property.</param>
-		public AnimatedAttribute(Type dataType)			
+		/// <param name="interpolation">Interpolation mode for this data.</param>
+		public AnimatedAttribute(Type dataType, InterpolationMode interpolation)			
 		{
 			_dataType = dataType;
+			_interpolation = interpolation;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AnimatedAttribute"/> class.
+		/// </summary>
+		/// <param name="dataType">Type of the data for the property.</param>
+		public AnimatedAttribute(Type dataType)
+			: this(dataType, InterpolationMode.Linear)
+		{
 		}
 		#endregion
 	}

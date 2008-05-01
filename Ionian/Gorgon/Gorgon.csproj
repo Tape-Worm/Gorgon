@@ -100,17 +100,14 @@
     <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\AnimationException.cs" />
     <Compile Include="Animation\AnimationList.cs" />
-    <Compile Include="Animation\Key.cs" />
+    <Compile Include="Animation\KeyFrame.cs" />
     <Compile Include="Animation\TrackCollection.cs" />
-    <Compile Include="Animation\Types\Frame.cs" />
-    <Compile Include="Animation\Types\KeyFrame.cs" />
+    <Compile Include="Animation\Types\KeyFloat.cs" />
+    <Compile Include="Animation\Types\KeyInt32.cs" />
     <Compile Include="Animation\Types\KeyVector2D.cs" />
-    <Compile Include="Animation\Types\TrackFrame.cs" />
-    <Compile Include="Animation\Types\KeyColor.cs" />
-    <Compile Include="Animation\Types\TrackColor.cs" />
-    <Compile Include="Animation\Types\KeyTransform.cs" />
     <Compile Include="Animation\Track.cs" />
-    <Compile Include="Animation\Types\TrackTransform.cs" />
+    <Compile Include="Animation\Types\TrackFloat.cs" />
+    <Compile Include="Animation\Types\TrackInt32.cs" />
     <Compile Include="Animation\Types\TrackVector2D.cs" />
     <Compile Include="Buffers\Buffer.cs">
       <SubType>Code</SubType>

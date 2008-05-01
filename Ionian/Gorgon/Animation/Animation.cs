@@ -83,9 +83,6 @@ namespace GorgonLibrary.Graphics
         private float _currentTime;									// Current time.
         private bool _enabled;										// Flag to indicate whether the animation is enabled or not.
 		private AnimationState _state = AnimationState.Playing;		// State of action for the animation.
-		private TrackTransform _transforms = null;					// Transformation track.
-		private TrackColor _colors = null;							// Color track.
-		private TrackFrame _frames = null;							// Frame track.
 		private TrackCollection _tracks = null;						// Tracks.
         #endregion
 
@@ -102,6 +99,10 @@ namespace GorgonLibrary.Graphics
         /// Event fired when the animation current time has advanced.
         /// </summary>
         public event AnimationAdvanceHandler AnimationAdvanced;
+		/// <summary>
+		/// Event fired when the animation needs to define the type of a track.
+		/// </summary>
+		public event AnimationTrackDefineHandler AnimationTrackDefinition;
         #endregion
 
         #region Properties.
@@ -164,39 +165,6 @@ namespace GorgonLibrary.Graphics
             }
         }
 
-        /// <summary>
-        /// Property to return the transformation track for the animation.
-        /// </summary>
-        public TrackTransform TransformationTrack
-        {
-            get
-            {
-                return _transforms;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the color track for the animation.
-        /// </summary>
-        public TrackColor ColorTrack
-        {
-            get
-            {
-                return _colors;
-            }
-        }
-
-		/// <summary>
-		/// Property to return the frame track for the animation.
-		/// </summary>
-		public TrackFrame FrameTrack
-		{
-			get
-			{
-				return _frames;
-			}
-		}
-
 		/// <summary>
 		/// Property to return the collection of tracks for this animation.
 		/// </summary>
@@ -257,17 +225,6 @@ namespace GorgonLibrary.Graphics
 			}
         }
 
-		/// <summary>
-		/// Property to return the total number of keys in the animation.
-		/// </summary>
-		public int TotalKeyCount
-		{
-			get
-			{
-				return _transforms.KeyCount + _colors.KeyCount + _frames.KeyCount;
-			}
-		}
-
         /// <summary>
         /// Property to set or return the current time.
         /// </summary>
@@ -322,6 +279,17 @@ namespace GorgonLibrary.Graphics
 
         #region Methods.
 		/// <summary>
+		/// Function called when the animation needs to define an unknown track type.
+		/// </summary>
+		/// <param name="sender">Object that sent the event.</param>
+		/// <param name="e">Event parameters.</param>
+		protected virtual void OnAnimationTrackDefine(object sender, AnimationTrackDefineEventArgs e)
+		{
+			if (AnimationTrackDefinition != null)
+				AnimationTrackDefinition(sender, e);
+		}
+
+		/// <summary>
 		/// Function to set the owner for this animation.
 		/// </summary>
 		/// <param name="owner">Owner for the animation.</param>
@@ -329,38 +297,57 @@ namespace GorgonLibrary.Graphics
 		{
 			Attribute[] attributes = null;						// List of attributes for the target object.
 			PropertyInfo[] properties = null;					// List of properties on the renderable.
+			Track track = null;									// Track to add.
+			AnimationTrackDefineEventArgs e;					// Event arguments.
 
 			if (owner == null)
-				throw new ArgumentNullException(owner);
+				throw new ArgumentNullException("owner");
 
 			properties = owner.GetType().GetProperties();
 
 			if (properties.Length == 0)
-				throw new AnimationOwnerInvalidException(owner.Name);
+				throw new AnimationOwnerInvalidException(owner.GetType().Name);
 
 			_tracks.Clear();
-
+			
 			// Find all the properties that are animated and make tracks for those properties.
 			foreach (PropertyInfo property in properties)
 			{
-				attributes = property.GetCustomAttributes(typeof(AnimatedAttribute), true);
+				attributes = property.GetCustomAttributes(typeof(AnimatedAttribute), true) as Attribute[];
 
 				foreach (AnimatedAttribute attribute in attributes)
 				{
 					switch (attribute.DataType.Name.ToLower())
 					{
 						case "vector2d":
-							_tracks.Add(new TrackVector2D(this, property));
+							track = new TrackVector2D(property);
+							break;
+						case "single":
+							track = new TrackFloat(property);
+							break;
+						case "int32":
+							track = new TrackInt32(property);
 							break;
 						default:
-							// If we don't know the type that's being added, then don't bother.
+							e = new AnimationTrackDefineEventArgs(property.Name, attribute.DataType);
+							OnAnimationTrackDefine(this, e);
+							track = e.Track;
+							if (track != null)
+								track.BoundProperty = property;
 							break;
+					}
+
+					if (track != null)
+					{
+						track.SetAnimationOwner(this);
+						track.InterpolationMode = attribute.InterpolationMode;
+						_tracks.Add(track);
 					}
 				}
 			}
 
 			if (_tracks.Count == 0)
-				throw new AnimationOwnerInvalidException(owner.Name);
+				throw new AnimationOwnerInvalidException(owner.GetType().Name);
 			
 			_owner = owner;
 		}
@@ -374,34 +361,10 @@ namespace GorgonLibrary.Graphics
 			if ((!_enabled) || (_state == AnimationState.Stopped))
                 return;
 
-			// Apply transformation tracks.
-			if (_transforms.KeyCount > 0)
+			foreach (Track track in _tracks)
 			{
-				Key key = null;      // Key to apply.
-
-				// Get interpolated key.
-				key = _transforms[_currentTime];
-				key.UpdateLayerObject(_owner);
-			}
-
-			// Apply color tracks.
-			if (_colors.KeyCount > 0)
-			{
-				Key key = null;      // Key to apply.
-
-				// Get interpolated key.
-				key = _colors[_currentTime];
-				key.UpdateLayerObject(_owner);
-			}
-
-			// Apply frame tracks.
-			if (_frames.KeyCount > 0)
-			{
-				Key key = null;		// Key to apply.
-
-				// Get interpolated key.
-				key = _frames[_currentTime];
-				key.UpdateLayerObject(_owner);
+				if (track.KeyCount > 0)
+					track[_currentTime].Update();
 			}
         }		
 
@@ -430,34 +393,10 @@ namespace GorgonLibrary.Graphics
         {
             _currentTime = 0;
 
-			// Apply transformation tracks.
-			if (_transforms.KeyCount > 0)
+			foreach (Track track in _tracks)
 			{
-				Key key = null;      // Key to apply.
-
-				// Get interpolated key.
-				key = _transforms[0];
-				key.UpdateLayerObject(_owner);
-			}
-
-			// Apply color tracks.
-			if (_colors.KeyCount > 0)
-			{
-				Key key = null;      // Key to apply.
-
-				// Get interpolated key.
-				key = _colors[0];
-				key.UpdateLayerObject(_owner);
-			}
-
-			// Apply frame tracks.
-			if (_frames.KeyCount > 0)
-			{
-				Key key = null;		// Key to apply.
-
-				// Get interpolated key.
-				key = _frames[0];
-				key.UpdateLayerObject(_owner);
+				if (track.KeyCount > 0)
+					track[0].Update();
 			}
 		}
         #endregion
@@ -468,14 +407,11 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="name">Name of the animation.</param>
         /// <param name="length">Length of the animation in milliseconds.</param>
-        protected Animation(string name, float length)
+        public Animation(string name, float length)
             : base(name)
         {
 			_owner = null;
 			_tracks = new TrackCollection();
-			_transforms = new TrackTransform(this);
-			_colors = new TrackColor(this);
-			_frames = new TrackFrame(this);
             _enabled = true;
             Length = length;
         }
@@ -503,7 +439,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="serializer">Serializer that's calling this function.</param>
         void ISerializable.WriteData(Serializer serializer)
         {
-            serializer.WriteGroupBegin("Animation");
+/*            serializer.WriteGroupBegin("Animation");
 
             // Write animation data.
             serializer.Write("Name", Name);
@@ -585,7 +521,7 @@ namespace GorgonLibrary.Graphics
 
 				serializer.WriteGroupEnd();
 			}			
-            serializer.WriteGroupEnd();
+            serializer.WriteGroupEnd();*/
         }
 
         /// <summary>
@@ -594,7 +530,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="serializer">Serializer that's calling this function.</param>
         void ISerializable.ReadData(Serializer serializer)
         {
-            // Write animation data.
+/*            // Write animation data.
             Name = serializer.ReadString("Name");
             _length = serializer.ReadSingle("Length");
             _loop = serializer.ReadBool("Looping");
@@ -686,7 +622,7 @@ namespace GorgonLibrary.Graphics
                         _frames.AddKey(key);
                     }
                 }
-			}
+			}*/
         }
         #endregion
 
@@ -708,16 +644,14 @@ namespace GorgonLibrary.Graphics
 			clone._loop = _loop;
 
 			// Add transforms.
-			foreach (KeyTransform key in _transforms)
-				clone.TransformationTrack.AddKey(key.Clone());
-
-			// Add colors.
-			foreach (KeyColor key in _colors)
-				clone.ColorTrack.AddKey(key.Clone());
-
-			// Add frames.
-			foreach (KeyFrame key in _frames)
-				clone.FrameTrack.AddKey(key.Clone());
+			foreach (Track track in _tracks)
+			{
+				if (clone.Tracks.Contains(track.Name))
+				{
+					foreach (KeyFrame key in track)
+						clone.Tracks[track.Name].AddKey(key.Clone());
+				}
+			}
 
 			return clone;
 		}

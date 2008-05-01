@@ -372,92 +372,92 @@ namespace GorgonLibrary
 			return ((left.X >= right.X) && (left.Y >= right.Y));
 		}
 
-        ///// <summary>
-        ///// Operator to perform addition upon two vectors.
-        ///// </summary>
-        ///// <param name="left">Vector to add to.</param>
-        ///// <param name="right">Vector to add with.</param>
-        ///// <returns>A new vector.</returns>
-        //public static Vector2D operator +(Vector2D left,Vector2D right)
-        //{
-        //    return Add(left,right);
-        //}
-		
-        ///// <summary>
-        ///// Operator to perform subtraction upon two vectors.
-        ///// </summary>
-        ///// <param name="left">Vector to subtract.</param>
-        ///// <param name="right">Vector to subtract with.</param>
-        ///// <returns>A new vector.</returns>
-        //public static Vector2D operator -(Vector2D left,Vector2D right)
-        //{
-        //    return Subtract(left,right);
-        //}
+		/// <summary>
+		/// Operator to perform addition upon two vectors.
+		/// </summary>
+		/// <param name="left">Vector to add to.</param>
+		/// <param name="right">Vector to add with.</param>
+		/// <returns>A new vector.</returns>
+		public static Vector2D operator +(Vector2D left, Vector2D right)
+		{
+			return Add(left, right);
+		}
 
-        ///// <summary>
-        ///// Operator to negate a vector.
-        ///// </summary>
-        ///// <param name="left">Vector to negate.</param>
-        ///// <returns>A negated vector.</returns>
-        //public static Vector2D operator -(Vector2D left)
-        //{
-        //    return Negate(left);
-        //}
+		/// <summary>
+		/// Operator to perform subtraction upon two vectors.
+		/// </summary>
+		/// <param name="left">Vector to subtract.</param>
+		/// <param name="right">Vector to subtract with.</param>
+		/// <returns>A new vector.</returns>
+		public static Vector2D operator -(Vector2D left, Vector2D right)
+		{
+			return Subtract(left, right);
+		}
 
-        ///// <summary>
-        ///// Operator to multiply two vectors together.
-        ///// </summary>
-        ///// <param name="left">Vector to multiply.</param>
-        ///// <param name="right">Vector to multiply by.</param>
-        ///// <returns>A new vector.</returns>
-        //public static Vector2D operator *(Vector2D left,Vector2D right)
-        //{
-        //    return Multiply(left,right);
-        //}
+		/// <summary>
+		/// Operator to negate a vector.
+		/// </summary>
+		/// <param name="left">Vector to negate.</param>
+		/// <returns>A negated vector.</returns>
+		public static Vector2D operator -(Vector2D left)
+		{
+			return Negate(left);
+		}
 
-        ///// <summary>
-        ///// Operator to multiply a vector by a scalar value.
-        ///// </summary>
-        ///// <param name="left">Vector to multiply with.</param>
-        ///// <param name="scalar">Scalar value to multiply by.</param>
-        ///// <returns>A new vector.</returns>
-        //public static Vector2D operator *(Vector2D left,float scalar)
-        //{
-        //    return Multiply(left,scalar);
-        //}
+		/// <summary>
+		/// Operator to multiply two vectors together.
+		/// </summary>
+		/// <param name="left">Vector to multiply.</param>
+		/// <param name="right">Vector to multiply by.</param>
+		/// <returns>A new vector.</returns>
+		public static Vector2D operator *(Vector2D left, Vector2D right)
+		{
+			return Multiply(left, right);
+		}
 
-        ///// <summary>
-        ///// Operator to multiply a vector by a scalar value.
-        ///// </summary>
-        ///// <param name="scalar">Scalar value to multiply by.</param>
-        ///// <param name="right">Vector to multiply with.</param>
-        ///// <returns>A new vector.</returns>
-        //public static Vector2D operator *(float scalar,Vector2D right)
-        //{
-        //    return Multiply(right, scalar);
-        //}
+		/// <summary>
+		/// Operator to multiply a vector by a scalar value.
+		/// </summary>
+		/// <param name="left">Vector to multiply with.</param>
+		/// <param name="scalar">Scalar value to multiply by.</param>
+		/// <returns>A new vector.</returns>
+		public static Vector2D operator *(Vector2D left, float scalar)
+		{
+			return Multiply(left, scalar);
+		}
 
-        ///// <summary>
-        ///// Operator to divide a vector by a scalar value.
-        ///// </summary>
-        ///// <param name="left">Vector to divide.</param>
-        ///// <param name="scalar">Scalar value to divide by.</param>
-        ///// <returns>A new vector.</returns>
-        //public static Vector2D operator /(Vector2D left,float scalar)
-        //{
-        //    return Divide(left,scalar);
-        //}		
+		/// <summary>
+		/// Operator to multiply a vector by a scalar value.
+		/// </summary>
+		/// <param name="scalar">Scalar value to multiply by.</param>
+		/// <param name="right">Vector to multiply with.</param>
+		/// <returns>A new vector.</returns>
+		public static Vector2D operator *(float scalar, Vector2D right)
+		{
+			return Multiply(right, scalar);
+		}
 
-        ///// <summary>
-        ///// Operator to divide a vector by another vector.
-        ///// </summary>
-        ///// <param name="left">Vector to divide.</param>
-        ///// <param name="right">Vector to divide by.</param>
-        ///// <returns>A new vector.</returns>
-        //public static Vector2D operator /(Vector2D left,Vector2D right)
-        //{
-        //    return Divide(left,right);
-        //}
+		/// <summary>
+		/// Operator to divide a vector by a scalar value.
+		/// </summary>
+		/// <param name="left">Vector to divide.</param>
+		/// <param name="scalar">Scalar value to divide by.</param>
+		/// <returns>A new vector.</returns>
+		public static Vector2D operator /(Vector2D left, float scalar)
+		{
+			return Divide(left, scalar);
+		}
+
+		/// <summary>
+		/// Operator to divide a vector by another vector.
+		/// </summary>
+		/// <param name="left">Vector to divide.</param>
+		/// <param name="right">Vector to divide by.</param>
+		/// <returns>A new vector.</returns>
+		public static Vector2D operator /(Vector2D left, Vector2D right)
+		{
+			return Divide(left, right);
+		}
 
 		/// <summary>
 		/// Operator to convert a 3D vector into a 2D vector.

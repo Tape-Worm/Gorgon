@@ -73,4 +73,86 @@ namespace GorgonLibrary.Graphics
         }
         #endregion
     }
+
+	/// <summary>
+	/// Event handler used when the time has been updated for an animation frame.
+	/// </summary>
+	/// <param name="sender">Sender of the event.</param>
+	/// <param name="e">Event parameters.</param>
+	/// <remarks>When a property is marked as animated, and its type is unknown to the animation system (e.g. a custom object or value type) we can still animate that property
+	/// if we define the track type.  This event allows us to pass back a new instance of the track type to the animation and will allow the user to customize how to handle that
+	/// particular type within an animation.</remarks>
+	public delegate void AnimationTrackDefineHandler(object sender, AnimationTrackDefineEventArgs e);
+
+	/// <summary>
+	/// Event arguments for animation track definitions.
+	/// </summary>
+	/// <remarks>When a property is marked as animated, and its type is unknown to the animation system (e.g. a custom object or value type) we can still animate that property
+	/// if we define the track type.  This event allows us to pass back a new instance of the track type to the animation and will allow the user to customize how to handle that
+	/// particular type within an animation.</remarks>
+	public class AnimationTrackDefineEventArgs
+	{
+		#region Variables.
+		private Track _newTrack = null;						// Track type.
+		private Type _trackDataType = null;					// Data type for the track.
+		private string _propertyName = string.Empty;		// Name of the property being animated.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the track type.
+		/// </summary>
+		public Track Track
+		{
+			get
+			{
+				return _newTrack;
+			}
+			set
+			{
+				_newTrack = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the data type for the track.
+		/// </summary>
+		public Type DataType
+		{
+			get
+			{
+				return _trackDataType;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the name of the animated property.
+		/// </summary>
+		public string PropertyName
+		{
+			get
+			{
+				return _propertyName;
+			}
+		}
+		#endregion
+
+		#region Constructor.
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AnimationTrackDefineEventArgs"/> class.
+		/// </summary>
+		/// <param name="propertyName">Name of the property being animated.</param>
+		/// <param name="dataType">Type of the data represented by the track.</param>
+		public AnimationTrackDefineEventArgs(string propertyName, Type dataType)
+		{
+			if (string.IsNullOrEmpty(propertyName))
+				throw new ArgumentNullException("propertyName");
+			if (dataType == null)
+				throw new ArgumentNullException("dataType");
+			_trackDataType = dataType;
+			_propertyName = propertyName;
+		}
+		#endregion
+	}
 }

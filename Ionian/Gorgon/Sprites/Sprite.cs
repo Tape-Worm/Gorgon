@@ -2026,8 +2026,10 @@ namespace GorgonLibrary.Graphics
 			_flipVertical = reader.ReadBool("VerticallyFlipped");
 
             // Get animations.
-            int animationCount = 0;             // Animation count.
-
+			// TODO: Update this to fit with new animation system.
+			/*
+			int animationCount = 0;             // Animation count.
+			
             animationCount = reader.ReadInt32("AnimationCount");
             if (animationCount > 0)
             {
@@ -2038,9 +2040,9 @@ namespace GorgonLibrary.Graphics
                     ((ISerializable)animation).ReadData(reader);
                     Animations.Add(animation);
                 }
-            }
-           
-            // Perform updates.
+            }*/
+
+			// Perform updates.
 			UpdateDimensions();
 			UpdateTransform();
 			UpdateImageLayer();

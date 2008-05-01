@@ -31,14 +31,38 @@ namespace GorgonLibrary.Graphics
 	/// A collection of animation tracks.
 	/// </summary>
 	public class TrackCollection
-		: Collection<Track>
+		: BaseCollection<Track>
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to return a track by its name.
+		/// </summary>
+		public Track this[string name]
+		{
+			get
+			{
+				return GetItem(name);
+			}
+		}
+
+		/// <summary>
+		/// Property to return a track by its index.
+		/// </summary>
+		public Track this[int index]
+		{
+			get
+			{
+				return GetItem(index);
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to add a new track to the collection.
 		/// </summary>
 		/// <param name="track">Track to add.</param>
-		public void Add(Track track)
+		internal void Add(Track track)
 		{
 			if (track == null)
 				throw new ArgumentNullException("track");
@@ -47,6 +71,14 @@ namespace GorgonLibrary.Graphics
 
 			AddItem(track.Name, track);
 		}
+
+		/// <summary>
+		/// Function to clear the collection.
+		/// </summary>
+		internal void Clear()
+		{
+			ClearItems();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -54,9 +86,8 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="TrackCollection"/> class.
 		/// </summary>
 		internal TrackCollection()
-			: base(8, false)
-		{
-			
+			: base(32, false)
+		{			
 		}
 		#endregion
 	}
