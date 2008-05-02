@@ -84,6 +84,7 @@ namespace GorgonLibrary.Graphics
         private bool _enabled;										// Flag to indicate whether the animation is enabled or not.
 		private AnimationState _state = AnimationState.Playing;		// State of action for the animation.
 		private TrackCollection _tracks = null;						// Tracks.
+		private int _frameRate = 30;								// Frame rate (for information purposes only).
         #endregion
 
         #region Events.
@@ -106,6 +107,24 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to set or return the frame rate.
+		/// </summary>
+		/// <remarks>This is just metadata and is only used for display purposes.  Its primary use is in the sprite editor.</remarks>
+		public int FrameRate
+		{
+			get
+			{
+				return _frameRate;
+			}
+			set
+			{
+				if (value < 1)
+					value = 1;
+				_frameRate = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the name.
 		/// </summary>
@@ -564,6 +583,7 @@ namespace GorgonLibrary.Graphics
             serializer.Write("Length", _length);
             serializer.Write("Looping", _loop);
             serializer.Write("Enabled", _enabled);
+			serializer.Write("FPS", _frameRate);
 			serializer.Write("TrackCount", _tracks.Count);
 
 			// Write tracks.
@@ -596,8 +616,6 @@ namespace GorgonLibrary.Graphics
 			int trackCount = 0;						// Number of tracks.
 			KeyFrame newKey = null;					// Key frame.
 
-            // Write animation data.
-
 			header = serializer.ReadString("Header");
 			if (string.Compare(header, "GORANM11", true) != 0)
 				throw new InvalidOperationException("The animation data is not in a known format.");
@@ -605,6 +623,7 @@ namespace GorgonLibrary.Graphics
             _length = serializer.ReadSingle("Length");
             _loop = serializer.ReadBool("Looping");
             _enabled = serializer.ReadBool("Enabled");
+			_frameRate = serializer.ReadInt32("FPS");
 			trackCount = serializer.ReadInt32("TrackCount");
 
 			// Loop through existing tracks.

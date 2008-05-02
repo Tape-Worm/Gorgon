@@ -40,7 +40,7 @@ namespace GorgonLibrary.Graphics.Tools
 		#region Variables.
 		private System.Windows.Forms.ImageList _images = null;					// Image list.		
 		private SpriteDocumentList _spriteList = null;							// Sprite list.
-		private TrackFrame _currentTrack = null;								// Current track.
+		private TrackImage _currentTrack = null;								// Current track.
 		private float _animLength = 0.0f;										// Animation length.
 		private Sprite _owner = null;											// Sprite that owns this animation.
 		#endregion
@@ -79,7 +79,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return the current track.
 		/// </summary>
-		public TrackFrame CurrentTrack
+		public TrackImage CurrentTrack
 		{
 			get
 			{
@@ -141,6 +141,87 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Methods.
 		/// <summary>
+		/// Handles the SelectedIndexChanged event of the listSprites control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void listSprites_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			try
+			{
+				if (listSprites.SelectedItems.Count > 0)
+					pictureSprite.Image = _images.Images[listSprites.SelectedItems[0].Name + ".@Image"];
+				else
+					pictureSprite.Image = null;
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(this, "Unable to get the selected image", ex);
+			}
+			finally
+			{
+				ValidateForm();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonOK control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonOK_Click(object sender, EventArgs e)
+		{
+			float startTime = 0.0f;					// Starting time.
+			SpriteDocument sprite;					// Sprite we're adding.
+			int frameCount = 0;						// Number of frames.
+			float interval = 0.0f;					// Time interval.
+
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				_currentTrack.ClearKeys();
+				foreach (ListViewItem item in listSprites.Items)
+				{
+					if (item.Checked)
+						frameCount++;
+				}
+
+				interval = (float)numericDelay.Value;
+				if (frameCount != listSprites.Items.Count)
+				{
+					if (UI.ConfirmBox("The selected frame count differs from the total frame count.  This will cause a delay at the end of the animation.\nWould you like to recalculate the interval?") == ConfirmationResult.Yes)
+						interval = _animLength / (float)frameCount;
+				}
+
+
+				// Go through each item and add a key.
+				foreach (ListViewItem item in listSprites.Items)
+				{
+					if (item.Checked)
+					{
+						KeyImage key = null;			// Image key.
+
+						sprite = _spriteList[item.Name];
+						key = new KeyImage(startTime, sprite.Sprite.Image);
+						key.ImageOffset = sprite.ImageLocation;
+						key.ImageSize = sprite.Size;
+						_currentTrack.AddKey(key);
+						startTime += interval;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(this, "Error trying to retrieve the frames.", ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Function to validate the interface.
 		/// </summary>
 		private void ValidateForm()
@@ -192,81 +273,5 @@ namespace GorgonLibrary.Graphics.Tools
 			InitializeComponent();
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the SelectedIndexChanged event of the listSprites control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void listSprites_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			try
-			{
-				if (listSprites.SelectedItems.Count > 0)
-					pictureSprite.Image = _images.Images[listSprites.SelectedItems[0].Name + ".@Image"];
-				else
-					pictureSprite.Image = null;
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(this, "Unable to get the selected image", ex);
-			}
-			finally
-			{
-				ValidateForm();
-			}
-		}
-
-		/// <summary>
-		/// Handles the Click event of the buttonOK control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonOK_Click(object sender, EventArgs e)
-		{
-			float startTime = 0.0f;					// Starting time.
-			SpriteDocument sprite;					// Sprite we're adding.
-			int frameCount = 0;						// Number of frames.
-			float interval = 0.0f;					// Time interval.
-
-			Cursor.Current = Cursors.WaitCursor;			
-
-			try
-			{
-				_currentTrack.ClearKeys();
-				foreach (ListViewItem item in listSprites.Items)
-				{
-					if (item.Checked)
-						frameCount++;
-				}
-
-				interval = (float)numericDelay.Value;
-				if (frameCount != listSprites.Items.Count)
-				{
-					if (UI.ConfirmBox("The selected frame count differs from the total frame count.  This will cause a delay at the end of the animation.\nWould you like to recalculate the interval?") == ConfirmationResult.Yes)
-						interval = _animLength / (float)frameCount;
-				}
-					
-
-				// Go through each item and add a key.
-				foreach (ListViewItem item in listSprites.Items)
-				{
-					if (item.Checked)
-					{
-						sprite = _spriteList[item.Name];
-						_currentTrack.CreateKey(startTime, new Frame(sprite.Sprite.Image, sprite.Sprite.ImageOffset, sprite.Sprite.Size));						
-						startTime += interval;
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(this, "Error trying to retrieve the frames.", ex);
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-		}
 	}
 }

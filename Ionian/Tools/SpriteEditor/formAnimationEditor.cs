@@ -336,6 +336,16 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			GetSettings();
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
@@ -430,19 +440,23 @@ namespace GorgonLibrary.Graphics.Tools
 		/// </summary>
 		public void GetSettings()
 		{
+			Point defaultLocation = Point.Empty;		// Default location.
 			Settings.Root = "AnimationEditor";
 			WindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), Settings.GetSetting("WindowState", "Normal"));
 
 			// Set window dimensions.
 			if (WindowState == FormWindowState.Normal)
 			{
-				Left = Convert.ToInt32(Settings.GetSetting("Left", formMain.Me.Left.ToString()));
-				Top = Convert.ToInt32(Settings.GetSetting("Top", formMain.Me.Top.ToString()));
-				Width = Convert.ToInt32(Settings.GetSetting("Width", "745"));
-				Height = Convert.ToInt32(Settings.GetSetting("Height", "595"));
+				defaultLocation = formMain.Me.Location;
+				defaultLocation.X = (defaultLocation.X / 2) - 350;
+				defaultLocation.Y = (defaultLocation.Y / 2) - 240;
+				Left = Convert.ToInt32(Settings.GetSetting("Left", defaultLocation.X.ToString()));
+				Top = Convert.ToInt32(Settings.GetSetting("Top", defaultLocation.Y.ToString()));
+				Width = Convert.ToInt32(Settings.GetSetting("Width", "700"));
+				Height = Convert.ToInt32(Settings.GetSetting("Height", "480"));
 			}
 			Settings.Root = null;
-		}
+		}		
 		#endregion
 
 		#region Constructor/Destructor.

@@ -94,8 +94,8 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			this.splitTrack.Panel2.Controls.Add(this.panelTrackControls);
 			this.splitTrack.Panel2.Padding = new System.Windows.Forms.Padding(2);
-			this.splitTrack.Size = new System.Drawing.Size(737, 546);
-			this.splitTrack.SplitterDistance = 434;
+			this.splitTrack.Size = new System.Drawing.Size(684, 422);
+			this.splitTrack.SplitterDistance = 310;
 			this.splitTrack.TabIndex = 0;
 			// 
 			// panelTrackControls
@@ -109,7 +109,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.panelTrackControls.Location = new System.Drawing.Point(2, 2);
 			this.panelTrackControls.Margin = new System.Windows.Forms.Padding(6);
 			this.panelTrackControls.Name = "panelTrackControls";
-			this.panelTrackControls.Size = new System.Drawing.Size(733, 104);
+			this.panelTrackControls.Size = new System.Drawing.Size(680, 104);
 			this.panelTrackControls.TabIndex = 0;
 			// 
 			// label1
@@ -144,7 +144,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.groupBox1.Controls.Add(this.radioMinutes);
 			this.groupBox1.Controls.Add(this.radioSeconds);
 			this.groupBox1.Controls.Add(this.radioMilliseconds);
-			this.groupBox1.Location = new System.Drawing.Point(281, 47);
+			this.groupBox1.Location = new System.Drawing.Point(228, 47);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(442, 45);
 			this.groupBox1.TabIndex = 9;
@@ -226,7 +226,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.trackTrack.Dock = System.Windows.Forms.DockStyle.Top;
 			this.trackTrack.Location = new System.Drawing.Point(0, 0);
 			this.trackTrack.Name = "trackTrack";
-			this.trackTrack.Size = new System.Drawing.Size(731, 45);
+			this.trackTrack.Size = new System.Drawing.Size(678, 45);
 			this.trackTrack.TabIndex = 0;
 			this.trackTrack.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
 			this.trackTrack.Scroll += new System.EventHandler(this.trackTrack_Scroll);
@@ -241,13 +241,13 @@ namespace GorgonLibrary.Graphics.Tools
 			// containerStatus.ContentPanel
 			// 
 			this.containerStatus.ContentPanel.Controls.Add(this.splitTrack);
-			this.containerStatus.ContentPanel.Size = new System.Drawing.Size(737, 546);
+			this.containerStatus.ContentPanel.Size = new System.Drawing.Size(684, 422);
 			this.containerStatus.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerStatus.LeftToolStripPanelVisible = false;
 			this.containerStatus.Location = new System.Drawing.Point(0, 0);
 			this.containerStatus.Name = "containerStatus";
 			this.containerStatus.RightToolStripPanelVisible = false;
-			this.containerStatus.Size = new System.Drawing.Size(737, 568);
+			this.containerStatus.Size = new System.Drawing.Size(684, 444);
 			this.containerStatus.TabIndex = 1;
 			this.containerStatus.Text = "toolStripContainer1";
 			this.containerStatus.TopToolStripPanelVisible = false;
@@ -257,14 +257,14 @@ namespace GorgonLibrary.Graphics.Tools
 			this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
 			this.statusStrip1.Location = new System.Drawing.Point(0, 0);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(737, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(684, 22);
 			this.statusStrip1.TabIndex = 0;
 			// 
 			// formAnimationEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(737, 568);
+			this.ClientSize = new System.Drawing.Size(684, 444);
 			this.Controls.Add(this.containerStatus);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "formAnimationEditor";
