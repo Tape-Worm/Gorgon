@@ -29,9 +29,9 @@ using System.Reflection;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Animation track used to animate 2D vector properties.
+	/// Animation track used to animate byte properties.
 	/// </summary>
-	public class TrackVector2D
+	public class TrackByte
 		: Track
 	{
 		#region Properties.
@@ -43,7 +43,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				KeyVector2D newKey = null;				// Key information.
+				KeyByte newKey = null;				// Key information.
 				NearestKeys keyData;					// Nearest key information.
 
 				// If we specify the exact key, then return it.
@@ -58,7 +58,7 @@ namespace GorgonLibrary.Graphics
 				keyData = FindNearest(timeIndex);
 
 				// Get an instance of the key.
-				newKey = new KeyVector2D(keyData.KeyTimeDelta, Vector2D.Zero);
+				newKey = new KeyByte(keyData.KeyTimeDelta, 0);
 				newKey.Owner = this;				
 
 				// Apply the transformation.
@@ -76,17 +76,17 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The new keyframe in the correct context.</returns>
 		protected internal override KeyFrame CreateKey()
 		{
-			return new KeyVector2D(0.0f, Vector2D.Zero);
+			return new KeyByte(0.0f, 0);
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TrackVector2D"/> class.
+		/// Initializes a new instance of the <see cref="TrackByte"/> class.
 		/// </summary>
 		/// <param name="property">Property that is bound to the track.</param>
-		internal TrackVector2D(PropertyInfo property)
-			: base(property, typeof(Vector2D))
+		internal TrackByte(PropertyInfo property)
+			: base(property, typeof(byte))
 		{
 		}
 		#endregion

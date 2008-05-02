@@ -25,11 +25,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using GorgonLibrary.Serialization;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A key frame 
+	/// A key frame for manipulating data of the type <see cref="GorgonLibrary.Vector2D"/>.
 	/// </summary>
 	public class KeyVector2D
 		: KeyFrame
@@ -115,6 +116,36 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to retrieve data from the serializer stream.
+		/// </summary>
+		/// <param name="serializer">Serializer that's calling this function.</param>
+		public override void ReadData(Serializer serializer)
+		{
+			string typeName = string.Empty;		// Type name of the key.
+
+			typeName = serializer.ReadString("Type");
+			if (string.Compare(typeName, "KeyVector2D", true) != 0)
+				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyVector2D", typeName);
+
+			Time = serializer.ReadSingle("Time");
+			_value = new Vector2D(serializer.ReadSingle("X"), serializer.ReadSingle("Y"));
+		}
+
+		/// <summary>
+		/// Function to persist the data into the serializer stream.
+		/// </summary>
+		/// <param name="serializer">Serializer that's calling this function.</param>
+		public override void WriteData(Serializer serializer)
+		{
+			serializer.WriteGroupBegin("KeyFrame");
+			serializer.Write("Type", "KeyVector2D");
+			serializer.Write("Time", Time);
+			serializer.Write("X", _value.X);
+			serializer.Write("Y", _value.Y);
+			serializer.WriteGroupEnd();
+		}
+
+		/// <summary>
 		/// Function to perform an update of the bound property.
 		/// </summary>
 		public override void Update()
@@ -134,8 +165,7 @@ namespace GorgonLibrary.Graphics
 		{
 			KeyVector2D clone = null;			// Cloned key.
 
-			clone = new KeyVector2D(Time);
-			clone.Value = _value;
+			clone = new KeyVector2D(Time, _value);
 
 			return clone;
 		}
@@ -146,11 +176,13 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="KeyVector2D"/> class.
 		/// </summary>
 		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
-		public KeyVector2D(float time)
+		/// <param name="value">Value for the key.</param>
+		public KeyVector2D(float time, Vector2D value)
 			: base(time)
 		{
 			_splineValue = new Spline();
 			_splineValue.AutoCalculate = false;
+			_value = value;
 		}
 		#endregion
 	}

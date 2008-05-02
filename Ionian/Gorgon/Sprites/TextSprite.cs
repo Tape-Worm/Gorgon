@@ -318,14 +318,15 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the opacity.
 		/// </summary>
-		public override byte Opacity
+		public override int Opacity
 		{
 			get
 			{
-				return (byte)((_vertexColors[0] >> 24) & 0xFF);
+				return ((_vertexColors[0] >> 24) & 0xFF);
 			}
 			set
 			{
+				value &= 0xFF;
 				_vertexColors[0] = ((int)value << 24) | (_vertexColors[0] & 0xFFFFFF);
 				_vertexColors[1] = ((int)value << 24) | (_vertexColors[1] & 0xFFFFFF);
 				_vertexColors[2] = ((int)value << 24) | (_vertexColors[2] & 0xFFFFFF);

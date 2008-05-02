@@ -313,20 +313,31 @@ namespace GorgonLibrary.Graphics
 			// Find all the properties that are animated and make tracks for those properties.
 			foreach (PropertyInfo property in properties)
 			{
-				attributes = property.GetCustomAttributes(typeof(AnimatedAttribute), true) as Attribute[];
+				// Note: this does not work.  Apparently it doesn't care about inherited attributes.  This is extremely dumb.
+				//attributes = property.GetCustomAttributes(typeof(AnimatedAttribute), true) as Attribute[];
+				attributes = AnimatedAttribute.GetCustomAttributes(property, typeof(AnimatedAttribute), true);
 
 				foreach (AnimatedAttribute attribute in attributes)
 				{
-					switch (attribute.DataType.Name.ToLower())
+					switch (attribute.DataType.FullName.ToLower())
 					{
-						case "vector2d":
+						case "gorgonlibrary.vector2d":
 							track = new TrackVector2D(property);
 							break;
-						case "single":
+						case "system.single":
 							track = new TrackFloat(property);
 							break;
-						case "int32":
+						case "system.int32":
 							track = new TrackInt32(property);
+							break;
+						case "system.byte":
+							track = new TrackByte(property);
+							break;
+						case "system.drawing.color":
+							track = new TrackColor(property);
+							break;
+						case "gorgonlibrary.graphics.image":
+							track = new TrackImage(property);
 							break;
 						default:
 							e = new AnimationTrackDefineEventArgs(property.Name, attribute.DataType);
@@ -432,105 +443,19 @@ namespace GorgonLibrary.Graphics
 			{
 			}
 		}
-	
+
 		/// <summary>
-        /// Function to persist the data into the serializer stream.
-        /// </summary>
-        /// <param name="serializer">Serializer that's calling this function.</param>
-        void ISerializable.WriteData(Serializer serializer)
-        {
-/*            serializer.WriteGroupBegin("Animation");
+		/// Function to read in the old version 1 file format.
+		/// </summary>
+		/// <param name="serializer">Serializer to use to read the format.</param>
+		internal void ReadVersion1Animation(Serializer serializer)
+		{
+			float keyTime = 0.0f;						// Key time.
+			Vector2D vector = Vector2D.Zero;			// Key vector.
+			float floatValue = 0;						// Key floating point value.
+			int intValue = 0;							// Key integer value.
 
             // Write animation data.
-            serializer.Write("Name", Name);
-            serializer.Write("Length", _length);
-            serializer.Write("Looping", _loop);
-            serializer.Write("Enabled", _enabled);
-            serializer.Write("TransformKeyCount", _transforms.KeyCount);
-
-			// Write keys.
-			if (_transforms.KeyCount > 0)
-			{
-				serializer.WriteGroupBegin("TransformationTrack");
-				KeyTransform key = null;        // Transformation key. 
-
-				for (int i = 0; i < _transforms.KeyCount; i++)
-				{
-					serializer.WriteGroupBegin("Key");
-					key = _transforms.GetKeyAtIndex(i) as KeyTransform;
-					serializer.Write("TimeIndex", key.Time);
-					serializer.Write("InterpolationMode", (int)key.InterpolationMode);
-					serializer.Write("PositionX", key.Position.X);
-					serializer.Write("PositionY", key.Position.Y);
-					serializer.Write("ScaleX", key.Scale.X);
-					serializer.Write("ScaleY", key.Scale.Y);
-					serializer.Write("Rotation", key.Rotation);
-					serializer.Write("AxisX", key.Axis.X);
-					serializer.Write("AxisY", key.Axis.Y);
-					serializer.Write("SizeX", key.Size.X);
-					serializer.Write("SizeY", key.Size.Y);
-					serializer.Write("OffsetX", key.ImageOffset.X);
-					serializer.Write("OffsetY", key.ImageOffset.Y);
-					serializer.WriteGroupEnd();
-				}
-
-				serializer.WriteGroupEnd();
-			}			
-
-			serializer.Write("ColorKeyCount", _colors.KeyCount);
-			// Write keys.
-			if (_colors.KeyCount > 0)
-			{
-				serializer.WriteGroupBegin("ColorTrack");
-				KeyColor key = null;        // Color key. 
-
-				for (int i = 0; i < _colors.KeyCount; i++)
-				{
-					serializer.WriteGroupBegin("Key");
-					key = _colors.GetKeyAtIndex(i) as KeyColor;
-					serializer.Write("TimeIndex", key.Time);
-					serializer.Write("InterpolationMode", (int)key.InterpolationMode);
-					serializer.Write("Color", key.Color.ToArgb());
-					serializer.Write("AlphaMaskValue", key.AlphaMaskValue);
-					serializer.WriteGroupEnd();
-				}
-
-				serializer.WriteGroupEnd();
-			}			
-
-			serializer.Write("FrameKeyCount", _frames.KeyCount);
-			// Write keys.
-			if (_frames.KeyCount > 0)
-			{
-				serializer.WriteGroupBegin("FrameTrack");
-				KeyFrame key = null;        // Frame switch key. 
-
-				for (int i = 0; i < _frames.KeyCount; i++)
-				{
-					serializer.WriteGroupBegin("Key");
-					key = _frames.GetKeyAtIndex(i) as KeyFrame;
-					serializer.Write("TimeIndex", key.Time);
-					serializer.Write("InterpolationMode", (int)key.InterpolationMode);
-					serializer.Write("ImageName", key.Frame.Image.Name);
-					serializer.Write("ImageOffsetX", key.Frame.Offset.X);
-					serializer.Write("ImageOffsetY", key.Frame.Offset.Y);
-					serializer.Write("SizeX", key.Frame.Size.X);
-					serializer.Write("SizeY", key.Frame.Size.Y);
-					serializer.WriteGroupEnd();
-				}
-
-				serializer.WriteGroupEnd();
-			}			
-            serializer.WriteGroupEnd();*/
-        }
-
-        /// <summary>
-        /// Function to retrieve data from the serializer stream.
-        /// </summary>
-        /// <param name="serializer">Serializer that's calling this function.</param>
-        void ISerializable.ReadData(Serializer serializer)
-        {
-/*            // Write animation data.
             Name = serializer.ReadString("Name");
             _length = serializer.ReadSingle("Length");
             _loop = serializer.ReadBool("Looping");
@@ -539,33 +464,45 @@ namespace GorgonLibrary.Graphics
             // Track count.
             int keyCount = 0;
 
-			// Remove keys.
-			_transforms.ClearKeys();
-			_colors.ClearKeys();
-			_frames.ClearKeys();
-
 			keyCount = serializer.ReadInt32("TransformKeyCount");
 
             // Write keys.
             if (keyCount > 0)
             {
-                KeyTransform key = null;        // Transformation key. 
-
                 for (int j = 0; j < keyCount; j++)
                 {
                     // Create a key.
-                    key = new KeyTransform(null, 0.0f);                                                        
+					keyTime = serializer.ReadSingle("TimeIndex");
+					serializer.ReadInt32("InterpolationMode");		// Skip this, it's handled by the track now - note that animations may not react properly.
+                    vector = new Vector2D(serializer.ReadSingle("PositionX"), serializer.ReadSingle("PositionY"));
 
-                    key.Time = serializer.ReadSingle("TimeIndex");
-                    key.InterpolationMode = (InterpolationMode)serializer.ReadInt32("InterpolationMode");
-                    key.Position = new Vector2D(serializer.ReadSingle("PositionX"), serializer.ReadSingle("PositionY"));
-                    key.Scale = new Vector2D(serializer.ReadSingle("ScaleX"), serializer.ReadSingle("ScaleY"));
-                    key.Rotation = serializer.ReadSingle("Rotation");
-                    key.Axis = new Vector2D(serializer.ReadSingle("AxisX"), serializer.ReadSingle("AxisY"));
-                    key.Size = new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY"));
-                    key.ImageOffset = new Vector2D(serializer.ReadSingle("OffsetX"), serializer.ReadSingle("OffsetY"));
+					if (_tracks.Contains("Position"))
+						_tracks["Position"].AddKey(new KeyVector2D(keyTime, vector));
 
-					_transforms.AddKey(key);
+					vector = new Vector2D(serializer.ReadSingle("ScaleX"), serializer.ReadSingle("ScaleY"));
+
+					if (_tracks.Contains("Scale"))
+						_tracks["Scale"].AddKey(new KeyVector2D(keyTime, vector));
+
+					floatValue = serializer.ReadSingle("Rotation");
+
+					if (_tracks.Contains("Rotation"))
+						_tracks["Rotation"].AddKey(new KeyFloat(keyTime, floatValue));
+
+					vector = new Vector2D(serializer.ReadSingle("AxisX"), serializer.ReadSingle("AxisY"));
+
+					if (_tracks.Contains("Axis"))
+						_tracks["Axis"].AddKey(new KeyVector2D(keyTime, vector));
+
+					vector = new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY"));
+					
+					if (_tracks.Contains("Size"))
+						_tracks["Size"].AddKey(new KeyVector2D(keyTime, vector));
+					
+					vector = new Vector2D(serializer.ReadSingle("OffsetX"), serializer.ReadSingle("OffsetY"));
+
+					if (_tracks.Contains("ImageOffset"))
+						_tracks["ImageOffset"].AddKey(new KeyVector2D(keyTime, vector));					
                 }
             }
 
@@ -574,19 +511,17 @@ namespace GorgonLibrary.Graphics
 			// Write keys.
 			if (keyCount > 0)
 			{
-				KeyColor key = null;        // Color key. 
-
 				for (int j = 0; j < keyCount; j++)
 				{
-					// Create a key.
-					key = new KeyColor(null, 0.0f);                            
+					keyTime = serializer.ReadSingle("TimeIndex");
+					serializer.ReadInt32("InterpolationMode");
 
-					key.Time = serializer.ReadSingle("TimeIndex");
-					key.InterpolationMode = (InterpolationMode)serializer.ReadInt32("InterpolationMode");
-					key.Color = Color.FromArgb(serializer.ReadInt32("Color"));
-					key.AlphaMaskValue = serializer.ReadInt32("AlphaMaskValue");
-
-					_colors.AddKey(key);
+					intValue = serializer.ReadInt32("Color");
+					if (_tracks.Contains("Color"))
+						_tracks["Color"].AddKey(new KeyColor(keyTime, Color.FromArgb(intValue)));
+					intValue = serializer.ReadInt32("AlphaMaskValue");
+					if (_tracks.Contains("AlphaMaskValue"))
+						_tracks["AlphaMaskValue"].AddKey(new KeyInt32(keyTime, intValue));
 				}
 			}
 
@@ -594,35 +529,103 @@ namespace GorgonLibrary.Graphics
             // Write keys.
             if (keyCount > 0)
             {
-                KeyFrame key = null;        // Frame switch key. 
-
                 for (int j = 0; j < keyCount; j++)
                 {
-                    Image imageFrame = null;            // Image used for frame.
-                    string imageName = string.Empty;    // Image name.
+					KeyImage newKey = null;				// Key image.
+					string imageName = string.Empty;    // Image name.
 
-                    // Create key.
-                    key = new KeyFrame(null, 0.0f);
-                    key.Time = serializer.ReadSingle("TimeIndex");
-                    key.InterpolationMode = (InterpolationMode)serializer.ReadInt32("InterpolationMode");
+					keyTime = serializer.ReadSingle("TimeIndex");
+					serializer.ReadInt32("InterpolationMode");
 
-                    // Get the current image frame.
-                    imageFrame = Owner.Image;
-                    imageName = serializer.ReadString("ImageName");
+					imageName = serializer.ReadString("ImageName");
 
-					if (((imageFrame != null) && (imageName != imageFrame.Name) && (ImageCache.Images.Contains(imageName))) || ((imageFrame == null) && (ImageCache.Images.Contains(imageName))))
-						imageFrame = ImageCache.Images[imageName];
-
-                    // No image?  No keyframe.
-                    if (imageFrame != null)
-                    {
-                        key.Frame = new Frame(imageFrame, new Vector2D(serializer.ReadSingle("ImageOffsetX"), serializer.ReadSingle("ImageOffsetY")),
-                            new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY")));
-
-                        _frames.AddKey(key);
-                    }
+					if ((_tracks.Contains("Image")) && (!string.IsNullOrEmpty(imageName)) && (ImageCache.Images.Contains(imageName)))
+					{
+						newKey = new KeyImage(keyTime, ImageCache.Images[imageName]);
+						newKey.ImageOffset = new Vector2D(serializer.ReadSingle("ImageOffsetX"), serializer.ReadSingle("ImageOffsetY"));
+						newKey.ImageSize = new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY"));
+						_tracks["Image"].AddKey(newKey);
+					}
                 }
-			}*/
+			}
+		}
+
+		/// <summary>
+        /// Function to persist the data into the serializer stream.
+        /// </summary>
+        /// <param name="serializer">Serializer that's calling this function.</param>
+        void ISerializable.WriteData(Serializer serializer)
+        {
+            serializer.WriteGroupBegin("Animation");			
+
+            // Write animation data.
+			serializer.Write("Header", "GORANM11");		// Stupid choice on my part, I should have versioned the animations.
+            serializer.Write("Name", Name);
+            serializer.Write("Length", _length);
+            serializer.Write("Looping", _loop);
+            serializer.Write("Enabled", _enabled);
+			serializer.Write("TrackCount", _tracks.Count);
+
+			// Write tracks.
+			foreach (Track track in _tracks)
+			{
+				serializer.WriteGroupBegin("Track");
+				serializer.Write("Name", track.Name);
+				serializer.Write("KeyCount", track.KeyCount);
+				if (track.KeyCount > 0)
+				{	
+					serializer.Write("InterpolationMode", (int)track.InterpolationMode);					
+
+					// Write keys for the track.
+					for (int i = 0; i < track.KeyCount;i++)
+						track.GetKeyAtIndex(i).WriteData(serializer);		// Keyframe to write.					
+				}
+				serializer.WriteGroupEnd();
+			}
+        }
+
+        /// <summary>
+        /// Function to retrieve data from the serializer stream.
+        /// </summary>
+        /// <param name="serializer">Serializer that's calling this function.</param>
+        void ISerializable.ReadData(Serializer serializer)
+        {
+			string header = string.Empty;			// Header.
+			string trackName = string.Empty;		// Name of the track.
+			int keyCount = 0;						// Number of keys for the track.
+			int trackCount = 0;						// Number of tracks.
+			KeyFrame newKey = null;					// Key frame.
+
+            // Write animation data.
+
+			header = serializer.ReadString("Header");
+			if (string.Compare(header, "GORANM11", true) != 0)
+				throw new InvalidOperationException("The animation data is not in a known format.");
+            Name = serializer.ReadString("Name");
+            _length = serializer.ReadSingle("Length");
+            _loop = serializer.ReadBool("Looping");
+            _enabled = serializer.ReadBool("Enabled");
+			trackCount = serializer.ReadInt32("TrackCount");
+
+			// Loop through existing tracks.
+			for (int i = 0; i < trackCount; i++)
+			{
+				trackName = serializer.ReadString("Name");
+				keyCount = serializer.ReadInt32("KeyCount");
+
+				// If the animation contains a track by this name, load its data.
+				if ((_tracks.Contains(trackName)) && (keyCount > 0))
+				{
+					_tracks[trackName].InterpolationMode = (InterpolationMode)serializer.ReadInt32("InterpolationMode");					
+					for (int j = 0; j < keyCount; j++)
+					{
+						// Get the new key.
+						newKey = _tracks[trackName].CreateKey();
+						newKey.ReadData(serializer);
+						_tracks[trackName].AddKey(newKey);
+					}
+				}
+			}
         }
         #endregion
 

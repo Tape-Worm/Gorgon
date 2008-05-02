@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using GorgonLibrary.Serialization;
 
 namespace GorgonLibrary.Graphics
 {
@@ -32,7 +33,7 @@ namespace GorgonLibrary.Graphics
 	/// Abstract object representing an animation key.
 	/// </summary>
 	public abstract class KeyFrame
-		: ICloneable<KeyFrame>
+		: ICloneable<KeyFrame>, ISerializable
 	{
 		#region Variables.
 		private Track _owner = null;				// Track that owns this key.
@@ -142,6 +143,35 @@ namespace GorgonLibrary.Graphics
 		/// A new object that is a copy of this instance.
 		/// </returns>
 		public abstract KeyFrame Clone();
+		#endregion
+
+		#region ISerializable Members
+		/// <summary>
+		/// Property to set or return the filename of the serializable object.
+		/// </summary>
+		/// <value></value>
+		string ISerializable.Filename
+		{
+			get
+			{
+				return string.Empty;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Function to persist the data into the serializer stream.
+		/// </summary>
+		/// <param name="serializer">Serializer that's calling this function.</param>
+		public abstract void WriteData(Serializer serializer);
+
+		/// <summary>
+		/// Function to retrieve data from the serializer stream.
+		/// </summary>
+		/// <param name="serializer">Serializer that's calling this function.</param>
+		public abstract void ReadData(Serializer serializer);
 		#endregion
 	}
 }

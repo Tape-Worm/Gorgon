@@ -1022,7 +1022,8 @@ namespace GorgonLibrary.Graphics
 
 		/// <summary>
 		/// Property to set or return the color.
-		/// </summary>
+		/// </summary>		
+		[Animated(typeof(Drawing.Color))]
 		public abstract Drawing.Color Color
 		{
 			get;
@@ -1031,8 +1032,9 @@ namespace GorgonLibrary.Graphics
 
 		/// <summary>
 		/// Property to set or return the opacity.
-		/// </summary>
-		public abstract byte Opacity
+		/// </summary>		
+		[Animated(typeof(int))]
+		public abstract int Opacity
 		{
 			get;
 			set;
@@ -1121,6 +1123,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the image that this object is bound with.
 		/// </summary>
+		[Animated(typeof(Image), InterpolationMode.None)]
 		public virtual Image Image
 		{
 			get

@@ -51,7 +51,8 @@ namespace GorgonLibrary.Graphics
 				throw new AnimationAlreadyExistsException(animation.Name);
 			
 			AddItem(animation.Name, animation);
-			animation.SetOwner(_owner);
+			if (animation.Owner != _owner)
+				animation.SetOwner(_owner);
         }
 
 		/// <summary>

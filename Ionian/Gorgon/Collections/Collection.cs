@@ -96,7 +96,7 @@ namespace GorgonLibrary
 		protected virtual T GetItem(string key)
 		{
 			if (!Contains(key))
-				throw new KeyNotFoundException(key);
+				throw new KeyNotFoundException("The object '" + key + "' was not found in the collection.");
 
 			if (_caseSensitive)
 				return _items[key];

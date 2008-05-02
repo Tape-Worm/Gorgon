@@ -58,7 +58,7 @@ namespace GorgonLibrary.Graphics
 				keyData = FindNearest(timeIndex);
 
 				// Get an instance of the key.
-				newKey = new KeyInt32(keyData.KeyTimeDelta);
+				newKey = new KeyInt32(keyData.KeyTimeDelta, 0);
 				newKey.Owner = this;				
 
 				// Apply the transformation.
@@ -66,6 +66,17 @@ namespace GorgonLibrary.Graphics
 
 				return newKey;
 			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to create a keyframe.
+		/// </summary>
+		/// <returns>The new keyframe in the correct context.</returns>
+		protected internal override KeyFrame CreateKey()
+		{
+			return new KeyInt32(0.0f, 0);
 		}
 		#endregion
 

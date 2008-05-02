@@ -103,8 +103,35 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-April 30/2008 - Version - Current
+May 2/2008 - Version - Current
 ================================
+* Made MASSIVE changes to the animation system.  Basically this system has pretty 
+  much been rewritten.  The only interface that hasn't changed much is the Animation
+  class.  If you've coded stuff using the old animation system your code WILL break
+  there's no two ways about it.  
+  
+  Here's a sub-listing of changes:
+  * The grouped tracks like TransformTrack, FrameTrack, and ColorTrack are now 
+    thankfully VERY dead and gone.  In their place is a more cohesive Tracks collection
+    that will hold all the tracks for the animation.
+  * No longer reliant on a group of properties (except for the KeyImage type).  We
+    can now mark specific properties as animated and the system will do its best
+    to deduce how to handle the types for those marked properties.
+  * All of these animated properties are now individual tracks - the way it should
+    have been right from the start.
+  * Because Gorgon can only know about so many types, there's the option to hook into
+    the animation events and define your own data type for a track and its keys.
+  * The user can actually include the animation system in our own custom objects
+    and animate the properties of custom object types by including the AnimationsList
+    collection.
+    
+  In short it'll be a much better and more flexible animation system.  
+
+* Updated to the latest version of SlimDX (May 1/08)
+
+* Modified Opacity property on renderables to use an int instead of a byte.  No,
+  I really don't know what I was thinking.
+  
 * Changed ScaledWidth/ScaledHeight so that the user can now set the scaled size of
   the renderable object in the context of absolute width and height.  Prior to this
   the user could only set the scale relatively via the Scale or UniformScale 

@@ -29,12 +29,27 @@ using System.Reflection;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Animation track used to animate 2D vector properties.
+	/// Animation track used to animate byte properties.
 	/// </summary>
-	public class TrackVector2D
+	public class TrackImage
 		: Track
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the interpolation mode for the track.
+		/// </summary>
+		/// <remarks>Image tracks don't use interpolation, and thus only use InterpolationMode.None.</remarks>
+		public override InterpolationMode InterpolationMode
+		{
+			get
+			{
+				return InterpolationMode.None;
+			}
+			set
+			{
+			}
+		}
+
 		/// <summary>
 		/// Property to return the key for a given frame time index.
 		/// </summary>
@@ -43,26 +58,29 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				KeyVector2D newKey = null;				// Key information.
-				NearestKeys keyData;					// Nearest key information.
+				KeyFrame newKey = null;				// Key information.
+				KeyFrame currentKey = null;			// Current key.
 
 				// If we specify the exact key, then return it.
 				if (Contains(timeIndex))
 					return KeyList[timeIndex];
 
-				// If we're at the last key, then don't progress any further.
-				if (timeIndex > GetKeyAtIndex(KeyList.Count - 1).Time)
-					return GetKeyAtIndex(KeyList.Count - 1);
+				// Get first frame.
+				newKey = GetKeyAtIndex(0);
 
-				// Get the nearest key information.
-				keyData = FindNearest(timeIndex);
+				// Find the key that matches the time index.
+				for (int i = 0; i < KeyList.Count; i++)
+				{
+					currentKey = GetKeyAtIndex(i);
 
-				// Get an instance of the key.
-				newKey = new KeyVector2D(keyData.KeyTimeDelta, Vector2D.Zero);
-				newKey.Owner = this;				
-
-				// Apply the transformation.
-				newKey.UpdateKeyData(keyData);
+					if (currentKey.Time <= timeIndex)
+					{
+						newKey = GetKeyAtIndex(i);
+						// If we have a key that matches the time index, then return it.
+						if (currentKey.Time == timeIndex)
+							return newKey;
+					}
+				}
 
 				return newKey;
 			}
@@ -76,17 +94,17 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The new keyframe in the correct context.</returns>
 		protected internal override KeyFrame CreateKey()
 		{
-			return new KeyVector2D(0.0f, Vector2D.Zero);
+			return new KeyImage(0, null);
 		}
 		#endregion
-
+		
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TrackVector2D"/> class.
+		/// Initializes a new instance of the <see cref="TrackImage"/> class.
 		/// </summary>
 		/// <param name="property">Property that is bound to the track.</param>
-		internal TrackVector2D(PropertyInfo property)
-			: base(property, typeof(Vector2D))
+		internal TrackImage(PropertyInfo property)
+			: base(property, typeof(Image))
 		{
 		}
 		#endregion

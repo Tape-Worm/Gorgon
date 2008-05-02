@@ -394,7 +394,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (D3D9.Direct3D9Exception d3dEx)
 			{
-                if (d3dEx.ResultCode == D3D9.Error.DeviceLost)
+                if (d3dEx.ResultCode == D3D9.ResultCode.DeviceLost)
                 {
                     // If we lose the device for some reason, flag it so on the next frame we can check for
                     // device availability.
@@ -447,7 +447,7 @@ namespace GorgonLibrary.Graphics
                     DX.Configuration.ThrowOnError = true;
 
 					// Ensure we -can- reset.
-					if ((level == D3D9.Error.DeviceNotReset) || (level.IsSuccess))
+					if ((level == D3D9.ResultCode.DeviceNotReset) || (level.IsSuccess))
 					{
 						DeviceLost();
 						ResetMode(true, _owner.ClientSize.Width, _owner.ClientSize.Height);
@@ -792,12 +792,12 @@ namespace GorgonLibrary.Graphics
             DX.Configuration.ThrowOnError = true;
 
 			_deviceWasLost = false;
-            if (coopLevel == D3D9.Error.DeviceNotReset)
+            if (coopLevel == D3D9.ResultCode.DeviceNotReset)
             {
                 _deviceWasLost = true;
                 ResetMode(false, 0, 0);
             }
-            if (coopLevel == D3D9.Error.DriverInternalError)
+            if (coopLevel == D3D9.ResultCode.DriverInternalError)
                 throw new DeviceCannotResetException(true);
 		}
 

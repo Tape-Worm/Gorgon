@@ -76,7 +76,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SlimDX, Version=1.0.3002.3510, Culture=neutral, PublicKeyToken=5a7e35f0f7a29e88, processorArchitecture=x86">
+    <Reference Include="SlimDX, Version=2.0.3.37, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\SlimDX\x86\Release\SlimDX.dll</HintPath>
     </Reference>
@@ -102,11 +102,17 @@
     <Compile Include="Animation\AnimationList.cs" />
     <Compile Include="Animation\KeyFrame.cs" />
     <Compile Include="Animation\TrackCollection.cs" />
+    <Compile Include="Animation\Types\KeyByte.cs" />
+    <Compile Include="Animation\Types\KeyColor.cs" />
     <Compile Include="Animation\Types\KeyFloat.cs" />
+    <Compile Include="Animation\Types\KeyImage.cs" />
     <Compile Include="Animation\Types\KeyInt32.cs" />
     <Compile Include="Animation\Types\KeyVector2D.cs" />
     <Compile Include="Animation\Track.cs" />
+    <Compile Include="Animation\Types\TrackByte.cs" />
+    <Compile Include="Animation\Types\TrackColor.cs" />
     <Compile Include="Animation\Types\TrackFloat.cs" />
+    <Compile Include="Animation\Types\TrackImage.cs" />
     <Compile Include="Animation\Types\TrackInt32.cs" />
     <Compile Include="Animation\Types\TrackVector2D.cs" />
     <Compile Include="Buffers\Buffer.cs">

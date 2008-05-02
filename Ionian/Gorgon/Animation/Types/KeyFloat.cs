@@ -25,11 +25,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using GorgonLibrary.Serialization;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A key frame 
+	/// A key frame for manipulating data of the type <see cref="System.Single">float</see>.
 	/// </summary>
 	public class KeyFloat
 		: KeyFrame
@@ -99,7 +100,7 @@ namespace GorgonLibrary.Graphics
 			{
 				// Calculate linear values.
 				if (Owner.InterpolationMode == InterpolationMode.Linear)
-					_value = MathUtility.Round(_value + (Time * (next.Value - previous.Value)));					
+					_value = MathUtility.Round(previous.Value + (Time * (next.Value - previous.Value)));
 				else
 				{
 					// Calculate spline values.
@@ -112,6 +113,35 @@ namespace GorgonLibrary.Graphics
 			}
 
 			Owner.NeedsUpdate = true;
+		}
+
+		/// <summary>
+		/// Function to retrieve data from the serializer stream.
+		/// </summary>
+		/// <param name="serializer">Serializer that's calling this function.</param>
+		public override void ReadData(Serializer serializer)
+		{
+			string typeName = string.Empty;		// Type name of the key.
+
+			typeName = serializer.ReadString("Type");
+			if (string.Compare(typeName, "KeyFloat", true) != 0)
+				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyFloat", typeName);
+
+			Time = serializer.ReadSingle("Time");
+			_value = serializer.ReadSingle("Value");
+		}
+
+		/// <summary>
+		/// Function to persist the data into the serializer stream.
+		/// </summary>
+		/// <param name="serializer">Serializer that's calling this function.</param>
+		public override void WriteData(Serializer serializer)
+		{
+			serializer.WriteGroupBegin("KeyFrame");
+			serializer.Write("Type", "KeyFloat");
+			serializer.Write("Time", Time);
+			serializer.Write("Value", _value);
+			serializer.WriteGroupEnd();
 		}
 
 		/// <summary>
@@ -138,8 +168,7 @@ namespace GorgonLibrary.Graphics
 		{
 			KeyFloat clone = null;			// Cloned key.
 
-			clone = new KeyFloat(Time);
-			clone.Value = _value;
+			clone = new KeyFloat(Time, _value);
 
 			return clone;
 		}
@@ -150,11 +179,13 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="KeyFloat"/> class.
 		/// </summary>
 		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
-		public KeyFloat(float time)
+		/// <param name="value">Value for the key.</param>
+		public KeyFloat(float time, float value)
 			: base(time)
 		{
 			_splineValue = new Spline();
 			_splineValue.AutoCalculate = false;
+			_value = value;
 		}
 		#endregion
 	}

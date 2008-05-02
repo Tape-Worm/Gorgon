@@ -25,26 +25,26 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using System.Drawing;
 using GorgonLibrary.Serialization;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A key frame for manipulating data of the type <see cref="System.Int32"/>
+	/// A key frame for manipulating data of the type <see cref="System.Drawing.Color"/>
 	/// </summary>
-	public class KeyInt32
+	public class KeyColor
 		: KeyFrame
 	{
 		#region Variables.
-		private int _value = 0;								// Value of the key.
-		private Spline _splineValue = null;					// Splined value.
+		private Color _value = Color.Transparent;			// Value of the key.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the value of the key.
 		/// </summary>
-		public int Value
+		public Color Value
 		{
 			get
 			{
@@ -59,57 +59,53 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to set up the splines.
-		/// </summary>
-		private void SetupSplines()
-		{
-			// Remove previous points.
-			_splineValue.Clear();
-
-			// Add points to the spline.
-			for (int i = 0; i < Owner.KeyCount; i++)
-			{
-				KeyInt32 key = Owner.GetKeyAtIndex(i) as KeyInt32;
-				_splineValue.AddPoint(new Vector2D(key.Value, 0.0f));
-			}
-
-			// Recalculate tangents.
-			_splineValue.RecalculateTangents();
-		}
-
-		/// <summary>
 		/// Function to update the data within the key frame.
 		/// </summary>
 		/// <param name="keyData">Interpolated key data used to help calculate data between keys.</param>
 		protected internal override void UpdateKeyData(Track.NearestKeys keyData)
 		{
+			float[] source = new float[4];		// Source color components.
+			float[] dest = new float[4];		// Destination color components.
+
 			// Cast to the appropriate types.
-			KeyInt32 previous = keyData.PreviousKey as KeyInt32;
-			KeyInt32 next = keyData.NextKey as KeyInt32;
+			KeyColor previous = keyData.PreviousKey as KeyColor;
+			KeyColor next = keyData.NextKey as KeyColor;
+			
 
 			if (previous == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyInt32", keyData.PreviousKey.GetType().Name);
+				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyColor", keyData.PreviousKey.GetType().Name);
 
 			if (next == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyInt32", keyData.NextKey.GetType().Name);
+				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyColor", keyData.NextKey.GetType().Name);
 
 			// Copy if we're at the same frame.
 			if ((Time == 0) || (previous.Owner.InterpolationMode == InterpolationMode.None))
 				_value = previous.Value;
 			else
 			{
-				// Calculate linear values.
-				if (Owner.InterpolationMode == InterpolationMode.Linear)
-					_value = previous.Value + (int)(Time * (float)(next.Value - previous.Value));
-				else
-				{
-					// Calculate spline values.
-					if (Owner.NeedsUpdate)
-						SetupSplines();
+				// Get color components.
+				source[0] = previous.Value.R;
+				source[1] = previous.Value.G;
+				source[2] = previous.Value.B;
+				source[3] = previous.Value.A;
 
-					// Calculate transforms.
-					_value = (int)MathUtility.Round(_splineValue[keyData.PreviousKeyIndex, Time].X);
+				dest[0] = next.Value.R;
+				dest[1] = next.Value.G;
+				dest[2] = next.Value.B;
+				dest[3] = next.Value.A;
+
+				// Interpolate the colors.
+				for (int i = 0; i < 4; i++)
+				{
+					dest[i] = (source[i] + ((dest[i] - source[i]) * Time));
+
+					if (dest[i] < 0)
+						dest[i] = 0;
+					if (dest[i] > 255)
+						dest[i] = 255;
 				}
+
+				_value = Color.FromArgb((int)dest[3], (int)dest[0], (int)dest[1], (int)dest[2]);
 			}
 
 			Owner.NeedsUpdate = true;
@@ -124,11 +120,11 @@ namespace GorgonLibrary.Graphics
 			string typeName = string.Empty;		// Type name of the key.
 
 			typeName = serializer.ReadString("Type");
-			if (string.Compare(typeName, "KeyInt32", true) != 0)
-				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyInt32", typeName);
+			if (string.Compare(typeName, "KeyColor", true) != 0)
+				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyColor", typeName);
 
 			Time = serializer.ReadSingle("Time");
-			_value = serializer.ReadInt32("Value");
+			_value = Color.FromArgb(serializer.ReadInt32("Value"));
 		}
 
 		/// <summary>
@@ -138,9 +134,9 @@ namespace GorgonLibrary.Graphics
 		public override void WriteData(Serializer serializer)
 		{
 			serializer.WriteGroupBegin("KeyFrame");
-			serializer.Write("Type", "KeyInt32");
+			serializer.Write("Type", "KeyColor");
 			serializer.Write("Time", Time);
-			serializer.Write("Value", _value);
+			serializer.Write("Value", _value.ToArgb());
 			serializer.WriteGroupEnd();
 		}
 
@@ -151,8 +147,8 @@ namespace GorgonLibrary.Graphics
 		{
 			if (Owner == null)
 				return;
-			if (Owner.BoundProperty.PropertyType != typeof(Int32))
-				Owner.BoundProperty.SetValue(Owner.Owner.Owner, Convert.ChangeType(_value, Owner.BoundProperty.PropertyType), null);
+			if (Owner.BoundProperty.PropertyType == typeof(int))
+				Owner.BoundProperty.SetValue(Owner.Owner.Owner, _value.ToArgb(), null);
 			else
 				Owner.BoundProperty.SetValue(Owner.Owner.Owner, _value, null);
 		}
@@ -165,9 +161,9 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override KeyFrame Clone()
 		{
-			KeyInt32 clone = null;			// Cloned key.
+			KeyColor clone = null;			// Cloned key.
 
-			clone = new KeyInt32(Time, _value);
+			clone = new KeyColor(Time, _value);
 
 			return clone;
 		}
@@ -175,15 +171,13 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="KeyInt32"/> class.
+		/// Initializes a new instance of the <see cref="KeyColor"/> class.
 		/// </summary>
 		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
-		/// <param name="value">Value for the key.</param>
-		public KeyInt32(float time, int value)
+		/// <param name="value">Color value for the key.</param>
+		public KeyColor(float time, Color value)
 			: base(time)
 		{
-			_splineValue = new Spline();
-			_splineValue.AutoCalculate = false;
 			_value = value;
 		}
 		#endregion

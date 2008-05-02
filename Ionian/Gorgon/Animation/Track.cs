@@ -276,7 +276,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the interpolation mode for the track.
 		/// </summary>
-		public InterpolationMode InterpolationMode
+		public virtual InterpolationMode InterpolationMode
 		{
 			get
 			{
@@ -337,6 +337,12 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to create a keyframe.
+		/// </summary>
+		/// <returns>The new keyframe in the correct context.</returns>
+		protected internal abstract KeyFrame CreateKey();
+
 		/// <summary>
 		/// Function to set an animation as the owner of this track.
 		/// </summary>

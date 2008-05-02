@@ -30,21 +30,21 @@ using GorgonLibrary.Serialization;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A key frame for manipulating data of the type <see cref="System.Int32"/>
+	/// A key frame for manipulating data of the type <see cref="System.Byte"/>
 	/// </summary>
-	public class KeyInt32
+	public class KeyByte
 		: KeyFrame
 	{
 		#region Variables.
-		private int _value = 0;								// Value of the key.
-		private Spline _splineValue = null;					// Splined value.
+		private byte _value = 0;					// Value of the key.
+		private Spline _splineValue = null;			// Splined value.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the value of the key.
 		/// </summary>
-		public int Value
+		public byte Value
 		{
 			get
 			{
@@ -69,7 +69,7 @@ namespace GorgonLibrary.Graphics
 			// Add points to the spline.
 			for (int i = 0; i < Owner.KeyCount; i++)
 			{
-				KeyInt32 key = Owner.GetKeyAtIndex(i) as KeyInt32;
+				KeyByte key = Owner.GetKeyAtIndex(i) as KeyByte;
 				_splineValue.AddPoint(new Vector2D(key.Value, 0.0f));
 			}
 
@@ -84,14 +84,14 @@ namespace GorgonLibrary.Graphics
 		protected internal override void UpdateKeyData(Track.NearestKeys keyData)
 		{
 			// Cast to the appropriate types.
-			KeyInt32 previous = keyData.PreviousKey as KeyInt32;
-			KeyInt32 next = keyData.NextKey as KeyInt32;
+			KeyByte previous = keyData.PreviousKey as KeyByte;
+			KeyByte next = keyData.NextKey as KeyByte;
 
 			if (previous == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyInt32", keyData.PreviousKey.GetType().Name);
+				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyByte", keyData.PreviousKey.GetType().Name);
 
 			if (next == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyInt32", keyData.NextKey.GetType().Name);
+				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyByte", keyData.NextKey.GetType().Name);
 
 			// Copy if we're at the same frame.
 			if ((Time == 0) || (previous.Owner.InterpolationMode == InterpolationMode.None))
@@ -100,7 +100,7 @@ namespace GorgonLibrary.Graphics
 			{
 				// Calculate linear values.
 				if (Owner.InterpolationMode == InterpolationMode.Linear)
-					_value = previous.Value + (int)(Time * (float)(next.Value - previous.Value));
+					_value = (byte)((float)previous.Value + (Time * (float)(next.Value - previous.Value)));
 				else
 				{
 					// Calculate spline values.
@@ -108,7 +108,7 @@ namespace GorgonLibrary.Graphics
 						SetupSplines();
 
 					// Calculate transforms.
-					_value = (int)MathUtility.Round(_splineValue[keyData.PreviousKeyIndex, Time].X);
+					_value = (byte)_splineValue[keyData.PreviousKeyIndex, Time].X;
 				}
 			}
 
@@ -124,11 +124,11 @@ namespace GorgonLibrary.Graphics
 			string typeName = string.Empty;		// Type name of the key.
 
 			typeName = serializer.ReadString("Type");
-			if (string.Compare(typeName, "KeyInt32", true) != 0)
-				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyInt32", typeName);
+			if (string.Compare(typeName, "KeyByte", true) != 0)
+				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyByte", typeName);
 
 			Time = serializer.ReadSingle("Time");
-			_value = serializer.ReadInt32("Value");
+			_value = serializer.ReadByte("Value");
 		}
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace GorgonLibrary.Graphics
 		public override void WriteData(Serializer serializer)
 		{
 			serializer.WriteGroupBegin("KeyFrame");
-			serializer.Write("Type", "KeyInt32");
+			serializer.Write("Type", "KeyByte");
 			serializer.Write("Time", Time);
 			serializer.Write("Value", _value);
 			serializer.WriteGroupEnd();
@@ -151,7 +151,7 @@ namespace GorgonLibrary.Graphics
 		{
 			if (Owner == null)
 				return;
-			if (Owner.BoundProperty.PropertyType != typeof(Int32))
+			if (Owner.BoundProperty.PropertyType != typeof(byte))
 				Owner.BoundProperty.SetValue(Owner.Owner.Owner, Convert.ChangeType(_value, Owner.BoundProperty.PropertyType), null);
 			else
 				Owner.BoundProperty.SetValue(Owner.Owner.Owner, _value, null);
@@ -165,9 +165,9 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override KeyFrame Clone()
 		{
-			KeyInt32 clone = null;			// Cloned key.
+			KeyByte clone = null;			// Cloned key.
 
-			clone = new KeyInt32(Time, _value);
+			clone = new KeyByte(Time, _value);
 
 			return clone;
 		}
@@ -175,16 +175,16 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="KeyInt32"/> class.
+		/// Initializes a new instance of the <see cref="KeyByte"/> class.
 		/// </summary>
 		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
-		/// <param name="value">Value for the key.</param>
-		public KeyInt32(float time, int value)
+		/// <param name="value">Value of the key.</param>
+		public KeyByte(float time, byte value)
 			: base(time)
 		{
+			_value = value;
 			_splineValue = new Spline();
 			_splineValue.AutoCalculate = false;
-			_value = value;
 		}
 		#endregion
 	}

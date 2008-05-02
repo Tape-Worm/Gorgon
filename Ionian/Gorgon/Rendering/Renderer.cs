@@ -502,7 +502,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (D3D9.Direct3D9Exception d3dEx)
 			{
-                if (d3dEx.ResultCode == D3D9.Error.DeviceLost)
+                if (d3dEx.ResultCode == D3D9.ResultCode.DeviceLost)
                 {
                     if (!Gorgon.Screen.DeviceNotReset)
                         Gorgon.Screen.ResetLostDevice();

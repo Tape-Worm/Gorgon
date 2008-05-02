@@ -253,7 +253,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the opacity.
 		/// </summary>
-		public override byte Opacity
+		public override int Opacity
 		{
 			get
 			{

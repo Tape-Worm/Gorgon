@@ -182,18 +182,19 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the opacity.
 		/// </summary>
-		public override byte Opacity
+		public override int Opacity
 		{
 			get
 			{
-				return (byte)((Vertices[0].Color >> 24) & 0xFF);
+				return ((Vertices[0].Color >> 24) & 0xFF);
 			}
 			set
 			{
-				Vertices[0].Color = ((int)value << 24) | (Vertices[0].Color & 0xFFFFFF);
-				Vertices[1].Color = ((int)value << 24) | (Vertices[1].Color & 0xFFFFFF);
-				Vertices[2].Color = ((int)value << 24) | (Vertices[2].Color & 0xFFFFFF);
-				Vertices[3].Color = ((int)value << 24) | (Vertices[3].Color & 0xFFFFFF);
+				value &= 0xFF;
+				Vertices[0].Color = (value << 24) | (Vertices[0].Color & 0xFFFFFF);
+				Vertices[1].Color = (value << 24) | (Vertices[1].Color & 0xFFFFFF);
+				Vertices[2].Color = (value << 24) | (Vertices[2].Color & 0xFFFFFF);
+				Vertices[3].Color = (value << 24) | (Vertices[3].Color & 0xFFFFFF);
 			}
 		}
 
@@ -2025,9 +2026,7 @@ namespace GorgonLibrary.Graphics
 			_flipHorizontal = reader.ReadBool("HorizontallyFlipped");
 			_flipVertical = reader.ReadBool("VerticallyFlipped");
 
-            // Get animations.
-			// TODO: Update this to fit with new animation system.
-			/*
+            // Get animations.			
 			int animationCount = 0;             // Animation count.
 			
             animationCount = reader.ReadInt32("AnimationCount");
@@ -2036,11 +2035,15 @@ namespace GorgonLibrary.Graphics
                 // Read each animation.
                 for (int i = 0; i < animationCount; i++)
                 {
-                    Animation animation = new Animation("@EmptyAnimation", this, 0.0f);
-                    ((ISerializable)animation).ReadData(reader);
-                    Animations.Add(animation);
+                    Animation animation = new Animation("@EmptyAnimation", 0.0f);
+					animation.SetOwner(this);					
+					if (spriteVersion == new Version(1, 1))
+						((ISerializable)animation).ReadData(reader);
+					else
+						animation.ReadVersion1Animation(reader);		// Import the old animation format.
+					Animations.Add(animation);
                 }
-            }*/
+            }
 
 			// Perform updates.
 			UpdateDimensions();
