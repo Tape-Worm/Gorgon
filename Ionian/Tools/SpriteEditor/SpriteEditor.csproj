@@ -360,8 +360,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorSprite.ico" />
-    <None Include="Resources\cut.png" />
-    <None Include="Resources\paste.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
