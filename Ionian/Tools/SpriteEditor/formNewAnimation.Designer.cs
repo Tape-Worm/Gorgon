@@ -89,7 +89,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(13, 41);
+			this.label2.Location = new System.Drawing.Point(13, 67);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(43, 13);
 			this.label2.TabIndex = 2;
@@ -99,11 +99,11 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			this.numericLength.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericLength.Increment = new decimal(new int[] {
-            10,
+            30,
             0,
             0,
             0});
-			this.numericLength.Location = new System.Drawing.Point(78, 39);
+			this.numericLength.Location = new System.Drawing.Point(78, 65);
 			this.numericLength.Maximum = new decimal(new int[] {
             86400000,
             0,
@@ -116,7 +116,7 @@ namespace GorgonLibrary.Graphics.Tools
             0});
 			this.numericLength.Name = "numericLength";
 			this.numericLength.Size = new System.Drawing.Size(89, 20);
-			this.numericLength.TabIndex = 1;
+			this.numericLength.TabIndex = 2;
 			this.numericLength.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.numericLength.Value = new decimal(new int[] {
             30,
@@ -127,7 +127,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			// labelUnit
 			// 
-			this.labelUnit.Location = new System.Drawing.Point(173, 41);
+			this.labelUnit.Location = new System.Drawing.Point(173, 67);
 			this.labelUnit.Name = "labelUnit";
 			this.labelUnit.Size = new System.Drawing.Size(108, 18);
 			this.labelUnit.TabIndex = 4;
@@ -167,7 +167,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(173, 67);
+			this.label3.Location = new System.Drawing.Point(173, 41);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(108, 18);
 			this.label3.TabIndex = 8;
@@ -177,11 +177,11 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			this.numericFrameRate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericFrameRate.Increment = new decimal(new int[] {
-            10,
+            15,
             0,
             0,
             0});
-			this.numericFrameRate.Location = new System.Drawing.Point(78, 65);
+			this.numericFrameRate.Location = new System.Drawing.Point(78, 39);
 			this.numericFrameRate.Maximum = new decimal(new int[] {
             86400000,
             0,
@@ -194,7 +194,7 @@ namespace GorgonLibrary.Graphics.Tools
             0});
 			this.numericFrameRate.Name = "numericFrameRate";
 			this.numericFrameRate.Size = new System.Drawing.Size(89, 20);
-			this.numericFrameRate.TabIndex = 2;
+			this.numericFrameRate.TabIndex = 1;
 			this.numericFrameRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.numericFrameRate.Value = new decimal(new int[] {
             30,
@@ -206,7 +206,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(12, 67);
+			this.label4.Location = new System.Drawing.Point(12, 41);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(60, 13);
 			this.label4.TabIndex = 7;

@@ -256,8 +256,8 @@ namespace GorgonLibrary.Example
 			{
 				if (_asteroidColliders.Count > 0)
 					_asteroidColliders.Clear();
-
-				missile.CollidesWith<Asteroid>(asteroids, _asteroidColliders);
+								
+				missile.CollidesWith<Asteroid>(asteroids, _asteroidColliders);				
 
 				if (_asteroidColliders.Count > 0)
 				{
@@ -320,7 +320,7 @@ namespace GorgonLibrary.Example
 
 			foreach (Asteroid asteroid in asteroids)
 			{
-				if ((asteroid.Position.Y > 0) && (CollidesWith<Asteroid>(asteroid)))
+				if ((asteroid.CollidesWith<Player>(this)) && (asteroid.Position.Y > 0))
 				{
 					_asteroidColliders.Add(asteroid);
 					asteroid.Reset();
@@ -423,6 +423,7 @@ namespace GorgonLibrary.Example
 		{
 			foreach (Projectile missile in _missiles)
 				missile.Draw();
+
 
 			if (_dead)
 			{

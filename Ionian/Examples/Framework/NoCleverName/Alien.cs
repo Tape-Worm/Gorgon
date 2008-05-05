@@ -81,8 +81,8 @@ namespace GorgonLibrary.Example
 		{
 			get
 			{
-				// Alien is worth 250 points.
-				return 250;
+				// Alien is worth 1000 points, and the higher up the alien is on the screen, the more it's worth.
+				return 1000 + (int)((Gorgon.Screen.Height - this.Position.Y) * MainForm.SpriteScales.Y);
 			}
 		}
 

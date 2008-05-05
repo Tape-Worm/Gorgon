@@ -56,6 +56,9 @@ namespace GorgonLibrary.Graphics.Tools
 
 			try
 			{
+				if (context.PropertyDescriptor.IsReadOnly)
+					return value;
+
 				binder = new formBindImage(formMain.Me);
 				binder.IsPropBagEditor = true;
 				binder.PropBagSelectedImage = value as Image;

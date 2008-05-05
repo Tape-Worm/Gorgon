@@ -100,6 +100,9 @@
     <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\AnimationException.cs" />
     <Compile Include="Animation\AnimationList.cs" />
+    <Compile Include="Animation\EditorCanDragAttribute.cs" />
+    <Compile Include="Animation\EditorRoundValuesAttribute.cs" />
+    <Compile Include="Animation\EditorMinMaxAttribute.cs" />
     <Compile Include="Animation\KeyFrame.cs" />
     <Compile Include="Animation\TrackCollection.cs" />
     <Compile Include="Animation\Types\KeyByte.cs" />
@@ -182,6 +185,7 @@
     <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Math\BoundingCircle.cs" />
     <Compile Include="Math\MathUtility.cs" />
     <Compile Include="Math\Matrix.cs" />
     <Compile Include="Math\Quaternion.cs" />

@@ -779,6 +779,13 @@ namespace Flobbster.Windows.Forms
 			private PropertyBag bag;
 			private PropertySpec item;
 
+			/// <summary>
+			/// Initializes a new instance of the <see cref="PropertySpecDescriptor"/> class.
+			/// </summary>
+			/// <param name="item">The item.</param>
+			/// <param name="bag">The bag.</param>
+			/// <param name="name">The name.</param>
+			/// <param name="attrs">The attrs.</param>
 			public PropertySpecDescriptor(PropertySpec item, PropertyBag bag, string name, Attribute[] attrs) :
 				base(name, attrs)
 			{
@@ -786,21 +793,43 @@ namespace Flobbster.Windows.Forms
 				this.item = item;
 			}
 
+			/// <summary>
+			/// When overridden in a derived class, gets the type of the component this property is bound to.
+			/// </summary>
+			/// <value></value>
+			/// <returns>A <see cref="T:System.Type"/> that represents the type of component this property is bound to. When the <see cref="M:System.ComponentModel.PropertyDescriptor.GetValue(System.Object)"/> or <see cref="M:System.ComponentModel.PropertyDescriptor.SetValue(System.Object,System.Object)"/> methods are invoked, the object specified might be an instance of this type.</returns>
 			public override Type ComponentType
 			{
 				get { return item.GetType(); }
 			}
 
+			/// <summary>
+			/// When overridden in a derived class, gets a value indicating whether this property is read-only.
+			/// </summary>
+			/// <value></value>
+			/// <returns>true if the property is read-only; otherwise, false.</returns>
 			public override bool IsReadOnly
 			{
 				get { return (Attributes.Matches(ReadOnlyAttribute.Yes)); }
 			}
 
+			/// <summary>
+			/// When overridden in a derived class, gets the type of the property.
+			/// </summary>
+			/// <value></value>
+			/// <returns>A <see cref="T:System.Type"/> that represents the type of the property.</returns>
 			public override Type PropertyType
 			{
 				get { return Type.GetType(item.TypeName); }
 			}
 
+			/// <summary>
+			/// When overridden in a derived class, returns whether resetting an object changes its value.
+			/// </summary>
+			/// <param name="component">The component to test for reset capability.</param>
+			/// <returns>
+			/// true if resetting the component changes its value; otherwise, false.
+			/// </returns>
 			public override bool CanResetValue(object component)
 			{
 				if ((item.DefaultValue == null) || (Attributes.Contains(ReadOnlyAttribute.Yes)))
@@ -809,6 +838,13 @@ namespace Flobbster.Windows.Forms
 					return !this.GetValue(component).Equals(item.DefaultValue);
 			}
 
+			/// <summary>
+			/// When overridden in a derived class, gets the current value of the property on a component.
+			/// </summary>
+			/// <param name="component">The component with the property for which to retrieve the value.</param>
+			/// <returns>
+			/// The value of a property for a given component.
+			/// </returns>
 			public override object GetValue(object component)
 			{
 				// Have the property bag raise an event to get the current value
@@ -819,11 +855,20 @@ namespace Flobbster.Windows.Forms
 				return e.Value;
 			}
 
+			/// <summary>
+			/// When overridden in a derived class, resets the value for this property of the component to the default value.
+			/// </summary>
+			/// <param name="component">The component with the property value that is to be reset to the default value.</param>
 			public override void ResetValue(object component)
 			{
 				SetValue(component, item.DefaultValue);
 			}
 
+			/// <summary>
+			/// When overridden in a derived class, sets the value of the component to a different value.
+			/// </summary>
+			/// <param name="component">The component with the property value that is to be set.</param>
+			/// <param name="value">The new value.</param>
 			public override void SetValue(object component, object value)
 			{
 				// Have the property bag raise an event to set the current value
@@ -833,6 +878,13 @@ namespace Flobbster.Windows.Forms
 				bag.OnSetValue(e);
 			}
 
+			/// <summary>
+			/// When overridden in a derived class, determines a value indicating whether the value of this property needs to be persisted.
+			/// </summary>
+			/// <param name="component">The component with the property to be examined for persistence.</param>
+			/// <returns>
+			/// true if the property should be persisted; otherwise, false.
+			/// </returns>
 			public override bool ShouldSerializeValue(object component)
 			{
 				object val = this.GetValue(component);
@@ -992,6 +1044,18 @@ namespace Flobbster.Windows.Forms
 			foreach(PropertySpec property in properties)
 			{
 				ArrayList attrs = new ArrayList();
+				bool isReadOnly = false; ;
+
+				if ((property.Attributes != null) && (property.Attributes.Length > 0))
+				{
+					if (property.Attributes[0] == ReadOnlyAttribute.Yes)
+						isReadOnly = true;
+				}
+
+				// Additionally, append the custom attributes associated with the
+				// PropertySpec, if any.
+				if (property.Attributes != null)
+					attrs.AddRange(property.Attributes);
 
 				// If a category, description, editor, or type converter are specified
 				// in the PropertySpec, create attributes to define that relationship.
@@ -1001,16 +1065,13 @@ namespace Flobbster.Windows.Forms
 				if(property.Description != null)
 					attrs.Add(new DescriptionAttribute(property.Description));
 
-				if(property.EditorTypeName != null)
+				if ((property.EditorTypeName != null) && (!isReadOnly))
+				{
 					attrs.Add(new EditorAttribute(property.EditorTypeName, typeof(UITypeEditor)));
+				}
 
-				if(property.ConverterTypeName != null)
+				if (property.ConverterTypeName != null)
 					attrs.Add(new TypeConverterAttribute(property.ConverterTypeName));
-
-				// Additionally, append the custom attributes associated with the
-				// PropertySpec, if any.
-				if(property.Attributes != null)
-					attrs.AddRange(property.Attributes);
 
 				Attribute[] attrArray = (Attribute[])attrs.ToArray(typeof(Attribute));
 

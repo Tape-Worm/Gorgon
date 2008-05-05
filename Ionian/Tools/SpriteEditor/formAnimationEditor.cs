@@ -33,25 +33,6 @@ using Dialogs;
 namespace GorgonLibrary.Graphics.Tools
 {
 	/// <summary>
-	/// Enumeration for time units.
-	/// </summary>
-	public enum TimeUnits
-	{
-		/// <summary>
-		/// Milliseconds.
-		/// </summary>
-		Milliseconds = 0,
-		/// <summary>
-		/// Seconds.
-		/// </summary>
-		Seconds = 1,
-		/// <summary>
-		/// Minutes.
-		/// </summary>
-		Minutes = 2
-	}
-
-	/// <summary>
 	/// Interface for the animation editor.
 	/// </summary>
 	public partial class formAnimationEditor 
@@ -60,15 +41,22 @@ namespace GorgonLibrary.Graphics.Tools
 		#region Variables.
 		private SpriteDocumentList _documents = null;					// Sprite document list.
 		private Animation _animation = null;							// Current animation.
-		private TimeUnits _currentUnit = TimeUnits.Milliseconds;		// Current time units.
-		private frameAnimation _frameEditor = null;						// Frame animation editor.
-		private colorAnimation _colorEditor = null;						// Color animation editor.
-		private transformAnimation _transformEditor = null;				// Transformation editor.
 		private bool _noevent = false;									// Flag to disable events.
-		private IDropIn _dropIn = null;									// Drop in object.		
+		private AnimationDropIn _dropIn = null;							// Animation drop in panel.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the total number of frames for this track.
+		/// </summary>
+		public Decimal MaxFrames
+		{
+			get
+			{
+				return trackTrack.Maximum + 1;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the currently loaded sprites.
 		/// </summary>
@@ -95,51 +83,73 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			set
 			{
-				_animation = value;
+				Renderable animationOwner = null;
 
-				if (_animation.Length < 1000.0f)
+				if (value != null)
 				{
-					radioMilliseconds.Checked = true;
-					UnitUpdate(radioMilliseconds, EventArgs.Empty);
+					_animation = value;
+					comboTrack.Items.Clear();
+					animationOwner = _animation.Owner as Renderable;
+
+
+					if (animationOwner != null)
+					{
+						foreach (Animation animation in animationOwner.Animations)
+						{
+							animation.Reset();
+							if (animation.Owner is Renderable)
+								((Renderable)animation.Owner).ApplyAnimations();
+						}
+					}
+					else
+					{
+						UI.ErrorBox(this, "The object is not a renderable type.  Cannot edit its animation.");
+						return;
+					}
+
+					// Get tracks.
+					FillTrackCombo();
+					string currentTrack = string.Empty;		// Current track.
+					int lastCount = 0;						// Last key count.
+
+					foreach (Track track in _animation.Tracks)
+					{
+						if (track.KeyCount > lastCount)
+						{
+							currentTrack = track.Name;
+							lastCount = track.KeyCount;
+						}
+					}
+
+					if (currentTrack == string.Empty)
+						comboTrack.SelectedItem = "Image";
+					else
+						comboTrack.SelectedItem = currentTrack;
+
+					Text = "Animation Editor - " + _animation.Name;
 				}
+				else
+					UI.ErrorBox(this, "Cannot set the current animation to NULL.");
 
-				if ((_animation.Length >= 1000.0f) && (_animation.Length < 60000.0f))
-				{
-					radioSeconds.Checked = true;
-					UnitUpdate(radioSeconds, EventArgs.Empty);
-				}
-
-				if (_animation.Length >= 60000.0f)
-				{
-					radioMinutes.Checked = true;
-					UnitUpdate(radioMinutes, EventArgs.Empty);
-				}
-
-				_frameEditor = new frameAnimation(_documents);
-				_frameEditor.Dock = DockStyle.Fill;
-
-				_colorEditor = new colorAnimation(_documents);
-				_colorEditor.Dock = DockStyle.Fill;
-
-				_transformEditor = new transformAnimation(_documents);
-				_transformEditor.Dock = DockStyle.Fill;
-
-				// Load the frame animation editor.
-				comboTrack.Text = "animation frames";
-
-				Text = "Animation Editor - " + _animation.Name;
-
-				// Reset all the animations.
-				foreach (Animation animation in _animation.Owner.Animations)
-				{
-					animation.Reset();
-					_animation.Owner.ApplyAnimations();
-				}
+				TrackerUpdate();
 			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to retrieve all the tracks from the animation.
+		/// </summary>
+		private void FillTrackCombo()
+		{
+			comboTrack.Items.Clear();
+			if (_animation.Tracks.Count > 0)
+			{
+				foreach (Track track in _animation.Tracks)
+					comboTrack.Items.Add(track.Name);
+			}
+		}
+
 		/// <summary>
 		/// Handles the Scroll event of the trackTrack control.
 		/// </summary>
@@ -149,8 +159,8 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			if (_noevent)
 				return;
-			numericTrackTime.Value = (decimal)trackTrack.Value;
-			_dropIn.CurrentTime = GetConvertedTime();
+			numericTrackFrames.Value = (decimal)trackTrack.Value;
+			UpdateDropIn();
 		}
 
 		/// <summary>
@@ -162,32 +172,39 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			if (_noevent)
 				return;
-			trackTrack.Value = (int)numericTrackTime.Value;
-			_dropIn.CurrentTime = GetConvertedTime();
+			trackTrack.Value = (int)numericTrackFrames.Value;
+			UpdateDropIn();
 		}
 
 		/// <summary>
-		/// Property to drop in the editor.
+		/// Function to update the drop-in.
 		/// </summary>
-		/// <param name="editor">Editor to drop in.</param>
-		private void DropInEditor(IDropIn editor)
+		private void UpdateDropIn()
 		{
-			float lastTime = 0.0f;		// Last time.
-			
-			// Remove the current control
-			if (splitTrack.Panel1.Controls.Count != 0)
+			AnimationDropIn dropIn;			// Drop in.
+
+			if (splitTrack.Panel1.Controls.Count > 0)
 			{
-				lastTime = ((IDropIn)splitTrack.Panel1.Controls[0]).CurrentTime;		// Get 'last' time.
-
-				// Don't remove the editor.
-				((IDropIn)splitTrack.Panel1.Controls[0]).CleanUp();
-				splitTrack.Panel1.Controls.RemoveAt(0);
+				dropIn = splitTrack.Panel1.Controls[0] as AnimationDropIn;
+				if (dropIn != null)  
+					dropIn.CurrentTime = ((float)numericTrackFrames.Value / _animation.FrameRate) * 1000.0f;
 			}
+		}
 
-			// Drop a frame editor in.
-			splitTrack.Panel1.Controls.Add((Control)editor);
-			_dropIn = editor;
-			SetTime(lastTime);
+		/// <summary>
+		/// Function to add a drop in control to the panel.
+		/// </summary>
+		/// <param name="dropIn">Animation drop-in to add.</param>
+		/// <param name="track">Track that is bound to this editor.</param>
+		private void AddDropIn(AnimationDropIn dropIn, Track track)
+		{	
+			// Remove the control.
+			if (splitTrack.Panel1.Controls.Count > 0)
+				splitTrack.Panel1.Controls[0].Dispose();
+			dropIn.CurrentTrack = track;
+			splitTrack.Panel1.Controls.Add(dropIn);
+			dropIn.Dock = DockStyle.Fill;
+			dropIn.GetSettings();
 		}
 
 		/// <summary>
@@ -197,125 +214,81 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void comboTrack_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			Renderable animObject = _animation.Owner as Renderable;		// Animated object.
+
 			try
 			{
-				// Load animation frame editor.
-				if (string.Compare(comboTrack.Text, "animation frames", true) == 0)
+				if ((animObject != null) && (_animation.Tracks.Contains(comboTrack.Text)))
 				{
-					DropInEditor(_frameEditor);
-
-					// Reset time.
-					_frameEditor.CurrentTrack = CurrentAnimation.FrameTrack;
-				}
-
-				if (string.Compare(comboTrack.Text, "color", true) == 0)
-				{
-					DropInEditor(_colorEditor);
-
-					// Reset time.
-					_colorEditor.CurrentTrack = CurrentAnimation.ColorTrack;
-				}
-
-				if (string.Compare(comboTrack.Text, "transformation", true) == 0)
-				{
-					DropInEditor(_transformEditor);
-
-					// Reset time.
-					_transformEditor.CurrentTrack = CurrentAnimation.TransformationTrack;
+					switch (_animation.Tracks[comboTrack.Text].DataType.FullName.ToLower())
+					{
+						case "gorgonlibrary.graphics.image":
+							AddDropIn(new ImageDropIn(), _animation.Tracks[comboTrack.Text]);
+							break;
+						case "system.byte":
+							AddDropIn(new ByteDropIn(), _animation.Tracks[comboTrack.Text]);
+							break;
+						case "system.int32":
+							AddDropIn(new Int32DropIn(), _animation.Tracks[comboTrack.Text]);
+							break;
+						case "system.single":
+							AddDropIn(new FloatDropIn(), _animation.Tracks[comboTrack.Text]);
+							break;
+						case "system.drawing.color":
+							AddDropIn(new ColorDropIn(), _animation.Tracks[comboTrack.Text]);
+							break;
+						case "gorgonlibrary.vector2d":
+							AddDropIn(new Vector2DDropIn(), _animation.Tracks[comboTrack.Text]);
+							break;
+						default:
+							UI.ErrorBox(this, "I have no idea how to handle the type '" + _animation.Tracks[comboTrack.Text].DataType.FullName + "'.");
+							break;
+					}
 				}
 			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(this, "Error while trying to open the track.", ex);
+				UI.ErrorBox(this, "Error while trying to load track editor.", ex);
 			}
 		}
 
 		/// <summary>
-		/// Function to validate the form.
+		/// Property to drop in the editor.
 		/// </summary>
-		private void ValidateForm()
+		/// <param name="editor">Editor to drop in.</param>
+		private void DropInEditor(AnimationDropIn editor)
 		{
+			float lastTime = 0.0f;		// Last time.
+			
+			// Remove the current control
+			if (splitTrack.Panel1.Controls.Count != 0)
+			{
+				lastTime = ((AnimationDropIn)splitTrack.Panel1.Controls[0]).CurrentTime;		// Get 'last' time.
 
-			if (_animation.Length >= 1000.0f)
-				radioSeconds.Enabled = true;
-			else
-				radioSeconds.Enabled = false;
+				// Don't remove the editor.
+				((AnimationDropIn)splitTrack.Panel1.Controls[0]).CleanUp();
+				splitTrack.Panel1.Controls.RemoveAt(0);
+			}
 
-			if (_animation.Length >= 60000.0f)
-				radioMinutes.Enabled = true;
-			else
-				radioMinutes.Enabled = false;
+			// Drop a frame editor in.
+			splitTrack.Panel1.Controls.Add((Control)editor);
+			_dropIn = editor;
 		}
 
 		/// <summary>
-		/// Function to update the display for the selected unit.
+		/// Function to update the display track.
 		/// </summary>
-		/// <param name="Sender"></param>
-		/// <param name="e"></param>
-		private void UnitUpdate(object Sender, EventArgs e)
+		private void TrackerUpdate()
 		{
-			Decimal maxTime = 0;						// Maximum animation time.
+			Decimal maxFrames = 0;						// Frame count.
 			int frequency = 0;							// Tick frequency.
 			Decimal increment = 0;						// Increment.
-			TimeUnits time = TimeUnits.Milliseconds;	// New time unit.
 			Decimal currentTime = 0;					// Current time.
 
-			if (Sender == radioSeconds)
-				time = TimeUnits.Seconds;
+			maxFrames = ((Decimal)_animation.Length / 1000.0M) * (Decimal)_animation.FrameRate;
+			currentTime = (numericTrackFrames.Value / (Decimal)_animation.FrameRate) * 1000.0M;
 
-			if (Sender == radioMinutes)
-				time = TimeUnits.Minutes;
-			
-			switch(time)
-			{
-				case TimeUnits.Milliseconds:
-					switch(_currentUnit)
-					{
-						case TimeUnits.Minutes:
-							currentTime  = numericTrackTime.Value * 60000.0M;
-							break;
-						case TimeUnits.Seconds:
-							currentTime  = numericTrackTime.Value * 1000.0M;
-							break;
-					}
-
-					maxTime = (Decimal)(_animation.Length - 1.0f);
-					labelUnit.Text = "msec.";
-					break;
-				case TimeUnits.Seconds:
-					switch(_currentUnit)
-					{
-						case TimeUnits.Minutes:
-							currentTime  = numericTrackTime.Value * 60.0M;							
-							break;
-						case TimeUnits.Milliseconds:
-							currentTime  = numericTrackTime.Value / 1000.0M;
-							break;
-					}
-
-					maxTime = (Decimal)((_animation.Length - 1.0f) / 1000.0f);
-					labelUnit.Text = "sec.";
-					break;
-				case TimeUnits.Minutes:
-					switch(_currentUnit)
-					{
-						case TimeUnits.Seconds:
-							currentTime  = numericTrackTime.Value / 60.0M;							
-							break;
-						case TimeUnits.Milliseconds:
-							currentTime  = numericTrackTime.Value / 60000.0M;
-							break;
-					}
-
-					maxTime = (Decimal)((_animation.Length - 1.0f) / 60000.0f);
-					labelUnit.Text = "min.";
-					break;
-			}
-
-			if (maxTime >= 15.0M)
-				frequency = (int)(maxTime / 15.0M);
-			else
-				frequency = 1;
+			frequency = (int)(maxFrames / 20.0M);
 			increment = (Decimal)frequency;
 
 			// Clamp the increment.
@@ -323,16 +296,14 @@ namespace GorgonLibrary.Graphics.Tools
 				increment = 1.0M;
 
 			// Update the ranges for the controls.
-			trackTrack.Maximum = (int)maxTime;
+			trackTrack.Maximum = (int)maxFrames - 1;
 			trackTrack.TickFrequency = frequency;
-			numericTrackTime.Maximum = maxTime;
-			numericTrackTime.Value = currentTime;
-			numericTrackTime.Increment = increment;
-			_currentUnit = time;
+			numericTrackFrames.Maximum = maxFrames - 1;
+			numericTrackFrames.Value = currentTime;
+			numericTrackFrames.Increment = (Decimal)frequency;
 
-			ValidateForm();
 			if (_dropIn != null)
-				_dropIn.CurrentTime = GetConvertedTime();
+				_dropIn.CurrentTime = (float)currentTime;
 		}
 
 		/// <summary>
@@ -379,60 +350,23 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
-		/// Function to set the time on the timing controls.
+		/// Function to update the frame counter/tracker.
 		/// </summary>
-		/// <param name="time">Time to set.</param>
-		internal void SetTime(float time)
+		/// <param name="time"></param>
+		public void SetTime(float time)
 		{
-			Decimal timeValue = (decimal)ConvertMillisecondsToUnit(time);
-
-			if (timeValue < numericTrackTime.Minimum)
-				timeValue = numericTrackTime.Minimum;
-			if (timeValue > numericTrackTime.Maximum)
-				timeValue = numericTrackTime.Maximum;
+			Decimal frame = 0;			// Current frame.
 
 			_noevent = true;
-			_dropIn.CurrentTime = time;
-			numericTrackTime.Value = timeValue;
-			trackTrack.Value = (int)numericTrackTime.Value;
+
+			frame = (Decimal)((time / 1000.0f) * _animation.FrameRate);
+			if (frame > numericTrackFrames.Maximum)
+				frame = numericTrackFrames.Maximum;
+			trackTrack.Value = (int)frame;
+			numericTrackFrames.Value = frame;			
+			UpdateDropIn();
+
 			_noevent = false;
-		}
-
-		/// <summary>
-		/// Function to convert the current time into milliseconds.
-		/// </summary>
-		/// <returns>Converted time value.</returns>
-		public float GetConvertedTime()
-		{
-			float currentValue = (float)trackTrack.Value;		// Current track value.
-
-			switch (_currentUnit)
-			{
-				case TimeUnits.Seconds:
-					return currentValue * 1000.0f;
-				case TimeUnits.Minutes:
-					return currentValue * 60000.0f;
-			}
-
-			return currentValue;
-		}
-
-		/// <summary>
-		/// Function to convert milliseconds to the requested unit.
-		/// </summary>
-		/// <param name="time">Time to convert.</param>
-		/// <returns>Time in the units specified.</returns>
-		public float ConvertMillisecondsToUnit(float time)
-		{
-			switch (_currentUnit)
-			{
-				case TimeUnits.Seconds:
-					return time / 1000.0f;
-				case TimeUnits.Minutes:
-					return time / 60000.0f;
-			}
-
-			return time;
 		}
 
 		/// <summary>

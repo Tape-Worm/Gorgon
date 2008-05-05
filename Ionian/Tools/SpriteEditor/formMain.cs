@@ -674,6 +674,7 @@ namespace GorgonLibrary.Graphics.Tools
 			Gorgon.Screen.BeginDrawing();
 			Gorgon.Screen.Rectangle(_spriteManager.CurrentSprite.Sprite.AABB.X, _spriteManager.CurrentSprite.Sprite.AABB.Y,
 					_spriteManager.CurrentSprite.Sprite.AABB.Width, _spriteManager.CurrentSprite.Sprite.AABB.Height, Drawing.Color.Red);
+			Gorgon.Screen.Circle(_spriteManager.CurrentSprite.Sprite.BoundingCircle.Center.X, _spriteManager.CurrentSprite.Sprite.BoundingCircle.Center.Y, _spriteManager.CurrentSprite.Sprite.BoundingCircle.Radius, Drawing.Color.Cyan);
 			Gorgon.Screen.EndDrawing();
 
 			_spriteManager.CurrentSprite.Sprite.Position = Vector2D.Subtract(newPosition, oldAxis);
@@ -1168,13 +1169,6 @@ namespace GorgonLibrary.Graphics.Tools
 					_spriteManager.CurrentSprite.Sprite.Axis = new Vector2D(e.X - _spriteManager.CurrentSprite.Sprite.Position.X, e.Y - _spriteManager.CurrentSprite.Sprite.Position.Y);
 				else
 				{
-					// If there's an animation with transform keys present, don't bother.
-					foreach (Animation anim in _spriteManager.CurrentSprite.Sprite.Animations)
-					{
-						if (anim.TransformationTrack.KeyCount > 0)
-							return;
-					}
-
 					// Change the cursor to indicate.
 					if (axisRect.Contains(e.Location))
 						panelGorgon.Cursor = Cursors.Hand;
@@ -1269,13 +1263,6 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				if ((!_clipper.IsClippingStarted) && (!_inAxisDrag) && (e.Button == System.Windows.Forms.MouseButtons.Left))
 				{
-					// If there's an animation with transform keys present, don't bother.6
-					foreach (Animation anim in _spriteManager.CurrentSprite.Sprite.Animations)
-					{
-						if (anim.TransformationTrack.KeyCount > 0)
-							return;
-					}
-
 					// Axis drag rectangle.
 					Drawing.Rectangle axisRect = new Drawing.Rectangle((int)(_spriteManager.CurrentSprite.Axis.X - 6 + _spriteManager.CurrentSprite.Sprite.Position.X), 
 											(int)(_spriteManager.CurrentSprite.Axis.Y - 6 + _spriteManager.CurrentSprite.Sprite.Position.Y), 12, 12);
@@ -1426,10 +1413,6 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			try
 			{
-				// Confirm so we can save our changes.
-				if (!NewProject())
-					return;
-
 				Settings.Root = "Paths";
 				dialogOpen.Title = "Open sprite project...";
 				dialogOpen.InitialDirectory = Settings.GetSetting("LastProjectOpenPath", @".\");
@@ -1438,6 +1421,10 @@ namespace GorgonLibrary.Graphics.Tools
 
 				if (dialogOpen.ShowDialog(this) == DialogResult.OK)
 				{
+					// Confirm so we can save our changes.
+					if (!NewProject())
+						return;
+
 					// Open the project.
 					OpenProject(dialogOpen.FileName);
 					Settings.SetSetting("LastProjectOpenPath", Path.GetDirectoryName(dialogOpen.FileName));
@@ -1699,10 +1686,25 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				try
 				{
+					XmlAttribute includeInAnims = null;		// Include in animations flag.
+					SpriteDocument doc = null;				// Sprite document.
+
 					if (Path.GetDirectoryName(node.InnerText) == @".")
-						_spriteManager.Sprites.Load(Path.GetDirectoryName(fileName) + @"\" + Path.GetFileName(node.InnerText));
+						doc = _spriteManager.Sprites.Load(Path.GetDirectoryName(fileName) + @"\" + Path.GetFileName(node.InnerText));
 					else
-						_spriteManager.Sprites.Load(node.InnerText);
+						doc = _spriteManager.Sprites.Load(node.InnerText);
+
+					if (node.Attributes.Count > 0)
+					{
+						includeInAnims = node.Attributes["IncludeInAnims"];
+						if (includeInAnims != null)
+						{
+							if (string.Compare(includeInAnims.Value, "true", true) == 0)
+								doc.IncludeInAnimations = true;
+							else
+								doc.IncludeInAnimations = false;
+						}
+					}
 				}
 				catch (Exception ex)
 				{
@@ -1865,14 +1867,19 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 
 			element = projectDocument.CreateElement("Count");
-			element.InnerText = spriteCount.ToString();
+			element.InnerText = SpriteManager.Sprites.Count.ToString();
 			support.AppendChild(element);
 
 			foreach (SpriteDocument doc in SpriteManager.Sprites)
 			{
 				if (doc.Sprite.Filename != string.Empty)
 				{
+					XmlAttribute animVisible;		// Animation visible.
+					
 					element = projectDocument.CreateElement("Path");
+					animVisible = projectDocument.CreateAttribute("IncludeInAnims");
+					animVisible.Value = doc.IncludeInAnimations.ToString();
+					element.Attributes.Append(animVisible);
 
 					sourceDir = Path.GetDirectoryName(fileName) + @"\";
 					destDir = Path.GetDirectoryName(doc.Sprite.Filename) + @"\";

@@ -68,7 +68,18 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void numericLength_ValueChanged(object sender, EventArgs e)
 		{
-			labelTimeCalculation.Text = "Animation will be " + + " seconds long.";
+			float time = 0.0f;		// Animation length in milliseconds.
+
+			if (sender == numericFrameRate)
+				numericLength.Increment = numericFrameRate.Value;
+
+			time = (float)(numericLength.Value / numericFrameRate.Value);
+			labelTimeCalculation.Text = "Animation will be " + time.ToString("0.000") + " seconds long.";
+
+			if (time < 0.000001f)
+				buttonOK.Enabled = false;
+			else
+				buttonOK.Enabled = true;
 		}
 
 		/// <summary>
@@ -98,23 +109,29 @@ namespace GorgonLibrary.Graphics.Tools
 				}
 			}
 
-			time = (float)numericLength.Value;
-
-			// Convert to milliseconds.
-			if (radioSeconds.Checked)
-				time *= 1000.0f;
-			if (radioMinutes.Checked)
-				time *= 60000.0f;
+			// Calculate length of animation in milliseconds.
+			time = (float)(numericLength.Value / numericFrameRate.Value) * 1000.0f;
 
 			animation = _editAnimation;
 
 			// Create the animation.
 			if (animation == null)
-				animation = _current.Animations.Create(textName.Text, time);
+			{
+				animation = new Animation(textName.Text, time);
+				animation.FrameRate = (int)numericFrameRate.Value;
+				_current.Animations.Add(animation);
+			}
 			else
 			{
-				if (time != animation.Length)
+				// Re-add if necessary.
+				if (!_current.Animations.Contains(animation.Name))
+					_current.Animations.Add(animation);
+
+				animation.FrameRate = (int)numericFrameRate.Value;
+
+				if (!MathUtility.EqualFloat(time,animation.Length, 0.0001f))
 				{
+					int keyCount = 0;				// Key counter.
 					float timeScaler = 0.0f;		// Time scale.
 
 					// Get the scale.
@@ -126,31 +143,20 @@ namespace GorgonLibrary.Graphics.Tools
 					// If there's not much of a difference, then don't bother.
 					if (!MathUtility.EqualFloat(timeScaler, 0.0f, 0.0001f))
 					{
+						foreach (Track track in animation.Tracks)
+							keyCount += track.KeyCount;
+
+
 						// Scale for each track type.
-						if (animation.FrameTrack.KeyCount > 0)
+						if (keyCount > 0)
 						{
-							result = UI.ConfirmBox("This animation has frame keys assigned to it.\nWould you like to scale the time for the assigned frame keys?", false, true);
+							result = UI.ConfirmBox("This animation has keys assigned to it.\nWould you like to scale the time for the assigned keys?", false, true);
 
 							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-								animation.FrameTrack.ScaleKeys(timeScaler);
-						}
-
-						if (animation.TransformationTrack.KeyCount > 0)
-						{
-							if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
-								result = UI.ConfirmBox("This animation has transformation keys assigned to it.\nWould you like to scale the time for the assigned transformation keys?", false, true);
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-								animation.TransformationTrack.ScaleKeys(timeScaler);
-						}
-
-						if (animation.ColorTrack.KeyCount > 0)
-						{
-							if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
-								result = UI.ConfirmBox("This animation has color keys assigned to it.\nWould you like to scale the time for the assigned color keys?");
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-								animation.ColorTrack.ScaleKeys(timeScaler);
+							{
+								foreach (Track track in animation.Tracks)
+									track.ScaleKeys(timeScaler);
+							}
 						}
 					}
 				}
@@ -191,6 +197,18 @@ namespace GorgonLibrary.Graphics.Tools
 				buttonOK.Enabled = false;
 			else
 				buttonOK.Enabled = true;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			// Update our label.
+			numericLength_ValueChanged(this, EventArgs.Empty);
 		}
 
 		/// <summary>

@@ -45,7 +45,7 @@ namespace GorgonLibrary.Example
 		: GorgonApplicationWindow
 	{
 		#region Constants.
-		/// <summary>Allow only five shots at a time.</summary>
+		/// <summary>Allow only five asteroids at a time.</summary>
 		private const int AsteroidCount = 5;
 		#endregion
 
@@ -220,6 +220,7 @@ namespace GorgonLibrary.Example
 				foreach (Asteroid asteroid in _asteroids)
 					asteroid.Update(e.FrameDeltaTime, _difficultyMod);
 
+
 				// Set the alien to active at some random point.
 				if ((!_alien.Active) && (_alienTimer.Seconds > 15 + _rnd.Next(10)))
 					_alien.Active = true;
@@ -272,7 +273,7 @@ namespace GorgonLibrary.Example
 			}
 
 			_stars.Draw();
-
+						
 			foreach (Asteroid asteroid in _asteroids)
 				asteroid.Draw();
 

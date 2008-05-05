@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.21022</ProductVersion>
@@ -96,18 +96,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\AnimatedAttribute.cs" />
     <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\AnimationException.cs" />
     <Compile Include="Animation\AnimationList.cs" />
-    <Compile Include="Animation\Key.cs" />
-    <Compile Include="Animation\Types\Frame.cs" />
-    <Compile Include="Animation\Types\KeyFrame.cs" />
-    <Compile Include="Animation\Types\TrackFrame.cs" />
+    <Compile Include="Animation\EditorCanDragAttribute.cs" />
+    <Compile Include="Animation\EditorMinMaxAttribute.cs" />
+    <Compile Include="Animation\EditorRoundValuesAttribute.cs" />
+    <Compile Include="Animation\KeyFrame.cs" />
+    <Compile Include="Animation\TrackCollection.cs" />
+    <Compile Include="Animation\Types\KeyByte.cs" />
     <Compile Include="Animation\Types\KeyColor.cs" />
+    <Compile Include="Animation\Types\KeyFloat.cs" />
+    <Compile Include="Animation\Types\KeyImage.cs" />
+    <Compile Include="Animation\Types\KeyInt32.cs" />
+    <Compile Include="Animation\Types\KeyVector2D.cs" />
+    <Compile Include="Animation\Types\TrackByte.cs" />
     <Compile Include="Animation\Types\TrackColor.cs" />
-    <Compile Include="Animation\Types\KeyTransform.cs" />
     <Compile Include="Animation\Track.cs" />
-    <Compile Include="Animation\Types\TrackTransform.cs" />
+    <Compile Include="Animation\Types\TrackFloat.cs" />
+    <Compile Include="Animation\Types\TrackImage.cs" />
+    <Compile Include="Animation\Types\TrackInt32.cs" />
+    <Compile Include="Animation\Types\TrackVector2D.cs" />
     <Compile Include="Buffers\Buffer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -175,6 +185,7 @@
     <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Math\BoundingCircle.cs" />
     <Compile Include="Math\MathUtility.cs" />
     <Compile Include="Math\Matrix.cs" />
     <Compile Include="Math\MinMaxRange.cs" />
@@ -194,10 +205,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\IAnimatable.cs" />
-    <Compile Include="Rendering\ICommonRenderable.cs" />
-    <Compile Include="Rendering\IMoveable.cs" />
-    <Compile Include="Rendering\IRenderable.cs" />
+    <Compile Include="Rendering\IRenderableStates.cs" />
     <Compile Include="Rendering\RenderableChildren.cs" />
     <Compile Include="Rendering\Renderable.cs" />
     <Compile Include="Rendering\Renderer.cs" />
@@ -239,6 +247,7 @@
     <Compile Include="Targets\RenderImage.cs" />
     <Compile Include="Targets\RenderWindow.cs" />
     <Compile Include="Timing\TimingData.cs" />
+    <Compile Include="Utility\ICloneable.cs" />
     <Compile Include="Utility\Logger.cs" />
     <Compile Include="Utility\LoggerExceptions.cs" />
     <Compile Include="Utility\NamedObject.cs" />
@@ -291,7 +300,6 @@
     <Compile Include="Vertex Data\VertexCache.cs" />
     <Compile Include="Vertex Data\VertexField.cs" />
     <Compile Include="Vertex Data\VertexType.cs" />
-    <None Include="Gorgon.cd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FileSystem\Design\formAuthentication.resx">

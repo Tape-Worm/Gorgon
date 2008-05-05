@@ -94,7 +94,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The new keyframe in the correct context.</returns>
 		protected internal override KeyFrame CreateKey()
 		{
-			return new KeyImage(0, null);
+			return new KeyImage(0, (Image)null);
 		}
 		#endregion
 		

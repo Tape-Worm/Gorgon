@@ -681,6 +681,31 @@ namespace GorgonLibrary
 
 		#region Operators.
 		/// <summary>
+		/// Operator for equality testing.
+		/// </summary>
+		/// <param name="range1">First range to test.</param>
+		/// <param name="range2">Second range to test.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool operator ==(MinMaxRangeF range1, MinMaxRangeF range2)
+		{
+			if ((MathUtility.EqualFloat(range1.Minimum, range2.Minimum)) && (MathUtility.EqualFloat(range1.Maximum, range2.Maximum)))
+				return true;
+			else
+				return false;
+		}
+
+		/// <summary>
+		/// Operator for inequality testing.
+		/// </summary>
+		/// <param name="range1">First range to test.</param>
+		/// <param name="range2">Second range to test.</param>
+		/// <returns>TRUE if not equal, FALSE if not.</returns>
+		public static bool operator !=(MinMaxRangeF range1, MinMaxRangeF range2)
+		{
+			return !(range1 == range2);
+		}
+
+		/// <summary>
 		/// Operator for addition.
 		/// </summary>
 		/// <param name="range1">First range to add.</param>

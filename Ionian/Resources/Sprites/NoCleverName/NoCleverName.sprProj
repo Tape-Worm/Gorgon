@@ -3,26 +3,26 @@
   <Header>SPRPROJ1.0</Header>
   <Images>
     <Count>1</Count>
-    <Path>D:\Code\Current\gorgonlib\Resources\Images\CleverSprites.png</Path>
+    <Path>D:\Code\Current\Gorgon\Unstable\Ionian\Resources\Images\CleverSprites.png</Path>
   </Images>
   <Targets>
     <Count>0</Count>
   </Targets>
   <Sprites>
     <Count>14</Count>
-    <Path>.\AlienF1.gorSprite</Path>
-    <Path>.\AlienF2.gorSprite</Path>
-    <Path>.\Blaster.gorSprite</Path>
-    <Path>.\RocketF1.gorSprite</Path>
-    <Path>.\RocketF2.gorSprite</Path>
-    <Path>.\YouF1.gorSprite</Path>
-    <Path>.\YouF2.gorSprite</Path>
-    <Path>.\You.gorSprite</Path>
-    <Path>.\Rocket.gorSprite</Path>
-    <Path>.\Alien.gorSprite</Path>
-    <Path>.\Asteroid1.gorSprite</Path>
-    <Path>.\Asteroid2.gorSprite</Path>
-    <Path>.\Asteroid3.gorSprite</Path>
-    <Path>.\AlienShield.gorSprite</Path>
+    <Path IncludeInAnims="True">.\AlienF1.gorSprite</Path>
+    <Path IncludeInAnims="True">.\AlienF2.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Blaster.gorSprite</Path>
+    <Path IncludeInAnims="True">.\RocketF1.gorSprite</Path>
+    <Path IncludeInAnims="True">.\RocketF2.gorSprite</Path>
+    <Path IncludeInAnims="True">.\YouF1.gorSprite</Path>
+    <Path IncludeInAnims="True">.\YouF2.gorSprite</Path>
+    <Path IncludeInAnims="True">.\You.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Rocket.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Alien.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Asteroid1.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Asteroid2.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Asteroid3.gorSprite</Path>
+    <Path IncludeInAnims="True">.\AlienShield.gorSprite</Path>
   </Sprites>
 </SpriteProject>

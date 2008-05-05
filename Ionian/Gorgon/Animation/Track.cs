@@ -233,20 +233,12 @@ namespace GorgonLibrary.Graphics
 		private PropertyInfo _property = null;				// Property on the owner object to update.
 		private InterpolationMode _interpolation;			// Interpolation mode.
 		private Type _dataType = null;						// Data type represented by the track.
+		private MinMaxRangeF _range = MinMaxRangeF.Empty;	// Min/max value for the data type in the track.
+		private bool _canDragValues = false;				// Flag to indicate that the editor can drag the values.
+		private bool _roundValues = false;					// Flag to indicate that the values need to be rounded.
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the type used by the track.
-		/// </summary>
-		protected internal Type DataType
-		{
-			get
-			{
-				return _dataType;
-			}
-		}
-
 		/// <summary>
 		/// Property to return the key list.
 		/// </summary>
@@ -270,6 +262,62 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				_property = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the editor can drag the values.
+		/// </summary>
+		public bool EditCanDragValues
+		{
+			get
+			{
+				return _canDragValues;
+			}
+			set
+			{
+				_canDragValues = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to round the values for the track.
+		/// </summary>
+		public bool RoundValues
+		{
+			get
+			{
+				return _roundValues;
+			}
+			set
+			{
+				_roundValues = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the range of values for the data represented by the track.
+		/// </summary>
+		public MinMaxRangeF DataRange
+		{
+			get
+			{
+				return _range;
+			}
+			set
+			{
+				_range = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the type used by the track.
+		/// </summary>
+		public Type DataType
+		{
+			get
+			{
+				return _dataType;
 			}
 		}
 

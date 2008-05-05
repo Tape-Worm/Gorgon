@@ -3,21 +3,21 @@
   <Header>SPRPROJ1.0</Header>
   <Images>
     <Count>1</Count>
-    <Path>D:\Code\Current\gorgonlib\Resources\Images\SpaceStuff.png</Path>
+    <Path>D:\Code\Current\Gorgon\Unstable\Ionian\Resources\Images\SpaceStuff.png</Path>
   </Images>
   <Targets>
     <Count>0</Count>
   </Targets>
   <Sprites>
     <Count>9</Count>
-    <Path>.\BigShip.gorSprite</Path>
-    <Path>.\SmallShip.gorSprite</Path>
-    <Path>.\Star1.gorSprite</Path>
-    <Path>.\Star2.gorSprite</Path>
-    <Path>.\Star3.gorSprite</Path>
-    <Path>.\Star4.gorSprite</Path>
-    <Path>.\LargeStar.gorSprite</Path>
-    <Path>.\Planet.gorSprite</Path>
-    <Path>.\Nebula.gorSprite</Path>
+    <Path IncludeInAnims="True">.\BigShip.gorSprite</Path>
+    <Path IncludeInAnims="True">.\SmallShip.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Star1.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Star2.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Star3.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Star4.gorSprite</Path>
+    <Path IncludeInAnims="True">.\LargeStar.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Planet.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Nebula.gorSprite</Path>
   </Sprites>
 </SpriteProject>

@@ -785,7 +785,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the alpha value used for alpha masking.
 		/// </summary>
-		[Animated(typeof(int))]
+		[Animated(typeof(int)), EditorMinMax(0, 255)]
 		public virtual int AlphaMaskValue
 		{
 			get
@@ -893,7 +893,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the offset within the source image to start drawing from.
 		/// </summary>
-		[Animated(typeof(Vector2D))]
+		[Animated(typeof(Vector2D)), EditorRoundValues()]
 		public virtual Vector2D ImageOffset
 		{
 			get
@@ -1033,7 +1033,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the opacity.
 		/// </summary>		
-		[Animated(typeof(int))]
+		[Animated(typeof(int)), EditorMinMax(0, 255)]
 		public abstract int Opacity
 		{
 			get;
@@ -1140,7 +1140,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the position of the object.
 		/// </summary>
-		[Animated(typeof(Vector2D))]
+		[Animated(typeof(Vector2D)), EditorRoundValues(), EditorCanDrag()]
 		public virtual Vector2D Position
 		{
 			get
@@ -1182,7 +1182,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the size of the object.
 		/// </summary>
-		[Animated(typeof(Vector2D))]
+		[Animated(typeof(Vector2D)), EditorRoundValues()]
 		public virtual Vector2D Size
 		{
 			get

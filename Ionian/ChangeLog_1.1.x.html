@@ -105,6 +105,22 @@
 	<pre>
 May 2/2008 - Version - Current
 ================================
+* Modified the NoCleverName example to use bounding circles on the asteroids instead of
+  rectangles.
+  
++ Sprite editor will now display the bounding circle in addition to the bounding rectangle
+  for a sprite.
+  
+* Added BoundingCircle on sprites.
+
++ Added a new value type: BoundingCircle.  This allows us to do collision checks bewteen
+  a circle primitive and other primitives.
+  
+* Completely scrapped and rebuilt the animation editor in the sprite editor system. 
+  The interface was kept pretty much the same, but new things like more tracks and copy,
+  cut and paste for key frames have been added.  The system is now compliant with the
+  new animation system.
+  
 * Made MASSIVE changes to the animation system.  Basically this system has pretty 
   much been rewritten.  The only interface that hasn't changed much is the Animation
   class.  If you've coded stuff using the old animation system your code WILL break

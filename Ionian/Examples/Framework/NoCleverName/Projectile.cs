@@ -185,7 +185,8 @@ namespace GorgonLibrary.Example
 
 			foreach (T collider in objects)
 			{
-				if (collider.CollisionRectangle.IntersectsWith(CollisionRectangle))
+				//				if (collider.CollisionRectangle.IntersectsWith(CollisionRectangle))
+				if (collider.CollidesWith<Projectile>(this))
 					colliders.Add(collider);
 			}
 		}

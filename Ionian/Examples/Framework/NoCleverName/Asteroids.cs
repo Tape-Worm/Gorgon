@@ -42,8 +42,8 @@ namespace GorgonLibrary.Example
 		private float _yVelocity;							// Y velocity.
 		private float _rotate;								// Asteroid rotation.
 		private int _score = 0;								// Score for the asteroid.
-		private Drawing.Rectangle _collisionRect;			// Collision rectangle.
 		private Sprite[] _asteroidSprites;					// List of asteroid sprites.
+		private BoundingCircle _bounds;						// Bounding circle.
 		#endregion
 
 		#region Properties.
@@ -85,7 +85,6 @@ namespace GorgonLibrary.Example
 			_asteroid.Scale = MainForm.SpriteScales;
 			_position = new Vector2D(MainForm.Random.Next((int)_asteroid.Axis.X, (int)(Gorgon.Screen.Width - _asteroid.Axis.X)), -_asteroid.Axis.Y);
 			_yVelocity = (float)(MainForm.Random.NextDouble() * 110.0) + _asteroid.Width / 4.0f;
-			_collisionRect = new Drawing.Rectangle((int)(_position.X - (_asteroid.Axis.X * _asteroid.Scale.X)), (int)(_position.Y - (_asteroid.Axis.Y * _asteroid.Scale.Y)), (int)_asteroid.ScaledWidth, (int)_asteroid.ScaledHeight);
 		}
 
 		/// <summary>
@@ -103,9 +102,6 @@ namespace GorgonLibrary.Example
 			if (_position.Y == 0)
 				_asteroid.BlendingMode = BlendingModes.None;
 
-			// Update the collision rectangle.
-			_collisionRect.Y = (int)(_position.Y - (_asteroid.Axis.Y * _asteroid.Scale.Y));
-
 			// If we're offscreen, then reset.
 			if (_position.Y > Gorgon.Screen.Height + _asteroid.Axis.Y)
 				Reset();
@@ -119,9 +115,10 @@ namespace GorgonLibrary.Example
 			_asteroid.Rotation = _rotate;
 			_asteroid.Position = _position;
 			_asteroid.Draw();
+			_bounds = _asteroid.BoundingCircle;
 #if (DEBUG && DEBUGDATA)
 			Gorgon.Screen.BeginDrawing();
-			Gorgon.Screen.Rectangle(CollisionRectangle.Left, CollisionRectangle.Top, CollisionRectangle.Width, CollisionRectangle.Height, Drawing.Color.Red);
+			Gorgon.Screen.Circle(_asteroid.BoundingCircle.Center.X, _asteroid.BoundingCircle.Center.Y, _asteroid.BoundingCircle.Radius, Drawing.Color.Red);
 			Gorgon.Screen.EndDrawing();
 #endif
 		}
@@ -153,7 +150,7 @@ namespace GorgonLibrary.Example
 		{
 			get 
 			{
-				return _collisionRect;
+				return System.Drawing.Rectangle.Empty;
 			}
 		}
 
@@ -198,7 +195,7 @@ namespace GorgonLibrary.Example
 		public bool CollidesWith<T>(T colliderObject)
 			where T : ICollider
 		{
-			return colliderObject.CollisionRectangle.IntersectsWith(_collisionRect);
+			return _bounds.Intersects(colliderObject.CollisionRectangle);
 		}
 		#endregion
 		#endregion

@@ -100,7 +100,11 @@ namespace GorgonLibrary.Graphics
 			{
 				// Calculate linear values.
 				if (Owner.InterpolationMode == InterpolationMode.Linear)
+				{
 					_value = MathUtility.Round(previous.Value + (Time * (next.Value - previous.Value)));
+					if (Owner.RoundValues)
+						_value = MathUtility.Round(_value);
+				}
 				else
 				{
 					// Calculate spline values.

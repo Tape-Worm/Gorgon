@@ -108,6 +108,23 @@ namespace GorgonLibrary.Graphics
 
         #region Properties.
 		/// <summary>
+		/// Property to return whether there are keys in the animation.
+		/// </summary>
+		public bool HasKeys
+		{
+			get
+			{
+				foreach (Track track in _tracks)
+				{
+					if (track.KeyCount > 0)
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the frame rate.
 		/// </summary>
 		/// <remarks>This is just metadata and is only used for display purposes.  Its primary use is in the sprite editor.</remarks>
@@ -298,6 +315,57 @@ namespace GorgonLibrary.Graphics
 
         #region Methods.
 		/// <summary>
+		/// Function to retrieve the range values for the property.
+		/// </summary>
+		/// <param name="property">Property to retrieve the range from.</param>
+		/// <returns>Range of the value.</returns>
+		private MinMaxRangeF GetRangeValues(PropertyInfo property)
+		{
+			EditorMinMaxAttribute attribute = null;			// Attribute.
+			
+			attribute = Attribute.GetCustomAttribute(property, typeof(EditorMinMaxAttribute), true) as EditorMinMaxAttribute;
+
+			if (attribute != null)
+				return new MinMaxRangeF(attribute.Minimum, attribute.Maximum);
+
+			return MinMaxRangeF.Empty;
+		}
+
+		/// <summary>
+		/// Function to return whether to round the data for the values or not.
+		/// </summary>
+		/// <param name="property">Property to examine.</param>
+		/// <returns>TRUE to round, FALSE to ignore.</returns>
+		private bool ValueIsRounded(PropertyInfo property)
+		{
+			EditorRoundValuesAttribute attribute = null;			// Attribute.
+
+			attribute = Attribute.GetCustomAttribute(property, typeof(EditorRoundValuesAttribute), true) as EditorRoundValuesAttribute;
+
+			if (attribute != null)
+				return true;
+
+			return false;
+		}
+
+		/// <summary>
+		/// Function to return whether the editor can drag the data values or not with the mouse.
+		/// </summary>
+		/// <param name="property">Property to examine.</param>
+		/// <returns>TRUE to drag, FALSE to ignore.</returns>
+		private bool ValueCanBeDragged(PropertyInfo property)
+		{
+			EditorCanDragAttribute attribute = null;			// Attribute.
+
+			attribute = Attribute.GetCustomAttribute(property, typeof(EditorCanDragAttribute), true) as EditorCanDragAttribute;
+
+			if (attribute != null)
+				return true;
+
+			return false;
+		}
+
+		/// <summary>
 		/// Function called when the animation needs to define an unknown track type.
 		/// </summary>
 		/// <param name="sender">Object that sent the event.</param>
@@ -314,13 +382,18 @@ namespace GorgonLibrary.Graphics
 		/// <param name="owner">Owner for the animation.</param>
 		protected internal void SetOwner(object owner)
 		{
-			Attribute[] attributes = null;						// List of attributes for the target object.
+			AnimatedAttribute attribute = null;					// List of attributes for the target object.
 			PropertyInfo[] properties = null;					// List of properties on the renderable.
 			Track track = null;									// Track to add.
 			AnimationTrackDefineEventArgs e;					// Event arguments.
 
+			// If we pass null, disconnect from the object.
 			if (owner == null)
-				throw new ArgumentNullException("owner");
+			{
+				_tracks.Clear();
+				_owner = null;
+				return;
+			}
 
 			properties = owner.GetType().GetProperties();
 
@@ -334,9 +407,9 @@ namespace GorgonLibrary.Graphics
 			{
 				// Note: this does not work.  Apparently it doesn't care about inherited attributes.  This is extremely dumb.
 				//attributes = property.GetCustomAttributes(typeof(AnimatedAttribute), true) as Attribute[];
-				attributes = AnimatedAttribute.GetCustomAttributes(property, typeof(AnimatedAttribute), true);
+				attribute = AnimatedAttribute.GetCustomAttribute(property, typeof(AnimatedAttribute), true) as AnimatedAttribute;
 
-				foreach (AnimatedAttribute attribute in attributes)
+				if (attribute != null)
 				{
 					switch (attribute.DataType.FullName.ToLower())
 					{
@@ -369,6 +442,9 @@ namespace GorgonLibrary.Graphics
 
 					if (track != null)
 					{
+						track.DataRange = GetRangeValues(property);
+						track.RoundValues = ValueIsRounded(property);
+						track.EditCanDragValues = ValueCanBeDragged(property);
 						track.SetAnimationOwner(this);
 						track.InterpolationMode = attribute.InterpolationMode;
 						_tracks.Add(track);
@@ -558,9 +634,12 @@ namespace GorgonLibrary.Graphics
 
 					imageName = serializer.ReadString("ImageName");
 
-					if ((_tracks.Contains("Image")) && (!string.IsNullOrEmpty(imageName)) && (ImageCache.Images.Contains(imageName)))
+					if ((_tracks.Contains("Image")) && (!string.IsNullOrEmpty(imageName)))
 					{
-						newKey = new KeyImage(keyTime, ImageCache.Images[imageName]);
+						if (ImageCache.Images.Contains(imageName))
+							newKey = new KeyImage(keyTime, ImageCache.Images[imageName]);
+						else
+							newKey = new KeyImage(keyTime, imageName);
 						newKey.ImageOffset = new Vector2D(serializer.ReadSingle("ImageOffsetX"), serializer.ReadSingle("ImageOffsetY"));
 						newKey.ImageSize = new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY"));
 						_tracks["Image"].AddKey(newKey);

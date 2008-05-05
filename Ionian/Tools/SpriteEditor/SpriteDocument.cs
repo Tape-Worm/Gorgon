@@ -46,6 +46,7 @@ namespace GorgonLibrary.Graphics.Tools
 		private bool _changed;										// Flag to indicate that the sprite has been changed.
 		private bool _xml;											// Flag to indicate that the sprite is an xml file.		
 		private PropertyBag _bag = null;							// Property bag.
+		private bool _includeInAnimations = true;					// Flag to indicate that we should include this sprite in animations.
 		#endregion
 
 		#region Events.
@@ -1226,32 +1227,26 @@ namespace GorgonLibrary.Graphics.Tools
 				Changed = true;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return whether to include this sprite in other animations.
+		/// </summary>
+		[PropertyInclude(false, typeof(bool)), PropertyCategory("Project Settings"), PropertyDescription("Sets whether we can use this sprite in other animations for other sprites."), PropertyDefault(true)]
+		public bool IncludeInAnimations
+		{
+			get
+			{
+				return _includeInAnimations;
+			}
+			set
+			{
+				_includeInAnimations = value;
+				_owner.ProjectChanged = true;
+			}
+		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to refresh the property list.
-		/// </summary>
-		private void RefreshProperties()
-		{
-			// Reset all property bag default values to the sprite values.
-			foreach (PropertySpec spec in _bag.Properties)
-			{
-				PropertySpecEventArgs e = new PropertySpecEventArgs(spec, null);	// Event args.
-
-				UpdatePropertySpec(spec);
-				GetValue(this, e);
-
-				// Don't default the inherited values.
-				if (!spec.Name.ToLower().StartsWith("inherit"))
-					spec.DefaultValue = e.Value;
-				else
-					SetValue(this, e);
-			}
-
-			SetAnimReadOnly();
-		}
-
 		/// <summary>
 		/// Function to set a specific property spec read-only.
 		/// </summary>
@@ -1268,56 +1263,97 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Function to determine if a particular animation track has keys set.
+		/// </summary>
+		/// <param name="trackName">Name of the track to query.</param>
+		/// <returns>TRUE if there are keys, FALSE if not.</returns>
+		private bool HasKeysForTrack(string trackName)
+		{
+			foreach (Animation animation in _sprite.Animations)
+			{
+				if (animation.Tracks.Contains(trackName))
+				{
+					if (animation.Tracks[trackName].KeyCount > 0)
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
 		/// Function to set animated properties to read-only if keys exist for said properties.
 		/// </summary>
 		private void SetAnimReadOnly()
 		{
-			int keyCount = 0;		// Key count.
-			bool readOnly = false;	// Read only flag.
-
 			if (_sprite == null)
 				return;
 
-			// Check key count.			
-			foreach (Animation anim in _sprite.Animations)
-				keyCount += anim.ColorTrack.KeyCount;
-			if (keyCount > 0)
-				readOnly = true;
-			else
-				readOnly = false;
-
 			// Set color properties.
-			SetSpecReadOnly(_bag.Properties["opacity"], readOnly);
-			SetSpecReadOnly(_bag.Properties["diffusecolor"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperleftalpha"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperrightalpha"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerleftalpha"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerrightalpha"], readOnly);
-			SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], readOnly);
-			SetSpecReadOnly(_bag.Properties["alphamaskvalue"], readOnly);
-
-			// Check key count.	
-			keyCount = 0;
-			foreach (Animation anim in _sprite.Animations)
-				keyCount += anim.TransformationTrack.KeyCount;
-			if (keyCount > 0)
-				readOnly = true;
+			if ((HasKeysForTrack("Color")) || (HasKeysForTrack("Opacity")))
+			{
+				SetSpecReadOnly(_bag.Properties["opacity"], true);
+				SetSpecReadOnly(_bag.Properties["diffusecolor"], true);
+				SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], true);
+				SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], true);
+				SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], true);
+				SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], true);
+				SetSpecReadOnly(_bag.Properties["upperleftalpha"], true);
+				SetSpecReadOnly(_bag.Properties["upperrightalpha"], true);
+				SetSpecReadOnly(_bag.Properties["lowerleftalpha"], true);
+				SetSpecReadOnly(_bag.Properties["lowerrightalpha"], true);
+			}
 			else
-				readOnly = false;
+			{
+				SetSpecReadOnly(_bag.Properties["opacity"], false);
+				SetSpecReadOnly(_bag.Properties["diffusecolor"], false);
+				SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], false);
+				SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], false);
+				SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], false);
+				SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], false);
+				SetSpecReadOnly(_bag.Properties["upperleftalpha"], false);
+				SetSpecReadOnly(_bag.Properties["upperrightalpha"], false);
+				SetSpecReadOnly(_bag.Properties["lowerleftalpha"], false);
+				SetSpecReadOnly(_bag.Properties["lowerrightalpha"], false);
+			}
+
+			if (HasKeysForTrack("AlphaMaskValue"))
+			{
+				SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], true);
+				SetSpecReadOnly(_bag.Properties["alphamaskvalue"], true);
+			}
+			else
+			{
+				SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], false);
+				SetSpecReadOnly(_bag.Properties["alphamaskvalue"], false);
+			}
 
 			// Set transformation properties.
-			SetSpecReadOnly(_bag.Properties["lowerleftoffset"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerrightoffset"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperleftoffset"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperrightoffset"], readOnly);
-			SetSpecReadOnly(_bag.Properties["axis"], readOnly);
-			SetSpecReadOnly(_bag.Properties["axisalignment"], readOnly);
-			SetSpecReadOnly(_bag.Properties["imagelocation"], readOnly);
-			SetSpecReadOnly(_bag.Properties["size"], readOnly);
+			if (HasKeysForTrack("Axis"))
+			{
+				SetSpecReadOnly(_bag.Properties["axis"], true);
+				SetSpecReadOnly(_bag.Properties["axisalignment"], true);
+			}
+			else
+			{
+				SetSpecReadOnly(_bag.Properties["axis"], false);
+				SetSpecReadOnly(_bag.Properties["axisalignment"], false);
+			}
+
+			if (HasKeysForTrack("Image"))
+				SetSpecReadOnly(_bag.Properties["boundimage"], true);
+			else
+				SetSpecReadOnly(_bag.Properties["boundimage"], false);
+
+			if ((HasKeysForTrack("ImageOffset")) || (HasKeysForTrack("Image")))
+				SetSpecReadOnly(_bag.Properties["imagelocation"], true);
+			else
+				SetSpecReadOnly(_bag.Properties["imagelocation"], false);
+
+			if ((HasKeysForTrack("Size")) || (HasKeysForTrack("Image")))
+				SetSpecReadOnly(_bag.Properties["size"], true);
+			else
+				SetSpecReadOnly(_bag.Properties["size"], false);
 		}
 
 		/// <summary>
@@ -1348,6 +1384,29 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 		}
 
+		/// <summary>
+		/// Function to refresh the property list.
+		/// </summary>
+		public void RefreshProperties()
+		{
+			// Reset all property bag default values to the sprite values.
+			foreach (PropertySpec spec in _bag.Properties)
+			{
+				PropertySpecEventArgs e = new PropertySpecEventArgs(spec, null);	// Event args.
+
+				UpdatePropertySpec(spec);
+				GetValue(this, e);
+
+				// Don't default the inherited values.
+				if (!spec.Name.ToLower().StartsWith("inherit"))
+					spec.DefaultValue = e.Value;
+				else
+					SetValue(this, e);
+			}
+
+			SetAnimReadOnly();
+		}
+		
 		/// <summary>
 		/// Function to save the sprite.
 		/// </summary>

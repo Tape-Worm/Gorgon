@@ -40,7 +40,7 @@ namespace GorgonLibrary.Graphics.Tools
 		#region Variables.
 		private System.Windows.Forms.ImageList _images = null;					// Image list.		
 		private SpriteDocumentList _spriteList = null;							// Sprite list.
-		private TrackImage _currentTrack = null;								// Current track.
+		private Track _currentTrack = null;										// Current track.
 		private float _animLength = 0.0f;										// Animation length.
 		private Sprite _owner = null;											// Sprite that owns this animation.
 		#endregion
@@ -79,7 +79,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return the current track.
 		/// </summary>
-		public TrackImage CurrentTrack
+		public Track CurrentTrack
 		{
 			get
 			{
@@ -209,7 +209,7 @@ namespace GorgonLibrary.Graphics.Tools
 						_currentTrack.AddKey(key);
 						startTime += interval;
 					}
-				}
+				}				
 			}
 			catch (Exception ex)
 			{

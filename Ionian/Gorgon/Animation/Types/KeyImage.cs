@@ -144,8 +144,8 @@ namespace GorgonLibrary.Graphics
 
 			if (renderObject != null)
 			{
-				if (renderObject.Image != _image)
-					renderObject.Image = _image;
+				if (renderObject.Image != Image)
+					renderObject.Image = Image;
 				if (renderObject.ImageOffset != _imageOffset)
 					renderObject.ImageOffset = _imageOffset;
 				if (renderObject.Size != _imageSize)
@@ -211,6 +211,18 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="KeyImage"/> class.
+		/// </summary>
+		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
+		/// <param name="deferred">The name of the deferred image.</param>
+		internal KeyImage(float time, string deferred)
+			: base(time)
+		{
+			_image = null;
+			_deferredImage = deferred;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="KeyImage"/> class.
 		/// </summary>

@@ -100,7 +100,11 @@ namespace GorgonLibrary.Graphics
 			{
 				// Calculate linear values.
 				if (Owner.InterpolationMode == InterpolationMode.Linear)
-					_value = MathUtility.Round(Vector2D.Add(previous.Value, Vector2D.Multiply(Vector2D.Subtract(next.Value, previous.Value), Time)));
+				{
+					_value = Vector2D.Add(previous.Value, Vector2D.Multiply(Vector2D.Subtract(next.Value, previous.Value), Time));
+					if (Owner.RoundValues)
+						_value = MathUtility.Round(_value);
+				}
 				else
 				{
 					// Calculate spline values.

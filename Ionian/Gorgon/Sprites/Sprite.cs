@@ -42,17 +42,31 @@ namespace GorgonLibrary.Graphics
 		: Renderable, ISerializable
 	{
 		#region Variables.
-		private float[] _spriteCorners;							// Sprite corners.
-		private Vector2D[] _vertexOffsets;						// Relative offsets for vertices.
-		private Vector2D _imagePosition;						// Position within the image to start copying from.
-		private string _spritePath;								// Path to the loaded/saved sprite.
-		private bool _flipHorizontal = false;					// Flag to flip horizontally.
-		private bool _flipVertical = false;						// Flag to flip vertically.
-		private string _deferredImage = string.Empty;			// Name of the deferred image to bind.
-		private string _deferredShader = string.Empty;			// Name of the deferred shader to bind.
+		private float[] _spriteCorners;									// Sprite corners.
+		private Vector2D[] _vertexOffsets;								// Relative offsets for vertices.
+		private Vector2D _imagePosition;								// Position within the image to start copying from.
+		private string _spritePath;										// Path to the loaded/saved sprite.
+		private bool _flipHorizontal = false;							// Flag to flip horizontally.
+		private bool _flipVertical = false;								// Flag to flip vertically.
+		private string _deferredImage = string.Empty;					// Name of the deferred image to bind.
+		private string _deferredShader = string.Empty;					// Name of the deferred shader to bind.
+		private BoundingCircle _boundCircle = BoundingCircle.Empty;		// Bounding circle.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the bounding circle of the sprite.
+		/// </summary>
+		public BoundingCircle BoundingCircle
+		{
+			get
+			{
+				if (this.IsAABBUpdated)
+					UpdateAABB();
+				return _boundCircle;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the image that this object is bound with.
 		/// </summary>
@@ -979,6 +993,8 @@ namespace GorgonLibrary.Graphics
 		{
 			Vector2D max = new Vector2D(float.MinValue, float.MinValue);	// Max boundary for the AABB.
 			Vector2D min = new Vector2D(float.MaxValue, float.MaxValue);	// Min boundary for the AABB.
+			float xradius = 0.0f;											// Bounding circle radius. 
+			float yradius = 0.0f;											// Bounding circle radius.
 
 			base.UpdateAABB();
 
@@ -999,6 +1015,13 @@ namespace GorgonLibrary.Graphics
 			}
 
 			SetAABB(min, max);
+			_boundCircle.Center = new Vector2D(min.X + (max.X - min.X) / 2.0f, min.Y + (max.Y - min.Y) / 2.0f);
+			xradius = MathUtility.Abs(max.X - min.X) / 2.0f;
+			yradius = MathUtility.Abs(max.Y - min.Y) / 2.0f;
+			if (xradius > yradius)
+				_boundCircle.Radius = xradius;
+			else
+				_boundCircle.Radius = yradius;
 			IsAABBUpdated = false;
 		}
 

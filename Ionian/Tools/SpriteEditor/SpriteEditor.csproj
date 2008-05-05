@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -69,11 +69,11 @@
     <Compile Include="ControlExtenders\Overlay.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\colorAnimation.cs">
+    <Compile Include="Controls\ByteDropIn.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\colorAnimation.Designer.cs">
-      <DependentUpon>colorAnimation.cs</DependentUpon>
+    <Compile Include="Controls\ByteDropIn.Designer.cs">
+      <DependentUpon>ByteDropIn.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\ColorChangedEventArgs.cs" />
     <Compile Include="Controls\ColorChooser.cs">
@@ -82,21 +82,44 @@
     <Compile Include="Controls\ColorChooser.designer.cs">
       <DependentUpon>ColorChooser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ColorDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ColorDropIn.Designer.cs">
+      <DependentUpon>ColorDropIn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ColorHandler.cs" />
     <Compile Include="Controls\ColorPicker.cs" />
     <Compile Include="Controls\ColorWheel.cs" />
-    <Compile Include="Controls\transformAnimation.cs">
+    <Compile Include="Controls\AnimationDropIn.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\transformAnimation.Designer.cs">
-      <DependentUpon>transformAnimation.cs</DependentUpon>
+    <Compile Include="Controls\AnimationDropIn.Designer.cs">
+      <DependentUpon>AnimationDropIn.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\IDropIn.cs" />
+    <Compile Include="Controls\FloatDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\FloatDropIn.Designer.cs">
+      <DependentUpon>FloatDropIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ImageDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ImageDropIn.Designer.cs">
+      <DependentUpon>ImageDropIn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ImageManager.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\ImageManager.Designer.cs">
       <DependentUpon>ImageManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Int32DropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Int32DropIn.Designer.cs">
+      <DependentUpon>Int32DropIn.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\Manager.cs">
       <SubType>UserControl</SubType>
@@ -115,6 +138,12 @@
     </Compile>
     <Compile Include="Controls\SpriteManager.Designer.cs">
       <DependentUpon>SpriteManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Vector2DDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Vector2DDropIn.Designer.cs">
+      <DependentUpon>Vector2DDropIn.cs</DependentUpon>
     </Compile>
     <Compile Include="formAnimationEditor.cs">
       <SubType>Form</SubType>
@@ -188,12 +217,6 @@
     <Compile Include="formSpriteExtractOptions.Designer.cs">
       <DependentUpon>formSpriteExtractOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\frameAnimation.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\frameAnimation.Designer.cs">
-      <DependentUpon>frameAnimation.cs</DependentUpon>
-    </Compile>
     <Compile Include="NVidiaAtlasImport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PropBag\IPropertyTableObject.cs" />
@@ -210,21 +233,37 @@
       <DependentUpon>ABOOT.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\colorAnimation.resx">
-      <DependentUpon>colorAnimation.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\ByteDropIn.resx">
+      <DependentUpon>ByteDropIn.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ColorChooser.resx">
       <DependentUpon>ColorChooser.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\transformAnimation.resx">
-      <DependentUpon>transformAnimation.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\AnimationDropIn.resx">
+      <DependentUpon>AnimationDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ColorDropIn.resx">
+      <DependentUpon>ColorDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FloatDropIn.resx">
+      <DependentUpon>FloatDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ImageDropIn.resx">
+      <DependentUpon>ImageDropIn.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ImageManager.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ImageManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Int32DropIn.resx">
+      <DependentUpon>Int32DropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Manager.resx">
       <SubType>Designer</SubType>
@@ -237,6 +276,10 @@
     <EmbeddedResource Include="Controls\SpriteManager.resx">
       <SubType>Designer</SubType>
       <DependentUpon>SpriteManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Vector2DDropIn.resx">
+      <DependentUpon>Vector2DDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="formAnimationEditor.resx">
       <SubType>Designer</SubType>
@@ -286,10 +329,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>formSpriteExtractOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\frameAnimation.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>frameAnimation.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -321,6 +360,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorSprite.ico" />
+    <None Include="Resources\cut.png" />
+    <None Include="Resources\paste.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">

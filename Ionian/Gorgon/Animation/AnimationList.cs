@@ -38,6 +38,36 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to clear the collection.
+		/// </summary>
+		public override void Clear()
+		{
+			foreach (Animation anim in this)
+				anim.SetOwner(null);
+			base.Clear();
+		}
+
+		/// <summary>
+		/// Function to remove an object from the list by index.
+		/// </summary>
+		/// <param name="index">Index to remove at.</param>
+		public override void Remove(int index)
+		{
+			this[index].SetOwner(null);
+			base.Remove(index);
+		}
+
+		/// <summary>
+		/// Function to remove an object from the list by key.
+		/// </summary>
+		/// <param name="key">Key of the object to remove.</param>
+		public override void Remove(string key)
+		{
+			this[key].SetOwner(null);
+			base.Remove(key);
+		}
+
         /// <summary>
         /// Function to add an animation.
         /// </summary>

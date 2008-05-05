@@ -151,6 +151,13 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap cut {
+            get {
+                object obj = ResourceManager.GetObject("cut", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap delete {
             get {
                 object obj = ResourceManager.GetObject("delete", resourceCulture);
@@ -354,6 +361,13 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap paste {
+            get {
+                object obj = ResourceManager.GetObject("paste", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Pattern {
             get {
                 object obj = ResourceManager.GetObject("Pattern", resourceCulture);
@@ -382,9 +396,23 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap selection_delete {
+            get {
+                object obj = ResourceManager.GetObject("selection_delete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap target {
             get {
                 object obj = ResourceManager.GetObject("target", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap TransGridBack1 {
+            get {
+                object obj = ResourceManager.GetObject("TransGridBack1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -636,11 +636,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				editor.GetSettings();
 				editor.Sprites = _spriteDocs;
 				editor.CurrentAnimation = _current.Sprite.Animations[listAnimations.SelectedItems[0].Name];
-				if (editor.ShowDialog(MainForm) == DialogResult.OK)
-				{
-					_current.Changed = true;
-					RefreshAnimationList();
-				}
+				editor.ShowDialog(MainForm);
+				RefreshAnimationList();
+				_current.RefreshProperties();
 			}
 			catch (Exception ex)
 			{
@@ -944,6 +942,77 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 		}
 
 		/// <summary>
+		/// Handles the Click event of the menuItemNvidiaImport control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void menuItemNvidiaImport_Click(object sender, EventArgs e)
+		{
+			NVidiaAtlasImport nvImport = null;						// NV texture atlas import.
+			ConfirmationResult result = ConfirmationResult.None;	// Confirmation result.
+			string spriteName = string.Empty;						// Name of the sprite.
+			int counter = 0;										// Sprite counter.
+			SpriteDocument spriteDoc = null;						// Sprite document.
+
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				nvImport = new NVidiaAtlasImport();
+
+				Settings.Root = "Paths";
+				dialogOpen.Title = "Import nvidia texture atlas...";
+				dialogOpen.InitialDirectory = Settings.GetSetting("LastImportOpenPath", @".\");
+				dialogOpen.Filter = "Nvidia texture atlas (*.tai)|*.tai";
+				dialogOpen.Multiselect = false;
+
+				// Import.
+				if (dialogOpen.ShowDialog(ParentForm) == DialogResult.OK)
+				{
+					nvImport.Import(dialogOpen.FileName);
+
+					// Create sprites.
+					foreach (KeyValuePair<string, NVidiaAtlasImport.SpriteData> sprite in nvImport.Sprites)
+					{
+						spriteName = sprite.Key;
+
+						// If a sprite exists with this name, then ask to overwrite it.
+						while (_spriteDocs.Contains(spriteName))
+						{
+							if ((result & ConfirmationResult.ToAll) == 0)
+								result = UI.ConfirmBox(ParentForm, "The sprite '" + spriteName + "' already exists.  Replace it?", false, true);
+
+							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
+								_spriteDocs.Remove(spriteName);
+							else
+								spriteName += "." + counter.ToString();
+						}
+
+						spriteDoc = _spriteDocs.Create(spriteName, sprite.Value.Image);
+						spriteDoc.SetRegion(sprite.Value.SpriteRect);
+						counter++;
+					}
+
+					MainForm.ProjectChanged = true;
+					ValidateForm();
+					RefreshList();
+					MainForm.ImageManager.RefreshList();
+					MainForm.ValidateForm();
+
+					Settings.SetSetting("LastImportOpenPath", Path.GetDirectoryName(dialogOpen.FileName));
+				}
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(ParentForm, "Error trying to import the texture atlas file(s).", ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Function to validate the form controls.
 		/// </summary>
 		protected override void ValidateForm()
@@ -955,7 +1024,10 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 			if (_current != null)
 			{
 				foreach (Animation anim in _current.Sprite.Animations)
-					keyCount += anim.TransformationTrack.KeyCount;
+				{
+					foreach (Track track in anim.Tracks)
+						keyCount += track.KeyCount;
+				}
 			}
 
 			if (listSprites.SelectedItems.Count == 0)
@@ -1374,76 +1446,5 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 			InitializeComponent();			
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the Click event of the menuItemNvidiaImport control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void menuItemNvidiaImport_Click(object sender, EventArgs e)
-		{
-			NVidiaAtlasImport nvImport = null;						// NV texture atlas import.
-			ConfirmationResult result = ConfirmationResult.None;	// Confirmation result.
-			string spriteName = string.Empty;						// Name of the sprite.
-			int counter = 0;										// Sprite counter.
-			SpriteDocument spriteDoc = null;						// Sprite document.
-
-			Cursor.Current = Cursors.WaitCursor;
-
-			try
-			{
-				nvImport = new NVidiaAtlasImport();
-
-				Settings.Root = "Paths";
-				dialogOpen.Title = "Import nvidia texture atlas...";
-				dialogOpen.InitialDirectory = Settings.GetSetting("LastImportOpenPath", @".\");
-				dialogOpen.Filter = "Nvidia texture atlas (*.tai)|*.tai";
-				dialogOpen.Multiselect = false;
-
-				// Import.
-				if (dialogOpen.ShowDialog(ParentForm) == DialogResult.OK)
-				{
-					nvImport.Import(dialogOpen.FileName);
-
-					// Create sprites.
-					foreach (KeyValuePair<string, NVidiaAtlasImport.SpriteData> sprite in nvImport.Sprites)
-					{
-						spriteName = sprite.Key;
-
-						// If a sprite exists with this name, then ask to overwrite it.
-						while (_spriteDocs.Contains(spriteName))
-						{
-							if ((result & ConfirmationResult.ToAll) == 0)
-								result = UI.ConfirmBox(ParentForm, "The sprite '" + spriteName + "' already exists.  Replace it?", false, true);
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-								_spriteDocs.Remove(spriteName);
-							else
-								spriteName += "." + counter.ToString();
-						}
-
-						spriteDoc = _spriteDocs.Create(spriteName, sprite.Value.Image);
-						spriteDoc.SetRegion(sprite.Value.SpriteRect);
-						counter++;						
-					}
-										
-					MainForm.ProjectChanged = true;
-					ValidateForm();
-					RefreshList();
-					MainForm.ImageManager.RefreshList();
-					MainForm.ValidateForm();
-
-					Settings.SetSetting("LastImportOpenPath", Path.GetDirectoryName(dialogOpen.FileName)); 
-				}
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(ParentForm, "Error trying to import the texture atlas file(s).",ex);
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-		}
 	}
 }
