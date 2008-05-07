@@ -30,6 +30,7 @@ using System.Text;
 using System.Windows.Forms.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
+using System.Linq;
 using Dialogs;
 using ControlExtenders;
 using Flobbster.Windows.Forms;
@@ -569,6 +570,7 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
 					{
 						_current.Sprite.Animations.Remove(item.Name);
+						_current.SetAnimReadOnly(false);
 						_current.Changed = true;
 					}
 				}
@@ -1212,23 +1214,13 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 		/// </summary>
 		public void UpdatePropertyGrid()
 		{
-			PropertyBag[] selectedDocuments = null;		// Selected documents.
+			// Get the selected items. (How can you not love teh LINQ?)
+			gridSpriteProperties.SelectedObjects = (from docs in _spriteDocs
+													join ListViewItem items in listSprites.SelectedItems on docs.Name equals items.Name
+													select docs.PropertyBag).ToArray();
 
-			if (_current != null)
-			{
-				// Create array.
-				selectedDocuments = new PropertyBag[listSprites.SelectedItems.Count];
-
-				// Add selected items to the array.
-				for (int i = 0; i < listSprites.SelectedItems.Count; i++)
-				{
-					_spriteDocs[listSprites.SelectedItems[i].Name].SetAnimReadOnly();
-					selectedDocuments[i] = _spriteDocs[listSprites.SelectedItems[i].Name].PropertyBag;
-				}
-			}
-
-			// Add the array.
-			gridSpriteProperties.SelectedObjects = selectedDocuments;			
+			// Update the grid.
+			gridSpriteProperties.Refresh();
 		}
 
 		/// <summary>

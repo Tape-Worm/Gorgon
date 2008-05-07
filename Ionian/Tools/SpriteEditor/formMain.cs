@@ -1451,7 +1451,7 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(this, "Unable to save the sprite.", ex);
+				UI.ErrorBox(this, "Error opening the project file.", ex);
 			}
 			finally
 			{

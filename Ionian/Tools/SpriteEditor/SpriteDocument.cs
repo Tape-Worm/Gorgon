@@ -594,7 +594,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritAlphaMaskFunction = value;
 
-				SetSpecReadOnly(_bag.Properties["AlphaMaskFunction"], value);
+				SetSpecReadOnly(_bag.Properties["AlphaMaskFunction"], value, true);
 				Changed = true;
 			}
 		}
@@ -613,7 +613,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritAlphaMaskValue = value;
 
-				SetSpecReadOnly(_bag.Properties["AlphaMaskValue"], value);
+				SetSpecReadOnly(_bag.Properties["AlphaMaskValue"], value, true);
 				Changed = true;
 			}
 		}
@@ -675,9 +675,10 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritBlending = value;
 
-				SetSpecReadOnly(_bag.Properties["SourceBlend"], value);
-				SetSpecReadOnly(_bag.Properties["DestinationBlend"], value);
-				SetSpecReadOnly(_bag.Properties["BlendingPreset"], value);
+				SetSpecReadOnly(_bag.Properties["SourceBlend"], value, false);
+				SetSpecReadOnly(_bag.Properties["DestinationBlend"], value, false);
+				SetSpecReadOnly(_bag.Properties["BlendingPreset"], value, false);
+				_owner.SpriteManager.RefreshPropertyGrid();
 				Changed = true;
 			}
 		}
@@ -753,7 +754,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritSmoothing = value;
 
-				SetSpecReadOnly(_bag.Properties["Smoothing"], value);
+				SetSpecReadOnly(_bag.Properties["Smoothing"], value, true);
 				Changed = true;
 			}
 		}
@@ -791,7 +792,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritHorizontalWrapping = value;
 
-				SetSpecReadOnly(_bag.Properties["HorizontalWrapping"], value); 
+				SetSpecReadOnly(_bag.Properties["HorizontalWrapping"], value, true); 
 				Changed = true;
 			}
 		}
@@ -810,7 +811,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritVerticalWrapping = value;
 
-				SetSpecReadOnly(_bag.Properties["VerticalWrapping"], value);
+				SetSpecReadOnly(_bag.Properties["VerticalWrapping"], value, true);
 				Changed = true;
 			}
 		}
@@ -866,7 +867,7 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_sprite.InheritDepthTestFunction = value;
-				SetSpecReadOnly(_bag.Properties["DepthTestFunction"], value);
+				SetSpecReadOnly(_bag.Properties["DepthTestFunction"], value, true);
 				Changed = true;
 			}
 		}
@@ -884,7 +885,7 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_sprite.InheritDepthBias = value;
-				SetSpecReadOnly(_bag.Properties["DepthBufferBias"], value);
+				SetSpecReadOnly(_bag.Properties["DepthBufferBias"], value, true);
 				Changed = true;
 			}
 		}
@@ -902,7 +903,7 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_sprite.InheritDepthWriteEnabled = value;
-				SetSpecReadOnly(_bag.Properties["DepthWriteEnabled"], value);
+				SetSpecReadOnly(_bag.Properties["DepthWriteEnabled"], value, true);
 				Changed = true;
 			}
 		}
@@ -975,7 +976,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilEnabled = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilEnabled"], value);
+				SetSpecReadOnly(_bag.Properties["StencilEnabled"], value, true);
 
 				Changed = true;
 			}
@@ -995,7 +996,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilFailOperation = value;
 								
-				SetSpecReadOnly(_bag.Properties["StencilFailOperation"], value);
+				SetSpecReadOnly(_bag.Properties["StencilFailOperation"], value, true);
 
 				Changed = true;
 			}
@@ -1015,7 +1016,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilMask = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilMask"], value);
+				SetSpecReadOnly(_bag.Properties["StencilMask"], value, true);
 				
 				Changed = true;
 			}
@@ -1035,7 +1036,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilPassOperation = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilPassOperation"], value);
+				SetSpecReadOnly(_bag.Properties["StencilPassOperation"], value, true);
 
 				Changed = true;
 			}
@@ -1055,7 +1056,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilReference = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilRefValue"], value);
+				SetSpecReadOnly(_bag.Properties["StencilRefValue"], value, true);
 
 				Changed = true;
 			}
@@ -1075,7 +1076,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilZFailOperation = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilZFailOperation"], value);
+				SetSpecReadOnly(_bag.Properties["StencilZFailOperation"], value, true);
 
 				Changed = true;
 			}
@@ -1095,7 +1096,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilCompare = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilCompareOperation"], value);
+				SetSpecReadOnly(_bag.Properties["StencilCompareOperation"], value, true);
 
 				Changed = true;
 			}
@@ -1248,21 +1249,6 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Methods.
 		/// <summary>
-		/// Function to set a specific property spec read-only.
-		/// </summary>
-		/// <param name="spec">Property specification.</param>
-		/// <param name="readOnly">TRUE if read-only, FALSE if not.</param>
-		private void SetSpecReadOnly(PropertySpec spec, bool readOnly)
-		{
-			if (!readOnly)
-				spec.Attributes = null;
-			else
-				spec.Attributes = new Attribute[] { System.ComponentModel.ReadOnlyAttribute.Yes };
-
-			_owner.SpriteManager.RefreshPropertyGrid();
-		}
-
-		/// <summary>
 		/// Function to update a property.
 		/// </summary>
 		/// <param name="spec">Property specification to update.</param>
@@ -1291,9 +1277,27 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Function to set a specific property spec read-only.
+		/// </summary>
+		/// <param name="spec">Property specification.</param>
+		/// <param name="readOnly">TRUE if read-only, FALSE if not.</param>
+		/// <param name="refreshNow">TRUE to refresh immediately, FALSE to defer.</param>
+		public void SetSpecReadOnly(PropertySpec spec, bool readOnly, bool refreshNow)
+		{
+			if (!readOnly)
+				spec.Attributes = null;
+			else
+				spec.Attributes = new Attribute[] { System.ComponentModel.ReadOnlyAttribute.Yes };
+
+			if (refreshNow)
+				_owner.SpriteManager.RefreshPropertyGrid();
+		}
+
+		/// <summary>
 		/// Function to set animated properties to read-only if keys exist for said properties.
 		/// </summary>
-		public void SetAnimReadOnly()
+		/// <param name="doNotRefresh">TRUE to defer the refreshing of the property grid, FALSE to refresh immediately.</param>
+		public void SetAnimReadOnly(bool doNotRefresh)
 		{
 			if (_sprite == null)
 				return;
@@ -1301,68 +1305,71 @@ namespace GorgonLibrary.Graphics.Tools
 			// Set color properties.
 			if ((HasKeysForTrack("Color")) || (HasKeysForTrack("Opacity")))
 			{
-				SetSpecReadOnly(_bag.Properties["opacity"], true);
-				SetSpecReadOnly(_bag.Properties["diffusecolor"], true);
-				SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], true);
-				SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], true);
-				SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], true);
-				SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], true);
-				SetSpecReadOnly(_bag.Properties["upperleftalpha"], true);
-				SetSpecReadOnly(_bag.Properties["upperrightalpha"], true);
-				SetSpecReadOnly(_bag.Properties["lowerleftalpha"], true);
-				SetSpecReadOnly(_bag.Properties["lowerrightalpha"], true);
+				SetSpecReadOnly(_bag.Properties["opacity"], true, false);
+				SetSpecReadOnly(_bag.Properties["diffusecolor"], true, false);
+				SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], true, false);
+				SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], true, false);
+				SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], true, false);
+				SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], true, false);
+				SetSpecReadOnly(_bag.Properties["upperleftalpha"], true, false);
+				SetSpecReadOnly(_bag.Properties["upperrightalpha"], true, false);
+				SetSpecReadOnly(_bag.Properties["lowerleftalpha"], true, false);
+				SetSpecReadOnly(_bag.Properties["lowerrightalpha"], true, false);
 			}
 			else
 			{
-				SetSpecReadOnly(_bag.Properties["opacity"], false);
-				SetSpecReadOnly(_bag.Properties["diffusecolor"], false);
-				SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], false);
-				SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], false);
-				SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], false);
-				SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], false);
-				SetSpecReadOnly(_bag.Properties["upperleftalpha"], false);
-				SetSpecReadOnly(_bag.Properties["upperrightalpha"], false);
-				SetSpecReadOnly(_bag.Properties["lowerleftalpha"], false);
-				SetSpecReadOnly(_bag.Properties["lowerrightalpha"], false);
+				SetSpecReadOnly(_bag.Properties["opacity"], false, false);
+				SetSpecReadOnly(_bag.Properties["diffusecolor"], false, false);
+				SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], false, false);
+				SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], false, false);
+				SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], false, false);
+				SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], false, false);
+				SetSpecReadOnly(_bag.Properties["upperleftalpha"], false, false);
+				SetSpecReadOnly(_bag.Properties["upperrightalpha"], false, false);
+				SetSpecReadOnly(_bag.Properties["lowerleftalpha"], false, false);
+				SetSpecReadOnly(_bag.Properties["lowerrightalpha"], false, false);
 			}
 
 			if (HasKeysForTrack("AlphaMaskValue"))
 			{
-				SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], true);
-				SetSpecReadOnly(_bag.Properties["alphamaskvalue"], true);
+				SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], true, false);
+				SetSpecReadOnly(_bag.Properties["alphamaskvalue"], true, false);
 			}
 			else
 			{
-				SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], false);
-				SetSpecReadOnly(_bag.Properties["alphamaskvalue"], false);
+				SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], false, false);
+				SetSpecReadOnly(_bag.Properties["alphamaskvalue"], false, false);
 			}
 
 			// Set transformation properties.
 			if (HasKeysForTrack("Axis"))
 			{
-				SetSpecReadOnly(_bag.Properties["axis"], true);
-				SetSpecReadOnly(_bag.Properties["axisalignment"], true);
+				SetSpecReadOnly(_bag.Properties["axis"], true, false);
+				SetSpecReadOnly(_bag.Properties["axisalignment"], true, false);
 			}
 			else
 			{
-				SetSpecReadOnly(_bag.Properties["axis"], false);
-				SetSpecReadOnly(_bag.Properties["axisalignment"], false);
+				SetSpecReadOnly(_bag.Properties["axis"], false, false);
+				SetSpecReadOnly(_bag.Properties["axisalignment"], false, false);
 			}
 
 			if (HasKeysForTrack("Image"))
-				SetSpecReadOnly(_bag.Properties["boundimage"], true);
+				SetSpecReadOnly(_bag.Properties["boundimage"], true, false);
 			else
-				SetSpecReadOnly(_bag.Properties["boundimage"], false);
+				SetSpecReadOnly(_bag.Properties["boundimage"], false, false);
 
 			if ((HasKeysForTrack("ImageOffset")) || (HasKeysForTrack("Image")))
-				SetSpecReadOnly(_bag.Properties["imagelocation"], true);
+				SetSpecReadOnly(_bag.Properties["imagelocation"], true, false);
 			else
-				SetSpecReadOnly(_bag.Properties["imagelocation"], false);
+				SetSpecReadOnly(_bag.Properties["imagelocation"], false, false);
 
 			if ((HasKeysForTrack("Size")) || (HasKeysForTrack("Image")))
-				SetSpecReadOnly(_bag.Properties["size"], true);
+				SetSpecReadOnly(_bag.Properties["size"], true, false);
 			else
-				SetSpecReadOnly(_bag.Properties["size"], false);
+				SetSpecReadOnly(_bag.Properties["size"], false, false);
+
+			if (!doNotRefresh)
+				_owner.SpriteManager.RefreshPropertyGrid();
 		}
 
 		/// <summary>
@@ -1404,7 +1411,7 @@ namespace GorgonLibrary.Graphics.Tools
 					SetValue(this, e);
 			}
 
-			SetAnimReadOnly();
+			SetAnimReadOnly(false);
 		}
 	
 		/// <summary>
@@ -1542,7 +1549,7 @@ namespace GorgonLibrary.Graphics.Tools
 			foreach (PropertySpec spec in _bag.Properties)
 				UpdatePropertySpec(spec);
 
-			SetAnimReadOnly();
+			SetAnimReadOnly(false);
 		}
 		#endregion
 

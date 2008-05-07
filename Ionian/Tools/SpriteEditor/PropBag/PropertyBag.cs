@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 
@@ -430,21 +431,295 @@ namespace Flobbster.Windows.Forms
 	public class PropertyBag : ICustomTypeDescriptor
 	{
 		#region PropertySpecCollection class definition
-		/// <summary>
-		/// Encapsulates a collection of PropertySpec objects.
-		/// </summary>
 		[Serializable]
-		public class PropertySpecCollection : IList
+		public class PropertySpecCollection
+			: IList<PropertySpec>
 		{
-			private ArrayList innerArray;
-			
+			private List<PropertySpec> innerArray = null;
+
 			/// <summary>
 			/// Initializes a new instance of the PropertySpecCollection class.
 			/// </summary>
 			public PropertySpecCollection()
 			{
-				innerArray = new ArrayList();
+				innerArray = new List<PropertySpec>();
 			}
+
+			/// <summary>
+			/// Searches for the PropertySpec with the specified name and returns the zero-based index of
+			/// the first occurrence within the entire PropertySpecCollection.
+			/// </summary>
+			/// <param name="name">The name of the PropertySpec to locate in the PropertySpecCollection.</param>
+			/// <returns>The zero-based index of the first occurrence of value within the entire PropertySpecCollection,
+			/// if found; otherwise, -1.</returns>
+			public int IndexOf(string name)
+			{
+				int i = 0;
+
+				foreach(PropertySpec spec in innerArray)
+				{
+					if(spec.Name == name)
+						return i;
+
+					i++;
+				}
+
+				return -1;
+			}
+
+			/// <summary>
+			/// Determines whether a PropertySpec with the specified name is in the PropertySpecCollection.
+			/// </summary>
+			/// <param name="name">The name of the PropertySpec to locate in the PropertySpecCollection.</param>
+			/// <returns>true if item is found in the PropertySpecCollection; otherwise, false.</returns>
+			public bool Contains(string name)
+			{
+				foreach(PropertySpec spec in innerArray)
+					if(spec.Name == name)
+						return true;
+
+				return false;
+			}
+
+			/// <summary>
+			/// Property to set return the property by its name.
+			/// </summary>
+			/// <param name="name">Name of the property.</param>
+			/// <returns>The property with the name.</returns>
+			/// <remarks>MW - 20070616 - Added to get properties by name.</remarks>
+			public PropertySpec this[string name]
+			{
+				get
+				{
+					foreach (PropertySpec spec in innerArray)
+					{
+						if (string.Compare(spec.Name, name, true) == 0)
+							return spec;
+					}
+
+					throw new IndexOutOfRangeException();
+				}
+				set
+				{
+					for (int i = 0; i < innerArray.Count; i++)
+					{
+						if (string.Compare(((PropertySpec)innerArray[i]).Name, name, true) == 0)
+							innerArray[i] = value;
+					}					
+				}
+			}
+
+			/// <summary>
+			/// Copies the elements of the PropertySpecCollection to a new PropertySpec array.
+			/// </summary>
+			/// <returns>A PropertySpec array containing copies of the elements of the PropertySpecCollection.</returns>
+			public PropertySpec[] ToArray()
+			{
+				return (PropertySpec[])innerArray.ToArray();
+			}
+
+			/// <summary>
+			/// Removes the property with the specified name from the PropertySpecCollection.
+			/// </summary>
+			/// <param name="name">The name of the PropertySpec to remove from the PropertySpecCollection.</param>
+			public void Remove(string name)
+			{
+				int index = IndexOf(name);
+				RemoveAt(index);
+			}
+
+			#region IList<PropertySpec> Members
+			/// <summary>
+			/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+			/// </summary>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+			/// <returns>
+			/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
+			/// </returns>
+			public int IndexOf(PropertySpec item)
+			{
+				return innerArray.IndexOf(item);
+			}
+
+			/// <summary>
+			/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+			/// </summary>
+			/// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
+			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+			/// <exception cref="T:System.ArgumentOutOfRangeException">
+			/// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.</exception>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
+			public void Insert(int index, PropertySpec item)
+			{
+				innerArray.Insert(index, item);
+			}
+
+			/// <summary>
+			/// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+			/// </summary>
+			/// <param name="index">The zero-based index of the item to remove.</param>
+			/// <exception cref="T:System.ArgumentOutOfRangeException">
+			/// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.</exception>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
+			public void RemoveAt(int index)
+			{
+				innerArray.RemoveAt(index);
+			}
+
+			/// <summary>
+			/// Gets or sets the <see cref="Flobbster.Windows.Forms.PropertySpec"/> at the specified index.
+			/// </summary>
+			/// <value></value>
+			public PropertySpec this[int index]
+			{
+				get
+				{
+					return innerArray[index];
+				}
+				set
+				{
+					innerArray[index] = value;
+				}
+			}
+
+			/// <summary>
+			/// Adds a PropertySpec to the end of the PropertySpecCollection.
+			/// </summary>
+			/// <param name="value">The PropertySpec to be added to the end of the PropertySpecCollection.</param>
+			/// <returns>The PropertySpecCollection index at which the value has been added.</returns>
+			public int Add(PropertySpec value)
+			{
+				innerArray.Add(value);
+				
+				return innerArray.Count - 1;
+			}
+			#endregion
+
+			#region ICollection<PropertySpec> Members
+			/// <summary>
+			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+			/// </summary>
+			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+			void ICollection<PropertySpec>.Add(PropertySpec item)
+			{					
+				// Not necessary.
+			}
+
+			/// <summary>
+			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+			/// </summary>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only. </exception>
+			public void Clear()
+			{
+				innerArray.Clear();
+			}
+
+			/// <summary>
+			/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+			/// </summary>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+			/// <returns>
+			/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+			/// </returns>
+			public bool Contains(PropertySpec item)
+			{
+				return innerArray.Contains(item);
+			}
+
+			/// <summary>
+			/// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+			/// </summary>
+			/// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+			/// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+			/// <exception cref="T:System.ArgumentNullException">
+			/// 	<paramref name="array"/> is null.</exception>
+			/// <exception cref="T:System.ArgumentOutOfRangeException">
+			/// 	<paramref name="arrayIndex"/> is less than 0.</exception>
+			/// <exception cref="T:System.ArgumentException">
+			/// 	<paramref name="array"/> is multidimensional.-or-<paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.-or-Type <paramref name="T"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.</exception>
+			public void CopyTo(PropertySpec[] array, int arrayIndex)
+			{
+				innerArray.CopyTo(array, arrayIndex);
+			}
+
+			/// <summary>
+			/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+			/// </summary>
+			/// <value></value>
+			/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</returns>
+			public int Count
+			{
+				get 
+				{ 
+					return innerArray.Count;
+				}
+			}
+
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+			/// </summary>
+			/// <value></value>
+			/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.</returns>
+			public bool IsReadOnly
+			{
+				get 
+				{ 
+					return false;
+				}
+			}
+
+			/// <summary>
+			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+			/// </summary>
+			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+			/// <returns>
+			/// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+			/// </returns>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+			public bool Remove(PropertySpec item)
+			{
+				return innerArray.Remove(item);
+			}
+
+			#endregion
+
+			#region IEnumerable<PropertySpec> Members
+			/// <summary>
+			/// Returns an enumerator that iterates through the collection.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+			/// </returns>
+			public IEnumerator<PropertySpec> GetEnumerator()
+			{
+				foreach(PropertySpec spec in innerArray)
+					yield return spec;
+			}
+
+			#endregion
+
+			#region IEnumerable Members
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+			/// </returns>
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return innerArray.GetEnumerator();
+			}
+			#endregion
+		}
+		/// <summary>
+		/// Encapsulates a collection of PropertySpec objects.
+		/// </summary>
+/*		[Serializable]
+		public class OLD_PropertySpecCollection : IList<PropertySpec>
+		{
+			private ArrayList innerArray;
+			
 
 			/// <summary>
 			/// Gets the number of elements in the PropertySpecCollection.
@@ -488,17 +763,6 @@ namespace Flobbster.Windows.Forms
 			}
 
 			/// <summary>
-			/// Gets an object that can be used to synchronize access to the collection.
-			/// </summary>
-			/// <value>
-			/// An object that can be used to synchronize access to the collection.
-			/// </value>
-			object ICollection.SyncRoot
-			{
-				get { return null; }
-			}
-
-			/// <summary>
 			/// Gets or sets the element at the specified index.
 			/// In C#, this property is the indexer for the PropertySpecCollection class.
 			/// </summary>
@@ -510,46 +774,6 @@ namespace Flobbster.Windows.Forms
 			{
 				get { return (PropertySpec)innerArray[index]; }
 				set { innerArray[index] = value; }
-			}
-
-			/// <summary>
-			/// Property to set return the property by its name.
-			/// </summary>
-			/// <param name="name">Name of the property.</param>
-			/// <returns>The property with the name.</returns>
-			/// <remarks>MW - 20070616 - Added to get properties by name.</remarks>
-			public PropertySpec this[string name]
-			{
-				get
-				{
-					foreach (PropertySpec spec in innerArray)
-					{
-						if (string.Compare(spec.Name, name, true) == 0)
-							return spec;
-					}
-
-					throw new IndexOutOfRangeException();
-				}
-				set
-				{
-					for (int i = 0; i < innerArray.Count; i++)
-					{
-						if (string.Compare(((PropertySpec)innerArray[i]).Name, name, true) == 0)
-							innerArray[i] = value;
-					}					
-				}
-			}
-
-			/// <summary>
-			/// Adds a PropertySpec to the end of the PropertySpecCollection.
-			/// </summary>
-			/// <param name="value">The PropertySpec to be added to the end of the PropertySpecCollection.</param>
-			/// <returns>The PropertySpecCollection index at which the value has been added.</returns>
-			public int Add(PropertySpec value)
-			{
-				int index = innerArray.Add(value);
-
-				return index;
 			}
 
 			/// <summary>
@@ -579,20 +803,6 @@ namespace Flobbster.Windows.Forms
 			public bool Contains(PropertySpec item)
 			{
 				return innerArray.Contains(item);
-			}
-
-			/// <summary>
-			/// Determines whether a PropertySpec with the specified name is in the PropertySpecCollection.
-			/// </summary>
-			/// <param name="name">The name of the PropertySpec to locate in the PropertySpecCollection.</param>
-			/// <returns>true if item is found in the PropertySpecCollection; otherwise, false.</returns>
-			public bool Contains(string name)
-			{
-				foreach(PropertySpec spec in innerArray)
-					if(spec.Name == name)
-						return true;
-
-				return false;
 			}
 
 			/// <summary>
@@ -639,28 +849,6 @@ namespace Flobbster.Windows.Forms
 			}
 
 			/// <summary>
-			/// Searches for the PropertySpec with the specified name and returns the zero-based index of
-			/// the first occurrence within the entire PropertySpecCollection.
-			/// </summary>
-			/// <param name="name">The name of the PropertySpec to locate in the PropertySpecCollection.</param>
-			/// <returns>The zero-based index of the first occurrence of value within the entire PropertySpecCollection,
-			/// if found; otherwise, -1.</returns>
-			public int IndexOf(string name)
-			{
-				int i = 0;
-
-				foreach(PropertySpec spec in innerArray)
-				{
-					if(spec.Name == name)
-						return i;
-
-					i++;
-				}
-
-				return -1;
-			}
-
-			/// <summary>
 			/// Inserts a PropertySpec object into the PropertySpecCollection at the specified index.
 			/// </summary>
 			/// <param name="index">The zero-based index at which value should be inserted.</param>
@@ -680,25 +868,6 @@ namespace Flobbster.Windows.Forms
 			}
 
 			/// <summary>
-			/// Removes the property with the specified name from the PropertySpecCollection.
-			/// </summary>
-			/// <param name="name">The name of the PropertySpec to remove from the PropertySpecCollection.</param>
-			public void Remove(string name)
-			{
-				int index = IndexOf(name);
-				RemoveAt(index);
-			}
-
-			/// <summary>
-			/// Removes the object at the specified index of the PropertySpecCollection.
-			/// </summary>
-			/// <param name="index">The zero-based index of the element to remove.</param>
-			public void RemoveAt(int index)
-			{
-				innerArray.RemoveAt(index);
-			}
-
-			/// <summary>
 			/// Copies the elements of the PropertySpecCollection to a new PropertySpec array.
 			/// </summary>
 			/// <returns>A PropertySpec array containing copies of the elements of the PropertySpecCollection.</returns>
@@ -708,14 +877,6 @@ namespace Flobbster.Windows.Forms
 			}
 
 			#region Explicit interface implementations for ICollection and IList
-			/// <summary>
-			/// This member supports the .NET Framework infrastructure and is not intended to be used directly from your code.
-			/// </summary>
-			void ICollection.CopyTo(Array array, int index)
-			{
-				CopyTo((PropertySpec[])array, index);
-			}
-
 			/// <summary>
 			/// This member supports the .NET Framework infrastructure and is not intended to be used directly from your code.
 			/// </summary>
@@ -771,7 +932,120 @@ namespace Flobbster.Windows.Forms
 				Remove((PropertySpec)value);
 			}
 			#endregion
-		}
+
+			#region ICollection<PropertySpec> Members
+			/// <summary>
+			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+			/// </summary>
+			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+			void ICollection<PropertySpec>.Add(PropertySpec item)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+			/// </summary>
+			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+			/// <returns>
+			/// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+			/// </returns>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+			bool ICollection<PropertySpec>.Remove(PropertySpec item)
+			{
+				throw new NotImplementedException();
+			}
+
+			#endregion
+
+			#region IEnumerable<PropertySpec> Members
+
+			/// <summary>
+			/// Returns an enumerator that iterates through the collection.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+			/// </returns>
+			IEnumerator<PropertySpec> IEnumerable<PropertySpec>.GetEnumerator()
+			{
+				throw new NotImplementedException();
+			}
+			#endregion
+
+			#region IList<PropertySpec> Members
+
+			int IList<PropertySpec>.IndexOf(PropertySpec item)
+			{
+				throw new NotImplementedException();
+			}
+
+			void IList<PropertySpec>.Insert(int index, PropertySpec item)
+			{
+				throw new NotImplementedException();
+			}
+
+			void IList<PropertySpec>.RemoveAt(int index)
+			{
+				throw new NotImplementedException();
+			}
+
+			PropertySpec IList<PropertySpec>.this[int index]
+			{
+				get
+				{
+					throw new NotImplementedException();
+				}
+				set
+				{
+					throw new NotImplementedException();
+				}
+			}
+
+			#endregion
+
+			#region ICollection<PropertySpec> Members
+
+
+			void ICollection<PropertySpec>.Clear()
+			{
+				throw new NotImplementedException();
+			}
+
+			bool ICollection<PropertySpec>.Contains(PropertySpec item)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// This member supports the .NET Framework infrastructure and is not intended to be used directly from your code.
+			/// </summary>
+			void ICollection<PropertySpec>.CopyTo(PropertySpec[] array, int arrayIndex)
+			{
+				CopyTo((PropertySpec[])array, arrayIndex);
+			}
+
+			int ICollection<PropertySpec>.Count
+			{
+				get { throw new NotImplementedException(); }
+			}
+
+			bool ICollection<PropertySpec>.IsReadOnly
+			{
+				get { throw new NotImplementedException(); }
+			}
+
+			#endregion
+
+			#region IEnumerable Members
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				throw new NotImplementedException();
+			}
+
+			#endregion
+		}*/
 		#endregion
 		#region PropertySpecDescriptor class definition
 		private class PropertySpecDescriptor : PropertyDescriptor
