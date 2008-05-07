@@ -1112,6 +1112,8 @@ namespace GorgonLibrary.Graphics
 			clone.ParentPosition = ParentPosition;
 			clone.ParentRotation = ParentRotation;
 			clone.ParentScale = ParentScale;
+			clone.HorizontalFlip = HorizontalFlip;
+			clone.VerticalFlip = VerticalFlip;
 
 			if (!InheritSmoothing)
 				clone.Smoothing = Smoothing;

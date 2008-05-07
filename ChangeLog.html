@@ -69,30 +69,14 @@
 </style>
 </head>
 <body>
-<div style="text-align: center"><img alt="" src="Resources/Misc/GorgonLogo2.png"></div><div>
-<span class="region">#region LGPL.</span><br>
-<span class="comment">
-//<br> 
-// Gorgon.<br>
-// Copyright (C) 2007 Michael Winsor<br>
-// <br>
-// This library is free software; you can redistribute it and/or<br>
-// modify it under the terms of the GNU Lesser General Public<br>
-// License as published by the Free Software Foundation; either<br>
-// version 2.1 of the License, or (at your option) any later version.<br>
-// <br>
-// This library is distributed in the hope that it will be useful,<br>
-// but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU<br>
-// Lesser General Public License for more details.<br>
-// <br>
-// You should have received a copy of the GNU Lesser General Public<br>
-// License along with this library; if not, write to the Free Software<br>
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA<br>
-// <br>
-</span>
-<span class="region">#endregion<br><br>
-<table style="width: 30%" cellspacing="1" class="style5">
+<div style="text-align: center"><img alt="" src="Resources/Misc/GorgonLogo2.png"/></div><div>
+<span class="region">#region LGPL.</span><br/><span class="comment">
+//<br/> 
+// Gorgon.<br/>
+// Copyright (C) 2007 Michael Winsor<br/>
+// <br/>
+// This library is free software; you can redistribute it and/or<br/>// modify it under the terms of the GNU Lesser General Public<br/>// License as published by the Free Software Foundation; either<br/>// version 2.1 of the License, or (at your option) any later version.<br/>// <br/>// This library is distributed in the hope that it will be useful,<br/>// but WITHOUT ANY WARRANTY; without even the implied warranty of<br/>// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU<br/>// Lesser General Public License for more details.<br/>// <br/>// You should have received a copy of the GNU Lesser General Public<br/>// License along with this library; if not, write to the Free Software<br/>// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA<br/>// <br/></span>
+<span class="region">#endregion<br/><br/><table style="width: 30%" cellspacing="1" class="style5">
 	<tr>
 		<td class="style2">Legend</td>
 	</tr>
@@ -118,8 +102,16 @@
 </span></div>
 
 <div>
-	<h1>Gorgon Change Log</h1><hr>
+	<h1>Gorgon Change Log</h1><hr/>
 	<pre>
+May 7/2008 - Version - Current
+================
+* Updated a bug in SpriteEditor where the current project would close if you cancelled the
+  open file dialog box.  Obviously this is not good.
+  
+* Updated a bug in Sprite.Clone().  The horizontal/vertical flipped properties were not being
+  cloned with the rest of the sprite.
+
 April 28/2008 - Version 1.0.3040.836
 ================
 * Updated a bug in TextSprite.  When a font was changed the boundaries of the sprite are not 
