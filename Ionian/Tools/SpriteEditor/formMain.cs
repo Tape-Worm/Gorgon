@@ -1455,7 +1455,7 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			finally
 			{
-				Settings.Root = null;				
+				Settings.Root = null;
 				Cursor.Current = Cursors.Default;
 				ValidateForm();
 			}
