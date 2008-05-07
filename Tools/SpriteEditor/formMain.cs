@@ -1441,10 +1441,6 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			try
 			{
-				// Confirm so we can save our changes.
-				if (!NewProject())
-					return;
-
 				Settings.Root = "Paths";
 				dialogOpen.Title = "Open sprite project...";
 				dialogOpen.InitialDirectory = Settings.GetSetting("LastProjectOpenPath", @".\");
@@ -1453,6 +1449,10 @@ namespace GorgonLibrary.Graphics.Tools
 
 				if (dialogOpen.ShowDialog(this) == DialogResult.OK)
 				{
+					// Confirm so we can save our changes.
+					if (!NewProject())
+						return;
+
 					// Open the project.
 					OpenProject(dialogOpen.FileName);
 					Settings.SetSetting("LastProjectOpenPath", Path.GetDirectoryName(dialogOpen.FileName));
@@ -1461,11 +1461,11 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(this, "Unable to save the sprite.", ex);
+				UI.ErrorBox(this, "Error opening the project file.", ex);
 			}
 			finally
 			{
-				Settings.Root = null;				
+				Settings.Root = null;
 				Cursor.Current = Cursors.Default;
 				ValidateForm();
 			}
