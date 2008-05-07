@@ -122,6 +122,8 @@ namespace GorgonLibrary.Graphics.Tools
 			// Set misc. settings.
 			Settings.SetSetting("ShowLogo", checkShowLogo.Checked.ToString());
 			Settings.SetSetting("BGColor", pictureColor.BackColor.ToArgb().ToString());
+			Settings.SetSetting("ShowBoundingBox", checkShowBoundingBox.Checked.ToString());
+			Settings.SetSetting("ShowBoundingCircle", checkShowBoundingCircle.Checked.ToString());
 		}
 
 		/// <summary>
@@ -140,6 +142,9 @@ namespace GorgonLibrary.Graphics.Tools
 
 			// Get settings.
 			checkShowLogo.Checked = (string.Compare(Settings.GetSetting("ShowLogo", "True"),"true",true) == 0);
+			checkShowBoundingBox.Checked = (string.Compare(Settings.GetSetting("ShowBoundingBox", "True"), "true", true) == 0);
+			checkShowBoundingCircle.Checked = (string.Compare(Settings.GetSetting("ShowBoundingCircle", "True"), "true", true) == 0);
+			Settings.SetSetting("ShowBoundingCircle", checkShowBoundingCircle.Checked.ToString());
 			pictureColor.BackColor = Color.FromArgb(255, Color.FromArgb(Convert.ToInt32(Settings.GetSetting("BGColor", "-16777077"))));
 			pictureColor.Refresh();
 		}

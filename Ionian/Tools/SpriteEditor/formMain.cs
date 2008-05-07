@@ -87,6 +87,9 @@ namespace GorgonLibrary.Graphics.Tools
 		private Vector2D _dragAxisStart = Vector2D.Zero;		// Axis drag start position.
 		private bool _stopRendering = false;					// Flag to temporarily stop rendering.
 		private static Font _mainfont = null;					// Main font.
+		private bool _showBoundingBox = false;					// Flag to indicate whether to show the bounding box for the sprite.
+		private bool _showBoundingCircle = false;				// Flag to indicate whether to show the bounding circle for the sprite.
+		private Sprite _displaySprite = null;					// Sprite used for display - no animation.
 		#endregion
 
 		#region Properties.
@@ -626,37 +629,38 @@ namespace GorgonLibrary.Graphics.Tools
 			panelSize.X = panelGorgon.Size.Width;
 			panelSize.Y = panelGorgon.Size.Height;
 
-			// Adjust.
-			oldScale = _spriteManager.CurrentSprite.Sprite.Scale;
-			newScale = _spriteManager.CurrentSprite.Sprite.Scale;
-			oldAxis = _spriteManager.CurrentSprite.Sprite.Axis;
-
-			// Disable animations.
-			foreach (Animation anim in _spriteManager.CurrentSprite.Sprite.Animations)
+			if (_spriteManager.CurrentSprite == null)
+				_displaySprite = null;
+			else
 			{
-				anim.Reset();
-				anim.AnimationState = AnimationState.Stopped;
+				// Clone the current sprite and remove its animations.
+				if (_displaySprite != _spriteManager.CurrentSprite.Sprite)
+				{
+					if (panelSize.X < _spriteManager.CurrentSprite.Sprite.Width)
+						newScale.X = (panelSize.X / _spriteManager.CurrentSprite.Sprite.Width);
+					if (panelSize.Y < _spriteManager.CurrentSprite.Sprite.Height)
+						newScale.Y = (panelSize.Y / _spriteManager.CurrentSprite.Sprite.Height);
+
+					// Square it.
+					if (newScale.Y < newScale.X)
+						newScale.X = newScale.Y;
+					if (newScale.X < newScale.Y)
+						newScale.Y = newScale.X;
+
+					_displaySprite = _spriteManager.CurrentSprite.Sprite.Clone() as Sprite;
+					_displaySprite.Animations.Clear();					
+					_displaySprite.Scale = newScale;
+					_displaySprite.Position = new Vector2D(MathUtility.Round((panelSize.X / 2.0f) - (_displaySprite.ScaledWidth / 2.0f)),
+						MathUtility.Round((panelSize.Y / 2.0f) - (_displaySprite.ScaledHeight / 2.0f)));
+				}
 			}
-			
-			_spriteManager.CurrentSprite.Sprite.Axis = Vector2D.Zero;
 
-			if (panelSize.X < _spriteManager.CurrentSprite.Sprite.Width)
-				newScale.X = (panelSize.X / _spriteManager.CurrentSprite.Sprite.Width);
-			if (panelSize.Y < _spriteManager.CurrentSprite.Sprite.Height)
-				newScale.Y = (panelSize.Y / _spriteManager.CurrentSprite.Sprite.Height);
-
-			// Square it.
-			if (newScale.Y < newScale.X)
-				newScale.X = newScale.Y;
-			if (newScale.X < newScale.Y)
-				newScale.Y = newScale.X;
-
-			_spriteManager.CurrentSprite.Sprite.Scale = newScale;
-			newPosition = Vector2D.Zero;
-			newPosition.X = MathUtility.Round((panelSize.X / 2.0f) - (_spriteManager.CurrentSprite.Sprite.ScaledWidth / 2.0f));
-			newPosition.Y = MathUtility.Round((panelSize.Y / 2.0f) - (_spriteManager.CurrentSprite.Sprite.ScaledHeight / 2.0f));
-            newPosition = Vector2D.Add(newPosition, oldAxis);
-
+			// Set axis.
+			if (_displaySprite != null)
+			{
+				oldAxis = _displaySprite.Axis;
+				_displaySprite.Axis = Vector2D.Zero;
+			}
 
 			// If bound to a render target, then update the temp image.
 			if ((_spriteManager.CurrentSprite.Sprite.Image != null) && (_spriteManager.CurrentSprite.Sprite.Image.ImageType == ImageType.RenderTarget))
@@ -671,31 +675,38 @@ namespace GorgonLibrary.Graphics.Tools
 				_gorgonLogo.Draw();
 			}
 
-			Gorgon.Screen.BeginDrawing();
-			Gorgon.Screen.Rectangle(_spriteManager.CurrentSprite.Sprite.AABB.X, _spriteManager.CurrentSprite.Sprite.AABB.Y,
-					_spriteManager.CurrentSprite.Sprite.AABB.Width, _spriteManager.CurrentSprite.Sprite.AABB.Height, Drawing.Color.Red);
-			Gorgon.Screen.Circle(_spriteManager.CurrentSprite.Sprite.BoundingCircle.Center.X, _spriteManager.CurrentSprite.Sprite.BoundingCircle.Center.Y, _spriteManager.CurrentSprite.Sprite.BoundingCircle.Radius, Drawing.Color.Cyan);
-			Gorgon.Screen.EndDrawing();
-
-			_spriteManager.CurrentSprite.Sprite.Position = Vector2D.Subtract(newPosition, oldAxis);
-			_spriteManager.CurrentSprite.Sprite.Draw();
+			if ((_showBoundingBox) || (_showBoundingCircle))
+			{
+				Gorgon.Screen.BeginDrawing();
+				if (_showBoundingBox)
+					Gorgon.Screen.Rectangle(_displaySprite.AABB.X, _displaySprite.AABB.Y,
+						_displaySprite.AABB.Width, _displaySprite.AABB.Height, Drawing.Color.Red);
+				if (_showBoundingCircle)
+					Gorgon.Screen.Circle(_displaySprite.BoundingCircle.Center.X, _displaySprite.BoundingCircle.Center.Y, _displaySprite.BoundingCircle.Radius, Drawing.Color.Cyan);
+				Gorgon.Screen.EndDrawing();
+			}
+						
+			_displaySprite.Draw();
 
 			// Draw a pointer to the hot-spot.
-			Gorgon.Screen.BeginDrawing();
-			newPosition.X = MathUtility.Round(newPosition.X);
-			newPosition.Y = MathUtility.Round(newPosition.Y);
-			if (_axisColor == Drawing.Color.Red)
-				_axisColor = Drawing.Color.Yellow;
-			else
-				_axisColor = Drawing.Color.Red;
-			Gorgon.Screen.VerticalLine(newPosition.X, newPosition.Y - 5, 5, _axisColor);
-			Gorgon.Screen.VerticalLine(newPosition.X, newPosition.Y + 1, 5, _axisColor);
-			Gorgon.Screen.HorizontalLine(newPosition.X - 5, newPosition.Y, 5, _axisColor);
-			Gorgon.Screen.HorizontalLine(newPosition.X + 1, newPosition.Y, 5, _axisColor);			
-			Gorgon.Screen.EndDrawing();
+			if (!_spriteManager.CurrentSprite.HasKeysForTrack("Axis"))
+			{
+				Gorgon.Screen.BeginDrawing();
+				newPosition = MathUtility.Round(Vector2D.Add(_displaySprite.FinalPosition, oldAxis));
+				if (_axisColor == Drawing.Color.Red)
+					_axisColor = Drawing.Color.Yellow;
+				else
+					_axisColor = Drawing.Color.Red;
+				Gorgon.Screen.VerticalLine(newPosition.X, newPosition.Y - 5, 5, _axisColor);
+				Gorgon.Screen.VerticalLine(newPosition.X, newPosition.Y + 1, 5, _axisColor);
+				Gorgon.Screen.HorizontalLine(newPosition.X - 5, newPosition.Y, 5, _axisColor);
+				Gorgon.Screen.HorizontalLine(newPosition.X + 1, newPosition.Y, 5, _axisColor);			
+				Gorgon.Screen.EndDrawing();
+			}
 
-			_spriteManager.CurrentSprite.Sprite.Scale = oldScale;
-			_spriteManager.CurrentSprite.Sprite.Axis = oldAxis;
+			// Set axis.
+			if (_displaySprite != null)
+				_displaySprite.Axis = oldAxis;
 		}
 
 		/// <summary>
@@ -1035,6 +1046,9 @@ namespace GorgonLibrary.Graphics.Tools
 				Settings.Root = null;
 				_showLogo = (string.Compare(Settings.GetSetting("ShowLogo", "True"), "true", true) == 0);
 				_spriteBGColor = Color.FromArgb(255, Color.FromArgb(Convert.ToInt32(Settings.GetSetting("BGColor", "-16777077"))));
+
+				_showBoundingBox = (string.Compare(Settings.GetSetting("ShowBoundingBox", "True"), "true", true) == 0);
+				_showBoundingCircle = (string.Compare(Settings.GetSetting("ShowBoundingCircle", "True"), "true", true) == 0);
 			}
 			catch (Exception ex)
 			{
@@ -1150,8 +1164,8 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void panelGorgon_MouseMove(object sender, MouseEventArgs e)
 		{
-			// Axis drag rectangle.
-			Drawing.Rectangle axisRect = Drawing.Rectangle.Empty;
+			Vector2D spritePos = Vector2D.Zero;						// Sprite position.
+			Drawing.Rectangle axisRect = Drawing.Rectangle.Empty;	// Drag rectangle.
 
 			if (!_clipper.KeyboardMode)
 			{
@@ -1161,12 +1175,13 @@ namespace GorgonLibrary.Graphics.Tools
 					_mousePos.Y = e.Y;
 			}
 
-			if ((_spriteManager.CurrentSprite != null) && (!_clipper.IsClippingStarted))
+			if ((_spriteManager.CurrentSprite != null) && (!_clipper.IsClippingStarted) && (!_spriteManager.CurrentSprite.HasKeysForTrack("Axis")) && (_displaySprite != null))
 			{
-				axisRect = new Drawing.Rectangle((int)(_spriteManager.CurrentSprite.Axis.X - 6 + _spriteManager.CurrentSprite.Sprite.Position.X),
-									 (int)(_spriteManager.CurrentSprite.Axis.Y - 6 + _spriteManager.CurrentSprite.Sprite.Position.Y), 12, 12);
+				spritePos = Vector2D.Add(_displaySprite.FinalPosition, _displaySprite.Axis);
+				axisRect = new Drawing.Rectangle((int)(spritePos.X - 6), (int)(spritePos.Y - 6), 12, 12);
+
 				if (_inAxisDrag)
-					_spriteManager.CurrentSprite.Sprite.Axis = new Vector2D(e.X - _spriteManager.CurrentSprite.Sprite.Position.X, e.Y - _spriteManager.CurrentSprite.Sprite.Position.Y);
+					_spriteManager.CurrentSprite.Sprite.Axis = _displaySprite.Axis = Vector2D.Subtract(e.Location, _displaySprite.Position);
 				else
 				{
 					// Change the cursor to indicate.
@@ -1241,6 +1256,9 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void panelGorgon_MouseDown(object sender, MouseEventArgs e)
 		{
+			Vector2D spritePos = Vector2D.Zero;							// Sprite position.
+			Drawing.Rectangle axisRect = Drawing.Rectangle.Empty;		// Axis drag rectangle.
+
 			if ((!_clipper.KeyboardMode) && (_clipper.IsClippingStarted))
 			{
 				// Cancel.
@@ -1261,11 +1279,11 @@ namespace GorgonLibrary.Graphics.Tools
 			// Begin axis drag.
 			if (_spriteManager.CurrentSprite != null)
 			{
-				if ((!_clipper.IsClippingStarted) && (!_inAxisDrag) && (e.Button == System.Windows.Forms.MouseButtons.Left))
+				if ((!_clipper.IsClippingStarted) && (!_inAxisDrag) && (e.Button == System.Windows.Forms.MouseButtons.Left) && (!_spriteManager.CurrentSprite.HasKeysForTrack("Axis")) && (_displaySprite != null))
 				{
 					// Axis drag rectangle.
-					Drawing.Rectangle axisRect = new Drawing.Rectangle((int)(_spriteManager.CurrentSprite.Axis.X - 6 + _spriteManager.CurrentSprite.Sprite.Position.X), 
-											(int)(_spriteManager.CurrentSprite.Axis.Y - 6 + _spriteManager.CurrentSprite.Sprite.Position.Y), 12, 12);
+					spritePos = Vector2D.Add(_displaySprite.FinalPosition, _displaySprite.Axis);
+					axisRect = new Drawing.Rectangle((int)(spritePos.X - 6), (int)(spritePos.Y - 6), 12, 12);
 
 					// If we're inside the drag rectangle, begin axis drag operation.
 					if (axisRect.Contains(e.Location))
@@ -1962,6 +1980,8 @@ namespace GorgonLibrary.Graphics.Tools
 					Settings.Root = null;
 					_showLogo = (string.Compare(Settings.GetSetting("ShowLogo", "True"), "true", true) == 0);
 					_spriteBGColor = Color.FromArgb(255, Color.FromArgb(Convert.ToInt32(Settings.GetSetting("BGColor", "-16777077"))));
+					_showBoundingBox = (string.Compare(Settings.GetSetting("ShowBoundingBox", "True"), "true", true) == 0);
+					_showBoundingCircle = (string.Compare(Settings.GetSetting("ShowBoundingCircle", "True"), "true", true) == 0);
 				}
 			}
 			catch (Exception ex)

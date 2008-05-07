@@ -886,6 +886,8 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
+				if (IsAABBUpdated)
+					UpdateAABB();
 				return _AABB;
 			}
 		}

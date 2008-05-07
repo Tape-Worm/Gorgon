@@ -1263,28 +1263,37 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
-		/// Function to determine if a particular animation track has keys set.
+		/// Function to update a property.
 		/// </summary>
-		/// <param name="trackName">Name of the track to query.</param>
-		/// <returns>TRUE if there are keys, FALSE if not.</returns>
-		private bool HasKeysForTrack(string trackName)
+		/// <param name="spec">Property specification to update.</param>
+		private void UpdatePropertySpec(PropertySpec spec)
 		{
-			foreach (Animation animation in _sprite.Animations)
+			if (_sprite == null)
+				return;
+			
+			switch (spec.Name.ToLower())
 			{
-				if (animation.Tracks.Contains(trackName))
-				{
-					if (animation.Tracks[trackName].KeyCount > 0)
-						return true;
-				}
+				case "upperleftdiffuse":
+				case "upperrightdiffuse":
+				case "lowerleftdiffuse":
+				case "lowerrightdiffuse":
+				case "diffusecolor":
+					spec.DefaultValue = Drawing.Color.FromArgb(255, 255, 255, 255);
+					break;
+				case "axis":
+				case "upperleftoffset":
+				case "upperrightoffset":
+				case "lowerleftoffset":
+				case "lowerrightoffset":
+					spec.DefaultValue = Drawing.PointF.Empty;
+					break;				
 			}
-
-			return false;
 		}
 
 		/// <summary>
 		/// Function to set animated properties to read-only if keys exist for said properties.
 		/// </summary>
-		private void SetAnimReadOnly()
+		public void SetAnimReadOnly()
 		{
 			if (_sprite == null)
 				return;
@@ -1357,31 +1366,22 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
-		/// Function to update a property.
+		/// Function to determine if a particular animation track has keys set.
 		/// </summary>
-		/// <param name="spec">Property specification to update.</param>
-		private void UpdatePropertySpec(PropertySpec spec)
+		/// <param name="trackName">Name of the track to query.</param>
+		/// <returns>TRUE if there are keys, FALSE if not.</returns>
+		public bool HasKeysForTrack(string trackName)
 		{
-			if (_sprite == null)
-				return;
-			
-			switch (spec.Name.ToLower())
+			foreach (Animation animation in _sprite.Animations)
 			{
-				case "upperleftdiffuse":
-				case "upperrightdiffuse":
-				case "lowerleftdiffuse":
-				case "lowerrightdiffuse":
-				case "diffusecolor":
-					spec.DefaultValue = Drawing.Color.FromArgb(255, 255, 255, 255);
-					break;
-				case "axis":
-				case "upperleftoffset":
-				case "upperrightoffset":
-				case "lowerleftoffset":
-				case "lowerrightoffset":
-					spec.DefaultValue = Drawing.PointF.Empty;
-					break;				
+				if (animation.Tracks.Contains(trackName))
+				{
+					if (animation.Tracks[trackName].KeyCount > 0)
+						return true;
+				}
 			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -1406,7 +1406,7 @@ namespace GorgonLibrary.Graphics.Tools
 
 			SetAnimReadOnly();
 		}
-		
+	
 		/// <summary>
 		/// Function to save the sprite.
 		/// </summary>
@@ -1494,7 +1494,6 @@ namespace GorgonLibrary.Graphics.Tools
 				_sprite = new Sprite(Name);
 
 			RefreshProperties();
-
 			Changed = true;
 		}
 
@@ -1558,7 +1557,7 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			SpriteDocument clone = new SpriteDocument(Name + ".Clone", _owner);	// Clone of the document.
 
-			clone._sprite = (Sprite)_sprite.Clone();
+			clone._sprite = _sprite.Clone() as Sprite;
 			clone._changed = true;
 			clone._xml = false;
 

@@ -86,6 +86,8 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_isDragging = true;
 				_spriteClone = Sprite.Sprite.Clone() as Sprite;
+				foreach (Animation animation in _spriteClone.Animations)
+					animation.Enabled = false;
 				_spriteClone.Color = Color.FromArgb(200, 200, 200, 255);
 			}
 		}

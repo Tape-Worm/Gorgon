@@ -1186,6 +1186,13 @@ namespace GorgonLibrary.Graphics
 				clone.SourceBlend = SourceBlend;
 				clone.DestinationBlend = DestinationBlend;
 			}
+			clone.Depth = Depth;
+			if (!InheritDepthBias)
+				clone.DepthBufferBias = DepthBufferBias;
+			if (!InheritDepthTestFunction)
+				clone.DepthTestFunction = DepthTestFunction;
+			if (!InheritDepthWriteEnabled)
+				clone.DepthWriteEnabled = DepthWriteEnabled;
 			if (!InheritAlphaMaskFunction)
 				clone.AlphaMaskFunction = AlphaMaskFunction;
 			if (!InheritAlphaMaskValue)

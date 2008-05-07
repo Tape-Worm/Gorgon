@@ -1221,7 +1221,10 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 				// Add selected items to the array.
 				for (int i = 0; i < listSprites.SelectedItems.Count; i++)
+				{
+					_spriteDocs[listSprites.SelectedItems[i].Name].SetAnimReadOnly();
 					selectedDocuments[i] = _spriteDocs[listSprites.SelectedItems[i].Name].PropertyBag;
+				}
 			}
 
 			// Add the array.

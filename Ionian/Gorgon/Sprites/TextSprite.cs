@@ -1159,7 +1159,8 @@ namespace GorgonLibrary.Graphics
 		public override void UpdateAABB()
 		{
 			base.UpdateAABB();
-			_size = MeasureText(_text, Bounds.Dimensions.Width, _wordWrap).Size;			
+			if (Bounds != null)
+				_size = MeasureText(_text, Bounds.Dimensions.Width, _wordWrap).Size;			
 		}
 
 		/// <summary>

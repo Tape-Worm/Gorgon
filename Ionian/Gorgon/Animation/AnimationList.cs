@@ -104,7 +104,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException("The animation '" + newName + "' already exists.");
 
 			// Create a copy.
-			newAnimation = (Animation)this[oldName].Clone();
+			newAnimation = this[oldName].Clone(_owner);
 			newAnimation.Name = newName;
 
 			// Replace in the collection.
@@ -123,7 +123,7 @@ namespace GorgonLibrary.Graphics
 
 			// Clone the animations.
 			foreach (Animation animation in this)
-				destination.Add((Animation)animation.Clone());
+				destination.Add(animation.Clone(destination._owner));
 		}
         #endregion
 

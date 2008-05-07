@@ -51,6 +51,9 @@ namespace GorgonLibrary.Graphics.Tools
 		private formAnimationEditor _editor = null;				// Animation editor.
 		private Track _currentTrack = null;						// Current track.
 		private KeyFrame _copiedFrame = null;					// Copied frame.
+		private bool _showBoundingBox = false;					// Flag to show a bounding box around the sprite.
+		private bool _showBoundingCircle = false;				// Flagt o show a bounding circle around the sprite.
+		private Drawing.Color _axisColor = Drawing.Color.Red;	// Axis color.
 		#endregion
 
 		#region Properties.
@@ -270,6 +273,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="GorgonLibrary.Graphics.FrameEventArgs"/> instance containing the event data.</param>
 		private void Gorgon_Idle(object sender, FrameEventArgs e)
 		{
+			Vector2D newPosition = Vector2D.Zero;		// New position.
 			if (_display == null)
 				return;
 
@@ -282,6 +286,30 @@ namespace GorgonLibrary.Graphics.Tools
 			if (_animation.HasKeys)
 			{
 				Sprite.Sprite.Draw();
+				Display.BeginDrawing();
+
+				if ((_showBoundingBox) || (_showBoundingCircle))
+				{
+					if (_showBoundingBox)
+						Display.Rectangle(Sprite.Sprite.AABB.Left, Sprite.Sprite.AABB.Top, Sprite.Sprite.AABB.Width, Sprite.Sprite.AABB.Height, Drawing.Color.Red);
+					if (_showBoundingCircle)
+						Display.Circle(Sprite.Sprite.BoundingCircle.Center.X, Sprite.Sprite.BoundingCircle.Center.Y, Sprite.Sprite.BoundingCircle.Radius, Drawing.Color.Cyan);
+				}
+
+				newPosition = Sprite.Sprite.FinalPosition;
+				newPosition.X = MathUtility.Round(newPosition.X);
+				newPosition.Y = MathUtility.Round(newPosition.Y);
+				if (_axisColor == Drawing.Color.Red)
+					_axisColor = Drawing.Color.Yellow;
+				else
+					_axisColor = Drawing.Color.Red;
+				Display.VerticalLine(newPosition.X, newPosition.Y - 5, 5, _axisColor);
+				Display.VerticalLine(newPosition.X, newPosition.Y + 1, 5, _axisColor);
+				Display.HorizontalLine(newPosition.X - 5, newPosition.Y, 5, _axisColor);
+				Display.HorizontalLine(newPosition.X + 1, newPosition.Y, 5, _axisColor);
+
+				Display.EndDrawing();
+				
 				if (_isPlaying)
 				{
 					_animation.Advance(e.TimingData);
@@ -547,6 +575,8 @@ namespace GorgonLibrary.Graphics.Tools
 				// Get the bg color settings.
 				Settings.Root = null;
 				_backgroundColor = Color.FromArgb(255, Color.FromArgb(Convert.ToInt32(Settings.GetSetting("BGColor", "-16777077"))));
+				_showBoundingBox = (string.Compare(Settings.GetSetting("ShowBoundingBox", "True"), "true", true) == 0);
+				_showBoundingCircle = (string.Compare(Settings.GetSetting("ShowBoundingCircle", "True"), "true", true) == 0);
 
 				// Get a reference to the render window display.
 				_display = new RenderWindow("AnimationDisplay", panelRender, false);

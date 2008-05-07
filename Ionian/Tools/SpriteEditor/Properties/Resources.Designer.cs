@@ -284,6 +284,20 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap key1_add {
+            get {
+                object obj = ResourceManager.GetObject("key1_add", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap key1_delete {
+            get {
+                object obj = ResourceManager.GetObject("key1_delete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap keyboard2 {
             get {
                 object obj = ResourceManager.GetObject("keyboard2", resourceCulture);
@@ -396,16 +410,16 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap selection_delete {
+        internal static System.Drawing.Bitmap target {
             get {
-                object obj = ResourceManager.GetObject("selection_delete", resourceCulture);
+                object obj = ResourceManager.GetObject("target", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap target {
+        internal static System.Drawing.Bitmap TrackDelete {
             get {
-                object obj = ResourceManager.GetObject("target", resourceCulture);
+                object obj = ResourceManager.GetObject("TrackDelete", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

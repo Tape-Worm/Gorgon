@@ -74,7 +74,7 @@ namespace GorgonLibrary.Graphics
 	/// </para>
 	/// </remarks>
     public class Animation
-        : NamedObject, ISerializable, ICloneable<Animation>
+        : NamedObject, ISerializable
     {
         #region Variables.
         private object _owner = null;								// Object that owns this animation.        
@@ -106,7 +106,7 @@ namespace GorgonLibrary.Graphics
 		public event AnimationTrackDefineHandler AnimationTrackDefinition;
         #endregion
 
-        #region Properties.
+        #region Properties.		
 		/// <summary>
 		/// Property to return whether there are keys in the animation.
 		/// </summary>
@@ -472,9 +472,39 @@ namespace GorgonLibrary.Graphics
 				if (track.KeyCount > 0)
 					track[_currentTime].Update();
 			}
-        }		
+        }
 
-        /// <summary>
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <param name="newOwner">New object that will own this animation.</param>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		public Animation Clone(object newOwner)
+		{
+			Animation clone = new Animation(Name, _length);
+
+			clone.SetOwner(newOwner);
+			clone._currentTime = _currentTime;
+			clone._enabled = _enabled;
+			clone._state = _state;
+			clone._loop = _loop;
+
+			// Add transforms.
+			foreach (Track track in _tracks)
+			{
+				if (clone.Tracks.Contains(track.Name))
+				{
+					foreach (KeyFrame key in track)
+						clone.Tracks[track.Name].AddKey(key.Clone());
+				}
+			}
+
+			return clone;
+		}
+		
+		/// <summary>
         /// Function to advance the animation by a specific time in milliseconds.
         /// </summary>
         /// <param name="time">Time in milliseconds.</param>
@@ -726,36 +756,5 @@ namespace GorgonLibrary.Graphics
 			}
         }
         #endregion
-
-		#region ICloneable<T> Members
-		/// <summary>
-		/// Creates a new object that is a copy of the current instance.
-		/// </summary>
-		/// <returns>
-		/// A new object that is a copy of this instance.
-		/// </returns>
-		public Animation Clone()
-		{
-			Animation clone = new Animation(Name, _length);
-
-			clone.SetOwner(_owner);
-			clone._currentTime = _currentTime;
-			clone._enabled = _enabled;
-			clone._state = _state;
-			clone._loop = _loop;
-
-			// Add transforms.
-			foreach (Track track in _tracks)
-			{
-				if (clone.Tracks.Contains(track.Name))
-				{
-					foreach (KeyFrame key in track)
-						clone.Tracks[track.Name].AddKey(key.Clone());
-				}
-			}
-
-			return clone;
-		}
-		#endregion
 	}
 }

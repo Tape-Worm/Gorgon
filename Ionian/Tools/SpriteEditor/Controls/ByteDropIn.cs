@@ -108,7 +108,8 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			base.ResetSprite();
 
-			numericFloat.Value = (Decimal)Sprite.Sprite.GetType().GetProperty(CurrentTrack.Name).GetValue(Sprite.Sprite, null);
+			_currentValue = (byte)Sprite.Sprite.GetType().GetProperty(CurrentTrack.Name).GetValue(Sprite.Sprite, null);
+			numericFloat.Value = (Decimal)_currentValue;
 		}
 
 		/// <summary>
