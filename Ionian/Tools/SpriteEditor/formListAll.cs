@@ -28,6 +28,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Linq;
 using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
@@ -181,11 +182,10 @@ namespace GorgonLibrary.Graphics.Tools
 			try
 			{
 				_currentTrack.ClearKeys();
-				foreach (ListViewItem item in listSprites.Items)
-				{
-					if (item.Checked)
-						frameCount++;
-				}
+				var items = from ListViewItem listItems in listSprites.Items
+							where listItems.Checked
+							select listItems;
+				frameCount = items.Count();
 
 				interval = (float)numericDelay.Value;
 				if (frameCount != listSprites.Items.Count)
@@ -196,19 +196,16 @@ namespace GorgonLibrary.Graphics.Tools
 
 
 				// Go through each item and add a key.
-				foreach (ListViewItem item in listSprites.Items)
+				foreach (ListViewItem item in items)
 				{
-					if (item.Checked)
-					{
-						KeyImage key = null;			// Image key.
+					KeyImage key = null;			// Image key.
 
-						sprite = _spriteList[item.Name];
-						key = new KeyImage(startTime, sprite.Sprite.Image);
-						key.ImageOffset = sprite.ImageLocation;
-						key.ImageSize = sprite.Size;
-						_currentTrack.AddKey(key);
-						startTime += interval;
-					}
+					sprite = _spriteList[item.Name];
+					key = new KeyImage(startTime, sprite.Sprite.Image);
+					key.ImageOffset = sprite.ImageLocation;
+					key.ImageSize = sprite.Size;
+					_currentTrack.AddKey(key);
+					startTime += interval;
 				}				
 			}
 			catch (Exception ex)
@@ -226,14 +223,21 @@ namespace GorgonLibrary.Graphics.Tools
 		/// </summary>
 		private void ValidateForm()
 		{
-			buttonOK.Enabled = false;
-			foreach (ListViewItem item in listSprites.Items)
-			{
-				if (item.Checked)
-					buttonOK.Enabled = true;
-			}
+			buttonOK.Enabled = (from ListViewItem listItems in listSprites.Items
+							   where listItems != null && listItems.Checked
+							   select listItems).Count() > 0;
 		}
 
+		/// <summary>
+		/// Handles the ItemChecked event of the listSprites control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.ItemCheckedEventArgs"/> instance containing the event data.</param>
+		private void listSprites_ItemChecked(object sender, ItemCheckedEventArgs e)
+		{
+			ValidateForm();
+		}
+	
 		/// <summary>
 		/// Function to refresh the list.
 		/// </summary>
@@ -245,16 +249,14 @@ namespace GorgonLibrary.Graphics.Tools
 			listSprites.Items.Clear();
 
 			// Add images.
-			foreach (SpriteDocument image in _spriteList)
+			var sprites = _spriteList.Where((sprite) => _owner.Name != sprite.Sprite.Name);
+			foreach (SpriteDocument image in sprites)
 			{
-				if (_owner.Name != image.Sprite.Name)
-				{
-					item = new ListViewItem(image.Name);
-					item.SubItems.Add(image.Sprite.Width.ToString("0.0") + "x" + image.Sprite.Height.ToString("0.0"));
-					item.Name = image.Name;
-					item.Checked = true;
-					listSprites.Items.Add(item);
-				}
+				item = new ListViewItem(image.Name);
+				item.SubItems.Add(image.Sprite.Width.ToString("0.0") + "x" + image.Sprite.Height.ToString("0.0"));
+				item.Name = image.Name;
+				item.Checked = true;
+				listSprites.Items.Add(item);
 			}
 						
 			listSprites.EndUpdate();
@@ -272,6 +274,6 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			InitializeComponent();
 		}
-		#endregion
+		#endregion		
 	}
 }

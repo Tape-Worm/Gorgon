@@ -28,6 +28,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Linq;
 using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
@@ -197,21 +198,15 @@ namespace GorgonLibrary.Graphics.Tools
 			// Add images.
 			if (!checkRenderTarget.Checked)
 			{
-				foreach (Image image in ImageCache.Images)
-				{
-					// Ignore resource images.
-					if ((!image.IsResource) && (image.ImageType == ImageType.Normal))
-						comboImages.Items.Add(image.Name);
-				}
+				var images = ImageCache.Images.Where((image) => !image.IsResource && image.ImageType == ImageType.Normal);
+				foreach (Image image in images)
+					comboImages.Items.Add(image.Name);
 			}
 			else
 			{
-				foreach (RenderTarget image in RenderTargetCache.Targets)
-				{
-					// Only add images that are not rendertargets unless we have render target checked.
-					if (_owner.ValidRenderTarget(image.Name))
-						comboImages.Items.Add(image.Name);
-				}
+				var targets = RenderTargetCache.Targets.Where((target) => _owner.ValidRenderTarget(target.Name) && (target is RenderImage));
+				foreach (RenderTarget image in targets)
+					comboImages.Items.Add(image.Name);
 			}
 
 			ValidateForm();

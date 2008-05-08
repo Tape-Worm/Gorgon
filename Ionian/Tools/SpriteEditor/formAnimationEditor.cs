@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Linq;
 using System.Windows.Forms;
 using Dialogs;
 
@@ -112,13 +113,11 @@ namespace GorgonLibrary.Graphics.Tools
 					string currentTrack = string.Empty;		// Current track.
 					int lastCount = 0;						// Last key count.
 
-					foreach (Track track in _animation.Tracks)
+					var tracks = _animation.Tracks.Where((track) => track.KeyCount > lastCount);
+					foreach (Track track in tracks)
 					{
-						if (track.KeyCount > lastCount)
-						{
-							currentTrack = track.Name;
-							lastCount = track.KeyCount;
-						}
+						currentTrack = track.Name;
+						lastCount = track.KeyCount;
 					}
 
 					if (currentTrack == string.Empty)

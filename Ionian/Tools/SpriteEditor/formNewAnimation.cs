@@ -131,7 +131,6 @@ namespace GorgonLibrary.Graphics.Tools
 
 				if (!MathUtility.EqualFloat(time,animation.Length, 0.0001f))
 				{
-					int keyCount = 0;				// Key counter.
 					float timeScaler = 0.0f;		// Time scale.
 
 					// Get the scale.
@@ -141,22 +140,14 @@ namespace GorgonLibrary.Graphics.Tools
 					animation.Length = time;
 
 					// If there's not much of a difference, then don't bother.
-					if (!MathUtility.EqualFloat(timeScaler, 0.0f, 0.0001f))
+					if ((!MathUtility.EqualFloat(timeScaler, 0.0f, 0.0001f)) && (animation.HasKeys))
 					{
-						foreach (Track track in animation.Tracks)
-							keyCount += track.KeyCount;
+						result = UI.ConfirmBox("This animation has keys assigned to it.\nWould you like to scale the time for the assigned keys?", false, true);
 
-
-						// Scale for each track type.
-						if (keyCount > 0)
+						if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
 						{
-							result = UI.ConfirmBox("This animation has keys assigned to it.\nWould you like to scale the time for the assigned keys?", false, true);
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-							{
-								foreach (Track track in animation.Tracks)
-									track.ScaleKeys(timeScaler);
-							}
+							foreach (Track track in animation.Tracks)
+								track.ScaleKeys(timeScaler);
 						}
 					}
 				}

@@ -196,9 +196,7 @@ namespace GorgonLibrary.Graphics.Tools
 
 				// Parse each line.
 				foreach (string line in _lines)
-				{
 					GetSpriteData(path, line);
-				}
 			}
 			finally
 			{

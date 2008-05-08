@@ -28,6 +28,7 @@ using System.Data;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Linq;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 using Dialogs;
@@ -136,17 +137,12 @@ namespace GorgonLibrary.Graphics.Tools
 				formatList = new SortedList<string, string>(new FormatSorter());
 
 				// Add to the list.
-				foreach (string format in formats)
-				{
-					// Add all to the list.
-					// Only add if it's not unknown AND the image format is supported for render targets.
-					if ((string.Compare(format, "bufferunknown") != 0) && (Image.SupportsFormat((ImageBufferFormats)Enum.Parse(typeof(ImageBufferFormats), format), ImageType.RenderTarget)))
-						formatList.Add(format, format);
-				}
-
-				// Now add to the combo.
-				foreach (KeyValuePair<string, string> format in formatList)
-					comboFormats.Items.Add(format.Key);
+				var validFormats = from formatEnum in formats
+								   where (string.Compare(formatEnum, "bufferunknown", true) != 0) &&
+										(Image.SupportsFormat((ImageBufferFormats)Enum.Parse(typeof(ImageBufferFormats), formatEnum), ImageType.RenderTarget))
+								   select formatEnum;				
+				foreach (string format in validFormats)
+					comboFormats.Items.Add(format);
 
 				// Get setting.
 				Settings.Root = null;
@@ -163,54 +159,6 @@ namespace GorgonLibrary.Graphics.Tools
 				Cursor.Current = Cursors.Default;
 			}
 		}
-
-		/// <summary>
-		/// Function to edit a render target.
-		/// </summary>
-		/// <param name="target">Target to edit.</param>
-		public void EditTarget(string target)
-		{
-			RenderImage image = null;		// Render image.
-
-			if (!RenderTargetCache.Targets.Contains(target)) 
-			{
-				UI.ErrorBox(this, "The render target '" + target + "' does not exist.");
-				return;
-			}
-
-			// Check type.
-			image = RenderTargetCache.Targets[target] as RenderImage;
-			if (image == null)
-			{
-				UI.ErrorBox(this, "The render target '" + target + "' is not a render image.");
-				return;
-			}
-
-			// Get data.
-			textName.Text = image.Name;
-			numericHeight.Value = image.Height;
-			numericWidth.Value = image.Width;
-			comboFormats.Text = image.Format.ToString();
-			checkUseDepthBuffer.Checked = image.UseDepthBuffer;
-			checkUseStencilBuffer.Checked = image.UseStencilBuffer;
-			Text = "Edit render target - " + image.Name;
-			_editMode = true;
-
-			ValidateForm();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public formNewRenderTarget()
-		{
-			InitializeComponent();
-
-			FillFormats();
-		}
-		#endregion
 
 		/// <summary>
 		/// Handles the TextChanged event of the textName control.
@@ -273,7 +221,7 @@ namespace GorgonLibrary.Graphics.Tools
 					if (image != null)
 						image.SetDimensions(width, height, format);
 				}
-				
+
 
 				Settings.Root = null;
 				Settings.SetSetting("LastRenderTargetFormat", comboFormats.Text);
@@ -281,7 +229,7 @@ namespace GorgonLibrary.Graphics.Tools
 			catch (Exception ex)
 			{
 				UI.ErrorBox(this, "Error creating the render target.", ex);
-			}			
+			}
 		}
 
 		/// <summary>
@@ -322,8 +270,56 @@ namespace GorgonLibrary.Graphics.Tools
 				DialogResult = DialogResult.OK;
 			}
 
-			if (e.KeyCode == Keys.Escape)				
+			if (e.KeyCode == Keys.Escape)
 				DialogResult = DialogResult.Cancel;
 		}
+
+		/// <summary>
+		/// Function to edit a render target.
+		/// </summary>
+		/// <param name="target">Target to edit.</param>
+		public void EditTarget(string target)
+		{
+			RenderImage image = null;		// Render image.
+
+			if (!RenderTargetCache.Targets.Contains(target)) 
+			{
+				UI.ErrorBox(this, "The render target '" + target + "' does not exist.");
+				return;
+			}
+
+			// Check type.
+			image = RenderTargetCache.Targets[target] as RenderImage;
+			if (image == null)
+			{
+				UI.ErrorBox(this, "The render target '" + target + "' is not a render image.");
+				return;
+			}
+
+			// Get data.
+			textName.Text = image.Name;
+			numericHeight.Value = image.Height;
+			numericWidth.Value = image.Width;
+			comboFormats.Text = image.Format.ToString();
+			checkUseDepthBuffer.Checked = image.UseDepthBuffer;
+			checkUseStencilBuffer.Checked = image.UseStencilBuffer;
+			Text = "Edit render target - " + image.Name;
+			_editMode = true;
+
+			ValidateForm();
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public formNewRenderTarget()
+		{
+			InitializeComponent();
+
+			FillFormats();
+		}
+		#endregion
 	}
 }

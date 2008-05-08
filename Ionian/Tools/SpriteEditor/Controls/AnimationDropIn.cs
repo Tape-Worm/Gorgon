@@ -30,6 +30,7 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Linq;
 using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
@@ -421,20 +422,14 @@ namespace GorgonLibrary.Graphics.Tools
 		/// </returns>
 		protected override bool ProcessDialogKey(Keys keyData)
 		{
-			foreach (Control control in splitAnimation.Panel2.Controls)
-			{
-				if (control is NumericUpDown)
-				{
-					if (((NumericUpDown)control).Focused)
-					{
-						if ((keyData == Keys.Enter) || (keyData == (Keys.LButton | Keys.MButton | Keys.Back)))
-						{
-							if (NumericFieldEnterPressed())
-								return true;
-						}
-					}
-				}
-			}
+			// Get all numeric fields.
+			var controlCount = (from Control control in splitAnimation.Panel2.Controls
+						   let numericControl = control as NumericUpDown
+						   where (numericControl != null) && (numericControl.Focused)
+						   select numericControl).Count();
+
+			if ((controlCount > 0) && ((keyData == Keys.Enter) || (keyData == (Keys.LButton | Keys.MButton | Keys.Back))) && (NumericFieldEnterPressed()))
+				return true;
 
 			return base.ProcessDialogKey(keyData);
 		}

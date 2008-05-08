@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq;
 using Drawing = System.Drawing;
 
 namespace GorgonLibrary.Graphics.Tools
@@ -408,12 +409,7 @@ namespace GorgonLibrary.Graphics.Tools
 
 							// This is SOOO inefficient, but it'll guarantee we don't get overlap.
 							// Don't do anything if this point already exists within a rectangle.
-							foreach (Drawing.RectangleF baseRectangle in rectangles)
-							{
-								if (baseRectangle.Contains(new Drawing.PointF(x, y)))
-									add = false;
-							}
-
+							add = (rectangles.Where((baseRectangle) => baseRectangle.Contains(new Drawing.PointF(x, y)))).Count() > 0;
 							if ((add) && (!ColorIsMask(scanPtr, x, y, imageDims)))
 							{
 								rectangle = GetSpriteRectangle(scanPtr, x, y, imageDims);								

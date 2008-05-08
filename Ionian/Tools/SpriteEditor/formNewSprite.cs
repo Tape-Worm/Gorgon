@@ -34,6 +34,9 @@ using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
+	/// <summary>
+	/// Interface to create a new sprite.
+	/// </summary>
 	public partial class formNewSprite 
 		: Form
 	{
@@ -145,50 +148,6 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-		{
-			base.OnFormClosing(e);
-
-			// Re-display managers if necessary.
-			_owner.ImageManager.Visible = _imageManagerVisible ;
-			_owner.RenderTargetManager.Visible = _targetManagerVisible;
-		}
-
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-
-			_owner = Owner as formMain;
-
-			FillCombos();			
-
-			// Get last visible state.
-			_imageManagerVisible = _owner.ImageManager.Visible;
-			_targetManagerVisible = _owner.RenderTargetManager.Visible;
-
-			// Update interface.
-			ValidateForm();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public formNewSprite()
-		{
-			InitializeComponent();
-		}
-		#endregion
-
-		/// <summary>
 		/// Handles the CheckedChanged event of the checkRenderTarget control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -252,7 +211,7 @@ namespace GorgonLibrary.Graphics.Tools
 						imageManager.ImageManager.SelectedImage = ImageCache.Images[comboImages.Text];
 					else
 						imageManager.ImageManager.SelectedImage = null;
-					imageManager.ShowDialog(this);					
+					imageManager.ShowDialog(this);
 
 					// Re-fill the combo and select the image name.
 					FillCombos();
@@ -273,7 +232,7 @@ namespace GorgonLibrary.Graphics.Tools
 					FillCombos();
 					if (targetManager.TargetManager.SelectedTarget != null)
 						comboImages.Text = targetManager.TargetManager.SelectedTarget.Name;
-				}				
+				}
 			}
 			catch (Exception ex)
 			{
@@ -288,7 +247,7 @@ namespace GorgonLibrary.Graphics.Tools
 					_owner.RenderTargetManager.RefreshList();
 					_owner.RenderTargetManager.SelectedTarget = targetManager.TargetManager.SelectedTarget;
 					targetManager.Dispose();
-				}				
+				}
 
 				if (imageManager != null)
 				{
@@ -344,5 +303,49 @@ namespace GorgonLibrary.Graphics.Tools
 			if (e.KeyCode == Keys.Escape)
 				DialogResult = DialogResult.Cancel;
 		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			base.OnFormClosing(e);
+
+			// Re-display managers if necessary.
+			_owner.ImageManager.Visible = _imageManagerVisible ;
+			_owner.RenderTargetManager.Visible = _targetManagerVisible;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			_owner = Owner as formMain;
+
+			FillCombos();			
+
+			// Get last visible state.
+			_imageManagerVisible = _owner.ImageManager.Visible;
+			_targetManagerVisible = _owner.RenderTargetManager.Visible;
+
+			// Update interface.
+			ValidateForm();
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public formNewSprite()
+		{
+			InitializeComponent();
+		}
+		#endregion
 	}
 }

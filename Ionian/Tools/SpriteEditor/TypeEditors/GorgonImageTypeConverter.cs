@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Drawing.Design;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -47,15 +48,9 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <returns>The render image attached to the image name.</returns>
 		private RenderImage FindRenderImage(string imageName)
 		{
-			foreach (RenderTarget target in RenderTargetCache.Targets)
-			{
-				RenderImage renderImage = target as RenderImage;		// Convert to render image.
-
-				if ((renderImage != null) && (renderImage.Image.Name == imageName))
-					return renderImage;
-			}
-
-			return null;
+			return (from targets in RenderTargetCache.Targets
+				   where (targets as RenderImage != null) && (string.Compare(targets.Name, imageName, true) == 0)
+				   select targets).Single() as RenderImage;
 		}
 
 		/// <summary>

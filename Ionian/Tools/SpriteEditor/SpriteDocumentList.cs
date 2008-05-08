@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+using System.Linq;
 using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
@@ -92,13 +93,11 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="destinationImage">Image to bind with.</param>
 		public void ReplaceImage(Image sourceImage, Image destinationImage)
 		{
-			foreach (SpriteDocument sprite in this)
+			foreach (SpriteDocument sprite in 
+				this.Where((doc) => sourceImage == doc.Sprite.Image))
 			{
-				if (sprite.Sprite.Image == sourceImage)
-				{
-					sprite.Sprite.Image = destinationImage;
-					sprite.Changed = true;
-				}
+				sprite.Sprite.Image = destinationImage;
+				sprite.Changed = true;
 			}			
 		}
 

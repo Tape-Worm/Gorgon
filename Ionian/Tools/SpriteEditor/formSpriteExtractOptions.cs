@@ -139,56 +139,6 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-		{
-			base.OnFormClosing(e);
-
-			Settings.Root = "SpriteExtraction";
-			Settings.SetSetting("NamingPrefix", textPrefix.Text);
-			Settings.SetSetting("MaskColor", _finder.MaskColor.ToArgb().ToString());
-			Settings.SetSetting("MaskOptions", _finder.MaskOptions.ToString());
-			Settings.Root = null;
-
-			if (_picker != null)
-				_picker.Dispose();
-
-			_picker = null;
-		}
-
-		/// <summary>
-		/// Function to retrieve the settings.
-		/// </summary>
-		public void GetSettings()
-		{
-			Settings.Root = "SpriteExtraction";
-			textPrefix.Text = Settings.GetSetting("NamingPrefix", _defaultPrefix);
-			_finder.MaskColor = Color.FromArgb(Convert.ToInt32(Settings.GetSetting("MaskColor", Color.Pink.ToArgb().ToString())));
-			_finder.MaskOptions = (MaskOptions)Enum.Parse(typeof(MaskOptions), Settings.GetSetting("MaskOptions", "3"));
-			Settings.Root = null;
-
-			UpdateInterface();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public formSpriteExtractOptions()
-		{
-			InitializeComponent();
-
-			textPrefix.Focus();
-			_picker = new ColorPicker();
-			_finder = new SpriteFinder();
-			_defaultPrefix = "ExtractedSprite_";
-		}
-		#endregion
-
-		/// <summary>
 		/// Handles the Leave event of the textPrefix control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -267,5 +217,55 @@ namespace GorgonLibrary.Graphics.Tools
 			if ((e.KeyCode == Keys.Enter) && (buttonOK.Enabled))
 				DialogResult = DialogResult.OK;
 		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			base.OnFormClosing(e);
+
+			Settings.Root = "SpriteExtraction";
+			Settings.SetSetting("NamingPrefix", textPrefix.Text);
+			Settings.SetSetting("MaskColor", _finder.MaskColor.ToArgb().ToString());
+			Settings.SetSetting("MaskOptions", _finder.MaskOptions.ToString());
+			Settings.Root = null;
+
+			if (_picker != null)
+				_picker.Dispose();
+
+			_picker = null;
+		}
+
+		/// <summary>
+		/// Function to retrieve the settings.
+		/// </summary>
+		public void GetSettings()
+		{
+			Settings.Root = "SpriteExtraction";
+			textPrefix.Text = Settings.GetSetting("NamingPrefix", _defaultPrefix);
+			_finder.MaskColor = Color.FromArgb(Convert.ToInt32(Settings.GetSetting("MaskColor", Color.Pink.ToArgb().ToString())));
+			_finder.MaskOptions = (MaskOptions)Enum.Parse(typeof(MaskOptions), Settings.GetSetting("MaskOptions", "3"));
+			Settings.Root = null;
+
+			UpdateInterface();
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public formSpriteExtractOptions()
+		{
+			InitializeComponent();
+
+			textPrefix.Focus();
+			_picker = new ColorPicker();
+			_finder = new SpriteFinder();
+			_defaultPrefix = "ExtractedSprite_";
+		}
+		#endregion
 	}
 }

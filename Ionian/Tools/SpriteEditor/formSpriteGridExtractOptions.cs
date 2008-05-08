@@ -70,74 +70,12 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Methods.
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-		{
-			base.OnFormClosing(e);
-
-			Settings.Root = "SpriteExtraction";
-			Settings.SetSetting("NamingPrefix", textPrefix.Text);
-			Settings.SetSetting("Left", numericLeft.Value.ToString());
-			Settings.SetSetting("Top", numericTop.Value.ToString());
-			Settings.SetSetting("Width", numericConstraintWidth.Value.ToString());
-			Settings.SetSetting("Height", numericConstraintHeight.Value.ToString());
-			Settings.SetSetting("CellSpacingX", numericSpacingX.Value.ToString());
-			Settings.SetSetting("CellSpacingY", numericSpacingY.Value.ToString());
-			Settings.SetSetting("CellWidth", numericCellWidth.Value.ToString());
-			Settings.SetSetting("CellHeight", numericCellHeight.Value.ToString());
-			Settings.Root = null;
-		}
-
-		/// <summary>
-		/// Function to retrieve the settings.
-		/// </summary>
-		public void GetSettings()
-		{
-			// Set constraints to the numeric domain controls.
-			numericConstraintWidth.Maximum = numericCellWidth.Maximum = numericLeft.Maximum = Gorgon.CurrentDriver.MaximumTextureWidth;
-			numericConstraintHeight.Maximum = numericCellHeight.Maximum = numericTop.Maximum = Gorgon.CurrentDriver.MaximumTextureHeight;
-			numericSpacingX.Maximum = Gorgon.CurrentDriver.MaximumTextureWidth / 2;
-			numericSpacingY.Maximum = Gorgon.CurrentDriver.MaximumTextureHeight / 2;
-
-			Settings.Root = "SpriteExtraction";
-			textPrefix.Text = Settings.GetSetting("NamingPrefix", _defaultPrefix);
-			numericLeft.Value = Convert.ToDecimal(Settings.GetSetting("Left", "0"));
-			numericTop.Value = Convert.ToDecimal(Settings.GetSetting("Top", "0"));
-			numericConstraintWidth.Value = Convert.ToDecimal(Settings.GetSetting("Width", "0"));
-			numericConstraintHeight.Value = Convert.ToDecimal(Settings.GetSetting("Height", "0"));
-			numericSpacingX.Value = Convert.ToDecimal(Settings.GetSetting("CellSpacingX", "0"));
-			numericSpacingY.Value = Convert.ToDecimal(Settings.GetSetting("CellSpacingY", "0"));
-			numericCellWidth.Value = Convert.ToDecimal(Settings.GetSetting("CellWidth", "32"));
-			numericCellHeight.Value = Convert.ToDecimal(Settings.GetSetting("CellHeight", "32"));
-			Settings.Root = null;
-
-			numericLeft_ValueChanged(this, EventArgs.Empty);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public formSpriteGridExtractOptions()
-		{
-			InitializeComponent();
-
-			textPrefix.Focus();
-			_finder = new SpriteFinder();
-			_defaultPrefix = "ExtractedSprite_";
-		}
-		#endregion
-
-		/// <summary>
 		/// Function to update the count.
 		/// </summary>
 		private void UpdateCount()
 		{
 			Rectangle constraint = new Rectangle((int)numericLeft.Value, (int)numericTop.Value, (int)numericConstraintWidth.Value, (int)numericConstraintHeight.Value);
-			int totalImageSize = constraint.Width * constraint.Height;		
+			int totalImageSize = constraint.Width * constraint.Height;
 			int spriteSize = ((int)numericSpacingX.Value + (int)numericCellWidth.Value) * ((int)numericSpacingY.Value + (int)numericCellHeight.Value);
 
 			// If the constraint is limited to the selected image size, then we can't get the sprite count.
@@ -229,10 +167,72 @@ namespace GorgonLibrary.Graphics.Tools
 				DialogResult = DialogResult.Cancel;
 
 			if ((e.KeyCode == Keys.Enter) && (buttonOK.Enabled))
-			{				
+			{
 				DialogResult = DialogResult.OK;
 				buttonOK_Click(this, EventArgs.Empty);
 			}
 		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			base.OnFormClosing(e);
+
+			Settings.Root = "SpriteExtraction";
+			Settings.SetSetting("NamingPrefix", textPrefix.Text);
+			Settings.SetSetting("Left", numericLeft.Value.ToString());
+			Settings.SetSetting("Top", numericTop.Value.ToString());
+			Settings.SetSetting("Width", numericConstraintWidth.Value.ToString());
+			Settings.SetSetting("Height", numericConstraintHeight.Value.ToString());
+			Settings.SetSetting("CellSpacingX", numericSpacingX.Value.ToString());
+			Settings.SetSetting("CellSpacingY", numericSpacingY.Value.ToString());
+			Settings.SetSetting("CellWidth", numericCellWidth.Value.ToString());
+			Settings.SetSetting("CellHeight", numericCellHeight.Value.ToString());
+			Settings.Root = null;
+		}
+
+		/// <summary>
+		/// Function to retrieve the settings.
+		/// </summary>
+		public void GetSettings()
+		{
+			// Set constraints to the numeric domain controls.
+			numericConstraintWidth.Maximum = numericCellWidth.Maximum = numericLeft.Maximum = Gorgon.CurrentDriver.MaximumTextureWidth;
+			numericConstraintHeight.Maximum = numericCellHeight.Maximum = numericTop.Maximum = Gorgon.CurrentDriver.MaximumTextureHeight;
+			numericSpacingX.Maximum = Gorgon.CurrentDriver.MaximumTextureWidth / 2;
+			numericSpacingY.Maximum = Gorgon.CurrentDriver.MaximumTextureHeight / 2;
+
+			Settings.Root = "SpriteExtraction";
+			textPrefix.Text = Settings.GetSetting("NamingPrefix", _defaultPrefix);
+			numericLeft.Value = Convert.ToDecimal(Settings.GetSetting("Left", "0"));
+			numericTop.Value = Convert.ToDecimal(Settings.GetSetting("Top", "0"));
+			numericConstraintWidth.Value = Convert.ToDecimal(Settings.GetSetting("Width", "0"));
+			numericConstraintHeight.Value = Convert.ToDecimal(Settings.GetSetting("Height", "0"));
+			numericSpacingX.Value = Convert.ToDecimal(Settings.GetSetting("CellSpacingX", "0"));
+			numericSpacingY.Value = Convert.ToDecimal(Settings.GetSetting("CellSpacingY", "0"));
+			numericCellWidth.Value = Convert.ToDecimal(Settings.GetSetting("CellWidth", "32"));
+			numericCellHeight.Value = Convert.ToDecimal(Settings.GetSetting("CellHeight", "32"));
+			Settings.Root = null;
+
+			numericLeft_ValueChanged(this, EventArgs.Empty);
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public formSpriteGridExtractOptions()
+		{
+			InitializeComponent();
+
+			textPrefix.Focus();
+			_finder = new SpriteFinder();
+			_defaultPrefix = "ExtractedSprite_";
+		}
+		#endregion
 	}
 }

@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 using Drawing = System.Drawing;
 using GorgonLibrary.Graphics.Tools.PropBag;
 using Flobbster.Windows.Forms;
@@ -1379,16 +1380,9 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <returns>TRUE if there are keys, FALSE if not.</returns>
 		public bool HasKeysForTrack(string trackName)
 		{
-			foreach (Animation animation in _sprite.Animations)
-			{
-				if (animation.Tracks.Contains(trackName))
-				{
-					if (animation.Tracks[trackName].KeyCount > 0)
-						return true;
-				}
-			}
-
-			return false;
+			return (from animations in _sprite.Animations
+					where animations.Tracks.Contains(trackName) && animations.Tracks[trackName].KeyCount > 0
+					select animations.Tracks[trackName]).Count() > 0;
 		}
 
 		/// <summary>

@@ -57,10 +57,6 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 		#endregion
 
-		#region Methods.
-
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Constructor.

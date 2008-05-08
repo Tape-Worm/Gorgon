@@ -29,6 +29,7 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
+using System.Linq;
 using Drawing = System.Drawing;
 using GorgonLibrary;
 using GorgonLibrary.InputDevices;
@@ -232,6 +233,26 @@ namespace GorgonLibrary.Graphics.Tools
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the Click event of the menuItemAbout control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void menuItemAbout_Click(object sender, EventArgs e)
+		{
+			ABOOT aboutForm = null;			// About form.
+
+			try
+			{
+				aboutForm = new ABOOT();
+				aboutForm.ShowDialog(this);
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(this, ex);
+			}
+		}
+
 		/// <summary>
 		/// Handles the KeyDown event of the Keyboard control.
 		/// </summary>
@@ -648,7 +669,8 @@ namespace GorgonLibrary.Graphics.Tools
 						newScale.Y = newScale.X;
 
 					_displaySprite = _spriteManager.CurrentSprite.Sprite.Clone() as Sprite;
-					_displaySprite.Animations.Clear();					
+					_displaySprite.Animations.Clear();
+					_displaySprite.Rotation = 0.0f;
 					_displaySprite.Scale = newScale;
 					_displaySprite.Position = new Vector2D(MathUtility.Round((panelSize.X / 2.0f) - (_displaySprite.ScaledWidth / 2.0f)),
 						MathUtility.Round((panelSize.Y / 2.0f) - (_displaySprite.ScaledHeight / 2.0f)));
@@ -1788,129 +1810,100 @@ namespace GorgonLibrary.Graphics.Tools
 			support = projectDocument.CreateElement("Images");
 			root.AppendChild(support);
 
-			// Create count.
-			int imageCount = 0;
-
-			foreach (Image image in ImageCache.Images)
-			{
-				if (!image.IsResource)
-					imageCount++;
-			}
+			// Create image count.
+			var imageList = ImageCache.Images.Where((image) => !image.IsResource);
+			int imageCount = imageList.Count();
 
 			element = projectDocument.CreateElement("Count");
 			element.InnerText = imageCount.ToString();
 			support.AppendChild(element);
 
 			// Add each image.
-			foreach (Image image in ImageCache.Images)
+			foreach (Image image in imageList)
 			{
-				if (!image.IsResource)
+				element = projectDocument.CreateElement("Path");
+				sourceDir = Path.GetDirectoryName(fileName) + @"\";
+				destDir = Path.GetDirectoryName(image.Filename) + @"\";
+
+				if (destDir.ToLower().StartsWith(sourceDir.ToLower()))
 				{
-					element = projectDocument.CreateElement("Path");
-					sourceDir = Path.GetDirectoryName(fileName) + @"\";
-					destDir = Path.GetDirectoryName(image.Filename) + @"\";
-
-					if (destDir.ToLower().StartsWith(sourceDir.ToLower()))
-					{
-						destDir = destDir.Replace(sourceDir, @".\");
-						element.InnerText = destDir + Path.GetFileName(image.Filename);
-					}
-					else
-						element.InnerText = image.Filename;
-
-					support.AppendChild(element);
+					destDir = destDir.Replace(sourceDir, @".\");
+					element.InnerText = destDir + Path.GetFileName(image.Filename);
 				}
+				else
+					element.InnerText = image.Filename;
+
+				support.AppendChild(element);
 			}
 
 			support = projectDocument.CreateElement("Targets");
 			root.AppendChild(support);
 
 			// Create count.
-			int targetCount = 0;
-
-			foreach (RenderTarget target in RenderTargetCache.Targets)
-			{
-				RenderImage targetImage = target as RenderImage;
-
-				if ((targetImage != null) && (ValidRenderTarget(targetImage.Name)))
-					targetCount++;
-			}
+			var targetList = RenderTargetCache.Targets.Where((target) => (target as RenderImage) != null && (ValidRenderTarget(target.Name)));
+			int targetCount = targetList.Count();
 
 			element = projectDocument.CreateElement("Count");
 			element.InnerText = targetCount.ToString();
 			support.AppendChild(element);
 
 			// Add each image.
-			foreach (RenderTarget target in RenderTargetCache.Targets)
+			foreach (RenderImage target in targetList)
 			{
-				RenderImage targetImage = target as RenderImage;
+				subSupport = projectDocument.CreateElement("RenderTarget");
+				support.AppendChild(subSupport);
 
-				if ((targetImage != null) && (ValidRenderTarget(targetImage.Name)))
-				{
-					subSupport = projectDocument.CreateElement("RenderTarget");
-					support.AppendChild(subSupport);
-
-					element = projectDocument.CreateElement("Name");
-					element.InnerText = targetImage.Name;
-					subSupport.AppendChild(element);
-					element = projectDocument.CreateElement("Width");
-					element.InnerText = targetImage.Width.ToString();
-					subSupport.AppendChild(element);
-					element = projectDocument.CreateElement("Height");
-					element.InnerText = targetImage.Width.ToString();
-					subSupport.AppendChild(element);
-					element = projectDocument.CreateElement("Format");
-					element.InnerText = targetImage.Format.ToString();
-					subSupport.AppendChild(element);
-					element = projectDocument.CreateElement("UseDepth");
-					element.InnerText = targetImage.UseDepthBuffer.ToString();
-					subSupport.AppendChild(element);
-					element = projectDocument.CreateElement("UseStencil");
-					element.InnerText = targetImage.UseStencilBuffer.ToString();
-					subSupport.AppendChild(element);
-				}
+				element = projectDocument.CreateElement("Name");
+				element.InnerText = target.Name;
+				subSupport.AppendChild(element);
+				element = projectDocument.CreateElement("Width");
+				element.InnerText = target.Width.ToString();
+				subSupport.AppendChild(element);
+				element = projectDocument.CreateElement("Height");
+				element.InnerText = target.Width.ToString();
+				subSupport.AppendChild(element);
+				element = projectDocument.CreateElement("Format");
+				element.InnerText = target.Format.ToString();
+				subSupport.AppendChild(element);
+				element = projectDocument.CreateElement("UseDepth");
+				element.InnerText = target.UseDepthBuffer.ToString();
+				subSupport.AppendChild(element);
+				element = projectDocument.CreateElement("UseStencil");
+				element.InnerText = target.UseStencilBuffer.ToString();
+				subSupport.AppendChild(element);
 			}
 
 			support = projectDocument.CreateElement("Sprites");
 			root.AppendChild(support);
 
 			// Create count.
-			int spriteCount = 0;
-
-			// Get a count of all saved sprites.
-			foreach (SpriteDocument doc in SpriteManager.Sprites)
-			{
-				if (doc.Sprite.Filename != string.Empty)
-					spriteCount++;
-			}
+			var documents = SpriteManager.Sprites.Where((doc) => !string.IsNullOrEmpty(doc.Sprite.Filename));
+			int spriteCount = documents.Count();
 
 			element = projectDocument.CreateElement("Count");
 			element.InnerText = SpriteManager.Sprites.Count.ToString();
 			support.AppendChild(element);
 
-			foreach (SpriteDocument doc in SpriteManager.Sprites)
+			foreach (SpriteDocument doc in documents)
 			{
-				if (doc.Sprite.Filename != string.Empty)
+				XmlAttribute animVisible;		// Animation visible.
+				
+				element = projectDocument.CreateElement("Path");
+				animVisible = projectDocument.CreateAttribute("IncludeInAnims");
+				animVisible.Value = doc.IncludeInAnimations.ToString();
+				element.Attributes.Append(animVisible);
+
+				sourceDir = Path.GetDirectoryName(fileName) + @"\";
+				destDir = Path.GetDirectoryName(doc.Sprite.Filename) + @"\";
+
+				if (destDir.ToLower().StartsWith(sourceDir.ToLower()))
 				{
-					XmlAttribute animVisible;		// Animation visible.
-					
-					element = projectDocument.CreateElement("Path");
-					animVisible = projectDocument.CreateAttribute("IncludeInAnims");
-					animVisible.Value = doc.IncludeInAnimations.ToString();
-					element.Attributes.Append(animVisible);
-
-					sourceDir = Path.GetDirectoryName(fileName) + @"\";
-					destDir = Path.GetDirectoryName(doc.Sprite.Filename) + @"\";
-
-					if (destDir.ToLower().StartsWith(sourceDir.ToLower()))
-					{
-						destDir = destDir.Replace(sourceDir, @".\");
-						element.InnerText = destDir + Path.GetFileName(doc.Sprite.Filename);
-					}
-					else
-						element.InnerText = doc.Sprite.Filename;
-					support.AppendChild(element);
+					destDir = destDir.Replace(sourceDir, @".\");
+					element.InnerText = destDir + Path.GetFileName(doc.Sprite.Filename);
 				}
+				else
+					element.InnerText = doc.Sprite.Filename;
+				support.AppendChild(element);
 			}
 
 			// Save the XML document.
@@ -2452,25 +2445,5 @@ namespace GorgonLibrary.Graphics.Tools
 			_axisColor = Drawing.Color.Red;
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the Click event of the menuItemAbout control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void menuItemAbout_Click(object sender, EventArgs e)
-		{
-			ABOOT aboutForm = null;			// About form.
-
-			try
-			{
-				aboutForm = new ABOOT();
-				aboutForm.ShowDialog(this);
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(this, ex);
-			}
-		}
 	}
 }
