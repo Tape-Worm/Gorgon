@@ -147,10 +147,6 @@ action mapping.
 Specifies the sub type of a DirectInput device.
 </summary>
         </member>
-        <member name="T:SlimDX.Direct3D9.Line">
-            <summary>Implements line drawing using textured triangles.</summary>
-            <unmanaged>ID3DXLine</unmanaged>
-        </member>
         <member name="M:SlimDX.Performance.SetRegion(SlimDX.Color4,System.String)">
             <summary>
 Marks a series of frames with the specified color and name in the PIXRun file. 
@@ -507,218 +503,34 @@ Gets or sets the X component of the vector.
 Defines a four component vector, using half precision floating point coordinates.
 </summary>
         </member>
-        <member name="M:SlimDX.XInput.Controller.SetReporting(System.Boolean)">
+        <member name="P:SlimDX.DXGI.SurfaceDescription.SampleDescription">
             <summary>
-Enables or disables data reporting in XInput.
-</summary>
-            <param name="value">
-                <c>true</c> to enable XInput, <c>false</c> to disable it.</param>
-        </member>
-        <member name="M:SlimDX.XInput.Controller.SetVibration(SlimDX.XInput.Vibration)">
-            <summary>
-Sets vibration information for the controller.
-</summary>
-            <param name="vibration">Vibration settings for the controller.</param>
-            <returns>A <see cref="!:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Controller.GetKeystroke(SlimDX.XInput.DeviceQueryType,SlimDX.XInput.Keystroke@)">
-            <summary>
-Gets keystroke information from the device.
-</summary>
-            <param name="flag">The type of the device to query.</param>
-            <param name="keystroke">Keystroke information from the device.</param>
-            <returns>A <see cref="!:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Controller.GetState">
-            <summary>
-Gets the state of the controller.
-</summary>
-            <returns>A <see cref="!:XInput.State" /> structure describing the state of the controller.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Controller.GetCapabilities(SlimDX.XInput.DeviceQueryType)">
-            <summary>
-Retrieves the capabilities of the controller.
-</summary>
-            <param name="device">The type of the device whose capabilities are being retrieved.</param>
-            <returns>A <see cref="!:XInput.Capabilities" /> structure describing the capabilities of the controller.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Controller.GetBatteryInformation(SlimDX.XInput.BatteryDeviceType)">
-            <summary>
-Retrieves battery information for the controller.
-</summary>
-            <param name="battery">The type of battery whose information is being retrieved.</param>
-            <returns>A <see cref="T:SlimDX.XInput.BatteryInformation" /> structure describing the battery in the controller.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Controller.#ctor(SlimDX.XInput.UserIndex)">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.XInput.Controller" /> class.
-</summary>
-            <param name="userIndex">The index of the player whose controller is being represented.</param>
-        </member>
-        <member name="P:SlimDX.XInput.Controller.SoundCaptureGuid">
-            <summary>
-Gets the identifier for the sound capture device in the controller.
+Gets the surface's multisampling properties.
 </summary>
         </member>
-        <member name="P:SlimDX.XInput.Controller.SoundRenderGuid">
+        <member name="P:SlimDX.DXGI.SurfaceDescription.Format">
             <summary>
-Gets the identifier for the sound renderer in the controller.
+Gets the format of the surface.
 </summary>
         </member>
-        <member name="P:SlimDX.XInput.Controller.IsConnected">
+        <member name="P:SlimDX.DXGI.SurfaceDescription.Height">
             <summary>
-Gets a value indicating whether or not the controller is connected.
+Gets the height of the surface.
 </summary>
         </member>
-        <member name="T:SlimDX.XInput.Controller">
+        <member name="P:SlimDX.DXGI.SurfaceDescription.Width">
             <summary>
-Represents an XInput controller.
+Gets the width of the surface.
 </summary>
         </member>
-        <member name="M:SlimDX.XInput.State.Equals(SlimDX.XInput.State@,SlimDX.XInput.State@)">
+        <member name="T:SlimDX.DXGI.SurfaceDescription">
             <summary>
-Determines whether the specified object instances are considered equal. 
-</summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.State.Equals(SlimDX.XInput.State)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
-</summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.State.Equals(System.Object)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
-</summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.State.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.State.op_Inequality(SlimDX.XInput.State,SlimDX.XInput.State)">
-            <summary>
-Tests for inequality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.State.op_Equality(SlimDX.XInput.State,SlimDX.XInput.State)">
-            <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="P:SlimDX.XInput.State.Gamepad">
-            <summary>
-Gets a <see cref="!:XInput.Gamepad" /> structure describing the current state of the gamepad.
+Describes properties of a surface.
 </summary>
         </member>
-        <member name="P:SlimDX.XInput.State.PacketNumber">
-            <summary>
-Gets the state packet number.
-</summary>
-            <remarks>
-The packet number indicates whether there have been any changes in the state of the controller. If the value
-does not change in sequentially returned State structures, the controller state has not changed. 
-</remarks>
-        </member>
-        <member name="T:SlimDX.XInput.State">
-            <summary>
-Represents the state of a controller.
-</summary>
-        </member>
-        <member name="M:SlimDX.XInput.Keystroke.Equals(SlimDX.XInput.Keystroke@,SlimDX.XInput.Keystroke@)">
-            <summary>
-Determines whether the specified object instances are considered equal. 
-</summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Keystroke.Equals(SlimDX.XInput.Keystroke)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
-</summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Keystroke.Equals(System.Object)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
-</summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Keystroke.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Keystroke.op_Inequality(SlimDX.XInput.Keystroke,SlimDX.XInput.Keystroke)">
-            <summary>
-Tests for inequality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Keystroke.op_Equality(SlimDX.XInput.Keystroke,SlimDX.XInput.Keystroke)">
-            <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="P:SlimDX.XInput.Keystroke.HidCode">
-            <summary>
-Gets the HID code corresponding to the input. If there is no corresponding HID code, this value is zero.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Keystroke.UserIndex">
-            <summary>
-Gets the index of the signed-in gamer associated with the device. Can be a value in the range 0–3.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Keystroke.Flags">
-            <summary>
-Gets a combination of flags that indicate the keyboard state at the time of the input event.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Keystroke.VirtualKey">
-            <summary>
-Gets the virtual-key code of the key, button, or stick movement.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.Keystroke">
-            <summary>
-Describes keystroke data from a device.
-</summary>
-        </member>
+        <member name="T:SlimDX.Direct3D9.RenderToEnvironmentMapDescription">
+            <summary>Describes an off-screen render target used by <see cref="T:SlimDX.Direct3D9.RenderToEnvironmentMap" /></summary>.
+<unmanaged>D3DXRTE_DESC</unmanaged></member>
         <member name="T:SlimDX.DirectInput.DirectInputNotFoundException">
             <summary>
 An exception indicating that the appropriate DirectInput runtime could not be found or initialized.
@@ -753,31 +565,6 @@ Gets the surface's description.
         <member name="T:SlimDX.DXGI.Surface">
             <summary>
 A <see cref="T:SlimDX.DXGI.Surface" /> implements methods for image-data objects.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControlCapabilities.ControlPoints">
-            <summary>
-Gets the list of curve control point positions.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControlCapabilities.MinimumConvertedValue">
-            <summary>
-Gets a value indicating the minimum range of the curve control point positions.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControlCapabilities.MaximumConvertedValue">
-            <summary>
-Gets a value indicating the maximum range of the curve control point positions.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControlCapabilities.IsScaleAndOffsetSupported">
-            <summary>
-Gets a value indicating whether gamma scale and offset transformation is supported.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.GammaControlCapabilities">
-            <summary>
-Describes gamma control capabilities.
 </summary>
         </member>
         <member name="P:SlimDX.DXGI.OutputDescription.MonitorHandle">
@@ -1053,296 +840,13 @@ Gets the adapter's description.
 Describes various properties of an Adapter.
 </summary>
         </member>
-        <member name="M:SlimDX.XInput.Capabilities.Equals(SlimDX.XInput.Capabilities@,SlimDX.XInput.Capabilities@)">
-            <summary>
-Determines whether the specified object instances are considered equal. 
-</summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        <member name="T:SlimDX.Direct3D9.Line">
+            <summary>Implements line drawing using textured triangles.</summary>
+            <unmanaged>ID3DXLine</unmanaged>
         </member>
-        <member name="M:SlimDX.XInput.Capabilities.Equals(SlimDX.XInput.Capabilities)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
-</summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Capabilities.Equals(System.Object)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
-</summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Capabilities.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Capabilities.op_Inequality(SlimDX.XInput.Capabilities,SlimDX.XInput.Capabilities)">
-            <summary>
-Tests for inequality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Capabilities.op_Equality(SlimDX.XInput.Capabilities,SlimDX.XInput.Capabilities)">
-            <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="P:SlimDX.XInput.Capabilities.Vibration">
-            <summary>
-Gets a <see cref="!:XInput.Vibration" /> structure describing available vibration features.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Capabilities.Gamepad">
-            <summary>
-Gets a <see cref="!:XInput.Gamepad" /> structure describing available gamepad features.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Capabilities.Flags">
-            <summary>
-Gets the features of the controller. 
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Capabilities.Subtype">
-            <summary>
-Gets the controller subtype.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Capabilities.Type">
-            <summary>
-Gets the controller type.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.Capabilities">
-            <summary>
-Describes the capabilities of a controller.
-</summary>
-        </member>
-        <member name="M:SlimDX.XInput.Vibration.Equals(SlimDX.XInput.Vibration@,SlimDX.XInput.Vibration@)">
-            <summary>
-Determines whether the specified object instances are considered equal. 
-</summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Vibration.Equals(SlimDX.XInput.Vibration)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
-</summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Vibration.Equals(System.Object)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
-</summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Vibration.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Vibration.op_Inequality(SlimDX.XInput.Vibration,SlimDX.XInput.Vibration)">
-            <summary>
-Tests for inequality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Vibration.op_Equality(SlimDX.XInput.Vibration,SlimDX.XInput.Vibration)">
-            <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="P:SlimDX.XInput.Vibration.RightMotorSpeed">
-            <summary>
-Gets or sets the right motor speed. 
-</summary>
-            <remarks>
-Valid values are in the range 0 to 65,535. Zero signifies no motor use; 65,535 signifies 100% motor use.
-</remarks>
-        </member>
-        <member name="P:SlimDX.XInput.Vibration.LeftMotorSpeed">
-            <summary>
-Gets or sets the left motor speed. 
-</summary>
-            <remarks>
-Valid values are in the range 0 to 65,535. Zero signifies no motor use; 65,535 signifies 100% motor use.
-</remarks>
-        </member>
-        <member name="T:SlimDX.XInput.Vibration">
-            <summary>
-Specifies motor speed levels for the vibration function of a controller.
-</summary>
-            <remarks>
-The left motor is the low-frequency rumble motor. The right motor is the high-frequency rumble motor. 
-The two motors are not the same, and they create different vibration effects.
-</remarks>
-        </member>
-        <member name="M:SlimDX.XInput.Gamepad.Equals(SlimDX.XInput.Gamepad@,SlimDX.XInput.Gamepad@)">
-            <summary>
-Determines whether the specified object instances are considered equal. 
-</summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Gamepad.Equals(SlimDX.XInput.Gamepad)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
-</summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Gamepad.Equals(System.Object)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
-</summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Gamepad.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Gamepad.op_Inequality(SlimDX.XInput.Gamepad,SlimDX.XInput.Gamepad)">
-            <summary>
-Tests for inequality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.XInput.Gamepad.op_Equality(SlimDX.XInput.Gamepad,SlimDX.XInput.Gamepad)">
-            <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="F:SlimDX.XInput.Gamepad.GamepadTriggerThreshold">
-            <summary>
-This constant may be used as the value which <see cref="!:Gamepad.LeftTrigger" /> and <see cref="!:Gamepad.RightTrigger" /> must be greater than to register as pressed.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.Gamepad.GamepadRightThumbDeadZone">
-            <summary>
-Can be used as a positive and negative value to filter the right thumbstick input.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.Gamepad.GamepadLeftThumbDeadZone">
-            <summary>
-Can be used as a positive and negative value to filter the left thumbstick input.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Gamepad.RightThumbY">
-            <summary>
-Gets the right thumbstick y-axis value. The value is between -32768 and 32767.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Gamepad.RightThumbX">
-            <summary>
-Gets the right thumbstick x-axis value. The value is between -32768 and 32767.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Gamepad.LeftThumbY">
-            <summary>
-Gets the left thumbstick y-axis value. The value is between -32768 and 32767.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Gamepad.LeftThumbX">
-            <summary>
-Gets the right thumbstick y-axis value. The value is between -32768 and 32767.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Gamepad.RightTrigger">
-            <summary>
-Gets the current value of the right trigger analog control. The value is between 0 and 255.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Gamepad.LeftTrigger">
-            <summary>
-Gets the current value of the left trigger analog control. The value is between 0 and 255.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.Gamepad.Buttons">
-            <summary>
-Gets a set of flags describing the pressed buttons on the gamepad.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.Gamepad">
-            <summary>
-Describes the current state of the Xbox 360 Controller.
-</summary>
-            <remarks>
-Each of the thumbstick axis members is a signed value between -32768 and 32767 describing the position of the thumbstick.
-A value of 0 is centered. Negative values signify down or to the left. Positive values signify up or to the right.
-The constants GamepadLeftThumbDeadZone or GamepadRightThumbDeadZone can be used as a positive and negative value to filter
-thumbstick input.
-</remarks>
-        </member>
-        <member name="P:SlimDX.DXGI.SurfaceDescription.SampleDescription">
-            <summary>
-Gets the surface's multisampling properties.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.SurfaceDescription.Format">
-            <summary>
-Gets the format of the surface.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.SurfaceDescription.Height">
-            <summary>
-Gets the height of the surface.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.SurfaceDescription.Width">
-            <summary>
-Gets the width of the surface.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.SurfaceDescription">
-            <summary>
-Describes properties of a surface.
-</summary>
+        <member name="T:SlimDX.Direct3D9.MatrixStack">
+            <summary>Applications use the methods of the MatrixStack class to manipulate a matrix stack.</summary>
+            <unmanaged>ID3DXMatrixStack</unmanaged>
         </member>
         <member name="T:SlimDX.Direct3D10.SpriteInstance">
             <summary>
@@ -1539,6 +1043,10 @@ Provides basic rendering statistics. All counts are relative to machine boot.
             <summary>Applications use the methods of the VertexBuffer class to manipulate vertex buffer resources.</summary>
             <unmanaged>IDirect3DVertexBuffer9</unmanaged>
         </member>
+        <member name="T:SlimDX.Direct3D9.VertexBufferDescription">
+            <summary>Describes a vertex buffer.</summary>
+            <unmanaged>D3DVERTEXBUFFER_DESC</unmanaged>
+        </member>
         <member name="T:SlimDX.Direct3D9.IndexBuffer">
             <summary>Applications use the methods of the IndexBuffer class to manipulate an index buffer resource.</summary>
             <unmanaged>IDirect3DIndexBuffer9</unmanaged>
@@ -1637,10 +1145,6 @@ Gets or sets the X component of the vector.
             <summary>
 Defines a three component vector, using half precision floating point coordinates.
 </summary>
-        </member>
-        <member name="T:SlimDX.Direct3D9.MatrixStack">
-            <summary>Applications use the methods of the MatrixStack class to manipulate a matrix stack.</summary>
-            <unmanaged>ID3DXMatrixStack</unmanaged>
         </member>
         <member name="T:SlimDX.Direct3D9.EventDescription">
             <summary>
@@ -2779,9 +2283,9 @@ Represents a "Audible" action.
 Represents a "Motion" action.
 </summary>
         </member>
-        <member name="F:SlimDX.DirectInput.FootballQuarterbackControls.Fakesnap">
+        <member name="F:SlimDX.DirectInput.FootballQuarterbackControls.FakeSnap">
             <summary>
-Represents a "Fakesnap" action.
+Represents a "FakeSnap" action.
 </summary>
         </member>
         <member name="F:SlimDX.DirectInput.FootballQuarterbackControls.Menu">
@@ -3039,9 +2543,9 @@ Represents a "Audible" action.
 Represents a "Rip" action.
 </summary>
         </member>
-        <member name="F:SlimDX.DirectInput.FootballDefenseControls.Bullrush">
+        <member name="F:SlimDX.DirectInput.FootballDefenseControls.BullRush">
             <summary>
-Represents a "Bullrush" action.
+Represents a "BullRush" action.
 </summary>
         </member>
         <member name="F:SlimDX.DirectInput.FootballDefenseControls.Swim">
@@ -3059,9 +2563,9 @@ Represents a "Spin" action.
 Represents a "Menu" action.
 </summary>
         </member>
-        <member name="F:SlimDX.DirectInput.FootballDefenseControls.Supertackle">
+        <member name="F:SlimDX.DirectInput.FootballDefenseControls.SuperTackle">
             <summary>
-Represents a "Supertackle" action.
+Represents a "SuperTackle" action.
 </summary>
         </member>
         <member name="F:SlimDX.DirectInput.FootballDefenseControls.Fake">
@@ -5754,7 +5258,7 @@ Represents a "Right" link.
 Represents a "Left" link.
 </summary>
         </member>
-        <member name="F:SlimDX.DirectInput.PlatformControls.Firesecondary">
+        <member name="F:SlimDX.DirectInput.PlatformControls.FireSecondary">
             <summary>
 Represents a "FireSecondary" action.
 </summary>
@@ -5887,6 +5391,11 @@ Represents a "Dodge" action.
         <member name="F:SlimDX.DirectInput.ThirdPersonControls.Device">
             <summary>
 Represents a "Device" action.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectInput.ThirdPersonControls.BackwardLink">
+            <summary>
+Represents a "Backward" link.
 </summary>
         </member>
         <member name="F:SlimDX.DirectInput.ThirdPersonControls.Step">
@@ -6498,9 +6007,991 @@ Refers to any axis.
 Defines object codes that refer to any control type on a device.
 </summary>
         </member>
-        <member name="T:SlimDX.Direct3D9.VertexBufferDescription">
-            <summary>Describes a vertex buffer.</summary>
-            <unmanaged>D3DVERTEXBUFFER_DESC</unmanaged>
+        <member name="M:SlimDX.XInput.Controller.SetReporting(System.Boolean)">
+            <summary>
+Enables or disables data reporting in XInput.
+</summary>
+            <param name="value">
+                <c>true</c> to enable XInput, <c>false</c> to disable it.</param>
+        </member>
+        <member name="M:SlimDX.XInput.Controller.SetVibration(SlimDX.XInput.Vibration)">
+            <summary>
+Sets vibration information for the controller.
+</summary>
+            <param name="vibration">Vibration settings for the controller.</param>
+            <returns>A <see cref="!:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Controller.GetKeystroke(SlimDX.XInput.DeviceQueryType,SlimDX.XInput.Keystroke@)">
+            <summary>
+Gets keystroke information from the device.
+</summary>
+            <param name="flag">The type of the device to query.</param>
+            <param name="keystroke">Keystroke information from the device.</param>
+            <returns>A <see cref="!:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Controller.GetState">
+            <summary>
+Gets the state of the controller.
+</summary>
+            <returns>A <see cref="!:XInput.State" /> structure describing the state of the controller.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Controller.GetCapabilities(SlimDX.XInput.DeviceQueryType)">
+            <summary>
+Retrieves the capabilities of the controller.
+</summary>
+            <param name="device">The type of the device whose capabilities are being retrieved.</param>
+            <returns>A <see cref="!:XInput.Capabilities" /> structure describing the capabilities of the controller.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Controller.GetBatteryInformation(SlimDX.XInput.BatteryDeviceType)">
+            <summary>
+Retrieves battery information for the controller.
+</summary>
+            <param name="battery">The type of battery whose information is being retrieved.</param>
+            <returns>A <see cref="T:SlimDX.XInput.BatteryInformation" /> structure describing the battery in the controller.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Controller.#ctor(SlimDX.XInput.UserIndex)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.XInput.Controller" /> class.
+</summary>
+            <param name="userIndex">The index of the player whose controller is being represented.</param>
+        </member>
+        <member name="P:SlimDX.XInput.Controller.SoundCaptureGuid">
+            <summary>
+Gets the identifier for the sound capture device in the controller.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Controller.SoundRenderGuid">
+            <summary>
+Gets the identifier for the sound renderer in the controller.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Controller.IsConnected">
+            <summary>
+Gets a value indicating whether or not the controller is connected.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.Controller">
+            <summary>
+Represents an XInput controller.
+</summary>
+        </member>
+        <member name="M:SlimDX.XInput.Capabilities.Equals(SlimDX.XInput.Capabilities@,SlimDX.XInput.Capabilities@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Capabilities.Equals(SlimDX.XInput.Capabilities)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Capabilities.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Capabilities.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Capabilities.op_Inequality(SlimDX.XInput.Capabilities,SlimDX.XInput.Capabilities)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Capabilities.op_Equality(SlimDX.XInput.Capabilities,SlimDX.XInput.Capabilities)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="P:SlimDX.XInput.Capabilities.Vibration">
+            <summary>
+Gets a <see cref="!:XInput.Vibration" /> structure describing available vibration features.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Capabilities.Gamepad">
+            <summary>
+Gets a <see cref="!:XInput.Gamepad" /> structure describing available gamepad features.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Capabilities.Flags">
+            <summary>
+Gets the features of the controller. 
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Capabilities.Subtype">
+            <summary>
+Gets the controller subtype.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Capabilities.Type">
+            <summary>
+Gets the controller type.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.Capabilities">
+            <summary>
+Describes the capabilities of a controller.
+</summary>
+        </member>
+        <member name="M:SlimDX.XInput.BatteryInformation.Equals(SlimDX.XInput.BatteryInformation@,SlimDX.XInput.BatteryInformation@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.BatteryInformation.Equals(SlimDX.XInput.BatteryInformation)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.BatteryInformation.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.BatteryInformation.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.BatteryInformation.op_Inequality(SlimDX.XInput.BatteryInformation,SlimDX.XInput.BatteryInformation)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.BatteryInformation.op_Equality(SlimDX.XInput.BatteryInformation,SlimDX.XInput.BatteryInformation)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="P:SlimDX.XInput.BatteryInformation.Level">
+            <summary>
+Gets the relative charge level of the battery.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.BatteryInformation.Type">
+            <summary>
+Gets the type of the battery.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.BatteryInformation">
+            <summary>
+Contains information about the battery of an XInput device.
+</summary>
+        </member>
+        <member name="M:SlimDX.XInput.Vibration.Equals(SlimDX.XInput.Vibration@,SlimDX.XInput.Vibration@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Vibration.Equals(SlimDX.XInput.Vibration)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Vibration.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Vibration.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Vibration.op_Inequality(SlimDX.XInput.Vibration,SlimDX.XInput.Vibration)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Vibration.op_Equality(SlimDX.XInput.Vibration,SlimDX.XInput.Vibration)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="P:SlimDX.XInput.Vibration.RightMotorSpeed">
+            <summary>
+Gets or sets the right motor speed. 
+</summary>
+            <remarks>
+Valid values are in the range 0 to 65,535. Zero signifies no motor use; 65,535 signifies 100% motor use.
+</remarks>
+        </member>
+        <member name="P:SlimDX.XInput.Vibration.LeftMotorSpeed">
+            <summary>
+Gets or sets the left motor speed. 
+</summary>
+            <remarks>
+Valid values are in the range 0 to 65,535. Zero signifies no motor use; 65,535 signifies 100% motor use.
+</remarks>
+        </member>
+        <member name="T:SlimDX.XInput.Vibration">
+            <summary>
+Specifies motor speed levels for the vibration function of a controller.
+</summary>
+            <remarks>
+The left motor is the low-frequency rumble motor. The right motor is the high-frequency rumble motor. 
+The two motors are not the same, and they create different vibration effects.
+</remarks>
+        </member>
+        <member name="M:SlimDX.XInput.State.Equals(SlimDX.XInput.State@,SlimDX.XInput.State@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.State.Equals(SlimDX.XInput.State)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.State.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.State.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.State.op_Inequality(SlimDX.XInput.State,SlimDX.XInput.State)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.State.op_Equality(SlimDX.XInput.State,SlimDX.XInput.State)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="P:SlimDX.XInput.State.Gamepad">
+            <summary>
+Gets a <see cref="!:XInput.Gamepad" /> structure describing the current state of the gamepad.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.State.PacketNumber">
+            <summary>
+Gets the state packet number.
+</summary>
+            <remarks>
+The packet number indicates whether there have been any changes in the state of the controller. If the value
+does not change in sequentially returned State structures, the controller state has not changed. 
+</remarks>
+        </member>
+        <member name="T:SlimDX.XInput.State">
+            <summary>
+Represents the state of a controller.
+</summary>
+        </member>
+        <member name="M:SlimDX.XInput.Keystroke.Equals(SlimDX.XInput.Keystroke@,SlimDX.XInput.Keystroke@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Keystroke.Equals(SlimDX.XInput.Keystroke)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Keystroke.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Keystroke.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Keystroke.op_Inequality(SlimDX.XInput.Keystroke,SlimDX.XInput.Keystroke)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Keystroke.op_Equality(SlimDX.XInput.Keystroke,SlimDX.XInput.Keystroke)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="P:SlimDX.XInput.Keystroke.HidCode">
+            <summary>
+Gets the HID code corresponding to the input. If there is no corresponding HID code, this value is zero.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Keystroke.UserIndex">
+            <summary>
+Gets the index of the signed-in gamer associated with the device. Can be a value in the range 0–3.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Keystroke.Flags">
+            <summary>
+Gets a combination of flags that indicate the keyboard state at the time of the input event.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Keystroke.VirtualKey">
+            <summary>
+Gets the virtual-key code of the key, button, or stick movement.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.Keystroke">
+            <summary>
+Describes keystroke data from a device.
+</summary>
+        </member>
+        <member name="M:SlimDX.XInput.Gamepad.Equals(SlimDX.XInput.Gamepad@,SlimDX.XInput.Gamepad@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Gamepad.Equals(SlimDX.XInput.Gamepad)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Gamepad.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Gamepad.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Gamepad.op_Inequality(SlimDX.XInput.Gamepad,SlimDX.XInput.Gamepad)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.XInput.Gamepad.op_Equality(SlimDX.XInput.Gamepad,SlimDX.XInput.Gamepad)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="F:SlimDX.XInput.Gamepad.GamepadTriggerThreshold">
+            <summary>
+This constant may be used as the value which <see cref="!:Gamepad.LeftTrigger" /> and <see cref="!:Gamepad.RightTrigger" /> must be greater than to register as pressed.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.Gamepad.GamepadRightThumbDeadZone">
+            <summary>
+Can be used as a positive and negative value to filter the right thumbstick input.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.Gamepad.GamepadLeftThumbDeadZone">
+            <summary>
+Can be used as a positive and negative value to filter the left thumbstick input.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Gamepad.RightThumbY">
+            <summary>
+Gets the right thumbstick y-axis value. The value is between -32768 and 32767.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Gamepad.RightThumbX">
+            <summary>
+Gets the right thumbstick x-axis value. The value is between -32768 and 32767.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Gamepad.LeftThumbY">
+            <summary>
+Gets the left thumbstick y-axis value. The value is between -32768 and 32767.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Gamepad.LeftThumbX">
+            <summary>
+Gets the right thumbstick y-axis value. The value is between -32768 and 32767.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Gamepad.RightTrigger">
+            <summary>
+Gets the current value of the right trigger analog control. The value is between 0 and 255.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Gamepad.LeftTrigger">
+            <summary>
+Gets the current value of the left trigger analog control. The value is between 0 and 255.
+</summary>
+        </member>
+        <member name="P:SlimDX.XInput.Gamepad.Buttons">
+            <summary>
+Gets a set of flags describing the pressed buttons on the gamepad.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.Gamepad">
+            <summary>
+Describes the current state of the Xbox 360 Controller.
+</summary>
+            <remarks>
+Each of the thumbstick axis members is a signed value between -32768 and 32767 describing the position of the thumbstick.
+A value of 0 is centered. Negative values signify down or to the left. Positive values signify up or to the right.
+The constants GamepadLeftThumbDeadZone or GamepadRightThumbDeadZone can be used as a positive and negative value to filter
+thumbstick input.
+</remarks>
+        </member>
+        <member name="T:SlimDX.XInput.UserIndex">
+            <summary>
+Specifies the index of a user's controller.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.UserIndex.Four">
+            <summary>
+Player four.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.UserIndex.Three">
+            <summary>
+Player three.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.UserIndex.Two">
+            <summary>
+Player two.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.UserIndex.One">
+            <summary>
+Player one.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.UserIndex.Any">
+            <summary>
+The index of the user is unimportant.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.KeystrokeFlags">
+            <summary>
+Defines flags that indicate the keyboard state at the time of an input event.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.KeystrokeFlags.Repeat">
+            <summary>
+A repeat of a held key.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.KeystrokeFlags.KeyUp">
+            <summary>
+The key was released.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.KeystrokeFlags.KeyDown">
+            <summary>
+The key was pressed.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.KeystrokeFlags.None">
+            <summary>
+No extra keystroke flags.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.GamepadKeyCode">
+            <summary>
+Specifies possible key codes for gamepad buttons.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbDownRight">
+            <summary>
+Pushing the right thumb stick down and to the right.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbDownLeft">
+            <summary>
+Pushing the right thumb stick down and to the left.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbUpRight">
+            <summary>
+Pushing the right thumb stick up and to the right.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbUpLeft">
+            <summary>
+Pushing the right thumb stick up and to the left.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbRight">
+            <summary>
+Pushing the right thumb stick right.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumpLeft">
+            <summary>
+Pushing the right thumb stick left.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbDown">
+            <summary>
+Pushing the right thumb stick down.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbUp">
+            <summary>
+Pushing the right thumb stick up.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbDownRight">
+            <summary>
+Pushing the left thumb stick down and to the right.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbDownLeft">
+            <summary>
+Pushing the left thumb stick down and to the left.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbUpRight">
+            <summary>
+Pushing the left thumb stick up and to the right.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbUpLeft">
+            <summary>
+Pushing the left thumb stick up and to the left.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbRight">
+            <summary>
+Pushing the left thumb stick right.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbLeft">
+            <summary>
+Pushing the left thumb stick left.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbDown">
+            <summary>
+Pushing the left thumb stick down.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbUp">
+            <summary>
+Pushing the left thumb stick up.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbPress">
+            <summary>
+A complete press of the right thumb stick.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbPress">
+            <summary>
+A complete press of the left thumb stick.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.Back">
+            <summary>
+The back button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.Start">
+            <summary>
+The start button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.DPadRight">
+            <summary>
+The Right button on the D-Pad.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.DPadLeft">
+            <summary>
+The Left button on the D-Pad.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.DPadDown">
+            <summary>
+The Down button on the D-Pad.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.DPadUp">
+            <summary>
+The Up button on the D-Pad.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightTrigger">
+            <summary>
+The right trigger button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftTrigger">
+            <summary>
+The left trigger button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftShoulder">
+            <summary>
+The left shoulder button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.RightShoulder">
+            <summary>
+The right shoulder button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.Y">
+            <summary>
+The Y button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.X">
+            <summary>
+The X button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.B">
+            <summary>
+The B button.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.GamepadKeyCode.A">
+            <summary>
+The A button.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.GamepadButtonFlags">
+            <summary>
+Describes a set of pressed buttons on a gamepad.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.Y">
+            <summary>
+The Y button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.X">
+            <summary>
+The X button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.B">
+            <summary>
+The B button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.A">
+            <summary>
+The A button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.RightShoulder">
+            <summary>
+The right shoulder button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.LeftShoulder">
+            <summary>
+The left shoulder button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.RightThumb">
+            <summary>
+The right thumb button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.LeftThumb">
+            <summary>
+The left thumb button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.Back">
+            <summary>
+The back button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.Start">
+            <summary>
+The start button is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.DPadRight">
+            <summary>
+The Right button on the D-Pad is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.DPadLeft">
+            <summary>
+The Left button on the D-Pad is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.DPadDown">
+            <summary>
+The Down button on the D-Pad is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.DPadUp">
+            <summary>
+The Up button on the D-Pad is pressed.
+</summary>
+        </member>
+        <member name="F:&lt;unknown type&gt;.None">
+            <summary>
+No buttons are pressed.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.DeviceSubtype">
+            <summary>
+Specifies possible sub-types for XInput devices.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.DeviceSubtype.FlightStick">
+            <summary>
+The device is a flight stick.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.DeviceSubtype.DancePad">
+            <summary>
+The device is a dancing pad.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.DeviceSubtype.Wheel">
+            <summary>
+The device is a racing wheel.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.DeviceSubtype.Gamepad">
+            <summary>
+The device is a generic gamepad.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.DeviceSubtype.ArcadeStick">
+            <summary>
+The device is an arcade stick.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.DeviceQueryType">
+            <summary>
+Defines the type of devices that will be returned by a query.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.DeviceQueryType.Gamepad">
+            <summary>
+Query for gamepads only.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.DeviceQueryType.Any">
+            <summary>
+Return any and all devices.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.DeviceType">
+            <summary>
+Specifies possible controller types.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.DeviceType.Gamepad">
+            <summary>
+The device is a game controller.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.CapabilityFlags">
+            <summary>
+Specifies capabilities for XInput devices.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.CapabilityFlags.VoiceSupported">
+            <summary>
+The device has an integrated voice device.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.CapabilityFlags.None">
+            <summary>
+No extra capabilities specfied.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.BatteryType">
+            <summary>
+Specifies possible battery types.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryType.Unknown">
+            <summary>
+The device's battery type is unknown.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryType.NickelMetalHydride">
+            <summary>
+The device is using a Nickel Metal Hydride battery.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryType.Alkaline">
+            <summary>
+The device is using an Alkaline battery.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryType.Wired">
+            <summary>
+The device is wired, and therefore does not have a battery.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryType.Disconnected">
+            <summary>
+The device is disconnected, and therefore the battery type cannot be determined.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.BatteryLevel">
+            <summary>
+Specifies possible values indicating the amount of charge remaining in a battery.
+</summary>
+            <remarks>
+These are only valid for wireless, connected devices, with known battery types. The amount of use time remaining depends on the type of device.
+</remarks>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryLevel.Full">
+            <summary>
+The battery is fully charged.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryLevel.Medium">
+            <summary>
+The battery is at a medium charge.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryLevel.Low">
+            <summary>
+The battery is running low.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryLevel.Empty">
+            <summary>
+The battery is completely empty.
+</summary>
+        </member>
+        <member name="T:SlimDX.XInput.BatteryDeviceType">
+            <summary>
+Specifies possible XInput devices that can use batteries.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryDeviceType.Headset">
+            <summary>
+An XInput headset.
+</summary>
+        </member>
+        <member name="F:SlimDX.XInput.BatteryDeviceType.Gamepad">
+            <summary>
+An XInput gamepad.
+</summary>
         </member>
         <member name="P:SlimDX.DXGI.GammaControl.ControlPoints">
             <summary>
@@ -6854,9 +7345,31 @@ Specifies the center point of the sphere.
 A bounding sphere, specified by a center vector and a radius.
 </summary>
         </member>
-        <member name="T:SlimDX.Direct3D9.RenderToEnvironmentMapDescription">
-            <summary>Describes an off-screen render target used by <see cref="T:SlimDX.Direct3D9.RenderToEnvironmentMap" /></summary>.
-<unmanaged>D3DXRTE_DESC</unmanaged></member>
+        <member name="P:SlimDX.DXGI.GammaControlCapabilities.ControlPoints">
+            <summary>
+Gets the list of curve control point positions.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControlCapabilities.MinimumConvertedValue">
+            <summary>
+Gets a value indicating the minimum range of the curve control point positions.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControlCapabilities.MaximumConvertedValue">
+            <summary>
+Gets a value indicating the maximum range of the curve control point positions.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControlCapabilities.IsScaleAndOffsetSupported">
+            <summary>
+Gets a value indicating whether gamma scale and offset transformation is supported.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.GammaControlCapabilities">
+            <summary>
+Describes gamma control capabilities.
+</summary>
+        </member>
         <member name="M:SlimDX.DirectInput.MouseState.GetButtons">
             <summary>
 Gets the state of the mouse buttons.
@@ -9133,53 +9646,6 @@ A DataBox provides supporting information for a <see cref="!:SlimDX.DataStream" 
 data is organized within three dimensions (a box).
 </summary>
         </member>
-        <member name="M:SlimDX.DXGI.Adapter.IsInterfaceSupported(System.Type,System.Int64@)">
-            <summary>
-Determines if a device interface for a graphics component is supported by the adapter.
-</summary>
-            <param name="type">The device interface type.</param>
-            <param name="userModeVersion">Receives the user-mode driver version of the interface.</param>
-            <returns>
-                <c>true</c> if the device interface is supported; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Adapter.IsInterfaceSupported(System.Type)">
-            <summary>
-Determines if a device interface for a graphics component is supported by the adapter.
-</summary>
-            <param name="type">The device interface type.</param>
-            <returns>
-                <c>true</c> if the device interface is supported; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Adapter.GetOutput(System.Int32)">
-            <summary>
-Gets the specified output.
-</summary>
-            <returns>The desired output, or <c>null</c> on failure.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Adapter.GetOutputCount">
-            <summary>
-Gets the number of outputs on the adapter.
-</summary>
-            <returns>The number of outputs on the adapter.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Adapter.FromPointer(System.IntPtr)">
-            <summary>
-Constructs a new instance of the <see cref="T:SlimDX.DXGI.Adapter" /> class using the specified pointer to a
-previously constructed unmanaged object.
-</summary>
-            <param name="pointer">The unmanaged IDXGIAdapter pointer.</param>
-            <returns>The newly constructed object.</returns>
-        </member>
-        <member name="P:SlimDX.DXGI.Adapter.Description">
-            <summary>
-Gets the adapter's description.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.Adapter">
-            <summary>
-A display subsystem (one or more GPUs, DACs, and video memory).
-</summary>
-        </member>
         <member name="M:SlimDX.Direct3D10.Debug.ValidatePipelineState">
             <summary>
 Validates the current pipeline state.
@@ -9420,6 +9886,32 @@ Occurs when the desired controller is not connected to the system.
         <member name="T:SlimDX.XInput.ResultCode">
             <summary>Defines error result codes that are returned by XInput functions.</summary>
         </member>
+        <member name="M:SlimDX.Direct3D9.ImageInformation.FromStream(System.IO.Stream)">
+            <summary>
+Function to extract image information from a stream.
+</summary>
+            <param name="stream">Stream containing the image.</param>
+            <returns>Information about the image.</returns>
+            <summary>
+Function to extract image information from a stream.
+</summary>
+            <param name="stream">Stream containing the image.</param>
+            <returns>Information about the image.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D9.ImageInformation.FromStream(System.IO.Stream,System.Boolean)">
+            <summary>
+Function to extract image information from a stream.
+</summary>
+            <param name="stream">Stream containing the image.</param>
+            <param name="peek">TRUE to preserve the stream position, FALSE will move the stream pointer.</param>
+            <returns>Information about the image.</returns>
+            <summary>
+Function to extract image information from a stream.
+</summary>
+            <param name="stream">Stream containing the image.</param>
+            <param name="peek">TRUE to preserve the stream position, FALSE will move the stream pointer.</param>
+            <returns>Information about the image.</returns>
+        </member>
         <member name="P:SlimDX.Direct3D10.Resource.Dimension">
             <summary>
 Gets the resource's dimension (type).
@@ -9452,37 +9944,6 @@ Constructs a DeviceChild from an unmanaged pointer.
             <summary>
 An object that is bound to a Device.
 </summary>
-        </member>
-        <member name="T:SlimDX.DXGI.WindowAssociationFlags">
-            <summary>
-Specifies values which control a swap chain's window association behavior.
-</summary>
-        </member>
-        <member name="M:SlimDX.Direct3D9.ImageInformation.FromStream(System.IO.Stream)">
-            <summary>
-Function to extract image information from a stream.
-</summary>
-            <param name="stream">Stream containing the image.</param>
-            <returns>Information about the image.</returns>
-            <summary>
-Function to extract image information from a stream.
-</summary>
-            <param name="stream">Stream containing the image.</param>
-            <returns>Information about the image.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D9.ImageInformation.FromStream(System.IO.Stream,System.Boolean)">
-            <summary>
-Function to extract image information from a stream.
-</summary>
-            <param name="stream">Stream containing the image.</param>
-            <param name="peek">TRUE to preserve the stream position, FALSE will move the stream pointer.</param>
-            <returns>Information about the image.</returns>
-            <summary>
-Function to extract image information from a stream.
-</summary>
-            <param name="stream">Stream containing the image.</param>
-            <param name="peek">TRUE to preserve the stream position, FALSE will move the stream pointer.</param>
-            <returns>Information about the image.</returns>
         </member>
         <member name="T:SlimDX.Direct3D9.Font">
             <summary>Encapsulates the textures and resources needed to render a specific font on a specific device.</summary>
@@ -9539,512 +10000,56 @@ Initializes a new instance of the <see cref="T:SlimDX.Direct3D9.Direct3D9Excepti
 Represents errors that occur in the XInput subsystem.
 </summary>
         </member>
-        <member name="M:SlimDX.XInput.BatteryInformation.Equals(SlimDX.XInput.BatteryInformation@,SlimDX.XInput.BatteryInformation@)">
+        <member name="T:SlimDX.DXGI.WindowAssociationFlags">
             <summary>
-Determines whether the specified object instances are considered equal. 
+Specifies values which control a swap chain's window association behavior.
 </summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
+        </member>
+        <member name="M:SlimDX.DXGI.Adapter.IsInterfaceSupported(System.Type,System.Int64@)">
+            <summary>
+Determines if a device interface for a graphics component is supported by the adapter.
+</summary>
+            <param name="type">The device interface type.</param>
+            <param name="userModeVersion">Receives the user-mode driver version of the interface.</param>
             <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+                <c>true</c> if the device interface is supported; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.XInput.BatteryInformation.Equals(SlimDX.XInput.BatteryInformation)">
+        <member name="M:SlimDX.DXGI.Adapter.IsInterfaceSupported(System.Type)">
             <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
+Determines if a device interface for a graphics component is supported by the adapter.
 </summary>
-            <param name="other">Object to make the comparison with.</param>
+            <param name="type">The device interface type.</param>
             <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+                <c>true</c> if the device interface is supported; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.XInput.BatteryInformation.Equals(System.Object)">
+        <member name="M:SlimDX.DXGI.Adapter.GetOutput(System.Int32)">
             <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
+Gets the specified output.
 </summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+            <returns>The desired output, or <c>null</c> on failure.</returns>
         </member>
-        <member name="M:SlimDX.XInput.BatteryInformation.GetHashCode">
+        <member name="M:SlimDX.DXGI.Adapter.GetOutputCount">
             <summary>
-Returns the hash code for this instance.
+Gets the number of outputs on the adapter.
 </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
+            <returns>The number of outputs on the adapter.</returns>
         </member>
-        <member name="M:SlimDX.XInput.BatteryInformation.op_Inequality(SlimDX.XInput.BatteryInformation,SlimDX.XInput.BatteryInformation)">
+        <member name="M:SlimDX.DXGI.Adapter.FromPointer(System.IntPtr)">
             <summary>
-Tests for inequality between two objects.
+Constructs a new instance of the <see cref="T:SlimDX.DXGI.Adapter" /> class using the specified pointer to a
+previously constructed unmanaged object.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+            <param name="pointer">The unmanaged IDXGIAdapter pointer.</param>
+            <returns>The newly constructed object.</returns>
         </member>
-        <member name="M:SlimDX.XInput.BatteryInformation.op_Equality(SlimDX.XInput.BatteryInformation,SlimDX.XInput.BatteryInformation)">
+        <member name="P:SlimDX.DXGI.Adapter.Description">
             <summary>
-Tests for equality between two objects.
+Gets the adapter's description.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="P:SlimDX.XInput.BatteryInformation.Level">
+        <member name="T:SlimDX.DXGI.Adapter">
             <summary>
-Gets the relative charge level of the battery.
-</summary>
-        </member>
-        <member name="P:SlimDX.XInput.BatteryInformation.Type">
-            <summary>
-Gets the type of the battery.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.BatteryInformation">
-            <summary>
-Contains information about the battery of an XInput device.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.UserIndex">
-            <summary>
-Specifies the index of a user's controller.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.UserIndex.Four">
-            <summary>
-Player four.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.UserIndex.Three">
-            <summary>
-Player three.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.UserIndex.Two">
-            <summary>
-Player two.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.UserIndex.One">
-            <summary>
-Player one.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.UserIndex.Any">
-            <summary>
-The index of the user is unimportant.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.KeystrokeFlags">
-            <summary>
-Defines flags that indicate the keyboard state at the time of an input event.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.KeystrokeFlags.Repeat">
-            <summary>
-A repeat of a held key.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.KeystrokeFlags.KeyUp">
-            <summary>
-The key was released.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.KeystrokeFlags.KeyDown">
-            <summary>
-The key was pressed.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.KeystrokeFlags.None">
-            <summary>
-No extra keystroke flags.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.GamepadKeyCode">
-            <summary>
-Specifies possible key codes for gamepad buttons.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbDownRight">
-            <summary>
-Pushing the right thumb stick down and to the right.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbDownLeft">
-            <summary>
-Pushing the right thumb stick down and to the left.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbUpRight">
-            <summary>
-Pushing the right thumb stick up and to the right.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbUpLeft">
-            <summary>
-Pushing the right thumb stick up and to the left.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbRight">
-            <summary>
-Pushing the right thumb stick right.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumpLeft">
-            <summary>
-Pushing the right thumb stick left.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbDown">
-            <summary>
-Pushing the right thumb stick down.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbUp">
-            <summary>
-Pushing the right thumb stick up.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbDownRight">
-            <summary>
-Pushing the left thumb stick down and to the right.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbDownLeft">
-            <summary>
-Pushing the left thumb stick down and to the left.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbUpRight">
-            <summary>
-Pushing the left thumb stick up and to the right.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbUpLeft">
-            <summary>
-Pushing the left thumb stick up and to the left.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbRight">
-            <summary>
-Pushing the left thumb stick right.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbLeft">
-            <summary>
-Pushing the left thumb stick left.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbDown">
-            <summary>
-Pushing the left thumb stick down.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbUp">
-            <summary>
-Pushing the left thumb stick up.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightThumbPress">
-            <summary>
-A complete press of the right thumb stick.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftThumbPress">
-            <summary>
-A complete press of the left thumb stick.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.Back">
-            <summary>
-The back button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.Start">
-            <summary>
-The start button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.DPadRight">
-            <summary>
-The Right button on the D-Pad.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.DPadLeft">
-            <summary>
-The Left button on the D-Pad.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.DPadDown">
-            <summary>
-The Down button on the D-Pad.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.DPadUp">
-            <summary>
-The Up button on the D-Pad.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightTrigger">
-            <summary>
-The right trigger button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftTrigger">
-            <summary>
-The left trigger button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.LeftShoulder">
-            <summary>
-The left shoulder button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.RightShoulder">
-            <summary>
-The right shoulder button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.Y">
-            <summary>
-The Y button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.X">
-            <summary>
-The X button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.B">
-            <summary>
-The B button.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.GamepadKeyCode.A">
-            <summary>
-The A button.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.GamepadButtonFlags">
-            <summary>
-Describes a set of pressed buttons on a gamepad.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.Y">
-            <summary>
-The Y button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.X">
-            <summary>
-The X button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.B">
-            <summary>
-The B button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.A">
-            <summary>
-The A button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.RightShoulder">
-            <summary>
-The right shoulder button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.LeftShoulder">
-            <summary>
-The left shoulder button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.RightThumb">
-            <summary>
-The right thumb button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.LeftThumb">
-            <summary>
-The left thumb button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.Back">
-            <summary>
-The back button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.Start">
-            <summary>
-The start button is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.DPadRight">
-            <summary>
-The Right button on the D-Pad is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.DPadLeft">
-            <summary>
-The Left button on the D-Pad is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.DPadDown">
-            <summary>
-The Down button on the D-Pad is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.DPadUp">
-            <summary>
-The Up button on the D-Pad is pressed.
-</summary>
-        </member>
-        <member name="F:&lt;unknown type&gt;.None">
-            <summary>
-No buttons are pressed.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.DeviceSubtype">
-            <summary>
-Specifies possible sub-types for XInput devices.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.DeviceSubtype.FlightStick">
-            <summary>
-The device is a flight stick.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.DeviceSubtype.DancePad">
-            <summary>
-The device is a dancing pad.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.DeviceSubtype.Wheel">
-            <summary>
-The device is a racing wheel.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.DeviceSubtype.Gamepad">
-            <summary>
-The device is a generic gamepad.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.DeviceSubtype.ArcadeStick">
-            <summary>
-The device is an arcade stick.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.DeviceQueryType">
-            <summary>
-Defines the type of devices that will be returned by a query.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.DeviceQueryType.Gamepad">
-            <summary>
-Query for gamepads only.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.DeviceQueryType.Any">
-            <summary>
-Return any and all devices.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.DeviceType">
-            <summary>
-Specifies possible controller types.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.DeviceType.Gamepad">
-            <summary>
-The device is a game controller.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.CapabilityFlags">
-            <summary>
-Specifies capabilities for XInput devices.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.CapabilityFlags.VoiceSupported">
-            <summary>
-The device has an integrated voice device.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.CapabilityFlags.None">
-            <summary>
-No extra capabilities specfied.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.BatteryType">
-            <summary>
-Specifies possible battery types.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryType.Unknown">
-            <summary>
-The device's battery type is unknown.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryType.NickelMetalHydride">
-            <summary>
-The device is using a Nickel Metal Hydride battery.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryType.Alkaline">
-            <summary>
-The device is using an Alkaline battery.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryType.Wired">
-            <summary>
-The device is wired, and therefore does not have a battery.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryType.Disconnected">
-            <summary>
-The device is disconnected, and therefore the battery type cannot be determined.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.BatteryLevel">
-            <summary>
-Specifies possible values indicating the amount of charge remaining in a battery.
-</summary>
-            <remarks>
-These are only valid for wireless, connected devices, with known battery types. The amount of use time remaining depends on the type of device.
-</remarks>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryLevel.Full">
-            <summary>
-The battery is fully charged.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryLevel.Medium">
-            <summary>
-The battery is at a medium charge.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryLevel.Low">
-            <summary>
-The battery is running low.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryLevel.Empty">
-            <summary>
-The battery is completely empty.
-</summary>
-        </member>
-        <member name="T:SlimDX.XInput.BatteryDeviceType">
-            <summary>
-Specifies possible XInput devices that can use batteries.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryDeviceType.Headset">
-            <summary>
-An XInput headset.
-</summary>
-        </member>
-        <member name="F:SlimDX.XInput.BatteryDeviceType.Gamepad">
-            <summary>
-An XInput gamepad.
+A display subsystem (one or more GPUs, DACs, and video memory).
 </summary>
         </member>
         <member name="M:SlimDX.Vector2.Equals(SlimDX.Vector2@,SlimDX.Vector2@)">
@@ -16841,11 +16846,6 @@ No performance options specified.
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawIndexedPrimitives(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawUserPrimitives``1(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,``0[])'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.RestoreVertexStream(System.Int32)'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Quaternion.SquadSetup(SlimDX.Quaternion,SlimDX.Quaternion,SlimDX.Quaternion,SlimDX.Quaternion)'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.SetPaletteEntries(System.Int32,SlimDX.Direct3D9.PaletteEntry[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawIndexedPrimitives(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawUserPrimitives``1(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.RestoreVertexStream(System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnLostDevice'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnResetDevice'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.SetPaletteEntries(System.Int32,SlimDX.Direct3D9.PaletteEntry[])'. -->
@@ -16919,6 +16919,12 @@ No performance options specified.
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawIndexedPrimitives(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawUserPrimitives``1(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,``0[])'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.RestoreVertexStream(System.Int32)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnLostDevice'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnResetDevice'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.SetPaletteEntries(System.Int32,SlimDX.Direct3D9.PaletteEntry[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawIndexedPrimitives(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawUserPrimitives``1(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.RestoreVertexStream(System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.SetPaletteEntries(System.Int32,SlimDX.Direct3D9.PaletteEntry[])'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawIndexedPrimitives(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawUserPrimitives``1(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,``0[])'. -->
@@ -16950,6 +16956,11 @@ No performance options specified.
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.RestoreVertexStream(System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnLostDevice'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnResetDevice'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Quaternion.SquadSetup(SlimDX.Quaternion,SlimDX.Quaternion,SlimDX.Quaternion,SlimDX.Quaternion)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.SetPaletteEntries(System.Int32,SlimDX.Direct3D9.PaletteEntry[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawIndexedPrimitives(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawUserPrimitives``1(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.RestoreVertexStream(System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Quaternion.SquadSetup(SlimDX.Quaternion,SlimDX.Quaternion,SlimDX.Quaternion,SlimDX.Quaternion)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Rational.#ctor(System.Int32,System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.SetPaletteEntries(System.Int32,SlimDX.Direct3D9.PaletteEntry[])'. -->
@@ -17030,12 +17041,6 @@ No performance options specified.
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnResetDevice'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Performance.GetStatus'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Performance.SetOptions(SlimDX.PerformanceOptions)'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.SetPaletteEntries(System.Int32,SlimDX.Direct3D9.PaletteEntry[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawIndexedPrimitives(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawUserPrimitives``1(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.RestoreVertexStream(System.Int32)'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnLostDevice'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.IResettable.OnResetDevice'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.SetPaletteEntries(System.Int32,SlimDX.Direct3D9.PaletteEntry[])'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawIndexedPrimitives(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:SlimDX.Direct3D9.Device.DrawUserPrimitives``1(SlimDX.Direct3D9.PrimitiveType,System.Int32,System.Int32,``0[])'. -->
