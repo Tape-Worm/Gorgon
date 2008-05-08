@@ -164,7 +164,7 @@ namespace GorgonLibrary.Internal
 		/// <returns>A data stream for a locked buffer.</returns>
 		protected override SlimDX.DataStream GetDataStream(SlimDX.Direct3D9.LockFlags lockFlags)
 		{
-			return _indexBuffer.Lock(LockOffset, LockLength, lockFlags);
+			return _indexBuffer.Lock(LockOffsetInBytes, LockSizeInBytes, lockFlags);
 		}
 
 		/// <summary>

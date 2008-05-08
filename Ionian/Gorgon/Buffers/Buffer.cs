@@ -39,13 +39,29 @@ namespace GorgonLibrary.Internal
 		#region Variables.
 		private int _size;							// Size of the buffer in bytes.
 		private BufferUsages _usage;				// Usage flags for this buffer (these may or may not apply depending on the buffer type).
-		private int _lockStart;						// Offset of locked data in the buffer.
-		private int _lockSize;						// Amount of data locked.
 		private bool _locked;						// Flag to indicate that the buffer is locked.
 		private DX.DataStream _lockStream = null;	// Stream containing locked data.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the size of the lock in bytes.
+		/// </summary>
+		protected int LockOffsetInBytes
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the size of the lock in bytes.
+		/// </summary>
+		protected int LockSizeInBytes
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to check and see if a buffer is locked or not.
 		/// </summary>
@@ -90,25 +106,19 @@ namespace GorgonLibrary.Internal
 		}
 
 		/// <summary>
-		/// Property to return the offset of the lock in bytes.
+		/// Property to return the offset of the lock in units of the buffers element size.
 		/// </summary>
-		public virtual int LockOffset
+		public abstract int LockOffset
 		{
-			get
-			{
-				return _lockStart;
-			}
+			get;
 		}
 
 		/// <summary>
-		/// Property to return the length of the locked area in bytes.
+		/// Property to return the length of the locked in units of the buffer element size.
 		/// </summary>
-		public virtual int LockLength
+		public abstract int LockLength
 		{
-			get
-			{
-				return _lockSize;
-			}
+			get;
 		}
 		#endregion
 
@@ -141,8 +151,8 @@ namespace GorgonLibrary.Internal
 				if (IsLocked)
 					Unlock();
 
-				_lockStart = offset;
-				_lockSize = length;
+				LockOffsetInBytes = offset;
+				LockSizeInBytes = length;
 
 				_lockStream = GetDataStream(Converter.Convert(flags));
 
@@ -150,8 +160,8 @@ namespace GorgonLibrary.Internal
 			}
 			catch (Exception ex)
 			{
-				_lockStart = 0;
-				_lockSize = 0;
+				LockOffsetInBytes = 0;
+				LockSizeInBytes = 0;
 				throw new CannotLockException(GetType(), ex);
 			}
 		}
@@ -300,8 +310,8 @@ namespace GorgonLibrary.Internal
 			_lockStream.Dispose();
 			_lockStream = null;
 
-			_lockStart = -1;
-			_lockSize = 0;
+			LockOffsetInBytes = -1;
+			LockSizeInBytes = 0;
 			_locked = false;
 		}
 		#endregion
@@ -313,7 +323,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="bufferusage">Usage flags for the buffer.</param>
 		protected DataBuffer(BufferUsages bufferusage)
 		{
-			_lockStart = -1;
+			LockOffsetInBytes = -1;
 			_usage = bufferusage;
 		}
 		#endregion

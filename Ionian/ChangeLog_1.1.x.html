@@ -105,6 +105,11 @@
 	<pre>
 May 8/2008 - Version - Current
 ================================
+* Made some fixes to the vertex/index buffer objects.  This was due to some recent changes
+  in SlimDX which does some validation on data being sent to the buffers.  This validation
+  wasn't present before and thus Gorgon's original vertex/index buffer code got away with 
+  doing its updates incorrectly (i.e. SlimDX is right, Gorgon is wrong in its approach).
+
 * In keeping with the whole .NET 3.5 thing, I've made use of LINQ in the sprite editor.
   Holy crap it is epic.  I reduced a bunch of loops down to simple 1-3 line pieces of
   code with this stuff, it's wicked.
