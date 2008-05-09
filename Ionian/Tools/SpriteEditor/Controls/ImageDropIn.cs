@@ -297,6 +297,8 @@ namespace GorgonLibrary.Graphics.Tools
 			string spriteName = string.Empty;			// Selected frame sprite name.
 			KeyImage key = null;						// Key that we're editing/creating.
 
+			base.SetKeyFrame();
+
 			if (_selectedSprite == null)
 				return;
 			

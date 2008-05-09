@@ -133,6 +133,15 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Property to set or return whether the track is empty.
+		/// </summary>
+		public bool IsEmpty
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the current track.
 		/// </summary>
 		public Track CurrentTrack
@@ -425,9 +434,9 @@ namespace GorgonLibrary.Graphics.Tools
 			// Get all numeric fields.
 			var controlCount = (from NumericUpDown control in splitAnimation.Panel2.Controls.OfType<NumericUpDown>()
 						   where (control != null) && (control.Focused)
-						   select control).Count();
+						   select control).Any();
 
-			if ((controlCount > 0) && ((keyData == Keys.Enter) || (keyData == (Keys.LButton | Keys.MButton | Keys.Back))) && (NumericFieldEnterPressed()))
+			if ((controlCount) && ((keyData == Keys.Enter) || (keyData == (Keys.LButton | Keys.MButton | Keys.Back))) && (NumericFieldEnterPressed()))
 				return true;
 
 			return base.ProcessDialogKey(keyData);
@@ -507,6 +516,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// </summary>
 		protected virtual void SetKeyFrame()
 		{
+			IsEmpty = false;
 		}
 
 		/// <summary>
@@ -589,6 +599,10 @@ namespace GorgonLibrary.Graphics.Tools
 				_animation.AnimationState = AnimationState.Playing;
 
 				ValidateForm();
+
+				// If we have keys, we're not empty.
+				if (CurrentTrack.KeyCount > 0)
+					IsEmpty = false;
 			}
 		}
 
@@ -627,6 +641,10 @@ namespace GorgonLibrary.Graphics.Tools
 				_animation.AnimationState = AnimationState.Stopped;
 				_animation.AnimationStopped -= new System.EventHandler(_animation_AnimationStopped);
 				_animation.Reset();
+
+				// If the track is empty, remove the default keys.
+				if ((CurrentTrack != null) && (IsEmpty) && (CurrentTrack.KeyCount > 0))
+					CurrentTrack.ClearKeys();					
 			}
 
 			Gorgon.Idle -= new FrameEventHandler(Gorgon_Idle);
@@ -648,6 +666,9 @@ namespace GorgonLibrary.Graphics.Tools
 		public AnimationDropIn()
 		{
 			InitializeComponent();
+
+			// Default to empty.
+			IsEmpty = true;
 		}
 		#endregion
 	}

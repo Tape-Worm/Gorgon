@@ -163,6 +163,7 @@ namespace GorgonLibrary.Graphics.Tools
 		protected override void SetKeyFrame()
 		{
 			KeyColor key = null;						// Key that we're editing/creating.
+			base.SetKeyFrame();
 
 			// Ensure that we have the current value.
 			numericA_ValueChanged(this, EventArgs.Empty);

@@ -144,7 +144,15 @@ namespace GorgonLibrary.Graphics.Tools
 			comboTrack.Items.Clear();
 			if (_animation.Tracks.Count > 0)
 			{
-				foreach (Track track in _animation.Tracks)
+				// Only add the width & height track if we have no image keys.
+				// This is an ugly hack, but it'll do for the time being.
+				// TODO: Consider putting an exclusion attribute on the properties.
+				var tracks = from track in _animation.Tracks
+							 where ((_animation.Tracks["Image"].KeyCount > 0) && (string.Compare(track.Name, "height", true) != 0) 
+									&& (string.Compare(track.Name, "width", true) != 0) && (string.Compare(track.Name, "size", true) != 0)) 
+									|| (_animation.Tracks["Image"].KeyCount == 0)
+							 select track;
+				foreach (Track track in tracks)
 					comboTrack.Items.Add(track.Name);
 			}
 		}
@@ -196,10 +204,21 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="dropIn">Animation drop-in to add.</param>
 		/// <param name="track">Track that is bound to this editor.</param>
 		private void AddDropIn(AnimationDropIn dropIn, Track track)
-		{	
+		{
+			string lastSetting = string.Empty;		// Last track name.
+
 			// Remove the control.
 			if (splitTrack.Panel1.Controls.Count > 0)
 				splitTrack.Panel1.Controls[0].Dispose();
+
+			comboTrack.SelectedIndexChanged -= new EventHandler(comboTrack_SelectedIndexChanged);
+			lastSetting = comboTrack.Text;
+			FillTrackCombo();
+			comboTrack.Text = lastSetting;
+			if (comboTrack.Text == string.Empty)
+				comboTrack.Text = "Image";
+			comboTrack.SelectedIndexChanged += new EventHandler(comboTrack_SelectedIndexChanged);
+
 			dropIn.CurrentTrack = track;
 			splitTrack.Panel1.Controls.Add(dropIn);
 			dropIn.Dock = DockStyle.Fill;
