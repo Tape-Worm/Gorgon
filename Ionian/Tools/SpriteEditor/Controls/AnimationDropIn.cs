@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Handles the Click event of the buttonSetKeyFrame control.
 		/// </summary>
@@ -423,10 +423,9 @@ namespace GorgonLibrary.Graphics.Tools
 		protected override bool ProcessDialogKey(Keys keyData)
 		{
 			// Get all numeric fields.
-			var controlCount = (from Control control in splitAnimation.Panel2.Controls
-						   let numericControl = control as NumericUpDown
-						   where (numericControl != null) && (numericControl.Focused)
-						   select numericControl).Count();
+			var controlCount = (from NumericUpDown control in splitAnimation.Panel2.Controls.OfType<NumericUpDown>()
+						   where (control != null) && (control.Focused)
+						   select control).Count();
 
 			if ((controlCount > 0) && ((keyData == Keys.Enter) || (keyData == (Keys.LButton | Keys.MButton | Keys.Back))) && (NumericFieldEnterPressed()))
 				return true;
