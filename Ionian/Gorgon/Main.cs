@@ -1233,6 +1233,10 @@ namespace GorgonLibrary
 #else
             DX.Configuration.EnableObjectTracking = false;
 #endif
+			// We don't need exceptions with these errors.
+			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceLost, SlimDX.ResultWatchFlags.AlwaysIgnore);
+			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceNotReset, SlimDX.ResultWatchFlags.AlwaysIgnore);
+
 			D3D9.Direct3D.Initialize();
 			D3D9.Direct3D.CheckWhql = checkDriverWHQL;
 

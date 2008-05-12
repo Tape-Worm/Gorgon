@@ -270,9 +270,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to perform a flip of the D3D buffers.
 		/// </summary>
-		protected internal virtual void D3DFlip()
+		/// <returns>A result code if the device is in a lost state.</returns>
+		protected internal virtual DX.Result D3DFlip()
 		{
-			_swapChain.Present(D3D9.Present.DoNotWait);
+			return _swapChain.Present(D3D9.Present.DoNotWait);
 		}
 
 		/// <summary>

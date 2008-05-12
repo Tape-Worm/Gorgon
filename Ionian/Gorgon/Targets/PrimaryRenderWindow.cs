@@ -342,90 +342,74 @@ namespace GorgonLibrary.Graphics
 			// Force required resources to free.
 			Gorgon.OnDeviceLost();
 
-			try
+			// Do not change parameters while minimized.
+			if (_ownerForm.WindowState != FormWindowState.Minimized)
+				SetPresentParams(_requestedVideoMode, _windowedMode, resize, resizewidth, resizeheight, false);
+
+			// Reset device.
+			DX.Result result = _device.Reset(_presentParameters);
+			if ((result == D3D9.ResultCode.DeviceLost) || (result == D3D9.ResultCode.DeviceNotReset))
+				return;
+
+			// Device was successfully reset.
+			_deviceWasLost = false;
+
+			// Get the current width & height.
+			SetDimensions(_currentVideoMode.Width, _currentVideoMode.Height);
+
+			// Get the color buffer.				
+			SetColorBuffer(_device.GetRenderTarget(0));
+
+			// Get the depth buffer.
+			if (_presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
+				SetDepthBuffer(_device.DepthStencilSurface);
+			else
+				SetDepthBuffer(null);
+
+			// Set the proper window dressing if windowed.
+			if ((_presentParameters.Windowed) && (_owner is Form) && (!resize))
 			{
-				// Do not change parameters while minimized.
-				if (_ownerForm.WindowState != FormWindowState.Minimized)
-					SetPresentParams(_requestedVideoMode, _windowedMode, resize, resizewidth, resizeheight, false);
-
-				// Reset device.
-				_device.Reset(_presentParameters);
-
-				// Device was successfully reset.
-				_deviceWasLost = false;
-
-				// Get the current width & height.
-				SetDimensions(_currentVideoMode.Width, _currentVideoMode.Height);
-
-				// Get the color buffer.				
-				SetColorBuffer(_device.GetRenderTarget(0));
-
-				// Get the depth buffer.
-				if (_presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
-					SetDepthBuffer(_device.DepthStencilSurface);
-				else
-					SetDepthBuffer(null);
-
-				// Set the proper window dressing if windowed.
-				if ((_presentParameters.Windowed) && (_owner is Form) && (!resize))
-				{
-					_ownerForm.Hide();
-					_ownerForm = Gorgon.Screen.OwnerForm;
-					_ownerForm.MinimizeBox = _formSettings.MinimizeBox;
-					_ownerForm.MaximizeBox = _formSettings.MaximizeBox;
-					_ownerForm.ControlBox = _formSettings.ControlBox;
-					_ownerForm.TopMost = _formSettings.TopMost;
-					_ownerForm.FormBorderStyle = _formSettings.Style;
-					_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
-					_ownerForm.Show();
-				}
-
-				Gorgon.Log.Print("RenderWindow", "Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", LoggingLevel.Verbose, Gorgon.Screen.Mode.Width, Gorgon.Screen.Mode.Height, Gorgon.Screen.Mode.Bpp, Gorgon.Screen.Mode.RefreshRate, Gorgon.Screen.Mode.Format.ToString());
-				Gorgon.Log.Print("RenderWindow", "Device reset.", LoggingLevel.Verbose);
-
-				Gorgon.Renderer.RenderStates.CheckForWBuffer(Converter.ConvertDepthFormat(_presentParameters.AutoDepthStencilFormat));
-
-				// Reset render states to their previous values.
-				Gorgon.Renderer.RenderStates.SetStates();
-
-				// Set default image layer states.
-				for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-					Gorgon.Renderer.ImageLayerStates[i].SetStates();
-			}
-			catch (D3D9.Direct3D9Exception d3dEx)
-			{
-                if (d3dEx.ResultCode == D3D9.ResultCode.DeviceLost)
-                {
-                    // If we lose the device for some reason, flag it so on the next frame we can check for
-                    // device availability.
-                    _deviceWasLost = true;
-                }
-                else
-                    throw d3dEx;
-			}
-			catch (Exception ex)
-			{
-				throw new DeviceCannotResetException(ex);
+				_ownerForm.Hide();
+				_ownerForm = Gorgon.Screen.OwnerForm;
+				_ownerForm.MinimizeBox = _formSettings.MinimizeBox;
+				_ownerForm.MaximizeBox = _formSettings.MaximizeBox;
+				_ownerForm.ControlBox = _formSettings.ControlBox;
+				_ownerForm.TopMost = _formSettings.TopMost;
+				_ownerForm.FormBorderStyle = _formSettings.Style;
+				_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
+				_ownerForm.Show();
 			}
 
-			if (!_deviceWasLost)
-			{
-				// Set the view matrix.
-				_device.SetTransform(D3D9.TransformState.View, DX.Matrix.Identity);
+			Gorgon.Log.Print("RenderWindow", "Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", LoggingLevel.Verbose, Gorgon.Screen.Mode.Width, Gorgon.Screen.Mode.Height, Gorgon.Screen.Mode.Bpp, Gorgon.Screen.Mode.RefreshRate, Gorgon.Screen.Mode.Format.ToString());
+			Gorgon.Log.Print("RenderWindow", "Device reset.", LoggingLevel.Verbose);
 
-				// Restore device state if reset was successful.
-				Gorgon.OnDeviceReset();
+			Gorgon.Renderer.RenderStates.CheckForWBuffer(Converter.ConvertDepthFormat(_presentParameters.AutoDepthStencilFormat));
 
-				_allowResizeEvent = true;
-			}
+			// Reset render states to their previous values.
+			Gorgon.Renderer.RenderStates.SetStates();
+
+			// Set default image layer states.
+			for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
+				Gorgon.Renderer.ImageLayerStates[i].SetStates();
+
+			// Set the view matrix.
+			_device.SetTransform(D3D9.TransformState.View, DX.Matrix.Identity);
+
+			// Restore device state if reset was successful.
+			Gorgon.OnDeviceReset();
+
+			_allowResizeEvent = true;
 		}
 
 		/// <summary>
 		/// Function to perform a flip of the D3D buffers.
 		/// </summary>
-		protected internal override void D3DFlip()
+		/// <returns>
+		/// A result code if the device is in a lost state.
+		/// </returns>
+		protected internal override DX.Result D3DFlip()
 		{
-            _device.Present();
+            return _device.Present();
 		}
 
 		/// <summary>

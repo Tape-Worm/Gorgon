@@ -486,30 +486,17 @@ namespace GorgonLibrary.Graphics
 			if (Gorgon.Screen == null)
 				throw new DeviceNotValidException();
 
-			try
+			// Attempt to reset the device if it's in a lost state.
+			if (Gorgon.Screen.DeviceNotReset)
 			{
-				// Attempt to reset the device if it's in a lost state.
-				if (Gorgon.Screen.DeviceNotReset)
-				{
-					Gorgon.Screen.ResetLostDevice();
-					return;
-				}
-
-				target = Gorgon.CurrentRenderTarget as RenderWindow;
-
-				if (target != null)
-					target.D3DFlip();
+				Gorgon.Screen.ResetLostDevice();
+				return;
 			}
-			catch (D3D9.Direct3D9Exception d3dEx)
-			{
-                if (d3dEx.ResultCode == D3D9.ResultCode.DeviceLost)
-                {
-                    if (!Gorgon.Screen.DeviceNotReset)
-                        Gorgon.Screen.ResetLostDevice();
-                }
-                else
-                    throw d3dEx;               
-			}
+
+			target = Gorgon.CurrentRenderTarget as RenderWindow;
+
+			if ((target != null) && (target.D3DFlip() == D3D9.ResultCode.DeviceLost) && (!Gorgon.Screen.DeviceNotReset))
+				Gorgon.Screen.ResetLostDevice();
 		}
 
 		/// <summary>

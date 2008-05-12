@@ -103,8 +103,11 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-May 8/2008 - Version - Current
+May 11/2008 - Version - Current
 ================================
+* Updated the device lost/reset code to no longer rely on exceptions, and instead use the
+  result codes returned by SlimDX.
+  
 * Made some fixes to the vertex/index buffer objects.  This was due to some recent changes
   in SlimDX which does some validation on data being sent to the buffers.  This validation
   wasn't present before and thus Gorgon's original vertex/index buffer code got away with 
