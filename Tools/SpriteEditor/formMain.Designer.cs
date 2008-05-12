@@ -236,8 +236,8 @@ namespace GorgonLibrary.Graphics.Tools
 			this.panelGorgon.Name = "panelGorgon";
 			this.panelGorgon.Size = new System.Drawing.Size(484, 368);
 			this.panelGorgon.TabIndex = 18;
-			this.panelGorgon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelGorgon_MouseDown);
 			this.panelGorgon.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelGorgon_MouseMove);
+			this.panelGorgon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelGorgon_MouseDown);
 			this.panelGorgon.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelGorgon_MouseUp);
 			// 
 			// panelVScroll
@@ -269,8 +269,8 @@ namespace GorgonLibrary.Graphics.Tools
 			this.splitRenderTargetManager.Size = new System.Drawing.Size(500, 4);
 			this.splitRenderTargetManager.TabIndex = 20;
 			this.splitRenderTargetManager.TabStop = false;
-			this.splitRenderTargetManager.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitRenderTargetManager_SplitterMoved);
 			this.splitRenderTargetManager.SplitterMoving += new System.Windows.Forms.SplitterEventHandler(this.splitRenderTargetManager_SplitterMoving);
+			this.splitRenderTargetManager.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitRenderTargetManager_SplitterMoved);
 			// 
 			// panelRenderTargetManager
 			// 
@@ -291,8 +291,8 @@ namespace GorgonLibrary.Graphics.Tools
 			this.splitSpriteManager.Size = new System.Drawing.Size(5, 510);
 			this.splitSpriteManager.TabIndex = 7;
 			this.splitSpriteManager.TabStop = false;
-			this.splitSpriteManager.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitSpriteManager_SplitterMoved);
 			this.splitSpriteManager.SplitterMoving += new System.Windows.Forms.SplitterEventHandler(this.splitSpriteManager_SplitterMoving);
+			this.splitSpriteManager.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitSpriteManager_SplitterMoved);
 			// 
 			// panelSpriteManager
 			// 
@@ -310,8 +310,8 @@ namespace GorgonLibrary.Graphics.Tools
 			this.splitImageManager.Size = new System.Drawing.Size(4, 510);
 			this.splitImageManager.TabIndex = 18;
 			this.splitImageManager.TabStop = false;
-			this.splitImageManager.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitImageManager_SplitterMoved);
 			this.splitImageManager.SplitterMoving += new System.Windows.Forms.SplitterEventHandler(this.splitImageManager_SplitterMoving);
+			this.splitImageManager.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitImageManager_SplitterMoved);
 			// 
 			// panelImageManager
 			// 
@@ -559,8 +559,8 @@ namespace GorgonLibrary.Graphics.Tools
 			this.textFixedWidth.Name = "textFixedWidth";
 			this.textFixedWidth.Size = new System.Drawing.Size(40, 25);
 			this.textFixedWidth.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.textFixedWidth.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textFixedWidth_KeyDown);
 			this.textFixedWidth.Leave += new System.EventHandler(this.textFixedWidth_Leave);
+			this.textFixedWidth.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textFixedWidth_KeyDown);
 			this.textFixedWidth.Validating += new System.ComponentModel.CancelEventHandler(this.textFixedWidth_Validating);
 			// 
 			// toolStripLabel1
@@ -576,8 +576,8 @@ namespace GorgonLibrary.Graphics.Tools
 			this.textFixedHeight.Name = "textFixedHeight";
 			this.textFixedHeight.Size = new System.Drawing.Size(40, 25);
 			this.textFixedHeight.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.textFixedHeight.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textFixedHeight_KeyDown);
 			this.textFixedHeight.Leave += new System.EventHandler(this.textFixedHeight_Leave);
+			this.textFixedHeight.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textFixedHeight_KeyDown);
 			this.textFixedHeight.Validating += new System.ComponentModel.CancelEventHandler(this.textFixedHeight_Validating);
 			// 
 			// toolStripSeparator3
