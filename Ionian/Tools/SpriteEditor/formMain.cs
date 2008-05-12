@@ -1033,7 +1033,13 @@ namespace GorgonLibrary.Graphics.Tools
 					Settings.Root = "ImageManager";
 					Settings.SetSetting("ImageEditorName", "Microsoft Paint");
 					Settings.SetSetting("ImageEditorPath", Environment.SystemDirectory + @"\mspaint.exe");
+					Settings.SetSetting("Visible", "true");
 					Settings.Root = null;
+					Settings.Root = "SpriteManager";
+					Settings.SetSetting("Visible", "true");
+					Settings.Root = null;
+					menuItemSpriteManager.Checked = true;
+					menuItemImageManager.Checked = true;
 					return;
 				}
 
