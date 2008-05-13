@@ -1777,6 +1777,83 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Function to return the relative path compared to a given path.
+		/// </summary>
+		/// <param name="relativeTo">Path that we're relative to.</param>
+		/// <param name="path">Absolute path to get relative path from.</param>
+		/// <returns>The relative path.</returns>
+		private string GetRelativePath(string relativeTo, string path)
+		{
+			string absolutePath = string.Empty;					// Absolute path.
+			string relative = string.Empty;						// Relative to.
+			string resultPath = string.Empty;					// Result path.
+			string pathPiece = string.Empty;					// Partial path.
+			int lastIndex = 0;									// Last component index.
+
+			if (string.IsNullOrEmpty(relativeTo))
+				throw new ArgumentNullException("relativeTo");
+
+			if (string.IsNullOrEmpty(path))
+				return "." + Path.DirectorySeparatorChar;
+
+			relative = Path.GetFullPath(relativeTo);		// Relative to.
+
+			// This is already a relative path.
+			if (path.StartsWith("."))
+				return path;
+
+			if (!Path.IsPathRooted(path))
+				return "." + Path.DirectorySeparatorChar + path;
+
+			absolutePath = Path.GetFullPath(path);		// Absolute path.			
+
+			if (!absolutePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				absolutePath += Path.DirectorySeparatorChar;
+			if (!relative.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				relative += Path.DirectorySeparatorChar;
+
+			// Get paths.
+			absolutePath = Path.GetDirectoryName(absolutePath).ToLower();
+			relative = Path.GetDirectoryName(relative).ToLower();
+
+			// If we're not even on the same drive, then leave.
+			if (string.Compare(Path.GetPathRoot(relative), Path.GetPathRoot(absolutePath), true) != 0)
+				return absolutePath;
+
+			// If this is the same, 
+			if (string.Compare(absolutePath, relative, true) == 0)
+				return ".";
+			if (absolutePath.StartsWith(relative, StringComparison.InvariantCultureIgnoreCase))
+				return "." + absolutePath.Substring(relative.Length);
+
+
+			pathPiece = relative;
+			lastIndex = pathPiece.LastIndexOf("\\");
+
+			while (lastIndex > 0)
+			{
+				pathPiece = pathPiece.Substring(0, lastIndex);
+				resultPath += ".." + Path.DirectorySeparatorChar;
+
+				// Check for a matching path
+				if (absolutePath.IndexOf(pathPiece, StringComparison.InvariantCultureIgnoreCase) > -1)
+				{
+					if (string.Compare(absolutePath, pathPiece, true) == 0)
+						return absolutePath.Replace(pathPiece,
+										resultPath.Substring(0, resultPath.Length - 1));
+					else
+						return absolutePath.Replace(pathPiece +
+								 (string.Compare(absolutePath ,pathPiece, true) == 0 ? string.Empty : Path.DirectorySeparatorChar.ToString()), resultPath);
+
+				}
+
+				lastIndex = pathPiece.LastIndexOf(Path.DirectorySeparatorChar, pathPiece.Length - 1);
+			}
+
+			return absolutePath;
+		}
+
+		/// <summary>
 		/// Function to save the project.
 		/// </summary>
 		/// <param name="fileName">Name and path of the project.</param>
@@ -1824,21 +1901,11 @@ namespace GorgonLibrary.Graphics.Tools
 			element.InnerText = imageCount.ToString();
 			support.AppendChild(element);
 
-			// Add each image.
+			// Add each image.			
 			foreach (Image image in imageList)
 			{
 				element = projectDocument.CreateElement("Path");
-				sourceDir = Path.GetDirectoryName(fileName) + @"\";
-				destDir = Path.GetDirectoryName(image.Filename) + @"\";
-
-				if (destDir.ToLower().StartsWith(sourceDir.ToLower()))
-				{
-					destDir = destDir.Replace(sourceDir, @".\");
-					element.InnerText = destDir + Path.GetFileName(image.Filename);
-				}
-				else
-					element.InnerText = image.Filename;
-
+				element.InnerText = GetRelativePath(Path.GetDirectoryName(fileName), Path.GetDirectoryName(image.Filename)) + Path.DirectorySeparatorChar + Path.GetFileName(image.Filename);
 				support.AppendChild(element);
 			}
 
@@ -1898,17 +1965,7 @@ namespace GorgonLibrary.Graphics.Tools
 				animVisible = projectDocument.CreateAttribute("IncludeInAnims");
 				animVisible.Value = doc.IncludeInAnimations.ToString();
 				element.Attributes.Append(animVisible);
-
-				sourceDir = Path.GetDirectoryName(fileName) + @"\";
-				destDir = Path.GetDirectoryName(doc.Sprite.Filename) + @"\";
-
-				if (destDir.ToLower().StartsWith(sourceDir.ToLower()))
-				{
-					destDir = destDir.Replace(sourceDir, @".\");
-					element.InnerText = destDir + Path.GetFileName(doc.Sprite.Filename);
-				}
-				else
-					element.InnerText = doc.Sprite.Filename;
+				element.InnerText = GetRelativePath(Path.GetDirectoryName(fileName), Path.GetDirectoryName(doc.Sprite.Filename)) + Path.DirectorySeparatorChar + Path.GetFileName(doc.Sprite.Filename);
 				support.AppendChild(element);
 			}
 

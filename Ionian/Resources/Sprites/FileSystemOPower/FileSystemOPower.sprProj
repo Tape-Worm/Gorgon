@@ -3,7 +3,7 @@
   <Header>SPRPROJ1.0</Header>
   <Images>
     <Count>1</Count>
-    <Path>D:\Code\Current\Gorgon\Unstable\Ionian\Resources\Images\0_HardVacuum.png</Path>
+    <Path>..\..\images\0_HardVacuum.png</Path>
   </Images>
   <Targets>
     <Count>0</Count>

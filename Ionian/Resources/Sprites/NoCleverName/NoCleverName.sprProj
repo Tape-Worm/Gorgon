@@ -3,7 +3,7 @@
   <Header>SPRPROJ1.0</Header>
   <Images>
     <Count>1</Count>
-    <Path>D:\Code\Current\Gorgon\Unstable\Ionian\Resources\Images\CleverSprites.png</Path>
+    <Path>..\..\Images\CleverSprites.png</Path>
   </Images>
   <Targets>
     <Count>0</Count>

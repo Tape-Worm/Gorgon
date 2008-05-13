@@ -103,8 +103,13 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-May 11/2008 - Version - Current
+May 13/2008 - Version - Current
 ================================
+* Updated sprite editor project saving to now store its child files with relative paths.
+  Prior to this it would only use a relative path if the sprite/image dependency was 
+  located under the same path as the project file.  Now it will attempt to source the 
+  files to a directory relative to the project file.
+  
 * Updated the device lost/reset code to no longer rely on exceptions, and instead use the
   result codes returned by SlimDX.
   
