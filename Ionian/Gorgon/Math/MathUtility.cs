@@ -46,6 +46,17 @@ namespace GorgonLibrary
 
 		#region Methods.
 		/// <summary>
+		/// Function to raise a value to a specified power.
+		/// </summary>
+		/// <param name="value">Value to raise.</param>
+		/// <param name="power">Power to raise up to.</param>
+		/// <returns>The value raised to the power.</returns>
+		public static float Pow(float value, float power)
+		{
+			return (float)Math.Pow(value, power);
+		}
+
+		/// <summary>
 		/// Function to round a floating point value to an integer.
 		/// </summary>
 		/// <param name="value">Value to round.</param>

@@ -924,6 +924,8 @@ namespace GorgonLibrary.Graphics
 					value = 1.0f;
 
 				_depth = value;
+				_needAABBUpdate = true;
+				_needParentUpdate = true;
 			}
 		}
 
