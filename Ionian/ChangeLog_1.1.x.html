@@ -103,8 +103,17 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-May 13/2008 - Version - Current
+May 20/2008 - Version - Current
 ================================
++ Added a border color option to the sprites.  This is used with the Vertical/Horizontal
+  Wrapping properties are set to Border.
+  
+* Modified sprite horizontal/vertical flipping to have better accuracy with flipped
+  texture coordinates.
+  
++ Added a utility library to the solution for higher level functionality such as sprite
+  meshes and various other high level functionality in the future.
+  
 * Updated sprite editor project saving to now store its child files with relative paths.
   Prior to this it would only use a relative path if the sprite/image dependency was 
   located under the same path as the project file.  Now it will attempt to source the 

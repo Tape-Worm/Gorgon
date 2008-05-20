@@ -523,31 +523,29 @@ namespace GorgonLibrary.Graphics
 			float tv;		// Starting vertical position.
 			float sizetu;	// Width.
 			float sizetv;	// Height.
-			float temp = 0;	// Temp value.
 
 			if (Image == null)
 				return;
 
 			// Initialize texture coordinates.
-			tu = (_imagePosition.X + 0.5f) / Image.ActualWidth;
-			tv = (_imagePosition.Y + 0.5f) / Image.ActualHeight;
-			sizetu = (_imagePosition.X + Size.X) / Image.ActualWidth;
-			sizetv = (_imagePosition.Y + Size.Y) / Image.ActualHeight;
+			if (!_flipHorizontal)
+				tu = (_imagePosition.X + 0.5f) / Image.ActualWidth;
+			else
+				tu = (_imagePosition.X + Size.X - 0.5f) / Image.ActualWidth;
+			if (!_flipVertical)
+				tv = (_imagePosition.Y + 0.5f) / Image.ActualHeight;
+			else
+				tv = (_imagePosition.Y + Size.Y - 0.5f) / Image.ActualHeight;
 
-			// Flip the image appropriately.
-			if (_flipHorizontal)
-			{
-				temp = tu;
-				tu = sizetu;
-				sizetu = temp;
-			}
+			if (!_flipHorizontal)
+				sizetu = (_imagePosition.X + Size.X) / Image.ActualWidth;
+			else
+				sizetu = (_imagePosition.X) / Image.ActualWidth;
 
-			if (_flipVertical)
-			{
-				temp = tv;
-				tv = sizetv;
-				sizetv = temp;
-			}
+			if (!_flipVertical)
+				sizetv = (_imagePosition.Y + Size.Y) / Image.ActualHeight;
+			else
+				sizetv = (_imagePosition.Y) / Image.ActualHeight;
 
 			Vertices[0].TextureCoordinates = new Vector2D(tu, tv);
 			Vertices[1].TextureCoordinates = new Vector2D(sizetu, tv);
@@ -1179,6 +1177,7 @@ namespace GorgonLibrary.Graphics
 			clone.ParentScale = ParentScale;
 			clone.HorizontalFlip = HorizontalFlip;
 			clone.VerticalFlip = VerticalFlip;
+			clone.BorderColor = BorderColor;
 
 			if (!InheritSmoothing)
 				clone.Smoothing = Smoothing;
@@ -1827,6 +1826,8 @@ namespace GorgonLibrary.Graphics
 			if (!InheritDepthWriteEnabled)
 				writer.Write("DepthWrite", DepthWriteEnabled);
 
+			writer.Write("BorderColor", BorderColor.ToArgb());
+
 			// Write flipped flags.
 			writer.Write("HorizontallyFlipped", _flipHorizontal);
 			writer.Write("VerticallyFlipped", _flipVertical);
@@ -2052,6 +2053,8 @@ namespace GorgonLibrary.Graphics
 					DepthTestFunction = (CompareFunctions)reader.ReadInt32("DepthCompare");
 				if (!InheritDepthWriteEnabled)
 					DepthWriteEnabled = reader.ReadBool("DepthWrite");
+
+				BorderColor = Drawing.Color.FromArgb(reader.ReadInt32("BorderColor"));
 			}
 
 			// Set flipping flags.

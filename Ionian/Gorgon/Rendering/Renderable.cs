@@ -95,7 +95,6 @@ namespace GorgonLibrary.Graphics
 		private Vector2D _parentScale = Vector2D.Zero;		// Parent scale.
 		private float _parentRotation = 0;					// Parent rotation.
 		private float _depth = 0.0f;						// Depth level of the renderable.
-
 		private VertexTypeList.PositionDiffuse2DTexture1[] _vertices;	// Vertices for the object.
         #endregion
 
@@ -210,6 +209,16 @@ namespace GorgonLibrary.Graphics
 			{
 				return Geometry.VertexCount;
 			}
+		}
+
+
+		/// <summary>
+		/// Property to set or return the color of the border when the wrapping mode is set to Border.
+		/// </summary>
+		public Drawing.Color BorderColor
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -1645,6 +1654,7 @@ namespace GorgonLibrary.Graphics
 			_inheritDepthWriteEnable = true;
 			_inheritDepthBias = true;
 			_inheritDepthTestCompare = true;
+			BorderColor = Drawing.Color.Black;
 			_wrapHMode = ImageAddressing.Clamp;
 			_wrapVMode = ImageAddressing.Clamp;
 			_stencilCompare = CompareFunctions.Always;

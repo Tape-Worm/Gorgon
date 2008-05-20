@@ -479,6 +479,8 @@ namespace GorgonLibrary.Graphics
 				_imageStates.AlphaOperationArgument2 = ImageOperationArguments.Texture;
 			}
 
+			_imageStates.BorderColor = renderObject.BorderColor;
+
 			// Set smoothing operation.
 			switch (renderObject.Smoothing)
 			{
@@ -540,6 +542,9 @@ namespace GorgonLibrary.Graphics
 			_imageStates = Gorgon.Renderer.ImageLayerStates[0];
 
 			if (image != Gorgon.Renderer.GetImage(0))
+				result = true;
+
+			if (renderObject.BorderColor != _imageStates.BorderColor)
 				result = true;
 
 			if (((renderObject.BlendingMode & BlendingModes.ColorAdditive) == BlendingModes.ColorAdditive) && (_imageStates.ColorOperation != ImageOperations.Additive))

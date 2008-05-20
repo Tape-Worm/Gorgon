@@ -327,6 +327,24 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Property to set or return the border color when the wrapping mode is set to Border.
+		/// </summary>
+		[PropertyInclude(false), PropertyCategory("Appearance"), PropertyDescription("Sets the color of the border when the wrapping mode is set to Border."), PropertyDefault("0x0")]
+		public Drawing.Color BorderColor
+		{
+			get
+			{
+				return _sprite.BorderColor;
+			}
+			set
+			{
+				_sprite.BorderColor = value;
+				_owner.SpriteManager.RefreshPropertyGrid();
+				Changed = true;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the upper left sprite vertex offset.
 		/// </summary>
 		[PropertyInclude(false, "", typeof(GorgonPointFConverter)), PropertyCategory("Vertex"), PropertyDescription("Sets the offset of the upper left vertex of the sprite."), PropertyDefault("0xFFFFFFFF")]
@@ -830,7 +848,7 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_sprite.HorizontalWrapMode = value;
-
+				SetSpecReadOnly(_bag.Properties["BorderColor"], !(value == ImageAddressing.Border || VerticalWrapping == ImageAddressing.Border), true);
 				_owner.SpriteManager.RefreshPropertyGrid();
 				Changed = true;
 			}
@@ -849,7 +867,7 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_sprite.VerticalWrapMode = value;
-
+				SetSpecReadOnly(_bag.Properties["BorderColor"], !(value == ImageAddressing.Border || HorizontalWrapping == ImageAddressing.Border), true);
 				_owner.SpriteManager.RefreshPropertyGrid();
 				Changed = true;
 			}

@@ -22,6 +22,7 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Text;
 using GorgonLibrary.Internal;
@@ -46,6 +47,15 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the vertical wrapping mode to use.
 		/// </summary>
 		ImageAddressing VerticalWrapMode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the color of the border when the wrapping mode is set to Border.
+		/// </summary>
+		Color BorderColor
 		{
 			get;
 			set;

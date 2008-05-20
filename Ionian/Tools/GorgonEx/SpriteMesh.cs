@@ -49,9 +49,85 @@ namespace GorgonLibrary.Extras
 		private BoundingCircle _boundCircle = BoundingCircle.Empty;		// Bounding circle.
 		private float _cosVal = 0.0f;									// Cached cosine.
 		private float _sinVal = 0.0f;									// Cached sine.
+		private bool _flipHorizontal = false;							// Flag to flip horizontally.
+		private bool _flipVertical = false;								// Flag to flip vertically.
+		private Vector2D _imageOffset = Vector2D.Zero;					// Image offset.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the offset within the source image to start drawing from.
+		/// </summary>
+		public override Vector2D ImageOffset
+		{
+			get
+			{
+				return _imageOffset;
+			}
+			set
+			{
+				// If we haven't changed, then do nothing.
+				if (value == _imageOffset)
+					return;
+
+				_imageOffset = value;
+				IsImageUpdated = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the region of the image that the sprite will use.
+		/// </summary>
+		public Drawing.RectangleF ImageRegion
+		{
+			get
+			{
+				return new Drawing.RectangleF(_imageOffset.X, _imageOffset.Y, Size.X, Size.Y);
+			}
+			set
+			{
+				_imageOffset.X = value.X;
+				_imageOffset.Y = value.Y;
+				SetSize(value.Width, value.Height);
+
+				IsImageUpdated = true;
+				IsAABBUpdated = true;
+				IsSizeUpdated = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the sprite is flipped horizontally or not.
+		/// </summary>
+		public bool HorizontalFlip
+		{
+			get
+			{
+				return _flipHorizontal;
+			}
+			set
+			{
+				_flipHorizontal = value;
+				IsSizeUpdated = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the sprite is flipped vertically or not.
+		/// </summary>
+		public bool VerticalFlip
+		{
+			get
+			{
+				return _flipVertical;
+			}
+			set
+			{
+				_flipVertical = value;
+				IsSizeUpdated = true;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the bounding circle of the sprite.
 		/// </summary>
@@ -83,6 +159,7 @@ namespace GorgonLibrary.Extras
 
 				_grid = new VertexTypeList.PositionDiffuse2DTexture1[_cols * _rows];
 				IsSizeUpdated = true;
+				IsImageUpdated = true;
 			}
 		}
 
@@ -130,6 +207,7 @@ namespace GorgonLibrary.Extras
 
 				_grid = new VertexTypeList.PositionDiffuse2DTexture1[_cols * _rows];
 				IsSizeUpdated = true;
+				IsImageUpdated = true;
 			}
 		}
 
@@ -252,7 +330,7 @@ namespace GorgonLibrary.Extras
 			Vector2D result = Vector2D.Zero;			// Result vertex.
 
 			result = vertex - Axis;
-			result *= Scale;
+			result *= FinalScale;
 
 			if (FinalRotation != 0.0f)
 			{
@@ -260,7 +338,7 @@ namespace GorgonLibrary.Extras
 				result.Y = (result.X * sin + result.Y * cos);
 			}
 
-			result += Position;
+			result += FinalPosition;
 
 			return (Vector3D)result;
 		}
@@ -270,6 +348,19 @@ namespace GorgonLibrary.Extras
 		/// </summary>
 		protected override void UpdateDimensions()
 		{
+			float imageWidth = Width;				// Image width to use in calculation
+			float imageHeight = Height;				// Image height to use in calculation.
+			float imageCellWidth = 0.0f;			// Image cell width.
+			float imageCellHeight = 0.0f;			// Image cell height.
+			Vector2D texPosition = Vector2D.Zero;	// Texture coordinate position.
+
+
+			if (Image != null)
+			{
+				imageWidth = Image.Width;
+				imageHeight = Image.Height;
+			}
+
 			_colWidth = Width / (_cols - 1);
 			_rowHeight = Height / (_rows - 1);
 
@@ -277,7 +368,32 @@ namespace GorgonLibrary.Extras
 			{
 				for (int x = 0; x < _cols; x++)
 				{
-					_grid[y * _cols + x].TextureCoordinates = Vector2D.Divide(new Vector2D(ImageOffset.X + x * _colWidth, ImageOffset.Y + y * _rowHeight), new Vector2D(Width, Height));
+					if (IsImageUpdated)
+					{
+						// Save us the extra calculations if we don't have a texture.
+						if (Image != null)
+						{
+							imageCellHeight = (y * _rowHeight);
+							imageCellWidth = (x * _colWidth);
+
+							if (_flipHorizontal)
+								imageCellWidth = imageWidth - imageCellWidth - ImageOffset.X;
+							else
+								imageCellWidth += ImageOffset.X;
+
+							if (_flipVertical)
+								imageCellHeight = imageHeight - imageCellHeight - ImageOffset.Y;
+							else
+								imageCellHeight += ImageOffset.Y;
+
+							_grid[y * _cols + x].TextureCoordinates = Vector2D.Divide(
+								new Vector2D(imageCellWidth, imageCellHeight),
+								new Vector2D(imageWidth, imageHeight));
+						}
+						else
+							_grid[y * _cols + x].TextureCoordinates = Vector2D.Zero;
+					}
+
 					_grid[y * _cols + x].Position = new Vector2D(x * _colWidth, y * _rowHeight);
 					_grid[y * _cols + x].Color = _color.ToArgb();
 					_grid[y * _cols + x].Position.Z = Depth;
@@ -299,12 +415,63 @@ namespace GorgonLibrary.Extras
 		/// <returns>A new sprite mesh.</returns>
 		public static SpriteMesh FromSprite(string name, Sprite sprite, int rows, int columns)
 		{
+			SpriteMesh result = null;			// New sprite mesh.
+
 			if (sprite == null)
 				throw new ArgumentNullException("sprite");
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name");
+			
+			result = new SpriteMesh(name, sprite.Image, rows, columns, sprite.ImageOffset.X, sprite.ImageOffset.Y, sprite.Size.X, sprite.Size.Y);
 
-			return new SpriteMesh(name, sprite.Image, rows, columns, sprite.ImageOffset.X, sprite.ImageOffset.Y, sprite.Size.X, sprite.Size.Y);;
+			result.AlphaMaskFunction = sprite.AlphaMaskFunction;
+			result.AlphaMaskValue = sprite.AlphaMaskValue;
+			result.Axis = sprite.Axis;
+			result.BlendingMode = sprite.BlendingMode;
+			result.Color = sprite.Color;
+			result.Depth = sprite.Depth;
+			result.DepthBufferBias = sprite.DepthBufferBias;
+			result.DepthTestFunction = sprite.DepthTestFunction;
+			result.DepthWriteEnabled = sprite.DepthWriteEnabled;
+			result.DestinationBlend = sprite.DestinationBlend;
+			result.HorizontalWrapMode = sprite.HorizontalWrapMode;
+			result.Opacity = sprite.Opacity;
+			result.Position = sprite.Position;
+			result.Rotation = sprite.Rotation;
+			result.Scale = sprite.Scale;
+			result.Shader = sprite.Shader;
+			result.Smoothing = sprite.Smoothing;
+			result.SourceBlend = sprite.SourceBlend;
+			result.StencilCompare = sprite.StencilCompare;
+			result.StencilEnabled = sprite.StencilEnabled;
+			result.StencilFailOperation = sprite.StencilFailOperation;
+			result.StencilMask = sprite.StencilMask;
+			result.StencilPassOperation = sprite.StencilPassOperation;
+			result.StencilReference = sprite.StencilReference;
+			result.StencilZFailOperation = sprite.StencilZFailOperation;
+			result.VerticalWrapMode = sprite.VerticalWrapMode;
+			result.HorizontalFlip = sprite.HorizontalFlip;
+			result.VerticalFlip = sprite.VerticalFlip;
+			result.BorderColor = sprite.BorderColor;
+
+			result.InheritAlphaMaskFunction = sprite.InheritAlphaMaskFunction;
+			result.InheritAlphaMaskValue = sprite.InheritAlphaMaskValue;
+			result.InheritBlending = sprite.InheritBlending;
+			result.InheritDepthBias  = sprite.InheritDepthBias;
+			result.InheritDepthTestFunction = sprite.InheritDepthTestFunction;
+			result.InheritDepthWriteEnabled = sprite.InheritDepthWriteEnabled;
+			result.InheritHorizontalWrapping = sprite.InheritHorizontalWrapping;
+			result.InheritSmoothing = sprite.InheritSmoothing;
+			result.InheritStencilCompare = sprite.InheritStencilCompare;
+			result.InheritStencilEnabled = sprite.InheritStencilEnabled;
+			result.InheritStencilFailOperation = sprite.InheritStencilFailOperation;
+			result.InheritStencilMask = sprite.InheritStencilMask;
+			result.InheritStencilPassOperation = sprite.InheritStencilPassOperation;
+			result.InheritStencilReference = sprite.InheritStencilReference;
+			result.InheritStencilZFailOperation = sprite.InheritStencilZFailOperation;
+			result.InheritVerticalWrapping = sprite.InheritVerticalWrapping;
+
+			return result;
 		}
 
 		/// <summary>
@@ -525,6 +692,61 @@ namespace GorgonLibrary.Extras
 		public override Renderable Clone()
 		{
 			SpriteMesh clone = new SpriteMesh(Name + ".Clone", Image, _rows, _cols, ImageOffset.X, ImageOffset.Y, Width, Height);
+
+			clone.ImageOffset = ImageOffset;
+			clone.Size = Size;
+			clone.Position = Position;
+			clone.Rotation = Rotation;
+			clone.Scale = Scale;
+			clone.Axis = Axis;
+			clone.SetAABB(AABB);
+			clone.ParentPosition = ParentPosition;
+			clone.ParentRotation = ParentRotation;
+			clone.ParentScale = ParentScale;
+			clone.HorizontalFlip = HorizontalFlip;
+			clone.VerticalFlip = VerticalFlip;
+			clone.BorderColor = BorderColor;
+
+			if (!InheritSmoothing)
+				clone.Smoothing = Smoothing;
+			if (!InheritBlending)
+			{
+				clone.BlendingMode = BlendingMode;
+				clone.SourceBlend = SourceBlend;
+				clone.DestinationBlend = DestinationBlend;
+			}
+			clone.Depth = Depth;
+			if (!InheritDepthBias)
+				clone.DepthBufferBias = DepthBufferBias;
+			if (!InheritDepthTestFunction)
+				clone.DepthTestFunction = DepthTestFunction;
+			if (!InheritDepthWriteEnabled)
+				clone.DepthWriteEnabled = DepthWriteEnabled;
+			if (!InheritAlphaMaskFunction)
+				clone.AlphaMaskFunction = AlphaMaskFunction;
+			if (!InheritAlphaMaskValue)
+				clone.AlphaMaskValue = AlphaMaskValue;
+			if (!InheritHorizontalWrapping)
+				clone.HorizontalWrapMode = HorizontalWrapMode;
+			if (!InheritVerticalWrapping)
+				clone.VerticalWrapMode = VerticalWrapMode;
+			if (!InheritStencilPassOperation)
+				clone.StencilPassOperation = StencilPassOperation;
+			if (!InheritStencilFailOperation)
+				clone.StencilFailOperation = StencilFailOperation;
+			if (!InheritStencilZFailOperation)
+				clone.StencilZFailOperation = StencilZFailOperation;
+			if (!InheritStencilCompare)
+				clone.StencilCompare = StencilCompare;
+			if (!InheritStencilEnabled)
+				clone.StencilEnabled = StencilEnabled;
+			if (!InheritStencilReference)
+				clone.StencilReference = StencilReference;
+			if (!InheritStencilMask)
+				clone.StencilMask = StencilMask;
+			clone.Shader = Shader;
+			for (int i = 0; i < _grid.Length; i++)
+				clone._grid[i] = _grid[i];
 
 			return clone;
 		}

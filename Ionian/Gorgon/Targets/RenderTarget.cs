@@ -105,6 +105,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return the color of the border when the wrapping mode is set to Border.
+		/// </summary>
+		public Drawing.Color BorderColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the image used as the pattern for drawing.
 		/// </summary>
 		public Image DrawingPattern
