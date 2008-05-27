@@ -139,7 +139,29 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Methods.
-	    /// <summary>
+		/// <summary>
+		/// Function to return the angle between two vectors in radians.
+		/// </summary>
+		/// <returns>The angle between the vector components in radians.</returns>
+		public float Angle()
+		{
+			return MathUtility.ATan(Y, X);
+		}
+
+		/// <summary>
+		/// Function to return the angle between two vectors in radians.
+		/// </summary>
+		/// <param name="vector1">First vector.</param>
+		/// <param name="vector2">Second vector.</param>
+		/// <returns>The angle between the vectors in radians.</returns>
+		public static float Angle(Vector2D vector1, Vector2D vector2)
+		{
+			vector1.Normalize();
+			vector2.Normalize();
+			return MathUtility.ACos(Vector2D.DotProduct(vector1, vector2));
+		}
+
+		/// <summary>
 		/// Function to return a negated vector.
 		/// </summary>
 		/// <param name="left">Vector to negate.</param>

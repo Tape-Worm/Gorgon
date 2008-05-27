@@ -255,6 +255,7 @@
     <Compile Include="Utility\Logger.cs" />
     <Compile Include="Utility\LoggerExceptions.cs" />
     <Compile Include="Utility\NamedObject.cs" />
+    <Compile Include="Utility\Range.cs" />
     <Compile Include="Vertex Data\VertexDataException.cs" />
     <Compile Include="Vertex Data\VertexTypeList.cs" />
     <Compile Include="Viewports\Viewport.cs">
