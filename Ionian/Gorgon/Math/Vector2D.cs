@@ -336,7 +336,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(Vector2D left,Vector2D right)
 		{
-			return ((left.X == right.X) && (left.Y == right.Y));
+			return (MathUtility.EqualFloat(left.X, right.X) && MathUtility.EqualFloat(left.Y, right.Y));
 		}
 
 		/// <summary>

@@ -155,47 +155,6 @@ namespace GorgonLibrary
 
 		#region Methods.
 		/// <summary>
-		/// Function to determine the shortest arc between this and another vector.
-		/// </summary>
-		/// <param name="destination">Point in space to rotate towards.</param>
-		/// <returns>New orientation.</returns>
-		public Quaternion RotationTo(Vector3D destination)
-		{
-			Vector3D from = new Vector3D(X,Y,Z);	// Copy of this vector.
-			Vector3D to = destination;						// Copy of destination.
-			Vector3D cp;									// Cross product of both vectors.
-			float angle;									// Angle between.
-			float s;
-			float invs;										// Inverse of s.
-			Quaternion q = Quaternion.Identity;				// Orientation.
-			
-			// Normalize us and the destination.
-			from.Normalize();
-			to.Normalize();
-
-			// Get angle.
-			cp = from.CrossProduct(to);
-			angle = from.DotProduct(to);
-
-			// If the angle is 1 then exit because any axis will work.
-			if (angle >= 1.0f)
-				return q;
-
-			s = MathUtility.Sqrt((1 + angle) * 2);
-
-			if (s == 0)
-				throw new DivideByZeroException();
-
-			invs = 1/s;
-
-			// Create orientation.
-			q = cp * invs;
-			q.W = s * 0.5f;
-
-			return q;
-		}
-
-		/// <summary>
 		/// Function to perform a dot product between this and another vector.
 		/// </summary>
 		/// <param name="vector">Vector to get the dot product against.</param>

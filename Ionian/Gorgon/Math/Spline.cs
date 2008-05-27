@@ -116,8 +116,7 @@ namespace GorgonLibrary
                 tangent1 = _tangents[index];
                 tangent2 = _tangents[index + 1];
 
-                // Create result matrix.
-                result[1,1] = point1.X;
+				result[1,1] = point1.X;
                 result[1,2] = point1.Y;
                 result[1,3] = 1.0f;
                 result[1,4] = 1.0f;
@@ -137,7 +136,6 @@ namespace GorgonLibrary
                 result[4,3] = 1.0f;
                 result[4,4] = 1.0f;
 
-                // Create return value.
                 Vector4D value = (_coefficients * result) * power;
                 
                 return new Vector2D(value.X, value.Y);

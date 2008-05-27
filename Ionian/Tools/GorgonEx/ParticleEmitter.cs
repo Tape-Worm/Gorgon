@@ -346,7 +346,7 @@ namespace GorgonLibrary.Extras
 		/// <returns>Random number within the range.</returns>
 		private float RandomFloat(Range<float> randomRange)
 		{
-			return ((float)_rnd.NextDouble() * MathUtility.Abs(randomRange.End - randomRange.Start)) + randomRange.Start;
+			return ((float)_rnd.NextDouble() * (randomRange.End - randomRange.Start)) + randomRange.Start;
 		}
 
 		/// <summary>

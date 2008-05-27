@@ -192,7 +192,6 @@
     <Compile Include="Math\BoundingCircle.cs" />
     <Compile Include="Math\MathUtility.cs" />
     <Compile Include="Math\Matrix.cs" />
-    <Compile Include="Math\Quaternion.cs" />
     <Compile Include="Math\Spline.cs" />
     <Compile Include="Math\Vector2D.cs" />
     <Compile Include="Math\Vector3D.cs" />

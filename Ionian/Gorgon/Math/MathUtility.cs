@@ -256,7 +256,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool EqualFloat(float value1,float value2)
 		{
-			return EqualFloat(value1,value2,0.00001f);
+			return EqualFloat(value1,value2,0.000001f);
 		}
 
 		/// <summary>

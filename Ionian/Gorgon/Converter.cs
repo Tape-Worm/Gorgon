@@ -783,26 +783,6 @@ namespace GorgonLibrary.Internal
 		}
 
 		/// <summary>
-		/// Function to convert a quaternion into a D3D quaternion.
-		/// </summary>
-		/// <param name="quaternion">Quaternion to convert.</param>
-		/// <returns>D3D quaternion.</returns>
-		public static DX.Quaternion Convert(Quaternion quaternion)
-		{
-			return new DX.Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
-		}
-
-		/// <summary>
-		/// Function to convert a quaternion into a D3D quaternion.
-		/// </summary>
-		/// <param name="quaternion">Quaternion to convert.</param>
-		/// <returns>D3D quaternion.</returns>
-		public static Quaternion Convert(DX.Quaternion quaternion)
-		{
-			return new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
-		}
-
-		/// <summary>
 		/// Function to convert a texture format into a Direct3D format.
 		/// </summary>
 		/// <param name="format">Format of the texture.</param>
