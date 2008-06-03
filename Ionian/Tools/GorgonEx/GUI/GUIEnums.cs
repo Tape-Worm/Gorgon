@@ -42,4 +42,27 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		Single = 1
 	}
+
+	/// <summary>
+	/// Enumeration containing mouse event types.
+	/// </summary>
+	public enum MouseEventType
+	{
+		/// <summary>
+		/// Mouse was moved.
+		/// </summary>
+		MouseMoved = 1,
+		/// <summary>
+		/// Mouse button was released.
+		/// </summary>
+		MouseButtonUp = 2,
+		/// <summary>
+		/// Mouse button was pressed.
+		/// </summary>
+		MouseButtonDown = 3,
+		/// <summary>
+		/// Mouse wheel was moved.
+		/// </summary>
+		MouseWheelMove = 4
+	}
 }

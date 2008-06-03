@@ -285,6 +285,16 @@ namespace GorgonLibrary.Extras.GUI
 		}
 
 		/// <summary>
+		/// Function to send the mouse event to the focused window.
+		/// </summary>
+		/// <param name="eventType">Type of event to send.</param>
+		private void SendMouseEvent(MouseEventType eventType, MouseInputEventArgs e)
+		{
+			if ((_focused != null) && (_focused.WindowDimensions.Contains((Drawing.Point)e.Position)))
+				_focused.MouseEvent(eventType, e);
+		}
+
+		/// <summary>
 		/// Handles the KeyUp event of the Keyboard control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -292,7 +302,7 @@ namespace GorgonLibrary.Extras.GUI
 		private void Keyboard_KeyUp(object sender, KeyboardInputEventArgs e)
 		{
 			if (_focused != null)
-				_focused.OnKeyUp(this, e);
+				_focused.KeyboardEvent(false, e);
 		}
 
 		/// <summary>
@@ -303,7 +313,7 @@ namespace GorgonLibrary.Extras.GUI
 		private void Keyboard_KeyDown(object sender, KeyboardInputEventArgs e)
 		{
 			if (_focused != null)
-				_focused.OnKeyDown(this, e);
+				_focused.KeyboardEvent(true, e);
 		}
 
 		/// <summary>
@@ -313,8 +323,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.MouseInputEventArgs"/> instance containing the event data.</param>
 		private void Mouse_MouseWheelMove(object sender, MouseInputEventArgs e)
 		{
-			if ((_focused != null) && (_focused.WindowDimensions.Contains((Drawing.Point)e.Position)))
-				_focused.OnMouseWheelMove(this, e);
+			SendMouseEvent(MouseEventType.MouseWheelMove, e);
 		}
 
 		/// <summary>
@@ -324,8 +333,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.MouseInputEventArgs"/> instance containing the event data.</param>
 		private void Mouse_MouseUp(object sender, MouseInputEventArgs e)
 		{
-			if ((_focused != null) && (_focused.WindowDimensions.Contains((Drawing.Point)e.Position)))
-				_focused.OnMouseUp(this, e);
+			SendMouseEvent(MouseEventType.MouseButtonUp, e);
 		}
 
 		/// <summary>
@@ -335,12 +343,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.MouseInputEventArgs"/> instance containing the event data.</param>
 		private void Mouse_MouseMove(object sender, MouseInputEventArgs e)
 		{
-			if ((_focused != null) && (MouseOverObject(_focused, (Drawing.Point)e.Position)))
-			{
-				MouseInputEventArgs args = new MouseInputEventArgs(e.Buttons, e.ShiftButtons, _focused.ScreenToPoint((Drawing.Point)e.Position), e.WheelPosition, 
-																	e.RelativePosition, e.WheelDelta, e.ClickCount);
-				_focused.OnMouseMove(this, args);
-			}
+			SendMouseEvent(MouseEventType.MouseMoved, e);
 		}
 
 		/// <summary>
@@ -378,8 +381,7 @@ namespace GorgonLibrary.Extras.GUI
 					BringToFront(_focused);				
 			}
 
-			if ((_focused != null) && (_focused.WindowDimensions.Contains((Drawing.Point)e.Position)))
-				_focused.OnMouseDown(this, e);
+			SendMouseEvent(MouseEventType.MouseButtonDown, e);
 		}
 
 		/// <summary>

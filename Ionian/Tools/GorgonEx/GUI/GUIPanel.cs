@@ -70,6 +70,41 @@ namespace GorgonLibrary.Extras.GUI
 
 		#region Methods.
 		/// <summary>
+		/// Function called when a keyboard event has taken place in this window.
+		/// </summary>
+		/// <param name="isDown">TRUE if the button was pressed, FALSE if released.</param>
+		/// <param name="e">Event parameters.</param>
+		protected internal override void KeyboardEvent(bool isDown, GorgonLibrary.InputDevices.KeyboardInputEventArgs e)
+		{
+			DefaultKeyboardEvent(isDown, e);
+		}
+
+		/// <summary>
+		/// Function called when a mouse event has taken place in this window.
+		/// </summary>
+		/// <param name="eventType">Type of event that should be fired.</param>
+		/// <param name="e">Event parameters.</param>
+		protected internal override void MouseEvent(MouseEventType eventType, GorgonLibrary.InputDevices.MouseInputEventArgs e)
+		{
+			var children = from guiObject in GUIObjects
+						   where guiObject.Visible
+						   orderby guiObject.ZOrder
+						   select guiObject;
+
+			// Forward any events on to our child objects and terminate event handling if the child has received the event.
+			foreach (GUIObject child in children)
+			{
+				if (child.WindowDimensions.Contains(ScreenToPoint((Drawing.Point)e.Position)))
+				{
+					child.MouseEvent(eventType, e);
+					return;
+				}
+			}
+
+			DefaultMouseEvent(eventType, e);
+		}
+
+		/// <summary>
 		/// Function to draw the non-client area.
 		/// </summary>
 		protected virtual void DrawNonClientArea()
@@ -86,7 +121,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// Function to set the client area for the object.
 		/// </summary>
 		/// <param name="windowArea">Full area of the window.</param>
-		protected internal override void SetClientArea(System.Drawing.Rectangle windowArea)
+		protected override void SetClientArea(System.Drawing.Rectangle windowArea)
 		{
 			if (Border == PanelBorderStyle.Single)
 			{
@@ -95,6 +130,31 @@ namespace GorgonLibrary.Extras.GUI
 			}
 
 			base.SetClientArea(windowArea);			
+		}
+
+		/// <summary>
+		/// Function to retrieve the clipping area for the children.
+		/// </summary>
+		/// <returns>A rectangle defining the clipping area for the child controls.</returns>
+		protected Drawing.Rectangle GetClippingArea()
+		{
+			Drawing.Rectangle screenPoints;			// Screen coordinates.
+			Drawing.Rectangle ownerPoints;			// Owner clip.
+			GUIPanel owner = Owner as GUIPanel;		// Owner panel.
+
+			screenPoints = Drawing.Rectangle.Empty;
+			if (owner != null)
+			{
+				screenPoints = owner.RectToScreen(owner.ClientArea);
+				if (owner.Owner != null)
+				{
+					ownerPoints = owner.GetClippingArea();
+					if (ownerPoints != Drawing.Rectangle.Empty)
+						screenPoints = Drawing.Rectangle.Intersect(screenPoints, ownerPoints);
+				}
+			}			
+
+			return screenPoints;
 		}
 
 		/// <summary>
@@ -118,18 +178,17 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		internal override void Draw()
 		{
-			Drawing.Rectangle screenPoints;		// Screen coordinates.
 			IGUIContainer container;			// Parent container.
+			Drawing.Rectangle screenPoints;		// Screen coordinates.
 
 			if (Visible)
 			{
 				container = Owner as IGUIContainer;
-
-				Gorgon.CurrentRenderTarget.BeginDrawing();
 				screenPoints = RectToScreen(ClientArea);
 
+				Gorgon.CurrentRenderTarget.BeginDrawing();
 				if ((container != null) && (container.ClipChildren))
-					SetClippingRegion(Owner.RectToScreen(Owner.ClientArea));
+					SetClippingRegion(GetClippingArea());
 
 				DrawNonClientArea();
 				

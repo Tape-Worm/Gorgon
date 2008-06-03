@@ -37,13 +37,15 @@ namespace GorgonLibrary.Extras.GUI
 		: GUIPanel
 	{
 		#region Variables.
-		private string _caption = string.Empty;							// Caption for the window.
 		private Font _windowFont = null;								// Font for the window.
 		private bool _disposed = false;									// Flag to indicate that the object is disposed.
 		private TextSprite _captionTextLabel = null;					// Caption text.
 		private bool _dragging = false;									// Flag to indicate that we're dragging.
 		private Drawing.Rectangle _captionRectangle;					// Caption rectangle.
 		private Vector2D _dragDelta = Vector2D.Zero;					// Drag delta.
+		private Viewport _clipView = null;								// Clipping view port.
+		private static int _defaultCaptionHeight = 20;					// Default caption height.
+		private static int _defaultBorderWidth = 4;						// Default border width.
 		#endregion
 
 		#region Properties.
@@ -61,6 +63,36 @@ namespace GorgonLibrary.Extras.GUI
 					return true;
 				else
 					return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the default caption height.
+		/// </summary>
+		public static int DefaultCaptionHeight
+		{
+			get
+			{
+				return _defaultCaptionHeight;
+			}
+			set
+			{
+				_defaultCaptionHeight = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the default border size.
+		/// </summary>
+		public static int DefaultBorderSize
+		{
+			get
+			{
+				return _defaultBorderWidth;
+			}
+			set
+			{
+				_defaultBorderWidth = value;
 			}
 		}
 
@@ -86,13 +118,13 @@ namespace GorgonLibrary.Extras.GUI
 		{
 			get
 			{
-				return _caption;
+				return _captionTextLabel.Text;
 			}
 			set
 			{
 				if (value == null)
 					value = string.Empty;
-				_caption = value;
+				_captionTextLabel.Text = value;
 			}
 		}
 
@@ -158,22 +190,70 @@ namespace GorgonLibrary.Extras.GUI
 		protected override void DrawNonClientArea()
 		{
 			Vector2D nonClientPosition = Position;
-			
-			Gorgon.CurrentRenderTarget.FilledRectangle(nonClientPosition.X, nonClientPosition.Y, WindowDimensions.Width, WindowDimensions.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.WindowFrame)));
+			Drawing.Rectangle captionScreen;
+			Viewport lastView = null;
 
-			_captionTextLabel.Position = new Vector2D(nonClientPosition.X, nonClientPosition.Y);
+			_captionRectangle = new System.Drawing.Rectangle(Position.X + DefaultBorderSize, Position.Y + DefaultBorderSize, WindowDimensions.Width - DefaultBorderSize * 2, DefaultCaptionHeight);
+			captionScreen = _captionRectangle;
+
+			if (Owner != null)
+			{
+				nonClientPosition = Owner.PointToScreen(Position);
+				captionScreen = Owner.RectToScreen(_captionRectangle);
+			}
+
+			Gorgon.CurrentRenderTarget.FilledRectangle(nonClientPosition.X, nonClientPosition.Y, WindowDimensions.Width, WindowDimensions.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.WindowFrame)));
+			Gorgon.CurrentRenderTarget.FilledRectangle(captionScreen.X, captionScreen.Y, captionScreen.Width, captionScreen.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ActiveCaption)));
+
+			_clipView.Left = captionScreen.Left;
+			_clipView.Top = captionScreen.Top;
+			_clipView.Width = captionScreen.Width;
+			_clipView.Height = captionScreen.Height;
+			lastView = Gorgon.CurrentClippingViewport;
+			Gorgon.CurrentClippingViewport = _clipView;
+			_captionTextLabel.Position = new Vector2D(captionScreen.Left, captionScreen.Top);
 			_captionTextLabel.Draw();
+			Gorgon.CurrentClippingViewport = lastView;
 		}
 
 		/// <summary>
 		/// Function to set the client area for the object.
 		/// </summary>
 		/// <param name="windowArea">Full area of the window.</param>
-		protected internal override void SetClientArea(System.Drawing.Rectangle windowArea)
+		protected override void SetClientArea(System.Drawing.Rectangle windowArea)
 		{
-			windowArea.Width -= 8;
-			windowArea.Height -= 28;
+			windowArea.Width -= DefaultBorderSize * 2;
+			windowArea.Height -= DefaultCaptionHeight + DefaultBorderSize * 3;
 			base.SetClientArea(windowArea);
+		}
+
+		/// <summary>
+		/// Function called when a mouse event has taken place in this window.
+		/// </summary>
+		/// <param name="eventType">Type of event that should be fired.</param>
+		/// <param name="e">Event parameters.</param>
+		protected internal override void MouseEvent(MouseEventType eventType, GorgonLibrary.InputDevices.MouseInputEventArgs e)
+		{
+			if (!ClientArea.Contains(ScreenToPoint((Drawing.Point)e.Position)))
+			{
+				Drawing.Point screenPos = (Drawing.Point)e.Position;
+				switch (eventType)
+				{
+					case MouseEventType.MouseButtonDown:
+						if ((IsMouseOverCaption) && (!_dragging) && (e.Buttons == GorgonLibrary.InputDevices.MouseButtons.Button1))
+						{
+							_dragDelta = Vector2D.Subtract(new Vector2D(Position.X, Position.Y), screenPos);
+							_dragging = true;
+						}
+						break;
+					case MouseEventType.MouseButtonUp:
+						if (e.Buttons == GorgonLibrary.InputDevices.MouseButtons.Button1)
+							_dragging = false;
+						break;
+				}
+			}
+			else
+				base.MouseEvent(eventType, e);
 		}
 
 		/// <summary>
@@ -185,19 +265,13 @@ namespace GorgonLibrary.Extras.GUI
 		{
 			base.Update(frameTime);
 
-			_captionRectangle = new System.Drawing.Rectangle(Position.X, Position.Y, WindowDimensions.Width, 24);
+			Drawing.Point mousePosition = (Drawing.Point)(Desktop.MousePosition + _dragDelta);			// Mouse position.
 
-			if ((IsMouseOverCaption) && (!_dragging) && (Desktop.Input.Mouse.Button == GorgonLibrary.InputDevices.MouseButtons.Button1))
-			{
-				_dragDelta = Vector2D.Subtract(new Vector2D(Position.X, Position.Y), Desktop.Input.Mouse.Position);
-				_dragging = true;
-			}
+			if (Owner != null)
+				mousePosition = Owner.ScreenToPoint(mousePosition);
 
-			if ((IsMouseOverCaption) && (_dragging) && (Desktop.Input.Mouse.Button == GorgonLibrary.InputDevices.MouseButtons.None))
-				_dragging = false;
-
-			if (_dragging)
-				Position = (Drawing.Point)(Desktop.Input.Mouse.Position + _dragDelta);
+			if (_dragging)			
+				Position = mousePosition;
 		}
 
 		/// <summary>
@@ -209,8 +283,8 @@ namespace GorgonLibrary.Extras.GUI
 		{
 			Drawing.Point result = base.PointToScreen(clientPoint);
 
-			result.X += 4;
-			result.Y += 24;
+			result.X += DefaultBorderSize;
+			result.Y += DefaultCaptionHeight + (DefaultBorderSize * 2);
 			return result;
 		}
 
@@ -221,10 +295,10 @@ namespace GorgonLibrary.Extras.GUI
 		/// <returns>The client coordinates of the point.</returns>
 		public override System.Drawing.Point ScreenToPoint(System.Drawing.Point screenPoint)
 		{
-			Drawing.Point result = base.PointToScreen(screenPoint);
+			Drawing.Point result = base.ScreenToPoint(screenPoint);
 
-			result.X -= 4;
-			result.Y -= 24;
+			result.X -= DefaultBorderSize;
+			result.Y -= DefaultCaptionHeight + (DefaultBorderSize * 2);
 			return result;
 		}
 		#endregion
@@ -241,10 +315,10 @@ namespace GorgonLibrary.Extras.GUI
 		public GUIWindow(string name, int x, int y, int width, int height)
 			: base(name)
 		{
-			WindowDimensions = new System.Drawing.Rectangle(x, y, width, height);
-			_caption = name;
+			WindowDimensions = new System.Drawing.Rectangle(x, y, width, height);			
 			Font = null;			
-			_captionTextLabel = new TextSprite("WindowCaptionLabel", Text, Font, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ActiveCaptionText));
+			_captionTextLabel = new TextSprite("WindowCaptionLabel", Name, Font, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ActiveCaptionText));
+			_clipView = new Viewport(0, 0, 1, 1);
 		}
 		#endregion
 	}

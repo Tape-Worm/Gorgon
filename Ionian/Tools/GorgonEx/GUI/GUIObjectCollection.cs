@@ -60,6 +60,19 @@ namespace GorgonLibrary.Extras.GUI
 
 		#region Methods.
 		/// <summary>
+		/// Function to update the ZOrder of the objects.
+		/// </summary>
+		private void UpdateZOrder()
+		{
+			int zOrder = Count - 1;
+			foreach (GUIObject obj in this)
+			{
+				obj.ZOrder = zOrder;
+				zOrder--;
+			}
+		}
+
+		/// <summary>
 		/// Function to add a GUI object to the collection.
 		/// </summary>
 		/// <param name="guiObject"></param>
@@ -71,6 +84,8 @@ namespace GorgonLibrary.Extras.GUI
 				throw new ArithmeticException("The GUI object '" + guiObject.Name + "'already has an owner.");
 
 			AddItem(guiObject.Name, guiObject);
+
+			UpdateZOrder();
 		}
 
 		/// <summary>
@@ -82,6 +97,7 @@ namespace GorgonLibrary.Extras.GUI
 			if (guiObject == null)
 				throw new ArgumentNullException("guiObject");
 			RemoveItem(guiObject.Name);
+			UpdateZOrder();
 		}
 		#endregion
 

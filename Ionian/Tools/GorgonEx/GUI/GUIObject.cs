@@ -258,12 +258,10 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		protected internal virtual void OnMouseMove(object sender, MouseInputEventArgs e)
+		protected virtual void OnMouseMove(object sender, MouseInputEventArgs e)
 		{		
 			if (MouseMove != null)
-			{
 				MouseMove(sender, e);
-			}
 		}
 
 		/// <summary>
@@ -271,7 +269,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		protected internal virtual void OnMouseDown(object sender, MouseInputEventArgs e)
+		protected virtual void OnMouseDown(object sender, MouseInputEventArgs e)
 		{
 			if (MouseDown != null)
 				MouseDown(sender, e);
@@ -282,7 +280,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		protected internal virtual void OnMouseUp(object sender, MouseInputEventArgs e)
+		protected virtual void OnMouseUp(object sender, MouseInputEventArgs e)
 		{
 			if (MouseUp != null)
 				MouseUp(sender, e);
@@ -293,7 +291,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		protected internal virtual void OnMouseWheelMove(object sender, MouseInputEventArgs e)
+		protected virtual void OnMouseWheelMove(object sender, MouseInputEventArgs e)
 		{
 			if (MouseWheelMove != null)
 				MouseWheelMove(sender, e);
@@ -304,7 +302,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		protected internal virtual void OnKeyDown(object sender, KeyboardInputEventArgs e)
+		protected virtual void OnKeyDown(object sender, KeyboardInputEventArgs e)
 		{
 			if (KeyDown != null)
 				KeyDown(sender, e);
@@ -315,20 +313,94 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		protected internal virtual void OnKeyUp(object sender, KeyboardInputEventArgs e)
+		protected virtual void OnKeyUp(object sender, KeyboardInputEventArgs e)
 		{
 			if (KeyUp != null)
 				KeyUp(sender, e);
+		}
+
+		/// <summary>
+		/// Function to return the screen point in the coordinates of the owner object.
+		/// </summary>
+		/// <param name="screenPoint">Screen point to convert.</param>
+		/// <returns>The point in owner space.</returns>
+		protected Point GetOwnerPoint(Point screenPoint)
+		{
+			if (Owner != null)
+				return Owner.ScreenToPoint(screenPoint);
+			return screenPoint;
+		}
+
+		/// <summary>
+		/// Function called for default mouse events.
+		/// </summary>
+		/// <param name="eventType">Mouse event type.</param>
+		/// <param name="e">Event parameters.</param>
+		protected void DefaultMouseEvent(MouseEventType eventType, MouseInputEventArgs e)
+		{
+			MouseInputEventArgs args = null;		// Arguments.
+
+			args = new MouseInputEventArgs(e.Buttons, e.ShiftButtons, ScreenToPoint((Point)e.Position), e.WheelPosition,
+															 e.RelativePosition, e.WheelDelta, e.ClickCount);
+
+			// If the mouse event is in the client area, then pass it on.
+			if (this.ClientArea.Contains((Point)args.Position))
+			{
+				switch (eventType)
+				{
+					case MouseEventType.MouseMoved:
+						OnMouseMove(this, args);
+						break;
+					case MouseEventType.MouseButtonDown:
+						OnMouseDown(this, args);
+						break;
+					case MouseEventType.MouseButtonUp:
+						OnMouseUp(this, args);
+						break;
+					case MouseEventType.MouseWheelMove:
+						OnMouseWheelMove(this, args);
+						break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function called for default keyboard events.
+		/// </summary>
+		/// <param name="keyDown">TRUE if the key is held, FALSE if released.</param>
+		/// <param name="e">Event parameters.</param>
+		protected void DefaultKeyboardEvent(bool keyDown, KeyboardInputEventArgs e)
+		{
+			// TODO: In here we will check to see if a control within the window is focused.
+			// Then we can process the key and/or send it on to the control.
+			if (keyDown)
+				OnKeyDown(this, e);
+			else
+				OnKeyUp(this, e);
 		}
 		
 		/// <summary>
 		/// Function to set the client area for the object.
 		/// </summary>
 		/// <param name="windowArea">Full area of the window.</param>
-		protected virtual internal void SetClientArea(Rectangle windowArea)
+		protected virtual void SetClientArea(Rectangle windowArea)
 		{
 			_clientArea = new Rectangle(0, 0, windowArea.Width, windowArea.Height);
 		}
+
+		/// <summary>
+		/// Function called when a mouse event has taken place in this window.
+		/// </summary>
+		/// <param name="eventType">Type of event that should be fired.</param>
+		/// <param name="e">Event parameters.</param>
+		protected abstract internal void MouseEvent(MouseEventType eventType, MouseInputEventArgs e);
+
+		/// <summary>
+		/// Function called when a keyboard event has taken place in this window.
+		/// </summary>
+		/// <param name="isDown">TRUE if the button was pressed, FALSE if released.</param>
+		/// <param name="e">Event parameters.</param>
+		protected abstract internal void KeyboardEvent(bool isDown, KeyboardInputEventArgs e);
 
 		/// <summary>
 		/// Function to convert a client rectangle to screen coordinates.
