@@ -54,4 +54,30 @@ namespace GorgonLibrary.Extras.GUI
 		{
 		}
 	}
+
+	/// <summary>
+	/// Exception thrown when an object of an invalid type is added to a collection or assigned as an owner.
+	/// </summary>
+	public class GUIInvalidTypeException
+		: GorgonException 
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GUIInvalidTypeException"/> class.
+		/// </summary>
+		/// <param name="message">Error message.</param>
+		/// <param name="inner">The inner exception that caused this exception.</param>
+		public GUIInvalidTypeException(string message, Exception inner)
+			: base(message, inner)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GUIInvalidTypeException"/> class.
+		/// </summary>
+		/// <param name="message">Error message.</param>
+		public GUIInvalidTypeException(string message)
+			: this(message, null)
+		{
+		}
+	}
 }

@@ -72,8 +72,8 @@ namespace GorgonLibrary.Extras.GUI
 		private Input _input = null;				// Input system to use.
 		private InputState _state;					// Input state data.
 		private Image _guiImage;					// Image to be used for the GUI.
-		private GUIObjectCollection _guiObjects;	// List of GUI objects.
-		private GUIObject _focused = null;			// Currently focused object.
+		private GUIWindowCollection _panels;		// List of GUI panels.
+		private GUIWindow _focused = null;			// Currently focused object.
 		#endregion
 
 		#region Properties.
@@ -89,20 +89,20 @@ namespace GorgonLibrary.Extras.GUI
 		}
 
 		/// <summary>
-		/// Property to return the list of GUI objects.
+		/// Property to return the list of GUI panels.
 		/// </summary>
-		public GUIObjectCollection GUIObjects
+		public GUIWindowCollection Panels
 		{
 			get
 			{
-				return _guiObjects;
+				return _panels;
 			}
 		}
 
 		/// <summary>
 		/// Property to return the current object with focus.
 		/// </summary>
-		public GUIObject Focused
+		public GUIWindow Focused
 		{
 			get
 			{
@@ -291,6 +291,8 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.KeyboardInputEventArgs"/> instance containing the event data.</param>
 		private void Keyboard_KeyUp(object sender, KeyboardInputEventArgs e)
 		{
+			if (_focused != null)
+				_focused.OnKeyUp(this, e);
 		}
 
 		/// <summary>
@@ -300,6 +302,8 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.KeyboardInputEventArgs"/> instance containing the event data.</param>
 		private void Keyboard_KeyDown(object sender, KeyboardInputEventArgs e)
 		{
+			if (_focused != null)
+				_focused.OnKeyDown(this, e);
 		}
 
 		/// <summary>
@@ -309,6 +313,8 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.MouseInputEventArgs"/> instance containing the event data.</param>
 		private void Mouse_MouseWheelMove(object sender, MouseInputEventArgs e)
 		{
+			if ((_focused != null) && (_focused.WindowDimensions.Contains((Drawing.Point)e.Position)))
+				_focused.OnMouseWheelMove(this, e);
 		}
 
 		/// <summary>
@@ -318,6 +324,8 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.MouseInputEventArgs"/> instance containing the event data.</param>
 		private void Mouse_MouseUp(object sender, MouseInputEventArgs e)
 		{
+			if ((_focused != null) && (_focused.WindowDimensions.Contains((Drawing.Point)e.Position)))
+				_focused.OnMouseUp(this, e);
 		}
 
 		/// <summary>
@@ -327,6 +335,30 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.MouseInputEventArgs"/> instance containing the event data.</param>
 		private void Mouse_MouseMove(object sender, MouseInputEventArgs e)
 		{
+			if ((_focused != null) && (MouseOverObject(_focused, (Drawing.Point)e.Position)))
+			{
+				MouseInputEventArgs args = new MouseInputEventArgs(e.Buttons, e.ShiftButtons, _focused.ScreenToPoint((Drawing.Point)e.Position), e.WheelPosition, 
+																	e.RelativePosition, e.WheelDelta, e.ClickCount);
+				_focused.OnMouseMove(this, args);
+			}
+		}
+
+		/// <summary>
+		/// Function to determine if the mouse is over a GUI object.
+		/// </summary>
+		/// <param name="guiObject">Object to test.</param>
+		/// <param name="position">Mouse position.</param>
+		/// <returns>TRUE if the object is under the mouse, FALSE if it is not.</returns>
+		private bool MouseOverObject(GUIObject guiObject, Drawing.Point position)
+		{
+			Drawing.Point clientPosition;		// Client position of the cursor.
+
+			if (guiObject == null)
+				throw new ArgumentNullException("guiObject");
+
+			clientPosition = guiObject.ScreenToPoint(position);
+
+			return guiObject.ClientArea.Contains(clientPosition);
 		}
 
 		/// <summary>
@@ -336,17 +368,18 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.MouseInputEventArgs"/> instance containing the event data.</param>
 		private void Mouse_MouseDown(object sender, MouseInputEventArgs e)
 		{
-			GUIObject currentObject = HitTest((Drawing.Point)e.Position);
+			GUIWindow currentObject = HitTest((Drawing.Point)e.Position);
 			if (currentObject != null)
 			{
 				if (_focused != currentObject)
 					_focused = currentObject;
 								
 				if (_focused.ZOrder != 0)
-					BringToFront(_focused);
-
-				_focused.OnMouseDown(this, e);
+					BringToFront(_focused);				
 			}
+
+			if ((_focused != null) && (_focused.WindowDimensions.Contains((Drawing.Point)e.Position)))
+				_focused.OnMouseDown(this, e);
 		}
 
 		/// <summary>
@@ -355,84 +388,52 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="location">Coordinates to test.</param>
 		/// <returns>The object under the coordinates.</returns>
 		/// <remarks>This will only return the object at the top of the Z-Order, if there are overlapping objects then the first in the z-order will be returned.</remarks>
-		public GUIObject HitTest(Drawing.Point location)
+		public GUIWindow HitTest(Drawing.Point location)
 		{
-			return (from guiObject in _guiObjects
-				   where ((guiObject.WindowDimensions.Contains(location)) && (guiObject.Visible) && (guiObject.Enabled))
-				   orderby guiObject.ZOrder
-				   select guiObject).FirstOrDefault();
+			return (from guiPanel in _panels
+				   where ((guiPanel.WindowDimensions.Contains(location)) && (guiPanel.Visible) && (guiPanel.Enabled))
+				   orderby guiPanel.ZOrder
+				   select guiPanel).FirstOrDefault();
 		}
 
 		/// <summary>
 		/// Function to bring an object to the foreground.
 		/// </summary>
 		/// <param name="focusedObject">Object to bring to the front.</param>
-		public void BringToFront(GUIObject focusedObject)
+		public void BringToFront(GUIWindow focusedObject)
 		{
 			int zCount = 1;			// ZOrder counter.
 
 			if (_focused != focusedObject)
 				_focused = focusedObject;
+
 			if (_focused.ZOrder != 0)
 			{
 				_focused.ZOrder = 0;
-				var objects = from guiObject in _guiObjects
-							  where _focused != guiObject
-							  select guiObject;
+				var objects = from guiPanel in _panels
+							  where _focused != guiPanel
+							  select guiPanel;
 
-				foreach (GUIObject guiObject in objects)
+				foreach (GUIWindow guiObject in objects)
 				{
 					guiObject.ZOrder = zCount;
 					zCount++;
 				}
 			}
 		}
-
-
-		/// <summary>
-		/// Function to create a new GUI panel.
-		/// </summary>
-		/// <param name="panelName">Name of the panel.</param>
-		/// <param name="x">Horitzontal position of the panel.</param>
-		/// <param name="y">Vertical position of the panel.</param>
-		/// <param name="width">Width of the panel.</param>
-		/// <param name="height">Height of the panel.</param>
-		/// <returns>A new GUI panel.</returns>
-		public GUIPanel CreatePanel(string panelName, int x, int y, int width, int height)
-		{			
-			GUIPanel newPanel = new GUIPanel(panelName);			// New panel.
-			int maxZOrder = 0;										// Maximum Z-value.
-
-			if (_guiObjects.Count > 0)
-				maxZOrder = _guiObjects.Max((guiObject) => guiObject.ZOrder) + 1;
-
-			if (_guiObjects.Contains(panelName))
-			{
-				newPanel.Dispose();
-				throw new ArgumentException("A panel with the name '" + panelName + "' already exists.");
-			}
-
-			newPanel.WindowDimensions = new Drawing.Rectangle(x, y, width, height);
-			newPanel.BackgroundColor = Drawing.Color.FromKnownColor(Drawing.KnownColor.Control);
-			newPanel.ZOrder = maxZOrder;
-			_guiObjects.Add(newPanel);
-			_focused = newPanel;
-
-			return newPanel;
-		}
-
+		
 		/// <summary>
 		/// Function to update the GUI system.
 		/// </summary>
 		/// <param name="frameTime">Frame delta time.</param>
 		public void Update(float frameTime)
 		{
-			var objects = from guiObject in _guiObjects
-						  where guiObject.Enabled && guiObject.Visible
-						  select guiObject;
+			var objects = from guiPanel in _panels
+						  where guiPanel.Enabled && guiPanel.Visible
+						  select guiPanel;
 
-			foreach (GUIObject guiObject in objects)
-				guiObject.Update(frameTime);
+			foreach (GUIWindow panel in objects)
+				panel.Update(frameTime);
 		}
 
 		/// <summary>
@@ -440,10 +441,10 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		public void Draw()
 		{
-			var objects = from guiObject in _guiObjects
-						  where guiObject.Enabled && guiObject.Visible
-						  orderby guiObject.ZOrder descending 
-						  select guiObject;
+			var objects = from guiPanel in _panels
+						  where guiPanel.Enabled && guiPanel.Visible
+						  orderby guiPanel.ZOrder descending
+						  select guiPanel;
 
 			if (Input == null)
 				throw new GUIInputInvalidException("No input interface was bound to the GUI.");
@@ -480,8 +481,8 @@ namespace GorgonLibrary.Extras.GUI
 				}
 			}
 
-			foreach (GUIObject guiObject in objects)
-				guiObject.Draw();
+			foreach (GUIWindow panel in objects)
+				panel.Draw();
 
 			if (Cursor != null) 
 				Cursor.Position = Input.Mouse.Position;
@@ -497,7 +498,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="input">Input interface to use with the GUI system.</param>
 		public Desktop(Input input)
 		{
-			_guiObjects = new GUIObjectCollection();
+			_panels = new GUIWindowCollection(this);
 			_state = new InputState();
 			Input = input;
 			CursorVisible = true;
@@ -519,6 +520,9 @@ namespace GorgonLibrary.Extras.GUI
 				if (disposing)
 				{
 					UnbindEvents();
+
+					foreach (GUIWindow panel in _panels)
+						panel.Dispose();
 
 					if (_guiImage != null)
 						_guiImage.Dispose();

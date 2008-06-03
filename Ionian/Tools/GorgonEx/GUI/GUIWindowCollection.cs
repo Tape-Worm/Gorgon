@@ -17,7 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Tuesday, May 27, 2008 2:04:03 PM
+// Created: Tuesday, May 27, 2008 5:25:44 PM
 // 
 #endregion
 
@@ -29,16 +29,20 @@ using System.Text;
 namespace GorgonLibrary.Extras.GUI
 {
 	/// <summary>
-	/// Object representing a list of GUI objects.
+	/// Object representing a collection of panels.
 	/// </summary>
-	public class GUIObjectCollection
-		: BaseCollection<GUIObject>
+	public class GUIWindowCollection
+		: BaseCollection<GUIWindow>
 	{
+		#region Variables.
+		private Desktop _desktop = null;				// Desktop that owns this collection.
+		#endregion
+
 		#region Properties.
 		/// <summary>
-		/// Property to return a GUI object from the collection by its index.
+		/// Property to return a panel by its index.
 		/// </summary>
-		public GUIObject this[int index]
+		public GUIWindow this[int index]
 		{
 			get
 			{
@@ -47,9 +51,9 @@ namespace GorgonLibrary.Extras.GUI
 		}
 
 		/// <summary>
-		/// Property to return a GUI object from the collection by its name.
+		/// Property to return a panel by its name.
 		/// </summary>
-		public GUIObject this[string name]
+		public GUIWindow this[string name]
 		{
 			get
 			{
@@ -60,38 +64,45 @@ namespace GorgonLibrary.Extras.GUI
 
 		#region Methods.
 		/// <summary>
-		/// Function to add a GUI object to the collection.
+		/// Function to add a panel to the collection.
 		/// </summary>
-		/// <param name="guiObject"></param>
-		internal void Add(GUIObject guiObject)
+		/// <param name="panel">Panel to add.</param>
+		public void Add(GUIWindow panel)
 		{
-			if (guiObject == null)
-				throw new ArgumentNullException("guiObject");
-			if (guiObject.Owner != null)
-				throw new ArithmeticException("The GUI object '" + guiObject.Name + "'already has an owner.");
+			if (panel == null)
+				throw new ArgumentNullException("panel");
 
-			AddItem(guiObject.Name, guiObject);
+			AddItem(panel.Name, panel);
+			panel.SetDesktop(_desktop);
+						
+			foreach (GUIWindow panelItem in this)
+				panelItem.ZOrder = int.MinValue;
+
+			_desktop.BringToFront(panel);
 		}
 
 		/// <summary>
-		/// Function to remove a GUI object from the collection.
+		/// Function to remove a GUI panel from the collection.
 		/// </summary>
-		/// <param name="guiObject">GUI object to remove.</param>
-		internal void Remove(GUIObject guiObject)
+		/// <param name="panel">GUI panel to remove.</param>
+		internal void Remove(GUIWindow panel)
 		{
-			if (guiObject == null)
-				throw new ArgumentNullException("guiObject");
-			RemoveItem(guiObject.Name);
+			if (panel == null)
+				throw new ArgumentNullException("panel");
+			RemoveItem(panel.Name);
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GUIObjectCollection"/> class.
+		/// Initializes a new instance of the <see cref="GUIWindowCollection"/> class.
 		/// </summary>
-		internal GUIObjectCollection()
-			: base(128, false)
+		internal GUIWindowCollection(Desktop desktop)
+			: base(128, true)
 		{
+			if (desktop == null)
+				throw new ArgumentNullException("desktop");
+			_desktop = desktop;
 		}
 		#endregion
 	}

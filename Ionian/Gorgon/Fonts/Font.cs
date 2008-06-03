@@ -82,6 +82,28 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return the font family name.
+		/// </summary>
+		public string FamilyName
+		{
+			get
+			{
+				if (_family == null)
+					return _familyName;
+				else
+					return _family.Name;
+			}
+			set
+			{
+				if (value == null)
+					throw new ArgumentNullException("value");
+				_family = null;
+				_familyName = value;
+				_needUpdate = true;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the number of resources the font consumes.
 		/// </summary>
 		/// <remarks>Resources mean the number of backing images that are required to hold the glyphs.  Too many images can lead to texture thrashing on the card and really hinder performance.  

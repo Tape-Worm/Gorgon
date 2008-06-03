@@ -28,6 +28,7 @@ using System.Text;
 using System.Drawing;
 using GorgonLibrary.Internal;
 using GorgonLibrary.InputDevices;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Extras.GUI
 {
@@ -63,9 +64,12 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		public event KeyboardInputEvent KeyUp;
 		#endregion
+
 		#region Variables.
 		private Rectangle _clientArea = Rectangle.Empty;			// Client area.
 		private Rectangle _windowArea = Rectangle.Empty;			// Window area.
+		private Viewport _clippedView = null;						// Clipping view.
+		private Viewport _previousView = null;						// Previous clipping view.
 		private GUIObject _owner = null;							// Object that will own this object.
 		private Desktop _desktop = null;							// Desktop that owns this object.
 		private bool _disposed = false;								// Flag to indicate that the object is disposed.
@@ -97,7 +101,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// <summary>
 		/// Property to set or return the owner object for this object.
 		/// </summary>
-		public GUIObject Owner
+		public virtual GUIObject Owner
 		{
 			get
 			{
@@ -225,16 +229,41 @@ namespace GorgonLibrary.Extras.GUI
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
+		/// <summary>
+		/// Function to set the active clipping region.
+		/// </summary>
+		/// <param name="clippingArea">Rectangle defining the clipping area.</param>
+		protected void SetClippingRegion(Rectangle clippingArea)
+		{
+			_previousView = Gorgon.CurrentClippingViewport;
+			_clippedView.Left = clippingArea.Left;
+			_clippedView.Top = clippingArea.Top;
+			_clippedView.Width = clippingArea.Width;
+			_clippedView.Height = clippingArea.Height;
+
+			Gorgon.CurrentClippingViewport = _clippedView;
+		}
+
+		/// <summary>
+		/// Function to restore the previous clipping region.
+		/// </summary>
+		protected void ResetClippingRegion()
+		{
+			Gorgon.CurrentClippingViewport = _previousView;
+		}
+
 		/// <summary>
 		/// Function called when the mouse is moved.
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
 		protected internal virtual void OnMouseMove(object sender, MouseInputEventArgs e)
-		{
+		{		
 			if (MouseMove != null)
+			{
 				MouseMove(sender, e);
+			}
 		}
 
 		/// <summary>
@@ -296,9 +325,55 @@ namespace GorgonLibrary.Extras.GUI
 		/// Function to set the client area for the object.
 		/// </summary>
 		/// <param name="windowArea">Full area of the window.</param>
-		protected internal void SetClientArea(Rectangle windowArea)
+		protected virtual internal void SetClientArea(Rectangle windowArea)
 		{
-			_clientArea = windowArea;
+			_clientArea = new Rectangle(0, 0, windowArea.Width, windowArea.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a client rectangle to screen coordinates.
+		/// </summary>
+		/// <param name="clientRect">Client rectangle to convert.</param>
+		/// <returns>The rectangle in screen coordinates.</returns>
+		public Rectangle RectToScreen(Rectangle clientRect)
+		{
+			return new Rectangle(PointToScreen(clientRect.Location), clientRect.Size);
+		}
+
+		/// <summary>
+		/// Function to convert a client point to screen coordinates.
+		/// </summary>
+		/// <param name="clientPoint">Client point to convert.</param>
+		/// <returns>The screen coordinates of the point.</returns>
+		public virtual Point PointToScreen(Point clientPoint)
+		{
+			Point currentPosition = clientPoint;		// Client area.
+
+			if (Owner != null)
+				currentPosition = Owner.PointToScreen(currentPosition);
+
+			currentPosition.X += Position.X;
+			currentPosition.Y += Position.Y;
+
+			return currentPosition;
+		}
+
+		/// <summary>
+		/// Function to convert a screen point to client coordinates.
+		/// </summary>
+		/// <param name="screenPoint">Screen point to convert.</param>
+		/// <returns>The client coordinates of the point.</returns>
+		public virtual Point ScreenToPoint(Point screenPoint)
+		{
+			Point currentPosition = screenPoint;		// Client area.
+
+			if (Owner != null)
+				currentPosition = Owner.ScreenToPoint(currentPosition);
+
+			currentPosition.X -= Position.X;
+			currentPosition.Y -= Position.Y;
+
+			return currentPosition;
 		}
 
 		/// <summary>
@@ -310,7 +385,6 @@ namespace GorgonLibrary.Extras.GUI
 			IGUIContainer container = this as IGUIContainer;	// Our child controls.
 
 			_desktop = desktop;
-
 			if (container != null)
 			{
 				// Assign all children to the same desktop.
@@ -336,7 +410,6 @@ namespace GorgonLibrary.Extras.GUI
 		/// Initializes a new instance of the <see cref="GUIObject"/> class.
 		/// </summary>
 		/// <param name="name">Name for this object.</param>
-		/// <param name="desktop">The desktop that owns this object.</param>
 		/// <remarks>
 		/// Since the name property is read-only, the name for an object must be passed to this constructor.
 		/// <para>Typically it will be difficult to rename an object that resides in a collection with its name as the key, thus making the property writable would be counter-productive.</para>
@@ -347,6 +420,8 @@ namespace GorgonLibrary.Extras.GUI
 		protected GUIObject(string name)
 			: base(name)
 		{
+			ZOrder = int.MinValue;
+			_clippedView = new Viewport(1, 1, 1, 1);
 		}
 		#endregion
 

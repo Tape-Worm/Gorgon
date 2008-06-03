@@ -38,6 +38,7 @@ namespace GorgonLibrary.Extras.GUI
 	{
 		#region Variables.
 		private GUIObjectCollection _guiObjects = null;				// List of objects contained in the panel.		
+		private PanelBorderStyle _border = PanelBorderStyle.None;	// Border style.
 		#endregion
 
 		#region Properties.
@@ -49,9 +50,53 @@ namespace GorgonLibrary.Extras.GUI
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the border style of the panel.
+		/// </summary>
+		public PanelBorderStyle Border
+		{
+			get
+			{
+				return _border;
+			}
+			set
+			{
+				_border = value;
+				SetClientArea(WindowDimensions);
+			}
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to draw the non-client area.
+		/// </summary>
+		protected virtual void DrawNonClientArea()
+		{
+			if (Border != PanelBorderStyle.Single)
+				return;
+
+			Drawing.Rectangle border = RectToScreen(ClientArea);		// Convert to screen coordinates.
+			border = Drawing.Rectangle.Inflate(border, 1, 1);
+			Gorgon.CurrentRenderTarget.Rectangle(border.X, border.Y, border.Width, border.Height, Drawing.Color.Black);
+		}
+
+		/// <summary>
+		/// Function to set the client area for the object.
+		/// </summary>
+		/// <param name="windowArea">Full area of the window.</param>
+		protected internal override void SetClientArea(System.Drawing.Rectangle windowArea)
+		{
+			if (Border == PanelBorderStyle.Single)
+			{
+				windowArea.Width -= 2;
+				windowArea.Height -= 2;
+			}
+
+			base.SetClientArea(windowArea);			
+		}
+
 		/// <summary>
 		/// Function to update the object.
 		/// </summary>
@@ -59,7 +104,13 @@ namespace GorgonLibrary.Extras.GUI
 		/// <remarks>The frame delta is typically used with animations to help achieve a smooth appearance regardless of processor speed.</remarks>
 		internal override void Update(float frameTime)
 		{
-			// Do nothing.
+			// Draw each child.
+			var children = from guiObject in GUIObjects
+						   where guiObject.Enabled
+						   select guiObject;
+
+			foreach (GUIObject guiObject in children)
+				guiObject.Update(frameTime);
 		}
 
 		/// <summary>
@@ -67,12 +118,70 @@ namespace GorgonLibrary.Extras.GUI
 		/// </summary>
 		internal override void Draw()
 		{
+			Drawing.Rectangle screenPoints;		// Screen coordinates.
+			IGUIContainer container;			// Parent container.
+
 			if (Visible)
 			{
+				container = Owner as IGUIContainer;
+
 				Gorgon.CurrentRenderTarget.BeginDrawing();
-				Gorgon.CurrentRenderTarget.FilledRectangle(WindowDimensions.X, WindowDimensions.Y, WindowDimensions.Width, WindowDimensions.Height, BackgroundColor);
+				screenPoints = RectToScreen(ClientArea);
+
+				if ((container != null) && (container.ClipChildren))
+					SetClippingRegion(Owner.RectToScreen(Owner.ClientArea));
+
+				DrawNonClientArea();
+				
+				Gorgon.CurrentRenderTarget.FilledRectangle(screenPoints.X, screenPoints.Y, screenPoints.Width, screenPoints.Height, BackgroundColor);
 				Gorgon.CurrentRenderTarget.EndDrawing();
+
+				// Draw each child.
+				var children = from guiObject in GUIObjects
+								where guiObject.Visible 
+								orderby guiObject.ZOrder descending
+								select guiObject;
+
+				foreach (GUIObject guiObject in children)
+					guiObject.Draw();
+
+				if ((container != null) && (container.ClipChildren))
+					ResetClippingRegion();
 			}
+		}
+
+		/// <summary>
+		/// Function to convert a client point to screen coordinates.
+		/// </summary>
+		/// <param name="clientPoint">Client point to convert.</param>
+		/// <returns>The screen coordinates of the point.</returns>
+		public override System.Drawing.Point PointToScreen(System.Drawing.Point clientPoint)
+		{
+			Drawing.Point newPoint;		// New point.
+
+			newPoint = base.PointToScreen(clientPoint);
+			if (Border == PanelBorderStyle.Single)
+			{
+				newPoint.X += 1;
+				newPoint.Y += 1;				
+			}			
+
+			return newPoint;
+		}
+
+		/// <summary>
+		/// Function to convert a screen point to client coordinates.
+		/// </summary>
+		/// <param name="screenPoint">Screen point to convert.</param>
+		/// <returns>The client coordinates of the point.</returns>
+		public override System.Drawing.Point ScreenToPoint(System.Drawing.Point screenPoint)
+		{
+			if (Border == PanelBorderStyle.Single)
+			{
+				screenPoint.X -= 1;
+				screenPoint.Y -= 1;
+			}
+			return base.ScreenToPoint(screenPoint);
 		}
 		#endregion
 
@@ -93,7 +202,8 @@ namespace GorgonLibrary.Extras.GUI
 		{
 			_guiObjects = new GUIObjectCollection();
 			Visible = true;
-			BackgroundColor = Drawing.Color.Transparent;
+			ClipChildren = true;
+			BackgroundColor = Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 		}
 		#endregion
 
@@ -108,6 +218,16 @@ namespace GorgonLibrary.Extras.GUI
 			{
 				return _guiObjects;
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether this control will clip its children.
+		/// </summary>
+		/// <value></value>
+		public bool ClipChildren
+		{
+			get;
+			set;
 		}
 		#endregion
 	}

@@ -17,7 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Tuesday, May 27, 2008 2:09:11 PM
+// Created: Tuesday, May 27, 2008 6:55:19 PM
 // 
 #endregion
 
@@ -29,25 +29,17 @@ using System.Text;
 namespace GorgonLibrary.Extras.GUI
 {
 	/// <summary>
-	/// Interface representing a container for GUI objects.
+	/// Border style enumeration for panels.
 	/// </summary>
-	public interface IGUIContainer
+	public enum PanelBorderStyle
 	{
 		/// <summary>
-		/// Property to set or return whether this control will clip its children.
+		/// No border.
 		/// </summary>
-		bool ClipChildren
-		{
-			get;
-			set;
-		}
-
+		None = 0,
 		/// <summary>
-		/// Property to return the list of objects contained within this container.
+		/// Single thin line around the control.
 		/// </summary>
-		GUIObjectCollection GUIObjects
-		{
-			get;
-		}
+		Single = 1
 	}
 }
