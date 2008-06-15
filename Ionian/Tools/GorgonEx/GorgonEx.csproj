@@ -60,11 +60,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUI\GUIDesktop.cs" />
+    <Compile Include="GUI\GUIElement.cs" />
+    <Compile Include="GUI\GUIElementCollection.cs" />
     <Compile Include="GUI\GUIEnums.cs" />
     <Compile Include="GUI\GUIExceptions.cs" />
     <Compile Include="GUI\GUIObject.cs" />
     <Compile Include="GUI\GUIObjectCollection.cs" />
     <Compile Include="GUI\GUIPanel.cs" />
+    <Compile Include="GUI\GUISkin.cs" />
     <Compile Include="GUI\GUIWindowCollection.cs" />
     <Compile Include="GUI\IGUIContainer.cs" />
     <Compile Include="GUI\GUIWindow.cs" />
@@ -89,13 +92,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
-    <None Include="Resources\DefaultCursorSprite.gorSprite" />
-    <None Include="Resources\DefaultGUIImage.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

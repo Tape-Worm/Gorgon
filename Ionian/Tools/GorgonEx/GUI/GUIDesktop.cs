@@ -74,6 +74,7 @@ namespace GorgonLibrary.Extras.GUI
 		private Image _guiImage;					// Image to be used for the GUI.
 		private GUIWindowCollection _panels;		// List of GUI panels.
 		private GUIWindow _focused = null;			// Currently focused object.
+		private GUISkin _skin = null;				// Skin for the objects.
 		#endregion
 
 		#region Properties.
@@ -85,6 +86,23 @@ namespace GorgonLibrary.Extras.GUI
 			get
 			{
 				return _guiImage;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the skin for the objects.
+		/// </summary>
+		public GUISkin Skin
+		{
+			get
+			{
+				return _skin;
+			}
+			set
+			{
+				if (value == null)
+					throw new ArgumentNullException("value");
+				_skin = value;
 			}
 		}
 
@@ -288,6 +306,7 @@ namespace GorgonLibrary.Extras.GUI
 		/// Function to send the mouse event to the focused window.
 		/// </summary>
 		/// <param name="eventType">Type of event to send.</param>
+		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.MouseInputEventArgs"/> instance containing the event data.</param>
 		private void SendMouseEvent(MouseEventType eventType, MouseInputEventArgs e)
 		{
 			if ((_focused != null) && (_focused.WindowDimensions.Contains((Drawing.Point)e.Position)))
@@ -486,10 +505,12 @@ namespace GorgonLibrary.Extras.GUI
 			foreach (GUIWindow panel in objects)
 				panel.Draw();
 
-			if (Cursor != null) 
+			if (Cursor != null)
+			{
 				Cursor.Position = Input.Mouse.Position;
-			if ((CursorVisible) && (!Input.Mouse.CursorVisible))
-				Cursor.Draw();				
+				if ((CursorVisible) && (!Input.Mouse.CursorVisible))
+					Cursor.Draw();
+			}
 		}
 		#endregion
 
@@ -498,15 +519,25 @@ namespace GorgonLibrary.Extras.GUI
 		/// Initializes a new instance of the <see cref="Desktop"/> class.
 		/// </summary>
 		/// <param name="input">Input interface to use with the GUI system.</param>
-		public Desktop(Input input)
+		/// <param name="skin">Skin to use when drawing.</param>
+		public Desktop(Input input, GUISkin skin)
 		{
+			if (skin == null)
+				throw new ArgumentNullException("skin");
+			if (input == null)
+				throw new ArgumentNullException("input");
+
+			Skin = skin;
 			_panels = new GUIWindowCollection(this);
 			_state = new InputState();
 			Input = input;
 			CursorVisible = true;
 			BackgroundColor = Drawing.Color.White;
-			_guiImage = Image.FromResource("DefaultGUIImage", Properties.Resources.ResourceManager);
-			Cursor = Sprite.FromResource("DefaultCursorSprite", Properties.Resources.ResourceManager);
+			_guiImage = skin.SkinImage;
+			if (_guiImage == null)
+				Cursor = new Sprite("DefaultCursor", Image.FromResource("DefaultCursorImage", Properties.Resources.ResourceManager));
+			else
+				Cursor = _skin.Elements["Cursor.Default"].GetSprite();
 		}
 		#endregion
 

@@ -154,7 +154,7 @@ namespace GorgonLibrary.Example
             _angle -= 15.0f * frameTime;
             if (_angle < -359.9999f)
                 _angle = 0.0f;
-            _cube.Diffuse = _cubeColor;
+            _cube.Diffuse = _cubeColor.ToColor();
             _cube.RotateXYZ(_angle, _angle, _angle);
             _cube.Draw();            
         }
@@ -208,7 +208,7 @@ namespace GorgonLibrary.Example
                 // Initialize our buffers and vertex data.
                 _cube = new Cube(_d3dObjects);
                 _cubeColor = new SlimDX.Color4(1.0f, 1.0f, 1.0f);
-                _cube.Diffuse = _cubeColor;
+                _cube.Diffuse = _cubeColor.ToColor();
                 _cube.Texture = Image.FromFile(@"..\..\..\..\Resources\D3D\Glass.png");
             }
             catch (Exception ex)

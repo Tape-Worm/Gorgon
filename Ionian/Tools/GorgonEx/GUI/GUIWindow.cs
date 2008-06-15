@@ -50,6 +50,20 @@ namespace GorgonLibrary.Extras.GUI
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the current GUI skin.
+		/// </summary>
+		private GUISkin Skin
+		{
+			get
+			{
+				if (Desktop != null)
+					return Desktop.Skin;
+				else
+					return null;
+			}
+		}
+
+		/// <summary>
 		/// Property to determine if the mouse is over the caption.
 		/// </summary>
 		private bool IsMouseOverCaption
@@ -67,32 +81,35 @@ namespace GorgonLibrary.Extras.GUI
 		}
 
 		/// <summary>
-		/// Property to set or return the default caption height.
+		/// Property to return the default border size.
 		/// </summary>
-		public static int DefaultCaptionHeight
+		public int DefaultBorderSize
 		{
 			get
 			{
-				return _defaultCaptionHeight;
-			}
-			set
-			{
-				_defaultCaptionHeight = value;
+				if (Skin == null)
+					return 0;
+				else
+					return Skin.Elements["Border"].Dimensions.Width;
 			}
 		}
 
 		/// <summary>
-		/// Property to set or return the default border size.
+		/// Property to return the default caption height.
 		/// </summary>
-		public static int DefaultBorderSize
+		public int DefaultCaptionHeight
 		{
 			get
 			{
-				return _defaultBorderWidth;
-			}
-			set
-			{
-				_defaultBorderWidth = value;
+				if (Skin == null)
+					return _windowFont.LineHeight + 4;
+				else
+				{
+					if ((_windowFont.LineHeight - Skin.Elements["Caption.Body"].Dimensions.Height) > 2)
+						return (Skin.Elements["Caption.Body"].Dimensions.Height) + (_windowFont.LineHeight - Skin.Elements["Caption.Body"].Dimensions.Height) + 4;
+					else
+						return Skin.Elements["Caption.Body"].Dimensions.Height + 4;
+				}
 			}
 		}
 
@@ -193,7 +210,13 @@ namespace GorgonLibrary.Extras.GUI
 			Drawing.Rectangle captionScreen;
 			Viewport lastView = null;
 
-			_captionRectangle = new System.Drawing.Rectangle(Position.X + DefaultBorderSize, Position.Y + DefaultBorderSize, WindowDimensions.Width - DefaultBorderSize * 2, DefaultCaptionHeight);
+			if (Skin == null)
+				return;
+
+			_captionRectangle = new System.Drawing.Rectangle(Position.X + Skin.Elements["Caption.Corner.Left"].Dimensions.Width, Position.Y,
+						WindowDimensions.Width - Skin.Elements["Caption.Corner.Right"].Dimensions.Width - (DefaultBorderSize * 2), DefaultCaptionHeight);
+
+			//_captionRectangle = new System.Drawing.Rectangle(Position.X + DefaultBorderSize, Position.Y + DefaultBorderSize, WindowDimensions.Width - DefaultBorderSize * 2, DefaultCaptionHeight);
 			captionScreen = _captionRectangle;
 
 			if (Owner != null)
@@ -202,8 +225,14 @@ namespace GorgonLibrary.Extras.GUI
 				captionScreen = Owner.RectToScreen(_captionRectangle);
 			}
 
-			Gorgon.CurrentRenderTarget.FilledRectangle(nonClientPosition.X, nonClientPosition.Y, WindowDimensions.Width, WindowDimensions.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.WindowFrame)));
-			Gorgon.CurrentRenderTarget.FilledRectangle(captionScreen.X, captionScreen.Y, captionScreen.Width, captionScreen.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ActiveCaption)));
+			Skin.Elements["Caption.Corner.Left"].Draw(new Drawing.Rectangle(captionScreen.Location.X - Skin.Elements["Caption.Corner.Left"].Dimensions.Width, captionScreen.Location.Y, Skin.Elements["Caption.Corner.Left"].Dimensions.Width, captionScreen.Size.Height));
+			Skin.Elements["Caption.Corner.Right"].Draw(new Drawing.Rectangle(captionScreen.Width + captionScreen.X, captionScreen.Location.Y, Skin.Elements["Caption.Corner.Right"].Dimensions.Width, captionScreen.Size.Height));
+			Skin.Elements["Caption.Body"].Draw(captionScreen);
+
+			Skin.Elements["Border"].Draw(new Drawing.Rectangle(Position.X, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight));
+
+			//Gorgon.CurrentRenderTarget.FilledRectangle(WindowDimensions.X, WindowDimensions.Y, WindowDimensions.Width, WindowDimensions.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.WindowFrame)));
+			//Gorgon.CurrentRenderTarget.FilledRectangle(captionScreen.X, captionScreen.Y, captionScreen.Width, captionScreen.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ActiveCaption)));
 
 			_clipView.Left = captionScreen.Left;
 			_clipView.Top = captionScreen.Top;
@@ -222,8 +251,12 @@ namespace GorgonLibrary.Extras.GUI
 		/// <param name="windowArea">Full area of the window.</param>
 		protected override void SetClientArea(System.Drawing.Rectangle windowArea)
 		{
-			windowArea.Width -= DefaultBorderSize * 2;
-			windowArea.Height -= DefaultCaptionHeight + DefaultBorderSize * 3;
+			if (Skin != null)
+			{
+				windowArea.Width -= DefaultBorderSize * 2;
+				windowArea.Height -= DefaultCaptionHeight;
+			}
+
 			base.SetClientArea(windowArea);
 		}
 
@@ -257,6 +290,14 @@ namespace GorgonLibrary.Extras.GUI
 		}
 
 		/// <summary>
+		/// Function to be called when the skin has been updated.
+		/// </summary>
+		internal void SkinUpdated()
+		{
+			SetClientArea(WindowDimensions);
+		}
+
+		/// <summary>
 		/// Function to update the object.
 		/// </summary>
 		/// <param name="frameTime">Frame delta time.</param>
@@ -284,7 +325,7 @@ namespace GorgonLibrary.Extras.GUI
 			Drawing.Point result = base.PointToScreen(clientPoint);
 
 			result.X += DefaultBorderSize;
-			result.Y += DefaultCaptionHeight + (DefaultBorderSize * 2);
+			result.Y += DefaultCaptionHeight;
 			return result;
 		}
 
@@ -298,7 +339,7 @@ namespace GorgonLibrary.Extras.GUI
 			Drawing.Point result = base.ScreenToPoint(screenPoint);
 
 			result.X -= DefaultBorderSize;
-			result.Y -= DefaultCaptionHeight + (DefaultBorderSize * 2);
+			result.Y -= DefaultCaptionHeight;
 			return result;
 		}
 		#endregion

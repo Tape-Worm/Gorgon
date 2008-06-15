@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renderer", "PlugIns\D3D\Ren
 		{EDC602B0-403D-4A3D-8A60-13992B351C95} = {EDC602B0-403D-4A3D-8A60-13992B351C95}
 	EndProjectSection
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TehShadowGn0s", "Graphics\TehShadowGn0s\TehShadowGn0s.vbproj", "{485F1DAC-E1B5-4440-8398-735ABC03C42F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{1FA47F6B-EFD7-4571-82B9-F559605CE34A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FA47F6B-EFD7-4571-82B9-F559605CE34A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FA47F6B-EFD7-4571-82B9-F559605CE34A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{485F1DAC-E1B5-4440-8398-735ABC03C42F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{485F1DAC-E1B5-4440-8398-735ABC03C42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{485F1DAC-E1B5-4440-8398-735ABC03C42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{485F1DAC-E1B5-4440-8398-735ABC03C42F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -130,7 +130,7 @@ namespace GorgonLibrary.Graphics
 					data.Position = 0;
 
 					// Create the effect.
-					_effect = D3D9.Effect.FromStream(Gorgon.Screen.Device, data, null, null, flags, null, out errors);
+					_effect = D3D9.Effect.FromStream(Gorgon.Screen.Device, data, null, null, null, flags, null, out errors);
 
 					// Add techniques and passes.
 					_techniques.Add(this);
@@ -889,7 +889,7 @@ namespace GorgonLibrary.Graphics
 #else
 					flags = D3D9.ShaderFlags.OptimizationLevel3;
 #endif
-					_effect = D3D9.Effect.FromStream(Gorgon.Screen.Device, stream, null, null, flags, null, out errors);
+					_effect = D3D9.Effect.FromStream(Gorgon.Screen.Device, stream, null, null, null, flags, null, out errors);
 
 					// Add techniques and passes.
 					_techniques.Add(this);

@@ -243,25 +243,25 @@ namespace GorgonLibrary.Internal
 				case AlphaBlendOperation.BlendFactor:
 					return D3D9.Blend.BlendFactor;
 				case AlphaBlendOperation.BothInverseSourceAlpha:
-					return D3D9.Blend.BothInvSourceAlpha;
+					return D3D9.Blend.BothInverseSourceAlpha;
 				case AlphaBlendOperation.DestinationAlpha:
 					return D3D9.Blend.DestinationAlpha;
 				case AlphaBlendOperation.DestinationColor:
 					return D3D9.Blend.DestinationColor;
 				case AlphaBlendOperation.InverseBlendFactor:
-					return D3D9.Blend.InvBlendFactor;
+					return D3D9.Blend.InverseBlendFactor;
 				case AlphaBlendOperation.InverseDestinationAlpha:
-					return D3D9.Blend.InvDestinationAlpha;
+					return D3D9.Blend.InverseDestinationAlpha;
 				case AlphaBlendOperation.InverseDestinationColor:
-					return D3D9.Blend.InvDestinationColor;
+					return D3D9.Blend.InverseDestinationColor;
 				case AlphaBlendOperation.InverseSourceAlpha:
-					return D3D9.Blend.InvSourceAlpha;
+					return D3D9.Blend.InverseSourceAlpha;
 				case AlphaBlendOperation.InverseSourceColor:
-					return D3D9.Blend.InvSourceColor;
+					return D3D9.Blend.InverseSourceColor;
 				case AlphaBlendOperation.SourceAlpha:
 					return D3D9.Blend.SourceAlpha;
 				case AlphaBlendOperation.SourceAlphaSaturation:
-					return D3D9.Blend.SourceAlphaSat;
+					return D3D9.Blend.SourceAlphaSaturated;
 				case AlphaBlendOperation.SourceColor:
 					return D3D9.Blend.SourceColor;
 				case AlphaBlendOperation.Zero:

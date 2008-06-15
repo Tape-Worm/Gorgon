@@ -390,7 +390,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return (_caps.Caps2 & D3D9.Caps2.CanAutoGenMipMap) == D3D9.Caps2.CanAutoGenMipMap;
+				return (_caps.Caps2 & D3D9.Caps2.CanAutoGenerateMipMap) == D3D9.Caps2.CanAutoGenerateMipMap;
 			}
 		}
 
@@ -606,7 +606,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BothInvSourceAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.BothInvSourceAlpha)) == D3D9.BlendCaps.BothInvSourceAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BothInverseSourceAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.BothInverseSourceAlpha)) == D3D9.BlendCaps.BothInverseSourceAlpha;
 			}
 		}
 
@@ -639,7 +639,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvDestinationAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvDestinationAlpha)) == D3D9.BlendCaps.InvDestinationAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InverseDestinationAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InverseDestinationAlpha)) == D3D9.BlendCaps.InverseDestinationAlpha;
 			}
 		}
 
@@ -650,7 +650,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvDestinationColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvDestinationColor)) == D3D9.BlendCaps.InvDestinationColor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InverseDestinationColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InverseDestinationColor)) == D3D9.BlendCaps.InverseDestinationColor;
 			}
 		}
 
@@ -661,7 +661,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvSourceColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvSourceColor)) == D3D9.BlendCaps.InvSourceColor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InverseSourceColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InverseSourceColor)) == D3D9.BlendCaps.InverseSourceColor;
 			}
 		}
 

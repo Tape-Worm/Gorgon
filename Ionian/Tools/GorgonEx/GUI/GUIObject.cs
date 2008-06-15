@@ -457,6 +457,7 @@ namespace GorgonLibrary.Extras.GUI
 			IGUIContainer container = this as IGUIContainer;	// Our child controls.
 
 			_desktop = desktop;
+			SetClientArea(WindowDimensions);
 			if (container != null)
 			{
 				// Assign all children to the same desktop.

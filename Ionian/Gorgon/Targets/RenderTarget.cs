@@ -79,6 +79,7 @@ namespace GorgonLibrary.Graphics
 		private float _depthBias;							// Depth bias.
 		private bool _depthWriteEnabled;					// Depth writing enabled flag.
 		private CompareFunctions _depthCompare;				// Depth test comparison function.
+		private int _shaderPass = 0;						// Current pass of the shader technique to apply.
 		#endregion
 
 		#region Properties.
@@ -2082,6 +2083,33 @@ namespace GorgonLibrary.Graphics
 				_shader = value;
 			}
 		}
-        #endregion
+
+		/// <summary>
+		/// Property to set or return the current shader pass.
+		/// </summary>
+		public int ShaderPass
+		{
+			get
+			{
+				if ((_shader == null) || (_shader.ActiveTechnique == null))
+					return -1;
+
+				if (_shaderPass >= _shader.ActiveTechnique.Passes.Count)
+					return _shader.ActiveTechnique.Passes.Count - 1;
+
+				return _shaderPass;
+			}
+			set
+			{
+				if ((_shader == null) || (_shader.ActiveTechnique == null))
+					throw new InvalidOperationException("There is no shader or active technique assigned to this renderable.");
+
+				if ((value < 0) || (value >= _shader.ActiveTechnique.Passes.Count))
+					throw new IndexOutOfRangeException("The pass index [" + value.ToString() + "] is not valid for the active technique of the shader.");
+
+				_shaderPass = value;
+			}
+		}
+		#endregion
 	}
 }

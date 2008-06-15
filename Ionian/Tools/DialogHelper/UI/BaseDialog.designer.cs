@@ -85,7 +85,6 @@ namespace Dialogs
 			this.OKButton.TabIndex = 10;
 			this.OKButton.Text = "OK";
 			this.OKButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.OKButton.UseVisualStyleBackColor = true;
 			// 
 			// BaseDialog
 			// 

@@ -519,6 +519,8 @@ namespace GorgonLibrary.Graphics
 
 			// Set the currently active shader.
 			Gorgon.Renderer.CurrentShader = renderObject.Shader;
+			if (Gorgon.Renderer.CurrentTechnique != null)
+				Gorgon.Renderer.CurrentShaderPass = renderObject.ShaderPass;
 
 			// Set dithering flag.
 			_renderStates.DitheringEnabled = _dither;
@@ -542,81 +544,84 @@ namespace GorgonLibrary.Graphics
 			_imageStates = Gorgon.Renderer.ImageLayerStates[0];
 
 			if (image != Gorgon.Renderer.GetImage(0))
-				result = true;
+				return true;
+
+			if (renderObject.ShaderPass != Gorgon.Renderer.CurrentShaderPass)
+				return true;
 
 			if (renderObject.BorderColor != _imageStates.BorderColor)
-				result = true;
+				return true;
 
 			if (((renderObject.BlendingMode & BlendingModes.ColorAdditive) == BlendingModes.ColorAdditive) && (_imageStates.ColorOperation != ImageOperations.Additive))
-				result = true;
+				return true;
 
 			if (((renderObject.BlendingMode & BlendingModes.ColorAdditive) != BlendingModes.ColorAdditive) && (_imageStates.ColorOperation == ImageOperations.Additive))
-				result = true;
+				return true;
 
 			if (renderObject.StencilCompare != states.StencilCompare)
-				result = true;
+				return true;
 
 			if (renderObject.StencilEnabled != states.StencilEnable)
-				result = true;
+				return true;
 
 			if (renderObject.StencilPassOperation != states.StencilPassOperation)
-				result = true;
+				return true;
 
 			if (renderObject.StencilFailOperation != states.StencilFailOperation)
-				result = true;
+				return true;
 
 			if (renderObject.StencilZFailOperation != states.StencilZFailOperation)
-				result = true;
+				return true;
 
 			if (renderObject.StencilReference != states.StencilReference)
-				result = true;
+				return true;
 
 			if (renderObject.StencilMask != states.StencilMask)
-				result = true;
+				return true;
 
 			if (renderObject.SourceBlend != states.SourceAlphaBlendOperation)
-				result = true;
+				return true;
 
 			if (renderObject.DestinationBlend != states.DestinationAlphaBlendOperation)
-				result = true;
+				return true;
 
 			if (renderObject.HorizontalWrapMode != _imageStates.HorizontalAddressing)
-				result = true;
+				return true;
 
 			if (renderObject.VerticalWrapMode != _imageStates.VerticalAddressing)
-				result = true;
+				return true;
 
 			if (renderObject.AlphaMaskFunction != states.AlphaTestFunction)
-				result = true;
+				return true;
 
 			if (renderObject.AlphaMaskValue != states.AlphaTestValue)
-				result = true;
+				return true;
 
 			if (renderObject.Smoothing != _lastSmooth)
-				result = true;
+				return true;
 
 			if (renderObject.DepthTestFunction != states.DepthTestFunction)
-				result = true;
+				return true;
 
 			if (renderObject.DepthWriteEnabled != states.DepthBufferWriteEnabled)
-				result = true;
+				return true;
 
 			if (renderObject.DepthBufferBias != states.DepthBias)
-				result = true;
+				return true;
 
 			if (Geometry.PrimitiveStyle != renderObject.PrimitiveStyle)
-				result = true;
+				return true;
 
 			if (Geometry.UseIndices != renderObject.UseIndices)
-				result = true;
+				return true;
 
 			if (renderObject.Shader != Gorgon.Renderer.CurrentShader)
-				result = true;
+				return true;
 
 			if ((renderObject.Shader != null) && (Gorgon.Renderer.CurrentTechnique != renderObject.Shader.ActiveTechnique))
-				result = true;
+				return true;
 
-			return result;
+			return false;
 		}
 		#endregion
 
