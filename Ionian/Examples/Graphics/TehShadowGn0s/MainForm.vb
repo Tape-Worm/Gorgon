@@ -36,9 +36,19 @@ Public Class MainForm
     Private _sprite2 As Sprite = Nothing                    ' Sprite to draw.
     Private _tileCount As Drawing.Size = Drawing.Size.Empty ' Number of tiles.
     Private _mousePos As Vector2D = Vector2D.Zero           ' Mouse position.
-    Private _blur As ShadowSprite = Nothing                 ' Blur sprite object.
+    Private _shadowGen As ShadowSprite = Nothing            ' Soft shadow generator.
     Private _shadow As Sprite = Nothing                     ' Soft shadow of sprite.
     Private _shadow2 As Sprite = Nothing                    ' Soft shadow of sprite.
+    Private _blurPass1 As RenderImage = Nothing             ' Blur pass image.
+    Private _blurPass2 As RenderImage = Nothing             ' Final output image.
+    Private _screenSprite As Sprite = Nothing               ' Sprite used to draw the output.
+    Private _blurShader As Shader = Nothing                 ' Blur shader.
+    Private _samples As Single = 100                        ' Blur samples.
+    Private _auto As Boolean = True                         ' Auto blur.
+    Private _moveShip1 As Boolean = True                    ' Flag to move ship 1.
+    Private _instructions As TextSprite = Nothing           ' Instructions.
+    Private _font As Font = Nothing                         ' Font for instructions.
+    Private _help As Boolean = True                         ' Flag to show help.
 #End Region
 
 #Region "Methods."
@@ -49,6 +59,13 @@ Public Class MainForm
     ''' <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
     Private Sub Gorgon_Reset(ByVal sender As Object, ByVal e As EventArgs)
         _tileCount = New Drawing.Size(MathUtility.Round(Gorgon.Screen.Width / _bgSprite.Width, 0, MidpointRounding.AwayFromZero), MathUtility.Round(Gorgon.Screen.Height / _bgSprite.Height, 0, MidpointRounding.AwayFromZero))
+        _blurPass2.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height)
+        _blurPass1.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height)
+        _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(Gorgon.Screen.Width)
+        _blurShader.Techniques("Blur").Parameters("blur1").SetValue(_blurPass1)
+        _blurShader.Techniques("Blur").Parameters("blur2").SetValue(_blurPass2)
+        _screenSprite.Width = _blurPass1.Width
+        _screenSprite.Height = _blurPass1.Height
     End Sub
 
     ''' <summary>
@@ -57,7 +74,9 @@ Public Class MainForm
     ''' <param name="sender">The source of the event.</param>
     ''' <param name="e">The <see cref="GorgonLibrary.Graphics.FrameEventArgs"/> instance containing the event data.</param>
     Private Sub Gorgon_Idle(ByVal sender As Object, ByVal e As FrameEventArgs)
-        Gorgon.CurrentRenderTarget.Clear()
+        _screenSprite.Shader = Nothing
+
+        Gorgon.CurrentRenderTarget = _blurPass2
 
         For x As Integer = 0 To _tileCount.Width
             For y As Integer = 0 To _tileCount.Height
@@ -66,15 +85,72 @@ Public Class MainForm
             Next
         Next
 
-        _sprite2.SetPosition((Gorgon.Screen.Width / 2D), (Gorgon.Screen.Height / 2D) - 100)
-        _shadow2.Position = _sprite2.Position + New Vector2D(5.0, 5.0)
-        _shadow2.Draw()
-        _sprite2.Draw()
+        If Not (_moveShip1) Then
+            _shadow.Draw()
+            _sprite.Draw()
+        Else
+            _shadow2.Draw()
+            _sprite2.Draw()
+        End If
 
-        _shadow.Position = Vector2D.Add(_mousePos, New Vector2D(2.0, 2.0))
-        _shadow.Draw()
-        _sprite.Position = _mousePos
-        _sprite.Draw()
+        If (_auto) Then
+            If (_moveShip1) Then
+                _sprite.Position = _mousePos
+                _shadow.Position = _mousePos
+                _shadow.Draw()
+                _sprite.Draw()
+            Else
+                _sprite2.Position = _mousePos
+                _shadow2.Position = _mousePos
+                _shadow2.Draw()
+                _sprite2.Draw()
+            End If
+        End If
+
+        _screenSprite.Image = _blurPass2.Image
+
+        For i As Integer = 0 To _samples - 1
+            _screenSprite.Shader = _blurShader
+            Gorgon.CurrentRenderTarget = _blurPass1
+            _screenSprite.ShaderPass = 0
+            _screenSprite.Draw()
+
+            Gorgon.CurrentRenderTarget = _blurPass2
+            _screenSprite.ShaderPass = 1
+            _screenSprite.Draw()
+        Next
+
+        _screenSprite.Shader = Nothing
+        _screenSprite.Image = _blurPass2.Image
+
+        Gorgon.CurrentRenderTarget = Nothing
+        _screenSprite.Draw()
+
+        If (_auto) Then
+            _samples -= e.FrameDeltaTime * 25
+        Else
+            If (_moveShip1) Then
+                _shadow.Position = _mousePos
+                _sprite.Position = _mousePos
+                _shadow.Draw()
+                _sprite.Draw()
+            Else
+                _shadow2.Position = _mousePos
+                _sprite2.Position = _mousePos
+                _shadow2.Draw()
+                _sprite2.Draw()
+            End If
+        End If
+
+        If (_samples < 0) Then
+            _samples = 0
+            _auto = False
+            _blurShader.Techniques("Blur").Parameters("fadeFactor").SetValue(0)
+        End If
+
+        If (_help) Then
+            _instructions.Draw()
+        End If
     End Sub
 
     ''' <summary>
@@ -90,19 +166,35 @@ Public Class MainForm
         Image.FromFile("..\..\..\..\Resources\Images\0_HardVacuum.png")
         _sprite = Sprite.FromFile("..\..\..\..\Resources\Sprites\TehShadowGn0s\WeirdShip.gorSprite")
         _sprite2 = Sprite.FromFile("..\..\..\..\Resources\Sprites\TehShadowGn0s\WeirdShip2.gorSprite")
+        _blurShader = Shader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx")
 
         _tileCount = New Drawing.Size(MathUtility.Round(Gorgon.Screen.Width / _bgSprite.Width, 0, MidpointRounding.AwayFromZero), MathUtility.Round(Gorgon.Screen.Height / _bgSprite.Height, 0, MidpointRounding.AwayFromZero))
 
-        _blur = New ShadowSprite(_sprite)
-        _blur.BlurAmount = 2.25
-        _shadow = _blur.CreateShadow(12)
-        _shadow.Axis = _sprite.Axis
+        _shadowGen = New ShadowSprite(_sprite)
+        _shadow = _shadowGen.CreateShadow(12)
+        _shadow.Axis = Vector2D.Add(Vector2D.Add(_sprite.Axis, New Vector2D(-24.0, -24.0)), _shadow.Axis)
 
-        _blur.BlurAmount = 1.0
-        _blur.Sprite = _sprite2
-        _blur.ShadowColor = Drawing.Color.FromArgb(128, 0, 0, 0)
-        _shadow2 = _blur.CreateShadow(8)
-        _shadow2.Axis = _sprite2.Axis
+        _shadowGen.Sprite = _sprite2
+        _shadow2 = _shadowGen.CreateShadow(8)
+        _shadow2.Axis = Vector2D.Add(Vector2D.Add(_sprite2.Axis, New Vector2D(-12.0, -12.0)), _shadow2.Axis)
+
+        _blurPass2 = New RenderImage("Output", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8)
+        _blurPass1 = New RenderImage("BlurOutput", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8)
+        _screenSprite = New Sprite("ScreenSprite", _blurPass2)
+        _screenSprite.Shader = _blurShader
+        _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(Gorgon.Screen.Width)
+        _blurShader.Techniques("Blur").Parameters("fadeFactor").SetValue(0.02D)
+        _blurShader.Techniques("Blur").Parameters("blur1").SetValue(_blurPass1)
+        _blurShader.Techniques("Blur").Parameters("blur2").SetValue(_blurPass2)
+
+        _sprite2.SetPosition((Gorgon.CurrentRenderTarget.Width / 2D), (Gorgon.CurrentRenderTarget.Height / 2D) - 100)
+        _shadow2.Position = _sprite2.Position
+
+        _font = New Font("Arial", "Arial", 9.0, True, True)
+        _instructions = New TextSprite("Instructions", "Help:" & ControlChars.CrLf & "F1 - Show/hide this text." & ControlChars.CrLf & "S - Show frame stats." & ControlChars.CrLf & _
+                "Click - move other ship into foreground." & ControlChars.CrLf & "Mousewheel - blur/sharpen background." & ControlChars.CrLf & "ESC - Quit.", _
+                _font, Vector2D.Zero, Drawing.Color.Yellow)
+        _instructions.Shadowed = True
     End Sub
 
     ''' <summary>
@@ -113,6 +205,40 @@ Public Class MainForm
         MyBase.OnMouseMove(e)
 
         _mousePos = e.Location
+    End Sub
+
+    ''' <summary>
+    ''' Raises the <see cref="E:System.Windows.Forms.Control.Click" /> event.
+    ''' </summary>
+    ''' <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    Protected Overrides Sub OnClick(ByVal e As System.EventArgs)
+        MyBase.OnClick(e)
+
+        _moveShip1 = Not _moveShip1
+    End Sub
+
+    ''' <summary>
+    ''' Raises the <see cref="E:System.Windows.Forms.Control.MouseWheel" /> event.
+    ''' </summary>
+    ''' <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    Protected Overrides Sub OnMouseWheel(ByVal e As System.Windows.Forms.MouseEventArgs)
+        MyBase.OnMouseWheel(e)
+
+        If (e.Delta < 0) Then
+            _samples -= 0.25
+        End If
+
+        If (e.Delta > 0) Then
+            _samples += 0.25
+        End If
+
+        If (_samples < 0) Then
+            _samples = 0
+        End If
+
+        If (_samples > 100) Then
+            _samples = 100
+        End If
     End Sub
 
     ''' <summary>
@@ -127,6 +253,8 @@ Public Class MainForm
                 Close()
             Case Keys.S
                 Gorgon.FrameStatsVisible = Not Gorgon.FrameStatsVisible
+            Case Keys.F1
+                _help = Not _help
         End Select
     End Sub
 
@@ -137,8 +265,8 @@ Public Class MainForm
     Protected Overrides Sub OnFormClosing(ByVal e As System.Windows.Forms.FormClosingEventArgs)
         MyBase.OnFormClosing(e)
 
-        If Not IsNothing(_blur) Then
-            _blur.Dispose()
+        If Not IsNothing(_shadowGen) Then
+            _shadowGen.Dispose()
         End If
 
         RemoveHandler Gorgon.Idle, New FrameEventHandler(AddressOf Gorgon_Idle)

@@ -5,6 +5,9 @@ texture blur2;
 // Amount to blur.
 float blurAmount = 1.0f / 512.0f;
 
+// Fade in-out factor (0 = none).
+float fadeFactor = 0.0f;
+
 // Our texture samplers
 sampler2D sourceSampler
 {
@@ -64,15 +67,10 @@ struct VTX_OUTPUT
 	float2 texCoords : TEXCOORD0;
 };
 
-// Function to draw the 'shadow' of the image.
-float4 psDrawShadow(VTX_OUTPUT vtx) : COLOR0
+// Function to retrieve the image data to blur.
+float4 psGetImage(VTX_OUTPUT vtx) : COLOR0
 {
-	float4 sample = tex2D(sourceSampler, vtx.texCoords);
-	
-	if (sample.a == 0)
-	   return sample;
-	else
-	   return float4(1.0, 1.0, 1.0, sample.a);
+	return tex2D(sourceSampler, vtx.texCoords);
 }
 
 // Function to blur an image horizontally.
@@ -82,10 +80,8 @@ float4 psHBlur(VTX_OUTPUT vtx) : COLOR0
 	
 	for (int i = 0; i < 13; i++)
 	{
-	   sample += tex2D(vBlurSampler, float2(vtx.texCoords.x + kernel[i] / blurAmount, vtx.texCoords.y)) * weights[i];
+	   sample += tex2D(vBlurSampler, float2(vtx.texCoords.x + kernel[i] / blurAmount, vtx.texCoords.y)) * (weights[i] / (1.0f + fadeFactor));
 	}
-	
-//	sample /= 13;	
 	
 	return sample;
 }
@@ -97,10 +93,8 @@ float4 psVBlur(VTX_OUTPUT vtx) : COLOR0
 	
 	for (int i = 0; i < 13; i++)
 	{
-	   sample += tex2D(hBlurSampler, float2(vtx.texCoords.x, vtx.texCoords.y + kernel[i] / blurAmount)) * weights[i];
+	   sample += tex2D(hBlurSampler, float2(vtx.texCoords.x, vtx.texCoords.y + kernel[i] / blurAmount)) * (weights[i] / (1.0f + fadeFactor));
 	}
-	
-//	sample /= 13;
 	
 	return sample;
 }
@@ -108,10 +102,10 @@ float4 psVBlur(VTX_OUTPUT vtx) : COLOR0
 // Technique to blur an image.
 technique Blur
 {
-	pass DrawShadow	
+	pass source	
 	{
 		VertexShader = null;
-		PixelShader = compile ps_2_0 psDrawShadow();
+		PixelShader = compile ps_2_0 psGetImage();
 	}
 	
 	pass hBlur

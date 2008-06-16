@@ -37,11 +37,42 @@ Public Class ShadowSprite
     Private _blurVTarget As RenderImage = Nothing                               ' Blur vertical target.
     Private _output As Image = Nothing                                          ' Final output.
     Private _sprite As Sprite = Nothing                                         ' Sprite to blur.
-    Private _blurAmount As Single = 2                                           ' Blur amount.
-    Private _color As Drawing.Color = Drawing.Color.FromArgb(192, 0, 0, 0)      ' Shadow color.
+    Private _blurAmount As Single = 2.5                                         ' Blur amount.
+    Private _color As Drawing.Color = Drawing.Color.FromArgb(255, 0, 0, 0)      ' Shadow color.
+    Private _bufferRoom As Single = 12.0                                        ' Area around the sprite to leave empty.
 #End Region
 
 #Region "Properties."
+    ''' <summary>
+    ''' Gets or sets the buffer room.
+    ''' </summary>
+    ''' <value>The buffer room.</value>
+    Public Property BufferRoom() As Single
+        Get
+            Return _bufferRoom
+        End Get
+        Set(ByVal value As Single)
+            _bufferRoom = value
+
+            If Not IsNothing(_blurHTarget) Then
+                _blurHTarget.Dispose()
+                _blurHTarget = Nothing
+            End If
+            If Not IsNothing(_blurVTarget) Then
+                _blurVTarget.Dispose()
+                _blurVTarget = Nothing
+            End If
+
+            _blurHTarget = New RenderImage(_sprite.Name + ".BlurH", _sprite.Width + _bufferRoom * 2.0, _sprite.Height + _bufferRoom * 2.0, ImageBufferFormats.BufferRGB888A8)
+            _blurVTarget = New RenderImage(_sprite.Name + ".BlurV", _sprite.Width + _bufferRoom * 2.0, _sprite.Height + _bufferRoom * 2.0, ImageBufferFormats.BufferRGB888A8)
+            _blurHTarget.Clear(Drawing.Color.Transparent)
+            _blurVTarget.Clear(Drawing.Color.Transparent)
+            _shader.Techniques("Blur").Parameters("sourceImage").SetValue(_sprite.Image)
+            _shader.Techniques("Blur").Parameters("blur1").SetValue(_blurHTarget)
+            _shader.Techniques("Blur").Parameters("blur2").SetValue(_blurVTarget)
+        End Set
+    End Property
+
     ''' <summary>
     ''' Property to set or return the blur amount.
     ''' </summary>
@@ -93,8 +124,8 @@ Public Class ShadowSprite
                 _blurVTarget = Nothing
             End If
 
-            _blurHTarget = New RenderImage("BlurH", _sprite.Width + 24, _sprite.Height + 24, ImageBufferFormats.BufferRGB888A8)
-            _blurVTarget = New RenderImage("BlurV", _sprite.Width + 24, _sprite.Height + 24, ImageBufferFormats.BufferRGB888A8)
+            _blurHTarget = New RenderImage(_sprite.Name + ".BlurH", _sprite.Width + _bufferRoom * 2.0, _sprite.Height + _bufferRoom * 2.0, ImageBufferFormats.BufferRGB888A8)
+            _blurVTarget = New RenderImage(_sprite.Name + ".BlurV", _sprite.Width + _bufferRoom * 2.0, _sprite.Height + _bufferRoom * 2.0, ImageBufferFormats.BufferRGB888A8)
             _blurHTarget.Clear(Drawing.Color.Transparent)
             _blurVTarget.Clear(Drawing.Color.Transparent)
             _shader.Techniques("Blur").Parameters("sourceImage").SetValue(_sprite.Image)
@@ -125,7 +156,7 @@ Public Class ShadowSprite
             Gorgon.CurrentRenderTarget = _blurVTarget
 
             _sprite.Shader = _shader
-            _sprite.Position = New Vector2D(12, 12)
+            _sprite.Position = New Vector2D(_bufferRoom, _bufferRoom)
             _sprite.Draw()
 
             _sprite.Image = _blurVTarget.Image
@@ -148,6 +179,7 @@ Public Class ShadowSprite
             _blurVTarget.CopyToImage(_output)
             result = New Sprite(_sprite.Name + ".Blurred", _output)
             result.Color = _color
+            result.Axis = New Vector2D(_bufferRoom, _bufferRoom)
         Finally
             Gorgon.CurrentRenderTarget = previousTarget
         End Try
