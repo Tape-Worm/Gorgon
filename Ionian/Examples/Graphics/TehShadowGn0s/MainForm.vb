@@ -43,7 +43,7 @@ Public Class MainForm
     Private _blurPass2 As RenderImage = Nothing             ' Final output image.
     Private _screenSprite As Sprite = Nothing               ' Sprite used to draw the output.
     Private _blurShader As Shader = Nothing                 ' Blur shader.
-    Private _samples As Single = 100                        ' Blur samples.
+    Private _samples As Single = 40                         ' Blur samples.
     Private _auto As Boolean = True                         ' Auto blur.
     Private _moveShip1 As Boolean = True                    ' Flag to move ship 1.
     Private _instructions As TextSprite = Nothing           ' Instructions.
