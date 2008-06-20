@@ -27,6 +27,7 @@ using System.Linq;
 using System.Xml;
 using System.Text;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.FileSystems;
 
 namespace GorgonLibrary.Extras.GUI
 {
@@ -34,28 +35,15 @@ namespace GorgonLibrary.Extras.GUI
 	/// Object representing a custom GUI skin.
 	/// </summary>
 	public class GUISkin
+		: IDisposable
 	{
 		#region Variables.
-		private Image _skinImage = null;						// Image to use for the skin.
+		private List<Image> _skinImages = null;					// List of skin images.
 		private GUIElementCollection _elements = null;			// Elements for the skin.
+		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the image used for the skin.
-		/// </summary>
-		public Image SkinImage
-		{
-			get
-			{
-				return _skinImage;
-			}
-			set
-			{
-				_skinImage = value;
-			}
-		}
-
 		/// <summary>
 		/// Property to return the list of elements for the skin.
 		/// </summary>
@@ -69,26 +57,106 @@ namespace GorgonLibrary.Extras.GUI
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to load a skin from a Gorgon packed file.
+		/// </summary>
+		/// <param name="skinFileSystem">File system that contains the GUI skin information.</param>
+		/// <returns>A new GUI skin to use.</returns>
+		public static GUISkin FromFile(FileSystem skinFileSystem)
+		{
+			GUISkin newSkin = new GUISkin();			// GUI skin.
+			GUIElement newElement = null;				// GUI element.
+			FileSystemPath images = null;				// Image path.
+			FileSystemPath elements = null;				// Elements.
 
+			if (skinFileSystem == null)
+				throw new ArgumentNullException("skinFileSystem");
+
+			try
+			{
+				if (!skinFileSystem.PathExists("/Images"))
+					skinFileSystem.Mount("/Images", false);
+				if (!skinFileSystem.PathExists("/Elements"))
+					skinFileSystem.Mount("/Elements", true);
+
+				images = skinFileSystem.Paths.ChildPaths["Images"];
+				elements = skinFileSystem.Paths.ChildPaths["Elements"];
+
+				// Load all related skin images.
+				foreach (FileSystemFile file in images.Files)
+					Image.FromFileSystem(skinFileSystem, file.FullPath);
+
+				// Load in cursors.
+				if (elements.ChildPaths.Contains("Cursors"))
+				{
+					foreach (FileSystemFile file in elements.ChildPaths["Cursors"].Files)
+					{
+						Sprite cursorSprite = Sprite.FromFileSystem(skinFileSystem, file.FullPath);
+						newElement = new GUIElement("Cursor." + file.Filename, cursorSprite);
+						newSkin.Elements.Add(newElement);
+					}
+				}
+
+				// Load in window elements.
+				if (elements.ChildPaths.Contains("Window"))
+				{
+					foreach (FileSystemFile file in elements.ChildPaths["Window"].Files)
+					{
+						Sprite windowElement = Sprite.FromFileSystem(skinFileSystem, file.FullPath);
+						newElement = new GUIElement("Window." + file.Filename, windowElement);
+						newSkin.Elements.Add(newElement);
+					}
+				}
+
+				return newSkin;
+			}
+			catch
+			{
+				if (newSkin != null)
+					newSkin.Dispose();
+				throw;
+			}			
+		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GUISkin"/> class.
 		/// </summary>
-		/// <param name="skinImage">The skin image.</param>
-		public GUISkin(Image skinImage)
+		public GUISkin()
 		{
-			SkinImage = skinImage;
+			_skinImages = new List<Image>();
 			_elements = new GUIElementCollection(this);
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					foreach (Image skinImage in _skinImages)
+						skinImage.Dispose();
+
+					_skinImages.Clear();
+				}
+				_disposed = true;
+			}
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GUISkin"/> class.
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		public GUISkin()
-			: this(null)
+		public void Dispose()
 		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

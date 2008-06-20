@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SpriteProject>
+  <Header>SPRPROJ1.0</Header>
+  <Images>
+    <Count>1</Count>
+    <Path>..\..\Images\DefaultGUIImage.png</Path>
+  </Images>
+  <Targets>
+    <Count>0</Count>
+  </Targets>
+  <Sprites>
+    <Count>11</Count>
+    <Path IncludeInAnims="True">.\Caption.LeftCorner.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Caption.RightCorner.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Caption.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Vertical.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Bottom.LeftCorner.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Bottom.RightCorner.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Bottom.Horizontal.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Cursor.Default.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Top.Horizontal.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Top.LeftCorner.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Top.RightCorner.gorSprite</Path>
+  </Sprites>
+</SpriteProject>

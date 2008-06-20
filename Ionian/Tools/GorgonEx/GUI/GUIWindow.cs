@@ -90,7 +90,7 @@ namespace GorgonLibrary.Extras.GUI
 				if (Skin == null)
 					return 0;
 				else
-					return Skin.Elements["Border"].Dimensions.Width;
+					return Skin.Elements["Window.Border.Vertical"].Dimensions.Width;
 			}
 		}
 
@@ -105,10 +105,10 @@ namespace GorgonLibrary.Extras.GUI
 					return _windowFont.LineHeight + 4;
 				else
 				{
-					if ((_windowFont.LineHeight - Skin.Elements["Caption.Body"].Dimensions.Height) > 2)
-						return (Skin.Elements["Caption.Body"].Dimensions.Height) + (_windowFont.LineHeight - Skin.Elements["Caption.Body"].Dimensions.Height) + 4;
+					if ((_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height) > 2)
+						return (Skin.Elements["Window.Caption"].Dimensions.Height) + (_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height) + 4;
 					else
-						return Skin.Elements["Caption.Body"].Dimensions.Height + 4;
+						return Skin.Elements["Window.Caption"].Dimensions.Height + 4;
 				}
 			}
 		}
@@ -213,8 +213,8 @@ namespace GorgonLibrary.Extras.GUI
 			if (Skin == null)
 				return;
 
-			_captionRectangle = new System.Drawing.Rectangle(Position.X + Skin.Elements["Caption.Corner.Left"].Dimensions.Width, Position.Y,
-						WindowDimensions.Width - Skin.Elements["Caption.Corner.Right"].Dimensions.Width - (DefaultBorderSize * 2), DefaultCaptionHeight);
+			_captionRectangle = new System.Drawing.Rectangle(Position.X + Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, Position.Y,
+						WindowDimensions.Width - Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width - (DefaultBorderSize * 2), DefaultCaptionHeight);
 
 			//_captionRectangle = new System.Drawing.Rectangle(Position.X + DefaultBorderSize, Position.Y + DefaultBorderSize, WindowDimensions.Width - DefaultBorderSize * 2, DefaultCaptionHeight);
 			captionScreen = _captionRectangle;
@@ -225,11 +225,12 @@ namespace GorgonLibrary.Extras.GUI
 				captionScreen = Owner.RectToScreen(_captionRectangle);
 			}
 
-			Skin.Elements["Caption.Corner.Left"].Draw(new Drawing.Rectangle(captionScreen.Location.X - Skin.Elements["Caption.Corner.Left"].Dimensions.Width, captionScreen.Location.Y, Skin.Elements["Caption.Corner.Left"].Dimensions.Width, captionScreen.Size.Height));
-			Skin.Elements["Caption.Corner.Right"].Draw(new Drawing.Rectangle(captionScreen.Width + captionScreen.X, captionScreen.Location.Y, Skin.Elements["Caption.Corner.Right"].Dimensions.Width, captionScreen.Size.Height));
-			Skin.Elements["Caption.Body"].Draw(captionScreen);
+			Skin.Elements["Window.Caption.LeftCorner"].Draw(new Drawing.Rectangle(captionScreen.Location.X - Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, captionScreen.Location.Y, Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, captionScreen.Size.Height));
+			Skin.Elements["Window.Caption.RightCorner"].Draw(new Drawing.Rectangle(captionScreen.Width + captionScreen.X, captionScreen.Location.Y, Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width, captionScreen.Size.Height));
+			Skin.Elements["Window.Caption"].Draw(captionScreen);
 
-			Skin.Elements["Border"].Draw(new Drawing.Rectangle(Position.X, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight));
+			Skin.Elements["Window.Border.Vertical"].Draw(new Drawing.Rectangle(Position.X, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight));
+			Skin.Elements["Window.Border.Vertical"].Draw(new Drawing.Rectangle(Position.X + WindowDimensions.Width - Skin.Elements["Window.Border.Vertical"].Dimensions.Width + 2, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight));
 
 			//Gorgon.CurrentRenderTarget.FilledRectangle(WindowDimensions.X, WindowDimensions.Y, WindowDimensions.Width, WindowDimensions.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.WindowFrame)));
 			//Gorgon.CurrentRenderTarget.FilledRectangle(captionScreen.X, captionScreen.Y, captionScreen.Width, captionScreen.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ActiveCaption)));

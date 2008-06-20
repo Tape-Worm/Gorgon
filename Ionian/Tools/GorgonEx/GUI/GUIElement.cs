@@ -96,11 +96,6 @@ namespace GorgonLibrary.Extras.GUI
 				throw new ArgumentException("This element is already bound to a skin.");
 
 			_owner = skin;
-
-			if (_owner != null)
-				_elementSprite.Image = _owner.SkinImage;
-			else
-				_elementSprite.Image = null;
 		}
 
 		/// <summary>
@@ -138,6 +133,17 @@ namespace GorgonLibrary.Extras.GUI
 			_elementSprite.ImageOffset = elementCoordinates.Location;
 			_elementSprite.Size = elementCoordinates.Size;
 			_elementSprite.Color = color;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GUIElement"/> class.
+		/// </summary>
+		/// <param name="name">The name of the element.</param>
+		/// <param name="sprite">The sprite to use as the element..</param>
+		public GUIElement(string name, Sprite sprite)
+			: base(name)
+		{
+			_elementSprite = sprite;			
 		}
 		#endregion
 	}

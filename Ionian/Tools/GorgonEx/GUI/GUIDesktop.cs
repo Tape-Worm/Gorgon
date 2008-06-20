@@ -71,24 +71,12 @@ namespace GorgonLibrary.Extras.GUI
 		private bool _disposed = false;				// Flag to indicate that the object is disposed.
 		private Input _input = null;				// Input system to use.
 		private InputState _state;					// Input state data.
-		private Image _guiImage;					// Image to be used for the GUI.
 		private GUIWindowCollection _panels;		// List of GUI panels.
 		private GUIWindow _focused = null;			// Currently focused object.
 		private GUISkin _skin = null;				// Skin for the objects.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the image used by the GUI for drawing its elements and cursors.
-		/// </summary>
-		internal Image GUIImage
-		{
-			get
-			{
-				return _guiImage;
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the skin for the objects.
 		/// </summary>
@@ -533,8 +521,7 @@ namespace GorgonLibrary.Extras.GUI
 			Input = input;
 			CursorVisible = true;
 			BackgroundColor = Drawing.Color.White;
-			_guiImage = skin.SkinImage;
-			if (_guiImage == null)
+			if (!skin.Elements.Contains("Cursor.Default"))
 				Cursor = new Sprite("DefaultCursor", Image.FromResource("DefaultCursorImage", Properties.Resources.ResourceManager));
 			else
 				Cursor = _skin.Elements["Cursor.Default"].GetSprite();
@@ -556,9 +543,6 @@ namespace GorgonLibrary.Extras.GUI
 
 					foreach (GUIWindow panel in _panels)
 						panel.Dispose();
-
-					if (_guiImage != null)
-						_guiImage.Dispose();
 				}
 
 				_disposed = true;
