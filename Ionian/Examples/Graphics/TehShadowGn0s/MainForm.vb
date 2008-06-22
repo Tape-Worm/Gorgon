@@ -61,7 +61,7 @@ Public Class MainForm
         _tileCount = New Drawing.Size(MathUtility.Round(Gorgon.Screen.Width / _bgSprite.Width, 0, MidpointRounding.AwayFromZero), MathUtility.Round(Gorgon.Screen.Height / _bgSprite.Height, 0, MidpointRounding.AwayFromZero))
         _blurPass2.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height)
         _blurPass1.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height)
-        _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(Gorgon.Screen.Width)
+        _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(_blurPass1.Width)
         _blurShader.Techniques("Blur").Parameters("blur1").SetValue(_blurPass1)
         _blurShader.Techniques("Blur").Parameters("blur2").SetValue(_blurPass2)
         _screenSprite.Width = _blurPass1.Width
@@ -182,7 +182,7 @@ Public Class MainForm
         _blurPass1 = New RenderImage("BlurOutput", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8)
         _screenSprite = New Sprite("ScreenSprite", _blurPass2)
         _screenSprite.Shader = _blurShader
-        _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(Gorgon.Screen.Width)
+        _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(_blurPass1.Width)
         _blurShader.Techniques("Blur").Parameters("fadeFactor").SetValue(0.02D)
         _blurShader.Techniques("Blur").Parameters("blur1").SetValue(_blurPass1)
         _blurShader.Techniques("Blur").Parameters("blur2").SetValue(_blurPass2)
