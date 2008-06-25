@@ -49,7 +49,6 @@ namespace GorgonLibrary.Graphics
 		private bool _flipHorizontal = false;							// Flag to flip horizontally.
 		private bool _flipVertical = false;								// Flag to flip vertically.
 		private string _deferredImage = string.Empty;					// Name of the deferred image to bind.
-		private string _deferredShader = string.Empty;					// Name of the deferred shader to bind.
 		private BoundingCircle _boundCircle = BoundingCircle.Empty;		// Bounding circle.
 		#endregion
 
@@ -86,28 +85,6 @@ namespace GorgonLibrary.Graphics
 			{
 				_deferredImage = string.Empty;
 				base.Image = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return a shader effect for this object.
-		/// </summary>
-		public override Shader Shader
-		{
-			get
-			{
-				if ((_deferredShader != string.Empty) && (base.Shader == null))
-				{
-					if (ShaderCache.Shaders.Contains(_deferredShader))
-						Shader = ShaderCache.Shaders[_deferredShader];
-				}
-
-				return base.Shader;
-			}
-			set
-			{
-				_deferredShader = string.Empty;
-				base.Shader = value;
 			}
 		}
 
@@ -322,7 +299,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-                SetName(value);
+				base.Name = value;
 			}
 		}
 		#endregion
@@ -1220,7 +1197,6 @@ namespace GorgonLibrary.Graphics
 			// Clone the animations.
 			Animations.CopyTo(clone.Animations);
 
-			clone.Shader = Shader;			
 			clone.InheritScale = InheritScale;
 			clone.InheritRotation = InheritRotation;
 			clone.Refresh();
@@ -1778,16 +1754,6 @@ namespace GorgonLibrary.Graphics
 			writer.Write("UpperRightColor", vertexColor[3]);
 			writer.Write("LowerLeftColor", vertexColor[0]);
 			writer.Write("LowerRightColor", vertexColor[1]);
-			// Write shader information.
-			writer.Write("HasShader", Shader != null);
-			if (Shader != null)
-			{
-				writer.Write("ShaderName", Shader.Name);
-				writer.Write("ShaderIsCompiled", Shader.IsCompiled);
-				writer.Write("HasTechnique", Shader.ActiveTechnique != null);
-				if (Shader.ActiveTechnique != null)
-					writer.Write("Technique", Shader.ActiveTechnique.Name);
-			}
 
 			if (!InheritAlphaMaskFunction)
 				writer.Write("AlphaMaskFunction", (int)AlphaMaskFunction);
@@ -1867,7 +1833,6 @@ namespace GorgonLibrary.Graphics
 			IsSizeUpdated = true;
 			IsAABBUpdated = true;
 			_deferredImage = string.Empty;
-			_deferredShader = string.Empty;
 
 			header = reader.ReadString("HeaderValue");
 
@@ -1983,27 +1948,18 @@ namespace GorgonLibrary.Graphics
 			SetSpriteVertexColor(VertexLocations.UpperRight, Drawing.Color.FromArgb(reader.ReadInt32("UpperRightColor")));
 			SetSpriteVertexColor(VertexLocations.LowerLeft, Drawing.Color.FromArgb(reader.ReadInt32("LowerLeftColor")));
 			SetSpriteVertexColor(VertexLocations.LowerRight, Drawing.Color.FromArgb(reader.ReadInt32("LowerRightColor")));
-			hasShader = reader.ReadBool("HasShader");
-			if (hasShader)
+
+			// This is for compatibility - v1.0 files had shaders attached to the sprites.  In reality this was kind of pointless.
+			if (spriteVersion < new Version(1, 1))
 			{
-				string shaderName = string.Empty;		// Shader name.
-				string technique = string.Empty;		// Active technique.
-				
-				shaderName = reader.ReadString("ShaderName");
-				reader.ReadBool("ShaderIsCompiled");		// For now, we'll ignore this.
-				if (reader.ReadBool("HasTechnique"))
-					technique = reader.ReadString("Technique");
-
-				if (ShaderCache.Shaders.Contains(shaderName))
+				hasShader = reader.ReadBool("HasShader");
+				if (hasShader)
 				{
-					Shader = ShaderCache.Shaders[shaderName];
-
-					// Set the active technique.
-					if (Shader.Techniques.Contains(technique))
-						Shader.ActiveTechnique = Shader.Techniques[technique];
+					reader.ReadString("ShaderName");
+					reader.ReadBool("ShaderIsCompiled");		// For now, we'll ignore this.
+					if (reader.ReadBool("HasTechnique"))
+						reader.ReadString("Technique");
 				}
-				else
-					_deferredShader = shaderName;
 			}
 
 			if (!InheritAlphaMaskFunction)

@@ -65,7 +65,6 @@ namespace GorgonLibrary.Graphics
 		private int _stencilReference;						// Stencil reference value.
 		private int _stencilMask;							// Stencil mask value.
 		private bool _useStencil;							// Flag to indicate whether to use the stencil or not.
-		private Shader _shader = null;						// Shader to apply to drawing and the blitter.
 		private int _width;									// Width of render target.
 		private int _height;								// Height of render target.
 		private bool _useDepthBuffer;						// Flag to indicate that we want to use a depth buffer.
@@ -79,7 +78,6 @@ namespace GorgonLibrary.Graphics
 		private float _depthBias;							// Depth bias.
 		private bool _depthWriteEnabled;					// Depth writing enabled flag.
 		private CompareFunctions _depthCompare;				// Depth test comparison function.
-		private int _shaderPass = 0;						// Current pass of the shader technique to apply.
 		#endregion
 
 		#region Properties.
@@ -2067,48 +2065,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return _useIndices;
 			}		
-		}
-
-		/// <summary>
-		/// Property to set or return a shader effect for this object.
-		/// </summary>
-		public Shader Shader
-		{
-			get
-			{
-				return _shader;
-			}
-			set
-			{
-				_shader = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the current shader pass.
-		/// </summary>
-		public int ShaderPass
-		{
-			get
-			{
-				if ((_shader == null) || (_shader.ActiveTechnique == null))
-					return -1;
-
-				if (_shaderPass >= _shader.ActiveTechnique.Passes.Count)
-					return _shader.ActiveTechnique.Passes.Count - 1;
-
-				return _shaderPass;
-			}
-			set
-			{
-				if ((_shader == null) || (_shader.ActiveTechnique == null))
-					throw new InvalidOperationException("There is no shader or active technique assigned to this renderable.");
-
-				if ((value < 0) || (value >= _shader.ActiveTechnique.Passes.Count))
-					throw new IndexOutOfRangeException("The pass index [" + value.ToString() + "] is not valid for the active technique of the shader.");
-
-				_shaderPass = value;
-			}
 		}
 		#endregion
 	}

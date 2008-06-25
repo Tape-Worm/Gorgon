@@ -1337,7 +1337,6 @@ namespace GorgonLibrary.Graphics
 			// Clone the animations.
 			Animations.CopyTo(clone.Animations);
 
-			clone.Shader = Shader;
 			clone.InheritScale = InheritScale;
 			clone.InheritRotation = InheritRotation;
 			clone.Refresh();

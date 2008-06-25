@@ -46,15 +46,36 @@ namespace GorgonLibrary.Graphics
 		private VertexType _currentVertexType;							// Current vertex type.
 		private ImageLayerStates[] _imageLayerStates;					// Layer states.
 		private VertexTypeList _vertexTypes;							// List of predefined vertex types.
-		private Shader _currentShader;									// Currently active shader.
-		private ShaderTechnique _currentTechnique;						// Current shader technique.
-		private int _currentShaderPass = 0;								// Current shader pass.
 		private bool _isDisposed;										// Flag to indicate that the render has been disposed.
 		private D3D9.Device _device = null;								// Device object.
 		private Matrix _currentProjection = Matrix.Identity;			// Current projection matrix.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return whether we can render yet.
+		/// </summary>
+		private bool CanRender
+		{
+			get
+			{
+				if (Gorgon.Screen.DeviceNotReset)
+				{
+					// Reset offsets for buffers.
+					Geometry.VerticesWritten = 0;
+					Geometry.VertexOffset = 0;
+					Gorgon.GlobalStateSettings.DeviceLost();
+					return false;
+				}
+
+				// Do nothing if the active render target is to be drawn by the user.
+				if ((Gorgon.CurrentRenderTarget == null) || (Geometry.VerticesWritten < 1))
+					return false;
+
+				return true;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the currently active Direct 3D device.
 		/// </summary>
@@ -114,32 +135,6 @@ namespace GorgonLibrary.Graphics
 				}
 
 				return false;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the current shader pass.
-		/// </summary>
-		public int CurrentShaderPass
-		{
-			get
-			{
-				if (_currentTechnique == null)
-					return -1;
-
-				if (_currentShaderPass >= _currentTechnique.Passes.Count)
-					return _currentTechnique.Passes.Count - 1;
-
-				return _currentShaderPass;
-			}
-			set
-			{
-				if (_currentTechnique == null)
-					throw new InvalidOperationException("There is no shader or technique assigned.");
-				if ((value < 0) || (value >= _currentTechnique.Passes.Count))
-					throw new IndexOutOfRangeException("The shader pass index [" + value.ToString() + "] is out of range.");
-
-				_currentShaderPass = value;
 			}
 		}
 
@@ -209,40 +204,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the currently active technique.
-		/// </summary>
-		public ShaderTechnique CurrentTechnique
-		{
-			get
-			{
-				return _currentTechnique;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the currently active shader.
-		/// </summary>
-		public Shader CurrentShader
-		{
-			get
-			{
-				return _currentShader;
-			}
-			set
-			{
-				if (_currentShader != value)
-					_currentShader = value;
-
-				if (value != null)
-					_currentTechnique = value.ActiveTechnique;
-				else
-					_currentTechnique = null;
-
-				_currentShaderPass = 0;
-			}
-		}
-
-		/// <summary>
 		/// Property to return the currently active view port.
 		/// </summary>
 		public Viewport CurrentViewport
@@ -302,6 +263,19 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to draw cached triangles.
+		/// </summary>
+		internal void DrawCachedTriangles()
+		{
+			DX.Configuration.ThrowOnError = false;
+			if ((Geometry.UseIndices) && (Geometry.IndicesWritten > 0))
+				D3DDevice.DrawIndexedPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, 0, Geometry.VerticesWritten, Geometry.IndexOffset, CalculateIndices(true, 0, Geometry.IndicesWritten, Geometry.PrimitiveStyle));
+			else
+				D3DDevice.DrawPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, CalculateIndices(false, Geometry.VerticesWritten, 0, Geometry.PrimitiveStyle));
+			DX.Configuration.ThrowOnError = true;
+		}
+
+		/// <summary>
 		/// Function to set the vertex type.
 		/// </summary>
 		/// <param name="vertexType">Type of vertex declaration to set.</param>
@@ -357,7 +331,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to begin rendering.
 		/// </summary>
-		private void BeginRendering()
+		public void BeginRendering()
 		{
 			if (D3DDevice == null)
 				return;
@@ -370,7 +344,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to end rendering.
 		/// </summary>
-		private void EndRendering()
+		public void EndRendering()
 		{
 			if (D3DDevice == null)
 				return;
@@ -533,64 +507,31 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Render()
 		{
-			D3D9.Effect shaderEffect = null;				// Shader effect.
-
-			if (Gorgon.Screen.DeviceNotReset)
-			{
-				// Reset offsets for buffers.
-				Geometry.VerticesWritten = 0;
-				Geometry.VertexOffset = 0;
-				Gorgon.GlobalStateSettings.DeviceLost();
-				return;
-			}
-
-			// Do nothing if the active render target is to be drawn by the user.
-			if (Gorgon.CurrentRenderTarget == null)
+			if (!CanRender)
 				return;
 
 			// Begin the rendering process.
 			BeginRendering();
 
-			if (Geometry.VerticesWritten > 0)
+			SetVertexType(Geometry.VertexType);
+			SetStreamData(Geometry.VertexBuffer);
+
+			if ((Geometry.UseIndices) && (Geometry.IndicesWritten > 0))
+				SetIndexBuffer(Geometry.IndexBuffer);
+
+			// Begin shader.
+			if (Gorgon.CurrentShader != null)
 			{
-				SetVertexType(Geometry.VertexType);
-				SetStreamData(Geometry.VertexBuffer);
-
-				// Begin shader.
-				if ((_currentShader != null) && (_currentTechnique != null))
-				{
-					shaderEffect = _currentShader.D3DEffect;
-					shaderEffect.Technique = _currentTechnique.D3DEffectHandle;
-					shaderEffect.Begin(D3D9.FX.None);
-				}
-				else
-					_currentTechnique = null;
-
-				if ((Geometry.UseIndices) && (Geometry.IndicesWritten > 0))
-					SetIndexBuffer(Geometry.IndexBuffer);
-
-				// Render each pass.
-				if (shaderEffect != null)
-					shaderEffect.BeginPass(CurrentShaderPass);
-
-				DX.Configuration.ThrowOnError = false;
-				if ((Geometry.UseIndices) && (Geometry.IndicesWritten > 0))
-					D3DDevice.DrawIndexedPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, 0, Geometry.VerticesWritten, Geometry.IndexOffset, CalculateIndices(true, 0, Geometry.IndicesWritten, Geometry.PrimitiveStyle));
-				else
-					D3DDevice.DrawPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, CalculateIndices(false, Geometry.VerticesWritten, 0, Geometry.PrimitiveStyle));
-				DX.Configuration.ThrowOnError = true;
-
-				if (shaderEffect != null)
-					shaderEffect.EndPass();
-
-				// End shader.
-				if (shaderEffect != null)
-					shaderEffect.End();
-
-				// Flush.
-				Geometry.VertexOffset = 0;
-				Geometry.VerticesWritten = 0;
+				Gorgon.CurrentShader.Begin();
+				Gorgon.CurrentShader.Render();
+				Gorgon.CurrentShader.End();
 			}
+			else
+				DrawCachedTriangles();
+
+			// Flush.
+			Geometry.VertexOffset = 0;
+			Geometry.VerticesWritten = 0;
 
 			EndRendering();
 		}

@@ -155,7 +155,7 @@ Public Class ShadowSprite
             ' Draw the initial image.
             Gorgon.CurrentRenderTarget = _blurVTarget
 
-            _sprite.Shader = _shader
+            '_sprite.Shader = _shader
             _sprite.Position = New Vector2D(_bufferRoom, _bufferRoom)
             _sprite.Draw()
 
@@ -167,12 +167,13 @@ Public Class ShadowSprite
 
             For i As Integer = 0 To samples - 1
                 Gorgon.CurrentRenderTarget = _blurHTarget
-                _sprite.ShaderPass = 1
+                Gorgon.CurrentShader = _shader.Techniques("Blur").Passes("hBlur")
                 _sprite.Draw()
                 Gorgon.CurrentRenderTarget = _blurVTarget
-                _sprite.ShaderPass = 2
+                Gorgon.CurrentShader = _shader.Techniques("Blur").Passes("vBlur")
                 _sprite.Draw()
             Next
+            Gorgon.CurrentShader = Nothing
 
             ' Create a new image with the blurred data.
             _output = New Image(_sprite.Name + ".BlurImage", _blurVTarget.Width, _blurVTarget.Height, _blurVTarget.Format)

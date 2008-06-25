@@ -367,8 +367,6 @@ namespace GorgonLibrary.Graphics
 				_blitter.StencilReference = StencilReference;
 			if (_blitter.StencilZFailOperation != StencilZFailOperation)
 				_blitter.StencilZFailOperation = StencilZFailOperation;
-			if (_blitter.Shader != Shader)
-				_blitter.Shader = Shader;
 
 			_blitter.Draw();
 		}

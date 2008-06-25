@@ -170,7 +170,7 @@ namespace GorgonLibrary.Graphics
 
 				if (_projectionChanged)
 				{
-					_orthoMatrix = Gorgon.Renderer.CreateOrthoProjectionMatrix(_viewPort.Left, _viewPort.Top, _viewPort.Width, _viewPort.Height);
+					_orthoMatrix = Gorgon.Renderer.CreateOrthoProjectionMatrix(_viewPort.Left, _viewPort.Top, _viewPort.Width, _viewPort.Height);					
 					_projectionChanged = false;
 				}
 				

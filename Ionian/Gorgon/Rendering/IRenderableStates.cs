@@ -62,15 +62,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the current shader pass.
-		/// </summary>
-		int ShaderPass
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the type of smoothing for the sprites.
 		/// </summary>
 		Smoothing Smoothing
@@ -207,15 +198,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the wrapping mode to use.
 		/// </summary>
 		ImageAddressing WrapMode
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return a shader effect for this object.
-		/// </summary>
-		Shader Shader
 		{
 			get;
 			set;

@@ -115,7 +115,9 @@ namespace GorgonLibrary.Example
 			_mother1.Draw();
 
 			_mother2.SetPosition(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2);
+			Gorgon.CurrentShader = _blur;
 			_mother2.Draw();
+			Gorgon.CurrentShader = null;
 			if (_showHelp)
 			{
 				_textSprite.SetPosition(0, 0);
@@ -185,7 +187,6 @@ namespace GorgonLibrary.Example
 			_base = Sprite.FromFileSystem(_bzipFS, @"\Sprites\base.gorSprite");
 			_mother1 = Sprite.FromFileSystem(_bzipFS, @"\Sprites\Mother.gorSprite");
 			_mother2 = Sprite.FromFileSystem(_bzipFS, @"\Sprites\Mother2c.gorSprite");
-			_mother2.Shader = _blur;
 
 			// Get poetry.
 			_text = Encoding.UTF8.GetString(_bzipFS.ReadFile(@"\SomeText.txt"));

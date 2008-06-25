@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -34,7 +35,7 @@ namespace GorgonLibrary.Graphics
 	/// Object representing a technique within a shader.
 	/// </summary>
 	public class ShaderTechnique
-		: NamedObject
+		: NamedObject, IShaderRenderer
 	{
 		#region Variables.
 		private D3D9.EffectHandle _effectHandle;		// Handle to the technique.
@@ -111,7 +112,7 @@ namespace GorgonLibrary.Graphics
 			{
 				// Get the handle.
 				_effectHandle = _owner.D3DEffect.GetTechnique(index);
-				SetName(_owner.D3DEffect.GetTechniqueDescription(_effectHandle).Name);
+				Name = _owner.D3DEffect.GetTechniqueDescription(_effectHandle).Name;
 				_passes.Add(this);
 			}
 			catch (Exception ex)
@@ -137,5 +138,40 @@ namespace GorgonLibrary.Graphics
 			GetTechnique(index);
 		}
 		#endregion
+
+		#region IShaderRenderer Members
+		/// <summary>
+		/// Function to begin the rendering with the shader.
+		/// </summary>
+		void IShaderRenderer.Begin()
+		{
+			_owner.D3DEffect.Technique = _effectHandle; 
+			_owner.D3DEffect.Begin(D3D9.FX.None);
+		}
+
+
+		/// <summary>
+		/// Function to render with the shader.
+		/// </summary>
+		void IShaderRenderer.Render()
+		{
+			// Begin rendering each pass.
+			for (int i = 0; i < _passes.Count; i++)
+			{
+				_owner.D3DEffect.BeginPass(i);
+				Gorgon.Renderer.DrawCachedTriangles();
+				_owner.D3DEffect.EndPass();
+			}
+		}
+
+		/// <summary>
+		/// Function to end rendering with the shader.
+		/// </summary>
+		void IShaderRenderer.End()
+		{
+			_owner.D3DEffect.End();
+		}
+		#endregion
 	}
 }
+

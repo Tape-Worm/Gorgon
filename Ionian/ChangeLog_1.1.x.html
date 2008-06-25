@@ -103,8 +103,16 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-June 18/2008 - Version - Current
+June 25/2008 - Version - Current
 ================================
+* Modified the shader subsystem extensively.  Renderable objects no longer have shaders attached
+  (i.e. Sprite.Shader no longer exists).  This will break code that relied on shaders, but the
+  old system didn't make any sense, especially when it came to multipass rendering.
+  Shaders are now set via the main static Gorgon class with the property CurrentShader (e.g.
+  Gorgon.CurrentShader = MyShader).  The user can set this to be equal to the shader (which will
+  find the first valid technique), or a specific technique (which will render all passes for a
+  technique) or a specific pass from a technique.  
+  
 * Updated SlimDX to the latest version (June 18/2008 - 2.0.4.38).
 
 * Added a new example for Visual Basic.NET

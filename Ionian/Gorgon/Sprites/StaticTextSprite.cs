@@ -505,23 +505,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return a shader effect for this object.
-		/// </summary>
-		/// <value></value>
-		public override Shader Shader
-		{
-			get
-			{
-				return _displaySprite.Shader;
-			}
-			set
-			{
-				if (_displaySprite.Shader != value)
-					_displaySprite.Shader = value;
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return the function used for alpha masking.
 		/// </summary>
 		/// <value></value>

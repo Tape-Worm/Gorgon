@@ -47,23 +47,16 @@ namespace GorgonLibrary.Internal
 			{
 				return _objectName;
 			}
+			protected internal set
+			{
+				if (string.IsNullOrEmpty(value))
+					throw new ArgumentNullException("newName");
+				_objectName = value;
+			}
 		}        
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to set the name of the object.
-        /// </summary>
-        /// <param name="newName">New name for the object.</param>
-        /// <exception cref="System.ArgumentNullException">The name was empty or NULL.</exception>
-        protected internal virtual void SetName(string newName)
-        {
-            if (string.IsNullOrEmpty(newName))
-                throw new ArgumentNullException("newName");
-
-            _objectName = newName;
-        }
-
 		/// <summary>
 		/// Function to determine if this named object is the same as another named object.
 		/// </summary>
@@ -116,7 +109,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="name">Name for this object.</param>
 		public NamedObject(string name)
 		{
-            SetName(name);
+			Name = name;
 		}
 		#endregion
 	}

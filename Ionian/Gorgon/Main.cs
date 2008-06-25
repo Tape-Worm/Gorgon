@@ -165,6 +165,7 @@ namespace GorgonLibrary
 		private static Viewport _clippingView = null;					// Clipping viewport.
 		private static Color _statsTextColor = Color.White;				// Frame statistics text color.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
+		private static IShaderRenderer _currentShader = null;			// Current shader.
 #if INCLUDE_D3DREF
 		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
 #endif
@@ -489,6 +490,39 @@ namespace GorgonLibrary
 					return _screen.Mode;
 				else
 					return _desktopVideoMode;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the currently active shader.
+		/// </summary>
+		/// <remarks>Use this to apply a shader to the rendering pass.  You can apply either a <see cref="GorgonLibrary.Graphics.Shader"/>, <see cref="GorgonLibrary.Graphics.ShaderTechnique"/> or a <see cref="GorgonLibrary.Graphics.ShaderPass"/>.  
+		/// When applying a shader there's a very small performance hit on the first pass of rendering as it attempts to locate the first valid shader technique.</remarks>
+		/// <value>A shader renderer output to apply to the scene when rendering.</value>
+		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="DeviceNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
+		public static IShaderRenderer CurrentShader
+		{
+			get
+			{
+				return _currentShader;
+			}
+			set
+			{
+				if (!_initialized)
+					throw new NotInitializedException();
+
+				// No device?  Throw an exception.
+				if (_screen == null)
+					throw new DeviceNotValidException();
+								
+				if (_currentShader == value)
+					return;
+
+				// Force a flush of the rendering pipeline whenever we change this.
+				Renderer.Render();
+				
+				_currentShader = value;
 			}
 		}
 

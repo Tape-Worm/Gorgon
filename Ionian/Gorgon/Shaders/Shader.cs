@@ -40,19 +40,20 @@ namespace GorgonLibrary.Graphics
 	/// Object to encapsulate pixel and vertex shader functionality.
 	/// </summary>
 	public class Shader
-		: NamedObject, IDisposable, IDeviceStateObject, ISerializable
+		: NamedObject, IDisposable, IDeviceStateObject, ISerializable, IShaderRenderer
 	{
 		#region Variables.
 		private ShaderTechniqueList _techniques;					// Techniques.
 		private D3D9.Effect _effect = null;							// Direct 3D effect.
 		private ShaderParameterList _parameters;					// List of parameters.
-		private ShaderTechnique _activeTechnique = null;			// Active technique.
 		private string _fileName = string.Empty;					// Filename of the shader.
 		private bool _isResource = false;							// Shader is a resource.
 		private StringBuilder _shaderCode = null;					// Shader code.
 		private byte[] _compiled = null;							// Compiled shader.
 		private bool _isBinary;										// Flag to indicate that the shader is a binary.
 		private bool _disposed = false;								// Flag to indicate whether this object is disposed already or not.
+		private ShaderTechnique _currentTechnique = null;			// First valid technique.
+
 		#endregion
 
 		#region Properties.
@@ -135,14 +136,6 @@ namespace GorgonLibrary.Graphics
 					// Add techniques and passes.
 					_techniques.Add(this);
 					_parameters.Add(this);
-
-					// Assign the first valid technique.
-					foreach (ShaderTechnique technique in _techniques)
-					{
-						ActiveTechnique = technique;
-						if (ActiveTechnique != null)
-							break;
-					}
 				}
 				catch (Exception ex)
 				{
@@ -206,39 +199,6 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				return _parameters;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the active technique.
-		/// </summary>
-		public ShaderTechnique ActiveTechnique
-		{
-			get
-			{
-				return _activeTechnique;
-			}
-			set
-			{
-				// Validate.
-				if (_effect == null)
-					return;
-
-				if (_techniques.Count == 0)
-					throw new ShaderHasNoTechniquesException(Name);
-
-				// Don't set the same technique.
-				if (value == _activeTechnique)
-					return;
-
-				if (value != null)
-				{
-					// Ensure the technique is valid.
-					if (_techniques[value.Name].Valid)
-						_activeTechnique = value;
-				}
-				else
-					_activeTechnique = null;
 			}
 		}
 		#endregion
@@ -740,6 +700,9 @@ namespace GorgonLibrary.Graphics
 			{
 				if (!_disposed)
 				{
+					if (Gorgon.CurrentShader == this)
+						Gorgon.CurrentShader = null;
+
 					if (ShaderCache.Shaders.Contains(Name))
 						ShaderCache.Shaders.Remove(Name);
 
@@ -831,9 +794,7 @@ namespace GorgonLibrary.Graphics
 			{
 				serializer.Write(string.Empty, ShaderSource);
 				_isBinary = false;
-			}
-
-			
+			}			
 		}
 
 		/// <summary>
@@ -895,14 +856,6 @@ namespace GorgonLibrary.Graphics
 					_techniques.Add(this);
 					_parameters.Add(this);
 
-					// Assign the first valid technique.
-					foreach (ShaderTechnique technique in _techniques)
-					{
-						ActiveTechnique = technique;
-						if (ActiveTechnique != null)
-							break;
-					}
-
 					_isBinary = true;
 				}
 				else
@@ -933,6 +886,61 @@ namespace GorgonLibrary.Graphics
 					stream.Dispose();
 				stream = null;
 			}
+		}
+		#endregion
+
+		#region IShaderRenderer Members
+		/// <summary>
+		/// Function to begin the rendering with the shader.
+		/// </summary>
+		void IShaderRenderer.Begin()
+		{
+			if (_effect != null)
+			{
+				if (_currentTechnique == null)
+				{
+					for (int i = 0; i < _techniques.Count; i++)
+					{
+						if (_techniques[i].Valid)
+						{
+							_currentTechnique = _techniques[i];
+							break;
+						}
+					}
+
+					if (_currentTechnique == null)
+						throw new ShaderHasNoTechniquesException(Name);
+				}
+
+				// NOTE: Note to self, we have to set the technique BEFORE calling Begin(), or else the handles become invalidated.
+				_effect.Technique = _currentTechnique.D3DEffectHandle;
+				_effect.Begin(D3D9.FX.None);
+			}
+		}
+
+		/// <summary>
+		/// Function to render with the shader.
+		/// </summary>
+		void IShaderRenderer.Render()
+		{
+			if ((_effect != null) && (_currentTechnique != null))
+			{				
+				for (int i = 0; i < _currentTechnique.Passes.Count; i++)
+				{
+					_effect.BeginPass(i);
+					Gorgon.Renderer.DrawCachedTriangles();
+					_effect.EndPass();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to end rendering with the shader.
+		/// </summary>
+		void IShaderRenderer.End()
+		{
+			if (_effect != null)
+				_effect.End();
 		}
 		#endregion
 	}

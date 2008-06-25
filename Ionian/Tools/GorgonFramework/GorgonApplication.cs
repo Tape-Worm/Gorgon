@@ -765,6 +765,8 @@ namespace GorgonLibrary.Framework
 			BlurLogo(e.FrameDeltaTime);
 
 			_logoSprite.SetPosition(Gorgon.CurrentVideoMode.Width / 2, Gorgon.CurrentVideoMode.Height / 2);
+			if (_logoShader != null)
+				Gorgon.CurrentShader = _logoShader;
 			_logoSprite.Draw();
 
 			if (_logoTimer.Seconds >= 0.01)
@@ -1148,18 +1150,17 @@ namespace GorgonLibrary.Framework
 				// Create the sprite logo.
 				Image.FromResource("Tape_Worm_Logo", Properties.Resources.ResourceManager);
 				_logoSprite = new Sprite("@LogoSprite", ImageCache.Images["Tape_Worm_Logo"]);
-				Shader.FromResource("Blur", Properties.Resources.ResourceManager, false);
-				_logoSprite.Shader = ShaderCache.Shaders["Blur"];
 				_logoSprite.SetAxis(128, 128);
 
 				// If we have a card with pixel shader 2.0 capability we're in for a treat.
 				// Yes, that's sad, really.
 				if (Gorgon.CurrentDriver.PixelShaderVersion >= new Version(2, 0))
 				{
-					_logoShader = _logoSprite.Shader;
+					_logoShader = Shader.FromResource("Blur", Properties.Resources.ResourceManager, false);
 					_logoShader.Parameters["sourceImage"].SetValue(_logoSprite.Image);
 					_logoShader.Parameters["blurAmount"].SetValue(_logoBlur);
 				}
+
 				previousBack = Gorgon.Screen.BackgroundColor;
 				Gorgon.Screen.BackgroundColor = Drawing.Color.Black;
 
@@ -1183,7 +1184,7 @@ namespace GorgonLibrary.Framework
 				{
 					Gorgon.Idle -= new FrameEventHandler(LogoRender);
 					if (_logoShader != null)
-						ShaderCache.Shaders[_logoSprite.Shader.Name].Dispose();
+						_logoShader.Dispose();
 					ImageCache.Images["Tape_Worm_Logo"].Dispose();
 					_logoShader = null;
 					_logoTimer = null;

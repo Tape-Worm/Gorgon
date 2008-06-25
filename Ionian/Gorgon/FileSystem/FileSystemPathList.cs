@@ -173,7 +173,7 @@ namespace GorgonLibrary.FileSystems
 			Remove(oldName);
 
 			// Rename.
-			oldPath.SetName(newName);
+			oldPath.Name = newName;
 
 			// Re-add with new name.
 			Add(oldPath);

@@ -106,9 +106,13 @@ namespace GorgonLibrary.Example
 			// Draw motherships.
 			_mother1.SetPosition(Gorgon.Screen.Width - (Gorgon.Screen.Width / 4), Gorgon.Screen.Height / 4);
 			_mother1.Draw();
-
+			
 			_mother2.SetPosition(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2);
+			Gorgon.CurrentShader = _blur;
 			_mother2.Draw();
+			Gorgon.CurrentShader = null;
+
+
 		}
 
 		/// <summary>
@@ -154,7 +158,6 @@ namespace GorgonLibrary.Example
 
 			// Get shader.
 			_blur = Shader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx");
-			_mother2.Shader = _blur;
 			_blur.Parameters["sourceImage"].SetValue(_spriteImage);
 
 			// Get poetry.

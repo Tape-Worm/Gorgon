@@ -153,7 +153,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-                base.SetName(value);
+				base.Name = value;
 			}
 		}
 

@@ -46,6 +46,27 @@ namespace GorgonLibrary.FileSystems
 
 		#region Properties.
 		/// <summary>
+		/// Read-only property to return the name of this object.
+		/// </summary>
+		/// <value>
+		/// A <see cref="string">string</see> containing the name of this object.
+		/// </value>
+		/// <remarks>The name of an object need not be unique, however if it is used as a key value for a collection then it should be unique.</remarks>
+		public override string Name
+		{
+			get
+			{
+				return base.Name;
+			}
+			protected internal set
+			{
+				base.Name = value;
+				FilesUpdated();
+			}
+		}
+
+
+		/// <summary>
 		/// Property to return the parent of the path.
 		/// </summary>
 		public FileSystemPath Parent
@@ -177,16 +198,6 @@ namespace GorgonLibrary.FileSystems
 						child.FilesUpdated();
 				}
 			}
-		}
-
-		/// <summary>
-		/// Function to assist with renaming.
-		/// </summary>
-		/// <param name="newName">New name.</param>
-		protected internal override void SetName(string newName)
-		{
-            base.SetName(newName);
-			FilesUpdated();
 		}
 
 		/// <summary>

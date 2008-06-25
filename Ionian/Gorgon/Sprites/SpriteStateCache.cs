@@ -517,11 +517,6 @@ namespace GorgonLibrary.Graphics
 			_renderStates.DepthBufferWriteEnabled = renderObject.DepthWriteEnabled;
 			_renderStates.DepthTestFunction = renderObject.DepthTestFunction;
 
-			// Set the currently active shader.
-			Gorgon.Renderer.CurrentShader = renderObject.Shader;
-			if (Gorgon.Renderer.CurrentTechnique != null)
-				Gorgon.Renderer.CurrentShaderPass = renderObject.ShaderPass;
-
 			// Set dithering flag.
 			_renderStates.DitheringEnabled = _dither;
 			Geometry.PrimitiveStyle = renderObject.PrimitiveStyle;
@@ -536,7 +531,6 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the state has changed, FALSE if not.</returns>
 		protected internal virtual bool StateChanged(IRenderableStates renderObject, Image image)
 		{
-			bool result = false;			// Result.
 			RenderStates states;			// Render states.
 			ImageLayerStates _imageStates;	// Image layer states.
 
@@ -544,9 +538,6 @@ namespace GorgonLibrary.Graphics
 			_imageStates = Gorgon.Renderer.ImageLayerStates[0];
 
 			if (image != Gorgon.Renderer.GetImage(0))
-				return true;
-
-			if (renderObject.ShaderPass != Gorgon.Renderer.CurrentShaderPass)
 				return true;
 
 			if (renderObject.BorderColor != _imageStates.BorderColor)
@@ -613,12 +604,6 @@ namespace GorgonLibrary.Graphics
 				return true;
 
 			if (Geometry.UseIndices != renderObject.UseIndices)
-				return true;
-
-			if (renderObject.Shader != Gorgon.Renderer.CurrentShader)
-				return true;
-
-			if ((renderObject.Shader != null) && (Gorgon.Renderer.CurrentTechnique != renderObject.Shader.ActiveTechnique))
 				return true;
 
 			return false;

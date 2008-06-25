@@ -250,7 +250,7 @@ namespace GorgonLibrary
 			_lastSection = string.Empty;
 
             if (string.IsNullOrEmpty(appname))
-                SetName("Console");
+                Name = "Console";
 
 			// Force the use of the console.
 			if (path == null)

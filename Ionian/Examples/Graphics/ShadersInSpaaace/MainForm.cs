@@ -77,7 +77,6 @@ namespace GorgonLibrary.Example
 			_cloakShader.Parameters["sprite"].SetValue(_shipImage);
 			_cloakShader.Parameters["cloakAmount"].SetValue(1.0f);
 			_cloakShader.Parameters["refractionIndex"].SetValue(_cloakIndex);
-			_ship.Shader = _cloakShader;
 		}
 
 		/// <summary>
@@ -191,6 +190,8 @@ namespace GorgonLibrary.Example
 				_cloakShader.Parameters["cloakAmount"].SetValue(_cloakAmount);
 				_cloakShader.Parameters["refractionIndex"].SetValue(_cloakIndex);
 			}
+
+			Gorgon.CurrentShader = _cloakShader;
 			_ship.Draw();
 		}
 
@@ -201,6 +202,7 @@ namespace GorgonLibrary.Example
 		/// <param name="e">The <see cref="GorgonLibrary.Graphics.FrameEventArgs"/> instance containing the event data.</param>
 		private void Gorgon_Idle(object sender, FrameEventArgs e)
 		{
+			Gorgon.Screen.Clear();
 			// Do nothing here.  When we need to update, we will.
 			Gorgon.CurrentRenderTarget = _finalBuffer;
 			Gorgon.CurrentRenderTarget.Clear();
@@ -224,12 +226,11 @@ namespace GorgonLibrary.Example
 				_frameTimer.Reset();
 			}
 
-			_bufferSprite.Position = Vector2D.Zero;
-			_bufferSprite.Draw();
-
 			_bufferSprite.Position = _offset;
+			Gorgon.CurrentShader = _scratchShader;
 			_bufferSprite.Draw();
 
+			Gorgon.CurrentShader = null;
 			_grainSprite.Opacity = (byte)(_rnd.Next(128) + 127);
 			_grainSprite.Draw();
 		}
@@ -274,10 +275,8 @@ namespace GorgonLibrary.Example
 			_imageShader = new ImageShader("NoiseShader", _scratchShader, "noise_2d");
 			_noiseImage = new Image("NoiseImage", 128, 128, ImageBufferFormats.BufferRGB888A8, true);
 			_noiseImage.FillFromShader(_imageShader);
-
 			_scratchShader.Parameters["Noise2DTex"].SetValue(_noiseImage);
 			_scratchShader.Parameters["SceneTexture"].SetValue(_finalBuffer);
-			_bufferSprite.Shader = _scratchShader;
 
 			_frameTimer = new PreciseTimer();
 		}

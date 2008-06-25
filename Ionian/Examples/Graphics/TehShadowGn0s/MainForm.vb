@@ -74,7 +74,6 @@ Public Class MainForm
     ''' <param name="sender">The source of the event.</param>
     ''' <param name="e">The <see cref="GorgonLibrary.Graphics.FrameEventArgs"/> instance containing the event data.</param>
     Private Sub Gorgon_Idle(ByVal sender As Object, ByVal e As FrameEventArgs)
-        _screenSprite.Shader = Nothing
 
         Gorgon.CurrentRenderTarget = _blurPass2
 
@@ -107,20 +106,17 @@ Public Class MainForm
             End If
         End If
 
-        _screenSprite.Image = _blurPass2.Image
-
         For i As Integer = 0 To _samples - 1
-            _screenSprite.Shader = _blurShader
             Gorgon.CurrentRenderTarget = _blurPass1
-            _screenSprite.ShaderPass = 0
+            Gorgon.CurrentShader = _blurShader.Techniques(0).Passes("hBlur")
             _screenSprite.Draw()
 
             Gorgon.CurrentRenderTarget = _blurPass2
-            _screenSprite.ShaderPass = 1
+            Gorgon.CurrentShader = _blurShader.Techniques(0).Passes("vBlur")
             _screenSprite.Draw()
         Next
+        Gorgon.CurrentShader = Nothing
 
-        _screenSprite.Shader = Nothing
         _screenSprite.Image = _blurPass2.Image
 
         Gorgon.CurrentRenderTarget = Nothing
@@ -171,17 +167,16 @@ Public Class MainForm
         _tileCount = New Drawing.Size(MathUtility.Round(Gorgon.Screen.Width / _bgSprite.Width, 0, MidpointRounding.AwayFromZero), MathUtility.Round(Gorgon.Screen.Height / _bgSprite.Height, 0, MidpointRounding.AwayFromZero))
 
         _shadowGen = New ShadowSprite(_sprite)
-        _shadow = _shadowGen.CreateShadow(12)
+        _shadow = _shadowGen.CreateShadow(16)
         _shadow.Axis = Vector2D.Add(Vector2D.Add(_sprite.Axis, New Vector2D(-24.0, -24.0)), _shadow.Axis)
 
         _shadowGen.Sprite = _sprite2
-        _shadow2 = _shadowGen.CreateShadow(8)
+        _shadow2 = _shadowGen.CreateShadow(16)
         _shadow2.Axis = Vector2D.Add(Vector2D.Add(_sprite2.Axis, New Vector2D(-12.0, -12.0)), _shadow2.Axis)
 
         _blurPass2 = New RenderImage("Output", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8)
         _blurPass1 = New RenderImage("BlurOutput", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8)
         _screenSprite = New Sprite("ScreenSprite", _blurPass2)
-        _screenSprite.Shader = _blurShader
         _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(_blurPass1.Width)
         _blurShader.Techniques("Blur").Parameters("fadeFactor").SetValue(0.02D)
         _blurShader.Techniques("Blur").Parameters("blur1").SetValue(_blurPass1)

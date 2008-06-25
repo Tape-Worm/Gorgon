@@ -439,7 +439,6 @@ namespace GorgonLibrary.Extras
 			result.Position = sprite.Position;
 			result.Rotation = sprite.Rotation;
 			result.Scale = sprite.Scale;
-			result.Shader = sprite.Shader;
 			result.Smoothing = sprite.Smoothing;
 			result.SourceBlend = sprite.SourceBlend;
 			result.StencilCompare = sprite.StencilCompare;
@@ -744,7 +743,6 @@ namespace GorgonLibrary.Extras
 				clone.StencilReference = StencilReference;
 			if (!InheritStencilMask)
 				clone.StencilMask = StencilMask;
-			clone.Shader = Shader;
 			for (int i = 0; i < _grid.Length; i++)
 				clone._grid[i] = _grid[i];
 

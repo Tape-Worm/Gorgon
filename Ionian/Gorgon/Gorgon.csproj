@@ -218,6 +218,7 @@
     <Compile Include="Serialization\StreamWriterEx.cs" />
     <Compile Include="Shaders\ImageShaderCache.cs" />
     <Compile Include="Shaders\ImageShaderList.cs" />
+    <Compile Include="Shaders\IShaderOutput.cs" />
     <Compile Include="Shaders\ShaderCache.cs" />
     <Compile Include="Shaders\ShaderParameter.cs" />
     <Compile Include="Shaders\ShaderParameterList.cs" />

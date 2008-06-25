@@ -110,7 +110,7 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			set
 			{
-                SetName(value);
+				base.Name = value;
                 _sprite.Name = value;
 				Changed = true;
 			}
@@ -1479,7 +1479,7 @@ namespace GorgonLibrary.Graphics.Tools
 
 				// Read the sprite from the stream.
 				_sprite = GorgonLibrary.Graphics.Sprite.FromStream(stream, _xml);
-				SetName(_sprite.Name);
+				Name = _sprite.Name;
 
 				RefreshProperties();
 

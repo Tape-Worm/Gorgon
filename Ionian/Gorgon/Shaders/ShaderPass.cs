@@ -34,11 +34,12 @@ namespace GorgonLibrary.Graphics
 	/// Object representing a pass within the shader.
 	/// </summary>
 	public class ShaderPass
-		: NamedObject
+		: NamedObject, IShaderRenderer
 	{
 		#region Variables.
 		private D3D9.EffectHandle _effectHandle;		// Handle to the pass.
 		private ShaderTechnique _owner;					// Technique that owns this pass.
+		private int _passIndex = 0;						// Index of this pass.
 		#endregion
 
 		#region Properties.
@@ -50,6 +51,17 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				return _owner;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the index of the shader pass.
+		/// </summary>
+		public int PassIndex
+		{
+			get
+			{
+				return _passIndex;
 			}
 		}
 		#endregion
@@ -64,8 +76,9 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				// Get handle and name.
+				_passIndex = index;
 				_effectHandle = _owner.Owner.D3DEffect.GetPass(_owner.D3DEffectHandle, index);
-				SetName(_owner.Owner.D3DEffect.GetPassDescription(_effectHandle).Name);
+				Name = _owner.Owner.D3DEffect.GetPassDescription(_effectHandle).Name;
 			}
 			catch (Exception ex)
 			{
@@ -86,6 +99,36 @@ namespace GorgonLibrary.Graphics
 			_owner = technique;
 			_effectHandle = null;
 			GetPass(index);
+		}
+		#endregion
+
+		#region IShaderRenderer Members
+		/// <summary>
+		/// Function to begin the rendering with the shader.
+		/// </summary>
+		void IShaderRenderer.Begin()
+		{
+			_owner.Owner.D3DEffect.Technique = _owner.D3DEffectHandle;
+			_owner.Owner.D3DEffect.Begin(D3D9.FX.None);
+		}
+
+		/// <summary>
+		/// Function to render with the shader.
+		/// </summary>
+		void IShaderRenderer.Render()
+		{
+			_owner.Owner.D3DEffect.BeginPass(_passIndex);
+			Gorgon.Renderer.DrawCachedTriangles();
+			_owner.Owner.D3DEffect.EndPass();
+		}
+
+		/// <summary>
+		/// Function to end rendering with the shader.
+		/// </summary>
+		void IShaderRenderer.End()
+		{
+			
+			_owner.Owner.D3DEffect.End();
 		}
 		#endregion
 	}
