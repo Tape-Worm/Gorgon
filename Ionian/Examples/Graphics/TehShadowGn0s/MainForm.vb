@@ -49,23 +49,60 @@ Public Class MainForm
     Private _instructions As TextSprite = Nothing           ' Instructions.
     Private _font As Font = Nothing                         ' Font for instructions.
     Private _help As Boolean = True                         ' Flag to show help.
+    Private _lastPos As Vector2D = Vector2D.Zero            ' Last position.
 #End Region
 
+#Region "Properties."
+    ''' <summary>
+    ''' Property to return the scale ratio of the screen to the current render target.
+    ''' </summary>
+    ''' <value>The target scale.</value>
+    Private ReadOnly Property TargetScale() As Vector2D
+        Get
+            Return New Vector2D(CSng(Gorgon.CurrentRenderTarget.Width / Gorgon.Screen.Width), CSng(Gorgon.CurrentRenderTarget.Height / Gorgon.Screen.Height))
+        End Get
+    End Property
+#End Region
+
+
 #Region "Methods."
+    ''' <summary>
+    ''' Function to convert the given set of normalized coordinates into the coordinates of the render target.
+    ''' </summary>
+    ''' <param name="coordinate">The coordinate.</param>
+    ''' <returns>Converted coordinates.</returns>
+    Private Function ToTarget(ByVal coordinate As Vector2D) As Vector2D
+        Dim output As Vector2D = Vector2D.Zero     ' Transformed vector.
+
+        output.X = CInt(coordinate.X * Gorgon.CurrentRenderTarget.Width)
+        output.Y = CInt(coordinate.Y * Gorgon.CurrentRenderTarget.Height)
+
+        Return output
+    End Function
+
+    ''' <summary>
+    ''' Function to convert the given set of absolute coordinates into normalized coordinates.
+    ''' </summary>
+    ''' <param name="coordinate">The coordinate.</param>
+    ''' <returns>Converted coordinates.</returns>
+    Private Function ToUnit(ByVal coordinate As Vector2D) As Vector2D
+        Dim output As Vector2D = Vector2D.Zero     ' Transformed vector.
+
+        output.X = CSng(coordinate.X / Gorgon.CurrentRenderTarget.Width)
+        output.Y = CSng(coordinate.Y / Gorgon.CurrentRenderTarget.Height)
+
+        Return output
+    End Function
+
     ''' <summary>
     ''' Handles the Reset event of the Gorgon control.
     ''' </summary>
     ''' <param name="sender">The source of the event.</param>
     ''' <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
     Private Sub Gorgon_Reset(ByVal sender As Object, ByVal e As EventArgs)
-        _tileCount = New Drawing.Size(MathUtility.Round(Gorgon.Screen.Width / _bgSprite.Width, 0, MidpointRounding.AwayFromZero), MathUtility.Round(Gorgon.Screen.Height / _bgSprite.Height, 0, MidpointRounding.AwayFromZero))
-        _blurPass2.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height)
-        _blurPass1.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height)
         _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(_blurPass1.Width)
         _blurShader.Techniques("Blur").Parameters("blur1").SetValue(_blurPass1)
         _blurShader.Techniques("Blur").Parameters("blur2").SetValue(_blurPass2)
-        _screenSprite.Width = _blurPass1.Width
-        _screenSprite.Height = _blurPass1.Height
     End Sub
 
     ''' <summary>
@@ -75,67 +112,103 @@ Public Class MainForm
     ''' <param name="e">The <see cref="GorgonLibrary.Graphics.FrameEventArgs"/> instance containing the event data.</param>
     Private Sub Gorgon_Idle(ByVal sender As Object, ByVal e As FrameEventArgs)
 
-        Gorgon.CurrentRenderTarget = _blurPass2
+        If (_samples - 1 > 0) Then
+            Gorgon.CurrentRenderTarget = _blurPass2
+        End If
+
+        _bgSprite.Scale = TargetScale
+        _sprite.Scale = Vector2D.Multiply(_bgSprite.Scale, 0.5D)
+        _sprite2.Scale = Vector2D.Multiply(_bgSprite.Scale, 0.5D)
+        _shadow2.Scale = Vector2D.Multiply(_bgSprite.Scale, 0.5D)
+        _shadow.Scale = Vector2D.Multiply(_bgSprite.Scale, 0.5D)
+        _screenSprite.UniformScale = 1
+        _tileCount = New Drawing.Size(MathUtility.Round(Gorgon.CurrentRenderTarget.Width / _bgSprite.ScaledWidth, 0, MidpointRounding.AwayFromZero), MathUtility.Round(Gorgon.CurrentRenderTarget.Height / _bgSprite.ScaledHeight, 0, MidpointRounding.AwayFromZero))
 
         For x As Integer = 0 To _tileCount.Width
             For y As Integer = 0 To _tileCount.Height
-                _bgSprite.SetPosition(x * _bgSprite.Width, y * _bgSprite.Height)
+                _bgSprite.SetPosition(x * _bgSprite.ScaledWidth, y * _bgSprite.ScaledHeight)
                 _bgSprite.Draw()
             Next
         Next
 
         If Not (_moveShip1) Then
+            _sprite.Position = ToTarget(_lastPos)
+            _shadow.Position = Vector2D.Add(_sprite.Position, Vector2D.Divide(Vector2D.Subtract(_sprite.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 8D))
             _shadow.Draw()
             _sprite.Draw()
         Else
+            _sprite2.Position = ToTarget(_lastPos)
+            _shadow2.Position = Vector2D.Add(_sprite2.Position, Vector2D.Divide(Vector2D.Subtract(_sprite2.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 8D))
             _shadow2.Draw()
             _sprite2.Draw()
         End If
 
         If (_auto) Then
             If (_moveShip1) Then
-                _sprite.Position = _mousePos
-                _shadow.Position = _mousePos
+                _sprite.Scale = _bgSprite.Scale
+                _shadow.Scale = _bgSprite.Scale
+                _sprite.Position = ToTarget(_mousePos)
+                _shadow.Position = Vector2D.Add(_sprite.Position, Vector2D.Divide(Vector2D.Subtract(_sprite.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 2D))
                 _shadow.Draw()
                 _sprite.Draw()
             Else
-                _sprite2.Position = _mousePos
-                _shadow2.Position = _mousePos
+                _sprite2.Scale = _bgSprite.Scale
+                _shadow2.Scale = _bgSprite.Scale
+                _sprite2.Position = ToTarget(_mousePos)
+                _shadow2.Position = Vector2D.Add(_sprite2.Position, Vector2D.Divide(Vector2D.Subtract(_sprite2.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 2D))
                 _shadow2.Draw()
                 _sprite2.Draw()
             End If
+
+            Gorgon.CurrentRenderTarget.BeginDrawing()
+            Gorgon.CurrentRenderTarget.FilledCircle(ToTarget(New Vector2D(0.5D, 0.5D)).X, ToTarget(New Vector2D(0.5D, 0.5D)).Y, 10, Drawing.Color.White)
+            Gorgon.CurrentRenderTarget.EndDrawing()
         End If
 
-        For i As Integer = 0 To _samples - 1
-            Gorgon.CurrentRenderTarget = _blurPass1
-            Gorgon.CurrentShader = _blurShader.Techniques(0).Passes("hBlur")
+
+        ' Only apply the shader if we have blurring.
+        If (_samples - 1 > 0) Then
+            For i As Integer = 0 To _samples - 1
+                Gorgon.CurrentRenderTarget = _blurPass1
+                Gorgon.CurrentShader = _blurShader.Techniques(0).Passes("hBlur")
+                _screenSprite.Draw()
+
+                Gorgon.CurrentRenderTarget = _blurPass2
+                Gorgon.CurrentShader = _blurShader.Techniques(0).Passes("vBlur")
+                _screenSprite.Draw()
+            Next
+
+            Gorgon.CurrentShader = Nothing
+
+            _screenSprite.Image = _blurPass2.Image
+
+            Gorgon.CurrentRenderTarget = Nothing
+
+            _screenSprite.Scale = New Vector2D(1 / _bgSprite.Scale.X, 1 / _bgSprite.Scale.Y)
             _screenSprite.Draw()
-
-            Gorgon.CurrentRenderTarget = _blurPass2
-            Gorgon.CurrentShader = _blurShader.Techniques(0).Passes("vBlur")
-            _screenSprite.Draw()
-        Next
-        Gorgon.CurrentShader = Nothing
-
-        _screenSprite.Image = _blurPass2.Image
-
-        Gorgon.CurrentRenderTarget = Nothing
-        _screenSprite.Draw()
+        End If
 
         If (_auto) Then
             _samples -= e.FrameDeltaTime * 25
         Else
             If (_moveShip1) Then
-                _shadow.Position = _mousePos
-                _sprite.Position = _mousePos
+                _sprite.Scale = TargetScale
+                _shadow.Scale = TargetScale
+                _sprite.Position = ToTarget(_mousePos)
+                _shadow.Position = Vector2D.Add(_sprite.Position, Vector2D.Divide(Vector2D.Subtract(_sprite.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 2D))
                 _shadow.Draw()
                 _sprite.Draw()
             Else
-                _shadow2.Position = _mousePos
-                _sprite2.Position = _mousePos
+                _sprite2.Scale = TargetScale
+                _shadow2.Scale = TargetScale
+                _sprite2.Position = ToTarget(_mousePos)
+                _shadow2.Position = Vector2D.Add(_sprite2.Position, Vector2D.Divide(Vector2D.Subtract(_sprite2.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 2D))
                 _shadow2.Draw()
                 _sprite2.Draw()
             End If
+            Gorgon.CurrentRenderTarget.BeginDrawing()
+            Gorgon.CurrentRenderTarget.FilledCircle(ToTarget(New Vector2D(0.5D, 0.5D)).X, ToTarget(New Vector2D(0.5D, 0.5D)).Y, 10, Drawing.Color.White)
+            Gorgon.CurrentRenderTarget.EndDrawing()
         End If
 
         If (_samples < 0) Then
@@ -164,26 +237,21 @@ Public Class MainForm
         _sprite2 = Sprite.FromFile("..\..\..\..\Resources\Sprites\TehShadowGn0s\WeirdShip2.gorSprite")
         _blurShader = Shader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx")
 
-        _tileCount = New Drawing.Size(MathUtility.Round(Gorgon.Screen.Width / _bgSprite.Width, 0, MidpointRounding.AwayFromZero), MathUtility.Round(Gorgon.Screen.Height / _bgSprite.Height, 0, MidpointRounding.AwayFromZero))
-
         _shadowGen = New ShadowSprite(_sprite)
         _shadow = _shadowGen.CreateShadow(16)
-        _shadow.Axis = Vector2D.Add(Vector2D.Add(_sprite.Axis, New Vector2D(-24.0, -24.0)), _shadow.Axis)
 
         _shadowGen.Sprite = _sprite2
         _shadow2 = _shadowGen.CreateShadow(16)
-        _shadow2.Axis = Vector2D.Add(Vector2D.Add(_sprite2.Axis, New Vector2D(-12.0, -12.0)), _shadow2.Axis)
 
-        _blurPass2 = New RenderImage("Output", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8)
-        _blurPass1 = New RenderImage("BlurOutput", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8)
+        _blurPass1 = New RenderImage("BlurOutput1", 256, 256, ImageBufferFormats.BufferRGB888X8)
+        _blurPass2 = New RenderImage("BlurOutput2", _blurPass1.Width, _blurPass1.Height, ImageBufferFormats.BufferRGB888X8)
         _screenSprite = New Sprite("ScreenSprite", _blurPass2)
         _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(_blurPass1.Width)
         _blurShader.Techniques("Blur").Parameters("fadeFactor").SetValue(0.02D)
         _blurShader.Techniques("Blur").Parameters("blur1").SetValue(_blurPass1)
         _blurShader.Techniques("Blur").Parameters("blur2").SetValue(_blurPass2)
 
-        _sprite2.SetPosition((Gorgon.CurrentRenderTarget.Width / 2D), (Gorgon.CurrentRenderTarget.Height / 2D) - 100)
-        _shadow2.Position = _sprite2.Position
+        _lastPos = New Vector2D(0.5D, 0.25D)
 
         _font = New Font("Arial", "Arial", 9.0, True, True)
         _instructions = New TextSprite("Instructions", "Help:" & ControlChars.CrLf & "F1 - Show/hide this text." & ControlChars.CrLf & "S - Show frame stats." & ControlChars.CrLf & _
@@ -199,7 +267,7 @@ Public Class MainForm
     Protected Overrides Sub OnMouseMove(ByVal e As System.Windows.Forms.MouseEventArgs)
         MyBase.OnMouseMove(e)
 
-        _mousePos = e.Location
+        _mousePos = ToUnit(e.Location)
     End Sub
 
     ''' <summary>
@@ -209,6 +277,7 @@ Public Class MainForm
     Protected Overrides Sub OnClick(ByVal e As System.EventArgs)
         MyBase.OnClick(e)
 
+        _lastPos = _mousePos
         _moveShip1 = Not _moveShip1
     End Sub
 

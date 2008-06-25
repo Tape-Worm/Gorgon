@@ -1,4 +1,3 @@
-texture sourceImage;
 texture blur1;
 texture blur2;
 
@@ -7,12 +6,6 @@ float blurAmount = 1.0f / 512.0f;
 
 // Fade in-out factor (0 = none).
 float fadeFactor = 0.0f;
-
-// Our texture samplers
-sampler2D sourceSampler
-{
-	Texture=<sourceImage>;
-};
 
 sampler2D hBlurSampler
 {
@@ -67,12 +60,6 @@ struct VTX_OUTPUT
 	float2 texCoords : TEXCOORD0;
 };
 
-// Function to retrieve the image data to blur.
-float4 psGetImage(VTX_OUTPUT vtx) : COLOR0
-{
-	return tex2D(sourceSampler, vtx.texCoords);
-}
-
 // Function to blur an image horizontally.
 float4 psHBlur(VTX_OUTPUT vtx) : COLOR0
 {
@@ -101,13 +88,7 @@ float4 psVBlur(VTX_OUTPUT vtx) : COLOR0
 
 // Technique to blur an image.
 technique Blur
-{
-	pass source	
-	{
-		VertexShader = null;
-		PixelShader = compile ps_2_0 psGetImage();
-	}
-	
+{	
 	pass hBlur
 	{
 		VertexShader = null;
