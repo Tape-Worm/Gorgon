@@ -116,6 +116,8 @@ Public Class MainForm
             Gorgon.CurrentRenderTarget = _blurPass2
         End If
 
+        _shadow2.Opacity = 255
+        _shadow.Opacity = 255
         _bgSprite.Scale = TargetScale
         _sprite.Scale = Vector2D.Multiply(_bgSprite.Scale, 0.5D)
         _sprite2.Scale = Vector2D.Multiply(_bgSprite.Scale, 0.5D)
@@ -149,6 +151,7 @@ Public Class MainForm
                 _shadow.Scale = _bgSprite.Scale
                 _sprite.Position = ToTarget(_mousePos)
                 _shadow.Position = Vector2D.Add(_sprite.Position, Vector2D.Divide(Vector2D.Subtract(_sprite.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 2D))
+                _shadow.Opacity = 192
                 _shadow.Draw()
                 _sprite.Draw()
             Else
@@ -156,6 +159,7 @@ Public Class MainForm
                 _shadow2.Scale = _bgSprite.Scale
                 _sprite2.Position = ToTarget(_mousePos)
                 _shadow2.Position = Vector2D.Add(_sprite2.Position, Vector2D.Divide(Vector2D.Subtract(_sprite2.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 2D))
+                _shadow2.Opacity = 192
                 _shadow2.Draw()
                 _sprite2.Draw()
             End If
@@ -196,6 +200,7 @@ Public Class MainForm
                 _shadow.Scale = TargetScale
                 _sprite.Position = ToTarget(_mousePos)
                 _shadow.Position = Vector2D.Add(_sprite.Position, Vector2D.Divide(Vector2D.Subtract(_sprite.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 2D))
+                _shadow.Opacity = 192
                 _shadow.Draw()
                 _sprite.Draw()
             Else
@@ -203,6 +208,7 @@ Public Class MainForm
                 _shadow2.Scale = TargetScale
                 _sprite2.Position = ToTarget(_mousePos)
                 _shadow2.Position = Vector2D.Add(_sprite2.Position, Vector2D.Divide(Vector2D.Subtract(_sprite2.Position, New Vector2D(Gorgon.CurrentRenderTarget.Width / 2D, Gorgon.CurrentRenderTarget.Height / 2D)), 2D))
+                _shadow2.Opacity = 192
                 _shadow2.Draw()
                 _sprite2.Draw()
             End If

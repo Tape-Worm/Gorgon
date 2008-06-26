@@ -272,7 +272,7 @@ namespace GorgonLibrary.Example
 			InstallCloak();
 
 			// Set up noise image.
-			_imageShader = new ImageShader("NoiseShader", _scratchShader, "noise_2d");
+			_imageShader = new ImageShader("NoiseShader", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0"));
 			_noiseImage = new Image("NoiseImage", 128, 128, ImageBufferFormats.BufferRGB888A8, true);
 			_noiseImage.FillFromShader(_imageShader);
 			_scratchShader.Parameters["Noise2DTex"].SetValue(_noiseImage);

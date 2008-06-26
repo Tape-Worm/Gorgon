@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester1", "Examples\Tester1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonEx", "Tools\GorgonEx\GorgonEx.csproj", "{6B225F4F-1057-429E-8EF3-3039579AA8FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShadersInSpaaace", "Examples\Graphics\ShadersInSpaaace\ShadersInSpaaace.csproj", "{0390ACAD-101E-46F1-A355-13E4F082CB04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{6B225F4F-1057-429E-8EF3-3039579AA8FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B225F4F-1057-429E-8EF3-3039579AA8FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B225F4F-1057-429E-8EF3-3039579AA8FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0390ACAD-101E-46F1-A355-13E4F082CB04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0390ACAD-101E-46F1-A355-13E4F082CB04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0390ACAD-101E-46F1-A355-13E4F082CB04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0390ACAD-101E-46F1-A355-13E4F082CB04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

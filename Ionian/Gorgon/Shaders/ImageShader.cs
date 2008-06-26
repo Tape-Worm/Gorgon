@@ -39,8 +39,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private bool _disposed = false;						// Flag to indicate that the object is disposed.
 		private D3D9.TextureShader _shader = null;			// Texture shader.
-		private Shader _root = null;						// Root shader.
-		private DX.DataStream _functionData = null;			// Stream to hold the function data.
+		private ShaderFunction _function = null;			// Shader function.
 		#endregion
 
 		#region Properties.
@@ -52,6 +51,26 @@ namespace GorgonLibrary.Graphics
 			get
 			{				
 				return _shader;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether this shader should destroy the function or leave it alone.
+		/// </summary>
+		public bool AutoDisposeFunction
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the function that this shader is using to fill the image.
+		/// </summary>
+		public ShaderFunction Function
+		{
+			get
+			{
+				return _function;
 			}
 		}
 		#endregion
@@ -71,37 +90,26 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="ImageShader"/> class.
 		/// </summary>
 		/// <param name="name">Name of the image shader.</param>
-		/// <param name="shader">The shader that holds the image shader function.</param>
-		/// <param name="functionName">Name of the function to import.</param>
-		public ImageShader(string name, Shader shader, string functionName)
+		/// <param name="function">Shader function to use to fill the image.</param>
+		public ImageShader(string name, ShaderFunction function)
 			: base(name)
 		{
-			D3D9.ShaderBytecode byteCode = null;		// Shader byte code.
+			AutoDisposeFunction = true;
 
-			if (shader == null)
-				throw new ArgumentNullException("shader");
-
-			if (string.IsNullOrEmpty(functionName))
-				throw new ArgumentNullException("functionName");
+			if (function == null)
+				throw new ArgumentNullException("function");
 
 			if (ImageShaderCache.ImageShaders.Contains(name))
 				throw new ShaderAlreadyExistsException(name);
 
-			try
-			{
-				_root = shader;
-				byteCode = shader.GetShaderFunction(functionName);
-                _functionData = byteCode.Data;
-				_shader = new D3D9.TextureShader(_functionData);
+			_function = function;
 
-				ImageShaderCache.ImageShaders.Add(this);
-			}
-			finally
-			{
-				if (byteCode != null)
-					byteCode.Dispose();
-				byteCode = null;
-			}
+			if (!_function.Target.StartsWith("tx_", StringComparison.CurrentCultureIgnoreCase))
+				throw new ArgumentException("The function needs to have been compiled with a texture shader profile (tx_n_n).");
+
+			_shader = new D3D9.TextureShader(function.ByteCode.Data);
+			
+			ImageShaderCache.ImageShaders.Add(this);
 		}
 		#endregion
 
@@ -118,9 +126,9 @@ namespace GorgonLibrary.Graphics
 				{
 					if (_shader != null)
 						_shader.Dispose();
-					if (_functionData != null)
-						_functionData.Dispose();
-					_functionData = null;
+					if ((_function != null) && (AutoDisposeFunction))
+						_function.Dispose();
+					_function = null;
 					_shader = null;
 					_disposed = true;
 
@@ -158,8 +166,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void DeviceReset()
 		{
-			if ((_functionData != null) && (_shader == null))
-				_shader = new D3D9.TextureShader(_functionData);
+			if ((_function != null) && (_shader == null))
+				_shader = new D3D9.TextureShader(_function.ByteCode.Data);
 		}
 
 		/// <summary>
