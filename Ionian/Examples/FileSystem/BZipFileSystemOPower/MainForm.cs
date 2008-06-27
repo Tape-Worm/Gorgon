@@ -179,8 +179,13 @@ namespace GorgonLibrary.Example
 			// Get shader.
 			if (Gorgon.CurrentDriver.PixelShaderVersion >= new Version(2, 0))
 			{
-				_blur = Shader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx");
+#if DEBUG
+				_blur = Shader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
+#else
+				_blur = Shader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
+#endif
 				_blur.Parameters["sourceImage"].SetValue(_spriteImage);
+
 			}
 
 			// Get the sprites.

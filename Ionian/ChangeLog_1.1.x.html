@@ -103,8 +103,18 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-June 25/2008 - Version - Current
+June 27/2008 - Version - Current
 ================================
+* Modified all From* static functions to take an extra parameter:  ShaderCompilerOptions.
+  This allows the user to control the optimization level and debug info level for a shader.
+  
++ Added a shader function object to be used with the image shaders.  These objects can be retrieved
+  from the Shader object via the GetShaderFunction().
+  
++ Added two new methods to the shader object:  CompileShader() and GetShaderFunction().  The 
+  CompileShader() function is used to compile the source code for a shader, while the GetShaderFunction
+  is used to retrieve a specific function from a shader and returns a ShaderFunction object. 
+
 * Modified the shader subsystem extensively.  Renderable objects no longer have shaders attached
   (i.e. Sprite.Shader no longer exists).  This will break code that relied on shaders, but the
   old system didn't make any sense, especially when it came to multipass rendering.

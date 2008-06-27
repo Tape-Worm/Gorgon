@@ -157,7 +157,11 @@ namespace GorgonLibrary.Example
 			_mother2 = Sprite.FromFileSystem(_folderFS, @"\Sprites\Mother2c.gorSprite");
 
 			// Get shader.
-			_blur = Shader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx");
+#if DEBUG
+			_blur = Shader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
+#else
+			_blur = Shader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
+#endif
 			_blur.Parameters["sourceImage"].SetValue(_spriteImage);
 
 			// Get poetry.

@@ -267,12 +267,18 @@ namespace GorgonLibrary.Example
 			_bufferSprite = new Sprite("FinalBufferSprite", _finalBuffer);
 
 			// Get shader.
-			_cloakShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx");
-			_scratchShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx");
+#if DEBUG
+			_cloakShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx", ShaderCompileOptions.Debug);
+			_scratchShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx", ShaderCompileOptions.Debug);
+			_imageShader = new ImageShader("NoiseShader", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0", ShaderCompileOptions.Debug));
+#else
+			_cloakShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx", ShaderCompileOptions.OptimizationLevel3);
+			_scratchShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx", ShaderCompileOptions.OptimizationLevel3);
+			_imageShader = new ImageShader("NoiseShader", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0", ShaderCompileOptions.OptimizationLevel3));
+#endif
 			InstallCloak();
 
-			// Set up noise image.
-			_imageShader = new ImageShader("NoiseShader", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0"));
+			// Set up noise image.			
 			_noiseImage = new Image("NoiseImage", 128, 128, ImageBufferFormats.BufferRGB888A8, true);
 			_noiseImage.FillFromShader(_imageShader);
 			_scratchShader.Parameters["Noise2DTex"].SetValue(_noiseImage);

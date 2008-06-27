@@ -200,7 +200,11 @@ Public Class ShadowSprite
             Throw New ArgumentNullException("sprite")
         End If
 
-        _shader = Shader.FromFile("..\..\..\..\Resources\Shaders\SpriteShadow.fx")
+#If DEBUG Then
+        _shader = Shader.FromFile("..\..\..\..\Resources\Shaders\SpriteShadow.fx", ShaderCompileOptions.Debug)
+#Else
+        _shader = Shader.FromFile("..\..\..\..\Resources\Shaders\SpriteShadow.fx", ShaderCompileOptions.OptimizationLevel3)
+#End If
 
         Me.Sprite = TryCast(sprite.Clone(), Sprite)
         _sprite.Axis = Vector2D.Zero

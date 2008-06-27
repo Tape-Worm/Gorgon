@@ -1156,7 +1156,11 @@ namespace GorgonLibrary.Framework
 				// Yes, that's sad, really.
 				if (Gorgon.CurrentDriver.PixelShaderVersion >= new Version(2, 0))
 				{
-					_logoShader = Shader.FromResource("Blur", Properties.Resources.ResourceManager, false);
+#if DEBUG
+					_logoShader = Shader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.Debug, false);
+#else
+					_logoShader = Shader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.OptimizationLevel3, false);
+#endif
 					_logoShader.Parameters["sourceImage"].SetValue(_logoSprite.Image);
 					_logoShader.Parameters["blurAmount"].SetValue(_logoBlur);
 				}

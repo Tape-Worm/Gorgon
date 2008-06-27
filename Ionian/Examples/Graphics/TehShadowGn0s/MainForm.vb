@@ -241,7 +241,11 @@ Public Class MainForm
         Image.FromFile("..\..\..\..\Resources\Images\0_HardVacuum.png")
         _sprite = Sprite.FromFile("..\..\..\..\Resources\Sprites\TehShadowGn0s\WeirdShip.gorSprite")
         _sprite2 = Sprite.FromFile("..\..\..\..\Resources\Sprites\TehShadowGn0s\WeirdShip2.gorSprite")
-        _blurShader = Shader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx")
+#If DEBUG Then
+        _blurShader = Shader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx", ShaderCompileOptions.Debug)
+#Else
+        _blurShader = Shader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx", ShaderCompileOptions.OptimizationLevel3)
+#End If
 
         _shadowGen = New ShadowSprite(_sprite)
         _shadow = _shadowGen.CreateShadow(16)
