@@ -468,9 +468,14 @@ namespace GorgonLibrary.Graphics
 					resourceManager = new ResourceManager(assembly.GetName().Name + ".Properties.Resources", assembly);
 				}
 
-				// Open a stream to the resource object.
-				effect = resourceManager.GetObject(name).ToString();
-				stream = new MemoryStream(Encoding.UTF8.GetBytes(effect));
+				// Open a stream to the resource object.				
+				if (!binary)
+				{
+					effect = resourceManager.GetObject(name).ToString();
+					stream = new MemoryStream(Encoding.UTF8.GetBytes(effect));
+				}
+				else
+					stream = new MemoryStream((byte[])resourceManager.GetObject(name));
 				return ShaderFromStream(name, null, resourceManager, stream, flags, binary, (int)stream.Length);
 			}
 			catch (GorgonException)
