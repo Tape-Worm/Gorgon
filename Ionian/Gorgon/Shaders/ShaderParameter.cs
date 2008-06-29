@@ -373,7 +373,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>An image value.</returns>
 		public Image GetImage()
 		{
-			Image newImage = new Image("ShaderParameter." + Name + ".Image", ImageType.Normal, 1, 1, ImageBufferFormats.BufferUnknown, false, false);	// Empty image.			
+			Image newImage = new Image("ShaderParameter." + Name + ".Image", ImageType.Normal, 1, 1, ImageBufferFormats.BufferUnknown, false);	// Empty image.			
 
 			GetImage(newImage);
 
