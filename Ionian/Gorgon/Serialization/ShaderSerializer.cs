@@ -30,9 +30,9 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.Serialization
 {
 	/// <summary>
-	/// Object representing a serializer for binary shader files.
+	/// Object representing a serializer for FX shader files.
 	/// </summary>
-	public class ShaderSerializer
+	public class FXShaderSerializer
 		: Serializer
 	{
 		#region Variables.
@@ -425,7 +425,7 @@ namespace GorgonLibrary.Serialization
 		/// </summary>
 		/// <param name="shader">Shader to (de)serialize.</param>
 		/// <param name="stream">Stream to write or read data through.</param>
-		internal ShaderSerializer(FXShader shader, Stream stream) 
+		internal FXShaderSerializer(FXShader shader, Stream stream) 
 			: base(shader, stream)
 		{
 		}
