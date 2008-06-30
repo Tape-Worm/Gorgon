@@ -172,7 +172,7 @@ namespace GorgonLibrary.GUI
 					_windowFont.Dispose();
 
 				if (value == null)
-					_windowFont = new Font(Name + ".WindowFont." + Guid.NewGuid().ToString(), "Arial", 24.0f, true, true, false, false);
+					_windowFont = new Font(Name + ".WindowFont." + Guid.NewGuid().ToString(), "Arial", 9.0f, true, true, false, false);
 				else
 				{
 					_windowFont = new Font(Name + ".WindowFont." + Guid.NewGuid().ToString(), value.FamilyName, value.FontSize, value.AntiAlias, value.Bold, value.Underline, value.Italic);

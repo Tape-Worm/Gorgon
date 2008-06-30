@@ -207,7 +207,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The object contained within the stream.</returns>
 		protected static FXShader ShaderFromStream(string name, FileSystem fileSystem, ResourceManager resources, Stream stream, ShaderCompileOptions flags, bool isXML, int bytes)
 		{
-			ShaderSerializer serializer = null;	// Shader serializer.
+			FXShaderSerializer serializer = null;	// Shader serializer.
 			FXShader newShader = null;			// Shader object.
 			string filePath = string.Empty;		// Path to the file.
 
@@ -226,7 +226,7 @@ namespace GorgonLibrary.Graphics
 				newShader._isResource = (resources != null);
 
 				// Create the serializer.
-				serializer = new ShaderSerializer(newShader, stream);
+				serializer = new FXShaderSerializer(newShader, stream);
 				serializer.DontCloseStream = true;
 
 				// Add whether we're binary or not.
@@ -241,8 +241,6 @@ namespace GorgonLibrary.Graphics
 				// Read the shader.
 				serializer.Deserialize();
 
-				// Add to the list.
-				ShaderCache.Shaders.Add(newShader);
 				return newShader;
 			}
 			catch (ShaderCompilerErrorException scEx)
@@ -439,7 +437,7 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				stream = File.OpenRead(filename);
+				stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
 				return ShaderFromStream(filename, null, null, stream, flags, binary, (int)stream.Length);
 			}
 			catch (GorgonException)
@@ -598,14 +596,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="binary">TRUE to save as binary, FALSE to save as text.</param>
 		public void Save(Stream stream, bool binary)
 		{
-			ShaderSerializer serializer = null;		// Shader serializer.
+			FXShaderSerializer serializer = null;		// Shader serializer.
 
 			if (stream == null)
 				throw new ArgumentNullException("stream");
 
 			try
 			{
-				serializer = new ShaderSerializer(this, stream);
+				serializer = new FXShaderSerializer(this, stream);
 				serializer.DontCloseStream = true;
 
 				// Save to a binary file.

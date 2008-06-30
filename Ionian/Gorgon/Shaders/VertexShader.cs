@@ -17,7 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Saturday, June 28, 2008 9:51:44 PM
+// Created: Monday, June 30, 2008 12:33:37 PM
 // 
 #endregion
 
@@ -25,24 +25,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Resources;
-using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
-using GorgonLibrary.Serialization;
-using GorgonLibrary.FileSystems;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Object representing a pixel shader.
+	/// Object representing a vertex shader.
 	/// </summary>
-	public class PixelShader
-		: BaseShader<PixelShader>
+	public class VertexShader
+		: BaseShader<VertexShader>
 	{
 		#region Variables.
-		private D3D9.PixelShader _shader = null;									// Pixel shader.
-		private Image _lastImage = null;											// Last image being used.
+		private D3D9.VertexShader _shader = null;					// Vertex shader.
 		#endregion
 
 		#region Methods.
@@ -58,20 +52,41 @@ namespace GorgonLibrary.Graphics
 
 			switch (target.ToString())
 			{
+				case "1.1":
+					return "vs_1_1";
 				case "2.1":
-					return "ps_2_a";
+					return "vs_2_a";
 				case "2.2":
-					return "ps_2_b";
+					return "vs_2_b";
 				case "2.0.1":
-					return "ps_2_sw";
+					return "vs_2_sw";
 				case "3":
 				case "3.0":
-					return "ps_3_0";
+					return "vs_3_0";
 				case "3.0.1":
-					return "ps_3_sw";
+					return "vs_3_sw";
 			}
 
-			return "ps_2_0";
+			return "vs_2_0";
+		}
+
+		/// <summary>
+		/// Function called to create the actual shader object.
+		/// </summary>
+		protected override void CreateShader()
+		{
+			if (Function != null)
+				_shader = new D3D9.VertexShader(Gorgon.Screen.Device, Function.ByteCode);
+		}
+
+		/// <summary>
+		/// Function called to destroy the shader object.
+		/// </summary>
+		protected override void DestroyShader()
+		{
+			if (_shader != null)
+				_shader.Dispose();
+			_shader = null;
 		}
 
 		/// <summary>
@@ -80,19 +95,7 @@ namespace GorgonLibrary.Graphics
 		protected override void OnRenderBegin()
 		{
 			if (_shader != null)
-			{
-				Gorgon.Screen.Device.PixelShader = _shader;
-				_lastImage = Gorgon.Renderer.GetImage(0);				
-				
-				// Get parameters bound to the samplers.
-				var parameters = from parameter in Parameters
-								 join sampler in Samplers on parameter.Name equals sampler.Key
-								select new {Parameter = parameter as ConstantShaderParameter, Handle = sampler.Value};
-
-				// Bind textures.
-				foreach(var param in parameters)
-					param.Parameter.SetTextureSampler(param.Handle);
-			}
+				Gorgon.Screen.Device.VertexShader = _shader;
 		}
 
 		/// <summary>
@@ -108,31 +111,16 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnRenderEnd()
 		{
-			Gorgon.Screen.Device.PixelShader = null;
-			// Reset the texture stages.
-			for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-				Gorgon.Renderer.SetImage(i, null);
-
-			Gorgon.Renderer.SetImage(0, _lastImage);
+			Gorgon.Screen.Device.VertexShader = null;
 		}
 
 		/// <summary>
-		/// Function called to create the actual shader object.
+		/// Function called when the shader is deserialized.
 		/// </summary>
-		protected override void CreateShader()
+		/// <param name="serializer">Deserializer used to read the data.</param>
+		protected override void OnReadData(GorgonLibrary.Serialization.Serializer serializer)
 		{
-			if (Function != null)
-				_shader = new D3D9.PixelShader(Gorgon.Screen.Device, Function.ByteCode);
-		}
-
-		/// <summary>
-		/// Function called to destroy the shader object.
-		/// </summary>
-		protected override void DestroyShader()
-		{
-			if (_shader != null)
-				_shader.Dispose();
-			_shader = null;
+			
 		}
 
 		/// <summary>
@@ -142,33 +130,36 @@ namespace GorgonLibrary.Graphics
 		/// <param name="target">Pixel shader target version.</param>
 		/// <param name="flags">Options to use for compilation.</param>
 		/// <remarks>See <see cref="GorgonLibrary.Graphics.ShaderCompileOptions"/> for more information about the compile time options.
-		/// <para>The target parameter can be 2.0, 2.1 (for 2_a), 2.2 (for 2_b), 2.0.1 (for 2_sw), 3.0 or 3.0.1 (for 3_sw).</para>
+		/// <para>The target parameter can be 1.1, 2.0, 2.1 (for 2_a), 2.2 (for 2_b), 2.0.1 (for 2_sw), 3.0 or 3.0.1 (for 3_sw).</para>
 		/// </remarks>
 		public void CompileShader(string functionName, Version target, ShaderCompileOptions flags)
 		{
-			CompileShaderImplementation(functionName, target, flags);
+			CompileShaderImplementation(functionName, target, flags);			
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PixelShader"/> class.
+		/// Initializes a new instance of the <see cref="VertexShader"/> class.
 		/// </summary>
-		/// <param name="name">THe name of the pixel shader.</param>
-		public PixelShader(string name)
+		/// <param name="name">Name for this object.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the name parameter is NULL or a zero length string.</exception>
+		public VertexShader(string name)
 			: base(name, null)
 		{
 		}
-
+		
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PixelShader"/> class.
+		/// Initializes a new instance of the <see cref="VertexShader"/> class.
 		/// </summary>
-		/// <param name="name">THe name of the pixel shader.</param>
-		/// <param name="function">Function that contains the pixel shader.</param>
-		public PixelShader(string name, ShaderFunction function)
+		/// <param name="name">Name for this object.</param>
+		/// <param name="function">Function to bind to the shader as an entry point.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the name parameter is NULL or a zero length string.</exception>
+		public VertexShader(string name, ShaderFunction function)
 			: base(name, function)
 		{
 		}
 		#endregion
+
 	}
 }

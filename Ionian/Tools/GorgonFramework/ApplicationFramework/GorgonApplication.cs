@@ -1159,7 +1159,7 @@ namespace GorgonLibrary.Framework
 #if DEBUG
 					_logoShader = FXShader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.Debug, true);
 #else
-					_logoShader = Shader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.OptimizationLevel3, true);
+					_logoShader = FXShader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.OptimizationLevel3, true);
 #endif
 					_logoShader.Parameters["sourceImage"].SetValue(_logoSprite.Image);
 					_logoShader.Parameters["blurAmount"].SetValue(_logoBlur);

@@ -32,9 +32,8 @@ namespace GorgonLibrary.Serialization
 	/// <summary>
 	/// Object representing a serializer for FX shader files.
 	/// </summary>
-	public class ShaderSerializer<T>
+	public class FXShaderSerializer
 		: Serializer
-		where T : Shader, ISerializable
 	{
 		#region Variables.
 		private StreamWriterEx _writer = null;			// Stream writer object.
@@ -426,8 +425,8 @@ namespace GorgonLibrary.Serialization
 		/// </summary>
 		/// <param name="shader">Shader to (de)serialize.</param>
 		/// <param name="stream">Stream to write or read data through.</param>
-		internal ShaderSerializer(BaseShader<T> shader, Stream stream) 
-			: base(shader as ISerializable, stream)
+		internal FXShaderSerializer(FXShader shader, Stream stream) 
+			: base(shader, stream)
 		{
 		}
 		#endregion

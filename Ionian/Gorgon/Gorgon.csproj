@@ -214,8 +214,13 @@
     <Compile Include="Rendering\RenderingException.cs" />
     <Compile Include="Serialization\BinaryReaderEx.cs" />
     <Compile Include="Serialization\BinaryWriterEx.cs" />
+    <Compile Include="Serialization\FXShaderSerializer.cs" />
+    <Compile Include="Serialization\ShaderSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serialization\StreamReaderEx.cs" />
     <Compile Include="Serialization\StreamWriterEx.cs" />
+    <Compile Include="Shaders\BaseShader.cs" />
     <Compile Include="Shaders\ConstantShaderParameter.cs" />
     <Compile Include="Shaders\FXShader.cs" />
     <Compile Include="Shaders\FXShaderParameter.cs" />
@@ -229,6 +234,7 @@
     <Compile Include="Shaders\ShaderFunction.cs" />
     <Compile Include="Shaders\ShaderParameterList.cs" />
     <Compile Include="Shaders\ImageShader.cs" />
+    <Compile Include="Shaders\VertexShader.cs" />
     <Compile Include="Sprites\Geometry.cs" />
     <Compile Include="Sprites\StaticTextSprite.cs" />
     <Compile Include="Sprites\TextSprite.cs" />
@@ -236,7 +242,6 @@
     <Compile Include="Serialization\BinarySerializer.cs" />
     <Compile Include="Serialization\ImageSerializer.cs" />
     <Compile Include="Serialization\SerializerException.cs" />
-    <Compile Include="Serialization\ShaderSerializer.cs" />
     <Compile Include="Serialization\ISerializable.cs" />
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="Serialization\XMLSerializer.cs" />
