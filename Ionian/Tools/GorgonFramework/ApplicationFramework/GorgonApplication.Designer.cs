@@ -53,6 +53,6 @@ namespace GorgonLibrary.Framework
 		/// <summary>
 		/// Configuration settings dataset.
 		/// </summary>
-		protected GorgonSettings ConfigurationSettings;
+		protected GorgonLibrary.Framework.GorgonSettings ConfigurationSettings;
 	}
 }

@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GorgonLibrary.Extras.GUI
+namespace GorgonLibrary.GUI
 {
 	/// <summary>
 	/// Interface representing a container for GUI objects.

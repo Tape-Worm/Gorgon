@@ -20,7 +20,6 @@ sampler2D sourceSampler = sampler_state
 // Our processed vertex.
 struct VTX_OUTPUT
 {
-	float4 position : POSITION;
 	float4 diffuse : COLOR0;
 	float2 texCoords : TEXCOORD0;
 };
@@ -36,7 +35,7 @@ float4 psBlurSample(float2 Tex : TEXCOORD0, float4 baseColor, float offX, float 
 	Tex.x = Tex.x + offX;
 	Tex.y = Tex.y + offY;
 	
-   	Color = baseColor + tex2D(sourceSampler, Tex / scaler);   	
+   	Color = baseColor + tex2D(sourceSampler, Tex / scaler);
    	return Color;
 }
 
@@ -73,6 +72,7 @@ float4 psBlur(VTX_OUTPUT vtx) : COLOR0
    	Color.rgb = saturate((Color.rgb / 9) * vtx.diffuse.rgb);
    	// Restore and combine the alpha.
    	Color.a = Alpha * vtx.diffuse.a;
+   	//Color +=  float4(0.0f, blurValue, 0.0f, 0.0f);
    	
     return Color;
 }

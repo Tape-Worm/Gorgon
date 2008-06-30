@@ -211,7 +211,7 @@ namespace GorgonLibrary.Internal
         /// </summary>
         /// <param name="shader">Shader object that holds the effect.</param>
         /// <returns>The internal D3D effect object.</returns>
-        public D3D9.Effect GetEffectFromShader(Shader shader)
+        public D3D9.Effect GetEffectFromShader(FXShader shader)
         {
             if (shader == null)
                 return null;

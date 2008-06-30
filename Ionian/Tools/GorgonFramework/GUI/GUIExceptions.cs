@@ -27,7 +27,7 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary;
 
-namespace GorgonLibrary.Extras.GUI
+namespace GorgonLibrary.GUI
 {
 	/// <summary>
 	/// Exception thrown when an input system is not bound to the GUI.

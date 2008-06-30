@@ -103,8 +103,22 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-June 27/2008 - Version - Current
+June 28/2008 - Version - Current
 ================================
+- Removed the GorgonEx library.  It's not necessary.
+
++ Added all the code from the GorgonEx library into the GorgonFramework library.
+  This seemed to be a better spot for this code.
+
+* Changed the Blur shader in the framework DLL from source code to a binary format.
+  This was merely for convienence for myself.  Everytime I made a change to the resource
+  file in the framework, the damn thing would try to put the contents of the shader in
+  &lt;summary&gt; tags, which would generate a bunch of warnings.  I have NO idea why
+  Visual Studio would do this.
+  
+* Fixed an issue in the shader FromResource function when trying to load a binary shader.
+  Shader was being converted to a string regardless of the binary flag.
+  
 * Modified all From* static functions to take an extra parameter:  ShaderCompilerOptions.
   This allows the user to control the optimization level and debug info level for a shader.
   

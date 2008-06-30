@@ -29,7 +29,7 @@ using System.Text;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.FileSystems;
 
-namespace GorgonLibrary.Extras.GUI
+namespace GorgonLibrary.GUI
 {
 	/// <summary>
 	/// Object representing a custom GUI skin.

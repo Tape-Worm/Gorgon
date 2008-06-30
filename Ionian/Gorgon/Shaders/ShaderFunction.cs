@@ -65,7 +65,7 @@ namespace GorgonLibrary.Graphics
 		public Shader Shader
 		{
 			get;
-			private set;
+			internal set;
 		}
 		#endregion
 

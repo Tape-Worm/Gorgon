@@ -555,7 +555,7 @@ namespace GorgonLibrary.Graphics
 
         #region ISerializable Members
 		/// <summary>
-		/// Property to set or return the filename of the serializable object.
+		/// Property to return the filename of the serializable object.
 		/// </summary>
 		/// <value></value>
 		string ISerializable.Filename
@@ -564,8 +564,17 @@ namespace GorgonLibrary.Graphics
 			{
 				return string.Empty;
 			}
-			set
+		}
+
+		/// <summary>
+		/// Property to return whether this object is an embedded resource.
+		/// </summary>
+		/// <value></value>
+		bool ISerializable.IsResource
+		{
+			get
 			{
+				return false;
 			}
 		}
 

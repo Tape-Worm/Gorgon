@@ -34,12 +34,19 @@ namespace GorgonLibrary.Serialization
 	public interface ISerializable
 	{
 		/// <summary>
-		/// Property to set or return the filename of the serializable object.
+		/// Property to return the filename of the serializable object.
 		/// </summary>
 		string Filename
 		{
 			get;
-			set;
+		}
+
+		/// <summary>
+		/// Property to return whether this object is an embedded resource.
+		/// </summary>
+		bool IsResource
+		{
+			get;
 		}
 
 		/// <summary>

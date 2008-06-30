@@ -50,6 +50,7 @@ namespace GorgonLibrary.Graphics
 		private bool _flipVertical = false;								// Flag to flip vertically.
 		private string _deferredImage = string.Empty;					// Name of the deferred image to bind.
 		private BoundingCircle _boundCircle = BoundingCircle.Empty;		// Bounding circle.
+		private bool _isResource = false;								// Flag to indicate that this object is an embedded resource.
 		#endregion
 
 		#region Properties.
@@ -117,17 +118,6 @@ namespace GorgonLibrary.Graphics
 			{
 				_flipVertical = value;
 				Refresh();
-			}
-		}
-
-		/// <summary>
-		/// Property to return the filename of the sprite.
-		/// </summary>
-		public string Filename
-		{
-			get
-			{
-				return _spritePath;
 			}
 		}
 
@@ -332,7 +322,8 @@ namespace GorgonLibrary.Graphics
 
                 // Create the sprite object.
                 newSprite = new Sprite(name);
-                ((ISerializable)newSprite).Filename = spritePath;
+                newSprite._spritePath = spritePath;
+				newSprite._isResource = (resources != null);
 
                 // Open the file for reading.
                 if (isXML)
@@ -1634,18 +1625,22 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the filename of the serializable object.
 		/// </summary>
-		string ISerializable.Filename
+		public string Filename
 		{
 			get
 			{
 				return _spritePath;
 			}
-			set
-			{
-				if (value == null)
-					value = string.Empty;
+		}
 
-				_spritePath = value;
+		/// <summary>
+		/// Property to return whether this object is an embedded resource.
+		/// </summary>
+		public bool IsResource
+		{
+			get
+			{
+				return _isResource;
 			}
 		}
 

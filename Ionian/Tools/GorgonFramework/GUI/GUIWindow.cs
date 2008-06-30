@@ -28,7 +28,7 @@ using System.Text;
 using Drawing = System.Drawing;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Extras.GUI
+namespace GorgonLibrary.GUI
 {
 	/// <summary>
 	/// Object representing a GUI window.
@@ -44,8 +44,6 @@ namespace GorgonLibrary.Extras.GUI
 		private Drawing.Rectangle _captionRectangle;					// Caption rectangle.
 		private Vector2D _dragDelta = Vector2D.Zero;					// Drag delta.
 		private Viewport _clipView = null;								// Clipping view port.
-		private static int _defaultCaptionHeight = 20;					// Default caption height.
-		private static int _defaultBorderWidth = 4;						// Default border width.
 		#endregion
 
 		#region Properties.
@@ -106,10 +104,24 @@ namespace GorgonLibrary.Extras.GUI
 				else
 				{
 					if ((_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height) > 2)
-						return (Skin.Elements["Window.Caption"].Dimensions.Height) + (_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height) + 4;
+						return (Skin.Elements["Window.Caption"].Dimensions.Height) + (_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height);
 					else
-						return Skin.Elements["Window.Caption"].Dimensions.Height + 4;
+						return Skin.Elements["Window.Caption"].Dimensions.Height;
 				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return the default border height.
+		/// </summary>
+		public int DefaultBorderHeight
+		{
+			get
+			{
+				if (Skin == null)
+					return 0;
+				else
+					return Skin.Elements["Window.Border.Bottom.Horizontal"].Dimensions.Height;
 			}
 		}
 
@@ -160,7 +172,7 @@ namespace GorgonLibrary.Extras.GUI
 					_windowFont.Dispose();
 
 				if (value == null)
-					_windowFont = new Font(Name + ".WindowFont." + Guid.NewGuid().ToString(), "Arial", 9.0f, true, true, false, false);
+					_windowFont = new Font(Name + ".WindowFont." + Guid.NewGuid().ToString(), "Arial", 24.0f, true, true, false, false);
 				else
 				{
 					_windowFont = new Font(Name + ".WindowFont." + Guid.NewGuid().ToString(), value.FamilyName, value.FontSize, value.AntiAlias, value.Bold, value.Underline, value.Italic);
@@ -213,10 +225,9 @@ namespace GorgonLibrary.Extras.GUI
 			if (Skin == null)
 				return;
 
-			_captionRectangle = new System.Drawing.Rectangle(Position.X + Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, Position.Y,
-						WindowDimensions.Width - Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width - (DefaultBorderSize * 2), DefaultCaptionHeight);
-
-			//_captionRectangle = new System.Drawing.Rectangle(Position.X + DefaultBorderSize, Position.Y + DefaultBorderSize, WindowDimensions.Width - DefaultBorderSize * 2, DefaultCaptionHeight);
+			_captionRectangle = new Drawing.Rectangle(Position.X + Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, Position.Y, 
+								WindowDimensions.Width - Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width - Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width, 
+								DefaultCaptionHeight);
 			captionScreen = _captionRectangle;
 
 			if (Owner != null)
@@ -229,11 +240,12 @@ namespace GorgonLibrary.Extras.GUI
 			Skin.Elements["Window.Caption.RightCorner"].Draw(new Drawing.Rectangle(captionScreen.Width + captionScreen.X, captionScreen.Location.Y, Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width, captionScreen.Size.Height));
 			Skin.Elements["Window.Caption"].Draw(captionScreen);
 
-			Skin.Elements["Window.Border.Vertical"].Draw(new Drawing.Rectangle(Position.X, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight));
-			Skin.Elements["Window.Border.Vertical"].Draw(new Drawing.Rectangle(Position.X + WindowDimensions.Width - Skin.Elements["Window.Border.Vertical"].Dimensions.Width + 2, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight));
+			Skin.Elements["Window.Border.Vertical"].Draw(new Drawing.Rectangle(Position.X, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight - DefaultBorderHeight));
+			Skin.Elements["Window.Border.Vertical"].Draw(new Drawing.Rectangle(Position.X + WindowDimensions.Width - Skin.Elements["Window.Border.Vertical"].Dimensions.Width, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight - DefaultBorderHeight));
 
-			//Gorgon.CurrentRenderTarget.FilledRectangle(WindowDimensions.X, WindowDimensions.Y, WindowDimensions.Width, WindowDimensions.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.WindowFrame)));
-			//Gorgon.CurrentRenderTarget.FilledRectangle(captionScreen.X, captionScreen.Y, captionScreen.Width, captionScreen.Height, Drawing.Color.FromArgb(128, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ActiveCaption)));
+			Skin.Elements["Window.Border.Bottom.LeftCorner"].Draw(new Drawing.Rectangle(Position.X, Position.Y + WindowDimensions.Height - Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Height, Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Width, Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Height));
+			Skin.Elements["Window.Border.Bottom.Horizontal"].Draw(new Drawing.Rectangle(Position.X + Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Width, Position.Y + WindowDimensions.Height - Skin.Elements["Window.Border.Bottom.Horizontal"].Dimensions.Height, WindowDimensions.Width - Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Width - Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Width, Skin.Elements["Window.Border.Bottom.Horizontal"].Dimensions.Height));
+			Skin.Elements["Window.Border.Bottom.RightCorner"].Draw(new Drawing.Rectangle(WindowDimensions.Right - Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Width, Position.Y + WindowDimensions.Height - Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Height, Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Width, Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Height));
 
 			_clipView.Left = captionScreen.Left;
 			_clipView.Top = captionScreen.Top;
@@ -241,6 +253,10 @@ namespace GorgonLibrary.Extras.GUI
 			_clipView.Height = captionScreen.Height;
 			lastView = Gorgon.CurrentClippingViewport;
 			Gorgon.CurrentClippingViewport = _clipView;
+			if (Desktop.Focused == this)
+				_captionTextLabel.Color = Drawing.Color.White;
+			else
+				_captionTextLabel.Color = Drawing.Color.Gray;
 			_captionTextLabel.Position = new Vector2D(captionScreen.Left, captionScreen.Top);
 			_captionTextLabel.Draw();
 			Gorgon.CurrentClippingViewport = lastView;
@@ -255,7 +271,7 @@ namespace GorgonLibrary.Extras.GUI
 			if (Skin != null)
 			{
 				windowArea.Width -= DefaultBorderSize * 2;
-				windowArea.Height -= DefaultCaptionHeight;
+				windowArea.Height -= DefaultCaptionHeight + DefaultBorderHeight;
 			}
 
 			base.SetClientArea(windowArea);

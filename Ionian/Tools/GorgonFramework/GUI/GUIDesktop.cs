@@ -30,7 +30,7 @@ using GorgonLibrary;
 using GorgonLibrary.InputDevices;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Extras.GUI
+namespace GorgonLibrary.GUI
 {
 	/// <summary>
 	/// Root object for the GUI system.
@@ -522,7 +522,7 @@ namespace GorgonLibrary.Extras.GUI
 			CursorVisible = true;
 			BackgroundColor = Drawing.Color.White;
 			if (!skin.Elements.Contains("Cursor.Default"))
-				Cursor = new Sprite("DefaultCursor", Image.FromResource("DefaultCursorImage", Properties.Resources.ResourceManager));
+				Cursor = new Sprite("DefaultCursor", Image.FromResource("DefaultCursorImage", GorgonLibrary.Framework.Properties.Resources.ResourceManager));
 			else
 				Cursor = _skin.Elements["Cursor.Default"].GetSprite();
 		}

@@ -61,7 +61,7 @@ namespace GorgonLibrary.Framework
 		private float _logoOpacity;								// Logo opacity.
 		private float _logoBlur = _maxBlur;						// Blur factor.
 		private bool _logoFadeDir;								// Logo fade direction.
-		private Shader _logoShader = null;						// Shader for the logo.
+		private FXShader _logoShader = null;					// Shader for the logo.
 		private bool _logoDone;									// Logo is done animation?
 		private double _logoSwitchTime = 0;						// Time value for switching logo animations.
 		private SortedList<string, FileSystem> _fileSystems;	// File systems.
@@ -1157,9 +1157,9 @@ namespace GorgonLibrary.Framework
 				if (Gorgon.CurrentDriver.PixelShaderVersion >= new Version(2, 0))
 				{
 #if DEBUG
-					_logoShader = Shader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.Debug, false);
+					_logoShader = FXShader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.Debug, true);
 #else
-					_logoShader = Shader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.OptimizationLevel3, false);
+					_logoShader = Shader.FromResource("Blur", Properties.Resources.ResourceManager, ShaderCompileOptions.OptimizationLevel3, true);
 #endif
 					_logoShader.Parameters["sourceImage"].SetValue(_logoSprite.Image);
 					_logoShader.Parameters["blurAmount"].SetValue(_logoBlur);

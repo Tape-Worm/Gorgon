@@ -40,7 +40,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private D3D9.EffectHandle _effectHandle;		// Handle to the technique.
 		private ShaderPassList _passes;					// List of passes.
-		private Shader _owner;							// Shader that owns the technique.
+		private FXShader _owner;							// Shader that owns the technique.
 		private ShaderParameterList _parameters;		// Shader parameters.
 		#endregion
 
@@ -70,7 +70,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the shader that owns this technique.
 		/// </summary>
-		public Shader Owner
+		public FXShader Owner
 		{
 			get
 			{
@@ -128,7 +128,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="shader">Shader that owns this technique.</param>
 		/// <param name="index">Index of the technique.</param>
-		internal ShaderTechnique(Shader shader, int index)
+		internal ShaderTechnique(FXShader shader, int index)
 			: base("NO_NAME")
 		{
 			_owner = shader;

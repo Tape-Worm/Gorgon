@@ -30,7 +30,7 @@ using GorgonLibrary;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Extras
+namespace GorgonLibrary.Graphics.Utilities
 {
 	/// <summary>
 	/// Object representing a deformable mesh for the sprites.

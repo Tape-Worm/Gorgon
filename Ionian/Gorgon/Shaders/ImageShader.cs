@@ -108,7 +108,6 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("The function needs to have been compiled with a texture shader profile (tx_n_n).");
 
 			_shader = new D3D9.TextureShader(function.ByteCode.Data);
-			
 			ImageShaderCache.ImageShaders.Add(this);
 		}
 		#endregion
@@ -175,7 +174,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void ForceRelease()
 		{
-			Dispose();
+			DeviceLost();
 		}
 		#endregion
 	}

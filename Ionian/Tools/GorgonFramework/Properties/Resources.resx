@@ -1925,11 +1925,6 @@
         RK5CYII=
 </value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Blur" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Blur.fx;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-    <comment>Blur shader</comment>
-  </data>
   <data name="__Cursor" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -1948,5 +1943,23 @@
         BpPJJD24EHhKwkRMrxj58E/N9WZU9/33+MRz8o6IufuEiAXE8A+SU1Mxmm8RawYzf6V+nAoRISGCnk4z
         3Wn83wf+Aj7HE9x4xLtLAAAAAElFTkSuQmCC
 </value>
+  </data>
+  <data name="DefaultCursorImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAAA8AAAAZCAYAAADuWXTMAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEgAA
+        CxIB0t1+/AAAAZtJREFUOE+dVDFuwkAQdEOX3kpBgSE0YFkIYWFBoIHCRkiYgpLCUBgs5QH5QB6QB+QB
+        +UAekPfkC5ublfd0hwwynLS682lnZme1PudvMCDHcRAPLcIqCZ7uZWDwowQMXCwWDxEwyPd9yrLsbgIN
+        2O/3dDqd7iLQyXEc0/l85qjbA53YarW49KIoahOYKrTZbOh4PNYmsMBRFFGapnQ4HCjPc95vWbDAzWaT
+        2u02LZdL2u12tN1uab1eXyWwwOWkUbfbZYLJZMIxn88rCfSl67rUaDR4VIMgYP9VyxxlDR6NRtTpdPi7
+        3+9zyYZfmX/sHype8R9wgud5NJ1OtRC8J0lign9VrsS3OmcaPBwOLRV8hGF4qf6lAJ8q3i1lozywM1GF
+        +lsJelE7/76Xpf2oO5TF9xXqAOo1KLsHRQDRDPi5pp6IKhjABA9Qky4+qzOSmGA8HtNqtTIr1OqoHW2H
+        GnZ5ipDAgF6vR7PZzARb6gBAzXzDcNbqRkNhDZVa3s0+yFksyYBIX2qBxRJ6AUVpqGmvSlTfCQHUZDjY
+        3j9FHJ0GlnQ46gAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Blur" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Blur.fxo;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

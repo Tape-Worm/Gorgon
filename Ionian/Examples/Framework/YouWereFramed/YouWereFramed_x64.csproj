@@ -52,11 +52,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon, Version=1.0.2927.5698, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=AMD64">
+    <Reference Include="Gorgon, Version=1.1.3101.31060, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Gorgon\bin64\Release\Gorgon.dll</HintPath>
     </Reference>
-    <Reference Include="GorgonFramework, Version=1.0.3031.30766, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="GorgonFramework, Version=1.0.3101.31061, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\GorgonFramework\bin64\Release\GorgonFramework.dll</HintPath>
     </Reference>

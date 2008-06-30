@@ -40,7 +40,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to add the techniques from the shader.
 		/// </summary>
 		/// <param name="shader">Shader owner.</param>
-		internal void Add(Shader shader)
+		internal void Add(FXShader shader)
 		{
             if (shader == null)
                 throw new ArgumentNullException("shader");

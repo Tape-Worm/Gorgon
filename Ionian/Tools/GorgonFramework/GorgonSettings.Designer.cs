@@ -356,7 +356,7 @@ namespace GorgonLibrary.Framework {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0")]
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class PathsDataTable : global::System.Data.DataTable, global::System.Collections.IEnumerable {
+        public partial class PathsDataTable : global::System.Data.TypedTableBase<PathsRow> {
             
             private global::System.Data.DataColumn columnPathName;
             
@@ -449,11 +449,6 @@ namespace GorgonLibrary.Framework {
             public PathsRow FindByPathName(string PathName) {
                 return ((PathsRow)(this.Rows.Find(new object[] {
                             PathName})));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public virtual global::System.Collections.IEnumerator GetEnumerator() {
-                return this.Rows.GetEnumerator();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -607,7 +602,7 @@ namespace GorgonLibrary.Framework {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0")]
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class PlugInsDataTable : global::System.Data.DataTable, global::System.Collections.IEnumerable {
+        public partial class PlugInsDataTable : global::System.Data.TypedTableBase<PlugInsRow> {
             
             private global::System.Data.DataColumn columnPlugInName;
             
@@ -710,11 +705,6 @@ namespace GorgonLibrary.Framework {
             public PlugInsRow FindByPlugInName(string PlugInName) {
                 return ((PlugInsRow)(this.Rows.Find(new object[] {
                             PlugInName})));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public virtual global::System.Collections.IEnumerator GetEnumerator() {
-                return this.Rows.GetEnumerator();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -873,7 +863,7 @@ namespace GorgonLibrary.Framework {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0")]
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class FileSystemsDataTable : global::System.Data.DataTable, global::System.Collections.IEnumerable {
+        public partial class FileSystemsDataTable : global::System.Data.TypedTableBase<FileSystemsRow> {
             
             private global::System.Data.DataColumn columnFileSystemName;
             
@@ -996,11 +986,6 @@ namespace GorgonLibrary.Framework {
             public FileSystemsRow FindByFileSystemName(string FileSystemName) {
                 return ((FileSystemsRow)(this.Rows.Find(new object[] {
                             FileSystemName})));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public virtual global::System.Collections.IEnumerator GetEnumerator() {
-                return this.Rows.GetEnumerator();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1165,7 +1150,7 @@ namespace GorgonLibrary.Framework {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0")]
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class InputPlugInsDataTable : global::System.Data.DataTable, global::System.Collections.IEnumerable {
+        public partial class InputPlugInsDataTable : global::System.Data.TypedTableBase<InputPlugInsRow> {
             
             private global::System.Data.DataColumn columnInputPlugInDLL;
             
@@ -1268,11 +1253,6 @@ namespace GorgonLibrary.Framework {
             public InputPlugInsRow FindByInputPlugInName(string InputPlugInName) {
                 return ((InputPlugInsRow)(this.Rows.Find(new object[] {
                             InputPlugInName})));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public virtual global::System.Collections.IEnumerator GetEnumerator() {
-                return this.Rows.GetEnumerator();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

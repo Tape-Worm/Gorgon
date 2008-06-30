@@ -639,7 +639,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Create the backing image.
-			return new Image(Name + FontSize.ToString("0.0") + ".BackingImage." + _imageCount.ToString(), ImageType.Normal, dims.Width, dims.Height, fontImageFormat, false, true);
+			return new Image(Name + FontSize.ToString("0.0") + ".BackingImage." + _imageCount.ToString(), ImageType.Normal, dims.Width, dims.Height, fontImageFormat, true);
 		}
 
 		/// <summary>

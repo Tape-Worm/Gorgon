@@ -425,7 +425,7 @@ namespace GorgonLibrary.Serialization
 		/// </summary>
 		/// <param name="shader">Shader to (de)serialize.</param>
 		/// <param name="stream">Stream to write or read data through.</param>
-		internal ShaderSerializer(Shader shader, Stream stream) 
+		internal ShaderSerializer(FXShader shader, Stream stream) 
 			: base(shader, stream)
 		{
 		}

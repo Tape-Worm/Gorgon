@@ -35,10 +35,10 @@ namespace GorgonLibrary.Graphics
 	/// Object representing a shader parameter.
 	/// </summary>
 	public class ShaderParameter
-		: NamedObject
+		: NamedObject, IShaderParameter
 	{
 		#region Variables.
-		private Shader _owner;								// Owner of the shader.
+		private FXShader _owner;							// Owner of the shader.
 		private D3D9.EffectHandle _effectHandle;			// Handle to the parameter.
 		private D3D9.ParameterDescription _desc;			// Parameter description data.
 		#endregion
@@ -54,7 +54,27 @@ namespace GorgonLibrary.Graphics
 				return _effectHandle;
 			}
 		}
+		#endregion
 
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="desc">Description of the parameter.</param>
+		/// <param name="handle">Handle of the parameter.</param>
+		/// <param name="shader">Owning shader for this parameter.</param>
+		/// <param name="index">Index of the parameter.</param>
+		internal ShaderParameter(D3D9.ParameterDescription desc, D3D9.EffectHandle handle, FXShader shader, int index)
+			: base(desc.Name)
+		{
+			_owner = shader;
+			_effectHandle = handle;			
+			_desc = desc;
+		}
+		#endregion
+
+		#region IShaderParameter Members
+		#region Properties.
 		/// <summary>
 		/// Property to return the size of an array parameter.
 		/// </summary>
@@ -327,7 +347,7 @@ namespace GorgonLibrary.Graphics
 				count = ArrayLength;
 
 			Color[] colors = new Color[count];		// Drawing colors
-            DX.Color4[] d3dColors;                  // D3D color values.
+			DX.Color4[] d3dColors;                  // D3D color values.
 
 			// Get colors.
 			d3dColors = _owner.D3DEffect.GetColorArray(_effectHandle, count);
@@ -349,22 +369,6 @@ namespace GorgonLibrary.Graphics
 
 			// Bind to the image.
 			sourceImage.D3DTexture = (D3D9.Texture)_owner.D3DEffect.GetTexture(_effectHandle);
-		}
-
-		/// <summary>
-		/// Function to return a render image value.
-		/// </summary>
-		/// <param name="sourceImage">Render image to use to store the shader texture.</param>		
-		public void GetImage(RenderImage sourceImage)
-		{
-			if (sourceImage == null)
-				throw new ArgumentNullException("sourceImage");
-
-			if (sourceImage.Image.ImageType != ImageType.RenderTarget)
-				throw new ArgumentException("Image is not a render image type.", "sourceImage");
-
-			// Bind to the image.			
-			sourceImage.Image.D3DTexture = (D3D9.Texture)_owner.D3DEffect.GetTexture(_effectHandle);
 		}
 
 		/// <summary>
@@ -489,7 +493,7 @@ namespace GorgonLibrary.Graphics
 			if (transpose)
 				_owner.D3DEffect.SetValueTranspose(_effectHandle, Converter.Convert(value));
 			else
-				_owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));			
+				_owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
 		}
 
 		/// <summary>
@@ -511,7 +515,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">A color value.</param>
 		public void SetValue(Color value)
 		{
-			_owner.D3DEffect.SetValue(_effectHandle, new DX.Color4(value));
+			_owner.D3DEffect.SetValue(_effectHandle, value);
 		}
 
 		/// <summary>
@@ -547,22 +551,6 @@ namespace GorgonLibrary.Graphics
 			_owner.D3DEffect.SetValue(_effectHandle, image.Image.D3DTexture);
 		}
 		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="desc">Description of the parameter.</param>
-		/// <param name="handle">Handle of the parameter.</param>
-		/// <param name="shader">Owning shader for this parameter.</param>
-		/// <param name="index">Index of the parameter.</param>
-		internal ShaderParameter(D3D9.ParameterDescription desc, D3D9.EffectHandle handle, Shader shader, int index)
-			: base(desc.Name)
-		{
-			_owner = shader;
-			_effectHandle = handle;			
-			_desc = desc;
-		}
 		#endregion
 	}
 }

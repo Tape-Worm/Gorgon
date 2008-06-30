@@ -28,7 +28,7 @@ using System.Text;
 using Drawing = System.Drawing;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Extras.GUI
+namespace GorgonLibrary.GUI
 {
 	/// <summary>
 	/// Object representing a panel that can hold GUI objects.

@@ -29,7 +29,7 @@ using Drawing = System.Drawing;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Internal;
 
-namespace GorgonLibrary.Extras.GUI
+namespace GorgonLibrary.GUI
 {
 	/// <summary>
 	/// Object representing an element from a GUI skin.

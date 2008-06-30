@@ -67,15 +67,23 @@ namespace GorgonLibrary.Framework.Properties {
             }
         }
         
-        internal static string Blur {
+        internal static byte[] Blur {
             get {
-                return ResourceManager.GetString("Blur", resourceCulture);
+                object obj = ResourceManager.GetObject("Blur", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         internal static System.Drawing.Bitmap check {
             get {
                 object obj = ResourceManager.GetObject("check", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap DefaultCursorImage {
+            get {
+                object obj = ResourceManager.GetObject("DefaultCursorImage", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

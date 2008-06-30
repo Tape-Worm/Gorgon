@@ -29,7 +29,7 @@ using Drawing = System.Drawing;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Internal;
 
-namespace GorgonLibrary.Extras
+namespace GorgonLibrary.Graphics.Utilities
 {
 	/// <summary>
 	/// Object representing a particle system emitter.

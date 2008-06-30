@@ -33,64 +33,20 @@ namespace GorgonLibrary.Graphics
 	/// Object representing a list of shader values.
 	/// </summary>
 	public class ShaderParameterList
-		: Collection<ShaderParameter>
+		: Collection<IShaderParameter>
 	{
 		#region Methods.
 		/// <summary>
 		/// Function to add a parameter to the list.
 		/// </summary>
 		/// <param name="parameter">Parameter to add.</param>
-		internal void Add(ShaderParameter parameter)
+		internal void Add(IShaderParameter parameter)
 		{
 			// Update collection.
 			if (Contains(parameter.Name))
 				SetItem(parameter.Name, parameter);
 			else
 				AddItem(parameter.Name, parameter);
-		}
-
-		/// <summary>
-		/// Function to add parameters.
-		/// </summary>
-		/// <param name="shader">Shader that owns these parameters.</param>
-		internal void Add(Shader shader)
-		{
-			try
-			{
-				ShaderParameter newParameter = null;			// Shader parameter.
-
-				// If there aren't any parameters, then exit.
-				if (shader.D3DEffect.Description.Parameters < 1)
-					return;
-				
-				// Get technique handle.
-				for (int i = 0; i < shader.D3DEffect.Description.Parameters; i++)
-				{
-					D3D9.EffectHandle handle;					// Handle.
-					D3D9.ParameterDescription description;		// Description.
-
-					// Get parameter handle.
-					handle = shader.D3DEffect.GetParameter(null, i);
-					description = shader.D3DEffect.GetParameterDescription(handle);
-
-					// Get the parameter.
-					newParameter = new ShaderParameter(description, handle, shader, i);
-
-					// Update collection.
-					Add(newParameter);
-
-					// Check technique.
-					foreach (ShaderTechnique technique in shader.Techniques)
-					{
-						if (shader.D3DEffect.IsParameterUsed(handle, technique.D3DEffectHandle))
-							technique.Parameters.Add(new ShaderParameter(description, handle, shader, i));
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new ShaderCannotGetParametersException(shader.Name, ex);
-			}
 		}
 		#endregion
 

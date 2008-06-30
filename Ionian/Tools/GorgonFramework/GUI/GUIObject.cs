@@ -30,7 +30,7 @@ using GorgonLibrary.Internal;
 using GorgonLibrary.InputDevices;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Extras.GUI
+namespace GorgonLibrary.GUI
 {
 	/// <summary>
 	/// Abstract object for GUI components.

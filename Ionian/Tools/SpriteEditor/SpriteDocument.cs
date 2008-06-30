@@ -1522,8 +1522,8 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="region">Source dimensions of the sprite.</param>
 		public void SetRegion(Drawing.RectangleF region)
 		{
-			_sprite.ImageRegion = region;
-			Changed = true;
+			_sprite.ImageRegion = region;			
+			Changed = true;			
 		}
 
 		/// <summary>

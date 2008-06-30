@@ -532,17 +532,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the filename for the image.
-		/// </summary>
-		public string Filename
-		{
-			get
-			{
-				return _filename;
-			}
-		}
-
-		/// <summary>
 		/// Property to return the actual width of the image.
 		/// </summary>
 		public int ActualWidth
@@ -698,8 +687,9 @@ namespace GorgonLibrary.Graphics
 					return ImageCache.Images[name];
 
 				// Create the Image.
-				newImage = new Image(name, ImageType.Normal, 1, 1, ImageBufferFormats.BufferUnknown, resources != null, false);
-				((ISerializable)newImage).Filename = imagePath;
+				newImage = new Image(name, ImageType.Normal, 1, 1, ImageBufferFormats.BufferUnknown, false);
+				newImage._isResource = (resources != null);
+				newImage._filename = imagePath;
 
 				// Create image serializer.
 				serializer = new ImageSerializer(newImage, stream);
@@ -2163,9 +2153,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="width">Width of the Image.</param>
 		/// <param name="height">Height of the Image.</param>
 		/// <param name="format">Format of the Image.</param>
-		/// <param name="isResource">TRUE if the image is a resource, FALSE if not.</param>
 		/// <param name="createTexture">TRUE to create an empty texture, FALSE to bypass.</param>
-		internal Image(string name, ImageType imageType, int width, int height, ImageBufferFormats format, bool isResource, bool createTexture)
+		internal Image(string name, ImageType imageType, int width, int height, ImageBufferFormats format, bool createTexture)
 			: base(name)
 		{
 			if (string.IsNullOrEmpty(name))
@@ -2178,7 +2167,7 @@ namespace GorgonLibrary.Graphics
 			_actualWidth = -1;
 			_locks = new List<ImageLockBox>();
 			_filename = string.Empty;
-			_isResource = isResource;
+			_isResource = false;
 
 			// Determine format from the video mode.
 			if (format == ImageBufferFormats.BufferUnknown)
@@ -2215,7 +2204,6 @@ namespace GorgonLibrary.Graphics
 			if (_imageType != ImageType.RenderTarget)
 				DeviceStateList.Add(this);
 
-			// If we pass in a width & height, then initialize.
 			if (createTexture)
 			{
 				Initialize();
@@ -2234,7 +2222,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">Format of the Image.</param>
 		/// <param name="dynamic">TRUE if a dynamic image, FALSE if not.</param>
 		public Image(string name, int width, int height, ImageBufferFormats format, bool dynamic)
-			: this(name, dynamic ? ImageType.Dynamic : ImageType.Normal, width, height, format, false, true)
+			: this(name, dynamic ? ImageType.Dynamic : ImageType.Normal, width, height, format, true)
 		{
 			if (ImageCache.Images.Contains(name))
 				throw new ImageAlreadyLoadedException(name, null);
@@ -2366,18 +2354,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the filename of the serializable object.
 		/// </summary>
-		string ISerializable.Filename
+		public string Filename
 		{
 			get
 			{
 				return _filename;
-			}
-			set
-			{
-				if (value == null)
-					value = string.Empty;
-
-				_filename = value;
 			}
 		}
 

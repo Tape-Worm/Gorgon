@@ -170,7 +170,7 @@ namespace GorgonLibrary.Graphics
 				if (_renderTarget == null)
 				{
 					// Create the image.
-					_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, false, true);
+					_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, true);
 					DeviceStateList.Remove(_renderTarget);
 				}
 				else

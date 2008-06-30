@@ -1282,6 +1282,8 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				MainForm.ValidateForm();
 				sprite.Sprite.UpdateAABB();
 			}
+
+			RefreshPropertyGrid();
 		}
 
 		/// <summary>
