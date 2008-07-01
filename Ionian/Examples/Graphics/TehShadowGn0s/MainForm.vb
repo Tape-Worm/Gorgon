@@ -42,7 +42,7 @@ Public Class MainForm
     Private _blurPass1 As RenderImage = Nothing             ' Blur pass image.
     Private _blurPass2 As RenderImage = Nothing             ' Final output image.
     Private _screenSprite As Sprite = Nothing               ' Sprite used to draw the output.
-    Private _blurShader As Shader = Nothing                 ' Blur shader.
+    Private _blurShader As FXShader = Nothing               ' Blur shader.
     Private _samples As Single = 40                         ' Blur samples.
     Private _auto As Boolean = True                         ' Auto blur.
     Private _moveShip1 As Boolean = True                    ' Flag to move ship 1.
@@ -242,9 +242,9 @@ Public Class MainForm
         _sprite = Sprite.FromFile("..\..\..\..\Resources\Sprites\TehShadowGn0s\WeirdShip.gorSprite")
         _sprite2 = Sprite.FromFile("..\..\..\..\Resources\Sprites\TehShadowGn0s\WeirdShip2.gorSprite")
 #If DEBUG Then
-        _blurShader = Shader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx", ShaderCompileOptions.Debug)
+        _blurShader = FXShader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx", ShaderCompileOptions.Debug)
 #Else
-        _blurShader = Shader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx", ShaderCompileOptions.OptimizationLevel3)
+        _blurShader = FXShader.FromFile("..\..\..\..\Resources\Shaders\GaussBlur.fx", ShaderCompileOptions.OptimizationLevel3)
 #End If
 
         _shadowGen = New ShadowSprite(_sprite)

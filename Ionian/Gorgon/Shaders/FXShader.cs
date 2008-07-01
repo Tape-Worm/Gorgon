@@ -37,7 +37,7 @@ using GorgonLibrary.FileSystems;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Object to encapsulate pixel and vertex shader functionality.
+	/// HLSL Effects framework shader object.
 	/// </summary>
 	public class FXShader
 		: Shader, ISerializable

@@ -32,7 +32,7 @@ Public Class ShadowSprite
 
 #Region "Variables."
     Private _disposed As Boolean = False                                        ' Flag to indicate that the blur object is disposed.
-    Private _shader As Shader = Nothing                                         ' Blur shader.
+    Private _shader As FXShader = Nothing                                       ' Blur shader.
     Private _blurHTarget As RenderImage = Nothing                               ' Blur horizontal target.
     Private _blurVTarget As RenderImage = Nothing                               ' Blur vertical target.
     Private _output As Image = Nothing                                          ' Final output.
@@ -201,9 +201,9 @@ Public Class ShadowSprite
         End If
 
 #If DEBUG Then
-        _shader = Shader.FromFile("..\..\..\..\Resources\Shaders\SpriteShadow.fx", ShaderCompileOptions.Debug)
+        _shader = FXShader.FromFile("..\..\..\..\Resources\Shaders\SpriteShadow.fx", ShaderCompileOptions.Debug)
 #Else
-        _shader = Shader.FromFile("..\..\..\..\Resources\Shaders\SpriteShadow.fx", ShaderCompileOptions.OptimizationLevel3)
+        _shader = FXShader.FromFile("..\..\..\..\Resources\Shaders\SpriteShadow.fx", ShaderCompileOptions.OptimizationLevel3)
 #End If
 
         Me.Sprite = TryCast(sprite.Clone(), Sprite)

@@ -90,7 +90,7 @@ namespace GorgonLibrary.Serialization
 				throw new SerializerAlreadyOpenException(null);
 
 			// Use the stream for reading binary data.
-			_reader = new StreamReaderEx(SerializationStream, Encoding.UTF8,DontCloseStream);
+			_reader = new StreamReaderEx(SerializationStream, true, DontCloseStream);
 			SerializationObject.ReadData(this);
 		}
 

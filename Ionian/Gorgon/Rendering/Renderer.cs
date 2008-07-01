@@ -522,9 +522,13 @@ namespace GorgonLibrary.Graphics
 			// Begin shader.
 			if (Gorgon.CurrentShader != null)
 			{
-				Gorgon.CurrentShader.Begin();
-				Gorgon.CurrentShader.Render();
-				Gorgon.CurrentShader.End();
+				IShaderRenderer shader = Gorgon.CurrentShader as IShaderRenderer;
+				if (shader != null)
+				{
+					shader.Begin();
+					shader.Render();
+					shader.End();
+				}
 			}
 			else
 				DrawCachedTriangles();

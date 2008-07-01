@@ -51,7 +51,7 @@ namespace GorgonLibrary.Example
 		private Font _textFont = null;						// Font for the text.
 		private Font _helpFont = null;						// Font for the help text.
 		private float _textY = 0.0f;						// Text vertical positioning.
-		private Shader _blur = null;						// Blur shader.
+		private FXShader _blur = null;						// Blur shader.
 		private bool _blurBounce = false;					// Blur bounce flag.
 		private float _blurAmount = 1.0f;					// Blur amount.
 		private bool _showHelp = true;						// Flag to show help.
@@ -180,9 +180,9 @@ namespace GorgonLibrary.Example
 			if (Gorgon.CurrentDriver.PixelShaderVersion >= new Version(2, 0))
 			{
 #if DEBUG
-				_blur = Shader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
+				_blur = FXShader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
 #else
-				_blur = Shader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
+				_blur = FXShader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
 #endif
 				_blur.Parameters["sourceImage"].SetValue(_spriteImage);
 

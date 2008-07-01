@@ -165,7 +165,7 @@ namespace GorgonLibrary
 		private static Viewport _clippingView = null;					// Clipping viewport.
 		private static Color _statsTextColor = Color.White;				// Frame statistics text color.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
-		private static IShaderRenderer _currentShader = null;			// Current shader.
+		private static Shader _currentShader = null;					// Current shader.
 #if INCLUDE_D3DREF
 		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
 #endif
@@ -501,7 +501,7 @@ namespace GorgonLibrary
 		/// <value>A shader renderer output to apply to the scene when rendering.</value>
 		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		/// <exception cref="DeviceNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
-		public static IShaderRenderer CurrentShader
+		public static Shader CurrentShader
 		{
 			get
 			{
@@ -976,7 +976,6 @@ namespace GorgonLibrary
 			// Clean up resources.
 			FontCache.DestroyAll();
 			RenderTargetCache.DestroyAll();
-			ImageShaderCache.DestroyAll();
 			ShaderCache.DestroyAll();
 			ImageCache.DestroyAll();
 
@@ -1390,9 +1389,6 @@ namespace GorgonLibrary
 			if (_stateCache != null)
 				_stateCache.Dispose();
 			
-			// Remove all image shaders.
-			ImageShaderCache.DestroyAll();
-
 			// Remove all shaders.
 			ShaderCache.DestroyAll();
 

@@ -224,8 +224,6 @@
     <Compile Include="Shaders\ConstantShaderParameter.cs" />
     <Compile Include="Shaders\FXShader.cs" />
     <Compile Include="Shaders\FXShaderParameter.cs" />
-    <Compile Include="Shaders\ImageShaderCache.cs" />
-    <Compile Include="Shaders\ImageShaderList.cs" />
     <Compile Include="Shaders\IShaderOutput.cs" />
     <Compile Include="Shaders\IShaderParameter.cs" />
     <Compile Include="Shaders\PixelShader.cs" />

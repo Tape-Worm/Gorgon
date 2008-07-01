@@ -40,8 +40,8 @@ namespace GorgonLibrary.Example
 		: Form
 	{
 		#region Variables.
-		private Shader _cloakShader = null;					// Cloaking shader.
-		private Shader _scratchShader = null;				// Film scratch shader.
+		private FXShader _cloakShader = null;				// Cloaking shader.
+		private FXShader _scratchShader = null;				// Film scratch shader.
 		private ImageShader _imageShader = null;			// Image shader.
 		private Image _noiseImage = null;					// Noise image.
 		private Image _backgroundImage = null;				// Background image.
@@ -268,13 +268,13 @@ namespace GorgonLibrary.Example
 
 			// Get shader.
 #if DEBUG
-			_cloakShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx", ShaderCompileOptions.Debug);
-			_scratchShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx", ShaderCompileOptions.Debug);
-			_imageShader = new ImageShader("NoiseShader", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0", ShaderCompileOptions.Debug));
+			_cloakShader = FXShader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx", ShaderCompileOptions.Debug);
+			_scratchShader = FXShader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx", ShaderCompileOptions.Debug);
+			_imageShader = new ImageShader("ScratchBuffer", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0", ShaderCompileOptions.Debug));
 #else
-			_cloakShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx", ShaderCompileOptions.OptimizationLevel3);
-			_scratchShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx", ShaderCompileOptions.OptimizationLevel3);
-			_imageShader = new ImageShader("NoiseShader", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0", ShaderCompileOptions.OptimizationLevel3));
+			_cloakShader = FXShader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx", ShaderCompileOptions.OptimizationLevel3);
+			_scratchShader = FXShader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx", ShaderCompileOptions.OptimizationLevel3);
+			_imageShader = new ImageShader("ScratchBuffer", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0", ShaderCompileOptions.OptimizationLevel3));
 #endif
 			InstallCloak();
 

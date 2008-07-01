@@ -50,7 +50,7 @@ namespace GorgonLibrary.Example
 		private TextSprite _textSprite = null;				// Text sprite.
 		private Font _textFont = null;						// Font for the text.
 		private float _textY = 0.0f;						// Text vertical positioning.
-		private Shader _blur = null;						// Blur shader.
+		private FXShader _blur = null;						// Blur shader.
 		private bool _blurBounce = false;					// Blur bounce flag.
 		private float _blurAmount = 1.0f;					// Blur amount.
 		#endregion
@@ -158,9 +158,9 @@ namespace GorgonLibrary.Example
 
 			// Get shader.
 #if DEBUG
-			_blur = Shader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
+			_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
 #else
-			_blur = Shader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
+			_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
 #endif
 			_blur.Parameters["sourceImage"].SetValue(_spriteImage);
 

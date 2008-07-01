@@ -210,6 +210,9 @@ namespace GorgonLibrary.Graphics
 			type = ShaderParameterType.Unknown;
 
 			// Get parameters.
+			if (_function.ByteCode.ConstantTable == null)
+				return;
+
 			for (int i = 0; i < _function.ByteCode.ConstantTable.Description.Constants; i++)
 			{
 				handle = _function.ByteCode.ConstantTable.GetConstant(null, i);
@@ -337,12 +340,13 @@ namespace GorgonLibrary.Graphics
 					Directory.SetCurrentDirectory(Path.GetDirectoryName(Path.GetFullPath(Filename)));
 				}
 
-				// Read in the data.			
-				code = serializer.ReadBytes(string.Empty, size);
 
 				if ((bool)serializer.Parameters["Binary"])
 				{
-					Function = new ShaderFunction(function, this, D3D9.ShaderBytecode.Compile(code, null, null, function, ShaderProfile(target), flags, out errors), ShaderProfile(target));
+					// Read in the data.			
+					code = serializer.ReadBytes(string.Empty, size);
+
+					Function = new ShaderFunction(function, this, new D3D9.ShaderBytecode(code), ShaderProfile(target));
 					CreateShader();
 					GetParameters();
 
@@ -355,7 +359,7 @@ namespace GorgonLibrary.Graphics
 				{
 					// Read source code and convert to a string.
 					//serializer.Stream.Read(code, 0, size);
-					ShaderSource = Encoding.UTF8.GetString(code);
+					ShaderSource = serializer.ReadString(string.Empty);
 					CompileShaderImplementation(function, target, (ShaderCompileOptions)flags);
 				}
 			}
@@ -799,8 +803,7 @@ namespace GorgonLibrary.Graphics
 				SetFunction(function);
 		}
 		#endregion
-
-
+		
 		#region ISerializable Members
 		#region Properties.
 		/// <summary>

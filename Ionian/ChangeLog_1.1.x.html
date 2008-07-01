@@ -103,9 +103,28 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-June 30/2008 - Version - Current
+July 1/2008 - Version - Current
 ================================
+- Removed ImageShaderCache and ImageShaderList as these aren't necessary anymore.  The
+  ImageShaders are now regular shaders and can be found in the ShaderCache.
+  
 * Fixed a bug in the shader serializer where it was saving the source as UTF-7.
+
+* Changed ShaderSerializer to FXShaderSerializer and ShaderSerializer now handles
+  objects derived from BaseShader.
+
++ Added BaseShader, PixelShader and VertexShader types.  These are shaders that don't use
+  the HLSL effects system (except to compile).  BaseShader is the abstract type that
+  Pixel/Vertex/ImageShader types are derived from.
+  
++ Added ConstantShaderParameter for use by the objects that inherit from BaseShader.
+  
+* Changed ShaderParameter to FXShaderParameter.
+
++ Added IShaderParameter as the defacto interface for shader parameter objects.
+
+* Changed Shader to FXShader to indicate that the shaders are based on the HLSL effects
+  framework.  The Shader type is now a base class from which other shaders are derived.  
 
 - Removed the GorgonEx library.  It's not necessary.
 

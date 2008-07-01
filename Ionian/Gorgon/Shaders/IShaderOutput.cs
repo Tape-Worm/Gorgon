@@ -32,7 +32,7 @@ namespace GorgonLibrary.Graphics
 	/// Interface to define a shader renderer.
 	/// </summary>
 	/// <remarks>This defines the component of a shader that can be applied to the rendering of a scene.</remarks>
-	public interface IShaderRenderer
+	internal interface IShaderRenderer
 	{
 		/// <summary>
 		/// Function to begin the rendering with the shader.
