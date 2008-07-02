@@ -209,6 +209,7 @@ namespace GorgonLibrary.Graphics
 			Parameters.Clear();
 			type = ShaderParameterType.Unknown;
 
+			
 			// Get parameters.
 			if (_function.ByteCode.ConstantTable == null)
 				return;
@@ -216,6 +217,8 @@ namespace GorgonLibrary.Graphics
 			for (int i = 0; i < _function.ByteCode.ConstantTable.Description.Constants; i++)
 			{
 				handle = _function.ByteCode.ConstantTable.GetConstant(null, i);
+
+				string[] mySamplers = _function.ByteCode.GetSamplers();
 
 				if (handle != null)
 				{
