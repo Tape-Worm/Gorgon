@@ -34,9 +34,10 @@ namespace GorgonLibrary.GUI
 	/// Object representing a GUI window.
 	/// </summary>
 	public class GUIWindow
-		: GUIPanel
+		: GUIObject, IGUIContainer
 	{
 		#region Variables.
+		private GUIObjectCollection _guiObjects = null;					// List of objects contained in the window.		
 		private Font _windowFont = null;								// Font for the window.
 		private bool _disposed = false;									// Flag to indicate that the object is disposed.
 		private TextSprite _captionTextLabel = null;					// Caption text.
@@ -44,6 +45,7 @@ namespace GorgonLibrary.GUI
 		private Drawing.Rectangle _captionRectangle;					// Caption rectangle.
 		private Vector2D _dragDelta = Vector2D.Zero;					// Drag delta.
 		private Viewport _clipView = null;								// Clipping view port.
+		private bool _hasCaption = true;								// Flag to indicate whether we have a caption on this window or not.
 		#endregion
 
 		#region Properties.
@@ -79,6 +81,31 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
+		/// Property to set or return the background color of the panel.
+		/// </summary>
+		public Drawing.Color BackgroundColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the window has a caption.
+		/// </summary>
+		public bool HasCaption
+		{
+			get
+			{
+				return _hasCaption;
+			}
+			set
+			{
+				_hasCaption = value;
+				SkinUpdated();
+			}
+		}
+		
+		/// <summary>
 		/// Property to return the default border size.
 		/// </summary>
 		public int DefaultBorderSize
@@ -88,7 +115,7 @@ namespace GorgonLibrary.GUI
 				if (Skin == null)
 					return 0;
 				else
-					return Skin.Elements["Window.Border.Vertical"].Dimensions.Width;
+					return Skin.Elements["Window.Border.Vertical.Left"].Dimensions.Width;
 			}
 		}
 
@@ -103,10 +130,15 @@ namespace GorgonLibrary.GUI
 					return _windowFont.LineHeight + 4;
 				else
 				{
-					if ((_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height) > 2)
-						return (Skin.Elements["Window.Caption"].Dimensions.Height) + (_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height);
+					if (HasCaption)
+					{
+						if ((_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height) > 2)
+							return (Skin.Elements["Window.Caption"].Dimensions.Height) + (_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height);
+						else
+							return Skin.Elements["Window.Caption"].Dimensions.Height;
+					}
 					else
-						return Skin.Elements["Window.Caption"].Dimensions.Height;
+						return Skin.Elements["Window.Border.Top.Horizontal"].Dimensions.Height;
 				}
 			}
 		}
@@ -198,6 +230,16 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
+		/// Function called when a keyboard event has taken place in this window.
+		/// </summary>
+		/// <param name="isDown">TRUE if the button was pressed, FALSE if released.</param>
+		/// <param name="e">Event parameters.</param>
+		protected internal override void KeyboardEvent(bool isDown, GorgonLibrary.InputDevices.KeyboardInputEventArgs e)
+		{
+			DefaultKeyboardEvent(isDown, e);
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -216,50 +258,85 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Function to draw the non-client area.
 		/// </summary>
-		protected override void DrawNonClientArea()
+		private void DrawNonClientArea()
 		{
 			Vector2D nonClientPosition = Position;
-			Drawing.Rectangle captionScreen;
+			Drawing.Rectangle captionScreen = Drawing.Rectangle.Empty;
 			Viewport lastView = null;
 
 			if (Skin == null)
 				return;
-
-			_captionRectangle = new Drawing.Rectangle(Position.X + Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, Position.Y, 
-								WindowDimensions.Width - Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width - Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width, 
-								DefaultCaptionHeight);
-			captionScreen = _captionRectangle;
-
-			if (Owner != null)
+			
+			if (HasCaption)
 			{
-				nonClientPosition = Owner.PointToScreen(Position);
-				captionScreen = Owner.RectToScreen(_captionRectangle);
+				_captionRectangle = new Drawing.Rectangle(Position.X + Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, Position.Y,
+									WindowDimensions.Width - Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width - Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width,
+									DefaultCaptionHeight);
+				captionScreen = _captionRectangle;
+
+				Skin.Elements["Window.Caption.LeftCorner"].Draw(new Drawing.Rectangle(captionScreen.Location.X - Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, captionScreen.Location.Y, Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, captionScreen.Size.Height));
+				Skin.Elements["Window.Caption.RightCorner"].Draw(new Drawing.Rectangle(captionScreen.Width + captionScreen.X, captionScreen.Location.Y, Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width, captionScreen.Size.Height));
+				Skin.Elements["Window.Caption"].Draw(captionScreen);
+			}
+			else
+			{
+				Skin.Elements["Window.Border.Top.LeftCorner"].Draw(new Drawing.Rectangle(Position.X, Position.Y, Skin.Elements["Window.Border.Top.LeftCorner"].Dimensions.Width, Skin.Elements["Window.Border.Top.LeftCorner"].Dimensions.Height));
+				Skin.Elements["Window.Border.Top.Horizontal"].Draw(new Drawing.Rectangle(Position.X + Skin.Elements["Window.Border.Top.LeftCorner"].Dimensions.Width, Position.Y, WindowDimensions.Width - Skin.Elements["Window.Border.Top.RightCorner"].Dimensions.Width - Skin.Elements["Window.Border.Top.RightCorner"].Dimensions.Width, Skin.Elements["Window.Border.Top.Horizontal"].Dimensions.Height));
+				Skin.Elements["Window.Border.Top.RightCorner"].Draw(new Drawing.Rectangle(WindowDimensions.Right - Skin.Elements["Window.Border.Top.RightCorner"].Dimensions.Width, Position.Y, Skin.Elements["Window.Border.Top.RightCorner"].Dimensions.Width, Skin.Elements["Window.Border.Top.RightCorner"].Dimensions.Height));
 			}
 
-			Skin.Elements["Window.Caption.LeftCorner"].Draw(new Drawing.Rectangle(captionScreen.Location.X - Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, captionScreen.Location.Y, Skin.Elements["Window.Caption.LeftCorner"].Dimensions.Width, captionScreen.Size.Height));
-			Skin.Elements["Window.Caption.RightCorner"].Draw(new Drawing.Rectangle(captionScreen.Width + captionScreen.X, captionScreen.Location.Y, Skin.Elements["Window.Caption.RightCorner"].Dimensions.Width, captionScreen.Size.Height));
-			Skin.Elements["Window.Caption"].Draw(captionScreen);
-
-			Skin.Elements["Window.Border.Vertical"].Draw(new Drawing.Rectangle(Position.X, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight - DefaultBorderHeight));
-			Skin.Elements["Window.Border.Vertical"].Draw(new Drawing.Rectangle(Position.X + WindowDimensions.Width - Skin.Elements["Window.Border.Vertical"].Dimensions.Width, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight - DefaultBorderHeight));
+			Skin.Elements["Window.Border.Vertical.Left"].Draw(new Drawing.Rectangle(Position.X, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight - DefaultBorderHeight));
+			Skin.Elements["Window.Border.Vertical.Right"].Draw(new Drawing.Rectangle(Position.X + WindowDimensions.Width - Skin.Elements["Window.Border.Vertical.Right"].Dimensions.Width, DefaultCaptionHeight + Position.Y, DefaultBorderSize, WindowDimensions.Height - DefaultCaptionHeight - DefaultBorderHeight));
 
 			Skin.Elements["Window.Border.Bottom.LeftCorner"].Draw(new Drawing.Rectangle(Position.X, Position.Y + WindowDimensions.Height - Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Height, Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Width, Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Height));
 			Skin.Elements["Window.Border.Bottom.Horizontal"].Draw(new Drawing.Rectangle(Position.X + Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Width, Position.Y + WindowDimensions.Height - Skin.Elements["Window.Border.Bottom.Horizontal"].Dimensions.Height, WindowDimensions.Width - Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Width - Skin.Elements["Window.Border.Bottom.LeftCorner"].Dimensions.Width, Skin.Elements["Window.Border.Bottom.Horizontal"].Dimensions.Height));
 			Skin.Elements["Window.Border.Bottom.RightCorner"].Draw(new Drawing.Rectangle(WindowDimensions.Right - Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Width, Position.Y + WindowDimensions.Height - Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Height, Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Width, Skin.Elements["Window.Border.Bottom.RightCorner"].Dimensions.Height));
 
-			_clipView.Left = captionScreen.Left;
-			_clipView.Top = captionScreen.Top;
-			_clipView.Width = captionScreen.Width;
-			_clipView.Height = captionScreen.Height;
-			lastView = Gorgon.CurrentClippingViewport;
-			Gorgon.CurrentClippingViewport = _clipView;
-			if (Desktop.Focused == this)
-				_captionTextLabel.Color = Drawing.Color.White;
-			else
-				_captionTextLabel.Color = Drawing.Color.Gray;
-			_captionTextLabel.Position = new Vector2D(captionScreen.Left, captionScreen.Top);
-			_captionTextLabel.Draw();
-			Gorgon.CurrentClippingViewport = lastView;
+			if (HasCaption)
+			{
+				_clipView.Left = captionScreen.Left;
+				_clipView.Top = captionScreen.Top;
+				_clipView.Width = captionScreen.Width;
+				_clipView.Height = captionScreen.Height;
+				lastView = Gorgon.CurrentClippingViewport;
+				Gorgon.CurrentClippingViewport = _clipView;
+				if (Desktop.Focused == this)
+					_captionTextLabel.Color = Drawing.Color.White;
+				else
+					_captionTextLabel.Color = Drawing.Color.Gray;
+				_captionTextLabel.Position = new Vector2D(captionScreen.Left, captionScreen.Top);
+				_captionTextLabel.Draw();
+				Gorgon.CurrentClippingViewport = lastView;
+			}
+		}
+
+		/// <summary>
+		/// Function to draw the object.
+		/// </summary>
+		internal override void Draw()
+		{
+			Drawing.Rectangle screenPoints;		// Screen coordinates.
+
+			if (Visible)
+			{
+				screenPoints = RectToScreen(ClientArea);
+
+				Gorgon.CurrentRenderTarget.BeginDrawing();
+
+				DrawNonClientArea();
+
+				Gorgon.CurrentRenderTarget.FilledRectangle(screenPoints.X, screenPoints.Y, screenPoints.Width, screenPoints.Height, BackgroundColor);
+				Gorgon.CurrentRenderTarget.EndDrawing();
+
+				// Draw each child.
+				var children = from guiObject in GUIObjects
+							   where guiObject.Visible
+							   orderby guiObject.ZOrder descending
+							   select guiObject;
+
+				foreach (GUIObject guiObject in children)
+					guiObject.Draw();
+			}
 		}
 
 		/// <summary>
@@ -284,7 +361,7 @@ namespace GorgonLibrary.GUI
 		/// <param name="e">Event parameters.</param>
 		protected internal override void MouseEvent(MouseEventType eventType, GorgonLibrary.InputDevices.MouseInputEventArgs e)
 		{
-			if (!ClientArea.Contains(ScreenToPoint((Drawing.Point)e.Position)))
+			if ((!ClientArea.Contains(ScreenToPoint((Drawing.Point)e.Position))) && (HasCaption))
 			{
 				Drawing.Point screenPos = (Drawing.Point)e.Position;
 				switch (eventType)
@@ -303,7 +380,24 @@ namespace GorgonLibrary.GUI
 				}
 			}
 			else
-				base.MouseEvent(eventType, e);
+			{
+				var children = from guiObject in GUIObjects
+							   where guiObject.Visible
+							   orderby guiObject.ZOrder
+							   select guiObject;
+
+				// Forward any events on to our child objects and terminate event handling if the child has received the event.
+				foreach (GUIObject child in children)
+				{
+					if (child.WindowDimensions.Contains(ScreenToPoint((Drawing.Point)e.Position)))
+					{
+						child.MouseEvent(eventType, e);
+						return;
+					}
+				}
+
+				DefaultMouseEvent(eventType, e);
+			}
 		}
 
 		/// <summary>
@@ -321,7 +415,13 @@ namespace GorgonLibrary.GUI
 		/// <remarks>The frame delta is typically used with animations to help achieve a smooth appearance regardless of processor speed.</remarks>
 		internal override void Update(float frameTime)
 		{
-			base.Update(frameTime);
+			// Draw each child.
+			var children = from guiObject in GUIObjects
+						   where guiObject.Enabled
+						   select guiObject;
+
+			foreach (GUIObject guiObject in children)
+				guiObject.Update(frameTime);
 
 			Drawing.Point mousePosition = (Drawing.Point)(Desktop.MousePosition + _dragDelta);			// Mouse position.
 
@@ -373,10 +473,43 @@ namespace GorgonLibrary.GUI
 		public GUIWindow(string name, int x, int y, int width, int height)
 			: base(name)
 		{
+			_guiObjects = new GUIObjectCollection();
+			BackgroundColor = Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 			WindowDimensions = new System.Drawing.Rectangle(x, y, width, height);			
-			Font = null;			
-			_captionTextLabel = new TextSprite("WindowCaptionLabel", Name, Font, Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ActiveCaptionText));
+			Font = null;
+			Visible = true;
+			_captionTextLabel = new TextSprite("WindowCaptionLabel", Name, Font, Drawing.Color.White);
 			_clipView = new Viewport(0, 0, 1, 1);
+		}
+		#endregion
+
+		#region IGUIContainer Members
+		/// <summary>
+		/// Property to set or return whether this control will clip its children.
+		/// </summary>
+		/// <value></value>
+		bool IGUIContainer.ClipChildren
+		{
+			get
+			{
+				return true;
+			}
+			set
+			{
+				
+			}
+		}
+
+		/// <summary>
+		/// Property to return the list of objects contained within this container.
+		/// </summary>
+		/// <value></value>
+		public GUIObjectCollection GUIObjects
+		{
+			get 
+			{
+				return _guiObjects;
+			}
 		}
 		#endregion
 	}

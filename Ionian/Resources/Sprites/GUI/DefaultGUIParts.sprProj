@@ -9,11 +9,10 @@
     <Count>0</Count>
   </Targets>
   <Sprites>
-    <Count>11</Count>
+    <Count>12</Count>
     <Path IncludeInAnims="True">.\Caption.LeftCorner.gorSprite</Path>
     <Path IncludeInAnims="True">.\Caption.RightCorner.gorSprite</Path>
     <Path IncludeInAnims="True">.\Caption.gorSprite</Path>
-    <Path IncludeInAnims="True">.\Border.Vertical.gorSprite</Path>
     <Path IncludeInAnims="True">.\Border.Bottom.LeftCorner.gorSprite</Path>
     <Path IncludeInAnims="True">.\Border.Bottom.RightCorner.gorSprite</Path>
     <Path IncludeInAnims="True">.\Border.Bottom.Horizontal.gorSprite</Path>
@@ -21,5 +20,7 @@
     <Path IncludeInAnims="True">.\Border.Top.Horizontal.gorSprite</Path>
     <Path IncludeInAnims="True">.\Border.Top.LeftCorner.gorSprite</Path>
     <Path IncludeInAnims="True">.\Border.Top.RightCorner.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Vertical.Left.gorSprite</Path>
+    <Path IncludeInAnims="True">.\Border.Vertical.Right.gorSprite</Path>
   </Sprites>
 </SpriteProject>

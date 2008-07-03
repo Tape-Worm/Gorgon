@@ -87,6 +87,19 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
+		/// Function to update the animation of the element sprites (if any).
+		/// </summary>
+		/// <param name="frameTime">Frame delta time.</param>
+		internal void Update(float frameTime)
+		{
+			if ((_elementSprite != null) && (_elementSprite.Animations.Count > 0))
+			{
+				foreach (Animation anim in _elementSprite.Animations)
+					anim.Advance(frameTime * 1000.0f);
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the 
 		/// </summary>
 		/// <param name="skin"></param>

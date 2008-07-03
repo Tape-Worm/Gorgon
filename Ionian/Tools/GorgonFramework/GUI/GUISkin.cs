@@ -58,6 +58,16 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
+		/// Function to update the skin sprites animations (if any).
+		/// </summary>
+		/// <param name="frameTime">Frame time delta.</param>
+		internal void Update(float frameTime)
+		{
+			foreach (GUIElement element in _elements)
+				element.Update(frameTime);
+		}
+
+		/// <summary>
 		/// Function to load a skin from a Gorgon packed file.
 		/// </summary>
 		/// <param name="skinFileSystem">File system that contains the GUI skin information.</param>

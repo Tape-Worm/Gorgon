@@ -133,31 +133,6 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
-		/// Function to retrieve the clipping area for the children.
-		/// </summary>
-		/// <returns>A rectangle defining the clipping area for the child controls.</returns>
-		protected Drawing.Rectangle GetClippingArea()
-		{
-			Drawing.Rectangle screenPoints;			// Screen coordinates.
-			Drawing.Rectangle ownerPoints;			// Owner clip.
-			GUIPanel owner = Owner as GUIPanel;		// Owner panel.
-
-			screenPoints = Drawing.Rectangle.Empty;
-			if (owner != null)
-			{
-				screenPoints = owner.RectToScreen(owner.ClientArea);
-				if (owner.Owner != null)
-				{
-					ownerPoints = owner.GetClippingArea();
-					if (ownerPoints != Drawing.Rectangle.Empty)
-						screenPoints = Drawing.Rectangle.Intersect(screenPoints, ownerPoints);
-				}
-			}			
-
-			return screenPoints;
-		}
-
-		/// <summary>
 		/// Function to update the object.
 		/// </summary>
 		/// <param name="frameTime">Frame delta time.</param>

@@ -443,6 +443,8 @@ namespace GorgonLibrary.GUI
 
 			foreach (GUIWindow panel in objects)
 				panel.Update(frameTime);
+
+			_skin.Update(frameTime);
 		}
 
 		/// <summary>

@@ -320,18 +320,6 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
-		/// Function to return the screen point in the coordinates of the owner object.
-		/// </summary>
-		/// <param name="screenPoint">Screen point to convert.</param>
-		/// <returns>The point in owner space.</returns>
-		protected Point GetOwnerPoint(Point screenPoint)
-		{
-			if (Owner != null)
-				return Owner.ScreenToPoint(screenPoint);
-			return screenPoint;
-		}
-
-		/// <summary>
 		/// Function called for default mouse events.
 		/// </summary>
 		/// <param name="eventType">Mouse event type.</param>
@@ -401,6 +389,30 @@ namespace GorgonLibrary.GUI
 		/// <param name="isDown">TRUE if the button was pressed, FALSE if released.</param>
 		/// <param name="e">Event parameters.</param>
 		protected abstract internal void KeyboardEvent(bool isDown, KeyboardInputEventArgs e);
+
+		/// <summary>
+		/// Function to retrieve the clipping area for the children.
+		/// </summary>
+		/// <returns>A rectangle defining the clipping area for the child controls.</returns>
+		protected Rectangle GetClippingArea()
+		{
+			Rectangle screenPoints;			// Screen coordinates.
+			Rectangle ownerPoints;			// Owner clip.
+
+			screenPoints = Rectangle.Empty;
+			if (Owner != null)
+			{
+				screenPoints = Owner.RectToScreen(Owner.ClientArea);
+				if (Owner.Owner != null)
+				{
+					ownerPoints = Owner.GetClippingArea();
+					if (ownerPoints != Rectangle.Empty)
+						screenPoints = Rectangle.Intersect(screenPoints, ownerPoints);
+				}
+			}
+
+			return screenPoints;
+		}
 
 		/// <summary>
 		/// Function to convert a client rectangle to screen coordinates.

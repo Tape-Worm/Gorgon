@@ -1875,7 +1875,7 @@ namespace GorgonLibrary.Graphics.Tools
 			root.AppendChild(support);
 
 			// Create count.
-			var targetList = RenderTargetCache.Targets.OfType<RenderImage>().Where((target) => ValidRenderTarget(target.Name));
+			var targetList = RenderTargetCache.Targets.Where(target => ValidRenderTarget(target.Name));
 			int targetCount = targetList.Count();
 
 			element = projectDocument.CreateElement("Count");

@@ -29,6 +29,7 @@ using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Linq;
 using GorgonLibrary;
 using Dialogs;
 
@@ -119,12 +120,9 @@ namespace GorgonLibrary.Graphics.Tools
 			// Add images.
 			if (!checkRenderTarget.Checked)
 			{
-				foreach (Image image in ImageCache.Images)
-				{
-					// Ignore resource images.
-					if ((!image.IsResource) && (image.ImageType == ImageType.Normal))
-						comboImages.Items.Add(image.Name);
-				}
+				var images = ImageCache.Images.Where(image => (!image.IsResource) && (image.ImageType == ImageType.Normal));
+				foreach (var image in images)
+					comboImages.Items.Add(image.Name);
 
 				if (_owner.ImageManager.SelectedImage != null)
 					comboImages.Text = _owner.ImageManager.SelectedImage.Name;
@@ -133,12 +131,9 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			else
 			{
-				foreach (RenderTarget image in RenderTargetCache.Targets)
-				{
-					// Only add images that are not rendertargets unless we have render target checked.
-					if (_owner.ValidRenderTarget(image.Name)) 
-						comboImages.Items.Add(image.Name);
-				}
+				var targets = RenderTargetCache.Targets.Where(target => (_owner.ValidRenderTarget(target.Name)));
+				foreach (var image in targets)
+					comboImages.Items.Add(image.Name);
 
 				if (_owner.RenderTargetManager.SelectedTarget != null)
 					comboImages.Text = _owner.RenderTargetManager.SelectedTarget.Name;

@@ -1532,9 +1532,27 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="image">Image to bind with, NULL to unbind.</param>
 		public void Bind(Image image)
 		{
+			string previousImageName = string.Empty;			// Previous image name.
 			try
 			{
+				if (_sprite.Image != null)
+					previousImageName = _sprite.Image.Name;
 				_sprite.Image = image;
+
+				if (_sprite.Animations.Count > 0)
+				{
+					// Get all the keys that are bound to the same image (i.e. the image with the same name).
+					var images = from anim in _sprite.Animations
+									from imageTrack in anim.Tracks
+									from key in imageTrack
+									let imageKey = key as KeyImage
+									where (imageKey != null) && (anim.Tracks.Contains("Image")) && (imageTrack.KeyCount > 0) && (((imageKey.Image != null) && (string.Compare(imageKey.Image.Name, previousImageName, true) == 0)) || (imageKey.Image == null))
+									select imageKey;
+
+					foreach (var key in images)
+						key.Image = image;
+				}
+
 				_sprite.Refresh();
 				Changed = true;
 			}

@@ -204,7 +204,7 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			else
 			{
-				var targets = RenderTargetCache.Targets.OfType<RenderImage>().Where((target) => _owner.ValidRenderTarget(target.Name));
+				var targets = RenderTargetCache.Targets.Where(target => _owner.ValidRenderTarget(target.Name));
 				foreach (RenderTarget image in targets)
 					comboImages.Items.Add(image.Name);
 			}

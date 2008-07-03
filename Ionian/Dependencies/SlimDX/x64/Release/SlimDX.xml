@@ -6248,6 +6248,239 @@ Opens and reads the contents of an included file.
 Specifies an interface for handling #include directives in shader or effect files.
 </summary>
         </member>
+        <member name="M:SlimDX.DXGI.Surface.Unmap">
+            <summary>
+Relinquishes access to the surface data.
+</summary>
+            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.DXGI.Surface.Map(SlimDX.DXGI.MapFlags)">
+            <summary>
+Acquires access to the surface data.
+</summary>
+            <param name="flags">Flags specifying CPU access permissions.</param>
+            <returns>A <see cref="T:SlimDX.DataRectangle" /> for accessing the mapped data, or <c>null</c> on failure.</returns>.
+</member>
+        <member name="M:SlimDX.DXGI.Surface.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DXGI.Surface" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDXGISurface pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="P:SlimDX.DXGI.Surface.Description">
+            <summary>
+Gets the surface's description.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.Surface">
+            <summary>
+A <see cref="T:SlimDX.DXGI.Surface" /> implements methods for image-data objects.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.DeviceChild.Device">
+            <summary>
+Gets the device the object is bound to.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.DeviceChild">
+            <summary>
+An object that is bound to a Device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.OutputDescription.MonitorHandle">
+            <summary>
+Gets the unmanaged HMONITOR handle for the output.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.OutputDescription.Rotation">
+            <summary>
+Gets rotation performed by the output on a presented image.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.OutputDescription.IsAttachedToDesktop">
+            <summary>
+Gets a value indicating whether the output is attached to the desktop.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.OutputDescription.DesktopBounds">
+            <summary>
+Gets output's bounds in desktop coordinates.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.OutputDescription.Name">
+            <summary>
+Gets the output's name.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.OutputDescription">
+            <summary>
+Describes various properties of an Output.
+</summary>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.WaitForVerticalBlank">
+            <summary>
+Halts the current thread until a vertical blank occurs.
+</summary>
+            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.ReleaseOwnership">
+            <summary>
+Releases ownership of an output.
+</summary>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.TakeOwnership(SlimDX.ComObject,System.Boolean)">
+            <summary>
+Takes ownership of an output.
+</summary>
+            <param name="device">The device interface.</param>
+            <param name="exclusive">If true, ownership is exclusive.</param>
+            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.CopyDisplaySurfaceTo(SlimDX.DXGI.Surface)">
+            <summary>
+Copies the display surface content to the specified destination surface.
+</summary>
+            <param name="surface">The destination surface.</param>
+            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.SetDisplaySurface(SlimDX.DXGI.Surface)">
+            <summary>
+Changes the current display surface to the specified surface.
+</summary>
+            <param name="surface">The new display surface.</param>
+            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.SetGammaControl(SlimDX.DXGI.GammaControl)">
+            <summary>
+Sets gamma control information.
+</summary>
+            <param name="control">The gamma control information.</param>
+            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.GetClosestMatchingMode(SlimDX.ComObject,SlimDX.DXGI.ModeDescription,SlimDX.DXGI.ModeDescription@)">
+            <summary>
+Gets the display mode that best matches the requested mode.
+</summary>
+            <param name="device">The device interface. If this parameter is null, only
+modes whose format matches the specified mode will be returned; otherwise, only those
+formats that are supported for scan-out by the device are returned.</param>
+            <param name="modeToMatch">The description of the display mode to match.</param>
+            <param name="result">Receives the best-matching display mode.</param>
+            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.GetDisplayModeList(SlimDX.DXGI.Format,SlimDX.DXGI.DisplayModeEnumerationFlags)">
+            <summary>
+Gets a list of display modes matching certain specifications.
+</summary>
+            <param name="format">The display mode color format.</param>
+            <param name="flags">Flags indicating how the display mode scanline order and scaling.</param>
+            <returns>A list of matching display mode descriptions. The list is null if an error occured.</returns>
+        </member>
+        <member name="M:SlimDX.DXGI.Output.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DXGI.Output" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDXGIOutput pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="P:SlimDX.DXGI.Output.GammaControlCapabilities">
+            <summary>
+Gets a description of the output's gamma-control capabilities.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.Output.FrameStatistics">
+            <summary>
+Gets statistics about recent frames.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.Output.Description">
+            <summary>
+Gets the output's description.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.Output">
+            <summary>
+Represents the output of an adapter (such as a monitor).
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControlCapabilities.ControlPoints">
+            <summary>
+Gets the list of curve control point positions.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControlCapabilities.MinimumConvertedValue">
+            <summary>
+Gets a value indicating the minimum range of the curve control point positions.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControlCapabilities.MaximumConvertedValue">
+            <summary>
+Gets a value indicating the maximum range of the curve control point positions.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControlCapabilities.IsScaleAndOffsetSupported">
+            <summary>
+Gets a value indicating whether gamma scale and offset transformation is supported.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.GammaControlCapabilities">
+            <summary>
+Describes gamma control capabilities.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControl.ControlPoints">
+            <summary>
+Gets the list of RGB control points defining the gamma curve.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControl.Offset">
+            <summary>
+Gets or sets an offset applied to gamma RGB values.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.GammaControl.Scale">
+            <summary>
+Gets or sets a scaling factor applied to gamma RGB values.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.GammaControl">
+            <summary>
+Describes gamma control settings.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.FrameStatistics.SyncGPUTime">
+            <summary>
+Reserved. Always returns 0.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.FrameStatistics.SyncQPCTime">
+            <summary>
+Gets a value equivalent to that returned by the unmanaged function QueryPerformanceCounter.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.FrameStatistics.SyncRefreshCount">
+            <summary>
+Gets the number of times a vertical blank has occured.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.FrameStatistics.PresentRefreshCount">
+            <summary>
+Gets the number of times a vertical blank has occured.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.FrameStatistics.PresentCount">
+            <summary>
+Gets the number of times an image has been presented to an output.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.FrameStatistics">
+            <summary>
+Provides basic rendering statistics. All counts are relative to machine boot. 
+</summary>
+        </member>
         <member name="M:SlimDX.Performance.SetRegion(SlimDX.Color4,System.String)">
             <summary>
 Marks a series of frames with the specified color and name in the PIXRun file. 
@@ -6955,6 +7188,35 @@ Provides access to connected adapters and window associations. A <see cref="T:Sl
 is also required to create most DXGI objects.
 </summary>
         </member>
+        <member name="M:SlimDX.DXGI.DXGIException.#ctor(SlimDX.Result)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DXGI.DXGIException" /> class.
+</summary>
+            <param name="result">The result code that caused this exception.</param>
+        </member>
+        <member name="M:SlimDX.DXGI.DXGIException.#ctor(System.String,System.Exception)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DXGI.DXGIException" /> class.
+</summary>
+            <param name="message">The message describing the exception.</param>
+            <param name="innerException">The exception that caused this exception.</param>
+        </member>
+        <member name="M:SlimDX.DXGI.DXGIException.#ctor(System.String)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DXGI.DXGIException" /> class.
+</summary>
+            <param name="message">The message describing the exception.</param>
+        </member>
+        <member name="M:SlimDX.DXGI.DXGIException.#ctor">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DXGI.DXGIException" /> class.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.DXGIException">
+            <summary>
+Represents errors that occur in the DXGI subsystem.
+</summary>
+        </member>
         <member name="T:SlimDX.Direct3D9.FragmentLinker">
             <summary>Used to link shader fragments at runtime.</summary>
             <unmanaged>ID3DXFragmentLinker</unmanaged>
@@ -7077,6 +7339,15 @@ Describes instance data for a single sprite rendered by the
 Used to control animation functionality, connecting animation sets with the transformation frames that are being animated.
 </summary>
             <unmanaged>ID3DXAnimationController</unmanaged>
+        </member>
+        <member name="T:SlimDX.Direct3D9.SkinInfo">
+            <summary>Applications use the methods of the SkinInfo class to manipulate bone matrices,
+which are used to skin vertex data for animation.</summary>
+            <unmanaged>ID3DXSkinInfo</unmanaged>
+        </member>
+        <member name="T:SlimDX.Direct3D9.BoneCombination">
+            <summary>Describes a subset of the mesh that has the same attribute and bone combination.</summary>
+            <unmanaged>D3DXBONECOMBINATION</unmanaged>
         </member>
         <member name="M:SlimDX.BoundingSphere.Equals(SlimDX.BoundingSphere@,SlimDX.BoundingSphere@)">
             <summary>
@@ -7238,6 +7509,122 @@ Specifies the center point of the sphere.
 A bounding sphere, specified by a center vector and a radius.
 </summary>
         </member>
+        <member name="M:SlimDX.DXGI.ModeDescription.#ctor(System.Int32,System.Int32,SlimDX.Rational,SlimDX.DXGI.Format)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DXGI.ModeDescription" /> structure.
+</summary>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+            <param name="refreshRate">The refresh rate.</param>
+            <param name="format">The format.</param>
+        </member>
+        <member name="P:SlimDX.DXGI.ModeDescription.Scaling">
+            <summary>
+Gets or sets the display mode scaling.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.ModeDescription.ScanlineOrdering">
+            <summary>
+Gets or sets the scanline ordering.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.ModeDescription.Format">
+            <summary>
+Gets or sets the display mode format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.ModeDescription.RefreshRate">
+            <summary>
+Gets or sets the display mode refresh rate.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.ModeDescription.Height">
+            <summary>
+Gets or sets the display mode height.
+</summary>
+        </member>
+        <member name="P:SlimDX.DXGI.ModeDescription.Width">
+            <summary>
+Gets or sets the display mode width.
+</summary>
+        </member>
+        <member name="T:SlimDX.DXGI.ModeDescription">
+            <summary>
+Describes a display mode.
+</summary>
+        </member>
+        <member name="M:SlimDX.Rational.Equals(SlimDX.Rational@,SlimDX.Rational@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1" />
+            <param name="value2" />
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Rational.Equals(SlimDX.Rational)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Rational.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Rational.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.Rational.op_Inequality(SlimDX.Rational,SlimDX.Rational)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Rational.op_Equality(SlimDX.Rational,SlimDX.Rational)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Rational.#ctor(System.Int32,System.Int32)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Rational" /> structure.
+</summary>
+            <param name="numerator">The numerator of the rational pair.</param>
+            <param name="denominator">The denominator of the rational pair.</param>
+        </member>
+        <member name="P:SlimDX.Rational.Denominator">
+            <summary>
+Gets or sets the denominator of the rational pair.
+</summary>
+        </member>
+        <member name="P:SlimDX.Rational.Numerator">
+            <summary>
+Gets or sets the numerator of the rational pair.
+</summary>
+        </member>
+        <member name="T:SlimDX.Rational">
+            <summary>
+Defines a rational number as a numerator / denominator pair.
+</summary>
+        </member>
         <member name="M:SlimDX.Direct3D9.PatchInfo.Equals(SlimDX.Direct3D9.PatchInfo@,SlimDX.Direct3D9.PatchInfo@)">
             <summary>
 Determines whether the specified object instances are considered equal. 
@@ -7360,384 +7747,6 @@ Tests for equality between two objects.
         <member name="T:SlimDX.Direct3D9.MatrixStack">
             <summary>Applications use the methods of the MatrixStack class to manipulate a matrix stack.</summary>
             <unmanaged>ID3DXMatrixStack</unmanaged>
-        </member>
-        <member name="M:SlimDX.DXGI.Surface.Unmap">
-            <summary>
-Relinquishes access to the surface data.
-</summary>
-            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Surface.Map(SlimDX.DXGI.MapFlags)">
-            <summary>
-Acquires access to the surface data.
-</summary>
-            <param name="flags">Flags specifying CPU access permissions.</param>
-            <returns>A <see cref="T:SlimDX.DataRectangle" /> for accessing the mapped data, or <c>null</c> on failure.</returns>.
-</member>
-        <member name="M:SlimDX.DXGI.Surface.FromPointer(System.IntPtr)">
-            <summary>
-Constructs a new instance of the <see cref="T:SlimDX.DXGI.Surface" /> class using the specified pointer to a
-previously constructed unmanaged object.
-</summary>
-            <param name="pointer">The unmanaged IDXGISurface pointer.</param>
-            <returns>The newly constructed object.</returns>
-        </member>
-        <member name="P:SlimDX.DXGI.Surface.Description">
-            <summary>
-Gets the surface's description.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.Surface">
-            <summary>
-A <see cref="T:SlimDX.DXGI.Surface" /> implements methods for image-data objects.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.DeviceChild.Device">
-            <summary>
-Gets the device the object is bound to.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.DeviceChild">
-            <summary>
-An object that is bound to a Device.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.OutputDescription.MonitorHandle">
-            <summary>
-Gets the unmanaged HMONITOR handle for the output.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.OutputDescription.Rotation">
-            <summary>
-Gets rotation performed by the output on a presented image.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.OutputDescription.IsAttachedToDesktop">
-            <summary>
-Gets a value indicating whether the output is attached to the desktop.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.OutputDescription.DesktopBounds">
-            <summary>
-Gets output's bounds in desktop coordinates.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.OutputDescription.Name">
-            <summary>
-Gets the output's name.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.OutputDescription">
-            <summary>
-Describes various properties of an Output.
-</summary>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.WaitForVerticalBlank">
-            <summary>
-Halts the current thread until a vertical blank occurs.
-</summary>
-            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.ReleaseOwnership">
-            <summary>
-Releases ownership of an output.
-</summary>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.TakeOwnership(SlimDX.ComObject,System.Boolean)">
-            <summary>
-Takes ownership of an output.
-</summary>
-            <param name="device">The device interface.</param>
-            <param name="exclusive">If true, ownership is exclusive.</param>
-            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.CopyDisplaySurfaceTo(SlimDX.DXGI.Surface)">
-            <summary>
-Copies the display surface content to the specified destination surface.
-</summary>
-            <param name="surface">The destination surface.</param>
-            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.SetDisplaySurface(SlimDX.DXGI.Surface)">
-            <summary>
-Changes the current display surface to the specified surface.
-</summary>
-            <param name="surface">The new display surface.</param>
-            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.SetGammaControl(SlimDX.DXGI.GammaControl)">
-            <summary>
-Sets gamma control information.
-</summary>
-            <param name="control">The gamma control information.</param>
-            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.GetClosestMatchingMode(SlimDX.ComObject,SlimDX.DXGI.ModeDescription,SlimDX.DXGI.ModeDescription@)">
-            <summary>
-Gets the display mode that best matches the requested mode.
-</summary>
-            <param name="device">The device interface. If this parameter is null, only
-modes whose format matches the specified mode will be returned; otherwise, only those
-formats that are supported for scan-out by the device are returned.</param>
-            <param name="modeToMatch">The description of the display mode to match.</param>
-            <param name="result">Receives the best-matching display mode.</param>
-            <returns>A <see cref="T:SlimDX.Result" /> object describing the result of the operation.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.GetDisplayModeList(SlimDX.DXGI.Format,SlimDX.DXGI.DisplayModeEnumerationFlags)">
-            <summary>
-Gets a list of display modes matching certain specifications.
-</summary>
-            <param name="format">The display mode color format.</param>
-            <param name="flags">Flags indicating how the display mode scanline order and scaling.</param>
-            <returns>A list of matching display mode descriptions. The list is null if an error occured.</returns>
-        </member>
-        <member name="M:SlimDX.DXGI.Output.FromPointer(System.IntPtr)">
-            <summary>
-Constructs a new instance of the <see cref="T:SlimDX.DXGI.Output" /> class using the specified pointer to a
-previously constructed unmanaged object.
-</summary>
-            <param name="pointer">The unmanaged IDXGIOutput pointer.</param>
-            <returns>The newly constructed object.</returns>
-        </member>
-        <member name="P:SlimDX.DXGI.Output.GammaControlCapabilities">
-            <summary>
-Gets a description of the output's gamma-control capabilities.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.Output.FrameStatistics">
-            <summary>
-Gets statistics about recent frames.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.Output.Description">
-            <summary>
-Gets the output's description.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.Output">
-            <summary>
-Represents the output of an adapter (such as a monitor).
-</summary>
-        </member>
-        <member name="M:SlimDX.DXGI.ModeDescription.#ctor(System.Int32,System.Int32,SlimDX.Rational,SlimDX.DXGI.Format)">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.DXGI.ModeDescription" /> structure.
-</summary>
-            <param name="width">The width.</param>
-            <param name="height">The height.</param>
-            <param name="refreshRate">The refresh rate.</param>
-            <param name="format">The format.</param>
-        </member>
-        <member name="P:SlimDX.DXGI.ModeDescription.Scaling">
-            <summary>
-Gets or sets the display mode scaling.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.ModeDescription.ScanlineOrdering">
-            <summary>
-Gets or sets the scanline ordering.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.ModeDescription.Format">
-            <summary>
-Gets or sets the display mode format.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.ModeDescription.RefreshRate">
-            <summary>
-Gets or sets the display mode refresh rate.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.ModeDescription.Height">
-            <summary>
-Gets or sets the display mode height.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.ModeDescription.Width">
-            <summary>
-Gets or sets the display mode width.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.ModeDescription">
-            <summary>
-Describes a display mode.
-</summary>
-        </member>
-        <member name="M:SlimDX.Rational.Equals(SlimDX.Rational@,SlimDX.Rational@)">
-            <summary>
-Determines whether the specified object instances are considered equal. 
-</summary>
-            <param name="value1" />
-            <param name="value2" />
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Rational.Equals(SlimDX.Rational)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
-</summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.Rational.Equals(System.Object)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
-</summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.Rational.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.Rational.op_Inequality(SlimDX.Rational,SlimDX.Rational)">
-            <summary>
-Tests for inequality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Rational.op_Equality(SlimDX.Rational,SlimDX.Rational)">
-            <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Rational.#ctor(System.Int32,System.Int32)">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Rational" /> structure.
-</summary>
-            <param name="numerator">The numerator of the rational pair.</param>
-            <param name="denominator">The denominator of the rational pair.</param>
-        </member>
-        <member name="P:SlimDX.Rational.Denominator">
-            <summary>
-Gets or sets the denominator of the rational pair.
-</summary>
-        </member>
-        <member name="P:SlimDX.Rational.Numerator">
-            <summary>
-Gets or sets the numerator of the rational pair.
-</summary>
-        </member>
-        <member name="T:SlimDX.Rational">
-            <summary>
-Defines a rational number as a numerator / denominator pair.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControlCapabilities.ControlPoints">
-            <summary>
-Gets the list of curve control point positions.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControlCapabilities.MinimumConvertedValue">
-            <summary>
-Gets a value indicating the minimum range of the curve control point positions.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControlCapabilities.MaximumConvertedValue">
-            <summary>
-Gets a value indicating the maximum range of the curve control point positions.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControlCapabilities.IsScaleAndOffsetSupported">
-            <summary>
-Gets a value indicating whether gamma scale and offset transformation is supported.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.GammaControlCapabilities">
-            <summary>
-Describes gamma control capabilities.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControl.ControlPoints">
-            <summary>
-Gets the list of RGB control points defining the gamma curve.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControl.Offset">
-            <summary>
-Gets or sets an offset applied to gamma RGB values.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.GammaControl.Scale">
-            <summary>
-Gets or sets a scaling factor applied to gamma RGB values.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.GammaControl">
-            <summary>
-Describes gamma control settings.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.FrameStatistics.SyncGPUTime">
-            <summary>
-Reserved. Always returns 0.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.FrameStatistics.SyncQPCTime">
-            <summary>
-Gets a value equivalent to that returned by the unmanaged function QueryPerformanceCounter.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.FrameStatistics.SyncRefreshCount">
-            <summary>
-Gets the number of times a vertical blank has occured.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.FrameStatistics.PresentRefreshCount">
-            <summary>
-Gets the number of times a vertical blank has occured.
-</summary>
-        </member>
-        <member name="P:SlimDX.DXGI.FrameStatistics.PresentCount">
-            <summary>
-Gets the number of times an image has been presented to an output.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.FrameStatistics">
-            <summary>
-Provides basic rendering statistics. All counts are relative to machine boot. 
-</summary>
-        </member>
-        <member name="M:SlimDX.DXGI.DXGIException.#ctor(SlimDX.Result)">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.DXGI.DXGIException" /> class.
-</summary>
-            <param name="result">The result code that caused this exception.</param>
-        </member>
-        <member name="M:SlimDX.DXGI.DXGIException.#ctor(System.String,System.Exception)">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.DXGI.DXGIException" /> class.
-</summary>
-            <param name="message">The message describing the exception.</param>
-            <param name="innerException">The exception that caused this exception.</param>
-        </member>
-        <member name="M:SlimDX.DXGI.DXGIException.#ctor(System.String)">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.DXGI.DXGIException" /> class.
-</summary>
-            <param name="message">The message describing the exception.</param>
-        </member>
-        <member name="M:SlimDX.DXGI.DXGIException.#ctor">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.DXGI.DXGIException" /> class.
-</summary>
-        </member>
-        <member name="T:SlimDX.DXGI.DXGIException">
-            <summary>
-Represents errors that occur in the DXGI subsystem.
-</summary>
         </member>
         <member name="F:SlimDX.DirectInput.DeviceSubtype.JapaneseJ3100Keyboard">
             <summary>
@@ -11088,15 +11097,6 @@ Constructs a DeviceChild object from a marshalled native pointer.
             <summary>
 An object that is bound to a Device.
 </summary>
-        </member>
-        <member name="T:SlimDX.Direct3D9.SkinInfo">
-            <summary>Applications use the methods of the SkinInfo class to manipulate bone matrices,
-which are used to skin vertex data for animation.</summary>
-            <unmanaged>ID3DXSkinInfo</unmanaged>
-        </member>
-        <member name="T:SlimDX.Direct3D9.BoneCombination">
-            <summary>Describes a subset of the mesh that has the same attribute and bone combination.</summary>
-            <unmanaged>D3DXBONECOMBINATION</unmanaged>
         </member>
         <member name="T:SlimDX.Direct3D9.GlyphMetricsFloat">
             <summary>Contains information about the placement and orientation of a glyph in a character cell.</summary>
@@ -15659,12 +15659,6 @@ previously constructed unmanaged object.
 </summary>
             <param name="pointer">The unmanaged ID3DXBuffer pointer.</param>
             <returns>The newly constructed object.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D9.ShaderBytecode.#ctor(System.Byte[])">
-            <summary>
-Constructs a new instance of the <see cref="T:SlimDX.Direct3D9.ShaderBytecode" />.
-</summary>
-            <param name="data">Data used to initialize the byte code structure.</param>
         </member>
         <member name="M:SlimDX.Direct3D9.ShaderBytecode.Dispose">
             <summary>

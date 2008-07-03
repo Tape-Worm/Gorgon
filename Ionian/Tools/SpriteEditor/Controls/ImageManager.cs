@@ -498,8 +498,8 @@ namespace GorgonLibrary.Graphics.Tools.Controls
                         // Reassociate with the sprites.
                         foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
                         {
-                            if (string.Compare(sprite.Sprite.Image.Name, editImage.Name) == 0)
-                                sprite.Sprite.Image = editImage;
+							if (string.Compare(sprite.Sprite.Image.Name, editImage.Name) == 0)
+								sprite.BoundImage = editImage;
                         }
                     }
 				}
@@ -695,6 +695,13 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 						// Re-load the image.
 						image.Dispose();
 						image = Image.FromFile(image.Filename);
+
+						// Reassociate with the sprites.
+						foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
+						{
+							if (string.Compare(sprite.Sprite.Image.Name, image.Name) == 0)
+								sprite.BoundImage = image;
+						}
 					}
 					else
 						UI.ErrorBox(MainForm, "The image '" + item.Name + "' does not exist.");
