@@ -53,7 +53,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return whether this shader is a binary (no source code) shader.
 		/// </summary>
-		public bool IsBinary
+		public virtual bool IsBinary
 		{
 			get;
 			protected set;
@@ -73,7 +73,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the source code for this shader.
 		/// </summary>
-		public string ShaderSource
+		public virtual string ShaderSource
 		{
 			get;
 			set;
