@@ -84,6 +84,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GorgonSettings.xsd</DependentUpon>
     </Compile>
+    <Compile Include="GUI\GUIButton.cs" />
     <Compile Include="GUI\GUIDesktop.cs" />
     <Compile Include="GUI\GUIElement.cs" />
     <Compile Include="GUI\GUIElementCollection.cs" />

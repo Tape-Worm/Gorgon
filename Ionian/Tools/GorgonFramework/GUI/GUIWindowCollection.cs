@@ -64,6 +64,14 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
+		/// Function to clear the collection.
+		/// </summary>
+		internal void Clear()
+		{
+			ClearItems();
+		}
+
+		/// <summary>
 		/// Function to add a panel to the collection.
 		/// </summary>
 		/// <param name="panel">Panel to add.</param>

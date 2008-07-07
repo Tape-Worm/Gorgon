@@ -103,8 +103,24 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-July 3/2008 - Version - Current
+July 6/2008 - Version - Current
 ================================
++ Added a background color command to the sprite clipper in the sprite editor
+  application.  This will allow the user to mask the sprite image against a color
+  if the default pattern makes it too difficult to see the sprites on the image.
+  
++ Added a zoom window size value to the sprite clipper in the sprite editor.  This
+  will allow the user to adjust the size of the zoomer window (note, this means the
+  physical size of the zoom window, not the scale, the mouse wheel controls
+  that).
+  
++ Added a DualShader class to bind a Vertex and Pixel shader to the renderer at the
+  same time.  This is necessary for SM 3 systems where it appears that a vertex shader
+  is also required.  This was not the case for SM 2 where the pixel shader could be
+  set without requiring a vertex shader.  The dual shader will use a default vertex
+  and pixel shader when it is created (unless pixel/vertex shaders are passed in via
+  the constructor, or assigned later).
+  
 * Fixed some issues with the sprite editor where animations would be corrupted when
   image bindings were changed.  Also fixed an issue with the Linq queries that
   enumerated render targets.

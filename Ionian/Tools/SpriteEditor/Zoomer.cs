@@ -40,9 +40,36 @@ namespace GorgonLibrary.Graphics.Tools
 		private TextSprite _zoomerCaption = null;				// Zoomer caption.
 		private float _zoomerScale = 1.5f;						// Zoomer scale.
 		private bool _zoomerFollows = true;						// Flag to indicate that the zoomer follows the cursor.
+		private float _zoomerWindowSize = 192.0f;				// Zoomer window size.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the zoomer window size.
+		/// </summary>
+		public float ZoomerWindowSize
+		{
+			get
+			{
+				return _zoomerWindowSize;
+			}
+			set
+			{
+				_zoomerWindowSize = value;
+
+				if (_zoomerWindowSize < 128.0f)
+					_zoomerWindowSize = 128.0f;
+				if (_zoomerWindowSize > 512.0f)
+					_zoomerWindowSize = 512.0f;
+
+				Settings.Root = "Zoomer";
+				Settings.SetSetting("ZoomerWindowSize", _zoomerWindowSize.ToString("0.0"));
+				Settings.Root = null;
+				_zoomerSprite.Width = _zoomerWindowSize;
+				_zoomerSprite.Height = _zoomerWindowSize;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the zoom amount.
 		/// </summary>
@@ -101,6 +128,8 @@ namespace GorgonLibrary.Graphics.Tools
 				_zoomerScale = Convert.ToSingle(Settings.GetSetting("ZoomerScale", "1.5"));
 				_zoomerCaption.Text = "Zoomer - " + _zoomerScale.ToString("0.0") + "x";
 				_zoomerFollows = string.Compare(Settings.GetSetting("ZoomerFollowsCursor", "true"), "true", true) == 0;
+				_zoomerWindowSize = Convert.ToSingle(Settings.GetSetting("ZoomerWindowSize", "192.0"));
+				Settings.Root = null;
 			}
 			catch (Exception ex)
 			{
@@ -132,12 +161,12 @@ namespace GorgonLibrary.Graphics.Tools
 				newPosition = _zoomerSprite.Position;
 
 				// Perform scaling.
-				scale.X = 192.0f / _zoomerScale;
-				scale.Y = 192.0f / _zoomerScale;
+				scale.X = ZoomerWindowSize / _zoomerScale;
+				scale.Y = ZoomerWindowSize / _zoomerScale;
 
 				// Update the zoomer sprite.
 				_zoomerSprite.ImageRegion = new Drawing.RectangleF(cursorPosition.X - (scale.X / 2.0f), cursorPosition.Y - (scale.Y / 2.0f), scale.X, scale.Y);
-				_zoomerSprite.UniformScale = 192.0f / _zoomerSprite.Width;
+				_zoomerSprite.UniformScale = ZoomerWindowSize / _zoomerSprite.Width;
 
 				if (!_zoomerFollows)
 				{
@@ -200,7 +229,7 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(_owner, "Error drawing the zoom window.", ex);
+				throw ex;
 			}
 		}
 		#endregion
@@ -221,8 +250,8 @@ namespace GorgonLibrary.Graphics.Tools
 			_zoomerSprite.BlendingMode = BlendingModes.None;
 			_zoomerSprite.WrapMode = ImageAddressing.Border;
 			_zoomerSprite.Smoothing = Smoothing.None;
-			_zoomerSprite.Width = 192.0f;
-			_zoomerSprite.Height = 192.0f;
+			_zoomerSprite.Width = ZoomerWindowSize;
+			_zoomerSprite.Height = ZoomerWindowSize;
 
 			// Create zoomer window caption.
 			_zoomerCaption = new TextSprite("ZoomerCaption", "Zoomer - " + _zoomerScale.ToString("0.0") + "x", formMain.MainFont);

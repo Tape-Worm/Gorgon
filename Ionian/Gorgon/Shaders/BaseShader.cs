@@ -218,8 +218,6 @@ namespace GorgonLibrary.Graphics
 			{
 				handle = _function.ByteCode.ConstantTable.GetConstant(null, i);
 
-				string[] mySamplers = _function.ByteCode.GetSamplers();
-
 				if (handle != null)
 				{
 					desc = _function.ByteCode.ConstantTable.GetConstantDescription(handle);
@@ -765,9 +763,15 @@ namespace GorgonLibrary.Graphics
 
 				compiler = new D3D9.EffectCompiler(ShaderSource, null, null, d3dflags, out errors);
 				functionHandle = compiler.GetFunction(functionName);
-				_function = new ShaderFunction(functionName, this, compiler.CompileShader(functionHandle, ShaderProfile(target), d3dflags), ShaderProfile(target));
+				if (functionHandle == null)
+					throw new ShaderCompilerErrorException(Name, "The function '" + functionName + "' was not found.");
+				_function = new ShaderFunction(functionName, this, compiler.CompileShader(functionHandle, ShaderProfile(target), d3dflags, out errors), ShaderProfile(target));
 				CreateShader();
 				GetParameters();
+			}
+			catch (ShaderCompilerErrorException scEx)
+			{
+				throw scEx;
 			}
 			catch (Exception ex)
 			{

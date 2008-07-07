@@ -110,6 +110,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.textFixedHeight = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonFollowCursor = new System.Windows.Forms.ToolStripButton();
+			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+			this.textWindowSize = new System.Windows.Forms.ToolStripTextBox();
+			this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonBackgroundColor = new System.Windows.Forms.ToolStripButton();
 			this.dialogOpen = new System.Windows.Forms.OpenFileDialog();
 			this.dialogSave = new System.Windows.Forms.SaveFileDialog();
 			this.containerMain.BottomToolStripPanel.SuspendLayout();
@@ -140,7 +145,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.containerMain.ContentPanel.Controls.Add(this.splitImageManager);
 			this.containerMain.ContentPanel.Controls.Add(this.panelImageManager);
 			this.containerMain.ContentPanel.Margin = new System.Windows.Forms.Padding(4);
-			this.containerMain.ContentPanel.Size = new System.Drawing.Size(843, 510);
+			this.containerMain.ContentPanel.Size = new System.Drawing.Size(843, 485);
 			this.containerMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerMain.LeftToolStripPanelVisible = false;
 			this.containerMain.Location = new System.Drawing.Point(0, 0);
@@ -215,13 +220,13 @@ namespace GorgonLibrary.Graphics.Tools
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelMain.Location = new System.Drawing.Point(169, 0);
 			this.panelMain.Name = "panelMain";
-			this.panelMain.Size = new System.Drawing.Size(500, 368);
+			this.panelMain.Size = new System.Drawing.Size(500, 343);
 			this.panelMain.TabIndex = 19;
 			// 
 			// scrollHorizontal
 			// 
 			this.scrollHorizontal.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.scrollHorizontal.Location = new System.Drawing.Point(0, 351);
+			this.scrollHorizontal.Location = new System.Drawing.Point(0, 326);
 			this.scrollHorizontal.Name = "scrollHorizontal";
 			this.scrollHorizontal.Size = new System.Drawing.Size(484, 17);
 			this.scrollHorizontal.TabIndex = 19;
@@ -234,7 +239,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.panelGorgon.Location = new System.Drawing.Point(0, 0);
 			this.panelGorgon.Margin = new System.Windows.Forms.Padding(4);
 			this.panelGorgon.Name = "panelGorgon";
-			this.panelGorgon.Size = new System.Drawing.Size(484, 368);
+			this.panelGorgon.Size = new System.Drawing.Size(484, 343);
 			this.panelGorgon.TabIndex = 18;
 			this.panelGorgon.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelGorgon_MouseMove);
 			this.panelGorgon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelGorgon_MouseDown);
@@ -247,7 +252,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.panelVScroll.Location = new System.Drawing.Point(484, 0);
 			this.panelVScroll.Margin = new System.Windows.Forms.Padding(0);
 			this.panelVScroll.Name = "panelVScroll";
-			this.panelVScroll.Size = new System.Drawing.Size(16, 368);
+			this.panelVScroll.Size = new System.Drawing.Size(16, 343);
 			this.panelVScroll.TabIndex = 20;
 			this.panelVScroll.Visible = false;
 			// 
@@ -258,13 +263,13 @@ namespace GorgonLibrary.Graphics.Tools
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.scrollVertical.Location = new System.Drawing.Point(0, 0);
 			this.scrollVertical.Name = "scrollVertical";
-			this.scrollVertical.Size = new System.Drawing.Size(16, 351);
+			this.scrollVertical.Size = new System.Drawing.Size(16, 326);
 			this.scrollVertical.TabIndex = 18;
 			// 
 			// splitRenderTargetManager
 			// 
 			this.splitRenderTargetManager.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.splitRenderTargetManager.Location = new System.Drawing.Point(169, 368);
+			this.splitRenderTargetManager.Location = new System.Drawing.Point(169, 343);
 			this.splitRenderTargetManager.Name = "splitRenderTargetManager";
 			this.splitRenderTargetManager.Size = new System.Drawing.Size(500, 4);
 			this.splitRenderTargetManager.TabIndex = 20;
@@ -275,7 +280,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// panelRenderTargetManager
 			// 
 			this.panelRenderTargetManager.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelRenderTargetManager.Location = new System.Drawing.Point(169, 372);
+			this.panelRenderTargetManager.Location = new System.Drawing.Point(169, 347);
 			this.panelRenderTargetManager.Name = "panelRenderTargetManager";
 			this.panelRenderTargetManager.Size = new System.Drawing.Size(500, 138);
 			this.panelRenderTargetManager.TabIndex = 21;
@@ -288,7 +293,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.splitSpriteManager.MinExtra = 160;
 			this.splitSpriteManager.MinSize = 120;
 			this.splitSpriteManager.Name = "splitSpriteManager";
-			this.splitSpriteManager.Size = new System.Drawing.Size(5, 510);
+			this.splitSpriteManager.Size = new System.Drawing.Size(5, 485);
 			this.splitSpriteManager.TabIndex = 7;
 			this.splitSpriteManager.TabStop = false;
 			this.splitSpriteManager.SplitterMoving += new System.Windows.Forms.SplitterEventHandler(this.splitSpriteManager_SplitterMoving);
@@ -300,14 +305,14 @@ namespace GorgonLibrary.Graphics.Tools
 			this.panelSpriteManager.Location = new System.Drawing.Point(674, 0);
 			this.panelSpriteManager.Margin = new System.Windows.Forms.Padding(4);
 			this.panelSpriteManager.Name = "panelSpriteManager";
-			this.panelSpriteManager.Size = new System.Drawing.Size(169, 510);
+			this.panelSpriteManager.Size = new System.Drawing.Size(169, 485);
 			this.panelSpriteManager.TabIndex = 8;
 			// 
 			// splitImageManager
 			// 
 			this.splitImageManager.Location = new System.Drawing.Point(165, 0);
 			this.splitImageManager.Name = "splitImageManager";
-			this.splitImageManager.Size = new System.Drawing.Size(4, 510);
+			this.splitImageManager.Size = new System.Drawing.Size(4, 485);
 			this.splitImageManager.TabIndex = 18;
 			this.splitImageManager.TabStop = false;
 			this.splitImageManager.SplitterMoving += new System.Windows.Forms.SplitterEventHandler(this.splitImageManager_SplitterMoving);
@@ -319,7 +324,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.panelImageManager.Location = new System.Drawing.Point(0, 0);
 			this.panelImageManager.Margin = new System.Windows.Forms.Padding(4);
 			this.panelImageManager.Name = "panelImageManager";
-			this.panelImageManager.Size = new System.Drawing.Size(165, 510);
+			this.panelImageManager.Size = new System.Drawing.Size(165, 485);
 			this.panelImageManager.TabIndex = 8;
 			// 
 			// menuMain
@@ -518,10 +523,15 @@ namespace GorgonLibrary.Graphics.Tools
             this.toolStripLabel1,
             this.textFixedHeight,
             this.toolStripSeparator3,
-            this.buttonFollowCursor});
+            this.buttonFollowCursor,
+            this.toolStripLabel2,
+            this.textWindowSize,
+            this.toolStripLabel3,
+            this.toolStripSeparator6,
+            this.buttonBackgroundColor});
 			this.stripSpriteClip.Location = new System.Drawing.Point(0, 24);
 			this.stripSpriteClip.Name = "stripSpriteClip";
-			this.stripSpriteClip.Size = new System.Drawing.Size(233, 25);
+			this.stripSpriteClip.Size = new System.Drawing.Size(843, 25);
 			this.stripSpriteClip.Stretch = true;
 			this.stripSpriteClip.TabIndex = 1;
 			this.stripSpriteClip.Visible = false;
@@ -597,6 +607,42 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonFollowCursor.Size = new System.Drawing.Size(23, 22);
 			this.buttonFollowCursor.Text = "Follow cursor";
 			this.buttonFollowCursor.Click += new System.EventHandler(this.buttonFollowCursor_Click);
+			// 
+			// toolStripLabel2
+			// 
+			this.toolStripLabel2.Name = "toolStripLabel2";
+			this.toolStripLabel2.Size = new System.Drawing.Size(77, 22);
+			this.toolStripLabel2.Text = "Window Size:";
+			// 
+			// textWindowSize
+			// 
+			this.textWindowSize.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.textWindowSize.Name = "textWindowSize";
+			this.textWindowSize.Size = new System.Drawing.Size(50, 25);
+			this.textWindowSize.Leave += new System.EventHandler(this.textWindowSize_Leave);
+			this.textWindowSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textWindowSize_KeyDown);
+			this.textWindowSize.Validating += new System.ComponentModel.CancelEventHandler(this.textWindowSize_Validating);
+			// 
+			// toolStripLabel3
+			// 
+			this.toolStripLabel3.Name = "toolStripLabel3";
+			this.toolStripLabel3.Size = new System.Drawing.Size(36, 22);
+			this.toolStripLabel3.Text = "pixels";
+			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonBackgroundColor
+			// 
+			this.buttonBackgroundColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonBackgroundColor.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.Color;
+			this.buttonBackgroundColor.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonBackgroundColor.Name = "buttonBackgroundColor";
+			this.buttonBackgroundColor.Size = new System.Drawing.Size(23, 22);
+			this.buttonBackgroundColor.Text = "Background color";
+			this.buttonBackgroundColor.Click += new System.EventHandler(this.buttonBackgroundColor_Click);
 			// 
 			// dialogOpen
 			// 
@@ -698,6 +744,11 @@ namespace GorgonLibrary.Graphics.Tools
 		private System.Windows.Forms.ToolStripMenuItem menuItemPrefs;
 		private System.Windows.Forms.ToolStripMenuItem menuItemHelp;
 		private System.Windows.Forms.ToolStripMenuItem menuItemAbout;
+		private System.Windows.Forms.ToolStripButton buttonBackgroundColor;
+		private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+		private System.Windows.Forms.ToolStripTextBox textWindowSize;
+		private System.Windows.Forms.ToolStripLabel toolStripLabel3;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 	}
 }
 

@@ -38,7 +38,6 @@ namespace GorgonLibrary.GUI
 	{
 		#region Variables.
 		private GUIObjectCollection _guiObjects = null;					// List of objects contained in the window.		
-		private Font _windowFont = null;								// Font for the window.
 		private bool _disposed = false;									// Flag to indicate that the object is disposed.
 		private TextSprite _captionTextLabel = null;					// Caption text.
 		private bool _dragging = false;									// Flag to indicate that we're dragging.
@@ -49,20 +48,6 @@ namespace GorgonLibrary.GUI
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the current GUI skin.
-		/// </summary>
-		private GUISkin Skin
-		{
-			get
-			{
-				if (Desktop != null)
-					return Desktop.Skin;
-				else
-					return null;
-			}
-		}
-
 		/// <summary>
 		/// Property to determine if the mouse is over the caption.
 		/// </summary>
@@ -127,13 +112,13 @@ namespace GorgonLibrary.GUI
 			get
 			{
 				if (Skin == null)
-					return _windowFont.LineHeight + 4;
+					return Font.LineHeight + 4;
 				else
 				{
 					if (HasCaption)
 					{
-						if ((_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height) > 2)
-							return (Skin.Elements["Window.Caption"].Dimensions.Height) + (_windowFont.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height);
+						if ((Font.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height) > 2)
+							return (Skin.Elements["Window.Caption"].Dimensions.Height) + (Font.LineHeight - Skin.Elements["Window.Caption"].Dimensions.Height);
 						else
 							return Skin.Elements["Window.Caption"].Dimensions.Height;
 					}
@@ -188,44 +173,6 @@ namespace GorgonLibrary.GUI
 				_captionTextLabel.Text = value;
 			}
 		}
-
-		/// <summary>
-		/// Property to set or return the font for the window.
-		/// </summary>
-		public Font Font
-		{
-			get
-			{
-				return _windowFont;
-			}
-			set
-			{
-				if (_windowFont != null)
-					_windowFont.Dispose();
-
-				if (value == null)
-					_windowFont = new Font(Name + ".WindowFont." + Guid.NewGuid().ToString(), "Arial", 9.0f, true, true, false, false);
-				else
-				{
-					_windowFont = new Font(Name + ".WindowFont." + Guid.NewGuid().ToString(), value.FamilyName, value.FontSize, value.AntiAlias, value.Bold, value.Underline, value.Italic);
-					_windowFont.BaseColor = value.BaseColor;
-					_windowFont.CharacterList = value.CharacterList;
-					_windowFont.GlyphHeightPadding = value.GlyphHeightPadding;
-					_windowFont.GlyphLeftOffset = value.GlyphLeftOffset;
-					_windowFont.GlyphTopOffset = value.GlyphTopOffset;
-					_windowFont.GlyphWidthPadding = value.GlyphWidthPadding;
-					_windowFont.GradientAngle = value.GradientAngle;
-					_windowFont.GradientColor = value.GradientColor;
-					_windowFont.Italic = value.Italic;
-					_windowFont.MaxFontImageHeight = value.MaxFontImageHeight;
-					_windowFont.MaxFontImageWidth = value.MaxFontImageWidth;
-					_windowFont.OutlineColor = value.OutlineColor;
-					_windowFont.OutlineWidth = value.OutlineWidth;
-					_windowFont.Strikeout = value.Strikeout;
-					_windowFont.UserBrush = value.UserBrush;
-				}
-			}
-		}
 		#endregion
 
 		#region Methods.
@@ -237,22 +184,6 @@ namespace GorgonLibrary.GUI
 		protected internal override void KeyboardEvent(bool isDown, GorgonLibrary.InputDevices.KeyboardInputEventArgs e)
 		{
 			DefaultKeyboardEvent(isDown, e);
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-					_windowFont.Dispose();
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
 		}
 
 		/// <summary>
@@ -331,7 +262,7 @@ namespace GorgonLibrary.GUI
 				// Draw each child.
 				var children = from guiObject in GUIObjects
 							   where guiObject.Visible
-							   orderby guiObject.ZOrder descending
+							   orderby guiObject.ZOrder
 							   select guiObject;
 
 				foreach (GUIObject guiObject in children)
@@ -382,8 +313,8 @@ namespace GorgonLibrary.GUI
 			else
 			{
 				var children = from guiObject in GUIObjects
-							   where guiObject.Visible
-							   orderby guiObject.ZOrder
+							   where guiObject.Visible && guiObject.Enabled
+							   orderby guiObject.ZOrder descending
 							   select guiObject;
 
 				// Forward any events on to our child objects and terminate event handling if the child has received the event.
@@ -418,8 +349,9 @@ namespace GorgonLibrary.GUI
 			// Draw each child.
 			var children = from guiObject in GUIObjects
 						   where guiObject.Enabled
+						   orderby guiObject.ZOrder
 						   select guiObject;
-
+						
 			foreach (GUIObject guiObject in children)
 				guiObject.Update(frameTime);
 

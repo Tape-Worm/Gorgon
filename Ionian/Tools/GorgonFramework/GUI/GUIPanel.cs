@@ -142,6 +142,7 @@ namespace GorgonLibrary.GUI
 			// Draw each child.
 			var children = from guiObject in GUIObjects
 						   where guiObject.Enabled
+						   orderby guiObject.ZOrder
 						   select guiObject;
 
 			foreach (GUIObject guiObject in children)

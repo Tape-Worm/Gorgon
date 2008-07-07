@@ -118,6 +118,16 @@ namespace GorgonLibrary.GUI
 					}
 				}
 
+				if (elements.ChildPaths.Contains("Controls"))
+				{
+					foreach (FileSystemFile file in elements.ChildPaths["Controls"].Files)
+					{
+						Sprite windowElement = Sprite.FromFileSystem(skinFileSystem, file.FullPath);
+						newElement = new GUIElement("Controls." + file.Filename, windowElement);
+						newSkin.Elements.Add(newElement);
+					}
+				}
+
 				return newSkin;
 			}
 			catch

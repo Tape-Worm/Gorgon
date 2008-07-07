@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Drawing;
+using Drawing = System.Drawing;
 using GorgonLibrary.Internal;
 using GorgonLibrary.InputDevices;
 using GorgonLibrary.Graphics;
@@ -66,18 +66,79 @@ namespace GorgonLibrary.GUI
 		#endregion
 
 		#region Variables.
-		private Rectangle _clientArea = Rectangle.Empty;			// Client area.
-		private Rectangle _windowArea = Rectangle.Empty;			// Window area.
-		private Viewport _clippedView = null;						// Clipping view.
-		private Viewport _previousView = null;						// Previous clipping view.
-		private GUIObject _owner = null;							// Object that will own this object.
-		private Desktop _desktop = null;							// Desktop that owns this object.
-		private bool _disposed = false;								// Flag to indicate that the object is disposed.
-		private bool _enabled = true;								// Flag to incidate that the object is enabled.
-		private bool _visible = false;								// Flag to indicate that the object is visible.
+		private Drawing.Rectangle _clientArea = Drawing.Rectangle.Empty;			// Client area.
+		private Drawing.Rectangle _windowArea = Drawing.Rectangle.Empty;			// Window area.
+		private Viewport _clippedView = null;										// Clipping view.
+		private Viewport _previousView = null;										// Previous clipping view.
+		private GUIObject _owner = null;											// Object that will own this object.
+		private Desktop _desktop = null;											// Desktop that owns this object.
+		private bool _disposed = false;												// Flag to indicate that the object is disposed.
+		private bool _enabled = true;												// Flag to incidate that the object is enabled.
+		private bool _visible = false;												// Flag to indicate that the object is visible.
+		private Font _font = null;													// Font for the object.
+		private int _zorder = -1;													// Z-ordering for the object.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return whether the cursor is on top of us or not.
+		/// </summary>
+		protected internal bool IsCursorOnTop
+		{
+			get
+			{
+				if (_desktop == null)
+					return false;
+
+				return _desktop.ControlUnderCursor() == this;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to suspend Z ordering.
+		/// </summary>
+		internal bool SuspendOrdering
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the current GUI skin.
+		/// </summary>
+		protected GUISkin Skin
+		{
+			get
+			{
+				if (Desktop != null)
+					return Desktop.Skin;
+				else
+					return null;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the font to use with the object.
+		/// </summary>
+		public Font Font
+		{
+			get
+			{
+				return _font;
+			}
+			set
+			{
+				if ((_font != null) && (_font != Desktop.DefaultFont))
+					_font.Dispose();
+				_font = null;
+
+				if (value == null)
+					_font = Desktop.DefaultFont;
+				else
+					_font = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the desktop that this object belongs to.
 		/// </summary>
@@ -94,8 +155,19 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		public int ZOrder
 		{
-			get;
-			set;
+			get
+			{
+				return _zorder;
+			}
+			set
+			{
+				IGUIContainer container = Owner as IGUIContainer;		// Owner container.
+
+				_zorder = value;
+
+				if ((container != null) && (!SuspendOrdering))
+					container.GUIObjects.UpdateZOrder();
+			}
 		}
 
 		/// <summary>
@@ -138,7 +210,7 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Property to set or return the window dimensions.
 		/// </summary>
-		public Rectangle WindowDimensions
+		public Drawing.Rectangle WindowDimensions
 		{
 			get
 			{
@@ -154,7 +226,7 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Property to return the client area of the object.
 		/// </summary>
-		public Rectangle ClientArea
+		public Drawing.Rectangle ClientArea
 		{
 			get
 			{
@@ -165,7 +237,7 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Property to set or return the position of the object.
 		/// </summary>
-		public Point Position
+		public Drawing.Point Position
 		{
 			get
 			{
@@ -180,7 +252,7 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Property to set or return the size of the object.
 		/// </summary>
-		public Size Size
+		public Drawing.Size Size
 		{
 			get
 			{
@@ -229,12 +301,12 @@ namespace GorgonLibrary.GUI
 		}
 		#endregion
 
-		#region Methods.
+		#region Methods.		
 		/// <summary>
 		/// Function to set the active clipping region.
 		/// </summary>
 		/// <param name="clippingArea">Rectangle defining the clipping area.</param>
-		protected void SetClippingRegion(Rectangle clippingArea)
+		protected void SetClippingRegion(Drawing.Rectangle clippingArea)
 		{
 			_previousView = Gorgon.CurrentClippingViewport;
 			_clippedView.Left = clippingArea.Left;
@@ -328,11 +400,11 @@ namespace GorgonLibrary.GUI
 		{
 			MouseInputEventArgs args = null;		// Arguments.
 
-			args = new MouseInputEventArgs(e.Buttons, e.ShiftButtons, ScreenToPoint((Point)e.Position), e.WheelPosition,
+			args = new MouseInputEventArgs(e.Buttons, e.ShiftButtons, ScreenToPoint((Drawing.Point)e.Position), e.WheelPosition,
 															 e.RelativePosition, e.WheelDelta, e.ClickCount);
 
 			// If the mouse event is in the client area, then pass it on.
-			if (this.ClientArea.Contains((Point)args.Position))
+			if ((IsCursorOnTop) && (this.ClientArea.Contains((Drawing.Point)args.Position)))
 			{
 				switch (eventType)
 				{
@@ -371,9 +443,9 @@ namespace GorgonLibrary.GUI
 		/// Function to set the client area for the object.
 		/// </summary>
 		/// <param name="windowArea">Full area of the window.</param>
-		protected virtual void SetClientArea(Rectangle windowArea)
+		protected virtual void SetClientArea(Drawing.Rectangle windowArea)
 		{
-			_clientArea = new Rectangle(0, 0, windowArea.Width, windowArea.Height);
+			_clientArea = new Drawing.Rectangle(0, 0, windowArea.Width, windowArea.Height);
 		}
 
 		/// <summary>
@@ -393,21 +465,22 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Function to retrieve the clipping area for the children.
 		/// </summary>
+		/// <param name="clipRect">Rectangle to clip against.</param>
 		/// <returns>A rectangle defining the clipping area for the child controls.</returns>
-		protected Rectangle GetClippingArea()
+		protected Drawing.Rectangle GetClippingArea(Drawing.Rectangle clipRect)
 		{
-			Rectangle screenPoints;			// Screen coordinates.
-			Rectangle ownerPoints;			// Owner clip.
+			Drawing.Rectangle screenPoints;			// Screen coordinates.
+			Drawing.Rectangle ownerPoints;			// Owner clip.
 
-			screenPoints = Rectangle.Empty;
+			screenPoints = Drawing.Rectangle.Empty;
 			if (Owner != null)
 			{
-				screenPoints = Owner.RectToScreen(Owner.ClientArea);
+				screenPoints = Owner.RectToScreen(clipRect);
 				if (Owner.Owner != null)
 				{
 					ownerPoints = Owner.GetClippingArea();
-					if (ownerPoints != Rectangle.Empty)
-						screenPoints = Rectangle.Intersect(screenPoints, ownerPoints);
+					if (ownerPoints != Drawing.Rectangle.Empty)
+						screenPoints = Drawing.Rectangle.Intersect(screenPoints, ownerPoints);
 				}
 			}
 
@@ -415,13 +488,22 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
+		/// Function to retrieve the clipping area for the children.
+		/// </summary>
+		/// <returns>A rectangle defining the clipping area for the child controls.</returns>
+		protected Drawing.Rectangle GetClippingArea()
+		{
+			return GetClippingArea(Owner.ClientArea);
+		}
+
+		/// <summary>
 		/// Function to convert a client rectangle to screen coordinates.
 		/// </summary>
 		/// <param name="clientRect">Client rectangle to convert.</param>
 		/// <returns>The rectangle in screen coordinates.</returns>
-		public Rectangle RectToScreen(Rectangle clientRect)
+		public Drawing.Rectangle RectToScreen(Drawing.Rectangle clientRect)
 		{
-			return new Rectangle(PointToScreen(clientRect.Location), clientRect.Size);
+			return new Drawing.Rectangle(PointToScreen(clientRect.Location), clientRect.Size);
 		}
 
 		/// <summary>
@@ -429,9 +511,9 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		/// <param name="clientPoint">Client point to convert.</param>
 		/// <returns>The screen coordinates of the point.</returns>
-		public virtual Point PointToScreen(Point clientPoint)
+		public virtual Drawing.Point PointToScreen(Drawing.Point clientPoint)
 		{
-			Point currentPosition = clientPoint;		// Client area.
+			Drawing.Point currentPosition = clientPoint;		// Client area.
 
 			if (Owner != null)
 				currentPosition = Owner.PointToScreen(currentPosition);
@@ -447,9 +529,9 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		/// <param name="screenPoint">Screen point to convert.</param>
 		/// <returns>The client coordinates of the point.</returns>
-		public virtual Point ScreenToPoint(Point screenPoint)
+		public virtual Drawing.Point ScreenToPoint(Drawing.Point screenPoint)
 		{
-			Point currentPosition = screenPoint;		// Client area.
+			Drawing.Point currentPosition = screenPoint;		// Client area.
 
 			if (Owner != null)
 				currentPosition = Owner.ScreenToPoint(currentPosition);
@@ -484,6 +566,7 @@ namespace GorgonLibrary.GUI
 		/// <param name="frameTime">Frame delta time.</param>
 		/// <remarks>The frame delta is typically used with animations to help achieve a smooth appearance regardless of processor speed.</remarks>
 		internal abstract void Update(float frameTime);
+
 		/// <summary>
 		/// Function to draw the object.
 		/// </summary>
@@ -505,7 +588,6 @@ namespace GorgonLibrary.GUI
 		protected GUIObject(string name)
 			: base(name)
 		{
-			ZOrder = int.MinValue;
 			_clippedView = new Viewport(1, 1, 1, 1);
 		}
 		#endregion
@@ -533,6 +615,10 @@ namespace GorgonLibrary.GUI
 
 					if (ownerContainer != null)
 						ownerContainer.GUIObjects.Remove(this);
+
+					if ((_font != null) && (_font != Desktop.DefaultFont))
+						_font.Dispose();
+					_font = null;
 				}
 				_disposed = true;
 			}

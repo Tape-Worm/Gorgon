@@ -52,45 +52,46 @@ namespace GorgonLibrary.Graphics.Tools
 		#endregion
 
 		#region Variables.
-		private Input _input = null;							// Input devices.
-		private float _logoOpacity;								// Opacity.
-		private Sprite _gorgonLogo = null;						// Gorgon logo.
-		private bool _showLogo = true;							// Flag to show the logo.
-		private Color _spriteBGColor = Color.DarkBlue;			// Sprite background color.
-		private RenderTargetManager _renderTargetManager = null;// Render target manager control.
-		private Sprite _currentImage = null;					// Current image.
-		private Image _patternImage = null;						// Pattern image.
-		private Sprite _patternSprite = null;					// Pattern sprite.
-		private Vector2D _mousePos = Vector2D.Zero;				// Mouse position.
-		private RenderImage _backBuffer = null;					// Back buffer.
-		private Sprite _backBufferSprite = null;				// Back buffer sprite.
-		private Sprite _tempImageSprite = null;					// Temporary image sprite.
-		private Random _rnd = new Random();						// Random number generator.
-		private bool _spriteManagerVisible;						// Flag to indicate that the sprite manager is visible.
-		private FormWindowState _lastState;						// Last window state.
-		private FormBorderStyle _lastStyle;						// Last window style.
-		private bool _imageManagerVisible;						// Flag to indicate whether the image manager is visible.
-		private bool _targetManagerVisible;						// Flag to indicate whether the target manager is visible.
-		private Viewport _clipView = null;						// Clipping viewport.
-		private bool _constrainX;								// Flag to indicate a horizontal constraint.
-		private bool _constrainY;								// Flag to indicate a vertical constraint.
-		private Clipper _clipper = null;						// Clipper object.
-		private Zoomer _zoomer = null;							// Zoomer object.
-		private DockExtender _docker = null;					// Dock extender host.
-		private string _projectName = string.Empty;				// Project name.
-		private string _projectPath = string.Empty;				// Path to the project.
-		private bool _projectChanged = false;					// Flag to indicate that the project has changes.
-		private SpriteManager _spriteManager = null;			// Sprite manager.
-		private ImageManager _imageManager = null;				// Image manager.
-		private Drawing.Color _axisColor;						// Axis cross color.
-		private static formMain _me = null;						// Form main.
-		private bool _inAxisDrag = false;						// Flag to indicate we're in axis-dragging mode.
-		private Vector2D _dragAxisStart = Vector2D.Zero;		// Axis drag start position.
-		private bool _stopRendering = false;					// Flag to temporarily stop rendering.
-		private static Font _mainfont = null;					// Main font.
-		private bool _showBoundingBox = false;					// Flag to indicate whether to show the bounding box for the sprite.
-		private bool _showBoundingCircle = false;				// Flag to indicate whether to show the bounding circle for the sprite.
-		private Sprite _displaySprite = null;					// Sprite used for display - no animation.
+		private Input _input = null;										// Input devices.
+		private float _logoOpacity;											// Opacity.
+		private Sprite _gorgonLogo = null;									// Gorgon logo.
+		private bool _showLogo = true;										// Flag to show the logo.
+		private Color _spriteBGColor = Color.DarkBlue;						// Sprite background color.
+		private RenderTargetManager _renderTargetManager = null;			// Render target manager control.
+		private Sprite _currentImage = null;								// Current image.
+		private Image _patternImage = null;									// Pattern image.
+		private Sprite _patternSprite = null;								// Pattern sprite.
+		private Vector2D _mousePos = Vector2D.Zero;							// Mouse position.
+		private RenderImage _backBuffer = null;								// Back buffer.
+		private Sprite _backBufferSprite = null;							// Back buffer sprite.
+		private Sprite _tempImageSprite = null;								// Temporary image sprite.
+		private Random _rnd = new Random();									// Random number generator.
+		private bool _spriteManagerVisible;									// Flag to indicate that the sprite manager is visible.
+		private FormWindowState _lastState;									// Last window state.
+		private FormBorderStyle _lastStyle;									// Last window style.
+		private bool _imageManagerVisible;									// Flag to indicate whether the image manager is visible.
+		private bool _targetManagerVisible;									// Flag to indicate whether the target manager is visible.
+		private Viewport _clipView = null;									// Clipping viewport.
+		private bool _constrainX;											// Flag to indicate a horizontal constraint.
+		private bool _constrainY;											// Flag to indicate a vertical constraint.
+		private Clipper _clipper = null;									// Clipper object.
+		private Zoomer _zoomer = null;										// Zoomer object.
+		private DockExtender _docker = null;								// Dock extender host.
+		private string _projectName = string.Empty;							// Project name.
+		private string _projectPath = string.Empty;							// Path to the project.
+		private bool _projectChanged = false;								// Flag to indicate that the project has changes.
+		private SpriteManager _spriteManager = null;						// Sprite manager.
+		private ImageManager _imageManager = null;							// Image manager.
+		private Drawing.Color _axisColor;									// Axis cross color.
+		private static formMain _me = null;									// Form main.
+		private bool _inAxisDrag = false;									// Flag to indicate we're in axis-dragging mode.
+		private Vector2D _dragAxisStart = Vector2D.Zero;					// Axis drag start position.
+		private bool _stopRendering = false;								// Flag to temporarily stop rendering.
+		private static Font _mainfont = null;								// Main font.
+		private bool _showBoundingBox = false;								// Flag to indicate whether to show the bounding box for the sprite.
+		private bool _showBoundingCircle = false;							// Flag to indicate whether to show the bounding circle for the sprite.
+		private Sprite _displaySprite = null;								// Sprite used for display - no animation.
+		private Drawing.Color _clipBGColor = Drawing.Color.Transparent;		// Clipper background color.
 		#endregion
 
 		#region Properties.
@@ -234,6 +235,40 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Click event of the buttonBackgroundColor control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonBackgroundColor_Click(object sender, EventArgs e)
+		{
+			ColorPicker picker = null;
+
+			try
+			{
+				picker = new ColorPicker();
+				picker.Color = _clipBGColor;
+
+				if (picker.ShowDialog(this) == DialogResult.OK)
+				{
+					_clipBGColor = picker.Color;
+					Settings.Root = "Clipping";
+					Settings.SetSetting("ClipperBGColor", _clipBGColor.ToArgb().ToString());
+				}
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(this, "Error setting the background color.", ex);
+			}
+			finally
+			{
+				Settings.Root = null;
+				if (picker != null)
+					picker.Dispose();
+				picker = null;
+			}
+		}
+
+		/// <summary>
 		/// Handles the Click event of the menuItemAbout control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -261,7 +296,7 @@ namespace GorgonLibrary.Graphics.Tools
 		private void Keyboard_KeyDown(object sender, KeyboardInputEventArgs e)
 		{
 			// Do nothing if the fixed textboxes are focused and we're in clip mode.
-			if (((textFixedHeight.Focused) || (textFixedWidth.Focused)) && (_clipper.IsClippingStarted))
+			if (((textFixedHeight.Focused) || (textFixedWidth.Focused) || (textWindowSize.Focused)) && (_clipper.IsClippingStarted))
 				return;
 
 			// Enter keyboard mode.
@@ -356,7 +391,7 @@ namespace GorgonLibrary.Graphics.Tools
 				case KeyboardKeys.Down:
 				case KeyboardKeys.NumPad2:
 					// Holding shift will move by 100 pixels, ctrl will move by 10 pixels.
-					if ((_clipper.KeyboardMode) && (!textFixedHeight.Focused) && (!textFixedWidth.Focused))
+					if ((_clipper.KeyboardMode) && (!textFixedHeight.Focused) && (!textFixedWidth.Focused) && (!textWindowSize.Focused))
 					{
 						if (e.Shift)
 							_mousePos.Y += 100.0f;
@@ -619,13 +654,25 @@ namespace GorgonLibrary.Graphics.Tools
 
 			// Draw pattern.
 			Gorgon.CurrentClippingViewport = _clipView;
-			for (int y = 0; y < _backBuffer.Height; y += (int)_patternSprite.Height)
+			if (_clipBGColor.A < 255)
 			{
-				for (int x = 0; x < _backBuffer.Width; x += (int)_patternSprite.Width)
+				for (int y = 0; y < _backBuffer.Height; y += (int)_patternSprite.Height)
 				{
-					_patternSprite.SetPosition(x, y);
-					_patternSprite.Draw();
+					for (int x = 0; x < _backBuffer.Width; x += (int)_patternSprite.Width)
+					{
+						_patternSprite.SetPosition(x, y);
+						_patternSprite.Draw();
+					}
 				}
+			}
+
+			if (_clipBGColor.A > 0)
+			{
+				Gorgon.CurrentRenderTarget.BeginDrawing();
+				Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
+				Gorgon.CurrentRenderTarget.FilledRectangle(0, 0, Gorgon.CurrentRenderTarget.Width - 1, Gorgon.CurrentRenderTarget.Height - 1, _clipBGColor);
+				Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.None;
+				Gorgon.CurrentRenderTarget.EndDrawing();
 			}
 			Gorgon.CurrentClippingViewport = null;
 		}
@@ -1071,9 +1118,13 @@ namespace GorgonLibrary.Graphics.Tools
 				menuItemTargetManager.Checked = string.Compare(Settings.GetSetting("Visible", "false"), "true", true) == 0;
 				panelRenderTargetManager.Width = Convert.ToInt32(Settings.GetSetting("SplitPosition", splitRenderTargetManager.SplitPosition.ToString()));
 
+				Settings.Root = "Clipping";
+				_clipBGColor = Color.FromArgb(Convert.ToInt32(Settings.GetSetting("ClipperBGColor", "0")));
+
 				Settings.Root = null;
 				_showLogo = (string.Compare(Settings.GetSetting("ShowLogo", "True"), "true", true) == 0);
 				_spriteBGColor = Color.FromArgb(255, Color.FromArgb(Convert.ToInt32(Settings.GetSetting("BGColor", "-16777077"))));
+
 
 				_showBoundingBox = (string.Compare(Settings.GetSetting("ShowBoundingBox", "True"), "true", true) == 0);
 				_showBoundingCircle = (string.Compare(Settings.GetSetting("ShowBoundingCircle", "True"), "true", true) == 0);
@@ -1366,6 +1417,43 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Handles the Validating event of the textWindowSize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.ComponentModel.CancelEventArgs"/> instance containing the event data.</param>
+		private void textWindowSize_Validating(object sender, CancelEventArgs e)
+		{
+			float windowSize = 0.0f;			// Window size.
+
+			windowSize = _zoomer.ZoomerWindowSize;
+
+			if (!Utilities.IsNumeric(textWindowSize.Text))
+				e.Cancel = true;
+			else
+			{
+				float.TryParse(textWindowSize.Text, out windowSize);
+
+				if ((windowSize<128.0f) || (windowSize>512.0f))
+				{
+					e.Cancel = true;
+					return;
+				}
+
+				_zoomer.ZoomerWindowSize = windowSize;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Leave event of the textWindowSize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void textWindowSize_Leave(object sender, EventArgs e)
+		{
+			textWindowSize_Validating(this, new CancelEventArgs());
+		}
+
+		/// <summary>
 		/// Handles the Validating event of the textFixedWidth control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -1436,6 +1524,20 @@ namespace GorgonLibrary.Graphics.Tools
 			if (e.KeyCode == Keys.Enter)
 			{
 				textFixedHeight_Validating(this, new CancelEventArgs());
+				e.Handled = true;
+			}
+		}
+
+		/// <summary>
+		/// Handles the KeyDown event of the textWindowSize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
+		private void textWindowSize_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+			{
+				textWindowSize_Validating(this, new CancelEventArgs());
 				e.Handled = true;
 			}
 		}
@@ -2261,6 +2363,7 @@ namespace GorgonLibrary.Graphics.Tools
 			buttonFixedSize.Checked = _clipper.IsFixedDimensions;
 			textFixedHeight.Text = _clipper.FixedSize.Y.ToString("0.0");
 			textFixedWidth.Text = _clipper.FixedSize.X.ToString("0.0");
+			textWindowSize.Text = _zoomer.ZoomerWindowSize.ToString("0.0");
 
 			// Configure the interface.
 			scrollHorizontal.Value = 0;

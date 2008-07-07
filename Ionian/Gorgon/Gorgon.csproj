@@ -222,6 +222,8 @@
     <Compile Include="Serialization\StreamWriterEx.cs" />
     <Compile Include="Shaders\BaseShader.cs" />
     <Compile Include="Shaders\ConstantShaderParameter.cs" />
+    <Compile Include="Shaders\DefaultPixelShader.cs" />
+    <Compile Include="Shaders\DefaultVertexShader.cs" />
     <Compile Include="Shaders\DualShader.cs" />
     <Compile Include="Shaders\FXShader.cs" />
     <Compile Include="Shaders\FXShaderParameter.cs" />

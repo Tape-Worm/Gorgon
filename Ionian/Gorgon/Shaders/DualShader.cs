@@ -37,6 +37,9 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private PixelShader _pixelShader = null;			// Pixel shader to use.
 		private VertexShader _vertexShader = null;			// Vertex shader to use.
+		private DefaultPixelShader _defaultPS = null;		// Default pixel shader.
+		private DefaultVertexShader _defaultVS = null;		// Default vertex shader.
+		private bool _disposed = false;						// Flag to indicate that we're already disposed.
 		#endregion
 
 		#region Properties.
@@ -62,7 +65,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the source code for this shader.
+		/// Property to return the source code for the shaders.
 		/// </summary>
 		public override string ShaderSource
 		{
@@ -70,21 +73,21 @@ namespace GorgonLibrary.Graphics
 			{
 				StringBuilder result = new StringBuilder();
 
-				if (VertexShader != null)
+				if ((VertexShader != null) && (!VertexShader.IsBinary))
 				{
-					result.Append("// Vertex shader:");
+					result.Append("// Vertex shader:\n");
 					result.Append(VertexShader.ShaderSource);
 				}
 
-				if (PixelShader != null)
+				if ((PixelShader != null) && (!PixelShader.IsBinary))
 				{
 					if (result.Length > 0)
 						result.Append("\n\n");
-					result.Append("// Pixel shader:");
+					result.Append("// Pixel shader:\n");
 					result.Append(PixelShader.ShaderSource);
 				}
 
-				return result;
+				return result.ToString();
 			}
 			set
 			{
@@ -114,6 +117,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the pixel shader to use.
 		/// </summary>
+		/// <remarks>The user should try and ensure the pixel and vertex shaders are the same version, the default shader will automatically 
+		/// default to the highest version supported by DirectX 9 and the video card.  If there's a version mismatch, for example, a vs_2_0 vertex
+		/// shader and a ps_3_0 shader probably won't work as expected.</remarks>
 		public PixelShader PixelShader
 		{
 			get
@@ -133,6 +139,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the vertex shader to use.
 		/// </summary>
+		/// <remarks>The user should try and ensure the pixel and vertex shaders are the same version, the default shader will automatically 
+		/// default to the highest version supported by DirectX 9 and the video card.  If there's a version mismatch, for example, a vs_2_0 vertex
+		/// shader and a ps_3_0 shader probably won't work as expected.</remarks>
 		public VertexShader VertexShader
 		{
 			get
@@ -151,6 +160,29 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (_defaultPS != null)
+						_defaultPS.Dispose();
+					if (_defaultVS != null)
+						_defaultVS.Dispose();
+				}
+				_defaultPS = null;
+				_defaultVS = null;
+				_disposed = true;
+			}
+		}
+
 		/// <summary>
 		/// Function to retrieve the parameters for a shader.
 		/// </summary>
@@ -225,6 +257,16 @@ namespace GorgonLibrary.Graphics
 			if (PixelShader != null)
 				PixelShader.DeviceReset();
 		}
+
+		/// <summary>
+		/// Function to reset this shaders vertex and pixel shaders to the default pixel and vertex shaders.
+		/// </summary>
+		/// <remarks>The default vertex and pixel shaders automatically set their target profiles to the highest supported by the video card and Direct X 9.  Please note that this does NOT mean that it will be set a SM 4.0 profile, that profile is for DirectX 10 and later.</remarks>
+		public void Reset()
+		{
+			PixelShader = _defaultPS;
+			VertexShader = _defaultVS;
+		}
 		#endregion
 
 		#region Constructor.
@@ -238,8 +280,10 @@ namespace GorgonLibrary.Graphics
 		public DualShader(string name, PixelShader pixelShader, VertexShader vertexShader)
 			: base(name)
 		{
-			PixelShader = pixelShader;
-			VertexShader = vertexShader;
+			_defaultPS = new DefaultPixelShader(name + ".Default.PixelShader");
+			_defaultVS = new DefaultVertexShader(name + ".Default.VertexShader");
+			PixelShader = _defaultPS;
+			VertexShader = _defaultVS;
 		}
 
 		/// <summary>

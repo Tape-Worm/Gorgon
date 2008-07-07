@@ -62,13 +62,19 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Function to update the ZOrder of the objects.
 		/// </summary>
-		private void UpdateZOrder()
+		internal void UpdateZOrder()
 		{
-			int zOrder = Count - 1;
-			foreach (GUIObject obj in this)
+			int zOrder = 0;
+			var guiObjects = from obj in this
+							 orderby obj.ZOrder ascending
+							 select obj;
+
+			foreach (GUIObject obj in guiObjects)
 			{
+				obj.SuspendOrdering = true;
 				obj.ZOrder = zOrder;
-				zOrder--;
+				zOrder++;
+				obj.SuspendOrdering = false;
 			}
 		}
 
@@ -82,10 +88,8 @@ namespace GorgonLibrary.GUI
 				throw new ArgumentNullException("guiObject");
 			if (guiObject.Owner != null)
 				throw new ArithmeticException("The GUI object '" + guiObject.Name + "'already has an owner.");
-
 			AddItem(guiObject.Name, guiObject);
-
-			UpdateZOrder();
+			guiObject.ZOrder = (from obj in this where obj != null orderby obj.ZOrder ascending select obj.ZOrder).Max() + 1;
 		}
 
 		/// <summary>

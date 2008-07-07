@@ -71,12 +71,34 @@ namespace GorgonLibrary.GUI
 		private bool _disposed = false;				// Flag to indicate that the object is disposed.
 		private Input _input = null;				// Input system to use.
 		private InputState _state;					// Input state data.
-		private GUIWindowCollection _panels;		// List of GUI panels.
+		private GUIWindowCollection _windows;		// List of GUI windows.
 		private GUIWindow _focused = null;			// Currently focused object.
 		private GUISkin _skin = null;				// Skin for the objects.
+		private static Font _defaultFont = null;	// Default GUI font.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the default font.
+		/// </summary>
+		public static Font DefaultFont
+		{
+			get
+			{
+				return _defaultFont;
+			}
+			set
+			{
+				if (_defaultFont != null)
+					_defaultFont.Dispose();
+
+				if (value == null)
+					_defaultFont = new Font("DefaultGUIFont", "Arial", 9.0f, true, false, false, false);
+				else
+					_defaultFont = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the skin for the objects.
 		/// </summary>
@@ -101,7 +123,7 @@ namespace GorgonLibrary.GUI
 		{
 			get
 			{
-				return _panels;
+				return _windows;
 			}
 		}
 
@@ -392,6 +414,52 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
+		/// Function to retrieve the control in the focused window under the cursor.
+		/// </summary>
+		/// <returns>The control under the cursor, or NULL if no control under the cursor.</returns>
+		public GUIObject ControlUnderCursor()
+		{
+			if (_focused == null)
+				return null;
+			return ControlUnderCursor(_focused);
+		}
+
+		/// <summary>
+		/// Function to retrieve the control in the focused window under the cursor.
+		/// </summary>
+		/// <param name="container">Container to search.</param>
+		/// <returns>The control under the cursor, or NULL if no control under the cursor.</returns>
+		public GUIObject ControlUnderCursor(IGUIContainer container)
+		{
+			GUIObject result = null;
+
+			if (container == null)
+				return null;
+
+			var controls = from control in container.GUIObjects
+						   where control.Visible && control.Enabled && control.Owner.RectToScreen(control.WindowDimensions).Contains((Drawing.Point)MousePosition)
+						   orderby control.ZOrder
+						   select control;
+
+			foreach(var control in controls)
+			{
+				IGUIContainer internalContainer = control as IGUIContainer;
+
+				if (internalContainer != null)
+				{
+					result = ControlUnderCursor(internalContainer);
+
+					if (result == null)
+						result = control;
+				}
+				else
+					result = control;
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to return the object under the set of coordinates passed.
 		/// </summary>
 		/// <param name="location">Coordinates to test.</param>
@@ -399,10 +467,10 @@ namespace GorgonLibrary.GUI
 		/// <remarks>This will only return the object at the top of the Z-Order, if there are overlapping objects then the first in the z-order will be returned.</remarks>
 		public GUIWindow HitTest(Drawing.Point location)
 		{
-			return (from guiPanel in _panels
-				   where ((guiPanel.WindowDimensions.Contains(location)) && (guiPanel.Visible) && (guiPanel.Enabled))
-				   orderby guiPanel.ZOrder
-				   select guiPanel).FirstOrDefault();
+			return (from guiWindow in _windows
+				   where ((guiWindow.WindowDimensions.Contains(location)) && (guiWindow.Visible) && (guiWindow.Enabled))
+				   orderby guiWindow.ZOrder
+				   select guiWindow).FirstOrDefault();
 		}
 
 		/// <summary>
@@ -419,9 +487,9 @@ namespace GorgonLibrary.GUI
 			if (_focused.ZOrder != 0)
 			{
 				_focused.ZOrder = 0;
-				var objects = from guiPanel in _panels
-							  where _focused != guiPanel
-							  select guiPanel;
+				var objects = from guiWindow in _windows
+							  where _focused != guiWindow
+							  select guiWindow;
 
 				foreach (GUIWindow guiObject in objects)
 				{
@@ -437,12 +505,12 @@ namespace GorgonLibrary.GUI
 		/// <param name="frameTime">Frame delta time.</param>
 		public void Update(float frameTime)
 		{
-			var objects = from guiPanel in _panels
-						  where guiPanel.Enabled && guiPanel.Visible
-						  select guiPanel;
+			var objects = from guiWindow in _windows
+						  where guiWindow.Enabled && guiWindow.Visible
+						  select guiWindow;
 
-			foreach (GUIWindow panel in objects)
-				panel.Update(frameTime);
+			foreach (GUIWindow window in objects)
+				window.Update(frameTime);
 
 			_skin.Update(frameTime);
 		}
@@ -452,10 +520,10 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		public void Draw()
 		{
-			var objects = from guiPanel in _panels
-						  where guiPanel.Enabled && guiPanel.Visible
-						  orderby guiPanel.ZOrder descending
-						  select guiPanel;
+			var objects = from guiWindow in _windows
+						  where guiWindow.Enabled && guiWindow.Visible
+						  orderby guiWindow.ZOrder descending
+						  select guiWindow;
 
 			if (Input == null)
 				throw new GUIInputInvalidException("No input interface was bound to the GUI.");
@@ -518,7 +586,7 @@ namespace GorgonLibrary.GUI
 				throw new ArgumentNullException("input");
 
 			Skin = skin;
-			_panels = new GUIWindowCollection(this);
+			_windows = new GUIWindowCollection(this);
 			_state = new InputState();
 			Input = input;
 			CursorVisible = true;
@@ -527,6 +595,7 @@ namespace GorgonLibrary.GUI
 				Cursor = new Sprite("DefaultCursor", Image.FromResource("DefaultCursorImage", GorgonLibrary.Framework.Properties.Resources.ResourceManager));
 			else
 				Cursor = _skin.Elements["Cursor.Default"].GetSprite();
+			_defaultFont = new Font("DefaultGUIFont", "Arial", 9.0f, true, false, false, false);
 		}
 		#endregion
 
@@ -543,8 +612,15 @@ namespace GorgonLibrary.GUI
 				{
 					UnbindEvents();
 
-					foreach (GUIWindow panel in _panels)
-						panel.Dispose();
+					foreach (GUIWindow window in _windows)
+						window.Dispose();
+
+					_windows.Clear();
+
+					if (_defaultFont != null)
+						_defaultFont.Dispose();
+					if (_skin != null)
+						_skin.Dispose();
 				}
 
 				_disposed = true;
