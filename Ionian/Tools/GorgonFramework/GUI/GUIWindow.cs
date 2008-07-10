@@ -38,7 +38,6 @@ namespace GorgonLibrary.GUI
 	{
 		#region Variables.
 		private GUIObjectCollection _guiObjects = null;					// List of objects contained in the window.		
-		private bool _disposed = false;									// Flag to indicate that the object is disposed.
 		private TextSprite _captionTextLabel = null;					// Caption text.
 		private bool _dragging = false;									// Flag to indicate that we're dragging.
 		private Drawing.Rectangle _captionRectangle;					// Caption rectangle.

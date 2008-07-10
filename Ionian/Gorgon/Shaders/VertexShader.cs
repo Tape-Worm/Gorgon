@@ -76,7 +76,25 @@ namespace GorgonLibrary.Graphics
 		protected override void CreateShader()
 		{
 			if (Function != null)
-				_shader = new D3D9.VertexShader(Gorgon.Screen.Device, Function.ByteCode);
+			{
+				D3D9.ShaderBytecode byteCode = null;
+
+				try
+				{
+					byte[] streamData = new byte[Function.ByteCode.Data.Length];
+
+					Function.ByteCode.Data.Position = 0;
+					Function.ByteCode.Data.Read(streamData, 0, streamData.Length);
+					byteCode = new SlimDX.Direct3D9.ShaderBytecode(streamData);
+					_shader = new D3D9.VertexShader(Gorgon.Screen.Device, byteCode);
+				}
+				catch
+				{
+					if (byteCode != null)
+						byteCode.Dispose();
+					throw;
+				}
+			}
 		}
 
 		/// <summary>

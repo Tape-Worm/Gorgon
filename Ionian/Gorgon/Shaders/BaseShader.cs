@@ -679,13 +679,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public override void DeviceReset()
 		{
-			CreateShader();
+			// Do nothing.
 		}
 
 		/// <summary>
 		/// Function called when the device is in a lost state.
 		/// </summary>
 		public override void DeviceLost()
+		{
+			// Do nothing.
+		}
+
+		/// <summary>
+		/// Function to force the loss of the objects data.
+		/// </summary>
+		public override void ForceRelease()
 		{
 			DestroyShader();
 		}
