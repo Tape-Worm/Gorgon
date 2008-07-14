@@ -166,6 +166,7 @@ namespace GorgonLibrary
 		private static Color _statsTextColor = Color.White;				// Frame statistics text color.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
 		private static Shader _currentShader = null;					// Current shader.
+		private static D3D9.Direct3D _d3d = null;						// Why is this needed??
 #if INCLUDE_D3DREF
 		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
 #endif
@@ -205,6 +206,17 @@ namespace GorgonLibrary
 				} 
 	
 				return true;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the Direct 3D interface.
+		/// </summary>
+		internal static D3D9.Direct3D Direct3D
+		{
+			get
+			{
+				return _d3d;
 			}
 		}
 
@@ -750,10 +762,10 @@ namespace GorgonLibrary
 
 				// Retrieve the desktop video mode for the driver.
 				_desktopVideoMode = new VideoMode();
-				_desktopVideoMode.Width = D3D9.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Width;
-				_desktopVideoMode.Height = D3D9.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Height;
-				_desktopVideoMode.RefreshRate = D3D9.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.RefreshRate;
-				_desktopVideoMode.Format = Converter.Convert(D3D9.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Format);
+				_desktopVideoMode.Width = Gorgon.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Width;
+				_desktopVideoMode.Height = Gorgon.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Height;
+				_desktopVideoMode.RefreshRate = Gorgon.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.RefreshRate;
+				_desktopVideoMode.Format = Converter.Convert(Gorgon.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Format);
 
 				_currentDriver = value;
 
@@ -1270,8 +1282,8 @@ namespace GorgonLibrary
 			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceLost, SlimDX.ResultWatchFlags.AlwaysIgnore);
 			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceNotReset, SlimDX.ResultWatchFlags.AlwaysIgnore);
 
-			D3D9.Direct3D.Initialize();
-			D3D9.Direct3D.CheckWhql = checkDriverWHQL;
+			_d3d = new D3D9.Direct3D();
+			_d3d.CheckWhql = checkDriverWHQL;
 
 			try
 			{
@@ -1405,7 +1417,9 @@ namespace GorgonLibrary
 				_screen.Dispose();
 
 			// Terminate Direct 3D.
-			D3D9.Direct3D.Terminate();
+			if (_d3d != null)
+				_d3d.Dispose();
+			_d3d = null;
 
 			_log.Print("Gorgon", "Shutting down.", LoggingLevel.Simple);
 

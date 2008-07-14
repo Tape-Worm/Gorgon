@@ -252,6 +252,8 @@ namespace GorgonLibrary.GUI
 			Input.Window.MouseEnter += new EventHandler(Window_Enter);
 			Input.Window.MouseLeave += new EventHandler(Window_Leave);
 
+			Input.Window.SizeChanged += new EventHandler(Window_SizeChanged);
+
 			if (!Input.Mouse.Enabled)
 				Input.Mouse.Enabled = true;
 			if (!Input.Keyboard.Enabled)
@@ -261,6 +263,16 @@ namespace GorgonLibrary.GUI
 
 			Input.Mouse.PositionRange = Input.Window.ClientRectangle;
 			Input.Mouse.WheelRange = Drawing.Point.Empty;
+		}
+
+		/// <summary>
+		/// Handles the SizeChanged event of the Window control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void Window_SizeChanged(object sender, EventArgs e)
+		{
+			Input.Mouse.PositionRange = new Drawing.RectangleF(0, 0, Gorgon.CurrentRenderTarget.Width, Gorgon.CurrentRenderTarget.Height);
 		}
 
 		/// <summary>

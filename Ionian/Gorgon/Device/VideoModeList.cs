@@ -169,7 +169,7 @@ namespace GorgonLibrary
 			// Enumerate video modes.
 			foreach (BackBufferFormats format in Enum.GetValues(typeof(BackBufferFormats)))
 			{
-				modes = D3D9.Direct3D.Adapters[_driver.DriverIndex].GetDisplayModes(Converter.Convert(format));
+				modes = Gorgon.Direct3D.Adapters[_driver.DriverIndex].GetDisplayModes(Converter.Convert(format));
 				foreach (D3D9.DisplayMode mode in modes)
 				{
 					if (_driver.ValidBackBufferFormat(Converter.Convert(mode.Format), Converter.Convert(mode.Format), false))

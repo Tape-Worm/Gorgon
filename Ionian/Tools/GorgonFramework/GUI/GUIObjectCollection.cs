@@ -103,6 +103,21 @@ namespace GorgonLibrary.GUI
 			RemoveItem(guiObject.Name);
 			UpdateZOrder();
 		}
+
+		/// <summary>
+		/// Function to find the index of a specific GUI object instance.
+		/// </summary>
+		/// <param name="guiObject">Instance to find.</param>
+		/// <returns>The index of the object in the collection, or -1 if not found.</returns>
+		public int IndexOf(GUIObject guiObject)
+		{
+			for (int i = 0; i < Count; i++)
+			{
+				if (this[i] == guiObject)
+					return i;
+			}
+			return -1;
+		}
 		#endregion
 
 		#region Constructor/Destructor.

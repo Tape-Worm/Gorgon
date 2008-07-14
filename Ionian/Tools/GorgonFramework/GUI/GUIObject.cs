@@ -77,6 +77,7 @@ namespace GorgonLibrary.GUI
 		private bool _visible = false;												// Flag to indicate that the object is visible.
 		private Font _font = null;													// Font for the object.
 		private int _zorder = -1;													// Z-ordering for the object.
+		private bool _canFocus = false;												// Flag to indicate that the object can receive keyboard focus.
 		#endregion
 
 		#region Properties.
@@ -114,6 +115,21 @@ namespace GorgonLibrary.GUI
 					return Desktop.Skin;
 				else
 					return null;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the control key receive keyboard focus.
+		/// </summary>
+		public bool CanFocus
+		{
+			get
+			{
+				return _canFocus;
+			}
+			protected set
+			{
+				_canFocus = value;
 			}
 		}
 
@@ -204,6 +220,11 @@ namespace GorgonLibrary.GUI
 				}
 
 				_owner = value;
+
+				GUIWindow window = GetOwnerWindow();
+
+				if ((window != null) && (window.FocusedControl == null))
+					this.Focus();
 			}
 		}
 
@@ -465,26 +486,42 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Function to retrieve the clipping area for the children.
 		/// </summary>
+		/// <param name="parent">Parent object to test against.</param>
 		/// <param name="clipRect">Rectangle to clip against.</param>
 		/// <returns>A rectangle defining the clipping area for the child controls.</returns>
-		protected Drawing.Rectangle GetClippingArea(Drawing.Rectangle clipRect)
+		protected Drawing.Rectangle GetClippingArea(GUIObject parent, Drawing.Rectangle clipRect)
 		{
 			Drawing.Rectangle screenPoints;			// Screen coordinates.
 			Drawing.Rectangle ownerPoints;			// Owner clip.
 
 			screenPoints = Drawing.Rectangle.Empty;
-			if (Owner != null)
+			if (parent != null)
 			{
-				screenPoints = Owner.RectToScreen(clipRect);
+				if (clipRect.Width < 0)
+					clipRect.Width = 0;
+				if (clipRect.Height < 0)
+					clipRect.Height = 0;
+
+				screenPoints = parent.RectToScreen(clipRect);				
 				if (Owner.Owner != null)
 				{
-					ownerPoints = Owner.GetClippingArea();
+					ownerPoints = parent.GetClippingArea();
 					if (ownerPoints != Drawing.Rectangle.Empty)
 						screenPoints = Drawing.Rectangle.Intersect(screenPoints, ownerPoints);
 				}
 			}
 
 			return screenPoints;
+		}		
+
+		/// <summary>
+		/// Function to retrieve the clipping area for the children.
+		/// </summary>
+		/// <param name="clipRect">Rectangle to clip against.</param>
+		/// <returns>A rectangle defining the clipping area for the child controls.</returns>
+		protected Drawing.Rectangle GetClippingArea(Drawing.Rectangle clipRect)
+		{
+			return GetClippingArea(Owner, clipRect);
 		}
 
 		/// <summary>
@@ -493,7 +530,52 @@ namespace GorgonLibrary.GUI
 		/// <returns>A rectangle defining the clipping area for the child controls.</returns>
 		protected Drawing.Rectangle GetClippingArea()
 		{
-			return GetClippingArea(Owner.ClientArea);
+			return GetClippingArea(Owner, Owner.ClientArea);
+		}
+
+		/// <summary>
+		/// Function to return the window that owns this object.
+		/// </summary>
+		/// <returns>The window that owns this object, NULL if none.</returns>
+		protected GUIWindow GetOwnerWindow()
+		{
+			if (this is GUIWindow)
+				return null;
+
+			GUIObject item = this.Owner;
+
+			while (item != null)
+			{
+				if (item is GUIWindow)
+					break;
+				else
+					item = item.Owner;
+			}
+
+			return item as GUIWindow;
+		}
+
+		/// <summary>
+		/// Function to set the focus to this control.
+		/// </summary>
+		public void Focus()
+		{
+			GUIWindow window = this as GUIWindow;		
+
+			if (window != null)
+				window.Desktop.BringToFront(window);
+			else
+			{
+				window = GetOwnerWindow();
+
+				// DO NOT SET ANOTHER WINDOW AS FOCUSED!!  I HATE THAT!!
+				if (window != Desktop.Focused)
+					return;
+				if ((!Enabled) || (!Visible) || (!CanFocus))
+					return;
+
+				window.FocusedControl = this;
+			}
 		}
 
 		/// <summary>
@@ -561,16 +643,32 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
+		/// Function to draw the focus rectangle.
+		/// </summary>
+		protected virtual void DrawFocusRectangle()
+		{
+			Drawing.Rectangle screenRect = Owner.RectToScreen(WindowDimensions);
+			GUIWindow ownerWindow = GetOwnerWindow();
+
+			if ((ownerWindow != null) && (ownerWindow.FocusedControl == this))
+			{
+				Gorgon.CurrentRenderTarget.BeginDrawing();
+				Gorgon.CurrentRenderTarget.Rectangle(screenRect.X, screenRect.Y, screenRect.Width, screenRect.Height, Drawing.Color.Blue);
+				Gorgon.CurrentRenderTarget.EndDrawing();
+			}
+		}
+
+		/// <summary>
 		/// Function to update the object.
 		/// </summary>
 		/// <param name="frameTime">Frame delta time.</param>
 		/// <remarks>The frame delta is typically used with animations to help achieve a smooth appearance regardless of processor speed.</remarks>
-		internal abstract void Update(float frameTime);
+		protected internal abstract void Update(float frameTime);
 
 		/// <summary>
 		/// Function to draw the object.
 		/// </summary>
-		internal abstract void Draw();
+		protected internal abstract void Draw();
 		#endregion
 
 		#region Constructor/Destructor.
@@ -606,6 +704,10 @@ namespace GorgonLibrary.GUI
 					// Destroy all child objects.
 					IGUIContainer container = this as IGUIContainer;
 					IGUIContainer ownerContainer = Owner as IGUIContainer;
+					GUIWindow ownerWindow = GetOwnerWindow();
+
+					if ((ownerWindow != null) && (ownerWindow.FocusedControl == this))
+						ownerWindow.SelectNextControl();
 
 					if (container != null)
 					{

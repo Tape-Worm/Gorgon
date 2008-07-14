@@ -704,7 +704,7 @@ namespace GorgonLibrary.Graphics
 					}
 
 					// Create the device.
-					_device = new D3D9.Device(Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, _ownerForm.Handle, flags, _presentParameters);
+					_device = new D3D9.Device(Gorgon.Direct3D, Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, _ownerForm.Handle, flags, _presentParameters);
 					_deviceWasLost = false;
 
 					// Confirm if a W-buffer exists or not.					

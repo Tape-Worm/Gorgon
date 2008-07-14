@@ -9,7 +9,7 @@
     <Count>0</Count>
   </Targets>
   <Sprites>
-    <Count>18</Count>
+    <Count>21</Count>
     <Path IncludeInAnims="True">.\Caption.LeftCorner.gorSprite</Path>
     <Path IncludeInAnims="True">.\Caption.RightCorner.gorSprite</Path>
     <Path IncludeInAnims="True">.\Caption.gorSprite</Path>
@@ -28,5 +28,8 @@
     <Path IncludeInAnims="True">.\Button.Hover.Left.gorSprite</Path>
     <Path IncludeInAnims="True">.\Button.Hover.Right.gorSprite</Path>
     <Path IncludeInAnims="True">.\Button.Hover.Body.gorSprite</Path>
+    <Path IncludeInAnims="True">.\CheckBox.Box.gorSprite</Path>
+    <Path IncludeInAnims="True">.\CheckBox.Box.Hover.gorSprite</Path>
+    <Path IncludeInAnims="True">.\CheckBox.Check.gorSprite</Path>
   </Sprites>
 </SpriteProject>

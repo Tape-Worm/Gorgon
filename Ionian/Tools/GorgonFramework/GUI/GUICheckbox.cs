@@ -17,7 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Sunday, July 06, 2008 11:27:56 PM
+// Created: Sunday, July 13, 2008 12:31:42 PM
 // 
 #endregion
 
@@ -27,30 +27,59 @@ using System.Linq;
 using System.Text;
 using Drawing = System.Drawing;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.InputDevices;
 
 namespace GorgonLibrary.GUI
 {
 	/// <summary>
-	/// Button object for the GUI system.
+	/// Checkbox control.
 	/// </summary>
-	public class GUIButton
+	public class GUICheckBox
 		: GUIObject
 	{
 		#region Variables.
 		private TextSprite _textLabel = null;				// Text sprite to draw on the button.
 		private string _text = string.Empty;				// Text to display on the button.
 		private Viewport _textClipper = null;				// Clipping view of the text label.
+		private bool _checked = false;						// Check state.
 		#endregion
 
 		#region Events.
 		/// <summary>
-		/// Event fired when the button is clicked.
+		/// Event fired when the checkbox is clicked.
 		/// </summary>
 		public event EventHandler Clicked;
+		/// <summary>
+		/// Event fired when the value of the checkbox is changed.
+		/// </summary>
+		public event EventHandler ValueChanged;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return whether the checkbox is in a checked state or not.
+		/// </summary>
+		public bool Checked
+		{
+			get
+			{
+				return _checked;
+			}
+			set
+			{
+				_checked = value;
+				OnCheckChanged(this, EventArgs.Empty);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the background color of the control.
+		/// </summary>
+		public Drawing.Color BackColor
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to set or return the foreground color of the button.
 		/// </summary>
@@ -89,6 +118,18 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
+		/// Function called when the checked value is changed.
+		/// </summary>
+		/// <param name="sender">Sender of the event.</param>
+		/// <param name="e">Event parameters.</param>
+		protected virtual void OnCheckChanged(object sender, EventArgs e)
+		{
+			if (ValueChanged != null)
+				ValueChanged(sender, e);
+		}
+
+
+		/// <summary>
 		/// Function called when the button is clicked.
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
@@ -108,8 +149,15 @@ namespace GorgonLibrary.GUI
 		{
 			DefaultMouseEvent(eventType, e);
 
-			if (eventType == MouseEventType.MouseButtonUp)
-				OnClick(this, EventArgs.Empty);
+			switch (eventType)
+			{
+				case MouseEventType.MouseButtonUp:
+					OnClick(this, EventArgs.Empty);
+					break;
+				case MouseEventType.MouseButtonDown:
+					Checked = !Checked;
+					break;
+			}
 		}
 
 		/// <summary>
@@ -119,10 +167,9 @@ namespace GorgonLibrary.GUI
 		/// <param name="e">Event parameters.</param>
 		protected internal override void KeyboardEvent(bool isDown, GorgonLibrary.InputDevices.KeyboardInputEventArgs e)
 		{
-			if ((isDown) && (e.Key == KeyboardKeys.Space))
-				OnClick(this, EventArgs.Empty);
-			else
-				DefaultKeyboardEvent(isDown, e);
+			if ((isDown) && (e.Key == GorgonLibrary.InputDevices.KeyboardKeys.Space))
+				Checked = !Checked;
+			DefaultKeyboardEvent(isDown, e);
 		}
 
 		/// <summary>
@@ -148,35 +195,51 @@ namespace GorgonLibrary.GUI
 			Drawing.Point position = Owner.PointToScreen(WindowDimensions.Location);		// Screen position of the button.
 			Drawing.Rectangle clipperDimensions = Drawing.Rectangle.Empty;					// Clipper dimensions.
 			IGUIContainer container = Owner as IGUIContainer;								// GUI container.
+			int boxY = 0;																	// Box Y position.
+			int checkDiff = 0;																// Check height difference.
 
 			if ((container != null) && (container.ClipChildren))
 				SetClippingRegion(GetClippingArea());
+			boxY = position.Y + (WindowDimensions.Height / 2);
+
+			if (BackColor.A > 0)
+			{
+				Gorgon.CurrentRenderTarget.BeginDrawing();
+				Gorgon.CurrentRenderTarget.FilledRectangle(position.X, position.Y, WindowDimensions.Width, WindowDimensions.Height, BackColor);
+				Gorgon.CurrentRenderTarget.EndDrawing();
+			}
+
 			if (!IsCursorOnTop)
 			{
-				Skin.Elements["Controls.Button.Left"].Draw(new Drawing.Rectangle(position.X, position.Y, Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height));
-				Skin.Elements["Controls.Button.Right"].Draw(new Drawing.Rectangle(position.X + WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width, position.Y, Skin.Elements["Controls.Button.Right"].Dimensions.Width, WindowDimensions.Height));
-				Skin.Elements["Controls.Button.Body"].Draw(new Drawing.Rectangle(position.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, position.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height));
-				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height);
-				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, position.Y);
+				checkDiff = Skin.Elements["Controls.CheckBox.Check"].Dimensions.Height - Skin.Elements["Controls.CheckBox.Box"].Dimensions.Height;
+				boxY -= Skin.Elements["Controls.CheckBox.Box"].Dimensions.Height / 2;
+				Skin.Elements["Controls.CheckBox.Box"].Draw(new Drawing.Rectangle(position.X, boxY, Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, Skin.Elements["Controls.CheckBox.Box"].Dimensions.Height));
+				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, WindowDimensions.Height);
+				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, position.Y);
 			}
 			else
 			{
-				Skin.Elements["Controls.Button.Hover.Left"].Draw(new Drawing.Rectangle(position.X, position.Y, Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height));
-				Skin.Elements["Controls.Button.Hover.Right"].Draw(new Drawing.Rectangle(position.X + WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width, position.Y, Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width, WindowDimensions.Height));
-				Skin.Elements["Controls.Button.Hover.Body"].Draw(new Drawing.Rectangle(position.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, position.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height));
-				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height);
-				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, position.Y);
+				checkDiff = Skin.Elements["Controls.CheckBox.Check"].Dimensions.Height - Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Height;
+				boxY -= Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Height / 2;
+				Skin.Elements["Controls.CheckBox.Box.Hover"].Draw(new Drawing.Rectangle(position.X, boxY, Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Height));
+				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, WindowDimensions.Height);
+				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, position.Y);
 			}
 
 			DrawFocusRectangle();
+
+			if (Checked)
+				Skin.Elements["Controls.CheckBox.Check"].Draw(new Drawing.Rectangle(position.X, boxY - checkDiff, Skin.Elements["Controls.CheckBox.Check"].Dimensions.Width, Skin.Elements["Controls.CheckBox.Check"].Dimensions.Height));
 
 			if ((container != null) && (container.ClipChildren))
 			{
 				ResetClippingRegion();
 				SetClippingRegion(GetClippingArea(clipperDimensions));
 			}
+
 			_textClipper.SetWindowDimensions(Gorgon.CurrentClippingViewport.Left, Gorgon.CurrentClippingViewport.Top, clipperDimensions.Width, clipperDimensions.Height);
 			_textLabel.Draw();
+
 			if ((container != null) && (container.ClipChildren))
 				ResetClippingRegion();			
 		}
@@ -184,20 +247,21 @@ namespace GorgonLibrary.GUI
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GUIButton"/> class.
+		/// Initializes a new instance of the <see cref="GUICheckBox"/> class.
 		/// </summary>
 		/// <param name="name">Name for this object.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the name parameter is NULL or a zero length string.</exception>
-		public GUIButton(string name)
+		public GUICheckBox(string name)
 			: base(name)
 		{
 			CanFocus = true;
+			BackColor = Drawing.Color.Transparent;
 			Visible = true;
 			Font = null;
-			ForeColor = Drawing.Color.White;
-			TextAlignment = Alignment.Center;
+			ForeColor = Drawing.Color.Black;
+			TextAlignment = Alignment.UpperLeft;
 			_textClipper = new Viewport(0, 0, 1, 1);
-			_textLabel = new TextSprite(name + "ButtonFont." + Guid.NewGuid().ToString(), name, Font);			
+			_textLabel = new TextSprite(name + "CheckBox." + Guid.NewGuid().ToString(), name, Font);			
 		}
 		#endregion
 	}

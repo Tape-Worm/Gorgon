@@ -96,6 +96,10 @@ namespace GorgonLibrary.GUI
 			{
 				if (child.WindowDimensions.Contains(ScreenToPoint((Drawing.Point)e.Position)))
 				{
+					GUIWindow parent = GetOwnerWindow();
+
+					if ((parent != null) && (parent.FocusedControl != child) && (eventType == MouseEventType.MouseButtonDown))
+						child.Focus();
 					child.MouseEvent(eventType, e);
 					return;
 				}
@@ -137,7 +141,7 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		/// <param name="frameTime">Frame delta time.</param>
 		/// <remarks>The frame delta is typically used with animations to help achieve a smooth appearance regardless of processor speed.</remarks>
-		internal override void Update(float frameTime)
+		protected internal override void Update(float frameTime)
 		{
 			// Draw each child.
 			var children = from guiObject in GUIObjects
@@ -152,7 +156,7 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Function to draw the object.
 		/// </summary>
-		internal override void Draw()
+		protected internal override void Draw()
 		{
 			IGUIContainer container;			// Parent container.
 			Drawing.Rectangle screenPoints;		// Screen coordinates.

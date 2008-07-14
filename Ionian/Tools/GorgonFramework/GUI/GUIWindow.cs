@@ -44,6 +44,7 @@ namespace GorgonLibrary.GUI
 		private Vector2D _dragDelta = Vector2D.Zero;					// Drag delta.
 		private Viewport _clipView = null;								// Clipping view port.
 		private bool _hasCaption = true;								// Flag to indicate whether we have a caption on this window or not.
+		private GUIObject _focused = null;								// Focused control.
 		#endregion
 
 		#region Properties.
@@ -65,9 +66,33 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
+		/// Property to return the focused control for this window.
+		/// </summary>
+		public GUIObject FocusedControl
+		{
+			get
+			{
+				return _focused;
+			}
+			internal set
+			{
+				_focused = value;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the background color of the panel.
 		/// </summary>
 		public Drawing.Color BackgroundColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the window is able to move or not.
+		/// </summary>
+		public bool CanMove
 		{
 			get;
 			set;
@@ -182,7 +207,13 @@ namespace GorgonLibrary.GUI
 		/// <param name="e">Event parameters.</param>
 		protected internal override void KeyboardEvent(bool isDown, GorgonLibrary.InputDevices.KeyboardInputEventArgs e)
 		{
-			DefaultKeyboardEvent(isDown, e);
+			if ((isDown) && (e.Key == GorgonLibrary.InputDevices.KeyboardKeys.Tab))
+				SelectNextControl();
+
+			if ((_focused != null) && (_focused.CanFocus))
+				_focused.KeyboardEvent(isDown, e);
+			else
+				DefaultKeyboardEvent(isDown, e);
 		}
 
 		/// <summary>
@@ -243,7 +274,7 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Function to draw the object.
 		/// </summary>
-		internal override void Draw()
+		protected internal override void Draw()
 		{
 			Drawing.Rectangle screenPoints;		// Screen coordinates.
 
@@ -291,7 +322,7 @@ namespace GorgonLibrary.GUI
 		/// <param name="e">Event parameters.</param>
 		protected internal override void MouseEvent(MouseEventType eventType, GorgonLibrary.InputDevices.MouseInputEventArgs e)
 		{
-			if ((!ClientArea.Contains(ScreenToPoint((Drawing.Point)e.Position))) && (HasCaption))
+			if ((!ClientArea.Contains(ScreenToPoint((Drawing.Point)e.Position))) && (HasCaption) && (CanMove))
 			{
 				Drawing.Point screenPos = (Drawing.Point)e.Position;
 				switch (eventType)
@@ -321,6 +352,8 @@ namespace GorgonLibrary.GUI
 				{
 					if (child.WindowDimensions.Contains(ScreenToPoint((Drawing.Point)e.Position)))
 					{
+						if ((FocusedControl != child) && (eventType == MouseEventType.MouseButtonDown))
+							child.Focus();
 						child.MouseEvent(eventType, e);
 						return;
 					}
@@ -343,7 +376,7 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		/// <param name="frameTime">Frame delta time.</param>
 		/// <remarks>The frame delta is typically used with animations to help achieve a smooth appearance regardless of processor speed.</remarks>
-		internal override void Update(float frameTime)
+		protected internal override void Update(float frameTime)
 		{
 			// Draw each child.
 			var children = from guiObject in GUIObjects
@@ -361,6 +394,61 @@ namespace GorgonLibrary.GUI
 
 			if (_dragging)			
 				Position = mousePosition;
+		}
+
+		/// <summary>
+		/// Function to retrieve all controls in the focused window.
+		/// </summary>
+		/// <param name="controls">Control list to populate.</param>
+		/// <param name="container">Container that owns the control.</param>
+		private void GetAllControls(List<GUIObject> controls, IGUIContainer container)
+		{
+			for (int i = 0; i < container.GUIObjects.Count; i++)
+			{
+				IGUIContainer ownerContainer = container.GUIObjects[i] as IGUIContainer;
+				if (ownerContainer != null)
+					GetAllControls(controls, ownerContainer);
+
+				controls.Add(container.GUIObjects[i]);
+			}
+		}
+
+		/// <summary>
+		/// Function to select the next control that can receive focus.
+		/// </summary>
+		public void SelectNextControl()
+		{
+			List<GUIObject> controls = new List<GUIObject>();
+			GUIObject candidate = null;
+
+			GetAllControls(controls, this);
+
+			var guiControls = from control in controls
+							  where control.Enabled && control.Visible && control.CanFocus
+							  orderby control.ZOrder
+							  select control;
+
+			if (_focused == null)
+				guiControls.FirstOrDefault();
+			else
+			{
+				for (int i = 0; i < guiControls.Count(); i++)
+				{
+					if ((guiControls.ElementAt(i) == _focused) || (candidate != null))
+					{
+						if (i < guiControls.Count() - 1)
+							candidate = guiControls.ElementAt(i + 1);
+						else
+							candidate = guiControls.ElementAt(0);
+
+						if ((candidate.Enabled) && (candidate.CanFocus) && (candidate.Visible))
+						{
+							_focused = candidate;
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -404,6 +492,8 @@ namespace GorgonLibrary.GUI
 		public GUIWindow(string name, int x, int y, int width, int height)
 			: base(name)
 		{
+			CanMove = true;
+			CanFocus = true;
 			_guiObjects = new GUIObjectCollection();
 			BackgroundColor = Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 			WindowDimensions = new System.Drawing.Rectangle(x, y, width, height);			

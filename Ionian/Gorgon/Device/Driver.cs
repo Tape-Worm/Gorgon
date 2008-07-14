@@ -884,7 +884,7 @@ namespace GorgonLibrary
 			{
 				foreach (DepthBufferFormats depthFormat in depthFormats)
 				{
-					if (D3D9.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(format), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthFormat)))
+					if (Gorgon.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(format), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthFormat)))
 						return true;
 				}
 			}
@@ -903,10 +903,10 @@ namespace GorgonLibrary
 			D3D9.AdapterInformation adapterData;		// Adapter information.
 
 			// Get adapter information.
-			adapterData = D3D9.Direct3D.Adapters[_driverOrdinal];
+			adapterData = Gorgon.Direct3D.Adapters[_driverOrdinal];
 
 			// Get capabilities.
-			_caps = D3D9.Direct3D.GetDeviceCaps(_driverOrdinal, Driver.DeviceType);
+			_caps = Gorgon.Direct3D.GetDeviceCaps(_driverOrdinal, Driver.DeviceType);
 
 			// Get standard information.			
 			_deviceName = adapterData.Details.DeviceName.Trim();
@@ -932,7 +932,7 @@ namespace GorgonLibrary
 			}
 
 			// Log card information.			
-			if (D3D9.Direct3D.CheckWhql)
+			if (Gorgon.Direct3D.CheckWhql)
 				Gorgon.Log.Print("Driver", "WHQL Data enumerated.", LoggingLevel.Verbose);
 			else
 				Gorgon.Log.Print("Driver", "WHQL Data not enumerated.", LoggingLevel.Verbose);
@@ -947,7 +947,7 @@ namespace GorgonLibrary
 			Gorgon.Log.Print("Driver", "Sub-System ID: 0x{0}", LoggingLevel.Verbose, _subSystem.ToString("x").PadLeft(8, '0'));
 			Gorgon.Log.Print("Driver", "Revision: {0}", LoggingLevel.Verbose, _revision);
 
-			if (D3D9.Direct3D.CheckWhql)
+			if (Gorgon.Direct3D.CheckWhql)
 				Gorgon.Log.Print("Driver", "WHQL: {0}", LoggingLevel.Verbose, _WHQL);
 
 			PropertyInfo[] properties = null;		// Property list.
@@ -987,7 +987,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if this format can be used, FALSE if not.</returns>
 		public bool ValidImageFormat(ImageBufferFormats display, BackBufferFormats backbuffer, bool windowed)
 		{
-			return D3D9.Direct3D.CheckDeviceType(_driverOrdinal, Driver.DeviceType, Converter.Convert(display), Converter.Convert(backbuffer), windowed);
+			return Gorgon.Direct3D.CheckDeviceType(_driverOrdinal, Driver.DeviceType, Converter.Convert(display), Converter.Convert(backbuffer), windowed);
 		}
 
 		/// <summary>
@@ -999,7 +999,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if this format can be used, FALSE if not.</returns>
 		public bool ValidBackBufferFormat(BackBufferFormats display, BackBufferFormats backbuffer, bool windowed)
 		{
-			return D3D9.Direct3D.CheckDeviceType(_driverOrdinal, Driver.DeviceType, Converter.Convert(display), Converter.Convert(backbuffer), windowed);
+			return Gorgon.Direct3D.CheckDeviceType(_driverOrdinal, Driver.DeviceType, Converter.Convert(display), Converter.Convert(backbuffer), windowed);
 		}
 
 		/// <summary>
@@ -1021,7 +1021,7 @@ namespace GorgonLibrary
 
 			bufferFormat = Gorgon.CurrentVideoMode.Format;
 
-			return D3D9.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(bufferFormat), usage, D3D9.ResourceType.Texture, Converter.Convert(format));
+			return Gorgon.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(bufferFormat), usage, D3D9.ResourceType.Texture, Converter.Convert(format));
 		}
 
 		/// <summary>
@@ -1031,7 +1031,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if supported, FALSE if not.</returns>
 		public bool ValidDesktopFormat(BackBufferFormats sourceformat)
 		{
-			return D3D9.Direct3D.CheckDeviceFormatConversion(_driverOrdinal, Driver.DeviceType, Converter.Convert(sourceformat), Converter.Convert(Gorgon.DesktopVideoMode.Format));
+			return Gorgon.Direct3D.CheckDeviceFormatConversion(_driverOrdinal, Driver.DeviceType, Converter.Convert(sourceformat), Converter.Convert(Gorgon.DesktopVideoMode.Format));
 		}
 
 		/// <summary>
@@ -1052,8 +1052,8 @@ namespace GorgonLibrary
 		/// <returns>TRUE if supported, FALSE if not.</returns>
 		public bool DepthFormatSupported(BackBufferFormats backBuffer, DepthBufferFormats depthBuffer)
 		{
-			if (D3D9.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthBuffer)))
-				return D3D9.Direct3D.CheckDepthStencilMatch(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), Converter.Convert(backBuffer), Converter.ConvertDepthFormat(depthBuffer));
+			if (Gorgon.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthBuffer)))
+				return Gorgon.Direct3D.CheckDepthStencilMatch(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), Converter.Convert(backBuffer), Converter.ConvertDepthFormat(depthBuffer));
 
 			return false;
 		}
@@ -1110,8 +1110,8 @@ namespace GorgonLibrary
 		/// <returns>TRUE if supported, FALSE if not.</returns>
 		public bool DepthFormatSupported(ImageBufferFormats backBuffer, DepthBufferFormats depthBuffer)
 		{
-			if (D3D9.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthBuffer)))
-				return D3D9.Direct3D.CheckDepthStencilMatch(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), Converter.Convert(backBuffer), Converter.ConvertDepthFormat(depthBuffer));
+			if (Gorgon.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthBuffer)))
+				return Gorgon.Direct3D.CheckDepthStencilMatch(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), Converter.Convert(backBuffer), Converter.ConvertDepthFormat(depthBuffer));
 
 			return false;
 		}

@@ -17,7 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Sunday, July 06, 2008 11:27:56 PM
+// Created: Sunday, July 13, 2008 1:10:56 PM
 // 
 #endregion
 
@@ -27,30 +27,48 @@ using System.Linq;
 using System.Text;
 using Drawing = System.Drawing;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.InputDevices;
 
 namespace GorgonLibrary.GUI
 {
 	/// <summary>
-	/// Button object for the GUI system.
+	/// Label control.
 	/// </summary>
-	public class GUIButton
+	public class GUILabel
 		: GUIObject
 	{
 		#region Variables.
 		private TextSprite _textLabel = null;				// Text sprite to draw on the button.
 		private string _text = string.Empty;				// Text to display on the button.
 		private Viewport _textClipper = null;				// Clipping view of the text label.
-		#endregion
-
-		#region Events.
-		/// <summary>
-		/// Event fired when the button is clicked.
-		/// </summary>
-		public event EventHandler Clicked;
+		private PanelBorderStyle _borderStyle;				// Border style.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the border style for the label.
+		/// </summary>
+		public PanelBorderStyle BorderStyle
+		{
+			get
+			{
+				return _borderStyle;
+			}
+			set
+			{
+				_borderStyle = value;
+				SetClientArea(WindowDimensions);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the background color of the control.
+		/// </summary>
+		public Drawing.Color BackColor
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to set or return the foreground color of the button.
 		/// </summary>
@@ -89,17 +107,6 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
-		/// Function called when the button is clicked.
-		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="e">Event arguments.</param>
-		protected virtual void OnClick(object sender, EventArgs e)
-		{
-			if (Clicked != null)
-				Clicked(sender, e);
-		}
-
-		/// <summary>
 		/// Function called when a mouse event has taken place in this window.
 		/// </summary>
 		/// <param name="eventType">Type of event that should be fired.</param>
@@ -107,9 +114,6 @@ namespace GorgonLibrary.GUI
 		protected internal override void MouseEvent(MouseEventType eventType, GorgonLibrary.InputDevices.MouseInputEventArgs e)
 		{
 			DefaultMouseEvent(eventType, e);
-
-			if (eventType == MouseEventType.MouseButtonUp)
-				OnClick(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -119,10 +123,22 @@ namespace GorgonLibrary.GUI
 		/// <param name="e">Event parameters.</param>
 		protected internal override void KeyboardEvent(bool isDown, GorgonLibrary.InputDevices.KeyboardInputEventArgs e)
 		{
-			if ((isDown) && (e.Key == KeyboardKeys.Space))
-				OnClick(this, EventArgs.Empty);
-			else
-				DefaultKeyboardEvent(isDown, e);
+			DefaultKeyboardEvent(isDown, e);
+		}
+
+		/// <summary>
+		/// Function to set the client area for the object.
+		/// </summary>
+		/// <param name="windowArea">Full area of the window.</param>
+		protected override void SetClientArea(System.Drawing.Rectangle windowArea)
+		{
+			if (BorderStyle == PanelBorderStyle.Single)
+			{
+				windowArea.Width -= 2;
+				windowArea.Height -= 2;
+			}
+
+			base.SetClientArea(windowArea);
 		}
 
 		/// <summary>
@@ -151,53 +167,80 @@ namespace GorgonLibrary.GUI
 
 			if ((container != null) && (container.ClipChildren))
 				SetClippingRegion(GetClippingArea());
-			if (!IsCursorOnTop)
-			{
-				Skin.Elements["Controls.Button.Left"].Draw(new Drawing.Rectangle(position.X, position.Y, Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height));
-				Skin.Elements["Controls.Button.Right"].Draw(new Drawing.Rectangle(position.X + WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width, position.Y, Skin.Elements["Controls.Button.Right"].Dimensions.Width, WindowDimensions.Height));
-				Skin.Elements["Controls.Button.Body"].Draw(new Drawing.Rectangle(position.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, position.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height));
-				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height);
-				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, position.Y);
-			}
-			else
-			{
-				Skin.Elements["Controls.Button.Hover.Left"].Draw(new Drawing.Rectangle(position.X, position.Y, Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height));
-				Skin.Elements["Controls.Button.Hover.Right"].Draw(new Drawing.Rectangle(position.X + WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width, position.Y, Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width, WindowDimensions.Height));
-				Skin.Elements["Controls.Button.Hover.Body"].Draw(new Drawing.Rectangle(position.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, position.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height));
-				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height);
-				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, position.Y);
-			}
 
-			DrawFocusRectangle();
+			Gorgon.CurrentRenderTarget.BeginDrawing();
+			if (BackColor.A > 0)
+				Gorgon.CurrentRenderTarget.FilledRectangle(position.X, position.Y, WindowDimensions.Width, WindowDimensions.Height, BackColor);
+			if (BorderStyle == PanelBorderStyle.Single)
+				Gorgon.CurrentRenderTarget.Rectangle(position.X, position.Y, WindowDimensions.Width, WindowDimensions.Height, Drawing.Color.Black);
+			Gorgon.CurrentRenderTarget.EndDrawing();
+
+			_textLabel.Position = new Vector2D(position.X, position.Y);
 
 			if ((container != null) && (container.ClipChildren))
 			{
 				ResetClippingRegion();
-				SetClippingRegion(GetClippingArea(clipperDimensions));
+				SetClippingRegion(GetClippingArea(this, new Drawing.Rectangle(0, 0, ClientArea.Width, ClientArea.Height)));
 			}
-			_textClipper.SetWindowDimensions(Gorgon.CurrentClippingViewport.Left, Gorgon.CurrentClippingViewport.Top, clipperDimensions.Width, clipperDimensions.Height);
+
+			_textClipper.SetWindowDimensions(Gorgon.CurrentClippingViewport.Left, Gorgon.CurrentClippingViewport.Top, ClientArea.Width, ClientArea.Height);
 			_textLabel.Draw();
+
 			if ((container != null) && (container.ClipChildren))
-				ResetClippingRegion();			
+				ResetClippingRegion();
+		}
+
+		/// <summary>
+		/// Function to convert a client point to screen coordinates.
+		/// </summary>
+		/// <param name="clientPoint">Client point to convert.</param>
+		/// <returns>The screen coordinates of the point.</returns>
+		public override System.Drawing.Point PointToScreen(System.Drawing.Point clientPoint)
+		{
+			Drawing.Point newPoint;		// New point.
+
+			newPoint = base.PointToScreen(clientPoint);
+			if (BorderStyle == PanelBorderStyle.Single)
+			{
+				newPoint.X += 1;
+				newPoint.Y += 1;
+			}
+
+			return newPoint;
+		}
+
+		/// <summary>
+		/// Function to convert a screen point to client coordinates.
+		/// </summary>
+		/// <param name="screenPoint">Screen point to convert.</param>
+		/// <returns>The client coordinates of the point.</returns>
+		public override System.Drawing.Point ScreenToPoint(System.Drawing.Point screenPoint)
+		{
+			if (BorderStyle == PanelBorderStyle.Single)
+			{
+				screenPoint.X -= 1;
+				screenPoint.Y -= 1;
+			}
+			return base.ScreenToPoint(screenPoint);
 		}
 		#endregion
 
-		#region Constructor.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GUIButton"/> class.
+		/// Initializes a new instance of the <see cref="GUILabel"/> class.
 		/// </summary>
 		/// <param name="name">Name for this object.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the name parameter is NULL or a zero length string.</exception>
-		public GUIButton(string name)
+		public GUILabel(string name)
 			: base(name)
 		{
-			CanFocus = true;
+			BackColor = Drawing.Color.Transparent;
 			Visible = true;
 			Font = null;
-			ForeColor = Drawing.Color.White;
-			TextAlignment = Alignment.Center;
+			ForeColor = Drawing.Color.Black;
+			TextAlignment = Alignment.UpperLeft;
 			_textClipper = new Viewport(0, 0, 1, 1);
-			_textLabel = new TextSprite(name + "ButtonFont." + Guid.NewGuid().ToString(), name, Font);			
+			_textLabel = new TextSprite(name + "Label." + Guid.NewGuid().ToString(), name, Font);			
 		}
 		#endregion
 	}

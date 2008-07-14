@@ -85,9 +85,9 @@ namespace GorgonLibrary
 				ClearItems();
 
 				// Loop through list and build.
-				for (i = 0; i < D3D9.Direct3D.Adapters.Count; i++)
+				for (i = 0; i < Gorgon.Direct3D.Adapters.Count; i++)
 				{
-					driverCapabilities = D3D9.Direct3D.GetDeviceCaps(i, Driver.DeviceType);
+					driverCapabilities = Gorgon.Direct3D.GetDeviceCaps(i, Driver.DeviceType);
 
 					// Only add drivers that support hardware rendering, or if we've chosen the 
 					// reference device upon startup, then allow all drivers.
