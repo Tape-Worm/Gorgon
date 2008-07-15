@@ -237,6 +237,7 @@ namespace GorgonLibrary.GUI
 			Drawing.Point position = Owner.PointToScreen(WindowDimensions.Location);		// Screen position of the button.
 			Drawing.Rectangle clipperDimensions = Drawing.Rectangle.Empty;					// Clipper dimensions.
 			IGUIContainer container = Owner as IGUIContainer;								// GUI container.
+			Drawing.Rectangle clipArea = Drawing.Rectangle.Empty;							// Clipping area.
 
 			if ((container != null) && (container.ClipChildren))
 				SetClippingRegion(GetClippingArea());
@@ -248,16 +249,19 @@ namespace GorgonLibrary.GUI
 
 			DrawFocusRectangle();
 
-			ResetClippingRegion();			
-			
+			ResetClippingRegion();
+
+			clipArea = GetClippingArea(this, new Drawing.Rectangle(0, 0, ClientArea.Width, ClientArea.Height));
 			if ((container != null) && (container.ClipChildren))
 			{
 			    ResetClippingRegion();
-				SetClippingRegion(GetClippingArea(this, new Drawing.Rectangle(0, 0, ClientArea.Width, ClientArea.Height)));
+				SetClippingRegion(clipArea);
 			}
 
-			Gorgon.CurrentRenderTarget.Clear(BackColor);
-			
+			if ((clipArea.Width < 1) || (clipArea.Height < 1))
+				SetClippingRegion(new Drawing.Rectangle(0, 0, 1, 1));
+				
+			Gorgon.CurrentRenderTarget.Clear(BackColor);			
 			OnCanvasDraw(this, EventArgs.Empty);
 	
 			if ((container != null) && (container.ClipChildren))

@@ -201,19 +201,20 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
-		/// Function called when a keyboard event has taken place in this window.
+		/// Function to retrieve all controls in the focused window.
 		/// </summary>
-		/// <param name="isDown">TRUE if the button was pressed, FALSE if released.</param>
-		/// <param name="e">Event parameters.</param>
-		protected internal override void KeyboardEvent(bool isDown, GorgonLibrary.InputDevices.KeyboardInputEventArgs e)
+		/// <param name="controls">Control list to populate.</param>
+		/// <param name="container">Container that owns the control.</param>
+		private void GetAllControls(List<GUIObject> controls, IGUIContainer container)
 		{
-			if ((isDown) && (e.Key == GorgonLibrary.InputDevices.KeyboardKeys.Tab))
-				SelectNextControl();
+			for (int i = 0; i < container.GUIObjects.Count; i++)
+			{
+				IGUIContainer ownerContainer = container.GUIObjects[i] as IGUIContainer;
+				if (ownerContainer != null)
+					GetAllControls(controls, ownerContainer);
 
-			if ((_focused != null) && (_focused.CanFocus))
-				_focused.KeyboardEvent(isDown, e);
-			else
-				DefaultKeyboardEvent(isDown, e);
+				controls.Add(container.GUIObjects[i]);
+			}
 		}
 
 		/// <summary>
@@ -269,6 +270,21 @@ namespace GorgonLibrary.GUI
 				_captionTextLabel.Draw();
 				Gorgon.CurrentClippingViewport = lastView;
 			}
+		}
+
+		/// Function called when a keyboard event has taken place in this window.
+		/// </summary>
+		/// <param name="isDown">TRUE if the button was pressed, FALSE if released.</param>
+		/// <param name="e">Event parameters.</param>
+		protected internal override void KeyboardEvent(bool isDown, GorgonLibrary.InputDevices.KeyboardInputEventArgs e)
+		{
+			if ((isDown) && (e.Key == GorgonLibrary.InputDevices.KeyboardKeys.Tab))
+				SelectNextControl();
+
+			if ((_focused != null) && (_focused.CanFocus))
+				_focused.KeyboardEvent(isDown, e);
+			else
+				DefaultKeyboardEvent(isDown, e);
 		}
 
 		/// <summary>
@@ -397,29 +413,11 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
-		/// Function to retrieve all controls in the focused window.
-		/// </summary>
-		/// <param name="controls">Control list to populate.</param>
-		/// <param name="container">Container that owns the control.</param>
-		private void GetAllControls(List<GUIObject> controls, IGUIContainer container)
-		{
-			for (int i = 0; i < container.GUIObjects.Count; i++)
-			{
-				IGUIContainer ownerContainer = container.GUIObjects[i] as IGUIContainer;
-				if (ownerContainer != null)
-					GetAllControls(controls, ownerContainer);
-
-				controls.Add(container.GUIObjects[i]);
-			}
-		}
-
-		/// <summary>
 		/// Function to select the next control that can receive focus.
 		/// </summary>
 		public void SelectNextControl()
 		{
 			List<GUIObject> controls = new List<GUIObject>();
-			GUIObject candidate = null;
 
 			GetAllControls(controls, this);
 
@@ -429,23 +427,18 @@ namespace GorgonLibrary.GUI
 							  select control;
 
 			if (_focused == null)
-				guiControls.FirstOrDefault();
+				_focused = guiControls.FirstOrDefault();
 			else
 			{
 				for (int i = 0; i < guiControls.Count(); i++)
 				{
-					if ((guiControls.ElementAt(i) == _focused) || (candidate != null))
+					if (guiControls.ElementAt(i) == _focused)
 					{
 						if (i < guiControls.Count() - 1)
-							candidate = guiControls.ElementAt(i + 1);
+							_focused = guiControls.ElementAt(i + 1);
 						else
-							candidate = guiControls.ElementAt(0);
-
-						if ((candidate.Enabled) && (candidate.CanFocus) && (candidate.Visible))
-						{
-							_focused = candidate;
-							break;
-						}
+							_focused = guiControls.ElementAt(0);
+						break;
 					}
 				}
 			}

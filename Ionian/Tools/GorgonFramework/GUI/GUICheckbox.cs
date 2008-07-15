@@ -214,7 +214,7 @@ namespace GorgonLibrary.GUI
 				checkDiff = Skin.Elements["Controls.CheckBox.Check"].Dimensions.Height - Skin.Elements["Controls.CheckBox.Box"].Dimensions.Height;
 				boxY -= Skin.Elements["Controls.CheckBox.Box"].Dimensions.Height / 2;
 				Skin.Elements["Controls.CheckBox.Box"].Draw(new Drawing.Rectangle(position.X, boxY, Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, Skin.Elements["Controls.CheckBox.Box"].Dimensions.Height));
-				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, WindowDimensions.Height);
+				clipperDimensions = new Drawing.Rectangle(Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, 0, ClientArea.Width - Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, ClientArea.Height);
 				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.CheckBox.Box"].Dimensions.Width, position.Y);
 			}
 			else
@@ -222,7 +222,7 @@ namespace GorgonLibrary.GUI
 				checkDiff = Skin.Elements["Controls.CheckBox.Check"].Dimensions.Height - Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Height;
 				boxY -= Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Height / 2;
 				Skin.Elements["Controls.CheckBox.Box.Hover"].Draw(new Drawing.Rectangle(position.X, boxY, Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Height));
-				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, WindowDimensions.Height);
+				clipperDimensions = new Drawing.Rectangle(Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, 0, ClientArea.Width - Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, ClientArea.Height);
 				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.CheckBox.Box.Hover"].Dimensions.Width, position.Y);
 			}
 
@@ -234,7 +234,7 @@ namespace GorgonLibrary.GUI
 			if ((container != null) && (container.ClipChildren))
 			{
 				ResetClippingRegion();
-				SetClippingRegion(GetClippingArea(clipperDimensions));
+				SetClippingRegion(GetClippingArea(this, clipperDimensions));
 			}
 
 			_textClipper.SetWindowDimensions(Gorgon.CurrentClippingViewport.Left, Gorgon.CurrentClippingViewport.Top, clipperDimensions.Width, clipperDimensions.Height);

@@ -502,8 +502,8 @@ namespace GorgonLibrary.GUI
 				if (clipRect.Height < 0)
 					clipRect.Height = 0;
 
-				screenPoints = parent.RectToScreen(clipRect);				
-				if (Owner.Owner != null)
+				screenPoints = parent.RectToScreen(clipRect);
+				if (parent.Owner != null)
 				{
 					ownerPoints = parent.GetClippingArea();
 					if (ownerPoints != Drawing.Rectangle.Empty)
@@ -566,15 +566,12 @@ namespace GorgonLibrary.GUI
 				window.Desktop.BringToFront(window);
 			else
 			{
-				window = GetOwnerWindow();
-
-				// DO NOT SET ANOTHER WINDOW AS FOCUSED!!  I HATE THAT!!
-				if (window != Desktop.Focused)
-					return;
 				if ((!Enabled) || (!Visible) || (!CanFocus))
 					return;
 
-				window.FocusedControl = this;
+				window = GetOwnerWindow();
+				if (window != null)
+					window.FocusedControl = this;
 			}
 		}
 

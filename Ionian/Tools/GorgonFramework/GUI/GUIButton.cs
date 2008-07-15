@@ -156,7 +156,7 @@ namespace GorgonLibrary.GUI
 				Skin.Elements["Controls.Button.Left"].Draw(new Drawing.Rectangle(position.X, position.Y, Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height));
 				Skin.Elements["Controls.Button.Right"].Draw(new Drawing.Rectangle(position.X + WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width, position.Y, Skin.Elements["Controls.Button.Right"].Dimensions.Width, WindowDimensions.Height));
 				Skin.Elements["Controls.Button.Body"].Draw(new Drawing.Rectangle(position.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, position.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height));
-				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height);
+				clipperDimensions = new Drawing.Rectangle(Skin.Elements["Controls.Button.Left"].Dimensions.Width, 0, WindowDimensions.Width - Skin.Elements["Controls.Button.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Left"].Dimensions.Width, WindowDimensions.Height);
 				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.Button.Left"].Dimensions.Width, position.Y);
 			}
 			else
@@ -164,7 +164,7 @@ namespace GorgonLibrary.GUI
 				Skin.Elements["Controls.Button.Hover.Left"].Draw(new Drawing.Rectangle(position.X, position.Y, Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height));
 				Skin.Elements["Controls.Button.Hover.Right"].Draw(new Drawing.Rectangle(position.X + WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width, position.Y, Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width, WindowDimensions.Height));
 				Skin.Elements["Controls.Button.Hover.Body"].Draw(new Drawing.Rectangle(position.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, position.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height));
-				clipperDimensions = new Drawing.Rectangle(WindowDimensions.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Y, WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height);
+				clipperDimensions = new Drawing.Rectangle(Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, 0, WindowDimensions.Width - Skin.Elements["Controls.Button.Hover.Right"].Dimensions.Width - Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, WindowDimensions.Height);
 				_textLabel.Position = new Vector2D(position.X + Skin.Elements["Controls.Button.Hover.Left"].Dimensions.Width, position.Y);
 			}
 
@@ -173,7 +173,7 @@ namespace GorgonLibrary.GUI
 			if ((container != null) && (container.ClipChildren))
 			{
 				ResetClippingRegion();
-				SetClippingRegion(GetClippingArea(clipperDimensions));
+				SetClippingRegion(GetClippingArea(this, clipperDimensions));
 			}
 			_textClipper.SetWindowDimensions(Gorgon.CurrentClippingViewport.Left, Gorgon.CurrentClippingViewport.Top, clipperDimensions.Width, clipperDimensions.Height);
 			_textLabel.Draw();

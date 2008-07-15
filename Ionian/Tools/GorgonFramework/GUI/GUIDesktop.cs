@@ -117,9 +117,9 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
-		/// Property to return the list of GUI panels.
+		/// Property to return the list of GUI windows.
 		/// </summary>
-		public GUIWindowCollection Panels
+		public GUIWindowCollection Windows
 		{
 			get
 			{
