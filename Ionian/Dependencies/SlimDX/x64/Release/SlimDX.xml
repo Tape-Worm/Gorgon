@@ -5082,102 +5082,41 @@ Gets or sets the size, in bytes, of the buffer.
 Describes a buffer resource.
 </summary>
         </member>
-        <member name="M:SlimDX.Half3.Equals(SlimDX.Half3@,SlimDX.Half3@)">
+        <member name="M:SlimDX.Direct3D10.StateBlock.ReleaseAllDeviceObjects">
             <summary>
-Determines whether the specified object instances are considered equal. 
+Release all references to device objects.
 </summary>
-            <param name="value1" />
-            <param name="value2" />
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+            <returns>A result code.</returns>
         </member>
-        <member name="M:SlimDX.Half3.Equals(SlimDX.Half3)">
+        <member name="M:SlimDX.Direct3D10.StateBlock.Capture">
             <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
+Captures the relevant state to the state block.
 </summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+            <returns>A result code.</returns>
         </member>
-        <member name="M:SlimDX.Half3.Equals(System.Object)">
+        <member name="M:SlimDX.Direct3D10.StateBlock.Apply">
             <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
+Applies the relevant state from the state block.
 </summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+            <returns>A result code.</returns>
         </member>
-        <member name="M:SlimDX.Half3.GetHashCode">
+        <member name="M:SlimDX.Direct3D10.StateBlock.FromPointer(System.IntPtr)">
             <summary>
-Returns the hash code for this instance.
+Constructs a StateBlock object from a marshalled native pointer.
 </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
+            <param name="pointer">The native object pointer.</param>
+            <returns>The StateBlock object for the native object.</returns>
         </member>
-        <member name="M:SlimDX.Half3.op_Inequality(SlimDX.Half3,SlimDX.Half3)">
+        <member name="M:SlimDX.Direct3D10.StateBlock.#ctor(SlimDX.Direct3D10.Device,SlimDX.Direct3D10.StateBlockMask!System.Runtime.CompilerServices.IsByValue)">
             <summary>
-Tests for inequality between two objects.
+Constructs a new StateBlock object.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+            <param name="device">The device to associate the state block with.</param>
+            <param name="mask">The mask describing which state properties are relevant to the state block.</param>
         </member>
-        <member name="M:SlimDX.Half3.op_Equality(SlimDX.Half3,SlimDX.Half3)">
+        <member name="P:SlimDX.Direct3D10.StateBlock.Device">
             <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Half3.#ctor(SlimDX.Half,SlimDX.Half,SlimDX.Half)">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Half3" /> structure.
-</summary>
-            <param name="x">The X component.</param>
-            <param name="y">The Y component.</param>
-            <param name="z">The Z component.</param>
-        </member>
-        <member name="M:SlimDX.Half3.#ctor(SlimDX.Half)">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Half3" /> structure.
-</summary>
-            <param name="value">The value to set for the X, Y, and Z components.</param>
-        </member>
-        <member name="P:SlimDX.Half3.Z">
-            <summary>
-Gets or sets the Z component of the vector.
-</summary>
-            <value>The Z component of the vector.</value>
-        </member>
-        <member name="P:SlimDX.Half3.Y">
-            <summary>
-Gets or sets the Y component of the vector.
-</summary>
-            <value>The Y component of the vector.</value>
-        </member>
-        <member name="P:SlimDX.Half3.X">
-            <summary>
-Gets or sets the X component of the vector.
-</summary>
-            <value>The X component of the vector.</value>
-        </member>
-        <member name="T:SlimDX.Half3">
-            <summary>
-Defines a three component vector, using half precision floating point coordinates.
-</summary>
-        </member>
-        <member name="M:SlimDX.Design.Half3Converter.#ctor">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Design.Half3Converter" /> class.
-</summary>
-        </member>
-        <member name="T:SlimDX.Design.Half3Converter">
-            <summary>
-Provides a type converter to convert <see cref="T:SlimDX.Half3" /> objects to and from various 
-other representations.
+Gets the device the object is bound to.
 </summary>
         </member>
         <member name="M:SlimDX.DirectInput.JoystickObjects.PointOfView(System.Int32)">
@@ -6157,6 +6096,104 @@ Tests for equality between two objects.
 Clones the instance and returns a new object containing the same values.
 </summary>
             <returns>A new <see cref="T:SlimDX.X3DAudio.Cone" /> object containing the same values as the current instance.</returns>
+        </member>
+        <member name="M:SlimDX.Half3.Equals(SlimDX.Half3@,SlimDX.Half3@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1" />
+            <param name="value2" />
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half3.Equals(SlimDX.Half3)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Half3.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Half3.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.Half3.op_Inequality(SlimDX.Half3,SlimDX.Half3)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half3.op_Equality(SlimDX.Half3,SlimDX.Half3)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half3.#ctor(SlimDX.Half,SlimDX.Half,SlimDX.Half)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Half3" /> structure.
+</summary>
+            <param name="x">The X component.</param>
+            <param name="y">The Y component.</param>
+            <param name="z">The Z component.</param>
+        </member>
+        <member name="M:SlimDX.Half3.#ctor(SlimDX.Half)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Half3" /> structure.
+</summary>
+            <param name="value">The value to set for the X, Y, and Z components.</param>
+        </member>
+        <member name="P:SlimDX.Half3.Z">
+            <summary>
+Gets or sets the Z component of the vector.
+</summary>
+            <value>The Z component of the vector.</value>
+        </member>
+        <member name="P:SlimDX.Half3.Y">
+            <summary>
+Gets or sets the Y component of the vector.
+</summary>
+            <value>The Y component of the vector.</value>
+        </member>
+        <member name="P:SlimDX.Half3.X">
+            <summary>
+Gets or sets the X component of the vector.
+</summary>
+            <value>The X component of the vector.</value>
+        </member>
+        <member name="T:SlimDX.Half3">
+            <summary>
+Defines a three component vector, using half precision floating point coordinates.
+</summary>
+        </member>
+        <member name="M:SlimDX.Design.Half3Converter.#ctor">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Design.Half3Converter" /> class.
+</summary>
+        </member>
+        <member name="T:SlimDX.Design.Half3Converter">
+            <summary>
+Provides a type converter to convert <see cref="T:SlimDX.Half3" /> objects to and from various 
+other representations.
+</summary>
         </member>
         <member name="M:SlimDX.Direct3D10.Asynchronous.GetData(SlimDX.Direct3D10.AsynchronousFlags)">
             <summary>
@@ -13178,6 +13215,16 @@ Gets or sets the effect state manager.
             <summary>
 Gets or sets the currently active technique.
 </summary>
+        </member>
+        <member name="M:SlimDX.Direct3D9.Effect.Disassemble(System.Boolean)">
+            <summary>
+Disassembles the effect.
+</summary>
+            <param name="enableColorCode">
+                <c>true</c> to enable color coding to make the disassembly easier to read, <c>false</c> to disable color coding.</param>
+            <returns>
+A <see cref="T:SlimDX.DataStream" /> that contains the disassembled effect.
+</returns>
         </member>
         <member name="M:SlimDX.Direct3D9.Effect.SetRawValue(SlimDX.Direct3D9.EffectHandle,SlimDX.DataStream,System.Int32)">
             <summary>
