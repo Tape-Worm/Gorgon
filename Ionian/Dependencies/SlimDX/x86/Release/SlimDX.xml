@@ -4,6 +4,59 @@
         "SlimDX"
     </assembly>
     <members>
+        <member name="P:SlimDX.DirectSound.AcousticEchoCancel.PreviouslyDiverged">
+            <summary>
+True if the AEC algorithm ever loses convergence.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.AcousticEchoCancel.ContinuouslyConverged">
+            <summary>
+True if the AEC algorithm has converged.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.AcousticEchoCancel.CurrentlyConverged">
+            <summary>
+True if the AEC algorithm is currently converged.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.AcousticEchoCancel.Uninitialized">
+            <summary>
+True if the AEC algorithm is in the uninitialized state.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.AcousticEchoCancel.Mode">
+            <summary>
+Operation mode.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.AcousticEchoCancel.NoiseFill">
+            <summary>
+Boolean value that specifies whether to enable background comfort noise, which makes the capture signal sound more natural by preventing periods of dead silence. By default, background comfort noise is not enabled.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.AcousticEchoCancel.Enabled">
+            <summary>
+Boolean value that specifies whether the effect is enabled.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.AcousticEchoCancel.Reset">
+            <summary>
+Sets the enumerator to its initial position, which is before the first element in the collection.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.AcousticEchoCancel.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.AcousticEchoCancel" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundCaptureFXAec pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.AcousticEchoCancel">
+            <summary>
+The CaptureEffectAcousticEchoCancel object is used to set and retrieve parameters on a capture buffer that supports acoustic echo cancellation. This object requires Microsoft® Windows® XP or later operating systems.
+</summary>
+        </member>
         <member name="T:SlimDX.Direct3D9.FragmentLinker">
             <summary>Used to link shader fragments at runtime.</summary>
             <unmanaged>ID3DXFragmentLinker</unmanaged>
@@ -43,6 +96,269 @@ Constructs a new StateBlock object.
         <member name="P:SlimDX.Direct3D10.StateBlock.Device">
             <summary>
 Gets the device the object is bound to.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.HFReferenceMin">
+            <summary>
+Minimum reference high frequency, in hertz.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.HFReferenceMax">
+            <summary>
+Maximum reference high frequency, in hertz.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.HFReferenceDefault">
+            <summary>
+Default reference high frequency, in hertz.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DiffusionMin">
+            <summary>
+Minimum echo density in the late reverberation decay, in percent.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DiffusionMax">
+            <summary>
+Maximum echo density in the late reverberation decay, in percent.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DiffusionDefault">
+            <summary>
+Default echo density in the late reverberation decay, in percent.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DensityMin">
+            <summary>
+Minimum modal density in the late reverberation decay, in percent.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DensityMax">
+            <summary>
+Maximum modal density in the late reverberation decay, in percent.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DensityDefault">
+            <summary>
+Default modal density in the late reverberation decay, in percent.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReverbDelayMin">
+            <summary>
+Minimum time limit between the early reflections and the late reverberation relative to the time of the first reflection, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReverbDelayMax">
+            <summary>
+Maximum time limit between the early reflections and the late reverberation relative to the time of the first reflection, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReverbDelayDefault">
+            <summary>
+Default time limit between the early reflections and the late reverberation relative to the time of the first reflection, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReverbMin">
+            <summary>
+Minimum attenuation of late reverberation relative to Room, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReverbMax">
+            <summary>
+Maximum attenuation of late reverberation relative to Room, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReverbDefault">
+            <summary>
+Default attenuation of late reverberation relative to Room, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReflectionsDelayMin">
+            <summary>
+Minimum delay time of the first reflection relative to the direct path, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReflectionsDelayMax">
+            <summary>
+Maximum delay time of the first reflection relative to the direct path, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReflectionsDelayDefault">
+            <summary>
+Default delay time of the first reflection relative to the direct path, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReflectionsMin">
+            <summary>
+Minimum attenuation of early reflections relative to Room, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReflectionsMax">
+            <summary>
+Maximum attenuation of early reflections relative to Room, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.ReflectionsDefault">
+            <summary>
+Default attenuation of early reflections relative to Room, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DecayHFRatioMin">
+            <summary>
+Minimum ratio of the decay time at high frequencies to the decay time at low frequencies.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DecayHFRatioMax">
+            <summary>
+Maximum ratio of the decay time at high frequencies to the decay time at low frequencies.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DecayHFRatioDefault">
+            <summary>
+Default ratio of the decay time at high frequencies to the decay time at low frequencies.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DecayTimeMin">
+            <summary>
+Minimum decay time, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DecayTimeMax">
+            <summary>
+Maximum decay time, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.DecayTimeDefault">
+            <summary>
+Default decay time, in seconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomRolloffFactorMin">
+            <summary>
+Minimum rolloff factor for the reflected signals. The rolloff factor for the direct path is controlled by the DirectSound listener.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomRolloffFactorMax">
+            <summary>
+Maximum rolloff factor for the reflected signals. The rolloff factor for the direct path is controlled by the DirectSound listener.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomRolloffFactorDefault">
+            <summary>
+Default rolloff factor for the reflected signals. The rolloff factor for the direct path is controlled by the DirectSound listener.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomHFMin">
+            <summary>
+Minimum attenuation of the room high-frequency effect, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomHFMax">
+            <summary>
+Maximum attenuation of the room high-frequency effect, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomHFDefault">
+            <summary>
+Default attenuation of the room high-frequency effect, in mB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomMin">
+            <summary>
+Minimum attenuation of the room effect, in millibels (mB).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomMax">
+            <summary>
+Maximum attenuation of the room effect, in millibels (mB).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2Reverb.RoomDefault">
+            <summary>
+Default attenuation of the room effect, in millibels (mB).
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.Preset">
+            <summary>
+Gets or sets the standard reverberation parameters of a buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.Quality">
+            <summary>
+Gets or sets the quality of the environmental reverberation effect.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.HFReference">
+            <summary>
+Reference high frequency, in hertz.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.Density">
+            <summary>
+Modal density in the late reverberation decay, in percent.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.Diffusion">
+            <summary>
+Echo density in the late reverberation decay, in percent.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.ReverbDelay">
+            <summary>
+Time limit between the early reflections and the late reverberation relative to the time of the first reflection, in seconds.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.Reverb">
+            <summary>
+Attenuation of late reverberation relative to Room, in mB.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.ReflectionsDelay">
+            <summary>
+Delay time of the first reflection relative to the direct path, in seconds.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.Reflections">
+            <summary>
+Attenuation of early reflections relative to Room, in mB.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.DecayHFRatio">
+            <summary>
+Ratio of the decay time at high frequencies to the decay time at low frequencies.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.DecayTime">
+            <summary>
+Decay time, in seconds.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.RoomRolloffFactor">
+            <summary>
+Rolloff factor for the reflected signals.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.RoomHF">
+            <summary>
+Attenuation of the room high-frequency effect, in mB.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.I3DL2Reverb.Room">
+            <summary>
+Attenuation of the room effect, in millibels (mB).
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.I3DL2Reverb.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.I3DL2Reverb" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXI3DL2Reverb pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.I3DL2Reverb">
+            <summary>
+The SoundEffectI3DL2Reverb object is used to set and retrieve effect parameters on a buffer that supports I3DL2 (Interactive 3D Audio Level 2) reverberation effects.
 </summary>
         </member>
         <member name="F:SlimDX.DirectInput.DeviceSubtype.JapaneseJ3100Keyboard">
@@ -188,6 +504,22 @@ action mapping.
 Specifies the sub type of a DirectInput device.
 </summary>
         </member>
+        <member name="M:SlimDX.Direct3D10.Mesh.Optimize(SlimDX.Direct3D10.MeshOptimizeFlags,System.Int32[]@,System.Int32[]@)">
+            <summary>
+Optimizes the mesh data.
+</summary>
+            <param name="flags">Flags indicating which optimizations to perform.</param>
+            <param name="faceRemap">An array of integers, one per face, that map the original mesh faces to the optimized mesh faces.</param>
+            <param name="vertexRemap">An array of integers, one per vertex, that map the original mesh vertices to the optimized mesh vertices.</param>
+            <returns>A result code.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D10.Mesh.Optimize(SlimDX.Direct3D10.MeshOptimizeFlags)">
+            <summary>
+Optimizes the mesh data.
+</summary>
+            <param name="flags">Flags indicating which optimizations to perform.</param>
+            <returns>A result code.</returns>
+        </member>
         <member name="M:SlimDX.Direct3D10.Mesh.Discard(SlimDX.Direct3D10.MeshDiscardFlags)">
             <summary>
 Discards data that has been committed to the device.
@@ -266,6 +598,184 @@ Opens and reads the contents of an included file.
         <member name="T:SlimDX.Direct3D10.Include">
             <summary>
 Specifies an interface for handling #include directives in shader or effect files.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.WetDryMixMin">
+            <summary>
+Minimum ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.WetDryMixMax">
+            <summary>
+Maximum ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.WetDryMixDefault">
+            <summary>
+Default ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.WaveformSin">
+            <summary>
+Sine waveform shape of the LFO. By default, the waveform is a sine.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.WaveformTriangle">
+            <summary>
+Triangular waveform shape of the LFO. By default, the waveform is a sine.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.WaveformDefault">
+            <summary>
+Default waveform shape of the LFO. By default, the waveform is a sine.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.Phase90">
+            <summary>
+Positive 90 phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.Phase180">
+            <summary>
+Positive 180 phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.PhaseZero">
+            <summary>
+Zero phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.PhaseNegative90">
+            <summary>
+Negative 90 phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.PhaseNegative180">
+            <summary>
+Negative 180 phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.PhaseMin">
+            <summary>
+Minimum phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.PhaseMax">
+            <summary>
+Maximum phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.PhaseDefault">
+            <summary>
+Default phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.FrequencyMin">
+            <summary>
+Minimum frequency of the LFO(low-frequency oscillator).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.FrequencyMax">
+            <summary>
+Maximum frequency of the LFO(low-frequency oscillator).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.FrequencyDefault">
+            <summary>
+Default frequency of the LFO(low-frequency oscillator).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.FeedbackMin">
+            <summary>
+Minimum percentage of output signal to feed back into the effect's input.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.FeedbackMax">
+            <summary>
+Maximum percentage of output signal to feed back into the effect's input.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.FeedbackDefault">
+            <summary>
+Default percentage of output signal to feed back into the effect's input.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.DepthMin">
+            <summary>
+Minimum percentage by which the delay time is modulated by the low-frequency oscillator (LFO), in hundredths of a percentage point.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.DepthMax">
+            <summary>
+Maximum percentage by which the delay time is modulated by the low-frequency oscillator (LFO), in hundredths of a percentage point.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.DepthDefault">
+            <summary>
+Default percentage by which the delay time is modulated by the low-frequency oscillator (LFO), in hundredths of a percentage point.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.DelayMin">
+            <summary>
+Minimum number of milliseconds the input is delayed before it is played back.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.DelayMax">
+            <summary>
+Maximum number of milliseconds the input is delayed before it is played back.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.FlangerEffect.DelayDefault">
+            <summary>
+Default number of milliseconds the input is delayed before it is played back.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.FlangerEffect.WetDryMix">
+            <summary>
+Ratio of wet (processed) signal to dry (unprocessed) signal. The default value is 50.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.FlangerEffect.Waveform">
+            <summary>
+Waveform shape of the LFO. By default, the waveform is a sine.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.FlangerEffect.Phase">
+            <summary>
+Phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.FlangerEffect.Frequency">
+            <summary>
+Frequency of the LFO. The default value is 0.25.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.FlangerEffect.Feedback">
+            <summary>
+Percentage of output signal to feed back into the effect's input. The default value is -50.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.FlangerEffect.Depth">
+            <summary>
+Percentage by which the delay time is modulated by the low-frequency oscillator (LFO), in hundredths of a percentage point. The default value is 100.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.FlangerEffect.Delay">
+            <summary>
+Number of milliseconds the input is delayed before it is played back. The default value is 2 ms.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.FlangerEffect.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.FlangerEffect" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXFlanger pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.FlangerEffect">
+            <summary>
+The SoundEffectFlanger object is used to set and retrieve effect parameters on a buffer that supports flange.
 </summary>
         </member>
         <member name="M:SlimDX.Direct3D10.ResourceRegion.Equals(SlimDX.Direct3D10.ResourceRegion@,SlimDX.Direct3D10.ResourceRegion@)">
@@ -350,6 +860,153 @@ Gets or sets the left boundary of the region.
         <member name="T:SlimDX.Direct3D10.ResourceRegion">
             <summary>
 Represents a 3D region of a resource's data.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.ResultCode">
+            <summary>Defines error result codes that are returned by DirectSound functions.</summary>
+        </member>
+        <member name="T:SlimDX.Direct3D9.MatrixStack">
+            <summary>Applications use the methods of the MatrixStack class to manipulate a matrix stack.</summary>
+            <unmanaged>ID3DXMatrixStack</unmanaged>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSound3DAlgorithmGuid.NoVirtualization3DAlgorithm">
+            <summary>
+3-D output is mapped into normal left and right stereo panning. At 90 degrees to the left, the sound is coming out of only the left speaker; at 90 degrees to the right, sound is coming out of only the right speaker. The vertical axis is ignored except for scaling of volume due to distance. Doppler shift and volume scaling are still applied, but the 3-D filtering is not performed on this buffer. This is the most efficient software implementation, but provides no virtual 3-D audio effect.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSound3DAlgorithmGuid.LightHrt3DAlgorithm">
+            <summary>
+The 3-D API is processed with the efficient 3-D audio algorithm. This algorithm gives a good 3-D audio effect, but uses fewer CPU cycles than Guid3DAlgorithmHrtfFull
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSound3DAlgorithmGuid.FullHrt3DAlgorithm">
+            <summary>
+The 3-D API is processed with the high quality 3-D audio algorithm. This algorithm gives the highest quality 3-D audio effect, but uses more CPU cycles.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSound3DAlgorithmGuid.Default3DAlgorithm">
+            <summary>
+Default 3-D algorithm
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.DirectSound3DAlgorithmGuid">
+            <summary>
+Contains system-defined identifiers for DirectSound 3-D Algorithms.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.WavesReverb">
+            <summary>
+Waves reverberation effect 
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.StandardParametricEqualizer">
+            <summary>
+Standard Parametric equalizer effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.StandardInteractive3DLevel2Reverb">
+            <summary>
+Standard Environmental reverberation effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.StandardGargle">
+            <summary>
+Standard Gargle effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.StandardFlanger">
+            <summary>
+Standard Flanger effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.StandardEcho">
+            <summary>
+Standard Echo effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.StandardDistortion">
+            <summary>
+Standard Distortion effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.StandardCompressor">
+            <summary>
+Standard Compressor effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundEffectGuid.StandardChorus">
+            <summary>
+Standard Chorus effect
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.SoundEffectGuid">
+            <summary>
+Contains system-defined identifiers for DirectSound sound effects.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectGuid.SystemNoiseSuppressionCaptureEffect">
+            <summary>
+System default noise suppression capture effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectGuid.SystemAcousticEchoCancellationCaptureEffect">
+            <summary>
+System default acoustic echo cancellation capture effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectGuid.MicrosoftNoiseSuppressionCaptureEffect">
+            <summary>
+Microsoft noise suppression capture effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectGuid.MicrosoftAcousticEchoCancellationCaptureEffect">
+            <summary>
+Microsoft acoustic echo cancellation capture effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectGuid.NoiseSuppressionCaptureEffect">
+            <summary>
+Noise suppression capture effect
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectGuid.AcousticEchoCancellationCaptureEffect">
+            <summary>
+Acoustic echo cancellation capture effect.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.CaptureEffectGuid">
+            <summary>
+Contains system-defined identifiers for DirectSound capture effects.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSoundGuid.DefaultVoicePlaybackDevice">
+            <summary>
+Voice playback device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSoundGuid.DefaultVoiceCaptureDevice">
+            <summary>
+Voice capture device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSoundGuid.DefaultPlaybackDevice">
+            <summary>
+Default audio playback device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSoundGuid.DefaultCaptureDevice">
+            <summary>
+Default audio capture device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSoundGuid.AllObjects">
+            <summary>
+All objects.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.DirectSoundGuid">
+            <summary>
+Contains system-defined identifiers for DirectSound default playback and capture devices.
 </summary>
         </member>
         <member name="M:SlimDX.Direct3D10.BlendState.FromPointer(System.IntPtr)">
@@ -475,6 +1132,121 @@ Provides a type converter to convert <see cref="T:SlimDX.Half2" /> objects to an
 other representations.
 </summary>
         </member>
+        <member name="M:SlimDX.Direct3D10.BufferDescription.Equals(SlimDX.Direct3D10.BufferDescription@,SlimDX.Direct3D10.BufferDescription@)">
+            <summary>
+Returns a value indicating whether the two BufferDescriptions are equivalent.
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> has the same value as <paramref name="value2" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D10.BufferDescription.Equals(SlimDX.Direct3D10.BufferDescription)">
+            <summary>
+Returns a value indicating whether this instance is equal to the specified object.
+</summary>
+            <param name="other">A <see cref="T:SlimDX.Direct3D10.BufferDescription" /> to compare with this instance.</param>
+            <returns>
+                <c>true</c> if <paramref name="other" /> has the same value as this instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D10.BufferDescription.Equals(System.Object)">
+            <summary>
+Returns a value indicating whether this instance is equal to the specified object.
+</summary>
+            <param name="obj">An object to compare with this instance.</param>
+            <returns>
+                <c>true</c> if <paramref name="obj" /> has the same value as this instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D10.BufferDescription.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D10.BufferDescription.op_Inequality(SlimDX.Direct3D10.BufferDescription,SlimDX.Direct3D10.BufferDescription)">
+            <summary>
+Tests for inequality between two BufferDescriptions.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D10.BufferDescription.op_Equality(SlimDX.Direct3D10.BufferDescription,SlimDX.Direct3D10.BufferDescription)">
+            <summary>
+Tests for equality between two BufferDescriptions.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D10.BufferDescription.#ctor(System.Int32,SlimDX.Direct3D10.ResourceUsage,SlimDX.Direct3D10.BindFlags,SlimDX.Direct3D10.CpuAccessFlags,SlimDX.Direct3D10.ResourceOptionFlags)">
+            <summary>
+Constructs a new BufferDescription object.
+</summary>
+            <param name="sizeInBytes">The size, in bytes, of the buffer.</param>
+            <param name="usage">Identifies the usage pattern for the buffer.</param>
+            <param name="bindFlags">Specifies how the buffer will be bound to the pipeline.</param>
+            <param name="accessFlags">Specifies how the buffer will be accessible from the CPU.</param>
+            <param name="optionFlags">Specifies miscellaneous resource options.</param>
+        </member>
+        <member name="P:SlimDX.Direct3D10.BufferDescription.OptionFlags">
+            <summary>
+Gets or sets the flags specifying miscellaneous resource options.
+</summary>
+        </member>
+        <member name="P:SlimDX.Direct3D10.BufferDescription.CpuAccessFlags">
+            <summary>
+Gets or sets the flags specifying how the CPU will be allowed to access the buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.Direct3D10.BufferDescription.BindFlags">
+            <summary>
+Gets or sets the flags specifying how the buffer is bound to the pipeline.
+</summary>
+        </member>
+        <member name="P:SlimDX.Direct3D10.BufferDescription.Usage">
+            <summary>
+Gets or sets the intended usage pattern of the buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.Direct3D10.BufferDescription.SizeInBytes">
+            <summary>
+Gets or sets the size, in bytes, of the buffer.
+</summary>
+        </member>
+        <member name="T:SlimDX.Direct3D10.BufferDescription">
+            <summary>
+Describes a buffer resource.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.FullDuplex.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.FullDuplex" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFullDuplex pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="M:SlimDX.DirectSound.FullDuplex.#ctor(System.Guid,System.Guid,SlimDX.DirectSound.CaptureBufferDescription,SlimDX.DirectSound.SoundBufferDescription,System.IntPtr,SlimDX.DirectSound.CooperativeLevel,SlimDX.DirectSound.CaptureBuffer@,SlimDX.DirectSound.SecondarySoundBuffer@)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.FullDuplex" /> class.
+</summary>
+            <param name="captureDevice" />
+            <param name="playbackDevice" />
+            <param name="captureDescription" />
+            <param name="bufferDescription" />
+            <param name="windowHandle" />
+            <param name="level" />
+            <param name="captureBuffer" />
+            <param name="secondaryBuffer" />
+        </member>
+        <member name="T:SlimDX.DirectSound.FullDuplex">
+            <summary>
+The FullDuplex object represents a full-duplex stream.
+</summary>
+        </member>
         <member name="M:SlimDX.DirectInput.MouseState.GetButtons">
             <summary>
 Gets the state of the mouse buttons.
@@ -498,6 +1270,119 @@ Gets the X axis of the mouse.
         <member name="T:SlimDX.DirectInput.MouseState">
             <summary>
 Describes the state of a mouse device.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PreLowPassCutoffMin">
+            <summary>
+Minimum filter cutoff for high-frequency harmonics attenuation.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PreLowPassCutoffMax">
+            <summary>
+Maximum filter cutoff for high-frequency harmonics attenuation.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PreLowPassCutoffDefault">
+            <summary>
+Default filter cutoff for high-frequency harmonics attenuation.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PostEQBandwidthMin">
+            <summary>
+Minimum width of frequency band that determines range of harmonic content addition.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PostEQBandwidthMax">
+            <summary>
+Maximum width of frequency band that determines range of harmonic content addition.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PostEQBandwidthDefault">
+            <summary>
+Default width of frequency band that determines range of harmonic content addition.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PostEQCenterFrequencyMin">
+            <summary>
+Minimum center frequency of harmonic content addition.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PostEQCenterFrequencyMax">
+            <summary>
+Maximum center frequency of harmonic content addition.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.PostEQCenterFrequencyDefault">
+            <summary>
+Default center frequency of harmonic content addition.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.EdgeMin">
+            <summary>
+Minimum percentage of distortion intensity.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.EdgeMax">
+            <summary>
+Maximum percentage of distortion intensity.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.EdgeDefault">
+            <summary>
+ Default percentage of distortion intensity.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.GainMin">
+            <summary>
+Minimum amount of signal change after distortion.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.GainMax">
+            <summary>
+Maximum amount of signal change after distortion.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.DistortionEffect.GainDefault">
+            <summary>
+Default amount of signal change after distortion.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DistortionEffect.PreLowPassCutoff">
+            <summary>
+Filter cutoff for high-frequency harmonics attenuation. The default value is 8000 Hz.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DistortionEffect.PostEQBandwidth">
+            <summary>
+Width of frequency band that determines range of harmonic content addition. The default value is 2400 Hz.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DistortionEffect.PostEQCenterFrequency">
+            <summary>
+Center frequency of harmonic content addition. The default value is 2400 Hz.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DistortionEffect.Edge">
+            <summary>
+Percentage of distortion intensity. The default value is 15 percent.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DistortionEffect.Gain">
+            <summary>
+Amount of signal change after distortion. The default value is -18 dB.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.DistortionEffect.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.DistortionEffect" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXDistortion pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.DistortionEffect">
+            <summary>
+The SoundEffectDistortion object is used to set and retrieve effect parameters on a buffer that supports distortion.
 </summary>
         </member>
         <member name="M:SlimDX.DXGI.Surface.Unmap">
@@ -679,102 +1564,360 @@ Provides a type converter to convert <see cref="T:SlimDX.Half3" /> objects to an
 other representations.
 </summary>
         </member>
-        <member name="M:SlimDX.Direct3D10.BufferDescription.Equals(SlimDX.Direct3D10.BufferDescription@,SlimDX.Direct3D10.BufferDescription@)">
+        <member name="P:SlimDX.DirectSound.NoiseSuppress.Enabled">
             <summary>
-Returns a value indicating whether the two BufferDescriptions are equivalent.
-</summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> has the same value as <paramref name="value2" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D10.BufferDescription.Equals(SlimDX.Direct3D10.BufferDescription)">
-            <summary>
-Returns a value indicating whether this instance is equal to the specified object.
-</summary>
-            <param name="other">A <see cref="T:SlimDX.Direct3D10.BufferDescription" /> to compare with this instance.</param>
-            <returns>
-                <c>true</c> if <paramref name="other" /> has the same value as this instance; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D10.BufferDescription.Equals(System.Object)">
-            <summary>
-Returns a value indicating whether this instance is equal to the specified object.
-</summary>
-            <param name="obj">An object to compare with this instance.</param>
-            <returns>
-                <c>true</c> if <paramref name="obj" /> has the same value as this instance; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D10.BufferDescription.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D10.BufferDescription.op_Inequality(SlimDX.Direct3D10.BufferDescription,SlimDX.Direct3D10.BufferDescription)">
-            <summary>
-Tests for inequality between two BufferDescriptions.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D10.BufferDescription.op_Equality(SlimDX.Direct3D10.BufferDescription,SlimDX.Direct3D10.BufferDescription)">
-            <summary>
-Tests for equality between two BufferDescriptions.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D10.BufferDescription.#ctor(System.Int32,SlimDX.Direct3D10.ResourceUsage,SlimDX.Direct3D10.BindFlags,SlimDX.Direct3D10.CpuAccessFlags,SlimDX.Direct3D10.ResourceOptionFlags)">
-            <summary>
-Constructs a new BufferDescription object.
-</summary>
-            <param name="sizeInBytes">The size, in bytes, of the buffer.</param>
-            <param name="usage">Identifies the usage pattern for the buffer.</param>
-            <param name="bindFlags">Specifies how the buffer will be bound to the pipeline.</param>
-            <param name="accessFlags">Specifies how the buffer will be accessible from the CPU.</param>
-            <param name="optionFlags">Specifies miscellaneous resource options.</param>
-        </member>
-        <member name="P:SlimDX.Direct3D10.BufferDescription.OptionFlags">
-            <summary>
-Gets or sets the flags specifying miscellaneous resource options.
+Gets or sets he noise suppression parameters of a buffer.
 </summary>
         </member>
-        <member name="P:SlimDX.Direct3D10.BufferDescription.CpuAccessFlags">
+        <member name="M:SlimDX.DirectSound.NoiseSuppress.Reset">
             <summary>
-Gets or sets the flags specifying how the CPU will be allowed to access the buffer.
+Sets the enumerator to its initial position, which is before the first element in the collection.
 </summary>
         </member>
-        <member name="P:SlimDX.Direct3D10.BufferDescription.BindFlags">
+        <member name="M:SlimDX.DirectSound.NoiseSuppress.FromPointer(System.IntPtr)">
             <summary>
-Gets or sets the flags specifying how the buffer is bound to the pipeline.
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.NoiseSuppress" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundCaptureFXNoiseSuppress pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.NoiseSuppress">
+            <summary>
+The NoiseSuppress object is used to set and retrieve parameters on a capture buffer that supports noise suppression. This object requires Microsoft Windows XP or later.
 </summary>
         </member>
-        <member name="P:SlimDX.Direct3D10.BufferDescription.Usage">
+        <member name="F:SlimDX.DirectSound.CompressorEffect.ThresholdMin">
             <summary>
-Gets or sets the intended usage pattern of the buffer.
+Minimum point at which compression begins, in decibels, in decibels (dB).
 </summary>
         </member>
-        <member name="P:SlimDX.Direct3D10.BufferDescription.SizeInBytes">
+        <member name="F:SlimDX.DirectSound.CompressorEffect.ThresholdMax">
             <summary>
-Gets or sets the size, in bytes, of the buffer.
+Maximum point at which compression begins, in decibels, in decibels (dB). 
 </summary>
         </member>
-        <member name="T:SlimDX.Direct3D10.BufferDescription">
+        <member name="F:SlimDX.DirectSound.CompressorEffect.ThresholdDefault">
             <summary>
-Describes a buffer resource.
+Default point at which compression begins, in decibels, in decibels (dB). The default value is -20 dB.
 </summary>
         </member>
-        <member name="T:SlimDX.Direct3D9.RenderToEnvironmentMap">
-            <summary>Used to generalize the process of rendering to environment maps.</summary>
-            <unmanaged>ID3DXRenderToEnvMap</unmanaged>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.ReleaseMin">
+            <summary>
+Minimum speed at which compression is stopped after input drops below Threshold, in miliseconds. 
+</summary>
         </member>
-        <member name="T:SlimDX.Direct3D9.RenderToEnvironmentMapDescription">
-            <summary>Describes an off-screen render target used by <see cref="T:SlimDX.Direct3D9.RenderToEnvironmentMap" /></summary>.
-<unmanaged>D3DXRTE_DESC</unmanaged></member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.ReleaseMax">
+            <summary>
+Maximum speed at which compression is stopped after input drops below Threshold, in miliseconds. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.ReleaseDefault">
+            <summary>
+Default speed at which compression is stopped after input drops below Threshold, in miliseconds. The default value is 200 ms.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.RatioMin">
+            <summary>
+Minimum compression ratio. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.RatioMax">
+            <summary>
+Maximum compression ratio.  
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.RatioDefault">
+            <summary>
+Default compression ratio. The default value is 3, which means 3:1 compression. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.PreDelayMin">
+            <summary>
+Minimum time after threshold is reached before attack phase is started, in milliseconds. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.PreDelayMax">
+            <summary>
+Maximum time after threshold is reached before attack phase is started, in milliseconds. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.PreDelayDefault">
+            <summary>
+Default time after threshold is reached before attack phase is started, in milliseconds. The default value is 4 ms. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.GainMin">
+            <summary>
+Minimum output gain of signal after compression, in decibels (dB). 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.GainMax">
+            <summary>
+Maximum output gain of signal after compression, in decibels (dB). 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.GainDefault">
+            <summary>
+Default output gain of signal after compression, in decibels (dB). The default value is 0 dB. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.AttackMin">
+            <summary>
+Minimum time before compression reaches its full value, in decibels (dB).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.AttackMax">
+            <summary>
+Maximum time before compression reaches its full value, in decibels (dB).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CompressorEffect.AttackDefault">
+            <summary>
+Default time before compression reaches its full value, in decibels (dB). The default value is 10 ms.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CompressorEffect.Threshold">
+            <summary>
+Point at which compression begins, in decibels.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CompressorEffect.Ratio">
+            <summary>
+Compression ratio. The default value is 3, which means 3:1 compression.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CompressorEffect.PreDelay">
+            <summary>
+Time after Threshold is reached before attack phase is started, in milliseconds.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CompressorEffect.Release">
+            <summary>
+Speed at which compression is stopped after input drops below Threshold.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CompressorEffect.Gain">
+            <summary>
+Output gain of signal after compression.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CompressorEffect.Attack">
+            <summary>
+Time before compression reaches its full value.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.CompressorEffect.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.CompressorEffect" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXCompressor pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.CompressorEffect">
+            <summary>
+The SoundEffectCompressor object is used to set and retrieve effect parameters on a buffer that supports compression.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.HighFrequencyRTRatioMin">
+            <summary>
+Minimum high-frequency reverb time ratio.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.HighFrequencyRTRatioMax">
+            <summary>
+Maximum high-frequency reverb time ratio.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.HighFrequencyRTRatioDefault">
+            <summary>
+Default high-frequency reverb time ratio.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.ReverbTimeMin">
+            <summary>
+Minimum reverb time, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.ReverbTimeMax">
+            <summary>
+Maximum reverb time, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.ReverbTimeDefault">
+            <summary>
+Default reverb time, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.ReverbMixMin">
+            <summary>
+Minimum reverb mix, in dB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.ReverbMixMax">
+            <summary>
+Maximum reverb mix, in dB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.ReverbMixDefault">
+            <summary>
+Default reverb mix, in dB.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.InGainMin">
+            <summary>
+Minimum input gain of signal, in decibels (dB).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.InGainMax">
+            <summary>
+Maximum input gain of signal, in decibels (dB).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.WavesReverb.InGainDefault">
+            <summary>
+Default input gain of signal, in decibels (dB).
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.WavesReverb.HighFrequencyRTRatio">
+            <summary>
+High-frequency reverb time ratio.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.WavesReverb.ReverbTime">
+            <summary>
+Reverb time, in milliseconds.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.WavesReverb.ReverbMix">
+            <summary>
+Reverb mix, in dB.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.WavesReverb.InGain">
+            <summary>
+Input gain of signal, in decibels (dB), the default value is 0 dB.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.WavesReverb.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.WavesReverb" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXWavesReverb pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.WavesReverb">
+            <summary>
+The SoundEffectWavesReverb object is used to set and retrieve effect parameters on a buffer that supports waves reverberation.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundBuffer3D.MaxConeAngle">
+            <summary>
+Maximum cone angle, in degrees.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundBuffer3D.MinConeAngle">
+            <summary>
+Minimum cone angle, in degrees.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundBuffer3D.DefaultConeOutsideVolume">
+            <summary>
+Default outside cone volume. Volume levels are expressed as attenuation, in hundredths of a decibel.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundBuffer3D.DefaultConeAngle">
+            <summary>
+Default cone angle, in degrees.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundBuffer3D.DefaultMaxDistance">
+            <summary>
+Default maximum distance, in meters.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundBuffer3D.DefaultMinDistance">
+            <summary>
+Default minimum distance, in meters.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.Velocity">
+            <summary>
+The velocity of the sound source.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.Position">
+            <summary>
+The position of the sound source.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.Mode">
+            <summary>
+The operation mode for 3-D sound processing.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.MinDistance">
+            <summary>
+The minimum distance, which is the distance from the listener at which sounds in this buffer begin to be attenuated.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.MaxDistance">
+            <summary>
+The maximum distance, which is the distance from the listener beyond which sounds in this buffer are no longer attenuated.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.Deferred">
+            <summary>
+Settings are not applied until the application calls the SoundListener3D.CommitDeferredSettings() if true.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.ConeOutsideVolume">
+            <summary>
+The volume of the sound outside the outside angle of the sound projection cone.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.ConeOrientation">
+            <summary>
+The orientation of the sound projection cone.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.OutsideConeAngle">
+            <summary>
+The outside angle of the sound projection cone.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.InsideConeAngle">
+            <summary>
+The inside angle of the sound projection cone.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundBuffer3D.AllParameters">
+            <summary>
+Gets or sets all the  parameters of a buffer
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.SoundBuffer3D.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.SoundBuffer3D" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSound3DBuffer pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="M:SlimDX.DirectSound.SoundBuffer3D.#ctor(SlimDX.DirectSound.SoundBuffer)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.SoundBuffer3D" /> class.
+</summary>
+            <param name="soundBuffer" />
+            <returns />
+        </member>
+        <member name="T:SlimDX.DirectSound.SoundBuffer3D">
+            <summary>
+The SoundBuffer3D object is used to retrieve and set parameters that describe the position, orientation, and environment of a sound buffer in 3-D space.
+</summary>
+        </member>
         <member name="M:SlimDX.X3DAudio.Listener.Equals(SlimDX.X3DAudio.Listener,SlimDX.X3DAudio.Listener)">
             <summary>
 Determines whether the specified object instances are considered equal. 
@@ -898,6 +2041,184 @@ be a pointer to an ID3DXSprite.</param>
             <summary>Provides a set of methods that simplify the process of drawing sprites.</summary>
             <unmanaged>ID3DXSprite</unmanaged>
         </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.WetDryMixMin">
+            <summary>
+Minimum ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.WetDryMixMax">
+            <summary>
+Maximum ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.WetDryMixDefault">
+            <summary>
+Default ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.WaveformTriangle">
+            <summary>
+Triangle waveform shape of the LFO.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.WaveformSin">
+            <summary>
+Sine waveform shape of the LFO.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.WaveformDefault">
+            <summary>
+Default waveform shape of the LFO. By default, the waveform is a sine.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.PhaseZero">
+            <summary>
+Zero phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.PhaseNegative90">
+            <summary>
+Negative 90 phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.PhaseNegative180">
+            <summary>
+Negative 180 phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.PhaseMin">
+            <summary>
+Minimum phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.PhaseMax">
+            <summary>
+Maximum phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.PhaseDefault">
+            <summary>
+Default phase differential between left and right LFOs. The default value is Phase90.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.Phase90">
+            <summary>
+Positive 90 phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.Phase180">
+            <summary>
+Positive 180 phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.FrequencyMin">
+            <summary>
+Minimum frequency of the LFO.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.FrequencyMax">
+            <summary>
+Maximum frequency of the LFO.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.FrequencyDefault">
+            <summary>
+Default frequency of the LFO. The default value is 1.1. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.FeedbackMin">
+            <summary>
+Minimum percentage of output signal to feed back into the effect's input.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.FeedbackMax">
+            <summary>
+Maximum percentage of output signal to feed back into the effect's input.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.FeedbackDefault">
+            <summary>
+Default percentage of output signal to feed back into the effect's input. The default value is 25.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.DepthMin">
+            <summary>
+Minimum percentage by which the delay time is modulated by the low-frequency oscillator, in hundredths of a percentage point.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.DepthMax">
+            <summary>
+Maximum percentage by which the delay time is modulated by the low-frequency oscillator, in hundredths of a percentage point.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.DepthDefault">
+            <summary>
+Default percentage by which the delay time is modulated by the low-frequency oscillator, in hundredths of a percentage point. The default value is 10.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.DelayMin">
+            <summary>
+Minimum number of milliseconds the input is delayed before it is played back. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.DelayMax">
+            <summary>
+Maximum number of milliseconds the input is delayed before it is played back. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ChorusEffect.DelayDefault">
+            <summary>
+Default number of milliseconds the input is delayed before it is played back. The default value is 50. 
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ChorusEffect.WetDryMix">
+            <summary>
+Ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ChorusEffect.Waveform">
+            <summary>
+Waveform shape of the LFO.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ChorusEffect.Phase">
+            <summary>
+Phase differential between left and right LFOs.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ChorusEffect.Frequency">
+            <summary>
+Frequency of the LFO.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ChorusEffect.Feedback">
+            <summary>
+Percentage of output signal to feed back into the effect's input.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ChorusEffect.Depth">
+            <summary>
+Percentage by which the delay time is modulated by the low-frequency oscillator, in hundredths of a percentage point.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ChorusEffect.Delay">
+            <summary>
+Number of milliseconds the input is delayed before it is played back.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.ChorusEffect.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.ChorusEffect" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXChorus pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.ChorusEffect">
+            <summary>
+The SoundEffectChorus object is used to set and retrieve effect parameters on a buffer that supports chorus.
+</summary>
+        </member>
         <member name="P:SlimDX.DXGI.AdapterDescription.Luid">
             <summary>
 Gets the adapter's unique identifier.
@@ -978,62 +2299,6 @@ An exception indicating that the appropriate Direct3DX 9 runtime could not be fo
         <member name="T:SlimDX.Direct3D9.StateBlock">
             <summary>Applications use the methods of the StateBlock class to encapsulate render states.</summary>
             <unmanaged>IDirect3DStateBlock9</unmanaged>
-        </member>
-        <member name="M:SlimDX.X3DAudio.Cone.Equals(SlimDX.X3DAudio.Cone,SlimDX.X3DAudio.Cone)">
-            <summary>
-Determines whether the specified object instances are considered equal. 
-</summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.X3DAudio.Cone.Equals(SlimDX.X3DAudio.Cone)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
-</summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.X3DAudio.Cone.Equals(System.Object)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
-</summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.X3DAudio.Cone.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.X3DAudio.Cone.op_Inequality(SlimDX.X3DAudio.Cone,SlimDX.X3DAudio.Cone)">
-            <summary>
-Tests for inequality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.X3DAudio.Cone.op_Equality(SlimDX.X3DAudio.Cone,SlimDX.X3DAudio.Cone)">
-            <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.X3DAudio.Cone.Clone">
-            <summary>
-Clones the instance and returns a new object containing the same values.
-</summary>
-            <returns>A new <see cref="T:SlimDX.X3DAudio.Cone" /> object containing the same values as the current instance.</returns>
         </member>
         <member name="M:SlimDX.XAudio2.VoiceState.Equals(SlimDX.XAudio2.VoiceState@,SlimDX.XAudio2.VoiceState@)">
             <summary>
@@ -1443,6 +2708,119 @@ Gets the number of items in the IO queue.
             <summary>Describes an annotation used by an effect object.</summary>
             <unmanaged>D3DXFRAGMENT_DESC</unmanaged>
         </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.FeedbackMin">
+            <summary>
+Minimum percentage of output fed back into input.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.FeedbackMax">
+            <summary>
+Maximum percentage of output fed back into input.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.FeedbackDefault">
+            <summary>
+Default percentage of output fed back into input.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.PanDelayMin">
+            <summary>
+Minimum value that specifies whether to swap left and right delays with each successive echo. The default value is zero, meaning no swap.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.PanDelayMax">
+            <summary>
+Maximum value that specifies whether to swap left and right delays with each successive echo. The default value is zero, meaning no swap.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.PanDelayDefault">
+            <summary>
+Default value that specifies whether to swap left and right delays with each successive echo. The default value is zero, meaning no swap.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.RightDelayMin">
+            <summary>
+Minimum delay for right channel, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.RightDelayMax">
+            <summary>
+Maximum delay for right channel, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.RightDelayDefault">
+            <summary>
+Default delay for right channel, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.LeftDelayMin">
+            <summary>
+Minimum delay for left channel, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.LeftDelayMax">
+            <summary>
+Maximum delay for left channel, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.LeftDelayDefault">
+            <summary>
+Default delay for left channel, in milliseconds.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.WetDryMixMin">
+            <summary>
+Minimum ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.WetDryMixMax">
+            <summary>
+Maximum ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.EchoEffect.WetDryMixDefault">
+            <summary>
+Default ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.EchoEffect.WetDryMix">
+            <summary>
+Ratio of wet (processed) signal to dry (unprocessed) signal.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.EchoEffect.Feedback">
+            <summary>
+Percentage of output fed back into input. The default value is 50.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.EchoEffect.PanDelay">
+            <summary>
+Value that specifies whether to swap left and right delays with each successive echo. The default value is zero, meaning no swap.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.EchoEffect.LeftDelay">
+            <summary>
+Delay for left channel, in milliseconds. The default value is 500 ms.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.EchoEffect.RightDelay">
+            <summary>
+Delay for right channel, in milliseconds. The default value is 500 ms.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.EchoEffect.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.EchoEffect" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXEcho pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.EchoEffect">
+            <summary>
+The SoundEffectEcho object is used to set and retrieve effect parameters on a buffer that supports echo.
+</summary>
+        </member>
         <member name="T:SlimDX.DirectInput.DirectInputException">
             <summary>
 Represents errors that occur in the XInput subsystem.
@@ -1459,12 +2837,6 @@ Describes an animation event.
 Describes an animation track and specifies blending weight, speed, and position for the track at a given time.
 </summary>
             <unmanaged>D3DXTRACK_DESC</unmanaged>
-        </member>
-        <member name="T:SlimDX.Direct3D9.AnimationController">
-            <summary>
-Used to control animation functionality, connecting animation sets with the transformation frames that are being animated.
-</summary>
-            <unmanaged>ID3DXAnimationController</unmanaged>
         </member>
         <member name="M:SlimDX.Direct3D10.StateBlockMask.Equals(SlimDX.Direct3D10.StateBlockMask,SlimDX.Direct3D10.StateBlockMask)">
             <summary>
@@ -1647,6 +3019,56 @@ Initializes a new instance of the <see cref="T:SlimDX.Direct3D10.StateBlockMask"
 </summary>
             <param name="other">The <see cref="T:SlimDX.Direct3D10.StateBlockMask" /> to copy initial values from.</param>
         </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.Velocity">
+            <summary>
+Describes the current velocity of the 3-D sound buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.Position">
+            <summary>
+Describes the current position of the 3-D sound buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.OutsideConeAngle">
+            <summary>
+The angle of the outside sound projection cone.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.Mode">
+            <summary>
+The 3-D sound processing mode to be set.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.MinDistance">
+            <summary>
+The minimum distance.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.MaxDistance">
+            <summary>
+The maximum distance.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.InsideConeAngle">
+            <summary>
+The angle of the inside sound projection cone.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.ConeOutsideVolume">
+            <summary>
+The cone outside volume.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.Buffer3DSettings.ConeOrientation">
+            <summary>
+Describes the current orientation of this 3-D buffer's sound projection cone.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.Buffer3DSettings">
+            <summary>
+Contains all information necessary to uniquely describe the location, orientation, and motion of a 3-D sound buffer.
+</summary>
+        </member>
         <member name="P:SlimDX.DXGI.GammaControlCapabilities.ControlPoints">
             <summary>
 Gets the list of curve control point positions.
@@ -1702,6 +3124,13 @@ Initializes a new instance of the <see cref="T:SlimDX.Direct3D9.Direct3D9NotFoun
 An exception indicating that the appropriate Direct3D 9 runtime could not be found or initialized.
 </summary>
         </member>
+        <member name="T:SlimDX.Direct3D9.RenderToEnvironmentMap">
+            <summary>Used to generalize the process of rendering to environment maps.</summary>
+            <unmanaged>ID3DXRenderToEnvMap</unmanaged>
+        </member>
+        <member name="T:SlimDX.Direct3D9.RenderToEnvironmentMapDescription">
+            <summary>Describes an off-screen render target used by <see cref="T:SlimDX.Direct3D9.RenderToEnvironmentMap" /></summary>.
+<unmanaged>D3DXRTE_DESC</unmanaged></member>
         <member name="M:SlimDX.Direct3D10.DepthStencilState.FromPointer(System.IntPtr)">
             <summary>
 Constructs a DepthStencilState object from a marshaled native pointer.
@@ -2130,6 +3559,116 @@ the return value will be negative.
             <summary>
 Provides access to the Direct3D performance API, which allows applications to gather performance
 data and integrate with PIX for Windows in order to perform detailed analysis.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.MaxRolloffFactor">
+            <summary>
+Maximum rolloff factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.MaxDopplerFactor">
+            <summary>
+Maximum Doppler factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.MaxDistanceFactor">
+            <summary>
+Maximum distance factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.MinRolloffFactor">
+            <summary>
+Minimum rolloff factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.MinDopplerFactor">
+            <summary>
+Minimum Doppler factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.MinDistanceFactor">
+            <summary>
+Minimum distance factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.DefaultRolloffFactor">
+            <summary>
+Default rolloff factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.DefaultDopplerFactor">
+            <summary>
+Default Doppler factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundListener3D.DefaultDistanceFactor">
+            <summary>
+Default distance factor. The default value is (1.0).
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundListener3D.Velocity">
+            <summary>
+Gets or sets the listener's velocity.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundListener3D.Position">
+            <summary>
+Gets or sets the listener's position.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundListener3D.RolloffFactor">
+            <summary>
+Gets or sets the rolloff factor, which determines the rate of attenuation over distance.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundListener3D.DopplerFactor">
+            <summary>
+Gets or sets the multiplier for the Doppler effect.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundListener3D.DistanceFactor">
+            <summary>
+Gets or sets the distance factor, which is the number of meters in a vector unit.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundListener3D.Deferred">
+            <summary>
+Determines if settings are set immediately or deferred.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundListener3D.TopOrientation">
+            <summary>
+Describes the listener's top orientation.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.SoundListener3D.FrontOrientation">
+            <summary>
+Describes the listener's front orientation.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.SoundListener3D.CommitDeferredSettings">
+            <summary>
+Commits any deferred settings made since the last call to this method.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.SoundListener3D.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.SoundListener3D" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSound3DListener pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="M:SlimDX.DirectSound.SoundListener3D.#ctor(SlimDX.DirectSound.SoundBuffer)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.SoundListener3D" /> class
+with a previously created sound buffer.
+</summary>
+            <param name="soundBuffer">The SlimDX::DirectSound::SoundBuffer object.</param>
+        </member>
+        <member name="T:SlimDX.DirectSound.SoundListener3D">
+            <summary>
+The Listener3D object is used to retrieve and set parameters that describe a listener's position, orientation, and listening environment in 3-D space.
 </summary>
         </member>
         <member name="M:SlimDX.DirectInput.JoystickObjects.PointOfView(System.Int32)">
@@ -6877,75 +8416,6 @@ Represents the hand-to-hand genre.
 Contains action mapping constants for Hand-To-Hand fighting games.
 </summary>
         </member>
-        <member name="M:SlimDX.Direct3D9.PatchInfo.Equals(SlimDX.Direct3D9.PatchInfo@,SlimDX.Direct3D9.PatchInfo@)">
-            <summary>
-Determines whether the specified object instances are considered equal. 
-</summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D9.PatchInfo.Equals(SlimDX.Direct3D9.PatchInfo)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
-</summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D9.PatchInfo.Equals(System.Object)">
-            <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
-</summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D9.PatchInfo.GetHashCode">
-            <summary>
-Returns the hash code for this instance.
-</summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D9.PatchInfo.op_Inequality(SlimDX.Direct3D9.PatchInfo,SlimDX.Direct3D9.PatchInfo)">
-            <summary>
-Tests for inequality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:SlimDX.Direct3D9.PatchInfo.op_Equality(SlimDX.Direct3D9.PatchInfo,SlimDX.Direct3D9.PatchInfo)">
-            <summary>
-Tests for equality between two objects.
-</summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="P:SlimDX.Direct3D9.PatchInfo.Basis">
-            <summary>
-Gets or sets the basis of the patch.
-</summary>
-        </member>
-        <member name="P:SlimDX.Direct3D9.PatchInfo.Degree">
-            <summary>
-Gets or sets the degree of the patch.
-</summary>
-        </member>
-        <member name="P:SlimDX.Direct3D9.PatchInfo.PatchType">
-            <summary>
-Gets or sets the patch type.
-</summary>
-        </member>
-        <member name="T:SlimDX.Direct3D9.PatchInfo">
-            <summary>Structure that contains the attributes of a patch mesh.</summary>
-            <unmanaged>D3DXPATCHINFO</unmanaged>
-        </member>
         <member name="M:SlimDX.Direct3D10.Debug.ValidatePipelineState">
             <summary>
 Validates the current pipeline state.
@@ -7141,18 +8611,31 @@ is also required to create most DXGI objects.
 Describes the state of a keyboard device.
 </summary>
         </member>
-        <member name="T:SlimDX.Direct3D9.MatrixStack">
-            <summary>Applications use the methods of the MatrixStack class to manipulate a matrix stack.</summary>
-            <unmanaged>ID3DXMatrixStack</unmanaged>
+        <member name="M:SlimDX.DirectSound.SecondarySoundBuffer.SetEffects(System.Guid[])">
+            <summary />
+            <param name="effects" />
+            <returns />
         </member>
-        <member name="T:SlimDX.Direct3D9.SkinInfo">
-            <summary>Applications use the methods of the SkinInfo class to manipulate bone matrices,
-which are used to skin vertex data for animation.</summary>
-            <unmanaged>ID3DXSkinInfo</unmanaged>
+        <member name="M:SlimDX.DirectSound.SecondarySoundBuffer.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.SoundBuffer" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundBuffer pointer.</param>
+            <returns>The newly constructed object.</returns>
         </member>
-        <member name="T:SlimDX.Direct3D9.BoneCombination">
-            <summary>Describes a subset of the mesh that has the same attribute and bone combination.</summary>
-            <unmanaged>D3DXBONECOMBINATION</unmanaged>
+        <member name="M:SlimDX.DirectSound.SecondarySoundBuffer.#ctor(SlimDX.DirectSound.DirectSound,SlimDX.DirectSound.SoundBufferDescription)">
+            <summary>
+Initializes a new instance of the <see cref="N:SlimDX.DirectSound" /> class.
+</summary>
+            <param name="device" />
+            <param name="description" />
+            <returns />
+        </member>
+        <member name="T:SlimDX.DirectSound.SecondarySoundBuffer">
+            <summary>
+The SecondarySoundBuffer object is used to manage sound buffers and effects.
+</summary>
         </member>
         <member name="P:SlimDX.Direct3D9.VertexShader.Function">
             <summary>
@@ -7732,6 +9215,90 @@ Describes the semantics of a shader parameter.
 </summary>
             <unmanaged>D3DXSEMANTIC</unmanaged>
         </member>
+        <member name="T:SlimDX.Direct3D9.AnimationController">
+            <summary>
+Used to control animation functionality, connecting animation sets with the transformation frames that are being animated.
+</summary>
+            <unmanaged>ID3DXAnimationController</unmanaged>
+        </member>
+        <member name="M:SlimDX.Direct3D9.PatchInfo.Equals(SlimDX.Direct3D9.PatchInfo@,SlimDX.Direct3D9.PatchInfo@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D9.PatchInfo.Equals(SlimDX.Direct3D9.PatchInfo)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D9.PatchInfo.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D9.PatchInfo.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D9.PatchInfo.op_Inequality(SlimDX.Direct3D9.PatchInfo,SlimDX.Direct3D9.PatchInfo)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Direct3D9.PatchInfo.op_Equality(SlimDX.Direct3D9.PatchInfo,SlimDX.Direct3D9.PatchInfo)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="P:SlimDX.Direct3D9.PatchInfo.Basis">
+            <summary>
+Gets or sets the basis of the patch.
+</summary>
+        </member>
+        <member name="P:SlimDX.Direct3D9.PatchInfo.Degree">
+            <summary>
+Gets or sets the degree of the patch.
+</summary>
+        </member>
+        <member name="P:SlimDX.Direct3D9.PatchInfo.PatchType">
+            <summary>
+Gets or sets the patch type.
+</summary>
+        </member>
+        <member name="T:SlimDX.Direct3D9.PatchInfo">
+            <summary>Structure that contains the attributes of a patch mesh.</summary>
+            <unmanaged>D3DXPATCHINFO</unmanaged>
+        </member>
+        <member name="T:SlimDX.Direct3D9.SkinInfo">
+            <summary>Applications use the methods of the SkinInfo class to manipulate bone matrices,
+which are used to skin vertex data for animation.</summary>
+            <unmanaged>ID3DXSkinInfo</unmanaged>
+        </member>
+        <member name="T:SlimDX.Direct3D9.BoneCombination">
+            <summary>Describes a subset of the mesh that has the same attribute and bone combination.</summary>
+            <unmanaged>D3DXBONECOMBINATION</unmanaged>
+        </member>
         <member name="T:SlimDX.Direct3D9.GlyphMetricsFloat">
             <summary>Contains information about the placement and orientation of a glyph in a character cell.</summary>
             <unmanaged>GLYPHMETRICSFLOAT</unmanaged>
@@ -8000,6 +9567,79 @@ Describes instance data for a single sprite rendered by the
 <see cref="T:SlimDX.Direct3D10.Sprite" /> interface.
 </summary>
             <unmanaged>D3DX10_SPRITE</unmanaged>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.GainMin">
+            <summary>
+Minimum gain.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.GainMax">
+            <summary>
+Maximum gain.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.GainDefault">
+            <summary>
+Default gain.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.BandwidthMin">
+            <summary>
+Minimum bandwidth, in semitones.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.BandwidthMax">
+            <summary>
+Maximum bandwidth, in semitones.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.BandwidthDefault">
+            <summary>
+Default bandwidth, in semitones.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.CenterMin">
+            <summary>
+Minimum center frequency, in hertz.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.CenterMax">
+            <summary>
+Maximum center frequency, in hertz.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.ParametricEqualizer.CenterDefault">
+            <summary>
+Default center frequency, in hertz.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ParametricEqualizer.Gain">
+            <summary>
+Gain, The default value is 0.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ParametricEqualizer.Bandwidth">
+            <summary>
+Bandwidth, in semitones. The default value is 12.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.ParametricEqualizer.Center">
+            <summary>
+Center frequency, in hertz. This value cannot exceed one-third of the frequency of the buffer. The default value is 8000.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.ParametricEqualizer.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.ParametricEqualizer" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXParamEq pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.ParametricEqualizer">
+            <summary>
+The SoundEffectParametricEqualizer object is used to set and retrieve effect parameters on a buffer that supports parametric equalizer effects.
+</summary>
         </member>
         <member name="M:SlimDX.Direct3D9.Texture.GetSurfaceLevel(System.Int32)">
             <summary>
@@ -11815,6 +13455,35 @@ Clones the instance and returns a new object containing the same values.
 </summary>
             <returns>A new <see cref="T:SlimDX.XAudio2.PerformanceData" /> object containing the same values as the current instance.</returns>
         </member>
+        <member name="M:SlimDX.XAudio2.XAudio2Exception.#ctor(SlimDX.Result)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.XAudio2.XAudio2Exception" /> class.
+</summary>
+            <param name="result">The result code that caused this exception.</param>
+        </member>
+        <member name="M:SlimDX.XAudio2.XAudio2Exception.#ctor(System.String,System.Exception)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.XAudio2.XAudio2Exception" /> class.
+</summary>
+            <param name="message">The message describing the exception.</param>
+            <param name="innerException">The exception that caused this exception.</param>
+        </member>
+        <member name="M:SlimDX.XAudio2.XAudio2Exception.#ctor(System.String)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.XAudio2.XAudio2Exception" /> class.
+</summary>
+            <param name="message">The message describing the exception.</param>
+        </member>
+        <member name="M:SlimDX.XAudio2.XAudio2Exception.#ctor">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.XAudio2.XAudio2Exception" /> class.
+</summary>
+        </member>
+        <member name="T:SlimDX.XAudio2.XAudio2Exception">
+            <summary>
+Represents errors that occur in the XAudio2 subsystem.
+</summary>
+        </member>
         <member name="M:SlimDX.XAudio2.DeviceDetails.Equals(SlimDX.XAudio2.DeviceDetails,SlimDX.XAudio2.DeviceDetails)">
             <summary>
 Determines whether the specified object instances are considered equal. 
@@ -11871,566 +13540,427 @@ Clones the instance and returns a new object containing the same values.
 </summary>
             <returns>A new <see cref="T:SlimDX.XAudio2.DeviceDetails" /> object containing the same values as the current instance.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormatExtensible.Equals(SlimDX.WaveFormatExtensible,SlimDX.WaveFormatExtensible)">
+        <member name="M:SlimDX.DirectSound.PrimarySoundBuffer.FromPointer(System.IntPtr)">
             <summary>
-Determines whether the specified object instances are considered equal. 
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.SoundBuffer" /> class using the specified pointer to a
+previously constructed unmanaged object.
 </summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+            <param name="pointer">The unmanaged IDirectSoundBuffer pointer.</param>
+            <returns>The newly constructed object.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormatExtensible.Equals(SlimDX.WaveFormatExtensible)">
+        <member name="M:SlimDX.DirectSound.PrimarySoundBuffer.#ctor(SlimDX.DirectSound.DirectSound,SlimDX.DirectSound.SoundBufferDescription)">
             <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.SoundBuffer" /> class.
 </summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+            <param name="device" />
+            <param name="description" />
+            <returns />
         </member>
-        <member name="M:SlimDX.WaveFormatExtensible.Equals(System.Object)">
+        <member name="P:SlimDX.DirectSound.SoundBuffer.Capabilities">
             <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
+Retrieves the capabilities of the buffer object.
 </summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormatExtensible.GetHashCode">
+        <member name="P:SlimDX.DirectSound.SoundBuffer.NoVirtualization">
             <summary>
-Returns the hash code for this instance.
+True if a requested 3D algorithm was not available and stereo panning was substituted.
 </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormatExtensible.op_Inequality(SlimDX.WaveFormatExtensible,SlimDX.WaveFormatExtensible)">
+        <member name="P:SlimDX.DirectSound.SoundBuffer.Status">
             <summary>
-Tests for inequality between two objects.
+Retrieves the status of the sound buffer.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormatExtensible.op_Equality(SlimDX.WaveFormatExtensible,SlimDX.WaveFormatExtensible)">
+        <member name="P:SlimDX.DirectSound.SoundBuffer.Pan">
             <summary>
-Tests for equality between two objects.
+Retrieves or sets the relative volume of the left and right audio channels.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormatExtensible.Clone">
+        <member name="P:SlimDX.DirectSound.SoundBuffer.Volume">
             <summary>
-Clones the instance and returns a new object containing the same values.
+Retrieves or sets the attenuation of the sound.
 </summary>
-            <returns>A new <see cref="T:SlimDX.WaveFormatExtensible" /> object containing the same values as the current instance.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormat.Equals(SlimDX.WaveFormat,SlimDX.WaveFormat)">
+        <member name="P:SlimDX.DirectSound.SoundBuffer.Frequency">
             <summary>
-Determines whether the specified object instances are considered equal. 
+Retrieves or sets the frequency, in samples per second, at which the buffer is playing.
 </summary>
-            <param name="value1">The first value to compare.</param>
-            <param name="value2">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormat.Equals(SlimDX.WaveFormat)">
+        <member name="P:SlimDX.DirectSound.SoundBuffer.CurrentPlayPosition">
             <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
+Retrieves or sets the position of the play cursor.
 </summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormat.Equals(System.Object)">
+        <member name="P:SlimDX.DirectSound.SoundBuffer.CurrentWritePosition">
             <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
+Retrieves the position of the write cursor in the sound buffer.
 </summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormat.GetHashCode">
+        <member name="M:SlimDX.DirectSound.SoundBuffer.Write(System.Byte[],System.Int32,SlimDX.DirectSound.LockFlags)">
             <summary>
-Returns the hash code for this instance.
+Writes data to the buffer.
 </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
+            <returns />
         </member>
-        <member name="M:SlimDX.WaveFormat.op_Inequality(SlimDX.WaveFormat,SlimDX.WaveFormat)">
+        <member name="M:SlimDX.DirectSound.SoundBuffer.Stop">
             <summary>
-Tests for inequality between two objects.
+Causes the sound buffer to stop playing.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormat.op_Equality(SlimDX.WaveFormat,SlimDX.WaveFormat)">
+        <member name="M:SlimDX.DirectSound.SoundBuffer.Play(System.Int32,SlimDX.DirectSound.PlayFlags)">
             <summary>
-Tests for equality between two objects.
+Causes the sound buffer to play, starting at the play cursor.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.WaveFormat.Clone">
+        <member name="M:SlimDX.DirectSound.SoundBuffer.Restore">
             <summary>
-Clones the instance and returns a new object containing the same values.
+Restores the memory allocation for a lost sound buffer.
 </summary>
-            <returns>A new <see cref="T:SlimDX.WaveFormat" /> object containing the same values as the current instance.</returns>
         </member>
-        <member name="T:SlimDX.Speakers">
+        <member name="T:SlimDX.DirectSound.SoundBuffer">
             <summary>
-Specifies possible speaker combinations for audio devices.
+The SoundBuffer object is used to manage sound buffers.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.SevenPointOneSurround">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.StickyFocus">
             <summary>
-A combination of speakers will be used that provides 7.1 surround sound output.
+Gets or Sets whether the buffer has sticky focus.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.FivePointOneSurround">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.StaticBuffer">
             <summary>
-A combination of speakers will be used that provides 5.1 surround sound output.
+Gets or Sets whether the buffer is in on-board hardware memory.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.SevenPointOne">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.PrimaryBuffer">
             <summary>
-A combination of speakers will be used that provides 7.1 sound output.
+Gets or Sets whether the buffer is a primary buffer.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.FivePointOne">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.Mute3DAtMaximumDistance">
             <summary>
-A combination of speakers will be used that provides 5.1 sound output.
+Gets or Sets whether the sound is reduced to silence at the maximum distance. The buffer will stop playing when the maximum distance is exceeded, so that processor time is not wasted. Applies only to software buffers.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.FourPointOne">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.LocationDefer">
             <summary>
-A combination of speakers will be used that provides 4.1 sound output.
+Gets or Sets whether the buffer can be assigned to a hardware or software resource at play time.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.Quadrophonic">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.LocateInSoftware">
             <summary>
-A combination of speakers will be used that provides quadrophonic sound output.
+Gets or Sets whether the buffer is in software memory and uses software mixing.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.Surround">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.LocateInHardware">
             <summary>
-A combination of speakers will be used that provides surround sound output.
+Gets or Sets whether the buffer uses hardware mixing.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.TwoPointOne">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.GlobalFocus">
             <summary>
-A combination of speakers will be used that provides 2.1 sound output.
+Gets or Sets whether the buffer is a global sound buffer.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.Stereo">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.ControlEffects">
             <summary>
-Two or more speakers will be used.
+Gets or Sets whether the buffer supports effects processing.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.Mono">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.ControlPositionNotify">
             <summary>
-A single speaker will be used.
+Gets or Sets whether the buffer has position notification capability.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.All">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.ControlPan">
             <summary>
-All possible speakers will be used.
+Gets or Sets whether the buffer has pan control capability.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.Reserved">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.ControlVolume">
             <summary>
-A reserved speaker will be used.
+Gets or Sets whether the buffer has volume control capability.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.TopBackRight">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.ControlFrequency">
             <summary>
-A top back right speaker will be used.
+Gets or Sets whether the buffer has frequency control capability.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.TopBackCenter">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.Control3D">
             <summary>
-A top back center speaker will be used.
+Gets or Sets whether the buffer has 3D control capability.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.TopBackLeft">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.CanGetCurrentPosition">
             <summary>
-A top back left speaker will be used.
+Gets or Sets whether the buffer uses the new behavior of the play cursor when retrieving the current position.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.TopFrontRight">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.PlayCpuOverhead">
             <summary>
-A top front right speaker will be used.
+The processing overhead as a percentage of main processor cycles needed to mix this sound buffer.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.TopFrontCenter">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.UnlockTransferRate">
             <summary>
-A top front center speaker will be used.
+The rate, in kilobytes per second, at which data is transferred to the buffer memory when <see cref="T:SlimDX.DirectSound.SoundBuffer">SoundBuffer.Unlock</see> is called.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.TopFrontLeft">
+        <member name="P:SlimDX.DirectSound.BufferCapabilities.BufferSize">
             <summary>
-A top front left speaker will be used.
+Size of this buffer, in bytes.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.TopCenter">
+        <member name="T:SlimDX.DirectSound.BufferCapabilities">
             <summary>
-A top center speaker will be used.
+Describes the capabilities of a DirectSound buffer object.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.SideRight">
+        <member name="P:SlimDX.DirectSound.SoundBufferDescription.AlgorithmFor3D">
             <summary>
-A right side speaker will be used.
+Unique identifier of the two-speaker virtualization algorithm to be used by DirectSound3D hardware emulation.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.SideLeft">
+        <member name="P:SlimDX.DirectSound.SoundBufferDescription.Format">
             <summary>
-A left side speaker will be used.
+Structure specifying the waveform format for the buffer.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.BackCenter">
+        <member name="P:SlimDX.DirectSound.SoundBufferDescription.Flags">
             <summary>
-A back center speaker will be used.
+Flags specifying the capabilities of the buffer.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.FrontRightOfCenter">
+        <member name="P:SlimDX.DirectSound.SoundBufferDescription.SizeInBytes">
             <summary>
-A front right-of-center speaker will be used.
+Size of the new buffer, in bytes. This value must be 0 when creating a buffer.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.FrontLeftOfCenter">
+        <member name="T:SlimDX.DirectSound.SoundBufferDescription">
             <summary>
-A front left-of-center speaker will be used.
+Describes the characteristics of a new buffer object.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.BackRight">
+        <member name="M:SlimDX.DirectSound.DirectSound.GetDevices">
             <summary>
-A back right speaker will be used.
+Enumerates the DirectSound devices installed in the system.
 </summary>
+            <returns>A collection of the devices found.</returns>
         </member>
-        <member name="F:SlimDX.Speakers.BackLeft">
+        <member name="P:SlimDX.DirectSound.DirectSound.Capabilities">
             <summary>
-A back left speaker will be used.
+Retrieves the capabilities of the hardware device.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.LowFrequency">
+        <member name="M:SlimDX.DirectSound.DirectSound.VerifyCertification">
             <summary>
-A low frequency speaker will be used.
+Ascertains whether the device driver is certified for DirectX.
 </summary>
         </member>
-        <member name="F:SlimDX.Speakers.FrontCenter">
+        <member name="M:SlimDX.DirectSound.DirectSound.GetSpeakerConfiguration(SlimDX.Speakers@,SlimDX.DirectSound.SpeakerGeometry@)">
             <summary>
-A front center speaker will be used.
+Retrieves the speaker configuration of the device.
 </summary>
+            <param name="speakerSet" />
+            <param name="geometry" />
         </member>
-        <member name="F:SlimDX.Speakers.FrontRight">
+        <member name="M:SlimDX.DirectSound.DirectSound.SetSpeakerConfiguration(SlimDX.Speakers,SlimDX.DirectSound.SpeakerGeometry)">
             <summary>
-A front right speaker will be used.
+Sets the speaker configuration of the device.
 </summary>
+            <param name="speakerSet" />
+            <param name="geometry" />
         </member>
-        <member name="F:SlimDX.Speakers.FrontLeft">
+        <member name="M:SlimDX.DirectSound.DirectSound.SetCooperativeLevel(System.IntPtr,SlimDX.DirectSound.CooperativeLevel)">
             <summary>
-A front left speaker will be used.
+Sets the cooperative level of the application for this sound device.
 </summary>
+            <param name="windowHandle" />
+            <param name="cooperativeLevel" />
         </member>
-        <member name="M:SlimDX.XAudio2.XAudio2Exception.#ctor(SlimDX.Result)">
+        <member name="M:SlimDX.DirectSound.DirectSound.FromPointer(System.IntPtr)">
             <summary>
-Initializes a new instance of the <see cref="T:SlimDX.XAudio2.XAudio2Exception" /> class.
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.DirectSound" /> class using the specified pointer to a
+previously constructed unmanaged object.
 </summary>
-            <param name="result">The result code that caused this exception.</param>
+            <param name="pointer">The unmanaged IDirectSound8 pointer.</param>
+            <returns>The newly constructed object.</returns>
         </member>
-        <member name="M:SlimDX.XAudio2.XAudio2Exception.#ctor(System.String,System.Exception)">
+        <member name="M:SlimDX.DirectSound.DirectSound.#ctor(System.Guid)">
             <summary>
-Initializes a new instance of the <see cref="T:SlimDX.XAudio2.XAudio2Exception" /> class.
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.DirectSound" /> class.
 </summary>
-            <param name="message">The message describing the exception.</param>
-            <param name="innerException">The exception that caused this exception.</param>
+            <param name="device" />
         </member>
-        <member name="M:SlimDX.XAudio2.XAudio2Exception.#ctor(System.String)">
+        <member name="M:SlimDX.DirectSound.DirectSound.#ctor">
             <summary>
-Initializes a new instance of the <see cref="T:SlimDX.XAudio2.XAudio2Exception" /> class.
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.DirectSound" /> class.
 </summary>
-            <param name="message">The message describing the exception.</param>
         </member>
-        <member name="M:SlimDX.XAudio2.XAudio2Exception.#ctor">
+        <member name="T:SlimDX.DirectSound.DirectSound">
             <summary>
-Initializes a new instance of the <see cref="T:SlimDX.XAudio2.XAudio2Exception" /> class.
+The DirectSound object is used to create buffer objects, manage devices, and set up the environment.
 </summary>
         </member>
-        <member name="T:SlimDX.XAudio2.XAudio2Exception">
+        <member name="P:SlimDX.DirectSound.Capabilities.UnlockTransferRateHardwareBuffers">
             <summary>
-Represents errors that occur in the XAudio2 subsystem.
+The rate, in kilobytes per second, at which data can be transferred to hardware static sound buffers. This and the number of bytes transferred determines the duration of a call to the Buffer.Read or Buffer.Write method.
 </summary>
         </member>
-        <member name="M:SlimDX.Half4.Equals(SlimDX.Half4@,SlimDX.Half4@)">
+        <member name="P:SlimDX.DirectSound.Capabilities.TotalHardwareMemory">
             <summary>
-Determines whether the specified object instances are considered equal. 
+Size, in bytes, of the amount of memory on the sound card that stores static sound buffers.
 </summary>
-            <param name="value1" />
-            <param name="value2" />
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.Half4.Equals(SlimDX.Half4)">
+        <member name="P:SlimDX.DirectSound.Capabilities.SecondaryStereo">
             <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
+The device supports hardware-mixed stereo secondary buffers.
 </summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
         </member>
-        <member name="M:SlimDX.Half4.Equals(System.Object)">
+        <member name="P:SlimDX.DirectSound.Capabilities.SecondaryMono">
             <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
+The device supports hardware-mixed monophonic secondary buffers.
 </summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
         </member>
-        <member name="M:SlimDX.Half4.GetHashCode">
+        <member name="P:SlimDX.DirectSound.Capabilities.Secondary8Bit">
             <summary>
-Returns the hash code for this instance.
+The device supports hardware-mixed secondary sound buffers with 8-bit samples.
 </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
         </member>
-        <member name="M:SlimDX.Half4.op_Inequality(SlimDX.Half4,SlimDX.Half4)">
+        <member name="P:SlimDX.DirectSound.Capabilities.Secondary16Bit">
             <summary>
-Tests for inequality between two objects.
+The device supports hardware-mixed secondary sound buffers with 16-bit samples.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.Half4.op_Equality(SlimDX.Half4,SlimDX.Half4)">
+        <member name="P:SlimDX.DirectSound.Capabilities.PrimaryStereo">
             <summary>
-Tests for equality between two objects.
+The device supports stereo primary buffers.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.Half4.#ctor(SlimDX.Half,SlimDX.Half,SlimDX.Half,SlimDX.Half)">
+        <member name="P:SlimDX.DirectSound.Capabilities.PrimaryMono">
             <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Half4" /> structure.
+The device supports monophonic primary buffers.
 </summary>
-            <param name="x">The X component.</param>
-            <param name="y">The Y component.</param>
-            <param name="z">The Z component.</param>
-            <param name="w">The W component.</param>
         </member>
-        <member name="M:SlimDX.Half4.#ctor(SlimDX.Half)">
+        <member name="P:SlimDX.DirectSound.Capabilities.PrimaryBuffers">
             <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Half4" /> structure.
+Number of primary buffers supported. This value will always be 1.
 </summary>
-            <param name="value">The value to set for the X, Y, Z, and W components.</param>
         </member>
-        <member name="P:SlimDX.Half4.W">
+        <member name="P:SlimDX.DirectSound.Capabilities.Primary8Bit">
             <summary>
-Gets or sets the W component of the vector.
+The device supports primary buffers with 8-bit samples.
 </summary>
-            <value>The W component of the vector.</value>
         </member>
-        <member name="P:SlimDX.Half4.Z">
+        <member name="P:SlimDX.DirectSound.Capabilities.Primary16Bit">
             <summary>
-Gets or sets the Z component of the vector.
+The device supports a primary buffer with 16-bit samples.
 </summary>
-            <value>The Z component of the vector.</value>
         </member>
-        <member name="P:SlimDX.Half4.Y">
+        <member name="P:SlimDX.DirectSound.Capabilities.PlayCpuOverheadSoftwareBuffers">
             <summary>
-Gets or sets the Y component of the vector.
+The processing overhead, as a percentage of main processor cycles, needed to mix software buffers. This varies according to the bus type, the processor type, and the clock speed.
 </summary>
-            <value>The Y component of the vector.</value>
         </member>
-        <member name="P:SlimDX.Half4.X">
+        <member name="P:SlimDX.DirectSound.Capabilities.MinSecondarySampleRate">
             <summary>
-Gets or sets the X component of the vector.
+Minimum sample rate specifications that are supported by this device's hardware secondary sound buffers.
 </summary>
-            <value>The X component of the vector.</value>
         </member>
-        <member name="T:SlimDX.Half4">
+        <member name="P:SlimDX.DirectSound.Capabilities.MaxSecondarySampleRate">
             <summary>
-Defines a four component vector, using half precision floating point coordinates.
+Maximum sample rate specifications that are supported by this device's hardware secondary sound buffers.
 </summary>
         </member>
-        <member name="M:SlimDX.Design.Half4Converter.#ctor">
+        <member name="P:SlimDX.DirectSound.Capabilities.MaxHardwareMixingStreamingBuffers">
             <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Design.Half4Converter" /> class.
+Maximum number of streaming sound buffers.
 </summary>
         </member>
-        <member name="T:SlimDX.Design.Half4Converter">
+        <member name="P:SlimDX.DirectSound.Capabilities.MaxHardwareMixingStaticBuffers">
             <summary>
-Provides a type converter to convert <see cref="T:SlimDX.Half4" /> objects to and from various 
-other representations.
+Maximum number of static buffers.
 </summary>
         </member>
-        <member name="M:SlimDX.Half.Equals(SlimDX.Half@,SlimDX.Half@)">
+        <member name="P:SlimDX.DirectSound.Capabilities.MaxHardwareMixingAllBuffers">
             <summary>
-Determines whether the specified object instances are considered equal. 
+Number of buffers that can be mixed in hardware. This member can be less than the sum of MaxHardwareMixingStaticBuffers and MaxHardwareMixingStreamingBuffers. Resource tradeoffs frequently occur.
 </summary>
-            <param name="value1" />
-            <param name="value2" />
-            <returns>
-                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
-if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.Half.Equals(SlimDX.Half)">
+        <member name="P:SlimDX.DirectSound.Capabilities.MaxHardware3DStreamingBuffers">
             <summary>
-Returns a value that indicates whether the current instance is equal to the specified object. 
+Maximum number of streaming 3-D buffers.
 </summary>
-            <param name="other">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
         </member>
-        <member name="M:SlimDX.Half.Equals(System.Object)">
+        <member name="P:SlimDX.DirectSound.Capabilities.MaxHardware3DStaticBuffers">
             <summary>
-Returns a value that indicates whether the current instance is equal to a specified object. 
+Maximum number of static 3-D buffers.
 </summary>
-            <param name="obj">Object to make the comparison with.</param>
-            <returns>
-                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
         </member>
-        <member name="M:SlimDX.Half.GetHashCode">
+        <member name="P:SlimDX.DirectSound.Capabilities.MaxHardware3DAllBuffers">
             <summary>
-Returns the hash code for this instance.
+Maximum number of 3-D buffers.
 </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
         </member>
-        <member name="M:SlimDX.Half.ToString">
+        <member name="P:SlimDX.DirectSound.Capabilities.MaxContiguousFreeHardwareMemoryBytes">
             <summary>
-Converts the value of the object to its equivalent string representation.
+Size, in bytes, of the largest contiguous block of free memory on the sound card.
 </summary>
-            <returns>The string representation of the value of this instance.</returns>
         </member>
-        <member name="M:SlimDX.Half.op_Inequality(SlimDX.Half,SlimDX.Half)">
+        <member name="P:SlimDX.DirectSound.Capabilities.FreeHardwareMixingStreamingBuffers">
             <summary>
-Tests for inequality between two objects.
+Number of unallocated streaming buffers.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.Half.op_Equality(SlimDX.Half,SlimDX.Half)">
+        <member name="P:SlimDX.DirectSound.Capabilities.FreeHardwareMixingStaticBuffers">
             <summary>
-Tests for equality between two objects.
+Number of unallocated static buffers.
 </summary>
-            <param name="left">The first value to compare.</param>
-            <param name="right">The second value to compare.</param>
-            <returns>
-                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:SlimDX.Half.op_Implicit(SlimDX.Half)~System.Single">
+        <member name="P:SlimDX.DirectSound.Capabilities.FreeHardwareMixingAllBuffers">
             <summary>
-Performs an implicit conversion from <see cref="T:SlimDX.Half" /> to <see cref="T:System.Single" />.
+Number of unallocated buffers. On WDM drivers, this includes FreeHardware3DAllBuffers.
 </summary>
-            <param name="value">The value to be converted.</param>
-            <returns>The converted value.</returns>
         </member>
-        <member name="M:SlimDX.Half.op_Explicit(System.Single)~SlimDX.Half">
+        <member name="P:SlimDX.DirectSound.Capabilities.FreeHardwareMemory">
             <summary>
-Performs an explicit conversion from <see cref="T:System.Single" /> to <see cref="T:SlimDX.Half" />.
+Size, in bytes, of the free memory on the sound card.
 </summary>
-            <param name="value">The value to be converted.</param>
-            <returns>The converted value.</returns>
         </member>
-        <member name="M:SlimDX.Half.ConvertToHalf(System.Single[])">
+        <member name="P:SlimDX.DirectSound.Capabilities.FreeHardware3DStreamingBuffers">
             <summary>
-Converts an array of full precision values into half precision values.
+Number of unallocated streaming 3-D buffers.
 </summary>
-            <param name="values">The values to be converted.</param>
-            <returns>An array of converted values.</returns>
         </member>
-        <member name="M:SlimDX.Half.ConvertToFloat(SlimDX.Half[])">
+        <member name="P:SlimDX.DirectSound.Capabilities.FreeHardware3DStaticBuffers">
             <summary>
-Converts an array of half precision values into full precision values.
+Number of unallocated static 3-D buffers.
 </summary>
-            <param name="values">The values to be converted.</param>
-            <returns>An array of converted values.</returns>
         </member>
-        <member name="M:SlimDX.Half.#ctor(System.Single)">
+        <member name="P:SlimDX.DirectSound.Capabilities.FreeHardware3DAllBuffers">
             <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Half" /> structure.
+Number of unallocated 3-D buffers.
 </summary>
-            <param name="value">The floating point value that should be stored in 16 bit format.</param>
         </member>
-        <member name="F:SlimDX.Half.MinValue">
+        <member name="P:SlimDX.DirectSound.Capabilities.EmulatedDriver">
             <summary>
-Minimum value of the number.
+The device does not have a DirectSound driver installed, so it is being emulated through the waveform-audio functions. Performance degradation should be expected.
 </summary>
         </member>
-        <member name="F:SlimDX.Half.MaxValue">
+        <member name="P:SlimDX.DirectSound.Capabilities.ContinuousRate">
             <summary>
-Maximum value of the number.
+The device supports all sample rates between the MinSecondarySampleRate and MaxSecondarySampleRate member values. Typically, this means that the actual output rate will be within +/- 10 hertz (Hz) of the requested frequency.
 </summary>
         </member>
-        <member name="F:SlimDX.Half.Epsilon">
+        <member name="P:SlimDX.DirectSound.Capabilities.Certified">
             <summary>
-Smallest such that 1.0 + epsilon != 1.0
+The driver has been tested and certified by Microsoft. This flag is always set for WDM drivers.
 </summary>
         </member>
-        <member name="F:SlimDX.Half.AdditionRounding">
+        <member name="T:SlimDX.DirectSound.Capabilities">
             <summary>
-Additional rounding.
-</summary>
-        </member>
-        <member name="F:SlimDX.Half.ExponentRadix">
-            <summary>
-Exponent radix.
-</summary>
-        </member>
-        <member name="F:SlimDX.Half.MinimumBinaryExponent">
-            <summary>
-Minimum binary exponent.
-</summary>
-        </member>
-        <member name="F:SlimDX.Half.MinimumDecimalExponent">
-            <summary>
-Minimum decimal exponent.
-</summary>
-        </member>
-        <member name="F:SlimDX.Half.MaximumBinaryExponent">
-            <summary>
-Maximum binary exponent.
-</summary>
-        </member>
-        <member name="F:SlimDX.Half.MaximumDecimalExponent">
-            <summary>
-Maximum decimal exponent.
-</summary>
-        </member>
-        <member name="F:SlimDX.Half.MantissaBits">
-            <summary>
-Number of bits in the mantissa.
-</summary>
-        </member>
-        <member name="F:SlimDX.Half.PrecisionDigits">
-            <summary>
-Number of decimal digits of precision.
-</summary>
-        </member>
-        <member name="T:SlimDX.Half">
-            <summary>
-A half precision (16 bit) floating point value.
-</summary>
-        </member>
-        <member name="M:SlimDX.Design.HalfConverter.#ctor">
-            <summary>
-Initializes a new instance of the <see cref="T:SlimDX.Design.HalfConverter" /> class.
-</summary>
-        </member>
-        <member name="T:SlimDX.Design.HalfConverter">
-            <summary>
-Provides a type converter to convert <see cref="T:SlimDX.Half" /> objects to and from various 
-other representations.
+Describes the capabilities of a DirectSound device.
 </summary>
         </member>
         <member name="M:SlimDX.Ray.Equals(SlimDX.Ray@,SlimDX.Ray@)">
@@ -12912,6 +14442,272 @@ Provides a type converter to convert <see cref="T:SlimDX.BoundingBox" /> objects
 other representations.
 </summary>
         </member>
+        <member name="M:SlimDX.Half4.Equals(SlimDX.Half4@,SlimDX.Half4@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1" />
+            <param name="value2" />
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half4.Equals(SlimDX.Half4)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Half4.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Half4.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.Half4.op_Inequality(SlimDX.Half4,SlimDX.Half4)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half4.op_Equality(SlimDX.Half4,SlimDX.Half4)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half4.#ctor(SlimDX.Half,SlimDX.Half,SlimDX.Half,SlimDX.Half)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Half4" /> structure.
+</summary>
+            <param name="x">The X component.</param>
+            <param name="y">The Y component.</param>
+            <param name="z">The Z component.</param>
+            <param name="w">The W component.</param>
+        </member>
+        <member name="M:SlimDX.Half4.#ctor(SlimDX.Half)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Half4" /> structure.
+</summary>
+            <param name="value">The value to set for the X, Y, Z, and W components.</param>
+        </member>
+        <member name="P:SlimDX.Half4.W">
+            <summary>
+Gets or sets the W component of the vector.
+</summary>
+            <value>The W component of the vector.</value>
+        </member>
+        <member name="P:SlimDX.Half4.Z">
+            <summary>
+Gets or sets the Z component of the vector.
+</summary>
+            <value>The Z component of the vector.</value>
+        </member>
+        <member name="P:SlimDX.Half4.Y">
+            <summary>
+Gets or sets the Y component of the vector.
+</summary>
+            <value>The Y component of the vector.</value>
+        </member>
+        <member name="P:SlimDX.Half4.X">
+            <summary>
+Gets or sets the X component of the vector.
+</summary>
+            <value>The X component of the vector.</value>
+        </member>
+        <member name="T:SlimDX.Half4">
+            <summary>
+Defines a four component vector, using half precision floating point coordinates.
+</summary>
+        </member>
+        <member name="M:SlimDX.Design.Half4Converter.#ctor">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Design.Half4Converter" /> class.
+</summary>
+        </member>
+        <member name="T:SlimDX.Design.Half4Converter">
+            <summary>
+Provides a type converter to convert <see cref="T:SlimDX.Half4" /> objects to and from various 
+other representations.
+</summary>
+        </member>
+        <member name="M:SlimDX.Half.Equals(SlimDX.Half@,SlimDX.Half@)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1" />
+            <param name="value2" />
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half.Equals(SlimDX.Half)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Half.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Half.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.Half.ToString">
+            <summary>
+Converts the value of the object to its equivalent string representation.
+</summary>
+            <returns>The string representation of the value of this instance.</returns>
+        </member>
+        <member name="M:SlimDX.Half.op_Inequality(SlimDX.Half,SlimDX.Half)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half.op_Equality(SlimDX.Half,SlimDX.Half)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Half.op_Implicit(SlimDX.Half)~System.Single">
+            <summary>
+Performs an implicit conversion from <see cref="T:SlimDX.Half" /> to <see cref="T:System.Single" />.
+</summary>
+            <param name="value">The value to be converted.</param>
+            <returns>The converted value.</returns>
+        </member>
+        <member name="M:SlimDX.Half.op_Explicit(System.Single)~SlimDX.Half">
+            <summary>
+Performs an explicit conversion from <see cref="T:System.Single" /> to <see cref="T:SlimDX.Half" />.
+</summary>
+            <param name="value">The value to be converted.</param>
+            <returns>The converted value.</returns>
+        </member>
+        <member name="M:SlimDX.Half.ConvertToHalf(System.Single[])">
+            <summary>
+Converts an array of full precision values into half precision values.
+</summary>
+            <param name="values">The values to be converted.</param>
+            <returns>An array of converted values.</returns>
+        </member>
+        <member name="M:SlimDX.Half.ConvertToFloat(SlimDX.Half[])">
+            <summary>
+Converts an array of half precision values into full precision values.
+</summary>
+            <param name="values">The values to be converted.</param>
+            <returns>An array of converted values.</returns>
+        </member>
+        <member name="M:SlimDX.Half.#ctor(System.Single)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Half" /> structure.
+</summary>
+            <param name="value">The floating point value that should be stored in 16 bit format.</param>
+        </member>
+        <member name="F:SlimDX.Half.MinValue">
+            <summary>
+Minimum value of the number.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.MaxValue">
+            <summary>
+Maximum value of the number.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.Epsilon">
+            <summary>
+Smallest such that 1.0 + epsilon != 1.0
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.AdditionRounding">
+            <summary>
+Additional rounding.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.ExponentRadix">
+            <summary>
+Exponent radix.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.MinimumBinaryExponent">
+            <summary>
+Minimum binary exponent.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.MinimumDecimalExponent">
+            <summary>
+Minimum decimal exponent.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.MaximumBinaryExponent">
+            <summary>
+Maximum binary exponent.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.MaximumDecimalExponent">
+            <summary>
+Maximum decimal exponent.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.MantissaBits">
+            <summary>
+Number of bits in the mantissa.
+</summary>
+        </member>
+        <member name="F:SlimDX.Half.PrecisionDigits">
+            <summary>
+Number of decimal digits of precision.
+</summary>
+        </member>
+        <member name="T:SlimDX.Half">
+            <summary>
+A half precision (16 bit) floating point value.
+</summary>
+        </member>
+        <member name="M:SlimDX.Design.HalfConverter.#ctor">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.Design.HalfConverter" /> class.
+</summary>
+        </member>
+        <member name="T:SlimDX.Design.HalfConverter">
+            <summary>
+Provides a type converter to convert <see cref="T:SlimDX.Half" /> objects to and from various 
+other representations.
+</summary>
+        </member>
         <member name="M:SlimDX.Color3.Equals(SlimDX.Color3@,SlimDX.Color3@)">
             <summary>
 Determines whether the specified object instances are considered equal. 
@@ -12999,6 +14795,599 @@ Initializes a new instance of the <see cref="T:SlimDX.Design.Color3Converter" />
             <summary>
 Provides a type converter to convert <see cref="T:SlimDX.Color3" /> objects to and from various 
 other representations.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBuffer.CurrentReadPosition">
+            <summary>
+Retrieves the position of the read cursor in the buffer. The capture cursor is ahead of the read cursor. The data after the read position up to and including the capture position is not necessarily valid data.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBuffer.CurrentCapturePosition">
+            <summary>
+Retrieves the position of the capture cursor in the buffer. The capture cursor is ahead of the read cursor. The data after the read position up to and including the capture position is not necessarily valid data.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBuffer.WaveMapped">
+            <summary>
+True if the buffer wave mapped.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBuffer.SizeInBytes">
+            <summary>
+The size, in bytes, of the capture buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBuffer.Format">
+            <summary>
+Retrieves the waveform format of the capture buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBuffer.Looping">
+            <summary>
+True if the capture buffer is looping.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBuffer.Capturing">
+            <summary>
+True if the buffer is currently capturing.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.CaptureBuffer.Stop">
+            <summary>
+Stops the buffer so that it is no longer capturing data. If the buffer is not capturing, the method has no effect.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.CaptureBuffer.Start(System.Boolean)">
+            <summary>
+Begins capturing data into the buffer. If the buffer is already capturing, the method has no effect.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.CaptureBuffer.Write(System.Byte[],System.Int32,System.Boolean)">
+            <summary>
+Write data to the capture buffer.
+</summary>
+            <param name="data" />
+            <param name="offset" />
+            <param name="lockEntireBuffer" />
+            <returns />
+        </member>
+        <member name="M:SlimDX.DirectSound.CaptureBuffer.Read(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+Reads data from the capture buffer.
+</summary>
+            <param name="offset" />
+            <param name="sizeBytes" />
+            <param name="lockEntireBuffer" />
+            <returns />
+        </member>
+        <member name="M:SlimDX.DirectSound.CaptureBuffer.GetEffectStatus(System.Int32)">
+            <summary>
+Retrieves the status of capture effects.
+</summary>
+            <param name="effectCount" />
+            <returns />
+        </member>
+        <member name="M:SlimDX.DirectSound.CaptureBuffer.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.CaptureBuffer" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundCaptureBuffer8 pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="M:SlimDX.DirectSound.CaptureBuffer.#ctor(SlimDX.DirectSound.DirectSoundCapture,SlimDX.DirectSound.CaptureBufferDescription)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.CaptureBuffer" /> class.
+</summary>
+            <param name="capture" />
+            <param name="description" />
+        </member>
+        <member name="T:SlimDX.DirectSound.CaptureBuffer">
+            <summary>
+The CaptureBuffer object is used to manipulate sound capture buffers.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBufferDescription.EffectDescriptions">
+            <summary>
+Describes effects supported by hardware for the buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBufferDescription.Format">
+            <summary>
+The format in which to capture the data.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBufferDescription.WaveMapped">
+            <summary>
+The Win32 wave mapper will be used for formats not supported by the device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBufferDescription.ControlEffects">
+            <summary>
+The buffer supports effects.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureBufferDescription.BufferBytes">
+            <summary>
+Size of capture buffer to create, in bytes.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.CaptureBufferDescription">
+            <summary>
+Describes a capture buffer.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectDescription.LocateInSoftware">
+            <summary>
+Effect specified must be in software.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectDescription.LocateInHardware">
+            <summary>
+Effect specified must be in hardware.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectDescription.CaptureEffectInstance">
+            <summary>
+Specifies the unique identifier of the preferred effect.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureEffectDescription.CaptureEffectClass">
+            <summary>
+Specifies the class identifier of the effect.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.CaptureEffectDescription">
+            <summary>
+Contains parameters for an effect associated with a capture buffer.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.DirectSoundCapture.GetDevices">
+            <summary>
+Enumerates the DirectSound capture devices installed in the system.
+</summary>
+            <returns>A collection of the devices found.</returns>
+        </member>
+        <member name="P:SlimDX.DirectSound.DirectSoundCapture.Capabilities">
+            <summary>
+Retrieves the capabilities of the capture device.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.DirectSoundCapture.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.DirectSoundCapture" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundCapture pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="M:SlimDX.DirectSound.DirectSoundCapture.#ctor(System.Guid)">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.DirectSoundCapture" /> class.
+</summary>
+            <param name="device" />
+            <returns />
+        </member>
+        <member name="M:SlimDX.DirectSound.DirectSoundCapture.#ctor">
+            <summary>
+Initializes a new instance of the <see cref="T:SlimDX.DirectSound.DirectSoundCapture" /> class.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.DirectSoundCapture">
+            <summary>
+The DirectSoundCapture object is used to create sound capture buffers.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.MultipleCapture">
+            <summary>
+Multiple capture objects can be used simultaneously on the capture device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format96KhzStereo8Bit">
+            <summary>
+The driver supports the 96Khz 8 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format96KhzStereo16Bit">
+            <summary>
+The driver supports the 96Khz 16 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format96KhzMono8Bit">
+            <summary>
+The driver supports the 96Khz 8 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format96KhzMono16Bit">
+            <summary>
+The driver supports the 96Khz 16 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format48KhzStereo8Bit">
+            <summary>
+The driver supports the 48Khz 8 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format48KhzStereo16Bit">
+            <summary>
+The driver supports the 48Khz 16 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format48KhzMono8Bit">
+            <summary>
+The driver supports the 48Khz 8 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format48KhzMono16Bit">
+            <summary>
+The driver supports the 48Khz 16 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format44KhzStereo8Bit">
+            <summary>
+The driver supports the 44Khz 8 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format44KhzStereo16Bit">
+            <summary>
+The driver supports the 44Khz 16 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format44KhzMono8Bit">
+            <summary>
+The driver supports the 44Khz 8 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format44KhzMono16Bit">
+            <summary>
+The driver supports the 44Khz 16 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format22KhzStereo8Bit">
+            <summary>
+The driver supports the 22Khz 8 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format22KhzStereo16Bit">
+            <summary>
+The driver supports the 22Khz 16 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format22KhzMono8Bit">
+            <summary>
+The driver supports the 22Khz 8 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format22KhzMono16Bit">
+            <summary>
+The driver supports the 22Khz 16 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format11KhzStereo8Bit">
+            <summary>
+The driver supports the 11Khz 8 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format11KhzStereo16Bit">
+            <summary>
+The driver supports the 11Khz 16 Bit Stereo format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format11KhzMono8Bit">
+            <summary>
+The driver supports the 11Khz 8 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Format11KhzMono16Bit">
+            <summary>
+The driver supports the 11Khz 16 Bit Mono format.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.EmulatedDriver">
+            <summary>
+There is no DirectSoundCapture driver for the device, so the standard waveform audio functions are being used.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Channels">
+            <summary>
+Number of channels supported by the device, where 1 is mono, 2 is stereo, and so on.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.CaptureCapabilities.Certified">
+            <summary>
+The driver for the device is a certified WDM driver.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.CaptureCapabilities">
+            <summary>
+Describes the capabilities of the capture device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DeviceInformation.ModuleName">
+            <summary>
+String that specifies the module name of the DirectSound driver corresponding to this device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DeviceInformation.Description">
+            <summary>
+String that provides a textual description of the DirectSound device.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.DeviceInformation.DriverGuid">
+            <summary>
+Identifies the DirectSound driver being enumerated
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.DeviceInformation">
+            <summary>
+Contains information about a DirectSound device.
+</summary>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormatExtensible.Equals(SlimDX.Multimedia.WaveFormatExtensible,SlimDX.Multimedia.WaveFormatExtensible)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormatExtensible.Equals(SlimDX.Multimedia.WaveFormatExtensible)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormatExtensible.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormatExtensible.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormatExtensible.op_Inequality(SlimDX.Multimedia.WaveFormatExtensible,SlimDX.Multimedia.WaveFormatExtensible)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormatExtensible.op_Equality(SlimDX.Multimedia.WaveFormatExtensible,SlimDX.Multimedia.WaveFormatExtensible)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormatExtensible.Clone">
+            <summary>
+Clones the instance and returns a new object containing the same values.
+</summary>
+            <returns>A new <see cref="T:SlimDX.Multimedia.WaveFormatExtensible" /> object containing the same values as the current instance.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormat.Equals(SlimDX.Multimedia.WaveFormat,SlimDX.Multimedia.WaveFormat)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormat.Equals(SlimDX.Multimedia.WaveFormat)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormat.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormat.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormat.op_Inequality(SlimDX.Multimedia.WaveFormat,SlimDX.Multimedia.WaveFormat)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormat.op_Equality(SlimDX.Multimedia.WaveFormat,SlimDX.Multimedia.WaveFormat)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.Multimedia.WaveFormat.Clone">
+            <summary>
+Clones the instance and returns a new object containing the same values.
+</summary>
+            <returns>A new <see cref="T:SlimDX.Multimedia.WaveFormat" /> object containing the same values as the current instance.</returns>
+        </member>
+        <member name="T:SlimDX.Speakers">
+            <summary>
+Specifies possible speaker combinations for audio devices.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.SevenPointOneSurround">
+            <summary>
+A combination of speakers will be used that provides 7.1 surround sound output.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.FivePointOneSurround">
+            <summary>
+A combination of speakers will be used that provides 5.1 surround sound output.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.SevenPointOne">
+            <summary>
+A combination of speakers will be used that provides 7.1 sound output.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.FivePointOne">
+            <summary>
+A combination of speakers will be used that provides 5.1 sound output.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.FourPointOne">
+            <summary>
+A combination of speakers will be used that provides 4.1 sound output.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.Quadrophonic">
+            <summary>
+A combination of speakers will be used that provides quadrophonic sound output.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.Surround">
+            <summary>
+A combination of speakers will be used that provides surround sound output.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.TwoPointOne">
+            <summary>
+A combination of speakers will be used that provides 2.1 sound output.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.Stereo">
+            <summary>
+Two or more speakers will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.Mono">
+            <summary>
+A single speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.All">
+            <summary>
+All possible speakers will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.Reserved">
+            <summary>
+A reserved speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.TopBackRight">
+            <summary>
+A top back right speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.TopBackCenter">
+            <summary>
+A top back center speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.TopBackLeft">
+            <summary>
+A top back left speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.TopFrontRight">
+            <summary>
+A top front right speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.TopFrontCenter">
+            <summary>
+A top front center speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.TopFrontLeft">
+            <summary>
+A top front left speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.TopCenter">
+            <summary>
+A top center speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.SideRight">
+            <summary>
+A right side speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.SideLeft">
+            <summary>
+A left side speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.BackCenter">
+            <summary>
+A back center speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.FrontRightOfCenter">
+            <summary>
+A front right-of-center speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.FrontLeftOfCenter">
+            <summary>
+A front left-of-center speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.BackRight">
+            <summary>
+A back right speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.BackLeft">
+            <summary>
+A back left speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.LowFrequency">
+            <summary>
+A low frequency speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.FrontCenter">
+            <summary>
+A front center speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.FrontRight">
+            <summary>
+A front right speaker will be used.
+</summary>
+        </member>
+        <member name="F:SlimDX.Speakers.FrontLeft">
+            <summary>
+A front left speaker will be used.
 </summary>
         </member>
         <member name="M:SlimDX.Direct3D9.Direct3D.SupportsR2VB(System.Int32,SlimDX.Direct3D9.DeviceType)">
@@ -15571,6 +17960,46 @@ Indicates that the X (or R) component is valid.
 Indicates that no components are valid.
 </summary>
         </member>
+        <member name="T:SlimDX.Direct3D10.MeshOptimizeFlags">
+            <summary>
+Values that indicate how to alter mesh data during an optimization operation.
+</summary>
+        </member>
+        <member name="F:SlimDX.Direct3D10.MeshOptimizeFlags.DeviceIndependent">
+            <summary>
+Affects the vertex cache size. Using this flag specifies a default vertex cache size that works well on legacy hardware.
+</summary>
+        </member>
+        <member name="F:SlimDX.Direct3D10.MeshOptimizeFlags.DoNotSplit">
+            <summary>
+While attribute sorting, do not split vertices that are shared between attribute groups.
+</summary>
+        </member>
+        <member name="F:SlimDX.Direct3D10.MeshOptimizeFlags.IgnoreVertices">
+            <summary>
+Optimize the faces only; do not optimize the vertices.
+</summary>
+        </member>
+        <member name="F:SlimDX.Direct3D10.MeshOptimizeFlags.StripReorder">
+            <summary>
+Reorders faces to maximize length of adjacent triangles.
+</summary>
+        </member>
+        <member name="F:SlimDX.Direct3D10.MeshOptimizeFlags.VertexCache">
+            <summary>
+Reorders faces to increase the cache hit rate of vertex caches.
+</summary>
+        </member>
+        <member name="F:SlimDX.Direct3D10.MeshOptimizeFlags.AttributeSort">
+            <summary>
+Reorders faces to optimize for fewer attribute bundle state changes and enhanced draw performance.
+</summary>
+        </member>
+        <member name="F:SlimDX.Direct3D10.MeshOptimizeFlags.Compact">
+            <summary>
+Reorders faces to remove unused vertices and faces.
+</summary>
+        </member>
         <member name="T:SlimDX.Direct3D10.IncludeType">
             <summary>
 Flags that indicate the location of an include file.
@@ -15585,6 +18014,544 @@ Indicates that the include is in the system path (or paths).
             <summary>
 Indicates that the include is in the local path (or paths).
 </summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.GargleEffect.RateMin">
+            <summary>
+Minimum rate of modulation, in Hertz.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.GargleEffect.RateMax">
+            <summary>
+Maximum rate of modulation, in Hertz.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.GargleEffect.RateDefault">
+            <summary>
+Default rate of modulation, in Hertz.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.GargleEffect.WaveShapeSquare">
+            <summary>
+Square shape of the modulation waveform.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.GargleEffect.WaveShapeTriangle">
+            <summary>
+Triangular shape of the modulation waveform.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.GargleEffect.WaveShapeDefault">
+            <summary>
+Default shape of the modulation waveform.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.GargleEffect.WaveShape">
+            <summary>
+Shape of the modulation waveform. By default the waveform is a triangle.
+</summary>
+        </member>
+        <member name="P:SlimDX.DirectSound.GargleEffect.Rate">
+            <summary>
+Rate of modulation, in Hertz. The default value is 20.
+</summary>
+        </member>
+        <member name="M:SlimDX.DirectSound.GargleEffect.FromPointer(System.IntPtr)">
+            <summary>
+Constructs a new instance of the <see cref="T:SlimDX.DirectSound.GargleEffect" /> class using the specified pointer to a
+previously constructed unmanaged object.
+</summary>
+            <param name="pointer">The unmanaged IDirectSoundFXGargle pointer.</param>
+            <returns>The newly constructed object.</returns>
+        </member>
+        <member name="T:SlimDX.DirectSound.GargleEffect">
+            <summary>
+The SoundEffectGargle object is used to set and retrieve effect parameters on a buffer that supports amplitude modulation.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.Volume">
+            <summary>
+Predefined audio volume attenuation values.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.Volume.Maximum">
+            <summary>
+Represents the original, unadjusted volume of the stream.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.Volume.Minimum">
+            <summary>
+Indicates an audio volume attenuated by 100 dB, which, for all practical purposes, is silence.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.PlayFlags">
+            <summary>
+Flags specifying the play behavior of the buffer.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.PlayFlags.TerminateByPriority">
+            <summary>
+If the hardware has no available voices, a currently playing buffer will be stopped to make room for the new buffer. 
+The buffer prematurely terminated will be the one with the lowest priority as set by the priority parameter passed to SecondarySoundBuffer::Play for the buffer.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.PlayFlags.TerminateByDistance">
+            <summary>
+If the hardware has no available voices, a currently playing buffer will be stopped to make room for the new buffer. 
+The buffer prematurely terminated will be selected from buffers that have the buffer's BufferFlags::Mute3DAtMaxDistance flag set and are beyond their maximum distance. If there are no such buffers, the method fails.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.PlayFlags.TerminateByTime">
+            <summary>
+If the hardware has no available voices, a currently playing nonlooping buffer will be stopped to make room for the new buffer. 
+The buffer prematurely terminated is the one with the least time left to play.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.PlayFlags.Software">
+            <summary>
+Play this voice in a software buffer only.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.PlayFlags.Hardware">
+            <summary>
+Play this voice in a hardware buffer only.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.PlayFlags.Looping">
+            <summary>
+Play continues until explicitly stopped. This flag must be set when playing a primary buffer.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.PlayFlags.None">
+            <summary />
+        </member>
+        <member name="T:SlimDX.DirectSound.I3DL2ReverbPreset">
+            <summary>
+Values that specify a standard reverberation preset. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Plate">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.LargeHall">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.MediumHall">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.LargeRoom">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.MediumRoom">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.SmallRoom">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Underwater">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.SewerPipe">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.ParkingLot">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Plain">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Quarry">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Mountains">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.City">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Forest">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Alley">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.StoneCorridor">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Hallway">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.CarpetedHallway">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Hangar">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Arena">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Cave">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.ConcertHall">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Auditorium">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.StoneRoom">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.LivingRoom">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Bathroom">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Room">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.PaddedCell">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Generic">
+            <summary />
+        </member>
+        <member name="F:SlimDX.DirectSound.I3DL2ReverbPreset.Default">
+            <summary />
+        </member>
+        <member name="T:SlimDX.DirectSound.SpeakerGeometry">
+            <summary>
+Various speaker configurations.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SpeakerGeometry.Maximum">
+            <summary>
+The speakers are directed over an arc of 180 degrees.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SpeakerGeometry.Wide">
+            <summary>
+The speakers are directed over an arc of 20 degrees.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SpeakerGeometry.Narrow">
+            <summary>
+The speakers are directed over an arc of 10 degrees.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SpeakerGeometry.Minimum">
+            <summary>
+The speakers are directed over an arc of 5 degrees.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.SoundEffectResult">
+            <summary>
+Indicates the result of the attempt to set an effect in the buffer. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundEffectResult.Unknown">
+            <summary>
+Effect is not registered on the system, and the method failed as a result.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundEffectResult.Failed">
+            <summary>
+No effect was created because resources weren't available.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundEffectResult.Unallocated">
+            <summary>
+Effect has not yet been assigned to hardware or software. 
+This value is returned if the buffer was created with the BufferFlags::Defer flag in <see cref="T:SlimDX.DirectSound.SoundBufferDescription" /> Flags.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundEffectResult.LocatedInSoftware">
+            <summary>
+Effect is instantiated in software.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundEffectResult.LocatedInHardware">
+            <summary>
+Effect is instantiated in hardware.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.SoundEffectResult.Present">
+            <summary>
+Effect is available but was not created because one of the other effects requested could not be created. 
+If any of the effects requested cannot be created, none of them are, and the call fails.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.Mode3D">
+            <summary>
+The 3-D sound processing mode to be set.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.Mode3D.Disable">
+            <summary>
+Processing of 3D sound is disabled. The sound seems to originate from the center of the listener's head.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.Mode3D.HeadRelative">
+            <summary>
+Sound parameters (position, velocity, and orientation) are relative to the listener's parameters. 
+In this mode, the absolute parameters of the sound are updated automatically as the listener's parameters change, so that the relative parameters remain constant.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.Mode3D.Normal">
+            <summary>
+Normal processing. This is the default mode.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.LockFlags">
+            <summary>
+Various sound buffer locking flags.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.LockFlags.EntireBuffer">
+            <summary>
+Lock the entire buffer.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.LockFlags.FromWriteCursor">
+            <summary>
+Start the lock at the write cursor.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.CooperativeLevel">
+            <summary>
+Values specifying the cooperative level of the device.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CooperativeLevel.WritePrimary">
+            <summary>
+Sets the write-primary level. The application has write access to the primary buffer. No secondary buffers can be played. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CooperativeLevel.Priority">
+            <summary>
+Sets the priority level.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CooperativeLevel.Normal">
+            <summary>
+Sets the normal level. 
+This level has the smoothest multitasking and resource-sharing behavior, 
+but because it does not allow the primary buffer format to change, output is restricted to the default 8-bit format.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.CaptureEffectResult">
+            <summary>
+Return values for Capture effects.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CaptureEffectResult.LocatedInSoftware">
+            <summary>
+Effect is instantiated in software.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.CaptureEffectResult.LocatedInHardware">
+            <summary>
+Effect is instantiated in hardware.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.BufferStatus">
+            <summary>
+Flags specifying the status of the buffer.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferStatus.Terminated">
+            <summary>
+The buffer was prematurely terminated by the voice manager and is not playing. 
+Set only for buffers created with the BufferFlags::Defer flag.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferStatus.Software">
+            <summary>
+The buffer is playing in software. Set only for buffers created with the BufferFlags::Defer flag.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferStatus.Hardware">
+            <summary>
+The buffer is playing in hardware. Set only for buffers created with the BufferFlags::Defer flag.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferStatus.Looping">
+            <summary>
+The buffer is being looped. If this value is not set, the buffer will stop when it reaches the end of the sound data. 
+This value is returned only in combination with BufferStatus::Playing.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferStatus.BufferLost">
+            <summary>
+The buffer is lost and must be restored before it can be played or locked.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferStatus.Playing">
+            <summary>
+The buffer is playing. If this value is not set, the buffer is stopped.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.BufferFlags">
+            <summary>
+Flags specifying the capabilities of the buffer.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.Defer">
+            <summary>
+The buffer can be assigned to a hardware or software resource at play time.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.Mute3DAtMaxDistance">
+            <summary>
+The sound is reduced to silence at the maximum distance. 
+The buffer will stop playing when the maximum distance is exceeded, so that processor time is not wasted. 
+Applies only to software buffers.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.GetCurrentPosition2">
+            <summary>
+The buffer uses the new behavior of the play cursor when retrieving the current position.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.GlobalFocus">
+            <summary>
+The buffer is a global sound buffer. 
+With this flag set, an application using DirectSound can continue to play its buffers if the user switches focus to another application, 
+even if the new application uses DirectSound.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.StickyFocus">
+            <summary>
+The buffer has sticky focus. 
+If the user switches to another application not using DirectSound, the buffer is still audible. 
+However, if the user switches to another DirectSound application, the buffer is muted.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.ControlEffects">
+            <summary>
+The buffer supports effects processing.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.ControlPositionNotify">
+            <summary>
+The buffer has position notification capability. 
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.ControlVolume">
+            <summary>
+The buffer has volume control capability.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.ControlPan">
+            <summary>
+The buffer has pan control capability.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.ControlFrequency">
+            <summary>
+The buffer has frequency control capability.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.Control3D">
+            <summary>
+The buffer has 3D control capability.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.Software">
+            <summary>
+The buffer is in software memory and uses software mixing.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.Hardware">
+            <summary>
+The buffer uses hardware mixing.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.Static">
+            <summary>
+The buffer is in on-board hardware memory.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.BufferFlags.PrimaryBuffer">
+            <summary>
+The buffer is a primary buffer.
+</summary>
+        </member>
+        <member name="T:SlimDX.DirectSound.AcousticEchoCancelMode">
+            <summary>
+Values indicating the acoustic echo cancellation operation mode.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.AcousticEchoCancelMode.FullDuplex">
+            <summary>
+The effect is running in full duplex mode.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.AcousticEchoCancelMode.HalfDuplex">
+            <summary>
+The effect is running in half duplex mode. Not presently supported.
+</summary>
+        </member>
+        <member name="F:SlimDX.DirectSound.AcousticEchoCancelMode.PassThrough">
+            <summary>
+The effect is passing capture and render data through without modifying it.
+</summary>
+        </member>
+        <member name="M:SlimDX.X3DAudio.Cone.Equals(SlimDX.X3DAudio.Cone,SlimDX.X3DAudio.Cone)">
+            <summary>
+Determines whether the specified object instances are considered equal. 
+</summary>
+            <param name="value1">The first value to compare.</param>
+            <param name="value2">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="value1" /> is the same instance as <paramref name="value2" /> or 
+if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.X3DAudio.Cone.Equals(SlimDX.X3DAudio.Cone)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to the specified object. 
+</summary>
+            <param name="other">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.X3DAudio.Cone.Equals(System.Object)">
+            <summary>
+Returns a value that indicates whether the current instance is equal to a specified object. 
+</summary>
+            <param name="obj">Object to make the comparison with.</param>
+            <returns>
+                <c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:SlimDX.X3DAudio.Cone.GetHashCode">
+            <summary>
+Returns the hash code for this instance.
+</summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:SlimDX.X3DAudio.Cone.op_Inequality(SlimDX.X3DAudio.Cone,SlimDX.X3DAudio.Cone)">
+            <summary>
+Tests for inequality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.X3DAudio.Cone.op_Equality(SlimDX.X3DAudio.Cone,SlimDX.X3DAudio.Cone)">
+            <summary>
+Tests for equality between two objects.
+</summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+                <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:SlimDX.X3DAudio.Cone.Clone">
+            <summary>
+Clones the instance and returns a new object containing the same values.
+</summary>
+            <returns>A new <see cref="T:SlimDX.X3DAudio.Cone" /> object containing the same values as the current instance.</returns>
         </member>
         <member name="M:SlimDX.Direct3D9.PresentParameters.Equals(SlimDX.Direct3D9.PresentParameters,SlimDX.Direct3D9.PresentParameters)">
             <summary>
