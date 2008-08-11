@@ -272,6 +272,7 @@ namespace GorgonLibrary.GUI
 			}
 		}
 
+		/// <summary>
 		/// Function called when a keyboard event has taken place in this window.
 		/// </summary>
 		/// <param name="isDown">TRUE if the button was pressed, FALSE if released.</param>

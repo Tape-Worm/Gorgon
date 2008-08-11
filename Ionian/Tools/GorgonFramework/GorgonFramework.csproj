@@ -14,10 +14,9 @@
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>
     </ApplicationIcon>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>gorgonfull.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -153,6 +152,7 @@
       <DependentUpon>GorgonSettings.xsd</DependentUpon>
     </None>
     <None Include="Resources\Blur.fx" />
+    <None Include="gorgonfull.snk" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorGUI.ico" />

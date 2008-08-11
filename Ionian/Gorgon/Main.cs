@@ -165,7 +165,7 @@ namespace GorgonLibrary
 		private static Viewport _clippingView = null;					// Clipping viewport.
 		private static Color _statsTextColor = Color.White;				// Frame statistics text color.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
-		private static Shader _currentShader = null;					// Current shader.
+		private static IShaderRenderer _currentShader = null;			// Current shader.
 		private static D3D9.Direct3D _d3d = null;						// Why is this needed??
 #if INCLUDE_D3DREF
 		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
@@ -513,7 +513,7 @@ namespace GorgonLibrary
 		/// <value>A shader renderer output to apply to the scene when rendering.</value>
 		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		/// <exception cref="DeviceNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
-		public static Shader CurrentShader
+		public static IShaderRenderer CurrentShader
 		{
 			get
 			{
