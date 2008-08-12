@@ -10,8 +10,9 @@
     <RootNamespace>GorgonLibrary.FileSystems</RootNamespace>
     <AssemblyName>GorgonBZip2FileSystem</AssemblyName>
     <ApplicationIcon>GorSharpZip.ico</ApplicationIcon>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>gorgonfull.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -57,7 +58,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.XML" />
-    <None Include="gorgonfull.snk" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BZip2PlugInEntry.cs" />

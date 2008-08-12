@@ -10,7 +10,8 @@
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>Gorgon</AssemblyName>
-    <AssemblyOriginatorKeyFile>gorgonfull.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -24,7 +25,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <OldToolsVersion>2.0</OldToolsVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -329,7 +330,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GorIcon.ico" />
-    <None Include="gorgonfull.snk" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
