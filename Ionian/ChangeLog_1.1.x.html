@@ -103,8 +103,20 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-July 6/2008 - Version - Current
+August 20/2008 - Version - Current
 ================================
+* FINALLY!! I managed to get rid of the ICSharpCode.SharpZipLib.DLL issue!!
+  The problem was this:  When the user loaded the BZip file system plug-in, the
+  plug-in loader would fail because it was unable to locate the aforementioned
+  assembly.  Even if it was located in the same directory as the DLL.  
+  
+  Previously, the only way to get this working was to put a copy of 
+  ICSharpCode.SharpZipLib.DLL in your application directory.  This has now been fixed.  
+  The plug-in can now be loaded without having ICSharpCode.SharpZipLib.DLL in your 
+  app directory.  As long as it can be located in the GAC, or the directory where your 
+  plug-in resides, then it should be able to load.  This has been a pain in the ass 
+  for a long time.
+  
 * Updated to the latest version of SlimDX.
 
 + Added a background color command to the sprite clipper in the sprite editor

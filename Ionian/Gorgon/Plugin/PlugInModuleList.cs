@@ -127,7 +127,7 @@ namespace GorgonLibrary.PlugIns
 					if (moduleName.IndexOf(", Version=") > -1)
 						newModule = Assembly.Load(moduleName);
 					else
-						newModule = Assembly.LoadFile(moduleName);
+						newModule = Assembly.LoadFrom(moduleName);
 				}
 				else
 					Gorgon.Log.Print("PlugInModuleList", "Plug-in module already exists, using version from the current app domain.", LoggingLevel.Verbose);
