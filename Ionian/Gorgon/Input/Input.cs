@@ -43,11 +43,11 @@ namespace GorgonLibrary.InputDevices
 		private JoystickList _joysticks = null;					// Joystick list.
 		private Mouse _mouse = null;							// Interface for mouse data.
 		private Keyboard _keyboard = null;						// Interface for keyboard data.
-#if DEBUG
+//#if DEBUG
 		private static bool _requireSigned = false;				// Flag to require a signed plug-in.
-#else
-		private static bool _requireSigned = true;				// Flag to require a signed plug-in.
-#endif
+//#else
+//		private static bool _requireSigned = true;				// Flag to require a signed plug-in.
+//#endif
 		#endregion
 
 		#region Properties.

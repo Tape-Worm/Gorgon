@@ -145,7 +145,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A boolean value.</returns>
 		public bool GetBoolean()
 		{
-			return _owner.D3DEffect.GetBool(_effectHandle);
+			return _owner.D3DEffect.GetValue<bool>(_effectHandle);
 		}
 
 		/// <summary>
@@ -162,7 +162,7 @@ namespace GorgonLibrary.Graphics
 			if ((count > ArrayLength) || (count < 1))
 				count = ArrayLength;
 
-			return _owner.D3DEffect.GetBoolArray(_effectHandle, count);
+			return _owner.D3DEffect.GetValue<bool>(_effectHandle, count);
 		}
 
 		/// <summary>
@@ -171,7 +171,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A boolean value.</returns>
 		public float GetFloat()
 		{
-			return _owner.D3DEffect.GetFloat(_effectHandle);
+			return _owner.D3DEffect.GetValue<float>(_effectHandle);
 		}
 
 		/// <summary>
@@ -188,7 +188,7 @@ namespace GorgonLibrary.Graphics
 			if ((count > ArrayLength) || (count < 1))
 				count = ArrayLength;
 
-			return _owner.D3DEffect.GetFloatArray(_effectHandle, count);
+			return _owner.D3DEffect.GetValue<float>(_effectHandle, count);
 		}
 
 		/// <summary>
@@ -197,7 +197,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>An integer value.</returns>
 		public int GetInteger()
 		{
-			return _owner.D3DEffect.GetInt(_effectHandle);
+			return _owner.D3DEffect.GetValue<int>(_effectHandle);
 		}
 
 		/// <summary>
@@ -214,7 +214,7 @@ namespace GorgonLibrary.Graphics
 			if ((count > ArrayLength) || (count < 1))
 				count = ArrayLength;
 
-			return _owner.D3DEffect.GetIntArray(_effectHandle, count);
+			return _owner.D3DEffect.GetValue<int>(_effectHandle, count);
 		}
 
 		/// <summary>
@@ -232,7 +232,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A 4D vector value.</returns>
 		public Vector4D GetVector4D()
 		{
-			return Converter.Convert(_owner.D3DEffect.GetVector(_effectHandle));
+			return Converter.Convert(_owner.D3DEffect.GetValue<DX.Vector4>(_effectHandle));
 		}
 
 		/// <summary>
@@ -253,7 +253,7 @@ namespace GorgonLibrary.Graphics
 			DX.Vector4[] d3dVectors;						// D3D vectors.
 
 			// Get matrices.
-			d3dVectors = _owner.D3DEffect.GetVectorArray(_effectHandle, count);
+			d3dVectors = _owner.D3DEffect.GetValue<DX.Vector4>(_effectHandle, count);
 
 			for (int i = 0; i < count; i++)
 				vectors[i] = Converter.Convert(d3dVectors[i]);
@@ -287,10 +287,10 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A matrix value.</returns>
 		public Matrix GetMatrix(bool transpose)
 		{
+			Matrix result = Converter.Convert(_owner.D3DEffect.GetValue<DX.Matrix>(_effectHandle));
 			if (transpose)
-				return Converter.Convert(_owner.D3DEffect.GetMatrixTranspose(_effectHandle));
-			else
-				return Converter.Convert(_owner.D3DEffect.GetMatrix(_effectHandle));
+				result = result.Transpose;
+			return result;
 		}
 
 		/// <summary>
@@ -312,13 +312,13 @@ namespace GorgonLibrary.Graphics
 			DX.Matrix[] d3dMatrices;						// D3D matrices.
 
 			// Get matrices.
-			if (transpose)
-				d3dMatrices = _owner.D3DEffect.GetMatrixTransposeArray(_effectHandle, count);
-			else
-				d3dMatrices = _owner.D3DEffect.GetMatrixArray(_effectHandle, count);
-
+			d3dMatrices = _owner.D3DEffect.GetValue<DX.Matrix>(_effectHandle, count);
 			for (int i = 0; i < count; i++)
+			{
 				matrices[i] = Converter.Convert(d3dMatrices[i]);
+				if (transpose)
+					matrices[i] = matrices[i].Transpose;
+			}
 
 			return matrices;
 		}
@@ -329,7 +329,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A color value.</returns>
 		public Color GetColor()
 		{
-			return Color.FromArgb(_owner.D3DEffect.GetColor(_effectHandle).ToArgb());
+			return _owner.D3DEffect.GetValue<DX.Color4>(_effectHandle).ToColor();
 		}
 
 		/// <summary>
@@ -350,7 +350,7 @@ namespace GorgonLibrary.Graphics
 			DX.Color4[] d3dColors;                  // D3D color values.
 
 			// Get colors.
-			d3dColors = _owner.D3DEffect.GetColorArray(_effectHandle, count);
+			d3dColors = _owner.D3DEffect.GetValue<DX.Color4>(_effectHandle, count);
 
 			for (int i = 0; i < count; i++)
 				colors[i] = d3dColors[i].ToColor();
@@ -444,7 +444,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">A string value.</param>
 		public void SetValue(string value)
 		{
-			_owner.D3DEffect.SetValue(_effectHandle, value);
+			_owner.D3DEffect.SetString(_effectHandle, value);
 		}
 
 		/// <summary>
@@ -491,7 +491,7 @@ namespace GorgonLibrary.Graphics
 		public void SetValue(Matrix value, bool transpose)
 		{
 			if (transpose)
-				_owner.D3DEffect.SetValueTranspose(_effectHandle, Converter.Convert(value));
+				_owner.D3DEffect.SetValue(_effectHandle, DX.Matrix.Transpose(Converter.Convert(value)));
 			else
 				_owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
 		}
@@ -504,7 +504,10 @@ namespace GorgonLibrary.Graphics
 		public void SetValue(Matrix[] value, bool transpose)
 		{
 			if (transpose)
-				_owner.D3DEffect.SetValueTranspose(_effectHandle, Converter.Convert(value));
+			{
+				foreach (Matrix matrix in value)
+					SetValue(matrix, true);
+			}
 			else
 				_owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
 		}
@@ -539,7 +542,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Image to set.</param>
 		public void SetValue(Image image)
 		{
-			_owner.D3DEffect.SetValue(_effectHandle, image.D3DTexture);
+			_owner.D3DEffect.SetTexture(_effectHandle, image.D3DTexture);
 		}
 
 		/// <summary>
@@ -548,7 +551,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Render image to set.</param>
 		public void SetValue(RenderImage image)
 		{
-			_owner.D3DEffect.SetValue(_effectHandle, image.Image.D3DTexture);
+			_owner.D3DEffect.SetTexture(_effectHandle, image.Image.D3DTexture);
 		}
 		#endregion
 		#endregion

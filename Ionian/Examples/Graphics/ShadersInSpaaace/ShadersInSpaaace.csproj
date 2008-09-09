@@ -1,8 +1,8 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0390ACAD-101E-46F1-A355-13E4F082CB04}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -52,9 +52,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon, Version=1.1.3137.28288, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=x86">
+    <Reference Include="Gorgon, Version=1.1.3174.27176, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Gorgon\bin\Debug\Gorgon.dll</HintPath>
+      <HintPath>..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

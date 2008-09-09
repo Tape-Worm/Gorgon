@@ -41,11 +41,11 @@ namespace GorgonLibrary.FileSystems
 		private FileSystemInfoAttribute _info;				// File system information.
 		private Type _fileSystemType;						// File system type.
 		private bool _isDisposed = false;					// Flag to indicate whether this object is disposed already or not.
-#if DEBUG
+//#if DEBUG
 		private static bool _requireSignedPlugIns = false;	// Flag to indicate that we require signed provider plug-ins.
-#else
-		private static bool _requireSignedPlugIns = true;	// Flag to indicate that we require signed provider plug-ins.
-#endif
+//#else
+//		private static bool _requireSignedPlugIns = true;	// Flag to indicate that we require signed provider plug-ins.
+//#endif
 		#endregion
 
 		#region Properties.

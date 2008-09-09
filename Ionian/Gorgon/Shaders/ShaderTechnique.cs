@@ -96,7 +96,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return !_owner.D3DEffect.ValidateTechnique(_effectHandle);
+				return _owner.D3DEffect.ValidateTechnique(_effectHandle);
 			}
 		}
 		#endregion

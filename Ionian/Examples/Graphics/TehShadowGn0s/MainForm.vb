@@ -184,7 +184,7 @@ Public Class MainForm
 
             Gorgon.CurrentShader = Nothing
 
-            _screenSprite.Image = _blurPass2.Image
+            _screenSprite.Image = _blurPass1.Image
 
             Gorgon.CurrentRenderTarget = Nothing
 
@@ -220,7 +220,7 @@ Public Class MainForm
         If (_samples < 0) Then
             _samples = 0
             _auto = False
-            _blurShader.Techniques("Blur").Parameters("fadeFactor").SetValue(0)
+            _blurShader.Techniques("Blur").Parameters("fadeFactor").SetValue(0.0F)
         End If
 
         If (_help) Then
@@ -256,7 +256,7 @@ Public Class MainForm
         _blurPass1 = New RenderImage("BlurOutput1", 256, 256, ImageBufferFormats.BufferRGB888X8)
         _blurPass2 = New RenderImage("BlurOutput2", _blurPass1.Width, _blurPass1.Height, ImageBufferFormats.BufferRGB888X8)
         _screenSprite = New Sprite("ScreenSprite", _blurPass2)
-        _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(_blurPass1.Width)
+        _blurShader.Techniques("Blur").Parameters("blurAmount").SetValue(Convert.ToSingle(_blurPass1.Width))
         _blurShader.Techniques("Blur").Parameters("fadeFactor").SetValue(0.02D)
         _blurShader.Techniques("Blur").Parameters("blur1").SetValue(_blurPass1)
         _blurShader.Techniques("Blur").Parameters("blur2").SetValue(_blurPass2)
