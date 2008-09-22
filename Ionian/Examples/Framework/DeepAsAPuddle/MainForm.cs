@@ -64,6 +64,7 @@ namespace GorgonLibrary.Example
 			WalkLeftAgain = 3
 		}
 		#endregion
+
 		#region Variables.
 		private Random _rnd = new Random();					// Random number generator.
 		private TextSprite _text = null;					// Text sprite.

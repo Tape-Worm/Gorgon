@@ -281,7 +281,7 @@ namespace GorgonLibrary.Example
 		/// Constructor.
 		/// </summary>
 		public MainForm()
-			: base(@".\GorgonSettings.xml")
+			: base(@".\ParticleAcceleration.xml")
 		{
 			InitializeComponent();
 			_emitters = new List<ParticleEmitter>();

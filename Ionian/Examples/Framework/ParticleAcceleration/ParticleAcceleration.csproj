@@ -84,7 +84,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GorgonSettings.xml">
+    <Content Include="ParticleAcceleration.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="GorIcon.ico" />
