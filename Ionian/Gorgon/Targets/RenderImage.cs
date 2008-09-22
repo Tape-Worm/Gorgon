@@ -198,8 +198,6 @@ namespace GorgonLibrary.Graphics
 
 				Gorgon.Log.Print("RenderImage", "Render image: {0}x{1}, Format: {2}, Depth buffer:{3}, Stencil buffer:{4}, Depth Format: {5}.", LoggingLevel.Intermediate, _renderTarget.ActualWidth, _renderTarget.ActualHeight, _format, useDepthBuffer, useStencil, _depthFormat);
 
-				// Confirm if a W-buffer exists or not.
-				Gorgon.Renderer.RenderStates.CheckForWBuffer(_depthFormat);
 				// Set default states.
 				Gorgon.Renderer.RenderStates.SetStates();
 				// Set default image layer states.

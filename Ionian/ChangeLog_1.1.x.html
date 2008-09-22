@@ -103,8 +103,31 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-September 9/2008 - Version - Current
+September 22/2008 - Version - Current
 ================================
++ Added functionality for FX shaders to determine if a projection matrix
+  value is present and auto-update it accordingly.  The shader will look
+  for a parameter named "_projectionMatrix", and if found, will be 
+  automatically populated with the projection matrix from the current 
+  clipping view port.
+  
+* Updated blur effect for framework logo.
+
+* Modified animations to always be enabled on load.  This property should
+  never have been saved.  However it is kept in the file format to keep
+  from breaking it, but has no effect.
+  
+- Removed any code referencing W-Buffers.  This is from antiquated hardware 
+  and would be unlikely to run on moderen operating systems.
+  
++ Added an example to show to use the depth buffer for depth-sorting sprites.
+  
++ Added the ability to play multiple animations at the same time in the 
+  sprite editor animation editor interface.  This will allow the user to 
+  see how combined animations will look when playing together.
+  
++ Added an example to show how to use the particle system.
+
 * Updated SlimDX to the most recent version (Sept/08).
 
 * FINALLY!! I managed to get rid of the ICSharpCode.SharpZipLib.DLL issue!!
@@ -119,8 +142,6 @@ September 9/2008 - Version - Current
   plug-in resides, then it should be able to load.  This has been a pain in the ass 
   for a long time.
   
-* Updated to the latest version of SlimDX.
-
 + Added a background color command to the sprite clipper in the sprite editor
   application.  This will allow the user to mask the sprite image against a color
   if the default pattern makes it too difficult to see the sprites on the image.
@@ -162,11 +183,6 @@ September 9/2008 - Version - Current
 * Changed Shader to FXShader to indicate that the shaders are based on the HLSL effects
   framework.  The Shader type is now a base class from which other shaders are derived.  
 
-- Removed the GorgonEx library.  It's not necessary.
-
-+ Added all the code from the GorgonEx library into the GorgonFramework library.
-  This seemed to be a better spot for this code.
-
 * Changed the Blur shader in the framework DLL from source code to a binary format.
   This was merely for convienence for myself.  Everytime I made a change to the resource
   file in the framework, the damn thing would try to put the contents of the shader in
@@ -176,7 +192,7 @@ September 9/2008 - Version - Current
 * Fixed an issue in the shader FromResource function when trying to load a binary shader.
   Shader was being converted to a string regardless of the binary flag.
   
-* Modified all From* static functions to take an extra parameter:  ShaderCompilerOptions.
+* Modified all shader From* static methods to take an extra parameter:  ShaderCompilerOptions.
   This allows the user to control the optimization level and debug info level for a shader.
   
 + Added a shader function object to be used with the image shaders.  These objects can be retrieved
@@ -194,22 +210,18 @@ September 9/2008 - Version - Current
   find the first valid technique), or a specific technique (which will render all passes for a
   technique) or a specific pass from a technique.  
   
-* Updated SlimDX to the latest version (June 18/2008 - 2.0.4.38).
-
-* Added a new example for Visual Basic.NET
+* Added a new example for Visual Basic.NET - "TehShadowGn0s"
 
 + Added a new property to the renderable objects (sprites, textsprites, etc...) called
   ShaderPass.  This property will tell the renderer which shader pass to execute when
   drawing a sprite with a shader.
   
-* Updated SlimDX to the latest version (June 8/2008 - 2.0.3.37).
-
-+ Adding a GUI interface to the extras.
++ Adding a limited GUI interface to the framework.
 
 + Added FamilyName property to Font objects.  I can't believe I forgot to add this!
 
-+ Added a particle emitter object to the extras library.  This one works like the
-  HGE particle system (and in fact is based on it).
++ Added a particle emitter object to the framework library.  This one works like the
+  HGE particle system (and in fact is directly based on it).
 
 + Added new simple value type called Range&lt;T&gt;.  This is just a value that holds
   a start and end value so it can be used to determine a range of values.  Use this
@@ -247,10 +259,10 @@ September 9/2008 - Version - Current
 * Modified the NoCleverName example to use bounding circles on the asteroids instead of
   rectangles.
   
-+ Sprite editor will now display the bounding circle in addition to the bounding rectangle
+* Sprite editor will now display the bounding circle in addition to the bounding rectangle
   for a sprite.
   
-* Added BoundingCircle on sprites.
++ Added BoundingCircle on sprites.
 
 + Added a new value type: BoundingCircle.  This allows us to do collision checks bewteen
   a circle primitive and other primitives.
@@ -263,7 +275,9 @@ September 9/2008 - Version - Current
 * Made MASSIVE changes to the animation system.  Basically this system has pretty 
   much been rewritten.  The only interface that hasn't changed much is the Animation
   class.  If you've coded stuff using the old animation system your code WILL break
-  there's no two ways about it.  
+  there's no two ways about it.  However, your sprites that contain animations will
+  work and will be updated to use the new system.  However, due to the differences in
+  the way the old and new systems work, the results may not be 100% accurate.
   
   Here's a sub-listing of changes:
   * The grouped tracks like TransformTrack, FrameTrack, and ColorTrack are now 
@@ -281,8 +295,6 @@ September 9/2008 - Version - Current
     collection.
     
   In short it'll be a much better and more flexible animation system.  
-
-* Updated to the latest version of SlimDX (May 1/08)
 
 * Modified Opacity property on renderables to use an int instead of a byte.  No,
   I really don't know what I was thinking.
@@ -322,9 +334,6 @@ September 9/2008 - Version - Current
   SharpUtilities dependency.  However, unlike the SharpUtilities it is NOT required by
   Gorgon and as such you are free to not use it if you choose.
   
-- Removed framework code from Gorgon and moved it into its own DLL.  This will break things
-  if you are using the framework code.  
-  
 - Removing dependency on SharpUtilities.  This library has run its course and it's a
   pain for distributing projects using it when it's been updated.  All Native code and
   math functions are to be moved into Gorgon.  This will break things if you're using
@@ -349,10 +358,6 @@ September 9/2008 - Version - Current
   mismatch between the image and the parameters passed in to the blitter.  Added Color
   parameter to the blitter that will allow us to alter the color of the blitted target
   or image.
-  
-* Modified the Direct 3D plug-in interface to expose a method to flush the rendering
-  pipeline.  This should be called before rendering your 3D scene or else you may get
-  odd behaviour from the previous render setup used by Gorgon. 
   
 + Added an example that will allow us to expose SlimDX's Direct 3D interfaces to
   our application via a plug-in.  This will allow us to mix in a 3D scene with our

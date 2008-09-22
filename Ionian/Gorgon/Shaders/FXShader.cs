@@ -141,6 +141,9 @@ namespace GorgonLibrary.Graphics
 						throw new ShaderHasNoTechniquesException(Name);
 				}
 
+				if (Parameters.Contains("_projectionMatrix"))
+					Parameters["_projectionMatrix"].SetValue(Gorgon.CurrentClippingViewport.ProjectionMatrix);
+
 				// NOTE: Note to self, we have to set the technique BEFORE calling Begin(), or else the handles become invalidated.
 				_effect.Technique = _currentTechnique.D3DEffectHandle;
 				_effect.Begin(D3D9.FX.None);

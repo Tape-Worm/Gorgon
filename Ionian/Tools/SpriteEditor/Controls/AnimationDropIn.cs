@@ -133,6 +133,15 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Property to set or return the list of animations to play.
+		/// </summary>
+		public List<Animation> PlayAnimations
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return whether the track is empty.
 		/// </summary>
 		public bool IsEmpty
@@ -160,6 +169,49 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Click event of the buttonPlayOther control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonPlayOther_Click(object sender, EventArgs e)
+		{
+			formAnimationSelector selector = null;
+
+			try
+			{
+				selector = new formAnimationSelector();
+				selector.UpdatePlaylist(PlayAnimations);
+				selector.GetAnimations(_currentTrack.Owner, _owner.Sprite);
+				if (selector.ShowDialog(ParentForm) == DialogResult.OK)
+				{
+					PlayAnimations = selector.CurrentPlaylist;
+
+					foreach (Animation anim in _owner.Sprite.Animations.Where(animation => animation != _currentTrack.Owner))
+					{
+						anim.AnimationState = AnimationState.Stopped;
+						anim.Reset();
+					}
+
+					foreach (Animation anim in PlayAnimations)
+					{
+						anim.Reset();
+						anim.AnimationState = AnimationState.Playing;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(ParentForm, "Unable to play other animations.", ex);
+			}
+			finally
+			{
+				if (selector != null)
+					selector.Dispose();
+				selector = null;
+			}
+		}
+
+		/// <summary>
 		/// Handles the Click event of the buttonSetKeyFrame control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -184,6 +236,22 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void buttonPlay_Click(object sender, EventArgs e)
 		{
+			var anims = from anim in _owner.Sprite.Animations
+						where !PlayAnimations.Contains(anim) && anim != _currentTrack.Owner
+						select anim;
+
+			foreach (Animation anim in anims)
+			{
+				anim.Reset();
+				anim.AnimationState = AnimationState.Stopped;
+			}
+
+			foreach (Animation anim in PlayAnimations)
+			{
+				anim.Reset();
+				anim.AnimationState = AnimationState.Playing;
+			}
+
 			_isPlaying = true;
 			_keyIndex = 0;
 			ValidateForm();
@@ -201,6 +269,12 @@ namespace GorgonLibrary.Graphics.Tools
 			_animation.Reset();
 			_editor.SetTime(0);
 			ValidateForm();
+
+			foreach (Animation anim in PlayAnimations)
+			{
+				anim.Reset();
+				anim.AnimationState = AnimationState.Stopped;
+			}
 		}
 
 		/// <summary>
@@ -323,6 +397,8 @@ namespace GorgonLibrary.Graphics.Tools
 				if (_isPlaying)
 				{
 					_animation.Advance(e.TimingData);
+					foreach (Animation anim in PlayAnimations)
+						anim.Advance(e.TimingData);
 					_editor.SetTime(_animation.CurrentTime);
 				}
 				else
@@ -468,9 +544,13 @@ namespace GorgonLibrary.Graphics.Tools
 			buttonCopyFrame.Enabled = false;
 			buttonCutFrame.Enabled = false;
 			buttonPasteFrame.Enabled = false;
+			buttonPlayOther.Enabled = false;
 
 			if (_animation == null)
 				return;
+
+			if (_owner.Sprite.Animations.Count > 1)
+				buttonPlayOther.Enabled = true;
 
 			// We can only stop while playing.
 			if (_isPlaying)
@@ -478,6 +558,7 @@ namespace GorgonLibrary.Graphics.Tools
 				buttonStop.Enabled = true;
 				return;
 			}
+
 
 			if (_animation.HasKeys)
 				buttonPlay.Enabled = true;
@@ -549,14 +630,46 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			switch (_currentTrack.Name.ToLower())
 			{
-				case "scale":
-					Sprite.Sprite.Scale = Vector2D.Unit;
+				case "scaledwidth":
+					Sprite.Sprite.ScaledWidth = 1.0f;
 					break;
+				case "scaledheight":
+					Sprite.Sprite.ScaledHeight = 1.0f;
+					break;
+				case "scaleddimensions":
+				case "scale":
 				case "uniformscale":
 					Sprite.Sprite.UniformScale = 1.0f;
 					break;
+				case "alphamaskvalue":
+					Sprite.Sprite.AlphaMaskValue = 0;
+					break;
+				case "size":
+					Sprite.Sprite.Size = new Vector2D(Sprite.Sprite.Image.Width, Sprite.Sprite.Image.Height);
+					break;
+				case "axis":
+					Sprite.Sprite.Axis = Vector2D.Zero;
+					break;
+				case "imageoffset":
+					Sprite.Sprite.ImageOffset = Vector2D.Zero;
+					break;
 				case "position":
 					Sprite.Sprite.Position = Vector2D.Zero;
+					break;
+				case "rotation":
+					Sprite.Sprite.Rotation = 0;
+					break;
+				case "color":
+					Sprite.Sprite.Color = Color.White;
+					break;
+				case "opacity":
+					Sprite.Sprite.Opacity = 255;
+					break;
+				case "width":
+					Sprite.Sprite.Width = Sprite.Sprite.Image.Width;
+					break;
+				case "height":
+					Sprite.Sprite.Width = Sprite.Sprite.Image.Height;
 					break;
 			}
 		}
@@ -592,9 +705,10 @@ namespace GorgonLibrary.Graphics.Tools
 				_animation = CurrentTrack.Owner;
 				sprite = _animation.Owner as Sprite;
 				_owner = _editor.Sprites[sprite.Name]; 
-				_owner.Sprite.Position = _owner.Axis;
+				_owner.Sprite.Position = Vector2D.Zero;
+				_owner.Sprite.Rotation = 0.0f;
+				_owner.Sprite.UniformScale = 1.0f;
 				_keyIndex = 0;
-				_animation.Enabled = true;
 				_animation.AnimationStopped += new EventHandler(_animation_AnimationStopped);
 				_animation.AnimationState = AnimationState.Playing;
 
@@ -671,5 +785,6 @@ namespace GorgonLibrary.Graphics.Tools
 			IsEmpty = true;
 		}
 		#endregion
+
 	}
 }

@@ -226,7 +226,6 @@ namespace GorgonLibrary.Graphics.Tools
 
 			base.OnLoad(e);
 			comboInterpolation.Text = CurrentTrack.InterpolationMode.ToString();
-			//splitAnimation.SplitterDistance = 385;
 
 			if (CurrentTrack.KeyCount == 0)
 			{

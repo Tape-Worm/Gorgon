@@ -108,6 +108,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		void IShaderRenderer.Begin()
 		{
+			if (_owner.Owner.Parameters.Contains("_projectionMatrix"))
+				_owner.Owner.Parameters["_projectionMatrix"].SetValue(Gorgon.CurrentClippingViewport.ProjectionMatrix);
+
 			_owner.Owner.D3DEffect.Technique = _owner.D3DEffectHandle;
 			_owner.Owner.D3DEffect.Begin(D3D9.FX.None);
 		}

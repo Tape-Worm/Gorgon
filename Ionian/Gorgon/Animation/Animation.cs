@@ -82,7 +82,7 @@ namespace GorgonLibrary.Graphics
         private bool _loop;											// Flag to indicate that this animation should loop.
         private float _currentTime;									// Current time.
         private bool _enabled;										// Flag to indicate whether the animation is enabled or not.
-		private AnimationState _state = AnimationState.Playing;		// State of action for the animation.
+		private AnimationState _state = AnimationState.Stopped;		// State of action for the animation.
 		private TrackCollection _tracks = null;						// Tracks.
 		private int _frameRate = 30;								// Frame rate (for information purposes only).
         #endregion
@@ -700,7 +700,9 @@ namespace GorgonLibrary.Graphics
             serializer.Write("Name", Name);
             serializer.Write("Length", _length);
             serializer.Write("Looping", _loop);
-            serializer.Write("Enabled", _enabled);
+			serializer.WriteComment("The Enabled property should not be here, and rather than mess up the format, it's staying here.  But keep in mind that it does nothing.");
+            serializer.Write("Enabled", true);
+			_enabled = true;
 			serializer.Write("FPS", _frameRate);
 			serializer.Write("TrackCount", _tracks.Count);
 
@@ -740,7 +742,7 @@ namespace GorgonLibrary.Graphics
             Name = serializer.ReadString("Name");
             _length = serializer.ReadSingle("Length");
             _loop = serializer.ReadBool("Looping");
-            _enabled = serializer.ReadBool("Enabled");
+            serializer.ReadBool("Enabled");
 			_frameRate = serializer.ReadInt32("FPS");
 			trackCount = serializer.ReadInt32("TrackCount");
 

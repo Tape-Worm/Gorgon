@@ -1,8 +1,8 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2F744206-1061-4382-833C-6C2B91ADBFF1}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -64,6 +64,12 @@
     </Compile>
     <Compile Include="ABOOT.Designer.cs">
       <DependentUpon>ABOOT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formAnimationSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formAnimationSelector.Designer.cs">
+      <DependentUpon>formAnimationSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="Clipper.cs" />
     <Compile Include="ControlExtenders\DockExtender.cs" />
@@ -236,6 +242,9 @@
     <EmbeddedResource Include="ABOOT.resx">
       <DependentUpon>ABOOT.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formAnimationSelector.resx">
+      <DependentUpon>formAnimationSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ByteDropIn.resx">
       <DependentUpon>ByteDropIn.cs</DependentUpon>

@@ -68,6 +68,10 @@ namespace GorgonLibrary.Graphics.Tools
 			// containerAnimation
 			// 
 			this.containerAnimation.BottomToolStripPanelVisible = true;
+			// 
+			// containerAnimation.ContentPanel
+			// 
+			this.containerAnimation.ContentPanel.Size = new System.Drawing.Size(629, 402);
 			this.containerAnimation.LeftToolStripPanelVisible = true;
 			this.containerAnimation.RightToolStripPanelVisible = true;
 			// 
@@ -89,12 +93,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.splitAnimation.Panel2.Controls.Add(this.label1);
 			this.splitAnimation.Panel2.Controls.Add(this.numericX);
 			this.splitAnimation.Panel2.Controls.Add(this.labelName);
-			this.splitAnimation.Size = new System.Drawing.Size(629, 427);
-			this.splitAnimation.SplitterDistance = 385;
+			this.splitAnimation.SplitterDistance = 374;
 			// 
 			// panelRender
 			// 
-			this.panelRender.Size = new System.Drawing.Size(623, 379);
+			this.panelRender.Size = new System.Drawing.Size(623, 368);
 			this.panelRender.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelRender_MouseMove);
 			this.panelRender.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelRender_MouseDown);
 			this.panelRender.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelRender_MouseUp);
@@ -103,7 +106,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			this.labelName.Location = new System.Drawing.Point(8, 9);
 			this.labelName.Name = "labelName";
-			this.labelName.Size = new System.Drawing.Size(105, 13);
+			this.labelName.Size = new System.Drawing.Size(85, 13);
 			this.labelName.TabIndex = 0;
 			this.labelName.Text = "Property Name:";
 			// 
@@ -111,7 +114,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			this.numericX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericX.DecimalPlaces = 6;
-			this.numericX.Location = new System.Drawing.Point(142, 7);
+			this.numericX.Location = new System.Drawing.Point(122, 7);
 			this.numericX.Name = "numericX";
 			this.numericX.Size = new System.Drawing.Size(95, 20);
 			this.numericX.TabIndex = 0;
@@ -122,7 +125,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(119, 9);
+			this.label1.Location = new System.Drawing.Point(99, 9);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(17, 13);
 			this.label1.TabIndex = 2;
@@ -131,7 +134,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(243, 9);
+			this.label2.Location = new System.Drawing.Point(223, 9);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(17, 13);
 			this.label2.TabIndex = 4;
@@ -141,7 +144,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			this.numericY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericY.DecimalPlaces = 6;
-			this.numericY.Location = new System.Drawing.Point(266, 7);
+			this.numericY.Location = new System.Drawing.Point(246, 7);
 			this.numericY.Name = "numericY";
 			this.numericY.Size = new System.Drawing.Size(95, 20);
 			this.numericY.TabIndex = 1;

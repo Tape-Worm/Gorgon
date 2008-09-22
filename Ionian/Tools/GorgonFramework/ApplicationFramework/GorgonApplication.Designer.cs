@@ -39,7 +39,7 @@ namespace GorgonLibrary.Framework
 			// 
 			// GorgonApplicationWindow
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.SystemColors.Window;
 			this.ClientSize = new System.Drawing.Size(320, 240);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

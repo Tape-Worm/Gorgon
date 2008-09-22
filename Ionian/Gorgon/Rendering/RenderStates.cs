@@ -48,7 +48,6 @@ namespace GorgonLibrary.Internal
 		private float _depthBufferBias;							// Depth buffer biasing.		
 		private bool _lightingEnabled;							// Flag to indicate that lighting is enabled.		
 		private bool _specularEnabled;							// Flag to indicate that specular lighting is enabled.		
-		private bool _useWBuffer;								// Flag to use the W Buffer for 16 bit depth buffers.		
 		private CompareFunctions _depthTestFunction;			// Depth testing function.		
 		private DrawingMode _drawingMode;						// Drawing mode for the scene.
 		private bool _alphaBlendEnabled;						// Flag to indicate that alpha blending is enabled.
@@ -373,13 +372,6 @@ namespace GorgonLibrary.Internal
 					return;
 
 				SetDepthBufferEnabled(value);
-				if (value)
-				{
-					if (_useWBuffer)
-						SetWBufferEnabled(true);
-					else
-						SetWBufferEnabled(false);
-				}
 				_depthBufferEnabled = value;
 			}
 		}
@@ -538,17 +530,6 @@ namespace GorgonLibrary.Internal
 					value = Gorgon.CurrentDriver.MaximumPointSize;
 				SetVertexPointSize(value);
 				_vertexPointSize = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to return whether the W buffer can be used or not.
-		/// </summary>
-		public bool UsingWBuffer
-		{
-			get
-			{
-				return _useWBuffer;
 			}
 		}
 
@@ -885,27 +866,6 @@ namespace GorgonLibrary.Internal
 		}
 
 		/// <summary>
-		/// Function to set the WBuffer enabled flag.
-		/// </summary>
-		/// <param name="value">TRUE to enable, FALSE to disable.</param>
-		private void SetWBufferEnabled(bool value)
-		{
-			DX.Configuration.ThrowOnError = false;
-			if ((Gorgon.Screen != null) && (Gorgon.Screen.UseDepthBuffer))
-			{
-
-				if (value)
-					Gorgon.Log.Print("RenderStates", "Using WBuffer for Depth buffer.", LoggingLevel.Verbose);
-				else
-					Gorgon.Log.Print("RenderStates", "Using ZBuffer for Depth buffer.", LoggingLevel.Verbose);
-
-				if (DeviceReady)
-					Device.SetRenderState<D3D9.ZBufferType>(D3D9.RenderState.ZEnable, D3D9.ZBufferType.UseWBuffer);
-			}
-			DX.Configuration.ThrowOnError = true;
-		}
-
-		/// <summary>
 		/// Function to set the depth buffer bias.
 		/// </summary>
 		/// <param name="value">Depth buffer bias value.</param>
@@ -1049,31 +1009,6 @@ namespace GorgonLibrary.Internal
 			DX.Configuration.ThrowOnError = true;
 		}
 
-		/// <summary>
-		/// Function to enable or disable W buffer support for 16 bit depth buffers.
-		/// </summary>
-		public void CheckForWBuffer(DepthBufferFormats targetFormat)
-		{
-			// Determine if we should use W Buffers or not.
-			if (Gorgon.CurrentDriver.SupportWBuffer)
-			{
-				switch (targetFormat)
-				{
-					case DepthBufferFormats.BufferDepth15Stencil1:
-					case DepthBufferFormats.BufferDepth16:
-					case DepthBufferFormats.BufferDepth16Lockable:
-					case DepthBufferFormats.BufferLuminance16:
-						_useWBuffer = true;
-						break;
-					default:
-						_useWBuffer = false;
-						break;
-				}
-			}
-			else
-				_useWBuffer = false;
-		}
-
         /// <summary>
         /// Function to copy the render states from another render state object.
         /// </summary>
@@ -1083,7 +1018,6 @@ namespace GorgonLibrary.Internal
             CullingMode = copy.CullingMode;
             PointSize = copy.PointSize;
             Normalize = copy.Normalize;
-            SetWBufferEnabled(copy._useWBuffer);
             SpecularEnabled = copy.SpecularEnabled;
             DepthBufferEnabled = copy.DepthBufferEnabled;
             DepthBufferWriteEnabled = copy.DepthBufferWriteEnabled;
@@ -1119,7 +1053,6 @@ namespace GorgonLibrary.Internal
 			SetCullMode(_cullingMode);
 			SetVertexPointSize(_vertexPointSize);
 			SetNormalize(_normalize);
-			SetWBufferEnabled(_useWBuffer);
 			SetSpecularEnabled(_specularEnabled);
 			SetDepthBufferEnabled(_depthBufferEnabled);
 			SetDepthBufferWriteEnabled(_depthBufferWriteEnabled);

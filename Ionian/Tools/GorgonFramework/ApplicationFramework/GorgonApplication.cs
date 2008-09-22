@@ -46,7 +46,7 @@ namespace GorgonLibrary.Framework
 		: Forms.Form
 	{
 		#region Constants.
-		private const float _maxBlur = 0.03999f;		// Maximum blur.
+		private const float _maxBlur = 30.0f;		// Maximum blur.
 		#endregion
 
 		#region Variables.
@@ -102,6 +102,38 @@ namespace GorgonLibrary.Framework
 			get
 			{
 				return _defaultFont;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the font of the text displayed by the control.
+		/// </summary>
+		/// <value></value>
+		/// <returns>
+		/// The <see cref="T:System.Drawing.Font"/> to apply to the text displayed by the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultFont"/> property.
+		/// </returns>
+		/// <PermissionSet>
+		/// 	<IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+		/// 	<IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+		/// 	<IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence"/>
+		/// 	<IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+		/// </PermissionSet>
+		public override System.Drawing.Font Font
+		{
+			get
+			{
+				return base.Font;
+			}
+			set
+			{
+				base.Font = value;
+
+				if ((!DesignMode) && (Gorgon.Screen != null))
+				{
+					if (_defaultFont != null)
+						_defaultFont.Dispose();
+					_defaultFont = new Font("DefaultFrameworkFont", value);
+				}
 			}
 		}
 
@@ -508,7 +540,7 @@ namespace GorgonLibrary.Framework
 
 					// Create new gorgon object.
 					Gorgon.CurrentDriver = _setup.VideoDriver;
-					Gorgon.SetMode(boundControl, _setup.VideoMode.Width, _setup.VideoMode.Height, _setup.VideoMode.Format, _setup.WindowedFlag, false, false, _setup.VideoMode.RefreshRate, _setup.VSyncInterval);
+					Gorgon.SetMode(boundControl, _setup.VideoMode.Width, _setup.VideoMode.Height, _setup.VideoMode.Format, _setup.WindowedFlag, UseDepthBuffer, UseStencilBuffer, _setup.VideoMode.RefreshRate, _setup.VSyncInterval);
 
 					// Run the logo.
 					if (_showLogo)
@@ -721,13 +753,13 @@ namespace GorgonLibrary.Framework
 			if (!_logoFadeDir)
 			{
 				if (_logoSprite.UniformScale < ((Gorgon.Screen.Width * 3.5f) / _logoSprite.Width))
-					_logoBlur -= 0.0132f * frameTime;
+					_logoBlur -= 13.2f * frameTime;
 				_logoOpacity += 95.0f * frameTime;
 				_logoSprite.UniformScale -= 8.0f * frameTime;
 				if (_logoSprite.UniformScale < 1.0f)
 					_logoSprite.UniformScale = 1.0f;
-				if (_logoBlur < 0.00001f) 
-					_logoBlur = 0.00001f;
+				if (_logoBlur < 1.0f) 
+					_logoBlur = 1.0f;
 				if (_logoOpacity > 255.0f)
 					_logoOpacity = 255.0f;				
 			}

@@ -1,3 +1,5 @@
+float4x4 _projectionMatrix;
+
 Texture sourceImage;
 
 // Amount to blur.
@@ -18,11 +20,24 @@ sampler2D sourceSampler = sampler_state
 };
 
 // Our processed vertex.
-struct VTX_OUTPUT
+struct VTX
 {
+	float4 position : POSITION;
+	float2 uv : TEXCOORD0;
 	float4 diffuse : COLOR0;
-	float2 texCoords : TEXCOORD0;
 };
+
+// Default vertex shader.
+VTX vsDefault(VTX inVtx)
+{
+	VTX outVtx;
+	
+	outVtx.position = float4(mul(inVtx.position, _projectionMatrix).xyz, 1.0f);
+	outVtx.diffuse = inVtx.diffuse;
+	outVtx.uv = inVtx.uv;
+	
+	return outVtx;
+}
 
 // Function to perform the sampling for the blur.
 float4 psBlurSample(float2 Tex : TEXCOORD0, float4 baseColor, float offX, float offY) : COLOR0
@@ -35,12 +50,12 @@ float4 psBlurSample(float2 Tex : TEXCOORD0, float4 baseColor, float offX, float 
 	Tex.x = Tex.x + offX;
 	Tex.y = Tex.y + offY;
 	
-   	Color = baseColor + tex2D(sourceSampler, Tex / scaler);
-   	return Color;
+   Color = baseColor + tex2D(sourceSampler, Tex / scaler);
+   return Color;
 }
 
 // Function to blur an image.
-float4 psBlur(VTX_OUTPUT vtx) : COLOR0
+float4 psBlur(float4 diffuse : COLOR0, float2 uv : TEXCOORD0) : COLOR0
 {
   	float4 Color = 0;				// Output.
   	float Alpha = 0;				// Alpha component.
@@ -50,31 +65,26 @@ float4 psBlur(VTX_OUTPUT vtx) : COLOR0
   	
   	if (blurAmount < 0.0f)
   	   blurValue = 0;
-  		
-  	if (blurAmount > 10.0f)
-  	   blurValue = 0.01;
 
-	Color = tex2D(sourceSampler, vtx.texCoords);	
+	Color = tex2D(sourceSampler, uv);	
 	// Store the alpha for later, we don't want to blur that.
 	Alpha = Color.a;
 	
 	// Sample eight directions + the center.
-  	Color = psBlurSample(vtx.texCoords, Color, -blurValue, -blurValue);
-  	Color = psBlurSample(vtx.texCoords, Color, 0, -blurValue);
-  	Color = psBlurSample(vtx.texCoords, Color, blurValue, -blurValue);  	
-  	Color = psBlurSample(vtx.texCoords, Color, -blurValue, blurValue);
-  	Color = psBlurSample(vtx.texCoords, Color, 0, blurValue);
-  	Color = psBlurSample(vtx.texCoords, Color, blurValue, blurValue);  	
-  	Color = psBlurSample(vtx.texCoords, Color, -blurValue, 0);
-  	Color = psBlurSample(vtx.texCoords, Color, blurValue, 0);
+  	Color = psBlurSample(uv, Color, -blurValue, -blurValue);
+  	Color = psBlurSample(uv, Color, 0, -blurValue);
+  	Color = psBlurSample(uv, Color, blurValue, -blurValue);  	
+  	Color = psBlurSample(uv, Color, -blurValue, blurValue);
+  	Color = psBlurSample(uv, Color, 0, blurValue);
+  	Color = psBlurSample(uv, Color, blurValue, blurValue);  	
+  	Color = psBlurSample(uv, Color, -blurValue, 0);
+  	Color = psBlurSample(uv, Color, blurValue, 0);
   	
   	// Calculate final color.
-   	Color.rgb = saturate((Color.rgb / 9) * vtx.diffuse.rgb);
-   	// Restore and combine the alpha.
-   	Color.a = Alpha * vtx.diffuse.a;
-   	//Color +=  float4(0.0f, blurValue, 0.0f, 0.0f);
-   	
-    return Color;
+   Color.rgb = saturate((Color.rgb / 9) * diffuse.rgb);
+   // Restore and combine the alpha.
+   Color.a = Alpha * diffuse.a;
+   return Color;
 }
 
 // Technique to blur an image.
@@ -82,7 +92,7 @@ technique Blur
 {	
 	pass p1
 	{
-		VertexShader = null;
+		VertexShader = compile vs_2_0 vsDefault();
 		PixelShader = compile ps_2_0 psBlur();
 	}
 }

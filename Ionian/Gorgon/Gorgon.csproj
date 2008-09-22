@@ -1,7 +1,7 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{933569ED-52A9-4232-A929-1D4C4489B5A1}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -77,7 +77,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SlimDX, Version=2.0.3.37, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="SlimDX, Version=2.0.5.39, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\SlimDX\x86\Release\SlimDX.dll</HintPath>
     </Reference>
@@ -333,20 +333,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
-    <None Include="Resources\question_and_answer.png" />
-    <None Include="Resources\round_error.png" />
-    <None Include="Resources\hardware_error.png" />
-    <None Include="Resources\disk_error.png" />
-    <None Include="Resources\square_error.png" />
-    <None Include="Resources\data_error.png" />
-    <None Include="Resources\bug.png" />
-    <None Include="Resources\error.png" />
-    <None Include="Resources\check.png" />
-    <None Include="Resources\delete.png" />
-    <None Include="Resources\SharpIcon.png" />
-    <None Include="Resources\about1.png" />
-    <None Include="Resources\about.png" />
-    <None Include="Resources\Blur.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

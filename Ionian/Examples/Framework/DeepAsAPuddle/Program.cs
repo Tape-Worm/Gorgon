@@ -1,7 +1,7 @@
 #region LGPL.
 // 
-// Gorgon.
-// Copyright (C) 2006 Michael Winsor
+// Examples.
+// Copyright (C) 2008 Michael Winsor
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,30 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // 
-// Created: Thursday, October 05, 2006 12:56:42 PM
+// Created: Sunday, September 21, 2008 7:12:59 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Windows.Forms;
 
-namespace GorgonLibrary.PlugIns
+namespace GorgonLibrary.Example
 {
 	/// <summary>
-	/// Interface for plug-in objects.
+	/// Main application.
 	/// </summary>
-	public interface IPlugIn
+	static class Program
 	{
 		/// <summary>
-		/// Property to return the plug-in entry point associated with this object.
+		/// The main entry point for the application.
 		/// </summary>
-		PlugInEntryPoint PlugInEntryPoint
+		[STAThread]
+		static void Main()
 		{
-			get;
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new MainForm());
 		}
 	}
 }

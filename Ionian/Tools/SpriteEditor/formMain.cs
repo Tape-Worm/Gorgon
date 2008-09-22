@@ -2033,6 +2033,7 @@ namespace GorgonLibrary.Graphics.Tools
 				support.AppendChild(element);
 			}
 
+
 			// Save the XML document.
 			projectDocument.Save(fileName);
 

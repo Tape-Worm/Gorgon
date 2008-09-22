@@ -44,6 +44,7 @@ namespace GorgonLibrary.Graphics.Tools
 		private Animation _animation = null;							// Current animation.
 		private bool _noevent = false;									// Flag to disable events.
 		private AnimationDropIn _dropIn = null;							// Animation drop in panel.
+		private List<Animation> _playAnimations = null;					// List of animations to play.
 		#endregion
 
 		#region Properties.
@@ -211,6 +212,8 @@ namespace GorgonLibrary.Graphics.Tools
 			if (splitTrack.Panel1.Controls.Count > 0)
 				splitTrack.Panel1.Controls[0].Dispose();
 
+			dropIn.PlayAnimations = _playAnimations;
+
 			comboTrack.SelectedIndexChanged -= new EventHandler(comboTrack_SelectedIndexChanged);
 			lastSetting = comboTrack.Text;
 			FillTrackCombo();
@@ -222,7 +225,7 @@ namespace GorgonLibrary.Graphics.Tools
 			dropIn.CurrentTrack = track;
 			splitTrack.Panel1.Controls.Add(dropIn);
 			dropIn.Dock = DockStyle.Fill;
-			dropIn.GetSettings();
+			dropIn.GetSettings();			
 		}
 
 		/// <summary>
@@ -271,47 +274,21 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
-		/// Property to drop in the editor.
-		/// </summary>
-		/// <param name="editor">Editor to drop in.</param>
-		private void DropInEditor(AnimationDropIn editor)
-		{
-			float lastTime = 0.0f;		// Last time.
-			
-			// Remove the current control
-			if (splitTrack.Panel1.Controls.Count != 0)
-			{
-				lastTime = ((AnimationDropIn)splitTrack.Panel1.Controls[0]).CurrentTime;		// Get 'last' time.
-
-				// Don't remove the editor.
-				((AnimationDropIn)splitTrack.Panel1.Controls[0]).CleanUp();
-				splitTrack.Panel1.Controls.RemoveAt(0);
-			}
-
-			// Drop a frame editor in.
-			splitTrack.Panel1.Controls.Add((Control)editor);
-			_dropIn = editor;
-		}
-
-		/// <summary>
 		/// Function to update the display track.
 		/// </summary>
 		private void TrackerUpdate()
 		{
 			Decimal maxFrames = 0;						// Frame count.
 			int frequency = 0;							// Tick frequency.
-			Decimal increment = 0;						// Increment.
 			Decimal currentTime = 0;					// Current time.
 
 			maxFrames = ((Decimal)_animation.Length / 1000.0M) * (Decimal)_animation.FrameRate;
 			currentTime = (numericTrackFrames.Value / (Decimal)_animation.FrameRate) * 1000.0M;
 
-			frequency = (int)(maxFrames / 20.0M);
-			increment = (Decimal)frequency;
-
-			// Clamp the increment.
-			if (increment < 1.0M)
-				increment = 1.0M;
+			if (maxFrames >= 60)
+				frequency = (int)(maxFrames / 20.0M);
+			else
+				frequency = 1;
 
 			// Update the ranges for the controls.
 			trackTrack.Maximum = (int)maxFrames - 1;
@@ -330,8 +307,20 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
+			Sprite owner = _animation.Owner as Sprite;
+
 			base.OnLoad(e);
 			GetSettings();
+
+			// Stop all animations except this one.
+			foreach (Animation anim in owner.Animations)
+			{
+				if (_animation != anim)
+				{
+					anim.Reset();
+					anim.AnimationState = AnimationState.Stopped;
+				}
+			}
 		}
 
 		/// <summary>
@@ -418,6 +407,8 @@ namespace GorgonLibrary.Graphics.Tools
 		public formAnimationEditor()
 		{
 			InitializeComponent();
+
+			_playAnimations = new List<Animation>();
 		}
 		#endregion
 	}

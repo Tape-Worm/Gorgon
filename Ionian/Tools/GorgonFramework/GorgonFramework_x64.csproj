@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{64D81BED-13F9-4F93-AF29-09A560FB52AA}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -83,11 +83,15 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="GUI\GUIButton.cs" />
+    <Compile Include="GUI\GUICanvas.cs" />
+    <Compile Include="GUI\GUICheckbox.cs" />
     <Compile Include="GUI\GUIDesktop.cs" />
     <Compile Include="GUI\GUIElement.cs" />
     <Compile Include="GUI\GUIElementCollection.cs" />
     <Compile Include="GUI\GUIEnums.cs" />
     <Compile Include="GUI\GUIExceptions.cs" />
+    <Compile Include="GUI\GUILabel.cs" />
     <Compile Include="GUI\GUIObject.cs" />
     <Compile Include="GUI\GUIObjectCollection.cs" />
     <Compile Include="GUI\GUIPanel.cs" />

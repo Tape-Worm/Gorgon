@@ -41,6 +41,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renderer", "PlugIns\D3D\Ren
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TehShadowGn0s", "Graphics\TehShadowGn0s\TehShadowGn0s.vbproj", "{485F1DAC-E1B5-4440-8398-735ABC03C42F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParticleAcceleration", "Framework\ParticleAcceleration\ParticleAcceleration.csproj", "{874C6675-8A95-41F0-B859-5D32DEE2E435}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepAsAPuddle", "Framework\DeepAsAPuddle\DeepAsAPuddle.csproj", "{4895706C-0197-47D8-9D44-4D0B805DCD34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +127,14 @@ Global
 		{485F1DAC-E1B5-4440-8398-735ABC03C42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{485F1DAC-E1B5-4440-8398-735ABC03C42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{485F1DAC-E1B5-4440-8398-735ABC03C42F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874C6675-8A95-41F0-B859-5D32DEE2E435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874C6675-8A95-41F0-B859-5D32DEE2E435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874C6675-8A95-41F0-B859-5D32DEE2E435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874C6675-8A95-41F0-B859-5D32DEE2E435}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4895706C-0197-47D8-9D44-4D0B805DCD34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4895706C-0197-47D8-9D44-4D0B805DCD34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4895706C-0197-47D8-9D44-4D0B805DCD34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4895706C-0197-47D8-9D44-4D0B805DCD34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{14CD80B4-7278-44AE-B60F-6A94341A6C99}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -220,11 +220,12 @@
     <Compile Include="Serialization\StreamWriterEx.cs" />
     <Compile Include="Shaders\BaseShader.cs" />
     <Compile Include="Shaders\ConstantShaderParameter.cs" />
+    <Compile Include="Shaders\DefaultPixelShader.cs" />
+    <Compile Include="Shaders\DefaultVertexShader.cs" />
+    <Compile Include="Shaders\DualShader.cs" />
     <Compile Include="Shaders\FXShader.cs" />
     <Compile Include="Shaders\FXShaderParameter.cs" />
     <Compile Include="Shaders\ImageShader.cs" />
-    <Compile Include="Shaders\ImageShaderCache.cs" />
-    <Compile Include="Shaders\ImageShaderList.cs" />
     <Compile Include="Shaders\IShaderOutput.cs" />
     <Compile Include="Shaders\IShaderParameter.cs" />
     <Compile Include="Shaders\PixelShader.cs" />
@@ -327,8 +328,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
-    <None Include="Resources\Arial_9pt_bold.gorFont" />
-    <None Include="Resources\Blur.fx" />
     <None Include="Resources\GorIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

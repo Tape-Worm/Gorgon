@@ -170,6 +170,10 @@ namespace GorgonLibrary.Graphics.Tools
 				document.Name = document.Name.Substring(0, document.Name.Length - 6) + ".Copy";
 			}
 
+			// Force all animations to be enabled.
+			foreach (Animation anim in document.Sprite.Animations)
+				anim.Enabled = true;
+
 			// Add to list.
 			AddItem(document.Name, document);
 

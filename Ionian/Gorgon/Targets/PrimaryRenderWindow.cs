@@ -383,8 +383,6 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("RenderWindow", "Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", LoggingLevel.Verbose, Gorgon.Screen.Mode.Width, Gorgon.Screen.Mode.Height, Gorgon.Screen.Mode.Bpp, Gorgon.Screen.Mode.RefreshRate, Gorgon.Screen.Mode.Format.ToString());
 			Gorgon.Log.Print("RenderWindow", "Device reset.", LoggingLevel.Verbose);
 
-			Gorgon.Renderer.RenderStates.CheckForWBuffer(Converter.ConvertDepthFormat(_presentParameters.AutoDepthStencilFormat));
-
 			// Reset render states to their previous values.
 			Gorgon.Renderer.RenderStates.SetStates();
 
@@ -707,8 +705,6 @@ namespace GorgonLibrary.Graphics
 					_device = new D3D9.Device(Gorgon.Direct3D, Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, _ownerForm.Handle, flags, _presentParameters);
 					_deviceWasLost = false;
 
-					// Confirm if a W-buffer exists or not.					
-					Gorgon.Renderer.RenderStates.CheckForWBuffer(Converter.ConvertDepthFormat(_presentParameters.AutoDepthStencilFormat));
 					// Set default states.
 					Gorgon.Renderer.RenderStates.SetStates();
 
