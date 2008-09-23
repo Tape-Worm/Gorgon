@@ -56,7 +56,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
     </Reference>
-    <Reference Include="GorgonFramework, Version=1.0.3184.37296, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="GorgonFramework, Version=1.0.3187.40278, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\GorgonFramework\bin\Release\GorgonFramework.dll</HintPath>
     </Reference>

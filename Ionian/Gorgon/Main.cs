@@ -143,30 +143,19 @@ namespace GorgonLibrary
 
 		#region Variables.
 		private static Logger _log;										// Log file.
-		private static bool _backgroundProcessing;						// Flag to indicate that we want to continue rendering in the background.
-		private static bool _running;									// Flag to indicate whether the app is in a running state.
 		private static SysMessageFilter _messageFilter;					// Windows message filter.
-		private static bool _allowScreenSaver;							// Flag to indicate whether we want to allow the screensaver to run or not.
 		private static PreciseTimer _timer;								// Main Gorgon timer.
-		private static bool _initialized;								// Flag to inidcate whether Gorgon has been initialized or not.
 		private static DriverList _drivers = null;						// List of video drivers for the system.
 		private static Driver _currentDriver = null;					// Current driver.
 		private static Renderer _renderer = null;						// Interface to the renderer.
 		private static FrameEventArgs _frameEventArgs = null;			// Frame event arguments.
-		private static TimingData _timingStats = null;					// Timing statistics.
 		private static VideoMode _desktopVideoMode;						// Current video mode of the desktop.
 		private static SpriteStateCache _stateCache = null;				// Sprite state cache.
-		private static PrimaryRenderWindow _screen = null;				// Primary rendering window.
 		private static RenderTarget _currentTarget = null;				// Currently active render target.
-		private static bool _fastResize;								// Flag to indicate that the screen should be scaled if the window is resized, otherwise a device reset occours.
-		private static bool _enableLogo;								// TRUE to show the logo overlay, FALSE to turn it off.
-		private static bool _enableStats;								// TRUE to show frame rate stats, FALSE to turn it off.
 		private static ClearTargets _clearTargets;						// Target buffers to clear.
 		private static Viewport _clippingView = null;					// Clipping viewport.
-		private static Color _statsTextColor = Color.White;				// Frame statistics text color.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
 		private static IShaderRenderer _currentShader = null;			// Current shader.
-		private static D3D9.Direct3D _d3d = null;						// Why is this needed??
 #if INCLUDE_D3DREF
 		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
 #endif
@@ -193,15 +182,15 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (_screen == null)
+				if (Screen == null)
 					return true;
 
-				if ((_screen.OwnerForm.WindowState == Forms.FormWindowState.Minimized) || ((!_screen.OwnerForm.ContainsFocus) && (!_screen.Windowed)))
+				if ((Screen.OwnerForm.WindowState == Forms.FormWindowState.Minimized) || ((!Screen.OwnerForm.ContainsFocus) && (!Screen.Windowed)))
 					return false;
 
-				if (!_backgroundProcessing)
+				if (!AllowBackgroundRendering)
 				{
-					if (!_screen.OwnerForm.ContainsFocus)
+					if (!Screen.OwnerForm.ContainsFocus)
 						return false;
 				} 
 	
@@ -214,10 +203,8 @@ namespace GorgonLibrary
 		/// </summary>
 		internal static D3D9.Direct3D Direct3D
 		{
-			get
-			{
-				return _d3d;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -227,7 +214,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (!_initialized)
+				if (!IsInitialized)
 					throw new NotInitializedException(null);
 
 				return _renderer;
@@ -262,14 +249,8 @@ namespace GorgonLibrary
 		/// <value>The color of the text for the frame statistics.</value>
 		public static Color FrameStatsTextColor
 		{
-			get
-			{
-				return _statsTextColor;
-			}
-			set
-			{
-				_statsTextColor = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -282,14 +263,8 @@ namespace GorgonLibrary
 		/// <value>TRUE will enable a fast resizing, FALSE will disable it.</value>
 		public static bool FastResize
 		{
-			get
-			{
-				return _fastResize;
-			}
-			set
-			{
-				_fastResize = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -298,14 +273,8 @@ namespace GorgonLibrary
 		/// <value>TRUE to show the Gorgon logo in the lower right corner of the screen while rendering, FALSE to hide.</value>
 		public static bool LogoVisible
 		{
-			get
-			{
-				return _enableLogo;
-			}
-			set
-			{
-				_enableLogo = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -314,14 +283,8 @@ namespace GorgonLibrary
 		/// <value>TRUE to show the current frame statistics (i.e. Frames Per Second, frame delta time, etc...) in the upper left corner of the screen while rendering.  FALSE to hide.</value>
 		public static bool FrameStatsVisible
 		{
-			get
-			{
-				return _enableStats;
-			}
-			set
-			{
-				_enableStats = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -413,7 +376,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (!_initialized)
+				if (!IsInitialized)
 					throw new NotInitializedException();
 
 				return _stateCache;
@@ -437,7 +400,7 @@ namespace GorgonLibrary
 			}
 			set
 			{
-				if ((!_initialized) || (_screen == null))
+				if ((!IsInitialized) || (Screen == null))
 					throw new NotInitializedException();
 
 				// Reset the view to the current target view.
@@ -498,8 +461,8 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (_screen != null)
-					return _screen.Mode;
+				if (Screen != null)
+					return Screen.Mode;
 				else
 					return _desktopVideoMode;
 			}
@@ -521,11 +484,11 @@ namespace GorgonLibrary
 			}
 			set
 			{
-				if (!_initialized)
+				if (!IsInitialized)
 					throw new NotInitializedException();
 
 				// No device?  Throw an exception.
-				if (_screen == null)
+				if (Screen == null)
 					throw new DeviceNotValidException();
 								
 				if (_currentShader == value)
@@ -558,19 +521,19 @@ namespace GorgonLibrary
 			}
 			set
 			{
-				if (!_initialized)
+				if (!IsInitialized)
 					throw new NotInitializedException();
 
 				// No device?  Throw an exception.
-				if (_screen == null)
+				if (Screen == null)
 					throw new DeviceNotValidException();
 
 				// If we specify NULL, then use the screen.
 				if (value == null)
-					value = _screen;
+					value = Screen;
 
 				// Set render target if it's changed.
-				if (!_screen.DeviceNotReset)
+				if (!Screen.DeviceNotReset)
 				{
 					if (_currentTarget != value)
 					{
@@ -581,8 +544,8 @@ namespace GorgonLibrary
 						if ((_currentDriver.SupportScissorTesting) && (_renderer.RenderStates.ScissorTesting))
 							_renderer.RenderStates.ScissorTesting = false;
 
-						_screen.Device.SetRenderTarget(0, value.SurfaceBuffer);
-                        _screen.Device.DepthStencilSurface = value.DepthBuffer;
+						Screen.Device.SetRenderTarget(0, value.SurfaceBuffer);
+                        Screen.Device.DepthStencilSurface = value.DepthBuffer;
 
 						// Reset the active view.
 						_currentTarget = value;
@@ -611,10 +574,8 @@ namespace GorgonLibrary
 		/// <value>The primary rendering window or the "Screen".  This can be any control and is the primary render target that is setup during the <see cref="M:GorgonLibrary.Gorgon.SetMode">SetMode()</see> function.  As such, this is the initial render target when a video mode is set.</value>
 		public static PrimaryRenderWindow Screen
 		{
-			get
-			{
-				return _screen;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -627,7 +588,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (!_initialized)
+				if (!IsInitialized)
 					throw new NotInitializedException();
 
 				return _desktopVideoMode;
@@ -641,10 +602,8 @@ namespace GorgonLibrary
 		/// <value>Returns a <see cref="GorgonLibrary.TimingData">TimingData</see> object containing information about the most current frame statistics.</value>
 		public static TimingData FrameStats
 		{
-			get
-			{
-				return _timingStats;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -653,10 +612,8 @@ namespace GorgonLibrary
 		/// <value>TRUE if <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize()</see> has been called, FALSE if not.</value>
 		public static bool IsInitialized
 		{
-			get
-			{
-				return _initialized;
-			}
+			get;
+			private set;
 		}
 
 #if INCLUDE_D3DREF
@@ -715,14 +672,14 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (!_initialized)
+				if (!IsInitialized)
 					throw new NotInitializedException(null);
 
 				return _currentDriver;
 			}
 			set
 			{
-				if (!_initialized)
+				if (!IsInitialized)
 					throw new NotInitializedException(null);
 
 				Stop();
@@ -789,7 +746,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (!_initialized)
+				if (!IsInitialized)
 					throw new NotInitializedException(null);
 
 				return _drivers;
@@ -806,14 +763,8 @@ namespace GorgonLibrary
 		/// <value>Setting this to TRUE will allow the engine to render while the window is not in the foreground or minimized.  Setting this to FALSE will halt rendering until the window is in the foreground.</value>
 		public static bool AllowBackgroundRendering
 		{
-			get
-			{
-				return _backgroundProcessing;
-			}
-			set
-			{
-				_backgroundProcessing = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -823,10 +774,8 @@ namespace GorgonLibrary
 		/// <value>TRUE if the application is running, and FALSE if not.</value>
 		public static bool IsRunning
 		{
-			get
-			{
-				return _running;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -841,14 +790,8 @@ namespace GorgonLibrary
 		/// <value>Set this property to TRUE if you wish to allow the screensaver/power management to kick in.  Set to FALSE if you want to suspend the screensaver/power management.</value>
 		public static bool AllowScreenSaver
 		{
-			get
-			{
-				return _allowScreenSaver;
-			}
-			set
-			{
-				_allowScreenSaver = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -889,22 +832,22 @@ namespace GorgonLibrary
 		/// <param name="e">Event arguments.</param>
 		private static void Run(object sender, EventArgs e)
 		{
-			while ((AppIdle) && (_running))
+			while ((AppIdle) && (IsRunning))
 			{
 				if (HasFocus)
 				{					
 					// Update the screen.
-					if (_timingStats.Refresh())
+					if (FrameStats.Refresh())
 					{
 						// Call idle event.					
 						OnIdle(sender, _frameEventArgs);
 
-						if ((_screen != null) && (_currentTarget != null))
+						if ((Screen != null) && (_currentTarget != null))
 						{
 							_currentTarget.Update();
 
 							// Give up some time if we don't have focus and we're windowed.
-							if ((!_screen.OwnerForm.ContainsFocus) && (_screen.Windowed))
+							if ((!Screen.OwnerForm.ContainsFocus) && (Screen.Windowed))
 								System.Threading.Thread.Sleep(10);
 						}
 					}
@@ -957,7 +900,7 @@ namespace GorgonLibrary
 			_clippingView = null;
 			DeviceStateList.DeviceWasLost();
 			_timer.Reset();
-			_timingStats.Reset();
+			FrameStats.Reset();
 
 			Gorgon.Log.Print("Gorgon", "Device has been put into a lost state.", LoggingLevel.Intermediate);
 		}
@@ -969,7 +912,7 @@ namespace GorgonLibrary
 		{
 			_renderer.Reset();
 			_timer.Reset();
-			_timingStats.Reset();
+			FrameStats.Reset();
 
 			if (DeviceReset != null)
 				DeviceReset(_renderer, EventArgs.Empty);
@@ -994,9 +937,9 @@ namespace GorgonLibrary
 			// Destroy anything that's not tracked.
 			DeviceStateList.ForceRelease();
 
-			if (_screen != null)
-				_screen.Dispose();
-			_screen = null;
+			if (Screen != null)
+				Screen.Dispose();
+			Screen = null;
 		}
 
 		/// <summary>
@@ -1030,19 +973,19 @@ namespace GorgonLibrary
 
 			// Create the video mode if we haven't set the primary window, otherwise
 			// just reset the video device object.
-			if (_screen == null)
+			if (Screen == null)
 			{
-				_screen = new PrimaryRenderWindow(owner);
-				_screen.SetMode(new VideoMode(width, height, refresh, format), windowed, usedepth, usestencil, false, vSyncInterval);
+				Screen = new PrimaryRenderWindow(owner);
+				Screen.SetMode(new VideoMode(width, height, refresh, format), windowed, usedepth, usestencil, false, vSyncInterval);
 			}
 			else
-				_screen.SetMode(new VideoMode(width, height, refresh, format), windowed, usedepth, usestencil, true, vSyncInterval);
+				Screen.SetMode(new VideoMode(width, height, refresh, format), windowed, usedepth, usestencil, true, vSyncInterval);
 
 			// Reset the buffers.
 			Geometry.UpdateVertexData(GlobalStateSettings.MaxSpritesPerBatch * 4);
 
 			// Reset the target.
-			CurrentRenderTarget = _screen;
+			CurrentRenderTarget = Screen;
 			CurrentRenderTarget.DefaultView.Refresh(CurrentRenderTarget);
 			CurrentClippingViewport = null;
 		}
@@ -1168,13 +1111,13 @@ namespace GorgonLibrary
 		/// <exception cref="RenderTargetNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode(Control)">SetMode()</see> has not been called.</exception>		
 		public static void Go()
 		{
-			if (!_initialized)
+			if (!IsInitialized)
 				throw new NotInitializedException(null);
 
 			if ((Gorgon.Screen != null) && (_currentTarget == null))
 				throw new RenderTargetNotValidException();
 
-			if (_running)
+			if (IsRunning)
 				return;
 
 			// Enter render loop.
@@ -1182,13 +1125,13 @@ namespace GorgonLibrary
 
 			// Reset all timers.
 			_timer.Reset();
-			_timingStats.Reset();
+			FrameStats.Reset();
 			if (_currentTarget != null)
 				_currentTarget.Refresh();
 
 			Forms.Application.Idle += new EventHandler(Run);
 
-			_running = true;
+			IsRunning = true;
 		}
 
 		/// <summary>
@@ -1201,17 +1144,17 @@ namespace GorgonLibrary
 		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		public static void Stop()
 		{
-			if (!_initialized)
+			if (!IsInitialized)
 				throw new NotInitializedException(null);
 
-			if (_running)
+			if (IsRunning)
 			{
 				Forms.Application.Idle -= new EventHandler(Run);
-				_running = false;
+				IsRunning = false;
 
 				// Reset all timers.
 				_timer.Reset();
-				_timingStats.Reset();
+				FrameStats.Reset();
 
 				_log.Print("Gorgon", "Main render loop stopped.", LoggingLevel.Verbose);
 			}
@@ -1233,8 +1176,8 @@ namespace GorgonLibrary
 			}
 
 			// Continue on.
-			if ((_running) && (_screen != null))
-				Run(_screen, EventArgs.Empty);
+			if ((IsRunning) && (Screen != null))
+				Run(Screen, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -1267,10 +1210,10 @@ namespace GorgonLibrary
 		public static void Initialize(bool allowBackgroundRender, bool allowScreenSaver, bool checkDriverWHQL)
 		{
 			// Terminate if already initialized.
-			if (_initialized)
+			if (IsInitialized)
 				Terminate();
 
-			_initialized = true;
+			IsInitialized = true;			
 
 			// Initialize.
 #if DEBUG
@@ -1282,8 +1225,8 @@ namespace GorgonLibrary
 			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceLost, SlimDX.ResultWatchFlags.AlwaysIgnore);
 			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceNotReset, SlimDX.ResultWatchFlags.AlwaysIgnore);
 
-			_d3d = new D3D9.Direct3D();
-			_d3d.CheckWhql = checkDriverWHQL;
+			Direct3D = new D3D9.Direct3D();
+			Direct3D.CheckWhql = checkDriverWHQL;
 
 			try
 			{
@@ -1332,9 +1275,9 @@ namespace GorgonLibrary
 				Gorgon.Log.Print("Gorgon", "Allow background processing: {0}", LoggingLevel.Verbose, allowBackgroundRender.ToString());
 				Gorgon.Log.Print("Gorgon", "Allow screen saver: {0}", LoggingLevel.Verbose, allowScreenSaver.ToString());
 
-				_backgroundProcessing = allowBackgroundRender;
-				_allowScreenSaver = allowScreenSaver;
-				_running = false;				
+				AllowBackgroundRendering = allowBackgroundRender;
+				AllowScreenSaver = allowScreenSaver;
+				IsRunning = false;				
 
 				// Enumerate drivers and video modes.
 				_drivers = new DriverList();
@@ -1351,19 +1294,21 @@ namespace GorgonLibrary
 				CurrentDriver = _drivers[0];
 
 				// Create timing statistics.
-				_timingStats = new TimingData(_timer);
+				FrameStats = new TimingData(_timer);
 
 				// Create event arguments for idle event.
-				_frameEventArgs = new FrameEventArgs(_timingStats);
+				_frameEventArgs = new FrameEventArgs(FrameStats);
 
 				// Set default clear parameters.
 				_clearTargets = ClearTargets.BackBuffer | ClearTargets.DepthBuffer | ClearTargets.StencilBuffer;
+
+				FrameStatsTextColor = Color.White;
 
 				_log.Print("Gorgon", "Initialized Successfully.", LoggingLevel.Simple);
 			}
 			catch (Exception ex)
 			{
-				_initialized = false;
+				IsInitialized = false;
 				throw ex;
 			}
 		}
@@ -1378,7 +1323,7 @@ namespace GorgonLibrary
 		public static void Terminate()
 		{
 			// If the engine wasn't initialized, do nothing.
-			if (!_initialized)
+			if (!IsInitialized)
 				return; 
 
 			// Stop the engine.
@@ -1392,8 +1337,8 @@ namespace GorgonLibrary
 			// Unload all the file systems.
 			FileSystemProviderCache.UnloadAll();
 
-			if (_timingStats != null)
-				_timingStats.Dispose();
+			if (FrameStats != null)
+				FrameStats.Dispose();
 
 			// Unload all plug-ins.
 			PlugInFactory.DestroyAll();
@@ -1413,13 +1358,13 @@ namespace GorgonLibrary
 			if ((_renderer != null) && (!_renderer.IsDisposed))
 				_renderer.Dispose();
 
-			if (_screen != null)
-				_screen.Dispose();
+			if (Screen != null)
+				Screen.Dispose();
 
 			// Terminate Direct 3D.
-			if (_d3d != null)
-				_d3d.Dispose();
-			_d3d = null;
+			if (Direct3D != null)
+				Direct3D.Dispose();
+			Direct3D = null;
 
 			_log.Print("Gorgon", "Shutting down.", LoggingLevel.Simple);
 
@@ -1428,13 +1373,13 @@ namespace GorgonLibrary
 				_log.Dispose();
 
 			_currentTarget = null;
-			_screen = null;
-			_timingStats = null;
+			Screen = null;
+			FrameStats = null;
 			_stateCache = null;
 			_timer = null;
 			_log = null;
 			_renderer = null;
-			_initialized = false;
+			IsInitialized = false;
 		}
 		#endregion
     }

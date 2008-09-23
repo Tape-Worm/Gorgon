@@ -52,6 +52,8 @@ namespace GorgonLibrary.Example
 		private PreciseTimer _timer = new PreciseTimer();						// Timer object.
 		private PreciseTimer _splatTimer = new PreciseTimer();					// Particle splat timer.
 		private TextSprite _text = null;										// Help text.
+		private bool _inverted = false;											// Flag to invert the screen.
+		private bool _showHelp = true;											// Flag to show help text.
 		#endregion
 
 		#region Methods.
@@ -64,6 +66,19 @@ namespace GorgonLibrary.Example
 			base.OnLogicUpdate(e);
 
 			int i = 0;
+
+			if (_inverted)
+			{
+				_text.Color = Drawing.Color.White;
+				_particleSprite.BlendingMode = BlendingModes.Additive;
+				_screen.BackgroundColor = Drawing.Color.Black;
+			}
+			else
+			{
+				_text.Color = Drawing.Color.Black;
+				_particleSprite.BlendingMode = BlendingModes.Modulated;
+				_screen.BackgroundColor = Drawing.Color.White;
+			}
 
 			while (i < _emitters.Count)
 			{
@@ -88,15 +103,25 @@ namespace GorgonLibrary.Example
 			int i = 0;
 
 			Gorgon.CurrentRenderTarget = _screen;
+
 			if (_clearScreen)
 				_screen.Clear();
 			else
 			{
 				if (_timer.Milliseconds > 12.5)
 				{
-					_screen.BlendingMode = BlendingModes.Additive;
-					_screen.FilledRectangle(0, 0, _screen.Width, _screen.Height, Drawing.Color.FromArgb(1, _rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
-					_screen.BlendingMode = BlendingModes.None;
+					if (!_inverted)
+					{
+						_screen.BlendingMode = BlendingModes.Additive;
+						_screen.FilledRectangle(0, 0, _screen.Width, _screen.Height, Drawing.Color.FromArgb(1, _rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
+						_screen.BlendingMode = BlendingModes.None;
+					}
+					else
+					{
+						_screen.BlendingMode = BlendingModes.Modulated;
+						_screen.FilledRectangle(0, 0, _screen.Width, _screen.Height, Drawing.Color.FromArgb(1, _rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
+						_screen.BlendingMode = BlendingModes.None;
+					}
 					_timer.Reset();
 				}
 			}
@@ -106,8 +131,11 @@ namespace GorgonLibrary.Example
 
 			Gorgon.CurrentRenderTarget = null;			
 			_screen.Blit();
-			_text.Text = "Left mouse button - Splat some particles.\nRight mouse button - Splat multicolored particles.\nMiddle mouse button - Toggle clear each frame.\nCTRL + F - Show frame statistics.\nESC - Exit.\n\nParticle emitter count: " + _emitters.Count.ToString();
-			_text.Draw();
+			if (_showHelp)
+			{
+				_text.Text = "H - Show/hide this help text.\nI - Invert and use additive blending.\nLeft mouse button - Splat some particles.\nRight mouse button - Splat multicolored particles.\nMiddle mouse button - Toggle clear each frame.\nCTRL + F - Show frame statistics.\nESC - Exit.\n\nParticle emitter count: " + _emitters.Count.ToString();
+				_text.Draw();
+			}
 		}
 
 		/// <summary>
@@ -116,6 +144,20 @@ namespace GorgonLibrary.Example
 		protected override void OnDeviceLost()
 		{
 			base.OnDeviceLost();
+		}
+
+		/// <summary>
+		/// Function called when a keyboard key is pushed down.
+		/// </summary>
+		/// <param name="e">Keyboard event parameters.</param>
+		protected override void OnKeyboardKeyDown(KeyboardInputEventArgs e)
+		{
+			base.OnKeyboardKeyDown(e);
+
+			if (e.Key == KeyboardKeys.I)
+				_inverted = !_inverted;
+			if (e.Key == KeyboardKeys.H)
+				_showHelp = !_showHelp;
 		}
 
 		/// <summary>

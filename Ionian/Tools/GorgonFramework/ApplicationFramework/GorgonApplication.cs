@@ -71,7 +71,6 @@ namespace GorgonLibrary.Framework
 		private Sprite _cursorSprite;							// Cursor sprite.
 		private Image _cursorImage;								// Cursor image.
 		private bool _cursorVisible;							// Flag to indicate that the cursor is visible.
-		private bool _showLogo = true;							// Flag to show the logo.
 		private bool _escapeCloses = true;						// Flag to indicate that the escape key will close the application.
 		private Font _defaultFont = null;						// Default font.
 #if DEBUG
@@ -85,7 +84,6 @@ namespace GorgonLibrary.Framework
 		/// <summary>
 		/// Property to return the cursor sprite.
 		/// </summary>
-		[Browsable(false)]
 		protected Sprite CursorSprite
 		{
 			get
@@ -135,6 +133,16 @@ namespace GorgonLibrary.Framework
 					_defaultFont = new Font("DefaultFrameworkFont", value);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to automatically clear the screen.
+		/// </summary>
+		[Browsable(true), Category("Framework"), Description("Sets whether to have the framework clear the screen at the start of every frame or not."), DefaultValue(true)]
+		public bool AutoClear
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -250,16 +258,10 @@ namespace GorgonLibrary.Framework
 		/// </summary>
 		/// <remarks>Users can make a custom logo by overriding the <see cref="GorgonLibrary.Framework.GorgonApplicationWindow.RunLogo"/> method.</remarks>
 		[Browsable(true), Category("Framework"), Description("Sets whether to show a logo on application startup."), DefaultValue(true)]
-		public bool ShowLogo
+		public bool ShowSplashScreen
 		{
-			get
-			{
-				return _showLogo;
-			}
-			set
-			{
-				_showLogo = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -543,7 +545,7 @@ namespace GorgonLibrary.Framework
 					Gorgon.SetMode(boundControl, _setup.VideoMode.Width, _setup.VideoMode.Height, _setup.VideoMode.Format, _setup.WindowedFlag, UseDepthBuffer, UseStencilBuffer, _setup.VideoMode.RefreshRate, _setup.VSyncInterval);
 
 					// Run the logo.
-					if (_showLogo)
+					if (ShowSplashScreen)
 					{
 						showBadge = Gorgon.LogoVisible;
 						Gorgon.LogoVisible = false;
@@ -752,7 +754,7 @@ namespace GorgonLibrary.Framework
 		{			
 			if (!_logoFadeDir)
 			{
-				if (_logoSprite.UniformScale < ((Gorgon.Screen.Width * 3.5f) / _logoSprite.Width))
+				if (_logoSprite.UniformScale < (Gorgon.Screen.Width / _logoSprite.Width))
 					_logoBlur -= 13.2f * frameTime;
 				_logoOpacity += 95.0f * frameTime;
 				_logoSprite.UniformScale -= 8.0f * frameTime;
@@ -801,18 +803,21 @@ namespace GorgonLibrary.Framework
 				Gorgon.CurrentShader = _logoShader;
 			_logoSprite.Draw();
 
-			if (_logoTimer.Seconds >= 0.01)
+			if ((_logoSprite.UniformScale <= 1.0f) || (_logoFadeDir))
 			{
-				_logoSwitchTime += 0.01;
-				_logoTimer.Reset();
-			}
+				if (_logoTimer.Seconds >= 0.01)
+				{
+					_logoSwitchTime += 0.01;
+					_logoTimer.Reset();
+				}
 
-			if (_logoSwitchTime > 4.0)
-			{
-				if ((_logoDone) && (_logoFadeDir))
-					Gorgon.Stop();
-				else
-					_logoFadeDir = true;
+				if (_logoSwitchTime > 2.25)
+				{
+					if ((_logoDone) && (_logoFadeDir))
+						Gorgon.Stop();
+					else
+						_logoFadeDir = true;
+				}
 			}
 		}
 
@@ -887,7 +892,8 @@ namespace GorgonLibrary.Framework
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void Gorgon_Idle(object sender, FrameEventArgs e)
 		{
-			Gorgon.Screen.Clear();
+			if (AutoClear)
+				Gorgon.Screen.Clear();
 
 			OnLogicUpdate(e);
 			OnFrameUpdate(e);
@@ -1250,6 +1256,8 @@ namespace GorgonLibrary.Framework
 		{
 			_configPath = configPath;
 			Gorgon.LogoVisible = true;
+			AutoClear = true;
+			ShowSplashScreen = true;
 
 			// Load the configuration.
 			InitializeComponent();
