@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -108,19 +108,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\delete.png" />
-    <None Include="Resources\check.png" />
-    <None Include="Resources\bug.png" />
-    <None Include="Resources\data_error.png" />
-    <None Include="Resources\square_error.png" />
-    <None Include="Resources\disk_error.png" />
-    <None Include="Resources\hardware_error.png" />
-    <None Include="Resources\round_error.png" />
-    <None Include="Resources\question_and_answer.png" />
-    <None Include="Resources\SharpIcon.png" />
-    <None Include="Resources\error.png" />
-    <None Include="Resources\about.png" />
-    <None Include="Resources\about1.png" />
     <Content Include="window_dialog.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
