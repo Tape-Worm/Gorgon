@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2006 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Friday, May 19, 2006 10:18:50 PM
 // 
@@ -252,13 +255,13 @@ namespace GorgonLibrary.Graphics
 					Unlock();
 
                 if (_image.ImageType == ImageType.RenderTarget)
-                    throw new CannotLockException("Cannot lock a render target.");
+					throw new GorgonException(GorgonErrors.CannotLock, "Cannot lock a render image.");
 
                 if (_image.D3DTexture == null)
-                    throw new CannotLockException("No backing resource found for this image.");
+					throw new GorgonException(GorgonErrors.CannotLock, "No backing store for this image.");
 
                 if ((_image.Pool == D3D9.Pool.Default) && (_image.ImageType != ImageType.Dynamic))
-                    throw new CannotLockException("The image is not a dynamic image and cannot be locked.");
+					throw new GorgonException(GorgonErrors.CannotLock, "Cannot lock a dynamic image.");
 
                 try
 				{
@@ -287,10 +290,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					if (_image != null)
-						throw new CannotLockException(_image.GetType(), ex);
-					else
-						throw new CannotLockException(GetType(), ex);
+					GorgonException.Repackage(GorgonErrors.CannotLock, ex);
 				}
 			}
 			#endregion
@@ -573,60 +573,60 @@ namespace GorgonLibrary.Graphics
 			if (Gorgon.Screen == null)
 				throw new DeviceNotValidException();
 
+			D3D9.SurfaceDescription surfaceDesc = default(D3D9.SurfaceDescription);			// Surface description.
+
+			// Destroy the previous image object.
+			if (_d3dImage != null)
+				_d3dImage.Dispose();
+			_d3dImage = null;
+
+			Gorgon.Log.Print("Image", "Creating image \"{0}\": {1}x{2}, Format: {3}.", LoggingLevel.Simple, Name, _width, _height, _format.ToString());
+
+			// Start out with the same size.
+			_actualWidth = _width;
+			_actualHeight = _height;
+
+			// If the device only supports square images, then make square.
+			if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
+			{
+				if (_actualWidth > _actualHeight)
+					_actualHeight = _actualWidth;
+				else
+					_actualWidth = _actualHeight;
+			}
+
+			// Resize to the power of two.
+			if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+			{
+				Drawing.Size newSize;		// New image size.
+
+				newSize = ResizePowerOf2(_actualWidth, _actualHeight);
+				_actualWidth = newSize.Width;
+				_actualHeight = newSize.Height;
+			}
+
+			// Ensure the image is the correct size.
+			if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
+				throw new ImageSizeException(Name, _actualWidth, _actualHeight, Gorgon.CurrentDriver.MaximumTextureWidth, Gorgon.CurrentDriver.MaximumTextureHeight, null);
+
+			// If we specified unknown for the buffer format, assume 32 bit.
+			if (_format == ImageBufferFormats.BufferUnknown)
+			{
+				_format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, _imageType);
+
+				if (!SupportsFormat(_format, _imageType))
+					throw new GorgonException(GorgonErrors.InvalidFormat);
+			}
+			else
+			{
+				// Throw an exception if the format requested is not supported.
+				if (!SupportsFormat(_format, _imageType))
+					throw new GorgonException(GorgonErrors.InvalidFormat, _format.ToString() + " is not a valid format.");
+			}
+
+			// Create the image.
 			try
 			{
-				D3D9.SurfaceDescription surfaceDesc;			// Surface description.
-
-				// Destroy the previous image object.
-				if (_d3dImage != null)
-					_d3dImage.Dispose();
-				_d3dImage = null;
-
-				Gorgon.Log.Print("Image", "Creating image \"{0}\": {1}x{2}, Format: {3}.", LoggingLevel.Simple, Name, _width, _height, _format.ToString());
-
-				// Start out with the same size.
-				_actualWidth = _width;
-				_actualHeight = _height;
-
-				// If the device only supports square images, then make square.
-				if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
-				{
-					if (_actualWidth > _actualHeight)
-						_actualHeight = _actualWidth;
-					else
-						_actualWidth = _actualHeight;
-				}
-
-				// Resize to the power of two.
-				if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
-				{
-					Drawing.Size newSize;		// New image size.
-
-					newSize = ResizePowerOf2(_actualWidth, _actualHeight);
-					_actualWidth = newSize.Width;
-					_actualHeight = newSize.Height;
-				}
-
-				// Ensure the image is the correct size.
-				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-					throw new ImageSizeException(Name, _actualWidth, _actualHeight, Gorgon.CurrentDriver.MaximumTextureWidth, Gorgon.CurrentDriver.MaximumTextureHeight, null);
-
-				// If we specified unknown for the buffer format, assume 32 bit.
-				if (_format == ImageBufferFormats.BufferUnknown)
-				{
-					_format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, _imageType);
-
-					if (!SupportsFormat(_format, _imageType))
-						throw new FormatNotSupportedException("Unable to find a suitable image format.", null);
-				}
-				else
-				{
-					// Throw an exception if the format requested is not supported.
-					if (!SupportsFormat(_format, _imageType))
-						throw new FormatNotSupportedException(_format, null);
-				}
-
-				// Create the image.
 				_d3dImage = new D3D9.Texture(Gorgon.Screen.Device,
 					_actualWidth, _actualHeight, 1,
 					Usage,
@@ -634,24 +634,20 @@ namespace GorgonLibrary.Graphics
 					Pool);
 
 				surfaceDesc = _d3dImage.GetLevelDescription(0);
-
-				_format = Converter.ConvertD3DImageFormat(surfaceDesc.Format);
-				_filename = string.Empty;
-				_isResource = false;
-				Gorgon.Log.Print("Image", "Image \"{0}\" created: {1}x{2} (actual texture size: {4}x{5}), Format: {3}.", LoggingLevel.Simple, Name, _width, _height, _format.ToString(), _actualWidth, _actualHeight);
-
-				// Clear the buffer.
-				if (_clearOnInit)
-					Clear(Drawing.Color.FromArgb(255, 0, 255));
 			}
-			catch (GorgonException)
+			catch(Exception ex)
 			{
-				throw;
+				GorgonException.Repackage(GorgonErrors.CannotCreate, "Unable to create the D3D texture object.", ex);
 			}
-			catch (Exception ex)
-			{
-				throw new CannotCreateException(Name, GetType(), ex);
-			}
+
+			_format = Converter.ConvertD3DImageFormat(surfaceDesc.Format);
+			_filename = string.Empty;
+			_isResource = false;
+			Gorgon.Log.Print("Image", "Image \"{0}\" created: {1}x{2} (actual texture size: {4}x{5}), Format: {3}.", LoggingLevel.Simple, Name, _width, _height, _format.ToString(), _actualWidth, _actualHeight);
+
+			// Clear the buffer.
+			if (_clearOnInit)
+				Clear(Drawing.Color.FromArgb(255, 0, 255));
 		}
 
 		/// <summary>
@@ -705,12 +701,12 @@ namespace GorgonLibrary.Graphics
 				ImageCache.Images.Add(newImage);
 				return newImage;
 			}
-			catch (Exception ex)
+			catch
 			{
 				if (newImage != null)
 					newImage.Dispose();
 				newImage = null;
-				throw new CannotLoadException(name, typeof(Image), ex);
+				throw;
 			}
 			finally
 			{
@@ -1551,18 +1547,25 @@ namespace GorgonLibrary.Graphics
 					format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, _imageType);
 
 					if (!SupportsFormat(format, _imageType))
-						throw new FormatNotSupportedException("Unable to find a suitable image format.", null);
+						throw new GorgonException(GorgonErrors.InvalidFormat);
 				}
 				else
 				{
 					// Throw an exception if the format requested is not supported.
 					if (!SupportsFormat(format, _imageType))
-						throw new FormatNotSupportedException(format, null);
+						throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
 				}
 
 				// Reload the image data within the new format.				
-				imageData = D3D9.Texture.ToStream(_d3dImage,D3D9.ImageFileFormat.Png);
-				newImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, imageData, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, 0);
+				try
+				{
+					imageData = D3D9.Texture.ToStream(_d3dImage, D3D9.ImageFileFormat.Png);
+					newImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, imageData, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, 0);
+				}
+				catch (Exception ex)
+				{
+					GorgonException.Repackage(GorgonErrors.CannotUpdate, "Cannot update the D3D texture object.", ex);
+				}
 
 				// Clean up the previous image.
 				_d3dImage.Dispose();
@@ -1575,14 +1578,6 @@ namespace GorgonLibrary.Graphics
 				_height = height;
 				_format = Converter.ConvertD3DImageFormat(surfaceDesc.Format);
 			}
-			catch (Exception ex)
-			{
-				// Destroy the new image.
-				if (newImage != null)
-					newImage.Dispose();
-
-				throw new CannotUpdateException(Name, GetType(), ex);
-			}
 			finally
 			{
 				if (imageData != null)
@@ -1590,7 +1585,6 @@ namespace GorgonLibrary.Graphics
 
 				newImage = null;
 			}
-
 		}
 
 		/// <summary>
@@ -1697,17 +1691,20 @@ namespace GorgonLibrary.Graphics
 
 				// Copy the texture data to a stream.
 				memoryImage = D3D9.Texture.ToStream(image.D3DTexture, D3D9.ImageFileFormat.Png);
-				_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
+				try
+				{
+					_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
+				}
+				catch (Exception ex)
+				{
+					GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while trying to create the D3D texture.",ex);
+				}
 				surfaceInfo = _d3dImage.GetLevelDescription(0);
 				_actualWidth = surfaceInfo.Width;
 				_actualHeight = surfaceInfo.Height;
 				_width = width;
 				_height = height;
 				_format = Converter.ConvertD3DImageFormat(surfaceInfo.Format);
-			}
-			catch (Exception ex)
-			{
-				throw new CannotLoadException(Name, GetType(), ex);
 			}
 			finally
 			{
@@ -1860,17 +1857,20 @@ namespace GorgonLibrary.Graphics
 				gdiImage.Save(memoryImage, Drawing.Imaging.ImageFormat.Png);
 				memoryImage.Position = 0;
 
-				_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
+				try
+				{
+					_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
+				}
+				catch (Exception ex)
+				{
+					GorgonException.Repackage(GorgonErrors.CannotLoad, "Could not load the D3D texture from the stream.", ex);
+				}
 				surfaceInfo = _d3dImage.GetLevelDescription(0);
 				_actualWidth = surfaceInfo.Width;
 				_actualHeight = surfaceInfo.Height;
 				_width = width;
 				_height = height;
 				_format = Converter.ConvertD3DImageFormat(surfaceInfo.Format);
-			}
-			catch (Exception ex)
-			{
-				throw new CannotLoadException(Name, GetType(), ex);
 			}
 			finally
 			{
@@ -1958,25 +1958,18 @@ namespace GorgonLibrary.Graphics
 			ImageSerializer serializer = null;		// Serializer object.
 			string filename = string.Empty;			// Filename.
 
-			try
-			{
-				if (stream is FileStream)
-					filename = ((FileStream)stream).Name;
-				else
-					filename = Name;
+			if (stream is FileStream)
+				filename = ((FileStream)stream).Name;
+			else
+				filename = Name;
 
-				// Open the serializer.
-				serializer = new ImageSerializer(this, stream);
-				serializer.DontCloseStream = true;
+			// Open the serializer.
+			serializer = new ImageSerializer(this, stream);
+			serializer.DontCloseStream = true;
 
-				serializer.Parameters["FileFormat"] = fileFormat;
+			serializer.Parameters["FileFormat"] = fileFormat;
 
-				serializer.Serialize();
-			}
-			catch (Exception ex)
-			{
-				throw new CannotSaveException(filename, GetType(), ex);
-			}
+			serializer.Serialize();
 		}
 
 		/// <summary>
@@ -2448,13 +2441,13 @@ namespace GorgonLibrary.Graphics
 				format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, ImageType.Normal);
 
 				if (!SupportsFormat(format, ImageType.Normal))
-					throw new FormatNotSupportedException("Unable to find a suitable image format.", null);
+					throw new GorgonException(GorgonErrors.InvalidFormat);					
 			}
 			else
 			{
 				// Throw an exception if the format requested is not supported.
 				if (!SupportsFormat(format, ImageType.Normal))
-					throw new FormatNotSupportedException(format, null);
+					throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
 			}
 			
 

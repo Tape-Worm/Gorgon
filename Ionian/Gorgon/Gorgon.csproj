@@ -102,7 +102,6 @@
   <ItemGroup>
     <Compile Include="Animation\AnimatedAttribute.cs" />
     <Compile Include="Animation\Animation.cs" />
-    <Compile Include="Animation\AnimationException.cs" />
     <Compile Include="Animation\AnimationList.cs" />
     <Compile Include="Animation\EditorCanDragAttribute.cs" />
     <Compile Include="Animation\EditorRoundValuesAttribute.cs" />
@@ -177,6 +176,7 @@
     <Compile Include="Fonts\GlyphTree.cs" />
     <Compile Include="Fonts\FontCache.cs" />
     <Compile Include="Fonts\FontList.cs" />
+    <Compile Include="GorgonErrors.cs" />
     <Compile Include="Imaging\ImageCache.cs" />
     <Compile Include="Imaging\ImageException.cs" />
     <Compile Include="Imaging\ImageList.cs" />

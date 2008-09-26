@@ -103,8 +103,18 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-September 22/2008 - Version - Current
+September 26/2008 - Version - Current
 ================================
+* Unified all exception objects into a single exception type:
+  GorgonException.  This exception system is modelled after SlimDX's ResultCode
+  setup.  This was done to cut down on the amount of exception object clutter
+  in the library.  GorgonExceptions will now contain packaged error information
+  value types (GorgonError).  This will contain a code and description of the error
+  and can be used to determine a course of action depending on the code packaged
+  with the exception.  This is a major breaking change.
+  
+* Changed the licensing from LGPL to MIT.  F**k you Stallman.
+
 + Added functionality for FX shaders to determine if a projection matrix
   value is present and auto-update it accordingly.  The shader will look
   for a parameter named "_projectionMatrix", and if found, will be 

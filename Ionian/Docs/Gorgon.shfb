@@ -52,15 +52,15 @@ But really, these are internal functions for use by Gorgon only.  They should ra
     <HelpTitle>Gorgon</HelpTitle>
     <HtmlHelpName>Gorgon</HtmlHelpName>
     <Language>en-US</Language>
-    <CopyrightHref>http://www.gnu.org/copyleft/lesser.html</CopyrightHref>
-    <CopyrightText>Copyright © 2007 - Licensed under the LGPL by Michael Winsor (Tape_Worm)</CopyrightText>
+    <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
+    <CopyrightText>Copyright © 2008 - Licensed under the MIT license by Michael Winsor (Tape_Worm).  See MIT.txt for details.</CopyrightText>
     <FeedbackEMailAddress>tape_worm@tape-worm.net</FeedbackEMailAddress>
     <HeaderText />
     <FooterText>Gorgon v1.1.x</FooterText>
     <ProjectLinkType>Local</ProjectLinkType>
     <SdkLinkType>Msdn</SdkLinkType>
     <SdkLinkTarget>Blank</SdkLinkTarget>
-    <PresentationStyle>hana</PresentationStyle>
+    <PresentationStyle>Prototype</PresentationStyle>
     <NamingMethod>Guid</NamingMethod>
     <SyntaxFilters>Standard</SyntaxFilters>
     <ShowFeedbackControl>True</ShowFeedbackControl>

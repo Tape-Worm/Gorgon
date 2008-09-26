@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2005 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Wednesday, April 27, 2005 10:30:08 AM
 // 
@@ -24,528 +27,311 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary
 {
-    /// <summary>
-    /// Base exception class for Gorgon.
-    /// </summary>
-    /// <remarks>All exceptions for Gorgon are derived from this base exception.</remarks>
-    public abstract class GorgonException
+	/// <summary>
+	/// Delegate to define an exception handler.
+	/// </summary>
+	/// <param name="ex">Exception passed to the handler.</param>
+	public delegate void GorgonExceptionHandler(Exception ex);
+
+	/// <summary>
+	/// Gorgon exception object.
+	/// </summary>
+	/// <remarks>This exception is the library specific exception for the library.</remarks>
+	public class GorgonException
 		: Exception
 	{
-		#region Constructor.
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the log system to use when dumping exceptions to the log.
+		/// </summary>
+		public static Logger Log
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the exception result code.
+		/// </summary>
+		public GorgonError ResultCode
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to format a stack trace to be more presentable.
+		/// </summary>
+		/// <param name="stack">Stack trace to format.</param>
+		/// <param name="indicator">Inner exception indicator.</param>
+		/// <param name="logLevel">Logging level to use.</param>
+		private static void FormatStackTrace(string stack, string indicator, LoggingLevel logLevel)
+		{
+			string[] lines = null;		// List of lines.
+
+			if (string.IsNullOrEmpty(stack))
+				return;
+
+			stack = stack.Replace('\t', ' ');
+			lines = stack.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+			Log.Print("{0}Stack trace:", logLevel, indicator);
+			for (int i = lines.Length - 1; i >= 0; i--)
+			{
+				int inIndex = lines[i].LastIndexOf(") in ");
+				int pathIndex = lines[i].LastIndexOf(@"\");
+
+				if ((inIndex > -1) && (pathIndex > -1))
+					lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
+
+				Log.Print("{1}{0}", logLevel, lines[i], indicator);
+			}
+
+			Log.Print("{0}<<<Beginning of stack>>>", logLevel, indicator);
+		}
+
+		/// <summary>
+		/// Function to send the exception to the log file.
+		/// </summary>
+		private static void LogException(Exception ex)
+		{
+			Exception inner = null;				// Inner exception.
+			string indicator = string.Empty;	// Inner exception indicator.
+
+			if (Log == null)
+				return;
+
+			if (ex == null)
+				return;
+
+			Log.Print("", LoggingLevel.All);
+			Log.Print("================================================", LoggingLevel.All);
+			Log.Print("\tEXCEPTION!!", LoggingLevel.All);
+			Log.Print("================================================", LoggingLevel.All);
+
+			inner = ex;
+			while (inner != null)
+			{
+				GorgonException heraException = inner as GorgonException;
+
+				Log.Print("{1}Exception: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Message, indicator);
+				Log.Print("{1}Type: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator);
+				if (inner.Source != null)
+					Log.Print("{1}Source: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator);
+				if (inner.TargetSite != null)
+					Log.Print("{1}Target site: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
+				if (heraException != null)
+					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, heraException.ResultCode.Name, heraException.ResultCode.Code, indicator);
+				FormatStackTrace(inner.StackTrace, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
+
+
+				if (inner.InnerException != null)
+				{
+					if (indicator != string.Empty)
+						indicator = "-" + indicator;
+					else
+						indicator = "> ";
+					Log.Print("", LoggingLevel.All);
+					Log.Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
+					Log.Print("{0}  Inner exception from \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message);
+					Log.Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
+				}
+
+				inner = inner.InnerException;
+			}
+			Log.Print("", LoggingLevel.All);
+		}
+
+		/// <summary>
+		/// When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
+		/// </summary>
+		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+		/// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+		/// <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is a null reference (Nothing in Visual Basic). </exception>
+		/// <PermissionSet>
+		/// 	<IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Read="*AllFiles*" PathDiscovery="*AllFiles*"/>
+		/// 	<IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="SerializationFormatter"/>
+		/// </PermissionSet>
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+
+			info.AddValue("ResultCode", ResultCode, typeof(GorgonError));
+		}
+
+		/// <summary>
+		/// Function to catch and log any stray exception.
+		/// </summary>
+		/// <param name="ex">Exception to catch.</param>
+		/// <returns>The exception that was caught.</returns>
+		public static Exception Catch(Exception ex)
+		{
+			if (ex == null)
+				throw new ArgumentNullException("ex");
+
+			LogException(ex);
+
+			return ex;
+		}
+
+		/// <summary>
+		/// Functon to catch and handle an exception.
+		/// </summary>
+		/// <param name="ex">Exception to pass to the handler.</param>
+		/// <param name="handler">Handler to handle the exception.</param>
+		/// <returns>The exception that was caught.</returns>
+		public static Exception Catch(Exception ex, GorgonExceptionHandler handler)
+		{
+			if (ex == null)
+				throw new ArgumentNullException("ex");
+
+			if (handler == null)
+				throw new ArgumentNullException("handler");
+
+			LogException(ex);
+			handler(ex);
+
+			return ex;
+		}
+
+		/// <summary>
+		/// Function to repackage an arbitrary exception as a hera exception.
+		/// </summary>
+		/// <param name="result">Result code to use.</param>
+		/// <param name="message">Message to append to the result.</param>
+		/// <param name="ex">Exception to capture and rethrow.</param>
+		/// <returns>A new Gorgon exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonLibrary.GorgonException"/>.</remarks>
+		public static GorgonException Repackage(GorgonError result, string message, Exception ex)
+		{
+			if (ex == null)
+				throw new ArgumentNullException("ex");
+
+			return new GorgonException(result, message, ex);
+		}
+
+		/// <summary>
+		/// Function to repackage an arbitrary exception as a hera exception.
+		/// </summary>
+		/// <param name="result">Result code to use.</param>
+		/// <param name="ex">Exception to capture and rethrow.</param>
+		/// <returns>A new Gorgon exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonLibrary.GorgonException"/>.</remarks>
+		public static GorgonException Repackage(GorgonError result, Exception ex)
+		{
+			if (ex == null)
+				throw new ArgumentNullException("ex");
+
+			return new GorgonException(result, ex);
+		}
+
+		/// <summary>
+		/// Function to repackage an arbitrary exception as a hera exception.
+		/// </summary>
+		/// <param name="message">New message to pass to the new exception.</param>
+		/// <param name="ex">Exception to capture and rethrow.</param>
+		/// <returns>A new Gorgon exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonLibrary.GorgonException"/>.</remarks>
+		public static GorgonException Repackage(string message, Exception ex)
+		{
+			if (ex == null)
+				throw new ArgumentNullException("ex");
+
+			return new GorgonException(message, ex);
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="errorMessage">Error message to display.</param>
+		/// <param name="innerException">Inner exception to pass through.</param>
+		public GorgonException(string errorMessage, Exception innerException)
+			: base(errorMessage, innerException)
+		{
+			ResultCode = new GorgonError("GorgonException", this.HResult, errorMessage);
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="errorMessage">Error message to display.</param>
+		public GorgonException(string errorMessage)
+			: base(errorMessage)
+		{
+			ResultCode = new GorgonError("GorgonException", this.HResult, errorMessage);
+		}
+
 		/// <summary>
 		/// Serialized constructor.
 		/// </summary>
 		/// <param name="info">Serialization info.</param>
 		/// <param name="context">Serialization context.</param>
-		protected GorgonException(SerializationInfo info, StreamingContext context) : base(info,context)
+		protected GorgonException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+			if (info.FullTypeName == typeof(GorgonError).FullName)
+				ResultCode = (GorgonError)info.GetValue("ResultCode", typeof(GorgonError));
+			else
+				ResultCode = new GorgonError("Exception", info.GetInt32("HResult"), info.GetString("Message"));
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonException"/> class.
+		/// </summary>
+		/// <param name="result">The result.</param>
+		/// <param name="message">Message data to append to the error.</param>
+		/// <param name="inner">The inner exception.</param>
+		public GorgonException(GorgonError result, string message, Exception inner)
+			: base(result.Description + (string.IsNullOrEmpty(message) ? "\n"+ message : string.Empty), inner)
+		{
+			ResultCode = result;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonException"/> class.
+		/// </summary>
+		/// <param name="result">The result.</param>
+		/// <param name="message">Message data to append to the error.</param>
+		public GorgonException(GorgonError result, string message)
+			: base(result.Description + (string.IsNullOrEmpty(message) ? "\n" + message : string.Empty))
+		{
+			ResultCode = result;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonException"/> class.
+		/// </summary>
+		/// <param name="result">The result.</param>
+		/// <param name="inner">The inner exception.</param>
+		public GorgonException(GorgonError result, Exception inner)
+			: this(result, null, inner)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonException"/> class.
+		/// </summary>
+		/// <param name="result">The result.</param>
+		public GorgonException(GorgonError result)
+			: this(result, null, null)
 		{
 		}
 
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-        public GorgonException()
-            : base("An unknown exception has occured.", null)
+		public GorgonException()
 		{
-		}
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonException"/> class.
-        /// </summary>
-        /// <param name="message">Display message for the exception.</param>
-        /// <param name="ex">The inner exception for this exception.</param>
-		public GorgonException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonException"/> class.
-        /// </summary>
-        /// <param name="message">Display message for the exception.</param>
-		public GorgonException(string message)
-			: this(message, null)
-		{
+			ResultCode = new GorgonError("GorgonException", int.MinValue, string.Empty);
 		}
 		#endregion
-	}
-
-    /// <summary>
-    /// Library not initialized exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when a method is called from the <see cref="GorgonLibrary.Gorgon">Gorgon</see> and <see cref="GorgonLibrary.Gorgon.Initialize()">has not yet been called.</see></remarks>
-	public class NotInitializedException 
-		: GorgonException
-	{
-		#region Constructor/Destructor
-		/// <summary>
-		/// Constructor.
-		/// </summary>		
-		/// <param name="ex">Exception that spawned this exception.</param>
-		public NotInitializedException(Exception ex)
-			: base("The library was not initialized.\nYou must call Initialize() first.", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>		
-		public NotInitializedException()
-			: this(null)
-		{
-		}
-		#endregion
-	}
-
-    /// <summary>
-    /// Cannot enumerate.
-    /// </summary>
-    /// <remarks>This exception is thrown when there's a failure to enumerate a list of objects in the system.  This is usually thrown by the <see cref="GorgonLibrary.DriverList">DriverList</see> or the <see cref="GorgonLibrary.VideoModeList">VideoModeList</see> objects.</remarks>
-	public class CannotEnumerateException
-		: GorgonException
-	{
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="enumObject">Object/device that is being enumerated.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotEnumerateException(string enumObject, Exception ex)
-			: base("Cannot enumerate the " + enumObject + ".", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="enumObject">Object/device that is being enumerated.</param>
-		public CannotEnumerateException(string enumObject)
-			: this(enumObject, null as Exception)
-		{
-		}
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="enumObject">Object/device that is being enumerated.</param>
-        /// <param name="message">Message to accompany the default message.</param>
-        public CannotEnumerateException(string enumObject, string message)
-            : base("Cannot enumerate the " + enumObject + ".\n" + message, null)
-        {
-        }
-        #endregion
-    }
-
-    /// <summary>
-    /// Cannot create exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when an object creation fails.</remarks>
-	public class CannotCreateException
-		: GorgonException
-	{
-		#region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CannotCreateException"/> class.
-        /// </summary>
-        /// <param name="message">Custom error message to display for this exception.</param>
-        /// <param name="ex">Inner exception for this exception.</param>
-		public CannotCreateException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CannotCreateException"/> class.
-        /// </summary>
-        /// <param name="message">Custom error message to display for this exception.</param>
-		public CannotCreateException(string message)
-			: base(message, null)
-		{
-		}
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CannotCreateException"/> class.
-        /// </summary>
-        /// <param name="name">Name of the object that could not be created.</param>
-        /// <param name="resourceType">Type of object that failed in creation.</param>
-        /// <param name="ex">Inner exception for this exception.</param>
-		public CannotCreateException(string name, Type resourceType, Exception ex)
-			: base("Could not create " + resourceType.Name + (name == string.Empty ? string.Empty : " '" + name + "'") + ".", ex)
-		{
-		}
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CannotCreateException"/> class.
-        /// </summary>
-        /// <param name="name">Name of the object that could not be created.</param>
-        /// <param name="resourceType">Type of object that failed in creation.</param>
-		public CannotCreateException(string name, Type resourceType)
-			: base("Could not create " + resourceType.Name + (name == string.Empty ? string.Empty : " '" + name + "'") + ".", null)
-		{
-		}
-		#endregion
-	}
-
-    /// <summary>
-    /// Cannot update exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when an object fails to be updated.</remarks>
-	public class CannotUpdateException
-		: GorgonException
-	{
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotUpdateException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		public CannotUpdateException(string message)
-			: base(message, null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="name">Name of the object.</param>
-		/// <param name="resourceType">Type of resource.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotUpdateException(string name, Type resourceType, Exception ex)
-			: base("Could not update the " + resourceType.Name + " '" + name + "'.", ex)
-		{
-		}
-
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="name">Name of the object.</param>
-		/// <param name="resourceType">Type of resource.</param>
-		public CannotUpdateException(string name, Type resourceType)
-			: base("Could not update the " + resourceType.Name + " '" + name + "'.", null)
-		{
-		}
-		#endregion
-	}
-
-    /// <summary>
-    /// Cannot load exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when there's a failure to read the object from a storage medium (e.g. disk or memory).</remarks>
-	public class CannotLoadException
-		: GorgonException
-	{
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotLoadException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="filename">Filename of the object.</param>
-		/// <param name="resourceType">Type of resource.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotLoadException(string filename, Type resourceType, Exception ex)
-			: base("Could not load " + resourceType.Name + " '" + filename + "'.", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		public CannotLoadException(string message)
-			: base(message, null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="filename">Filename of the object.</param>
-		/// <param name="resourceType">Type of resource.</param>
-		public CannotLoadException(string filename, Type resourceType)
-			: base("Could not load " + resourceType.Name + " '" + filename + "'.", null)
-		{
-		}
-		#endregion
-	}
-
-    /// <summary>
-    /// Cannot save exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when an attempt to save a object to a storage medium fails.</remarks>
-	public class CannotSaveException
-		: GorgonException
-	{
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotSaveException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="filename">Filename of the object.</param>
-		/// <param name="resourceType">Type of resource.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotSaveException(string filename, Type resourceType, Exception ex)
-			: base("Could not save " + resourceType.Name + " '" + filename + "'.", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		public CannotSaveException(string message)
-			: base(message, null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="filename">Filename of the object.</param>
-		/// <param name="resourceType">Type of resource.</param>
-		public CannotSaveException(string filename, Type resourceType)
-			: base("Could not save " + resourceType.Name + " '" + filename + "'.", null)
-		{
-		}
-		#endregion
-	}
-
-    /// <summary>
-    /// Image buffer format not supported exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when an invalid image buffer format is encountered.</remarks>
-	public class FormatNotSupportedException
-		: GorgonException
-	{
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Description of the error.</param>
-		/// <param name="ex">Source exception.</param>
-		public FormatNotSupportedException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="ex">Source exception.</param>
-		public FormatNotSupportedException(Exception ex)
-			: this("The selected buffer format is not supported by the hardware.", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Description of the error.</param>
-		public FormatNotSupportedException(string message)
-			: this(message, null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public FormatNotSupportedException()
-			: this("The selected buffer format is not supported by the hardware.", null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="format">Format that caused the exception.</param>
-		/// <param name="ex">Source exception.</param>
-		public FormatNotSupportedException(BackBufferFormats format, Exception ex)
-			: this("The backbuffer format '" + format.ToString() + "' is not supported by the hardware.", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="format">Format that caused the exception.</param>
-		/// <param name="ex">Source exception.</param>
-		public FormatNotSupportedException(GorgonLibrary.Graphics.ImageBufferFormats format, Exception ex)
-			: this("The format '" + format.ToString() + "' is not supported by the hardware.", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="format">Format that caused the exception.</param>
-		public FormatNotSupportedException(BackBufferFormats format)
-			: this("The backbuffer format '" + format.ToString() + "' is not supported by the hardware.", null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="format">Format that caused the exception.</param>
-		public FormatNotSupportedException(GorgonLibrary.Graphics.ImageBufferFormats format)
-			: this("The format '" + format.ToString() + "' is not supported by the hardware.", null)
-		{
-		}
-		#endregion
-	}
-
-    /// <summary>
-    /// Not locked exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when an attempt is made to write/read an object that requires a lock but no lock is applied.</remarks>
-	public class NotLockedException
-		: GorgonException
-	{
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>		
-		/// <param name="message">Message to display.</param>
-		/// <param name="ex">Source exception.</param>
-		public NotLockedException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="type">Type of object.</param>
-		/// <param name="ex">Source exception.</param>
-		public NotLockedException(Type type, Exception ex)
-			: this("The " + type.Name + " is not locked.", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>		
-		/// <param name="message">Message to display.</param>		
-		public NotLockedException(string message)
-			: this(message, null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="type">Type of object.</param>		
-		public NotLockedException(Type type)
-			: this("The " + type.Name + " is not locked.", null)
-		{
-		}
-		#endregion
-	}
-
-    /// <summary>
-    /// Cannot lock exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when there's an attempt to lock an object but that lock fails to be acquired.</remarks>
-	public class CannotLockException
-		: GorgonException
-	{
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>		
-		/// <param name="message">Message to display.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotLockException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="type">Type of object.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotLockException(Type type, Exception ex)
-			: this("Could not lock the " + type.Name + ".", ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>		
-		/// <param name="message">Message to display.</param>
-		public CannotLockException(string message)
-			: base(message, null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="type">Type of object.</param>
-		public CannotLockException(Type type)
-			: this("Could not lock the " + type.Name + ".", null)
-		{
-		}
-		#endregion
-	}
-
-    /// <summary>
-    /// Cannot read exception.
-    /// </summary>
-    /// <remarks>This exception is thrown when there was an attempt to read an objects data but there was a failure to do so.</remarks>
-	public class CannotReadException
-		: GorgonException
-	{
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		/// <param name="ex">Source exception.</param>
-		public CannotReadException(string message, Exception ex)
-			: base(message, ex)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="message">Error message.</param>
-		public CannotReadException(string message)
-			: base(message, null)
-		{
-		}
-		#endregion
-	}
+	}	
 }

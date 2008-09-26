@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2005 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Wednesday, April 27, 2005 10:29:58 AM
 // 
@@ -214,8 +217,8 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (!IsInitialized)
-					throw new NotInitializedException(null);
+				if (!IsInitialized)					
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				return _renderer;
 			}
@@ -370,14 +373,14 @@ namespace GorgonLibrary
 		/// </code>
 		/// </example>
 		/// <remarks>Changing the states in this property will result in that state being applied to all renderable objects.  The exception to this is when the state has been changed directly on the renderable object itself.</remarks>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		/// <value>A list of global settings that <see cref="GorgonLibrary.Graphics.Sprite">sprites</see> and <see cref="GorgonLibrary.Graphics.TextSprite">text sprites</see> will use as initial and inherited values.</value>		
 		public static SpriteStateCache GlobalStateSettings
 		{
 			get
 			{
 				if (!IsInitialized)
-					throw new NotInitializedException();
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				return _stateCache;
 			}
@@ -391,7 +394,7 @@ namespace GorgonLibrary
 		/// <para>Setting this property to NULL will set the clipping viewport dimensions to the size of the current render target dimensions.</para>
 		/// </remarks>
 		/// <value>A rectangular region that defines what area of the screen (or other render target) to update.</value>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		public static Viewport CurrentClippingViewport
 		{
 			get
@@ -401,7 +404,7 @@ namespace GorgonLibrary
 			set
 			{
 				if ((!IsInitialized) || (Screen == null))
-					throw new NotInitializedException();
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				// Reset the view to the current target view.
 				if (value == null)
@@ -474,8 +477,8 @@ namespace GorgonLibrary
 		/// <remarks>Use this to apply a shader to the rendering pass.  You can apply either a <see cref="GorgonLibrary.Graphics.Shader"/>, <see cref="GorgonLibrary.Graphics.ShaderTechnique"/> or a <see cref="GorgonLibrary.Graphics.ShaderPass"/>.  
 		/// When applying a shader there's a very small performance hit on the first pass of rendering as it attempts to locate the first valid shader technique.</remarks>
 		/// <value>A shader renderer output to apply to the scene when rendering.</value>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		/// <exception cref="DeviceNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
 		public static IShaderRenderer CurrentShader
 		{
 			get
@@ -485,7 +488,7 @@ namespace GorgonLibrary
 			set
 			{
 				if (!IsInitialized)
-					throw new NotInitializedException();
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				// No device?  Throw an exception.
 				if (Screen == null)
@@ -511,7 +514,7 @@ namespace GorgonLibrary
 		/// 	<para>Please note that when the render target is switched the <see cref="GorgonLibrary.Gorgon.CurrentClippingViewport">clipping viewport</see> is reset to the size of the render target being assigned.</para>
 		/// </remarks>
 		/// <value>A render target to use as a canvas for drawing.  This can be a <see cref="GorgonLibrary.Graphics.RenderImage">RenderImage</see> or a <see cref="GorgonLibrary.Graphics.RenderWindow">RenderWindow</see>.</value>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		/// <exception cref="DeviceNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
 		public static RenderTarget CurrentRenderTarget
 		{
@@ -522,7 +525,7 @@ namespace GorgonLibrary
 			set
 			{
 				if (!IsInitialized)
-					throw new NotInitializedException();
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				// No device?  Throw an exception.
 				if (Screen == null)
@@ -583,13 +586,13 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks></remarks>
 		/// <value>The desktop <see cref="VideoMode">video mode</see> information.</value>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		public static VideoMode DesktopVideoMode
 		{
 			get
 			{
 				if (!IsInitialized)
-					throw new NotInitializedException();
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				return _desktopVideoMode;
 			}
@@ -667,20 +670,20 @@ namespace GorgonLibrary
 		/// </para>
 		/// </remarks>
 		/// <value>This will get/set the current video driver index, which is ranged from 0 to <see cref="GorgonLibrary.DriverList">DriverList</see>.Count - 1.</value>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		public static Driver CurrentDriver
 		{
 			get
 			{
 				if (!IsInitialized)
-					throw new NotInitializedException(null);
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				return _currentDriver;
 			}
 			set
 			{
 				if (!IsInitialized)
-					throw new NotInitializedException(null);
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				Stop();
 
@@ -741,13 +744,13 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>If a driver does not have hardware acceleration, it will not be included in the list.</remarks>
 		/// <value>The list of installed <see cref="GorgonLibrary.Driver">video drivers</see>.</value>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		public static DriverList Drivers
 		{
 			get
 			{
 				if (!IsInitialized)
-					throw new NotInitializedException(null);
+					throw new GorgonException(GorgonErrors.NotInitialized);
 
 				return _drivers;
 			}
@@ -1107,12 +1110,12 @@ namespace GorgonLibrary
 		/// Function to start the engine rendering.
 		/// </summary>
 		/// <remarks>The application does not begin rendering right away when this function is called, it merely tells the library that the application is ready for rendering to begin when it's ready.</remarks>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		/// <exception cref="RenderTargetNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode(Control)">SetMode()</see> has not been called.</exception>		
 		public static void Go()
 		{
 			if (!IsInitialized)
-				throw new NotInitializedException(null);
+				throw new GorgonException(GorgonErrors.NotInitialized);
 
 			if ((Gorgon.Screen != null) && (_currentTarget == null))
 				throw new RenderTargetNotValidException();
@@ -1141,11 +1144,11 @@ namespace GorgonLibrary
 		/// This will merely stop the rendering process, it can be restarted with the <see cref="GorgonLibrary.Gorgon.Go">Go()</see> function.
 		/// <para>Note that this function does -not- affect the video mode.</para>
 		/// </remarks>
-		/// <exception cref="NotInitializedException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		public static void Stop()
 		{
 			if (!IsInitialized)
-				throw new NotInitializedException(null);
+				throw new GorgonException(GorgonErrors.NotInitialized);
 
 			if (IsRunning)
 			{
@@ -1259,6 +1262,7 @@ namespace GorgonLibrary
 				try
 				{
 					_log.Open();
+					GorgonException.Log = _log;
 				}
 				catch(GorgonException gEx)
 				{
