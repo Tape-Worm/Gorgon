@@ -571,7 +571,7 @@ namespace GorgonLibrary.Graphics
 		private void Initialize()
 		{
 			if (Gorgon.Screen == null)
-				throw new DeviceNotValidException();
+				throw new GorgonException(GorgonErrors.NoDevice);
 
 			D3D9.SurfaceDescription surfaceDesc = default(D3D9.SurfaceDescription);			// Surface description.
 
@@ -728,7 +728,7 @@ namespace GorgonLibrary.Graphics
 			D3D9.Pool pool;							// Resource pool.
 
 			if (Gorgon.Screen == null)
-				throw new DeviceNotValidException();
+				throw new GorgonException(GorgonErrors.NoDevice);
 
 			if ((type == ImageType.RenderTarget) || (type == ImageType.Dynamic))
 				pool = D3D9.Pool.Default;
@@ -2152,9 +2152,9 @@ namespace GorgonLibrary.Graphics
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name");
-			
+
 			if (Gorgon.Screen == null)
-				throw new DeviceNotValidException();
+				throw new GorgonException(GorgonErrors.NoDevice);
 
 			_actualHeight = -1;
 			_actualWidth = -1;

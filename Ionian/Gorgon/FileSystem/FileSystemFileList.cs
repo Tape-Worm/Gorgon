@@ -60,13 +60,13 @@ namespace GorgonLibrary.FileSystems
 		{
 			get
 			{
-				if ((key == string.Empty) || (key == null))
+				if (string.IsNullOrEmpty(key))
 					throw new ArgumentNullException("key");
 
 				key = TransformFilename(key);
 
 				if (!Contains(key))
-					throw new FileSystemFileNotFoundException(key);
+					throw new FileNotFoundException("The file '" + key + "' was not found");
 
 				return GetItem(key);
 			}
@@ -94,7 +94,7 @@ namespace GorgonLibrary.FileSystems
 			result = Path.GetFileName(result);
 
 			if (!FileSystemFile.ValidFilename(result))
-				throw new FileSystemFilenameInvalidException(result);
+				throw new ArgumentException("The filename '" + result + "' is not valid.");
 
 			return result;
 		}
@@ -110,10 +110,8 @@ namespace GorgonLibrary.FileSystems
 
 			key = TransformFilename(key);
 
-			if (!Contains(key))
-				throw new FileSystemFileNotFoundException(key);
-			_owner.FilesUpdated();
 			base.RemoveItem(key);
+			_owner.FilesUpdated();
 		}
 
 		/// <summary>
@@ -122,8 +120,8 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="index">Index to remove at.</param>
 		protected override void RemoveItem(int index)
 		{
-			_owner.FilesUpdated();
 			base.RemoveItem(index);
+			_owner.FilesUpdated();
 		}
 
 		/// <summary>
@@ -131,8 +129,8 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		protected override void ClearItems()
 		{
-			_owner.FilesUpdated();
 			base.ClearItems();
+			_owner.FilesUpdated();
 		}
 
 		/// <summary>
@@ -168,9 +166,6 @@ namespace GorgonLibrary.FileSystems
 			fileName = TransformFilename(fileName);
 
 			newFile = new FileSystemFile(_owner, fileName, data, originalSize, compressedSize, dateTime, encrypted);
-
-			if (Contains(fileName))
-				throw new FileSystemFileExistsException(newFile.FullPath);
 
 			AddItem(fileName, newFile);
 			_owner.FilesUpdated();

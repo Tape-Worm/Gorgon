@@ -403,7 +403,6 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="fileSystemStream">The file stream that will contain the file system.</param>
 		/// <remarks>Due to the nature of a file stream, the file system within the stream must be a packed file system.</remarks>
-		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
 		public override void AssignRoot(Stream fileSystemStream)
 		{
 			if (fileSystemStream == null)
@@ -421,12 +420,12 @@ namespace GorgonLibrary.FileSystems
 			{
 				ReadIndex(fileSystemStream);
 			}
-			catch (Exception ex)
+			catch
 			{
 				_fileStream = null;
 				_fileSystemOffset = 0;
 				_streamIsRoot = false;
-				throw new FileSystemRootIsInvalidException("File stream [" + fileSystemStream.ToString() + "]", ex);
+				throw;
 			}
 
 			// Validate the index XML.
@@ -438,8 +437,7 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="path">Path to the root of the file system.</param>
 		/// <remarks>Path can be a folder that contains the file system XML index for a folder file system or a file (typically
-		/// ending with extension .gorPack) for a packed file system.</remarks>
-		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
+		/// ending with extension .gorPack) for a packed file system.</remarks>		
 		public override void AssignRoot(string path)
 		{
 			FileStream stream = null;					// File stream.
@@ -455,7 +453,7 @@ namespace GorgonLibrary.FileSystems
 
 			// Check for the archive file.
 			if (!File.Exists(Root))
-				throw new FileSystemRootIsInvalidException(Root);
+				throw new FileNotFoundException("The file system root '" + Root + "' does not exist.");
 
 			try
 			{
@@ -467,10 +465,6 @@ namespace GorgonLibrary.FileSystems
 				// Open the archive file.
 				stream = File.OpenRead(Root);
 				ReadIndex(stream);
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemRootIsInvalidException(path, ex);
 			}
 			finally
 			{

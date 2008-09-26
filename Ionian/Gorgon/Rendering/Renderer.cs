@@ -490,7 +490,7 @@ namespace GorgonLibrary.Graphics
 			RenderWindow target = null;		// Current target.
 
 			if (Gorgon.Screen == null)
-				throw new DeviceNotValidException();
+				throw new GorgonException(GorgonErrors.NoDevice);
 
 			// Attempt to reset the device if it's in a lost state.
 			if (Gorgon.Screen.DeviceNotReset)

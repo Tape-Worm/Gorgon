@@ -158,6 +158,50 @@ namespace GorgonLibrary
 				return new GorgonError("InvalidFormat", ErrorBase + 0xA, "The format is not valid or unable to find a valid format.");
 			}
 		}
+
+		/// <summary>
+		/// No valid device object was found.
+		/// </summary>
+		public static GorgonError NoDevice
+		{
+			get
+			{
+				return new GorgonError("NoDevice", ErrorBase + 0xB, "There is no device object for this operation.");
+			}
+		}
+
+		/// <summary>
+		/// Driver reported an internal error.
+		/// </summary>
+		public static GorgonError HardwareError
+		{
+			get
+			{
+				return new GorgonError("HardwareError", ErrorBase + 0xC, "There was an internal driver or hardware exception.");
+			}
+		}
+
+		/// <summary>
+		/// The plug-in type is not valid.
+		/// </summary>
+		public static GorgonError InvalidPlugin
+		{
+			get
+			{
+				return new GorgonError("InvalidPlugin", ErrorBase + 0xD, "This plug-in type is not valid.");
+			}
+		}
+
+		/// <summary>
+		/// Error while writing data.
+		/// </summary>
+		public static GorgonError CannotWriteData
+		{
+			get
+			{
+				return new GorgonError("CannotWrite", ErrorBase + 0xE, "Error writing the data.");
+			}
+		}
 	}
 
 	/// <summary>

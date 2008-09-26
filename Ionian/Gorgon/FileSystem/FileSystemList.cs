@@ -47,9 +47,6 @@ namespace GorgonLibrary.FileSystems
         {
             get
             {
-				if (!Contains(key))
-					throw new FileSystemDoesNotExistException(key);
-
                 return GetItem(key);
             }
         }
@@ -62,9 +59,6 @@ namespace GorgonLibrary.FileSystems
 		{
 			get
 			{
-				if ((index < 0) || (index >= Count))
-                    throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
-
 				return GetItem(index);
 			}
 		}
@@ -77,9 +71,6 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="fileSystem">File system to add.</param>
 		internal void Add(FileSystem fileSystem)
 		{
-			if (Contains(fileSystem.Name))
-				throw new FileSystemExistsException(fileSystem.Name);
-
 			AddItem(fileSystem.Name, fileSystem);
 		}
 

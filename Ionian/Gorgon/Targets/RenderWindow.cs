@@ -381,7 +381,7 @@ namespace GorgonLibrary.Graphics
 		{
 			// Make sure the desktop can be used for rendering.
 			if ((usewindow) && (!Gorgon.CurrentDriver.DesktopFormatSupported(mode)))
-				throw new DeviceVideoModeNotValidException(Gorgon.DesktopVideoMode);
+				throw new ArgumentException("The desktop video mode (" + mode.ToString() + ") will not support the device object.");
 
 			if (!resize)
 				Gorgon.Log.Print("RenderWindow", "Setting swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, mode.Width, mode.Height, mode.Bpp, mode.Format.ToString(), Name);

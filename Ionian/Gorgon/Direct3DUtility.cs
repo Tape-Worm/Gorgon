@@ -333,8 +333,8 @@ namespace GorgonLibrary.Internal
 			if (!Gorgon.IsInitialized)
 				throw new GorgonException(GorgonErrors.NotInitialized);
 
-            if (Gorgon.Screen == null)
-                throw new DeviceNotValidException();
+			if (Gorgon.Screen == null)
+				throw new GorgonException(GorgonErrors.NoDevice);
 
             DeviceStateList.Add(this);
         }

@@ -381,7 +381,10 @@ namespace GorgonLibrary.Framework
 			_driver.VideoModes.Refresh();
 
 			if (_driver.VideoModes.Count < 1)
-				throw new DeviceHasNoVideoModesException();
+			{
+				UI.ErrorBox(this, "There are no available video modes for this device.");
+				return;
+			}
 
 			// Add to combo.
 			foreach (VideoMode mode in _driver.VideoModes)

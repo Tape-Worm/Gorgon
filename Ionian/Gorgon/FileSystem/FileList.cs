@@ -59,7 +59,7 @@ namespace GorgonLibrary.FileSystems
 					throw new ArgumentNullException("key");
 
 				if (!Contains(key))
-					throw new FileSystemFileNotFoundException(key);
+					throw new System.IO.FileNotFoundException("The file '" + key + "' was not found");
 
 				return GetItem(key);
 			}			
@@ -81,9 +81,6 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="file">File to add.</param>
 		internal void AddFile(FileSystemFile file)
 		{
-			if (Contains(file.FullPath))
-				throw new FileSystemFileExistsException(file.FullPath);
-
 			AddItem(file.FullPath, file);
 		}
 		#endregion

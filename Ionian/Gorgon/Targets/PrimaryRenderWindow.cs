@@ -331,7 +331,7 @@ namespace GorgonLibrary.Graphics
 		private void ResetMode(bool resize, int resizewidth, int resizeheight)
 		{
 			if (_device == null)
-				throw new DeviceCannotResetException();
+				throw new GorgonException(GorgonErrors.NoDevice);
 
 			// Don't reset if the device is not in a lost state.
 			_deviceWasLost = true;
@@ -489,7 +489,7 @@ namespace GorgonLibrary.Graphics
 		{
 			// Make sure the desktop can be used for rendering.
 			if ((usewindow) && (!Gorgon.CurrentDriver.DesktopFormatSupported(mode)))
-				throw new DeviceVideoModeNotValidException(Gorgon.DesktopVideoMode);
+				throw new ArgumentException("The desktop video mode (" + mode.ToString() + ") will not support the device object.");
 
 			if (!resize)
 			{
@@ -682,45 +682,46 @@ namespace GorgonLibrary.Graphics
 			// We may need to force a reset.
 			if (!dontCreate)
 			{
+				Gorgon.Log.Print("RenderWindow", "Creating Direct 3D device object...", LoggingLevel.Intermediate);
+
+				// Center on screen.
+				if (_presentParameters.Windowed)
+					_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
+
+				flags = D3D9.CreateFlags.FpuPreserve | D3D9.CreateFlags.Multithreaded;
+
+				// Determine processing.
+				if (Gorgon.CurrentDriver.HardwareTransformAndLighting)
+				{
+					flags |= D3D9.CreateFlags.HardwareVertexProcessing;
+					Gorgon.Log.Print("RenderWindow", "Using hardware vertex processing.", LoggingLevel.Verbose);
+				}
+				else
+				{
+					flags |= D3D9.CreateFlags.SoftwareVertexProcessing;
+					Gorgon.Log.Print("RenderWindow", "Using software vertex processing.", LoggingLevel.Verbose);
+				}
+
 				try
 				{
-					Gorgon.Log.Print("RenderWindow", "Creating Direct 3D device object...", LoggingLevel.Intermediate);
-
-					// Center on screen.
-					if (_presentParameters.Windowed)
-						_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
-
-					flags = D3D9.CreateFlags.FpuPreserve | D3D9.CreateFlags.Multithreaded;
-
-					// Determine processing.
-					if (Gorgon.CurrentDriver.HardwareTransformAndLighting)
-					{
-						flags |= D3D9.CreateFlags.HardwareVertexProcessing;
-						Gorgon.Log.Print("RenderWindow", "Using hardware vertex processing.", LoggingLevel.Verbose);
-					}
-					else
-					{
-						flags |= D3D9.CreateFlags.SoftwareVertexProcessing;
-						Gorgon.Log.Print("RenderWindow", "Using software vertex processing.", LoggingLevel.Verbose);
-					}
-
 					// Create the device.
 					_device = new D3D9.Device(Gorgon.Direct3D, Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, _ownerForm.Handle, flags, _presentParameters);
-					_deviceWasLost = false;
-
-					// Set default states.
-					Gorgon.Renderer.RenderStates.SetStates();
-
-					// Set default image layer states.
-					for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-						Gorgon.Renderer.ImageLayerStates[i].SetStates();
-
-					Gorgon.Log.Print("RenderWindow", "Direct 3D device object created.", LoggingLevel.Intermediate);
 				}
 				catch (Exception ex)
 				{
-					throw new DeviceCreationFailureException(ex);
+					throw new GorgonException(GorgonErrors.CannotCreate, "Error trying to create the Direct3D device object.", ex);
 				}
+				_deviceWasLost = false;
+
+
+				// Set default states.
+				Gorgon.Renderer.RenderStates.SetStates();
+
+				// Set default image layer states.
+				for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
+					Gorgon.Renderer.ImageLayerStates[i].SetStates();
+
+				Gorgon.Log.Print("RenderWindow", "Direct 3D device object created.", LoggingLevel.Intermediate);
 
 				_allowResizeEvent = true;
 				SetDimensions(_currentVideoMode.Width, _currentVideoMode.Height);
@@ -780,8 +781,8 @@ namespace GorgonLibrary.Graphics
                 _deviceWasLost = true;
                 ResetMode(false, 0, 0);
             }
-            if (coopLevel == D3D9.ResultCode.DriverInternalError)
-                throw new DeviceCannotResetException(true);
+			if (coopLevel == D3D9.ResultCode.DriverInternalError)
+				throw new GorgonException(GorgonErrors.HardwareError, "Device could not reset.");
 		}
 
 		/// <summary>

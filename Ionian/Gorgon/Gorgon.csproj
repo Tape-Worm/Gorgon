@@ -154,7 +154,6 @@
     <Compile Include="FileSystem\FileList.cs" />
     <Compile Include="FileSystem\FileSystemCache.cs" />
     <Compile Include="FileSystem\FileSystemEditorInfoAttribute.cs" />
-    <Compile Include="FileSystem\FileSystemException.cs" />
     <Compile Include="FileSystem\FileSystemFile.cs" />
     <Compile Include="FileSystem\FileSystemFileList.cs" />
     <Compile Include="FileSystem\FileSystemPath.cs" />

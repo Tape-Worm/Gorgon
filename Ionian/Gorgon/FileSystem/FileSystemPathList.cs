@@ -55,7 +55,7 @@ namespace GorgonLibrary.FileSystems
 				key = TransformPath(key);
 
 				if (!Contains(key))
-					throw new FileSystemPathNotFoundException(key);
+					throw new FileNotFoundException("The file '" + key + "' was not found in this file system.");
 
 				return base[key];
 			}
@@ -90,8 +90,7 @@ namespace GorgonLibrary.FileSystems
 				result = result.Substring(result.LastIndexOf(@"\") + 1);
 
 			if (!FileSystemPath.ValidPath(result))
-				throw new FileSystemPathInvalidException(result);
-
+				throw new ArgumentException("The path '" + result + "' is not valid.");
 			return result;
 		}
 
@@ -101,16 +100,13 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="key">Key of the object to remove.</param>
 		protected override void RemoveItem(string key)
 		{
-			if ((key == string.Empty) || (key == null))
+			if (string.IsNullOrEmpty(key))
 				throw new ArgumentNullException("key");
 
 			key = TransformPath(key);
 
-			if (!Contains(key))
-				throw new FileSystemPathNotFoundException(key);
-
-			_owner.FilesUpdated();
 			base.RemoveItem(key);
+			_owner.FilesUpdated();
 		}
 
 		/// <summary>
@@ -119,8 +115,8 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="index">Index to remove at.</param>
 		protected override void RemoveItem(int index)
 		{
-			_owner.FilesUpdated();
 			base.RemoveItem(index);
+			_owner.FilesUpdated();
 		}
 
 		/// <summary>
@@ -128,8 +124,8 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		protected override void ClearItems()
 		{
-			_owner.FilesUpdated();
 			base.ClearItems();
+			_owner.FilesUpdated();
 		}
 
 
@@ -169,7 +165,7 @@ namespace GorgonLibrary.FileSystems
 				return;
 
 			if (Contains(newName))
-				throw new FileSystemPathExistsException(newName);
+				throw new ArgumentException("The path '" + newName + "' already exists.");
 
 			// Extract old name.
 			oldPath = this[oldName];
@@ -197,12 +193,9 @@ namespace GorgonLibrary.FileSystems
 
 			// Do not allow us to create a root.
 			if (pathName == @"\")
-				throw new FileSystemPathExistsException(@"\");
+				throw new ArgumentException(@"Cannot create a root path '\'.");
 
 			newPath = new FileSystemPath(_owner, pathName);
-
-			if (Contains(pathName))
-				throw new FileSystemPathExistsException(newPath.FullPath);
 
 			AddItem(pathName, newPath);
 			_owner.FilesUpdated();
@@ -216,9 +209,6 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="path">Path to add.</param>
 		public void Add(FileSystemPath path)
 		{
-			if (Contains(path.Name))
-				throw new FileSystemPathExistsException(path.FullPath);
-
 			path.Parent = _owner;
 
 			AddItem(path.Name, path);

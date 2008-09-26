@@ -256,7 +256,7 @@ namespace GorgonLibrary.FileSystems
 
 			// Add each plug-in (if it doesn't already exist).
 			if ((plugIn == null) || (plugIn.PlugInType != PlugInType.FileSystem))
-				throw new FileSystemPlugInLoadException(providerPlugInPath, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
+				throw new GorgonException(GorgonErrors.InvalidPlugin, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
 
 			if (!FileSystemProviderCache.Providers.Contains(plugInName))
 				FileSystemProviderCache.Providers.Add(plugIn);
@@ -286,7 +286,7 @@ namespace GorgonLibrary.FileSystems
 				if (plugIn != null)
 				{
 					if (plugIn.PlugInType != PlugInType.FileSystem)
-						throw new FileSystemPlugInLoadException(providerPlugInPath, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
+						throw new GorgonException(GorgonErrors.InvalidPlugin, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
 
 					if (!FileSystemProviderCache.Providers.Contains(plugIn.Name))
 						FileSystemProviderCache.Providers.Add(plugIn);
@@ -345,7 +345,7 @@ namespace GorgonLibrary.FileSystems
 			attributes = fileSystemType.GetCustomAttributes(typeof(FileSystemInfoAttribute), true);
 
 			if ((attributes == null) || (attributes.Length == 0))
-				throw new FileSystemAttributeMissingException(typeof(FileSystemInfoAttribute));
+				throw new GorgonException(GorgonErrors.InvalidPlugin, "The provider is missing the FileSystemInfoAttribute.");
 
 			// Get the attribute.
 			_info = (FileSystemInfoAttribute)attributes[0];

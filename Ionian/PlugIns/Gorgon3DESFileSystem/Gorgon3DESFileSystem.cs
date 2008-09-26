@@ -127,7 +127,7 @@ namespace GorgonLibrary.FileSystems
 				encryptedSize = reader.ReadInt32();
 				authCompare = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
 
-				if (authCompare.Length != AuthenticationData.Data.Length)
+				if (authCompare.Length != AuthenticationData.Data.Length)					
 					throw new FileSystemAccessDeniedException(Name);
 
 				// Ensure the data is the same.

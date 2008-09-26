@@ -53,7 +53,8 @@ namespace GorgonLibrary.FileSystems
 				attributes = typeof(GorgonBZip2FileSystem).GetCustomAttributes(typeof(FileSystemInfoAttribute), true);
 
 				if ((attributes == null) || (attributes.Length == 0))
-					throw new FileSystemAttributeMissingException(typeof(FileSystemInfoAttribute));
+					throw new GorgonException(GorgonErrors.InvalidPlugin, "The provider is missing the FileSystemInfoAttribute.");
+
 				return (FileSystemInfoAttribute)attributes[0];
 			}
 		}
@@ -75,15 +76,8 @@ namespace GorgonLibrary.FileSystems
 			if (parameters[1] == null)
 				throw new ArgumentNullException("provider");
 
-			try
-			{
-				// Get the file system and mount it.
-				return new GorgonBZip2FileSystem(parameters[0].ToString(), parameters[1] as FileSystemProvider);
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemPlugInLoadException(parameters[0].ToString(), ex.Message, ex);
-			}			
+			// Get the file system and mount it.
+			return new GorgonBZip2FileSystem(parameters[0].ToString(), parameters[1] as FileSystemProvider);
 		}
         #endregion		
 

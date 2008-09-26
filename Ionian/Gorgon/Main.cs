@@ -492,7 +492,7 @@ namespace GorgonLibrary
 
 				// No device?  Throw an exception.
 				if (Screen == null)
-					throw new DeviceNotValidException();
+					throw new GorgonException(GorgonErrors.NoDevice);
 								
 				if (_currentShader == value)
 					return;
@@ -515,7 +515,7 @@ namespace GorgonLibrary
 		/// </remarks>
 		/// <value>A render target to use as a canvas for drawing.  This can be a <see cref="GorgonLibrary.Graphics.RenderImage">RenderImage</see> or a <see cref="GorgonLibrary.Graphics.RenderWindow">RenderWindow</see>.</value>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		/// <exception cref="DeviceNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
 		public static RenderTarget CurrentRenderTarget
 		{
 			get
@@ -529,7 +529,7 @@ namespace GorgonLibrary
 
 				// No device?  Throw an exception.
 				if (Screen == null)
-					throw new DeviceNotValidException();
+					throw new GorgonException(GorgonErrors.NoDevice);
 
 				// If we specify NULL, then use the screen.
 				if (value == null)
@@ -964,8 +964,8 @@ namespace GorgonLibrary
 		/// <param name="refresh">Refresh rate of the video mode.</param>
 		/// <param name="vSyncInterval">V-sync interval for presentation.</param>
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="DeviceCreationFailureException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="DeviceVideoModeNotValidException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
 		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil, int refresh, VSyncIntervals vSyncInterval)
 		{
 			if (owner == null)
@@ -1012,8 +1012,8 @@ namespace GorgonLibrary
 		/// <param name="usestencil">TRUE to create a stencil buffer, FALSE to not create.</param>
 		/// <param name="refresh">Refresh rate of the video mode.</param>
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="DeviceCreationFailureException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="DeviceVideoModeNotValidException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
 		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil, int refresh)
 		{
 			SetMode(owner, width, height, format, windowed, usedepth, usestencil, refresh, VSyncIntervals.IntervalNone);
@@ -1036,8 +1036,8 @@ namespace GorgonLibrary
 		/// <param name="usedepth">TRUE to create a depth buffer, FALSE to not create.</param>
 		/// <param name="usestencil">TRUE to create a stencil buffer, FALSE to not create.</param>
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="DeviceCreationFailureException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="DeviceVideoModeNotValidException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
 		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil)
 		{
 			SetMode(owner, width, height, format, windowed, usedepth, usestencil, 60, VSyncIntervals.IntervalNone);
@@ -1059,8 +1059,8 @@ namespace GorgonLibrary
 		/// <param name="format">Buffer format for the video mode.</param>
 		/// <param name="windowed">TRUE to use windowed mode, FALSE to go fullscreen.</param>		
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="DeviceCreationFailureException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="DeviceVideoModeNotValidException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
 		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed)
 		{
 			SetMode(owner, width, height, format, windowed, false, false, 60, VSyncIntervals.IntervalNone);
@@ -1080,8 +1080,8 @@ namespace GorgonLibrary
 		/// <param name="height">Height of the video mode.</param>		
 		/// <param name="format">Buffer format for the video mode.</param>
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="DeviceCreationFailureException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="DeviceVideoModeNotValidException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
 		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format)
 		{
 			SetMode(owner, width, height, format, false, false, false, 60, VSyncIntervals.IntervalNone);
@@ -1096,8 +1096,8 @@ namespace GorgonLibrary
 		/// </remarks>
 		/// <param name="owner">Control that will be bound to the <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and will be the initial canvas to receive drawing commands.</param>
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="DeviceCreationFailureException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="DeviceVideoModeNotValidException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
 		public static void SetMode(Forms.Control owner)
 		{
 			if (owner == null)
