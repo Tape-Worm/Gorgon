@@ -91,10 +91,10 @@ namespace GorgonLibrary.Graphics
 			KeyVector2D next = keyData.NextKey as KeyVector2D;
 
 			if (previous == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyVector2D", keyData.PreviousKey.GetType().Name);
+				throw new ArgumentException("The previous key is not the expected type: KeyVector2D", "keyData");
 
 			if (next == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyVector2D", keyData.NextKey.GetType().Name);
+				throw new ArgumentException("The next key is not the expected type: KeyVector2D", "keyData");
 
 			// Copy if we're at the same frame.
 			if ((Time == 0) || (previous.Owner.InterpolationMode == InterpolationMode.None))
@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyVector2D", true) != 0)
-				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyVector2D", typeName);
+				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyVector2D");
 
 			Time = serializer.ReadSingle("Time");
 			_value = new Vector2D(serializer.ReadSingle("X"), serializer.ReadSingle("Y"));

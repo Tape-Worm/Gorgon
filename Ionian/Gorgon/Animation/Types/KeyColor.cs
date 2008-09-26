@@ -73,13 +73,13 @@ namespace GorgonLibrary.Graphics
 			// Cast to the appropriate types.
 			KeyColor previous = keyData.PreviousKey as KeyColor;
 			KeyColor next = keyData.NextKey as KeyColor;
-			
+
 
 			if (previous == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyColor", keyData.PreviousKey.GetType().Name);
+				throw new ArgumentException("The previous key is not the expected type: KeyColor", "keyData");
 
 			if (next == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyColor", keyData.NextKey.GetType().Name);
+				throw new ArgumentException("The next key is not the expected type: KeyColor", "keyData");
 
 			// Copy if we're at the same frame.
 			if ((Time == 0) || (previous.Owner.InterpolationMode == InterpolationMode.None))
@@ -124,7 +124,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyColor", true) != 0)
-				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyColor", typeName);
+				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyColor");
 
 			Time = serializer.ReadSingle("Time");
 			_value = Color.FromArgb(serializer.ReadInt32("Value"));

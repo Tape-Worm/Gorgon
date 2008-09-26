@@ -69,8 +69,6 @@ namespace GorgonLibrary.Graphics
 		{
 			if (track == null)
 				throw new ArgumentNullException("track");
-			if (Contains(track.Name))
-				throw new AnimationTrackAlreadyExistsException(track.Name);
 
 			AddItem(track.Name, track);
 		}

@@ -399,10 +399,6 @@ namespace GorgonLibrary.Graphics
 			}
 
 			properties = owner.GetType().GetProperties();
-
-			if (properties.Length == 0)
-				throw new AnimationOwnerInvalidException(owner.GetType().Name);
-
 			_tracks.Clear();
 			
 			// Find all the properties that are animated and make tracks for those properties.
@@ -455,9 +451,6 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 
-			if (_tracks.Count == 0)
-				throw new AnimationOwnerInvalidException(owner.GetType().Name);
-			
 			_owner = owner;
 		}
 

@@ -91,10 +91,10 @@ namespace GorgonLibrary.Graphics
 			KeyByte next = keyData.NextKey as KeyByte;
 
 			if (previous == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyByte", keyData.PreviousKey.GetType().Name);
+				throw new ArgumentException("The previous key is not the expected type: KeyByte", "keyData");
 
 			if (next == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyByte", keyData.NextKey.GetType().Name);
+				throw new ArgumentException("The next key is not the expected type: KeyByte", "keyData");
 
 			// Copy if we're at the same frame.
 			if ((Time == 0) || (previous.Owner.InterpolationMode == InterpolationMode.None))
@@ -128,7 +128,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyByte", true) != 0)
-				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyByte", typeName);
+				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyByte");
 
 			Time = serializer.ReadSingle("Time");
 			_value = serializer.ReadByte("Value");

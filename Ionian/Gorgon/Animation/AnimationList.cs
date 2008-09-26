@@ -80,9 +80,6 @@ namespace GorgonLibrary.Graphics
 			if (animation == null)
 				throw new ArgumentNullException("animation");
 
-			if (Contains(animation.Name))
-				throw new AnimationAlreadyExistsException(animation.Name);
-			
 			AddItem(animation.Name, animation);
 			if (animation.Owner != _owner)
 				animation.SetOwner(_owner);

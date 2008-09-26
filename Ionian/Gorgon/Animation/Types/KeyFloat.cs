@@ -91,10 +91,10 @@ namespace GorgonLibrary.Graphics
 			KeyFloat next = keyData.NextKey as KeyFloat;
 
 			if (previous == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.PreviousKey.Time.ToString("0.0"), "KeyFloat", keyData.PreviousKey.GetType().Name);
+				throw new ArgumentException("The previous key is not the expected type: KeyFloat", "keyData");
 
 			if (next == null)
-				throw new AnimationTypeMismatchException("key at time index", keyData.NextKey.Time.ToString("0.0"), "KeyFloat", keyData.NextKey.GetType().Name);
+				throw new ArgumentException("The next key is not the expected type: KeyFloat", "keyData");
 
 			// Copy if we're at the same frame.
 			if ((Time == 0) || (previous.Owner.InterpolationMode == InterpolationMode.None))
@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyFloat", true) != 0)
-				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyFloat", typeName);
+				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyFloat");
 
 			Time = serializer.ReadSingle("Time");
 			_value = serializer.ReadSingle("Value");

@@ -166,7 +166,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyImage", true) != 0)
-				throw new AnimationTypeMismatchException("serialized key type", string.Empty, "KeyImage", typeName);
+				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyImage");
 
 			Time = serializer.ReadSingle("Time");
 			_image = null;

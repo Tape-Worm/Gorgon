@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics
 				int i = 0;										// Loop.
 
 				if (owner.KeyCount < 1)
-					throw new AnimationTrackHasNoKeysException();
+					throw new ArgumentException("Track has no keys.", "owner");
 
                 // Initialize.
                 _previousKeyIndex = 0;
@@ -475,7 +475,7 @@ namespace GorgonLibrary.Graphics
 		public void Remove(float time)
 		{
 			if (!Contains(time))
-				throw new AnimationKeyNotFoundException(time.ToString("0.0"));
+				throw new ArgumentOutOfRangeException("There is no key at time index " + time.ToString("0.000") + ".", "time");
 
 			_keys.Remove(time);
 		}
