@@ -180,7 +180,7 @@ namespace GorgonLibrary.GUI
 			}
 			set
 			{
-				throw new GUIInvalidTypeException("GUI windows cannot be owned.");
+				throw new NotSupportedException("GUI windows cannot be owned.");
 			}
 		}
 

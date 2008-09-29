@@ -473,7 +473,7 @@ namespace GorgonLibrary.Internal
 						return field;
 				}
 
-				throw new VertexFieldContextInvalidException();
+				throw new ArgumentException("There is no vertex field context '" + context.ToString() + "' in this vertex type.", "context");
 			}
 		}
 		#endregion

@@ -451,14 +451,22 @@ namespace GorgonLibrary.FileSystems.Tools
 
                 return true;
             }
-            catch (FileSystemAccessDeniedException)
+            catch (GorgonException gEx)
             {
                 if (newFileSystem != null)
                     newFileSystem.Dispose();
                 newFileSystem = null;
 
-                UI.ErrorBox(this, "Access to the filesystem '" + filePath + "' is denied.");
-                return true;
+				if (gEx.ResultCode == GorgonErrors.AccessDenied)
+				{
+					GorgonException.Catch(gEx, (message) => UI.ErrorBox(this, "Access to the file system '" + filePath + "' is denied."));
+					return true;
+				}
+				else
+				{
+					GorgonException.Catch(gEx, (message) => UI.ErrorBox(this, gEx));
+					return false;
+				}
             }
             catch (Exception ex)
             {

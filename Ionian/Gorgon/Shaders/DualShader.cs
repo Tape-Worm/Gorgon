@@ -212,7 +212,7 @@ namespace GorgonLibrary.Graphics
 		protected override void OnRenderBegin()
 		{
 			if ((VertexShader == null) && (PixelShader == null))
-				throw new ShaderNotValidException();
+				throw new InvalidOperationException("DualShader needs a pixel and vertex shader before rendering.");
 
 			if (VertexShader != null)
 				((IShaderRenderer)VertexShader).Begin();

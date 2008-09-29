@@ -231,12 +231,12 @@ namespace GorgonLibrary.GUI
 				if ((Gorgon.Screen != null) && (Gorgon.Screen.Owner != null))
 					Input.Bind(Gorgon.Screen.Owner);
 				else
-					throw new GUIInputInvalidException("Cannot bind the input interface to a window handle.");
+					throw new GorgonException(GorgonErrors.CannotBindInputDevice, "Cannot bind the input interface to a window handle.");
 			}
 			if (Input.Mouse == null)
-				throw new GUIInputInvalidException("The mouse was not bound to the input interface.  A mouse is required for the GUI system.");
+				throw new GorgonException(GorgonErrors.CannotBindInputDevice, "The mouse was not bound to the input interface.  A mouse is required for the GUI system.");
 			if (Input.Keyboard == null)
-				throw new GUIInputInvalidException("The keyboard was not bound to the input interface.  A keyboard is required for the GUI system.");
+				throw new GorgonException(GorgonErrors.CannotBindInputDevice, "The keyboard was not bound to the input interface.  A keyboard is required for the GUI system.");
 						
 			_state.CursorVisible = Input.Mouse.CursorVisible;
 			_state.MouseEnabled = Input.Mouse.Enabled;
@@ -541,7 +541,7 @@ namespace GorgonLibrary.GUI
 						  select guiWindow;
 
 			if (Input == null)
-				throw new GUIInputInvalidException("No input interface was bound to the GUI.");
+				throw new GorgonException(GorgonErrors.NotInitialized, "No input system was bound to the GUI.");
 
 			if (ShowDesktopBackground)
 			{

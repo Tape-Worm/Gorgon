@@ -315,20 +315,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="vertexData">Vertex cache containing vertex buffers and stream information.</param>
 		public void SetStreamData(VertexBuffer vertexData)
 		{
-			try
-			{
-				if (D3DDevice == null)
-					return;
+			if (D3DDevice == null)
+				return;
 
-				if (vertexData != null)
-					D3DDevice.SetStreamSource(0, vertexData.D3DVertexBuffer, 0, vertexData.VertexSize);
-				else
-					D3DDevice.SetStreamSource(0, null, 0, 0);
-			}
-			catch (Exception ex)
-			{
-				throw new RendererCannotSetStreamException(ex);
-			}
+			if (vertexData != null)
+				D3DDevice.SetStreamSource(0, vertexData.D3DVertexBuffer, 0, vertexData.VertexSize);
+			else
+				D3DDevice.SetStreamSource(0, null, 0, 0);
 		}
 
 		/// <summary>

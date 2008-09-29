@@ -217,35 +217,36 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				_swapChain = new D3D9.SwapChain(Gorgon.Screen.Device, _presentParameters);
-				Gorgon.Log.Print("RenderWindow", "Swap chain created.", LoggingLevel.Verbose);
-
-				// Get the color buffer.
-				SetColorBuffer(_swapChain.GetBackBuffer(0));
-
-				// If we have a Z Buffer, then try to create it.
-				if (_presentParameters.EnableAutoDepthStencil)
-				{
-					SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon.Screen.Device, _currentVideoMode.Width, _currentVideoMode.Height, _presentParameters.AutoDepthStencilFormat, D3D9.MultisampleType.None, 0, false));
-					Gorgon.Log.Print("RenderWindow", "Depth buffer created.", LoggingLevel.Verbose);
-				}
-				else
-					SetDepthBuffer(null);
-
-				// Update width and height to reflect the backbuffer dimensions.
-				base.Width = _currentVideoMode.Width;
-				base.Height = _currentVideoMode.Height;
-
-				// Update windows.
-				Refresh();
-
-				_owner.Resize += new EventHandler(OnOwnerResized);
-
-				Gorgon.Log.Print("RenderWindow", "Swap chain mode {0}x{1}x{2} ({3}) has been set.", LoggingLevel.Simple, Width, Height, mode.Bpp, mode.Format.ToString());
 			}
 			catch (Exception ex)
 			{
-				throw new RenderTargetCreationFailureException(ex);
+				throw new GorgonException(GorgonErrors.CannotCreate, "Error creating the D3D render target object.", ex);
 			}
+
+			Gorgon.Log.Print("RenderWindow", "Swap chain created.", LoggingLevel.Verbose);
+
+			// Get the color buffer.
+			SetColorBuffer(_swapChain.GetBackBuffer(0));
+
+			// If we have a Z Buffer, then try to create it.
+			if (_presentParameters.EnableAutoDepthStencil)
+			{
+				SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon.Screen.Device, _currentVideoMode.Width, _currentVideoMode.Height, _presentParameters.AutoDepthStencilFormat, D3D9.MultisampleType.None, 0, false));
+				Gorgon.Log.Print("RenderWindow", "Depth buffer created.", LoggingLevel.Verbose);
+			}
+			else
+				SetDepthBuffer(null);
+
+			// Update width and height to reflect the backbuffer dimensions.
+			base.Width = _currentVideoMode.Width;
+			base.Height = _currentVideoMode.Height;
+
+			// Update windows.
+			Refresh();
+
+			_owner.Resize += new EventHandler(OnOwnerResized);
+
+			Gorgon.Log.Print("RenderWindow", "Swap chain mode {0}x{1}x{2} ({3}) has been set.", LoggingLevel.Simple, Width, Height, mode.Bpp, mode.Format.ToString());
 		}
 
 		/// <summary>
@@ -510,7 +511,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("owner");
 
 			if (RenderTargetCache.Targets.Contains(name))
-				throw new RenderTargetAlreadyExistsException(name);
+				throw new ArgumentException("'" + name + "' already exists.");
 
 			Gorgon.Log.Print("RenderWindow", "Creating rendering window '{0}' ...", LoggingLevel.Intermediate, name);
 
@@ -518,7 +519,7 @@ namespace GorgonLibrary.Graphics
 
 			// Make sure we're in windowed mode if we've already set the primary window.
 			if ((Gorgon.Screen != null) && (!Gorgon.Screen.Windowed))
-				throw new RenderTargetIsFullScreenException();
+				throw new InvalidOperationException("Cannot create multiple swapchains while in full-screen mode.");
 
 			// Create presentation parameters.
 			_presentParameters = new D3D9.PresentParameters();
@@ -534,7 +535,7 @@ namespace GorgonLibrary.Graphics
 					parent = parent.Parent;
 
 				if (parent == null)
-					throw new RenderTargetOwnerNotValidException();
+					throw new Exception("This shouldn't happen - I can't find a parent form for this control!!!");
 
 				_ownerForm = parent as Form;
 			}
@@ -570,7 +571,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("owner");
 
 			if (RenderTargetCache.Targets.Contains(name))
-				throw new RenderTargetAlreadyExistsException(name);
+				throw new ArgumentException("'" + name + "' already exists.");
 
 			Gorgon.Log.Print("RenderWindow", "Creating rendering window '{0}' ...", LoggingLevel.Intermediate, name);
 
@@ -578,7 +579,7 @@ namespace GorgonLibrary.Graphics
 
 			// Make sure we're in windowed mode if we've already set the primary window.
 			if ((Gorgon.Screen != null) && (!Gorgon.Screen.Windowed))
-				throw new RenderTargetIsFullScreenException();
+				throw new InvalidOperationException("Cannot create multiple swapchains while in full-screen mode.");
 
 			// Create presentation parameters.
 			_presentParameters = new D3D9.PresentParameters();
@@ -594,7 +595,7 @@ namespace GorgonLibrary.Graphics
 					parent = parent.Parent;
 
 				if (parent == null)
-					throw new RenderTargetOwnerNotValidException();
+					throw new Exception("This shouldn't happen - Can't find a parent form for the control!!");
 
 				_ownerForm = parent as Form;
 			}

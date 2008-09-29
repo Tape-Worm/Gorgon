@@ -433,6 +433,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			formPathNameInput nameInput = null;		// Path name input.
 			TreeNode node = null;					// Newly added node.
 			FileSystemPath newPath = null;			// New file system path.
+			FileSystemPath path = null;				// File system path.
 
 			try
 			{
@@ -441,7 +442,14 @@ namespace GorgonLibrary.FileSystems.Tools
 				// Add a dummy entry to the file system.
 				if (nameInput.ShowDialog(this) == DialogResult.OK)
 				{
-					newPath = ((FileSystemPath)treePaths.SelectedNode.Tag).ChildPaths.Add(nameInput.PathName);
+					path = treePaths.SelectedNode.Tag as FileSystemPath;
+					if (!path.ChildPaths.Contains(nameInput.PathName))
+						newPath = ((FileSystemPath)treePaths.SelectedNode.Tag).ChildPaths.Add(nameInput.PathName);
+					else
+					{
+						UI.ErrorBox(this, "The path '" + nameInput.PathName + "' already exists.");
+						return;
+					}
 
 					// Add the node.
 					node = treePaths.SelectedNode.Nodes.Add(newPath.Name.ToLower(), newPath.Name);
@@ -452,10 +460,6 @@ namespace GorgonLibrary.FileSystems.Tools
 
 					IsChanged = true;
 				}
-			}
-			catch (FileSystemPathExistsException)
-			{
-				UI.ErrorBox(this, "The path '" + nameInput.PathName + "' already exists.");
 			}
 			catch (Exception ex)
 			{
@@ -715,7 +719,8 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// </summary>
 		/// <param name="source">Source path/name.</param>
 		/// <param name="destination">Destination path/name.</param>
-		private void MovePath(string source, string destination)
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		private bool MovePath(string source, string destination)
 		{
 			FileSystemPath path = null;								// Path to move.
 			FileSystemPath destPath = null;							// Destination path.
@@ -747,12 +752,20 @@ namespace GorgonLibrary.FileSystems.Tools
 			destPath = _fileSystem.GetPath(destination);
 
 			// Add the path to the destination.
-			destPath.ChildPaths.Add(path);
+			if (!destPath.ChildPaths.Contains(path.Name))
+				destPath.ChildPaths.Add(path);
+			else
+			{
+				UI.ErrorBox(this, "The path '" + path.Name + "' already exists at the destination.");
+				return false;
+			}
 
 			// Remove from the source parent.
 			oldParent.ChildPaths.Remove(path.Name);
 
 			IsChanged = true;
+
+			return true;
 		}
 
 		/// <summary>
@@ -1185,7 +1198,8 @@ namespace GorgonLibrary.FileSystems.Tools
 					if (data.SourceFileSystem == _fileSystem)
 					{
 						// Move the data.
-						MovePath(sourcePath.FullPath, path.FullPath);
+						if (!MovePath(sourcePath.FullPath, path.FullPath))
+							return;
 
 						// Remove from the node list.
 						data.SourceNode.Remove();
@@ -1254,10 +1268,6 @@ namespace GorgonLibrary.FileSystems.Tools
 
 				// Get the files.
 				GetFiles(treePaths.SelectedNode);
-			}
-			catch (FileSystemPathExistsException)
-			{
-				UI.ErrorBox(this, "The path '" + sourcePath.Name + "' already exists under '" + path.Name + "'.");
 			}
 			catch (Exception ex)
 			{

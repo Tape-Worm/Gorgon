@@ -34,7 +34,7 @@ namespace GorgonLibrary
     /// Cannot open log file.
     /// </summary>
     public class LogfileCannotOpenException
-        : GorgonException
+		: Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LogfileCannotOpenException"/> class.
@@ -60,7 +60,7 @@ namespace GorgonLibrary
     /// Cannot write to the log file.
     /// </summary>
     public class LogfileCannotWriteException
-        : GorgonException
+        : Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LogfileCannotOpenException"/> class.

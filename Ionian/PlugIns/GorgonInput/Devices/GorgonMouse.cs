@@ -102,7 +102,7 @@ namespace GorgonLibrary.InputDevices
 			
 			// Attempt to register the device.
 			if (!Win32API.RegisterRawInputDevices(_device))
-				throw new InputCannotBindMouseException();
+				throw new GorgonException(GorgonErrors.CannotBindInputDevice, "Failed to bind the mouse device.");
 
 			_acquired = true;
 		}
@@ -120,7 +120,7 @@ namespace GorgonLibrary.InputDevices
 
 			// Attempt to register the device.
 			if (!Win32API.RegisterRawInputDevices(_device))
-				throw new InputCannotBindMouseException();
+				throw new GorgonException(GorgonErrors.CannotBindInputDevice, "Failed to bind the mouse device.");
 
 			_acquired = false;
 		}

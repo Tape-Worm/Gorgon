@@ -81,8 +81,6 @@ namespace GorgonLibrary.PlugIns
 		{
 			if (plugIn == null)
 				throw new ArgumentNullException("plugIn");
-			if (Contains(plugIn.Name))
-				throw new PlugInAlreadyLoadedException(plugIn.Name);
 
 			AddItem(plugIn.Name, plugIn);
 		}
@@ -93,9 +91,6 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="plugInName">Name of the plug-in to remove.</param>
 		internal void Remove(string plugInName)
 		{
-			if (!Contains(plugInName))
-				throw new PlugInNotFoundException(plugInName);
-
 			RemoveItem(plugInName);
 		}
 		#endregion

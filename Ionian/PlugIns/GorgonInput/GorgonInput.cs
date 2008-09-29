@@ -80,12 +80,13 @@ namespace GorgonLibrary.InputDevices
 					// Get the data size.
 					result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, null, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
 					if (result == -1)
-						throw new InputCannotCaptureRawDataException();
+						throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
+
 
 					// Get the data.
 					result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, out input, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
 					if ((result == -1) || (result != dataSize))
-						throw new InputCannotCaptureRawDataException();
+						throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
 
 					// Send the event back.
 					if (RawInputData != null)

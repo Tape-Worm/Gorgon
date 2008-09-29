@@ -169,17 +169,14 @@
     <Compile Include="FileSystem\FolderFileSystem\FolderFileSystem.cs" />
     <Compile Include="FileSystem\IAuthData.cs" />
     <Compile Include="Fonts\Font.cs" />
-    <Compile Include="Fonts\FontException.cs" />
     <Compile Include="Fonts\Glyph.cs" />
     <Compile Include="Fonts\GlyphTree.cs" />
     <Compile Include="Fonts\FontCache.cs" />
     <Compile Include="Fonts\FontList.cs" />
     <Compile Include="GorgonErrors.cs" />
     <Compile Include="Imaging\ImageCache.cs" />
-    <Compile Include="Imaging\ImageException.cs" />
     <Compile Include="Imaging\ImageList.cs" />
     <Compile Include="Input\Input.cs" />
-    <Compile Include="Input\InputException.cs" />
     <Compile Include="Input\InputPlugIn.cs" />
     <Compile Include="Input\Joystick.cs" />
     <Compile Include="Input\JoystickList.cs" />
@@ -197,7 +194,6 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="Plugin\PlugInEntryPoint.cs" />
-    <Compile Include="Plugin\PlugInException.cs" />
     <Compile Include="Plugin\PlugInFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -209,7 +205,6 @@
     <Compile Include="Rendering\RenderableChildren.cs" />
     <Compile Include="Rendering\Renderable.cs" />
     <Compile Include="Rendering\Renderer.cs" />
-    <Compile Include="Rendering\RenderingException.cs" />
     <Compile Include="Serialization\BinaryReaderEx.cs" />
     <Compile Include="Serialization\BinaryWriterEx.cs" />
     <Compile Include="Serialization\FXShaderSerializer.cs" />
@@ -240,17 +235,14 @@
     <Compile Include="Targets\PrimaryRenderWindow.cs" />
     <Compile Include="Serialization\BinarySerializer.cs" />
     <Compile Include="Serialization\ImageSerializer.cs" />
-    <Compile Include="Serialization\SerializerException.cs" />
     <Compile Include="Serialization\ISerializable.cs" />
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="Serialization\XMLSerializer.cs" />
-    <Compile Include="Shaders\ShaderException.cs" />
     <Compile Include="Shaders\ShaderList.cs" />
     <Compile Include="Shaders\ShaderPass.cs" />
     <Compile Include="Shaders\ShaderPassList.cs" />
     <Compile Include="Shaders\ShaderTechnique.cs" />
     <Compile Include="Shaders\ShaderTechniqueList.cs" />
-    <Compile Include="Sprites\SpriteException.cs" />
     <Compile Include="Sprites\SpriteStateCache.cs" />
     <Compile Include="Imaging\Image.cs" />
     <Compile Include="Imaging\ImageLayerState.cs" />
@@ -265,7 +257,6 @@
     <Compile Include="Utility\LoggerExceptions.cs" />
     <Compile Include="Utility\NamedObject.cs" />
     <Compile Include="Utility\Range.cs" />
-    <Compile Include="Vertex Data\VertexDataException.cs" />
     <Compile Include="Vertex Data\VertexTypeList.cs" />
     <Compile Include="Viewports\Viewport.cs">
       <SubType>Code</SubType>

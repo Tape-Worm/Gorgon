@@ -48,27 +48,20 @@ namespace GorgonLibrary.Graphics
             if (shader == null)
                 throw new ArgumentNullException("shader");
 
-            if (shader.D3DEffect.Description.Techniques < 1)
-                throw new ShaderCannotGetTechniquesException(shader.Name);
+			if (shader.D3DEffect.Description.Techniques < 1)
+				throw new GorgonException(GorgonErrors.CannotCreate, "There are no techniues in '" + shader.Name + "'.");
                         
-            try
-			{
-				ShaderTechnique newTechnique = null;			// Technique.
+			ShaderTechnique newTechnique = null;			// Technique.
 
-				// Get technique handle.
-				for (int i = 0;i < shader.D3DEffect.Description.Techniques;i++)
-				{
-					newTechnique = new ShaderTechnique(shader, i);
-					// Update collection.
-					if (Contains(newTechnique.Name))
-						SetItem(newTechnique.Name, newTechnique);
-					else
-						AddItem(newTechnique.Name, newTechnique);
-				}
-			}
-			catch (Exception ex)
+			// Get technique handle.
+			for (int i = 0;i < shader.D3DEffect.Description.Techniques;i++)
 			{
-				throw new ShaderNotValidException(ex);
+				newTechnique = new ShaderTechnique(shader, i);
+				// Update collection.
+				if (Contains(newTechnique.Name))
+					SetItem(newTechnique.Name, newTechnique);
+				else
+					AddItem(newTechnique.Name, newTechnique);
 			}
 		}
 		#endregion

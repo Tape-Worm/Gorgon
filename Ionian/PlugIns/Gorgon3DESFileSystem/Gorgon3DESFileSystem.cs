@@ -127,14 +127,14 @@ namespace GorgonLibrary.FileSystems
 				encryptedSize = reader.ReadInt32();
 				authCompare = TransformData(reader.ReadBytes(encryptedSize), _privKey, true);
 
-				if (authCompare.Length != AuthenticationData.Data.Length)					
-					throw new FileSystemAccessDeniedException(Name);
+				if (authCompare.Length != AuthenticationData.Data.Length)
+					throw new GorgonException(GorgonErrors.AccessDenied);
 
 				// Ensure the data is the same.
 				for (int i = 0; i < authCompare.Length; i++)
 				{
 					if (authCompare[i] != AuthenticationData.Data[i])
-						throw new FileSystemAccessDeniedException(Name);
+						throw new GorgonException(GorgonErrors.AccessDenied);
 				}
 
 				// Try to load the file key.
@@ -166,14 +166,13 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="fileSystemStream">The file stream that will contain the file system.</param>
 		/// <remarks>Due to the nature of a file stream, the file system within the stream must be a packed file system.</remarks>
-		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
 		public override void AssignRoot(Stream fileSystemStream)
 		{
 			if (fileSystemStream == null)
 				throw new ArgumentNullException("fileSystemStream");
 
-            if (AuthenticationData == null)
-                throw new InvalidAuthenticationDataException(Name);
+			if (AuthenticationData == null)
+				throw new GorgonException(GorgonErrors.AccessDenied, "No valid authentication data.");
 
 			base.AssignRoot(fileSystemStream);
 			InitializeIndex("[Stream]->" + Provider.Name + "." + Name);
@@ -187,12 +186,11 @@ namespace GorgonLibrary.FileSystems
 			{
 				ReadIndex(fileSystemStream);
 			}
-			catch (Exception ex)
+			catch 
 			{
 				_fileStream = null;
 				_fileSystemOffset = 0;
 				_streamIsRoot = false;
-				throw new FileSystemRootIsInvalidException("File stream [" + fileSystemStream.ToString() + "]", ex);
 			}
 
 			// Validate the index XML.
@@ -205,13 +203,12 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="path">Path to the root of the file system.</param>
 		/// <remarks>Path can be a folder that contains the file system XML index for a folder file system or a file (typically
 		/// ending with extension .gorPack) for a packed file system.</remarks>
-		/// <exception cref="GorgonLibrary.FileSystems.FileSystemRootIsInvalidException">The path to the root is invalid.</exception>
 		public override void AssignRoot(string path)
 		{
 			FileStream stream = null;					// File stream.
 
             if (AuthenticationData == null)
-                throw new InvalidAuthenticationDataException(Name);
+				throw new GorgonException(GorgonErrors.AccessDenied, "No valid authentication data.");
             
             if (path == null)
 				path = string.Empty;
@@ -224,10 +221,7 @@ namespace GorgonLibrary.FileSystems
 			
 			// Check for the archive file.
 			if (!File.Exists(Root))
-				throw new FileSystemRootIsInvalidException(Root);
-
-            if (AuthenticationData == null)
-                throw new InvalidAuthenticationDataException(Name);
+				throw new System.IO.FileNotFoundException("The root file '" + Root + "' was not found.");
 
             try
             {
@@ -239,14 +233,6 @@ namespace GorgonLibrary.FileSystems
 				// Open the archive file.
 	            stream = File.OpenRead(Root);
 				ReadIndex(stream);
-            }
-            catch (FileSystemAccessDeniedException adex)
-            {
-                throw adex;
-            }
-            catch (Exception ex)
-            {
-                throw new FileSystemRootIsInvalidException(path, ex);
             }
 			finally
 			{
@@ -508,7 +494,7 @@ namespace GorgonLibrary.FileSystems
                 if (AuthenticationData != null)
                     encrypted = TransformData(AuthenticationData.Data, _privKey, false);
                 else
-                    throw new InvalidAuthenticationDataException(Name);
+					throw new GorgonException(GorgonErrors.AccessDenied, "No valid authentication data.");
 
 				writer = new BinaryWriterEx(_fileStream, true);
 				writer.Write(FileSystemHeader);
@@ -615,7 +601,7 @@ namespace GorgonLibrary.FileSystems
 		public override void Save(Stream fileSystemStream)
 		{
             if (AuthenticationData == null)
-                throw new InvalidAuthenticationDataException(Name);
+				throw new GorgonException(GorgonErrors.AccessDenied, "No valid authentication data.");
             
             if (fileSystemStream == null)
 				throw new ArgumentNullException("fileSystemStream");
@@ -634,7 +620,7 @@ namespace GorgonLibrary.FileSystems
 		public override void Save(string filePath)
 		{
             if (AuthenticationData == null)
-                throw new InvalidAuthenticationDataException(Name);
+				throw new GorgonException(GorgonErrors.AccessDenied, "No valid authentication data.");
             
             _streamIsRoot = false;
 			_fileStream = null;

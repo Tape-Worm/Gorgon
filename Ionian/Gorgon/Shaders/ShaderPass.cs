@@ -85,7 +85,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (Exception ex)
 			{
-				throw new ShaderCannotGetPassesException(_owner, ex);
+				GorgonException.Repackage(GorgonErrors.CannotReadData, "Could not retrieve the shader passes.", ex);
 			}
 		}
 		#endregion

@@ -499,6 +499,9 @@ namespace GorgonLibrary.Graphics
 			if (key == null)
 				throw new ArgumentNullException("key");
 
+			if (key.DataType != _dataType)
+				throw new ArgumentException("The key type '" + key.DataType.FullName + "' is not the expected type '" + _dataType.FullName + "'.", "key");
+
 			key.Owner = this;
 			if (!Contains(key.Time))
 				KeyList.Add(key.Time, key);
@@ -515,6 +518,33 @@ namespace GorgonLibrary.Graphics
         {
             return new NearestKeys(this, timeIndex);
         }
+
+		/// <summary>
+		/// Function to copy keys from one track to another.
+		/// </summary>
+		/// <param name="track">Track to copy from.</param>
+		public void CopyKeysFrom(Track track)
+		{
+			if (track == null)
+				throw new ArgumentNullException("track");
+
+			if (track.KeyCount < 1)
+				throw new ArgumentException("The source track contains 0 keys.", "track");
+
+			if (track.GetKeyAtIndex(0).DataType != _dataType)
+				throw new ArgumentException("The key type '" + track.GetKeyAtIndex(0).DataType.FullName + "' is not the expected type '" + _dataType.FullName + "'.", "key");
+
+			ClearKeys();
+
+			foreach (KeyFrame key in track)
+			{
+				if (key.Time <= _owner.Length)
+				{
+					KeyFrame newKey = key.Clone();
+					AddKey(key);
+				}
+			}
+		}
         #endregion
 
         #region Constructor/Destructor.

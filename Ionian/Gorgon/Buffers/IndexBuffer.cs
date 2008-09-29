@@ -285,7 +285,7 @@ namespace GorgonLibrary.Internal
 			else
 			{
 				if (!Gorgon.CurrentDriver.SupportIndex32)
-					throw new IndexSizeInvalid();
+					throw new ArgumentException("The video card does not support 32 bit indices.", "indexType");
 
 				_indexType = typeof(uint);
 			}

@@ -90,7 +90,6 @@
     <Compile Include="GUI\GUIElement.cs" />
     <Compile Include="GUI\GUIElementCollection.cs" />
     <Compile Include="GUI\GUIEnums.cs" />
-    <Compile Include="GUI\GUIExceptions.cs" />
     <Compile Include="GUI\GUILabel.cs" />
     <Compile Include="GUI\GUIObject.cs" />
     <Compile Include="GUI\GUIObjectCollection.cs">

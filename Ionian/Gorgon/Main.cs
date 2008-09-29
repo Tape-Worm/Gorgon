@@ -840,7 +840,7 @@ namespace GorgonLibrary
 				if (HasFocus)
 				{					
 					// Update the screen.
-					if (FrameStats.Refresh())
+					if (FrameStats.Update())
 					{
 						// Call idle event.					
 						OnIdle(sender, _frameEventArgs);
@@ -1111,14 +1111,14 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>The application does not begin rendering right away when this function is called, it merely tells the library that the application is ready for rendering to begin when it's ready.</remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		/// <exception cref="RenderTargetNotValidException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode(Control)">SetMode()</see> has not been called.</exception>		
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode(Control)">SetMode()</see> has not been called.</exception>		
 		public static void Go()
 		{
 			if (!IsInitialized)
 				throw new GorgonException(GorgonErrors.NotInitialized);
 
 			if ((Gorgon.Screen != null) && (_currentTarget == null))
-				throw new RenderTargetNotValidException();
+				throw new InvalidOperationException("The render target is invalid.");
 
 			if (IsRunning)
 				return;

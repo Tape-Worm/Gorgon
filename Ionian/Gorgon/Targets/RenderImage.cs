@@ -168,21 +168,14 @@ namespace GorgonLibrary.Graphics
 			SetColorBuffer(null);
 			SetDepthBuffer(null);
 
-			try
+			if (_renderTarget == null)
 			{
-				if (_renderTarget == null)
-				{
-					// Create the image.
-					_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, true);
-					DeviceStateList.Remove(_renderTarget);
-				}
-				else
-					_renderTarget.SetDimensions(Width, Height, format, preserve);	// Resize the target.
+				// Create the image.
+				_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, true);
+				DeviceStateList.Remove(_renderTarget);
 			}
-			catch (Exception ex)
-			{
-				GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while creating the render image.", ex);
-			}
+			else
+				_renderTarget.SetDimensions(Width, Height, format, preserve);	// Resize the target.
 
 			// Get the final format.
 			_format = _renderTarget.Format;
@@ -248,7 +241,7 @@ namespace GorgonLibrary.Graphics
 						_depthFormat = Converter.ConvertDepthFormat(dsFormats[0][i]);
 						base.UseStencilBuffer = true;
 						base.UseDepthBuffer = true;
-						Gorgon.Log.Print("RenderImage", "Stencil and depth buffer requested and found.  Using stencil buffer. ({0})", LoggingLevel.Verbose, Converter.Convert(dsFormats[0][i]).ToString());
+						Gorgon.Log.Print("RenderImage", "Stencil and depth buffer requested and found.  Using stencil buffer. ({0})", LoggingLevel.Verbose, _depthFormat.ToString());
 						break;
 					}
 				}
@@ -264,7 +257,7 @@ namespace GorgonLibrary.Graphics
 					{
 						_depthFormat = Converter.ConvertDepthFormat(dsFormats[1][i]);
 						base.UseDepthBuffer = true;
-						Gorgon.Log.Print("RenderImage", "Stencil buffer not requested or found.  Using depth buffer. ({0}).", LoggingLevel.Verbose, Converter.Convert(dsFormats[1][i]).ToString());
+						Gorgon.Log.Print("RenderImage", "Stencil buffer not requested or found.  Using depth buffer. ({0}).", LoggingLevel.Verbose, _depthFormat.ToString());
 						break;
 					}
 				}
@@ -442,19 +435,12 @@ namespace GorgonLibrary.Graphics
 			if (image == null)
 				throw new ArgumentNullException();
 
-			try
-			{				
-				// Resize the image.
-				if ((_renderTarget.Width != image.Width) || (_renderTarget.Height != image.Height) || (_renderTarget.Format != image.Format))
-					image.SetDimensions(_renderTarget.Width, _renderTarget.Height, _renderTarget.Format, true);
+			// Resize the image.
+			if ((_renderTarget.Width != image.Width) || (_renderTarget.Height != image.Height) || (_renderTarget.Format != image.Format))
+				image.SetDimensions(_renderTarget.Width, _renderTarget.Height, _renderTarget.Format, true);
 
-				// Transfer to the image via a proxy.
-				image.Copy(_renderTarget);
-			}
-			catch(Exception ex)
-			{
-				throw new RenderTargetCannotConvertException(Name, ex);
-			}
+			// Transfer to the image via a proxy.
+			image.Copy(_renderTarget);
 		}
 
 		/// <summary>

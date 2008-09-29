@@ -54,21 +54,9 @@ namespace GorgonLibrary
 		private PreciseTimer _timer;								// FPS timer.
 		private int _frameAvgCounter;								// Counter for frame average.
 		private double _frameAvgSum;								// Frame average sum.
-		private static TimingData _empty = new TimingData(null);	// Empty timing data.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return an empty timing data structure.
-		/// </summary>
-		public static TimingData Empty
-		{
-			get
-			{
-				return _empty;
-			}
-		}
-
 		/// <summary>
 		/// Property to return the amount of time to draw a frame in milliseconds.
 		/// </summary>
@@ -177,7 +165,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Function to reset the timing data.
 		/// </summary>
-		public void Reset()
+		internal void Reset()
 		{
 			if (_timer != null)
 				_timer.Reset();
@@ -192,10 +180,10 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to end timing routine.
+		/// Function to update the timing values.
 		/// </summary>
-		/// <returns>TRUE to continue, FALSE to implement a delay.</returns>
-		public bool Refresh()
+		/// <returns>TRUE if no delay is required, FALSE if the user should implement a delay.</returns>
+		internal bool Update()
 		{
 			/* This code has been pulled and modified from the HGE source */
 			double theTime = 0.0;		// The current time.

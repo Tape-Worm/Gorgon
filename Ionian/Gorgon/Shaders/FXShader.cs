@@ -84,42 +84,42 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void GetParameters()
 		{
-			try
+			ShaderParameter newParameter = null;			// Shader parameter.
+
+			// If there aren't any parameters, then exit.
+			if (_effect.Description.Parameters < 1)
+				return;
+
+			// Get technique handle.
+			for (int i = 0; i < _effect.Description.Parameters; i++)
 			{
-				ShaderParameter newParameter = null;			// Shader parameter.
+				D3D9.EffectHandle handle = null;											// Handle.
+				D3D9.ParameterDescription description = default(D3D9.ParameterDescription);	// Description.
 
-				// If there aren't any parameters, then exit.
-				if (_effect.Description.Parameters < 1)
-					return;
-
-				// Get technique handle.
-				for (int i = 0; i < _effect.Description.Parameters; i++)
+				// Get parameter handle.
+				try
 				{
-					D3D9.EffectHandle handle;					// Handle.
-					D3D9.ParameterDescription description;		// Description.
-
-					// Get parameter handle.
 					handle = _effect.GetParameter(null, i);
 					description = _effect.GetParameterDescription(handle);
+				}
+				catch (Exception ex)
+				{
+					GorgonException.Repackage(GorgonErrors.CannotCreate, "Error trying to retrieve the shader parameters.",ex);
+				}			
 
-					// Get the parameter.
-					newParameter = new ShaderParameter(description, handle, this, i);
+				// Get the parameter.
+				newParameter = new ShaderParameter(description, handle, this, i);
 
-					// Update collection.
-					Parameters.Add(newParameter);
+				// Update collection.
+				Parameters.Add(newParameter);
 
-					// Check technique.
-					foreach (ShaderTechnique technique in Techniques)
-					{
-						if (_effect.IsParameterUsed(handle, technique.D3DEffectHandle))
-							technique.Parameters.Add(new ShaderParameter(description, handle, this, i));
-					}
+				// Check technique.
+				foreach (ShaderTechnique technique in Techniques)
+				{
+					if (_effect.IsParameterUsed(handle, technique.D3DEffectHandle))
+						technique.Parameters.Add(new ShaderParameter(description, handle, this, i));
 				}
 			}
-			catch (Exception ex)
-			{
-				throw new ShaderCannotGetParametersException(Name, ex);
-			}			
 		}
 
 		/// <summary>
@@ -141,14 +141,14 @@ namespace GorgonLibrary.Graphics
 					}
 
 					if (_currentTechnique == null)
-						throw new ShaderHasNoTechniquesException(Name);
+						throw new GorgonException(GorgonErrors.CannotUpdate, "Unable to find a valid technique for shader '" + Name + "'.");
 				}
 
 				if (Parameters.Contains("_projectionMatrix"))
 					Parameters["_projectionMatrix"].SetValue(Gorgon.CurrentClippingViewport.ProjectionMatrix);
 
 				// NOTE: Note to self, we have to set the technique BEFORE calling Begin(), or else the handles become invalidated.
-				_effect.Technique = _currentTechnique.D3DEffectHandle;
+				_effect.Technique = _currentTechnique.D3DEffectHandle;				
 				_effect.Begin(D3D9.FX.None);
 			}
 		}
@@ -328,7 +328,7 @@ namespace GorgonLibrary.Graphics
 				if (_effect != null)
 					_effect.Dispose();
 
-				throw new ShaderCompilerErrorException(Name, errors, ex);
+				GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
 			}
 			finally
 			{
@@ -375,7 +375,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("shaderTarget");
 
 			if (string.IsNullOrEmpty(ShaderSource))
-				throw new ShaderCompilerErrorException(Name, "Shader has no source.");
+				throw new GorgonException(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' has no souce to compile.");
 
 			try
 			{
@@ -386,15 +386,18 @@ namespace GorgonLibrary.Graphics
 					Directory.SetCurrentDirectory(Path.GetDirectoryName(Path.GetFullPath(_fileName)));
 				}
 
-				compiler = new D3D9.EffectCompiler(ShaderSource, null, null, d3dflags, out errors);
-				functionHandle = compiler.GetFunction(function);
-				byteCode = compiler.CompileShader(functionHandle, shaderTarget, d3dflags, out errors);
+				try
+				{
+					compiler = new D3D9.EffectCompiler(ShaderSource, null, null, d3dflags, out errors);
+					functionHandle = compiler.GetFunction(function);
+					byteCode = compiler.CompileShader(functionHandle, shaderTarget, d3dflags, out errors);
+				}
+				catch (Exception ex)
+				{
+					GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
+				}
 
 				return new ShaderFunction(function, this, byteCode, shaderTarget);
-			}
-			catch(Exception ex)
-			{
-				throw new ShaderCannotCreateTextureShaderException(errors, ex);
 			}
 			finally
 			{
@@ -751,15 +754,15 @@ namespace GorgonLibrary.Graphics
 			bool binary = false;			// Flag for binary mode.
 
 			if (!serializer.Parameters.Contains("Binary"))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotSave, "The serializer parameter 'Binary' is missing.");
 
 			binary = (bool)serializer.Parameters["Binary"];
 
 			if ((Compiled == null) && (binary))
-				throw new ShaderCompilerErrorException(Name, "The shader was not compiled.");
+				throw new GorgonException(GorgonErrors.CannotSave, "Cannot save a binary shader without compiled shader code.");
 
 			if ((!binary) && (ShaderSource == string.Empty))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotSave, "Cannot save a non-binary shader without source code.");
 
 			// Write to the stream.			
 			IsBinary = binary;
@@ -785,13 +788,13 @@ namespace GorgonLibrary.Graphics
 			if (serializer.Parameters.Contains("byteSize"))
 				size = (int)serializer.Parameters["byteSize"];
 			else
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotLoad, "The serializer is missing a parameter 'byteSize'");				
 
 			if (!serializer.Parameters.Contains("Binary"))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotLoad, "The serializer is missing a parameter 'Binary'");
 
 			if (!serializer.Parameters.Contains("flags"))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotLoad, "The serializer is missing a parameter 'flags'");
 
 			try
 			{
@@ -811,7 +814,14 @@ namespace GorgonLibrary.Graphics
 				{
 					// Send to a memory stream and build from a stream.
 					stream = new MemoryStream(code);
-					_effect = D3D9.Effect.FromStream(Gorgon.Screen.Device, stream, null, null, null, flags, null, out errors);
+					try
+					{
+						_effect = D3D9.Effect.FromStream(Gorgon.Screen.Device, stream, null, null, null, flags, null, out errors);
+					}
+					catch (Exception ex)
+					{
+						GorgonException.Repackage(GorgonErrors.CannotLoad, "The shader '" + Name + "' had loading errors.\n\nErrors:\n" + errors, ex);
+					}
 
 					// Add techniques and passes.
 					_techniques.Add(this);
@@ -830,18 +840,13 @@ namespace GorgonLibrary.Graphics
 					CompileShader((ShaderCompileOptions)flags);
 				}
 			}
-			catch (ShaderCompilerErrorException scEx)
-			{
-				// Throw compiler errors back earlier so we can see them easier.
-				throw scEx;
-			}
-			catch (Exception ex)
+			catch
 			{
 				if (_effect != null)
 					_effect.Dispose();
 				_effect = null;
 
-				throw new SerializerCannotDeserializeException(typeof(ISerializable).Name, "Shader", errors, ex);
+				throw;
 			}
 			finally
 			{

@@ -1,8 +1,8 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{434387DC-0059-4645-B0B9-581F2788E228}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -76,7 +76,6 @@
     <Compile Include="Forms\formGetPassword.Designer.cs">
       <DependentUpon>formGetPassword.cs</DependentUpon>
     </Compile>
-    <Compile Include="TripleDESFileSystemException.cs" />
     <Compile Include="Gorgon3DESFileSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TripleDESPlugInEntry.cs" />

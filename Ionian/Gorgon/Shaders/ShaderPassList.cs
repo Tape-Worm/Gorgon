@@ -45,36 +45,36 @@ namespace GorgonLibrary.Graphics
 		/// <param name="technique">Technique to use.</param>
 		internal void Add(ShaderTechnique technique)
 		{
-            D3D9.TechniqueDescription techniqueInfo;		// Technique information.
+            D3D9.TechniqueDescription techniqueInfo = default(D3D9.TechniqueDescription);		// Technique information.
 
             if (technique == null)
                 throw new ArgumentNullException("technique");
             
-            try
-			{
 				ShaderPass newPass = null;						// Pass.
 
+			try
+			{
 				techniqueInfo = technique.Owner.D3DEffect.GetTechniqueDescription(technique.D3DEffectHandle);
-
-				// Get technique handle.
-				for (int i = 0; i < techniqueInfo.Passes; i++)
-				{
-					newPass = new ShaderPass(technique, i);
-
-					// Update collection.
-					if (Contains(newPass.Name))
-						SetItem(newPass.Name, newPass);
-					else
-						AddItem(newPass.Name, newPass);
-				}
 			}
 			catch (Exception ex)
 			{
-				throw new ShaderCannotGetTechniquesException(technique.Owner.Name, ex);
+				GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while retrieving the HLSL techniques.", ex);
 			}
 
-            if (techniqueInfo.Passes < 1)
-                throw new ShaderCannotGetPassesException(technique);
+			// Get technique handle.
+			for (int i = 0; i < techniqueInfo.Passes; i++)
+			{
+				newPass = new ShaderPass(technique, i);
+
+				// Update collection.
+				if (Contains(newPass.Name))
+					SetItem(newPass.Name, newPass);
+				else
+					AddItem(newPass.Name, newPass);
+			}
+
+			if (techniqueInfo.Passes < 1)
+				throw new GorgonException(GorgonErrors.CannotCreate, "The are no passes for the technique '" + techniqueInfo.Name + "'.");
         }
 		#endregion
 

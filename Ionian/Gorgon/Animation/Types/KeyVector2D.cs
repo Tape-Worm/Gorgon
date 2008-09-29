@@ -58,6 +58,18 @@ namespace GorgonLibrary.Graphics
 				_value = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the type of data stored in the key.
+		/// </summary>
+		/// <value></value>
+		public override Type DataType
+		{
+			get 
+			{
+				return typeof(Vector2D);
+			}
+		}
 		#endregion
 
 		#region Methods.

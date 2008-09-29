@@ -103,8 +103,15 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-September 26/2008 - Version - Current
+September 28/2008 - Version - Current
 ================================
+- Removed the Empty property on the TimingData object, it served no useful
+  purpose.
+  
+* Changed the access modifier on the refresh/reset methods on the TimingData 
+  object to internal, these functions have no real purpose being exposed as public 
+  members.
+
 * Unified all exception objects into a single exception type:
   GorgonException.  This exception system is modelled after SlimDX's ResultCode
   setup.  This was done to cut down on the amount of exception object clutter

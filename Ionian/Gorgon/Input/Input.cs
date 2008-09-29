@@ -190,7 +190,7 @@ namespace GorgonLibrary.InputDevices
 			plugIn = PlugInFactory.Load(plugInPath, plugInName, _requireSigned) as InputPlugIn;
 
 			if ((plugIn == null) || (plugIn.PlugInType != PlugInType.Input))
-				throw new InputPlugInInvalidType(plugInPath);
+				throw new GorgonException(GorgonErrors.InvalidPlugin, "The plug-in was not an input plug-in type.");
 
 			return plugIn.CreateImplementation(null) as Input;
 		}

@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2006 Michael Winsor
+// Copyright (C) 2008 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,41 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, November 01, 2006 5:33:47 PM
+// Created: Sunday, September 21, 2008 7:12:59 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Windows.Forms;
 
-namespace GorgonLibrary.FileSystems
+namespace GorgonLibrary.Example
 {
 	/// <summary>
-	/// File system authentication exception.
+	/// Main application.
 	/// </summary>
-	public class InvalidAuthenticationDataException
-		: GorgonException
+	static class Program
 	{
-		#region Constructor.
 		/// <summary>
-		/// Constructor.
+		/// The main entry point for the application.
 		/// </summary>
-		/// <param name="fileSystemName">Name of the file system that previously existed.</param>
-		/// <param name="ex">Source exception.</param>
-		public InvalidAuthenticationDataException(string fileSystemName, Exception ex)
-			: base("The authentication for the file system '" + fileSystemName + "' is not valid.", ex)
+		[STAThread]
+		static void Main()
 		{
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new MainForm());
 		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="fileSystemName">Name of the file system that previously existed.</param>
-        public InvalidAuthenticationDataException(string fileSystemName)
-			: this(fileSystemName, null)
-		{
-		}
-		#endregion
 	}
 }

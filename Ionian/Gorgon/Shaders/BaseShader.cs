@@ -260,15 +260,15 @@ namespace GorgonLibrary.Graphics
 			byte[] psData = null;			// Pixel shader data.
 
 			if (!serializer.Parameters.Contains("Binary"))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotWriteData, "Missing binary parameter for serialization.");
 
 			binary = (bool)serializer.Parameters["Binary"];
 
 			if ((!IsCompiled) && (binary))
-				throw new ShaderCompilerErrorException(Name, "The shader was not compiled.");
+				throw new GorgonException(GorgonErrors.CannotWriteData, "Cannot write a binary shader that was not compiled.");
 
 			if ((!binary) && (ShaderSource == string.Empty))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotWriteData, "Cannot write a source code shader without source code.");
 						
 			// Write to the stream.			
 			IsBinary = binary;			
@@ -308,25 +308,25 @@ namespace GorgonLibrary.Graphics
 				IsResource = (bool)serializer.Parameters["IsResource"];
 
 			if (!serializer.Parameters.Contains("Function"))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'Function'");
 			else
 				function = serializer.Parameters["Function"].ToString();
 
 			if (!serializer.Parameters.Contains("Target"))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'Target'");
 			else
 				target = serializer.Parameters["Target"] as Version;
 
 			if (serializer.Parameters.Contains("byteSize"))
 				size = (int)serializer.Parameters["byteSize"];
 			else
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'byteSize'");
 
 			if (!serializer.Parameters.Contains("Binary"))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'Binary'");
 
 			if (!serializer.Parameters.Contains("flags"))
-				throw new ShaderNotValidException();
+				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'flags'");
 
 			try
 			{
@@ -361,15 +361,6 @@ namespace GorgonLibrary.Graphics
 					ShaderSource = serializer.ReadString(string.Empty);
 					CompileShaderImplementation(function, target, (ShaderCompileOptions)flags);
 				}
-			}
-			catch (ShaderCompilerErrorException scEx)
-			{
-				// Throw compiler errors back earlier so we can see them easier.
-				throw scEx;
-			}
-			catch (Exception ex)
-			{
-				throw new SerializerCannotDeserializeException(typeof(ISerializable).Name, "Shader", errors, ex);
 			}
 			finally
 			{
@@ -723,7 +714,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("target");
 
 			if (string.IsNullOrEmpty(ShaderSource))
-				throw new ShaderCompilerErrorException(Name, "Shader has no source.");
+				throw new GorgonException(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' has no source code");
 
 			try
 			{
@@ -742,27 +733,26 @@ namespace GorgonLibrary.Graphics
 				_isResource = false;
 				IsBinary = false;
 
-				compiler = new D3D9.EffectCompiler(ShaderSource, null, null, d3dflags, out errors);
-				functionHandle = compiler.GetFunction(functionName);
+				try
+				{
+					compiler = new D3D9.EffectCompiler(ShaderSource, null, null, d3dflags, out errors);
+					functionHandle = compiler.GetFunction(functionName);
+				}
+				catch (Exception ex)
+				{
+					GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
+				}
 				if (functionHandle == null)
-					throw new ShaderCompilerErrorException(Name, "The function '" + functionName + "' was not found.");
+					throw new GorgonException(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' does not contain the function '" + functionName + "'.");
 				_function = new ShaderFunction(functionName, this, compiler.CompileShader(functionHandle, ShaderProfile(target), d3dflags, out errors), ShaderProfile(target));
 				CreateShader();
 				GetParameters();
 			}
-			catch (ShaderCompilerErrorException scEx)
-			{
-				throw scEx;
-			}
-			catch (Exception ex)
+			finally
 			{
 				if ((!string.IsNullOrEmpty(previousDir)) && (Directory.Exists(previousDir)))
 					Directory.SetCurrentDirectory(previousDir);
 
-				throw new ShaderCompilerErrorException(Name, errors, ex);
-			}
-			finally
-			{
 				if (compiler != null)
 					compiler.Dispose();
 

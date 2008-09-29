@@ -351,9 +351,9 @@ namespace GorgonLibrary.Graphics
 				if (image == null)
 					throw new ArgumentNullException("image");
 				if ((image.ImageType != ImageType.Dynamic) && (image.ImageType != ImageType.RenderTarget))
-					throw new RenderTargetCannotConvertException(Name, "The destination image is not a dynamic image or a render target.");
+					throw new GorgonException(GorgonErrors.CannotUpdate, "The destination image is not a dynamic image or a render target.");
 				if (image.Format != targetFormat)
-					throw new RenderTargetCannotConvertException(Name, "The destination image format does not match that of the render target.");
+					throw new GorgonException(GorgonErrors.CannotUpdate, "The destination image format does not match that of the render target.");
 
 				// Flush the render buffer.
 				if (Gorgon.IsRunning)
@@ -1669,7 +1669,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("name");
 
 			if (RenderTargetCache.Targets.Contains(name))
-				throw new RenderTargetAlreadyExistsException(name);
+				throw new ArgumentException("'" + name + "' already exists.");
 
 			_width = width;
 			_height = height;

@@ -361,9 +361,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void UpdateDimensions()
 		{
-			if ((MathUtility.EqualFloat(Size.X, 0.0f)) || (MathUtility.EqualFloat(Size.Y, 0.0f)))
-				throw new SpriteSizeException(null);
-
 			// Resize the sprite.
 			_spriteCorners[0] = -Axis.X;
 			_spriteCorners[1] = -Axis.Y;
@@ -1795,7 +1792,7 @@ namespace GorgonLibrary.Graphics
 					spriteVersion = new Version(1, 1);
 					break;
 				default:
-					throw new SpriteNotValidException();
+					throw new GorgonException(GorgonErrors.CannotLoad, "Sprite file type is unknown or corrupted.");
 			}
 
 			// Get sprite data.

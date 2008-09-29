@@ -93,6 +93,14 @@ namespace GorgonLibrary.Graphics
 					_owner.NeedsUpdate = true;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the type of data stored in the key.
+		/// </summary>
+		public abstract Type DataType
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.

@@ -100,19 +100,19 @@ namespace GorgonLibrary.PlugIns
 				publicKey = name.GetPublicKey();
 
 				if (publicKey.Length < 1)
-					throw new PlugInSigningException(name.Name);
+					throw new GorgonException(GorgonErrors.AccessDenied, "Incorrect key for the plug-in '" + pluginName + "'.");
 
 				if (_compareKey != null)
 				{
 					// Compare the key.
 					if (publicKey.Length != _compareKey.Length)
-						throw new PlugInSigningException(name.Name);
+						throw new GorgonException(GorgonErrors.AccessDenied, "Incorrect key for the plug-in '" + pluginName + "'.");
 
 					// Do a byte-by-byte comparison of the key.
 					for (int i = 0; i < publicKey.Length; i++)
 					{
 						if (publicKey[i] != _compareKey[i])
-							throw new PlugInSigningException(name.Name);
+							throw new GorgonException(GorgonErrors.AccessDenied, "Incorrect key for the plug-in '" + pluginName + "'.");
 					}
 				}
 			}
@@ -125,7 +125,7 @@ namespace GorgonLibrary.PlugIns
 			typeAttributes = pluginModule.GetCustomAttributes(typeof(PlugInAttribute), false);
 
 			if (typeAttributes.Length == 0)
-				throw new PlugInNotValidException(name.Name);
+				throw new GorgonException(GorgonErrors.InvalidPlugin, "Unable to find the PlugInAttribute for plug-in '" + name.Name + "'.");
 
 			// Get the public types.				
 			foreach (Type type in pluginModule.ManifestModule.FindTypes(
@@ -145,7 +145,7 @@ namespace GorgonLibrary.PlugIns
 				entry = type.Assembly.CreateInstance(type.Namespace + "." + type.Name, false, BindingFlags.CreateInstance, null, new object[] { pluginModule.Location }, null, null) as PlugInEntryPoint;
 
 				if (entry == null)
-					throw new PlugInCannotCreateException(pluginName);
+					throw new GorgonException(GorgonErrors.CannotCreate, "Error trying to create the plug-in entry point interface.");
 
 				Gorgon.Log.Print("PlugInManager", "Plug-in type: {0}, Module: {1}.", LoggingLevel.Intermediate, entry.PlugInType.ToString(), entry.GetType().ToString());
 
@@ -163,9 +163,9 @@ namespace GorgonLibrary.PlugIns
 						return entry;
 				}
 			}
-			
+
 			if (pluginName != string.Empty)
-				throw new PlugInNotFoundException(pluginName);
+				throw new GorgonException(GorgonErrors.CannotCreate, "No plug-in named '" + pluginName + "' was found in the plug-in module.");
 
 			return null;
 		}

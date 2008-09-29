@@ -72,10 +72,10 @@ namespace GorgonLibrary.Serialization
 			XmlWriterSettings settings = new XmlWriterSettings();		// XML Settings.
 
 			if (SerializationStream == null)
-				throw new SerializerNotOpenException(null);
+				throw new GorgonException(GorgonErrors.CannotSave, "The serializer stream is not open.");
 
 			if (_writer != null)
-				throw new SerializerAlreadyOpenException(null);
+				throw new GorgonException(GorgonErrors.CannotSave, "The serializer is already open for writing.");
 			
 			// Use the stream for writing binary data.
 			settings.CloseOutput = !DontCloseStream;
@@ -100,10 +100,10 @@ namespace GorgonLibrary.Serialization
 			XmlReaderSettings settings = new XmlReaderSettings();		// XML Settings.
 
 			if (SerializationStream == null)
-				throw new SerializerNotOpenException(null);
+				throw new GorgonException(GorgonErrors.CannotSave, "The serializer stream is not open.");
 
 			if (_reader != null)
-				throw new SerializerAlreadyOpenException(null);
+				throw new GorgonException(GorgonErrors.CannotSave, "The serializer is already open for reading.");
 
 			// Use the stream for reading binary data.
 			settings.CloseInput = !DontCloseStream;

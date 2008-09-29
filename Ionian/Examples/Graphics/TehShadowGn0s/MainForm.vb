@@ -67,7 +67,6 @@ Public Class MainForm
     End Property
 #End Region
 
-
 #Region "Methods."
     ''' <summary>
     ''' Function to convert the given set of normalized coordinates into the coordinates of the render target.

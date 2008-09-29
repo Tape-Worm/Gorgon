@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParticleAcceleration", "Fra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepAsAPuddle", "Framework\DeepAsAPuddle\DeepAsAPuddle.csproj", "{4895706C-0197-47D8-9D44-4D0B805DCD34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimatedDebate", "Framework\AnimatedDebate\AnimatedDebate.csproj", "{2F771859-7FBA-46DE-B372-A1B0BE32C153}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,10 @@ Global
 		{4895706C-0197-47D8-9D44-4D0B805DCD34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4895706C-0197-47D8-9D44-4D0B805DCD34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4895706C-0197-47D8-9D44-4D0B805DCD34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

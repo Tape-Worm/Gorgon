@@ -1,6 +1,6 @@
 ﻿#region MIT.
 // 
-// Examples.
+// Gorgon.
 // Copyright (C) 2008 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60,8 +60,8 @@ namespace GorgonLibrary.Example
             // We can actually host several plug-ins within a single DLL if necessary.
             plugIn = PlugInFactory.PlugIns[0] as SpriteExportPlugIn;
 
-            if (plugIn == null)
-                throw new PlugInCannotCreateException("SpriteExporter");
+			if (plugIn == null)
+				throw new ApplicationException("Could not create the plug-in.");
 
             return plugIn.Create();
         }

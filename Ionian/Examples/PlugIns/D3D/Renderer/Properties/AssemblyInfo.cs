@@ -1,6 +1,6 @@
 ﻿#region MIT.
 // 
-// Examples.
+// Gorgon.
 // Copyright (C) 2008 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

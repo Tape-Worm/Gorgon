@@ -166,7 +166,7 @@ namespace GorgonLibrary.Internal
 					return D3D9.DeclarationUsage.TextureCoordinate;
 			}
 
-			throw new VertexFieldContextInvalidException();
+			throw new GorgonException(GorgonErrors.InvalidFormat, "Vertex field context '" + context.ToString() + "' has no Direct3D equivalent.");
 		}
 
 		/// <summary>
@@ -198,7 +198,7 @@ namespace GorgonLibrary.Internal
 					return D3D9.DeclarationType.Ubyte4;
 			}
 
-			throw new VertexFieldInvalidException();
+			throw new GorgonException(GorgonErrors.InvalidFormat, "Vertex field type '" + fieldType.ToString() + "' has no Direct3D equivalent.");
 		}
 
 		/// <summary>

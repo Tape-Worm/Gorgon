@@ -67,7 +67,7 @@ namespace GorgonLibrary.Internal
 			set
 			{
 				if (value == null)
-					throw new VertexTypeInvalidException();
+					throw new ArgumentNullException();
 
 				if (_vertexType != null)
 					_vertexType.Dispose();

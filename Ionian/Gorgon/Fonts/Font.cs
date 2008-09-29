@@ -443,7 +443,7 @@ namespace GorgonLibrary.Graphics
 					value = Image.ResizePowerOf2(value, _maxImageSize.Height).Width;
 
 				if ((value < 1) || (value > Gorgon.CurrentDriver.MaximumTextureWidth))
-					throw new ImageSizeException("Font image width must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureWidth.ToString() + ".");
+					throw new ArgumentException("Font image width must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureWidth.ToString() + ".");
 
 				_maxImageSize = new Drawing.Size(value, _maxImageSize.Height);
 
@@ -466,7 +466,7 @@ namespace GorgonLibrary.Graphics
 					value = Image.ResizePowerOf2(_maxImageSize.Width, value).Height;
 
 				if ((value < 1) || (value > Gorgon.CurrentDriver.MaximumTextureHeight))
-					throw new ImageSizeException("Font image height must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureHeight.ToString() + ".");
+					throw new ArgumentException("Font image height must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureHeight.ToString() + ".");
 
 				_maxImageSize = new Drawing.Size(_maxImageSize.Width, value);
 
@@ -637,7 +637,7 @@ namespace GorgonLibrary.Graphics
 						if (Image.ValidateFormat(ImageBufferFormats.BufferRGB332A8, ImageType.Normal) == ImageBufferFormats.BufferRGB555A1)
 							fontImageFormat = ImageBufferFormats.BufferRGB555A1;
 						else
-							throw new FontImageFormatNotValidException();
+							throw new GorgonException(GorgonErrors.CannotCreate, "Cannot create font backing image(s).  No suitable alpha format was found.");
 				}
 			}
 
@@ -831,17 +831,10 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The glyph associated with the character.</returns>
 		public Glyph GetGlyph(char c)
 		{
-			try
-			{
-				if (_glyphData.ContainsKey(c))
-					return _glyphData[c];
-				else
-					return _glyphData[' '];
-			}
-			catch (Exception ex)
-			{
-				throw new FontGlyphNotFoundException(c, ex);
-			}
+			if (_glyphData.ContainsKey(c))
+				return _glyphData[c];
+			else
+				return _glyphData[' '];
 		}
 		#endregion
 
@@ -860,7 +853,7 @@ namespace GorgonLibrary.Graphics
 			: base(fontName)
 		{
 			if (FontCache.Fonts.Contains(fontName))
-				throw new FontAlreadyLoadedException(fontName);
+				throw new ArgumentException("'" + fontName + "' already exists.", "fontName");
 
 			_familyName = family;
 			_antiAlias = antiAlias;

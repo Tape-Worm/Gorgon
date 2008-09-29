@@ -219,7 +219,7 @@ namespace GorgonLibrary.Graphics
 					return;
 
 				if (_image.D3DTexture == null)
-					throw new ImageNotValidException();
+					return;
 
 				try
 				{
@@ -607,7 +607,7 @@ namespace GorgonLibrary.Graphics
 
 			// Ensure the image is the correct size.
 			if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-				throw new ImageSizeException(Name, _actualWidth, _actualHeight, Gorgon.CurrentDriver.MaximumTextureWidth, Gorgon.CurrentDriver.MaximumTextureHeight, null);
+				throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 			// If we specified unknown for the buffer format, assume 32 bit.
 			if (_format == ImageBufferFormats.BufferUnknown)
@@ -1344,35 +1344,27 @@ namespace GorgonLibrary.Graphics
 		public static Drawing.Size GetImageDimensions(string path, bool adjust)
 		{
 			Drawing.Size imageSize = Drawing.Size.Empty;	// Image size.
+			D3D9.ImageInformation imageInfo;				// Image information.
+							
+			imageInfo = D3D9.ImageInformation.FromFile(path);
 
-			try
+			imageSize.Width = imageInfo.Width;
+			imageSize.Height = imageInfo.Height;
+
+			// If the device only supports square images, then make square.
+			if ((adjust) && (Gorgon.CurrentDriver != default(Driver)))
 			{
-				D3D9.ImageInformation imageInfo;		// Image information.
-
-				imageInfo = D3D9.ImageInformation.FromFile(path);
-
-				imageSize.Width = imageInfo.Width;
-				imageSize.Height = imageInfo.Height;
-
-				// If the device only supports square images, then make square.
-				if ((adjust) && (Gorgon.CurrentDriver != default(Driver)))
+				if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
 				{
-					if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
-					{
-						if (imageSize.Width > imageSize.Height)
-							imageSize.Height = imageSize.Width;
-						else
-							imageSize.Width = imageSize.Height;
-					}
-
-					// Resize to the power of two.
-					if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
-						imageSize = ResizePowerOf2(imageSize.Width, imageSize.Height);
+					if (imageSize.Width > imageSize.Height)
+						imageSize.Height = imageSize.Width;
+					else
+						imageSize.Width = imageSize.Height;
 				}
-			}
-			catch (Exception ex)
-			{
-				throw new ImageInformationNotFoundException("Cannot retrieve image information for '" + path + "'.", ex);
+
+				// Resize to the power of two.
+				if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+					imageSize = ResizePowerOf2(imageSize.Width, imageSize.Height);
 			}
 
 			return imageSize;
@@ -1539,7 +1531,7 @@ namespace GorgonLibrary.Graphics
 
 				// Ensure the image is the correct size.
 				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-					throw new ImageSizeException(Name, _actualWidth, _actualHeight, Gorgon.CurrentDriver.MaximumTextureWidth, Gorgon.CurrentDriver.MaximumTextureHeight, null);
+					throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// If we specified unknown for the buffer format, assume 32 bit.
 				if (format == ImageBufferFormats.BufferUnknown)
@@ -1687,7 +1679,7 @@ namespace GorgonLibrary.Graphics
 
 				// Ensure the image is the correct size.
 				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-					throw new ImageSizeException(Name, _actualWidth, _actualHeight, Gorgon.CurrentDriver.MaximumTextureWidth, Gorgon.CurrentDriver.MaximumTextureHeight, null);
+					throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// Copy the texture data to a stream.
 				memoryImage = D3D9.Texture.ToStream(image.D3DTexture, D3D9.ImageFileFormat.Png);
@@ -1850,7 +1842,7 @@ namespace GorgonLibrary.Graphics
 
 				// Ensure the image is the correct size.
 				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-					throw new ImageSizeException(Name, _actualWidth, _actualHeight, Gorgon.CurrentDriver.MaximumTextureWidth, Gorgon.CurrentDriver.MaximumTextureHeight, null);
+					throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// Load the image.
 				memoryImage = new MemoryStream();
@@ -2218,7 +2210,7 @@ namespace GorgonLibrary.Graphics
 			: this(name, dynamic ? ImageType.Dynamic : ImageType.Normal, width, height, format, true)
 		{
 			if (ImageCache.Images.Contains(name))
-				throw new ImageAlreadyLoadedException(name, null);
+				throw new ArgumentException("'" + name + "' is already loaded.", "name");
 
 			try
 			{
@@ -2366,7 +2358,7 @@ namespace GorgonLibrary.Graphics
 			D3D9.ImageFileFormat fileFormat;	// Image file format.
 
 			if (!serializer.Parameters.Contains("FileFormat"))
-				throw new ImageNotValidException();
+				throw new GorgonException(GorgonErrors.InvalidFormat, "The file format was not supplied as a serialization parameter.");
 
 			try
 			{
@@ -2409,7 +2401,7 @@ namespace GorgonLibrary.Graphics
 			if ((!serializer.Parameters.Contains("byteSize")) || (!serializer.Parameters.Contains("Width")) ||
 				(!serializer.Parameters.Contains("Height")) || (!serializer.Parameters.Contains("Format")) ||
 				(!serializer.Parameters.Contains("ColorKey")))
-				throw new ImageNotValidException();
+				throw new GorgonException(GorgonErrors.InvalidFormat, "Some serialization parameters are missing for this image.");
 
 			// Get image parameters.
 			size = (int)serializer.Parameters["byteSize"];

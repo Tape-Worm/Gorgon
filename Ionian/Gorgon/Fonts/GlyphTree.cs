@@ -231,7 +231,7 @@ namespace GorgonLibrary.Internal
 			GlyphNode newNode = null;		// New node.
 
 			if ((imageDims.Width > _root.ImageRect.Width) || (imageDims.Height > _root.ImageRect.Height))
-				throw new GorgonLibrary.Graphics.FontGlyphTooLargeException();
+				throw new ArgumentOutOfRangeException("imageDims");
 
 			newNode = _root.Add(imageDims);
 

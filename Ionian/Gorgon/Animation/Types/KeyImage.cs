@@ -48,6 +48,18 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the type of data stored in the key.
+		/// </summary>
+		/// <value></value>
+		public override Type DataType
+		{
+			get
+			{
+				return typeof(Image);
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the track that owns this key.
 		/// </summary>
 		/// <value></value>

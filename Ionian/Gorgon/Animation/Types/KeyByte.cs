@@ -45,6 +45,18 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the type of data stored in the key.
+		/// </summary>
+		/// <value></value>
+		public override Type DataType
+		{
+			get
+			{
+				return typeof(Byte);
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the value of the key.
 		/// </summary>
 		public byte Value

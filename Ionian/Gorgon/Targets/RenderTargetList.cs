@@ -69,9 +69,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="target">Target to add.</param>
 		internal void Add(RenderTarget target)
 		{
-			if (Contains(target.Name))
-				throw new RenderTargetAlreadyExistsException(target.Name);
-
 			Items.Add(target.Name, target);
 		}
 

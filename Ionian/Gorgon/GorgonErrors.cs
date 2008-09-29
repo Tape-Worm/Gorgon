@@ -202,6 +202,28 @@ namespace GorgonLibrary
 				return new GorgonError("CannotWrite", ErrorBase + 0xE, "Error writing the data.");
 			}
 		}
+
+		/// <summary>
+		/// Access is denied.
+		/// </summary>
+		public static GorgonError AccessDenied
+		{
+			get
+			{
+				return new GorgonError("AccessDenied", ErrorBase + 0xF, "Access is denied.");
+			}
+		}
+
+		/// <summary>
+		/// Cannot bind an input device.
+		/// </summary>
+		public static GorgonError CannotBindInputDevice
+		{
+			get
+			{
+				return new GorgonError("CannotBindInputDevice", ErrorBase + 0x10, "Error binding the input device.");
+			}
+		}
 	}
 
 	/// <summary>

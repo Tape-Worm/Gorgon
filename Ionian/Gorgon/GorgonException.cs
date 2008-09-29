@@ -40,7 +40,9 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Gorgon exception object.
 	/// </summary>
-	/// <remarks>This exception is the library specific exception for the library.</remarks>
+	/// <remarks>This is the library specific exception, meaning that it's meant for library specific functionality.<para>
+	/// When this exception is consumed, the user can check the <see cref="GorgonLibrary.GorgonError">ResultCode</see> property to examine the context of the exception.</para>
+	/// </remarks>
 	public class GorgonException
 		: Exception
 	{
@@ -118,7 +120,7 @@ namespace GorgonLibrary
 			inner = ex;
 			while (inner != null)
 			{
-				GorgonException heraException = inner as GorgonException;
+				GorgonException gorgonException = inner as GorgonException;
 
 				Log.Print("{1}Exception: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Message, indicator);
 				Log.Print("{1}Type: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator);
@@ -126,8 +128,8 @@ namespace GorgonLibrary
 					Log.Print("{1}Source: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator);
 				if (inner.TargetSite != null)
 					Log.Print("{1}Target site: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
-				if (heraException != null)
-					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, heraException.ResultCode.Name, heraException.ResultCode.Code, indicator);
+				if (gorgonException != null)
+					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
 				FormatStackTrace(inner.StackTrace, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
 
 
@@ -201,7 +203,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as a hera exception.
+		/// Function to repackage an arbitrary exception as a gorgon exception.
 		/// </summary>
 		/// <param name="result">Result code to use.</param>
 		/// <param name="message">Message to append to the result.</param>
@@ -217,7 +219,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as a hera exception.
+		/// Function to repackage an arbitrary exception as a gorgon exception.
 		/// </summary>
 		/// <param name="result">Result code to use.</param>
 		/// <param name="ex">Exception to capture and rethrow.</param>
@@ -232,7 +234,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as a hera exception.
+		/// Function to repackage an arbitrary exception as a gorgon exception.
 		/// </summary>
 		/// <param name="message">New message to pass to the new exception.</param>
 		/// <param name="ex">Exception to capture and rethrow.</param>

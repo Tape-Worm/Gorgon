@@ -126,7 +126,7 @@ namespace GorgonLibrary.Graphics
 			: base(name)
 		{
 			if (ShaderCache.Shaders.Contains(name))
-				throw new ShaderAlreadyExistsException(name);
+				throw new ArgumentException("'" + name + "' already exists.");
 			
 			_parameters = new ShaderParameterList();
 

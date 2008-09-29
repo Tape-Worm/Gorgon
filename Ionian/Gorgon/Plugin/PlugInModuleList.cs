@@ -118,34 +118,27 @@ namespace GorgonLibrary.PlugIns
 		{
 			Assembly newModule;			// Module to load.
 
-			try
-			{	
-				Gorgon.Log.Print("PlugInModuleList","Attempting to load plug-in module \"{0}\".", LoggingLevel.Intermediate,moduleName);							
-				newModule = AssemblyExists(moduleName);
+			Gorgon.Log.Print("PlugInModuleList","Attempting to load plug-in module \"{0}\".", LoggingLevel.Intermediate,moduleName);							
+			newModule = AssemblyExists(moduleName);
 
-				// If the module is not in the application domain, then load it.
-				if (newModule == null)
-				{
-					// Load using the full name of the assembly.
-					if (moduleName.IndexOf(", Version=") > -1)
-						newModule = Assembly.Load(moduleName);
-					else
-						newModule = Assembly.LoadFrom(moduleName);
-				}
-				else
-					Gorgon.Log.Print("PlugInModuleList", "Plug-in module already exists, using version from the current app domain.", LoggingLevel.Verbose);
-
-				// If it's not in our list, then add it, else get its reference.
-				if (!Contains(newModule.FullName))
-					AddItem(newModule.FullName, newModule);
-
-				Gorgon.Log.Print("PlugInModuleList", "Plug-in module \"{0}\" loaded successfully.", LoggingLevel.Intermediate, newModule.FullName);
-				return newModule;
-			}
-			catch (Exception ex)
+			// If the module is not in the application domain, then load it.
+			if (newModule == null)
 			{
-				throw new ModuleCannotLoadException(moduleName, ex);
+				// Load using the full name of the assembly.
+				if (moduleName.IndexOf(", Version=") > -1)
+					newModule = Assembly.Load(moduleName);
+				else
+					newModule = Assembly.LoadFrom(moduleName);
 			}
+			else
+				Gorgon.Log.Print("PlugInModuleList", "Plug-in module already exists, using version from the current app domain.", LoggingLevel.Verbose);
+
+			// If it's not in our list, then add it, else get its reference.
+			if (!Contains(newModule.FullName))
+				AddItem(newModule.FullName, newModule);
+
+			Gorgon.Log.Print("PlugInModuleList", "Plug-in module \"{0}\" loaded successfully.", LoggingLevel.Intermediate, newModule.FullName);
+			return newModule;
 		}
 		#endregion
 

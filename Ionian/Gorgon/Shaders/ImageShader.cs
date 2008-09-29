@@ -73,7 +73,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnRenderBegin()
 		{
-			throw new ShaderNotValidException();
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -81,7 +81,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnRender()
 		{
-			throw new ShaderNotValidException();
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnRenderEnd()
 		{
-			throw new ShaderNotValidException();
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
