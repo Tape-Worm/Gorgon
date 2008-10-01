@@ -303,6 +303,7 @@ namespace GorgonLibrary.GUI
 
 			Input.Window.Enter -= new EventHandler(Window_Enter);
 			Input.Window.Leave -= new EventHandler(Window_Leave);
+			Input.Window.SizeChanged -= new EventHandler(Window_SizeChanged);
 		}
 
 		/// <summary>

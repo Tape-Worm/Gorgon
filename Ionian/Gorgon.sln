@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework", "Tools\Go
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester1", "Examples\Tester1\Tester1.csproj", "{2FFFE574-9D04-449B-9FF3-4D934AD14E36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GooeyGUI", "Examples\Framework\GooeyGUI\GooeyGUI.csproj", "{51DFE41D-4319-4360-BF8E-84AD0A47D562}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +74,10 @@ Global
 		{2FFFE574-9D04-449B-9FF3-4D934AD14E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FFFE574-9D04-449B-9FF3-4D934AD14E36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FFFE574-9D04-449B-9FF3-4D934AD14E36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

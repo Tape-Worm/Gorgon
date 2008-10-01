@@ -1071,13 +1071,23 @@ namespace GorgonLibrary.Framework
 		}
 
 		/// <summary>
+		/// Function called before Gorgon is shut down.
+		/// </summary>
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		/// <remarks>Users should override this function to perform clean up when the application closes.</remarks>
+		protected virtual bool OnGorgonShutDown()
+		{
+			return true;
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
 		protected override void OnFormClosing(Forms.FormClosingEventArgs e)
 		{
 			// If we cancel, then don't destroy anything.
-			if (e.Cancel)
+			if ((e.Cancel) || (!OnGorgonShutDown()))
 			{
 				base.OnFormClosing(e);
 				return;

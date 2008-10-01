@@ -86,13 +86,12 @@ namespace GorgonLibrary.Example
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
+		/// Function called before Gorgon is shut down.
 		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		/// <remarks>Users should override this function to perform clean up when the application closes.</remarks>
+		protected override bool OnGorgonShutDown()
 		{
-			base.OnFormClosing(e);
-
 			if (_lightningFX != null)
 				_lightningFX.LightningEvent -= new LightningFlashEventHandler(_lightningFX_LightningEvent);
 
@@ -102,6 +101,8 @@ namespace GorgonLibrary.Example
 				foreach (NebulaLayer layer in _nebulaLayers)
 					layer.Dispose();
 			}
+
+			return true;
 		}
 
 		/// <summary>

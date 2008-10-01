@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepAsAPuddle", "Framework\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimatedDebate", "Framework\AnimatedDebate\AnimatedDebate.csproj", "{2F771859-7FBA-46DE-B372-A1B0BE32C153}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GooeyGUI", "Framework\GooeyGUI\GooeyGUI.csproj", "{51DFE41D-4319-4360-BF8E-84AD0A47D562}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,6 +143,10 @@ Global
 		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

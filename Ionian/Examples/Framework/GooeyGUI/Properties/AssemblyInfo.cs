@@ -20,10 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, September 21, 2008 7:12:43 PM
+// Created: Friday, October 26, 2007 11:55:49 PM
 // 
 #endregion
-
 
 using System;
 using System.Reflection;
@@ -35,12 +34,12 @@ using System.Security.Permissions;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Deep as a puddle.")]
-[assembly: AssemblyDescription("Example to show how to programmatically manipulate the animation system.")]
+[assembly: AssemblyTitle("You were framed")]
+[assembly: AssemblyDescription("Example showing how to use the GUI functionality in the framework.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyProduct("Gorgon Framework Example.")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2008")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor 2007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: CLSCompliant(false)]

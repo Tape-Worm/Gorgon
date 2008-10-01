@@ -362,13 +362,12 @@ namespace GorgonLibrary.Example
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
+		/// Function called before Gorgon is shut down.
 		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		/// <remarks>Users should override this function to perform clean up when the application closes.</remarks>
+		protected override bool OnGorgonShutDown()
 		{
-			base.OnFormClosing(e);
-
 			if (_title != null)
 			{
 				_title.TitleClosed -= new EventHandler(_title_TitleClosed);
@@ -383,6 +382,8 @@ namespace GorgonLibrary.Example
 
 			if (_fonts != null)
 				_fonts.Dispose();
+
+			return true;
 		}
 
 		/// <summary>
