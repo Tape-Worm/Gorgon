@@ -87,6 +87,8 @@ namespace GorgonLibrary.InputDevices
 		{
 			get
 			{
+				if ((_owner != null) && ((_owner.IsDisposed) || (_owner.Disposing)))
+					return null;
 				return _owner;
 			}
 		}
@@ -295,6 +297,7 @@ namespace GorgonLibrary.InputDevices
 				_disposed = true;
 			}
 
+			_owner = null;
 			_joysticks = null;
 			_mouse = null;
 			_keyboard = null;

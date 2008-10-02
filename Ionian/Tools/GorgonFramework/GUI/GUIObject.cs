@@ -285,6 +285,7 @@ namespace GorgonLibrary.GUI
 			set
 			{
 				_windowArea.Size = value;
+				SetClientArea(_windowArea);
 			}
 		}
 
@@ -647,13 +648,20 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		protected virtual void DrawFocusRectangle()
 		{
+			BlendingModes mode;
 			Drawing.Rectangle screenRect = Owner.RectToScreen(WindowDimensions);
 			GUIWindow ownerWindow = GetOwnerWindow();
 
-			if ((ownerWindow != null) && (ownerWindow.FocusedControl == this))
+			if ((ownerWindow != null) && (ownerWindow.FocusedControl == this) && (_desktop != null))
 			{
 				Gorgon.CurrentRenderTarget.BeginDrawing();
-				Gorgon.CurrentRenderTarget.Rectangle(screenRect.X, screenRect.Y, screenRect.Width, screenRect.Height, Drawing.Color.Blue);
+				mode = Gorgon.CurrentRenderTarget.BlendingMode;
+				Gorgon.CurrentRenderTarget.BlendingMode = _desktop.FocusRectangleBlend;
+				if (_desktop.FocusRectangleOutline)
+					Gorgon.CurrentRenderTarget.Rectangle(screenRect.X, screenRect.Y, screenRect.Width, screenRect.Height, _desktop.FocusRectangleColor);
+				else
+					Gorgon.CurrentRenderTarget.FilledRectangle(screenRect.X, screenRect.Y, screenRect.Width, screenRect.Height, _desktop.FocusRectangleColor);
+				Gorgon.CurrentRenderTarget.BlendingMode = mode;
 				Gorgon.CurrentRenderTarget.EndDrawing();
 			}
 		}

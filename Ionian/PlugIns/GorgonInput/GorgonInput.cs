@@ -113,6 +113,9 @@ namespace GorgonLibrary.InputDevices
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.RawInputEventArgs"/> instance containing the event data.</param>
 		private void messageFilter_RawInputData(object sender, RawInputEventArgs e)
 		{
+			if (Window.Disposing)
+				return;
+
 			if ((Mouse.Exclusive) && (!Mouse.Acquired))
 			{
 				// Attempt to recapture.

@@ -276,7 +276,7 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		public void OnCanvasUpdate(object sender, UpdateEventArgs e)
+		protected void OnCanvasUpdate(object sender, UpdateEventArgs e)
 		{
 			if (CanvasUpdate != null)
 				CanvasUpdate(sender, e);
@@ -287,7 +287,7 @@ namespace GorgonLibrary.GUI
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		public void OnCanvasDraw(object sender, EventArgs e)
+		protected void OnCanvasDraw(object sender, EventArgs e)
 		{
 			if (CanvasDraw != null)
 				CanvasDraw(sender, e);

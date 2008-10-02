@@ -275,11 +275,15 @@ namespace GorgonLibrary.InputDevices
 			if ((mouseData.LastX != 0) || (mouseData.LastY != 0))
 				OnMouseMove();
 
-			// Move the windows cursor to match if not exclusive.
-			if (!_exclusive)
-				Forms.Cursor.Position = InputInterface.Window.PointToScreen((Point)_position);
-			else
-				Forms.Cursor.Position = InputInterface.Window.PointToScreen((Point)Vector2D.Zero);
+			// If the window is disposed, then do nothing.
+			if (InputInterface.Window != null)
+			{
+				// Move the windows cursor to match if not exclusive.
+				if (!_exclusive)
+					Forms.Cursor.Position = InputInterface.Window.PointToScreen((Point)_position);
+				else
+					Forms.Cursor.Position = InputInterface.Window.PointToScreen((Point)Vector2D.Zero);
+			}
 		}
 		#endregion
 

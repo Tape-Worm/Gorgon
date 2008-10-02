@@ -52,6 +52,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
     </Reference>
+    <Reference Include="Gorgon, Version=1.1.3196.39849, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
+    </Reference>
+    <Reference Include="GorgonFramework, Version=1.0.3196.39850, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Tools\GorgonFramework\bin\Release\GorgonFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -82,16 +90,6 @@
     <Content Include="GorIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.csproj">
-      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
-      <Name>Gorgon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Tools\GorgonFramework\GorgonFramework.csproj">
-      <Project>{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}</Project>
-      <Name>GorgonFramework</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

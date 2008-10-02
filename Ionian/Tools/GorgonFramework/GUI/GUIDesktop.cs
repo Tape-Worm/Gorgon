@@ -103,6 +103,33 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
+		/// Property to set or return the color of the focus rectangle.
+		/// </summary>
+		public Drawing.Color FocusRectangleColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the focus rectangle blend mode.
+		/// </summary>
+		public BlendingModes FocusRectangleBlend
+		{
+			get;
+			set;
+		}
+		
+		/// <summary>
+		/// Property to set or return whether the focus rectangle is an outline or solid rectangle.
+		/// </summary>
+		public bool FocusRectangleOutline
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the skin for the objects.
 		/// </summary>
 		public GUISkin Skin
@@ -605,8 +632,11 @@ namespace GorgonLibrary.GUI
 			_windows = new GUIWindowCollection(this);
 			_state = new InputState();
 			Input = input;
-			CursorVisible = true;
+			CursorVisible = true;			
 			BackgroundColor = Drawing.Color.White;
+			FocusRectangleBlend = BlendingModes.None;
+			FocusRectangleColor = Drawing.Color.FromArgb(0, 0, 64);
+			FocusRectangleOutline = true;
 			if (!skin.Elements.Contains("Cursor.Default"))
 				Cursor = new Sprite("DefaultCursor", Image.FromResource("DefaultCursorImage", GorgonLibrary.Framework.Properties.Resources.ResourceManager));
 			else
