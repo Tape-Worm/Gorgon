@@ -1,23 +1,26 @@
-#region LGPL.
+#region MIT.
 // 
-// Gorgon.
-// Copyright (C) 2007 Michael Winsor
+// Examples.
+// Copyright (C) 2008 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
-// Created: Friday, October 26, 2007 11:55:49 PM
+// Created: Thursday, October 02, 2008 10:46:02 PM
 // 
 #endregion
 
@@ -28,13 +31,11 @@ using System.Runtime.InteropServices;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.Framework;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.InputDevices;
+using Dialogs;
 
 namespace GorgonLibrary.Example
 {
@@ -47,7 +48,7 @@ namespace GorgonLibrary.Example
 		: GorgonApplicationWindow
 	{
 		#region Constants.
-		/// <summary>Allow only five shots at a time.</summary>
+		/// <summary>Allow only five asteroids at a time.</summary>
 		private const int AsteroidCount = 5;
 		#endregion
 
@@ -222,6 +223,7 @@ namespace GorgonLibrary.Example
 				foreach (Asteroid asteroid in _asteroids)
 					asteroid.Update(e.FrameDeltaTime, _difficultyMod);
 
+
 				// Set the alien to active at some random point.
 				if ((!_alien.Active) && (_alienTimer.Seconds > 15 + _rnd.Next(10)))
 					_alien.Active = true;
@@ -274,7 +276,7 @@ namespace GorgonLibrary.Example
 			}
 
 			_stars.Draw();
-
+						
 			foreach (Asteroid asteroid in _asteroids)
 				asteroid.Draw();
 
@@ -360,13 +362,12 @@ namespace GorgonLibrary.Example
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
+		/// Function called before Gorgon is shut down.
 		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		/// <remarks>Users should override this function to perform clean up when the application closes.</remarks>
+		protected override bool OnGorgonShutDown()
 		{
-			base.OnFormClosing(e);
-
 			if (_title != null)
 			{
 				_title.TitleClosed -= new EventHandler(_title_TitleClosed);
@@ -381,6 +382,8 @@ namespace GorgonLibrary.Example
 
 			if (_fonts != null)
 				_fonts.Dispose();
+
+			return true;
 		}
 
 		/// <summary>
@@ -457,7 +460,7 @@ namespace GorgonLibrary.Example
 			: base(@".\NoCleverNameSettings.xml")
 		{
 			InitializeComponent();
-		}
+ 		}
 		#endregion
 	}
 }

@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2006 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Thursday, November 02, 2006 9:17:23 AM
 // 
@@ -27,10 +30,9 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using System.Reflection;
-using SharpUtilities;
-using SharpUtilities.Collections;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Serialization;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.FileSystems
 {
@@ -65,6 +67,7 @@ namespace GorgonLibrary.FileSystems
 		private XmlDocument _fileIndex = null;								// XML file containing the directory and file list.
 		private FileSystemPath _rootPath = new FileSystemPath(null, @"\");	// File system root path object.
 		private string _root = string.Empty;								// Root file path for the physical file system.
+        private IAuthData _authData = null;                                 // Authentication data.
         #endregion
 
         #region Properties.
@@ -110,6 +113,50 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
+		/// Property to set or return the authentication data for the file system.
+		/// </summary>
+		public IAuthData AuthenticationData
+		{
+			get
+			{
+				return _authData;
+			}
+			set
+			{
+				if (this.Provider.IsEncrypted)
+				{
+					_authData = value;
+					InitializeSecurity();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the root of the file system is a stream or not.
+		/// </summary>
+		public virtual bool IsRootInStream
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the offset of the file system within the stream.
+		/// </summary>
+		public virtual long FileSystemStreamOffset
+		{
+			get
+			{
+				return -1;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
 		/// Property to return the a file system file.
 		/// </summary>
 		/// <param name="filePath">Path of the file system file.</param>
@@ -119,7 +166,7 @@ namespace GorgonLibrary.FileSystems
 			get
 			{
 				if (!FileExists(filePath))
-					throw new FileSystemFileNotFoundException(filePath);
+					throw new System.IO.FileNotFoundException("The file '" + filePath + "' was not found.");
 
 				// Get the fully qualified name.
 				filePath = FileSystem.FullFileName(filePath);
@@ -142,28 +189,12 @@ namespace GorgonLibrary.FileSystems
         /// <summary>
         /// Property to set or return the root path of the file system.
         /// </summary>
-        public virtual string Root
+        public string Root
         {
             get
             {
                 return _root;
-            }
-            set
-            {
-				if ((value == null) || (value == string.Empty))
-					throw new FileSystemRootIsInvalidException();
-
-				// Use standard separators
-				value = value.Replace("/", @"\");
-
-				// Add the file index.
-				_fileIndex = new XmlDocument();
-
-				// Remove all entries.
-				Clear();
-
-				_root = value;
-			}
+            } 
         }
         #endregion
 
@@ -261,6 +292,14 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="file">File to save.</param>
 		protected abstract void SaveFileData(string filePath, FileSystemFile file);
 
+        /// <summary>
+        /// Function to initialize any security for the encrypted data.
+        /// </summary>
+        protected virtual void InitializeSecurity()
+        {
+            // Initialize our security for an encrypted file system.
+        }
+
 		/// <summary>
 		/// Function to fire the file read event.
 		/// </summary>
@@ -346,11 +385,8 @@ namespace GorgonLibrary.FileSystems
 			nodes = _fileIndex.SelectNodes("//Header");
 
 			// Validate the index file.
-			if ((nodes == null) || (nodes.Count == 0))
-				throw new FileSystemHeaderInvalidException();
-
-			if (string.Compare(nodes[0].InnerText, "gorfs1.0", true) != 0)
-				throw new FileSystemHeaderInvalidException();
+			if ((nodes == null) || (nodes.Count == 0) || (string.Compare(nodes[0].InnerText, "gorfs1.0", true) != 0))
+				throw new GorgonException(GorgonErrors.InvalidFormat, "The file system index is corrupt.");
 		}
 
 		/// <summary>
@@ -405,6 +441,42 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
+		/// Function to initialize the file system indexing.
+		/// </summary>
+		/// <param name="rootPath">Path to the root of the file system.</param>
+		protected void InitializeIndex(string rootPath)
+		{
+			if (string.IsNullOrEmpty(rootPath))
+				throw new ArgumentNullException("rootPath");
+
+			_fileIndex = new XmlDocument();
+			Clear();
+			_root = rootPath;
+		}
+		
+		/// <summary>
+        /// Function used to create a user friendly authorization interface.
+        /// </summary>
+        /// <param name="owner">Form that would potentially own any dialogs we create.</param>
+        /// <returns>A code to indicate the status.</returns>
+        /// <remarks>You'd typically use this to create a login screen or file browser or whatever to define the authorization for the user.</remarks>
+        public virtual int CreateAuthorization(System.Windows.Forms.Form owner)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// Function user to get the authorization from the user.
+        /// </summary>
+        /// <param name="owner">Form that would potentially own any dialogs we create.</param>
+        /// <returns>A code to indicate the status.</returns>
+        /// <remarks>You'd typically use this to create a login screen or file browser or whatever to define the authorization for the user.</remarks>
+        public virtual int GetAuthorization(System.Windows.Forms.Form owner)
+        {
+            return 0;
+        }
+
+		/// <summary>
 		/// Function to create a file system.
 		/// </summary>
 		/// <param name="fileSystemName">Name of the file system.</param>
@@ -447,9 +519,6 @@ namespace GorgonLibrary.FileSystems
 			if (string.IsNullOrEmpty(provider))
 				throw new ArgumentNullException("provider");
 
-			if (!FileSystemProviderCache.Providers.Contains(provider))
-				throw new FileSystemPlugInNotFoundException(provider);
-
 			return Create(fileSystemName, FileSystemProviderCache.Providers[provider]);
 		}
 
@@ -485,8 +554,8 @@ namespace GorgonLibrary.FileSystems
 		public static string FullFileName(string path)
 		{
 			// Ensure that there's a file name.
-			if ((path == string.Empty) || (path == null))
-				throw new FileSystemFilenameInvalidException();
+			if (string.IsNullOrEmpty(path))
+				throw new ArgumentNullException("path");
 
 			// Replace alternate path separator.
 			path = path.Replace("/", @"\");
@@ -510,7 +579,7 @@ namespace GorgonLibrary.FileSystems
 			string[] paths = null;				// Path list.
 
 			if (!PathExists(path))
-				throw new FileSystemPathNotFoundException(path);
+				throw new System.IO.DirectoryNotFoundException("The path '" + path + "' was not found.");
 
 			// Get the pull pathname.
 			path = FullPathName(path);
@@ -524,7 +593,7 @@ namespace GorgonLibrary.FileSystems
 
 			// No paths?  Then leave.
 			if (paths.Length == 0)
-				throw new FileSystemPathNotFoundException(path);
+				throw new System.IO.DirectoryNotFoundException("The path '" + path + "' was not found.");
 
 			// Begin at the root.
 			newPath = Paths;
@@ -536,7 +605,7 @@ namespace GorgonLibrary.FileSystems
 				if (newPath.ChildPaths.Contains(searchPath))
 					newPath = newPath.ChildPaths[searchPath];
 				else
-					throw new FileSystemPathNotFoundException(path);
+					throw new System.IO.DirectoryNotFoundException("The path '" + path + "' was not found.");
 			}
 
 			return newPath;
@@ -563,93 +632,86 @@ namespace GorgonLibrary.FileSystems
 			DateTime fileDate = DateTime.MinValue;	// File date & time.
 			string fileComment = string.Empty;		// File comment.
 
-			if ((path == null) || (path == string.Empty))
+			if (string.IsNullOrEmpty(path))
 				path = @"\";
 			
 			// Get the path name.
 			path = FileSystem.FullPathName(path);
 
 			if (!FileSystemPath.ValidPath(path))
-				throw new FileSystemPathInvalidException(path);
+				throw new ArgumentNullException("The path '" + path + "' is not valid.");
 
-			try
+			// Get file system paths.
+			if (recurse)
+				nodes = _fileIndex.SelectNodes("//Path[@FullPath[starts-with(.,'" + path + "')]]");
+			else
+				nodes = _fileIndex.SelectNodes("//Path[@FullPath='" + path + "']");
+
+			if (nodes.Count == 0)
+				throw new System.IO.DirectoryNotFoundException("The path '" + path + "' was not found.");
+
+			// Add paths.
+			foreach (XmlNode pathNode in nodes)
 			{
-				// Get file system paths.
-				if (recurse)
-					nodes = _fileIndex.SelectNodes("//Path[@FullPath[starts-with(.,'" + path + "')]]");
-				else
-					nodes = _fileIndex.SelectNodes("//Path[@FullPath='" + path + "']");
+				CreatePath(pathNode.Attributes["FullPath"].Value);
 
-				if (nodes.Count == 0)
-					throw new FileSystemPathNotFoundException(path);
+				// Get file list.
+				files = pathNode.SelectNodes("File");
 
-				// Add paths.
-				foreach (XmlNode pathNode in nodes)
+				// Get the parent path object.
+				newPath = GetPath(pathNode.Attributes["FullPath"].Value);					
+
+				// Add each new file.
+				foreach (XmlNode fileNode in files)
 				{
-					CreatePath(pathNode.Attributes["FullPath"].Value);
+					// Get file path.
+					fileProperty = fileNode.SelectSingleNode("Filename");
+					if ((fileProperty != null) && (fileProperty.InnerText != string.Empty))
+						filePath = fileProperty.InnerText;
+					else
+						throw new GorgonException(GorgonErrors.CannotReadData, "The file system appears to be corrupted.");
 
-					// Get file list.
-					files = pathNode.SelectNodes("File");
+					fileProperty = fileNode.SelectSingleNode("Extension");
+					if (fileProperty != null)
+						filePath += fileProperty.InnerText;
 
-					// Get the parent path object.
-					newPath = GetPath(pathNode.Attributes["FullPath"].Value);					
+					// Get offset.
+					fileProperty = fileNode.SelectSingleNode("Offset");
+					if (fileProperty != null)
+						fileOffset = Convert.ToInt64(fileProperty.InnerText);
+					
+					// Get size.
+					fileProperty = fileNode.SelectSingleNode("Size");
+					if (fileProperty != null)
+						fileSize = Convert.ToInt32(fileProperty.InnerText);
 
-					// Add each new file.
-					foreach (XmlNode fileNode in files)
-					{
-						// Get file path.
-						fileProperty = fileNode.SelectSingleNode("Filename");
-                        if ((fileProperty != null) && (fileProperty.InnerText != string.Empty))
-                            filePath = fileProperty.InnerText;
-                        else
-                            throw new FileSystemIndexReadException();
+					// Get compressed size.
+					fileProperty = fileNode.SelectSingleNode("CompressedSize");
+					if (fileProperty != null)
+						fileCompressedSize = Convert.ToInt32(fileProperty.InnerText);
 
-						fileProperty = fileNode.SelectSingleNode("Extension");
-						if (fileProperty != null)
-							filePath += fileProperty.InnerText;
+					// Get file date.
+					fileProperty = fileNode.SelectSingleNode("FileDate");
+                    if (fileProperty != null)
+                        DateTime.TryParse(fileProperty.InnerText, System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat, System.Globalization.DateTimeStyles.None, out fileDate);
 
-						// Get offset.
-						fileProperty = fileNode.SelectSingleNode("Offset");
-						if (fileProperty != null)
-							fileOffset = Convert.ToInt64(fileProperty.InnerText);
-						
-						// Get size.
-						fileProperty = fileNode.SelectSingleNode("Size");
-						if (fileProperty != null)
-							fileSize = Convert.ToInt32(fileProperty.InnerText);
+					// Get encrypted flag.
+					fileProperty = fileNode.SelectSingleNode("Encrypted");
+					if (fileProperty != null)
+						fileEncrypted = (string.Compare(fileProperty.InnerText, "true", true) == 0);
 
-						// Get compressed size.
-						fileProperty = fileNode.SelectSingleNode("CompressedSize");
-						if (fileProperty != null)
-							fileCompressedSize = Convert.ToInt32(fileProperty.InnerText);
+					// Get comment.
+					fileProperty = fileNode.SelectSingleNode("Comment");
+					if (fileProperty != null)
+						fileComment = fileProperty.InnerText;
 
-						// Get file date.
-						fileProperty = fileNode.SelectSingleNode("FileDate");
-                        if (fileProperty != null)
-                            DateTime.TryParse(fileProperty.InnerText, System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat, System.Globalization.DateTimeStyles.None, out fileDate);
+					newFile = newPath.Files.Add(filePath, null, fileSize, fileCompressedSize, fileDate, fileEncrypted);
+					newFile.Comment = fileComment;
+					newFile.Offset = fileOffset;
 
-						// Get encrypted flag.
-						fileProperty = fileNode.SelectSingleNode("Encrypted");
-						if (fileProperty != null)
-							fileEncrypted = (string.Compare(fileProperty.InnerText, "true", true) == 0);
-
-						// Get comment.
-						fileProperty = fileNode.SelectSingleNode("Comment");
-						if (fileProperty != null)
-							fileComment = fileProperty.InnerText;
-
-						newFile = newPath.Files.Add(filePath, null, fileSize, fileCompressedSize, fileDate, fileEncrypted);
-						newFile.Comment = fileComment;
-						newFile.Offset = fileOffset;
-
-						// Attempt to load the file data from the disk.
-						Load(newFile);
-					}
+					// Attempt to load the file data from the disk.
+					Load(newFile);
 				}
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemPathMountException(path, ex);
 			}
 		}
 
@@ -683,10 +745,10 @@ namespace GorgonLibrary.FileSystems
 			path = FileSystem.FullPathName(path);
 
 			if (!FileSystemPath.ValidPath(path))
-				throw new FileSystemPathInvalidException(path);
+				throw new ArgumentException("The path '" + path + "' is not a valid path.");
 
 			if (!PathExists(path))
-				throw new FileSystemPathNotFoundException(path);
+				throw new System.IO.DirectoryNotFoundException("The path '" + path + "' was not found.");
 
 			// All the files to be unmounted.
 			removed = GetPath(path).GetFiles();
@@ -760,7 +822,7 @@ namespace GorgonLibrary.FileSystems
 			path = FullPathName(path);
 
 			if (!FileSystemPath.ValidPath(path))
-				throw new FileSystemPathInvalidException(path);
+				throw new ArgumentException("The path '" + path + "' is not a valid path.");
 
 			// Do nothing if the path exists.
 			if (PathExists(path))
@@ -800,7 +862,7 @@ namespace GorgonLibrary.FileSystems
 			path = FullPathName(path);
 
 			if (!FileSystemPath.ValidPath(path))
-				throw new FileSystemPathInvalidException(path);
+				throw new ArgumentException("The path '" + path + "' is not a valid path.");
 
 			// Destroy everything under the root if we specify the root.
 			if (path == @"\")
@@ -836,28 +898,21 @@ namespace GorgonLibrary.FileSystems
 			filePath = FileSystem.FullFileName(filePath);
 
 			if (!FileSystemFile.ValidFilename(filePath))
-				throw new FileSystemFilenameInvalidException(filePath);
+				throw new ArithmeticException("'" + filePath + "' is not a valid filename.");
 
-			try
-			{
-				// Remove the file if it already exists.
-				if (FileExists(filePath))
-					Delete(filePath);
+			// Remove the file if it already exists.
+			if (FileExists(filePath))
+				Delete(filePath);
 
-				// Get the path.
-				path = Path.GetDirectoryName(filePath);
+			// Get the path.
+			path = Path.GetDirectoryName(filePath);
 
-				// Attempt to create the path.
-				CreatePath(path);
+			// Attempt to create the path.
+			CreatePath(path);
 
-				// Add the file and fire write event.
-				file = EncodeData(GetPath(path), Path.GetFileName(filePath), objectData);
-				OnFileWrite(this, new FileSystemReadWriteEventArgs(file));
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemWriteException(filePath, ex);
-			}
+			// Add the file and fire write event.
+			file = EncodeData(GetPath(path), Path.GetFileName(filePath), objectData);
+			OnFileWrite(this, new FileSystemReadWriteEventArgs(file));
 		}
 
 		/// <summary>
@@ -874,26 +929,19 @@ namespace GorgonLibrary.FileSystems
 			filePath = FileSystem.FullFileName(filePath);
 
 			if (!FileSystemFile.ValidFilename(filePath))
-				throw new FileSystemFilenameInvalidException(filePath);
+				throw new ArithmeticException("'" + filePath + "' is not a valid filename.");
 
 			if (!FileExists(filePath))
-				throw new FileSystemFileNotFoundException(filePath);
+				throw new System.IO.FileNotFoundException("The file '" + filePath + "' was not found in this file system.");
 
-			try
-			{
-				// Get the data and decode.
-				file = GetPath(Path.GetDirectoryName(filePath)).Files[Path.GetFileName(filePath)];
-				result = DecodeData(file);
+			// Get the data and decode.
+			file = GetPath(Path.GetDirectoryName(filePath)).Files[Path.GetFileName(filePath)];
+			result = DecodeData(file);
 
-				// Fire read event.
-				OnFileRead(this, new FileSystemReadWriteEventArgs(file));
+			// Fire read event.
+			OnFileRead(this, new FileSystemReadWriteEventArgs(file));
 
-				return result;
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemReadException(filePath, ex);
-			}
+			return result;
 		}
 
 		/// <summary>
@@ -911,23 +959,16 @@ namespace GorgonLibrary.FileSystems
 			filePath = FileSystem.FullFileName(filePath);
 
 			if (!FileSystemFile.ValidFilename(filePath))
-				throw new FileSystemFilenameInvalidException(filePath);
+				throw new ArithmeticException("'" + filePath + "' is not a valid filename.");
 
 			if (!FileExists(filePath))
-				throw new FileSystemFileNotFoundException(filePath);
+				throw new System.IO.FileNotFoundException("The file '" + filePath + "' was not found in this file system.");
 
-			try
-			{
-				// Get the data and decode.
-				file = GetPath(Path.GetDirectoryName(filePath)).Files[Path.GetFileName(filePath)];
-				result = DecodeData(file);
+			// Get the data and decode.
+			file = GetPath(Path.GetDirectoryName(filePath)).Files[Path.GetFileName(filePath)];
+			result = DecodeData(file);
 
-				return new MemoryStream(result, readOnly);
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemReadException(filePath, ex);
-			}
+			return new MemoryStream(result, readOnly);
 		}
 
 		/// <summary>
@@ -940,44 +981,57 @@ namespace GorgonLibrary.FileSystems
 			return OpenFileStream(filePath, false);
 		}
 
+		/// <summary>
+		/// Function to assign the root of this file system.
+		/// </summary>
+		/// <param name="path">Path to the root of the file system.</param>
+		/// <remarks>Path can be a folder that contains the file system XML index for a folder file system or a file (typically 
+		/// ending with extension .gorPack) for a packed file system.</remarks>
+        public abstract void AssignRoot(string path);
+
+		/// <summary>
+		/// Function to assign the root of this file system.
+		/// </summary>
+		/// <param name="fileSystemStream">The file stream that will contain the file system.</param>
+		/// <remarks>Due to the nature of a file stream, the file system within the stream must be a packed file system.</remarks>
+		/// <exception cref="InvalidOperationException">The file system is not a packed file system.</exception>
+		public virtual void AssignRoot(Stream fileSystemStream)
+		{
+			if (!Provider.IsPackedFile)
+				throw new InvalidOperationException("The file system is not a packed file system.  Streams can only be used as the root in a packed file system.");
+		}
+
         /// <summary>
         /// Function to remove a file from the file system.
         /// </summary>
         /// <param name="file">Path and filename of the object to delete.</param>
         public void Delete(string file)
         {
-			try
+			// If we pass in nothing then delete all files.			
+			if (string.IsNullOrEmpty(file))
 			{
-				// If we pass in nothing then delete all files.			
-				if ((file == string.Empty) || (file == null))
-				{
-					Paths.Files.Clear();
-					return;
-				}
-
-				file = FileSystem.FullFileName(file);
-			
-				// Remove all files under the path.
-				if (Path.GetFileName(file) == string.Empty)
-				{
-					GetPath(file).Files.Clear();
-					return;
-				}
-
-				if (!FileSystemFile.ValidFilename(file))
-					throw new FileSystemFilenameInvalidException(file);
-
-				// Check to see if the file exists.
-				if (!FileExists(file))
-					throw new FileSystemFileNotFoundException(file);
-
-				// Remove the file.
-				GetPath(Path.GetDirectoryName(file)).Files.Remove(file);
+				Paths.Files.Clear();
+				return;
 			}
-			catch (Exception ex)
+
+			file = FileSystem.FullFileName(file);
+		
+			// Remove all files under the path.
+			if (Path.GetFileName(file) == string.Empty)
 			{
-				throw new FileSystemDeleteException(file, ex);
+				GetPath(file).Files.Clear();
+				return;
 			}
+
+			if (!FileSystemFile.ValidFilename(file))
+				throw new ArgumentException("'" + file + "' is not a valid filename.");
+
+			// Check to see if the file exists.
+			if (!FileExists(file))
+				throw new System.IO.FileNotFoundException("The file '" + file + "' was not found in this file system.");
+
+			// Remove the file.
+			GetPath(Path.GetDirectoryName(file)).Files.Remove(file);
         }
 
 		/// <summary>
@@ -1001,7 +1055,7 @@ namespace GorgonLibrary.FileSystems
 			filePath = FileSystem.FullFileName(filePath);
 
 			if (!FileSystemFile.ValidFilename(filePath))
-				throw new FileSystemFilenameInvalidException(filePath);
+				throw new ArithmeticException("'" + filePath + "' is not a valid filename.");
 
 			// If the path doesn't exist, then obviously the file doesn't either.
 			if (!PathExists(Path.GetDirectoryName(filePath)))
@@ -1028,7 +1082,7 @@ namespace GorgonLibrary.FileSystems
 			path = FullPathName(path);
 
 			if (!FileSystemPath.ValidPath(path))
-				throw new FileSystemPathInvalidException(path);
+				throw new ArgumentException("The path '" + path + "' is not a valid path.");
 
 			// Root always exists.
 			if (path == @"\")
@@ -1066,7 +1120,7 @@ namespace GorgonLibrary.FileSystems
 			fileName = FileSystem.FullFileName(fileName);
 
 			if (!FileSystemFile.ValidFilename(fileName))
-				throw new FileSystemFilenameInvalidException(fileName);
+				throw new ArgumentException("'" + fileName + "' is not a valid filename.");
 
 			// Extract the filename.
 			filePath = Path.GetDirectoryName(fileName);
@@ -1091,31 +1145,41 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
+		/// Function to save the file system to a stream.
+		/// </summary>
+		/// <param name="fileSystemStream">Stream to save into.</param>
+		public virtual void Save(Stream fileSystemStream)
+		{
+			if (!Provider.IsPackedFile)
+				throw new InvalidOperationException("Only packed file systems can be persisted to a stream.");
+		}
+		
+		/// <summary>
 		/// Function to save the file system.
 		/// </summary>
 		/// <param name="filePath">Path to save the file system into.</param>
-		public void Save(string filePath)
+		public virtual void Save(string filePath)
 		{
 			XmlElement fsElement = null;				// File system.
 			long offset = 0;							// File offset.
 			FileList allFiles = null;					// All files.
-						
-			if ((filePath == string.Empty) || (filePath == null))
+
+			if (((filePath == string.Empty) || (filePath == null)) && (!IsRootInStream))
 				throw new ArgumentNullException("filePath");
 
-            // Get all the file entries.
-            allFiles = Paths.GetFiles();
+			// Get all the file entries.
+			allFiles = Paths.GetFiles();
 
-            // Reset the XML index.
-            RebuildIndex();
+			// Reset the XML index.
+			RebuildIndex();
 
-            // Get the file system node.
-            fsElement = _fileIndex.SelectSingleNode("//FileSystem") as XmlElement;
+			// Get the file system node.
+			fsElement = _fileIndex.SelectSingleNode("//FileSystem") as XmlElement;
 
-            if (fsElement == null)
-                throw new FileSystemIndexReadException();
-            
-            try
+			if (fsElement == null)
+				throw new GorgonException(GorgonErrors.CannotReadData, "The file system index is corrupt.");
+
+			try
 			{
 				// Update the file offsets.
 				foreach (FileSystemFile file in allFiles)
@@ -1140,7 +1204,7 @@ namespace GorgonLibrary.FileSystems
 				foreach (FileSystemFile file in allFiles)
 				{
 					if (file.Data == null)
-                        throw new Exception("File has no data.");
+						throw new Exception("File has no data.");
 
 					SaveFileData(filePath, file);
 
@@ -1150,10 +1214,6 @@ namespace GorgonLibrary.FileSystems
 
 				// Set the root path.
 				_root = filePath;
-			}
-			catch (Exception ex)
-			{
-				throw new CannotSaveException("Cannot save the file system '" + filePath + "'", ex);
 			}
 			finally
 			{

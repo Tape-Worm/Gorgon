@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2006 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Wednesday, May 17, 2006 10:50:26 PM
 // 
@@ -25,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Graphics;
@@ -49,7 +51,6 @@ namespace GorgonLibrary.Internal
 		private float _depthBufferBias;							// Depth buffer biasing.		
 		private bool _lightingEnabled;							// Flag to indicate that lighting is enabled.		
 		private bool _specularEnabled;							// Flag to indicate that specular lighting is enabled.		
-		private bool _useWBuffer;								// Flag to use the W Buffer for 16 bit depth buffers.		
 		private CompareFunctions _depthTestFunction;			// Depth testing function.		
 		private DrawingMode _drawingMode;						// Drawing mode for the scene.
 		private bool _alphaBlendEnabled;						// Flag to indicate that alpha blending is enabled.
@@ -68,6 +69,7 @@ namespace GorgonLibrary.Internal
 		private CompareFunctions _stencilCompare;				// Stencil testing function.
 		private bool _ditherEnabled;                            // Flag to indicate whether dithering is enabled or not.
 		private D3D9.Device _device = null;						// D3D device object.
+        private bool _enableStateSetting = true;                // Flag to indicate that we should enable/disable setting the states.
 		#endregion
 
 		#region Properties.
@@ -78,7 +80,7 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				if (Device == null)
+				if ((Device == null) || (!_enableStateSetting))
 					return false;
 
 				return !Gorgon.Screen.DeviceNotReset;
@@ -101,6 +103,21 @@ namespace GorgonLibrary.Internal
 				return _device;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return whether setting the properties should affect the states or not.
+        /// </summary>
+        internal bool PropertyShouldSetState
+        {
+            get
+            {
+                return _enableStateSetting;
+            }
+            set
+            {
+                _enableStateSetting = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return whether to enable the stencil buffer or not.
@@ -358,13 +375,6 @@ namespace GorgonLibrary.Internal
 					return;
 
 				SetDepthBufferEnabled(value);
-				if (value)
-				{
-					if (_useWBuffer)
-						SetWBufferEnabled(true);
-					else
-						SetWBufferEnabled(false);
-				}
 				_depthBufferEnabled = value;
 			}
 		}
@@ -523,17 +533,6 @@ namespace GorgonLibrary.Internal
 					value = Gorgon.CurrentDriver.MaximumPointSize;
 				SetVertexPointSize(value);
 				_vertexPointSize = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to return whether the W buffer can be used or not.
-		/// </summary>
-		public bool UsingWBuffer
-		{
-			get
-			{
-				return _useWBuffer;
 			}
 		}
 
@@ -870,27 +869,6 @@ namespace GorgonLibrary.Internal
 		}
 
 		/// <summary>
-		/// Function to set the WBuffer enabled flag.
-		/// </summary>
-		/// <param name="value">TRUE to enable, FALSE to disable.</param>
-		private void SetWBufferEnabled(bool value)
-		{
-			DX.Configuration.ThrowOnError = false;
-			if ((Gorgon.Screen != null) && (Gorgon.Screen.UseDepthBuffer))
-			{
-
-				if (value)
-					Gorgon.Log.Print("RenderStates", "Using WBuffer for Depth buffer.", LoggingLevel.Verbose);
-				else
-					Gorgon.Log.Print("RenderStates", "Using ZBuffer for Depth buffer.", LoggingLevel.Verbose);
-
-				if (DeviceReady)
-					Device.SetRenderState<D3D9.ZBufferType>(D3D9.RenderState.ZEnable, D3D9.ZBufferType.UseWBuffer);
-			}
-			DX.Configuration.ThrowOnError = true;
-		}
-
-		/// <summary>
 		/// Function to set the depth buffer bias.
 		/// </summary>
 		/// <param name="value">Depth buffer bias value.</param>
@@ -1034,30 +1012,41 @@ namespace GorgonLibrary.Internal
 			DX.Configuration.ThrowOnError = true;
 		}
 
-		/// <summary>
-		/// Function to enable or disable W buffer support for 16 bit depth buffers.
-		/// </summary>
-		public void CheckForWBuffer(DepthBufferFormats targetFormat)
-		{
-			// Determine if we should use W Buffers or not.
-			if (Gorgon.CurrentDriver.SupportWBuffer)
-			{
-				switch (targetFormat)
-				{
-					case DepthBufferFormats.BufferDepth15Stencil1:
-					case DepthBufferFormats.BufferDepth16:
-					case DepthBufferFormats.BufferDepth16Lockable:
-					case DepthBufferFormats.BufferLuminance16:
-						_useWBuffer = true;
-						break;
-					default:
-						_useWBuffer = false;
-						break;
-				}
-			}
-			else
-				_useWBuffer = false;
-		}
+        /// <summary>
+        /// Function to copy the render states from another render state object.
+        /// </summary>
+        /// <param name="copy">Object to copy.</param>
+        internal void CopyStates(RenderStates copy)
+        {
+            CullingMode = copy.CullingMode;
+            PointSize = copy.PointSize;
+            Normalize = copy.Normalize;
+            SpecularEnabled = copy.SpecularEnabled;
+            DepthBufferEnabled = copy.DepthBufferEnabled;
+            DepthBufferWriteEnabled = copy.DepthBufferWriteEnabled;
+            DepthBias = copy.DepthBias;
+            DepthTestFunction = copy.DepthTestFunction;
+            ShadingMode = copy.ShadingMode;
+            DrawingMode = copy.DrawingMode;
+            AlphaBlendEnabled = copy.AlphaBlendEnabled;
+            LightingEnabled = copy.LightingEnabled;
+            SourceAlphaBlendOperation = copy.SourceAlphaBlendOperation;
+            DestinationAlphaBlendOperation = copy.DestinationAlphaBlendOperation;
+            AlphaTestEnabled = copy.AlphaTestEnabled;
+            AlphaTestFunction = copy.AlphaTestFunction;
+            AlphaTestValue = copy.AlphaTestValue;
+            DrawLastPixel = copy.DrawLastPixel;
+            ScissorTesting = copy.ScissorTesting;
+            ScissorRectangle = copy.ScissorRectangle;
+            StencilCompare = copy.StencilCompare;
+            StencilEnable = copy.StencilEnable;
+            StencilFailOperation = copy.StencilFailOperation;
+            StencilMask = copy.StencilMask;
+            StencilPassOperation = copy.StencilPassOperation;
+            StencilReference = copy.StencilReference;
+            StencilZFailOperation = copy.StencilZFailOperation;
+            DitheringEnabled = copy.DitheringEnabled;
+        }
 
 		/// <summary>
 		/// Function to set the render states.
@@ -1067,7 +1056,6 @@ namespace GorgonLibrary.Internal
 			SetCullMode(_cullingMode);
 			SetVertexPointSize(_vertexPointSize);
 			SetNormalize(_normalize);
-			SetWBufferEnabled(_useWBuffer);
 			SetSpecularEnabled(_specularEnabled);
 			SetDepthBufferEnabled(_depthBufferEnabled);
 			SetDepthBufferWriteEnabled(_depthBufferWriteEnabled);
@@ -1120,6 +1108,16 @@ namespace GorgonLibrary.Internal
 			_stencilCompare = CompareFunctions.Always;
 			_stencilMask = -1;
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderStates"/> class.
+        /// </summary>
+        /// <param name="copy">The renderstates to copy into this object.</param>
+        internal RenderStates(RenderStates copy)
+        {
+            _enableStateSetting = false;
+            CopyStates(copy);
+        }
 		#endregion
-	}
+    }
 }

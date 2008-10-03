@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Wednesday, November 21, 2007 12:32:50 AM
 // 
@@ -26,7 +29,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Drawing = System.Drawing;
-using SharpUtilities;
 using GorgonLibrary;
 using GorgonLibrary.Internal;
 
@@ -79,6 +81,28 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				return _needUpdate;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the font family name.
+		/// </summary>
+		public string FamilyName
+		{
+			get
+			{
+				if (_family == null)
+					return _familyName;
+				else
+					return _family.Name;
+			}
+			set
+			{
+				if (value == null)
+					throw new ArgumentNullException("value");
+				_family = null;
+				_familyName = value;
+				_needUpdate = true;
 			}
 		}
 
@@ -419,7 +443,7 @@ namespace GorgonLibrary.Graphics
 					value = Image.ResizePowerOf2(value, _maxImageSize.Height).Width;
 
 				if ((value < 1) || (value > Gorgon.CurrentDriver.MaximumTextureWidth))
-					throw new ImageSizeException("Font image width must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureWidth.ToString() + ".");
+					throw new ArgumentException("Font image width must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureWidth.ToString() + ".");
 
 				_maxImageSize = new Drawing.Size(value, _maxImageSize.Height);
 
@@ -442,7 +466,7 @@ namespace GorgonLibrary.Graphics
 					value = Image.ResizePowerOf2(_maxImageSize.Width, value).Height;
 
 				if ((value < 1) || (value > Gorgon.CurrentDriver.MaximumTextureHeight))
-					throw new ImageSizeException("Font image height must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureHeight.ToString() + ".");
+					throw new ArgumentException("Font image height must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureHeight.ToString() + ".");
 
 				_maxImageSize = new Drawing.Size(_maxImageSize.Width, value);
 
@@ -613,12 +637,12 @@ namespace GorgonLibrary.Graphics
 						if (Image.ValidateFormat(ImageBufferFormats.BufferRGB332A8, ImageType.Normal) == ImageBufferFormats.BufferRGB555A1)
 							fontImageFormat = ImageBufferFormats.BufferRGB555A1;
 						else
-							throw new FontImageFormatNotValidException();
+							throw new GorgonException(GorgonErrors.CannotCreate, "Cannot create font backing image(s).  No suitable alpha format was found.");
 				}
 			}
 
 			// Create the backing image.
-			return new Image(Name + FontSize.ToString("0.0") + ".BackingImage." + _imageCount.ToString(), ImageType.Normal, dims.Width, dims.Height, fontImageFormat, false, true);
+			return new Image(Name + FontSize.ToString("0.0") + ".BackingImage." + _imageCount.ToString(), ImageType.Normal, dims.Width, dims.Height, fontImageFormat, true);
 		}
 
 		/// <summary>
@@ -807,17 +831,10 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The glyph associated with the character.</returns>
 		public Glyph GetGlyph(char c)
 		{
-			try
-			{
-				if (_glyphData.ContainsKey(c))
-					return _glyphData[c];
-				else
-					return _glyphData[' '];
-			}
-			catch (Exception ex)
-			{
-				throw new FontGlyphNotFoundException(c, ex);
-			}
+			if (_glyphData.ContainsKey(c))
+				return _glyphData[c];
+			else
+				return _glyphData[' '];
 		}
 		#endregion
 
@@ -836,7 +853,7 @@ namespace GorgonLibrary.Graphics
 			: base(fontName)
 		{
 			if (FontCache.Fonts.Contains(fontName))
-				throw new FontAlreadyLoadedException(fontName);
+				throw new ArgumentException("'" + fontName + "' already exists.", "fontName");
 
 			_familyName = family;
 			_antiAlias = antiAlias;

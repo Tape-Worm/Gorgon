@@ -1,23 +1,26 @@
-#region LGPL.
+#region MIT.
 // 
-// Gorgon.
-// Copyright (C) 2006 Michael Winsor
+// Examples.
+// Copyright (C) 2008 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
-// Created: Wednesday, October 18, 2006 1:12:00 AM
+// Created: Thursday, October 02, 2008 10:46:02 PM
 // 
 #endregion
 
@@ -27,8 +30,7 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using Dialogs;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.FileSystems;
@@ -51,7 +53,7 @@ namespace GorgonLibrary.Example
 		private TextSprite _textSprite = null;				// Text sprite.
 		private Font _textFont = null;						// Font for the text.
 		private float _textY = 0.0f;						// Text vertical positioning.
-		private Shader _blur = null;						// Blur shader.
+		private FXShader _blur = null;						// Blur shader.
 		private bool _blurBounce = false;					// Blur bounce flag.
 		private float _blurAmount = 1.0f;					// Blur amount.
 		#endregion
@@ -107,9 +109,13 @@ namespace GorgonLibrary.Example
 			// Draw motherships.
 			_mother1.SetPosition(Gorgon.Screen.Width - (Gorgon.Screen.Width / 4), Gorgon.Screen.Height / 4);
 			_mother1.Draw();
-
+			
 			_mother2.SetPosition(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2);
+			Gorgon.CurrentShader = _blur;
 			_mother2.Draw();
+			Gorgon.CurrentShader = null;
+
+
 		}
 
 		/// <summary>
@@ -135,7 +141,7 @@ namespace GorgonLibrary.Example
 			_folderFS = new FolderFileSystem("SomeFolderFileSystem", FileSystemProvider.Create(typeof(FolderFileSystem)));
 
 			// Mount the file system.
-			_folderFS.Root = @"..\..\..\..\Resources\FileSystems\FolderSystem";
+			_folderFS.AssignRoot(@"..\..\..\..\Resources\FileSystems\FolderSystem");
 
 			// Mount the root, but do not recurse.
 			_folderFS.Mount(@"\", false);
@@ -154,8 +160,11 @@ namespace GorgonLibrary.Example
 			_mother2 = Sprite.FromFileSystem(_folderFS, @"\Sprites\Mother2c.gorSprite");
 
 			// Get shader.
-			_blur = Shader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx");
-			_mother2.Shader = _blur;
+#if DEBUG
+			_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
+#else
+			_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
+#endif
 			_blur.Parameters["sourceImage"].SetValue(_spriteImage);
 
 			// Get poetry.
@@ -183,7 +192,6 @@ namespace GorgonLibrary.Example
 				// Display the logo and frame stats.
 				Gorgon.LogoVisible = true;
 				Gorgon.FrameStatsVisible = false;
-				Gorgon.InvertFrameStatsTextColor = false;
 
 				// Set the video mode to match the form client area.
 				Gorgon.SetMode(this, 640, 480, BackBufferFormats.BufferRGB888, true);

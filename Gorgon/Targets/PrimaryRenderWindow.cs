@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Friday, April 27, 2007 9:10:23 PM
 // 
@@ -26,8 +29,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -217,23 +218,24 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void DrawStats()
 		{
-			Viewport lastClip = null;	// Last clipping view.
-			BlendingModes lastBlend;	// Last blending mode.
+			Viewport lastClip = null;				// Last clipping view.
+			BlendingModes lastBlend;				// Last blending mode.
+			CompareFunctions lastDepthCompare;		// Last depth buffer comparison function.
 
 			if (_logoStats == null)
 				return;
 
 			// Draw background.
-			if (!Gorgon.InvertFrameStatsTextColor)
-			{
-				Gorgon.CurrentRenderTarget.BeginDrawing();
-				lastBlend = Gorgon.CurrentRenderTarget.BlendingMode;
-				Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
-				Gorgon.CurrentRenderTarget.FilledRectangle(0, 0, Gorgon.CurrentRenderTarget.Width, 80, Drawing.Color.FromArgb(160, Drawing.Color.Black));
-				Gorgon.CurrentRenderTarget.HorizontalLine(0, 80, Gorgon.CurrentRenderTarget.Width, Drawing.Color.White);
-				Gorgon.CurrentRenderTarget.BlendingMode = lastBlend;
-				Gorgon.CurrentRenderTarget.EndDrawing();
-			}
+			Gorgon.CurrentRenderTarget.BeginDrawing();
+			lastBlend = Gorgon.CurrentRenderTarget.BlendingMode;
+			lastDepthCompare = Gorgon.CurrentRenderTarget.DepthTestFunction;
+			Gorgon.CurrentRenderTarget.DepthTestFunction = CompareFunctions.Always;
+			Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
+			Gorgon.CurrentRenderTarget.FilledRectangle(0, 0, Gorgon.CurrentRenderTarget.Width, 80, Drawing.Color.FromArgb(160, Drawing.Color.Black));
+			Gorgon.CurrentRenderTarget.HorizontalLine(0, 80, Gorgon.CurrentRenderTarget.Width, Drawing.Color.White);
+			Gorgon.CurrentRenderTarget.BlendingMode = lastBlend;
+			Gorgon.CurrentRenderTarget.DepthTestFunction = lastDepthCompare;
+			Gorgon.CurrentRenderTarget.EndDrawing();
 
 			// Reset the clipping view.			
 			if (Gorgon.CurrentClippingViewport != DefaultView)
@@ -244,20 +246,17 @@ namespace GorgonLibrary.Graphics
 
 			if (_logoStats.Color != Gorgon.FrameStatsTextColor)
 				_logoStats.Color = Gorgon.FrameStatsTextColor;
-			if (Gorgon.InvertFrameStatsTextColor)
-				_logoStats.BlendingMode = BlendingModes.Inverted;
-			else
-				_logoStats.BlendingMode = BlendingModes.Modulated;
 			_logoStats.Text = "Frame draw time: " + Convert.ToSingle(Gorgon.FrameStats.FrameDrawTime).ToString("0.0") + "ms\n" +
 								"Current FPS: " + Gorgon.FrameStats.CurrentFps.ToString("0.0") + "\n" +
 								"Average FPS: " + Gorgon.FrameStats.AverageFps.ToString("0.0") + "\n" +
 								"Highest FPS: " + Gorgon.FrameStats.HighestFps.ToString("0.0") + "\n" +
 								"Lowest FPS: " + Gorgon.FrameStats.LowestFps.ToString("0.0") + "\n";
+			_logoStats.DepthTestFunction = CompareFunctions.Always;
 			_logoStats.Draw();
 
 			// Reset the clipper to the previous value.
 			if (lastClip != null)
-				Gorgon.CurrentClippingViewport = lastClip;
+				Gorgon.CurrentClippingViewport = lastClip;			
 		}
 
 		/// <summary>
@@ -281,6 +280,7 @@ namespace GorgonLibrary.Graphics
 			_logoSprite.AlphaMaskFunction = CompareFunctions.Always;
 			_logoSprite.BlendingMode = BlendingModes.Modulated;
 			_logoSprite.Opacity = 225;
+			_logoSprite.DepthTestFunction = CompareFunctions.Always;
 			_logoSprite.Draw();
 
 			// Reset the clipper to the previous value.
@@ -331,7 +331,7 @@ namespace GorgonLibrary.Graphics
 		private void ResetMode(bool resize, int resizewidth, int resizeheight)
 		{
 			if (_device == null)
-				throw new DeviceCannotResetException();
+				throw new GorgonException(GorgonErrors.NoDevice);
 
 			// Don't reset if the device is not in a lost state.
 			_deviceWasLost = true;
@@ -345,90 +345,72 @@ namespace GorgonLibrary.Graphics
 			// Force required resources to free.
 			Gorgon.OnDeviceLost();
 
-			try
+			// Do not change parameters while minimized.
+			if (_ownerForm.WindowState != FormWindowState.Minimized)
+				SetPresentParams(_requestedVideoMode, _windowedMode, resize, resizewidth, resizeheight, false);
+
+			// Reset device.
+			DX.Result result = _device.Reset(_presentParameters);
+			if ((result == D3D9.ResultCode.DeviceLost) || (result == D3D9.ResultCode.DeviceNotReset))
+				return;
+
+			// Device was successfully reset.
+			_deviceWasLost = false;
+
+			// Get the current width & height.
+			SetDimensions(_currentVideoMode.Width, _currentVideoMode.Height);
+
+			// Get the color buffer.				
+			SetColorBuffer(_device.GetRenderTarget(0));
+
+			// Get the depth buffer.
+			if (_presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
+				SetDepthBuffer(_device.DepthStencilSurface);
+			else
+				SetDepthBuffer(null);
+
+			// Set the proper window dressing if windowed.
+			if ((_presentParameters.Windowed) && (_owner is Form) && (!resize))
 			{
-				// Do not change parameters while minimized.
-				if (_ownerForm.WindowState != FormWindowState.Minimized)
-					SetPresentParams(_requestedVideoMode, _windowedMode, resize, resizewidth, resizeheight, false);
-
-				// Reset device.
-				_device.Reset(_presentParameters);
-
-				// Device was successfully reset.
-				_deviceWasLost = false;
-
-				// Get the current width & height.
-				SetDimensions(_currentVideoMode.Width, _currentVideoMode.Height);
-
-				// Get the color buffer.				
-				SetColorBuffer(_device.GetRenderTarget(0));
-
-				// Get the depth buffer.
-				if (_presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
-					SetDepthBuffer(_device.DepthStencilSurface);
-				else
-					SetDepthBuffer(null);
-
-				// Set the proper window dressing if windowed.
-				if ((_presentParameters.Windowed) && (_owner is Form) && (!resize))
-				{
-					_ownerForm.Hide();
-					_ownerForm = Gorgon.Screen.OwnerForm;
-					_ownerForm.MinimizeBox = _formSettings.MinimizeBox;
-					_ownerForm.MaximizeBox = _formSettings.MaximizeBox;
-					_ownerForm.ControlBox = _formSettings.ControlBox;
-					_ownerForm.TopMost = _formSettings.TopMost;
-					_ownerForm.FormBorderStyle = _formSettings.Style;
-					_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
-					_ownerForm.Show();
-				}
-
-				Gorgon.Log.Print("RenderWindow", "Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", LoggingLevel.Verbose, Gorgon.Screen.Mode.Width, Gorgon.Screen.Mode.Height, Gorgon.Screen.Mode.Bpp, Gorgon.Screen.Mode.RefreshRate, Gorgon.Screen.Mode.Format.ToString());
-				Gorgon.Log.Print("RenderWindow", "Device reset.", LoggingLevel.Verbose);
-
-				Gorgon.Renderer.RenderStates.CheckForWBuffer(Converter.ConvertDepthFormat(_presentParameters.AutoDepthStencilFormat));
-
-				// Reset render states to their previous values.
-				Gorgon.Renderer.RenderStates.SetStates();
-
-				// Set default image layer states.
-				for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-					Gorgon.Renderer.ImageLayerStates[i].SetStates();
-			}
-			catch (D3D9.Direct3D9Exception d3dEx)
-			{
-                if (d3dEx.ResultCode == D3D9.Error.DeviceLost)
-                {
-                    // If we lose the device for some reason, flag it so on the next frame we can check for
-                    // device availability.
-                    _deviceWasLost = true;
-                }
-                else
-                    throw d3dEx;
-			}
-			catch (Exception ex)
-			{
-				throw new DeviceCannotResetException(ex);
+				_ownerForm.Hide();
+				_ownerForm = Gorgon.Screen.OwnerForm;
+				_ownerForm.MinimizeBox = _formSettings.MinimizeBox;
+				_ownerForm.MaximizeBox = _formSettings.MaximizeBox;
+				_ownerForm.ControlBox = _formSettings.ControlBox;
+				_ownerForm.TopMost = _formSettings.TopMost;
+				_ownerForm.FormBorderStyle = _formSettings.Style;
+				_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
+				_ownerForm.Show();
 			}
 
-			if (!_deviceWasLost)
-			{
-				// Set the view matrix.
-				_device.SetTransform(D3D9.TransformState.View, DX.Matrix.Identity);
+			Gorgon.Log.Print("RenderWindow", "Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", LoggingLevel.Verbose, Gorgon.Screen.Mode.Width, Gorgon.Screen.Mode.Height, Gorgon.Screen.Mode.Bpp, Gorgon.Screen.Mode.RefreshRate, Gorgon.Screen.Mode.Format.ToString());
+			Gorgon.Log.Print("RenderWindow", "Device reset.", LoggingLevel.Verbose);
 
-				// Restore device state if reset was successful.
-				Gorgon.OnDeviceReset();
+			// Reset render states to their previous values.
+			Gorgon.Renderer.RenderStates.SetStates();
 
-				_allowResizeEvent = true;
-			}
+			// Set default image layer states.
+			for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
+				Gorgon.Renderer.ImageLayerStates[i].SetStates();
+
+			// Set the view matrix.
+			_device.SetTransform(D3D9.TransformState.View, DX.Matrix.Identity);
+
+			// Restore device state if reset was successful.
+			Gorgon.OnDeviceReset();
+
+			_allowResizeEvent = true;
 		}
 
 		/// <summary>
 		/// Function to perform a flip of the D3D buffers.
 		/// </summary>
-		protected internal override void D3DFlip()
+		/// <returns>
+		/// A result code if the device is in a lost state.
+		/// </returns>
+		protected internal override DX.Result D3DFlip()
 		{
-            _device.Present();
+            return _device.Present();
 		}
 
 		/// <summary>
@@ -450,7 +432,7 @@ namespace GorgonLibrary.Graphics
                     DX.Configuration.ThrowOnError = true;
 
 					// Ensure we -can- reset.
-					if ((level == D3D9.Error.DeviceNotReset) || (level.IsSuccess))
+					if ((level == D3D9.ResultCode.DeviceNotReset) || (level.IsSuccess))
 					{
 						DeviceLost();
 						ResetMode(true, _owner.ClientSize.Width, _owner.ClientSize.Height);
@@ -507,17 +489,17 @@ namespace GorgonLibrary.Graphics
 		{
 			// Make sure the desktop can be used for rendering.
 			if ((usewindow) && (!Gorgon.CurrentDriver.DesktopFormatSupported(mode)))
-				throw new DeviceVideoModeNotValidException(Gorgon.DesktopVideoMode);
+				throw new ArgumentException("The desktop video mode (" + mode.ToString() + ") will not support the device object.");
 
 			if (!resize)
 			{
 				if (!usewindow)
-					Gorgon.Log.Print("RenderWindow", "Setting fullscreen mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), _objectName);
+					Gorgon.Log.Print("RenderWindow", "Setting fullscreen mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 				else
-					Gorgon.Log.Print("RenderWindow", "Setting windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), _objectName);
+					Gorgon.Log.Print("RenderWindow", "Setting windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 			}
 			else
-				Gorgon.Log.Print("RenderWindow", "Resizing windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, resizewidth, resizeheight, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), _objectName);
+				Gorgon.Log.Print("RenderWindow", "Resizing windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, resizewidth, resizeheight, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 
 			// Don't go too small.
 			if (resizewidth < 32)
@@ -700,47 +682,46 @@ namespace GorgonLibrary.Graphics
 			// We may need to force a reset.
 			if (!dontCreate)
 			{
+				Gorgon.Log.Print("RenderWindow", "Creating Direct 3D device object...", LoggingLevel.Intermediate);
+
+				// Center on screen.
+				if (_presentParameters.Windowed)
+					_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
+
+				flags = D3D9.CreateFlags.FpuPreserve | D3D9.CreateFlags.Multithreaded;
+
+				// Determine processing.
+				if (Gorgon.CurrentDriver.HardwareTransformAndLighting)
+				{
+					flags |= D3D9.CreateFlags.HardwareVertexProcessing;
+					Gorgon.Log.Print("RenderWindow", "Using hardware vertex processing.", LoggingLevel.Verbose);
+				}
+				else
+				{
+					flags |= D3D9.CreateFlags.SoftwareVertexProcessing;
+					Gorgon.Log.Print("RenderWindow", "Using software vertex processing.", LoggingLevel.Verbose);
+				}
+
 				try
 				{
-					Gorgon.Log.Print("RenderWindow", "Creating Direct 3D device object...", LoggingLevel.Intermediate);
-
-					// Center on screen.
-					if (_presentParameters.Windowed)
-						_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
-
-					flags = D3D9.CreateFlags.FpuPreserve | D3D9.CreateFlags.Multithreaded;
-
-					// Determine processing.
-					if (Gorgon.CurrentDriver.HardwareTransformAndLighting)
-					{
-						flags |= D3D9.CreateFlags.HardwareVertexProcessing;
-						Gorgon.Log.Print("RenderWindow", "Using hardware vertex processing.", LoggingLevel.Verbose);
-					}
-					else
-					{
-						flags |= D3D9.CreateFlags.SoftwareVertexProcessing;
-						Gorgon.Log.Print("RenderWindow", "Using software vertex processing.", LoggingLevel.Verbose);
-					}
-
 					// Create the device.
-					_device = new D3D9.Device(Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, _ownerForm.Handle, flags, _presentParameters);
-					_deviceWasLost = false;
-
-					// Confirm if a W-buffer exists or not.					
-					Gorgon.Renderer.RenderStates.CheckForWBuffer(Converter.ConvertDepthFormat(_presentParameters.AutoDepthStencilFormat));
-					// Set default states.
-					Gorgon.Renderer.RenderStates.SetStates();
-
-					// Set default image layer states.
-					for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-						Gorgon.Renderer.ImageLayerStates[i].SetStates();
-
-					Gorgon.Log.Print("RenderWindow", "Direct 3D device object created.", LoggingLevel.Intermediate);
+					_device = new D3D9.Device(Gorgon.Direct3D, Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, _ownerForm.Handle, flags, _presentParameters);
 				}
 				catch (Exception ex)
 				{
-					throw new DeviceCreationFailureException(ex);
+					throw new GorgonException(GorgonErrors.CannotCreate, "Error trying to create the Direct3D device object.", ex);
 				}
+				_deviceWasLost = false;
+
+
+				// Set default states.
+				Gorgon.Renderer.RenderStates.SetStates();
+
+				// Set default image layer states.
+				for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
+					Gorgon.Renderer.ImageLayerStates[i].SetStates();
+
+				Gorgon.Log.Print("RenderWindow", "Direct 3D device object created.", LoggingLevel.Intermediate);
 
 				_allowResizeEvent = true;
 				SetDimensions(_currentVideoMode.Width, _currentVideoMode.Height);
@@ -750,9 +731,15 @@ namespace GorgonLibrary.Graphics
 
 				// Get the depth buffer.
 				if (this._presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
+				{
 					SetDepthBuffer(_device.DepthStencilSurface);
+					Gorgon.Renderer.RenderStates.DepthBufferEnabled = true;
+				}
 				else
+				{
 					SetDepthBuffer(null);
+					Gorgon.Renderer.RenderStates.DepthBufferEnabled = false;
+				}
 
 				// Set the view matrix.
 				_device.SetTransform(D3D9.TransformState.View, DX.Matrix.Identity);
@@ -789,13 +776,13 @@ namespace GorgonLibrary.Graphics
             DX.Configuration.ThrowOnError = true;
 
 			_deviceWasLost = false;
-            if (coopLevel == D3D9.Error.DeviceNotReset)
+            if (coopLevel == D3D9.ResultCode.DeviceNotReset)
             {
                 _deviceWasLost = true;
                 ResetMode(false, 0, 0);
             }
-            if (coopLevel == D3D9.Error.DriverInternalError)
-                throw new DeviceCannotResetException(true);
+			if (coopLevel == D3D9.ResultCode.DriverInternalError)
+				throw new GorgonException(GorgonErrors.HardwareError, "Device could not reset.");
 		}
 
 		/// <summary>

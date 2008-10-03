@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Sunday, July 08, 2007 11:33:07 PM
 // 
@@ -28,8 +31,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -42,7 +44,6 @@ namespace GorgonLibrary.Graphics.Tools
 		#region Variables.
 		private Sprite _current = null;								// Current sprite.
 		private Animation _editAnimation = null;					// Animation being edited.
-		private TimeUnits _currentUnit = TimeUnits.Milliseconds;	// Current time units.
 		#endregion
 
 		#region Properties.
@@ -64,135 +65,24 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Methods.
 		/// <summary>
-		/// Handles the TextChanged event of the textName control.
+		/// Handles the ValueChanged event of the numericLength control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void textName_TextChanged(object sender, EventArgs e)
+		private void numericLength_ValueChanged(object sender, EventArgs e)
 		{
-			if (textName.Text == string.Empty)
+			float time = 0.0f;		// Animation length in milliseconds.
+
+			if (sender == numericFrameRate)
+				numericLength.Increment = numericFrameRate.Value;
+
+			time = (float)(numericLength.Value / numericFrameRate.Value);
+			labelTimeCalculation.Text = "Animation will be " + time.ToString("0.000") + " seconds long.";
+
+			if (time < 0.000001f)
 				buttonOK.Enabled = false;
 			else
 				buttonOK.Enabled = true;
-		}
-
-		/// <summary>
-		/// Function to edit an animation.
-		/// </summary>
-		/// <param name="animationName">Name of the animation.</param>
-		public void EditAnimation(string animationName)
-		{
-			_editAnimation = _current.Animations[animationName];
-
-			Text = "Edit - " + _editAnimation.Name;
-			textName.Text = _editAnimation.Name;
-
-			if (_editAnimation.Looped)
-				checkLoop.Checked = true;
-
-			numericLength.Value = (Decimal)_editAnimation.Length;
-
-			if (_editAnimation.Length < 1000.0f)
-			{
-				radioMilliseconds.Checked = true;
-				UnitUpdate(radioMilliseconds, EventArgs.Empty);
-			}
-
-			if ((_editAnimation.Length >= 1000.0f) && (_editAnimation.Length < 60000.0f))
-			{
-				radioSeconds.Checked = true;
-				UnitUpdate(radioSeconds, EventArgs.Empty);
-			}
-
-			if (_editAnimation.Length >= 60000.0f)
-			{
-				radioMinutes.Checked = true;
-				UnitUpdate(radioMinutes, EventArgs.Empty);
-			}			
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public formNewAnimation()
-		{
-			InitializeComponent();
-		}
-		#endregion
-
-		/// <summary>
-		/// Handles the CheckedChanged event of the radioMilliseconds control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void UnitUpdate(object sender, EventArgs e)
-		{
-			TimeUnits time = TimeUnits.Milliseconds;	// New time unit.
-			Decimal currentTime = 0;					// Current time.			
-
-
-			if (sender == radioSeconds)
-				time = TimeUnits.Seconds;
-
-			if (sender == radioMinutes)
-				time = TimeUnits.Minutes;
-
-			currentTime = (Decimal)numericLength.Value;
-
-			switch (time)
-			{
-				case TimeUnits.Milliseconds:
-					switch (_currentUnit)
-					{
-						case TimeUnits.Minutes:
-							currentTime = numericLength.Value * 60000.0M;
-							break;
-						case TimeUnits.Seconds:
-							currentTime = numericLength.Value * 1000.0M;
-							break;
-					}
-					numericLength.DecimalPlaces = 0;
-					numericLength.Minimum = 1M;
-					numericLength.Increment = 1000.0M;
-					labelUnit.Text = "milliseconds";
-					break;
-				case TimeUnits.Seconds:
-					switch (_currentUnit)
-					{
-						case TimeUnits.Minutes:
-							currentTime = numericLength.Value * 60.0M;
-							break;
-						case TimeUnits.Milliseconds:
-							currentTime = numericLength.Value / 1000.0M;
-							break;
-					}
-
-					numericLength.DecimalPlaces = 3;
-					numericLength.Minimum = 0.001M;
-					numericLength.Increment = 100.0M;
-					labelUnit.Text = "seconds";
-					break;
-				case TimeUnits.Minutes:
-					switch (_currentUnit)
-					{
-						case TimeUnits.Seconds:
-							currentTime = numericLength.Value / 60.0M;
-							break;
-						case TimeUnits.Milliseconds:
-							currentTime = numericLength.Value / 60000.0M;
-							break;
-					}
-					numericLength.DecimalPlaces = 6;
-					numericLength.Minimum = 1.0M / 60000.0M;
-					numericLength.Increment = 10.0M;
-					labelUnit.Text = "minutes";
-					break;
-			}
-
-			_currentUnit = time;
-			numericLength.Value = currentTime;						
 		}
 
 		/// <summary>
@@ -206,7 +96,7 @@ namespace GorgonLibrary.Graphics.Tools
 			float time = 0.0f;										// Timeframe.
 			ConfirmationResult result = ConfirmationResult.None;	// Confirmation result.
 
-			if (_current.Animations.Contains(textName.Text)) 
+			if (_current.Animations.Contains(textName.Text))
 			{
 				// If the name has changed, and it already exists ask to overwrite.
 				if (((_editAnimation != null) && (string.Compare(textName.Text, _editAnimation.Name, true) != 0)) || (_editAnimation == null))
@@ -222,22 +112,27 @@ namespace GorgonLibrary.Graphics.Tools
 				}
 			}
 
-			time = (float)numericLength.Value;
-
-			// Convert to milliseconds.
-			if (radioSeconds.Checked)
-				time *= 1000.0f; 
-			if (radioMinutes.Checked)
-				time *= 60000.0f;
+			// Calculate length of animation in milliseconds.
+			time = (float)(numericLength.Value / numericFrameRate.Value) * 1000.0f;
 
 			animation = _editAnimation;
 
 			// Create the animation.
 			if (animation == null)
-				animation = _current.Animations.Create(textName.Text, time);
+			{
+				animation = new Animation(textName.Text, time);
+				animation.FrameRate = (int)numericFrameRate.Value;
+				_current.Animations.Add(animation);
+			}
 			else
 			{
-				if (time != animation.Length)
+				// Re-add if necessary.
+				if (!_current.Animations.Contains(animation.Name))
+					_current.Animations.Add(animation);
+
+				animation.FrameRate = (int)numericFrameRate.Value;
+
+				if (!MathUtility.EqualFloat(time,animation.Length, 0.0001f))
 				{
 					float timeScaler = 0.0f;		// Time scale.
 
@@ -248,36 +143,17 @@ namespace GorgonLibrary.Graphics.Tools
 					animation.Length = time;
 
 					// If there's not much of a difference, then don't bother.
-					if (!MathUtility.EqualFloat(timeScaler, 0.0f, 0.0001f))
+					if ((!MathUtility.EqualFloat(timeScaler, 0.0f, 0.0001f)) && (animation.HasKeys))
 					{
-						// Scale for each track type.
-						if (animation.FrameTrack.KeyCount > 0)
+						result = UI.ConfirmBox("This animation has keys assigned to it.\nWould you like to scale the time for the assigned keys?", false, true);
+
+						if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
 						{
-							result = UI.ConfirmBox("This animation has frame keys assigned to it.\nWould you like to scale the time for the assigned frame keys?", false, true);
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-								animation.FrameTrack.ScaleKeys(timeScaler);
-						}
-
-						if (animation.TransformationTrack.KeyCount > 0)
-						{
-							if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
-								result = UI.ConfirmBox("This animation has transformation keys assigned to it.\nWould you like to scale the time for the assigned transformation keys?", false, true);
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-								animation.TransformationTrack.ScaleKeys(timeScaler);
-						}
-
-						if (animation.ColorTrack.KeyCount > 0)
-						{
-							if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
-								result = UI.ConfirmBox("This animation has color keys assigned to it.\nWould you like to scale the time for the assigned color keys?");
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-								animation.ColorTrack.ScaleKeys(timeScaler);
+							foreach (Track track in animation.Tracks)
+								track.ScaleKeys(timeScaler);
 						}
 					}
-				}				
+				}
 
 				// Rename if necessary.
 				if (string.Compare(animation.Name, textName.Text, true) != 0)
@@ -300,8 +176,62 @@ namespace GorgonLibrary.Graphics.Tools
 			if ((e.KeyCode == Keys.Enter) && (buttonOK.Enabled))
 			{
 				DialogResult = DialogResult.OK;
-				buttonOK_Click(this, EventArgs.Empty);				
+				buttonOK_Click(this, EventArgs.Empty);
 			}
 		}
+
+		/// <summary>
+		/// Handles the TextChanged event of the textName control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void textName_TextChanged(object sender, EventArgs e)
+		{
+			if (textName.Text == string.Empty)
+				buttonOK.Enabled = false;
+			else
+				buttonOK.Enabled = true;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			// Update our label.
+			numericLength_ValueChanged(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Function to edit an animation.
+		/// </summary>
+		/// <param name="animationName">Name of the animation.</param>
+		public void EditAnimation(string animationName)
+		{
+			_editAnimation = _current.Animations[animationName];
+
+			Text = "Edit - " + _editAnimation.Name;
+			textName.Text = _editAnimation.Name;
+
+			if (_editAnimation.Looped)
+				checkLoop.Checked = true;
+
+			numericFrameRate.Value = (Decimal)_editAnimation.FrameRate;
+			numericLength.Value = ((Decimal)_editAnimation.Length / 1000M) * numericFrameRate.Value;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public formNewAnimation()
+		{
+			InitializeComponent();
+		}
+		#endregion
 	}
 }

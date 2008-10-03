@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Friday, May 18, 2007 12:38:11 AM
 // 
@@ -25,9 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -356,18 +357,19 @@ namespace GorgonLibrary.Graphics.Tools
 		private void DrawPreviousSelectionRectangle(float renderTime)
 		{
 			Drawing.RectangleF clipRect = Drawing.RectangleF.Empty;		// Rectangle to draw.
+            float scrollRate = -8 * renderTime;                         // Scrolling rate.
 
 			if (_updateRectangle == Drawing.RectangleF.Empty)
 				return;
 			
 			clipRect = _updateRectangle;
-			clipRect.Offset(-_owner.ScrollOffset);
+			clipRect.Offset(Vector2D.Negate(_owner.ScrollOffset));
 			clipRect.Offset(8.0f, 8.0f);
 
 			Gorgon.Screen.BlendingMode = BlendingModes.Modulated;
 			Gorgon.Screen.DrawingPattern = _patternImage;
 			Gorgon.Screen.WrapMode = ImageAddressing.Wrapping;
-			_updatePatternOffset += new Vector2D(-8 * renderTime, -8 * renderTime);
+            _updatePatternOffset = Vector2D.Add(_updatePatternOffset, new Vector2D(scrollRate, scrollRate));
 			if (_updatePatternOffset.X < -1024.0f)
 				_updatePatternOffset.X = 0;
 			if (_updatePatternOffset.Y < -1024.0f)
@@ -398,20 +400,21 @@ namespace GorgonLibrary.Graphics.Tools
 		private void DrawSelectionRectangle(Vector2D cursorPosition, float renderTime)
 		{
 			Drawing.RectangleF clipRect = Drawing.RectangleF.Empty;		// Rectangle to draw.
+            float scrollRate = 16 * renderTime;                         // Scrolling rate.
 
 			if ((!_inSelection) && (!_fixedDimensions))
 				return;
 
 			// Get the visible clipping region.
-			clipRect = GetClipDimensions(cursorPosition + _owner.ScrollOffset);
+			clipRect = GetClipDimensions(Vector2D.Add(cursorPosition, _owner.ScrollOffset));
 
 			// Convert to screen coordinates.
-			clipRect.Offset(-_owner.ScrollOffset);
+			clipRect.Offset(Vector2D.Negate(_owner.ScrollOffset));
 
 			Gorgon.Screen.BlendingMode = BlendingModes.Modulated;
 			Gorgon.Screen.DrawingPattern = _patternImage;
 			Gorgon.Screen.WrapMode = ImageAddressing.Wrapping;
-			_selectPatternOffset += new Vector2D(16 * renderTime, 16 * renderTime);
+            _selectPatternOffset = Vector2D.Add(_selectPatternOffset, new Vector2D(scrollRate, scrollRate));
 			if (_selectPatternOffset.X > 1024.0f)
 				_selectPatternOffset.X = 0;
 			if (_selectPatternOffset.Y > 1024.0f)
@@ -454,10 +457,6 @@ namespace GorgonLibrary.Graphics.Tools
 				// Draw the selection rectangle.
 				DrawPreviousSelectionRectangle(renderTime);
 				DrawSelectionRectangle(cursorPosition, renderTime);
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(_owner, "Unable to draw the cursor.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

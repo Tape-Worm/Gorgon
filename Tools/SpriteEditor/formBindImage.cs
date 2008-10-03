@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Friday, May 18, 2007 2:48:56 PM
 // 
@@ -28,8 +31,8 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using System.Linq;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -198,21 +201,15 @@ namespace GorgonLibrary.Graphics.Tools
 			// Add images.
 			if (!checkRenderTarget.Checked)
 			{
-				foreach (Image image in ImageCache.Images)
-				{
-					// Ignore resource images.
-					if ((!image.IsResource) && (image.ImageType == ImageType.Normal))
-						comboImages.Items.Add(image.Name);
-				}
+				var images = ImageCache.Images.Where((image) => !image.IsResource && image.ImageType == ImageType.Normal);
+				foreach (Image image in images)
+					comboImages.Items.Add(image.Name);
 			}
 			else
 			{
-				foreach (RenderTarget image in RenderTargetCache.Targets)
-				{
-					// Only add images that are not rendertargets unless we have render target checked.
-					if (_owner.ValidRenderTarget(image.Name))
-						comboImages.Items.Add(image.Name);
-				}
+				var targets = RenderTargetCache.Targets.Where(target => _owner.ValidRenderTarget(target.Name));
+				foreach (RenderTarget image in targets)
+					comboImages.Items.Add(image.Name);
 			}
 
 			ValidateForm();
@@ -319,10 +316,6 @@ namespace GorgonLibrary.Graphics.Tools
 					else
 						_owner.SpriteManager.Sprites[item.Name].Bind(ImageCache.Images[comboImages.Text]);
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "Unable to re-bind the sprite.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

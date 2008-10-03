@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2006 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Monday, November 20, 2006 1:04:16 AM
 // 
@@ -25,8 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
+using System.ComponentModel;
+using System.Reflection;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
 
@@ -72,21 +75,19 @@ namespace GorgonLibrary.Graphics
 	/// 		</item>
 	/// 	</list>
 	/// </para>
-	/// The animation object is only applied to objects which implement the <see cref="GorgonLibrary.Graphics.IAnimatable">IAnimatable</see> interface.
 	/// </remarks>
     public class Animation
-        : NamedObject, ISerializable, ICloneable
+        : NamedObject, ISerializable
     {
         #region Variables.
-        private IAnimatable _owner = null;						// Object that owns this animation.        
-        private float _length = 1000;							// Length of the track in milliseconds.
-        private bool _loop;										// Flag to indicate that this animation should loop.
-        private float _currentTime;								// Current time.
-        private bool _enabled;									// Flag to indicate whether the animation is enabled or not.
-		private AnimationState _state = AnimationState.Playing;	// State of action for the animation.
-		private TrackTransform _transforms = null;				// Transformation track.
-		private TrackColor _colors = null;						// Color track.
-		private TrackFrame _frames = null;						// Frame track.
+        private object _owner = null;								// Object that owns this animation.        
+        private float _length = 1000;								// Length of the track in milliseconds.
+        private bool _loop;											// Flag to indicate that this animation should loop.
+        private float _currentTime;									// Current time.
+        private bool _enabled;										// Flag to indicate whether the animation is enabled or not.
+		private AnimationState _state = AnimationState.Stopped;		// State of action for the animation.
+		private TrackCollection _tracks = null;						// Tracks.
+		private int _frameRate = 30;								// Frame rate (for information purposes only).
         #endregion
 
         #region Events.
@@ -102,9 +103,48 @@ namespace GorgonLibrary.Graphics
         /// Event fired when the animation current time has advanced.
         /// </summary>
         public event AnimationAdvanceHandler AnimationAdvanced;
+		/// <summary>
+		/// Event fired when the animation needs to define the type of a track.
+		/// </summary>
+		public event AnimationTrackDefineHandler AnimationTrackDefinition;
         #endregion
 
-        #region Properties.
+        #region Properties.		
+		/// <summary>
+		/// Property to return whether there are keys in the animation.
+		/// </summary>
+		public bool HasKeys
+		{
+			get
+			{
+				foreach (Track track in _tracks)
+				{
+					if (track.KeyCount > 0)
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the frame rate.
+		/// </summary>
+		/// <remarks>This is just metadata and is only used for display purposes.  Its primary use is in the sprite editor.</remarks>
+		public int FrameRate
+		{
+			get
+			{
+				return _frameRate;
+			}
+			set
+			{
+				if (value < 1)
+					value = 1;
+				_frameRate = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the name.
 		/// </summary>
@@ -116,10 +156,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (value == string.Empty)
-					throw new InvalidNameException();
-
-				_objectName = value;
+				base.Name = value;
 			}
 		}
 
@@ -159,7 +196,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the owner of this animation.
         /// </summary>
-        public IAnimatable Owner
+        public object Owner
         {
             get
             {
@@ -167,36 +204,15 @@ namespace GorgonLibrary.Graphics
             }
         }
 
-        /// <summary>
-        /// Property to return the transformation track for the animation.
-        /// </summary>
-        public TrackTransform TransformationTrack
-        {
-            get
-            {
-                return _transforms;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the color track for the animation.
-        /// </summary>
-        public TrackColor ColorTrack
-        {
-            get
-            {
-                return _colors;
-            }
-        }
-
 		/// <summary>
-		/// Property to return the frame track for the animation.
+		/// Property to return the collection of tracks for this animation.
 		/// </summary>
-		public TrackFrame FrameTrack
+		/// <remarks>Each track corresponds to an animation property on the owner object.<para>Custom tracks can be added to this collection as well.</para></remarks>
+		public TrackCollection Tracks
 		{
 			get
 			{
-				return _frames;
+				return _tracks;
 			}
 		}
 
@@ -247,17 +263,6 @@ namespace GorgonLibrary.Graphics
 				}
 			}
         }
-
-		/// <summary>
-		/// Property to return the total number of keys in the animation.
-		/// </summary>
-		public int TotalKeyCount
-		{
-			get
-			{
-				return _transforms.KeyCount + _colors.KeyCount + _frames.KeyCount;
-			}
-		}
 
         /// <summary>
         /// Property to set or return the current time.
@@ -313,11 +318,139 @@ namespace GorgonLibrary.Graphics
 
         #region Methods.
 		/// <summary>
+		/// Function to retrieve the range values for the property.
+		/// </summary>
+		/// <param name="property">Property to retrieve the range from.</param>
+		/// <returns>Range of the value.</returns>
+		private MinMaxRangeF GetRangeValues(PropertyInfo property)
+		{
+			EditorMinMaxAttribute attribute = null;			// Attribute.
+			
+			attribute = Attribute.GetCustomAttribute(property, typeof(EditorMinMaxAttribute), true) as EditorMinMaxAttribute;
+
+			if (attribute != null)
+				return new MinMaxRangeF(attribute.Minimum, attribute.Maximum);
+
+			return MinMaxRangeF.Empty;
+		}
+
+		/// <summary>
+		/// Function to return whether to round the data for the values or not.
+		/// </summary>
+		/// <param name="property">Property to examine.</param>
+		/// <returns>TRUE to round, FALSE to ignore.</returns>
+		private bool ValueIsRounded(PropertyInfo property)
+		{
+			EditorRoundValuesAttribute attribute = null;			// Attribute.
+
+			attribute = Attribute.GetCustomAttribute(property, typeof(EditorRoundValuesAttribute), true) as EditorRoundValuesAttribute;
+
+			if (attribute != null)
+				return true;
+
+			return false;
+		}
+
+		/// <summary>
+		/// Function to return whether the editor can drag the data values or not with the mouse.
+		/// </summary>
+		/// <param name="property">Property to examine.</param>
+		/// <returns>TRUE to drag, FALSE to ignore.</returns>
+		private bool ValueCanBeDragged(PropertyInfo property)
+		{
+			EditorCanDragAttribute attribute = null;			// Attribute.
+
+			attribute = Attribute.GetCustomAttribute(property, typeof(EditorCanDragAttribute), true) as EditorCanDragAttribute;
+
+			if (attribute != null)
+				return true;
+
+			return false;
+		}
+
+		/// <summary>
+		/// Function called when the animation needs to define an unknown track type.
+		/// </summary>
+		/// <param name="sender">Object that sent the event.</param>
+		/// <param name="e">Event parameters.</param>
+		protected virtual void OnAnimationTrackDefine(object sender, AnimationTrackDefineEventArgs e)
+		{
+			if (AnimationTrackDefinition != null)
+				AnimationTrackDefinition(sender, e);
+		}
+
+		/// <summary>
 		/// Function to set the owner for this animation.
 		/// </summary>
 		/// <param name="owner">Owner for the animation.</param>
-		protected internal void SetOwner(IAnimatable owner)
+		protected internal void SetOwner(object owner)
 		{
+			AnimatedAttribute attribute = null;					// List of attributes for the target object.
+			PropertyInfo[] properties = null;					// List of properties on the renderable.
+			Track track = null;									// Track to add.
+			AnimationTrackDefineEventArgs e;					// Event arguments.
+
+			// If we pass null, disconnect from the object.
+			if (owner == null)
+			{
+				_tracks.Clear();
+				_owner = null;
+				return;
+			}
+
+			properties = owner.GetType().GetProperties();
+			_tracks.Clear();
+			
+			// Find all the properties that are animated and make tracks for those properties.
+			foreach (PropertyInfo property in properties)
+			{
+				// Note: this does not work.  Apparently it doesn't care about inherited attributes.  This is extremely dumb.
+				//attributes = property.GetCustomAttributes(typeof(AnimatedAttribute), true) as Attribute[];
+				attribute = AnimatedAttribute.GetCustomAttribute(property, typeof(AnimatedAttribute), true) as AnimatedAttribute;
+
+				if (attribute != null)
+				{
+					switch (attribute.DataType.FullName.ToLower())
+					{
+						case "gorgonlibrary.vector2d":
+							track = new TrackVector2D(property);
+							break;
+						case "system.single":
+							track = new TrackFloat(property);
+							break;
+						case "system.int32":
+							track = new TrackInt32(property);
+							break;
+						case "system.byte":
+							track = new TrackByte(property);
+							break;
+						case "system.drawing.color":
+							track = new TrackColor(property);
+							break;
+						case "gorgonlibrary.graphics.image":
+							track = new TrackImage(property);
+							break;
+						default:
+							e = new AnimationTrackDefineEventArgs(property.Name, attribute.DataType);
+							OnAnimationTrackDefine(this, e);
+							track = e.Track;
+							if (track != null)
+								track.BoundProperty = property;
+							break;
+					}
+
+					if (track != null)
+					{
+						track.DataRange = GetRangeValues(property);
+						track.RoundValues = ValueIsRounded(property);
+						track.EditCanDragValues = ValueCanBeDragged(property);
+						track.SetAnimationOwner(this);
+						track.InterpolationMode = attribute.InterpolationMode;
+						_tracks.Add(track);
+					}
+				}
+			}
+
 			_owner = owner;
 		}
 
@@ -330,38 +463,44 @@ namespace GorgonLibrary.Graphics
 			if ((!_enabled) || (_state == AnimationState.Stopped))
                 return;
 
-			// Apply transformation tracks.
-			if (_transforms.KeyCount > 0)
+			foreach (Track track in _tracks)
 			{
-				Key key = null;      // Key to apply.
+				if (track.KeyCount > 0)
+					track[_currentTime].Update();
+			}
+        }
 
-				// Get interpolated key.
-				key = _transforms[_currentTime];
-				key.UpdateLayerObject(_owner);
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <param name="newOwner">New object that will own this animation.</param>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		public Animation Clone(object newOwner)
+		{
+			Animation clone = new Animation(Name, _length);
+
+			clone.SetOwner(newOwner);
+			clone._currentTime = _currentTime;
+			clone._enabled = _enabled;
+			clone._state = _state;
+			clone._loop = _loop;
+
+			// Add transforms.
+			foreach (Track track in _tracks)
+			{
+				if (clone.Tracks.Contains(track.Name))
+				{
+					foreach (KeyFrame key in track)
+						clone.Tracks[track.Name].AddKey(key.Clone());
+				}
 			}
 
-			// Apply color tracks.
-			if (_colors.KeyCount > 0)
-			{
-				Key key = null;      // Key to apply.
-
-				// Get interpolated key.
-				key = _colors[_currentTime];
-				key.UpdateLayerObject(_owner);
-			}
-
-			// Apply frame tracks.
-			if (_frames.KeyCount > 0)
-			{
-				Key key = null;		// Key to apply.
-
-				// Get interpolated key.
-				key = _frames[_currentTime];
-				key.UpdateLayerObject(_owner);
-			}
-        }		
-
-        /// <summary>
+			return clone;
+		}
+		
+		/// <summary>
         /// Function to advance the animation by a specific time in milliseconds.
         /// </summary>
         /// <param name="time">Time in milliseconds.</param>
@@ -386,34 +525,10 @@ namespace GorgonLibrary.Graphics
         {
             _currentTime = 0;
 
-			// Apply transformation tracks.
-			if (_transforms.KeyCount > 0)
+			foreach (Track track in _tracks)
 			{
-				Key key = null;      // Key to apply.
-
-				// Get interpolated key.
-				key = _transforms[0];
-				key.UpdateLayerObject(_owner);
-			}
-
-			// Apply color tracks.
-			if (_colors.KeyCount > 0)
-			{
-				Key key = null;      // Key to apply.
-
-				// Get interpolated key.
-				key = _colors[0];
-				key.UpdateLayerObject(_owner);
-			}
-
-			// Apply frame tracks.
-			if (_frames.KeyCount > 0)
-			{
-				Key key = null;		// Key to apply.
-
-				// Get interpolated key.
-				key = _frames[0];
-				key.UpdateLayerObject(_owner);
+				if (track.KeyCount > 0)
+					track[0].Update();
 			}
 		}
         #endregion
@@ -423,15 +538,12 @@ namespace GorgonLibrary.Graphics
         /// Constructor.
         /// </summary>
         /// <param name="name">Name of the animation.</param>
-        /// <param name="owner">Owner of this animation.</param>
         /// <param name="length">Length of the animation in milliseconds.</param>
-        internal Animation(string name, IAnimatable owner, float length)
+        public Animation(string name, float length)
             : base(name)
         {
-            _owner = owner;
-			_transforms = new TrackTransform(this);
-			_colors = new TrackColor(this);
-			_frames = new TrackFrame(this);
+			_owner = null;
+			_tracks = new TrackCollection();
             _enabled = true;
             Length = length;
         }
@@ -439,7 +551,7 @@ namespace GorgonLibrary.Graphics
 
         #region ISerializable Members
 		/// <summary>
-		/// Property to set or return the filename of the serializable object.
+		/// Property to return the filename of the serializable object.
 		/// </summary>
 		/// <value></value>
 		string ISerializable.Filename
@@ -448,110 +560,33 @@ namespace GorgonLibrary.Graphics
 			{
 				return string.Empty;
 			}
-			set
+		}
+
+		/// <summary>
+		/// Property to return whether this object is an embedded resource.
+		/// </summary>
+		/// <value></value>
+		bool ISerializable.IsResource
+		{
+			get
 			{
+				return false;
 			}
 		}
-	
+
 		/// <summary>
-        /// Function to persist the data into the serializer stream.
-        /// </summary>
-        /// <param name="serializer">Serializer that's calling this function.</param>
-        void ISerializable.WriteData(Serializer serializer)
-        {
-            serializer.WriteGroupBegin("Animation");
+		/// Function to read in the old version 1 file format.
+		/// </summary>
+		/// <param name="serializer">Serializer to use to read the format.</param>
+		internal void ReadVersion1Animation(Serializer serializer)
+		{
+			float keyTime = 0.0f;						// Key time.
+			Vector2D vector = Vector2D.Zero;			// Key vector.
+			float floatValue = 0;						// Key floating point value.
+			int intValue = 0;							// Key integer value.
 
             // Write animation data.
-            serializer.Write("Name", _objectName);
-            serializer.Write("Length", _length);
-            serializer.Write("Looping", _loop);
-            serializer.Write("Enabled", _enabled);
-            serializer.Write("TransformKeyCount", _transforms.KeyCount);
-
-			// Write keys.
-			if (_transforms.KeyCount > 0)
-			{
-				serializer.WriteGroupBegin("TransformationTrack");
-				KeyTransform key = null;        // Transformation key. 
-
-				for (int i = 0; i < _transforms.KeyCount; i++)
-				{
-					serializer.WriteGroupBegin("Key");
-					key = _transforms.GetKeyAtIndex(i) as KeyTransform;
-					serializer.Write("TimeIndex", key.Time);
-					serializer.Write("InterpolationMode", (int)key.InterpolationMode);
-					serializer.Write("PositionX", key.Position.X);
-					serializer.Write("PositionY", key.Position.Y);
-					serializer.Write("ScaleX", key.Scale.X);
-					serializer.Write("ScaleY", key.Scale.Y);
-					serializer.Write("Rotation", key.Rotation);
-					serializer.Write("AxisX", key.Axis.X);
-					serializer.Write("AxisY", key.Axis.Y);
-					serializer.Write("SizeX", key.Size.X);
-					serializer.Write("SizeY", key.Size.Y);
-					serializer.Write("OffsetX", key.ImageOffset.X);
-					serializer.Write("OffsetY", key.ImageOffset.Y);
-					serializer.WriteGroupEnd();
-				}
-
-				serializer.WriteGroupEnd();
-			}			
-
-			serializer.Write("ColorKeyCount", _colors.KeyCount);
-			// Write keys.
-			if (_colors.KeyCount > 0)
-			{
-				serializer.WriteGroupBegin("ColorTrack");
-				KeyColor key = null;        // Color key. 
-
-				for (int i = 0; i < _colors.KeyCount; i++)
-				{
-					serializer.WriteGroupBegin("Key");
-					key = _colors.GetKeyAtIndex(i) as KeyColor;
-					serializer.Write("TimeIndex", key.Time);
-					serializer.Write("InterpolationMode", (int)key.InterpolationMode);
-					serializer.Write("Color", key.Color.ToArgb());
-					serializer.Write("AlphaMaskValue", key.AlphaMaskValue);
-					serializer.WriteGroupEnd();
-				}
-
-				serializer.WriteGroupEnd();
-			}			
-
-			serializer.Write("FrameKeyCount", _frames.KeyCount);
-			// Write keys.
-			if (_frames.KeyCount > 0)
-			{
-				serializer.WriteGroupBegin("FrameTrack");
-				KeyFrame key = null;        // Frame switch key. 
-
-				for (int i = 0; i < _frames.KeyCount; i++)
-				{
-					serializer.WriteGroupBegin("Key");
-					key = _frames.GetKeyAtIndex(i) as KeyFrame;
-					serializer.Write("TimeIndex", key.Time);
-					serializer.Write("InterpolationMode", (int)key.InterpolationMode);
-					serializer.Write("ImageName", key.Frame.Image.Name);
-					serializer.Write("ImageOffsetX", key.Frame.Offset.X);
-					serializer.Write("ImageOffsetY", key.Frame.Offset.Y);
-					serializer.Write("SizeX", key.Frame.Size.X);
-					serializer.Write("SizeY", key.Frame.Size.Y);
-					serializer.WriteGroupEnd();
-				}
-
-				serializer.WriteGroupEnd();
-			}			
-            serializer.WriteGroupEnd();
-        }
-
-        /// <summary>
-        /// Function to retrieve data from the serializer stream.
-        /// </summary>
-        /// <param name="serializer">Serializer that's calling this function.</param>
-        void ISerializable.ReadData(Serializer serializer)
-        {
-            // Write animation data.
-            _objectName = serializer.ReadString("Name");
+            Name = serializer.ReadString("Name");
             _length = serializer.ReadSingle("Length");
             _loop = serializer.ReadBool("Looping");
             _enabled = serializer.ReadBool("Enabled");
@@ -559,33 +594,45 @@ namespace GorgonLibrary.Graphics
             // Track count.
             int keyCount = 0;
 
-			// Remove keys.
-			_transforms.ClearKeys();
-			_colors.ClearKeys();
-			_frames.ClearKeys();
-
 			keyCount = serializer.ReadInt32("TransformKeyCount");
 
             // Write keys.
             if (keyCount > 0)
             {
-                KeyTransform key = null;        // Transformation key. 
-
                 for (int j = 0; j < keyCount; j++)
                 {
                     // Create a key.
-                    key = new KeyTransform(null, 0.0f);                                                        
+					keyTime = serializer.ReadSingle("TimeIndex");
+					serializer.ReadInt32("InterpolationMode");		// Skip this, it's handled by the track now - note that animations may not react properly.
+                    vector = new Vector2D(serializer.ReadSingle("PositionX"), serializer.ReadSingle("PositionY"));
 
-                    key.Time = serializer.ReadSingle("TimeIndex");
-                    key.InterpolationMode = (InterpolationMode)serializer.ReadInt32("InterpolationMode");
-                    key.Position = new Vector2D(serializer.ReadSingle("PositionX"), serializer.ReadSingle("PositionY"));
-                    key.Scale = new Vector2D(serializer.ReadSingle("ScaleX"), serializer.ReadSingle("ScaleY"));
-                    key.Rotation = serializer.ReadSingle("Rotation");
-                    key.Axis = new Vector2D(serializer.ReadSingle("AxisX"), serializer.ReadSingle("AxisY"));
-                    key.Size = new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY"));
-                    key.ImageOffset = new Vector2D(serializer.ReadSingle("OffsetX"), serializer.ReadSingle("OffsetY"));
+					if (_tracks.Contains("Position"))
+						_tracks["Position"].AddKey(new KeyVector2D(keyTime, vector));
 
-					_transforms.AddKey(key);
+					vector = new Vector2D(serializer.ReadSingle("ScaleX"), serializer.ReadSingle("ScaleY"));
+
+					if (_tracks.Contains("Scale"))
+						_tracks["Scale"].AddKey(new KeyVector2D(keyTime, vector));
+
+					floatValue = serializer.ReadSingle("Rotation");
+
+					if (_tracks.Contains("Rotation"))
+						_tracks["Rotation"].AddKey(new KeyFloat(keyTime, floatValue));
+
+					vector = new Vector2D(serializer.ReadSingle("AxisX"), serializer.ReadSingle("AxisY"));
+
+					if (_tracks.Contains("Axis"))
+						_tracks["Axis"].AddKey(new KeyVector2D(keyTime, vector));
+
+					vector = new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY"));
+					
+					if (_tracks.Contains("Size"))
+						_tracks["Size"].AddKey(new KeyVector2D(keyTime, vector));
+					
+					vector = new Vector2D(serializer.ReadSingle("OffsetX"), serializer.ReadSingle("OffsetY"));
+
+					if (_tracks.Contains("ImageOffset"))
+						_tracks["ImageOffset"].AddKey(new KeyVector2D(keyTime, vector));					
                 }
             }
 
@@ -594,19 +641,17 @@ namespace GorgonLibrary.Graphics
 			// Write keys.
 			if (keyCount > 0)
 			{
-				KeyColor key = null;        // Color key. 
-
 				for (int j = 0; j < keyCount; j++)
 				{
-					// Create a key.
-					key = new KeyColor(null, 0.0f);                            
+					keyTime = serializer.ReadSingle("TimeIndex");
+					serializer.ReadInt32("InterpolationMode");
 
-					key.Time = serializer.ReadSingle("TimeIndex");
-					key.InterpolationMode = (InterpolationMode)serializer.ReadInt32("InterpolationMode");
-					key.Color = Color.FromArgb(serializer.ReadInt32("Color"));
-					key.AlphaMaskValue = serializer.ReadInt32("AlphaMaskValue");
-
-					_colors.AddKey(key);
+					intValue = serializer.ReadInt32("Color");
+					if (_tracks.Contains("Color"))
+						_tracks["Color"].AddKey(new KeyColor(keyTime, Color.FromArgb(intValue)));
+					intValue = serializer.ReadInt32("AlphaMaskValue");
+					if (_tracks.Contains("AlphaMaskValue"))
+						_tracks["AlphaMaskValue"].AddKey(new KeyInt32(keyTime, intValue));
 				}
 			}
 
@@ -614,68 +659,109 @@ namespace GorgonLibrary.Graphics
             // Write keys.
             if (keyCount > 0)
             {
-                KeyFrame key = null;        // Frame switch key. 
-
                 for (int j = 0; j < keyCount; j++)
                 {
-                    Image imageFrame = null;            // Image used for frame.
-                    string imageName = string.Empty;    // Image name.
+					KeyImage newKey = null;				// Key image.
+					string imageName = string.Empty;    // Image name.
 
-                    // Create key.
-                    key = new KeyFrame(null, 0.0f);
-                    key.Time = serializer.ReadSingle("TimeIndex");
-                    key.InterpolationMode = (InterpolationMode)serializer.ReadInt32("InterpolationMode");
+					keyTime = serializer.ReadSingle("TimeIndex");
+					serializer.ReadInt32("InterpolationMode");
 
-                    // Get the current image frame.
-                    imageFrame = Owner.Image;
-                    imageName = serializer.ReadString("ImageName");
+					imageName = serializer.ReadString("ImageName");
 
-					if (((imageFrame != null) && (imageName != imageFrame.Name) && (ImageCache.Images.Contains(imageName))) || ((imageFrame == null) && (ImageCache.Images.Contains(imageName))))
-						imageFrame = ImageCache.Images[imageName];
-
-                    // No image?  No keyframe.
-                    if (imageFrame != null)
-                    {
-                        key.Frame = new Frame(imageFrame, new Vector2D(serializer.ReadSingle("ImageOffsetX"), serializer.ReadSingle("ImageOffsetY")),
-                            new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY")));
-
-                        _frames.AddKey(key);
-                    }
+					if ((_tracks.Contains("Image")) && (!string.IsNullOrEmpty(imageName)))
+					{
+						if (ImageCache.Images.Contains(imageName))
+							newKey = new KeyImage(keyTime, ImageCache.Images[imageName]);
+						else
+							newKey = new KeyImage(keyTime, imageName);
+						newKey.ImageOffset = new Vector2D(serializer.ReadSingle("ImageOffsetX"), serializer.ReadSingle("ImageOffsetY"));
+						newKey.ImageSize = new Vector2D(serializer.ReadSingle("SizeX"), serializer.ReadSingle("SizeY"));
+						_tracks["Image"].AddKey(newKey);
+					}
                 }
+			}
+		}
+
+		/// <summary>
+        /// Function to persist the data into the serializer stream.
+        /// </summary>
+        /// <param name="serializer">Serializer that's calling this function.</param>
+        void ISerializable.WriteData(Serializer serializer)
+        {
+            serializer.WriteGroupBegin("Animation");			
+
+            // Write animation data.
+			serializer.Write("Header", "GORANM11");		// Stupid choice on my part, I should have versioned the animations.
+            serializer.Write("Name", Name);
+            serializer.Write("Length", _length);
+            serializer.Write("Looping", _loop);
+			serializer.WriteComment("The Enabled property should not be here, and rather than mess up the format, it's staying here.  But keep in mind that it does nothing.");
+            serializer.Write("Enabled", true);
+			_enabled = true;
+			serializer.Write("FPS", _frameRate);
+			serializer.Write("TrackCount", _tracks.Count);
+
+			// Write tracks.
+			foreach (Track track in _tracks)
+			{
+				serializer.WriteGroupBegin("Track");
+				serializer.Write("Name", track.Name);
+				serializer.Write("KeyCount", track.KeyCount);
+				if (track.KeyCount > 0)
+				{	
+					serializer.Write("InterpolationMode", (int)track.InterpolationMode);					
+
+					// Write keys for the track.
+					for (int i = 0; i < track.KeyCount;i++)
+						track.GetKeyAtIndex(i).WriteData(serializer);		// Keyframe to write.					
+				}
+				serializer.WriteGroupEnd();
+			}
+        }
+
+        /// <summary>
+        /// Function to retrieve data from the serializer stream.
+        /// </summary>
+        /// <param name="serializer">Serializer that's calling this function.</param>
+        void ISerializable.ReadData(Serializer serializer)
+        {
+			string header = string.Empty;			// Header.
+			string trackName = string.Empty;		// Name of the track.
+			int keyCount = 0;						// Number of keys for the track.
+			int trackCount = 0;						// Number of tracks.
+			KeyFrame newKey = null;					// Key frame.
+
+			header = serializer.ReadString("Header");
+			if (string.Compare(header, "GORANM11", true) != 0)
+				throw new InvalidOperationException("The animation data is not in a known format.");
+            Name = serializer.ReadString("Name");
+            _length = serializer.ReadSingle("Length");
+            _loop = serializer.ReadBool("Looping");
+            serializer.ReadBool("Enabled");
+			_frameRate = serializer.ReadInt32("FPS");
+			trackCount = serializer.ReadInt32("TrackCount");
+
+			// Loop through existing tracks.
+			for (int i = 0; i < trackCount; i++)
+			{
+				trackName = serializer.ReadString("Name");
+				keyCount = serializer.ReadInt32("KeyCount");
+
+				// If the animation contains a track by this name, load its data.
+				if ((_tracks.Contains(trackName)) && (keyCount > 0))
+				{
+					_tracks[trackName].InterpolationMode = (InterpolationMode)serializer.ReadInt32("InterpolationMode");					
+					for (int j = 0; j < keyCount; j++)
+					{
+						// Get the new key.
+						newKey = _tracks[trackName].CreateKey();
+						newKey.ReadData(serializer);
+						_tracks[trackName].AddKey(newKey);
+					}
+				}
 			}
         }
         #endregion
-
-		#region ICloneable Members
-		/// <summary>
-		/// Creates a new object that is a copy of the current instance.
-		/// </summary>
-		/// <returns>
-		/// A new object that is a copy of this instance.
-		/// </returns>
-		public object Clone()
-		{
-			Animation clone = new Animation(_objectName, _owner, _length);			
-
-			clone._currentTime = _currentTime;
-			clone._enabled = _enabled;
-			clone._state = _state;
-			clone._loop = _loop;
-
-			// Add transforms.
-			foreach (KeyTransform key in _transforms)
-				clone.TransformationTrack.AddKey((KeyTransform)key.Clone());
-
-			// Add colors.
-			foreach (KeyColor key in _colors)
-				clone.ColorTrack.AddKey((KeyColor)key.Clone());
-
-			// Add frames.
-			foreach (KeyFrame key in _frames)
-				clone.FrameTrack.AddKey((KeyFrame)key.Clone());
-
-			return clone;
-		}
-		#endregion
 	}
 }

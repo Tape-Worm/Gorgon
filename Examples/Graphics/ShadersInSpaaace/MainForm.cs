@@ -1,23 +1,26 @@
-#region LGPL.
+#region MIT.
 // 
-// Gorgon.
-// Copyright (C) 2007 Michael Winsor
+// Examples.
+// Copyright (C) 2008 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
-// Created: Friday, October 26, 2007 11:55:49 PM
+// Created: Thursday, October 02, 2008 10:46:02 PM
 // 
 #endregion
 
@@ -27,9 +30,7 @@ using System.ComponentModel;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
+using Dialogs;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
 
@@ -42,8 +43,8 @@ namespace GorgonLibrary.Example
 		: Form
 	{
 		#region Variables.
-		private Shader _cloakShader = null;					// Cloaking shader.
-		private Shader _scratchShader = null;				// Film scratch shader.
+		private FXShader _cloakShader = null;				// Cloaking shader.
+		private FXShader _scratchShader = null;				// Film scratch shader.
 		private ImageShader _imageShader = null;			// Image shader.
 		private Image _noiseImage = null;					// Noise image.
 		private Image _backgroundImage = null;				// Background image.
@@ -79,7 +80,6 @@ namespace GorgonLibrary.Example
 			_cloakShader.Parameters["sprite"].SetValue(_shipImage);
 			_cloakShader.Parameters["cloakAmount"].SetValue(1.0f);
 			_cloakShader.Parameters["refractionIndex"].SetValue(_cloakIndex);
-			_ship.Shader = _cloakShader;
 		}
 
 		/// <summary>
@@ -140,11 +140,11 @@ namespace GorgonLibrary.Example
 
 			scale.X = (float)Gorgon.Screen.Width / _background.Image.Width;
 			scale.Y = (float)Gorgon.Screen.Height / _background.Image.Height;
-			
-			_background.Axis = _ship.Position / scale;
+
+            _background.Axis = Vector2D.Divide(_ship.Position, scale);
 			_background.Position = _ship.Axis;
 			_background.Rotation = -_degrees;
-			_background.Scale = (Vector2D.Unit / _ship.Scale) * scale;
+            _background.Scale = Vector2D.Divide(scale, _ship.Scale);
 			_background.Draw();
 			Gorgon.CurrentRenderTarget = _finalBuffer;
 
@@ -193,6 +193,8 @@ namespace GorgonLibrary.Example
 				_cloakShader.Parameters["cloakAmount"].SetValue(_cloakAmount);
 				_cloakShader.Parameters["refractionIndex"].SetValue(_cloakIndex);
 			}
+
+			Gorgon.CurrentShader = _cloakShader;
 			_ship.Draw();
 		}
 
@@ -203,6 +205,7 @@ namespace GorgonLibrary.Example
 		/// <param name="e">The <see cref="GorgonLibrary.Graphics.FrameEventArgs"/> instance containing the event data.</param>
 		private void Gorgon_Idle(object sender, FrameEventArgs e)
 		{
+			Gorgon.Screen.Clear();
 			// Do nothing here.  When we need to update, we will.
 			Gorgon.CurrentRenderTarget = _finalBuffer;
 			Gorgon.CurrentRenderTarget.Clear();
@@ -226,12 +229,11 @@ namespace GorgonLibrary.Example
 				_frameTimer.Reset();
 			}
 
-			_bufferSprite.Position = Vector2D.Zero;
-			_bufferSprite.Draw();
-
 			_bufferSprite.Position = _offset;
+			Gorgon.CurrentShader = _scratchShader;
 			_bufferSprite.Draw();
 
+			Gorgon.CurrentShader = null;
 			_grainSprite.Opacity = (byte)(_rnd.Next(128) + 127);
 			_grainSprite.Draw();
 		}
@@ -268,18 +270,22 @@ namespace GorgonLibrary.Example
 			_bufferSprite = new Sprite("FinalBufferSprite", _finalBuffer);
 
 			// Get shader.
-			_cloakShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx");
-			_scratchShader = Shader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx");
+#if DEBUG
+			_cloakShader = FXShader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx", ShaderCompileOptions.Debug);
+			_scratchShader = FXShader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx", ShaderCompileOptions.Debug);
+			_imageShader = new ImageShader("ScratchBuffer", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0", ShaderCompileOptions.Debug));
+#else
+			_cloakShader = FXShader.FromFile(@"..\..\..\..\Resources\Shaders\Cloak.fx", ShaderCompileOptions.OptimizationLevel3);
+			_scratchShader = FXShader.FromFile(@"..\..\..\..\Resources\Shaders\post_scratched_film.fx", ShaderCompileOptions.OptimizationLevel3);
+			_imageShader = new ImageShader("ScratchBuffer", _scratchShader.GetShaderFunction("noise_2d", "tx_1_0", ShaderCompileOptions.OptimizationLevel3));
+#endif
 			InstallCloak();
 
-			// Set up noise image.
-			_imageShader = new ImageShader("NoiseShader", _scratchShader, "noise_2d");
+			// Set up noise image.			
 			_noiseImage = new Image("NoiseImage", 128, 128, ImageBufferFormats.BufferRGB888A8, true);
 			_noiseImage.FillFromShader(_imageShader);
-
 			_scratchShader.Parameters["Noise2DTex"].SetValue(_noiseImage);
 			_scratchShader.Parameters["SceneTexture"].SetValue(_finalBuffer);
-			_bufferSprite.Shader = _scratchShader;
 
 			_frameTimer = new PreciseTimer();
 		}
@@ -365,8 +371,7 @@ namespace GorgonLibrary.Example
 				// Display the logo.
 				Gorgon.LogoVisible = true;
 				Gorgon.FrameStatsVisible = false;
-				Gorgon.InvertFrameStatsTextColor = false;
-
+				
 				if (Gorgon.CurrentDriver.PixelShaderVersion < new Version(2, 0))
 				{
 					UI.ErrorBox(this, "This example requires a shader model 2 capable video card.\nSee details for more information.", "Required pixel shader version: 2.0\n" + Gorgon.CurrentDriver.Description + " pixel shader version: " + Gorgon.CurrentDriver.PixelShaderVersion.ToString());
