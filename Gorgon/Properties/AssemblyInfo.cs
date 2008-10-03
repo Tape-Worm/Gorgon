@@ -24,7 +24,7 @@
 // 
 #endregion
 
-// #define BETA
+#define BETA
 
 using System;
 using System.Reflection;
