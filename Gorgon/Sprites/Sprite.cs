@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2006 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Sunday, July 09, 2006 3:16:50 AM
 // 
@@ -29,8 +32,6 @@ using System.Runtime.InteropServices;
 using System.Resources;
 using System.Reflection;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
 using GorgonLibrary.FileSystems;
@@ -44,15 +45,53 @@ namespace GorgonLibrary.Graphics
 		: Renderable, ISerializable
 	{
 		#region Variables.
-		private float[] _spriteCorners;							// Sprite corners.
-		private Vector2D[] _vertexOffsets;						// Relative offsets for vertices.
-		private Vector2D _imagePosition;						// Position within the image to start copying from.
-		private string _spritePath;								// Path to the loaded/saved sprite.
-		private bool _flipHorizontal = false;					// Flag to flip horizontally.
-		private bool _flipVertical = false;						// Flag to flip vertically.
+		private float[] _spriteCorners;									// Sprite corners.
+		private Vector2D[] _vertexOffsets;								// Relative offsets for vertices.
+		private Vector2D _imagePosition;								// Position within the image to start copying from.
+		private string _spritePath;										// Path to the loaded/saved sprite.
+		private bool _flipHorizontal = false;							// Flag to flip horizontally.
+		private bool _flipVertical = false;								// Flag to flip vertically.
+		private string _deferredImage = string.Empty;					// Name of the deferred image to bind.
+		private BoundingCircle _boundCircle = BoundingCircle.Empty;		// Bounding circle.
+		private bool _isResource = false;								// Flag to indicate that this object is an embedded resource.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the bounding circle of the sprite.
+		/// </summary>
+		public BoundingCircle BoundingCircle
+		{
+			get
+			{
+				if (this.IsAABBUpdated)
+					UpdateAABB();
+				return _boundCircle;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the image that this object is bound with.
+		/// </summary>
+		public override Image Image
+		{
+			get
+			{
+				if ((_deferredImage != string.Empty) && (base.Image == null))
+				{
+					if (ImageCache.Images.Contains(_deferredImage))
+						Image = ImageCache.Images[_deferredImage];
+				}
+
+				return base.Image;
+			}
+			set
+			{
+				_deferredImage = string.Empty;
+				base.Image = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return whether the sprite is flipped horizontally or not.
 		/// </summary>
@@ -82,17 +121,6 @@ namespace GorgonLibrary.Graphics
 			{
 				_flipVertical = value;
 				Refresh();
-			}
-		}
-
-		/// <summary>
-		/// Property to return the filename of the sprite.
-		/// </summary>
-		public string Filename
-		{
-			get
-			{
-				return _spritePath;
 			}
 		}
 
@@ -138,18 +166,19 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the opacity.
 		/// </summary>
-		public override byte Opacity
+		public override int Opacity
 		{
 			get
 			{
-				return (byte)((Vertices[0].Color >> 24) & 0xFF);
+				return ((Vertices[0].Color >> 24) & 0xFF);
 			}
 			set
 			{
-				Vertices[0].Color = ((int)value << 24) | (Vertices[0].Color & 0xFFFFFF);
-				Vertices[1].Color = ((int)value << 24) | (Vertices[1].Color & 0xFFFFFF);
-				Vertices[2].Color = ((int)value << 24) | (Vertices[2].Color & 0xFFFFFF);
-				Vertices[3].Color = ((int)value << 24) | (Vertices[3].Color & 0xFFFFFF);
+				value &= 0xFF;
+				Vertices[0].Color = (value << 24) | (Vertices[0].Color & 0xFFFFFF);
+				Vertices[1].Color = (value << 24) | (Vertices[1].Color & 0xFFFFFF);
+				Vertices[2].Color = (value << 24) | (Vertices[2].Color & 0xFFFFFF);
+				Vertices[3].Color = (value << 24) | (Vertices[3].Color & 0xFFFFFF);
 			}
 		}
 
@@ -229,7 +258,7 @@ namespace GorgonLibrary.Graphics
 				base.Scale = value;
 
 				if (Children.Count > 0)
-                    ((IRenderable)this).UpdateChildren();
+                    ((Renderable)this).UpdateChildren();
 			}
 		}
 
@@ -263,10 +292,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (string.IsNullOrEmpty(value))
-					throw new InvalidNameException();
-
-				_objectName = value;
+				base.Name = value;
 			}
 		}
 		#endregion
@@ -289,44 +315,37 @@ namespace GorgonLibrary.Graphics
 			string imageName = string.Empty;			// Image name.
 			string spritePath = string.Empty;			// Path to the sprite.
 
-			try
-			{
-				// Get the filename if this is a file stream.
-				if (stream is FileStream)
-					spritePath = ((FileStream)stream).Name;
-				else
-					spritePath = name;
+            try
+            {
+                // Get the filename if this is a file stream.
+                if (stream is FileStream)
+                    spritePath = ((FileStream)stream).Name;
+                else
+                    spritePath = name;
 
-				// Create the sprite object.
-				newSprite = new Sprite(name);
-				((ISerializable)newSprite).Filename = spritePath;
+                // Create the sprite object.
+                newSprite = new Sprite(name);
+                newSprite._spritePath = spritePath;
+				newSprite._isResource = (resources != null);
 
-				// Open the file for reading.
-				if (isXML)
-					spriteSerializer = new XMLSerializer(newSprite, stream);
-				else
-					spriteSerializer = new BinarySerializer(newSprite, stream);
+                // Open the file for reading.
+                if (isXML)
+                    spriteSerializer = new XMLSerializer(newSprite, stream);
+                else
+                    spriteSerializer = new BinarySerializer(newSprite, stream);
 
-				if (resources != null)
-					spriteSerializer.Parameters["ResourceManager"] = resources;
+                if (resources != null)
+                    spriteSerializer.Parameters["ResourceManager"] = resources;
 
-				// Don't close the underlying stream.
-				spriteSerializer.DontCloseStream = true;
+                // Don't close the underlying stream.
+                spriteSerializer.DontCloseStream = true;
 
-				// Set the image parameters.
-				if (alternateImage != null)
-					spriteSerializer.Parameters["Image"] = alternateImage;
+                // Set the image parameters.
+                if (alternateImage != null)
+                    spriteSerializer.Parameters["Image"] = alternateImage;
 
-				spriteSerializer.Deserialize();
-			}
-			catch (SharpException sEx)
-			{
-				throw sEx;
-			}
-			catch (Exception ex)
-			{
-				throw new CannotLoadException(newSprite.Name, typeof(Sprite), ex);
-			}
+                spriteSerializer.Deserialize();
+            }
 			finally
 			{
 				if (spriteSerializer != null)
@@ -342,9 +361,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void UpdateDimensions()
 		{
-			if ((MathUtility.EqualFloat(Size.X, 0.0f)) || (MathUtility.EqualFloat(Size.Y, 0.0f)))
-				throw new SpriteSizeException(null);
-
 			// Resize the sprite.
 			_spriteCorners[0] = -Axis.X;
 			_spriteCorners[1] = -Axis.Y;
@@ -443,10 +459,10 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Adjust vertex offsets.
-            Vertices[0].Position.Z = -1.0f;
-            Vertices[1].Position.Z = -1.0f;
-            Vertices[2].Position.Z = -1.0f;
-            Vertices[3].Position.Z = -1.0f;
+            Vertices[0].Position.Z = -Depth;
+			Vertices[1].Position.Z = -Depth;
+			Vertices[2].Position.Z = -Depth;
+			Vertices[3].Position.Z = -Depth;
 
 			Vertices[0].Position.X += _vertexOffsets[0].X;
             Vertices[0].Position.Y += _vertexOffsets[0].Y;
@@ -467,31 +483,29 @@ namespace GorgonLibrary.Graphics
 			float tv;		// Starting vertical position.
 			float sizetu;	// Width.
 			float sizetv;	// Height.
-			float temp = 0;	// Temp value.
 
 			if (Image == null)
 				return;
 
 			// Initialize texture coordinates.
-			tu = (_imagePosition.X + 0.5f) / Image.ActualWidth;
-			tv = (_imagePosition.Y + 0.5f) / Image.ActualHeight;
-			sizetu = (_imagePosition.X + Size.X) / Image.ActualWidth;
-			sizetv = (_imagePosition.Y + Size.Y) / Image.ActualHeight;
+			if (!_flipHorizontal)
+				tu = (_imagePosition.X + 0.5f) / Image.ActualWidth;
+			else
+				tu = (_imagePosition.X + Size.X - 0.5f) / Image.ActualWidth;
+			if (!_flipVertical)
+				tv = (_imagePosition.Y + 0.5f) / Image.ActualHeight;
+			else
+				tv = (_imagePosition.Y + Size.Y - 0.5f) / Image.ActualHeight;
 
-			// Flip the image appropriately.
-			if (_flipHorizontal)
-			{
-				temp = tu;
-				tu = sizetu;
-				sizetu = temp;
-			}
+			if (!_flipHorizontal)
+				sizetu = (_imagePosition.X + Size.X) / Image.ActualWidth;
+			else
+				sizetu = (_imagePosition.X) / Image.ActualWidth;
 
-			if (_flipVertical)
-			{
-				temp = tv;
-				tv = sizetv;
-				sizetv = temp;
-			}
+			if (!_flipVertical)
+				sizetv = (_imagePosition.Y + Size.Y) / Image.ActualHeight;
+			else
+				sizetv = (_imagePosition.Y) / Image.ActualHeight;
 
 			Vertices[0].TextureCoordinates = new Vector2D(tu, tv);
 			Vertices[1].TextureCoordinates = new Vector2D(sizetu, tv);
@@ -555,14 +569,6 @@ namespace GorgonLibrary.Graphics
 				else
 					return SpriteFromStream(path, fileSystem, null, stream, false, alternateImage);
 			}
-			catch (SharpException sEx)
-			{
-				throw sEx;
-			}
-			catch (Exception ex)
-			{
-				throw new CannotLoadException(path, typeof(Sprite), ex);
-			}
 			finally
 			{
 				if (stream != null)
@@ -602,14 +608,6 @@ namespace GorgonLibrary.Graphics
 					return SpriteFromStream(spritePath, null, null, spriteStream, true, alternateImage);
 				else
 					return SpriteFromStream(spritePath, null, null, spriteStream, false, alternateImage);
-			}
-			catch (SharpException sEx)
-			{
-				throw sEx;
-			}
-			catch (Exception ex)
-			{
-				throw new CannotLoadException(spritePath, typeof(Sprite), ex);
 			}
 			finally
 			{
@@ -663,14 +661,6 @@ namespace GorgonLibrary.Graphics
 					stream = new MemoryStream((byte[])resourceManager.GetObject(spriteName));
 
 				return SpriteFromStream("@SpriteResource.", null, resourceManager, stream, isXML, alternateImage);
-			}
-			catch (SharpException sEx)
-			{
-				throw sEx;
-			}
-			catch (Exception ex)
-			{
-				throw new CannotLoadException(spriteName, typeof(Sprite), ex);
 			}
 			finally
 			{
@@ -791,10 +781,6 @@ namespace GorgonLibrary.Graphics
 
 				_spritePath = spritePath;
 			}
-			catch (Exception ex)
-			{
-				throw new CannotSaveException(spritePath, GetType(), ex);
-			}
 			finally
 			{
 				if (spriteSerializer != null)
@@ -840,14 +826,6 @@ namespace GorgonLibrary.Graphics
 
 				// Serialize.
 				Save(stream, isXML);
-			}
-			catch (CannotSaveException csex)
-			{
-				throw csex;
-			}
-			catch (Exception ex)
-			{
-				throw new CannotSaveException(fileName, GetType(), ex);
 			}
 			finally
 			{
@@ -918,10 +896,6 @@ namespace GorgonLibrary.Graphics
 
 				fileSystem.WriteFile(fileName, data);
 			}
-			catch (Exception ex)
-			{
-				throw new CannotSaveException(fileName, GetType(), ex);
-			}
 			finally
 			{
 				if (stream != null)
@@ -937,6 +911,8 @@ namespace GorgonLibrary.Graphics
 		{
 			Vector2D max = new Vector2D(float.MinValue, float.MinValue);	// Max boundary for the AABB.
 			Vector2D min = new Vector2D(float.MaxValue, float.MaxValue);	// Min boundary for the AABB.
+			float xradius = 0.0f;											// Bounding circle radius. 
+			float yradius = 0.0f;											// Bounding circle radius.
 
 			base.UpdateAABB();
 
@@ -957,6 +933,13 @@ namespace GorgonLibrary.Graphics
 			}
 
 			SetAABB(min, max);
+			_boundCircle.Center = new Vector2D(min.X + (max.X - min.X) / 2.0f, min.Y + (max.Y - min.Y) / 2.0f);
+			xradius = MathUtility.Abs(max.X - min.X) / 2.0f;
+			yradius = MathUtility.Abs(max.Y - min.Y) / 2.0f;
+			if (xradius > yradius)
+				_boundCircle.Radius = xradius;
+			else
+				_boundCircle.Radius = yradius;
 			IsAABBUpdated = false;
 		}
 
@@ -1086,9 +1069,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public override object Clone()
+		public override Renderable Clone()
 		{
-			Sprite clone = new Sprite(_objectName + ".Clone", Image, ImageOffset, Size, Axis, Position, Rotation, Scale);		// Create clone.
+			Sprite clone = new Sprite(Name + ".Clone", Image, ImageOffset, Size, Axis, Position, Rotation, Scale);		// Create clone.
 
 			// Copy properties.
 			for (int i = 0; i < _spriteCorners.Length; i++)
@@ -1102,7 +1085,7 @@ namespace GorgonLibrary.Graphics
 
 			clone._imagePosition = _imagePosition;
 			clone._spritePath = string.Empty;
-			((IRenderable)clone).SetParent(Parent);
+			clone.SetParent(Parent);
 			clone.Size = Size;
 			clone.Position = Position;
 			clone.Rotation = Rotation;
@@ -1114,6 +1097,7 @@ namespace GorgonLibrary.Graphics
 			clone.ParentScale = ParentScale;
 			clone.HorizontalFlip = HorizontalFlip;
 			clone.VerticalFlip = VerticalFlip;
+			clone.BorderColor = BorderColor;
 
 			if (!InheritSmoothing)
 				clone.Smoothing = Smoothing;
@@ -1123,6 +1107,13 @@ namespace GorgonLibrary.Graphics
 				clone.SourceBlend = SourceBlend;
 				clone.DestinationBlend = DestinationBlend;
 			}
+			clone.Depth = Depth;
+			if (!InheritDepthBias)
+				clone.DepthBufferBias = DepthBufferBias;
+			if (!InheritDepthTestFunction)
+				clone.DepthTestFunction = DepthTestFunction;
+			if (!InheritDepthWriteEnabled)
+				clone.DepthWriteEnabled = DepthWriteEnabled;
 			if (!InheritAlphaMaskFunction)
 				clone.AlphaMaskFunction = AlphaMaskFunction;
 			if (!InheritAlphaMaskValue)
@@ -1149,7 +1140,6 @@ namespace GorgonLibrary.Graphics
 			// Clone the animations.
 			Animations.CopyTo(clone.Animations);
 
-			clone.Shader = Shader;			
 			clone.InheritScale = InheritScale;
 			clone.InheritRotation = InheritRotation;
 			clone.Refresh();
@@ -1587,18 +1577,22 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the filename of the serializable object.
 		/// </summary>
-		string ISerializable.Filename
+		public string Filename
 		{
 			get
 			{
 				return _spritePath;
 			}
-			set
-			{
-				if (value == null)
-					value = string.Empty;
+		}
 
-				_spritePath = value;
+		/// <summary>
+		/// Property to return whether this object is an embedded resource.
+		/// </summary>
+		public bool IsResource
+		{
+			get
+			{
+				return _isResource;
 			}
 		}
 
@@ -1610,7 +1604,7 @@ namespace GorgonLibrary.Graphics
 		{
 			int[] vertexColor = new int[4];				// Vertex colors.
 
-			writer.WriteComment("Gorgon Sprite - " + _objectName);
+			writer.WriteComment("Gorgon Sprite - " + Name);
 			writer.WriteComment("Written by Michael Winsor (Tape_Worm) for the Gorgon library.");
 			writer.WriteComment("Use at your own peril.");
 
@@ -1619,14 +1613,14 @@ namespace GorgonLibrary.Graphics
 
 			// Write header.
 			writer.WriteGroupBegin("Header");
-			writer.Write("HeaderValue", "GORSPR1");
+			writer.Write("HeaderValue", "GORSPR1.1");
 			writer.WriteGroupEnd();
 
 			// Write meta data.
 			writer.WriteGroupBegin("MetaData");
 
 			// Write name
-			writer.Write("Name", _objectName);
+			writer.Write("Name", Name);
 
 			writer.WriteGroupEnd();
 
@@ -1672,6 +1666,9 @@ namespace GorgonLibrary.Graphics
 			writer.Write("StencilReference", InheritStencilReference);
 			writer.Write("StencilZFailOperation", InheritStencilZFailOperation);
 			writer.Write("VerticalWrapping", InheritVerticalWrapping);
+			writer.Write("DepthBias", InheritDepthBias);
+			writer.Write("DepthFunction", InheritDepthTestFunction);
+			writer.Write("DepthWrite", InheritDepthWriteEnabled);
 			writer.WriteGroupEnd();
 
 			// Write dimensions.
@@ -1704,16 +1701,6 @@ namespace GorgonLibrary.Graphics
 			writer.Write("UpperRightColor", vertexColor[3]);
 			writer.Write("LowerLeftColor", vertexColor[0]);
 			writer.Write("LowerRightColor", vertexColor[1]);
-			// Write shader information.
-			writer.Write("HasShader", Shader != null);
-			if (Shader != null)
-			{
-				writer.Write("ShaderName", Shader.Name);
-				writer.Write("ShaderIsCompiled", Shader.IsCompiled);
-				writer.Write("HasTechnique", Shader.ActiveTechnique != null);
-				if (Shader.ActiveTechnique != null)
-					writer.Write("Technique", Shader.ActiveTechnique.Name);
-			}
 
 			if (!InheritAlphaMaskFunction)
 				writer.Write("AlphaMaskFunction", (int)AlphaMaskFunction);
@@ -1745,6 +1732,15 @@ namespace GorgonLibrary.Graphics
 				writer.Write("StencilZFailOperation", (int)StencilZFailOperation);
 			if (!InheritVerticalWrapping)
 				writer.Write("VerticalWrapping", (int)VerticalWrapMode);
+			if (!InheritDepthBias)
+				writer.Write("DepthBias", DepthBufferBias);
+			if (!InheritDepthTestFunction)
+				writer.Write("DepthCompare", (int)DepthTestFunction);
+			if (!InheritDepthWriteEnabled)
+				writer.Write("DepthWrite", DepthWriteEnabled);
+
+			writer.Write("BorderColor", BorderColor.ToArgb());
+
 			// Write flipped flags.
 			writer.Write("HorizontallyFlipped", _flipHorizontal);
 			writer.Write("VerticallyFlipped", _flipVertical);
@@ -1777,19 +1773,30 @@ namespace GorgonLibrary.Graphics
 			string header = string.Empty;										// Header.
 			bool hasImage = false;												// Flag to indicate whether an image is bound.
 			bool hasShader = false;												// Flag to indicate whether a shader is bound.
+			Version spriteVersion = new Version(1, 0);							// Sprite versioning.
 
 			// Mark the sprite as changed.
 			IsImageUpdated = true;
 			IsSizeUpdated = true;
 			IsAABBUpdated = true;
+			_deferredImage = string.Empty;
 
 			header = reader.ReadString("HeaderValue");
 
-			if (header.ToLower() != "gorspr1")
-				throw new SpriteNotValidException();
+			switch (header.ToLower())
+			{
+				case "gorspr1":
+					spriteVersion = new Version(1, 0);
+					break;
+				case "gorspr1.1":
+					spriteVersion = new Version(1, 1);
+					break;
+				default:
+					throw new GorgonException(GorgonErrors.CannotLoad, "Sprite file type is unknown or corrupted.");
+			}
 
 			// Get sprite data.
-			_objectName = reader.ReadString("Name");
+			Name = reader.ReadString("Name");
 
 			// We have an alternate image, so use that instead.
 			if (reader.Parameters.ContainsKey("Image"))
@@ -1841,6 +1848,8 @@ namespace GorgonLibrary.Graphics
 					// If an image is loaded with this name, use it.
 					if ((Image == null) && (ImageCache.Images.Contains(imageName)))
 						Image = ImageCache.Images[imageName];
+					else
+						_deferredImage = imageName;
 				}
 			}
           
@@ -1858,6 +1867,14 @@ namespace GorgonLibrary.Graphics
 			InheritStencilReference = reader.ReadBool("StencilReference");
 			InheritStencilZFailOperation = reader.ReadBool("StencilZFailOperation");
 			InheritVerticalWrapping = reader.ReadBool("VerticalWrapping");
+			// Get version 1.1 fields.
+			if (spriteVersion == new Version(1, 1))
+			{
+				InheritDepthBias = reader.ReadBool("DepthBias");
+				InheritDepthTestFunction = reader.ReadBool("DepthFunction");
+				InheritDepthWriteEnabled = reader.ReadBool("DepthWrite");
+			}
+
 
 			// Get dimensions.
 			Size = new Vector2D(reader.ReadSingle("Width"), reader.ReadSingle("Height"));
@@ -1878,24 +1895,17 @@ namespace GorgonLibrary.Graphics
 			SetSpriteVertexColor(VertexLocations.UpperRight, Drawing.Color.FromArgb(reader.ReadInt32("UpperRightColor")));
 			SetSpriteVertexColor(VertexLocations.LowerLeft, Drawing.Color.FromArgb(reader.ReadInt32("LowerLeftColor")));
 			SetSpriteVertexColor(VertexLocations.LowerRight, Drawing.Color.FromArgb(reader.ReadInt32("LowerRightColor")));
-			hasShader = reader.ReadBool("HasShader");
-			if (hasShader)
+
+			// This is for compatibility - v1.0 files had shaders attached to the sprites.  In reality this was kind of pointless.
+			if (spriteVersion < new Version(1, 1))
 			{
-				string shaderName = string.Empty;		// Shader name.
-				string technique = string.Empty;		// Active technique.
-				
-				shaderName = reader.ReadString("ShaderName");
-				reader.ReadBool("ShaderIsCompiled");		// For now, we'll ignore this.
-				if (reader.ReadBool("HasTechnique"))
-					technique = reader.ReadString("Technique");
-
-				if (ShaderCache.Shaders.Contains(shaderName))
+				hasShader = reader.ReadBool("HasShader");
+				if (hasShader)
 				{
-					Shader = ShaderCache.Shaders[shaderName];
-
-					// Set the active technique.
-					if (Shader.Techniques.Contains(technique))
-						Shader.ActiveTechnique = Shader.Techniques[technique];
+					reader.ReadString("ShaderName");
+					reader.ReadBool("ShaderIsCompiled");		// For now, we'll ignore this.
+					if (reader.ReadBool("HasTechnique"))
+						reader.ReadString("Technique");
 				}
 			}
 
@@ -1937,26 +1947,43 @@ namespace GorgonLibrary.Graphics
 			if (!InheritVerticalWrapping)
 				VerticalWrapMode = (ImageAddressing)reader.ReadInt32("VerticalWrapping");
 
+			// Get version 1.1 fields.
+			if (spriteVersion == new Version(1, 1))
+			{
+				if (!InheritDepthBias)
+					DepthBufferBias = reader.ReadSingle("DepthBias");
+				if (!InheritDepthTestFunction)
+					DepthTestFunction = (CompareFunctions)reader.ReadInt32("DepthCompare");
+				if (!InheritDepthWriteEnabled)
+					DepthWriteEnabled = reader.ReadBool("DepthWrite");
+
+				BorderColor = Drawing.Color.FromArgb(reader.ReadInt32("BorderColor"));
+			}
+
 			// Set flipping flags.
 			_flipHorizontal = reader.ReadBool("HorizontallyFlipped");
 			_flipVertical = reader.ReadBool("VerticallyFlipped");
 
-            // Get animations.
-            int animationCount = 0;             // Animation count.
-
+            // Get animations.			
+			int animationCount = 0;             // Animation count.
+			
             animationCount = reader.ReadInt32("AnimationCount");
             if (animationCount > 0)
             {
                 // Read each animation.
                 for (int i = 0; i < animationCount; i++)
                 {
-                    Animation animation = new Animation("@EmptyAnimation", this, 0.0f);
-                    ((ISerializable)animation).ReadData(reader);
-                    Animations.Add(animation);
+                    Animation animation = new Animation("@EmptyAnimation", 0.0f);
+					animation.SetOwner(this);					
+					if (spriteVersion == new Version(1, 1))
+						((ISerializable)animation).ReadData(reader);
+					else
+						animation.ReadVersion1Animation(reader);		// Import the old animation format.
+					Animations.Add(animation);
                 }
             }
-           
-            // Perform updates.
+
+			// Perform updates.
 			UpdateDimensions();
 			UpdateTransform();
 			UpdateImageLayer();

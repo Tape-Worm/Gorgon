@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2005 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Tuesday, July 19, 2005 1:45:21 AM
 // 
@@ -39,13 +42,29 @@ namespace GorgonLibrary.Internal
 		#region Variables.
 		private int _size;							// Size of the buffer in bytes.
 		private BufferUsages _usage;				// Usage flags for this buffer (these may or may not apply depending on the buffer type).
-		private int _lockStart;						// Offset of locked data in the buffer.
-		private int _lockSize;						// Amount of data locked.
 		private bool _locked;						// Flag to indicate that the buffer is locked.
 		private DX.DataStream _lockStream = null;	// Stream containing locked data.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the size of the lock in bytes.
+		/// </summary>
+		protected int LockOffsetInBytes
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the size of the lock in bytes.
+		/// </summary>
+		protected int LockSizeInBytes
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to check and see if a buffer is locked or not.
 		/// </summary>
@@ -90,25 +109,19 @@ namespace GorgonLibrary.Internal
 		}
 
 		/// <summary>
-		/// Property to return the offset of the lock in bytes.
+		/// Property to return the offset of the lock in units of the buffers element size.
 		/// </summary>
-		public virtual int LockOffset
+		public abstract int LockOffset
 		{
-			get
-			{
-				return _lockStart;
-			}
+			get;
 		}
 
 		/// <summary>
-		/// Property to return the length of the locked area in bytes.
+		/// Property to return the length of the locked in units of the buffer element size.
 		/// </summary>
-		public virtual int LockLength
+		public abstract int LockLength
 		{
-			get
-			{
-				return _lockSize;
-			}
+			get;
 		}
 		#endregion
 
@@ -141,8 +154,8 @@ namespace GorgonLibrary.Internal
 				if (IsLocked)
 					Unlock();
 
-				_lockStart = offset;
-				_lockSize = length;
+				LockOffsetInBytes = offset;
+				LockSizeInBytes = length;
 
 				_lockStream = GetDataStream(Converter.Convert(flags));
 
@@ -150,9 +163,9 @@ namespace GorgonLibrary.Internal
 			}
 			catch (Exception ex)
 			{
-				_lockStart = 0;
-				_lockSize = 0;
-				throw new CannotLockException(GetType(), ex);
+				LockOffsetInBytes = 0;
+				LockSizeInBytes = 0;
+				throw new GorgonException(GorgonErrors.CannotLock, ex);
 			}
 		}
 
@@ -165,7 +178,7 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new NotLockedException(GetType());
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			_lockStream.Write<T>(data);
 		}
@@ -179,7 +192,7 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new NotLockedException(GetType());
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			_lockStream.WriteRange<T>(data);
 		}
@@ -195,7 +208,7 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new NotLockedException(GetType());
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			_lockStream.WriteRange<T>(data, startIndex, count);
 		}
@@ -209,7 +222,7 @@ namespace GorgonLibrary.Internal
 		public virtual void Write(byte[] data, int startIndex, int count)
 		{
 			if (!IsLocked)
-				throw new NotLockedException(GetType());
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			_lockStream.Write(data, startIndex, count);
 		}
@@ -222,7 +235,7 @@ namespace GorgonLibrary.Internal
 		public virtual void Write(IntPtr pointer, int count)
 		{
 			if (!IsLocked)
-				throw new NotLockedException(GetType());
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			_lockStream.WriteRange(pointer, count);
 		}
@@ -236,10 +249,10 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new NotLockedException(GetType());
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			if ((BufferUsage & BufferUsages.WriteOnly) == BufferUsages.WriteOnly)
-				throw new CannotReadException("Cannot read from a write-only buffer.");
+				throw new GorgonException(GorgonErrors.CannotReadData, "Buffer is write-only.");
 
 			return _lockStream.Read<T>();
 		}
@@ -254,10 +267,10 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new NotLockedException(GetType());
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			if ((BufferUsage & BufferUsages.WriteOnly) == BufferUsages.WriteOnly)
-				throw new CannotReadException("Cannot read from a write-only buffer.");
+				throw new GorgonException(GorgonErrors.CannotReadData, "Buffer is write-only.");
 
 			return _lockStream.ReadRange<T>(count);
 		}
@@ -275,10 +288,10 @@ namespace GorgonLibrary.Internal
 				throw new ArgumentNullException("data");
 
 			if (!IsLocked)
-				throw new NotLockedException(GetType());
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			if ((BufferUsage & BufferUsages.WriteOnly) == BufferUsages.WriteOnly)
-				throw new CannotReadException("Cannot read from a write-only buffer.");
+				throw new GorgonException(GorgonErrors.CannotReadData, "Buffer is write-only.");
 
 			return _lockStream.Read(data, offset, count);
 		}
@@ -295,13 +308,13 @@ namespace GorgonLibrary.Internal
 		public virtual void Unlock()
 		{
 			if (!_locked)
-				throw new NotLockedException(GetType(), null);
+				throw new GorgonException(GorgonErrors.NotLocked);
 
 			_lockStream.Dispose();
 			_lockStream = null;
 
-			_lockStart = -1;
-			_lockSize = 0;
+			LockOffsetInBytes = -1;
+			LockSizeInBytes = 0;
 			_locked = false;
 		}
 		#endregion
@@ -313,7 +326,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="bufferusage">Usage flags for the buffer.</param>
 		protected DataBuffer(BufferUsages bufferusage)
 		{
-			_lockStart = -1;
+			LockOffsetInBytes = -1;
 			_usage = bufferusage;
 		}
 		#endregion

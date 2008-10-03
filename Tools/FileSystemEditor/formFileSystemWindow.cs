@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Sunday, April 01, 2007 3:51:26 PM
 // 
@@ -30,11 +33,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.IO;
-using SharpUtilities.Utility;
-using SharpUtilities.Native.Win32;
+using GorgonLibrary.Serialization;
 using GorgonLibrary.FileSystems;
+using Dialogs;
 
 namespace GorgonLibrary.FileSystems.Tools
 {
@@ -275,6 +276,11 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// </summary>
 		private void UpdateCaption()
 		{
+            if ((_fileSystem != null) && (_fileSystem.Provider.IsEncrypted))
+                buttonChangeAuth.Enabled = true;
+            else
+                buttonChangeAuth.Enabled = false;
+
 			if ((_fileSystem != null) && (_rootPath != string.Empty))
 				Text = "File System - " + _rootPath + " [" + _fileSystem.Provider.Name + "]";
 			else
@@ -427,6 +433,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			formPathNameInput nameInput = null;		// Path name input.
 			TreeNode node = null;					// Newly added node.
 			FileSystemPath newPath = null;			// New file system path.
+			FileSystemPath path = null;				// File system path.
 
 			try
 			{
@@ -435,7 +442,14 @@ namespace GorgonLibrary.FileSystems.Tools
 				// Add a dummy entry to the file system.
 				if (nameInput.ShowDialog(this) == DialogResult.OK)
 				{
-					newPath = ((FileSystemPath)treePaths.SelectedNode.Tag).ChildPaths.Add(nameInput.PathName);
+					path = treePaths.SelectedNode.Tag as FileSystemPath;
+					if (!path.ChildPaths.Contains(nameInput.PathName))
+						newPath = ((FileSystemPath)treePaths.SelectedNode.Tag).ChildPaths.Add(nameInput.PathName);
+					else
+					{
+						UI.ErrorBox(this, "The path '" + nameInput.PathName + "' already exists.");
+						return;
+					}
 
 					// Add the node.
 					node = treePaths.SelectedNode.Nodes.Add(newPath.Name.ToLower(), newPath.Name);
@@ -446,10 +460,6 @@ namespace GorgonLibrary.FileSystems.Tools
 
 					IsChanged = true;
 				}
-			}
-			catch (FileSystemPathExistsException)
-			{
-				UI.ErrorBox(this, "The path '" + nameInput.PathName + "' already exists.");
 			}
 			catch (Exception ex)
 			{
@@ -482,7 +492,7 @@ namespace GorgonLibrary.FileSystems.Tools
 				viewFiles.SmallImageList.Images.Add(extension, Utilities.IconFromExtension(extension, ShellIconSize.Small).ToBitmap());
 
 			if (!viewFiles.LargeImageList.Images.ContainsKey(extension))
-				viewFiles.LargeImageList.Images.Add(extension, Utilities.IconFromExtension(extension, ShellIconSize.Large).ToBitmap());
+                viewFiles.LargeImageList.Images.Add(extension, Utilities.IconFromExtension(extension, ShellIconSize.Large).ToBitmap());
 
 			fileItem.ImageKey = extension;
 		}
@@ -516,10 +526,19 @@ namespace GorgonLibrary.FileSystems.Tools
 				item.SubItems.Add(file.Extension);
 				item.SubItems.Add(file.DateTime.ToString());
 				item.SubItems.Add(Utilities.FormatByteUnits((ulong)file.Size));
+                item.ForeColor = Color.Black;
+                if (_fileSystem.Provider.IsEncrypted)
+                {
+                    item.ForeColor = Color.Green;
+                    if (!viewFiles.Columns.ContainsKey("headerEncrypted"))
+                        viewFiles.Columns.Add("headerEncrypted", "Encrypted?");
+                    item.SubItems.Add(file.IsEncrypted.ToString());
+                }
 
 				// Add compression information.
 				if (_fileSystem.Provider.IsCompressed)
 				{
+                    item.ForeColor = Color.Blue;
 					if (!viewFiles.Columns.ContainsKey("headerCompressed"))
 						viewFiles.Columns.Add("headerCompressed", "Compressed?");
 					if (!viewFiles.Columns.ContainsKey("headerCompressedSize"))
@@ -700,7 +719,8 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// </summary>
 		/// <param name="source">Source path/name.</param>
 		/// <param name="destination">Destination path/name.</param>
-		private void MovePath(string source, string destination)
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		private bool MovePath(string source, string destination)
 		{
 			FileSystemPath path = null;								// Path to move.
 			FileSystemPath destPath = null;							// Destination path.
@@ -732,12 +752,20 @@ namespace GorgonLibrary.FileSystems.Tools
 			destPath = _fileSystem.GetPath(destination);
 
 			// Add the path to the destination.
-			destPath.ChildPaths.Add(path);
+			if (!destPath.ChildPaths.Contains(path.Name))
+				destPath.ChildPaths.Add(path);
+			else
+			{
+				UI.ErrorBox(this, "The path '" + path.Name + "' already exists at the destination.");
+				return false;
+			}
 
 			// Remove from the source parent.
 			oldParent.ChildPaths.Remove(path.Name);
 
 			IsChanged = true;
+
+			return true;
 		}
 
 		/// <summary>
@@ -841,11 +869,6 @@ namespace GorgonLibrary.FileSystems.Tools
 				treePaths.LabelEdit = false;
 
 				IsChanged = true;
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
-				e.CancelEdit = true;
 			}
 			catch (Exception ex)
 			{
@@ -1175,7 +1198,8 @@ namespace GorgonLibrary.FileSystems.Tools
 					if (data.SourceFileSystem == _fileSystem)
 					{
 						// Move the data.
-						MovePath(sourcePath.FullPath, path.FullPath);
+						if (!MovePath(sourcePath.FullPath, path.FullPath))
+							return;
 
 						// Remove from the node list.
 						data.SourceNode.Remove();
@@ -1244,14 +1268,6 @@ namespace GorgonLibrary.FileSystems.Tools
 
 				// Get the files.
 				GetFiles(treePaths.SelectedNode);
-			}
-			catch (FileSystemPathExistsException)
-			{
-				UI.ErrorBox(this, "The path '" + sourcePath.Name + "' already exists under '" + path.Name + "'.");
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -1532,10 +1548,6 @@ namespace GorgonLibrary.FileSystems.Tools
 					GetFiles(treePaths.SelectedNode);
 					IsChanged = _isChanged;
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -1893,8 +1905,8 @@ namespace GorgonLibrary.FileSystems.Tools
 				ValidatePopup();
 			}
 		}
-
-		/// <summary>
+       
+        /// <summary>
 		/// Function to retrieve file properties.
 		/// </summary>
 		private void GetFileProperties()
@@ -2032,7 +2044,7 @@ namespace GorgonLibrary.FileSystems.Tools
 				if (compressedFiles)
 					properties += "Some/all files are compressed.\r\n";
 				if (encryptedFiles)
-					properties += "Some/all files are encrypted.\r\n";
+					properties += "Files are encrypted.\r\n";
 
 				// Update properties box.
 				if (properties != string.Empty)
@@ -2058,7 +2070,26 @@ namespace GorgonLibrary.FileSystems.Tools
 			}
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Handles the Click event of the buttonChangeAuth control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void buttonChangeAuth_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_fileSystem.CreateAuthorization(this) != 0)
+                    _isChanged = true;
+                UpdateCaption();
+            }
+            catch (Exception ex)
+            {
+                UI.ErrorBox(this, "Error trying to alter the authentication.", ex);
+            }
+        }
+        
+        /// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
@@ -2144,12 +2175,29 @@ namespace GorgonLibrary.FileSystems.Tools
 				_parentWindow = null;
 		}
 
+        /// <summary>
+        /// Function to change the authentication.
+        /// </summary>
+        public void ChangeAuthentication()
+        {
+            buttonChangeAuth.PerformClick();
+        }
+
 		/// <summary>
 		/// Function to save the file system.
 		/// </summary>
 		/// <param name="filePath">Path or file to save the file system into.</param>
 		public void Save(string filePath)
 		{
+            if ((_fileSystem.Provider.IsEncrypted) && (_fileSystem.AuthenticationData == null))
+            {
+                if (_fileSystem.CreateAuthorization(this) == 0)
+                {
+                    UI.ErrorBox(this, "The file system is encrypted and requires authorization.  Please provide credentials.");
+                    return;
+                }
+            }
+
 			// Save to the path.
 			_fileSystem.Save(filePath);
 

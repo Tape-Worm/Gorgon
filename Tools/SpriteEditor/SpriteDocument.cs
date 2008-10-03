@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Tuesday, May 22, 2007 3:59:05 PM
 // 
@@ -26,12 +29,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
 using GorgonLibrary.Graphics.Tools.PropBag;
 using Flobbster.Windows.Forms;
+using GorgonLibrary.Internal;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -47,6 +50,7 @@ namespace GorgonLibrary.Graphics.Tools
 		private bool _changed;										// Flag to indicate that the sprite has been changed.
 		private bool _xml;											// Flag to indicate that the sprite is an xml file.		
 		private PropertyBag _bag = null;							// Property bag.
+		private bool _includeInAnimations = true;					// Flag to indicate that we should include this sprite in animations.
 		#endregion
 
 		#region Events.
@@ -109,10 +113,8 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			set
 			{
-				if (string.IsNullOrEmpty(value))
-					throw new InvalidNameException();
-
-				_sprite.Name = _objectName = value;
+				base.Name = value;
+                _sprite.Name = value;
 				Changed = true;
 			}
 		}
@@ -322,6 +324,24 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.Color = value;
 				_sprite.Opacity = value.A;
+				_owner.SpriteManager.RefreshPropertyGrid();
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the border color when the wrapping mode is set to Border.
+		/// </summary>
+		[PropertyInclude(false), PropertyCategory("Appearance"), PropertyDescription("Sets the color of the border when the wrapping mode is set to Border."), PropertyDefault("0x0")]
+		public Drawing.Color BorderColor
+		{
+			get
+			{
+				return _sprite.BorderColor;
+			}
+			set
+			{
+				_sprite.BorderColor = value;
 				_owner.SpriteManager.RefreshPropertyGrid();
 				Changed = true;
 			}
@@ -585,7 +605,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite alpha masking function is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Alpha Masking"), PropertyDescription("Sets whether to inherit the alpha mask function from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Alpha Masking"), PropertyDescription("Sets whether to inherit the alpha mask function from the global states."), PropertyDefault(true)]
 		public bool InheritAlphaMaskFunction
 		{
 			get
@@ -596,7 +616,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritAlphaMaskFunction = value;
 
-				SetSpecReadOnly(_bag.Properties["AlphaMaskFunction"], value);
+				SetSpecReadOnly(_bag.Properties["AlphaMaskFunction"], value, true);
 				Changed = true;
 			}
 		}
@@ -604,7 +624,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite alpha masking value is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Alpha Masking"), PropertyDescription("Sets whether to inherit the alpha mask value from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Alpha Masking"), PropertyDescription("Sets whether to inherit the alpha mask value from the global states."), PropertyDefault(true)]
 		public bool InheritAlphaMaskValue
 		{
 			get
@@ -615,7 +635,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritAlphaMaskValue = value;
 
-				SetSpecReadOnly(_bag.Properties["AlphaMaskValue"], value);
+				SetSpecReadOnly(_bag.Properties["AlphaMaskValue"], value, true);
 				Changed = true;
 			}
 		}
@@ -666,7 +686,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite blending mode is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Blending"), PropertyDescription("Sets whether to inherit the blending values from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Blending"), PropertyDescription("Sets whether to inherit the blending values from the global states."), PropertyDefault(true)]
 		public bool InheritBlending
 		{
 			get
@@ -677,9 +697,10 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritBlending = value;
 
-				SetSpecReadOnly(_bag.Properties["SourceBlend"], value);
-				SetSpecReadOnly(_bag.Properties["DestinationBlend"], value);
-				SetSpecReadOnly(_bag.Properties["BlendingPreset"], value);
+				SetSpecReadOnly(_bag.Properties["SourceBlend"], value, false);
+				SetSpecReadOnly(_bag.Properties["DestinationBlend"], value, false);
+				SetSpecReadOnly(_bag.Properties["BlendingPreset"], value, false);
+				_owner.SpriteManager.RefreshPropertyGrid();
 				Changed = true;
 			}
 		}
@@ -744,7 +765,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite smoothing mode is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Smoothing"), PropertyDescription("Sets whether to inherit the smoothing value from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Smoothing"), PropertyDescription("Sets whether to inherit the smoothing value from the global states."), PropertyDefault(true)]
 		public bool InheritSmoothing
 		{
 			get
@@ -755,7 +776,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritSmoothing = value;
 
-				SetSpecReadOnly(_bag.Properties["Smoothing"], value);
+				SetSpecReadOnly(_bag.Properties["Smoothing"], value, true);
 				Changed = true;
 			}
 		}
@@ -782,7 +803,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite horizontal wrapping mode is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Wrapping"), PropertyDescription("Sets whether to inherit the horizontal wrapping mode from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Wrapping"), PropertyDescription("Sets whether to inherit the horizontal wrapping mode from the global states."), PropertyDefault(true)]
 		public bool InheritHorizontalWrapping
 		{
 			get
@@ -793,7 +814,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritHorizontalWrapping = value;
 
-				SetSpecReadOnly(_bag.Properties["HorizontalWrapping"], value); 
+				SetSpecReadOnly(_bag.Properties["HorizontalWrapping"], value, true); 
 				Changed = true;
 			}
 		}
@@ -801,7 +822,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite vertical wrapping mode is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Wrapping"), PropertyDescription("Sets whether to inherit the vertical wrapping mode from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Wrapping"), PropertyDescription("Sets whether to inherit the vertical wrapping mode from the global states."), PropertyDefault(true)]
 		public bool InheritVerticalWrapping
 		{
 			get
@@ -812,7 +833,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritVerticalWrapping = value;
 
-				SetSpecReadOnly(_bag.Properties["VerticalWrapping"], value);
+				SetSpecReadOnly(_bag.Properties["VerticalWrapping"], value, true);
 				Changed = true;
 			}
 		}
@@ -830,7 +851,7 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_sprite.HorizontalWrapMode = value;
-
+				SetSpecReadOnly(_bag.Properties["BorderColor"], !(value == ImageAddressing.Border || VerticalWrapping == ImageAddressing.Border), true);
 				_owner.SpriteManager.RefreshPropertyGrid();
 				Changed = true;
 			}
@@ -849,7 +870,115 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_sprite.VerticalWrapMode = value;
+				SetSpecReadOnly(_bag.Properties["BorderColor"], !(value == ImageAddressing.Border || HorizontalWrapping == ImageAddressing.Border), true);
+				_owner.SpriteManager.RefreshPropertyGrid();
+				Changed = true;
+			}
+		}
 
+		/// <summary>
+		/// Property to set or return whether to inherit the depth testing function.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets whether to inherit the depth test function from the global states."), PropertyDefault(true)]
+		public bool InheritDepthTestFunction
+		{
+			get
+			{
+				return _sprite.InheritDepthTestFunction;
+			}
+			set
+			{
+				_sprite.InheritDepthTestFunction = value;
+				SetSpecReadOnly(_bag.Properties["DepthTestFunction"], value, true);
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to inherit the depth bias.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets whether to inherit the depth bias from the global states."), PropertyDefault(true)]
+		public bool InheritDepthBias
+		{
+			get
+			{
+				return _sprite.InheritDepthBias;
+			}
+			set
+			{
+				_sprite.InheritDepthBias = value;
+				SetSpecReadOnly(_bag.Properties["DepthBufferBias"], value, true);
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to inherit the depth write enabled flag.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets whether to inherit the depth write enabled flag from the global states."), PropertyDefault(true)]
+		public bool InheritDepthWriteEnabled
+		{
+			get
+			{
+				return _sprite.InheritDepthWriteEnabled;
+			}
+			set
+			{
+				_sprite.InheritDepthWriteEnabled = value;
+				SetSpecReadOnly(_bag.Properties["DepthWriteEnabled"], value, true);
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth testing function.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets the depth test function for the sprite."), PropertyDefault(true)]
+		public CompareFunctions DepthTestFunction
+		{
+			get
+			{
+				return _sprite.DepthTestFunction;
+			}
+			set
+			{
+				_sprite.DepthTestFunction = value;
+				_owner.SpriteManager.RefreshPropertyGrid();
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth buffer bias.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets the depth bias for the sprite."), PropertyDefault(true)]
+		public float DepthBufferBias
+		{
+			get
+			{
+				return _sprite.DepthBufferBias;
+			}
+			set
+			{
+				_sprite.DepthBufferBias = value;
+				_owner.SpriteManager.RefreshPropertyGrid();
+				Changed = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth write flag.
+		/// </summary>
+		[PropertyInclude(), PropertyCategory("Depth"), PropertyDescription("Sets the depth write enabled flag for the sprite."), PropertyDefault(true)]
+		public bool DepthWriteEnabled
+		{
+			get
+			{
+				return _sprite.DepthWriteEnabled;
+			}
+			set
+			{
+				_sprite.DepthWriteEnabled = value;
 				_owner.SpriteManager.RefreshPropertyGrid();
 				Changed = true;
 			}
@@ -858,7 +987,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil enable flag is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil enabled flag from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil enabled flag from the global states."), PropertyDefault(true)]
 		public bool InheritStencilEnabled
 		{
 			get
@@ -869,7 +998,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilEnabled = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilEnabled"], value);
+				SetSpecReadOnly(_bag.Properties["StencilEnabled"], value, true);
 
 				Changed = true;
 			}
@@ -878,7 +1007,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil fail operation is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil fail operation from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil fail operation from the global states."), PropertyDefault(true)]
 		public bool InheritStencilFailOperation
 		{
 			get
@@ -889,7 +1018,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilFailOperation = value;
 								
-				SetSpecReadOnly(_bag.Properties["StencilFailOperation"], value);
+				SetSpecReadOnly(_bag.Properties["StencilFailOperation"], value, true);
 
 				Changed = true;
 			}
@@ -898,7 +1027,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil mask value is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil masking value from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil masking value from the global states."), PropertyDefault(true)]
 		public bool InheritStencilMask
 		{
 			get
@@ -909,7 +1038,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilMask = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilMask"], value);
+				SetSpecReadOnly(_bag.Properties["StencilMask"], value, true);
 				
 				Changed = true;
 			}
@@ -918,7 +1047,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil pass operation is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil pass operation from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil pass operation from the global states."), PropertyDefault(true)]
 		public bool InheritStencilPassOperation
 		{
 			get
@@ -929,7 +1058,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilPassOperation = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilPassOperation"], value);
+				SetSpecReadOnly(_bag.Properties["StencilPassOperation"], value, true);
 
 				Changed = true;
 			}
@@ -938,7 +1067,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil reference value is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil reference value from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil reference value from the global states."), PropertyDefault(true)]
 		public bool InheritStencilRefValue
 		{
 			get
@@ -949,7 +1078,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilReference = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilRefValue"], value);
+				SetSpecReadOnly(_bag.Properties["StencilRefValue"], value, true);
 
 				Changed = true;
 			}
@@ -958,7 +1087,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil Z-fail operation is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil z-fail operation from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil z-fail operation from the global states."), PropertyDefault(true)]
 		public bool InheritStencilZFailOperation
 		{
 			get
@@ -969,7 +1098,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilZFailOperation = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilZFailOperation"], value);
+				SetSpecReadOnly(_bag.Properties["StencilZFailOperation"], value, true);
 
 				Changed = true;
 			}
@@ -978,7 +1107,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return whether the sprite stencil compare operation is inherited or not.
 		/// </summary>
-		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil compare operation from the sprite state manager."), PropertyDefault(true)]
+		[PropertyInclude(), PropertyCategory("Stencil"), PropertyDescription("Sets whether to inherit the stencil compare operation from the global states."), PropertyDefault(true)]
 		public bool InheritStencilCompareOperation
 		{
 			get
@@ -989,7 +1118,7 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_sprite.InheritStencilCompare = value;
 
-				SetSpecReadOnly(_bag.Properties["StencilCompareOperation"], value);
+				SetSpecReadOnly(_bag.Properties["StencilCompareOperation"], value, true);
 
 				Changed = true;
 			}
@@ -1121,100 +1250,26 @@ namespace GorgonLibrary.Graphics.Tools
 				Changed = true;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return whether to include this sprite in other animations.
+		/// </summary>
+		[PropertyInclude(false, typeof(bool)), PropertyCategory("Project Settings"), PropertyDescription("Sets whether we can use this sprite in other animations for other sprites."), PropertyDefault(true)]
+		public bool IncludeInAnimations
+		{
+			get
+			{
+				return _includeInAnimations;
+			}
+			set
+			{
+				_includeInAnimations = value;
+				_owner.ProjectChanged = true;
+			}
+		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to refresh the property list.
-		/// </summary>
-		private void RefreshProperties()
-		{
-			// Reset all property bag default values to the sprite values.
-			foreach (PropertySpec spec in _bag.Properties)
-			{
-				PropertySpecEventArgs e = new PropertySpecEventArgs(spec, null);	// Event args.
-
-				UpdatePropertySpec(spec);
-				GetValue(this, e);
-
-				// Don't default the inherited values.
-				if (!spec.Name.ToLower().StartsWith("inherit"))
-					spec.DefaultValue = e.Value;
-				else
-					SetValue(this, e);
-			}
-
-			SetAnimReadOnly();
-		}
-
-		/// <summary>
-		/// Function to set a specific property spec read-only.
-		/// </summary>
-		/// <param name="spec">Property specification.</param>
-		/// <param name="readOnly">TRUE if read-only, FALSE if not.</param>
-		private void SetSpecReadOnly(PropertySpec spec, bool readOnly)
-		{
-			if (!readOnly)
-				spec.Attributes = null;
-			else
-				spec.Attributes = new Attribute[] { System.ComponentModel.ReadOnlyAttribute.Yes };
-
-			_owner.SpriteManager.RefreshPropertyGrid();
-		}
-
-		/// <summary>
-		/// Function to set animated properties to read-only if keys exist for said properties.
-		/// </summary>
-		private void SetAnimReadOnly()
-		{
-			int keyCount = 0;		// Key count.
-			bool readOnly = false;	// Read only flag.
-
-			if (_sprite == null)
-				return;
-
-			// Check key count.			
-			foreach (Animation anim in _sprite.Animations)
-				keyCount += anim.ColorTrack.KeyCount;
-			if (keyCount > 0)
-				readOnly = true;
-			else
-				readOnly = false;
-
-			// Set color properties.
-			SetSpecReadOnly(_bag.Properties["opacity"], readOnly);
-			SetSpecReadOnly(_bag.Properties["diffusecolor"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperleftalpha"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperrightalpha"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerleftalpha"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerrightalpha"], readOnly);
-			SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], readOnly);
-			SetSpecReadOnly(_bag.Properties["alphamaskvalue"], readOnly);
-
-			// Check key count.	
-			keyCount = 0;
-			foreach (Animation anim in _sprite.Animations)
-				keyCount += anim.TransformationTrack.KeyCount;
-			if (keyCount > 0)
-				readOnly = true;
-			else
-				readOnly = false;
-
-			// Set transformation properties.
-			SetSpecReadOnly(_bag.Properties["lowerleftoffset"], readOnly);
-			SetSpecReadOnly(_bag.Properties["lowerrightoffset"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperleftoffset"], readOnly);
-			SetSpecReadOnly(_bag.Properties["upperrightoffset"], readOnly);
-			SetSpecReadOnly(_bag.Properties["axis"], readOnly);
-			SetSpecReadOnly(_bag.Properties["axisalignment"], readOnly);
-			SetSpecReadOnly(_bag.Properties["imagelocation"], readOnly);
-			SetSpecReadOnly(_bag.Properties["size"], readOnly);
-		}
-
 		/// <summary>
 		/// Function to update a property.
 		/// </summary>
@@ -1244,6 +1299,137 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Function to set a specific property spec read-only.
+		/// </summary>
+		/// <param name="spec">Property specification.</param>
+		/// <param name="readOnly">TRUE if read-only, FALSE if not.</param>
+		/// <param name="refreshNow">TRUE to refresh immediately, FALSE to defer.</param>
+		public void SetSpecReadOnly(PropertySpec spec, bool readOnly, bool refreshNow)
+		{
+			if (!readOnly)
+				spec.Attributes = null;
+			else
+				spec.Attributes = new Attribute[] { System.ComponentModel.ReadOnlyAttribute.Yes };
+
+			if (refreshNow)
+				_owner.SpriteManager.RefreshPropertyGrid();
+		}
+
+		/// <summary>
+		/// Function to set animated properties to read-only if keys exist for said properties.
+		/// </summary>
+		/// <param name="doNotRefresh">TRUE to defer the refreshing of the property grid, FALSE to refresh immediately.</param>
+		public void SetAnimReadOnly(bool doNotRefresh)
+		{
+			if (_sprite == null)
+				return;
+
+			// Set color properties.
+			if ((HasKeysForTrack("Color")) || (HasKeysForTrack("Opacity")))
+			{
+				SetSpecReadOnly(_bag.Properties["opacity"], true, false);
+				SetSpecReadOnly(_bag.Properties["diffusecolor"], true, false);
+				SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], true, false);
+				SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], true, false);
+				SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], true, false);
+				SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], true, false);
+				SetSpecReadOnly(_bag.Properties["upperleftalpha"], true, false);
+				SetSpecReadOnly(_bag.Properties["upperrightalpha"], true, false);
+				SetSpecReadOnly(_bag.Properties["lowerleftalpha"], true, false);
+				SetSpecReadOnly(_bag.Properties["lowerrightalpha"], true, false);
+			}
+			else
+			{
+				SetSpecReadOnly(_bag.Properties["opacity"], false, false);
+				SetSpecReadOnly(_bag.Properties["diffusecolor"], false, false);
+				SetSpecReadOnly(_bag.Properties["upperleftdiffuse"], false, false);
+				SetSpecReadOnly(_bag.Properties["upperrightdiffuse"], false, false);
+				SetSpecReadOnly(_bag.Properties["lowerleftdiffuse"], false, false);
+				SetSpecReadOnly(_bag.Properties["lowerrightdiffuse"], false, false);
+				SetSpecReadOnly(_bag.Properties["upperleftalpha"], false, false);
+				SetSpecReadOnly(_bag.Properties["upperrightalpha"], false, false);
+				SetSpecReadOnly(_bag.Properties["lowerleftalpha"], false, false);
+				SetSpecReadOnly(_bag.Properties["lowerrightalpha"], false, false);
+			}
+
+			if (HasKeysForTrack("AlphaMaskValue"))
+			{
+				SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], true, false);
+				SetSpecReadOnly(_bag.Properties["alphamaskvalue"], true, false);
+			}
+			else
+			{
+				SetSpecReadOnly(_bag.Properties["inheritalphamaskvalue"], false, false);
+				SetSpecReadOnly(_bag.Properties["alphamaskvalue"], false, false);
+			}
+
+			// Set transformation properties.
+			if (HasKeysForTrack("Axis"))
+			{
+				SetSpecReadOnly(_bag.Properties["axis"], true, false);
+				SetSpecReadOnly(_bag.Properties["axisalignment"], true, false);
+			}
+			else
+			{
+				SetSpecReadOnly(_bag.Properties["axis"], false, false);
+				SetSpecReadOnly(_bag.Properties["axisalignment"], false, false);
+			}
+
+			if (HasKeysForTrack("Image"))
+				SetSpecReadOnly(_bag.Properties["boundimage"], true, false);
+			else
+				SetSpecReadOnly(_bag.Properties["boundimage"], false, false);
+
+			if ((HasKeysForTrack("ImageOffset")) || (HasKeysForTrack("Image")))
+				SetSpecReadOnly(_bag.Properties["imagelocation"], true, false);
+			else
+				SetSpecReadOnly(_bag.Properties["imagelocation"], false, false);
+
+			if ((HasKeysForTrack("Size")) || (HasKeysForTrack("Image")))
+				SetSpecReadOnly(_bag.Properties["size"], true, false);
+			else
+				SetSpecReadOnly(_bag.Properties["size"], false, false);
+
+			if (!doNotRefresh)
+				_owner.SpriteManager.RefreshPropertyGrid();
+		}
+
+		/// <summary>
+		/// Function to determine if a particular animation track has keys set.
+		/// </summary>
+		/// <param name="trackName">Name of the track to query.</param>
+		/// <returns>TRUE if there are keys, FALSE if not.</returns>
+		public bool HasKeysForTrack(string trackName)
+		{
+			return (from animations in _sprite.Animations
+					where animations.Tracks.Contains(trackName) && animations.Tracks[trackName].KeyCount > 0
+					select animations.Tracks[trackName]).Count() > 0;
+		}
+
+		/// <summary>
+		/// Function to refresh the property list.
+		/// </summary>
+		public void RefreshProperties()
+		{
+			// Reset all property bag default values to the sprite values.
+			foreach (PropertySpec spec in _bag.Properties)
+			{
+				PropertySpecEventArgs e = new PropertySpecEventArgs(spec, null);	// Event args.
+
+				UpdatePropertySpec(spec);
+				GetValue(this, e);
+
+				// Don't default the inherited values.
+				if (!spec.Name.ToLower().StartsWith("inherit"))
+					spec.DefaultValue = e.Value;
+				else
+					SetValue(this, e);
+			}
+
+			SetAnimReadOnly(false);
+		}
+	
+		/// <summary>
 		/// Function to save the sprite.
 		/// </summary>
 		/// <param name="fileName">Filename to use.</param>
@@ -1259,9 +1445,9 @@ namespace GorgonLibrary.Graphics.Tools
 				_sprite.Save(fileName, xml);
 				_xml = xml;
 			}
-			catch (SharpException sEx)
+			catch (Exception ex)
 			{
-				UI.ErrorBox(_owner, "Unable to save '" + fileName + "'.", sEx.ErrorLog);
+				UI.ErrorBox(_owner, "Unable to save '" + fileName + "'.", ex);
 			}
 		}
 
@@ -1296,16 +1482,12 @@ namespace GorgonLibrary.Graphics.Tools
 
 				// Read the sprite from the stream.
 				_sprite = GorgonLibrary.Graphics.Sprite.FromStream(stream, _xml);
-				_objectName = _sprite.Name;
+				Name = _sprite.Name;
 
 				RefreshProperties();
 
 				_changed = false;
 				_owner.SpriteManager.RefreshPropertyGrid();
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{
@@ -1323,26 +1505,18 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="boundImage">Image to bind.</param>
 		public void Create(Image boundImage)
 		{
-			try
+			if (boundImage != null)
 			{
-				if (boundImage != null)
-				{
-					if (boundImage.ImageType == ImageType.RenderTarget)
-						_sprite = new Sprite(_objectName, boundImage.RenderImage, boundImage.RenderImage.Width, boundImage.RenderImage.Height);
-					else
-						_sprite = new Sprite(_objectName, boundImage, new Vector2D(boundImage.Width, boundImage.Height));
-				}
+				if (boundImage.ImageType == ImageType.RenderTarget)
+					_sprite = new Sprite(Name, boundImage.RenderImage, boundImage.RenderImage.Width, boundImage.RenderImage.Height);
 				else
-					_sprite = new Sprite(_objectName);
-
-				RefreshProperties();
-
-				Changed = true;
+					_sprite = new Sprite(Name, boundImage, new Vector2D(boundImage.Width, boundImage.Height));
 			}
-			catch
-			{
-				throw;
-			}
+			else
+				_sprite = new Sprite(Name);
+
+			RefreshProperties();
+			Changed = true;
 		}
 
 		/// <summary>
@@ -1351,8 +1525,8 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="region">Source dimensions of the sprite.</param>
 		public void SetRegion(Drawing.RectangleF region)
 		{
-			_sprite.ImageRegion = region;
-			Changed = true;
+			_sprite.ImageRegion = region;			
+			Changed = true;			
 		}
 
 		/// <summary>
@@ -1361,15 +1535,33 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="image">Image to bind with, NULL to unbind.</param>
 		public void Bind(Image image)
 		{
+			string previousImageName = string.Empty;			// Previous image name.
 			try
 			{
+				if (_sprite.Image != null)
+					previousImageName = _sprite.Image.Name;
 				_sprite.Image = image;
+
+				if (_sprite.Animations.Count > 0)
+				{
+					// Get all the keys that are bound to the same image (i.e. the image with the same name).
+					var images = from anim in _sprite.Animations
+									from imageTrack in anim.Tracks
+									from key in imageTrack
+									let imageKey = key as KeyImage
+									where (imageKey != null) && (anim.Tracks.Contains("Image")) && (imageTrack.KeyCount > 0) && (((imageKey.Image != null) && (string.Compare(imageKey.Image.Name, previousImageName, true) == 0)) || (imageKey.Image == null))
+									select imageKey;
+
+					foreach (var key in images)
+						key.Image = image;
+				}
+
 				_sprite.Refresh();
 				Changed = true;
 			}
-			catch (SharpException sEx)
+			catch (Exception ex)
 			{
-				UI.ErrorBox(_owner, "Unable to bind the requested image to '" + _objectName + "'.", sEx.ErrorLog);
+				UI.ErrorBox(_owner, "Unable to bind the requested image to '" + Name + "'.", ex);
 			}
 		}
 		#endregion
@@ -1390,7 +1582,7 @@ namespace GorgonLibrary.Graphics.Tools
 			foreach (PropertySpec spec in _bag.Properties)
 				UpdatePropertySpec(spec);
 
-			SetAnimReadOnly();
+			SetAnimReadOnly(false);
 		}
 		#endregion
 
@@ -1403,9 +1595,9 @@ namespace GorgonLibrary.Graphics.Tools
 		/// </returns>
 		public object Clone()
 		{
-			SpriteDocument clone = new SpriteDocument(_objectName + ".Clone", _owner);	// Clone of the document.
+			SpriteDocument clone = new SpriteDocument(Name + ".Clone", _owner);	// Clone of the document.
 
-			clone._sprite = (Sprite)_sprite.Clone();
+			clone._sprite = _sprite.Clone() as Sprite;
 			clone._changed = true;
 			clone._xml = false;
 

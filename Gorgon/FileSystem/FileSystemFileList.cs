@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Friday, April 20, 2007 1:34:49 PM
 // 
@@ -25,8 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using SharpUtilities;
-using SharpUtilities.Collections;
 
 namespace GorgonLibrary.FileSystems
 {
@@ -59,13 +60,13 @@ namespace GorgonLibrary.FileSystems
 		{
 			get
 			{
-				if ((key == string.Empty) || (key == null))
+				if (string.IsNullOrEmpty(key))
 					throw new ArgumentNullException("key");
 
 				key = TransformFilename(key);
 
 				if (!Contains(key))
-					throw new FileSystemFileNotFoundException(key);
+					throw new FileNotFoundException("The file '" + key + "' was not found");
 
 				return GetItem(key);
 			}
@@ -93,7 +94,7 @@ namespace GorgonLibrary.FileSystems
 			result = Path.GetFileName(result);
 
 			if (!FileSystemFile.ValidFilename(result))
-				throw new FileSystemFilenameInvalidException(result);
+				throw new ArgumentException("The filename '" + result + "' is not valid.");
 
 			return result;
 		}
@@ -109,10 +110,8 @@ namespace GorgonLibrary.FileSystems
 
 			key = TransformFilename(key);
 
-			if (!Contains(key))
-				throw new FileSystemFileNotFoundException(key);
-			_owner.FilesUpdated();
 			base.RemoveItem(key);
+			_owner.FilesUpdated();
 		}
 
 		/// <summary>
@@ -121,8 +120,8 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="index">Index to remove at.</param>
 		protected override void RemoveItem(int index)
 		{
-			_owner.FilesUpdated();
 			base.RemoveItem(index);
+			_owner.FilesUpdated();
 		}
 
 		/// <summary>
@@ -130,8 +129,8 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		protected override void ClearItems()
 		{
-			_owner.FilesUpdated();
 			base.ClearItems();
+			_owner.FilesUpdated();
 		}
 
 		/// <summary>
@@ -160,13 +159,13 @@ namespace GorgonLibrary.FileSystems
 		{
 			FileSystemFile newFile = null;		// New file.
 
+			if (string.IsNullOrEmpty(fileName))
+				throw new ArgumentNullException("fileName");
+
 			// Get the file name.
 			fileName = TransformFilename(fileName);
 
 			newFile = new FileSystemFile(_owner, fileName, data, originalSize, compressedSize, dateTime, encrypted);
-
-			if (Contains(fileName))
-				throw new FileSystemFileExistsException(newFile.FullPath);
 
 			AddItem(fileName, newFile);
 			_owner.FilesUpdated();

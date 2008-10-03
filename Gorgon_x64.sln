@@ -12,6 +12,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpriteEditor_x64", "Tools\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas_x64", "Tools\Atlas\Atlas_x64.csproj", "{FCEF5779-88BD-4971-8D11-BA06D2861CA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon3DESFileSystem_x64", "PlugIns\Gorgon3DESFileSystem\Gorgon3DESFileSystem_x64.csproj", "{81618E79-E4D5-40C0-99DD-EF9E34A931BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework_x64", "Tools\GorgonFramework\GorgonFramework_x64.csproj", "{64D81BED-13F9-4F93-AF29-09A560FB52AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogHelper", "Tools\DialogHelper\DialogHelper.csproj", "{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,10 +28,6 @@ Global
 		{14CD80B4-7278-44AE-B60F-6A94341A6C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14CD80B4-7278-44AE-B60F-6A94341A6C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14CD80B4-7278-44AE-B60F-6A94341A6C99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{005AC34C-F568-4BB9-B58B-1CE87958B862}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{005AC34C-F568-4BB9-B58B-1CE87958B862}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{005AC34C-F568-4BB9-B58B-1CE87958B862}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{005AC34C-F568-4BB9-B58B-1CE87958B862}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C091B6C1-3FF3-44ED-BC3A-E2511B3B7B17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C091B6C1-3FF3-44ED-BC3A-E2511B3B7B17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C091B6C1-3FF3-44ED-BC3A-E2511B3B7B17}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -46,6 +48,18 @@ Global
 		{FCEF5779-88BD-4971-8D11-BA06D2861CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCEF5779-88BD-4971-8D11-BA06D2861CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCEF5779-88BD-4971-8D11-BA06D2861CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81618E79-E4D5-40C0-99DD-EF9E34A931BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81618E79-E4D5-40C0-99DD-EF9E34A931BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81618E79-E4D5-40C0-99DD-EF9E34A931BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81618E79-E4D5-40C0-99DD-EF9E34A931BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64D81BED-13F9-4F93-AF29-09A560FB52AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64D81BED-13F9-4F93-AF29-09A560FB52AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64D81BED-13F9-4F93-AF29-09A560FB52AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64D81BED-13F9-4F93-AF29-09A560FB52AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

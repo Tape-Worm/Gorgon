@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Friday, April 06, 2007 12:24:21 PM
 // 
@@ -38,6 +41,7 @@ namespace GorgonLibrary.FileSystems
 		private string _description = string.Empty;			// File system description.
 		private bool _isCompressed = false;					// Flag to indicate whether a file system is compressed or not.
 		private bool _isPackFile = false;					// Flag to indicate whether a file system is a pack file or a folder system.
+        private bool _isEncrypted = false;                  // Flag to indicate whether a file system is encrypted or not.
         private string _ID = string.Empty;                  // ID for the file system type.
 		#endregion
 
@@ -86,6 +90,17 @@ namespace GorgonLibrary.FileSystems
 				return _isPackFile;
 			}
 		}
+
+        /// <summary>
+        /// Property to return whether the file system is encrypted or not.
+        /// </summary>
+        public bool IsEncrypted
+        {
+            get
+            {
+                return _isEncrypted;
+            }
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -95,8 +110,9 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="description">Description of the filesystem type.</param>
 		/// <param name="iscompressed">TRUE if the file system compresses its data, FALSE if not.</param>
 		/// <param name="ispackfile">TRUE if the file system is a pack file, FALSE if folder based.</param>
+        /// <param name="isencrypted">TRUE if the file system is encrypted, FALSE if not.</param>
         /// <param name="fileSystemID">ID of the file system.</param>
-		public FileSystemInfoAttribute(string description, bool iscompressed, bool ispackfile, string fileSystemID)
+		public FileSystemInfoAttribute(string description, bool iscompressed, bool ispackfile, bool isencrypted, string fileSystemID)
 		{
             if (string.IsNullOrEmpty(description))
                 throw new ArgumentNullException("description");
@@ -107,6 +123,7 @@ namespace GorgonLibrary.FileSystems
 			_description = description;
 			_isCompressed = iscompressed;
 			_isPackFile = ispackfile;
+            _isEncrypted = isencrypted;
             _ID = fileSystemID;
 		}
 		#endregion

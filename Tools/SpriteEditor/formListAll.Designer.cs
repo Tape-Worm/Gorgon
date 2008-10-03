@@ -54,10 +54,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.listSprites.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.listSprites.Location = new System.Drawing.Point(12, 12);
 			this.listSprites.Name = "listSprites";
-			this.listSprites.Size = new System.Drawing.Size(303, 266);
+			this.listSprites.Size = new System.Drawing.Size(303, 303);
 			this.listSprites.TabIndex = 10;
 			this.listSprites.UseCompatibleStateImageBehavior = false;
 			this.listSprites.View = System.Windows.Forms.View.Details;
+			this.listSprites.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listSprites_ItemChecked);
 			this.listSprites.SelectedIndexChanged += new System.EventHandler(this.listSprites_SelectedIndexChanged);
 			// 
 			// columnFrameName
@@ -90,7 +91,7 @@ namespace GorgonLibrary.Graphics.Tools
             0,
             327680});
 			this.numericDelay.Name = "numericDelay";
-			this.numericDelay.Size = new System.Drawing.Size(120, 20);
+			this.numericDelay.Size = new System.Drawing.Size(128, 20);
 			this.numericDelay.TabIndex = 13;
 			this.numericDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 

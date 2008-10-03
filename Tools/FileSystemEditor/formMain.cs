@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Sunday, April 01, 2007 12:05:35 PM
 // 
@@ -29,11 +32,10 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using GorgonLibrary;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.FileSystems;
+using Dialogs;
 
 namespace GorgonLibrary.FileSystems.Tools
 {
@@ -390,63 +392,91 @@ namespace GorgonLibrary.FileSystems.Tools
 
 			Cursor.Current = Cursors.WaitCursor;
 			newFileSystem = null;
-			try
-			{
-				// Open the selector.
-				if (string.IsNullOrEmpty(filePath))
-					return true;
+            try
+            {
+                // Open the selector.
+                if (string.IsNullOrEmpty(filePath))
+                    return true;
 
-				if (!File.Exists(filePath))
-				{
-					UI.ErrorBox(this, "The file system '" + filePath + "' does not exist.");					
-					return false;
-				}
+                if (!File.Exists(filePath))
+                {
+                    UI.ErrorBox(this, "The file system '" + filePath + "' does not exist.");
+                    return false;
+                }
 
-				// Open the file and read the header ID.
-				headerStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-				reader = new BinaryReader(headerStream, Encoding.UTF8);
-				headerValue = reader.ReadString();
+                // Open the file and read the header ID.
+                headerStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                reader = new BinaryReader(headerStream, Encoding.UTF8);
+                headerValue = reader.ReadString();
 
-				// Try to match up the header.
-				foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
-				{
-					if (string.Compare(provider.ID, headerValue, true) == 0)
-					{
-						if (!provider.IsPackedFile)
-							fsName = Path.GetDirectoryName(filePath);
-						else
-							fsName = Path.GetFileNameWithoutExtension(filePath);
+                // Try to match up the header.
+                foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
+                {
+                    if (string.Compare(provider.ID, headerValue, true) == 0)
+                    {
+                        if (!provider.IsPackedFile)
+                            fsName = Path.GetDirectoryName(filePath);
+                        else
+                            fsName = Path.GetFileNameWithoutExtension(filePath);
 
-						// Do nothing if this file system is loaded already.
+                        // Do nothing if this file system is loaded already.
                         if (FileSystemCache.FileSystems.Contains(fsName))
                         {
                             newFileSystem = null;
                             return true;
                         }
 
-						newFileSystem = FileSystem.Create(fsName, provider);
+                        newFileSystem = FileSystem.Create(fsName, provider);
+                        // If the file system provider is encrypted, then we need access.
+                        if (provider.IsEncrypted)
+                        {
+                            if (newFileSystem.GetAuthorization(this) == 0)
+                            {
+                                UI.ErrorBox(this, "This file system needs authorization to open.");
+                                newFileSystem.Dispose();
+                                newFileSystem = null;
+                                return true;
+                            }
+                        }
 						if (!provider.IsPackedFile)
-							newFileSystem.Root = Path.GetDirectoryName(filePath);
+							newFileSystem.AssignRoot(Path.GetDirectoryName(filePath));
 						else
-							newFileSystem.Root = filePath;
-						break;
-					}
-				}
+							newFileSystem.AssignRoot(filePath);
+                        break;
+                    }
+                }
 
                 if (newFileSystem == null)
                     return false;
 
-				return true;
-			}
-			catch (Exception ex)
-			{
-				if (newFileSystem != null)
-					newFileSystem.Dispose();
-				newFileSystem = null;
+                return true;
+            }
+            catch (GorgonException gEx)
+            {
+                if (newFileSystem != null)
+                    newFileSystem.Dispose();
+                newFileSystem = null;
 
-				UI.ErrorBox(this, "There was an error trying to open the file system '" + filePath + "'.", ex);
-				return false;
-			}
+				if (gEx.ResultCode == GorgonErrors.AccessDenied)
+				{
+					GorgonException.Catch(gEx, (message) => UI.ErrorBox(this, "Access to the file system '" + filePath + "' is denied."));
+					return true;
+				}
+				else
+				{
+					GorgonException.Catch(gEx, (message) => UI.ErrorBox(this, gEx));
+					return false;
+				}
+            }
+            catch (Exception ex)
+            {
+                if (newFileSystem != null)
+                    newFileSystem.Dispose();
+                newFileSystem = null;
+
+                UI.ErrorBox(this, "There was an error trying to open the file system '" + filePath + "'.", ex);
+                return false;
+            }
 			finally
 			{
 				if (headerStream != null)
@@ -733,10 +763,6 @@ namespace GorgonLibrary.FileSystems.Tools
 					}
 				}
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(this, ex);
@@ -826,11 +852,6 @@ namespace GorgonLibrary.FileSystems.Tools
                         }
 					}
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, ErrorDialogIcons.Bug, sEx.Message, sEx.ErrorLog);
-				Application.Exit();
 			}
 			catch (Exception ex)
 			{
@@ -992,10 +1013,6 @@ namespace GorgonLibrary.FileSystems.Tools
 
 				// Finally write the config document.
 				fsTypes.Save(_dataPath + "Config.xml");
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, sEx.Message, sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{

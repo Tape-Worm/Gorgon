@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Tuesday, May 08, 2007 9:58:21 PM
 // 
@@ -28,10 +31,10 @@ using System.Data;
 using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using System.Linq;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -137,17 +140,12 @@ namespace GorgonLibrary.Graphics.Tools
 				formatList = new SortedList<string, string>(new FormatSorter());
 
 				// Add to the list.
-				foreach (string format in formats)
-				{
-					// Add all to the list.
-					// Only add if it's not unknown AND the image format is supported for render targets.
-					if ((string.Compare(format, "bufferunknown") != 0) && (Image.SupportsFormat((ImageBufferFormats)Enum.Parse(typeof(ImageBufferFormats), format), ImageType.RenderTarget)))
-						formatList.Add(format, format);
-				}
-
-				// Now add to the combo.
-				foreach (KeyValuePair<string, string> format in formatList)
-					comboFormats.Items.Add(format.Key);
+				var validFormats = from formatEnum in formats
+								   where (string.Compare(formatEnum, "bufferunknown", true) != 0) &&
+										(Image.SupportsFormat((ImageBufferFormats)Enum.Parse(typeof(ImageBufferFormats), formatEnum), ImageType.RenderTarget))
+								   select formatEnum;				
+				foreach (string format in validFormats)
+					comboFormats.Items.Add(format);
 
 				// Get setting.
 				Settings.Root = null;
@@ -155,63 +153,15 @@ namespace GorgonLibrary.Graphics.Tools
 
 				ValidateForm();
 			}
-			catch (SharpException sEx)
+			catch (Exception ex)
 			{
-				UI.ErrorBox(this, "Unable to retrieve render target format list.", sEx.ErrorLog);
+				UI.ErrorBox(this, "Unable to retrieve render target format list.", ex);
 			}
 			finally
 			{
 				Cursor.Current = Cursors.Default;
 			}
 		}
-
-		/// <summary>
-		/// Function to edit a render target.
-		/// </summary>
-		/// <param name="target">Target to edit.</param>
-		public void EditTarget(string target)
-		{
-			RenderImage image = null;		// Render image.
-
-			if (!RenderTargetCache.Targets.Contains(target)) 
-			{
-				UI.ErrorBox(this, "The render target '" + target + "' does not exist.");
-				return;
-			}
-
-			// Check type.
-			image = RenderTargetCache.Targets[target] as RenderImage;
-			if (image == null)
-			{
-				UI.ErrorBox(this, "The render target '" + target + "' is not a render image.");
-				return;
-			}
-
-			// Get data.
-			textName.Text = image.Name;
-			numericHeight.Value = image.Height;
-			numericWidth.Value = image.Width;
-			comboFormats.Text = image.Format.ToString();
-			checkUseDepthBuffer.Checked = image.UseDepthBuffer;
-			checkUseStencilBuffer.Checked = image.UseStencilBuffer;
-			Text = "Edit render target - " + image.Name;
-			_editMode = true;
-
-			ValidateForm();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public formNewRenderTarget()
-		{
-			InitializeComponent();
-
-			FillFormats();
-		}
-		#endregion
 
 		/// <summary>
 		/// Handles the TextChanged event of the textName control.
@@ -274,19 +224,15 @@ namespace GorgonLibrary.Graphics.Tools
 					if (image != null)
 						image.SetDimensions(width, height, format);
 				}
-				
+
 
 				Settings.Root = null;
 				Settings.SetSetting("LastRenderTargetFormat", comboFormats.Text);
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(this, "Unable to create the render target.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(this, ex);
-			}			
+				UI.ErrorBox(this, "Error creating the render target.", ex);
+			}
 		}
 
 		/// <summary>
@@ -327,8 +273,56 @@ namespace GorgonLibrary.Graphics.Tools
 				DialogResult = DialogResult.OK;
 			}
 
-			if (e.KeyCode == Keys.Escape)				
+			if (e.KeyCode == Keys.Escape)
 				DialogResult = DialogResult.Cancel;
 		}
+
+		/// <summary>
+		/// Function to edit a render target.
+		/// </summary>
+		/// <param name="target">Target to edit.</param>
+		public void EditTarget(string target)
+		{
+			RenderImage image = null;		// Render image.
+
+			if (!RenderTargetCache.Targets.Contains(target)) 
+			{
+				UI.ErrorBox(this, "The render target '" + target + "' does not exist.");
+				return;
+			}
+
+			// Check type.
+			image = RenderTargetCache.Targets[target] as RenderImage;
+			if (image == null)
+			{
+				UI.ErrorBox(this, "The render target '" + target + "' is not a render image.");
+				return;
+			}
+
+			// Get data.
+			textName.Text = image.Name;
+			numericHeight.Value = image.Height;
+			numericWidth.Value = image.Width;
+			comboFormats.Text = image.Format.ToString();
+			checkUseDepthBuffer.Checked = image.UseDepthBuffer;
+			checkUseStencilBuffer.Checked = image.UseStencilBuffer;
+			Text = "Edit render target - " + image.Name;
+			_editMode = true;
+
+			ValidateForm();
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public formNewRenderTarget()
+		{
+			InitializeComponent();
+
+			FillFormats();
+		}
+		#endregion
 	}
 }

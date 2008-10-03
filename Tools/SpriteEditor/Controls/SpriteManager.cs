@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Wednesday, May 30, 2007 3:30:01 PM
 // 
@@ -30,9 +33,8 @@ using System.Text;
 using System.Windows.Forms.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using System.Linq;
+using Dialogs;
 using ControlExtenders;
 using Flobbster.Windows.Forms;
 
@@ -141,10 +143,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					}
 				}
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "There was an error attempting to save the selected sprite(s).", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "There was an error attempting to save the selected sprite(s).", ex);
@@ -199,10 +197,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 					MainForm.ProjectChanged = true;
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "There was an error attempting to open the sprite(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -302,10 +296,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 				RefreshList();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to clone the selected sprite(s).", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "Unable to clone the selected sprite(s).", ex);
@@ -336,10 +326,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				RefreshList();
 				RefreshPropertyGrid();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to flip the selected sprite(s).", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "Unable to flip the selected sprite(s).", ex);
@@ -369,10 +355,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 				RefreshList();
 				RefreshPropertyGrid();
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to flip the selected sprite(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -423,10 +405,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					RefreshList();
 					RefreshPropertyGrid();
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -484,10 +462,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 					ValidateForm();
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to add the animation.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -556,10 +530,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				_current.Sprite.Animations.Rename(oldName, e.Label);
 				_current.Changed = true;
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to rename the animation.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(MainForm, "Unable to rename the animation.", ex);
@@ -603,6 +573,7 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
 					{
 						_current.Sprite.Animations.Remove(item.Name);
+						_current.SetAnimReadOnly(false);
 						_current.Changed = true;
 					}
 				}
@@ -670,15 +641,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				editor.GetSettings();
 				editor.Sprites = _spriteDocs;
 				editor.CurrentAnimation = _current.Sprite.Animations[listAnimations.SelectedItems[0].Name];
-				if (editor.ShowDialog(MainForm) == DialogResult.OK)
-				{
-					_current.Changed = true;
-					RefreshAnimationList();
-				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to edit the animation.", sEx.ErrorLog);
+				editor.ShowDialog(MainForm);
+				RefreshAnimationList();
+				_current.RefreshProperties();
 			}
 			catch (Exception ex)
 			{
@@ -745,10 +710,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 					// Force the main window to have focus.
 					Focus();
 				}
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to update sprite image binding(s).", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -850,10 +811,6 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				_spriteDocs.Rename(_spriteDocs[oldName], e.Label);
 
 				RefreshPropertyGrid();
-			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to rename the sprite.", sEx.ErrorLog);
 			}
 			catch (Exception ex)
 			{
@@ -990,6 +947,77 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 		}
 
 		/// <summary>
+		/// Handles the Click event of the menuItemNvidiaImport control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void menuItemNvidiaImport_Click(object sender, EventArgs e)
+		{
+			NVidiaAtlasImport nvImport = null;						// NV texture atlas import.
+			ConfirmationResult result = ConfirmationResult.None;	// Confirmation result.
+			string spriteName = string.Empty;						// Name of the sprite.
+			int counter = 0;										// Sprite counter.
+			SpriteDocument spriteDoc = null;						// Sprite document.
+
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				nvImport = new NVidiaAtlasImport();
+
+				Settings.Root = "Paths";
+				dialogOpen.Title = "Import nvidia texture atlas...";
+				dialogOpen.InitialDirectory = Settings.GetSetting("LastImportOpenPath", @".\");
+				dialogOpen.Filter = "Nvidia texture atlas (*.tai)|*.tai";
+				dialogOpen.Multiselect = false;
+
+				// Import.
+				if (dialogOpen.ShowDialog(ParentForm) == DialogResult.OK)
+				{
+					nvImport.Import(dialogOpen.FileName);
+
+					// Create sprites.
+					foreach (KeyValuePair<string, NVidiaAtlasImport.SpriteData> sprite in nvImport.Sprites)
+					{
+						spriteName = sprite.Key;
+
+						// If a sprite exists with this name, then ask to overwrite it.
+						while (_spriteDocs.Contains(spriteName))
+						{
+							if ((result & ConfirmationResult.ToAll) == 0)
+								result = UI.ConfirmBox(ParentForm, "The sprite '" + spriteName + "' already exists.  Replace it?", false, true);
+
+							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
+								_spriteDocs.Remove(spriteName);
+							else
+								spriteName += "." + counter.ToString();
+						}
+
+						spriteDoc = _spriteDocs.Create(spriteName, sprite.Value.Image);
+						spriteDoc.SetRegion(sprite.Value.SpriteRect);
+						counter++;
+					}
+
+					MainForm.ProjectChanged = true;
+					ValidateForm();
+					RefreshList();
+					MainForm.ImageManager.RefreshList();
+					MainForm.ValidateForm();
+
+					Settings.SetSetting("LastImportOpenPath", Path.GetDirectoryName(dialogOpen.FileName));
+				}
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(ParentForm, "Error trying to import the texture atlas file(s).", ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Function to validate the form controls.
 		/// </summary>
 		protected override void ValidateForm()
@@ -1001,7 +1029,10 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 			if (_current != null)
 			{
 				foreach (Animation anim in _current.Sprite.Animations)
-					keyCount += anim.TransformationTrack.KeyCount;
+				{
+					foreach (Track track in anim.Tracks)
+						keyCount += track.KeyCount;
+				}
 			}
 
 			if (listSprites.SelectedItems.Count == 0)
@@ -1186,20 +1217,13 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 		/// </summary>
 		public void UpdatePropertyGrid()
 		{
-			PropertyBag[] selectedDocuments = null;		// Selected documents.
+			// Get the selected items. (How can you not love teh LINQ?)
+			gridSpriteProperties.SelectedObjects = (from docs in _spriteDocs
+													join ListViewItem items in listSprites.SelectedItems on docs.Name equals items.Name
+													select docs.PropertyBag).ToArray();
 
-			if (_current != null)
-			{
-				// Create array.
-				selectedDocuments = new PropertyBag[listSprites.SelectedItems.Count];
-
-				// Add selected items to the array.
-				for (int i = 0; i < listSprites.SelectedItems.Count; i++)
-					selectedDocuments[i] = _spriteDocs[listSprites.SelectedItems[i].Name].PropertyBag;
-			}
-
-			// Add the array.
-			gridSpriteProperties.SelectedObjects = selectedDocuments;			
+			// Update the grid.
+			gridSpriteProperties.Refresh();
 		}
 
 		/// <summary>
@@ -1261,6 +1285,8 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				MainForm.ValidateForm();
 				sprite.Sprite.UpdateAABB();
 			}
+
+			RefreshPropertyGrid();
 		}
 
 		/// <summary>
@@ -1336,13 +1362,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				// Validate the form.
 				ValidateForm();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to enumerate the sprite animations.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(MainForm, ex);
+				UI.ErrorBox(MainForm, "Unable to enumerate the sprite animations.", ex);
 			}
 		}
 
@@ -1408,13 +1430,9 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				// Validate the form.
 				ValidateForm();
 			}
-			catch (SharpException sEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to enumerate the sprites.", sEx.ErrorLog);
-			}
 			catch (Exception ex)
 			{
-				UI.ErrorBox(MainForm, ex);
+				UI.ErrorBox(MainForm, "Unable to enumerate the sprites.", ex);
 			}
 		}
 		#endregion
@@ -1428,76 +1446,5 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 			InitializeComponent();			
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the Click event of the menuItemNvidiaImport control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void menuItemNvidiaImport_Click(object sender, EventArgs e)
-		{
-			NVidiaAtlasImport nvImport = null;						// NV texture atlas import.
-			ConfirmationResult result = ConfirmationResult.None;	// Confirmation result.
-			string spriteName = string.Empty;						// Name of the sprite.
-			int counter = 0;										// Sprite counter.
-			SpriteDocument spriteDoc = null;						// Sprite document.
-
-			Cursor.Current = Cursors.WaitCursor;
-
-			try
-			{
-				nvImport = new NVidiaAtlasImport();
-
-				Settings.Root = "Paths";
-				dialogOpen.Title = "Import nvidia texture atlas...";
-				dialogOpen.InitialDirectory = Settings.GetSetting("LastImportOpenPath", @".\");
-				dialogOpen.Filter = "Nvidia texture atlas (*.tai)|*.tai";
-				dialogOpen.Multiselect = false;
-
-				// Import.
-				if (dialogOpen.ShowDialog(ParentForm) == DialogResult.OK)
-				{
-					nvImport.Import(dialogOpen.FileName);
-
-					// Create sprites.
-					foreach (KeyValuePair<string, NVidiaAtlasImport.SpriteData> sprite in nvImport.Sprites)
-					{
-						spriteName = sprite.Key;
-
-						// If a sprite exists with this name, then ask to overwrite it.
-						while (_spriteDocs.Contains(spriteName))
-						{
-							if ((result & ConfirmationResult.ToAll) == 0)
-								result = UI.ConfirmBox(ParentForm, "The sprite '" + spriteName + "' already exists.  Replace it?", false, true);
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-								_spriteDocs.Remove(spriteName);
-							else
-								spriteName += "." + counter.ToString();
-						}
-
-						spriteDoc = _spriteDocs.Create(spriteName, sprite.Value.Image);
-						spriteDoc.SetRegion(sprite.Value.SpriteRect);
-						counter++;						
-					}
-										
-					MainForm.ProjectChanged = true;
-					ValidateForm();
-					RefreshList();
-					MainForm.ImageManager.RefreshList();
-					MainForm.ValidateForm();
-
-					Settings.SetSetting("LastImportOpenPath", Path.GetDirectoryName(dialogOpen.FileName)); 
-				}
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(ParentForm, "Error trying to import the texture atlas file(s).",ex);
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-		}
 	}
 }
