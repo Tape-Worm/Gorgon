@@ -45,6 +45,7 @@ namespace GorgonLibrary.Example
 		: GorgonApplicationWindow
 	{
 		#region Variables.
+		private TextSprite _text = null;					// Text for instruction.
 		private Random _rnd = new Random();					// Random number generator.
 		private SpriteMesh _mesh = null;					// Sprite mesh.
 		private Image _nebulaImage = null;					// Nebula image.
@@ -52,6 +53,7 @@ namespace GorgonLibrary.Example
 		private Vector2D _swirl = Vector2D.Zero;			// Swirl.
 		private float _angle = 0.0f;						// Angle.
 		private PreciseTimer _timer = new PreciseTimer();	// Timer.
+		private float _disturbance = 50.0f;					// Brush disturbance.
 		#endregion
 
 		#region Methods.
@@ -130,7 +132,7 @@ namespace GorgonLibrary.Example
 					{
 						_point.X = col * _mesh.ColumnWidth;
 						_point.Y = row * _mesh.RowHeight;
-						_point = Vector2D.Add(_point, new Vector2D(_rnd.Next((int)-_mesh.ColumnWidth, (int)_mesh.ColumnWidth) * e.FrameDeltaTime * 550.0f, _rnd.Next((int)-_mesh.RowHeight, (int)_mesh.RowHeight) * e.FrameDeltaTime * 550.0f));
+						_point = Vector2D.Add(_point, new Vector2D(_rnd.Next((int)-_mesh.ColumnWidth, (int)_mesh.ColumnWidth) * e.FrameDeltaTime * _disturbance, _rnd.Next((int)-_mesh.RowHeight, (int)_mesh.RowHeight) * e.FrameDeltaTime * _disturbance));
 						_swirl.X = (MathUtility.Cos(MathUtility.Radians(_angle))) - (MathUtility.Sin(MathUtility.Radians(_angle)));
 						_swirl.Y = (MathUtility.Cos(MathUtility.Radians(_angle))) + (MathUtility.Sin(MathUtility.Radians(_angle)));
 						_mesh.SetVertexPosition(col, row, _point.X + _swirl.X, _point.Y + _swirl.Y);
@@ -139,6 +141,8 @@ namespace GorgonLibrary.Example
 					}
 				}
 			}
+
+			_text.Text = "Mouse wheel - increase/decrease the disturbance of the brush.\n\nDisturbance: " + _disturbance.ToString("0.0");
 		}
 
 		/// <summary>
@@ -148,7 +152,27 @@ namespace GorgonLibrary.Example
 		protected override void OnFrameUpdate(FrameEventArgs e)
 		{
 			base.OnFrameUpdate(e);
-			_mesh.Draw();			
+			_mesh.Draw();
+			_text.Draw();
+		}
+
+		/// <summary>
+		/// Function called when a mouse scroll wheel is scrolled.
+		/// </summary>
+		/// <param name="e">Mouse event parameters.</param>
+		protected override void OnMouseWheelScrolled(MouseInputEventArgs e)
+		{
+			base.OnMouseWheelScrolled(e);
+
+			if (e.WheelDelta < 0)
+				_disturbance -= 10.0f;
+			if (e.WheelDelta > 0)
+				_disturbance += 10.0f;
+
+			if (_disturbance < 50.0f)
+				_disturbance = 50.0f;
+			if (_disturbance > 250.0f)
+				_disturbance = 250.0f;
 		}
 
 		/// <summary>
@@ -181,7 +205,9 @@ namespace GorgonLibrary.Example
 			scale = (640.0f / _nebulaImage.Width) * ((Gorgon.Screen.Width + (Gorgon.Screen.Width / 10.0f)) / 640.0f);			
 			_mesh.SetScale(scale,scale);
 			_mesh.Columns = (int)(_mesh.ScaledWidth / 10);
-			_mesh.Rows = (int)(_mesh.ScaledHeight / 10);			
+			_mesh.Rows = (int)(_mesh.ScaledHeight / 10);
+
+			_text = new TextSprite("Instructions", string.Empty, this.FrameworkFont, Drawing.Color.White);
 		}
 		#endregion
 
