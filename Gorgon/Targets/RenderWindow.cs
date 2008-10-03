@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2005 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Wednesday, August 03, 2005 12:52:59 AM
 // 
@@ -24,9 +27,6 @@
 using System;
 using Drawing = System.Drawing;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -217,35 +217,36 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				_swapChain = new D3D9.SwapChain(Gorgon.Screen.Device, _presentParameters);
-				Gorgon.Log.Print("RenderWindow", "Swap chain created.", LoggingLevel.Verbose);
-
-				// Get the color buffer.
-				SetColorBuffer(_swapChain.GetBackBuffer(0));
-
-				// If we have a Z Buffer, then try to create it.
-				if (_presentParameters.EnableAutoDepthStencil)
-				{
-					SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon.Screen.Device, _currentVideoMode.Width, _currentVideoMode.Height, _presentParameters.AutoDepthStencilFormat, D3D9.MultisampleType.None, 0, false));
-					Gorgon.Log.Print("RenderWindow", "Depth buffer created.", LoggingLevel.Verbose);
-				}
-				else
-					SetDepthBuffer(null);
-
-				// Update width and height to reflect the backbuffer dimensions.
-				base.Width = _currentVideoMode.Width;
-				base.Height = _currentVideoMode.Height;
-
-				// Update windows.
-				Refresh();
-
-				_owner.Resize += new EventHandler(OnOwnerResized);
-
-				Gorgon.Log.Print("RenderWindow", "Swap chain mode {0}x{1}x{2} ({3}) has been set.", LoggingLevel.Simple, Width, Height, mode.Bpp, mode.Format.ToString());
 			}
 			catch (Exception ex)
 			{
-				throw new RenderTargetCreationFailureException(ex);
+				throw new GorgonException(GorgonErrors.CannotCreate, "Error creating the D3D render target object.", ex);
 			}
+
+			Gorgon.Log.Print("RenderWindow", "Swap chain created.", LoggingLevel.Verbose);
+
+			// Get the color buffer.
+			SetColorBuffer(_swapChain.GetBackBuffer(0));
+
+			// If we have a Z Buffer, then try to create it.
+			if (_presentParameters.EnableAutoDepthStencil)
+			{
+				SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon.Screen.Device, _currentVideoMode.Width, _currentVideoMode.Height, _presentParameters.AutoDepthStencilFormat, D3D9.MultisampleType.None, 0, false));
+				Gorgon.Log.Print("RenderWindow", "Depth buffer created.", LoggingLevel.Verbose);
+			}
+			else
+				SetDepthBuffer(null);
+
+			// Update width and height to reflect the backbuffer dimensions.
+			base.Width = _currentVideoMode.Width;
+			base.Height = _currentVideoMode.Height;
+
+			// Update windows.
+			Refresh();
+
+			_owner.Resize += new EventHandler(OnOwnerResized);
+
+			Gorgon.Log.Print("RenderWindow", "Swap chain mode {0}x{1}x{2} ({3}) has been set.", LoggingLevel.Simple, Width, Height, mode.Bpp, mode.Format.ToString());
 		}
 
 		/// <summary>
@@ -273,9 +274,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to perform a flip of the D3D buffers.
 		/// </summary>
-		protected internal virtual void D3DFlip()
+		/// <returns>A result code if the device is in a lost state.</returns>
+		protected internal virtual DX.Result D3DFlip()
 		{
-			_swapChain.Present(D3D9.Present.DoNotWait);
+			return _swapChain.Present(D3D9.Present.DoNotWait);
 		}
 
 		/// <summary>
@@ -380,12 +382,12 @@ namespace GorgonLibrary.Graphics
 		{
 			// Make sure the desktop can be used for rendering.
 			if ((usewindow) && (!Gorgon.CurrentDriver.DesktopFormatSupported(mode)))
-				throw new DeviceVideoModeNotValidException(Gorgon.DesktopVideoMode);
+				throw new ArgumentException("The desktop video mode (" + mode.ToString() + ") will not support the device object.");
 
 			if (!resize)
-				Gorgon.Log.Print("RenderWindow", "Setting swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, mode.Width, mode.Height, mode.Bpp, mode.Format.ToString(), _objectName);
+				Gorgon.Log.Print("RenderWindow", "Setting swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, mode.Width, mode.Height, mode.Bpp, mode.Format.ToString(), Name);
 			else
-				Gorgon.Log.Print("RenderWindow", "Resizing swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, resizewidth, resizeheight, mode.Bpp, mode.Format.ToString(), _objectName);
+				Gorgon.Log.Print("RenderWindow", "Resizing swap chain to {0}x{1}x{2} ({3}) on '{4}'.", LoggingLevel.Intermediate, resizewidth, resizeheight, mode.Bpp, mode.Format.ToString(), Name);
 
 			// Don't go too small.
 			if (resizewidth < 32)
@@ -452,7 +454,7 @@ namespace GorgonLibrary.Graphics
 		{
 			RenderTarget previousTarget = null;		// Previous render target.
 
-			base.Update();
+			Gorgon.Renderer.Render();
 
 			// Switch to the proper render target.
 			if ((Gorgon.CurrentRenderTarget != this) || ((Gorgon.CurrentRenderTarget == null) && (this == Gorgon.Screen)))
@@ -509,7 +511,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("owner");
 
 			if (RenderTargetCache.Targets.Contains(name))
-				throw new RenderTargetAlreadyExistsException(name);
+				throw new ArgumentException("'" + name + "' already exists.");
 
 			Gorgon.Log.Print("RenderWindow", "Creating rendering window '{0}' ...", LoggingLevel.Intermediate, name);
 
@@ -517,7 +519,7 @@ namespace GorgonLibrary.Graphics
 
 			// Make sure we're in windowed mode if we've already set the primary window.
 			if ((Gorgon.Screen != null) && (!Gorgon.Screen.Windowed))
-				throw new RenderTargetIsFullScreenException();
+				throw new InvalidOperationException("Cannot create multiple swapchains while in full-screen mode.");
 
 			// Create presentation parameters.
 			_presentParameters = new D3D9.PresentParameters();
@@ -533,7 +535,7 @@ namespace GorgonLibrary.Graphics
 					parent = parent.Parent;
 
 				if (parent == null)
-					throw new RenderTargetOwnerNotValidException();
+					throw new Exception("This shouldn't happen - I can't find a parent form for this control!!!");
 
 				_ownerForm = parent as Form;
 			}
@@ -569,7 +571,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("owner");
 
 			if (RenderTargetCache.Targets.Contains(name))
-				throw new RenderTargetAlreadyExistsException(name);
+				throw new ArgumentException("'" + name + "' already exists.");
 
 			Gorgon.Log.Print("RenderWindow", "Creating rendering window '{0}' ...", LoggingLevel.Intermediate, name);
 
@@ -577,7 +579,7 @@ namespace GorgonLibrary.Graphics
 
 			// Make sure we're in windowed mode if we've already set the primary window.
 			if ((Gorgon.Screen != null) && (!Gorgon.Screen.Windowed))
-				throw new RenderTargetIsFullScreenException();
+				throw new InvalidOperationException("Cannot create multiple swapchains while in full-screen mode.");
 
 			// Create presentation parameters.
 			_presentParameters = new D3D9.PresentParameters();
@@ -593,7 +595,7 @@ namespace GorgonLibrary.Graphics
 					parent = parent.Parent;
 
 				if (parent == null)
-					throw new RenderTargetOwnerNotValidException();
+					throw new Exception("This shouldn't happen - Can't find a parent form for the control!!");
 
 				_ownerForm = parent as Form;
 			}
@@ -675,7 +677,7 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)			
 			{
-				Gorgon.Log.Print("RenderWindow", "Destroying render window '{0}'...", LoggingLevel.Intermediate, _objectName);
+				Gorgon.Log.Print("RenderWindow", "Destroying render window '{0}'...", LoggingLevel.Intermediate, Name);
 
 				// Remove resizing handler.
 				_owner.Resize -= new EventHandler(OnOwnerResized);
@@ -697,7 +699,7 @@ namespace GorgonLibrary.Graphics
 				if (Gorgon.CurrentRenderTarget == this)
 					Gorgon.CurrentRenderTarget = null;
 
-				Gorgon.Log.Print("RenderWindow", "Render window '{0}' destroyed.", LoggingLevel.Intermediate, _objectName);
+				Gorgon.Log.Print("RenderWindow", "Render window '{0}' destroyed.", LoggingLevel.Intermediate, Name);
 			}			
 
 			// Do unmanaged clean up.

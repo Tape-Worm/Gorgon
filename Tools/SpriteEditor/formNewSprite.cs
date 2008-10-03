@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Monday, May 07, 2007 11:30:13 PM
 // 
@@ -29,13 +32,15 @@ using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
+using System.Linq;
 using GorgonLibrary;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
+	/// <summary>
+	/// Interface to create a new sprite.
+	/// </summary>
 	public partial class formNewSprite 
 		: Form
 	{
@@ -118,12 +123,9 @@ namespace GorgonLibrary.Graphics.Tools
 			// Add images.
 			if (!checkRenderTarget.Checked)
 			{
-				foreach (Image image in ImageCache.Images)
-				{
-					// Ignore resource images.
-					if ((!image.IsResource) && (image.ImageType == ImageType.Normal))
-						comboImages.Items.Add(image.Name);
-				}
+				var images = ImageCache.Images.Where(image => (!image.IsResource) && (image.ImageType == ImageType.Normal));
+				foreach (var image in images)
+					comboImages.Items.Add(image.Name);
 
 				if (_owner.ImageManager.SelectedImage != null)
 					comboImages.Text = _owner.ImageManager.SelectedImage.Name;
@@ -132,12 +134,9 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			else
 			{
-				foreach (RenderTarget image in RenderTargetCache.Targets)
-				{
-					// Only add images that are not rendertargets unless we have render target checked.
-					if (_owner.ValidRenderTarget(image.Name)) 
-						comboImages.Items.Add(image.Name);
-				}
+				var targets = RenderTargetCache.Targets.Where(target => (_owner.ValidRenderTarget(target.Name)));
+				foreach (var image in targets)
+					comboImages.Items.Add(image.Name);
 
 				if (_owner.RenderTargetManager.SelectedTarget != null)
 					comboImages.Text = _owner.RenderTargetManager.SelectedTarget.Name;
@@ -145,50 +144,6 @@ namespace GorgonLibrary.Graphics.Tools
 					comboImages.Text = string.Empty;
 			}
 		}
-
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-		{
-			base.OnFormClosing(e);
-
-			// Re-display managers if necessary.
-			_owner.ImageManager.Visible = _imageManagerVisible ;
-			_owner.RenderTargetManager.Visible = _targetManagerVisible;
-		}
-
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-
-			_owner = Owner as formMain;
-
-			FillCombos();			
-
-			// Get last visible state.
-			_imageManagerVisible = _owner.ImageManager.Visible;
-			_targetManagerVisible = _owner.RenderTargetManager.Visible;
-
-			// Update interface.
-			ValidateForm();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public formNewSprite()
-		{
-			InitializeComponent();
-		}
-		#endregion
 
 		/// <summary>
 		/// Handles the CheckedChanged event of the checkRenderTarget control.
@@ -254,7 +209,7 @@ namespace GorgonLibrary.Graphics.Tools
 						imageManager.ImageManager.SelectedImage = ImageCache.Images[comboImages.Text];
 					else
 						imageManager.ImageManager.SelectedImage = null;
-					imageManager.ShowDialog(this);					
+					imageManager.ShowDialog(this);
 
 					// Re-fill the combo and select the image name.
 					FillCombos();
@@ -275,7 +230,7 @@ namespace GorgonLibrary.Graphics.Tools
 					FillCombos();
 					if (targetManager.TargetManager.SelectedTarget != null)
 						comboImages.Text = targetManager.TargetManager.SelectedTarget.Name;
-				}				
+				}
 			}
 			catch (Exception ex)
 			{
@@ -290,7 +245,7 @@ namespace GorgonLibrary.Graphics.Tools
 					_owner.RenderTargetManager.RefreshList();
 					_owner.RenderTargetManager.SelectedTarget = targetManager.TargetManager.SelectedTarget;
 					targetManager.Dispose();
-				}				
+				}
 
 				if (imageManager != null)
 				{
@@ -346,5 +301,49 @@ namespace GorgonLibrary.Graphics.Tools
 			if (e.KeyCode == Keys.Escape)
 				DialogResult = DialogResult.Cancel;
 		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			base.OnFormClosing(e);
+
+			// Re-display managers if necessary.
+			_owner.ImageManager.Visible = _imageManagerVisible ;
+			_owner.RenderTargetManager.Visible = _targetManagerVisible;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			_owner = Owner as formMain;
+
+			FillCombos();			
+
+			// Get last visible state.
+			_imageManagerVisible = _owner.ImageManager.Visible;
+			_targetManagerVisible = _owner.RenderTargetManager.Visible;
+
+			// Update interface.
+			ValidateForm();
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public formNewSprite()
+		{
+			InitializeComponent();
+		}
+		#endregion
 	}
 }

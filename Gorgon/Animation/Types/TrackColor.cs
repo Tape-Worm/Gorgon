@@ -1,36 +1,39 @@
-#region LGPL.
+﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2006 Michael Winsor
+// Copyright (C) 2008 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
-// Created: Thursday, November 23, 2006 9:52:36 AM
+// Created: Wednesday, April 30, 2008 10:50:41 AM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using SharpUtilities.Collections;
-using SharpUtilities.Mathematics;
+using System.Text;
+using System.Reflection;
 using System.Drawing;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Object representing a track of color keys.
+	/// Animation track used to animate color properties.
 	/// </summary>
 	public class TrackColor
 		: Track
@@ -39,82 +42,55 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the key for a given frame time index.
 		/// </summary>
-		/// <param name="timeIndex">Frame time index to retrieve.</param>
 		/// <returns>A key containing interpolated keyframe data.</returns>
-		public override Key this[float timeIndex]
+		public override KeyFrame this[float timeIndex]
 		{
-            get
-            {
-                KeyColor newKey = null;					// Key information.
-                NearestKeys keyData;					// Nearest key information.
+			get
+			{
+				KeyColor newKey = null;				// Key information.
+				NearestKeys keyData;					// Nearest key information.
 
 				// If we specify the exact key, then return it.
 				if (Contains(timeIndex))
 					return KeyList[timeIndex];
 
-                // Get the nearest key information.
-                keyData = FindNearest(timeIndex);
+				// If we're at the last key, then don't progress any further.
+				if (timeIndex > GetKeyAtIndex(KeyList.Count - 1).Time)
+					return GetKeyAtIndex(KeyList.Count - 1);
 
-                // Get an instance of the key.
-				newKey = new KeyColor(this, keyData.KeyTimeDelta);
+				// Get the nearest key information.
+				keyData = FindNearest(timeIndex);
 
-                // Apply the color.
-				newKey.Apply(keyData.PreviousKeyIndex, keyData.PreviousKey, keyData.NextKey);
+				// Get an instance of the key.
+				newKey = new KeyColor(keyData.KeyTimeDelta, Color.Transparent);
+				newKey.Owner = this;				
 
-                return newKey;
-            }
+				// Apply the transformation.
+				newKey.UpdateKeyData(keyData);
+
+				return newKey;
+			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to add a key to the track.
+		/// Function to create a keyframe.
 		/// </summary>
-		/// <param name="key">Key to add.</param>
-		public override void AddKey(Key key)
+		/// <returns>The new keyframe in the correct context.</returns>
+		protected internal override KeyFrame CreateKey()
 		{
-			if (key == null)
-				throw new ArgumentNullException("key");
-			
-			if (key.Owner != null)
-				throw new AnimationKeyAssignedException(GetType());
-
-			// Assign the key owner.
-			key.AssignToTrack(this);
-			if (!Contains(key.Time))
-				KeyList.Add(key.Time, key);
-			else
-				KeyList[key.Time] = key;
-		}
-
-		/// <summary>
-		/// Function to create a color key.
-		/// </summary>
-		/// <returns>A new color key.</returns>
-		public KeyColor CreateKey(float timePosition, Color color)
-		{
-			KeyColor newKey = null;         // New transform key.
-
-			newKey = new KeyColor(this, timePosition);
-            newKey.Color = color;
-
-			if (!Contains(timePosition))
-				KeyList.Add(timePosition, newKey);
-			else
-				KeyList[timePosition] = newKey;
-
-			Update();
-			return newKey;
+			return new KeyColor(0.0f, Color.Transparent);
 		}
 		#endregion
 
-		#region Constructor.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Constructor.
+		/// Initializes a new instance of the <see cref="TrackColor"/> class.
 		/// </summary>
-		/// <param name="owner">Animation that owns this track.</param>
-		internal TrackColor(Animation owner)
-			: base(owner)
+		/// <param name="property">Property that is bound to the track.</param>
+		internal TrackColor(PropertyInfo property)
+			: base(property, typeof(Color))
 		{
 		}
 		#endregion

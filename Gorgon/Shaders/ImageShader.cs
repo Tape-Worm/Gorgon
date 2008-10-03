@@ -1,21 +1,24 @@
-﻿#region LGPL.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Friday, December 07, 2007 4:17:18 PM
 // 
@@ -26,7 +29,6 @@ using System.Collections.Generic;
 using System.Text;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
-using SharpUtilities;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -35,13 +37,10 @@ namespace GorgonLibrary.Graphics
 	/// Object representing an image shader interface.
 	/// </summary>
 	public class ImageShader
-		: NamedObject, IDisposable, IDeviceStateObject
+		: BaseShader<ImageShader>
 	{
 		#region Variables.
-		private bool _disposed = false;						// Flag to indicate that the object is disposed.
 		private D3D9.TextureShader _shader = null;			// Texture shader.
-		private Shader _root = null;						// Root shader.
-		private DX.DataStream _functionData = null;			// Stream to hold the function data.
 		#endregion
 
 		#region Properties.
@@ -59,6 +58,73 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to retrieve the shader target profile.
+		/// </summary>
+		/// <param name="target">Version of the profile.</param>
+		/// <returns>The shader target profile.</returns>
+		/// <remarks>For a texture shader this is always tx_1_0.</remarks>
+		protected override string ShaderProfile(Version target)
+		{
+			return "tx_1_0";
+		}
+
+		/// <summary>
+		/// Function called before the rendering begins with this shader.
+		/// </summary>
+		protected override void OnRenderBegin()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Function called when rendering with this shader.
+		/// </summary>
+		protected override void OnRender()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Function called after the rendering ends with this shader.
+		/// </summary>
+		protected override void OnRenderEnd()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Function called to create the actual shader object.
+		/// </summary>
+		protected override void CreateShader()
+		{
+			if (Function != null)
+				_shader = new D3D9.TextureShader(Function.ByteCode.Data);
+		}
+
+		/// <summary>
+		/// Function called to destroy the shader object.
+		/// </summary>
+		protected override void DestroyShader()
+		{
+			if (_shader != null)
+				_shader.Dispose();
+
+			_shader = null;
+		}
+
+		/// <summary>
+		/// Function to compile the shader source code.
+		/// </summary>
+		/// <param name="functionName">Name of the function to compile.</param>
+		/// <param name="flags">Options to use for compilation.</param>
+		/// <remarks>See <see cref="GorgonLibrary.Graphics.ShaderCompileOptions"/> for more information about the compile time options.
+		/// </remarks>
+		public void CompileShader(string functionName, ShaderCompileOptions flags)
+		{
+			CompileShaderImplementation(functionName, new Version(1,0), flags);
+		}
+
+		/// <summary>
 		/// Function to set the default values.
 		/// </summary>
 		public void SetDefaultValues()
@@ -71,108 +137,23 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImageShader"/> class.
 		/// </summary>
-		/// <param name="name">Name of the image shader.</param>
-		/// <param name="shader">The shader that holds the image shader function.</param>
-		/// <param name="functionName">Name of the function to import.</param>
-		public ImageShader(string name, Shader shader, string functionName)
-			: base(name)
+		/// <param name="name">Name of the image shader.</param>		
+		public ImageShader(string name)
+			: base(name, null)
 		{
-			D3D9.ShaderBytecode byteCode = null;		// Shader byte code.
-
-			if (shader == null)
-				throw new ArgumentNullException("shader");
-
-			if (string.IsNullOrEmpty(functionName))
-				throw new ArgumentNullException("functionName");
-
-			if (ImageShaderCache.ImageShaders.Contains(name))
-				throw new ShaderAlreadyExistsException(name);
-
-			try
-			{
-				_root = shader;
-				byteCode = shader.GetShaderFunction(functionName);
-                _functionData = byteCode.Data;
-				_shader = new D3D9.TextureShader(_functionData);
-
-				ImageShaderCache.ImageShaders.Add(this);
-			}
-			catch
-			{
-				throw;
-			}
-			finally
-			{
-				if (byteCode != null)
-					byteCode.Dispose();
-				byteCode = null;
-			}
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				if (!_disposed)
-				{
-					if (_shader != null)
-						_shader.Dispose();
-					if (_functionData != null)
-						_functionData.Dispose();
-					_functionData = null;
-					_shader = null;
-					_disposed = true;
-
-					// Remove us from the cache.
-					if (ImageShaderCache.ImageShaders.Contains(Name))
-						ImageShaderCache.ImageShaders.Remove(Name);
-				}
-			}
 		}
 
 		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// Initializes a new instance of the <see cref="ImageShader"/> class.
 		/// </summary>
-		public void Dispose()
+		/// <param name="name">Name for this object.</param>
+		/// <param name="function">Function to bind to the shader as an entry point.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the name parameter is NULL or a zero length string.</exception>
+		public ImageShader(string name, ShaderFunction function)
+			: base(name, function)
 		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-
-		#region IDeviceStateObject Members
-		/// <summary>
-		/// Function called when the device is in a lost state.
-		/// </summary>
-		public void DeviceLost()
-		{
-			if (_shader != null)
-				_shader.Dispose();
-
-			_shader = null;
-		}
-
-		/// <summary>
-		/// Function called when the device is reset.
-		/// </summary>
-		public void DeviceReset()
-		{
-			if ((_functionData != null) && (_shader == null))
-				_shader = new D3D9.TextureShader(_functionData);
-		}
-
-		/// <summary>
-		/// Function to force the loss of the objects data.
-		/// </summary>
-		public void ForceRelease()
-		{
-			Dispose();
+			if (function == null)
+				throw new ArgumentNullException("function");
 		}
 		#endregion
 	}

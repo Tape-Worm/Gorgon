@@ -1,203 +1,200 @@
-#region LGPL.
+﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2006 Michael Winsor
+// Copyright (C) 2008 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
-// Created: Tuesday, November 21, 2006 12:08:22 AM
+// Created: Wednesday, April 30, 2008 1:52:49 PM
 // 
 #endregion
 
 using System;
-using SharpUtilities.Mathematics;
+using System.Collections.Generic;
+using System.Text;
+using System.Reflection;
 using System.Drawing;
-using GorgonLibrary.Internal;
+using GorgonLibrary.Serialization;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Object representing a color key.
+	/// A key frame for manipulating data of the type <see cref="System.Drawing.Color"/>
 	/// </summary>
 	public class KeyColor
-		: Key
+		: KeyFrame
 	{
 		#region Variables.
-        private Color _color = Color.White;                 // Color
-        private int _maskValue;								// Alpha mask value.
+		private Color _value = Color.Transparent;			// Value of the key.
 		#endregion
 
 		#region Properties.
-        /// <summary>
-        /// Property to set or return the color.
-        /// </summary>
-        public Color Color
-        {
-            get
-            {
-                return _color;
-            }
-            set
-            {
-                _color = value;
-				if (Owner != null)
-					Owner.Update();
-            }
-        }
+		/// <summary>
+		/// Property to return the type of data stored in the key.
+		/// </summary>
+		/// <value></value>
+		public override Type DataType
+		{
+			get
+			{
+				return typeof(Color);
+			}
+		}
 
-        /// <summary>
-        /// Property to set or return the alpha mask value.
-        /// </summary>
-        public int AlphaMaskValue
-        {
-            get
-            {
-                return _maskValue;
-            }
-            set
-            {
-                _maskValue = value;
-                if (_maskValue < 0)
-                    _maskValue = 0;
-                if (_maskValue > 255)
-                    _maskValue = 255;
-            }
-        }
+		/// <summary>
+		/// Property to set or return the value of the key.
+		/// </summary>
+		public Color Value
+		{
+			get
+			{
+				return _value;
+			}
+			set
+			{
+				_value = value;
+			}
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to apply key information to the owning object of the animation.
+		/// Function to update the data within the key frame.
 		/// </summary>
-		/// <param name="prevKeyIndex">Previous key index.</param>
-		/// <param name="previousKey">Key prior to this one.</param>
-		/// <param name="nextKey">Key after this one.</param>
-		protected internal override void Apply(int prevKeyIndex, Key previousKey, Key nextKey)
+		/// <param name="keyData">Interpolated key data used to help calculate data between keys.</param>
+		protected internal override void UpdateKeyData(Track.NearestKeys keyData)
 		{
-			KeyColor previous = previousKey as KeyColor;
-			KeyColor next = nextKey as KeyColor;
+			float[] source = new float[4];		// Source color components.
+			float[] dest = new float[4];		// Destination color components.
 
-			if (previousKey == null)
-				throw new ArgumentNullException("previousKey");
+			// Cast to the appropriate types.
+			KeyColor previous = keyData.PreviousKey as KeyColor;
+			KeyColor next = keyData.NextKey as KeyColor;
 
-			if (nextKey == null)
-				throw new ArgumentNullException("nextKey");
 
 			if (previous == null)
-				throw new AnimationTypeMismatchException("key at time index", previousKey.Time.ToString("0.0"), "KeyColor", previousKey.GetType().Name);
+				throw new ArgumentException("The previous key is not the expected type: KeyColor", "keyData");
 
 			if (next == null)
-				throw new AnimationTypeMismatchException("key at time index", nextKey.Time.ToString("0.0"), "KeyColor", nextKey.GetType().Name);
+				throw new ArgumentException("The next key is not the expected type: KeyColor", "keyData");
 
 			// Copy if we're at the same frame.
-			if ((Time == 0) || (previous.InterpolationMode == InterpolationMode.None))
-			{
-				_color = previous.Color;
-				_maskValue = previous.AlphaMaskValue;
-			}
+			if ((Time == 0) || (previous.Owner.InterpolationMode == InterpolationMode.None))
+				_value = previous.Value;
 			else
 			{
-				float[] sourceComponents = new float[4];        // Source color components.
-				float[] destComponents = new float[4];          // Destination color components.
-				int mask = previous._maskValue;              // Alpha mask value.
+				// Get color components.
+				source[0] = previous.Value.R;
+				source[1] = previous.Value.G;
+				source[2] = previous.Value.B;
+				source[3] = previous.Value.A;
 
+				dest[0] = next.Value.R;
+				dest[1] = next.Value.G;
+				dest[2] = next.Value.B;
+				dest[3] = next.Value.A;
 
-				// Get components.
-				sourceComponents[0] = Convert.ToSingle(previous.Color.R);
-				sourceComponents[1] = Convert.ToSingle(previous.Color.G);
-				sourceComponents[2] = Convert.ToSingle(previous.Color.B);
-				sourceComponents[3] = Convert.ToSingle(previous.Color.A);
-				destComponents[0] = Convert.ToSingle(next.Color.R);
-				destComponents[1] = Convert.ToSingle(next.Color.G);
-				destComponents[2] = Convert.ToSingle(next.Color.B);
-				destComponents[3] = Convert.ToSingle(next.Color.A);
-
-				// Calculate interpolated colors.
+				// Interpolate the colors.
 				for (int i = 0; i < 4; i++)
 				{
-					destComponents[i] = (sourceComponents[i] + ((destComponents[i] - sourceComponents[i]) * Time));
-					destComponents[i] = (float)Math.Round(destComponents[i]);
+					dest[i] = (source[i] + ((dest[i] - source[i]) * Time));
 
-					// Clamp values.
-					if (destComponents[i] > 255)
-						destComponents[i] = 255.0f;
-
-					if (destComponents[i] < 0)
-						destComponents[i] = 0;
+					if (dest[i] < 0)
+						dest[i] = 0;
+					if (dest[i] > 255)
+						dest[i] = 255;
 				}
 
-				// Create color.
-				_color = Color.FromArgb(Convert.ToInt32(destComponents[3]), Convert.ToInt32(destComponents[0]), Convert.ToInt32(destComponents[1]), Convert.ToInt32(destComponents[2]));
-
-				// Interpolate mask value.
-				_maskValue = Convert.ToInt32(Math.Round(mask + ((next._maskValue - mask) * Time)));
+				_value = Color.FromArgb((int)dest[3], (int)dest[0], (int)dest[1], (int)dest[2]);
 			}
 
-			if (Owner != null)
-				Owner.Update();
+			Owner.NeedsUpdate = true;
 		}
 
 		/// <summary>
-		/// Function to use the key data to update a layer object.
+		/// Function to retrieve data from the serializer stream.
 		/// </summary>
-		/// <param name="layerObject">Layer object to update.</param>
-		protected internal override void UpdateLayerObject(IAnimatable layerObject)
+		/// <param name="serializer">Serializer that's calling this function.</param>
+		public override void ReadData(Serializer serializer)
 		{
-			layerObject.Color = _color;
-			if (layerObject.AlphaMaskValue != _maskValue)
-				layerObject.AlphaMaskValue = _maskValue;
+			string typeName = string.Empty;		// Type name of the key.
+
+			typeName = serializer.ReadString("Type");
+			if (string.Compare(typeName, "KeyColor", true) != 0)
+				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyColor");
+
+			Time = serializer.ReadSingle("Time");
+			_value = Color.FromArgb(serializer.ReadInt32("Value"));
 		}
 
 		/// <summary>
-		/// Function to clone this key.
+		/// Function to persist the data into the serializer stream.
 		/// </summary>
-		/// <returns>A clone of this key.</returns>
-		public override object Clone()
+		/// <param name="serializer">Serializer that's calling this function.</param>
+		public override void WriteData(Serializer serializer)
 		{
-			KeyColor newKey = null;         // Cloned key.
-
-			newKey = new KeyColor(null, Time);
-			newKey.InterpolationMode = InterpolationMode;
-			newKey.Color = _color;
-			newKey.AlphaMaskValue = _maskValue;
-
-			return newKey;
+			serializer.WriteGroupBegin("KeyFrame");
+			serializer.Write("Type", "KeyColor");
+			serializer.Write("Time", Time);
+			serializer.Write("Value", _value.ToArgb());
+			serializer.WriteGroupEnd();
 		}
-		#endregion
 
-		#region Constructor/Destructor.
 		/// <summary>
-		/// Constructor.
+		/// Function to perform an update of the bound property.
 		/// </summary>
-		/// <param name="owner">Owner of this key.</param>
-		/// <param name="timePosition">Position in time for this keyframe.</param>
-		public KeyColor(TrackColor owner, float timePosition)
-			: base(owner, timePosition)
+		public override void Update()
 		{
-			// Get the size from the animation owner.
-			if (Owner != null)
-			{
-				_color = Owner.Owner.Owner.Color;
-				_maskValue = Owner.Owner.Owner.AlphaMaskValue;
-			}
+			if (Owner == null)
+				return;
+			if (Owner.BoundProperty.PropertyType == typeof(int))
+				Owner.BoundProperty.SetValue(Owner.Owner.Owner, _value.ToArgb(), null);
+			else
+				Owner.BoundProperty.SetValue(Owner.Owner.Owner, _value, null);
+		}
+
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		public override KeyFrame Clone()
+		{
+			KeyColor clone = null;			// Cloned key.
+
+			clone = new KeyColor(Time, _value);
+
+			return clone;
 		}
 		#endregion
 
-		#region IKey Members
-		#region Methods.
-		#endregion
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="KeyColor"/> class.
+		/// </summary>
+		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
+		/// <param name="value">Color value for the key.</param>
+		public KeyColor(float time, Color value)
+			: base(time)
+		{
+			_value = value;
+		}
 		#endregion
 	}
 }

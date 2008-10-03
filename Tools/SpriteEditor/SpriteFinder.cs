@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Saturday, June 23, 2007 12:40:44 PM
 // 
@@ -25,10 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -217,7 +218,7 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			catch (Exception ex)
 			{
-				throw new CannotCreateException("Cannot create the GDI+ image for extraction.", ex);
+				GorgonException.Repackage(GorgonErrors.CannotCreate, "Cannot create the GDI+ image for extraction.", ex);
 			}
 		}
 
@@ -314,10 +315,6 @@ namespace GorgonLibrary.Graphics.Tools
 					}
 				}				
 			}
-			catch
-			{
-				throw;
-			}
 			finally
 			{
 				if ((bmpData != null) && (_image != null))
@@ -349,34 +346,27 @@ namespace GorgonLibrary.Graphics.Tools
 			if ((constraint.Height == 0) || (constraint.Bottom > _image.Height))
 				constraint.Height = _image.Height - constraint.Top;
 
-			try
-			{
-				rectangles = new List<System.Drawing.RectangleF>();
+			rectangles = new List<System.Drawing.RectangleF>();
 
-				// Create the rectangle list.
-				if (!_topToBottom)
-				{
-					for (int x = constraint.Left; x < constraint.Right; x += ((int)_gridCellSpacing.X) + ((int)_gridCell.X))
-					{
-						for (int y = constraint.Top; y < constraint.Bottom; y += ((int)_gridCellSpacing.Y) + ((int)_gridCell.Y))
-							rectangles.Add(new Drawing.RectangleF(x, y, _gridCell.X, _gridCell.Y));
-					}
-				}
-				else
+			// Create the rectangle list.
+			if (!_topToBottom)
+			{
+				for (int x = constraint.Left; x < constraint.Right; x += ((int)_gridCellSpacing.X) + ((int)_gridCell.X))
 				{
 					for (int y = constraint.Top; y < constraint.Bottom; y += ((int)_gridCellSpacing.Y) + ((int)_gridCell.Y))
-					{
-						for (int x = constraint.Left; x < constraint.Right; x += ((int)_gridCellSpacing.X) + ((int)_gridCell.X))						
-							rectangles.Add(new Drawing.RectangleF(x, y, _gridCell.X, _gridCell.Y));
-					}
+						rectangles.Add(new Drawing.RectangleF(x, y, _gridCell.X, _gridCell.Y));
 				}
-
-				return rectangles.ToArray();
 			}
-			catch
+			else
 			{
-				throw;
+				for (int y = constraint.Top; y < constraint.Bottom; y += ((int)_gridCellSpacing.Y) + ((int)_gridCell.Y))
+				{
+					for (int x = constraint.Left; x < constraint.Right; x += ((int)_gridCellSpacing.X) + ((int)_gridCell.X))						
+						rectangles.Add(new Drawing.RectangleF(x, y, _gridCell.X, _gridCell.Y));
+				}
 			}
+
+			return rectangles.ToArray();
 		}
 
 		/// <summary>
@@ -422,12 +412,7 @@ namespace GorgonLibrary.Graphics.Tools
 
 							// This is SOOO inefficient, but it'll guarantee we don't get overlap.
 							// Don't do anything if this point already exists within a rectangle.
-							foreach (Drawing.RectangleF baseRectangle in rectangles)
-							{
-								if (baseRectangle.Contains(new Drawing.PointF(x, y)))
-									add = false;
-							}
-
+							add = (rectangles.Where((baseRectangle) => baseRectangle.Contains(new Drawing.PointF(x, y)))).Count() > 0;
 							if ((add) && (!ColorIsMask(scanPtr, x, y, imageDims)))
 							{
 								rectangle = GetSpriteRectangle(scanPtr, x, y, imageDims);								
@@ -443,10 +428,6 @@ namespace GorgonLibrary.Graphics.Tools
 				}
 
 				return rectangles.ToArray();
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{

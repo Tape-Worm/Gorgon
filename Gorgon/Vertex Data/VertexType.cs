@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2005 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Tuesday, July 19, 2005 10:51:34 PM
 // 
@@ -24,7 +27,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SharpUtilities.Collections;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Graphics;
 
@@ -202,7 +204,7 @@ namespace GorgonLibrary.Internal
 		public void UpdateField(short stream,int fieldIndex,short fieldOffset, VertexFieldContext context, VertexFieldType fieldType, byte index)
 		{
 			if ((fieldIndex < 0) || (fieldIndex >= _fields.Count))
-				throw new IndexOutOfBoundsException(index);
+                throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
 
 			_fields[fieldIndex] = new VertexField(stream,fieldOffset, context, fieldType, index);
 
@@ -451,7 +453,7 @@ namespace GorgonLibrary.Internal
 						return field;
 				}
 
-				throw new IndexOutOfBoundsException(index);
+				throw new IndexOutOfRangeException("The index " + index.ToString() + " is not valid for this collection.");
 			}
 		}
 
@@ -471,7 +473,7 @@ namespace GorgonLibrary.Internal
 						return field;
 				}
 
-				throw new VertexFieldContextInvalidException();
+				throw new ArgumentException("There is no vertex field context '" + context.ToString() + "' in this vertex type.", "context");
 			}
 		}
 		#endregion
