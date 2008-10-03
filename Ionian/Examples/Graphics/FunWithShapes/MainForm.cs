@@ -1,6 +1,6 @@
 #region MIT.
 // 
-// Gorgon.
+// Examples.
 // Copyright (C) 2008 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, June 24, 2007 5:05:32 PM
+// Created: Thursday, October 02, 2008 10:46:02 PM
 // 
 #endregion
 

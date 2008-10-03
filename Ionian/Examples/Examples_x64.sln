@@ -42,6 +42,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D3D_x64", "PlugIns\D3D\D3D_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renderer_x64", "PlugIns\D3D\Renderer\Renderer_x64.csproj", "{1FA47F6B-EFD7-4571-82B9-F559605CE34A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimatedDebate_x64", "Framework\AnimatedDebate\AnimatedDebate_x64.csproj", "{2F771859-7FBA-46DE-B372-A1B0BE32C153}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GooeyGUI_x64", "Framework\GooeyGUI\GooeyGUI_x64.csproj", "{51DFE41D-4319-4360-BF8E-84AD0A47D562}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThatDoesntMesh_x64", "Framework\ThatDoesntMesh\ThatDoesntMesh_x64.csproj", "{21D09713-434A-4307-887A-F60D942584D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,6 +138,18 @@ Global
 		{1FA47F6B-EFD7-4571-82B9-F559605CE34A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FA47F6B-EFD7-4571-82B9-F559605CE34A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FA47F6B-EFD7-4571-82B9-F559605CE34A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F771859-7FBA-46DE-B372-A1B0BE32C153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51DFE41D-4319-4360-BF8E-84AD0A47D562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21D09713-434A-4307-887A-F60D942584D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21D09713-434A-4307-887A-F60D942584D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21D09713-434A-4307-887A-F60D942584D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21D09713-434A-4307-887A-F60D942584D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

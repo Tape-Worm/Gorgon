@@ -1,10 +1,10 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2F771859-7FBA-46de-B372-A1B0BE32C153}</ProjectGuid>
+    <ProjectGuid>{2F771859-7FBA-46DE-B372-A1B0BE32C153}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GorgonLibrary.Example</RootNamespace>
@@ -52,11 +52,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon, Version=1.1.3101.31060, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="Gorgon, Version=1.1.3193.22278, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Gorgon\bin64\Release\Gorgon.dll</HintPath>
     </Reference>
-    <Reference Include="GorgonFramework, Version=1.0.3101.31061, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="GorgonFramework, Version=1.0.3193.22279, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\GorgonFramework\bin64\Release\GorgonFramework.dll</HintPath>
     </Reference>
@@ -84,8 +84,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GorgonSettings.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="AnimatedDebate.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="GorIcon.ico" />
   </ItemGroup>

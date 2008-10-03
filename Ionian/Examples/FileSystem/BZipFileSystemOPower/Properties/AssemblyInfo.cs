@@ -20,10 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, October 18, 2006 1:09:35 AM
+// Created: TOBEREPLACED
 // 
 #endregion
-
 
 using System;
 using System.Reflection;
