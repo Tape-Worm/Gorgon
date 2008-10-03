@@ -39,16 +39,20 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.tipButtons = new System.Windows.Forms.ToolTip(this.components);
+			this.buttonBGColor = new System.Windows.Forms.Button();
 			this.dialogEditorPath = new System.Windows.Forms.OpenFileDialog();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.pictureColor = new System.Windows.Forms.PictureBox();
-			this.label3 = new System.Windows.Forms.Label();
-			this.buttonBGColor = new System.Windows.Forms.Button();
 			this.checkShowLogo = new System.Windows.Forms.CheckBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.pictureColor = new System.Windows.Forms.PictureBox();
 			this.dialogColor = new System.Windows.Forms.ColorDialog();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.checkShowBoundingBox = new System.Windows.Forms.CheckBox();
+			this.checkShowBoundingCircle = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureColor)).BeginInit();
+			this.groupBox3.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox1
@@ -118,7 +122,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.buttonOK.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.check;
-			this.buttonOK.Location = new System.Drawing.Point(214, 206);
+			this.buttonOK.Location = new System.Drawing.Point(214, 287);
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(26, 23);
 			this.buttonOK.TabIndex = 2;
@@ -130,11 +134,22 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonCancel.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.delete;
-			this.buttonCancel.Location = new System.Drawing.Point(246, 206);
+			this.buttonCancel.Location = new System.Drawing.Point(246, 287);
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(26, 23);
 			this.buttonCancel.TabIndex = 3;
 			this.buttonCancel.UseVisualStyleBackColor = true;
+			// 
+			// buttonBGColor
+			// 
+			this.buttonBGColor.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.Color;
+			this.buttonBGColor.Location = new System.Drawing.Point(227, 16);
+			this.buttonBGColor.Name = "buttonBGColor";
+			this.buttonBGColor.Size = new System.Drawing.Size(26, 23);
+			this.buttonBGColor.TabIndex = 0;
+			this.tipButtons.SetToolTip(this.buttonBGColor, "Select the background color.");
+			this.buttonBGColor.UseVisualStyleBackColor = true;
+			this.buttonBGColor.Click += new System.EventHandler(this.buttonBGColor_Click);
 			// 
 			// dialogEditorPath
 			// 
@@ -155,6 +170,25 @@ namespace GorgonLibrary.Graphics.Tools
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Background";
 			// 
+			// checkShowLogo
+			// 
+			this.checkShowLogo.AutoSize = true;
+			this.checkShowLogo.Location = new System.Drawing.Point(10, 42);
+			this.checkShowLogo.Name = "checkShowLogo";
+			this.checkShowLogo.Size = new System.Drawing.Size(153, 17);
+			this.checkShowLogo.TabIndex = 1;
+			this.checkShowLogo.Text = "Show logo in sprite display.";
+			this.checkShowLogo.UseVisualStyleBackColor = true;
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(7, 21);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(34, 13);
+			this.label3.TabIndex = 1;
+			this.label3.Text = "Color:";
+			// 
 			// pictureColor
 			// 
 			this.pictureColor.BackColor = System.Drawing.Color.White;
@@ -166,46 +200,48 @@ namespace GorgonLibrary.Graphics.Tools
 			this.pictureColor.TabIndex = 0;
 			this.pictureColor.TabStop = false;
 			// 
-			// label3
-			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(7, 21);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(34, 13);
-			this.label3.TabIndex = 1;
-			this.label3.Text = "Color:";
-			// 
-			// buttonBGColor
-			// 
-			this.buttonBGColor.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.Color;
-			this.buttonBGColor.Location = new System.Drawing.Point(227, 16);
-			this.buttonBGColor.Name = "buttonBGColor";
-			this.buttonBGColor.Size = new System.Drawing.Size(26, 23);
-			this.buttonBGColor.TabIndex = 0;
-			this.tipButtons.SetToolTip(this.buttonBGColor, "Select the background color.");
-			this.buttonBGColor.UseVisualStyleBackColor = true;
-			this.buttonBGColor.Click += new System.EventHandler(this.buttonBGColor_Click);
-			// 
-			// checkShowLogo
-			// 
-			this.checkShowLogo.AutoSize = true;
-			this.checkShowLogo.Location = new System.Drawing.Point(10, 42);
-			this.checkShowLogo.Name = "checkShowLogo";
-			this.checkShowLogo.Size = new System.Drawing.Size(153, 17);
-			this.checkShowLogo.TabIndex = 1;
-			this.checkShowLogo.Text = "Show logo in sprite display.";
-			this.checkShowLogo.UseVisualStyleBackColor = true;
-			// 
 			// dialogColor
 			// 
 			this.dialogColor.AnyColor = true;
 			this.dialogColor.FullOpen = true;
 			// 
+			// groupBox3
+			// 
+			this.groupBox3.Controls.Add(this.checkShowBoundingCircle);
+			this.groupBox3.Controls.Add(this.checkShowBoundingBox);
+			this.groupBox3.Location = new System.Drawing.Point(12, 206);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Size = new System.Drawing.Size(260, 73);
+			this.groupBox3.TabIndex = 4;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "Bounding Areas";
+			// 
+			// checkShowBoundingBox
+			// 
+			this.checkShowBoundingBox.AutoSize = true;
+			this.checkShowBoundingBox.Location = new System.Drawing.Point(10, 19);
+			this.checkShowBoundingBox.Name = "checkShowBoundingBox";
+			this.checkShowBoundingBox.Size = new System.Drawing.Size(171, 17);
+			this.checkShowBoundingBox.TabIndex = 1;
+			this.checkShowBoundingBox.Text = "Show bounding box for sprites.";
+			this.checkShowBoundingBox.UseVisualStyleBackColor = true;
+			// 
+			// checkShowBoundingCircle
+			// 
+			this.checkShowBoundingCircle.AutoSize = true;
+			this.checkShowBoundingCircle.Location = new System.Drawing.Point(10, 42);
+			this.checkShowBoundingCircle.Name = "checkShowBoundingCircle";
+			this.checkShowBoundingCircle.Size = new System.Drawing.Size(179, 17);
+			this.checkShowBoundingCircle.TabIndex = 2;
+			this.checkShowBoundingCircle.Text = "Show bounding circle for sprites.";
+			this.checkShowBoundingCircle.UseVisualStyleBackColor = true;
+			// 
 			// formPreferences
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(284, 241);
+			this.ClientSize = new System.Drawing.Size(284, 322);
+			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.buttonOK);
@@ -224,6 +260,8 @@ namespace GorgonLibrary.Graphics.Tools
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureColor)).EndInit();
+			this.groupBox3.ResumeLayout(false);
+			this.groupBox3.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -246,5 +284,8 @@ namespace GorgonLibrary.Graphics.Tools
 		private System.Windows.Forms.CheckBox checkShowLogo;
 		private System.Windows.Forms.Button buttonBGColor;
 		private System.Windows.Forms.ColorDialog dialogColor;
+		private System.Windows.Forms.GroupBox groupBox3;
+		private System.Windows.Forms.CheckBox checkShowBoundingBox;
+		private System.Windows.Forms.CheckBox checkShowBoundingCircle;
 	}
 }

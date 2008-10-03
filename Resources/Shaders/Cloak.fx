@@ -29,17 +29,23 @@ sampler spriteSampler = sampler_state
 };
 
 /* data from application vertex buffer */
-struct VTX_OUTPUT
+struct PXL_INPUT
 {
-	float4 position : POSITION;	
 	float2 texCoords : TEXCOORD0;
 	float4 diffuse : COLOR;
-  float4 color : COLOR0;
+};
+
+/* Vertex data */
+struct VTX
+{
+	float4 position : POSITION;
+	float2 uv : TEXCOORD0;
+	float4 diffuse : COLOR;
 };
 
 /********* pixel shader ********/
 
-float4 simplePS(VTX_OUTPUT IN) : COLOR {
+float4 simplePS(PXL_INPUT IN) : COLOR {
   float2 scaler = spriteDimensions/backbufferSize;
   float2 backPos = float2(0,0);
   float4 spriteColor;
@@ -79,6 +85,7 @@ technique main
 {
 	pass p0    
 	{
+		VertexShader = null;
 		PixelShader = compile ps_2_0 simplePS();
 	}
 }

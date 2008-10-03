@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Monday, November 12, 2007 2:17:33 PM
 // 
@@ -28,8 +31,8 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SharpUtilities;
-using SharpUtilities.Utility;
+using System.Linq;
+using Dialogs;
 
 namespace GorgonLibrary.Graphics.Tools
 {
@@ -41,7 +44,7 @@ namespace GorgonLibrary.Graphics.Tools
 		#region Variables.
 		private System.Windows.Forms.ImageList _images = null;					// Image list.		
 		private SpriteDocumentList _spriteList = null;							// Sprite list.
-		private TrackFrame _currentTrack = null;								// Current track.
+		private Track _currentTrack = null;										// Current track.
 		private float _animLength = 0.0f;										// Animation length.
 		private Sprite _owner = null;											// Sprite that owns this animation.
 		#endregion
@@ -80,7 +83,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Property to set or return the current track.
 		/// </summary>
-		public TrackFrame CurrentTrack
+		public Track CurrentTrack
 		{
 			get
 			{
@@ -142,59 +145,6 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Methods.
 		/// <summary>
-		/// Function to validate the interface.
-		/// </summary>
-		private void ValidateForm()
-		{
-			buttonOK.Enabled = false;
-			foreach (ListViewItem item in listSprites.Items)
-			{
-				if (item.Checked)
-					buttonOK.Enabled = true;
-			}
-		}
-
-		/// <summary>
-		/// Function to refresh the list.
-		/// </summary>
-		public void RefreshList()
-		{
-			ListViewItem item = null;		// List view item.
-
-			listSprites.BeginUpdate();
-			listSprites.Items.Clear();
-
-			// Add images.
-			foreach (SpriteDocument image in _spriteList)
-			{
-				if (_owner.Name != image.Sprite.Name)
-				{
-					item = new ListViewItem(image.Name);
-					item.SubItems.Add(image.Sprite.Width.ToString("0.0") + "x" + image.Sprite.Height.ToString("0.0"));
-					item.Name = image.Name;
-					item.Checked = true;
-					listSprites.Items.Add(item);
-				}
-			}
-						
-			listSprites.EndUpdate();
-			listSprites.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
-			ValidateForm();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="formListAll"/> class.
-		/// </summary>
-		public formListAll()
-		{
-			InitializeComponent();
-		}
-		#endregion
-
-		/// <summary>
 		/// Handles the SelectedIndexChanged event of the listSprites control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -230,16 +180,15 @@ namespace GorgonLibrary.Graphics.Tools
 			int frameCount = 0;						// Number of frames.
 			float interval = 0.0f;					// Time interval.
 
-			Cursor.Current = Cursors.WaitCursor;			
+			Cursor.Current = Cursors.WaitCursor;
 
 			try
 			{
 				_currentTrack.ClearKeys();
-				foreach (ListViewItem item in listSprites.Items)
-				{
-					if (item.Checked)
-						frameCount++;
-				}
+				var items = from ListViewItem listItems in listSprites.Items
+							where listItems.Checked
+							select listItems;
+				frameCount = items.Count();
 
 				interval = (float)numericDelay.Value;
 				if (frameCount != listSprites.Items.Count)
@@ -247,18 +196,20 @@ namespace GorgonLibrary.Graphics.Tools
 					if (UI.ConfirmBox("The selected frame count differs from the total frame count.  This will cause a delay at the end of the animation.\nWould you like to recalculate the interval?") == ConfirmationResult.Yes)
 						interval = _animLength / (float)frameCount;
 				}
-					
+
 
 				// Go through each item and add a key.
-				foreach (ListViewItem item in listSprites.Items)
+				foreach (ListViewItem item in items)
 				{
-					if (item.Checked)
-					{
-						sprite = _spriteList[item.Name];
-						_currentTrack.CreateKey(startTime, new Frame(sprite.Sprite.Image, sprite.Sprite.ImageOffset, sprite.Sprite.Size));						
-						startTime += interval;
-					}
-				}
+					KeyImage key = null;			// Image key.
+
+					sprite = _spriteList[item.Name];
+					key = new KeyImage(startTime, sprite.Sprite.Image);
+					key.ImageOffset = sprite.ImageLocation;
+					key.ImageSize = sprite.Size;
+					_currentTrack.AddKey(key);
+					startTime += interval;
+				}				
 			}
 			catch (Exception ex)
 			{
@@ -269,5 +220,63 @@ namespace GorgonLibrary.Graphics.Tools
 				Cursor.Current = Cursors.Default;
 			}
 		}
+
+		/// <summary>
+		/// Function to validate the interface.
+		/// </summary>
+		private void ValidateForm()
+		{
+			buttonOK.Enabled = (from ListViewItem listItems in listSprites.Items
+							   where listItems != null && listItems.Checked
+							   select listItems).Count() > 0;
+		}
+
+		/// <summary>
+		/// Handles the ItemChecked event of the listSprites control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.ItemCheckedEventArgs"/> instance containing the event data.</param>
+		private void listSprites_ItemChecked(object sender, ItemCheckedEventArgs e)
+		{
+			ValidateForm();
+		}
+	
+		/// <summary>
+		/// Function to refresh the list.
+		/// </summary>
+		public void RefreshList()
+		{
+			ListViewItem item = null;		// List view item.
+
+			listSprites.BeginUpdate();
+			listSprites.Items.Clear();
+
+			// Add images.
+			var sprites = _spriteList.Where((sprite) => _owner.Name != sprite.Sprite.Name);
+			foreach (SpriteDocument image in sprites)
+			{
+				item = new ListViewItem(image.Name);
+				item.SubItems.Add(image.Sprite.Width.ToString("0.0") + "x" + image.Sprite.Height.ToString("0.0"));
+				item.Name = image.Name;
+				item.Checked = true;
+				listSprites.Items.Add(item);
+			}
+						
+			listSprites.EndUpdate();
+			listSprites.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+			ValidateForm();
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="formListAll"/> class.
+		/// </summary>
+		public formListAll()
+		{
+			InitializeComponent();
+		}
+		#endregion		
 	}
 }

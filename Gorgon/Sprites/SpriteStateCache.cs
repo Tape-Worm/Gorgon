@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Saturday, January 06, 2007 1:07:50 PM
 // 
@@ -48,6 +51,9 @@ namespace GorgonLibrary.Graphics
 		private StencilOperations _globalStencilFailOperation;						// Stencil fail operation.
 		private StencilOperations _globalStencilZFailOperation;						// Stencil Z fail operation.
 		private CompareFunctions _globalStencilCompare;								// Stencil compare operation.
+		private bool _globalDepthWriteEnabled;										// Depth buffer writing enabled.
+		private float _globalDepthBias;												// Depth buffer bias.
+		private CompareFunctions _globalDepthTestFunction;							// Depth buffer testing function.
 		private int _globalStencilReference;										// Stencil reference value.
 		private int _globalStencilMask;												// Stencil mask value.
 		private bool _globalUseStencil;												// Flag to indicate whether to use the stencil or not.
@@ -58,6 +64,28 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return whether the depth buffer (if applicable) is enabled or not.
+		/// </summary>
+		/// <remarks>If the current render target does not have a depth buffer attached (i.e. <see cref="GorgonLibrary.Graphics.RenderTarget.UseDepthBuffer">RenderTarget.Graphics.RenderTarget</see>=false) then this property will always return FALSE.</remarks>
+		public bool DepthBufferEnabled
+		{
+			get
+			{
+				if ((Gorgon.CurrentRenderTarget == null) || (!Gorgon.CurrentRenderTarget.UseDepthBuffer))
+					return false;
+
+				return Gorgon.Renderer.RenderStates.DepthBufferEnabled;
+			}
+			set
+			{
+				if ((Gorgon.CurrentRenderTarget == null) || (!Gorgon.CurrentRenderTarget.UseDepthBuffer))
+					return;
+
+				Gorgon.Renderer.RenderStates.DepthBufferEnabled = true;
+			}
+		}
+		
 		/// <summary>
 		/// Property to set or return the maximum number of sprites per batch.
 		/// </summary>
@@ -120,6 +148,51 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				_globalSourceBlend = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the depth buffer writing (if applicable) is enabled or not.
+		/// </summary>
+		public bool GlobalDepthWriteEnabled
+		{
+			get
+			{
+				return _globalDepthWriteEnabled;
+			}
+			set
+			{
+				_globalDepthWriteEnabled = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the depth buffer bias (if applicable).
+		/// </summary>
+		public float GlobalDepthBufferBias
+		{
+			get
+			{
+				return _globalDepthBias;
+			}
+			set
+			{
+				_globalDepthBias = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the depth buffer test function (if applicable) is enabled or not.
+		/// </summary>
+		public CompareFunctions GlobalDepthBufferTestFunction
+		{
+			get
+			{
+				return _globalDepthTestFunction;
+			}
+			set
+			{
+				_globalDepthTestFunction = value;
 			}
 		}
 
@@ -363,7 +436,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to set specific render states per sprite.
 		/// </summary>
 		/// <param name="renderObject">Cache to retrieve states from.</param>
-		protected internal virtual void SetStates(ICommonRenderable renderObject)
+		protected internal virtual void SetStates(IRenderableStates renderObject)
 		{
 			// Set the wrapping mode.
 			_imageStates.HorizontalAddressing = renderObject.HorizontalWrapMode;
@@ -409,6 +482,8 @@ namespace GorgonLibrary.Graphics
 				_imageStates.AlphaOperationArgument2 = ImageOperationArguments.Texture;
 			}
 
+			_imageStates.BorderColor = renderObject.BorderColor;
+
 			// Set smoothing operation.
 			switch (renderObject.Smoothing)
 			{
@@ -431,7 +506,7 @@ namespace GorgonLibrary.Graphics
 			}
 			_lastSmooth = renderObject.Smoothing;
 
-			// Set stencil _renderStates.
+			// Set stencil render states.
 			_renderStates.StencilEnable = renderObject.StencilEnabled;
 			_renderStates.StencilCompare = renderObject.StencilCompare;
 			_renderStates.StencilFailOperation = renderObject.StencilFailOperation;
@@ -440,8 +515,10 @@ namespace GorgonLibrary.Graphics
 			_renderStates.StencilZFailOperation = renderObject.StencilZFailOperation;
 			_renderStates.StencilReference = renderObject.StencilReference;
 
-			// Set the currently active shader.
-			Gorgon.Renderer.CurrentShader = renderObject.Shader;
+			// Set depth render states.
+			_renderStates.DepthBias = renderObject.DepthBufferBias;
+			_renderStates.DepthBufferWriteEnabled = renderObject.DepthWriteEnabled;
+			_renderStates.DepthTestFunction = renderObject.DepthTestFunction;
 
 			// Set dithering flag.
 			_renderStates.DitheringEnabled = _dither;
@@ -455,9 +532,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="renderObject">Cache to retrieve states from.</param>
 		/// <param name="image">Image used by the renderable.</param>
 		/// <returns>TRUE if the state has changed, FALSE if not.</returns>
-		protected internal virtual bool StateChanged(ICommonRenderable renderObject, Image image)
+		protected internal virtual bool StateChanged(IRenderableStates renderObject, Image image)
 		{
-			bool result = false;			// Result.
 			RenderStates states;			// Render states.
 			ImageLayerStates _imageStates;	// Image layer states.
 
@@ -465,69 +541,75 @@ namespace GorgonLibrary.Graphics
 			_imageStates = Gorgon.Renderer.ImageLayerStates[0];
 
 			if (image != Gorgon.Renderer.GetImage(0))
-				result = true;
+				return true;
+
+			if (renderObject.BorderColor != _imageStates.BorderColor)
+				return true;
 
 			if (((renderObject.BlendingMode & BlendingModes.ColorAdditive) == BlendingModes.ColorAdditive) && (_imageStates.ColorOperation != ImageOperations.Additive))
-				result = true;
+				return true;
 
 			if (((renderObject.BlendingMode & BlendingModes.ColorAdditive) != BlendingModes.ColorAdditive) && (_imageStates.ColorOperation == ImageOperations.Additive))
-				result = true;
+				return true;
 
 			if (renderObject.StencilCompare != states.StencilCompare)
-				result = true;
+				return true;
 
 			if (renderObject.StencilEnabled != states.StencilEnable)
-				result = true;
+				return true;
 
 			if (renderObject.StencilPassOperation != states.StencilPassOperation)
-				result = true;
+				return true;
 
 			if (renderObject.StencilFailOperation != states.StencilFailOperation)
-				result = true;
+				return true;
 
 			if (renderObject.StencilZFailOperation != states.StencilZFailOperation)
-				result = true;
+				return true;
 
 			if (renderObject.StencilReference != states.StencilReference)
-				result = true;
+				return true;
 
 			if (renderObject.StencilMask != states.StencilMask)
-				result = true;
+				return true;
 
 			if (renderObject.SourceBlend != states.SourceAlphaBlendOperation)
-				result = true;
+				return true;
 
 			if (renderObject.DestinationBlend != states.DestinationAlphaBlendOperation)
-				result = true;
+				return true;
 
 			if (renderObject.HorizontalWrapMode != _imageStates.HorizontalAddressing)
-				result = true;
+				return true;
 
 			if (renderObject.VerticalWrapMode != _imageStates.VerticalAddressing)
-				result = true;
+				return true;
 
 			if (renderObject.AlphaMaskFunction != states.AlphaTestFunction)
-				result = true;
+				return true;
 
 			if (renderObject.AlphaMaskValue != states.AlphaTestValue)
-				result = true;
+				return true;
 
 			if (renderObject.Smoothing != _lastSmooth)
-				result = true;
+				return true;
+
+			if (renderObject.DepthTestFunction != states.DepthTestFunction)
+				return true;
+
+			if (renderObject.DepthWriteEnabled != states.DepthBufferWriteEnabled)
+				return true;
+
+			if (renderObject.DepthBufferBias != states.DepthBias)
+				return true;
 
 			if (Geometry.PrimitiveStyle != renderObject.PrimitiveStyle)
-				result = true;
+				return true;
 
 			if (Geometry.UseIndices != renderObject.UseIndices)
-				result = true;
+				return true;
 
-			if (renderObject.Shader != Gorgon.Renderer.CurrentShader)
-				result = true;
-
-			if ((renderObject.Shader != null) && (Gorgon.Renderer.CurrentTechnique != renderObject.Shader.ActiveTechnique))
-				result = true;
-
-			return result;
+			return false;
 		}
 		#endregion
 
@@ -554,6 +636,9 @@ namespace GorgonLibrary.Graphics
 			_globalStencilFailOperation = StencilOperations.Keep;
 			_globalStencilZFailOperation = StencilOperations.Keep;
 			_globalStencilMask = -1;
+			_globalDepthBias = 0.0f;
+			_globalDepthTestFunction = CompareFunctions.LessThanOrEqual;
+			_globalDepthWriteEnabled = true;
 			_renderStates = Gorgon.Renderer.RenderStates;
 			_imageStates = Gorgon.Renderer.ImageLayerStates[0];
 

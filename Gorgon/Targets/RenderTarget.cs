@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2005 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Tuesday, August 02, 2005 11:53:31 AM
 // 
@@ -24,9 +27,6 @@
 using System;
 using System.Windows.Forms;
 using Drawing = System.Drawing;
-using SharpUtilities;
-using SharpUtilities.Utility;
-using SharpUtilities.Mathematics;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
 
@@ -41,7 +41,7 @@ namespace GorgonLibrary.Graphics
 	/// This is accomplished through the use of render targets.  
 	/// </remarks>
 	public abstract class RenderTarget 
-		: NamedObject, IDisposable, IDeviceStateObject, ICommonRenderable
+		: NamedObject, IDisposable, IDeviceStateObject, IRenderableStates
 	{
 		#region Variables.
 		private bool _inheritClearTargets;					// Flag to indicate that we will inherit the clear targets from Gorgon.
@@ -64,10 +64,10 @@ namespace GorgonLibrary.Graphics
 		private StencilOperations _stencilFailOperation;	// Stencil fail operation.
 		private StencilOperations _stencilZFailOperation;	// Stencil Z fail operation.
 		private CompareFunctions _stencilCompare;			// Stencil compare operation.
+		private float _primitiveDepth = 0.0f;				// Depth of the primitive.
 		private int _stencilReference;						// Stencil reference value.
 		private int _stencilMask;							// Stencil mask value.
 		private bool _useStencil;							// Flag to indicate whether to use the stencil or not.
-		private Shader _shader = null;						// Shader to apply to drawing and the blitter.
 		private int _width;									// Width of render target.
 		private int _height;								// Height of render target.
 		private bool _useDepthBuffer;						// Flag to indicate that we want to use a depth buffer.
@@ -78,6 +78,9 @@ namespace GorgonLibrary.Graphics
 		private D3D9.Surface _colorBuffer;					// Color buffer from the render target.
 		private D3D9.Surface _depthBuffer;					// Depth buffer to use.
 		private D3D9.Surface _convertBuffer;				// Conversion buffer.
+		private float _depthBias;							// Depth bias.
+		private bool _depthWriteEnabled;					// Depth writing enabled flag.
+		private CompareFunctions _depthCompare;				// Depth test comparison function.
 		#endregion
 
 		#region Properties.
@@ -101,6 +104,15 @@ namespace GorgonLibrary.Graphics
 			{
 				return _colorBuffer;
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return the color of the border when the wrapping mode is set to Border.
+		/// </summary>
+		public Drawing.Color BorderColor
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -269,6 +281,25 @@ namespace GorgonLibrary.Graphics
 				_backColor = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the depth value for primitives being drawn.
+		/// </summary>
+		public float PrimitiveDepth
+		{
+			get
+			{
+				return _primitiveDepth;
+			}
+			set
+			{
+				if (value < 0.0f)
+					value = 0.0f;
+				if (value > 1.0f)
+					value = 1.0f;
+				_primitiveDepth = value;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -320,9 +351,9 @@ namespace GorgonLibrary.Graphics
 				if (image == null)
 					throw new ArgumentNullException("image");
 				if ((image.ImageType != ImageType.Dynamic) && (image.ImageType != ImageType.RenderTarget))
-					throw new RenderTargetCannotConvertException(Name, "The destination image is not a dynamic image or a render target.");
+					throw new GorgonException(GorgonErrors.CannotUpdate, "The destination image is not a dynamic image or a render target.");
 				if (image.Format != targetFormat)
-					throw new RenderTargetCannotConvertException(Name, "The destination image format does not match that of the render target.");
+					throw new GorgonException(GorgonErrors.CannotUpdate, "The destination image format does not match that of the render target.");
 
 				// Flush the render buffer.
 				if (Gorgon.IsRunning)
@@ -349,10 +380,6 @@ namespace GorgonLibrary.Graphics
 
 				// Send the render target data to the surface.
 				Gorgon.Screen.Device.UpdateSurface(_convertBuffer, sourceRect, imageSurface, Drawing.Point.Empty);
-			}
-			catch
-			{
-				throw;
 			}
 			finally
 			{
@@ -503,7 +530,7 @@ namespace GorgonLibrary.Graphics
 				// Build end points.
 				pointVertex[0].Position.X = (int)x;
 				pointVertex[0].Position.Y = (int)y;
-				pointVertex[0].Position.Z = -0.5f;
+				pointVertex[0].Position.Z = -PrimitiveDepth;
                 pointVertex[0].Color = color.ToArgb();
 
 				if (_drawingPattern == null)
@@ -707,35 +734,35 @@ namespace GorgonLibrary.Graphics
 			// Build end points.
 			rectVertex[0].Position.X = x;
 			rectVertex[0].Position.Y = y;
-			rectVertex[0].Position.Z = -0.5f;
+			rectVertex[0].Position.Z = -PrimitiveDepth;
 
 			rectVertex[1].Position.X = x + width - 1;
 			rectVertex[1].Position.Y = y;
-			rectVertex[1].Position.Z = -0.5f;
+			rectVertex[1].Position.Z = -PrimitiveDepth;
 
 			rectVertex[2].Position.X = x + width - 1;
 			rectVertex[2].Position.Y = y;
-			rectVertex[2].Position.Z = -0.5f;
+			rectVertex[2].Position.Z = -PrimitiveDepth;
 
 			rectVertex[3].Position.X = x + width - 1;
 			rectVertex[3].Position.Y = y + height - 1;
-			rectVertex[3].Position.Z = -0.5f;
+			rectVertex[3].Position.Z = -PrimitiveDepth;
 
 			rectVertex[4].Position.X = x + width - 1;
 			rectVertex[4].Position.Y = y + height - 1;
-			rectVertex[4].Position.Z = -0.5f;
+			rectVertex[4].Position.Z = -PrimitiveDepth;
 
 			rectVertex[5].Position.X = x;
 			rectVertex[5].Position.Y = y + height - 1;
-			rectVertex[5].Position.Z = -0.5f;
+			rectVertex[5].Position.Z = -PrimitiveDepth;
 
 			rectVertex[6].Position.X = x;
 			rectVertex[6].Position.Y = y + height - 1;
-			rectVertex[6].Position.Z = -0.5f;
+			rectVertex[6].Position.Z = -PrimitiveDepth;
 
 			rectVertex[7].Position.X = x;
 			rectVertex[7].Position.Y = y;
-			rectVertex[7].Position.Z = -0.5f;
+			rectVertex[7].Position.Z = -PrimitiveDepth;
 
 			rectVertex[0].Color = color.ToArgb();
 			rectVertex[1].Color = color.ToArgb();
@@ -821,16 +848,16 @@ namespace GorgonLibrary.Graphics
 			// Build end points.
 			lineVertex[0].Position.X = (int)x;
 			lineVertex[0].Position.Y = (int)y;
-			lineVertex[0].Position.Z = -0.5f;
+			lineVertex[0].Position.Z = -PrimitiveDepth;
 			lineVertex[1].Position.X = (int)(x + width);
 			lineVertex[1].Position.Y = (int)y;
-			lineVertex[1].Position.Z = -0.5f;
+			lineVertex[1].Position.Z = -PrimitiveDepth;
 			lineVertex[2].Position.X = (int)(x + width);
 			lineVertex[2].Position.Y = (int)(y + height);
-			lineVertex[2].Position.Z = -0.5f;
+			lineVertex[2].Position.Z = -PrimitiveDepth;
 			lineVertex[3].Position.X = (int)x;
 			lineVertex[3].Position.Y = (int)(y + height);
-			lineVertex[3].Position.Z = -0.5f;
+			lineVertex[3].Position.Z = -PrimitiveDepth;
 
 			lineVertex[0].Color = color.ToArgb();
 			lineVertex[1].Color = color.ToArgb();
@@ -896,10 +923,10 @@ namespace GorgonLibrary.Graphics
 				// Build end points.
 				lineVertex[0].Position.X = (int)x;
 				lineVertex[0].Position.Y = (int)y;
-				lineVertex[0].Position.Z = -0.5f;
+				lineVertex[0].Position.Z = -PrimitiveDepth;
 				lineVertex[1].Position.X = (int)(x + width);
 				lineVertex[1].Position.Y = (int)y;
-				lineVertex[1].Position.Z = -0.5f;
+				lineVertex[1].Position.Z = -PrimitiveDepth;
 				lineVertex[0].Color = color.ToArgb();
 				lineVertex[1].Color = color.ToArgb();
 
@@ -976,10 +1003,10 @@ namespace GorgonLibrary.Graphics
 				// Build end points.
 				lineVertex[0].Position.X = (int)x;
 				lineVertex[0].Position.Y = (int)y;
-				lineVertex[0].Position.Z = -0.5f;
+				lineVertex[0].Position.Z = -PrimitiveDepth;
 				lineVertex[1].Position.X = (int)x;
 				lineVertex[1].Position.Y = (int)(y + height);
-				lineVertex[1].Position.Z = -0.5f;
+				lineVertex[1].Position.Z = -PrimitiveDepth;
 				lineVertex[0].Color = color.ToArgb();
 				lineVertex[1].Color = color.ToArgb();
 
@@ -1614,10 +1641,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to render the scene for this target.
 		/// </summary>
-		public virtual void Update()
-		{
-			Gorgon.Renderer.Render();
-		}
+		public abstract void Update();
 
 		/// <summary>
 		/// Function to copy the render target into a render target image.
@@ -1645,7 +1669,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("name");
 
 			if (RenderTargetCache.Targets.Contains(name))
-				throw new RenderTargetAlreadyExistsException(name);
+				throw new ArgumentException("'" + name + "' already exists.");
 
 			_width = width;
 			_height = height;
@@ -1661,6 +1685,9 @@ namespace GorgonLibrary.Graphics
 			_wrapVMode = ImageAddressing.Clamp;
 			_sourceBlend = AlphaBlendOperation.One;
 			_destBlend = AlphaBlendOperation.Zero;
+			_depthBias = 0.0f;
+			_depthCompare = CompareFunctions.LessThanOrEqual;
+			_depthWriteEnabled = true;
 
 			// Create a default window.
 			_defaultView = new Viewport(0, 0, 1, 1);
@@ -1735,6 +1762,51 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region ICommonRenderable Members
+		/// <summary>
+		/// Property to set or return whether to enable the depth buffer (if applicable) writing or not.
+		/// </summary>
+		public virtual bool DepthWriteEnabled
+		{
+			get
+			{
+				return _depthWriteEnabled;
+			}
+			set
+			{
+				_depthWriteEnabled = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return (if applicable) the depth buffer bias.
+		/// </summary>
+		public virtual float DepthBufferBias
+		{
+			get
+			{
+				return _depthBias;
+			}
+			set
+			{
+				_depthBias = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth buffer (if applicable) testing comparison function.
+		/// </summary>
+		public virtual CompareFunctions DepthTestFunction
+		{
+			get
+			{
+				return _depthCompare;
+			}
+			set
+			{
+				_depthCompare = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the wrapping mode to use.
 		/// </summary>
@@ -1997,21 +2069,6 @@ namespace GorgonLibrary.Graphics
 				return _useIndices;
 			}		
 		}
-
-		/// <summary>
-		/// Property to set or return a shader effect for this object.
-		/// </summary>
-		public Shader Shader
-		{
-			get
-			{
-				return _shader;
-			}
-			set
-			{
-				_shader = value;
-			}
-		}
-        #endregion
+		#endregion
 	}
 }

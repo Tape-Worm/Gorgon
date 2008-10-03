@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2005 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Monday, July 11, 2005 2:24:06 PM
 // 
@@ -23,8 +26,6 @@
 
 using System;
 using System.Reflection;
-using SharpUtilities;
-using SharpUtilities.Utility;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
@@ -392,7 +393,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return (_caps.Caps2 & D3D9.Caps2.CanAutoGenMipMap) == D3D9.Caps2.CanAutoGenMipMap;
+				return (_caps.Caps2 & D3D9.Caps2.CanAutoGenerateMipMap) == D3D9.Caps2.CanAutoGenerateMipMap;
 			}
 		}
 
@@ -608,7 +609,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BothInvSourceAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.BothInvSourceAlpha)) == D3D9.BlendCaps.BothInvSourceAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BothInverseSourceAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.BothInverseSourceAlpha)) == D3D9.BlendCaps.BothInverseSourceAlpha;
 			}
 		}
 
@@ -641,7 +642,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvDestinationAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvDestinationAlpha)) == D3D9.BlendCaps.InvDestinationAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InverseDestinationAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InverseDestinationAlpha)) == D3D9.BlendCaps.InverseDestinationAlpha;
 			}
 		}
 
@@ -652,7 +653,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvDestinationColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvDestinationColor)) == D3D9.BlendCaps.InvDestinationColor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InverseDestinationColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InverseDestinationColor)) == D3D9.BlendCaps.InverseDestinationColor;
 			}
 		}
 
@@ -663,7 +664,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InvSourceColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InvSourceColor)) == D3D9.BlendCaps.InvSourceColor;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InverseSourceColor) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.InverseSourceColor)) == D3D9.BlendCaps.InverseSourceColor;
 			}
 		}
 
@@ -886,7 +887,7 @@ namespace GorgonLibrary
 			{
 				foreach (DepthBufferFormats depthFormat in depthFormats)
 				{
-					if (D3D9.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(format), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthFormat)))
+					if (Gorgon.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(format), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthFormat)))
 						return true;
 				}
 			}
@@ -905,10 +906,10 @@ namespace GorgonLibrary
 			D3D9.AdapterInformation adapterData;		// Adapter information.
 
 			// Get adapter information.
-			adapterData = D3D9.Direct3D.Adapters[_driverOrdinal];
+			adapterData = Gorgon.Direct3D.Adapters[_driverOrdinal];
 
 			// Get capabilities.
-			_caps = D3D9.Direct3D.GetDeviceCaps(_driverOrdinal, Driver.DeviceType);
+			_caps = Gorgon.Direct3D.GetDeviceCaps(_driverOrdinal, Driver.DeviceType);
 
 			// Get standard information.			
 			_deviceName = adapterData.Details.DeviceName.Trim();
@@ -934,7 +935,7 @@ namespace GorgonLibrary
 			}
 
 			// Log card information.			
-			if (D3D9.Direct3D.CheckWhql)
+			if (Gorgon.Direct3D.CheckWhql)
 				Gorgon.Log.Print("Driver", "WHQL Data enumerated.", LoggingLevel.Verbose);
 			else
 				Gorgon.Log.Print("Driver", "WHQL Data not enumerated.", LoggingLevel.Verbose);
@@ -949,7 +950,7 @@ namespace GorgonLibrary
 			Gorgon.Log.Print("Driver", "Sub-System ID: 0x{0}", LoggingLevel.Verbose, _subSystem.ToString("x").PadLeft(8, '0'));
 			Gorgon.Log.Print("Driver", "Revision: {0}", LoggingLevel.Verbose, _revision);
 
-			if (D3D9.Direct3D.CheckWhql)
+			if (Gorgon.Direct3D.CheckWhql)
 				Gorgon.Log.Print("Driver", "WHQL: {0}", LoggingLevel.Verbose, _WHQL);
 
 			PropertyInfo[] properties = null;		// Property list.
@@ -989,7 +990,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if this format can be used, FALSE if not.</returns>
 		public bool ValidImageFormat(ImageBufferFormats display, BackBufferFormats backbuffer, bool windowed)
 		{
-			return D3D9.Direct3D.CheckDeviceType(_driverOrdinal, Driver.DeviceType, Converter.Convert(display), Converter.Convert(backbuffer), windowed);
+			return Gorgon.Direct3D.CheckDeviceType(_driverOrdinal, Driver.DeviceType, Converter.Convert(display), Converter.Convert(backbuffer), windowed);
 		}
 
 		/// <summary>
@@ -1001,7 +1002,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if this format can be used, FALSE if not.</returns>
 		public bool ValidBackBufferFormat(BackBufferFormats display, BackBufferFormats backbuffer, bool windowed)
 		{
-			return D3D9.Direct3D.CheckDeviceType(_driverOrdinal, Driver.DeviceType, Converter.Convert(display), Converter.Convert(backbuffer), windowed);
+			return Gorgon.Direct3D.CheckDeviceType(_driverOrdinal, Driver.DeviceType, Converter.Convert(display), Converter.Convert(backbuffer), windowed);
 		}
 
 		/// <summary>
@@ -1023,7 +1024,7 @@ namespace GorgonLibrary
 
 			bufferFormat = Gorgon.CurrentVideoMode.Format;
 
-			return D3D9.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(bufferFormat), usage, D3D9.ResourceType.Texture, Converter.Convert(format));
+			return Gorgon.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(bufferFormat), usage, D3D9.ResourceType.Texture, Converter.Convert(format));
 		}
 
 		/// <summary>
@@ -1033,7 +1034,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if supported, FALSE if not.</returns>
 		public bool ValidDesktopFormat(BackBufferFormats sourceformat)
 		{
-			return D3D9.Direct3D.CheckDeviceFormatConversion(_driverOrdinal, Driver.DeviceType, Converter.Convert(sourceformat), Converter.Convert(Gorgon.DesktopVideoMode.Format));
+			return Gorgon.Direct3D.CheckDeviceFormatConversion(_driverOrdinal, Driver.DeviceType, Converter.Convert(sourceformat), Converter.Convert(Gorgon.DesktopVideoMode.Format));
 		}
 
 		/// <summary>
@@ -1054,8 +1055,8 @@ namespace GorgonLibrary
 		/// <returns>TRUE if supported, FALSE if not.</returns>
 		public bool DepthFormatSupported(BackBufferFormats backBuffer, DepthBufferFormats depthBuffer)
 		{
-			if (D3D9.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthBuffer)))
-				return D3D9.Direct3D.CheckDepthStencilMatch(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), Converter.Convert(backBuffer), Converter.ConvertDepthFormat(depthBuffer));
+			if (Gorgon.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthBuffer)))
+				return Gorgon.Direct3D.CheckDepthStencilMatch(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), Converter.Convert(backBuffer), Converter.ConvertDepthFormat(depthBuffer));
 
 			return false;
 		}
@@ -1112,8 +1113,8 @@ namespace GorgonLibrary
 		/// <returns>TRUE if supported, FALSE if not.</returns>
 		public bool DepthFormatSupported(ImageBufferFormats backBuffer, DepthBufferFormats depthBuffer)
 		{
-			if (D3D9.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthBuffer)))
-				return D3D9.Direct3D.CheckDepthStencilMatch(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), Converter.Convert(backBuffer), Converter.ConvertDepthFormat(depthBuffer));
+			if (Gorgon.Direct3D.CheckDeviceFormat(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), D3D9.Usage.DepthStencil, D3D9.ResourceType.Surface, Converter.ConvertDepthFormat(depthBuffer)))
+				return Gorgon.Direct3D.CheckDepthStencilMatch(_driverOrdinal, Driver.DeviceType, Converter.Convert(backBuffer), Converter.Convert(backBuffer), Converter.ConvertDepthFormat(depthBuffer));
 
 			return false;
 		}

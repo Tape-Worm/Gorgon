@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2006 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Monday, November 20, 2006 1:19:22 PM
 // 
@@ -23,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using SharpUtilities.Collections;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -35,38 +37,52 @@ namespace GorgonLibrary.Graphics
         : Collection<Animation>
     {
         #region Variables.
-        private IAnimatable _owner = null;          // Owner for the animation list.
+        private object _owner = null;          // Owner for the animation list.
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to clear the collection.
+		/// </summary>
+		public override void Clear()
+		{
+			foreach (Animation anim in this)
+				anim.SetOwner(null);
+			base.Clear();
+		}
+
+		/// <summary>
+		/// Function to remove an object from the list by index.
+		/// </summary>
+		/// <param name="index">Index to remove at.</param>
+		public override void Remove(int index)
+		{
+			this[index].SetOwner(null);
+			base.Remove(index);
+		}
+
+		/// <summary>
+		/// Function to remove an object from the list by key.
+		/// </summary>
+		/// <param name="key">Key of the object to remove.</param>
+		public override void Remove(string key)
+		{
+			this[key].SetOwner(null);
+			base.Remove(key);
+		}
+
         /// <summary>
         /// Function to add an animation.
         /// </summary>
         /// <param name="animation">Animation to add.</param>
-        internal void Add(Animation animation)
+        public void Add(Animation animation)
         {
-			animation.SetOwner(_owner);
+			if (animation == null)
+				throw new ArgumentNullException("animation");
+
 			AddItem(animation.Name, animation);
-        }
-
-        /// <summary>
-        /// Function to create an animation.
-        /// </summary>
-        /// <param name="name">Name of the animation.</param>
-        /// <param name="length">Length of the animation in milliseconds.</param>
-        /// <returns>A new animation.</returns>
-        public Animation Create(string name, float length)
-        {
-            Animation newAnimation = null;          // Animation.
-
-            if (Contains(name))
-                throw new DuplicateObjectException(name);
-
-            newAnimation = new Animation(name, _owner, length);
-			AddItem(name, newAnimation);
-            newAnimation.Length = length;
-
-            return newAnimation;
+			if (animation.Owner != _owner)
+				animation.SetOwner(_owner);
         }
 
 		/// <summary>
@@ -82,13 +98,13 @@ namespace GorgonLibrary.Graphics
 			if (string.IsNullOrEmpty(newName))
 				throw new ArgumentNullException("newName");
 
-			if (!Contains(oldName))
-				throw new SharpUtilities.Collections.KeyNotFoundException(oldName);
-			if (Contains(newName))
-				throw new DuplicateObjectException(newName);
+            if (!Contains(oldName))
+                throw new KeyNotFoundException("The animation '" + oldName + "' does not exist.");
+            if (Contains(newName))
+                throw new ArgumentException("The animation '" + newName + "' already exists.");
 
 			// Create a copy.
-			newAnimation = (Animation)this[oldName].Clone();
+			newAnimation = this[oldName].Clone(_owner);
 			newAnimation.Name = newName;
 
 			// Replace in the collection.
@@ -107,7 +123,7 @@ namespace GorgonLibrary.Graphics
 
 			// Clone the animations.
 			foreach (Animation animation in this)
-				destination.Add((Animation)animation.Clone());
+				destination.Add(animation.Clone(destination._owner));
 		}
         #endregion
 
@@ -116,7 +132,8 @@ namespace GorgonLibrary.Graphics
         /// Constructor.
         /// </summary>
         /// <param name="owner">Owner of this animation list.</param>
-        internal AnimationList(IAnimatable owner)
+        public AnimationList(object owner)
+			: base(false)
         {
             _owner = owner;
         }

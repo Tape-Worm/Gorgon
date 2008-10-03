@@ -1,4 +1,4 @@
-﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+﻿<html>
 <head>
 <title>Gorgon Change Log</title>
 <style type="text/css">
@@ -37,7 +37,7 @@
 .changeStyle {
 	border: 1px solid #000000;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: x-small;	
+	font-size: x-small;
 }
 .itemHeader {
 	font-family: Arial, Helvetica, sans-serif;
@@ -69,20 +69,19 @@
 </style>
 </head>
 <body>
-<div style="text-align: center"><img alt="" src="Resources/Misc/GorgonLogo2.png"/></div><div>
-<span class="region">#region LGPL.</span><br/><span class="comment">
-//<br/> 
+<div style="text-align: center"><img alt="" src="Resources/Misc/GorgonLogo2.png" /></div><div>
+<span class="region">#region LGPL.</span><br/>
+<span class="comment">
+//<br/>
 // Gorgon.<br/>
-// Copyright (C) 2007 Michael Winsor<br/>
-// <br/>
-// This library is free software; you can redistribute it and/or<br/>// modify it under the terms of the GNU Lesser General Public<br/>// License as published by the Free Software Foundation; either<br/>// version 2.1 of the License, or (at your option) any later version.<br/>// <br/>// This library is distributed in the hope that it will be useful,<br/>// but WITHOUT ANY WARRANTY; without even the implied warranty of<br/>// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU<br/>// Lesser General Public License for more details.<br/>// <br/>// You should have received a copy of the GNU Lesser General Public<br/>// License along with this library; if not, write to the Free Software<br/>// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA<br/>// <br/></span>
-<span class="region">#endregion<br/><br/><table style="width: 30%" cellspacing="1" class="style5">
+// Copyright (C) 2007 Michael Winsor<br/>// <br/>// This library is free software; you can redistribute it and/or<br/>// modify it under the terms of the GNU Lesser General Public<br/>// License as published by the Free Software Foundation; either<br/>// version 2.1 of the License, or (at your option) any later version.<br/>// <br/>// This library is distributed in the hope that it will be useful,<br/>// but WITHOUT ANY WARRANTY; without even the implied warranty of<br/>// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU<br/>// Lesser General Public License for more details.<br/>// <br/>// You should have received a copy of the GNU Lesser General Public<br/>// License along with this library; if not, write to the Free Software<br/>// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA<br/>// <br/></span>
+<span class="region">#endregion<br/><br/></span><table class="region" style="width: 30%" cellspacing="1">
 	<tr>
 		<td class="style2">Legend</td>
 	</tr>
 	<tr>
 		<td>
-		<table style="width: 100%" cellspacing="1" class="style5" align="center">
+		<table style="text-align: center; width: 100%" cellspacing="1" class="style5">
 			<tr>
 				<td class="style4">*</td>
 				<td class="style4">Modification</td>
@@ -99,229 +98,306 @@
 		</td>
 	</tr>
 </table>
-</span></div>
+</div>
 
 <div>
-	<h1>Gorgon Change Log</h1><hr/>
+	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
-May 12/2008 - Version 1.0.3067.23663
-================
-* Updated a bug in SpriteEditor that didn't show the image/sprite panels when a new installation
-  (i.e. no prior config file was found) of the sprite editor is launched for the first time.
-  It will now show the sprite and image manager panels for a new install.
+October 3/2008 - Version - Current
+================================
++ Added an example to show off the sprite mesh functionality (freshly ripped off
+  from HGE).
   
-* Updated a bug in SpriteEditor where the current project would close if you cancelled the
-  open file dialog box.  Obviously this is not good.
-  
-* Updated a bug in Sprite.Clone().  The horizontal/vertical flipped properties were not being
-  cloned with the rest of the sprite.
++ Added an example to show off the minimal GUI functionality.
 
-April 28/2008 - Version 1.0.3040.836
-================
-* Updated a bug in TextSprite.  When a font was changed the boundaries of the sprite are not 
-  udpated and thus the measurements are incorrect.
+- Removed the Empty property on the TimingData object, it served no useful
+  purpose.
+  
+* Changed the access modifier on the refresh/reset methods on the TimingData 
+  object to internal, these functions have no real purpose being exposed as public 
+  members.
 
-* Updated some code to disable the SlimDX object tracker in release mode.  Apparently the default
-  behaviour has changed.
+* Unified all exception objects into a single exception type:
+  GorgonException.  This exception system is modelled after SlimDX's ResultCode
+  setup.  This was done to cut down on the amount of exception object clutter
+  in the library.  GorgonExceptions will now contain packaged error information
+  value types (GorgonError).  This will contain a code and description of the error
+  and can be used to determine a course of action depending on the code packaged
+  with the exception.  This is a major breaking change.
+  
+* Changed the licensing from LGPL to MIT.  F**k you Stallman.
 
-+ Added a readme file to the examples to explain what needs to be done in order to compile the
-  solutions.
++ Added functionality for FX shaders to determine if a projection matrix
+  value is present and auto-update it accordingly.  The shader will look
+  for a parameter named "_projectionMatrix", and if found, will be 
+  automatically populated with the projection matrix from the current 
+  clipping view port.
   
-* Changed the INeedYourInput example to load only the Release version of the GorgonInput plug-in
-  assembly.
+* Updated blur effect for framework logo.
 
-April 2/2008 - Version 1.0.3014.31665
-================  
-* Fixed a bug in the file system code.  Apparently I didn't realize there are other countries
-  on this planet and thus didn't bother to localize my date/time fields in the file entries.  
-  I'm an idiot.
+* Modified animations to always be enabled on load.  This property should
+  never have been saved.  However it is kept in the file format to keep
+  from breaking it, but has no effect.
   
-* Fixed a bug in the file system editor.  Picture files were supposed to have a preview window
-  but due to an oversight this window would not be displayed.
+- Removed any code referencing W-Buffers.  This is from antiquated hardware 
+  and would be unlikely to run on moderen operating systems.
+  
++ Added an example to show to use the depth buffer for depth-sorting sprites.
+  
++ Added the ability to play multiple animations at the same time in the 
+  sprite editor animation editor interface.  This will allow the user to 
+  see how combined animations will look when playing together.
+  
++ Added an example to show how to use the particle system.
 
-March 27/2008 - Version 1.0.3008.00001 
-================
-* First non-beta release.  Joy!
+* Updated SlimDX to the most recent version (Sept/08).
 
-* Corrected the BZipFileSystemOPower example to match the blur effect timing of the 
-  FolderFileSystemOPower example.  It was previously set to dec/increment by 1 every second, 
-  while the folder example was set to dec/increment by 5.
+* FINALLY!! I managed to get rid of the ICSharpCode.SharpZipLib.DLL issue!!
+  The problem was this:  When the user loaded the BZip file system plug-in, the
+  plug-in loader would fail because it was unable to locate the aforementioned
+  assembly.  Even if it was located in the same directory as the DLL.  
   
-- Removed the Timing namespace and moved the TimingData and PreciseTimer classes into the 
-  GorgonLibrary namespace.  This may break some code, sorry :(  It was an utterly useless 
-  namespace.
+  Previously, the only way to get this working was to put a copy of 
+  ICSharpCode.SharpZipLib.DLL in your application directory.  This has now been fixed.  
+  The plug-in can now be loaded without having ICSharpCode.SharpZipLib.DLL in your 
+  app directory.  As long as it can be located in the GAC, or the directory where your 
+  plug-in resides, then it should be able to load.  This has been a pain in the ass 
+  for a long time.
   
-* Modified the StaticTextSprite to show shadowing on the text.  This set of properties must
-  have been accidentally forgotten.
++ Added a background color command to the sprite clipper in the sprite editor
+  application.  This will allow the user to mask the sprite image against a color
+  if the default pattern makes it too difficult to see the sprites on the image.
   
-* FileSystemEditor was modified to reflect the aforementioned changes.
++ Added a zoom window size value to the sprite clipper in the sprite editor.  This
+  will allow the user to adjust the size of the zoomer window (note, this means the
+  physical size of the zoom window, not the scale, the mouse wheel controls
+  that).
   
-+ Added a Description property to the FileSystemProvider to return a description of the provider
-  plug-in.
++ Added a DualShader class to bind a Vertex and Pixel shader to the renderer at the
+  same time.  This is necessary for SM 3 systems where it appears that a vertex shader
+  is also required.  This was not the case for SM 2 where the pixel shader could be
+  set without requiring a vertex shader.  The dual shader will use a default vertex
+  and pixel shader when it is created (unless pixel/vertex shaders are passed in via
+  the constructor, or assigned later).
   
-* Modified the FileSystemProvider Name property to use the name of the plug-in and not the 
-  description.  This was an oversight on my part.  Consequently, the FileSystemProviderCache
-  object now takes the name of the plug-in as the provider key name:
-  (i.e. FileSystemProviderCache.Providers["Gorgon.BZip2FileSystem"])  This could possibly break
-  some code if you were using the name of the provider.
+* Fixed some issues with the sprite editor where animations would be corrupted when
+  image bindings were changed.  Also fixed an issue with the Linq queries that
+  enumerated render targets.
   
-* Fixed an issue with the file system editor.  When loading a file system from the command line
-  or via file association and the plug-in for that file could not be loaded it would just error
-  out.  Now it will ask the user to load the plug-in first and then error out only if it cannot
-  get the proper provider after that.
+- Removed ImageShaderCache and ImageShaderList as these aren't necessary anymore.  The
+  ImageShaders are now regular shaders and can be found in the ShaderCache.
   
-* Fixed an issue in the GetSettings() function of the file system editor.  When a file system
-  provider plug-in failed to load the function would cease to read the rest of the configuration.
-  This caused portions of the program to reset to its defaults.  Now if the plug-in cannot load it
-  will display an error and then continue.
-  
-+ Added a new object to allow plug-in developers access to the internal Direct 3D objects used by
-  Gorgon.  Developers need to be very careful with this as it can cause issues if used incorrectly.
-  Since this is only meant for plug-in developers you can only access it from your PlugInEntryPoint
-  super class as a protected member.
-  
-* Changed the Converter class to be public.  This was done to help facilitate plug-in development
-  and to allow raw access to Direct 3D.
+* Fixed a bug in the shader serializer where it was saving the source as UTF-7.
 
-* Changing file system editor to prompt with the plug-in locator if a plug-in cannot be
-  found.  Currently it opens the old file open dialog, this is pointless if it cannot load
-  the plug-in.
+* Changed ShaderSerializer to FXShaderSerializer and ShaderSerializer now handles
+  objects derived from BaseShader.
 
-* Updated an issue with Vertex/Index buffer creation on cards/chipsets without hardware
-  transform and lighting (yeah, I didn't think they existed any more either).  The buffer
-  would get created before it should have due to the detection of a non-hardware T&amp;L card.
++ Added BaseShader, PixelShader and VertexShader types.  These are shaders that don't use
+  the HLSL effects system (except to compile).  BaseShader is the abstract type that
+  Pixel/Vertex/ImageShader types are derived from.
   
-* Updated an issue with the sprite editor.  Launching the image editor failed with
-  a relative path.  Forcing the path to be decoded into an absolute path solved this
-  issue.
++ Added ConstantShaderParameter for use by the objects that inherit from BaseShader.
   
-* Updated an issue in the sprite editor where an edited image would become unbound from
-  the sprites but still claim to be bound in the property listing.  This was corrected
-  by re-assigning the image to the sprites after it had changed.
-  
-* Updated to the most current version of SlimDX.  Modified for any breaking changes.
-  This release uses the March release of DirectX.  There was also a breaking change
-  made in the HLSL compiler where half types cannot be global (I think that's what it
-  was) and this broke the ShadersInSpaaaaace example.  The solution was to change 
-  the type to a float.  This will likely be the initial NON-BETA release for Gorgon.
-  As soon as the March version of SlimDX is released I will release a new (non-beta) 
-  version of Gorgon shortly after (given time to update for breaking changes and the like)
-  and I will release updated versions of the demo programs as well.
+* Changed ShaderParameter to FXShaderParameter.
 
-* Fixed an issue with the sprite editor.  When a project is loaded and the first 
-  sprite selected the properties for that sprite did not show up.  The same issue
-  affected new sprites, where after a new sprite was created the properties for
-  the previously selected sprite would show instead of the new sprite (which is
-  selected).  Traced this to the .Selected property of a list view item not firing
-  the AfterSelected event in the list view control.
-  
-* Updated the version of SlimDX to the most current version as of March 2/2008.
-  Modified Gorgon accordingly to handle the breaking changes introduced.  Gorgon
-  will have a release (and an exit from BETA I'm thinking) when the new version of
-  SlimDX is released for public consumption just to keep it somewhat synced.
-  
-- Dropped the DEBUG builds of SlimDX.  I don't use these often (in fact, almost
-  never due to the debug runtime of DirectX and the object tracker in SlimDX) so I
-  didn't see a reason to keep them here.  Debug builds can be created from the
-  SlimDX source code at http://slimdx.googlecode.com/svn/trunk. (Note: you'll <u>need</u>
-  a subversion client like <a href="http://tortoisesvn.tigris.org/">TortoiseSVN</a> or something).
++ Added IShaderParameter as the defacto interface for shader parameter objects.
 
-* Updated an issue in the TimingData structure where the framecount is returning 0
-  all time.  That just ain't right.  It was returning the wrong frame counter and
-  consequently was always being reset to 0 after a FPS update.
-  
-+ Added file type registration to installer.  .gorPack, and header.folderSystem
-  file types will be opened by FileSystemEditor and .sprProj will be opened by
-  SpriteEditor.
+* Changed Shader to FXShader to indicate that the shaders are based on the HLSL effects
+  framework.  The Shader type is now a base class from which other shaders are derived.  
 
-* Changed the base GorgonException class to be abstract.  Modified any attempts
-  to throw the base class as an exception.
+* Changed the Blur shader in the framework DLL from source code to a binary format.
+  This was merely for convienence for myself.  Everytime I made a change to the resource
+  file in the framework, the damn thing would try to put the contents of the shader in
+  &lt;summary&gt; tags, which would generate a bunch of warnings.  I have NO idea why
+  Visual Studio would do this.
   
-* Changes/additions to the documentation.  
+* Fixed an issue in the shader FromResource function when trying to load a binary shader.
+  Shader was being converted to a string regardless of the binary flag.
+  
+* Modified all shader From* static methods to take an extra parameter:  ShaderCompilerOptions.
+  This allows the user to control the optimization level and debug info level for a shader.
+  
++ Added a shader function object to be used with the image shaders.  These objects can be retrieved
+  from the Shader object via the GetShaderFunction().
+  
++ Added two new methods to the shader object:  CompileShader() and GetShaderFunction().  The 
+  CompileShader() function is used to compile the source code for a shader, while the GetShaderFunction
+  is used to retrieve a specific function from a shader and returns a ShaderFunction object. 
 
-+ Added the ability to open file systems from the command line with the file
-  system editor.  This can open several file systems at the same time.
+* Modified the shader subsystem extensively.  Renderable objects no longer have shaders attached
+  (i.e. Sprite.Shader no longer exists).  This will break code that relied on shaders, but the
+  old system didn't make any sense, especially when it came to multipass rendering.
+  Shaders are now set via the main static Gorgon class with the property CurrentShader (e.g.
+  Gorgon.CurrentShader = MyShader).  The user can set this to be equal to the shader (which will
+  find the first valid technique), or a specific technique (which will render all passes for a
+  technique) or a specific pass from a technique.  
   
-+ Added the ability to automatically re-open the last file systems loaded
-  when the file system editor is launched.
-  
-* Changed the open command to use a common file dialog to open file system types.
-  This change will alter how folder file systems are opened.  Folder file systems
-  must now have the file "header.folderSystem" present in the root.  If you have
-  created folder file systems, you will not be able to open them with the file system
-  editor without first adding this file to the file system root.
-  
-  <strong><u>The following will fix the older folder file systems:</u></strong>
-  1. Locate the header.folderSystem file in <i>{Your Gorgon Install Directory}</i>\Redist\Patch
-  2. Copy this file into the root of any folder file system you may have.
-  
-  This should allow the file system editor to open any previous folder file system.
-  
-* Modified the FolderFileSystem and GorgonBZip2FileSystem object to now output a file 
-  system type ID.  This ID is used by the editor to determine the type of file system
-  when loading.  Furthermore, the FolderFileSystem object will write out a header.folderSystem
-  file in the root of the folder file system.  Any file system objects implementing a
-  folder file system MUST be sure to output this file.
-  
-* Modified the file system attribute to include an ID to identify the file system type
-  so that the file system editor can open the file correctly.
-  
-* Fixed a bug in the Sprite Editor in which the current directory wasn't being
-  set when opening a project.
-  
-* Fixed a bug in the Sprite Editor where the input plug-in would fail to load 
-  because the editor was launched without setting a working directory.  Initially 
-  it attempted to load the input plug-in from the current directory.
-  
-+ Added the ability to open a sprite project from the command line.
-  (i.e. SpriteEditor "c:\my sprites\myspriteProject.sprProj")
+* Added a new example for Visual Basic.NET - "TehShadowGn0s"
 
-* Updated default key/char map to add some missing keys (not quotes): ";|\"
++ Added a new property to the renderable objects (sprites, textsprites, etc...) called
+  ShaderPass.  This property will tell the renderer which shader pass to execute when
+  drawing a sprite with a shader.
+  
++ Adding a limited GUI interface to the framework.
 
-+ Added a KeyMapCollection object which maps the keyboard keys to their 
-  respective display characters.  This key map can be customized by the user
-  for maximum flexibility.
-  
-* Changed the Keyboard.KeyMappings property to return a KeyMapCollection object 
-  instead of a SortedList&lt;KeyboardKeys, KeyCharMap&gt; object.  This could 
-  <u>possibly</u> break some things, so I apologize for that.
-  
-+ Added a KeyState property in the Keyboard object.  This is a KeyStateCollection 
-  object that will record the states of various keys.  Unlike the obsolete
-  indexer property, this will allow the user to set the key state as well.
-  
-- Obsoleted the Keyboard indexer (Keyboard[KeyboardKeys]), and will be removed 
-  in the next release.
-  
-* Updated a bug regarding sorted collections in the Sharp Utilities dependency.
++ Added FamilyName property to Font objects.  I can't believe I forgot to add this!
 
-BETA
-------------------------------------------------------------------------------------------
++ Added a particle emitter object to the framework library.  This one works like the
+  HGE particle system (and in fact is directly based on it).
 
-January 30/2008 - Version 1.0.2951.19564
-===============
-* Updated yet another bug in TextSprite.MeasureText() where the function would 
-  ignore the wordWrap parameter.
++ Added new simple value type called Range&lt;T&gt;.  This is just a value that holds
+  a start and end value so it can be used to determine a range of values.  Use this
+  instead of creating multiple properties on your object for ranged values.
   
-* Updated a bug in TextSprite.MeasureText().  The function was reading the wrong
-  string buffer when measuring the text.  It should have been measuring the text
-  in the parameter, instead it was measuring the internal text buffer.
++ Added a border color option to the sprites.  This is used with the Vertical/Horizontal
+  Wrapping properties are set to Border.
   
-* Updated a bug in the sprite editor where the vertex offsets were returning the 
-  vertex world position and not the relative offset positioning.
+* Modified sprite horizontal/vertical flipping to have better accuracy with flipped
+  texture coordinates.
   
-* Updated configuration files for BetterThanPortal and NoCleverName.  Plug-ins 
-  location was pointing to the DEBUG versions of the plug-ins on x86 systems.  This 
-  has been changed to point at the RELEASE versions.
++ Added a utility library to the solution for higher level functionality such as sprite
+  meshes and various other high level functionality in the future.
+  
+* Updated sprite editor project saving to now store its child files with relative paths.
+  Prior to this it would only use a relative path if the sprite/image dependency was 
+  located under the same path as the project file.  Now it will attempt to source the 
+  files to a directory relative to the project file.
+  
+* Updated the device lost/reset code to no longer rely on exceptions, and instead use the
+  result codes returned by SlimDX.
+  
+* Made some fixes to the vertex/index buffer objects.  This was due to some recent changes
+  in SlimDX which does some validation on data being sent to the buffers.  This validation
+  wasn't present before and thus Gorgon's original vertex/index buffer code got away with 
+  doing its updates incorrectly (i.e. SlimDX is right, Gorgon is wrong in its approach).
 
-January 11/2008 - Version 1.0.2932.40179
-===============
-* Modified the source package layout, integrated both x86 and x64 into one package.
+* In keeping with the whole .NET 3.5 thing, I've made use of LINQ in the sprite editor.
+  Holy crap it is epic.  I reduced a bunch of loops down to simple 1-3 line pieces of
+  code with this stuff, it's wicked.
+  
+* Switched Gorgon, the tools and the examples over to .NET 3.5.  From this point forward
+  Gorgon 1.1.x will require .NET 3.5.
 
-+ Added x64 versions of the example solution/project files.
+* Modified the NoCleverName example to use bounding circles on the asteroids instead of
+  rectangles.
+  
+* Sprite editor will now display the bounding circle in addition to the bounding rectangle
+  for a sprite.
+  
++ Added BoundingCircle on sprites.
 
-January 6/2008 - Version 1.0.2927.5698
-==============
-+ Initial BETA release.</pre>
++ Added a new value type: BoundingCircle.  This allows us to do collision checks bewteen
+  a circle primitive and other primitives.
+  
+* Completely scrapped and rebuilt the animation editor in the sprite editor system. 
+  The interface was kept pretty much the same, but new things like more tracks and copy,
+  cut and paste for key frames have been added.  The system is now compliant with the
+  new animation system.
+  
+* Made MASSIVE changes to the animation system.  Basically this system has pretty 
+  much been rewritten.  The only interface that hasn't changed much is the Animation
+  class.  If you've coded stuff using the old animation system your code WILL break
+  there's no two ways about it.  However, your sprites that contain animations will
+  work and will be updated to use the new system.  However, due to the differences in
+  the way the old and new systems work, the results may not be 100% accurate.
+  
+  Here's a sub-listing of changes:
+  * The grouped tracks like TransformTrack, FrameTrack, and ColorTrack are now 
+    thankfully VERY dead and gone.  In their place is a more cohesive Tracks collection
+    that will hold all the tracks for the animation.
+  * No longer reliant on a group of properties (except for the KeyImage type).  We
+    can now mark specific properties as animated and the system will do its best
+    to deduce how to handle the types for those marked properties.
+  * All of these animated properties are now individual tracks - the way it should
+    have been right from the start.
+  * Because Gorgon can only know about so many types, there's the option to hook into
+    the animation events and define your own data type for a track and its keys.
+  * The user can actually include the animation system in our own custom objects
+    and animate the properties of custom object types by including the AnimationsList
+    collection.
+    
+  In short it'll be a much better and more flexible animation system.  
+
+* Modified Opacity property on renderables to use an int instead of a byte.  No,
+  I really don't know what I was thinking.
+  
+* Changed ScaledWidth/ScaledHeight so that the user can now set the scaled size of
+  the renderable object in the context of absolute width and height.  Prior to this
+  the user could only set the scale relatively via the Scale or UniformScale 
+  properties.
+  
+* Changed ICommonRenderable to IRenderableStates, since this is what this interface
+  actually contained.
+  
+- Removed IMovable, IAnimatable, IRenderable.  These really served no purpose.
+  
+- Removed InvertFrameStatsColor from Gorgon.  Seemed kind of pointless really.
+
++ Added a Depth (and PrimitiveDepth to render targets) property to all Sprite types.
+  This depth function will respect the Z-Buffer if one is set up via SetMode.  With this
+  the user will be able to sort out which sprites get rendered before other sprites by
+  using the Z-Buffer to test for occlusion regardless of the order of drawing.
+
++ Added new Depth buffer testing and writing properties to renderable objects.  And added
+  global depth buffer test/writing properties as well.
+  
+- Took out a dumb restriction on the sprites that required the shader and/or image that 
+  a sprite was bound with to be loaded BEFORE the sprite is loaded.  Now the system will 
+  defer the binding of the image/shader until they're loaded into the Image/ShaderCache
+  objects.
+  
++ Added a framework DLL to help simplify development of applications in Gorgon.  This
+  framework DLL is what used to be the framework in the Gorgon Library itself.  If your
+  code is broken by the framework code removal from Gorgon, then adding this assembly 
+  to your project should fix it.
+  
++ Added a dialogs helper which is just a small DLL that gives extended dialog boxes
+  for errors, confirmation and information.  This is the same as the dialogs in the
+  SharpUtilities dependency.  However, unlike the SharpUtilities it is NOT required by
+  Gorgon and as such you are free to not use it if you choose.
+  
+- Removing dependency on SharpUtilities.  This library has run its course and it's a
+  pain for distributing projects using it when it's been updated.  All Native code and
+  math functions are to be moved into Gorgon.  This will break things if you're using
+  SharpUtilities.
+  
++ Added new code to the PlugInFactory static object to check for signed assemblies.
+  Also added code to compare the assembly public key with the users public key so
+  that the user application can only load plug-ins that are signed by the user.
+  
+* Did some code clean up to break some silly habits (like catch { throw; } finally { }).
+
++ Added Save(stream), AssignRoot(string/Stream) methods and IsRootInStream property to 
+  facilitate loading a file system object from a stream.  With this we can put packed 
+  file systems into other packed file systems, or load a file system from a binary 
+  data blob (e.g. imagine loading your file system from a database field).  Or even stream
+  in a file system from a network connection.  Also added a FileSystemStreamOffset property 
+  to set or show where the file system is located within a stream. Removed the setter 
+  accessor on the Root property since we can now set it via the AssignRoot function.
+  
+* Modified the Blit() methods to take a BlitterSizeMode enumeration instead of a boolean
+  as the scaling parameter.  This was done to be explicit about the case of size
+  mismatch between the image and the parameters passed in to the blitter.  Added Color
+  parameter to the blitter that will allow us to alter the color of the blitted target
+  or image.
+  
++ Added an example that will allow us to expose SlimDX's Direct 3D interfaces to
+  our application via a plug-in.  This will allow us to mix in a 3D scene with our
+  2D stuff.
+  
+- Dropped the shared plug-in project from the examples.  We no longer require (and
+  honestly, never did require) a proxy DLL to host our base/abstract plug-in
+  interface(s).  This opens up a great deal of flexibility, the reason for the proxy 
+  DLL in the previous version was due to a circular dependency issue which has since 
+  been resolved.  Now the user can add the host assembly (e.g. My2DWorldBuilder.exe)
+  as a reference and use the interfaces exposed by that.  Of course, you can still
+  use a proxy DLL if you wish.
+  
+* Updated the file system editor to handle encrypted files.
+
++ Added a new encrypted file system plug-in.  This is a test plug-in, and should
+  NOT be used in a production environment.  If you wish to use this plug-in, you
+  can modify the private key in the code and sign the plug-in assembly yourself.
+</pre>
 </div>
 </body>

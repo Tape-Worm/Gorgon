@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2007 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Saturday, April 07, 2007 2:12:28 AM
 // 
@@ -25,8 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
-using SharpUtilities;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.FileSystems
 {
@@ -41,6 +44,11 @@ namespace GorgonLibrary.FileSystems
 		private FileSystemInfoAttribute _info;				// File system information.
 		private Type _fileSystemType;						// File system type.
 		private bool _isDisposed = false;					// Flag to indicate whether this object is disposed already or not.
+//#if DEBUG
+		private static bool _requireSignedPlugIns = false;	// Flag to indicate that we require signed provider plug-ins.
+//#else
+//		private static bool _requireSignedPlugIns = true;	// Flag to indicate that we require signed provider plug-ins.
+//#endif
 		#endregion
 
 		#region Properties.
@@ -72,6 +80,21 @@ namespace GorgonLibrary.FileSystems
 			get
 			{				
 				return _fileSystemPlugIn;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether provider plug-ins need to be signed or not.
+		/// </summary>
+		public static bool RequireSignedProviderPlugIns
+		{
+			get
+			{
+				return _requireSignedPlugIns;
+			}
+			set
+			{
+				_requireSignedPlugIns = value;
 			}
 		}
 
@@ -159,6 +182,17 @@ namespace GorgonLibrary.FileSystems
 			}
 		}
 
+        /// <summary>
+        /// Property to return whether this provider uses encryption or not.
+        /// </summary>
+        public bool IsEncrypted
+        {
+            get
+            {
+                return _info.IsEncrypted;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the ID of the file system.
 		/// </summary>
@@ -217,24 +251,17 @@ namespace GorgonLibrary.FileSystems
 			if (string.IsNullOrEmpty(providerPlugInPath))
 				throw new ArgumentNullException("providerPlugInPath");
 
-			try
-			{
-				// Load the plug-in.
-				plugIn = PlugInFactory.Load(providerPlugInPath, plugInName) as FileSystemPlugIn;
+			// Load the plug-in.
+			plugIn = PlugInFactory.Load(providerPlugInPath, plugInName, _requireSignedPlugIns) as FileSystemPlugIn;
 
-				// Add each plug-in (if it doesn't already exist).
-				if ((plugIn == null) || (plugIn.PlugInType != PlugInType.FileSystem))
-					throw new ApplicationException("The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
+			// Add each plug-in (if it doesn't already exist).
+			if ((plugIn == null) || (plugIn.PlugInType != PlugInType.FileSystem))
+				throw new GorgonException(GorgonErrors.InvalidPlugin, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
 
-				if (!FileSystemProviderCache.Providers.Contains(plugInName))
-					FileSystemProviderCache.Providers.Add(plugIn);
+			if (!FileSystemProviderCache.Providers.Contains(plugInName))
+				FileSystemProviderCache.Providers.Add(plugIn);
 
-				return FileSystemProviderCache.Providers[plugInName];
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemPlugInLoadException(providerPlugInPath, ex);
-			}
+			return FileSystemProviderCache.Providers[plugInName];
 		}
 
 		/// <summary>
@@ -249,28 +276,21 @@ namespace GorgonLibrary.FileSystems
 			if (string.IsNullOrEmpty(providerPlugInPath))
 				throw new ArgumentNullException("providerPlugInPath");
 
-			try
-			{
-				// Load the plug-in.
-				PlugInFactory.Load(providerPlugInPath);
+			// Load the plug-in.
+			PlugInFactory.Load(providerPlugInPath, _requireSignedPlugIns);
 
-				// Add each plug-in (if it doesn't already exist).
-				foreach (PlugInEntryPoint plugInItem in PlugInFactory.PlugIns)
+			// Add each plug-in (if it doesn't already exist).
+			foreach (PlugInEntryPoint plugInItem in PlugInFactory.PlugIns)
+			{
+				plugIn = plugInItem as FileSystemPlugIn;
+				if (plugIn != null)
 				{
-					plugIn = plugInItem as FileSystemPlugIn;
-					if (plugIn != null)
-					{
-						if (plugIn.PlugInType != PlugInType.FileSystem)
-							throw new ApplicationException("The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
+					if (plugIn.PlugInType != PlugInType.FileSystem)
+						throw new GorgonException(GorgonErrors.InvalidPlugin, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
 
-						if (!FileSystemProviderCache.Providers.Contains(plugIn.Name))
-							FileSystemProviderCache.Providers.Add(plugIn);
-					}
+					if (!FileSystemProviderCache.Providers.Contains(plugIn.Name))
+						FileSystemProviderCache.Providers.Add(plugIn);
 				}
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemPlugInLoadException(providerPlugInPath, ex);
 			}
 		}
 
@@ -285,21 +305,14 @@ namespace GorgonLibrary.FileSystems
 			if (providerType == null)
 				throw new ArgumentNullException("providerType");
 
-			try
-			{
-				if (!providerType.IsSubclassOf(typeof(FileSystem)))
-					throw new TypeLoadException("The provider type is not a file system.");
+			if (!providerType.IsSubclassOf(typeof(FileSystem)))
+				throw new TypeLoadException("The provider type is not a file system.");
 
-				// Add the type.
-				if (!FileSystemProviderCache.Providers.Contains(providerType))
-					FileSystemProviderCache.Providers.Add(providerType);
+			// Add the type.
+			if (!FileSystemProviderCache.Providers.Contains(providerType))
+				FileSystemProviderCache.Providers.Add(providerType);
 
-				return FileSystemProviderCache.Providers[providerType];
-			}
-			catch (Exception ex)
-			{
-				throw new FileSystemPlugInLoadException(providerType.FullName, ex);
-			}
+			return FileSystemProviderCache.Providers[providerType];
 		}
 		#endregion
 
@@ -332,7 +345,7 @@ namespace GorgonLibrary.FileSystems
 			attributes = fileSystemType.GetCustomAttributes(typeof(FileSystemInfoAttribute), true);
 
 			if ((attributes == null) || (attributes.Length == 0))
-				throw new FileSystemAttributeMissingException(typeof(FileSystemInfoAttribute));
+				throw new GorgonException(GorgonErrors.InvalidPlugin, "The provider is missing the FileSystemInfoAttribute.");
 
 			// Get the attribute.
 			_info = (FileSystemInfoAttribute)attributes[0];

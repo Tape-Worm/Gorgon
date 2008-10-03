@@ -1,28 +1,30 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2005 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Saturday, July 09, 2005 5:32:17 PM
 // 
 #endregion
 
 using System;
-using SharpUtilities.Mathematics;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Graphics;
@@ -164,7 +166,7 @@ namespace GorgonLibrary.Internal
 					return D3D9.DeclarationUsage.TextureCoordinate;
 			}
 
-			throw new VertexFieldContextInvalidException();
+			throw new GorgonException(GorgonErrors.InvalidFormat, "Vertex field context '" + context.ToString() + "' has no Direct3D equivalent.");
 		}
 
 		/// <summary>
@@ -196,7 +198,7 @@ namespace GorgonLibrary.Internal
 					return D3D9.DeclarationType.Ubyte4;
 			}
 
-			throw new VertexFieldInvalidException();
+			throw new GorgonException(GorgonErrors.InvalidFormat, "Vertex field type '" + fieldType.ToString() + "' has no Direct3D equivalent.");
 		}
 
 		/// <summary>
@@ -244,25 +246,25 @@ namespace GorgonLibrary.Internal
 				case AlphaBlendOperation.BlendFactor:
 					return D3D9.Blend.BlendFactor;
 				case AlphaBlendOperation.BothInverseSourceAlpha:
-					return D3D9.Blend.BothInvSourceAlpha;
+					return D3D9.Blend.BothInverseSourceAlpha;
 				case AlphaBlendOperation.DestinationAlpha:
 					return D3D9.Blend.DestinationAlpha;
 				case AlphaBlendOperation.DestinationColor:
 					return D3D9.Blend.DestinationColor;
 				case AlphaBlendOperation.InverseBlendFactor:
-					return D3D9.Blend.InvBlendFactor;
+					return D3D9.Blend.InverseBlendFactor;
 				case AlphaBlendOperation.InverseDestinationAlpha:
-					return D3D9.Blend.InvDestinationAlpha;
+					return D3D9.Blend.InverseDestinationAlpha;
 				case AlphaBlendOperation.InverseDestinationColor:
-					return D3D9.Blend.InvDestinationColor;
+					return D3D9.Blend.InverseDestinationColor;
 				case AlphaBlendOperation.InverseSourceAlpha:
-					return D3D9.Blend.InvSourceAlpha;
+					return D3D9.Blend.InverseSourceAlpha;
 				case AlphaBlendOperation.InverseSourceColor:
-					return D3D9.Blend.InvSourceColor;
+					return D3D9.Blend.InverseSourceColor;
 				case AlphaBlendOperation.SourceAlpha:
 					return D3D9.Blend.SourceAlpha;
 				case AlphaBlendOperation.SourceAlphaSaturation:
-					return D3D9.Blend.SourceAlphaSat;
+					return D3D9.Blend.SourceAlphaSaturated;
 				case AlphaBlendOperation.SourceColor:
 					return D3D9.Blend.SourceColor;
 				case AlphaBlendOperation.Zero:
@@ -400,7 +402,7 @@ namespace GorgonLibrary.Internal
 				case BackBufferFormats.BufferP8:
 					return D3D9.Format.P8;
 				default:
-					throw new FormatNotSupportedException(format, null);
+					throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
 			}
 		}
 
@@ -422,7 +424,7 @@ namespace GorgonLibrary.Internal
 				case BackBufferFormats.BufferRGB888:
 					return ImageBufferFormats.BufferRGB888X8;
 				default:
-					throw new FormatNotSupportedException(format, null);
+					throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
 			}
 		}
 
@@ -446,7 +448,7 @@ namespace GorgonLibrary.Internal
 				case D3D9.Format.P8:
 					return BackBufferFormats.BufferP8;
 				default:
-					throw new FormatNotSupportedException("The Direct3D format " + format.ToString() + " is not supported.", null);
+					throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
 			}
 		}
 
@@ -781,26 +783,6 @@ namespace GorgonLibrary.Internal
 			ret.m14 = mat.M41; ret.m24 = mat.M42; ret.m34 = mat.M43; ret.m44 = mat.M44;
 
 			return ret;
-		}
-
-		/// <summary>
-		/// Function to convert a quaternion into a D3D quaternion.
-		/// </summary>
-		/// <param name="quaternion">Quaternion to convert.</param>
-		/// <returns>D3D quaternion.</returns>
-		public static DX.Quaternion Convert(Quaternion quaternion)
-		{
-			return new DX.Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
-		}
-
-		/// <summary>
-		/// Function to convert a quaternion into a D3D quaternion.
-		/// </summary>
-		/// <param name="quaternion">Quaternion to convert.</param>
-		/// <returns>D3D quaternion.</returns>
-		public static Quaternion Convert(DX.Quaternion quaternion)
-		{
-			return new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
 		}
 
 		/// <summary>

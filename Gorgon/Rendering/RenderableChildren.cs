@@ -1,21 +1,24 @@
-#region LGPL.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2006 Michael Winsor
 // 
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 // 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 // 
 // Created: Friday, November 24, 2006 7:48:29 PM
 // 
@@ -23,9 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using SharpUtilities;
-using SharpUtilities.Mathematics;
-using SharpUtilities.Collections;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -34,10 +34,10 @@ namespace GorgonLibrary.Graphics
     /// Object representing a list of child objects for sprites.
     /// </summary>
     public class RenderableChildren
-        : Collection<IMoveable>
+        : Collection<Renderable>
     {
         #region Variables.
-        private IMoveable _owner;      // Owner object.
+        private Renderable _owner;      // Owner object.
         #endregion
 
         #region Methods.
@@ -46,7 +46,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         protected override void ClearItems()
         {
-            foreach (IMoveable child in this)
+            foreach (Renderable child in this)
                 child.SetParent(null);
 
             base.ClearItems();
@@ -76,13 +76,10 @@ namespace GorgonLibrary.Graphics
         /// Function to remove an object from the list by reference.
         /// </summary>
         /// <param name="child">Child object to remove.</param>
-        public void Remove(IMoveable child)
+        public void Remove(Renderable child)
         {
-            if (!Contains(child.Name))
-                throw new SharpUtilities.Collections.KeyNotFoundException(child.Name);
-
-            child.SetParent(null);
 			RemoveItem(child.Name);
+            child.SetParent(null);
         }
 
         /// <summary>
@@ -90,13 +87,13 @@ namespace GorgonLibrary.Graphics
         /// </summary>
 		/// <param name="child">Child to add.</param>
         /// <param name="offset">Offset of the child from the parent.</param>        
-        public void Add(IMoveable child, Vector2D offset)
+        public void Add(Renderable child, Vector2D offset)
         {
             if (child == null)
                 throw new ArgumentNullException("child");
 
             if (Contains(child.Name))
-                throw new DuplicateObjectException(child.Name);
+                throw new ArgumentException("The child object '" + child.Name + "' is already attached");
 
             // Add the child object.            
 			AddItem(child.Name, child);
@@ -109,7 +106,7 @@ namespace GorgonLibrary.Graphics
         /// Function to add a child object.
         /// </summary>
         /// <param name="child">Child to add.</param>
-        public void Add(IMoveable child)
+        public void Add(Renderable child)
         {
             Add(child, child.Position);
         }
@@ -120,7 +117,7 @@ namespace GorgonLibrary.Graphics
         /// Constructor.
         /// </summary>
         /// <param name="owner">Owning object.</param>
-        public RenderableChildren(IMoveable owner)
+        public RenderableChildren(Renderable owner)
         {
             _owner = owner;
         }
