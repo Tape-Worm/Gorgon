@@ -47,9 +47,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon, Version=1.0.3022.39457, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="Gorgon, Version=1.1.3198.25098, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
+      <HintPath>..\..\..\..\Gorgon\bin64\Release\Gorgon.dll</HintPath>
     </Reference>
     <Reference Include="SlimDX, Version=2.0.3.37, Culture=neutral, PublicKeyToken=5a7e35f0f7a29e88, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -74,9 +74,9 @@
     <Content Include="GorIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\D3D.csproj">
+    <ProjectReference Include="..\D3D_x64.csproj">
       <Project>{EDC602B0-403D-4A3D-8A60-13992B351C95}</Project>
-      <Name>D3D</Name>
+      <Name>D3D_x64</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
