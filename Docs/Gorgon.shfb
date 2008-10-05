@@ -74,7 +74,7 @@ But really, these are internal functions for use by Gorgon only.  They should ra
     <CopyrightText>Copyright © 2008 - Licensed under the MIT license by Michael Winsor (Tape_Worm).  See MIT.txt for details.</CopyrightText>
     <FeedbackEMailAddress>tape_worm@tape-worm.net</FeedbackEMailAddress>
     <HeaderText />
-    <FooterText>Gorgon v1.1.x</FooterText>
+    <FooterText>Gorgon v1.1.x (BETA)</FooterText>
     <ProjectLinkType>Local</ProjectLinkType>
     <SdkLinkType>Msdn</SdkLinkType>
     <SdkLinkTarget>Self</SdkLinkTarget>
