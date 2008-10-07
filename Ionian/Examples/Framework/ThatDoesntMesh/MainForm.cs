@@ -95,9 +95,9 @@ namespace GorgonLibrary.Example
 						g = _mesh.GetVertexColor(x, y).G;
 						b = _mesh.GetVertexColor(x, y).B;
 
-						r += (384.0f * e.FrameDeltaTime);
-						g += (384.0f * e.FrameDeltaTime);
-						b += (384.0f * e.FrameDeltaTime);
+						r += MathUtility.Round(384.0f * e.FrameDeltaTime);
+						g += MathUtility.Round(384.0f * e.FrameDeltaTime);
+						b += MathUtility.Round(384.0f * e.FrameDeltaTime);
 
 						if (r > 255)
 							r = 255;
