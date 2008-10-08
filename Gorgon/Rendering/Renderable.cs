@@ -780,6 +780,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the alpha value used for alpha masking.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(int)), EditorMinMax(0, 255)]
 		public virtual int AlphaMaskValue
 		{
@@ -890,6 +891,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the offset within the source image to start drawing from.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(Vector2D)), EditorRoundValues()]
 		public virtual Vector2D ImageOffset
 		{
@@ -996,6 +998,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return a uniform scale across the X and Y axis.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(float))]
 		public abstract float UniformScale
 		{
@@ -1022,6 +1025,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the color.
 		/// </summary>		
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(Drawing.Color))]
 		public abstract Drawing.Color Color
 		{
@@ -1032,6 +1036,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the opacity.
 		/// </summary>		
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(int)), EditorMinMax(0, 255)]
 		public abstract int Opacity
 		{
@@ -1042,6 +1047,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the axis of the sprite.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(Vector2D))]
 		public virtual Vector2D Axis
 		{
@@ -1058,6 +1064,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the scale of the sprite.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(Vector2D))]
 		public virtual Vector2D Scale
 		{
@@ -1074,6 +1081,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the size of the object with scaling applied.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(Vector2D))]
 		public virtual Vector2D ScaledDimensions
 		{
@@ -1090,6 +1098,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the scaled width of the object.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(float))]
 		public virtual float ScaledWidth
 		{
@@ -1106,6 +1115,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the scaled height of the object.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(float))]
 		public virtual float ScaledHeight
 		{
@@ -1122,6 +1132,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the image that this object is bound with.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(Image), InterpolationMode.None)]
 		public virtual Image Image
 		{
@@ -1139,6 +1150,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the position of the object.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(Vector2D)), EditorRoundValues(), EditorCanDrag()]
 		public virtual Vector2D Position
 		{
@@ -1160,6 +1172,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the rotation angle in degrees.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(float))]
 		public virtual float Rotation
 		{
@@ -1181,6 +1194,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the size of the object.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(Vector2D)), EditorRoundValues()]
 		public virtual Vector2D Size
 		{
@@ -1204,6 +1218,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the width of the object.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(float))]
 		public virtual float Width
 		{
@@ -1221,6 +1236,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the height of the object.
 		/// </summary>
+		/// <remarks>Animations can be applied to this property.</remarks>
 		[Animated(typeof(float))]
 		public virtual float Height
 		{
