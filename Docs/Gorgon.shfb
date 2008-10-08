@@ -1,8 +1,8 @@
-﻿<project schemaVersion="1.6.0.2">
+﻿<project schemaVersion="1.6.0.7">
     <assemblies>
         <assembly assemblyPath="..\Tools\DialogHelper\bin\Release\DialogHelper.dll" xmlCommentsPath="..\Tools\DialogHelper\bin\Release\DialogHelper.xml" commentsOnly="False" />
-        <assembly assemblyPath="..\Gorgon\bin64\Release\Gorgon.dll" xmlCommentsPath="..\Gorgon\bin64\Release\Gorgon.xml" commentsOnly="False" />
-        <assembly assemblyPath="..\Tools\GorgonFramework\bin64\Release\GorgonFramework.dll" xmlCommentsPath="..\Tools\GorgonFramework\bin64\Release\GorgonFramework.xml" commentsOnly="False" />
+        <assembly assemblyPath="..\Gorgon\bin\Release\Gorgon.dll" xmlCommentsPath="..\Gorgon\bin\Release\Gorgon.xml" commentsOnly="False" />
+        <assembly assemblyPath="..\Tools\GorgonFramework\bin\Release\GorgonFramework.dll" xmlCommentsPath="..\Tools\GorgonFramework\bin\Release\GorgonFramework.xml" commentsOnly="False" />
     </assemblies>
     <namespaceSummaries>
         <namespaceSummaryItem name="" isDocumented="False" />
@@ -27,7 +27,7 @@ But really, these are internal functions for use by Gorgon only.  They should ra
         <namespaceSummaryItem name="GorgonLibrary.Properties" isDocumented="False" />
         <namespaceSummaryItem name="GorgonLibrary.Serialization" isDocumented="True">This namespace contains objects to serialize and/or deserialize objects to and from a storage medium.</namespaceSummaryItem>
     </namespaceSummaries>
-    <additionalContent>
+    <additionalContent contentSiteMap=".\HelpMap.sitemap" topicFileTransform="">
         <contentItem sourcePath=".\Content\*.*" destPath="Content\" excludeItems="False" />
     </additionalContent>
     <dependencies>
@@ -49,7 +49,7 @@ But really, these are internal functions for use by Gorgon only.  They should ra
         </filter>
     </apiFilter>
     <ProjectSummary />
-    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors</MissingTags>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, TypeParameter</MissingTags>
     <VisibleItems>ExplicitInterfaceImplementations, InheritedMembers, Protected</VisibleItems>
     <HtmlHelp1xCompilerPath path="" />
     <HtmlHelp2xCompilerPath path="" />
@@ -58,12 +58,11 @@ But really, these are internal functions for use by Gorgon only.  They should ra
     <WorkingPath path="" />
     <CleanIntermediates>True</CleanIntermediates>
     <KeepLogFile>True</KeepLogFile>
+    <BuildLogFile path="" />
     <HelpFileFormat>HtmlHelp1x</HelpFileFormat>
-    <PurgeDuplicateTopics>True</PurgeDuplicateTopics>
     <CppCommentsFixup>False</CppCommentsFixup>
     <FrameworkVersion>3.5</FrameworkVersion>
-    <BinaryTOC>True</BinaryTOC>
-    <IncludeFavorites>True</IncludeFavorites>
+    <IndentHtml>False</IndentHtml>
     <Preliminary>True</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>Reference</RootNamespaceTitle>
@@ -73,6 +72,7 @@ But really, these are internal functions for use by Gorgon only.  They should ra
     <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
     <CopyrightText>Copyright © 2008 - Licensed under the MIT license by Michael Winsor (Tape_Worm).  See MIT.txt for details.</CopyrightText>
     <FeedbackEMailAddress>tape_worm@tape-worm.net</FeedbackEMailAddress>
+    <FeedbackEMailLinkText />
     <HeaderText />
     <FooterText>Gorgon v1.1.x (BETA)</FooterText>
     <ProjectLinkType>Local</ProjectLinkType>
@@ -82,7 +82,11 @@ But really, these are internal functions for use by Gorgon only.  They should ra
     <NamingMethod>Guid</NamingMethod>
     <SyntaxFilters>Standard</SyntaxFilters>
     <ShowFeedbackControl>True</ShowFeedbackControl>
+    <BinaryTOC>True</BinaryTOC>
+    <IncludeFavorites>True</IncludeFavorites>
+    <CollectionTocStyle>Hierarchical</CollectionTocStyle>
+    <IncludeStopWordList>True</IncludeStopWordList>
+    <PlugInNamespaces>ms.vsipcc+, ms.vsexpresscc+</PlugInNamespaces>
+    <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
-    <ContentSiteMap path=".\HelpMap.sitemap" />
-    <TopicFileTransform path="" />
 </project>
