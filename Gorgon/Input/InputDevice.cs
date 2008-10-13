@@ -37,16 +37,10 @@ namespace GorgonLibrary.InputDevices
 	public abstract class InputDevice
 	{
 		#region Variables.
-		private Input _owner;				// Input device interface owner.
-
-		/// <summary>Flag to indicate that the device is bound.</summary>
-		protected bool _bound;
-		/// <summary>Flag to indicate that the device has been acquired.</summary>
-		protected bool _acquired;
-		/// <summary>Flag to indicate whether the owning window has exclusive access to the device.</summary>
-		protected bool _exclusive;
-		/// <summary>Flag to indicate whether this device will continue to send data even when the window is not focused.</summary>
-		protected bool _background;
+		private bool _bound;				// Flag to indicate whether the device was bound.
+		private bool _acquired;				// Flag to indicate whether the device is in an acquired state.
+		private bool _exclusive;			// Flag to indicate whether the device has exclusive access to the device.
+		private bool _background;			// Flag to indicate whether the device will poll in the background.
 		#endregion
 
 		#region Properties.
@@ -55,10 +49,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		protected Input InputInterface
 		{
-			get
-			{
-				return _owner;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -72,13 +64,15 @@ namespace GorgonLibrary.InputDevices
 			}
 			set
 			{
+				_acquired = value;
+
 				if (_bound)
 				{
 					if (value)
 						BindDevice();
 					else
 						UnbindDevice();					
-				}
+				}				
 			}
 		}
 
@@ -127,11 +121,13 @@ namespace GorgonLibrary.InputDevices
 			}
 			set
 			{
+				Acquired = value;
+
 				if (value)
 					BindDevice();
 				else
 					UnbindDevice();
-
+				
 				_bound = value;
 			}
 		}
@@ -172,7 +168,7 @@ namespace GorgonLibrary.InputDevices
 		{
 			if (owner == null)
 				throw new ArgumentNullException("owner");
-			_owner = owner;
+			InputInterface = owner;
 		}
 		#endregion
 	}

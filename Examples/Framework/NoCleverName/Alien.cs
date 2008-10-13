@@ -251,6 +251,7 @@ namespace GorgonLibrary.Example
 		public Alien(Sprite alienSprite, Sprite blasterSprite, Sprite shieldSprite)
 		{
 			_alienSprite = alienSprite;
+			_alienSprite.Animations[0].AnimationState = AnimationState.Playing;
 			_alienBlaster = blasterSprite;
 			_alienShield = shieldSprite;
 			_alienSprite.Scale = MainForm.SpriteScales;

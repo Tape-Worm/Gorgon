@@ -442,7 +442,7 @@ namespace GorgonLibrary.Example
 
 				// Set up title screen.
 				_title = new TitleAndSetup(_font, Input);
-				_title.TitleClosed += new EventHandler(_title_TitleClosed);
+				_title.TitleClosed += new EventHandler(_title_TitleClosed);				
 			}
 			catch (Exception ex)
 			{
