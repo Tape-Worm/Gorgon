@@ -41,6 +41,7 @@ namespace GorgonLibrary.InputDevices
 		: InputDevice
 	{
 		#region Variables.
+		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private bool _cursorVisible = true;									// Is the mouse cursor visible?
 		private Vector2D _doubleClickRange = new Vector2D(2.0f, 2.0f);		// Range that a double click is valid within.
 		private Vector2D _position;											// Mouse horizontal and vertical position.
@@ -320,6 +321,21 @@ namespace GorgonLibrary.InputDevices
 				MouseInputEventArgs e = new MouseInputEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
 				MouseUp(this, e);
 			}
+		}
+
+		/// <summary>
+		/// Function to perform clean up on the object.
+		/// </summary>
+		protected internal override void Dispose()
+		{
+			if (!_disposed)
+			{
+				if (!CursorVisible)
+					System.Windows.Forms.Cursor.Show();
+				_disposed = true;
+			}
+
+			base.Dispose();
 		}
 
 		/// <summary>
