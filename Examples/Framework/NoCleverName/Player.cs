@@ -465,6 +465,9 @@ namespace GorgonLibrary.Example
 			float hScale = 0.0f;			// Horizontal scale.
 			float vScale = 0.0f;			// Vertical scale.
 
+			playerSprite.Animations[0].AnimationState = AnimationState.Playing;
+			missileSprite.Animations[0].AnimationState = AnimationState.Playing;
+
 			playerSprite.Scale = MainForm.SpriteScales;
 			missileSprite.Scale = MainForm.SpriteScales;
 
