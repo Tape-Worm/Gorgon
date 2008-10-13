@@ -37,42 +37,8 @@ namespace GorgonLibrary.InputDevices
 		: InputDevice 
 	{
 		#region Variables.
-		private string _name = string.Empty;		// Name of the joystick.
-
-		/// <summary>Axis values.</summary>
-		protected float[] _axisValues = null;
-		/// <summary>Axis directions.</summary>
-		protected JoystickDirections[] _axisDirections = null;
-		/// <summary>Values for POV hat.</summary>
-		protected int[] _povValues = null;
-		/// <summary>Directions for POV hat.</summary>
-		protected JoystickDirections[] _povDirections = null;
-		/// <summary>Button values.</summary>
-		protected bool[] _buttons = null;
-		/// <summary>Number of POV hats.</summary>
-		protected int _povCount;
-		/// <summary>Range of motion for the joystick axes.</summary>
-		protected MinMaxRange[] _axisRanges = null;
-		/// <summary>Number of axes on the joystick.</summary>
-		protected int _axisCount;
-		/// <summary>Number of buttons the joystick.</summary>
-		protected int _buttonCount;
-		/// <summary>Manufacturer ID.</summary>
-		protected int _manufacturerID;
-		/// <summary>Product ID.</summary>
-		protected int _productID;
-		/// <summary>Flag to indicate whether the joystick has a rudder or not.</summary>
-		protected bool _hasRudder;
-		/// <summary>Flag to indicate whether the joystick has a POV hat or not.</summary>
-		protected bool _hasPOV;
-		/// <summary>Flag to indicate whether the joystick has an unrestricted POV or not.</summary>
-		protected bool _unrestrictedPOV;
-		/// <summary>Flag to indicate whether the joystick has a Z axis or not.</summary>
-		protected bool _hasZ;
-		/// <summary>Point of view hat only has 4 directions.</summary>
-		protected bool _POV4Directions;
-		/// <summary>Dead zone range for each axis.</summary>
-		protected MinMaxRange[] _deadZone = null;
+		private float[] _axisValues = null;			// Axis values.
+		private bool[] _buttons = null;				// Button values.
 		#endregion
 
 		#region Properties.
@@ -81,10 +47,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public int POVCount
 		{
-			get
-			{
-				return _povCount;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -97,10 +61,8 @@ namespace GorgonLibrary.InputDevices
 		/// will not register any movement because the entire range is considered 'dead'.</para></remarks>
 		public virtual MinMaxRange[] DeadZone
 		{
-			get
-			{
-				return _deadZone;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -116,6 +78,10 @@ namespace GorgonLibrary.InputDevices
 				PollJoystick();
 				return _axisValues;
 			}
+			protected set
+			{
+				_axisValues = value;
+			}
 		}
 
 		/// <summary>
@@ -126,10 +92,8 @@ namespace GorgonLibrary.InputDevices
 		/// <see cref="GorgonLibrary.InputDevices.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
 		public JoystickDirections[] AxisDirection
 		{
-			get
-			{
-				return _axisDirections;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -137,10 +101,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public int[] POV
 		{
-			get
-			{
-				return _povValues;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -148,10 +110,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public JoystickDirections[] POVDirection
 		{
-			get
-			{
-				return _povDirections;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -163,6 +123,10 @@ namespace GorgonLibrary.InputDevices
 			{
 				PollJoystick();
 				return _buttons;
+			}
+			protected set
+			{
+				_buttons = value;
 			}
 		}
 
@@ -215,10 +179,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public string Name
 		{
-			get
-			{
-				return _name;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -226,10 +188,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public int AxisCount
 		{
-			get
-			{
-				return _axisCount;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -237,10 +197,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public int ButtonCount
 		{
-			get
-			{
-				return _buttonCount;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -248,10 +206,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public int ManufacturerID
 		{
-			get
-			{
-				return _manufacturerID;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -259,10 +215,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public int ProductID
 		{
-			get
-			{
-				return _productID;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -270,10 +224,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public MinMaxRange[] AxisRanges
 		{
-			get
-			{
-				return _axisRanges;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -281,10 +233,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public bool HasRudder
 		{
-			get
-			{
-				return _hasRudder;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -292,10 +242,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public bool HasPOV
 		{
-			get
-			{
-				return _hasPOV;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -303,10 +251,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public bool POVHas4Directions
 		{
-			get
-			{
-				return _POV4Directions;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -314,10 +260,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public bool UnrestrictedPOV
 		{
-			get
-			{
-				return _unrestrictedPOV;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -325,14 +269,33 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public bool HasZAxis
 		{
-			get
-			{
-				return _hasZ;
-			}
+			get;
+			protected set;
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to set the data for a specific axis.
+		/// </summary>
+		/// <param name="index">Index of the axis to set.</param>
+		/// <param name="value">Value to set.</param>
+		/// <returns>Axis data.</returns>
+		protected void SetAxisData(int index, float value)
+		{
+			_axisValues[index] = value;
+		}
+
+		/// <summary>
+		/// Function to set the pressed value for a specific button.
+		/// </summary>
+		/// <param name="index">Index of the button to set.</param>
+		/// <param name="value">Value to set.</param>
+		protected void SetButtonValue(int index, bool value)
+		{
+			_buttons[index] = value;
+		}
+
 		/// <summary>
 		/// Function to poll the joystick for data.
 		/// </summary>
@@ -345,7 +308,7 @@ namespace GorgonLibrary.InputDevices
 		/// <param name="deadzoneRange">Range to set for the joystick dead zone.</param>
 		public void SetDeadzone(int axis, int deadzoneRange)
 		{
-			int range = _axisRanges[axis].Range / 2;		// Axis range.
+			int range = AxisRanges[axis].Range / 2;		// Axis range.
 			DeadZone[axis] = new MinMaxRange(range - deadzoneRange, range + deadzoneRange);
 		}
 		#endregion
@@ -359,7 +322,7 @@ namespace GorgonLibrary.InputDevices
 		protected internal Joystick(string name, Input owner)
 			: base(owner)
 		{
-			_name = name;
+			Name = name;
 		}
 		#endregion
 	}

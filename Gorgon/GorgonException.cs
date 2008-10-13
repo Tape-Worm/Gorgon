@@ -292,7 +292,7 @@ namespace GorgonLibrary
 		/// <param name="message">Message data to append to the error.</param>
 		/// <param name="inner">The inner exception.</param>
 		public GorgonException(GorgonError result, string message, Exception inner)
-			: base(result.Description + (string.IsNullOrEmpty(message) ? "\n"+ message : string.Empty), inner)
+			: base(result.Description + (!string.IsNullOrEmpty(message) ? "\n"+ message : string.Empty), inner)
 		{
 			ResultCode = result;
 		}
@@ -303,7 +303,7 @@ namespace GorgonLibrary
 		/// <param name="result">The result.</param>
 		/// <param name="message">Message data to append to the error.</param>
 		public GorgonException(GorgonError result, string message)
-			: base(result.Description + (string.IsNullOrEmpty(message) ? "\n" + message : string.Empty))
+			: base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty))
 		{
 			ResultCode = result;
 		}

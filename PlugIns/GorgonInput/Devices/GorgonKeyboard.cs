@@ -162,11 +162,11 @@ namespace GorgonLibrary.InputDevices
 			_device.Flags = RawInputDeviceFlags.None;
 
 			// Enable background access.
-			if ((_background) || (_exclusive))
+			if ((AllowBackground) || (Exclusive))
 				_device.Flags |= RawInputDeviceFlags.InputSink;
 
 			// Enable exclusive access.
-			if (_exclusive)
+			if (Exclusive)
 				_device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
 
 			_device.WindowHandle = InputInterface.Window.Handle;
@@ -174,8 +174,6 @@ namespace GorgonLibrary.InputDevices
 			// Attempt to register the device.
 			if (!Win32API.RegisterRawInputDevices(_device))
 				throw new GorgonException(GorgonErrors.CannotBindInputDevice, "Failed to bind the keyboard device.");
-
-			_acquired = true;
 		}
 
 		/// <summary>
@@ -191,8 +189,6 @@ namespace GorgonLibrary.InputDevices
 			// Attempt to register the device.
 			if (!Win32API.RegisterRawInputDevices(_device))
 				throw new GorgonException(GorgonErrors.CannotBindInputDevice, "Failed to bind the keyboard device.");
-
-			_acquired = false;
 		}
 		#endregion
 
