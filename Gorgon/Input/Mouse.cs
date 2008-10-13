@@ -41,26 +41,13 @@ namespace GorgonLibrary.InputDevices
 		: InputDevice
 	{
 		#region Variables.
-		private bool _cursorVisible = true;		// Is the mouse cursor visible?
-
-		/// <summary>Double click delay in milliseconds.</summary>
-		protected int _doubleClickDelay = 600;
-		/// <summary>Range that a double click is valid within.</summary>
-		protected Vector2D _doubleClickRange = new Vector2D(2.0f, 2.0f);
-		/// <summary>Mouse horizontal and vertical position.</summary>
-		protected Vector2D _position;
-		/// <summary>Mouse wheel position.</summary>
-		protected int _wheel;
-		/// <summary>Mouse button flags.</summary>
-		protected MouseButtons _button;
-		/// <summary>Mouse relative position.</summary>
-		protected Vector2D _relativePosition;
-		/// <summary>Mouse wheel delta.</summary>
-		protected int _relativeWheel;
-		/// <summary>Constraints for the mouse position.</summary>
-		protected RectangleF _positionConstraint;
-		/// <summary>Constraints for the mouse wheel.</summary>
-		protected Point _wheelConstraint;
+		private bool _cursorVisible = true;									// Is the mouse cursor visible?
+		private Vector2D _doubleClickRange = new Vector2D(2.0f, 2.0f);		// Range that a double click is valid within.
+		private Vector2D _position;											// Mouse horizontal and vertical position.
+		private int _wheel;													// Mouse wheel position.
+		private Vector2D _relativePosition = Vector2D.Zero;					// Mouse relative position.
+		private RectangleF _positionConstraint;								// Constraints for the mouse position.
+		private Point _wheelConstraint;										// Constraints for the mouse wheel.
 		#endregion
 
 		#region Events.
@@ -118,14 +105,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public int DoubleClickDelay
 		{
-			get
-			{
-				return _doubleClickDelay;
-			}
-			set
-			{
-				_doubleClickDelay = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -206,10 +187,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public int WheelDelta
 		{
-			get
-			{
-				return _relativeWheel;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -221,6 +200,10 @@ namespace GorgonLibrary.InputDevices
 			{
 				ConstrainData();
 				return _relativePosition;
+			}
+			protected set
+			{
+				_relativePosition = value;
 			}
 		}
 
@@ -261,14 +244,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public MouseButtons Button
 		{
-			get
-			{
-				return _button;
-			}
-			set
-			{
-				_button = value;
-			}
+			get;
+			set;
 		}
 		#endregion
 
@@ -298,7 +275,7 @@ namespace GorgonLibrary.InputDevices
 			if (MouseWheelMove != null)
 			{
 				ConstrainData();
-				MouseInputEventArgs e = new MouseInputEventArgs(_button, MouseButtons.None, _position, _wheel, _relativePosition, _relativeWheel, 0);
+				MouseInputEventArgs e = new MouseInputEventArgs(Button, MouseButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				MouseWheelMove(this, e);
 			}
 		}
@@ -311,7 +288,7 @@ namespace GorgonLibrary.InputDevices
 			if (MouseMove != null)
 			{
 				ConstrainData();
-				MouseInputEventArgs e = new MouseInputEventArgs(_button, MouseButtons.None, _position, _wheel, _relativePosition, _relativeWheel, 0);
+				MouseInputEventArgs e = new MouseInputEventArgs(Button, MouseButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				MouseMove(this, e);
 			}
 		}
@@ -325,7 +302,7 @@ namespace GorgonLibrary.InputDevices
 			if (MouseDown != null)
 			{
 				ConstrainData();
-				MouseInputEventArgs e = new MouseInputEventArgs(button, _button, _position, _wheel, _relativePosition, _relativeWheel, 0);
+				MouseInputEventArgs e = new MouseInputEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
 				MouseDown(this, e);
 			}
 		}
@@ -340,7 +317,7 @@ namespace GorgonLibrary.InputDevices
 			if (MouseUp != null)
 			{
 				ConstrainData();
-				MouseInputEventArgs e = new MouseInputEventArgs(button, _button, _position, _wheel, _relativePosition, _relativeWheel, clickCount);
+				MouseInputEventArgs e = new MouseInputEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
 				MouseUp(this, e);
 			}
 		}
@@ -385,7 +362,7 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		public void ResetButtons()
 		{
-			_button = MouseButtons.None;
+			Button = MouseButtons.None;
 		}
 
 		/// <summary>
@@ -455,9 +432,10 @@ namespace GorgonLibrary.InputDevices
 		protected internal Mouse(Input owner)
 			: base(owner)
 		{
+			DoubleClickDelay = 600;
 
 			_position = new Vector2D(owner.Window.ClientRectangle.Width / 2, owner.Window.ClientRectangle.Height / 2);
-			_button = MouseButtons.None;
+			Button = MouseButtons.None;
 			_positionConstraint = RectangleF.Empty;
 			_wheelConstraint = Point.Empty;
 
