@@ -127,7 +127,10 @@ namespace GorgonLibrary.InputDevices
 						Forms.Cursor.Show();
 				}
 				else
-					Forms.Cursor.Hide();
+				{
+					if (_cursorVisible)
+						Forms.Cursor.Hide();
+				}
 
 				_cursorVisible = value;
 			}
@@ -144,10 +147,9 @@ namespace GorgonLibrary.InputDevices
 			}
 			set
 			{
+				base.Exclusive = value;
 				if (value)
 					CursorVisible = false;
-				
-				base.Exclusive = value;
 			}
 		}
 
