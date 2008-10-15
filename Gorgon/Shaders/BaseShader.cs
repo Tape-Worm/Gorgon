@@ -740,7 +740,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
+					throw GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
 				}
 				if (functionHandle == null)
 					throw new GorgonException(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' does not contain the function '" + functionName + "'.");
