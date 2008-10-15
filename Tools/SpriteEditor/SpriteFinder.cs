@@ -218,7 +218,7 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Repackage(GorgonErrors.CannotCreate, "Cannot create the GDI+ image for extraction.", ex);
+				throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Cannot create the GDI+ image for extraction.", ex);
 			}
 		}
 
