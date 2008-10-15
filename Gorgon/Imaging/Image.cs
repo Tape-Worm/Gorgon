@@ -290,7 +290,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					GorgonException.Repackage(GorgonErrors.CannotLock, ex);
+					throw GorgonException.Repackage(GorgonErrors.CannotLock, ex);
 				}
 			}
 			#endregion
@@ -637,7 +637,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch(Exception ex)
 			{
-				GorgonException.Repackage(GorgonErrors.CannotCreate, "Unable to create the D3D texture object.", ex);
+				throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Unable to create the D3D texture object.", ex);
 			}
 
 			_format = Converter.ConvertD3DImageFormat(surfaceDesc.Format);
@@ -1556,7 +1556,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					GorgonException.Repackage(GorgonErrors.CannotUpdate, "Cannot update the D3D texture object.", ex);
+					throw GorgonException.Repackage(GorgonErrors.CannotUpdate, "Cannot update the D3D texture object.", ex);
 				}
 
 				// Clean up the previous image.
@@ -1689,7 +1689,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while trying to create the D3D texture.",ex);
+					throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while trying to create the D3D texture.",ex);
 				}
 				surfaceInfo = _d3dImage.GetLevelDescription(0);
 				_actualWidth = surfaceInfo.Width;
@@ -1855,7 +1855,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					GorgonException.Repackage(GorgonErrors.CannotLoad, "Could not load the D3D texture from the stream.", ex);
+					throw GorgonException.Repackage(GorgonErrors.CannotLoad, "Could not load the D3D texture from the stream.", ex);
 				}
 				surfaceInfo = _d3dImage.GetLevelDescription(0);
 				_actualWidth = surfaceInfo.Width;

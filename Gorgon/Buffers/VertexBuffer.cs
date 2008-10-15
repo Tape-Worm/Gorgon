@@ -152,7 +152,7 @@ namespace GorgonLibrary.Internal
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Repackage(GorgonErrors.CannotCreate, "There was an error creating the D3D vertex buffer.", ex);
+				throw GorgonException.Repackage(GorgonErrors.CannotCreate, "There was an error creating the D3D vertex buffer.", ex);
 			}
 		}
 
