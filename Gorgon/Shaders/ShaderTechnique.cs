@@ -120,7 +120,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Repackage(GorgonErrors.CannotReadData, "Error trying to retrieve the technique information.", ex);
+				throw GorgonException.Repackage(GorgonErrors.CannotReadData, "Error trying to retrieve the technique information.", ex);
 			}
 		}
 		#endregion

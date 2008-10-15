@@ -58,7 +58,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while retrieving the HLSL techniques.", ex);
+				throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while retrieving the HLSL techniques.", ex);
 			}
 
 			// Get technique handle.

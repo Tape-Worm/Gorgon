@@ -104,7 +104,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					GorgonException.Repackage(GorgonErrors.CannotCreate, "Error trying to retrieve the shader parameters.",ex);
+					throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Error trying to retrieve the shader parameters.",ex);
 				}			
 
 				// Get the parameter.
@@ -328,7 +328,7 @@ namespace GorgonLibrary.Graphics
 				if (_effect != null)
 					_effect.Dispose();
 
-				GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
+				throw GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
 			}
 			finally
 			{
@@ -394,7 +394,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
+					throw GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
 				}
 
 				return new ShaderFunction(function, this, byteCode, shaderTarget);
@@ -820,7 +820,7 @@ namespace GorgonLibrary.Graphics
 					}
 					catch (Exception ex)
 					{
-						GorgonException.Repackage(GorgonErrors.CannotLoad, "The shader '" + Name + "' had loading errors.\n\nErrors:\n" + errors, ex);
+						throw GorgonException.Repackage(GorgonErrors.CannotLoad, "The shader '" + Name + "' had loading errors.\n\nErrors:\n" + errors, ex);
 					}
 
 					// Add techniques and passes.
