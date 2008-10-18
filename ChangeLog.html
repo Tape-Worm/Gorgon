@@ -122,6 +122,9 @@
 	<pre>
 October 13/2008 - Version - Current
 ================================
+* Fixed an issue where having a non-null CurrentShader would cause a null
+  reference exception when Gorgon.Terminate() is called.
+  
 * Fixed a problem when compiling shaders.  Shader errors were not being thrown
   as exceptions.
 

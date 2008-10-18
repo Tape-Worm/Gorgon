@@ -52,7 +52,10 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return _vertices.DataOffset;
+				if (_vertices != null)
+					return _vertices.DataOffset;
+
+				return 0;
 			}
 			set
 			{
@@ -68,7 +71,9 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return _indices.DataOffset;
+				if (_indices != null)
+					return _indices.DataOffset;
+				return 0;
 			}
 		}
 
@@ -79,7 +84,9 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return (_vertices.DataWritten * 6) / 4;
+				if (_vertices != null)
+					return (_vertices.DataWritten * 6) / 4;
+				return 0;
 			}
 		}
 
@@ -90,7 +97,9 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return _vertices.DataWritten;
+				if (_vertices != null)
+					return _vertices.DataWritten;
+				return 0;
 			}
 			set
 			{
@@ -122,7 +131,9 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return _vertices.VertexBuffer;
+				if (_vertices != null)
+					return _vertices.VertexBuffer;
+				return null;
 			}
 		}
 
@@ -134,7 +145,9 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return _indices.IndexBuffer;
+				if (_indices != null)
+					return _indices.IndexBuffer;
+				return null;
 			}
 		}
 
@@ -173,7 +186,9 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return _vertices.Count;
+				if (_vertices != null)
+					return _vertices.Count;
+				return 0;
 			}
 		}
 		#endregion
