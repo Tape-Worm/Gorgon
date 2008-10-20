@@ -52,6 +52,8 @@ namespace GorgonLibrary.Graphics
 		private bool _isDisposed;										// Flag to indicate that the render has been disposed.
 		private D3D9.Device _device = null;								// Device object.
 		private Matrix _currentProjection = Matrix.Identity;			// Current projection matrix.
+		private IndexBuffer _currentIndexBuffer = null;					// Current index buffer.
+		private VertexBuffer _currentVertexBuffer = null;				// Current vertex buffer.
 		#endregion
 
 		#region Properties.
@@ -305,8 +307,18 @@ namespace GorgonLibrary.Graphics
 		/// <param name="indices">The index buffer.</param>
 		public void SetIndexBuffer(IndexBuffer indices)
 		{
-            if (D3DDevice != null)
-                D3DDevice.Indices = indices.D3DIndexBuffer;
+			if (D3DDevice == null)
+				return;
+
+			if (_currentIndexBuffer != indices)
+			{
+				_currentIndexBuffer = indices;
+
+				if (_currentIndexBuffer != null)
+					D3DDevice.Indices = _currentIndexBuffer.D3DIndexBuffer;
+				else
+					D3DDevice.Indices = null;
+			}
 		}
 
 		/// <summary>
@@ -318,10 +330,15 @@ namespace GorgonLibrary.Graphics
 			if (D3DDevice == null)
 				return;
 
-			if (vertexData != null)
-				D3DDevice.SetStreamSource(0, vertexData.D3DVertexBuffer, 0, vertexData.VertexSize);
-			else
-				D3DDevice.SetStreamSource(0, null, 0, 0);
+			if (_currentVertexBuffer != vertexData)
+			{
+				_currentVertexBuffer = vertexData;
+
+				if (_currentVertexBuffer != null)
+					D3DDevice.SetStreamSource(0, _currentVertexBuffer.D3DVertexBuffer, 0, _currentVertexBuffer.VertexSize);
+				else
+					D3DDevice.SetStreamSource(0, null, 0, 0);
+			}
 		}
 
 		/// <summary>
@@ -366,6 +383,7 @@ namespace GorgonLibrary.Graphics
 
 				// Turn off current vertex type (should get reset on next render pass).
 				SetVertexType(null);
+				SetIndexBuffer(null);
 
 				// Reset the current render target.
 				Gorgon.CurrentRenderTarget = null;

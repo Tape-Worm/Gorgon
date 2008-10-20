@@ -939,7 +939,10 @@ namespace GorgonLibrary.Graphics
 			aabbUpdate = Drawing.RectangleF.Empty;
 
 			// Calculate the number of vertices.
-			vertexCount = _text.Length * 8;
+			if (_shadowed)
+				vertexCount = _text.Length * 8;
+			else
+				vertexCount = _text.Length * 4;
 
 			// If no vertices, do nothing.
 			if (vertexCount == 0)
