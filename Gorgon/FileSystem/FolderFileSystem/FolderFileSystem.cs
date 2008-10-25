@@ -41,6 +41,11 @@ namespace GorgonLibrary.FileSystems
     public class FolderFileSystem
         : FileSystem
 	{
+		#region Variables.
+		private List<FileSystemPath> _deletedPaths = null;				// List of deleted paths.
+		private List<FileSystemFile> _deletedFiles = null;				// List of deleted files.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the header for the file system.
@@ -57,6 +62,30 @@ namespace GorgonLibrary.FileSystems
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function used by custom file systems to perform custom actions when a path is deleted.
+		/// </summary>
+		/// <param name="filePath">Path to be deleted.</param>
+		protected override void OnPathDelete(FileSystemPath filePath)
+		{			
+			base.OnPathDelete(filePath);
+
+			if (!_deletedPaths.Contains(filePath))
+				_deletedPaths.Add(filePath);
+		}
+
+		/// <summary>
+		/// Funciton used by custom file systems to perform custom actions when a file is deleted.
+		/// </summary>
+		/// <param name="file">File to delete.</param>
+		protected override void OnFileDelete(FileSystemFile file)
+		{
+			base.OnFileDelete(file);
+
+			if (!_deletedFiles.Contains(file))
+				_deletedFiles.Add(file);
+		}
+
 		/// <summary>
 		/// Function to encode object data.
 		/// </summary>
@@ -160,6 +189,59 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
+		/// Function called when the save function is complete.
+		/// </summary>
+		/// <remarks>This function is called at the end of the save function, regardless of whether the save was successful or not.</remarks>
+		protected override void SaveFinalize()
+		{
+			base.SaveFinalize();
+			string rootPath;
+
+			if (!PurgeDeletedFiles)
+			{
+				_deletedPaths.Clear();
+				_deletedFiles.Clear();
+				return;
+			}
+
+			rootPath = Path.GetDirectoryName(Root) ?? string.Empty;
+
+			if (string.IsNullOrEmpty(rootPath))
+				throw new DirectoryNotFoundException("The root path is empty.");
+
+			if (!rootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				rootPath += Path.DirectorySeparatorChar.ToString();
+
+			if (!Directory.Exists(rootPath))
+				throw new DirectoryNotFoundException("The root path '" + rootPath + "' was not found.");
+
+			try
+			{
+				// Destroy all deleted files.
+				foreach (FileSystemFile file in _deletedFiles)
+				{
+					string fileName = Path.GetFullPath(rootPath + file.FullPath);
+
+					if (File.Exists(fileName))
+						File.Delete(fileName);
+				}
+
+				foreach (FileSystemPath path in _deletedPaths)
+				{
+					string pathName = Path.GetFullPath(rootPath + path.FullPath);
+
+					if (Directory.Exists(pathName))					
+						Directory.Delete(pathName, true);
+				}
+			}
+			finally
+			{
+				_deletedFiles.Clear();
+				_deletedPaths.Clear();
+			}
+		}
+
+		/// <summary>
 		/// Function to save the file data.
 		/// </summary>
 		/// <param name="filePath">Root of the file system on the disk.</param>
@@ -176,7 +258,7 @@ namespace GorgonLibrary.FileSystems
 
 			try
 			{
-				if (filePath.EndsWith(@"\"))
+				if (filePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
 					filePath = Path.GetDirectoryName(filePath) ?? string.Empty;
 
 				// Get the path to the file.
@@ -217,10 +299,20 @@ namespace GorgonLibrary.FileSystems
 			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
 				path += Path.DirectorySeparatorChar;
 
+			path = Path.GetFullPath(path);
+
+			if (path.EndsWith(Path.VolumeSeparatorChar.ToString() + Path.DirectorySeparatorChar.ToString()))
+				throw new ArgumentException("Cannot mount the root of the file system.");
+
 			if (!Directory.Exists(path))
 				throw new DirectoryNotFoundException("The folder file system path '" + path + "' was not found.");
 
+			_deletedPaths.Clear();
+			_deletedFiles.Clear();
 			InitializeIndex(path);
+
+			if (!File.Exists(Root + "Header.folderSystem"))
+				throw new GorgonException(GorgonErrors.CannotLoad, "The file system header data was not found at the root location: '" + Root + "'.");
 
 			// Load the index file.
 			if (!File.Exists(Root + "FileSystem.Index.xml"))
@@ -242,6 +334,8 @@ namespace GorgonLibrary.FileSystems
         public FolderFileSystem(string name, FileSystemProvider provider)
             : base(name, provider)
         {
+			_deletedFiles = new List<FileSystemFile>();
+			_deletedPaths = new List<FileSystemPath>();
         }
         #endregion
     }

@@ -120,6 +120,37 @@
 <div>
 	<h1>Gorgon Change Log</h1><h2>1.1.x - Ionian</h2><hr/>
 	<pre>
+October 24/2008 - Version - Current
+================================
+* Updated FolderFileSystemOfPower example to display the same help text that's in the
+  bzip filesystem version.
+  
+- Removed Delete() and DeletePath() functions from the file system object, they
+  serve no purpose.
+
+* The file system will store this purge flag per file system.  This requires a change
+  to the file system index file and changes the header value from GORFS1.0 to GORFS1.1.
+  As a consequence v1.0.x of Gorgon will not be able to read GORFS1.1 filesystems.
+  However v1.1.x of Gorgon will read GORFS1.0 and GORFS1.1 just fine.
+
++ Added a Purge button to folder file system windows in the file system editor.
+  When checked this will tell the file system to purge any deleted files and/or
+  paths from the actual file system.  Otherwise it will be up to the user to clean
+  up any left over files/paths after delete.  This will not appear for packed
+  filesystems.
+
++ Added a PurgeDeletedFiles property to the FileSystem object.  This allows the 
+  more paranoid user to handle the file system deletes themselves.  This only
+  works on folder file systems.  Packed file systems will purge deleted data
+  regardless of this.
+
++ Added two new protected functions to the file system object:
+  OnPathDelete and OnFileDelete.
+  These functions are called when a file is deleted from the filesystem.  These
+  functions can be overridden by the file system type to perform specific
+  actions when a file or path is deleted.  This will allow folder file systems
+  to actually update the real file system when an item is deleted.
+
 October 19/2008 - Version - v1.1.x BETA - Update #2
 ================================
 * Making small optimizations to the rendering code.

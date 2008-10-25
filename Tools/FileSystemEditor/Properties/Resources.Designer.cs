@@ -95,6 +95,13 @@ namespace GorgonLibrary.FileSystems.Tools.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap delete2 {
+            get {
+                object obj = ResourceManager.GetObject("delete2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap disk_blue {
             get {
                 object obj = ResourceManager.GetObject("disk_blue", resourceCulture);
