@@ -240,6 +240,17 @@ namespace GorgonLibrary.FileSystems.Tools
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Click event of the buttonPurge control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonPurge_Click(object sender, EventArgs e)
+		{
+			if (_fileSystem != null)
+				_fileSystem.PurgeDeletedFiles = buttonPurge.Checked;
+		}
+
+		/// <summary>
 		/// Function to check to see if a file should be overwritten.
 		/// </summary>
 		/// <param name="fileName">File to check.</param>
@@ -280,6 +291,17 @@ namespace GorgonLibrary.FileSystems.Tools
                 buttonChangeAuth.Enabled = true;
             else
                 buttonChangeAuth.Enabled = false;
+
+			if (_fileSystem != null)
+			{
+				buttonPurge.Enabled = !_fileSystem.Provider.IsPackedFile;
+				buttonPurge.Checked = _fileSystem.PurgeDeletedFiles;
+			}
+			else
+			{
+				buttonPurge.Checked = false;
+				buttonPurge.Visible = false;
+			}
 
 			if ((_fileSystem != null) && (_rootPath != string.Empty))
 				Text = "File System - " + _rootPath + " [" + _fileSystem.Provider.Name + "]";
