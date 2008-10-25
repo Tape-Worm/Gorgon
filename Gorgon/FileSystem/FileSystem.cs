@@ -68,6 +68,7 @@ namespace GorgonLibrary.FileSystems
 		private FileSystemPath _rootPath = new FileSystemPath(null, @"\");	// File system root path object.
 		private string _root = string.Empty;								// Root file path for the physical file system.
         private IAuthData _authData = null;                                 // Authentication data.
+		private bool _purge = true;											// Purge on delete flag.
         #endregion
 
         #region Properties.
@@ -88,6 +89,25 @@ namespace GorgonLibrary.FileSystems
 		protected abstract string FileSystemHeader
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to purge any deleted files or paths when a folder file system is saved.
+		/// </summary>
+		/// <remarks>This property only applies to folder based file systems.  Packed file systems will always have their deleted items purged regardless of this setting.</remarks>
+		public bool PurgeDeletedFiles
+		{
+			get
+			{
+				if ((_provider != null) && (_provider.IsPackedFile))
+					return false;
+
+				return _purge;
+			}
+			set
+			{
+				_purge = value;
+			}
 		}
 
 		/// <summary>
@@ -353,6 +373,7 @@ namespace GorgonLibrary.FileSystems
 			XmlComment comment = null;					// Comment node.
 			XmlElement fsElement = null;				// File system.
 			XmlElement header = null;					// Header.
+			XmlElement purgeFlag = null;				// Purge flag element.
 
 			// Set up index file.
 			_fileIndex.RemoveAll();
@@ -369,10 +390,24 @@ namespace GorgonLibrary.FileSystems
 			fsElement = _fileIndex.CreateElement("FileSystem");
 			_fileIndex.AppendChild(fsElement);
 
-			// Create header node.
-			header = _fileIndex.CreateElement("Header");
-			header.InnerText = "GORFS1.0";
-			fsElement.AppendChild(header);
+			if (!this.Provider.IsPackedFile)
+			{
+				// Create header node.
+				header = _fileIndex.CreateElement("Header");
+				header.InnerText = "GORFS1.1";
+				fsElement.AppendChild(header);
+
+				purgeFlag = _fileIndex.CreateElement("PurgeDeletedData");
+				purgeFlag.InnerText = PurgeDeletedFiles.ToString();
+				fsElement.AppendChild(purgeFlag);
+			}
+			else
+			{
+				// Create header node.
+				header = _fileIndex.CreateElement("Header");
+				header.InnerText = "GORFS1.0";
+				fsElement.AppendChild(header);
+			}
 		}
 
 		/// <summary>
@@ -385,8 +420,18 @@ namespace GorgonLibrary.FileSystems
 			nodes = _fileIndex.SelectNodes("//Header");
 
 			// Validate the index file.
-			if ((nodes == null) || (nodes.Count == 0) || (string.Compare(nodes[0].InnerText, "gorfs1.0", true) != 0))
+			if ((nodes == null) || (nodes.Count == 0) || ((string.Compare(nodes[0].InnerText, "gorfs1.0", true) != 0) && (string.Compare(nodes[0].InnerText, "gorfs1.1", true) != 0)))
 				throw new GorgonException(GorgonErrors.InvalidFormat, "The file system index is corrupt.");
+
+			if (string.Compare(nodes[0].InnerText, "gorfs1.1", true) == 0)
+			{
+				XmlNode purgeFlag = _fileIndex.SelectSingleNode("//PurgeDeletedData");
+
+				if (purgeFlag != null)
+					PurgeDeletedFiles = Convert.ToBoolean(purgeFlag.InnerText);
+				else
+					PurgeDeletedFiles = true;
+			}
 		}
 
 		/// <summary>
@@ -437,6 +482,22 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="filePath">Path to the file system location.</param>
 		protected virtual void SaveInitialize(string filePath)
+		{
+		}
+
+		/// <summary>
+		/// Function used by custom file systems to perform custom actions when a path is deleted.
+		/// </summary>
+		/// <param name="filePath">Path to be deleted.</param>
+		protected virtual void OnPathDelete(FileSystemPath filePath)
+		{
+		}
+
+		/// <summary>
+		/// Funciton used by custom file systems to perform custom actions when a file is deleted.
+		/// </summary>
+		/// <param name="file">File to delete.</param>
+		protected virtual void OnFileDelete(FileSystemFile file)
 		{
 		}
 
@@ -855,14 +916,18 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="path">File system path to delete.</param>
 		public void DeletePath(string path)
 		{
-			// Start from the top.
-			if ((path == string.Empty) || (path == null))
-				path = @"\";
+			if (string.IsNullOrEmpty(path))
+				throw new ArgumentNullException("path");
 
 			path = FullPathName(path);
 
 			if (!FileSystemPath.ValidPath(path))
 				throw new ArgumentException("The path '" + path + "' is not a valid path.");
+
+			if (path == @"\")
+				OnPathDelete(Paths);
+			else
+				OnPathDelete(GetPath(path));
 
 			// Destroy everything under the root if we specify the root.
 			if (path == @"\")
@@ -874,14 +939,6 @@ namespace GorgonLibrary.FileSystems
 
 			// Get the path list.
 			GetPath(path).Parent.ChildPaths.Remove(path);
-		}
-
-		/// <summary>
-		/// Function to delete all paths and files under the file system.
-		/// </summary>
-		public void DeletePath()
-		{
-			Delete(@"\");
 		}
 
 		/// <summary>
@@ -1007,21 +1064,14 @@ namespace GorgonLibrary.FileSystems
         /// <param name="file">Path and filename of the object to delete.</param>
         public void Delete(string file)
         {
-			// If we pass in nothing then delete all files.			
 			if (string.IsNullOrEmpty(file))
-			{
-				Paths.Files.Clear();
-				return;
-			}
+				throw new ArgumentNullException("file");
 
 			file = FileSystem.FullFileName(file);
 		
 			// Remove all files under the path.
 			if (Path.GetFileName(file) == string.Empty)
-			{
-				GetPath(file).Files.Clear();
-				return;
-			}
+				throw new FileNotFoundException(file);
 
 			if (!FileSystemFile.ValidFilename(file))
 				throw new ArgumentException("'" + file + "' is not a valid filename.");
@@ -1029,20 +1079,12 @@ namespace GorgonLibrary.FileSystems
 			// Check to see if the file exists.
 			if (!FileExists(file))
 				throw new System.IO.FileNotFoundException("The file '" + file + "' was not found in this file system.");
+			
+			OnFileDelete(GetPath(Path.GetDirectoryName(file)).Files[file]);
 
 			// Remove the file.
 			GetPath(Path.GetDirectoryName(file)).Files.Remove(file);
         }
-
-		/// <summary>
-		/// Function to remove ALL file system entries from the file system.
-		/// </summary>
-		public void Delete()
-		{
-			// Remove all entries.
-			foreach (FileSystemFile file in Paths.GetFiles())
-				Delete(file.FullPath);
-		}
 
 		/// <summary>
 		/// Function to return whether an file exists or not.
