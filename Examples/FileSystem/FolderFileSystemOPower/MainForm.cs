@@ -52,10 +52,12 @@ namespace GorgonLibrary.Example
 		private string _text = string.Empty;				// Text to display.
 		private TextSprite _textSprite = null;				// Text sprite.
 		private Font _textFont = null;						// Font for the text.
+		private Font _helpFont = null;						// Font for the help text.
 		private float _textY = 0.0f;						// Text vertical positioning.
 		private FXShader _blur = null;						// Blur shader.
 		private bool _blurBounce = false;					// Blur bounce flag.
 		private float _blurAmount = 1.0f;					// Blur amount.
+		private bool _showHelp = true;						// Flag to show help.
 		#endregion
 
 		#region Methods.
@@ -66,6 +68,8 @@ namespace GorgonLibrary.Example
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (e.KeyCode == Keys.F1)
+				_showHelp = !_showHelp;
 			if (e.KeyCode == Keys.Escape)
 				Close();
 			if (e.KeyCode == Keys.S)
@@ -86,13 +90,16 @@ namespace GorgonLibrary.Example
 			_textSprite.Draw();
 
 			if (_textSprite.Position.Y < -_textSprite.Height)
-				_textY = Gorgon.Screen.Height + (_textFont.LineHeight * 2);
+				_textY = Gorgon.Screen.Height + _textFont.LineHeight;
 
 			// Scroll up.
 			_textY -= (25.0f * e.FrameDeltaTime);
 
 			// Set blur amount.
-			_blur.Parameters["blurAmount"].SetValue(_blurAmount);
+			if (_blur != null)
+				_blur.Parameters["blurAmount"].SetValue(_blurAmount);
+			else
+				_mother2.Opacity = (byte)(34.0f * _blurAmount);
 
 			if (!_blurBounce)
 				_blurAmount += 5.0f * e.FrameDeltaTime;
@@ -114,8 +121,19 @@ namespace GorgonLibrary.Example
 			Gorgon.CurrentShader = _blur;
 			_mother2.Draw();
 			Gorgon.CurrentShader = null;
+			if (_showHelp)
+			{
+				_textSprite.SetPosition(0, 0);
+				_textSprite.Font = _helpFont;
+				_textSprite.Color = Drawing.Color.Blue;
+				_textSprite.Text = "F1 - Show/hide this help text.\nS - Show frame statistics.\nESC - Exit.";
+				_textSprite.Draw();
 
-
+				// Reset our text.
+				_textSprite.Color = Drawing.Color.Black;
+				_textSprite.Text = _text;
+				_textSprite.Font = _textFont;
+			}
 		}
 
 		/// <summary>
@@ -136,6 +154,7 @@ namespace GorgonLibrary.Example
 		{
 			// Create font.
 			_textFont = new Font("Gigi_24pt", "Gigi", 24.0f, true);
+			_helpFont = new Font("Arial_9pt", "Arial", 10.0f, true, true);
 
 			// Create the folder file system.
 			_folderFS = new FolderFileSystem("SomeFolderFileSystem", FileSystemProvider.Create(typeof(FolderFileSystem)));
@@ -160,12 +179,15 @@ namespace GorgonLibrary.Example
 			_mother2 = Sprite.FromFileSystem(_folderFS, @"\Sprites\Mother2c.gorSprite");
 
 			// Get shader.
+			if (Gorgon.CurrentDriver.PixelShaderVersion >= new Version(2, 0))
+			{
 #if DEBUG
-			_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
+				_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
 #else
-			_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
+				_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
 #endif
-			_blur.Parameters["sourceImage"].SetValue(_spriteImage);
+				_blur.Parameters["sourceImage"].SetValue(_spriteImage);
+			}
 
 			// Get poetry.
 			_text = Encoding.UTF8.GetString(_folderFS.ReadFile(@"\SomeText.txt"));
@@ -174,7 +196,7 @@ namespace GorgonLibrary.Example
 			_textSprite = new TextSprite("Poetry", _text, _textFont);
 			_textSprite.Color = Drawing.Color.Black;
 			_textSprite.Refresh();
-			_textY = Gorgon.Screen.Height + (_textFont.LineHeight * 2);
+			_textY = Gorgon.Screen.Height + _textFont.LineHeight;
 		}
 
 		/// <summary>
