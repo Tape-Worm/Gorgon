@@ -742,11 +742,12 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// <param name="source">Source path/name.</param>
 		/// <param name="destination">Destination path/name.</param>
 		/// <returns>TRUE if successful, FALSE if not.</returns>
-		private bool MovePath(string source, string destination)
+		private FileSystemPath MovePath(string source, string destination)
 		{
 			FileSystemPath path = null;								// Path to move.
 			FileSystemPath destPath = null;							// Destination path.
 			FileSystemPath oldParent = null;						// Previous parent.
+			FileSystemPath newPath = null;							// New path copy.
 
 			// Get source.
 			source = FileSystem.FullPathName(source);
@@ -775,19 +776,22 @@ namespace GorgonLibrary.FileSystems.Tools
 
 			// Add the path to the destination.
 			if (!destPath.ChildPaths.Contains(path.Name))
-				destPath.ChildPaths.Add(path);
+			{
+				newPath = path.Copy(path.Name);
+				destPath.ChildPaths.Add(newPath);
+			}
 			else
 			{
 				UI.ErrorBox(this, "The path '" + path.Name + "' already exists at the destination.");
-				return false;
+				return null;
 			}
 
 			// Remove from the source parent.
-			oldParent.ChildPaths.Remove(path.Name);
+			_fileSystem.DeletePath(path.FullPath);
 
 			IsChanged = true;
 
-			return true;
+			return newPath;
 		}
 
 		/// <summary>
@@ -795,9 +799,11 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// </summary>
 		/// <param name="oldName">Old name of the path.</param>
 		/// <param name="newName">New name of the path.</param>
-		private void RenamePath(string oldName, string newName)
+		/// <returns>The full path of the renamed node.</returns>
+		private FileSystemPath RenamePath(string oldName, string newName)
 		{
 			FileSystemPath path = null;								// Path to move.
+			string newPathName = newName;							// New path name.
 
 			// Get source.
 			oldName = FileSystem.FullPathName(oldName);
@@ -812,7 +818,7 @@ namespace GorgonLibrary.FileSystems.Tools
 
 			// Don't allow us to move into the same node.
 			if (newName.ToLower() == oldName.ToLower())
-				return;
+				return _fileSystem.GetPath(oldName);
 
 			// Ensure the path doesn't already exist.
 			if (_fileSystem.PathExists(newName))
@@ -821,9 +827,14 @@ namespace GorgonLibrary.FileSystems.Tools
 			// Move the node.				
 			path = _fileSystem.GetPath(oldName);
 			// Rename the path.
-			path.Parent.ChildPaths.Rename(oldName, newName);
+			FileSystemPath parentPath = path.Parent;
+			FileSystemPath pathCopy = path.Copy(newPathName);
+			path.Parent.ChildPaths.Add(pathCopy);
+			_fileSystem.DeletePath(oldName);			
 
 			IsChanged = true;
+
+			return pathCopy;
 		}
 
 		/// <summary>
@@ -885,7 +896,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			try
 			{
 				// Move the node.
-				RenamePath(((FileSystemPath)e.Node.Tag).FullPath, ((FileSystemPath)e.Node.Parent.Tag).FullPath + @"\" + e.Label);
+				e.Node.Tag = RenamePath(((FileSystemPath)e.Node.Tag).FullPath, e.Label);
 
 				// Turn off editing.
 				treePaths.LabelEdit = false;
@@ -1220,7 +1231,8 @@ namespace GorgonLibrary.FileSystems.Tools
 					if (data.SourceFileSystem == _fileSystem)
 					{
 						// Move the data.
-						if (!MovePath(sourcePath.FullPath, path.FullPath))
+						FileSystemPath newPath = MovePath(sourcePath.FullPath, path.FullPath);
+						if (newPath == null)
 							return;
 
 						// Remove from the node list.
@@ -1230,6 +1242,7 @@ namespace GorgonLibrary.FileSystems.Tools
 							data.SourceNode.Nodes.Add("$DUMMYNODE$");
 
 						// Re-add to new parent.
+						data.SourceNode.Tag = newPath;
 						treePaths.SelectedNode.Nodes.Add(data.SourceNode);
 					}
 					else
@@ -1785,7 +1798,8 @@ namespace GorgonLibrary.FileSystems.Tools
 				newFile.Comment = file.Comment;
 
 				// Remove the old file.
-				file.Owner.Files.Remove(file.Filename + file.Extension);
+				_fileSystem.Delete(file.FullPath);
+				//file.Owner.Files.Remove(file.Filename + file.Extension);
 			}
 			catch (Exception ex)
 			{
