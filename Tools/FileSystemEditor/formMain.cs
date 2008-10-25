@@ -354,9 +354,9 @@ namespace GorgonLibrary.FileSystems.Tools
 					// Create file system window.
 					newFS = new formFileSystemWindow();
 					newFS.IsNew = true;
-					newFS.IsChanged = true;
 					newFS.MdiParent = this;
 					newFS.FileSystem = formNew.ActiveFileSystem;
+					newFS.IsChanged = true;
 					newFS.RootPath = formNew.NewName;
 					newFS.Show();
 
