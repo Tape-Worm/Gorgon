@@ -217,17 +217,21 @@ namespace GorgonLibrary.FileSystems
 		/// <summary>
 		/// Function to create a deep copy of this path.
 		/// </summary>
+		/// <param name="newName">New name of the path.</param>
 		/// <returns>A deep copy of the path.</returns>
-		public FileSystemPath Copy()
+		public FileSystemPath Copy(string newName)
 		{
 			FileSystemPath newPath = null;		// New path.
 
+			if (string.IsNullOrEmpty(newName))
+				throw new ArgumentNullException("newName");
+
 			// Create path.
-			newPath = new FileSystemPath(null, Name);
+			newPath = new FileSystemPath(null, newName);
 
 			// Copy all children.
 			foreach(FileSystemPath child in _paths)
-				newPath.ChildPaths.Add(child.Copy());
+				newPath.ChildPaths.Add(child.Copy(child.Name));
 
 			// Copy files.
 			foreach(FileSystemFile file in _files)
