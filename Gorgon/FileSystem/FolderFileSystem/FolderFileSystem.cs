@@ -72,21 +72,14 @@ namespace GorgonLibrary.FileSystems
 
 			if (!_deletedPaths.Contains(filePath))
 			{
+				foreach (FileSystemPath path in filePath.ChildPaths)
+					OnPathDelete(path);
+
+				foreach (FileSystemFile file in filePath.Files)
+					OnFileDelete(file);
+								
 				if (filePath.FullPath != @"\")
 					_deletedPaths.Add(filePath);
-				else
-				{
-					foreach (FileSystemPath path in filePath.ChildPaths)
-					{
-						if (!_deletedPaths.Contains(path))
-							_deletedPaths.Add(path);
-					}
-					foreach (FileSystemFile file in filePath.Files)
-					{
-						if (!_deletedFiles.Contains(file))
-							_deletedFiles.Add(file);
-					}
-				}
 			}
 		}
 
@@ -238,7 +231,7 @@ namespace GorgonLibrary.FileSystems
 				{
 					string fileName = Path.GetFullPath(rootPath + file.FullPath);
 
-					if (File.Exists(fileName))
+					if ((File.Exists(fileName)) && (!FileExists(file.FullPath)))
 						File.Delete(fileName);
 				}
 
@@ -246,7 +239,7 @@ namespace GorgonLibrary.FileSystems
 				{
 					string pathName = Path.GetFullPath(rootPath + path.FullPath);
 
-					if (Directory.Exists(pathName))
+					if ((Directory.Exists(pathName)) && (!PathExists(path.FullPath)))
 						Directory.Delete(pathName, true);
 				}
 			}
