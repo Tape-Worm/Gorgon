@@ -1673,7 +1673,7 @@ namespace GorgonLibrary.Graphics
             _children = new RenderableChildren(this);
 			_animations = new AnimationList(this);
 			
-			_axis = new Vector2D(1.0f, 1.0f);
+			_axis = Vector2D.Zero;
 			_AABB = new Drawing.RectangleF(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
 		}
 		#endregion
