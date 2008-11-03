@@ -119,6 +119,18 @@
 
 <div>
 	<pre>
+November 2/2008 - Version - Current
+===============================================================================================
+* Modified x64 framework project file.  Debug output directory was incorrect.
+
+* Updated a bug in the SpriteMesh object where rotating the mesh caused the mesh to become
+  skewed.  This was because the rotation code tried to rotate on the y axis with an already
+  transformed x axis.  The correct thing to do was to rotate both axes as untransformed.
+  i.e. I'm dumb.
+  
+* Updated issue with Renderable base class where the Axis property was being initialized with
+  1, 1 instead of 0, 0.
+
 October 29/2008 - Version - 1.1.0.0
 ===============================================================================================
 * Updated FolderFileSystemOfPower example to display the same help text that's in the
