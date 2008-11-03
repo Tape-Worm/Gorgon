@@ -332,16 +332,13 @@ namespace GorgonLibrary.Graphics.Utilities
 		{
 			Vector2D result = Vector2D.Zero;			// Result vertex.
 
-			result = vertex - Axis;
-			result *= FinalScale;
+			result = Vector2D.Subtract(vertex,Axis);
+			result = Vector2D.Multiply(FinalScale, result);
 
 			if (FinalRotation != 0.0f)
-			{
-				result.X = (result.X * cos - result.Y * sin);
-				result.Y = (result.X * sin + result.Y * cos);
-			}
+				result = new Vector2D(result.X * cos - result.Y * sin, result.X * sin + result.Y * cos);
 
-			result += FinalPosition;
+			result = Vector2D.Add(FinalPosition, result);			
 
 			return (Vector3D)result;
 		}
@@ -536,7 +533,7 @@ namespace GorgonLibrary.Graphics.Utilities
 		/// <param name="flush">TRUE to flush the buffers after drawing, FALSE to only flush on state change.</param>
 		public override void Draw(bool flush)
 		{
-			int index = 0;			// Index.
+			int index = 0;	// Index.
 			_cosVal = 0.0f;	// Cached cosine.
 			_sinVal = 0.0f;	// Cached sine.
 
@@ -551,8 +548,8 @@ namespace GorgonLibrary.Graphics.Utilities
 				float angle;		// Angle in radians.
 
 				angle = MathUtility.Radians(FinalRotation);
-				_cosVal = (float)Math.Cos(angle);
-				_sinVal = (float)Math.Sin(angle);
+				_cosVal = MathUtility.Cos(angle);
+				_sinVal = MathUtility.Sin(angle);
 			}
 
 			if (IsAABBUpdated)
@@ -566,25 +563,28 @@ namespace GorgonLibrary.Graphics.Utilities
 
 					Vertices[0].TextureCoordinates = _grid[index].TextureCoordinates;
 					Vertices[0].Position = TransformVertex(_grid[index].Position, _cosVal, _sinVal);
+					Vertices[0].Position.Z = -Depth;
 					Vertices[0].Color = _grid[index].Color;
 
 					Vertices[1].TextureCoordinates = _grid[index + 1].TextureCoordinates;
 					Vertices[1].Position = TransformVertex(_grid[index + 1].Position, _cosVal, _sinVal);
+					Vertices[1].Position.Z = -Depth;
 					Vertices[1].Color = _grid[index+1].Color;
 
 					Vertices[2].TextureCoordinates = _grid[index + _cols + 1].TextureCoordinates;
 					Vertices[2].Position = TransformVertex(_grid[index + _cols + 1].Position, _cosVal, _sinVal);
+					Vertices[2].Position.Z = -Depth;
 					Vertices[2].Color = _grid[index + _cols + 1].Color;
 
 					Vertices[3].TextureCoordinates = _grid[index + _cols].TextureCoordinates;
 					Vertices[3].Position = TransformVertex(_grid[index + _cols].Position, _cosVal, _sinVal);
+					Vertices[3].Position.Z = -Depth;
 					Vertices[3].Color = _grid[index + _cols].Color;
 
 					if (WriteVertexData(0, 4) + 4 >= BufferSize)
 						FlushToRenderer();
 				}
 			}
-
 
 			EndRendering(flush);
 		}
@@ -783,7 +783,7 @@ namespace GorgonLibrary.Graphics.Utilities
 			// Create a single cell.
 			_grid = new VertexTypeList.PositionDiffuse2DTexture1[rows * cols];
 			Image = spriteImage;
-			Scale = new Vector2D(1, 1);
+			Scale = Vector2D.Unit;
 			IsAABBUpdated = true;
 			IsSizeUpdated = true;
 			IsImageUpdated = true;
