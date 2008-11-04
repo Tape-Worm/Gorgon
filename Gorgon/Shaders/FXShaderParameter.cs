@@ -545,7 +545,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Image to set.</param>
 		public void SetValue(Image image)
 		{
-			_owner.D3DEffect.SetTexture(_effectHandle, image.D3DTexture);
+			if (image != null)
+				_owner.D3DEffect.SetTexture(_effectHandle, image.D3DTexture);
+			else
+				_owner.D3DEffect.SetTexture(_effectHandle, null);
 		}
 
 		/// <summary>
@@ -554,7 +557,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Render image to set.</param>
 		public void SetValue(RenderImage image)
 		{
-			_owner.D3DEffect.SetTexture(_effectHandle, image.Image.D3DTexture);
+			if (image != null)
+				_owner.D3DEffect.SetTexture(_effectHandle, image.Image.D3DTexture);
+			else
+				_owner.D3DEffect.SetTexture(_effectHandle, null);
 		}
 		#endregion
 		#endregion

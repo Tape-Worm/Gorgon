@@ -66,7 +66,7 @@ namespace GorgonLibrary.Graphics
 
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to retrieve an array of values.
 		/// </summary>
@@ -360,7 +360,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A color value.</returns>
 		public System.Drawing.Color GetColor()
 		{
-			return (Drawing.Color)_colorValue;
+			return _colorValue.ToColor();
 		}
 
 		/// <summary>
@@ -373,7 +373,7 @@ namespace GorgonLibrary.Graphics
 			Drawing.Color[] values = new Drawing.Color[count];
 
 			for (int i = 0; i < count; i++)
-				values[i] = (Drawing.Color)_colorValues[i];
+				values[i] = _colorValues[i].ToColor();
 
 			return values;
 		}
@@ -569,7 +569,7 @@ namespace GorgonLibrary.Graphics
 		public void SetValue(System.Drawing.Color value)
 		{
 			this.ValueType = ShaderParameterType.Color;
-			_colorValue = value;
+			_colorValue = new DX.Color4(value);
 			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, value);
 		}
 
@@ -583,7 +583,8 @@ namespace GorgonLibrary.Graphics
 			_colorValues = new SlimDX.Color4[value.Length];
 
 			for (int i = 0; i < value.Length; i++)
-				_colorValues[i] = value[i];
+				_colorValues[i] = new DX.Color4(value[i]);
+			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _colorValues);
 			_arrayLength = value.Length;
 		}
 
@@ -594,7 +595,10 @@ namespace GorgonLibrary.Graphics
 		public void SetValue(Image image)
 		{
 			this.ValueType = ShaderParameterType.Image;
-			_imageValue = image.D3DTexture;
+			if (image != null)
+				_imageValue = image.D3DTexture;
+			else
+				_imageValue = null;
 		}
 
 		/// <summary>
@@ -603,7 +607,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Render image to set.</param>
 		public void SetValue(RenderImage image)
 		{
-			SetValue(image.Image);
+			if (image != null)
+				SetValue(image.Image);
+			else
+				SetValue((Image)null);
 		}
 		#endregion
 		#endregion
