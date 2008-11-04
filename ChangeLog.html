@@ -119,8 +119,13 @@
 
 <div>
 	<pre>
-November 2/2008 - Version - Current
+November 4/2008 - Version - Current
 ===============================================================================================
+* Fixed a bug in the FX shader parameters where a color value was being passed in directly to
+  the shader via SetValue(Drawing.Color).  This was incorrect, the value should have been a
+  SlimDX.Color4 value.  This had the effect of messing up any color values passed to the
+  shader
+  
 * Modified x64 framework project file.  Debug output directory was incorrect.
 
 * Updated a bug in the SpriteMesh object where rotating the mesh caused the mesh to become

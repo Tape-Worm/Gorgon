@@ -521,7 +521,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">A color value.</param>
 		public void SetValue(Color value)
 		{
-			_owner.D3DEffect.SetValue(_effectHandle, value);
+			_owner.D3DEffect.SetValue(_effectHandle, new DX.Color4(value));
 		}
 
 		/// <summary>
