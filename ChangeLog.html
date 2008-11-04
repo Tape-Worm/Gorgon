@@ -121,10 +121,16 @@
 	<pre>
 November 4/2008 - Version - Current
 ===============================================================================================
+* Updated other shader parameters to check for NULL values when passing an image to a shader.
+
+* Fixed an issue in the SetValue(Color[]) constant shader parameter.  The array was not being
+  persisted to the shader.
+  
 * Fixed a bug in the FX shader parameters where a color value was being passed in directly to
   the shader via SetValue(Drawing.Color).  This was incorrect, the value should have been a
   SlimDX.Color4 value.  This had the effect of messing up any color values passed to the
-  shader
+  shader.  Also fixed the constant shader parameters where color values were not being
+  translated correctly.
   
 * Modified x64 framework project file.  Debug output directory was incorrect.
 
