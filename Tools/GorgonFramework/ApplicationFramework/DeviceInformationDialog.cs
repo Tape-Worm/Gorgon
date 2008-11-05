@@ -181,6 +181,7 @@ namespace GorgonLibrary.Framework
 			CreateRow(group, "Has support for blending inverse destination alpha?", _driver.SupportBlendingInverseDestinationAlpha);
 			CreateRow(group, "Has support for blending inverse destination color?", _driver.SupportBlendingInverseDestinationColor);
 			CreateRow(group, "Has support for blending inverse source alpha?", _driver.SupportBlendingInverseSourceAlpha);
+			CreateRow(group, "Has support for blending both inverse source & dest alpha?", _driver.SupportBlendingBothInverseSourceAlpha);
 			CreateRow(group, "Has support for blending inverse source color?", _driver.SupportBlendingInverseSourceColor);
 			CreateRow(group, "Has support for blending inverse source alpha with saturation?", _driver.SupportBlendingSourceAlphaSaturation);
 			CreateRow(group, "Has support for blending factor?", _driver.SupportBlendingFactor);
