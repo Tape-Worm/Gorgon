@@ -84,7 +84,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="BumpInTheNight.xml" />
+    <Content Include="BumpInTheNight.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="GorIcon.ico" />
   </ItemGroup>
   <ItemGroup>
