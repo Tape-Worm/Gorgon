@@ -119,8 +119,18 @@
 
 <div>
 	<pre>
-November 4/2008 - Version - Current
+November 5/2008 - Version - Current
 ===============================================================================================
++ Added sample that performs per pixel Dot3 bump mapping - BumpInTheNight.
+
++ Added a new function to the framework - bool OnValidateDriver(driver).  This will allow the
+  user to accept or reject the current driver based on whatever criteria they choose.
+  
+* Fixed an issue with blitting images/renderimages where once the blitted image is stretched, it
+  stays stretched even when calling Blit(x, y);.
+  
+* Fixed an issue where inverse source alpha blending caps were being reported incorrectly.
+
 * Updated other shader parameters to check for NULL values when passing an image to a shader.
 
 * Fixed an issue in the SetValue(Color[]) constant shader parameter.  The array was not being
