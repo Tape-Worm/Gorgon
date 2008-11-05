@@ -317,6 +317,9 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
+				if (_blitter.UniformScale != 1.0f)
+					_blitter.UniformScale = 1.0f;
+
 				// Crop.
 				if (width != _blitter.Width)
 					_blitter.Width = width;

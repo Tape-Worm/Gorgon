@@ -544,6 +544,12 @@ namespace GorgonLibrary.Framework
 					LoadPlugins();
 
 					// Create new gorgon object.
+					if (!OnValidateDriver(_setup.VideoDriver))
+					{
+						Gorgon.Terminate();
+						return false;
+					}
+
 					Gorgon.CurrentDriver = _setup.VideoDriver;
 					Gorgon.SetMode(boundControl, _setup.VideoMode.Width, _setup.VideoMode.Height, _setup.VideoMode.Format, _setup.WindowedFlag, UseDepthBuffer, UseStencilBuffer, _setup.VideoMode.RefreshRate, _setup.VSyncInterval);
 
@@ -931,6 +937,16 @@ namespace GorgonLibrary.Framework
 		private void Gorgon_DeviceLost(object sender, EventArgs e)
 		{
 			OnDeviceLost();
+		}
+
+		/// <summary>
+		/// Function to validate the chosen video driver.
+		/// </summary>
+		/// <param name="driver">Driver to validate.</param>
+		/// <returns>TRUE if the driver is valid, FALSE if not.</returns>
+		protected virtual bool OnValidateDriver(Driver driver)
+		{
+			return true;
 		}
 
 		/// <summary>
