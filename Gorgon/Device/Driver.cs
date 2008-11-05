@@ -609,7 +609,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.BothInverseSourceAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.BothInverseSourceAlpha)) == D3D9.BlendCaps.BothInverseSourceAlpha;
+				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.InverseSourceAlpha) & (_caps.SourceBlendCaps & D3D9.BlendCaps.InverseSourceAlpha)) == D3D9.BlendCaps.InverseSourceAlpha;
 			}
 		}
 
@@ -621,6 +621,17 @@ namespace GorgonLibrary
 			get
 			{
 				return ((_caps.SourceBlendCaps & D3D9.BlendCaps.DestinationAlpha) & (_caps.DestinationBlendCaps & D3D9.BlendCaps.DestinationAlpha)) == D3D9.BlendCaps.DestinationAlpha;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the card supports blending both inverse source alpha.
+		/// </summary>
+		public bool SupportBlendingBothInverseSourceAlpha
+		{
+			get
+			{
+				return (_caps.SourceBlendCaps & D3D9.BlendCaps.BothInverseSourceAlpha) == D3D9.BlendCaps.BothInverseSourceAlpha; 
 			}
 		}
 

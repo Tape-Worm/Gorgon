@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GooeyGUI_x64", "Framework\G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThatDoesntMesh_x64", "Framework\ThatDoesntMesh\ThatDoesntMesh_x64.csproj", "{21D09713-434A-4307-887A-F60D942584D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BumpInTheNight_x64", "Framework\BumpInTheNight\BumpInTheNight_x64.csproj", "{BFFBDC37-DC3A-499B-97EF-5595E73E8E08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,6 +152,10 @@ Global
 		{21D09713-434A-4307-887A-F60D942584D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21D09713-434A-4307-887A-F60D942584D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21D09713-434A-4307-887A-F60D942584D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFFBDC37-DC3A-499B-97EF-5595E73E8E08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFFBDC37-DC3A-499B-97EF-5595E73E8E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFFBDC37-DC3A-499B-97EF-5595E73E8E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFFBDC37-DC3A-499B-97EF-5595E73E8E08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
