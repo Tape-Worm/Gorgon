@@ -35,8 +35,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A sample showing how to access Direct3D through a plug-in interface.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon Graphics Library.")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2008")]
+[assembly: AssemblyProduct("Gorgon Example.")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
