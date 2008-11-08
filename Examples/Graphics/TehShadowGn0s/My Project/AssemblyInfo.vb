@@ -38,8 +38,8 @@ Imports System.Security.Permissions
 <Assembly: AssemblyTitle("Teh Shadow Gn0s")> 
 <Assembly: AssemblyDescription("Example to show how to use Gorgon in Visual Basic.NET")> 
 <Assembly: AssemblyCompany("Michael Winsor")> 
-<Assembly: AssemblyProduct("Gorgon Graphics Library.")> 
-<Assembly: AssemblyCopyright("Copyright © Michael Winsor 2008")> 
+<Assembly: AssemblyProduct("Gorgon Example.")> 
+<Assembly: AssemblyCopyright("Copyright © Michael Winsor")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: CLSCompliant(False)> 
 <Assembly: FileIOPermission(SecurityAction.RequestMinimum, AllFiles:=FileIOPermissionAccess.AllAccess)> 

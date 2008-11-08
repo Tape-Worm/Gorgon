@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Example showing how to use the input plug-in.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon Graphics Library")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2007")]
+[assembly: AssemblyProduct("Gorgon Example.")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
