@@ -119,18 +119,18 @@ namespace GorgonLibrary.Example
 			_bumpSprite.SetPosition(Gorgon.Screen.Width / 2.0f, Gorgon.Screen.Height / 2.0f);
 
 			scale.Scale(_bumpSprite.Scale);
-			rotate.RotateZ(-_bumpSprite.Rotation);
+			rotate.RotateZ(_bumpSprite.Rotation);
 			world = Matrix.Multiply(rotate, scale);
-			world.Translate(Vector2D.Add(Vector2D.Negate(_bumpSprite.Position), _bumpSprite.Axis));
+			world.Translate(Vector2D.Add(new Vector2D(_bumpSprite.Position.X, -_bumpSprite.Position.Y), new Vector2D(_bumpSprite.Axis.X, -_bumpSprite.Axis.Y)));
 
 			_bumpShader.Parameters["worldMatrix"].SetValue(world);
-			_bumpShader.Parameters["Position"].SetValue(_lightPosition);
+			_bumpShader.Parameters["Position"].SetValue(new Vector2D(-_lightPosition.X, _lightPosition.Y));
 
 			_bufferSprite.Position = _torch.Position = _lightPosition;
 			_torch.Animations[0].Advance(e.FrameDeltaTime * 1000.0f);
-
+			
 			_bumpSprite.Rotation = _angle;
-			_bumpSprite.Position = Vector2D.Subtract(_bumpSprite.Position, Vector2D.Subtract(_lightPosition, _bufferSprite.Axis));
+			_bumpSprite.Position = Vector2D.Subtract(_bumpSprite.Position, Vector2D.Subtract(_lightPosition, _bufferSprite.Axis));			
 		}
 
 		/// <summary>
@@ -146,9 +146,17 @@ namespace GorgonLibrary.Example
 			_bumpSprite.Draw();
 			Gorgon.CurrentShader = null;
 			if (_rnd.Next(1000) > 512)
+			{
+				_bumpShader.Parameters["Intensity"].SetValue((float)_rnd.NextDouble() * 0.3f + 0.7f);
+				_bumpShader.Parameters["Color"].SetValue(Drawing.Color.FromArgb(255, _rnd.Next(180, 255), _rnd.Next(128, 192)));
 				_lightSource.Blit(-_lightSource.Width * 0.05f, -_lightSource.Height * 0.05f, _lightSource.Width + (_lightSource.Width * 0.10f), _lightSource.Height + (_lightSource.Height * 0.10f));
+			}
 			else
+			{
+				_bumpShader.Parameters["Intensity"].SetValue(1.0f);
+				_bumpShader.Parameters["Color"].SetValue(Drawing.Color.White);
 				_lightSource.Blit(0, 0);
+			}
 
 			Gorgon.CurrentRenderTarget = null;
 
@@ -163,7 +171,7 @@ namespace GorgonLibrary.Example
 		protected override void OnMouseMovement(MouseInputEventArgs e)
 		{
 			base.OnMouseMovement(e);
-			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, -25.0f);
+			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, 2025.0f);
 		}
 
 		/// <summary>
