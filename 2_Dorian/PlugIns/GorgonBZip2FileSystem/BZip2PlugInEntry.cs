@@ -87,8 +87,9 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="plugInPath">Path to the plug-in.</param>
 		public GorgonBZip2FileSystemPlugInEntry(string plugInPath)
-			: base("Gorgon.BZip2FileSystem", plugInPath)
+			: base(plugInPath)
 		{
+			//"Gorgon.BZip2FileSystem"
 		}
 		#endregion
 	}
