@@ -35,26 +35,13 @@ namespace GorgonLibrary.InputDevices
 	/// <summary>
 	/// Entry point for the plug-in.
 	/// </summary>
-    public class GorgonInputPlugInEntry
+	[PlugInDescription("Gorgon.RawInput", PlugInType.Input, Description = "A plug-in that utilizes the WM_INPUT message to provide access to input devices.")]
+    public class GorgonInputPlugIn
 		: InputPlugIn
 	{
 		#region Variables.
 		private static Input _input = null;					// Input interface object.
 		private static object _syncLock = new object();		// Lock synchronization object.
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to return a description of the input interface.
-		/// </summary>
-		/// <value></value>
-		public override string Description
-		{
-			get 
-			{
-				return "Gorgon raw input interface.";
-			}
-		}
 		#endregion
 
 		#region Methods.
@@ -94,8 +81,8 @@ namespace GorgonLibrary.InputDevices
 		/// Constructor.
 		/// </summary>
 		/// <param name="plugInPath">Path to the plug-in.</param>
-		public GorgonInputPlugInEntry(string plugInPath)
-			: base("Gorgon.RawInput", plugInPath)
+		public GorgonInputPlugIn(string plugInPath)
+			: base(plugInPath)
 		{
 		}
 		#endregion
