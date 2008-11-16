@@ -121,16 +121,16 @@ namespace GorgonLibrary.Example
 			scale.Scale(_bumpSprite.Scale);
 			rotate.RotateZ(-_bumpSprite.Rotation);
 			world = Matrix.Multiply(rotate, scale);
-			world.Translate(Vector2D.Add(Vector2D.Negate(_bumpSprite.Position), _bumpSprite.Axis));
+			world.Translate(Vector2D.Add(_bumpSprite.Position, _bumpSprite.Axis));
 
 			_bumpShader.Parameters["worldMatrix"].SetValue(world);
 			_bumpShader.Parameters["Position"].SetValue(_lightPosition);
 
 			_bufferSprite.Position = _torch.Position = _lightPosition;
 			_torch.Animations[0].Advance(e.FrameDeltaTime * 1000.0f);
-
+			
 			_bumpSprite.Rotation = _angle;
-			_bumpSprite.Position = Vector2D.Subtract(_bumpSprite.Position, Vector2D.Subtract(_lightPosition, _bufferSprite.Axis));
+			_bumpSprite.Position = Vector2D.Subtract(_bumpSprite.Position, Vector2D.Subtract(_lightPosition, _bufferSprite.Axis));			
 		}
 
 		/// <summary>
@@ -163,7 +163,7 @@ namespace GorgonLibrary.Example
 		protected override void OnMouseMovement(MouseInputEventArgs e)
 		{
 			base.OnMouseMovement(e);
-			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, -25.0f);
+			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, 2025.0f);
 		}
 
 		/// <summary>
