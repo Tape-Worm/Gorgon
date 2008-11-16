@@ -86,8 +86,9 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="plugInPath">Path to the plug-in.</param>
 		public Gorgon3DESFileSystemPlugInEntry(string plugInPath)
-			: base("Gorgon.3DESFileSystem", plugInPath)
+			: base(plugInPath)
 		{
+			//"Gorgon.3DESFileSystem"
 		}
 		#endregion
 	}
