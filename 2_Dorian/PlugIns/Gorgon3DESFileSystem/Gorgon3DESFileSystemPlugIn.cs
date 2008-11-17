@@ -35,7 +35,8 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
     /// Entry point for the plug-in.
     /// </summary>
-    public class Gorgon3DESFileSystemPlugInEntry
+	[PlugInDescription("Gorgon.3DESFileSystem", PlugInType.FileSystem, Description = "File system provider plug-in that provides Triple DES encryption.")]
+    public class Gorgon3DESFileSystemPlugIn
         : FileSystemPlugIn
     {
         #region Properties.
@@ -85,10 +86,9 @@ namespace GorgonLibrary.FileSystems
 		/// Constructor.
 		/// </summary>
 		/// <param name="plugInPath">Path to the plug-in.</param>
-		public Gorgon3DESFileSystemPlugInEntry(string plugInPath)
+		public Gorgon3DESFileSystemPlugIn(string plugInPath)
 			: base(plugInPath)
 		{
-			//"Gorgon.3DESFileSystem"
 		}
 		#endregion
 	}

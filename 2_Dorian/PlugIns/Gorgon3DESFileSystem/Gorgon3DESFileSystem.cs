@@ -39,7 +39,7 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
 	/// Object representing a packed file system encrypted with 3DES encryption.
     /// </summary>
-	[FileSystemInfo("Triple DES File System", false, true, true, "GORPACK1.3DES")]
+	[FileSystemInfo(false, true, true, "GORPACK1.3DES")]
     public class Gorgon3DESFileSystem
         : FileSystem
     {

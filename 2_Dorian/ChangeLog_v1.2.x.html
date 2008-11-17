@@ -92,7 +92,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,<br/>
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN<br/>
 // THE SOFTWARE.<br/></span>
-<span class="region">#endregion<br/><br/></span><table class="region" style="width: 30%" cellspacing="1">
+<span class="region">#endregion<br/><br/></span>
+<span style="width: 100%;text-align : center" class="versionStyle">v1.2.x - Dorian</span><p/>
+<table class="region" style="width: 30%" cellspacing="1">
 	<tr>
 		<td class="style2">Legend</td>
 	</tr>
@@ -119,9 +121,16 @@
 
 <div>
 	<pre>
-November 14/2008 - Version - Current
+November 16/2008 - Version - Current
 ===============================================================================================
 * Moving the render system into a plug-in based system.
+
+* 
+
+* Fixed some issues with null reference exceptions when the sprite editor crashes at startup.
+
+* Simplified plug-in system.  Now will only load one plug-in instead of all plug-ins.  Keys
+  must be passed to the plug-in at load if RequireSignedPlugIns is true.
 
 </pre>
 </div>

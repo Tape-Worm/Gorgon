@@ -41,6 +41,16 @@ namespace GorgonLibrary.FileSystems.Tools
 	{
 		#region Methods.
 		/// <summary>
+		/// Handles the Resize event of the formFileSystems control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void formFileSystems_Resize(object sender, EventArgs e)
+		{
+			listPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
+
+		/// <summary>
 		/// Function to validate the form interface.
 		/// </summary>
 		private void ValidateForm()
@@ -59,23 +69,29 @@ namespace GorgonLibrary.FileSystems.Tools
 		{
 			ListViewItem newItem = null;		// List view item.
 
+			listPlugIns.BeginUpdate();
 			listPlugIns.Items.Clear();
-
+			
 			// Add each type.
 			foreach (FileSystemProvider fsType in FileSystemProviderCache.Providers)
 			{
 				// Only add plug-ins.
 				if (fsType.IsPlugIn)
 				{
-					newItem = new ListViewItem(fsType.Description + " (" + fsType.Name + ")");
-					newItem.SubItems.Add(fsType.PlugInPath);
+					newItem = new ListViewItem(fsType.Name);
+					newItem.Tag = fsType.PlugInPath;
+					newItem.SubItems.Add(fsType.Description);
 					newItem.Name = fsType.Name;
 					listPlugIns.Items.Add(newItem);
 				}
 			}
 
 			ValidateForm();
-			listPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+			listPlugIns.EndUpdate();
+			listPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+			if (listPlugIns.Items.Count > 0)
+				listPlugIns.Items[0].Selected = true;
 		}
 
 		/// <summary>
@@ -85,13 +101,20 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void buttonAddPlugIn_Click(object sender, EventArgs e)
 		{
+			PlugIns.PlugInDescriptionAttribute[] names = null;
+
 			try
 			{
 				// Begin loading.
 				if (dialogPlugInPath.ShowDialog(this) == DialogResult.OK)
 				{
 					foreach (string plugInPath in dialogPlugInPath.FileNames)
-						FileSystemProvider.Load(plugInPath);
+					{
+						names = PlugIns.PlugInFactory.GetPlugInMetaData(plugInPath, null);
+
+						foreach (PlugIns.PlugInDescriptionAttribute name in names)
+							FileSystemProvider.Load(plugInPath, name.PlugInName);
+					}
 				}
 			}
 			catch (Exception ex)
@@ -173,5 +196,18 @@ namespace GorgonLibrary.FileSystems.Tools
 			InitializeComponent();
 		}
 		#endregion
+
+		/// <summary>
+		/// Handles the SelectedIndexChanged event of the listPlugIns control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void listPlugIns_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listPlugIns.SelectedItems.Count == 1)
+				labelDescription.Text = listPlugIns.SelectedItems[0].Tag.ToString();
+			else
+				labelDescription.Text = string.Empty;
+		}
 	}
 }

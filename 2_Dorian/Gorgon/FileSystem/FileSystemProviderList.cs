@@ -86,13 +86,17 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="plugIn">Plug-in used by the file system.</param>
 		internal void Add(FileSystemPlugIn plugIn)
 		{
+			FileSystemProvider provider = null;
+
             if (plugIn == null)
                 throw new ArgumentNullException("plugIn");
 
             if (Contains(plugIn.Name))
                 throw new ArgumentException("The provider plug-in '" + plugIn.Name + "' is already loaded.");
 
-			AddItem(plugIn.Name, new FileSystemProvider(plugIn));
+			provider = new FileSystemProvider(plugIn);
+			provider.Description = plugIn.Description;
+			AddItem(plugIn.Name, provider);
 		}
 
 		/// <summary>

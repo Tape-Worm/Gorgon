@@ -40,7 +40,6 @@ using GorgonLibrary.PlugIns;
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2006")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: PlugIn()]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

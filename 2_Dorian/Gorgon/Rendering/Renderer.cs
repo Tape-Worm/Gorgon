@@ -39,7 +39,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Object representing an abstract layer that will handle the rendering calls.
 	/// </summary>
-	internal class Renderer
+	public class Renderer
 		: IDisposable
 	{
 		#region Variables.
@@ -54,6 +54,7 @@ namespace GorgonLibrary.Graphics
 		private Matrix _currentProjection = Matrix.Identity;			// Current projection matrix.
 		private IndexBuffer _currentIndexBuffer = null;					// Current index buffer.
 		private VertexBuffer _currentVertexBuffer = null;				// Current vertex buffer.
+		private RendererPlugIn _plugIn = null;							// Plug-in that created the renderer.
 		#endregion
 
 		#region Properties.
@@ -557,6 +558,71 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
+		/// Initializes a new instance of the <see cref="Renderer"/> class.
+		/// </summary>
+		/// <param name="plugIn">The plug in.</param>
+		protected Renderer(RendererPlugIn plugIn)
+		{
+			if (plugIn == null)
+				throw new ArgumentNullException("plugIn");
+			_plugIn = plugIn;
+
+			Gorgon.Log.Print("Renderer", "Starting renderer...", LoggingLevel.Simple);
+
+			if (IsD3DDebug)
+				Gorgon.Log.Print("Renderer", "[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", LoggingLevel.Verbose);
+#if INCLUDE_D3DREF
+			if (Gorgon.UseReferenceDevice)
+				Gorgon.Log.Print("Renderer", "[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", LoggingLevel.All);
+#endif
+			_vertexTypes = new VertexTypeList();
+
+			// Remove any left over state objects.
+			DeviceStateList.Clear();
+
+			// Default to common vertex type.
+			_currentVertexType = null;
+
+			// Recreate and reset the internal data.
+			_currentView = null;
+
+			// Default to windows control colors for the default material.
+			_currentImages = new Image[Gorgon.CurrentDriver.MaximumTextureStages];
+
+			// Create render state tracker.
+			_renderStates = new RenderStates();
+
+			// Set initial render states.
+			_renderStates.AlphaBlendEnabled = true;
+			_renderStates.SourceAlphaBlendOperation = AlphaBlendOperation.SourceAlpha;
+			_renderStates.DestinationAlphaBlendOperation = AlphaBlendOperation.InverseSourceAlpha;
+			_renderStates.DepthBufferEnabled = false;
+			_renderStates.LightingEnabled = false;
+			_renderStates.AlphaTestEnabled = true;
+			_renderStates.AlphaTestFunction = CompareFunctions.GreaterThan;
+			_renderStates.AlphaTestValue = 1;
+			_renderStates.DrawLastPixel = true;
+			_renderStates.ScissorTesting = false;
+
+			// Set initial layer states.
+			_imageLayerStates = new ImageLayerStates[Gorgon.CurrentDriver.MaximumTextureStages];
+			for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
+				_imageLayerStates[i] = new ImageLayerStates(i);
+
+			// Set initial state.
+			_imageLayerStates[0].ColorOperation = ImageOperations.Modulate;
+			_imageLayerStates[0].ColorOperationArgument1 = ImageOperationArguments.Diffuse;
+			_imageLayerStates[0].ColorOperationArgument2 = ImageOperationArguments.Texture;
+			_imageLayerStates[0].AlphaOperation = ImageOperations.Modulate;
+			_imageLayerStates[0].AlphaOperationArgument1 = ImageOperationArguments.Diffuse;
+			_imageLayerStates[0].AlphaOperationArgument2 = ImageOperationArguments.Texture;
+			_imageLayerStates[0].HorizontalAddressing = ImageAddressing.Clamp;
+			_imageLayerStates[0].VerticalAddressing = ImageAddressing.Clamp;
+
+			Gorgon.Log.Print("Renderer", "Renderer successfully initialized.", LoggingLevel.Intermediate);
+		}
+
+		/// <summary>
 		/// Constructor.
 		/// </summary>
 		internal Renderer()
@@ -622,7 +688,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to perform clean up.
 		/// </summary>
 		/// <param name="disposing">TRUE to remove all objects, FALSE to remove only unmanaged.</param>
-		private void Dispose(bool disposing)
+		protected virtual void Dispose(bool disposing)
 		{
 			if (_isDisposed)
 				return;
@@ -634,6 +700,7 @@ namespace GorgonLibrary.Graphics
 				if (_vertexTypes != null)
 					_vertexTypes.Dispose();
 
+				_plugIn.Unload();
 				Gorgon.Log.Print("Renderer", "Renderer destroyed.", LoggingLevel.Simple);
 			}
 

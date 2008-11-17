@@ -95,9 +95,10 @@ namespace GorgonLibrary.Graphics.Tools
 		private bool _showBoundingCircle = false;							// Flag to indicate whether to show the bounding circle for the sprite.
 		private Sprite _displaySprite = null;								// Sprite used for display - no animation.
 		private Drawing.Color _clipBGColor = Drawing.Color.Transparent;		// Clipper background color.
+		private bool _noSaveSettings = true;								// Flag to keep the settings from being saved.
 		#endregion
 
-		#region Properties.
+		#region Properties.		
 		/// <summary>
 		/// Property to return the main font.
 		/// </summary>
@@ -1127,10 +1128,10 @@ namespace GorgonLibrary.Graphics.Tools
 				Settings.Root = null;
 				_showLogo = (string.Compare(Settings.GetSetting("ShowLogo", "True"), "true", true) == 0);
 				_spriteBGColor = Color.FromArgb(255, Color.FromArgb(Convert.ToInt32(Settings.GetSetting("BGColor", "-16777077"))));
-
-
+				
 				_showBoundingBox = (string.Compare(Settings.GetSetting("ShowBoundingBox", "True"), "true", true) == 0);
 				_showBoundingCircle = (string.Compare(Settings.GetSetting("ShowBoundingCircle", "True"), "true", true) == 0);
+				_noSaveSettings = false;
 			}
 			catch (Exception ex)
 			{
@@ -2217,7 +2218,7 @@ namespace GorgonLibrary.Graphics.Tools
 					Gorgon.Go();
 
 					// Get the settings.
-					GetSettings();
+					GetSettings();					
 					_clipper.GetSettings();
 					_zoomer.GetSettings();
 					_imageManager.GetSettings();
@@ -2262,7 +2263,7 @@ namespace GorgonLibrary.Graphics.Tools
 				try
 				{
 					// If we're in clipping mode, then just go back to the main interface.
-					if (_clipper.IsClippingStarted)
+					if ((_clipper != null) && (_clipper.IsClippingStarted))
 					{
 						_clipper.CancelSelection();
 						ExitClipping();
@@ -2271,7 +2272,7 @@ namespace GorgonLibrary.Graphics.Tools
 					}
 
 					// Check for changes.
-					if ((_spriteManager.Sprites.HasChanges) || (_projectChanged))
+					if ((_spriteManager != null) && (_spriteManager.Sprites.HasChanges) || (_projectChanged))
 					{
 						result = UI.ConfirmBox(this, "The project has changes that have not been saved.\nWould you like to save these changes?", true, false);
 
@@ -2299,29 +2300,34 @@ namespace GorgonLibrary.Graphics.Tools
 			{				
 				try
 				{
-					_spriteManager.SaveSettings();
-					_imageManager.SaveSettings();
+					if (_spriteManager != null)
+						_spriteManager.SaveSettings();
+					if (_imageManager != null)
+						_imageManager.SaveSettings();
 
-					if (_clipper.IsClippingStarted)
+					if ((_clipper != null) && (_clipper.IsClippingStarted))
 						ExitClipping();
 
-					// Save position and height.
-					Settings.Root = "MainWindow";
-					// Save main window settings.
-					if (WindowState != FormWindowState.Minimized)
-						Settings.SetSetting("State", WindowState.ToString());
-
-					if (WindowState == FormWindowState.Normal)
+					if (!_noSaveSettings)
 					{
-						Settings.SetSetting("Left", Left.ToString());
-						Settings.SetSetting("Top", Top.ToString());
-						Settings.SetSetting("Width", Width.ToString());
-						Settings.SetSetting("Height", Height.ToString());
-					}
-					Settings.Root = null;
+						// Save position and height.
+						Settings.Root = "MainWindow";
+						// Save main window settings.
+						if (WindowState != FormWindowState.Minimized)
+							Settings.SetSetting("State", WindowState.ToString());
 
-					// Save the settings
-					Settings.Save("Config.XML");
+						if (WindowState == FormWindowState.Normal)
+						{
+							Settings.SetSetting("Left", Left.ToString());
+							Settings.SetSetting("Top", Top.ToString());
+							Settings.SetSetting("Width", Width.ToString());
+							Settings.SetSetting("Height", Height.ToString());
+						}
+						Settings.Root = null;
+
+						// Save the settings
+						Settings.Save("Config.XML");
+					}
 
 					// Remove the event.
 					if (_clipper != null)

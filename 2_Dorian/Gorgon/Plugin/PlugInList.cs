@@ -37,14 +37,14 @@ namespace GorgonLibrary.PlugIns
 	/// <summary>
 	/// Object to repesent a list of plugins.
 	/// </summary>
-	public class PlugInList
-		: BaseCollection<PlugInEntryPoint>
+	public class PlugInCollection
+		: BaseCollection<PlugIn>
 	{
 		#region Properties.
 		/// <summary>
 		/// Property to return a plug-in by its index.
 		/// </summary>
-		public PlugInEntryPoint this[int index]
+		public PlugIn this[int index]
 		{
 			get
 			{
@@ -55,7 +55,7 @@ namespace GorgonLibrary.PlugIns
 		/// <summary>
 		/// Property to return a plug-in by its name.
 		/// </summary>
-		public PlugInEntryPoint this[string key]
+		public PlugIn this[string key]
 		{
 			get
 			{
@@ -77,7 +77,7 @@ namespace GorgonLibrary.PlugIns
 		/// Function to add a plug-in to the list.
 		/// </summary>
 		/// <param name="plugIn">Plug-in to add.</param>
-		internal void Add(PlugInEntryPoint plugIn)
+		internal void Add(PlugIn plugIn)
 		{
 			if (plugIn == null)
 				throw new ArgumentNullException("plugIn");
@@ -93,13 +93,22 @@ namespace GorgonLibrary.PlugIns
 		{
 			RemoveItem(plugInName);
 		}
+
+		/// <summary>
+		/// Function to remove a plug-in.
+		/// </summary>
+		/// <param name="index">The index of the plug-in.</param>
+		internal void Remove(int index)
+		{
+			RemoveItem(index);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		internal PlugInList()
+		internal PlugInCollection()
             : base(4, true)
 		{
 		}

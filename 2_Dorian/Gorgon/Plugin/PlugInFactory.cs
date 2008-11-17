@@ -39,158 +39,68 @@ namespace GorgonLibrary.PlugIns
 	public static class PlugInFactory
 	{
 		#region Variables.
-		private static PlugInModuleList _modules = null;		// List of modules.
-		private static PlugInList _plugIns = null;				// List of plug-ins.
-		private static byte[] _compareKey = null;				// The public key to use for comparison.
+		private static PlugInModuleCollection _modules = null;	// List of modules.
+		private static PlugInCollection _plugIns = null;				// List of plug-ins.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the list of previously loaded plug-ins.
 		/// </summary>
-		public static PlugInList PlugIns
+		public static PlugInCollection PlugIns
 		{
 			get
 			{
 				return _plugIns;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return whether plug-ins must be signed.
+		/// </summary>
+		public static bool RequireSignedPlugIns
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to set the key to use for comparison with the assembly public key.
+		/// Function to retrieve the plug-ins from a module.
 		/// </summary>
-		/// <param name="publicKey">An array of bytes containing the data for the public key to use in a comparison or NULL.</param>
-		/// <remarks>This function allows us to compare the public key for a specific plug-in against what we have stored here.  With this we can filter plug-ins that are not signed by the owner of the public key.  This adds a small measure of security.
-		/// <para>Passing NULL as the key will allow any signed assembly plug-in to load.</para>
-		/// </remarks>
-		public static void SetComparisonKey(byte[] publicKey)
+		/// <param name="pluginModule">Module to retrieve plug-ins from.</param>
+		/// <param name="parameters">Parameters to pass to the plug-in.</param>
+		private static void GetPlugInTypes(Assembly pluginModule, object[] parameters)
 		{
-			_compareKey = publicKey;
-		}
+			PlugIn entry = null;					// Entry point to the plug-in.
+			Type[] plugIns = null;					// List of plug-ins in the module.
 
-		/// <summary>
-		/// Function to load a plug-in.
-		/// </summary>
-		/// <param name="pluginModule">Module containing the plug-in.</param>
-		/// <param name="pluginName">Name of the plug-in to create.</param>
-        /// <param name="parameters">Constructor parameters.</param>
-		/// <param name="mustBeSigned">TRUE to require that the plug-in be signed, FALSE to load any plug-in.</param>
-        /// <returns>The plug-in interface.</returns>
-		public static PlugInEntryPoint Load(Assembly pluginModule, string pluginName, object[] parameters, bool mustBeSigned)
-		{
-			PlugInEntryPoint entry = null;					// Entry point to the plug-in.
-			AssemblyName name = null;						// Assembly name.
-			object[] typeAttributes = null;					// List of type attributes.
-			byte[] publicKey = null;						// Public key for the assembly.
-
-			if (pluginName == null)
-				pluginName = string.Empty;
-
-			// If we pass NULL, try to retrieve the plug-in from the entry assembly.
-			if (pluginModule == null)
-				pluginModule = Assembly.GetEntryAssembly();
-
-			// Get the assembly name.
-			name = pluginModule.GetName();
-
-			if (mustBeSigned)
-			{
-				publicKey = name.GetPublicKey();
-
-				if (publicKey.Length < 1)
-					throw new GorgonException(GorgonErrors.AccessDenied, "Incorrect key for the plug-in '" + pluginName + "'.");
-
-				if (_compareKey != null)
+			// Get the public types.
+			plugIns = pluginModule.ManifestModule.FindTypes(
+				(plugInType, filter) =>
 				{
-					// Compare the key.
-					if (publicKey.Length != _compareKey.Length)
-						throw new GorgonException(GorgonErrors.AccessDenied, "Incorrect key for the plug-in '" + pluginName + "'.");
+					return (plugInType.IsSubclassOf(typeof(PlugIn)));
+				}, null);
 
-					// Do a byte-by-byte comparison of the key.
-					for (int i = 0; i < publicKey.Length; i++)
-					{
-						if (publicKey[i] != _compareKey[i])
-							throw new GorgonException(GorgonErrors.AccessDenied, "Incorrect key for the plug-in '" + pluginName + "'.");
-					}
-				}
-			}
+			if (plugIns.Length == 0)
+				throw new GorgonException(GorgonErrors.InvalidPlugin, pluginModule.FullName + " does not contain any plug-ins.");
 
-			// Don't duplicate.
-			if ((pluginName != string.Empty) && (_plugIns.Contains(pluginName)))
-				return _plugIns[pluginName];
-
-			// Get attributes for this module.
-			typeAttributes = pluginModule.GetCustomAttributes(typeof(PlugInAttribute), false);
-
-			if (typeAttributes.Length == 0)
-				throw new GorgonException(GorgonErrors.InvalidPlugin, "Unable to find the PlugInAttribute for plug-in '" + name.Name + "'.");
-
-			// Get the public types.				
-			foreach (Type type in pluginModule.ManifestModule.FindTypes(
-				delegate(Type plugInType, object filter)
-				{
-					object[] attributes;		// Get attributes for the type.
-
-					attributes = plugInType.GetCustomAttributes(typeof(PlugInAttribute), true);
-
-					if ((attributes == null) || (attributes.Length == 0))
-						return false;
-
-					return true;
-				}, null))
+			// Get all the plug-in types and add them.
+			foreach (Type type in plugIns)
 			{
-				// Create the plug-in entry class.						
-				entry = type.Assembly.CreateInstance(type.Namespace + "." + type.Name, false, BindingFlags.CreateInstance, null, new object[] { pluginModule.Location }, null, null) as PlugInEntryPoint;
+				// Create the plug-in entry class.
+				entry = type.Assembly.CreateInstance(type.Namespace + "." + type.Name, false, BindingFlags.CreateInstance, null, new object[] { pluginModule.Location }, null, null) as PlugIn;
 
 				if (entry == null)
-					throw new GorgonException(GorgonErrors.CannotCreate, "Error trying to create the plug-in entry point interface.");
+					throw new GorgonException(GorgonErrors.InvalidPlugin, "Unable to create '" + type.FullName + "'.");
 
-				Gorgon.Log.Print("PlugInManager", "Plug-in type: {0}, Module: {1}.", LoggingLevel.Intermediate, entry.PlugInType.ToString(), entry.GetType().ToString());
-
-				// Match name or load all plug-ins from the assembly. 
-				if ((pluginName == string.Empty) || (string.Compare(pluginName,entry.Name, true) == 0))
+				if (!_plugIns.Contains(entry.Name))
 				{
-					Gorgon.Log.Print("PlugInManager", "Loading plug-in \"{0}\".", LoggingLevel.Simple, entry.Name);
-
-					if (!_plugIns.Contains(entry.Name))
-						_plugIns.Add(entry);
-
-					Gorgon.Log.Print("PlugInManager", "Plug-in \"{0}\" was loaded successfully.", LoggingLevel.Simple, entry.Name);
-
-					if (pluginName != string.Empty)
-						return entry;
+					Gorgon.Log.Print("Found plug-in type: {0}, Module: {1}.", LoggingLevel.Intermediate, entry.PlugInType.ToString(), entry.GetType().ToString());
+					_plugIns.Add(entry);
 				}
 			}
-
-			if (pluginName != string.Empty)
-				throw new GorgonException(GorgonErrors.CannotCreate, "No plug-in named '" + pluginName + "' was found in the plug-in module.");
-
-			return null;
-		}
-
-		/// <summary>
-		/// Function to load a plug-in.
-		/// </summary>
-		/// <param name="pluginModule">Module containing the plug-in.</param>
-		/// <param name="pluginName">Name of the plug-in to create.</param>
-		/// <param name="mustBeSigned">TRUE to indicate that the plug-in must be signed, FALSE to load any plug-in.</param>
-		/// <returns>The plug-in interface.</returns>
-        public static PlugInEntryPoint Load(Assembly pluginModule, string pluginName, bool mustBeSigned)
-        {
-            return Load(pluginModule, pluginName, null, mustBeSigned);
-        }
-
-		/// <summary>
-		/// Function to load a plug-in.
-		/// </summary>
-		/// <param name="pluginModule">Module containing the plug-in.</param>
-		/// <param name="mustBeSigned">TRUE to indicate that the plug-in must be signed, FALSE to load any plug-in.</param>
-		/// <returns>The plug-in interface.</returns>
-		public static void Load(Assembly pluginModule, bool mustBeSigned)
-		{
-			Load(pluginModule, null, null, mustBeSigned);
 		}
 
 		/// <summary>
@@ -198,23 +108,35 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="pluginDLL">Path to the DLL containing the plug-in.</param>
 		/// <param name="pluginName">Name of the plug-in to create.</param>
-        /// <param name="parameters">Parameters for construction.</param>
-		/// <param name="mustBeSigned">TRUE to indicate that the plug-in must be signed, FALSE to load any plug-in.</param>
+		/// <param name="parameters">Parameters for construction.</param>
+		/// <param name="key">Byte array containing the public key to verify.</param>
 		/// <returns>The plug-in interface.</returns>
-		public static PlugInEntryPoint Load(string pluginDLL, string pluginName, object[] parameters, bool mustBeSigned)
+		/// <remarks>The key argument is only used when <see cref="T:HeraLibrary.PlugInCollection.RequireSignedPlugIns"/> is set to TRUE.  Otherwise it is ignored.</remarks>
+		public static PlugIn Load(string pluginDLL, string pluginName, byte[] key, object[] parameters)
 		{
 			Assembly pluginModule = null;		// Module containing the plug-in.
 
-			if (!string.IsNullOrEmpty(pluginDLL))
-			{
-				if (pluginDLL.IndexOf(", Version=") > -1)
-					pluginModule = _modules.LoadModule(pluginDLL);
-				else
-					pluginModule = _modules.LoadModule(Path.GetFullPath(pluginDLL));
-			}
+			if ((RequireSignedPlugIns) && (key != null))
+				throw new ArgumentNullException("key");
+
+			if (string.IsNullOrEmpty(pluginDLL))
+				throw new ArgumentNullException("pluginDLL");
+
+			if (string.IsNullOrEmpty(pluginName))
+				throw new ArgumentNullException("pluginName");
+
+			if (pluginDLL.IndexOf(", Version=") > -1)
+				pluginModule = _modules.LoadModule(pluginDLL, RequireSignedPlugIns, key);
+			else
+				pluginModule = _modules.LoadModule(Path.GetFullPath(pluginDLL), RequireSignedPlugIns, key);
+
+			GetPlugInTypes(pluginModule, parameters);
+
+			if (!_plugIns.Contains(pluginName))
+				throw new GorgonException(GorgonErrors.InvalidPlugin, pluginName + " was not found.");
 
 			// Load the module.			
-			return Load(pluginModule, pluginName, parameters, mustBeSigned);
+			return _plugIns[pluginName];
 		}
 
 		/// <summary>
@@ -222,38 +144,107 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="pluginDLL">Path to the DLL containing the plug-in.</param>
 		/// <param name="pluginName">Name of the plug-in to create.</param>
-		/// <param name="mustBeSigned">TRUE to indicate that the plug-in must be signed, FALSE to load any plug-in.</param>
+		/// <param name="key">Byte array containing the public key to verify.</param>
 		/// <returns>Object wrapped in the plug-in.</returns>        
-        public static PlugInEntryPoint Load(string pluginDLL, string pluginName, bool mustBeSigned)
-        {
-            return Load(pluginDLL, pluginName, null, mustBeSigned);
-        }
-
-		/// <summary>
-		/// Function to load multiple plug-ins from a plug-in DLL.
-		/// </summary>
-		/// <param name="pluginDLL">Path to the DLL containing the plug-ins.</param>        
-		/// <param name="mustBeSigned">TRUE to indicate that the plug-in must be signed, FALSE to load any plug-in.</param>
-		/// <returns>The loaded plug-in.</returns>
-        public static void Load(string pluginDLL, bool mustBeSigned)
-        {
-            Load(pluginDLL, null, null, mustBeSigned);
-        }
-
-		/// <summary>
-		/// Function to destroy a plug-in.
-		/// </summary>
-		/// <param name="plugInName">Name of the plug-in to unload.</param>
-		public static void Unload(string plugInName)
+		/// <remarks>The key argument is only used when <see cref="T:HeraLibrary.PlugInCollection.RequireSignedPlugIns"/> is set to TRUE.  Otherwise it is ignored.</remarks>
+		public static PlugIn Load(string pluginDLL, string pluginName, byte[] key)
 		{
-			_plugIns.Remove(plugInName);
+			return Load(pluginDLL, pluginName, key, null);
 		}
 
 		/// <summary>
-		/// Function to remove all plug-ins.
+		/// Function to retrieve all available plug-in metadata from a specified module.
 		/// </summary>
-		public static void DestroyAll()
+		/// <param name="pluginDLL">Path to the DLL containing the plug-in(s).</param>
+		/// <param name="key">Key used to sign the plug-in.</param>
+		/// <returns>An array with all the plug-in metadata.</returns>
+		public static PlugInDescriptionAttribute[] GetPlugInMetaData(string pluginDLL, byte[] key)
 		{
+			Type[] plugIns = null;
+			PlugInDescriptionAttribute[] result = null;
+			Assembly pluginModule = null;
+
+			if ((RequireSignedPlugIns) && (key != null))
+				throw new ArgumentNullException("key");
+
+			if (string.IsNullOrEmpty(pluginDLL))
+				throw new ArgumentNullException("pluginDLL");
+
+			if (pluginDLL.IndexOf(", Version=") > -1)
+				pluginModule = _modules.LoadModule(pluginDLL, RequireSignedPlugIns, key);
+			else
+				pluginModule = _modules.LoadModule(Path.GetFullPath(pluginDLL), RequireSignedPlugIns, key);
+
+			// Get the public types.
+			plugIns = pluginModule.ManifestModule.FindTypes(
+				(plugInType, filter) =>
+				{
+					return (plugInType.IsSubclassOf(typeof(PlugIn)));
+				}, null);
+
+			if (plugIns.Length == 0)
+				return new PlugInDescriptionAttribute[0];
+
+			result = new PlugInDescriptionAttribute[plugIns.Length];
+
+			// Get all the plug-in types and add them.
+			for (int i = 0; i < plugIns.Length; i++)
+			{
+				PlugInDescriptionAttribute[] attribute = null;
+
+				attribute = plugIns[i].GetCustomAttributes(typeof(PlugInDescriptionAttribute), false) as PlugInDescriptionAttribute[];
+
+				if ((attribute == null) || (attribute.Length == 0))
+					throw new GorgonException(GorgonErrors.InvalidPlugin, "The plug-in type '" + plugIns[i].FullName + "' has no PlugInDescriptionAttribute");
+
+				result[i] = attribute[0];
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to remove a plug-in from the factory.
+		/// </summary>
+		/// <param name="plugIn">Plug-in to remove.</param>
+		public static void Unload(PlugIn plugIn)
+		{
+			Gorgon.Log.Print("Removing plug-in: {0}.", LoggingLevel.Intermediate, plugIn.Name);
+			_plugIns[plugIn.Name].Unload();
+			_plugIns.Remove(plugIn.Name);
+		}
+
+		/// <summary>
+		/// Function to remove a plug-in by its index.
+		/// </summary>
+		/// <param name="index">Index of the plug-in to remove.</param>
+		public static void Unload(int index)
+		{
+			Gorgon.Log.Print("Removing plug-in: {0}.", LoggingLevel.Intermediate, _plugIns[index].Name);
+			_plugIns[index].Unload();
+			_plugIns.Remove(index);
+		}
+
+		/// <summary>
+		/// Function to remove a plug-in by its name.
+		/// </summary>
+		/// <param name="name">Name of the plug-in to unload.</param>
+		public static void Unload(string name)
+		{
+			Gorgon.Log.Print("Removing plug-in: {0}.", LoggingLevel.Intermediate, name);
+			_plugIns[name].Unload();
+			_plugIns.Remove(name);
+		}
+
+
+		/// <summary>
+		/// Function to clear the plug-in list.
+		/// </summary>
+		public static void UnloadAll()
+		{
+			Gorgon.Log.Print("Removing all plug-ins.", LoggingLevel.Intermediate);
+			foreach (PlugIn plugIn in _plugIns)
+				plugIn.Unload();
 			_plugIns.Clear();
 		}
 		#endregion
@@ -264,8 +255,8 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		static PlugInFactory()
 		{
-			_modules = new PlugInModuleList();
-			_plugIns = new PlugInList();
+			_modules = new PlugInModuleCollection();
+			_plugIns = new PlugInCollection();
 		}
 		#endregion	
 	}

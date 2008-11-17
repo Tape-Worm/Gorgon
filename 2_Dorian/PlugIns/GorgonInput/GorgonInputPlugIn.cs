@@ -20,22 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, May 01, 2006 10:59:13 PM
+// Created: Saturday, September 30, 2006 10:04:18 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
 using System.Text;
+using GorgonLibrary;
+using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.PlugIns
+namespace GorgonLibrary.InputDevices
 {
 	/// <summary>
-	/// Attribute used to determine which assembly is considered a plug-in.
+	/// Entry point for the plug-in.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-	public sealed class PlugInAttribute 
-		: Attribute
+	[PlugInDescription("Gorgon.RawInput", PlugInType.Input, Description = "A plug-in that utilizes the WM_INPUT message to provide access to input devices.")]
+    public class GorgonInputPlugIn
+		: InputPlugIn
 	{
+		#region Methods.
+		/// <summary>
+        /// Function to create an input interface.
+        /// </summary>
+        /// <param name="parameters">Parameters to pass for construction.</param>
+        /// <returns>New input object.</returns>
+		protected override object CreateImplementation(object[] parameters)
+		{
+			return new GorgonInput(this);
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="plugInPath">Path to the plug-in.</param>
+		public GorgonInputPlugIn(string plugInPath)
+			: base(plugInPath)
+		{
+		}
+		#endregion
 	}
 }

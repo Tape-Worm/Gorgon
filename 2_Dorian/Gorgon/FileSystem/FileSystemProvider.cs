@@ -44,11 +44,6 @@ namespace GorgonLibrary.FileSystems
 		private FileSystemInfoAttribute _info;				// File system information.
 		private Type _fileSystemType;						// File system type.
 		private bool _isDisposed = false;					// Flag to indicate whether this object is disposed already or not.
-//#if DEBUG
-		private static bool _requireSignedPlugIns = false;	// Flag to indicate that we require signed provider plug-ins.
-//#else
-//		private static bool _requireSignedPlugIns = true;	// Flag to indicate that we require signed provider plug-ins.
-//#endif
 		#endregion
 
 		#region Properties.
@@ -80,21 +75,6 @@ namespace GorgonLibrary.FileSystems
 			get
 			{				
 				return _fileSystemPlugIn;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether provider plug-ins need to be signed or not.
-		/// </summary>
-		public static bool RequireSignedProviderPlugIns
-		{
-			get
-			{
-				return _requireSignedPlugIns;
-			}
-			set
-			{
-				_requireSignedPlugIns = value;
 			}
 		}
 
@@ -154,10 +134,8 @@ namespace GorgonLibrary.FileSystems
         /// </summary>
         public string Description
         {
-            get
-            {
-                return _info.Description;
-            }
+            get;
+			internal set;
         }
 
         /// <summary>
@@ -242,9 +220,10 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="providerPlugInPath">Path to the provider plug-in.</param>
 		/// <param name="plugInName">Name of the file system plug-in.</param>
+		/// <param name="key">Key used to sign the plug-in.</param>
 		/// <returns>The filesystem plug-in provider.</returns>
 		/// <remarks>This will only load the file system provider if it hasn't already been loaded.<para>The filesystem plugInName is the name of the plug-in within the DLL, not the name of the provider.</para></remarks>
-		public static FileSystemProvider Load(string providerPlugInPath, string plugInName)
+		public static FileSystemProvider Load(string providerPlugInPath, string plugInName, byte[] key)
 		{
 			FileSystemPlugIn plugIn = null;					// File system plug-in.
 
@@ -252,7 +231,7 @@ namespace GorgonLibrary.FileSystems
 				throw new ArgumentNullException("providerPlugInPath");
 
 			// Load the plug-in.
-			plugIn = PlugInFactory.Load(providerPlugInPath, plugInName, _requireSignedPlugIns) as FileSystemPlugIn;
+			plugIn = PlugInFactory.Load(providerPlugInPath, plugInName, key) as FileSystemPlugIn;
 
 			// Add each plug-in (if it doesn't already exist).
 			if ((plugIn == null) || (plugIn.PlugInType != PlugInType.FileSystem))
@@ -265,33 +244,15 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
-		/// Function to load all file system providers from a plug-in.
+		/// Function to load a file system provider plug-in.
 		/// </summary>
 		/// <param name="providerPlugInPath">Path to the provider plug-in.</param>
-		/// <remarks>This will load all file system providers contained within the DLL.</remarks>
-		public static void Load(string providerPlugInPath)
+		/// <param name="plugInName">Name of the file system plug-in.</param>
+		/// <returns>The filesystem plug-in provider.</returns>
+		/// <remarks>This will only load the file system provider if it hasn't already been loaded.<para>The filesystem plugInName is the name of the plug-in within the DLL, not the name of the provider.</para></remarks>
+		public static FileSystemProvider Load(string providerPlugInPath, string plugInName)
 		{
-			FileSystemPlugIn plugIn = null;					// File system plug-in.
-
-			if (string.IsNullOrEmpty(providerPlugInPath))
-				throw new ArgumentNullException("providerPlugInPath");
-
-			// Load the plug-in.
-			PlugInFactory.Load(providerPlugInPath, _requireSignedPlugIns);
-
-			// Add each plug-in (if it doesn't already exist).
-			foreach (PlugInEntryPoint plugInItem in PlugInFactory.PlugIns)
-			{
-				plugIn = plugInItem as FileSystemPlugIn;
-				if (plugIn != null)
-				{
-					if (plugIn.PlugInType != PlugInType.FileSystem)
-						throw new GorgonException(GorgonErrors.InvalidPlugin, "The plug-in is not a file system plug-in.\nThe type returned was: " + plugIn.PlugInType.ToString());
-
-					if (!FileSystemProviderCache.Providers.Contains(plugIn.Name))
-						FileSystemProviderCache.Providers.Add(plugIn);
-				}
-			}
+			return Load(providerPlugInPath, plugInName, null);
 		}
 
 		/// <summary>

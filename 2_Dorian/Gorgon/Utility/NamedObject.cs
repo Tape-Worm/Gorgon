@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Internal
+namespace GorgonLibrary
 {
 	/// <summary>
 	/// Abstract Class representing a named object.

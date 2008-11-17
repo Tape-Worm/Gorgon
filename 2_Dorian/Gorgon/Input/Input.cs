@@ -46,11 +46,6 @@ namespace GorgonLibrary.InputDevices
 		private JoystickList _joysticks = null;					// Joystick list.
 		private Mouse _mouse = null;							// Interface for mouse data.
 		private Keyboard _keyboard = null;						// Interface for keyboard data.
-//#if DEBUG
-		private static bool _requireSigned = false;				// Flag to require a signed plug-in.
-//#else
-//		private static bool _requireSigned = true;				// Flag to require a signed plug-in.
-//#endif
 		#endregion
 
 		#region Properties.
@@ -62,21 +57,6 @@ namespace GorgonLibrary.InputDevices
 			get
 			{
 				return _plugIn;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether the input plug-in requires signing.
-		/// </summary>
-		public static bool RequireSignedPlugIn
-		{
-			get
-			{
-				return _requireSigned;
-			}
-			set
-			{
-				_requireSigned = value;
 			}
 		}
 
@@ -179,7 +159,8 @@ namespace GorgonLibrary.InputDevices
 		/// </summary>
 		/// <param name="plugInPath">Path to the plug-in DLL.</param>
 		/// <param name="plugInName">Name of the plug-in to instance.</param>
-		public static Input LoadInputPlugIn(string plugInPath, string plugInName)
+		/// <param name="key">Key used to sign plug-in.</param>
+		public static Input LoadInputPlugIn(string plugInPath, string plugInName, byte[] key)
 		{
 			InputPlugIn plugIn = null;			// Plug-in.			
 
@@ -189,12 +170,22 @@ namespace GorgonLibrary.InputDevices
 			if (string.IsNullOrEmpty(plugInName))
 				throw new ArgumentNullException("plugInName");
 
-			plugIn = PlugInFactory.Load(plugInPath, plugInName, _requireSigned) as InputPlugIn;
+			plugIn = PlugInFactory.Load(plugInPath, plugInName, key) as InputPlugIn;
 
 			if ((plugIn == null) || (plugIn.PlugInType != PlugInType.Input))
 				throw new GorgonException(GorgonErrors.InvalidPlugin, "The plug-in was not an input plug-in type.");
 
-			return plugIn.CreateImplementation(null) as Input;
+			return plugIn.Create();
+		}
+
+		/// <summary>
+		/// Function to load an input plug-in.
+		/// </summary>
+		/// <param name="plugInPath">Path to the plug-in DLL.</param>
+		/// <param name="plugInName">Name of the plug-in to instance.</param>
+		public static Input LoadInputPlugIn(string plugInPath, string plugInName)
+		{
+			return LoadInputPlugIn(plugInPath, plugInName, null);
 		}
 
 		/// <summary>

@@ -35,7 +35,7 @@ namespace GorgonLibrary.FileSystems
 	/// Abstract object for file system plug-ins.
 	/// </summary>
 	public abstract class FileSystemPlugIn
-		: PlugInEntryPoint
+		: PlugIn
 	{
 		#region Properties.
 		/// <summary>
@@ -64,10 +64,9 @@ namespace GorgonLibrary.FileSystems
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="name">Name of the file system plug-in.</param>
 		/// <param name="plugInPath">Path to the plug-in.</param>
-		protected FileSystemPlugIn(string name, string plugInPath)
-			: base(name, plugInPath, PlugInType.FileSystem)
+		protected FileSystemPlugIn(string plugInPath)
+			: base(plugInPath)
 		{
 		}		
 		#endregion

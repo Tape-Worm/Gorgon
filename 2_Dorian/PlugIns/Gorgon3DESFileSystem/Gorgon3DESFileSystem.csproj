@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -77,8 +77,8 @@
       <DependentUpon>formGetPassword.cs</DependentUpon>
     </Compile>
     <Compile Include="Gorgon3DESFileSystem.cs" />
+    <Compile Include="Gorgon3DESFileSystemPlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TripleDESPlugInEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorEnc.ico" />

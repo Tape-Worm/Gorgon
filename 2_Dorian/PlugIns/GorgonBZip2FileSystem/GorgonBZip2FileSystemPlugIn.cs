@@ -36,7 +36,8 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
     /// Entry point for the plug-in.
     /// </summary>
-    public class GorgonBZip2FileSystemPlugInEntry
+	[PlugInDescription("Gorgon.BZip2FileSystem", PlugInType.FileSystem, Description = "File system provider plug-in that provides BZip2 compression.")]
+    public class GorgonBZip2FileSystemPlugIn
         : FileSystemPlugIn
     {
         #region Properties.
@@ -86,10 +87,9 @@ namespace GorgonLibrary.FileSystems
 		/// Constructor.
 		/// </summary>
 		/// <param name="plugInPath">Path to the plug-in.</param>
-		public GorgonBZip2FileSystemPlugInEntry(string plugInPath)
+		public GorgonBZip2FileSystemPlugIn(string plugInPath)
 			: base(plugInPath)
 		{
-			//"Gorgon.BZip2FileSystem"
 		}
 		#endregion
 	}

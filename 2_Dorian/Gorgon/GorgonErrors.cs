@@ -224,6 +224,28 @@ namespace GorgonLibrary
 				return new GorgonError("CannotBindInputDevice", ErrorBase + 0x10, "Error binding the input device.");
 			}
 		}
+
+		/// <summary>
+		/// Plug-in assembly was not signed.
+		/// </summary>
+		public static GorgonError ModuleNotSigned
+		{
+			get
+			{
+				return new GorgonError("ModuleNotSigned", ErrorBase + 0x11, "The plug-in assembly is not signed.");
+			}
+		}
+
+		/// <summary>
+		/// Plug-in assembly was not signed with a valid key.
+		/// </summary>
+		public static GorgonError ModuleKeyMismatch
+		{
+			get
+			{
+				return new GorgonError("ModuleKeyMismatch", ErrorBase + 0x12, "The assembly not signed with a valid key.");
+			}
+		}
 	}
 
 	/// <summary>

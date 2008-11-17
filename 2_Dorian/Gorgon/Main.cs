@@ -1345,7 +1345,7 @@ namespace GorgonLibrary
 				FrameStats.Dispose();
 
 			// Unload all plug-ins.
-			PlugInFactory.DestroyAll();
+			PlugInFactory.UnloadAll();
 
 			if (_stateCache != null)
 				_stateCache.Dispose();

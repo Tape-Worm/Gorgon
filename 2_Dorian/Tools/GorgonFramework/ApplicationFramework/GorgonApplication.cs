@@ -76,11 +76,6 @@ namespace GorgonLibrary.Framework
 		private bool _cursorVisible;							// Flag to indicate that the cursor is visible.
 		private bool _escapeCloses = true;						// Flag to indicate that the escape key will close the application.
 		private Font _defaultFont = null;						// Default font.
-#if DEBUG
-		private bool _requireSignedPlugIns = false;				// Flag to indicate that plug-ins should be signed.
-#else
-		private bool _requireSignedPlugIns = true;				// Flag to indicate that plug-ins should be signed.
-#endif
 		#endregion
 
         #region Properties.
@@ -151,60 +146,16 @@ namespace GorgonLibrary.Framework
 		/// <summary>
 		/// Property to set or return whether custom plug-ins should be signed or not.
 		/// </summary>
-#if DEBUG
-		[Browsable(true), Category("Framework"), Description("Sets whether or not to require that custom plug-ins should be signed."),DefaultValue(false)]
-#else
-		[Browsable(true), Category("Framework"), Description("Sets whether or not to require that custom plug-ins should be signed."), DefaultValue(true)]
-#endif
+		[Browsable(true), Category("Framework"), Description("Sets whether or not to require that plug-ins should be signed."), DefaultValue(false)]
 		public bool RequireSignedPlugIns
 		{
 			get
 			{
-				return _requireSignedPlugIns;
+				return PlugInFactory.RequireSignedPlugIns;
 			}
 			set
 			{
-				_requireSignedPlugIns = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether the file system providers should be signed.
-		/// </summary>
-#if DEBUG
-		[Browsable(true), Category("Framework"), Description("Sets whether or not to require signed file system provider plug-ins."), DefaultValue(false)]
-#else
-		[Browsable(true), Category("Framework"), Description("Sets whether or not to require signed file system provider plug-ins."), DefaultValue(true)]
-#endif
-		public bool RequiredSignedFileSystemProvider
-		{
-			get
-			{
-				return FileSystemProvider.RequireSignedProviderPlugIns;
-			}
-			set
-			{
-				FileSystemProvider.RequireSignedProviderPlugIns = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether the input plug-ins should be signed.
-		/// </summary>
-#if DEBUG
-		[Browsable(true), Category("Framework"), Description("Sets whether or not to require signed input plug-ins."), DefaultValue(false)]
-#else
-		[Browsable(true), Category("Framework"), Description("Sets whether or not to require signed input plug-ins."), DefaultValue(true)]
-#endif
-		public bool RequiredSignedInputPlugIn
-		{
-			get
-			{
-				return Input.RequireSignedPlugIn;
-			}
-			set
-			{
-				Input.RequireSignedPlugIn = value;
+				PlugInFactory.RequireSignedPlugIns = value;
 			}
 		}
 
@@ -835,15 +786,18 @@ namespace GorgonLibrary.Framework
 		/// </summary>
 		private void LoadPlugins()
 		{
+			byte[] key = null;		// Key used for comparison.
+
 			// Load each plug-in.
 			foreach (GorgonSettings.PlugInsRow row in ConfigurationSettings.PlugIns)
 			{
-				if ((row.PlugInEnabled) && (row.PlugInDLL != string.Empty))
+				if ((row.PlugInEnabled) && (row.PlugInDLL != string.Empty) && (row.PlugInName != string.Empty))
 				{
-					if (row.PlugInName == string.Empty)
-						PlugInFactory.Load(row.PlugInDLL, _requireSignedPlugIns);
-					else
-						PlugInFactory.Load(row.PlugInDLL, row.PlugInName, _requireSignedPlugIns);
+					key = GetPlugInKey(row.PlugInDLL, row.PlugInName);
+					if ((RequireSignedPlugIns) && (key == null))
+						throw new GorgonException(GorgonErrors.ModuleKeyMismatch, "The plug-in '" + row.PlugInName + "' requires a key when loading.");
+
+					PlugInFactory.Load(row.PlugInDLL, row.PlugInName, key);
 				}
 			}
 		}
@@ -856,13 +810,18 @@ namespace GorgonLibrary.Framework
 			FileSystemProvider fsPlugIn = null;	// File system plug-in.
 			FileSystem fileSystem = null;		// File system.
 			string rootPath = string.Empty;		// Root path.
+			byte[] key = null;					// Key used for comparison.
 
 			// Go through each file system and mount it.
 			foreach (GorgonSettings.FileSystemsRow row in ConfigurationSettings.FileSystems)
 			{
-				if ((row.FileSystemEnabled) && (row.FileSystemProviderDLL != string.Empty))
+				if ((row.FileSystemEnabled) && (row.FileSystemProviderDLL != string.Empty) && (row.FileSystemProviderName != string.Empty))
 				{
-					fsPlugIn = FileSystemProvider.Load(_plugInPath + row.FileSystemProviderDLL, row.FileSystemProviderName);
+					key = GetPlugInKey(row.FileSystemProviderDLL, row.FileSystemProviderName);
+					if ((RequireSignedPlugIns) && (key == null))
+						throw new GorgonException(GorgonErrors.ModuleKeyMismatch, "The plug-in '" + row.FileSystemProviderName + "' requires a key when loading.");
+
+					fsPlugIn = FileSystemProvider.Load(_plugInPath + row.FileSystemProviderDLL, row.FileSystemProviderName, key);
 					fileSystem = FileSystem.Create(row.FileSystemName, fsPlugIn);
 
 					if (row.FileSystemRoot != string.Empty)
@@ -883,11 +842,16 @@ namespace GorgonLibrary.Framework
 		/// Function to load input plug-ins.
 		/// </summary>
 		private void LoadInputPlugIns()
-		{			
+		{
+			byte[] key = null;					// Key used for comparison.
+
 			foreach (GorgonSettings.InputPlugInsRow row in ConfigurationSettings.InputPlugIns)
 			{
 				if ((row.InputEnabled) && (row.InputPlugInDLL != string.Empty) && (row.InputPlugInName != string.Empty))
 				{
+					key = GetPlugInKey(row.InputPlugInDLL, row.InputPlugInName);
+					if ((RequireSignedPlugIns) && (key == null))
+						throw new GorgonException(GorgonErrors.ModuleKeyMismatch, "The plug-in '" + row.InputPlugInName + "' requires a key when loading.");
 					_input = Input.LoadInputPlugIn(_plugInPath + row.InputPlugInDLL, row.InputPlugInName);
 					return;
 				}
@@ -937,6 +901,18 @@ namespace GorgonLibrary.Framework
 		private void Gorgon_DeviceLost(object sender, EventArgs e)
 		{
 			OnDeviceLost();
+		}
+
+		/// <summary>
+		/// Function called when a plug-in is loaded and requires a key.
+		/// </summary>
+		/// <param name="plugInPath">Path to the plug-in assembly.</param>
+		/// <param name="plugInName">Name of the plug-in being loaded.</param>
+		/// <returns>A byte array containing the key that was used to sign the plug-in.</returns>
+		/// <remarks>Users must override this function when <see cref="GorgonLibrary.Framework.GorgonApplicationWindow.RequireSignedPlugIns">RequireSignedPlugIns</see> is set to true.</remarks>
+		protected virtual byte[] GetPlugInKey(string plugInPath, string plugInName)
+		{
+			return null;
 		}
 
 		/// <summary>

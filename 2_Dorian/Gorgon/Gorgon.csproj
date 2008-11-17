@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
@@ -133,7 +133,6 @@
     <Compile Include="Collections\Collection.cs" />
     <Compile Include="Collections\Dictionary.cs" />
     <Compile Include="Collections\DynamicArray.cs" />
-    <Compile Include="Direct3DUtility.cs" />
     <Compile Include="Enums\AnimationEnums.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Enums\FontEnums.cs" />
@@ -193,8 +192,10 @@
     <Compile Include="Math\Vector4D.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
-    <Compile Include="Plugin\PlugInEntryPoint.cs" />
+    <Compile Include="Plugin\PlugIn.cs" />
+    <Compile Include="Plugin\PlugInDescriptionAttribute.cs" />
     <Compile Include="Plugin\PlugInFactory.cs" />
+    <Compile Include="Plugin\PlugInModuleCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -205,6 +206,7 @@
     <Compile Include="Rendering\RenderableChildren.cs" />
     <Compile Include="Rendering\Renderable.cs" />
     <Compile Include="Rendering\Renderer.cs" />
+    <Compile Include="Rendering\RendererPlugIn.cs" />
     <Compile Include="Serialization\BinaryReaderEx.cs" />
     <Compile Include="Serialization\BinaryWriterEx.cs" />
     <Compile Include="Serialization\FXShaderSerializer.cs" />
@@ -263,12 +265,9 @@
     </Compile>
     <Compile Include="Buffers\IDataCache.cs" />
     <Compile Include="Converter.cs" />
-    <Compile Include="Enums\PlugInTypeEnums.cs" />
-    <Compile Include="Plugin\PlugInAttribute.cs" />
     <Compile Include="Plugin\PlugInList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Plugin\PlugInModuleList.cs" />
     <Compile Include="Rendering\RenderStates.cs" />
     <Compile Include="Events\DriverChangeEvent.cs">
       <SubType>Code</SubType>

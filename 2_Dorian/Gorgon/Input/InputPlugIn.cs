@@ -35,26 +35,51 @@ namespace GorgonLibrary.InputDevices
 	/// Abstract interface for an input plug-in.
 	/// </summary>
 	public abstract class InputPlugIn
-		: PlugInEntryPoint
+		: PlugIn
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to return a description of the input interface.
-		/// </summary>
-		public abstract string Description
-		{
-			get;
-		}
+		#region Variables.
+		private static Input _input = null;				// Input interface.
+		private static object _sync = new object();		// Sync lock.
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to unload this plug-in.
+		/// Function to perform clean up when this plug-in is unloaded.
 		/// </summary>
-		protected internal virtual void Unload()
+		protected internal override void Unload()
 		{
-			if (PlugInFactory.PlugIns.Contains(Name))
-				PlugInFactory.PlugIns.Remove(Name);
+ 			base.Unload();
+
+			if (_input != null)
+			{
+				lock (_sync)
+				{
+					if (_input != null)
+						_input = null;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Funciton to create the input interface.
+		/// </summary>
+		/// <returns>A new input interface.</returns>
+		internal Input Create()
+		{
+			if (_input == null)
+			{
+				lock (_sync)
+				{
+					if (_input == null)
+					{
+						_input = CreateImplementation(null) as Input;
+						if (_input == null)
+							throw new GorgonException(GorgonErrors.InvalidPlugin, "Error creating plug-in '" + Name + "'.");
+					}
+				}
+			}
+
+			return _input;
 		}
 		#endregion
 
@@ -62,10 +87,9 @@ namespace GorgonLibrary.InputDevices
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InputPlugIn"/> class.
 		/// </summary>
-		/// <param name="name">The name of the plug-in.</param>
 		/// <param name="inputDLLPath">The input DLL path.</param>
-		protected InputPlugIn(string name, string inputDLLPath)
-			: base(name, inputDLLPath, PlugInType.Input)
+		protected InputPlugIn(string inputDLLPath)
+			: base(inputDLLPath)
 		{
 		}
 		#endregion

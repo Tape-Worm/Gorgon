@@ -37,7 +37,7 @@ namespace GorgonLibrary.Internal
     /// Object used to interface to internal Gorgon D3D objects.
     /// </summary>
     /// <remarks>This is meant for plug-in developers to use as an entry point to gain full access to Gorgon's D3D internals (i.e. if a developer wanted to merge 3D stuff with Gorgon, they'd use this class to gain access to everything).
-    /// <para>Since this is strictly for plug-ins, this class can only be accessed from the <see cref="GorgonLibrary.PlugIns.PlugInEntryPoint">PlugInEntryPoint</see> superclass as the protected method <see cref="GorgonLibrary.PlugIns.PlugInEntryPoint.GetD3DObjects">GetD3DObjects()</see>.</para>
+    /// <para>Since this is strictly for plug-ins, this class can only be accessed from the <see cref="GorgonLibrary.PlugIns.PlugIn">PlugIn</see> superclass as the protected method <see cref="GorgonLibrary.PlugIns.PlugIn.GetD3DObjects">GetD3DObjects()</see>.</para>
     /// <para>BE VERY CAREFUL WITH THIS OBJECT!  It cannot be stressed enough, you will be messing with the guts of Gorgon and as such you can easily cause it to crash by doing something wrong.</para></remarks>
     public class D3DObjects
         : IDeviceStateObject, IDisposable
