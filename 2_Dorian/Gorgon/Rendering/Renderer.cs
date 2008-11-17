@@ -560,7 +560,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Renderer"/> class.
 		/// </summary>
-		/// <param name="plugIn">The plug in.</param>
+		/// <param name="plugIn">The plug in used to create the renderer.</param>
 		protected Renderer(RendererPlugIn plugIn)
 		{
 			if (plugIn == null)

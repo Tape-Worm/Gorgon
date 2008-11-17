@@ -42,26 +42,86 @@ namespace GorgonLibrary.SlimDXRenderer
 	{
 		#region Variables.
 		private bool _disposed = false;					// Flag to indicate that the object was disposed.
-		private D3D.Direct3DEx _direct3DEx = null;		// Direct 3D ex object.
-		private D3D.Direct3D _direct3D = null;			// Direct 3D object.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return whether to use the Ex interfaces or not.
+		/// </summary>
+		internal bool HasEXInterfaces
+		{
+			get;
+			private set;
+		}
 
+		/// <summary>
+		/// Property to return a Direct 3D interface.
+		/// </summary>
+		internal D3D.Direct3D Direct3D
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return a Direct 3DEx interface.
+		/// </summary>
+		internal D3D.Direct3DEx Direct3DEx
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to check whether the system supports the Ex interfaces for Direct 3D 9.
+		/// </summary>
+		private void CheckD3D9Ex()
+		{
+			IntPtr d3d9Handle = IntPtr.Zero;			// Handle to D3D9.DLL.
+			UIntPtr exFunction = UIntPtr.Zero;			// Handle to Direct3DCreate9Ex function.
 
+			try
+			{
+				HasEXInterfaces = false;
+				d3d9Handle = Win32.LoadLibrary("D3D9.DLL");
+				if (d3d9Handle != IntPtr.Zero)
+				{
+					exFunction = Win32.GetProcAddress(d3d9Handle, "Direct3DCreate9Ex");
+					if (exFunction != UIntPtr.Zero)
+						HasEXInterfaces = true;
+				}
+			}
+			catch
+			{
+				HasEXInterfaces = false;
+			}
+			finally
+			{
+				if (d3d9Handle != IntPtr.Zero)
+					Win32.FreeLibrary(d3d9Handle);
+			}
+		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SlimDXRenderer"/> class.
 		/// </summary>
-		/// <param name="plugIn">The plug in.</param>
+		/// <param name="plugIn">The plug in used to create the renderer.</param>
 		public SlimDXRenderer(SlimDXRendererPlugIn plugIn)
 			: base(plugIn)
-		{
+		{		
+			CheckD3D9Ex();
+
+			if (HasEXInterfaces)
+			{
+				Direct3DEx = new D3D.Direct3DEx();
+				Direct3D = Direct3DEx as D3D.Direct3D;
+			}
+			else
+				Direct3D = new D3D.Direct3D();
 		}
 		#endregion
 	
@@ -76,7 +136,11 @@ namespace GorgonLibrary.SlimDXRenderer
 			{
 				if (disposing)
 				{
-					
+					if (Direct3D != null)
+						Direct3D.Dispose();
+
+					Direct3D = null;
+					Direct3DEx = null;
 				}
 
 				_disposed = true;

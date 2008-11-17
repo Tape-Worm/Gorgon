@@ -53,6 +53,7 @@
     <Compile Include="SlimDXRendererPlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SlimDXRenderer.cs" />
+    <Compile Include="Win32.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorDX.ico" />
