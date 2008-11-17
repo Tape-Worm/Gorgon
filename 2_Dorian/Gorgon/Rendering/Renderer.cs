@@ -100,51 +100,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return whether the D3D runtime is in debug mode or not.
-		/// </summary>
-		/// <returns>TRUE if in debug, FALSE if in retail.</returns>
-		private bool IsD3DDebug
-		{
-			get
-			{
-				RegistryKey regKey = null;		// Registry key.
-				int keyValue = 0;				// Registry key value.
-
-				try
-				{
-					// Get the registry setting.
-					regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Direct3D");
-
-					if (regKey == null)
-						return false;
-
-					// Get value.
-					keyValue = Convert.ToInt32(regKey.GetValue("LoadDebugRuntime", (int)0));
-					if (keyValue != 0)
-						return true;
-				}
-#if DEBUG
-				catch (Exception ex)
-#else
-				catch
-#endif
-				{
-#if DEBUG
-                    MessageBox.Show("Unable to determine Direct 3D runtime settings.", ex.Message);
-#endif
-				}
-				finally
-				{
-					if (regKey != null)
-						regKey.Close();
-					regKey = null;
-				}
-
-				return false;
-			}
-		}
-
-		/// <summary>
 		/// Property to return the render state list.
 		/// </summary>
 		public RenderStates RenderStates
@@ -279,6 +234,41 @@ namespace GorgonLibrary.Graphics
 			else
 				D3DDevice.DrawPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, CalculateIndices(false, Geometry.VerticesWritten, 0, Geometry.PrimitiveStyle));
 			DX.Configuration.ThrowOnError = true;
+		}
+
+		/// <summary>
+		/// Function to load a renderer plug-in.
+		/// </summary>
+		/// <param name="path">Path to the renderer.</param>
+		/// <param name="name">Name of the renderer plug-in.</param>
+		/// <param name="key">Key used to authenticate the renderer plug-in.</param>
+		/// <returns>A new renderer interface.</returns>
+		public static Renderer Load(string path, string name, byte[] key)
+		{
+			RendererPlugIn plugIn = null;		// Renderer plug-in.
+
+			if (string.IsNullOrEmpty(path))
+				throw new ArgumentNullException("path");
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name");
+
+			plugIn = PlugIns.PlugInFactory.Load(path, name, key) as RendererPlugIn;
+
+			if ((plugIn == null) || (plugIn.PlugInType != PlugIns.PlugInType.Renderer))
+				throw new GorgonException(GorgonErrors.InvalidPlugin, "Unable to load renderer '" + name + "' from '" + path + "'.");
+
+			return plugIn.Create();
+		}
+
+		/// <summary>
+		/// Function to load a renderer plug-in.
+		/// </summary>
+		/// <param name="path">Path to the renderer.</param>
+		/// <param name="name">Name of the renderer plug-in.</param>
+		/// <returns>A new renderer interface.</returns>
+		public static Renderer Load(string path, string name)
+		{
+			return Load(path, name, null);
 		}
 
 		/// <summary>
@@ -569,8 +559,6 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("Renderer", "Starting renderer...", LoggingLevel.Simple);
 
-			if (IsD3DDebug)
-				Gorgon.Log.Print("Renderer", "[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", LoggingLevel.Verbose);
 #if INCLUDE_D3DREF
 			if (Gorgon.UseReferenceDevice)
 				Gorgon.Log.Print("Renderer", "[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", LoggingLevel.All);
@@ -629,8 +617,6 @@ namespace GorgonLibrary.Graphics
 		{
 			Gorgon.Log.Print("Renderer", "Starting renderer...", LoggingLevel.Simple);
 
-			if (IsD3DDebug)
-				Gorgon.Log.Print("Renderer", "[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", LoggingLevel.Verbose);
 #if INCLUDE_D3DREF
 			if (Gorgon.UseReferenceDevice)
 				Gorgon.Log.Print("Renderer", "[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", LoggingLevel.All);
@@ -700,7 +686,9 @@ namespace GorgonLibrary.Graphics
 				if (_vertexTypes != null)
 					_vertexTypes.Dispose();
 
-				_plugIn.Unload();
+				// TODO: Remove this check.
+				if (_plugIn != null)
+					_plugIn.Unload();
 				Gorgon.Log.Print("Renderer", "Renderer destroyed.", LoggingLevel.Simple);
 			}
 

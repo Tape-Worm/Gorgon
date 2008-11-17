@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Win32;
 using DX = SlimDX;
 using D3D = SlimDX.Direct3D9;
 using GorgonLibrary.Graphics;
@@ -45,6 +46,41 @@ namespace GorgonLibrary.SlimDXRenderer
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return whether the D3D runtime is in debug mode or not.
+		/// </summary>
+		/// <returns>TRUE if in debug, FALSE if in retail.</returns>
+		private bool IsD3DDebug
+		{
+			get
+			{
+				RegistryKey regKey = null;		// Registry key.
+				int keyValue = 0;				// Registry key value.
+
+				try
+				{
+					// Get the registry setting.
+					regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Direct3D");
+
+					if (regKey == null)
+						return false;
+
+					// Get value.
+					keyValue = Convert.ToInt32(regKey.GetValue("LoadDebugRuntime", (int)0));
+					if (keyValue != 0)
+						return true;
+				}
+				finally
+				{
+					if (regKey != null)
+						regKey.Close();
+					regKey = null;
+				}
+
+				return false;
+			}
+		}
+
 		/// <summary>
 		/// Property to return whether to use the Ex interfaces or not.
 		/// </summary>
@@ -113,6 +149,9 @@ namespace GorgonLibrary.SlimDXRenderer
 		public SlimDXRenderer(SlimDXRendererPlugIn plugIn)
 			: base(plugIn)
 		{		
+			if (IsD3DDebug)
+				Gorgon.Log.Print("Renderer", "[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", LoggingLevel.Verbose);
+
 			CheckD3D9Ex();
 
 			if (HasEXInterfaces)
