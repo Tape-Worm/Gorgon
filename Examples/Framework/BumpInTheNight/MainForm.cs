@@ -163,7 +163,7 @@ namespace GorgonLibrary.Example
 		protected override void OnMouseMovement(MouseInputEventArgs e)
 		{
 			base.OnMouseMovement(e);
-			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, 25.0f);
+			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, 15.0f);
 		}
 
 		/// <summary>
@@ -196,7 +196,7 @@ namespace GorgonLibrary.Example
 		{
 			FileSystems[ApplicationName].Mount();
 
-			_lightPosition = new Vector3D(Input.Mouse.Position.X, Input.Mouse.Position.Y, 25.0f);
+			_lightPosition = new Vector3D(Input.Mouse.Position.X, Input.Mouse.Position.Y, 15.0f);
 			_torchImage = Image.FromFileSystem(FileSystems[ApplicationName], "/Images/Torch.png");
 			_lightSource = Image.FromFileSystem(FileSystems[ApplicationName], "/Images/Lightmap.png");
 			_torch = Sprite.FromFileSystem(FileSystems[ApplicationName], "/Sprites/Torch.gorSprite");
