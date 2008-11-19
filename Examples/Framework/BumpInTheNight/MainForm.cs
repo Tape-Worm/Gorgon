@@ -46,42 +46,24 @@ namespace GorgonLibrary.Example
 	{
 		#region Variables.
 		private Random _rnd = new Random();										// Random number generator.
-		private RenderImage _buffer = null;										// Buffer used to render the lit image.
-		private RenderImage _lightSource = null;								// Our light source.
-		private Sprite _torch = null;											// The torch sprite.
+		private RenderImage _lightBuffer = null;								// Buffer used to render the lit image.
+		private RenderImage _colorBuffer = null;								// Color buffer - used to draw diffuse sprites.
+		private RenderImage _normalBuffer = null;								// Normal map buffer - used to draw normal maps.
 		private Sprite _bufferSprite = null;									// Buffer sprite.
+		private Sprite _torch = null;											// The torch sprite.
+		private Sprite _lightSprite = null;										// Lighting sprite.
 		private Sprite _bumpSprite = null;										// Bump map sprite.
 		private Image _torchImage = null;										// Image used for torch.
 		private Image _bumpNormal = null;										// Normal map.
 		private Image _bumpColor = null;										// Color map.
+		private Image _lightSource = null;										// "Light source" - Gradient circle.
 		private FXShader _bumpShader = null;									// Bump mapping shader.
 		private float _angle = 0.0f;											// Bump sprite rotation angle.
 		private Vector3D _lightPosition = Vector2D.Zero;						// Light position.
-		private Vector2D _lightSpriteScale = new Vector2D(2.5f, 2.5f);			// Scaling for lighting sprite.
+		private Vector2D _lightSpriteScale = Vector2D.Zero;						// Scaling for lighting sprite.
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to draw the light source shading for the light.
-		/// </summary>
-		private void DrawLightSource()
-		{
-			float alpha = 0;
-
-			_lightSource.BlendingMode = BlendingModes.None;
-			_lightSource.Clear(Drawing.Color.Black);			
-			_lightSource.BeginDrawing();
-
-			for (int i = 0; i < _lightSource.Width; i++)
-			{
-				alpha = 255.0f - (((float)i / (float)_lightSource.Width) * 255.0f);
-				_lightSource.FilledCircle(_lightSource.Width / 2.0f, _lightSource.Height / 2.0f, (_lightSource.Width - i) / 2.125f, Drawing.Color.FromArgb((int)alpha, Drawing.Color.Black));
-			}
-			_lightSource.EndDrawing();
-
-			_lightSource.BlendingMode = BlendingModes.Modulated;
-		}
-
 		/// <summary>
 		/// Function to validate the chosen video driver.
 		/// </summary>
@@ -108,29 +90,20 @@ namespace GorgonLibrary.Example
 		/// <param name="e">Frame event parameters.</param>
 		protected override void OnLogicUpdate(FrameEventArgs e)
 		{
-			Matrix rotate = Matrix.Identity;			// Rotation matrix.
-			Matrix scale = Matrix.Identity;			// Scaling matrix.
-			Matrix world = Matrix.Identity;			// World matrix.
-
 			base.OnLogicUpdate(e);
 
 			_angle += 12.0f * e.FrameDeltaTime;
 
-			_bumpSprite.SetPosition(Gorgon.Screen.Width / 2.0f, Gorgon.Screen.Height / 2.0f);
+			_bumpSprite.SetPosition(_colorBuffer.Width / 2.0f, _colorBuffer.Height / 2.0f);
+			_bumpShader.Parameters["Position"].SetValue(_lightPosition);
 
-			scale.Scale(_bumpSprite.Scale);
-			rotate.RotateZ(_bumpSprite.Rotation);
-			world = Matrix.Multiply(rotate, scale);
-			world.Translate(Vector2D.Add(new Vector2D(_bumpSprite.Position.X, -_bumpSprite.Position.Y), new Vector2D(_bumpSprite.Axis.X, -_bumpSprite.Axis.Y)));
-
-			_bumpShader.Parameters["worldMatrix"].SetValue(world);
-			_bumpShader.Parameters["Position"].SetValue(new Vector2D(-_lightPosition.X, _lightPosition.Y));
-
-			_bufferSprite.Position = _torch.Position = _lightPosition;
+			_torch.Position = _lightPosition;
 			_torch.Animations[0].Advance(e.FrameDeltaTime * 1000.0f);
+			_lightSprite.Position = _lightPosition;
+
+			_bufferSprite.ImageOffset = Vector2D.Subtract(_lightPosition, _lightSprite.Axis);
 			
 			_bumpSprite.Rotation = _angle;
-			_bumpSprite.Position = Vector2D.Subtract(_bumpSprite.Position, Vector2D.Subtract(_lightPosition, _bufferSprite.Axis));			
 		}
 
 		/// <summary>
@@ -140,27 +113,46 @@ namespace GorgonLibrary.Example
 		protected override void OnFrameUpdate(FrameEventArgs e)
 		{
 			base.OnFrameUpdate(e);
-			_buffer.Clear(Drawing.Color.White);
-			Gorgon.CurrentRenderTarget = _buffer;
-			Gorgon.CurrentShader = _bumpShader.Techniques["BumpSmooth"];
+
+			// Draw the sprites to the normal and diffuse buffers.
+			Gorgon.CurrentRenderTarget = _normalBuffer;
+			_normalBuffer.Clear(Drawing.Color.FromArgb(255, 127, 127, 127));
+			_bumpSprite.Image = _bumpNormal;
 			_bumpSprite.Draw();
+			Gorgon.CurrentRenderTarget = _colorBuffer;
+			_colorBuffer.Clear(Drawing.Color.White);
+			_bumpSprite.Image = _bumpColor;
+			_bumpSprite.Draw();
+
+			// Draw to our lit buffer.
+			Gorgon.CurrentRenderTarget = _lightBuffer;
+			_lightBuffer.Clear(Drawing.Color.Black);
+
+			// Draw bump mapped result.
+			Gorgon.CurrentShader = _bumpShader.Techniques["BumpSmooth"];			
+			_bufferSprite.Image = _colorBuffer.Image;
+			_bufferSprite.ImageOffset = new Vector2D(_lightPosition.X, _lightPosition.Y) - _lightSprite.Axis;
+			_bufferSprite.Draw();
 			Gorgon.CurrentShader = null;
+			_lightBuffer.BlendingMode = BlendingModes.Modulated;
+			// Draw light map to obscure the lit image.
 			if (_rnd.Next(1000) > 512)
 			{
 				_bumpShader.Parameters["Intensity"].SetValue((float)_rnd.NextDouble() * 0.3f + 0.7f);
 				_bumpShader.Parameters["Color"].SetValue(Drawing.Color.FromArgb(255, _rnd.Next(180, 255), _rnd.Next(128, 192)));
-				_lightSource.Blit(-_lightSource.Width * 0.05f, -_lightSource.Height * 0.05f, _lightSource.Width + (_lightSource.Width * 0.10f), _lightSource.Height + (_lightSource.Height * 0.10f));
+				_lightSource.Blit(-_lightSource.Width * 0.05f, -_lightSource.Height * 0.05f, _lightSpriteScale.X + (_lightSpriteScale.X * 0.10f), _lightSpriteScale.Y + (_lightSpriteScale.Y * 0.10f));
 			}
 			else
 			{
-				_bumpShader.Parameters["Intensity"].SetValue(1.0f);
+				_bumpShader.Parameters["Intensity"].SetValue(1.2f);
 				_bumpShader.Parameters["Color"].SetValue(Drawing.Color.White);
-				_lightSource.Blit(0, 0);
+				_lightSource.Blit(0, 0, _lightSpriteScale.X, _lightSpriteScale.Y);
 			}
-
-			Gorgon.CurrentRenderTarget = null;
-
-			_bufferSprite.Draw();
+			_lightBuffer.BlendingMode = BlendingModes.None;
+			Gorgon.CurrentRenderTarget = null;			
+			
+			// Finally blit the lit image to the screen.
+			_lightSprite.Draw();
 			_torch.Draw();
 		}
 
@@ -171,7 +163,7 @@ namespace GorgonLibrary.Example
 		protected override void OnMouseMovement(MouseInputEventArgs e)
 		{
 			base.OnMouseMovement(e);
-			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, 2025.0f);
+			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, 25.0f);
 		}
 
 		/// <summary>
@@ -188,12 +180,13 @@ namespace GorgonLibrary.Example
 		protected override void OnDeviceReset()
 		{
 			base.OnDeviceReset();
-			_lightSource.SetDimensions((int)(Gorgon.Screen.Width / _lightSpriteScale.X), (int)(Gorgon.Screen.Width / _lightSpriteScale.Y));
-			_buffer.SetDimensions(_lightSource.Width, _lightSource.Height);
-			_bufferSprite.SetAxis(_buffer.Width / 2, _buffer.Height / 2);
-			_bufferSprite.SetSize(_buffer.Width, _buffer.Height);
+			_lightSpriteScale = new Vector2D(Gorgon.Screen.Width / 2.5f, Gorgon.Screen.Width / 2.5f);
+			_lightBuffer.SetDimensions((int)_lightSpriteScale.X, (int)_lightSpriteScale.Y);
+			_colorBuffer.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height);
+			_normalBuffer.SetDimensions(_colorBuffer.Width, _colorBuffer.Height);
 
-			DrawLightSource();
+			_bufferSprite.SetSize(_colorBuffer.Width, _colorBuffer.Height);
+			_bumpShader.Parameters["TextureSize"].SetValue(new Vector2D(Gorgon.Screen.Width, Gorgon.Screen.Height));
 		}
 
 		/// <summary>
@@ -203,20 +196,27 @@ namespace GorgonLibrary.Example
 		{
 			FileSystems[ApplicationName].Mount();
 
-			_lightPosition = new Vector3D(Input.Mouse.Position.X, Input.Mouse.Position.Y, -25.0f);
+			_lightPosition = new Vector3D(Input.Mouse.Position.X, Input.Mouse.Position.Y, 25.0f);
 			_torchImage = Image.FromFileSystem(FileSystems[ApplicationName], "/Images/Torch.png");
+			_lightSource = Image.FromFileSystem(FileSystems[ApplicationName], "/Images/Lightmap.png");
 			_torch = Sprite.FromFileSystem(FileSystems[ApplicationName], "/Sprites/Torch.gorSprite");
 
-			_lightSource = new RenderImage("LightSource", (int)(Gorgon.Screen.Width / _lightSpriteScale.X), (int)(Gorgon.Screen.Width / _lightSpriteScale.Y), ImageBufferFormats.BufferRGB888A8);
-			_buffer = new RenderImage("Buffer", _lightSource.Width, _lightSource.Height, ImageBufferFormats.BufferRGB888X8);
-			DrawLightSource();
+			_lightSpriteScale = new Vector2D(Gorgon.Screen.Width / 2.5f, Gorgon.Screen.Width / 2.5f);
+			
+			_lightBuffer = new RenderImage("Buffer", (int)_lightSpriteScale.X, (int)_lightSpriteScale.Y, ImageBufferFormats.BufferRGB888X8);
+			_colorBuffer = new RenderImage("ColorBuffer", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8);
+			_normalBuffer = new RenderImage("NormalBuffer", _colorBuffer.Width, _colorBuffer.Height, ImageBufferFormats.BufferRGB888X8);			
+			
+			_bufferSprite = new Sprite("BackBuffer", _colorBuffer);
+			_bufferSprite.WrapMode = ImageAddressing.Clamp;
 
-			_bufferSprite = new Sprite("BackBuffer", _buffer);
-			_bufferSprite.SetAxis(_buffer.Width / 2, _buffer.Height / 2);
+			_lightSprite = new Sprite("LightSprite", _lightBuffer);
+			_lightSprite.SetAxis(_lightBuffer.Width / 2.0f, _lightBuffer.Height / 2.0f);
 
 			_bumpNormal = Image.FromFileSystem(FileSystems[ApplicationName], "/Images/normalmap.png");
 			_bumpColor = Image.FromFileSystem(FileSystems[ApplicationName], "/Images/colormap.png");
 			_bumpSprite = new Sprite("BumpSprite", _bumpColor);
+			_bumpSprite.UniformScale = Gorgon.Screen.Height / 480.0f;
 
 #if DEBUG
 			_bumpShader = FXShader.FromFileSystem(FileSystems[ApplicationName], "/Shaders/bumpmap.fx", ShaderCompileOptions.Debug);
@@ -224,8 +224,9 @@ namespace GorgonLibrary.Example
 			_bumpShader = FXShader.FromFileSystem(FileSystems[ApplicationName], "/Shaders/bumpmap.fx", ShaderCompileOptions.OptimizationLevel3);
 #endif
 
-			_bumpShader.Parameters["ColorMap"].SetValue(_bumpColor);
-			_bumpShader.Parameters["NormalMap"].SetValue(_bumpNormal);
+			_bumpShader.Parameters["ColorMap"].SetValue(_colorBuffer);
+			_bumpShader.Parameters["NormalMap"].SetValue(_normalBuffer);
+			_bumpShader.Parameters["TextureSize"].SetValue(new Vector2D(Gorgon.Screen.Width, Gorgon.Screen.Height));
 
 			_bumpSprite.SetAxis(_bumpSprite.Width / 2.0f, _bumpSprite.Height / 2.0f);
 			_torch.Animations[0].AnimationState = AnimationState.Playing;
