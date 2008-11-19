@@ -1,10 +1,12 @@
 float4x4 _projectionMatrix;
-float4x4 worldMatrix;
 
 float3 Position;
 float4 Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
 float Intensity = 1.0f;
-float4 Ambient = float4(0.25f, 0.25f, 0.25f, 1.0f);
+float4 Ambient = float4(0.75f, 0.75f, 0.75f, 1.0f);
+float4 GlobalAmbient = float4(0.25f, 0.25f, 0.25f, 1.0f);
+
+float2 TextureSize;
 
 texture ColorMap;
 texture NormalMap;
@@ -19,41 +21,36 @@ sampler2D normalSampler = sampler_state
 	texture = <NormalMap>;
 };
 
-struct IN_VTX
+struct VTX
 {
 	float4 position : POSITION;
 	float4 diffuse : COLOR0;
 	float2 uv : TEXCOORD0;
 };
 
-struct OUT_VTX
+float4 psBump(float2 coloruv : TEXCOORD0, float4 color : COLOR0) : COLOR0
 {
-	float4 position : POSITION;
-	float4 diffuse : COLOR0;
-	float2 coloruv : TEXCOORD0;
-	float3 normaluv : TEXCOORD1;
-};
-
-float4 psBump(float2 coloruv : TEXCOORD0, float3 normaluv : TEXCOORD1, float4 color : COLOR0) : COLOR0
-{
-	float3 light = (normaluv - 0.5f) * 2.0f;		
-	float3 normalTexel = tex2D(normalSampler, coloruv).xyz;
-	float4 imageTexel = tex2D(colorSampler, coloruv);
-	float3 normal = (normalTexel - 0.5f) * 2.0f;
+	float4 tex = tex2D(colorSampler, coloruv);
+	float4 normal = tex2D(normalSampler, coloruv) * 2.0f - 1.0f;
 	
-	return float4(((dot(-normal, light) * Intensity * color + Ambient) * imageTexel).rgb, imageTexel.a);
+	float3 pixelPosition = float3(TextureSize.x * coloruv.x, TextureSize.y * coloruv.y,
+                                  0);
+                                  
+   float3 lightDir = (Position - pixelPosition);
+    
+	float lightAmount = max(dot(normal, normalize(lightDir)), 0) * Intensity;
+	
+	return (tex * GlobalAmbient) + (color * lightAmount * Color * Ambient);
+
 }
 
-OUT_VTX vsBump(IN_VTX inVtx)
+VTX vsBump(VTX inVtx)
 {
-	OUT_VTX outVtx;
+	VTX outVtx;
 	
 	outVtx.position = float4(mul(inVtx.position, _projectionMatrix).xyz, 1.0f);
-	outVtx.coloruv = inVtx.uv;
-	outVtx.diffuse = inVtx.diffuse * Color;
-	// If we want to inherit the transforms of the sprite, we need to send in a world matrix
-	// and multiply by that.  It's not giving 100% perfect per-pixel lighting, but it'll do.
-	outVtx.normaluv = normalize(mul(inVtx.position.xyz - Position, worldMatrix).xyz);
+	outVtx.uv = inVtx.uv;
+	outVtx.diffuse = inVtx.diffuse;
 	
 	return outVtx;
 }
