@@ -61,6 +61,9 @@ namespace GorgonLibrary.Example
 		private float _angle = 0.0f;											// Bump sprite rotation angle.
 		private Vector3D _lightPosition = Vector2D.Zero;						// Light position.
 		private Vector2D _lightSpriteScale = Vector2D.Zero;						// Scaling for lighting sprite.
+		private bool _addLighting = false;										// Flag to use additive lighting.
+		private TextSprite _statusText;											// Status text sprite.
+		private bool _showHelp = false;											// Show help.
 		#endregion
 
 		#region Methods.
@@ -96,14 +99,13 @@ namespace GorgonLibrary.Example
 
 			_bumpSprite.SetPosition(_colorBuffer.Width / 2.0f, _colorBuffer.Height / 2.0f);
 			_bumpShader.Parameters["Position"].SetValue(_lightPosition);
+			_bumpShader.Parameters["UseAdditiveLighting"].SetValue(_addLighting);
 
 			_torch.Position = _lightPosition;
 			_torch.Animations[0].Advance(e.FrameDeltaTime * 1000.0f);
 			_lightSprite.Position = _lightPosition;
 
 			_bufferSprite.ImageOffset = Vector2D.Subtract(_lightPosition, _lightSprite.Axis);
-			
-			_bumpSprite.Rotation = _angle;
 		}
 
 		/// <summary>
@@ -116,12 +118,15 @@ namespace GorgonLibrary.Example
 
 			// Draw the sprites to the normal and diffuse buffers.
 			Gorgon.CurrentRenderTarget = _normalBuffer;
-			_normalBuffer.Clear(Drawing.Color.FromArgb(255, 127, 127, 127));
+			_normalBuffer.Clear(Drawing.Color.FromArgb(255, 127, 127, 200));		// Change the blue channel to lighten or darken the background.
 			_bumpSprite.Image = _bumpNormal;
 			_bumpSprite.Draw();
 			Gorgon.CurrentRenderTarget = _colorBuffer;
 			_colorBuffer.Clear(Drawing.Color.White);
 			_bumpSprite.Image = _bumpColor;
+			_bumpSprite.Rotation = 0.0f;
+			_bumpSprite.Draw();
+			_bumpSprite.Rotation = _angle;			
 			_bumpSprite.Draw();
 
 			// Draw to our lit buffer.
@@ -154,6 +159,14 @@ namespace GorgonLibrary.Example
 			// Finally blit the lit image to the screen.
 			_lightSprite.Draw();
 			_torch.Draw();
+
+			_statusText.Text = "F1 - " + (_showHelp ? " Hide help." : "Show help.\n");
+			if (_showHelp)
+				_statusText.AppendText("\nLeft Mouse - Change lighting type to " + (_addLighting ? "modulated" : "additive") + "\nScroll Wheel - Increase or decrease light distance.\nESC - Quit.\nCTRL+F - Show frame statistics.\nAlt+Enter - Switch to " + (Gorgon.Screen.Windowed ? "full screen mode." : "windowed mode.") + "\n");
+				
+			_statusText.AppendText("\nLight distance: " + _lightPosition.Z.ToString("0.000"));
+			_statusText.AppendText("\nMode: " + (!_addLighting ? "modulated" : "additive"));
+			_statusText.Draw();
 		}
 
 		/// <summary>
@@ -163,15 +176,48 @@ namespace GorgonLibrary.Example
 		protected override void OnMouseMovement(MouseInputEventArgs e)
 		{
 			base.OnMouseMovement(e);
-			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, 15.0f);
+			_lightPosition = new Vector3D(e.Position.X, e.Position.Y, _lightPosition.Z);
 		}
 
 		/// <summary>
-		/// Function called when the video device is set to a lost state.
+		/// Function called when a mouse button is pushed down.
 		/// </summary>
-		protected override void OnDeviceLost()
+		/// <param name="e">Mouse event parameters.</param>
+		protected override void OnMouseButtonDown(MouseInputEventArgs e)
 		{
-			base.OnDeviceLost();
+			base.OnMouseButtonDown(e);
+
+			if ((e.Buttons & GorgonLibrary.InputDevices.MouseButtons.Button1) == GorgonLibrary.InputDevices.MouseButtons.Button1)
+				_addLighting = !_addLighting;			
+		}
+
+		/// <summary>
+		/// Function called when a mouse scroll wheel is scrolled.
+		/// </summary>
+		/// <param name="e">Mouse event parameters.</param>
+		protected override void OnMouseWheelScrolled(MouseInputEventArgs e)
+		{
+			base.OnMouseWheelScrolled(e);
+
+			if (e.WheelDelta > 0)
+				_lightPosition.Z += 1.0f;
+			else
+				_lightPosition.Z -= 1.0f;
+
+			if (_lightPosition.Z < 1.0f)
+				_lightPosition.Z = 1.0f;
+		}
+
+		/// <summary>
+		/// Function called when a keyboard key is pushed down.
+		/// </summary>
+		/// <param name="e">Keyboard event parameters.</param>
+		protected override void OnKeyboardKeyDown(KeyboardInputEventArgs e)
+		{
+			base.OnKeyboardKeyDown(e);
+
+			if (e.Key == KeyboardKeys.F1)
+				_showHelp = !_showHelp;
 		}
 
 		/// <summary>
@@ -186,7 +232,11 @@ namespace GorgonLibrary.Example
 			_normalBuffer.SetDimensions(_colorBuffer.Width, _colorBuffer.Height);
 
 			_bufferSprite.SetSize(_colorBuffer.Width, _colorBuffer.Height);
+			_lightSprite.SetSize(_lightBuffer.Width, _lightBuffer.Height);
+			_lightSprite.SetAxis(_lightBuffer.Width / 2.0f, _lightBuffer.Height / 2.0f);
 			_bumpShader.Parameters["TextureSize"].SetValue(new Vector2D(Gorgon.Screen.Width, Gorgon.Screen.Height));
+			_bumpShader.Parameters["ColorMap"].SetValue(_colorBuffer);
+			_bumpShader.Parameters["NormalMap"].SetValue(_normalBuffer);
 		}
 
 		/// <summary>
@@ -205,7 +255,9 @@ namespace GorgonLibrary.Example
 			
 			_lightBuffer = new RenderImage("Buffer", (int)_lightSpriteScale.X, (int)_lightSpriteScale.Y, ImageBufferFormats.BufferRGB888X8);
 			_colorBuffer = new RenderImage("ColorBuffer", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8);
-			_normalBuffer = new RenderImage("NormalBuffer", _colorBuffer.Width, _colorBuffer.Height, ImageBufferFormats.BufferRGB888X8);			
+			_normalBuffer = new RenderImage("NormalBuffer", _colorBuffer.Width, _colorBuffer.Height, ImageBufferFormats.BufferRGB888X8);
+
+			_statusText = new TextSprite("Status", string.Empty, FrameworkFont, Drawing.Color.White);			
 			
 			_bufferSprite = new Sprite("BackBuffer", _colorBuffer);
 			_bufferSprite.WrapMode = ImageAddressing.Clamp;
