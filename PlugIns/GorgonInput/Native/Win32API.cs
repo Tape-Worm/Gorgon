@@ -105,7 +105,7 @@ namespace GorgonLibrary.InputDevices.Internal
         /// <param name="cbSizeHeader">Size of the header.</param>
         /// <returns>0 if successful if pData is null, otherwise number of bytes if pData is not null.</returns>
         [DllImport("user32.dll")]
-        public static extern int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, out RAWINPUT pData, ref int pcbSize, int cbSizeHeader);
+        public static extern int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, out RAWINPUTx86 pData, ref int pcbSize, int cbSizeHeader);
 
         /// <summary>
         /// Function to retrieve raw input data.

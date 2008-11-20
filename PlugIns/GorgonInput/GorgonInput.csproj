@@ -66,6 +66,7 @@
     <Compile Include="Devices\JoystickExceptions.cs" />
     <Compile Include="Events\InputEvents.cs" />
     <Compile Include="GorgonInput.cs" />
+    <Compile Include="Native\RawInput.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="Native\Win32Types.cs" />

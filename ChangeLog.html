@@ -119,8 +119,23 @@
 
 <div>
 	<pre>
-November 14/2008 - Version - Current
+November 20/2008 - Version - Current
 ===============================================================================================
+* Modified the GorgonInput plug-in.  There is platform specific native code that will mess up
+  on x64 systems.  This used to be handled via conditional compilation, but since we now have
+  a unified project file, we needed another solution.
+  
+- Removed the x64 .sln and .csproj files.  Since the SlimDX runtime installer will put SlimDX
+  into the GAC (both x64 and x86), there's no need to have seperate files.  The projects are
+  set to AnyCPU and will produce platform agnostic (MSIL) versions of the binaries.  The 
+  .NET runtime is not responsible for determining which platform version of SlimDX to use.
+  Note:  If you require that your application be strictly x64 or x86, all you need to do is
+  set the platform in the properties of your project to whatever platform you require.  Your
+  binary will force the usage of the proper platform version of SlimDX.
+
+- Removed SlimDX from the Dependencies directory.  The installer will now install the SlimDX
+  runtime and it will install any pre-requisites (except the .NET framework).
+  
 * Updated to the November 2008 version of SlimDX and DirectX.
 
 + Added sample that performs per pixel Dot3 bump mapping - BumpInTheNight.

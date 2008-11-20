@@ -252,7 +252,7 @@ namespace GorgonLibrary.InputDevices.Internal
     /// Value type for raw input.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    internal struct RAWINPUT
+    internal struct RAWINPUTx86
     {
         /// <summary>Header for the data.</summary>
         [FieldOffset(0)]
@@ -287,6 +287,6 @@ namespace GorgonLibrary.InputDevices.Internal
         /// <summary>HID raw input data.</summary>
         [FieldOffset(24)]
         public RAWINPUTHID HID;
-    }
+    }		
     #endregion
 }
