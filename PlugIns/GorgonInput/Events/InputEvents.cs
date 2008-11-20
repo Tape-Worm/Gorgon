@@ -37,25 +37,11 @@ namespace GorgonLibrary.InputDevices
 	internal class RawInputEventArgs
 		: EventArgs
 	{
-		#region Variables.
-		private RAWINPUTx64 _inputDatax64;	// Raw input data.
-		private RAWINPUT _inputData;		// Raw input data.
-		#endregion
-
 		#region Properties.
-		/// <summary>
-		/// Property to return the raw input data for x64.
-		/// </summary>
-		public RAWINPUTx64 Datax64
-		{
-			get;
-			private set;
-		}
-
 		/// <summary>
 		/// Property to return the raw input data.
 		/// </summary>
-		public RAWINPUT Datax86
+		public RawInputData Data
 		{
 			get;
 			private set;
@@ -66,19 +52,10 @@ namespace GorgonLibrary.InputDevices
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="input">Raw input data.</param>
-		public RawInputEventArgs(RAWINPUTx64 input)
+		/// <param name="data">Raw input data to pass.</param>
+		public RawInputEventArgs(RawInputData data)
 		{
-			Datax64 = input;
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="input">Raw input data.</param>
-		public RawInputEventArgs(RAWINPUT input)
-		{
-			Datax86 = input;
+			Data = data;
 		}
 		#endregion
 	}
