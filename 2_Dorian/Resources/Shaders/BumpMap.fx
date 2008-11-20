@@ -3,8 +3,9 @@ float4x4 _projectionMatrix;
 float3 Position;
 float4 Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
 float Intensity = 1.0f;
-float4 Ambient = float4(0.75f, 0.75f, 0.75f, 1.0f);
-float4 GlobalAmbient = float4(0.25f, 0.25f, 0.25f, 1.0f);
+float4 Ambient = float4(1.0f, 1.0f, 1.0f, 1.0f);
+float4 GlobalAmbient = float4(1.0f, 1.0f, 1.0f, 1.0f);
+bool UseAdditiveLighting = false;
 
 float2 TextureSize;
 
@@ -31,7 +32,7 @@ struct VTX
 float4 psBump(float2 coloruv : TEXCOORD0, float4 color : COLOR0) : COLOR0
 {
 	float4 tex = tex2D(colorSampler, coloruv);
-	float4 normal = tex2D(normalSampler, coloruv) * 2.0f - 1.0f;
+	float3 normal = tex2D(normalSampler, coloruv) * 2.0f - 1.0f;
 	
 	float3 pixelPosition = float3(TextureSize.x * coloruv.x, TextureSize.y * coloruv.y,
                                   0);
@@ -40,8 +41,10 @@ float4 psBump(float2 coloruv : TEXCOORD0, float4 color : COLOR0) : COLOR0
     
 	float lightAmount = max(dot(normal, normalize(lightDir)), 0) * Intensity;
 	
-	return (tex * GlobalAmbient) + (color * lightAmount * Color * Ambient);
-
+	if (!UseAdditiveLighting)
+		return (tex * GlobalAmbient) * (color * lightAmount * Color * Ambient);
+	else
+		return (tex * GlobalAmbient) + (color * lightAmount * Color * Ambient);
 }
 
 VTX vsBump(VTX inVtx)
