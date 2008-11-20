@@ -65,32 +65,50 @@ namespace GorgonLibrary.InputDevices
 			/// </returns>
 			public bool PreFilterMessage(ref System.Windows.Forms.Message m)
 			{
+				int result = 0;										// Result from the raw data capture.
+
 				// Handle raw input messages.
 				if ((WindowMessages)m.Msg == WindowMessages.RawInput)
 				{
-#if PLATFORM_X64
-					RAWINPUTx64 input = new RAWINPUTx64();				// Raw input data.
-					int dataSize = Marshal.SizeOf(typeof(RAWINPUTx64));	// Size of raw input data.
-#else
-					RAWINPUT input = new RAWINPUT();					// Raw input data.
-					int dataSize = Marshal.SizeOf(typeof(RAWINPUT));	// Size of raw input data.
-#endif
-					int result = 0;										// Result from the raw data capture.
+					if (IntPtr.Size == 4)
+					{
+						RAWINPUT input = new RAWINPUT();					// Raw input data.
+						int dataSize = Marshal.SizeOf(typeof(RAWINPUT));	// Size of raw input data.
 
-					// Get the data size.
-					result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, null, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-					if (result == -1)
-						throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
+						// Get the data size.
+						result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, null, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+						if (result == -1)
+							throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
 
 
-					// Get the data.
-					result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, out input, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-					if ((result == -1) || (result != dataSize))
-						throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
+						// Get the data.
+						result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, out input, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+						if ((result == -1) || (result != dataSize))
+							throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
 
-					// Send the event back.
-					if (RawInputData != null)
-						RawInputData(this, new RawInputEventArgs(input));
+						// Send the event back.
+						if (RawInputData != null)
+							RawInputData(this, new RawInputEventArgs(input));
+					}
+					else
+					{
+						RAWINPUTx64 input = new RAWINPUTx64();				// Raw input data.
+						int dataSize = Marshal.SizeOf(typeof(RAWINPUTx64));	// Size of raw input data.
+						// Get the data size.
+						result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, null, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+						if (result == -1)
+							throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
+
+
+						// Get the data.
+						result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, out input, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+						if ((result == -1) || (result != dataSize))
+							throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
+
+						// Send the event back.
+						if (RawInputData != null)
+							RawInputData(this, new RawInputEventArgs(input));
+					}
 
 					return false;
 				}
@@ -113,6 +131,8 @@ namespace GorgonLibrary.InputDevices
 		/// <param name="e">The <see cref="GorgonLibrary.InputDevices.RawInputEventArgs"/> instance containing the event data.</param>
 		private void messageFilter_RawInputData(object sender, RawInputEventArgs e)
 		{
+			RAWINPUTHEADER header;
+
 			if (Window.Disposing)
 				return;
 
@@ -134,16 +154,31 @@ namespace GorgonLibrary.InputDevices
 					return;
 			}
 
+			if (IntPtr.Size == 4)
+				header = e.Datax86.Header;
+			else
+				header = e.Datax64.Header;
+
 			// Determine type of device.
-			switch (e.Data.Header.Type)
+			switch (header.Type)
 			{
 				case RawInputType.Mouse:
 					if ((Mouse != null) && (Mouse.Enabled) && (Mouse.Acquired))
-						((GorgonMouse)Mouse).GetRawData(e.Data.Mouse);
+					{
+						if (IntPtr.Size == 4)
+							((GorgonMouse)Mouse).GetRawData(e.Datax86.Mouse);
+						else
+							((GorgonMouse)Mouse).GetRawData(e.Datax64.Mouse);
+					}
 					break;
 				case RawInputType.Keyboard:
 					if ((Keyboard != null) && (Keyboard.Enabled) && (Keyboard.Acquired))
-						((GorgonKeyboard)Keyboard).GetRawData(e.Data.Keyboard);
+					{
+						if (IntPtr.Size == 4)
+							((GorgonKeyboard)Keyboard).GetRawData(e.Datax86.Keyboard);
+						else
+							((GorgonKeyboard)Keyboard).GetRawData(e.Datax64.Keyboard);
+					}
 					break;
 			}
 		}
