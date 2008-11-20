@@ -5,12 +5,8 @@
     <Path>..\..\..\..\Resources</Path>
   </Paths>
   <Paths>
-    <PathName>PlugInPathX86</PathName>
+    <PathName>PlugInPath</PathName>
     <Path>..\..\..\..\PlugIns\bin\Release</Path>
-  </Paths>
-  <Paths>
-    <PathName>PlugInPathX64</PathName>
-    <Path>..\..\..\..\PlugIns\bin64\Release</Path>
   </Paths>
   <FileSystems>
     <FileSystemName>AnimatedDebate</FileSystemName>
