@@ -393,6 +393,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>if exist "$(SolutionDir)PlugIns\bin\$(ConfigurationName)\GorgonInput.*" copy "$(SolutionDir)PlugIns\bin\$(ConfigurationName)\GorgonInput.*" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent>if exist "$(SolutionDir)PlugIns\bin\$(ConfigurationName)\GorgonInput.*" copy "$(SolutionDir)PlugIns\bin\$(ConfigurationName)\GorgonInput.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
