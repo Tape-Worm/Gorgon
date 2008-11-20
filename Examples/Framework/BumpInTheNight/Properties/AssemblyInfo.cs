@@ -63,5 +63,5 @@ using System.Security.Permissions;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.1.3240.32723")]
-[assembly: AssemblyFileVersion("1.1.3240.32723")]
+[assembly: AssemblyVersion("1.1.3246.24958")]
+[assembly: AssemblyFileVersion("1.1.3246.24958")]
