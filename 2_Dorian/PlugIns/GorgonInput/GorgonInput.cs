@@ -55,6 +55,10 @@ namespace GorgonLibrary.InputDevices
 			public event RawInputEventHandler RawInputData = null;
 			#endregion
 
+			#region Variables.
+			private RawInputData _data = null;					// Raw input data.
+			#endregion
+
 			#region IMessageFilter Members
 			/// <summary>
 			/// Filters out a message before it is dispatched.
@@ -68,30 +72,12 @@ namespace GorgonLibrary.InputDevices
 				// Handle raw input messages.
 				if ((WindowMessages)m.Msg == WindowMessages.RawInput)
 				{
-#if PLATFORM_X64
-					RAWINPUTx64 input = new RAWINPUTx64();				// Raw input data.
-					int dataSize = Marshal.SizeOf(typeof(RAWINPUTx64));	// Size of raw input data.
-#else
-					RAWINPUT input = new RAWINPUT();					// Raw input data.
-					int dataSize = Marshal.SizeOf(typeof(RAWINPUT));	// Size of raw input data.
-#endif
-					int result = 0;										// Result from the raw data capture.
+					if (_data == null)
+						_data = new RawInputData();
 
-					// Get the data size.
-					result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, null, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-					if (result == -1)
-						throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
-
-
-					// Get the data.
-					result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, out input, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-					if ((result == -1) || (result != dataSize))
-						throw new GorgonException(GorgonErrors.CannotReadData, "Error reading raw input data.");
-
-					// Send the event back.
+					_data.GetRawInputData(m.LParam);
 					if (RawInputData != null)
-						RawInputData(this, new RawInputEventArgs(input));
-
+						RawInputData(this, new RawInputEventArgs(_data));
 					return false;
 				}
 
@@ -138,12 +124,16 @@ namespace GorgonLibrary.InputDevices
 			switch (e.Data.Header.Type)
 			{
 				case RawInputType.Mouse:
-					if ((Mouse != null) && (Mouse.Enabled) && (Mouse.Acquired))
-						((GorgonMouse)Mouse).GetRawData(e.Data.Mouse);
+					GorgonMouse mouse = Mouse as GorgonMouse;
+
+					if ((mouse != null) && (mouse.Enabled) && (mouse.Acquired))
+						mouse.GetRawData(e.Data.Mouse);
 					break;
 				case RawInputType.Keyboard:
-					if ((Keyboard != null) && (Keyboard.Enabled) && (Keyboard.Acquired))
-						((GorgonKeyboard)Keyboard).GetRawData(e.Data.Keyboard);
+					GorgonKeyboard keyboard = Keyboard as GorgonKeyboard;
+					
+					if ((keyboard != null) && (keyboard.Enabled) && (keyboard.Acquired))
+						keyboard.GetRawData(e.Data.Keyboard);
 					break;
 			}
 		}

@@ -466,10 +466,7 @@ namespace GorgonLibrary.Framework
 				// Get plug-in path.
 				if (PlugInPath == string.Empty)
 				{
-					if (Gorgon.Platform == PlatformID.x86)
-						rows = ConfigurationSettings.Paths.Select("PathName='PlugInPathX86'");
-					else
-						rows = ConfigurationSettings.Paths.Select("PathName='PlugInPathX64'");
+					rows = ConfigurationSettings.Paths.Select("PathName='PlugInPath'");
 
 					if (rows.Length > 0)
 						_plugInPath = rows[0]["Path"].ToString();
