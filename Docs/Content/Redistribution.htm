@@ -25,32 +25,28 @@
 		<h1 class="style1">Redistribution</h1>
 		<div id="bodyContent">
 			<p>So you've written this bang up game and now you need to send it to someone and you're asking "How do I do this?"  Well, an installer program like 
-			<a href="http://nsis.sourceforge.net/Main_Page" class="external text" title="http://nsis.sourceforge.net/Main_Page" rel="nofollow">
-			NSIS</a> will help greatly.  But what you'll really need is to know what files to include with your game or application.  And without further ado:
+			<a href="http://nsis.sourceforge.net/Main_Page" class="external text" title="http://www.jrsoftware.org/isinfo.php" rel="nofollow">
+			Inno Setup</a> will help greatly.  But what you'll really need is to know what files to include with your game or application.  And without further ado:
 </p>
 			<h2>Prerequisite packages for distribution:</h2>
 <div class="blueBox">
 <p>These packages are installers that deliver required files for use by Gorgon and should be included with and executed by your installer package (at the very least your victims need to be informed that they need to install these items before running your application).
 </p>
-<ul><li>Visual C++ 2008 
-	SP1 runtime - 
-	<a href="http://www.microsoft.com/downloads/details.aspx?familyid=A5C84275-3B97-4AB7-A40D-3802B2AF5FC2&amp;displaylang=en">x86</a> 
-	and/or 
-	<a href="http://www.microsoft.com/downloads/details.aspx?familyid=BA9257CA-337F-4B40-8C14-157CFDFFEE4E&amp;displaylang=en">x64</a> This is required by the version of SlimDX 
-	that Gorgon uses</li><li> 
+<ul>
+	<li>The <a target="_blank" href="http://code.google.com/p/slimdx/wiki/Downloads?tm=2">SlimDX runtime</a>.</li>
+	<li> 
 	<a href="http://www.microsoft.com/downloads/details.aspx?familyid=2da43d38-db71-4c1b-bc6a-9b6652cd92a3&amp;displaylang=en|The" class="external text" title="http://www.microsoft.com/downloads/details.aspx?familyid=2da43d38-db71-4c1b-bc6a-9b6652cd92a3&amp;displaylang=en|The" rel="nofollow">
-	The latest and greatest version of the DirectX runtime</a> - This should be fairly obvious.
+	The latest and greatest version of the DirectX runtime</a> - The required files should be installed by SlimDX, but if not, you can use this.
 </li>
 	<li> 
 	<a href="http://www.microsoft.com/downloads/details.aspx?familyid=AB99342F-5D1A-413D-8319-81DA479AB0D7&amp;displaylang=en">
 	.NET 3.5 SP1</a></li><li> Windows XP or better.</li></ul></div>
-<p>Along with those packages you will need be sure that your applications bundles the following with its own installer:</p>
+<p>Along with those packages you will need to be sure that your applications bundles the following with its own installer:</p>
 <strong>Assembly (DLL/Executable) files required by Gorgon applications:</strong>
 <div class="blueBox">
-<ul><li> Gorgon.dll</li>
-	<li>SlimDX.dll</li>
-</ul>
-</div><br /><strong>Required if you're using the compressed file system (BZip 2 compressed file system):
+<ul><li>Gorgon.dll</li>
+<li><em>GorgonFramework.dll</em> - That is, if you're using the framework.</li>
+</ul></div><br /><strong>Required if you're using the compressed file system (BZip 2 compressed file system):
 			</strong>
 <div class="blueBox">
 <ul><li> GorgonBZip2FileSystem.dll 
@@ -64,10 +60,10 @@
 <ul><li>GorgonInput.dll
 </li></ul>
 </div>
-<p>Also, keep in mind that if you're developing for an x64 (64-bit) operating system like Windows XP 64 or Vista x64 that your code will 
-<strong>not run</strong> on x86 (32-bit) 
-operating systems. This is unlike 32 bit binaries which do run on a x64 
-operating systems.
+<p>Unlike previous versions, v1.1.3246.24958 and beyond, will <b>not</b> require the Visual C++ 2008 SP1 Runtime.</p>
+<p>Furthermore, there is no need for an x64 and x86 version of Gorgon, by setting the project properties to AnyCPU the framework will automatically select the proper platform version of SlimDX (SlimDX, both x86 and x64 if applicable, should be installed in the GAC to facilitate this).</p>
+<p>
+If you wish to provide a platform specific binary you can specify x64 or x86 in your project properties and the runtime should pick the correct platform version (that is, x86 if you compile for x86 or x64 if you compile for x64).
 </p>
 </div>
 </body>
