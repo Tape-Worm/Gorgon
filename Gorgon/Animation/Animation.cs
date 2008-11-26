@@ -356,16 +356,16 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="property">Property to examine.</param>
 		/// <returns>TRUE to drag, FALSE to ignore.</returns>
-		private bool ValueCanBeDragged(PropertyInfo property)
+		private EditorDragType ValueCanBeDragged(PropertyInfo property)
 		{
 			EditorCanDragAttribute attribute = null;			// Attribute.
 
 			attribute = Attribute.GetCustomAttribute(property, typeof(EditorCanDragAttribute), true) as EditorCanDragAttribute;
 
 			if (attribute != null)
-				return true;
+				return attribute.DragType;
 
-			return false;
+			return EditorDragType.None;
 		}
 
 		/// <summary>

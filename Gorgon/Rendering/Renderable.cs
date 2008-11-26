@@ -1048,7 +1048,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the axis of the sprite.
 		/// </summary>
 		/// <remarks>Animations can be applied to this property.</remarks>
-		[Animated(typeof(Vector2D))]
+		[Animated(typeof(Vector2D)), EditorCanDrag(EditorDragType.Axis)]
 		public virtual Vector2D Axis
 		{
 			get
@@ -1151,7 +1151,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the position of the object.
 		/// </summary>
 		/// <remarks>Animations can be applied to this property.</remarks>
-		[Animated(typeof(Vector2D)), EditorRoundValues(), EditorCanDrag()]
+		[Animated(typeof(Vector2D)), EditorRoundValues(), EditorCanDrag(EditorDragType.Sprite)]
 		public virtual Vector2D Position
 		{
 			get

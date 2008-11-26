@@ -31,11 +31,51 @@ using System.Text;
 namespace GorgonLibrary.Internal
 {
 	/// <summary>
+	/// Type of drag to perform.
+	/// </summary>
+	public enum EditorDragType
+	{
+		/// <summary>
+		/// No dragging.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Sprite can be dragged.
+		/// </summary>
+		Sprite = 1,
+		/// <summary>
+		/// Axis can be dragged.
+		/// </summary>
+		Axis = 2
+	}
+
+	/// <summary>
 	/// Attribute for sprite editor to determine min/max.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 	public class EditorCanDragAttribute
 		: Attribute
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to set or return whether we're dragging the sprite or not.
+		/// </summary>
+		public EditorDragType DragType
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EditorCanDragAttribute"/> class.
+		/// </summary>
+		/// <param name="dragSprite">Type of drag operation.</param>
+		public EditorCanDragAttribute(EditorDragType dragSprite)
+		{
+			DragType = dragSprite;
+		}
+		#endregion
 	}
 }
