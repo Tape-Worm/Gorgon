@@ -352,16 +352,16 @@ namespace GorgonLibrary.Graphics.Tools
 				GetSpriteFrames();
 				
 				// Automatically add the first key.
-				if (CurrentTrack.KeyCount == 0)
-				{
-					KeyImage newKey = null;		// New key.
+				//if (CurrentTrack.KeyCount == 0)
+				//{
+				//    KeyImage newKey = null;		// New key.
 										
-					newKey = new KeyImage(0.0f, Sprite.BoundImage);
-					newKey.ImageOffset = Sprite.ImageLocation;
-					newKey.ImageSize = Sprite.Size;
-					CurrentTrack.AddKey(newKey);
-					Sprite.Changed = true;
-				}
+				//    newKey = new KeyImage(0.0f, Sprite.BoundImage);
+				//    newKey.ImageOffset = Sprite.ImageLocation;
+				//    newKey.ImageSize = Sprite.Size;
+				//    CurrentTrack.AddKey(newKey);
+				//    Sprite.Changed = true;
+				//}
 
 				ValidateForm();
 			}

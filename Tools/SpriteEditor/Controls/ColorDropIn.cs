@@ -207,16 +207,9 @@ namespace GorgonLibrary.Graphics.Tools
 			comboInterpolation.Text = CurrentTrack.InterpolationMode.ToString();
 			// Automatically add the first key.
 			if (CurrentTrack.KeyCount == 0)
-			{
-				KeyColor newKey = null;		// New key.
-
-				newKey = new KeyColor(0.0f, Sprite.Sprite.Color);
-				CurrentTrack.AddKey(newKey);
 				_currentColor = Sprite.Sprite.Color;
-				Sprite.Changed = true;
-			}
 			else
-				_currentColor = ((KeyColor)CurrentTrack[0]).Value;
+				_currentColor = ((KeyColor)CurrentTrack[0]).Value;				
 
 			numericA.Value = _currentColor.A;
 			numericR.Value = _currentColor.R;

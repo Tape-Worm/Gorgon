@@ -43,7 +43,6 @@ namespace GorgonLibrary.Graphics.Tools
 		#region Variables.
 		private ToolStripComboBox comboInterpolation = null;			// Drop down.
 		private Vector2D _currentValue = Vector2D.Zero;					// Current value.
-		private bool _isDragging = false;								// Flag to indicate that we're dragging.
 		private Sprite _spriteClone = null;								// Clone of the sprite.
 		#endregion
 
@@ -85,13 +84,26 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void panelRender_MouseDown(object sender, MouseEventArgs e)
 		{
-			if ((Sprite.Sprite.AABB.Contains(e.Location)) && (CurrentTrack.EditCanDragValues))
+			switch (CurrentTrack.EditCanDragValues)
 			{
-				_isDragging = true;
-				_spriteClone = Sprite.Sprite.Clone() as Sprite;
-				foreach (Animation animation in _spriteClone.Animations)
-					animation.Enabled = false;
-				_spriteClone.Color = Color.FromArgb(200, 200, 200, 255);
+				case GorgonLibrary.Internal.EditorDragType.Sprite:
+					if (Sprite.Sprite.AABB.Contains(e.Location))
+					{
+						IsDragging = true;
+						_spriteClone = Sprite.Sprite.Clone() as Sprite;
+						foreach (Animation animation in _spriteClone.Animations)
+							animation.Enabled = false;
+						_spriteClone.Color = Color.FromArgb(200, 200, 200, 255);
+					}
+					break;
+				case GorgonLibrary.Internal.EditorDragType.Axis:
+					Rectangle axisBox = new Rectangle((int)(Sprite.Sprite.Position.X) - 8, (int)(Sprite.Sprite.Position.Y) - 8, 16, 16);
+					if (axisBox.Contains(e.Location))
+					{
+						DragValue = new Vector2D(e.Location.X, e.Location.Y);
+						IsDragging = true;
+					}
+					break;
 			}
 		}
 
@@ -102,8 +114,38 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void panelRender_MouseMove(object sender, MouseEventArgs e)
 		{
-			if ((_isDragging) && (e.Button == MouseButtons.Left) && (_spriteClone != null))
-				typeof(Sprite).GetProperty(CurrentTrack.Name).SetValue(_spriteClone, new Vector2D(e.Location), null);
+			if ((IsDragging) && (e.Button == MouseButtons.Left))
+			{
+				switch (CurrentTrack.EditCanDragValues)
+				{
+					case GorgonLibrary.Internal.EditorDragType.Sprite:
+						if (_spriteClone != null)
+							typeof(Sprite).GetProperty(CurrentTrack.Name).SetValue(_spriteClone, new Vector2D(e.Location), null);
+						break;
+					case GorgonLibrary.Internal.EditorDragType.Axis:
+						DragValue = new Vector2D(e.Location.X, e.Location.Y);
+						break;
+				}
+			}
+			else
+			{
+				switch (CurrentTrack.EditCanDragValues)
+				{
+					case GorgonLibrary.Internal.EditorDragType.Sprite:
+						if (Sprite.Sprite.AABB.Contains(e.Location))
+							panelRender.Cursor = Cursors.Hand;
+						else
+							panelRender.Cursor = Cursors.Default;
+						break;
+					case GorgonLibrary.Internal.EditorDragType.Axis:
+						Rectangle axisBox = new Rectangle((int)(Sprite.Sprite.Position.X) - 8, (int)(Sprite.Sprite.Position.Y) - 8, 16, 16);
+						if (axisBox.Contains(e.Location))
+							panelRender.Cursor = Cursors.Hand;
+						else
+							panelRender.Cursor = Cursors.Default;
+						break;
+				}
+			}
 		}
 
 		/// <summary>
@@ -113,13 +155,26 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void panelRender_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (_isDragging)
+			if (IsDragging)
 			{
-				numericX.Value = (Decimal)_spriteClone.Position.X;
-				numericY.Value = (Decimal)_spriteClone.Position.Y;
+				switch (CurrentTrack.EditCanDragValues)
+				{
+					case GorgonLibrary.Internal.EditorDragType.Sprite:
+						if (_spriteClone != null)
+						{
+							numericX.Value = (Decimal)_spriteClone.Position.X;
+							numericY.Value = (Decimal)_spriteClone.Position.Y;
+						}
+						break;
+					case GorgonLibrary.Internal.EditorDragType.Axis:
+						Vector2D diff = Vector2D.Add(Sprite.Sprite.Axis, Vector2D.Subtract(DragValue, Sprite.Sprite.Position));
+						numericX.Value = (Decimal)diff.X;
+						numericY.Value = (Decimal)diff.Y;
+						break;
+				}
 				SetKeyFrame();
 				ValidateForm();
-				_isDragging = false;
+				IsDragging = false;
 				_spriteClone = null;
 			}
 		}
@@ -163,8 +218,13 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			base.IdleEvent();
 
-			if (_spriteClone != null)
-				_spriteClone.Draw();
+			switch (CurrentTrack.EditCanDragValues)
+			{
+				case GorgonLibrary.Internal.EditorDragType.Sprite:
+					if (_spriteClone != null)
+						_spriteClone.Draw();
+					break;
+			}			
 		}
 
 		/// <summary>
@@ -172,12 +232,11 @@ namespace GorgonLibrary.Graphics.Tools
 		/// </summary>
 		protected override void ResetSprite()
 		{
-			Vector2D value = Vector2D.Zero;		// Value.
 			base.ResetSprite();
 
-			value = (Vector2D)Sprite.Sprite.GetType().GetProperty(CurrentTrack.Name).GetValue(Sprite.Sprite, null);
-			numericX.Value = (Decimal)value.X;
-			numericY.Value = (Decimal)value.Y;
+			_currentValue = (Vector2D)Sprite.Sprite.GetType().GetProperty(CurrentTrack.Name).GetValue(Sprite.Sprite, null);
+			numericX.Value = (Decimal)_currentValue.X;
+			numericY.Value = (Decimal)_currentValue.Y;
 		}
 
 		/// <summary>
@@ -230,12 +289,7 @@ namespace GorgonLibrary.Graphics.Tools
 			base.OnLoad(e);
 			comboInterpolation.Text = CurrentTrack.InterpolationMode.ToString();
 
-			if (CurrentTrack.KeyCount == 0)
-			{
-				key = new KeyVector2D(0.0f, (Vector2D)(Sprite.Sprite.GetType().GetProperty(CurrentTrack.Name).GetValue(Sprite.Sprite,null)));
-				CurrentTrack.AddKey(key);
-			}
-			else
+			if (CurrentTrack.KeyCount != 0)
 				key = CurrentTrack[0.0f] as KeyVector2D;
 
 			// Get the range.
@@ -250,8 +304,14 @@ namespace GorgonLibrary.Graphics.Tools
 			numericX.Maximum = (Decimal)maxValue;
 			numericY.Minimum = (Decimal)minValue;
 			numericY.Maximum = (Decimal)maxValue;
-			numericX.Value = (Decimal)key.Value.X;
-			numericY.Value = (Decimal)key.Value.Y;
+			if (key != null)
+			{
+				numericX.Value = (Decimal)key.Value.X;
+				numericY.Value = (Decimal)key.Value.Y;
+			}
+			else
+				ResetSprite();
+
 			labelName.Text = CurrentTrack.Name;
 			ValidateForm();
 		}
