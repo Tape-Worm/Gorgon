@@ -761,20 +761,17 @@ namespace GorgonLibrary.Graphics.Tools
 			_displaySprite.Draw();
 
 			// Draw a pointer to the hot-spot.
-			if (!_spriteManager.CurrentSprite.HasKeysForTrack("Axis"))
-			{
-				Gorgon.Screen.BeginDrawing();
-				newPosition = MathUtility.Round(Vector2D.Add(_displaySprite.FinalPosition, oldAxis));
-				if (_axisColor == Drawing.Color.Red)
-					_axisColor = Drawing.Color.Yellow;
-				else
-					_axisColor = Drawing.Color.Red;
-				Gorgon.Screen.VerticalLine(newPosition.X, newPosition.Y - 5, 5, _axisColor);
-				Gorgon.Screen.VerticalLine(newPosition.X, newPosition.Y + 1, 5, _axisColor);
-				Gorgon.Screen.HorizontalLine(newPosition.X - 5, newPosition.Y, 5, _axisColor);
-				Gorgon.Screen.HorizontalLine(newPosition.X + 1, newPosition.Y, 5, _axisColor);			
-				Gorgon.Screen.EndDrawing();
-			}
+			Gorgon.Screen.BeginDrawing();
+			newPosition = MathUtility.Round(Vector2D.Add(_displaySprite.FinalPosition, oldAxis));
+			if (_axisColor == Drawing.Color.Red)
+				_axisColor = Drawing.Color.Yellow;
+			else
+				_axisColor = Drawing.Color.Red;
+			Gorgon.Screen.VerticalLine(newPosition.X, newPosition.Y - 5, 5, _axisColor);
+			Gorgon.Screen.VerticalLine(newPosition.X, newPosition.Y + 1, 5, _axisColor);
+			Gorgon.Screen.HorizontalLine(newPosition.X - 5, newPosition.Y, 5, _axisColor);
+			Gorgon.Screen.HorizontalLine(newPosition.X + 1, newPosition.Y, 5, _axisColor);			
+			Gorgon.Screen.EndDrawing();
 
 			// Set axis.
 			if (_displaySprite != null)

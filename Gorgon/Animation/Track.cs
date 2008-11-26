@@ -237,7 +237,6 @@ namespace GorgonLibrary.Graphics
 		private InterpolationMode _interpolation;			// Interpolation mode.
 		private Type _dataType = null;						// Data type represented by the track.
 		private MinMaxRangeF _range = MinMaxRangeF.Empty;	// Min/max value for the data type in the track.
-		private bool _canDragValues = false;				// Flag to indicate that the editor can drag the values.
 		private bool _roundValues = false;					// Flag to indicate that the values need to be rounded.
         #endregion
 
@@ -271,16 +270,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether the editor can drag the values.
 		/// </summary>
-		public bool EditCanDragValues
+		public EditorDragType EditCanDragValues
 		{
-			get
-			{
-				return _canDragValues;
-			}
-			set
-			{
-				_canDragValues = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -556,6 +549,7 @@ namespace GorgonLibrary.Graphics
 		protected Track(string name, Type type)
 			: base(name)
 		{
+			EditCanDragValues = EditorDragType.None;
 			_owner = null;
 			_dataType = type;
 			_sorter = new FrameTimeSort();

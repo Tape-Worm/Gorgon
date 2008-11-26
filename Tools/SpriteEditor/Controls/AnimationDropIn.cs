@@ -62,6 +62,24 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return whether there's a drag operation in progress.
+		/// </summary>
+		protected bool IsDragging
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the value when a drag operation is in progress.
+		/// </summary>
+		protected Vector2D DragValue
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return the sprite that owns this animation.
 		/// </summary>
 		protected SpriteDocument Sprite
@@ -361,6 +379,7 @@ namespace GorgonLibrary.Graphics.Tools
 		private void Gorgon_Idle(object sender, FrameEventArgs e)
 		{
 			Vector2D newPosition = Vector2D.Zero;		// New position.
+			Vector2D axis = Vector2D.Zero;				// Axis.
 			if (_display == null)
 				return;
 
@@ -370,33 +389,37 @@ namespace GorgonLibrary.Graphics.Tools
 			_display.Clear(_backgroundColor);
 
 			// Only display if the key count is valid.
+			Sprite.Sprite.Position = Vector2D.Subtract(Vector2D.Add(new Vector2D(_display.Width / 2.0f, _display.Height / 2.0f), Sprite.Sprite.Axis), new Vector2D(Sprite.Sprite.Width / 2.0f, Sprite.Sprite.Height / 2.0f));
+			Sprite.Sprite.Draw();
+			Display.BeginDrawing();
+
+			if ((_showBoundingBox) || (_showBoundingCircle))
+			{
+				if (_showBoundingBox)
+					Display.Rectangle(Sprite.Sprite.AABB.Left, Sprite.Sprite.AABB.Top, Sprite.Sprite.AABB.Width, Sprite.Sprite.AABB.Height, Drawing.Color.Red);
+				if (_showBoundingCircle)
+					Display.Circle(Sprite.Sprite.BoundingCircle.Center.X, Sprite.Sprite.BoundingCircle.Center.Y, Sprite.Sprite.BoundingCircle.Radius, Drawing.Color.Cyan);
+			}
+
+			newPosition = Sprite.Sprite.FinalPosition;
+			newPosition.X = MathUtility.Round(newPosition.X);
+			newPosition.Y = MathUtility.Round(newPosition.Y);
+			if ((CurrentTrack.EditCanDragValues == GorgonLibrary.Internal.EditorDragType.Axis) && (IsDragging))
+				newPosition = DragValue;
+
+			if (_axisColor == Drawing.Color.Red)
+				_axisColor = Drawing.Color.Yellow;
+			else
+				_axisColor = Drawing.Color.Red;
+			Display.VerticalLine(newPosition.X, newPosition.Y - 5, 5, _axisColor);
+			Display.VerticalLine(newPosition.X, newPosition.Y + 1, 5, _axisColor);
+			Display.HorizontalLine(newPosition.X - 5, newPosition.Y, 5, _axisColor);
+			Display.HorizontalLine(newPosition.X + 1, newPosition.Y, 5, _axisColor);
+
+			Display.EndDrawing();
+
 			if (_animation.HasKeys)
 			{
-				Sprite.Sprite.Draw();
-				Display.BeginDrawing();
-
-				if ((_showBoundingBox) || (_showBoundingCircle))
-				{
-					if (_showBoundingBox)
-						Display.Rectangle(Sprite.Sprite.AABB.Left, Sprite.Sprite.AABB.Top, Sprite.Sprite.AABB.Width, Sprite.Sprite.AABB.Height, Drawing.Color.Red);
-					if (_showBoundingCircle)
-						Display.Circle(Sprite.Sprite.BoundingCircle.Center.X, Sprite.Sprite.BoundingCircle.Center.Y, Sprite.Sprite.BoundingCircle.Radius, Drawing.Color.Cyan);
-				}
-
-				newPosition = Sprite.Sprite.FinalPosition;
-				newPosition.X = MathUtility.Round(newPosition.X);
-				newPosition.Y = MathUtility.Round(newPosition.Y);
-				if (_axisColor == Drawing.Color.Red)
-					_axisColor = Drawing.Color.Yellow;
-				else
-					_axisColor = Drawing.Color.Red;
-				Display.VerticalLine(newPosition.X, newPosition.Y - 5, 5, _axisColor);
-				Display.VerticalLine(newPosition.X, newPosition.Y + 1, 5, _axisColor);
-				Display.HorizontalLine(newPosition.X - 5, newPosition.Y, 5, _axisColor);
-				Display.HorizontalLine(newPosition.X + 1, newPosition.Y, 5, _axisColor);
-
-				Display.EndDrawing();
-				
 				if (_isPlaying)
 				{
 					_animation.Advance(e.TimingData);
@@ -634,10 +657,10 @@ namespace GorgonLibrary.Graphics.Tools
 			switch (_currentTrack.Name.ToLower())
 			{
 				case "scaledwidth":
-					Sprite.Sprite.ScaledWidth = 1.0f;
+					Sprite.Sprite.ScaledWidth = Sprite.Sprite.Width;
 					break;
 				case "scaledheight":
-					Sprite.Sprite.ScaledHeight = 1.0f;
+					Sprite.Sprite.ScaledHeight = Sprite.Sprite.Height;
 					break;
 				case "scaleddimensions":
 				case "scale":
@@ -672,7 +695,7 @@ namespace GorgonLibrary.Graphics.Tools
 					Sprite.Sprite.Width = Sprite.Sprite.Image.Width;
 					break;
 				case "height":
-					Sprite.Sprite.Width = Sprite.Sprite.Image.Height;
+					Sprite.Sprite.Height = Sprite.Sprite.Image.Height;
 					break;
 			}
 		}
@@ -788,6 +811,5 @@ namespace GorgonLibrary.Graphics.Tools
 			IsEmpty = true;
 		}
 		#endregion
-
 	}
 }

@@ -119,7 +119,31 @@
 
 <div>
 	<pre>
-November 20/2008 - Version - Current
+November 26/2008 - Version - Current
+===============================================================================================
+- Removed the default frame #0 that was inserted when an empty track was selected.  The system
+  will now just use whatever default the sprite originally had an leave the track empty.  This
+  was problematic at times, and somewhat confusing.  Now if you want to start an animation, 
+  the user will have to set up the initial frame manually (by adding the frame via the add key
+  button or pressing enter on the dialog boxes or if the property can be dragged like Position
+  or Axis).
+  
+* Modified draggable properties to now show a hand icon to indicate dragging ability when the
+  mouse is moved over the object to be dragged.
+
++ Added ability to drag the axis in the animation editor.  You can do it in the main sprite
+  display, why not in the editor too?
+
+* Modified EditorCanDragAttribute to now take/return a DragType as opposed to TRUE or FALSE.  
+  This allows for various types of dragging to be possible.
+
+* Updated an issue with the Sprite Editor where the sprite would appear offscreen when its axis
+  was set to the right/lower portion of the sprite.  While technically correct, this made the
+  UI a little more difficult to use.  The sprite will now appear in the center of the screen
+  -UNLESS- the position track has keys (and the frame #0 position is not the center of the
+  screen).
+
+November 20/2008 - Version 1.1.3246.24958
 ===============================================================================================
 * Modified the GorgonInput plug-in.  There is platform specific native code that will mess up
   on x64 systems.  This used to be handled via conditional compilation, but since we now have
