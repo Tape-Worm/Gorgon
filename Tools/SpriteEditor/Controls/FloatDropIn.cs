@@ -166,13 +166,9 @@ namespace GorgonLibrary.Graphics.Tools
 			comboInterpolation.Text = CurrentTrack.InterpolationMode.ToString();
 			//splitAnimation.SplitterDistance = 385;
 
-			if (CurrentTrack.KeyCount == 0)
-			{
-				key = new KeyFloat(0.0f, (float)(Sprite.Sprite.GetType().GetProperty(CurrentTrack.Name).GetValue(Sprite.Sprite,null)));
-				CurrentTrack.AddKey(key);
-			}
-			else
+			if (CurrentTrack.KeyCount != 0)
 				key = CurrentTrack[0.0f] as KeyFloat;
+				
 
 			// Get the range.
 			minValue = CurrentTrack.DataRange.Minimum;
@@ -184,7 +180,10 @@ namespace GorgonLibrary.Graphics.Tools
 				maxValue = (float)Decimal.MaxValue / 2.0f;
 			numericFloat.Minimum = (Decimal)minValue;
 			numericFloat.Maximum = (Decimal)maxValue;
-			numericFloat.Value = (Decimal)key.Value;
+			if (key != null)
+				numericFloat.Value = (Decimal)key.Value;
+			else
+				ResetSprite();
 			labelName.Text = CurrentTrack.Name;
 			ValidateForm();
 		}
