@@ -165,6 +165,13 @@ namespace GorgonLibrary.FileSystems.Tools.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap folder_into {
+            get {
+                object obj = ResourceManager.GetObject("folder_into", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap folder_out {
             get {
                 object obj = ResourceManager.GetObject("folder_out", resourceCulture);
