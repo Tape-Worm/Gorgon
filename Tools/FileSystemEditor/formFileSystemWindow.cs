@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -239,6 +240,126 @@ namespace GorgonLibrary.FileSystems.Tools
 		#endregion
 
 		#region Methods.
+
+		/// <summary>
+		/// Function to copy a list of files to a specified directory.
+		/// </summary>
+		/// <param name="files">List of files to copy.</param>
+		/// <param name="destination">Folder to copy into.</param>
+		/// <param name="copyFolders">TRUE to copy the folders, FALSE to just copy files.</param>
+		private void CopyFiles(List<FileSystemFile> files, string destination, bool copyFolders)
+		{
+			Stream stream = null;
+			ConfirmationResult result = ConfirmationResult.None;
+
+			if (string.IsNullOrEmpty(destination))
+				throw new ArgumentNullException("destination");
+			if (files == null)
+				throw new ArgumentNullException("files");
+
+			try
+			{
+				_parentWindow.InitFileImport(files.Count, true);
+				foreach (FileSystemFile file in files)
+				{
+					byte[] fileData = _fileSystem.ReadFile(file.FullPath);
+					string fileName = destination + Path.DirectorySeparatorChar.ToString();
+					string directory = string.Empty;
+
+					if (copyFolders)
+					{
+						string filePath = file.FullPath;
+						FileSystemPath fsPath = treePaths.SelectedNode.Tag as FileSystemPath;
+
+						if (filePath.StartsWith(fsPath.FullPath, StringComparison.CurrentCultureIgnoreCase))
+							filePath = filePath.Substring(fsPath.FullPath.Length);
+
+						fileName += filePath;
+						directory = Path.GetDirectoryName(fileName);
+					}
+					else
+						fileName += file.Name;
+
+					if (!Directory.Exists(directory))
+						Directory.CreateDirectory(directory);
+
+					if ((File.Exists(fileName)) && ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll))
+					{
+						result = UI.ConfirmBox(this, "The file '" + fileName + "' already exists at this location.  Overwrite it?", true, true);
+						if (result == ConfirmationResult.Cancel)
+							return;
+					}
+
+					if ((result & ConfirmationResult.No) != ConfirmationResult.No)
+					{
+						stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+						stream.Write(fileData, 0, fileData.Length);
+						stream.Close();
+					}
+					_parentWindow.UpdateFileImport(file.Filename);
+					Application.DoEvents();
+				}
+			}
+			finally
+			{
+				_parentWindow.EndFileImport();
+
+				if (stream != null)
+					stream.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the menuItemCopyToExplorer control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void menuItemCopyToExplorer_Click(object sender, EventArgs e)
+		{
+			List<FileSystemFile> files = new List<FileSystemFile>();
+
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				dialogFolders.SelectedPath = _parentWindow.LastExportDirectory;
+				if (dialogFolders.ShowDialog() == DialogResult.OK)
+				{
+					if (sender == viewFiles)
+					{
+						foreach (ListViewItem item in viewFiles.SelectedItems)
+							files.Add(item.Tag as FileSystemFile);
+					}
+					else
+					{
+						FileSystemPath path = null;
+						if (sender == menuItemCopyPathToExplorer)
+							path = treePaths.SelectedNode.Tag as FileSystemPath;
+						else
+							path = _fileSystem.Paths;
+
+						files.AddRange(path.GetFiles());
+					}
+
+					if (files.Count == 0)
+					{
+						UI.ErrorBox(this, "There are no files under the selected path that can be exported.");
+						return;
+					}
+
+					CopyFiles(files, dialogFolders.SelectedPath, sender != viewFiles);
+				}
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(this, "Error copying files on to the disk.", ex);
+			}
+			finally
+			{
+				_parentWindow.LastExportDirectory = dialogFolders.SelectedPath;
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
 		/// <summary>
 		/// Handles the Click event of the buttonPurge control.
 		/// </summary>
@@ -303,8 +424,13 @@ namespace GorgonLibrary.FileSystems.Tools
 				buttonPurge.Visible = false;
 			}
 
+			if (_fileSystem.FileCount != 0)
+				buttonCopyToExplorer.Enabled = true;
+			else
+				buttonCopyToExplorer.Enabled = false;
+
 			if ((_fileSystem != null) && (_rootPath != string.Empty))
-				Text = "File System - " + _rootPath + " [" + _fileSystem.Provider.Name + "]";
+				Text = _fileSystem.Provider.Description + " - " + _rootPath;
 			else
 				Text = "File System";
 
@@ -410,16 +536,24 @@ namespace GorgonLibrary.FileSystems.Tools
 			menuItemAddFiles.Enabled = false;
 			menuItemRemoveFiles.Enabled = false;
 			menuItemEditComment.Enabled = false;
+			menuItemCopyToExplorer.Enabled = false;
+			menuItemCopyPathToExplorer.Enabled = false;
 
 			if (treePaths.SelectedNode != null)
 			{
 				menuItemAddPath.Enabled = true;
 				menuItemRemovePath.Enabled = true;
 				menuItemAddFiles.Enabled = true;
+				if (_fileSystem.FileCount != 0)
+					menuItemCopyPathToExplorer.Enabled = true;
 			}
 
 			if (viewFiles.SelectedItems.Count > 0)
+			{
 				menuItemRemoveFiles.Enabled = true;
+				if (_fileSystem.FileCount != 0)
+					menuItemCopyToExplorer.Enabled = true;
+			}
 
 			if (viewFiles.SelectedItems.Count == 1)
 				menuItemEditComment.Enabled = true;
@@ -1146,7 +1280,7 @@ namespace GorgonLibrary.FileSystems.Tools
 					}
 				}
 
-				_parentWindow.InitFileImport(files.Count);
+				_parentWindow.InitFileImport(files.Count, false);
 
 				// Begin adding files.
 				foreach (string fileName in files)
@@ -1249,7 +1383,7 @@ namespace GorgonLibrary.FileSystems.Tools
 					{
 						// Copy the paths.
 						_copyWrite = ConfirmationResult.None;
-						_parentWindow.InitFileImport(sourcePath.GetFiles().Count);
+						_parentWindow.InitFileImport(sourcePath.GetFiles().Count, false);
 						CopyPaths(data.SourceFileSystem, _fileSystem, sourcePath, path, true);
 
 						// Refresh the other tree.
@@ -1266,7 +1400,7 @@ namespace GorgonLibrary.FileSystems.Tools
 
 					dragData = (ListViewDragDropData)e.Data.GetData(typeof(ListViewDragDropData));
 
-					_parentWindow.InitFileImport(dragData.SourceItems.Length);
+					_parentWindow.InitFileImport(dragData.SourceItems.Length, false);
 
 					// Copy the items to the path in the destination file system.
 					foreach (ListViewItem item in dragData.SourceItems)
@@ -1554,7 +1688,7 @@ namespace GorgonLibrary.FileSystems.Tools
 				{
 					dragData = (ListViewDragDropData)e.Data.GetData(typeof(ListViewDragDropData));
 
-					_parentWindow.InitFileImport(dragData.SourceItems.Length);
+					_parentWindow.InitFileImport(dragData.SourceItems.Length, false);
 
 					// Copy the items to the path in the destination file system.
 					foreach (ListViewItem item in dragData.SourceItems)
@@ -1672,7 +1806,7 @@ namespace GorgonLibrary.FileSystems.Tools
 
 			try
 			{
-				_parentWindow.InitFileImport(files.Length);
+				_parentWindow.InitFileImport(files.Length, false);
 
 				// Load the files.
 				foreach (string file in files)
@@ -2141,6 +2275,8 @@ namespace GorgonLibrary.FileSystems.Tools
 			// Create sorters.
 			for (int i = 0; i < 10; i++)
 				_sorters[i] = new ListViewCompare(i);
+
+			UpdateCaption();
 		}
 
 		/// <summary>
