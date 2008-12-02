@@ -46,7 +46,7 @@ namespace GorgonLibrary.FileSystems.Tools
 		: Form
 	{
 		#region Variables.
-		private FileSystemProvider _lastUsed;									// Last used file system.
+		private FileSystemProvider _lastUsed;								// Last used file system.
 		private string _lastOpenDir = @".\";								// Last file open dialog directory.
 		private string _lastViewSetting = "LargeIcon";						// Last file system view setting.
 		private string _dataPath = string.Empty;							// Path to configuration files, etc...
@@ -56,6 +56,7 @@ namespace GorgonLibrary.FileSystems.Tools
 		private bool _inFileOperation = false;								// Flag to indicate that we're in a file operation.
 		private string _lastSaveDir = @".\";								// Last save directory.
 		private ConfirmationResult _confirmResult = ConfirmationResult.None;// Overwrite confirmation result.
+		private bool _export = false;										// Flag to indicate that we're exporting files.
 		#endregion
 
 		#region Properties.
@@ -98,6 +99,15 @@ namespace GorgonLibrary.FileSystems.Tools
 			{
 				_confirmResult = value;
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return the last export directory used.
+		/// </summary>
+		public string LastExportDirectory
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -517,7 +527,7 @@ namespace GorgonLibrary.FileSystems.Tools
 				newFS.FileSystem = fileSystem;
 				newFS.RootPath = fileSystem.Root;
 				newFS.FileSystem.Mount(@"\", true);
-				newFS.Show();
+				newFS.Show();				
 			}
 			catch (Exception ex)
 			{
@@ -686,6 +696,10 @@ namespace GorgonLibrary.FileSystems.Tools
 
 				if (_lastSaveDir == string.Empty)
 					_lastSaveDir = @".\";
+
+				settingNode = fsTypes.SelectSingleNode("//LastExportPath");
+				if (settingNode != null)
+					LastExportDirectory = settingNode.InnerText;
 
 				settingNode = fsTypes.SelectSingleNode("//LastViewType");
 				if (settingNode != null)
@@ -969,6 +983,10 @@ namespace GorgonLibrary.FileSystems.Tools
 				element.InnerText = _lastSaveDir;
 				elementRoot.AppendChild(element);
 
+				element = fsTypes.CreateElement("LastExportPath");
+				element.InnerText = LastExportDirectory;
+				elementRoot.AppendChild(element);
+
 				element = fsTypes.CreateElement("LastViewType");
 				element.InnerText = _lastViewSetting;
 				elementRoot.AppendChild(element);
@@ -1094,11 +1112,13 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// Function to initialize the file import bar.
 		/// </summary>
 		/// <param name="fileCount">Number of files being imported.</param>
-		public void InitFileImport(int fileCount)
+		/// <param name="exportFile">TRUE to set for file export, FALSE for import.</param>
+		public void InitFileImport(int fileCount, bool exportFile)
 		{
 			_inFileOperation = true;
 			_importFileCount = fileCount;
 			_fileCounter = 0;
+			_export = exportFile;
 
 			progressFileImport.Value = 0;
 			labelFileName.Owner.Refresh();
@@ -1115,7 +1135,10 @@ namespace GorgonLibrary.FileSystems.Tools
 			decimal percentage = 0;		// Percentage.
 
 			Cursor.Current = Cursors.WaitCursor;
-			labelFileName.Text = "Importing file: " + fileName;
+			if (!_export)
+				labelFileName.Text = "Importing file: " + fileName;
+			else
+				labelFileName.Text = "Exporting file: " + fileName;
 			_fileCounter += 1;
 
 			percentage = (_fileCounter / _importFileCount) * 100;

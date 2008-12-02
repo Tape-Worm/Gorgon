@@ -62,5 +62,5 @@ Imports System.Security.Permissions
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.1.3252.24018")> 
-<Assembly: AssemblyFileVersion("1.1.3252.24018")> 
+<Assembly: AssemblyVersion("1.1.3258.20122")> 
+<Assembly: AssemblyFileVersion("1.1.3258.20122")> 

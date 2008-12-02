@@ -119,8 +119,14 @@
 
 <div>
 	<pre>
-November 26/2008 - Version - Current
+December 1/2008 - Version - Current
 ===============================================================================================
+* Updated a bug in the FileSystemPath object where GetFiles() was getting ALL files in the file
+  system instead of just the files belonging to the path and its children.
+  
+* Updated FileSystemEditor to have the ability to copy files from a virtual file system back
+  on to the external windows file system (Copy file/path to external folder).
+  
 - Removed the default frame #0 that was inserted when an empty track was selected.  The system
   will now just use whatever default the sprite originally had an leave the track empty.  This
   was problematic at times, and somewhat confusing.  Now if you want to start an animation, 

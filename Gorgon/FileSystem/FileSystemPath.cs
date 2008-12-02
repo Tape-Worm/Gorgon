@@ -165,18 +165,15 @@ namespace GorgonLibrary.FileSystems
 				_allFiles.Clear();
 
 				foreach (FileSystemPath childPath in _paths)
-					childPath.GetAllFiles(files);
+				{
+					childPath.GetAllFiles(childPath._allFiles);
+					foreach (FileSystemFile file in childPath._allFiles)
+						_allFiles.AddFile(file);
+				}
 
 				// Add to the list.
 				foreach (FileSystemFile file in _files)
 					files.AddFile(file);
-
-				// Add to local list.
-				if (_allFiles != files)
-				{
-					foreach (FileSystemFile file in files)
-						_allFiles.AddFile(file);
-				}
 			}
 
 			_filesUpdated = false;

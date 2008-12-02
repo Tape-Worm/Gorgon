@@ -75,8 +75,12 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.splitTree = new System.Windows.Forms.SplitContainer();
 			this.treePaths = new System.Windows.Forms.TreeView();
 			this.menuTreePopup = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.menuItemAddPath = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItemRemovePath = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuItemAddFiles = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuItemCopyPathToExplorer = new System.Windows.Forms.ToolStripMenuItem();
 			this.treeImages = new System.Windows.Forms.ImageList(this.components);
 			this.splitDetailView = new System.Windows.Forms.SplitContainer();
 			this.viewFiles = new System.Windows.Forms.ListView();
@@ -85,6 +89,7 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.headerDateTime = new System.Windows.Forms.ColumnHeader();
 			this.headerSize = new System.Windows.Forms.ColumnHeader();
 			this.menuFilePopup = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.menuItemEditComment = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuItemView = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItemSmallIcons = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,10 +97,15 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.menuItemList = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItemDetails = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuItemViewAddFiles = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItemRemoveFiles = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuItemCopyToExplorer = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelPreview = new System.Windows.Forms.Panel();
 			this.htmlPreview = new System.Windows.Forms.WebBrowser();
 			this.labelPreview = new System.Windows.Forms.Label();
 			this.textPreview = new System.Windows.Forms.TextBox();
+			this.pictureImage = new System.Windows.Forms.PictureBox();
 			this.textComment = new System.Windows.Forms.TextBox();
 			this.labelComment = new System.Windows.Forms.Label();
 			this.textProperties = new System.Windows.Forms.TextBox();
@@ -104,17 +114,14 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.label2 = new System.Windows.Forms.Label();
 			this.textFileName = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.pictureIcon = new System.Windows.Forms.PictureBox();
 			this.dialogAddFile = new System.Windows.Forms.OpenFileDialog();
 			this.stripMenu = new System.Windows.Forms.ToolStrip();
-			this.menuItemAddPath = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuItemRemovePath = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuItemEditComment = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuItemViewAddFiles = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuItemRemoveFiles = new System.Windows.Forms.ToolStripMenuItem();
-			this.pictureImage = new System.Windows.Forms.PictureBox();
-			this.pictureIcon = new System.Windows.Forms.PictureBox();
 			this.buttonChangeAuth = new System.Windows.Forms.ToolStripButton();
 			this.buttonPurge = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonCopyToExplorer = new System.Windows.Forms.ToolStripButton();
+			this.dialogFolders = new System.Windows.Forms.FolderBrowserDialog();
 			this.splitTree.Panel1.SuspendLayout();
 			this.splitTree.Panel2.SuspendLayout();
 			this.splitTree.SuspendLayout();
@@ -124,9 +131,9 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.splitDetailView.SuspendLayout();
 			this.menuFilePopup.SuspendLayout();
 			this.panelPreview.SuspendLayout();
-			this.stripMenu.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureImage)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
+			this.stripMenu.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// splitTree
@@ -180,21 +187,53 @@ namespace GorgonLibrary.FileSystems.Tools
             this.menuItemAddPath,
             this.menuItemRemovePath,
             this.toolStripMenuItem1,
-            this.menuItemAddFiles});
+            this.menuItemAddFiles,
+            this.toolStripSeparator4,
+            this.menuItemCopyPathToExplorer});
 			this.menuTreePopup.Name = "contextMenuStrip1";
-			this.menuTreePopup.Size = new System.Drawing.Size(154, 76);
+			this.menuTreePopup.Size = new System.Drawing.Size(204, 104);
+			// 
+			// menuItemAddPath
+			// 
+			this.menuItemAddPath.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_add;
+			this.menuItemAddPath.Name = "menuItemAddPath";
+			this.menuItemAddPath.Size = new System.Drawing.Size(203, 22);
+			this.menuItemAddPath.Text = "Add path...";
+			this.menuItemAddPath.Click += new System.EventHandler(this.menuItemAddPath_Click);
+			// 
+			// menuItemRemovePath
+			// 
+			this.menuItemRemovePath.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_delete;
+			this.menuItemRemovePath.Name = "menuItemRemovePath";
+			this.menuItemRemovePath.Size = new System.Drawing.Size(203, 22);
+			this.menuItemRemovePath.Text = "Remove path...";
+			this.menuItemRemovePath.Click += new System.EventHandler(this.menuItemRemovePath_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(150, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(200, 6);
 			// 
 			// menuItemAddFiles
 			// 
 			this.menuItemAddFiles.Name = "menuItemAddFiles";
-			this.menuItemAddFiles.Size = new System.Drawing.Size(153, 22);
+			this.menuItemAddFiles.Size = new System.Drawing.Size(203, 22);
 			this.menuItemAddFiles.Text = "Add file(s)...";
 			this.menuItemAddFiles.Click += new System.EventHandler(this.menuItemAddFiles_Click);
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(200, 6);
+			// 
+			// menuItemCopyPathToExplorer
+			// 
+			this.menuItemCopyPathToExplorer.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_into;
+			this.menuItemCopyPathToExplorer.Name = "menuItemCopyPathToExplorer";
+			this.menuItemCopyPathToExplorer.Size = new System.Drawing.Size(203, 22);
+			this.menuItemCopyPathToExplorer.Text = "Copy to external folder...";
+			this.menuItemCopyPathToExplorer.ToolTipText = "Copies the selected path from the virtual file system on to the harddrive.";
+			this.menuItemCopyPathToExplorer.Click += new System.EventHandler(this.menuItemCopyToExplorer_Click);
 			// 
 			// treeImages
 			// 
@@ -275,14 +314,25 @@ namespace GorgonLibrary.FileSystems.Tools
             this.menuItemView,
             this.toolStripSeparator1,
             this.menuItemViewAddFiles,
-            this.menuItemRemoveFiles});
+            this.menuItemRemoveFiles,
+            this.toolStripSeparator3,
+            this.menuItemCopyToExplorer});
 			this.menuFilePopup.Name = "contextMenuStrip1";
-			this.menuFilePopup.Size = new System.Drawing.Size(159, 104);
+			this.menuFilePopup.Size = new System.Drawing.Size(204, 132);
+			// 
+			// menuItemEditComment
+			// 
+			this.menuItemEditComment.Enabled = false;
+			this.menuItemEditComment.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.document_dirty;
+			this.menuItemEditComment.Name = "menuItemEditComment";
+			this.menuItemEditComment.Size = new System.Drawing.Size(203, 22);
+			this.menuItemEditComment.Text = "Edit comment...";
+			this.menuItemEditComment.Click += new System.EventHandler(this.menuItemEditComment_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(155, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(200, 6);
 			// 
 			// menuItemView
 			// 
@@ -292,7 +342,7 @@ namespace GorgonLibrary.FileSystems.Tools
             this.menuItemList,
             this.menuItemDetails});
 			this.menuItemView.Name = "menuItemView";
-			this.menuItemView.Size = new System.Drawing.Size(158, 22);
+			this.menuItemView.Size = new System.Drawing.Size(203, 22);
 			this.menuItemView.Text = "View";
 			// 
 			// menuItemSmallIcons
@@ -332,7 +382,37 @@ namespace GorgonLibrary.FileSystems.Tools
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(155, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(200, 6);
+			// 
+			// menuItemViewAddFiles
+			// 
+			this.menuItemViewAddFiles.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.add;
+			this.menuItemViewAddFiles.Name = "menuItemViewAddFiles";
+			this.menuItemViewAddFiles.Size = new System.Drawing.Size(203, 22);
+			this.menuItemViewAddFiles.Text = "Add file(s)...";
+			this.menuItemViewAddFiles.Click += new System.EventHandler(this.menuItemAddFiles_Click);
+			// 
+			// menuItemRemoveFiles
+			// 
+			this.menuItemRemoveFiles.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.delete1;
+			this.menuItemRemoveFiles.Name = "menuItemRemoveFiles";
+			this.menuItemRemoveFiles.Size = new System.Drawing.Size(203, 22);
+			this.menuItemRemoveFiles.Text = "Remove file(s)...";
+			this.menuItemRemoveFiles.Click += new System.EventHandler(this.menuItemRemoveFiles_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(200, 6);
+			// 
+			// menuItemCopyToExplorer
+			// 
+			this.menuItemCopyToExplorer.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_into;
+			this.menuItemCopyToExplorer.Name = "menuItemCopyToExplorer";
+			this.menuItemCopyToExplorer.Size = new System.Drawing.Size(203, 22);
+			this.menuItemCopyToExplorer.Text = "Copy to external folder...";
+			this.menuItemCopyToExplorer.ToolTipText = "Copies the selected files from the virtual file system on to the harddrive.";
+			this.menuItemCopyToExplorer.Click += new System.EventHandler(this.menuItemCopyToExplorer_Click);
 			// 
 			// panelPreview
 			// 
@@ -397,6 +477,20 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.textPreview.TabIndex = 22;
 			this.textPreview.Visible = false;
 			this.textPreview.WordWrap = false;
+			// 
+			// pictureImage
+			// 
+			this.pictureImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.pictureImage.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.pictureImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.pictureImage.Location = new System.Drawing.Point(12, 275);
+			this.pictureImage.Name = "pictureImage";
+			this.pictureImage.Size = new System.Drawing.Size(341, 109);
+			this.pictureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.pictureImage.TabIndex = 21;
+			this.pictureImage.TabStop = false;
+			this.pictureImage.Visible = false;
 			// 
 			// textComment
 			// 
@@ -490,80 +584,6 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.label1.TabIndex = 13;
 			this.label1.Text = "Filename:";
 			// 
-			// dialogAddFile
-			// 
-			this.dialogAddFile.Filter = "All files (*.*)|*.*";
-			this.dialogAddFile.InitialDirectory = ".\\";
-			this.dialogAddFile.Multiselect = true;
-			// 
-			// stripMenu
-			// 
-			this.stripMenu.AutoSize = false;
-			this.stripMenu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.stripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonChangeAuth,
-            this.buttonPurge});
-			this.stripMenu.Location = new System.Drawing.Point(0, 0);
-			this.stripMenu.Name = "stripMenu";
-			this.stripMenu.Size = new System.Drawing.Size(572, 25);
-			this.stripMenu.TabIndex = 2;
-			this.stripMenu.Text = "toolStrip1";
-			// 
-			// menuItemAddPath
-			// 
-			this.menuItemAddPath.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_add;
-			this.menuItemAddPath.Name = "menuItemAddPath";
-			this.menuItemAddPath.Size = new System.Drawing.Size(153, 22);
-			this.menuItemAddPath.Text = "Add path...";
-			this.menuItemAddPath.Click += new System.EventHandler(this.menuItemAddPath_Click);
-			// 
-			// menuItemRemovePath
-			// 
-			this.menuItemRemovePath.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_delete;
-			this.menuItemRemovePath.Name = "menuItemRemovePath";
-			this.menuItemRemovePath.Size = new System.Drawing.Size(153, 22);
-			this.menuItemRemovePath.Text = "Remove path...";
-			this.menuItemRemovePath.Click += new System.EventHandler(this.menuItemRemovePath_Click);
-			// 
-			// menuItemEditComment
-			// 
-			this.menuItemEditComment.Enabled = false;
-			this.menuItemEditComment.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.document_dirty;
-			this.menuItemEditComment.Name = "menuItemEditComment";
-			this.menuItemEditComment.Size = new System.Drawing.Size(158, 22);
-			this.menuItemEditComment.Text = "Edit comment...";
-			this.menuItemEditComment.Click += new System.EventHandler(this.menuItemEditComment_Click);
-			// 
-			// menuItemViewAddFiles
-			// 
-			this.menuItemViewAddFiles.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.add;
-			this.menuItemViewAddFiles.Name = "menuItemViewAddFiles";
-			this.menuItemViewAddFiles.Size = new System.Drawing.Size(158, 22);
-			this.menuItemViewAddFiles.Text = "Add file(s)...";
-			this.menuItemViewAddFiles.Click += new System.EventHandler(this.menuItemAddFiles_Click);
-			// 
-			// menuItemRemoveFiles
-			// 
-			this.menuItemRemoveFiles.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.delete1;
-			this.menuItemRemoveFiles.Name = "menuItemRemoveFiles";
-			this.menuItemRemoveFiles.Size = new System.Drawing.Size(158, 22);
-			this.menuItemRemoveFiles.Text = "Remove file(s)...";
-			this.menuItemRemoveFiles.Click += new System.EventHandler(this.menuItemRemoveFiles_Click);
-			// 
-			// pictureImage
-			// 
-			this.pictureImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.pictureImage.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.pictureImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.pictureImage.Location = new System.Drawing.Point(12, 275);
-			this.pictureImage.Name = "pictureImage";
-			this.pictureImage.Size = new System.Drawing.Size(341, 109);
-			this.pictureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.pictureImage.TabIndex = 21;
-			this.pictureImage.TabStop = false;
-			this.pictureImage.Visible = false;
-			// 
 			// pictureIcon
 			// 
 			this.pictureIcon.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -577,6 +597,27 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.pictureIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.pictureIcon.TabIndex = 12;
 			this.pictureIcon.TabStop = false;
+			// 
+			// dialogAddFile
+			// 
+			this.dialogAddFile.Filter = "All files (*.*)|*.*";
+			this.dialogAddFile.InitialDirectory = ".\\";
+			this.dialogAddFile.Multiselect = true;
+			// 
+			// stripMenu
+			// 
+			this.stripMenu.AutoSize = false;
+			this.stripMenu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.stripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonChangeAuth,
+            this.buttonPurge,
+            this.toolStripSeparator5,
+            this.buttonCopyToExplorer});
+			this.stripMenu.Location = new System.Drawing.Point(0, 0);
+			this.stripMenu.Name = "stripMenu";
+			this.stripMenu.Size = new System.Drawing.Size(572, 25);
+			this.stripMenu.TabIndex = 2;
+			this.stripMenu.Text = "toolStrip1";
 			// 
 			// buttonChangeAuth
 			// 
@@ -600,6 +641,26 @@ namespace GorgonLibrary.FileSystems.Tools
 				"lder file system when this file system is saved.";
 			this.buttonPurge.Click += new System.EventHandler(this.buttonPurge_Click);
 			// 
+			// toolStripSeparator5
+			// 
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonCopyToExplorer
+			// 
+			this.buttonCopyToExplorer.Enabled = false;
+			this.buttonCopyToExplorer.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_into;
+			this.buttonCopyToExplorer.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonCopyToExplorer.Name = "buttonCopyToExplorer";
+			this.buttonCopyToExplorer.Size = new System.Drawing.Size(147, 22);
+			this.buttonCopyToExplorer.Text = "Copy to external folder";
+			this.buttonCopyToExplorer.ToolTipText = "Copies the contents of the file system to the harddrive.";
+			this.buttonCopyToExplorer.Click += new System.EventHandler(this.menuItemCopyToExplorer_Click);
+			// 
+			// dialogFolders
+			// 
+			this.dialogFolders.Description = "Select the folder to copy the selected path/files into.";
+			// 
 			// formFileSystemWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -620,10 +681,10 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.menuFilePopup.ResumeLayout(false);
 			this.panelPreview.ResumeLayout(false);
 			this.panelPreview.PerformLayout();
-			this.stripMenu.ResumeLayout(false);
-			this.stripMenu.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureImage)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
+			this.stripMenu.ResumeLayout(false);
+			this.stripMenu.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -673,5 +734,12 @@ namespace GorgonLibrary.FileSystems.Tools
         private System.Windows.Forms.ToolStrip stripMenu;
         private System.Windows.Forms.ToolStripButton buttonChangeAuth;
 		private System.Windows.Forms.ToolStripButton buttonPurge;
+		private System.Windows.Forms.ToolStripMenuItem menuItemCopyToExplorer;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+		private System.Windows.Forms.ToolStripMenuItem menuItemCopyPathToExplorer;
+		private System.Windows.Forms.FolderBrowserDialog dialogFolders;
+		private System.Windows.Forms.ToolStripButton buttonCopyToExplorer;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 	}
 }
