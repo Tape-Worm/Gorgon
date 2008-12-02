@@ -150,7 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorFS.ico" />
-    <None Include="Resources\folder_into.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
