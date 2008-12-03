@@ -330,7 +330,8 @@ namespace GorgonLibrary.Graphics
 			if (D3DDevice == null)
 				return;
 
-			if (_currentVertexBuffer != vertexData)
+			if ((_currentVertexBuffer != vertexData) || (
+				(Gorgon.CurrentDriver.Vendor == 0x8086) && (Gorgon.CurrentDriver.ID < 0x29A2)))		// This is a fix to bypass this check if you're running an older Intel (pre G?965) card.
 			{
 				_currentVertexBuffer = vertexData;
 
