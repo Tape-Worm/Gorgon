@@ -119,8 +119,13 @@
 
 <div>
 	<pre>
-December 1/2008 - Version - Current
+December 3/2008 - Version - Current
 ===============================================================================================
+* Worked around a bug with older Intel drivers where the bound vertex buffer is not updated
+  after the initial changes to the vertex buffer.  The workaround requires that SetStreamSource
+  be called during every frame.  This is a minor perfomance hit, but it will only affect Intel
+  cards.
+  
 * Updated a bug in the FileSystemPath object where GetFiles() was getting ALL files in the file
   system instead of just the files belonging to the path and its children.
   
