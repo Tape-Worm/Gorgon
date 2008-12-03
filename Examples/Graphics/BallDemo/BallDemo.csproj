@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -52,7 +52,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon, Version=1.0.2927.5698, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=x86">
+    <Reference Include="Gorgon, Version=1.1.3259.25915, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
     </Reference>
