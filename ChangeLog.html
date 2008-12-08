@@ -119,8 +119,30 @@
 
 <div>
 	<pre>
-December 3/2008 - Version - Current
+December 7/2008 - Version - Current
 ===============================================================================================
+* Fixed a bug in the animation frame editor.  If a frame is selected and the Add Key button is
+  clicked, nothing happens.
+  
+* Modified the image frame animation editor to give more screen real-estate.  Moved it to the
+  right hand side as opposed to the bottom.
+  
+* Modified floating point rounding accuracy issues when using time based system with frame 
+  based editing.
+  
++ Added a track/key view to help identify which tracks have keys and where those keys are
+  located.  This view can be toggled on and off and the user has the choice of showing all
+  tracks or just tracks with keys.
+  
+* Fixed an issue with the SpriteEditor where if the toolbar in the sprite clipper had keyboard
+  focus, the app would not exit - To be fair, this is NOT Gorgon's fault, this is a bug in
+  Microsoft's toolbar strip object and needs to be worked around.  This bug only seems to 
+  appear under specific circumstances.
+  
+* Updated color track editor in the SpriteEditor animation editor to auto-create a key when a
+  color was selected by the color selector.  An additional button was added to turn off this
+  key auto-creation if required.
+  
 * Worked around a bug with older Intel drivers where the bound vertex buffer is not updated
   after the initial changes to the vertex buffer.  The workaround requires that SetStreamSource
   be called during every frame.  This is a minor perfomance hit, but it will only affect Intel

@@ -234,9 +234,10 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			base.ResetSprite();
 
-			_currentValue = (Vector2D)Sprite.Sprite.GetType().GetProperty(CurrentTrack.Name).GetValue(Sprite.Sprite, null);
-			numericX.Value = (Decimal)_currentValue.X;
-			numericY.Value = (Decimal)_currentValue.Y;
+			Vector2D value = (Vector2D)Sprite.Sprite.GetType().GetProperty(CurrentTrack.Name).GetValue(Sprite.Sprite, null);
+			
+			numericX.Value = (Decimal)value.X;
+			numericY.Value = (Decimal)value.Y;
 		}
 
 		/// <summary>
@@ -253,9 +254,9 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Function to set the current key.
 		/// </summary>
-		protected override void SetKeyFrame()
+		protected override void SetKeyFrameImpl()
 		{
-			base.SetKeyFrame();
+			base.SetKeyFrameImpl();
 			KeyVector2D key = null;						// Key that we're editing/creating.
 
 			// Ensure that we have the current value.

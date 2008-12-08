@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -64,6 +64,21 @@
     </Compile>
     <Compile Include="ABOOT.Designer.cs">
       <DependentUpon>ABOOT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\BetterPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackKeyDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackKeyDisplay.Designer.cs">
+      <DependentUpon>TrackKeyDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TrackNameButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackNameButton.Designer.cs">
+      <DependentUpon>TrackNameButton.cs</DependentUpon>
     </Compile>
     <Compile Include="formAnimationSelector.cs">
       <SubType>Form</SubType>
@@ -242,6 +257,12 @@
     <EmbeddedResource Include="ABOOT.resx">
       <DependentUpon>ABOOT.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TrackKeyDisplay.resx">
+      <DependentUpon>TrackKeyDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TrackNameButton.resx">
+      <DependentUpon>TrackNameButton.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formAnimationSelector.resx">
       <DependentUpon>formAnimationSelector.cs</DependentUpon>

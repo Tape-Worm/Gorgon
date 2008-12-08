@@ -184,7 +184,7 @@ namespace GorgonLibrary.Graphics
                 }
 
                 // Same frame.
-                if (_previousKey.Time == _keyTimeDelta)
+                if (MathUtility.EqualFloat(_previousKey.Time, _keyTimeDelta, 0.001f))
                     _keyTimeDelta = 0;
                 else
                     _keyTimeDelta = (requestedTime - _previousKey.Time) / (_keyTimeDelta - _previousKey.Time);
@@ -216,7 +216,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			public int Compare(float x, float y)
 			{
-				if (x == y)
+				if (MathUtility.EqualFloat(x, y, 0.001f))
 					return 0;
 
 				if (x < y)
@@ -480,7 +480,27 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if a key exists, FALSE if not.</returns>
 		public bool Contains(float time)
 		{
-			return _keys.ContainsKey(time);
+			for (int i = 0; i < _keys.Keys.Count; i++)
+			{
+				if (MathUtility.EqualFloat(_keys.Keys[i], time, 0.001f))
+					return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Function to return the index of a given key time.
+		/// </summary>
+		/// <param name="time">Time to check.</param>
+		/// <returns>The index of the key, or -1 if not found.</returns>
+		public int IndexOfKey(float time)
+		{
+			for (int i = 0; i < _keys.Keys.Count; i++)
+			{
+				if (MathUtility.EqualFloat(_keys.Keys[i], time, 0.001f))
+					return i;
+			}
+			return -1;
 		}
 
 		/// <summary>

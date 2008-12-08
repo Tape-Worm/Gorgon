@@ -64,6 +64,13 @@ namespace GorgonLibrary.Graphics.Tools
 			this.trackTrack = new System.Windows.Forms.TrackBar();
 			this.containerStatus = new System.Windows.Forms.ToolStripContainer();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+			this.splitTrackView = new System.Windows.Forms.SplitContainer();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.label3 = new System.Windows.Forms.Label();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.checkShowAll = new System.Windows.Forms.CheckBox();
+			this.panelTrackNames = new GorgonLibrary.Graphics.Tools.BetterPanel();
+			this.panelTrackDisplay = new GorgonLibrary.Graphics.Tools.BetterPanel();
 			this.splitTrack.Panel2.SuspendLayout();
 			this.splitTrack.SuspendLayout();
 			this.panelTrackControls.SuspendLayout();
@@ -72,6 +79,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.containerStatus.BottomToolStripPanel.SuspendLayout();
 			this.containerStatus.ContentPanel.SuspendLayout();
 			this.containerStatus.SuspendLayout();
+			this.splitTrackView.Panel1.SuspendLayout();
+			this.splitTrackView.Panel2.SuspendLayout();
+			this.splitTrackView.SuspendLayout();
+			this.panel1.SuspendLayout();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// splitTrack
@@ -91,8 +103,8 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			this.splitTrack.Panel2.Controls.Add(this.panelTrackControls);
 			this.splitTrack.Panel2.Padding = new System.Windows.Forms.Padding(2);
-			this.splitTrack.Size = new System.Drawing.Size(684, 422);
-			this.splitTrack.SplitterDistance = 332;
+			this.splitTrack.Size = new System.Drawing.Size(684, 393);
+			this.splitTrack.SplitterDistance = 303;
 			this.splitTrack.TabIndex = 0;
 			// 
 			// panelTrackControls
@@ -173,14 +185,14 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			// containerStatus.ContentPanel
 			// 
-			this.containerStatus.ContentPanel.Controls.Add(this.splitTrack);
-			this.containerStatus.ContentPanel.Size = new System.Drawing.Size(684, 422);
+			this.containerStatus.ContentPanel.Controls.Add(this.splitTrackView);
+			this.containerStatus.ContentPanel.Size = new System.Drawing.Size(684, 525);
 			this.containerStatus.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerStatus.LeftToolStripPanelVisible = false;
 			this.containerStatus.Location = new System.Drawing.Point(0, 0);
 			this.containerStatus.Name = "containerStatus";
 			this.containerStatus.RightToolStripPanelVisible = false;
-			this.containerStatus.Size = new System.Drawing.Size(684, 444);
+			this.containerStatus.Size = new System.Drawing.Size(684, 547);
 			this.containerStatus.TabIndex = 1;
 			this.containerStatus.Text = "toolStripContainer1";
 			this.containerStatus.TopToolStripPanelVisible = false;
@@ -193,11 +205,107 @@ namespace GorgonLibrary.Graphics.Tools
 			this.statusStrip1.Size = new System.Drawing.Size(684, 22);
 			this.statusStrip1.TabIndex = 0;
 			// 
+			// splitTrackView
+			// 
+			this.splitTrackView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitTrackView.Location = new System.Drawing.Point(0, 0);
+			this.splitTrackView.Name = "splitTrackView";
+			this.splitTrackView.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// splitTrackView.Panel1
+			// 
+			this.splitTrackView.Panel1.Controls.Add(this.splitTrack);
+			this.splitTrackView.Panel1MinSize = 380;
+			// 
+			// splitTrackView.Panel2
+			// 
+			this.splitTrackView.Panel2.Controls.Add(this.panelTrackNames);
+			this.splitTrackView.Panel2.Controls.Add(this.panelTrackDisplay);
+			this.splitTrackView.Panel2.Controls.Add(this.panel1);
+			this.splitTrackView.Panel2.Controls.Add(this.panel2);
+			this.splitTrackView.Panel2.Padding = new System.Windows.Forms.Padding(2);
+			this.splitTrackView.Size = new System.Drawing.Size(684, 525);
+			this.splitTrackView.SplitterDistance = 393;
+			this.splitTrackView.TabIndex = 1;
+			// 
+			// panel1
+			// 
+			this.panel1.Controls.Add(this.label3);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panel1.Location = new System.Drawing.Point(2, 2);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(680, 19);
+			this.panel1.TabIndex = 0;
+			// 
+			// label3
+			// 
+			this.label3.BackColor = System.Drawing.SystemColors.ActiveCaption;
+			this.label3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.label3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label3.Location = new System.Drawing.Point(0, 0);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(680, 19);
+			this.label3.TabIndex = 0;
+			this.label3.Text = "Track View";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// panel2
+			// 
+			this.panel2.Controls.Add(this.checkShowAll);
+			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panel2.Location = new System.Drawing.Point(2, 102);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(680, 24);
+			this.panel2.TabIndex = 2;
+			// 
+			// checkShowAll
+			// 
+			this.checkShowAll.AutoSize = true;
+			this.checkShowAll.Checked = true;
+			this.checkShowAll.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowAll.Location = new System.Drawing.Point(6, 6);
+			this.checkShowAll.Name = "checkShowAll";
+			this.checkShowAll.Size = new System.Drawing.Size(98, 17);
+			this.checkShowAll.TabIndex = 2;
+			this.checkShowAll.Text = "Show all tracks";
+			this.checkShowAll.UseVisualStyleBackColor = true;
+			this.checkShowAll.Click += new System.EventHandler(this.checkShowAll_Click);
+			// 
+			// panelTrackNames
+			// 
+			this.panelTrackNames.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)));
+			this.panelTrackNames.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.panelTrackNames.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panelTrackNames.Location = new System.Drawing.Point(2, 20);
+			this.panelTrackNames.Name = "panelTrackNames";
+			this.panelTrackNames.ShowScrollBars = false;
+			this.panelTrackNames.Size = new System.Drawing.Size(149, 82);
+			this.panelTrackNames.TabIndex = 3;
+			this.panelTrackNames.Resize += new System.EventHandler(this.panelTrackNames_Resize);
+			// 
+			// panelTrackDisplay
+			// 
+			this.panelTrackDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.panelTrackDisplay.AutoScroll = true;
+			this.panelTrackDisplay.AutoScrollMargin = new System.Drawing.Size(3, 3);
+			this.panelTrackDisplay.AutoScrollMinSize = new System.Drawing.Size(3, 3);
+			this.panelTrackDisplay.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.panelTrackDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panelTrackDisplay.Location = new System.Drawing.Point(150, 20);
+			this.panelTrackDisplay.Name = "panelTrackDisplay";
+			this.panelTrackDisplay.ShowScrollBars = false;
+			this.panelTrackDisplay.Size = new System.Drawing.Size(532, 82);
+			this.panelTrackDisplay.TabIndex = 1;
+			this.panelTrackDisplay.Scroll += new System.Windows.Forms.ScrollEventHandler(this.panelTrackDisplay_Scroll);
+			// 
 			// formAnimationEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(684, 444);
+			this.ClientSize = new System.Drawing.Size(684, 547);
 			this.Controls.Add(this.containerStatus);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "formAnimationEditor";
@@ -215,6 +323,12 @@ namespace GorgonLibrary.Graphics.Tools
 			this.containerStatus.ContentPanel.ResumeLayout(false);
 			this.containerStatus.ResumeLayout(false);
 			this.containerStatus.PerformLayout();
+			this.splitTrackView.Panel1.ResumeLayout(false);
+			this.splitTrackView.Panel2.ResumeLayout(false);
+			this.splitTrackView.ResumeLayout(false);
+			this.panel1.ResumeLayout(false);
+			this.panel2.ResumeLayout(false);
+			this.panel2.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -230,6 +344,13 @@ namespace GorgonLibrary.Graphics.Tools
 		private System.Windows.Forms.TrackBar trackTrack;
 		private System.Windows.Forms.ToolStripContainer containerStatus;
 		private System.Windows.Forms.StatusStrip statusStrip1;
+		private System.Windows.Forms.SplitContainer splitTrackView;
+		private BetterPanel panelTrackDisplay;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Panel panel2;
+		private System.Windows.Forms.CheckBox checkShowAll;
+		private BetterPanel panelTrackNames;
 
 	}
 }

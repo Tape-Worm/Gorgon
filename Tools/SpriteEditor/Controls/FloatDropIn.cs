@@ -129,9 +129,9 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Function to set the current key.
 		/// </summary>
-		protected override void SetKeyFrame()
+		protected override void SetKeyFrameImpl()
 		{
-			base.SetKeyFrame();
+			base.SetKeyFrameImpl();
 			KeyFloat key = null;						// Key that we're editing/creating.
 
 			// Ensure that we have the current value.
