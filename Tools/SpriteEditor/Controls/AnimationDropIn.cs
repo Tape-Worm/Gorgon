@@ -60,7 +60,7 @@ namespace GorgonLibrary.Graphics.Tools
 		private Drawing.Color _axisColor = Drawing.Color.Red;	// Axis color.
 		#endregion
 
-		#region Properties.
+		#region Properties.		
 		/// <summary>
 		/// Property to set or return whether there's a drag operation in progress.
 		/// </summary>
@@ -154,6 +154,21 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Property to set or return the show track/keys button state.
+		/// </summary>
+		public bool ShowTrackKeys
+		{
+			get
+			{
+				return buttonViewTracks.Checked;
+			}
+			set
+			{
+				buttonViewTracks.Checked = value;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the list of animations to play.
 		/// </summary>
 		public List<Animation> PlayAnimations
@@ -183,6 +198,7 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_currentTrack = value;
+				FixTimeErrors();
 				ValidateForm();
 			}
 		}
@@ -307,6 +323,7 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			_keyIndex = 0;
 			_editor.SetTime(_currentTrack.GetKeyAtIndex(0).Time);
+			ValidateForm();
 		}
 
 		/// <summary>
@@ -318,6 +335,7 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			_keyIndex = _currentTrack.KeyCount - 1;
 			_editor.SetTime(_currentTrack.GetKeyAtIndex(_keyIndex).Time);
+			ValidateForm();
 		}
 
 		/// <summary>
@@ -327,12 +345,22 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void buttonPreviousKeyFrame_Click(object sender, EventArgs e)
 		{
-			_keyIndex--;
+			if ((_keyIndex == -1) && (CurrentTrack.KeyCount > 0))
+			{
+				KeyFrame prev = CurrentTrack.FindNearest(CurrentTime).PreviousKey;
+				if (prev != null)
+					_keyIndex = CurrentTrack.IndexOfKey(prev.Time);
+				else
+					_keyIndex = CurrentTrack.KeyCount - 1;
+			}
+			else
+				_keyIndex--;
 
 			if (_keyIndex < 0)
 				_keyIndex = _currentTrack.KeyCount - 1;
 
-			_editor.SetTime(_currentTrack.GetKeyAtIndex(_keyIndex).Time);
+			_editor.SetTime(_currentTrack.GetKeyAtIndex(_keyIndex).Time);			
+			ValidateForm();
 		}
 
 		/// <summary>
@@ -342,11 +370,50 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void buttonNextKeyframe_Click(object sender, EventArgs e)
 		{
-			_keyIndex++;
+			if ((_keyIndex == -1) && (CurrentTrack.KeyCount > 0))
+			{
+				KeyFrame next = CurrentTrack.FindNearest(CurrentTime).NextKey;
+				if (next != null)
+					_keyIndex = CurrentTrack.IndexOfKey(next.Time);
+				else
+					_keyIndex = 0;
+			}
+			else
+				_keyIndex++;
 
 			if (_keyIndex >= _currentTrack.KeyCount)
 				_keyIndex = 0;
-			_editor.SetTime(_currentTrack.GetKeyAtIndex(_keyIndex).Time);
+			_editor.SetTime(_currentTrack.GetKeyAtIndex(_keyIndex).Time);			
+			ValidateForm();
+		}
+
+		/// <summary>
+		/// Function to fix time related rounding errors.
+		/// </summary>
+		private void FixTimeErrors()
+		{
+			if (CurrentTrack == null)
+				return;
+
+			float currentTime = 0.0f;
+			float adjustedTime = 0.0f;
+			int frame = 0;
+			KeyFrame newKey = null;
+
+			for (int i = CurrentTrack.KeyCount - 1; i >= 0 ; i--)
+			{
+				currentTime = CurrentTrack.GetKeyAtIndex(i).Time;
+				frame = MathUtility.RoundInt((currentTime / 1000.0f) * CurrentTrack.Owner.FrameRate);
+				adjustedTime = ((float)frame / CurrentTrack.Owner.FrameRate) * 1000.0f;
+
+				if (!MathUtility.EqualFloat(currentTime, adjustedTime, 0.001f))
+				{
+					newKey = CurrentTrack.GetKeyAtIndex(i).Clone();
+					CurrentTrack.RemoveKeyAtIndex(i);
+					newKey.Time = adjustedTime;
+					CurrentTrack.AddKey(newKey);
+				}
+			}
 		}
 
 		/// <summary>
@@ -474,6 +541,8 @@ namespace GorgonLibrary.Graphics.Tools
 				newFrame.Time = CurrentTime;
 				CurrentTrack.AddKey(newFrame);
 				ValidateForm();
+				if (Editor != null)
+					Editor.RefreshTrackView();
 			}
 			catch (Exception ex)
 			{
@@ -511,6 +580,8 @@ namespace GorgonLibrary.Graphics.Tools
 				_copiedFrame = CurrentTrack[CurrentTime].Clone();
 				CurrentTrack.Remove(CurrentTime);
 				ValidateForm();
+				if (Editor != null)
+					Editor.RefreshTrackView();
 			}
 			catch (Exception ex)
 			{
@@ -571,6 +642,7 @@ namespace GorgonLibrary.Graphics.Tools
 			buttonCutFrame.Enabled = false;
 			buttonPasteFrame.Enabled = false;
 			buttonPlayOther.Enabled = false;
+			buttonViewTracks.Enabled = false;
 
 			if (_animation == null)
 				return;
@@ -585,12 +657,14 @@ namespace GorgonLibrary.Graphics.Tools
 				return;
 			}
 
-
 			if (_animation.HasKeys)
 				buttonPlay.Enabled = true;
 
 			if (_copiedFrame != null)
 				buttonPasteFrame.Enabled = true;
+
+			if (_animation.HasKeys)
+				buttonViewTracks.Enabled = true;
 
 			if (_currentTrack.KeyCount > 0)
 			{
@@ -616,14 +690,27 @@ namespace GorgonLibrary.Graphics.Tools
 					buttonLastKeyFrame.Enabled = true;
 				}
 			}
+
+			if (CurrentTrack.KeyCount > 0)
+				_keyIndex = CurrentTrack.IndexOfKey(CurrentTime);
+		}
+
+		/// <summary>
+		/// Implementation function for SetKeyFrame.
+		/// </summary>
+		protected virtual void SetKeyFrameImpl()
+		{
 		}
 
 		/// <summary>
 		/// Function to set the current key.
 		/// </summary>
-		protected virtual void SetKeyFrame()
+		protected void SetKeyFrame()
 		{
 			IsEmpty = false;
+			SetKeyFrameImpl();
+			if (Editor != null)
+				Editor.RefreshTrackView();
 		}
 
 		/// <summary>
@@ -636,6 +723,8 @@ namespace GorgonLibrary.Graphics.Tools
 			ValidateForm();
 			if (_currentTrack.KeyCount == 0)
 				ResetSprite();
+			if (Editor != null)
+				Editor.RefreshTrackView();			
 		}
 
 		/// <summary>
@@ -647,6 +736,9 @@ namespace GorgonLibrary.Graphics.Tools
 			_currentTrack.ClearKeys();
 			ValidateForm();
 			ResetSprite();
+			if (Editor != null)
+				Editor.RefreshTrackView();
+
 		}
 
 		/// <summary>
@@ -811,5 +903,22 @@ namespace GorgonLibrary.Graphics.Tools
 			IsEmpty = true;
 		}
 		#endregion
+
+		/// <summary>
+		/// Handles the Click event of the buttonViewTracks control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonViewTracks_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				_editor.ShowViewer();
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(ParentForm, "Error viewing tracks/keys.", ex);
+			}
+		}
 	}
 }
