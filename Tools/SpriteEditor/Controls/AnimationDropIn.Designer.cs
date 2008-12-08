@@ -45,7 +45,9 @@ namespace GorgonLibrary.Graphics.Tools
 			}
 
 			if ((!DesignMode) && (disposing))
+			{
 				CleanUp();
+			}
 
 			_display = null;
 			base.Dispose(disposing);
@@ -63,24 +65,25 @@ namespace GorgonLibrary.Graphics.Tools
 			this.splitAnimation = new System.Windows.Forms.SplitContainer();
 			this.panelRender = new System.Windows.Forms.Panel();
 			this.stripAnimation = new System.Windows.Forms.ToolStrip();
-			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonSetKeyFrame = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonRemoveKeyFrame = new System.Windows.Forms.ToolStripButton();
 			this.buttonClearKeys = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonCopyFrame = new System.Windows.Forms.ToolStripButton();
 			this.buttonCutFrame = new System.Windows.Forms.ToolStripButton();
 			this.buttonPasteFrame = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonFirstKeyFrame = new System.Windows.Forms.ToolStripButton();
 			this.buttonPreviousKeyFrame = new System.Windows.Forms.ToolStripButton();
 			this.buttonNextKeyframe = new System.Windows.Forms.ToolStripButton();
 			this.buttonLastKeyFrame = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonPlay = new System.Windows.Forms.ToolStripButton();
 			this.buttonStop = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonPlayOther = new System.Windows.Forms.ToolStripButton();
+			this.buttonViewTracks = new System.Windows.Forms.ToolStripButton();
 			this.containerAnimation.ContentPanel.SuspendLayout();
 			this.containerAnimation.TopToolStripPanel.SuspendLayout();
 			this.containerAnimation.SuspendLayout();
@@ -163,37 +166,13 @@ namespace GorgonLibrary.Graphics.Tools
             this.buttonPlay,
             this.buttonStop,
             this.toolStripSeparator5,
-            this.buttonPlayOther});
+            this.buttonPlayOther,
+            this.buttonViewTracks});
 			this.stripAnimation.Location = new System.Drawing.Point(0, 0);
 			this.stripAnimation.Name = "stripAnimation";
 			this.stripAnimation.Size = new System.Drawing.Size(629, 25);
 			this.stripAnimation.Stretch = true;
 			this.stripAnimation.TabIndex = 0;
-			// 
-			// toolStripSeparator4
-			// 
-			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripSeparator3
-			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripSeparator5
-			// 
-			this.toolStripSeparator5.Name = "toolStripSeparator5";
-			this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
 			// 
 			// buttonSetKeyFrame
 			// 
@@ -204,6 +183,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonSetKeyFrame.Size = new System.Drawing.Size(23, 22);
 			this.buttonSetKeyFrame.Text = "Set key frame to the current time.";
 			this.buttonSetKeyFrame.Click += new System.EventHandler(this.buttonSetKeyFrame_Click);
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
 			// 
 			// buttonRemoveKeyFrame
 			// 
@@ -226,6 +210,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonClearKeys.Size = new System.Drawing.Size(23, 22);
 			this.buttonClearKeys.Text = "Clear all keyframes.";
 			this.buttonClearKeys.Click += new System.EventHandler(this.buttonClearKeys_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
 			// 
 			// buttonCopyFrame
 			// 
@@ -259,6 +248,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonPasteFrame.Size = new System.Drawing.Size(23, 22);
 			this.buttonPasteFrame.Text = "Paste a cut/copied key frame.";
 			this.buttonPasteFrame.Click += new System.EventHandler(this.buttonPasteFrame_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
 			// 
 			// buttonFirstKeyFrame
 			// 
@@ -304,6 +298,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonLastKeyFrame.Text = "Go to last key frame.";
 			this.buttonLastKeyFrame.Click += new System.EventHandler(this.buttonLastKeyFrame_Click);
 			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
 			// buttonPlay
 			// 
 			this.buttonPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -326,6 +325,11 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonStop.Text = "Stop animation.";
 			this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
 			// 
+			// toolStripSeparator5
+			// 
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+			// 
 			// buttonPlayOther
 			// 
 			this.buttonPlayOther.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -336,6 +340,20 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonPlayOther.Size = new System.Drawing.Size(23, 22);
 			this.buttonPlayOther.Text = "Play other animations...";
 			this.buttonPlayOther.Click += new System.EventHandler(this.buttonPlayOther_Click);
+			// 
+			// buttonViewTracks
+			// 
+			this.buttonViewTracks.Checked = true;
+			this.buttonViewTracks.CheckOnClick = true;
+			this.buttonViewTracks.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.buttonViewTracks.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonViewTracks.Enabled = false;
+			this.buttonViewTracks.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.window_view;
+			this.buttonViewTracks.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonViewTracks.Name = "buttonViewTracks";
+			this.buttonViewTracks.Size = new System.Drawing.Size(23, 22);
+			this.buttonViewTracks.Text = "View all tracks/keys";
+			this.buttonViewTracks.Click += new System.EventHandler(this.buttonViewTracks_Click);
 			// 
 			// AnimationDropIn
 			// 
@@ -381,5 +399,6 @@ namespace GorgonLibrary.Graphics.Tools
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripButton buttonPlayOther;
+		private System.Windows.Forms.ToolStripButton buttonViewTracks;
 	}
 }

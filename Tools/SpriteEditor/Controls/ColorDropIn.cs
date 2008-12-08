@@ -122,6 +122,11 @@ namespace GorgonLibrary.Graphics.Tools
 					numericG.Value = picker.Color.G;
 					numericB.Value = picker.Color.B;
 					numericA.Value = picker.Color.A;
+					if (checkAutoKey.Checked)
+					{
+						SetKeyFrame();
+						ValidateForm();
+					}
 				}
 			}
 			catch (Exception ex)
@@ -149,6 +154,18 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Handles the Click event of the checkAutoKey control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void checkAutoKey_Click(object sender, EventArgs e)
+		{
+			Settings.Root = "AnimationDropInSettings";
+			Settings.SetSetting("Color_AutoKey", checkAutoKey.Checked.ToString());
+			Settings.Root = null;
+		}
+
+		/// <summary>
 		/// Function to handle enter key presses in numeric up down fields.
 		/// </summary>
 		/// <returns>TRUE if handled, FALSE if not.</returns>
@@ -163,10 +180,10 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Function to set the current key.
 		/// </summary>
-		protected override void SetKeyFrame()
+		protected override void SetKeyFrameImpl()
 		{
 			KeyColor key = null;						// Key that we're editing/creating.
-			base.SetKeyFrame();
+			base.SetKeyFrameImpl();
 
 			// Ensure that we have the current value.
 			numericA_ValueChanged(this, EventArgs.Empty);
@@ -220,6 +237,11 @@ namespace GorgonLibrary.Graphics.Tools
 			numericR.ValueChanged += new EventHandler(numericA_ValueChanged);
 			numericG.ValueChanged += new EventHandler(numericA_ValueChanged);
 			numericB.ValueChanged += new EventHandler(numericA_ValueChanged);
+
+			Settings.Root = "AnimationDropInSettings";
+			checkAutoKey.Checked = Convert.ToBoolean(Settings.GetSetting("Color_AutoKey", "true"));
+			Settings.Root = null;
+
 			ValidateForm();
 		}
 		#endregion

@@ -539,6 +539,8 @@ namespace GorgonLibrary.Graphics.Tools
 
 			// Update the current sprite.
 			_spriteManager.RefreshList();
+
+			panelGorgon.Focus();
 		}
 
 		/// <summary>
@@ -1507,10 +1509,13 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
 		private void textFixedWidth_KeyDown(object sender, KeyEventArgs e)
 		{
+			CancelEventArgs args = new CancelEventArgs();
 			if (e.KeyCode == Keys.Enter)
 			{
-				textFixedWidth_Validating(this, new CancelEventArgs());
+				textFixedWidth_Validating(this, args);
 				e.Handled = true;
+				if (!args.Cancel)
+					panelGorgon.Focus();
 			}
 		}
 
@@ -1521,10 +1526,13 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
 		private void textFixedHeight_KeyDown(object sender, KeyEventArgs e)
 		{
+			CancelEventArgs args = new CancelEventArgs();
 			if (e.KeyCode == Keys.Enter)
 			{
-				textFixedHeight_Validating(this, new CancelEventArgs());
+				textFixedHeight_Validating(this, args);
 				e.Handled = true;
+				if (!args.Cancel)
+					panelGorgon.Focus();
 			}
 		}
 
@@ -1535,10 +1543,14 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
 		private void textWindowSize_KeyDown(object sender, KeyEventArgs e)
 		{
+			CancelEventArgs args = new CancelEventArgs();
+
 			if (e.KeyCode == Keys.Enter)
 			{
-				textWindowSize_Validating(this, new CancelEventArgs());
+				textWindowSize_Validating(this, args);
 				e.Handled = true;
+				if (!args.Cancel)
+					panelGorgon.Focus();
 			}
 		}
 

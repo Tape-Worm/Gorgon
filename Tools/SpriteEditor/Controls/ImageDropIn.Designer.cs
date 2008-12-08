@@ -67,24 +67,22 @@ namespace GorgonLibrary.Graphics.Tools
 			// containerAnimation
 			// 
 			this.containerAnimation.BottomToolStripPanelVisible = true;
-			// 
-			// containerAnimation.ContentPanel
-			// 
-			this.containerAnimation.ContentPanel.Size = new System.Drawing.Size(629, 402);
 			this.containerAnimation.LeftToolStripPanelVisible = true;
 			this.containerAnimation.RightToolStripPanelVisible = true;
 			// 
 			// splitAnimation
 			// 
+			this.splitAnimation.Orientation = System.Windows.Forms.Orientation.Vertical;
 			// 
 			// splitAnimation.Panel2
 			// 
 			this.splitAnimation.Panel2.Controls.Add(this.listFrames);
-			this.splitAnimation.SplitterDistance = 210;
+			this.splitAnimation.Size = new System.Drawing.Size(629, 427);
+			this.splitAnimation.SplitterDistance = 400;
 			// 
 			// panelRender
 			// 
-			this.panelRender.Size = new System.Drawing.Size(623, 204);
+			this.panelRender.Size = new System.Drawing.Size(394, 421);
 			this.panelRender.DragOver += new System.Windows.Forms.DragEventHandler(this.panelRender_DragOver);
 			this.panelRender.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelRender_DragDrop);
 			// 
@@ -98,7 +96,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.listFrames.Location = new System.Drawing.Point(3, 3);
 			this.listFrames.Name = "listFrames";
 			this.listFrames.ShowItemToolTips = true;
-			this.listFrames.Size = new System.Drawing.Size(623, 183);
+			this.listFrames.Size = new System.Drawing.Size(220, 421);
 			this.listFrames.SmallImageList = this.imageSprites;
 			this.listFrames.TabIndex = 0;
 			this.listFrames.TileSize = new System.Drawing.Size(66, 66);

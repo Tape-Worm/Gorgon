@@ -46,11 +46,24 @@ namespace GorgonLibrary.Graphics.Tools
 		private SpriteDocumentList _documents = null;					// Sprite document list.
 		private Animation _animation = null;							// Current animation.
 		private bool _noevent = false;									// Flag to disable events.
-		private AnimationDropIn _dropIn = null;							// Animation drop in panel.
 		private List<Animation> _playAnimations = null;					// List of animations to play.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the current drop-in.
+		/// </summary>
+		public AnimationDropIn DropIn
+		{
+			get
+			{
+				if (splitTrack.Panel1.Controls.Count < 1)
+					return null;
+
+				return splitTrack.Panel1.Controls[0] as AnimationDropIn;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the total number of frames for this track.
 		/// </summary>
@@ -74,6 +87,17 @@ namespace GorgonLibrary.Graphics.Tools
 			set
 			{
 				_documents = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the current frame.
+		/// </summary>
+		public int CurrentFrame
+		{
+			get
+			{
+				return (int)numericTrackFrames.Value;
 			}
 		}
 
@@ -135,6 +159,7 @@ namespace GorgonLibrary.Graphics.Tools
 					UI.ErrorBox(this, "Cannot set the current animation to NULL.");
 
 				TrackerUpdate();
+				UpdateTrackView();
 			}
 		}
 		#endregion
@@ -183,6 +208,7 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			if (_noevent)
 				return;
+
 			trackTrack.Value = (int)numericTrackFrames.Value;
 			UpdateDropIn();
 		}
@@ -193,6 +219,13 @@ namespace GorgonLibrary.Graphics.Tools
 		private void UpdateDropIn()
 		{
 			AnimationDropIn dropIn;			// Drop in.
+
+			if ((!splitTrackView.Panel2Collapsed) && (DropIn != null))
+			{
+				TrackKeyDisplay display = panelTrackDisplay.Controls[DropIn.CurrentTrack.Name] as TrackKeyDisplay;
+				if (display != null)
+					display.Invalidate(true);
+			}
 
 			if (splitTrack.Panel1.Controls.Count > 0)
 			{
@@ -228,7 +261,9 @@ namespace GorgonLibrary.Graphics.Tools
 			dropIn.CurrentTrack = track;
 			splitTrack.Panel1.Controls.Add(dropIn);
 			dropIn.Dock = DockStyle.Fill;
-			dropIn.GetSettings();			
+			dropIn.GetSettings();
+
+			dropIn.ShowTrackKeys = !splitTrackView.Panel2Collapsed;
 		}
 
 		/// <summary>
@@ -269,6 +304,8 @@ namespace GorgonLibrary.Graphics.Tools
 							break;
 					}
 				}
+
+				UpdateTrackView();
 			}
 			catch (Exception ex)
 			{
@@ -299,9 +336,202 @@ namespace GorgonLibrary.Graphics.Tools
 			numericTrackFrames.Maximum = maxFrames - 1;
 			numericTrackFrames.Value = currentTime;
 			numericTrackFrames.Increment = (Decimal)frequency;
+		}
 
-			if (_dropIn != null)
-				_dropIn.CurrentTime = (float)currentTime;
+		/// <summary>
+		/// Handles the Click event of the checkShowAll control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void checkShowAll_Click(object sender, EventArgs e)
+		{
+			UpdateTrackView();
+			Settings.Root = "AnimationEditor";
+			Settings.SetSetting("ShowAllTracks", checkShowAll.Checked.ToString());
+			Settings.Root = null;		
+		}
+
+		/// <summary>
+		/// Function to update the track view.
+		/// </summary>
+		private void UpdateTrackView()
+		{
+			int height = 0;
+			int maxWidth = panelTrackDisplay.Width - 2;
+			int maxFrames = 0;
+			int rows = 1;
+
+			base.Refresh();
+
+			if (_animation == null)
+				return;
+
+			try
+			{
+				if (_animation.Tracks.Count > 0)
+				{
+
+					var tracks = from track in _animation.Tracks
+								 where ((_animation.Tracks["Image"].KeyCount > 0) && (string.Compare(track.Name, "height", true) != 0)
+										&& (string.Compare(track.Name, "width", true) != 0) && (string.Compare(track.Name, "size", true) != 0))
+										|| (_animation.Tracks["Image"].KeyCount == 0)
+								 select track;
+
+					Point lastOffset = panelTrackDisplay.AutoScrollPosition;
+					panelTrackDisplay.AutoScroll = false;
+					panelTrackDisplay.AutoScrollMinSize = new Size(3, 3);
+					panelTrackDisplay.AutoScrollOffset = new Point(0, 0);
+
+					maxFrames = (int)((_animation.Length / 1000.0f) * _animation.FrameRate);
+					if (maxFrames > 1024)
+					{
+						while ((maxFrames % 1024) != 0)
+							maxFrames++;
+					}
+					rows = maxFrames / TrackKeyDisplay.MaxFramesPerRow;
+					if (rows < 1)
+						rows = 1;
+
+					panelTrackNames.ResetScroll();
+					foreach (Track track in tracks)
+					{
+						TrackKeyDisplay display = null;
+						TrackNameButton button = null;
+
+						if (!panelTrackDisplay.Controls.ContainsKey(track.Name))
+						{
+							display = new TrackKeyDisplay();
+							display.Name = track.Name;
+							panelTrackDisplay.Controls.Add(display);
+							display.Location = new Point(0, height);
+							display.Track = track;
+							display.OwnerForm = this;
+							display.MouseDown += new MouseEventHandler(display_MouseDown);
+							display.Height = rows * 32;
+
+							button = new TrackNameButton();
+							button.Name = track.Name;
+							panelTrackNames.Controls.Add(button);
+							button.TrackName = track.Name;
+							if (DropIn.CurrentTrack == track)
+								button.Selected = true;
+							button.Location = new Point(0, height + 2);
+							button.MouseDown += new MouseEventHandler(button_MouseDown);
+						}
+						else
+						{
+							display = panelTrackDisplay.Controls[track.Name] as TrackKeyDisplay;
+							display.Location = new Point(-panelTrackDisplay.AutoScrollOffset.X, height);
+							display.Height = rows * 32;
+							display.Refresh();
+
+							button = panelTrackNames.Controls[track.Name] as TrackNameButton;
+							button.Location = new Point(-panelTrackDisplay.AutoScrollOffset.X, height + 2);
+							button.Refresh();
+						}
+
+						if ((track.KeyCount > 0) || (checkShowAll.Checked))
+						{
+							button.Visible = true;
+							display.Visible = true;
+							if (maxFrames > 1024)
+								display.Width = 1024 * 32 + 8;
+							else
+								display.Width = maxFrames * 32 + 8;
+							//display.Width - button.Width;
+							maxWidth = MathUtility.Min(maxWidth, display.Width);
+							height += display.Height;
+						}
+						else
+						{
+							display.Visible = false;
+							button.Visible = false;
+						}
+					}
+
+					panelTrackDisplay.AutoScroll = true;					
+					panelTrackDisplay.AutoScrollMinSize = new Size(maxWidth, height);
+					panelTrackDisplay.AutoScrollPosition = new Point(-lastOffset.X, -lastOffset.Y);
+				}
+			}
+			catch (Exception ex)
+			{
+				Dialogs.UI.ErrorBox(this, "Error refreshing track listing.", ex);
+			}
+		}
+
+		/// <summary>
+		/// Handles the MouseDown event of the button control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
+		private void button_MouseDown(object sender, MouseEventArgs e)
+		{
+			TrackNameButton button = sender as TrackNameButton;
+
+			if (button != null)
+			{
+				if (string.Compare(button.Name, comboTrack.Text, true) != 0)
+					comboTrack.Text = button.Name;
+
+				if (panelTrackNames.Controls.ContainsKey(comboTrack.Text))
+				{
+					button.Selected = true;
+					foreach (TrackNameButton otherButtons in panelTrackNames.Controls)
+					{
+						if (otherButtons != button)
+							otherButtons.Selected = false;							
+					}
+				}
+			}			
+		}
+
+		/// <summary>
+		/// Handles the Scroll event of the panelTrackDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.ScrollEventArgs"/> instance containing the event data.</param>
+		private void panelTrackDisplay_Scroll(object sender, ScrollEventArgs e)
+		{
+			panelTrackDisplay.Invalidate(true);
+			panelTrackNames.ScrollControls(new Point(0, -panelTrackDisplay.AutoScrollPosition.Y));
+		}
+
+		/// <summary>
+		/// Handles the Resize event of the panelTrackNames control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void panelTrackNames_Resize(object sender, EventArgs e)
+		{
+			panelTrackNames.ScrollControls(new Point(0, -panelTrackDisplay.AutoScrollPosition.Y));
+		}
+
+		/// <summary>
+		/// Handles the MouseDown event of the display control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
+		private void display_MouseDown(object sender, MouseEventArgs e)
+		{
+			TrackKeyDisplay display = sender as TrackKeyDisplay;
+
+			if (display != null)
+			{
+				if (string.Compare(display.Name, comboTrack.Text, true) != 0)
+					comboTrack.Text = display.Name;
+
+				if (panelTrackNames.Controls.ContainsKey(comboTrack.Text))
+				{
+					foreach (TrackNameButton button in panelTrackNames.Controls)
+					{
+						if (button.TrackName != comboTrack.Text)
+							button.Selected = false;
+						else
+							button.Selected = true;
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -357,6 +587,25 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				UI.ErrorBox(this, "Unable to save the animation window settings.",ex);
 			}
+		}		
+
+		/// <summary>
+		/// Function to show the track/key viewer.
+		/// </summary>
+		public void ShowViewer()
+		{
+			splitTrackView.Panel2Collapsed = !splitTrackView.Panel2Collapsed;
+			Settings.Root = "AnimationEditor";
+			Settings.SetSetting("TrackViewCollapsed", splitTrackView.Panel2Collapsed.ToString());
+			Settings.Root = null;
+		}
+
+		/// <summary>
+		/// Function to refresh the track viewer.
+		/// </summary>
+		public void RefreshTrackView()
+		{
+			UpdateTrackView();
 		}
 
 		/// <summary>
@@ -369,7 +618,7 @@ namespace GorgonLibrary.Graphics.Tools
 
 			_noevent = true;
 
-			frame = (Decimal)((time / 1000.0f) * _animation.FrameRate);
+			frame = MathUtility.RoundInt((time / 1000.0f) * _animation.FrameRate);
 			if (frame > numericTrackFrames.Maximum)
 				frame = numericTrackFrames.Maximum;
 			trackTrack.Value = (int)frame;
@@ -399,7 +648,12 @@ namespace GorgonLibrary.Graphics.Tools
 				Width = Convert.ToInt32(Settings.GetSetting("Width", "700"));
 				Height = Convert.ToInt32(Settings.GetSetting("Height", "480"));
 			}
+
+			splitTrackView.Panel2Collapsed = Convert.ToBoolean(Settings.GetSetting("TrackViewCollapsed", "false"));
+			checkShowAll.Checked = Convert.ToBoolean(Settings.GetSetting("ShowAllTracks", "true"));
+			
 			Settings.Root = null;
+
 		}		
 		#endregion
 
