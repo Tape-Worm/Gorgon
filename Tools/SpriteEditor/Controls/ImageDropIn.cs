@@ -66,7 +66,7 @@ namespace GorgonLibrary.Graphics.Tools
 			if (listFrames.SelectedIndices.Count < 1)
 				return;
 
-			spriteName = listFrames.SelectedIndices[0].ToString();
+			spriteName = listFrames.SelectedItems[0].Name;
 			if (Editor.Sprites.Contains(spriteName))
 				_selectedSprite = Editor.Sprites[spriteName];
 			ValidateForm();
@@ -295,12 +295,12 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <summary>
 		/// Function to set the current key.
 		/// </summary>
-		protected override void SetKeyFrame()
+		protected override void SetKeyFrameImpl()
 		{
 			string spriteName = string.Empty;			// Selected frame sprite name.
 			KeyImage key = null;						// Key that we're editing/creating.
 
-			base.SetKeyFrame();
+			base.SetKeyFrameImpl();
 
 			if (_selectedSprite == null)
 				return;

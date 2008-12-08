@@ -284,6 +284,13 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Indicator {
+            get {
+                object obj = ResourceManager.GetObject("Indicator", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap key1_add {
             get {
                 object obj = ResourceManager.GetObject("key1_add", resourceCulture);
@@ -294,6 +301,13 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
         internal static System.Drawing.Bitmap key1_delete {
             get {
                 object obj = ResourceManager.GetObject("key1_delete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap key1_preferences {
+            get {
+                object obj = ResourceManager.GetObject("key1_preferences", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -441,6 +455,13 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
         internal static System.Drawing.Bitmap updown {
             get {
                 object obj = ResourceManager.GetObject("updown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap window_view {
+            get {
+                object obj = ResourceManager.GetObject("window_view", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -54,6 +54,7 @@ namespace GorgonLibrary.Graphics.Tools
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.labelBlue = new System.Windows.Forms.Label();
 			this.numericB = new System.Windows.Forms.NumericUpDown();
 			this.labelGreen = new System.Windows.Forms.Label();
@@ -64,6 +65,8 @@ namespace GorgonLibrary.Graphics.Tools
 			this.numericA = new System.Windows.Forms.NumericUpDown();
 			this.pictureColor = new System.Windows.Forms.PictureBox();
 			this.buttonSelectColor = new System.Windows.Forms.Button();
+			this.checkAutoKey = new System.Windows.Forms.CheckBox();
+			this.tipInfo = new System.Windows.Forms.ToolTip(this.components);
 			this.containerAnimation.ContentPanel.SuspendLayout();
 			this.containerAnimation.SuspendLayout();
 			this.splitAnimation.Panel1.SuspendLayout();
@@ -89,6 +92,7 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			// splitAnimation.Panel2
 			// 
+			this.splitAnimation.Panel2.Controls.Add(this.checkAutoKey);
 			this.splitAnimation.Panel2.Controls.Add(this.buttonSelectColor);
 			this.splitAnimation.Panel2.Controls.Add(this.labelBlue);
 			this.splitAnimation.Panel2.Controls.Add(this.numericB);
@@ -198,9 +202,9 @@ namespace GorgonLibrary.Graphics.Tools
 			// 
 			this.pictureColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.pictureColor.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.TransGridBack1;
-			this.pictureColor.Location = new System.Drawing.Point(312, 6);
+			this.pictureColor.Location = new System.Drawing.Point(330, 6);
 			this.pictureColor.Name = "pictureColor";
-			this.pictureColor.Size = new System.Drawing.Size(311, 67);
+			this.pictureColor.Size = new System.Drawing.Size(293, 67);
 			this.pictureColor.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.pictureColor.TabIndex = 12;
 			this.pictureColor.TabStop = false;
@@ -214,8 +218,24 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonSelectColor.Name = "buttonSelectColor";
 			this.buttonSelectColor.Size = new System.Drawing.Size(29, 23);
 			this.buttonSelectColor.TabIndex = 4;
+			this.tipInfo.SetToolTip(this.buttonSelectColor, "Select a color.  A key will be created automatically if the auto-key button is se" +
+					"lected.");
 			this.buttonSelectColor.UseVisualStyleBackColor = true;
 			this.buttonSelectColor.Click += new System.EventHandler(this.buttonSelectColor_Click);
+			// 
+			// checkAutoKey
+			// 
+			this.checkAutoKey.Appearance = System.Windows.Forms.Appearance.Button;
+			this.checkAutoKey.Checked = true;
+			this.checkAutoKey.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkAutoKey.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.key1_preferences;
+			this.checkAutoKey.Location = new System.Drawing.Point(282, 31);
+			this.checkAutoKey.Name = "checkAutoKey";
+			this.checkAutoKey.Size = new System.Drawing.Size(29, 23);
+			this.checkAutoKey.TabIndex = 21;
+			this.tipInfo.SetToolTip(this.checkAutoKey, "Auto-create the key after using the color selector button.");
+			this.checkAutoKey.UseVisualStyleBackColor = true;
+			this.checkAutoKey.Click += new System.EventHandler(this.checkAutoKey_Click);
 			// 
 			// ColorDropIn
 			// 
@@ -249,5 +269,7 @@ namespace GorgonLibrary.Graphics.Tools
 		private System.Windows.Forms.NumericUpDown numericA;
 		private System.Windows.Forms.PictureBox pictureColor;
 		private System.Windows.Forms.Button buttonSelectColor;
+		private System.Windows.Forms.CheckBox checkAutoKey;
+		private System.Windows.Forms.ToolTip tipInfo;
 	}
 }
