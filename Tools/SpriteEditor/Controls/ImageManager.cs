@@ -77,6 +77,378 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 
 		#region Methods.
 		/// <summary>
+		/// Handles the SplitterMoved event of the splitImageList control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="T:System.Windows.Forms.SplitterEventArgs"/> instance containing the event data.</param>
+		private void splitImageList_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			if (Gorgon.IsInitialized)
+				Gorgon.Go();
+		}
+
+		/// <summary>
+		/// Handles the SelectedIndexChanged event of the listImages control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+		private void listImages_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			GetSelectedImage();
+			ValidateForm();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonEditImage control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+		private void buttonEditImage_Click(object sender, EventArgs e)
+		{
+			string imageName = string.Empty;		// Image file name.
+			ProcessStartInfo startInfo;				// Process start info.
+			Image editImage = null;					// Edit image.
+			DateTime originalTime;                  // Original file time.
+			DateTime updateTime;                    // Last update time.
+
+			try
+			{
+				Cursor.Current = Cursors.WaitCursor;
+				// Get the image filename.
+				editImage = ImageCache.Images[listImages.SelectedItems[0].Name];
+				imageName = Path.GetFullPath(editImage.Filename);
+
+				if (!File.Exists(_imageEditorPath))
+				{
+					UI.ErrorBox(MainForm, "Unable to locate the image editor at '" + _imageEditorPath + "'.");
+					return;
+				}
+
+				if (!File.Exists(imageName))
+				{
+					UI.ErrorBox(MainForm, "Unable to locate the image at the specified location '" + imageName + "'.");
+					return;
+				}
+
+				updateTime = originalTime = File.GetLastWriteTimeUtc(imageName);
+				startInfo = new ProcessStartInfo("\"" + _imageEditorPath + "\"");
+				startInfo.Arguments = "\"" + imageName + "\"";
+				startInfo.WorkingDirectory = Path.GetDirectoryName(imageName);
+				Process.Start(startInfo).WaitForExit();
+
+				// Reload this image.
+				if (editImage != null)
+				{
+					updateTime = File.GetLastWriteTimeUtc(imageName);
+					if (updateTime > originalTime)
+					{
+						// Destroy the previous image.
+						editImage.Dispose();
+
+						// Re-load it.
+						editImage = Image.FromFile(imageName);
+
+						// Reassociate with the sprites.
+						foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
+						{
+							if (string.Compare(sprite.Sprite.Image.Name, editImage.Name) == 0)
+								sprite.BoundImage = editImage;
+						}
+					}
+				}
+
+				// Refresh the image.
+				listImages.SelectedItems[0].SubItems[1].Text = editImage.Width + "x" + editImage.Height;
+				listImages.SelectedItems[0].SubItems[2].Text = editImage.Format.ToString();
+				GetSelectedImage();
+			}
+			catch (Win32Exception wEx)
+			{
+				UI.ErrorBox(MainForm, "Unable to edit the selected image '" + imageName + "'.", wEx);
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(MainForm, "Unable to edit the selected image '" + imageName + "'.", ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonRemoveImages control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+		private void buttonRemoveImages_Click(object sender, EventArgs e)
+		{
+			ConfirmationResult result;		// Confirmation result.
+
+			try
+			{
+				if (UI.ConfirmBox(MainForm, "Are you sure you wish to remove the selected images?") == ConfirmationResult.No)
+					return;
+
+				Cursor.Current = Cursors.WaitCursor;
+
+				foreach (ListViewItem item in listImages.SelectedItems)
+				{
+					result = ConfirmationResult.None;
+
+					// Unbind image from any loaded sprites.
+					foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
+					{
+						Image image = ImageCache.Images[item.Name];		// Current image.
+
+						if (image == sprite.Sprite.Image)
+						{
+							if ((result & ConfirmationResult.ToAll) == 0)
+								result = UI.ConfirmBox(MainForm, "The image '" + item.Name + "' is bound to the sprite '" + sprite.Name + "'.  It cannot be removed unless the sprite is unbound.\nRemove the binding to the sprite?", true, true);
+
+							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
+							{
+								sprite.Bind(null);
+								MainForm.SpriteManager.RefreshList();
+							}
+
+							// Exit.
+							if (result == ConfirmationResult.Cancel)
+								return;
+						}
+					}
+
+					if (((result & ConfirmationResult.Yes) == ConfirmationResult.Yes) || (result == ConfirmationResult.None))
+						ImageCache.Images[item.Name].Dispose();
+
+				}
+
+				RefreshList();
+				GetSelectedImage();
+
+				// Update the status.
+				MainForm.ProjectChanged = true;
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(MainForm, "There was an error attempting to remove the selected image(s).", ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the SplitterMoving event of the splitImageList control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.SplitterCancelEventArgs"/> instance containing the event data.</param>
+		private void splitImageList_SplitterMoving(object sender, SplitterCancelEventArgs e)
+		{
+			if (Gorgon.IsInitialized)
+				Gorgon.Stop();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonExtractSprites control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonExtractSprites_Click(object sender, EventArgs e)
+		{
+			formSpriteExtractOptions extract = null;				// Sprite extraction interface.
+			Drawing.RectangleF[] rectangles = null;					// Rectangle list.
+			SpriteDocumentList spriteDocs = null;					// Sprite documents.
+			SpriteDocument sprite = null;							// Sprite.
+			int counter = 0;										// Sprite counter.
+			string spriteName = string.Empty;						// Sprite name.
+			ConfirmationResult result = ConfirmationResult.None;	// Dialog result.
+
+			try
+			{
+				extract = new formSpriteExtractOptions();
+				extract.GetSettings();
+
+				// Get sprite documents.
+				spriteDocs = MainForm.SpriteManager.Sprites;
+
+				// Begin extraction.
+				if (extract.ShowDialog(MainForm) == DialogResult.OK)
+				{
+					System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+					// Extract from all selected images.
+					foreach (ListViewItem item in listImages.SelectedItems)
+					{
+						// Send the image to the finder.
+						extract.Finder.GetGDIImage(ImageCache.Images[item.Name]);
+
+						// Get sprite rectangles.
+						rectangles = extract.Finder.GetRectangles();
+
+						// Begin sprite creation.
+						foreach (Drawing.RectangleF rectangle in rectangles)
+						{
+							spriteName = extract.Prefix + counter.ToString();
+
+							// If a sprite exists with this name, then ask to overwrite it.
+							while (spriteDocs.Contains(spriteName))
+							{
+								if ((result & ConfirmationResult.ToAll) == 0)
+									result = UI.ConfirmBox(MainForm, "The sprite '" + spriteName + "' already exists.  Replace it?", false, true);
+
+								if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
+									spriteDocs.Remove(spriteName);
+								else
+									spriteName += "." + counter.ToString();
+							}
+
+							sprite = spriteDocs.Create(spriteName, ImageCache.Images[item.Name]);
+							sprite.SetRegion(rectangle);
+							counter++;
+						}
+					}
+
+					MainForm.SpriteManager.RefreshList();
+				}
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", ex);
+			}
+			finally
+			{
+				if (extract != null)
+					extract.Dispose();
+
+				extract = null;
+				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonRefresh control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonRefresh_Click(object sender, EventArgs e)
+		{
+			Image image = null;		// Image to refresh.
+
+			try
+			{
+				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+
+				// Go through each image and re-load from disk.
+				foreach (ListViewItem item in listImages.SelectedItems)
+				{
+					image = ImageCache.Images[item.Name];
+					if ((image != null) && (File.Exists(image.Filename)))
+					{
+						// Re-load the image.
+						image.Dispose();
+						image = Image.FromFile(image.Filename);
+
+						// Reassociate with the sprites.
+						foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
+						{
+							if (string.Compare(sprite.Sprite.Image.Name, image.Name) == 0)
+								sprite.BoundImage = image;
+						}
+					}
+					else
+						UI.ErrorBox(MainForm, "The image '" + item.Name + "' does not exist.");
+				}
+
+				GetSelectedImage();
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(MainForm, "Unable to refresh the selected images.", ex);
+			}
+			finally
+			{
+				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonGridExtract control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonGridExtract_Click(object sender, EventArgs e)
+		{
+			formSpriteGridExtractOptions extract = null;			// Sprite grid extraction interface.
+			Drawing.RectangleF[] rectangles = null;					// Rectangle list.
+			SpriteDocumentList spriteDocs = null;					// Sprite documents.
+			SpriteDocument sprite = null;							// Sprite.
+			int counter = 0;										// Sprite counter.
+			string spriteName = string.Empty;						// Sprite name.
+			ConfirmationResult result = ConfirmationResult.None;	// Dialog result.
+
+			try
+			{
+				extract = new formSpriteGridExtractOptions();
+				extract.GetSettings();
+
+				// Get sprite documents.
+				spriteDocs = MainForm.SpriteManager.Sprites;
+
+				// Begin extraction.
+				if (extract.ShowDialog(MainForm) == DialogResult.OK)
+				{
+					System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+					// Extract from all selected images.
+					foreach (ListViewItem item in listImages.SelectedItems)
+					{
+						// Send the image to the finder.
+						extract.Finder.GetGDIImage(ImageCache.Images[item.Name]);
+
+						// Get sprite rectangles.
+						rectangles = extract.Finder.GetGridRectangles();
+
+						// Begin sprite creation.
+						foreach (Drawing.RectangleF rectangle in rectangles)
+						{
+							spriteName = extract.Prefix + counter.ToString();
+
+							// If a sprite exists with this name, then ask to overwrite it.
+							while (spriteDocs.Contains(spriteName))
+							{
+								if ((result & ConfirmationResult.ToAll) == 0)
+									result = UI.ConfirmBox(MainForm, "The sprite '" + spriteName + "' already exists.  Replace it?", false, true);
+
+								if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
+									spriteDocs.Remove(spriteName);
+								else
+									spriteName += "." + counter.ToString();
+							}
+
+							sprite = spriteDocs.Create(spriteName, ImageCache.Images[item.Name]);
+							sprite.SetRegion(rectangle);
+							counter++;
+						}
+					}
+
+					MainForm.SpriteManager.RefreshList();
+				}
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", ex);
+			}
+			finally
+			{
+				if (extract != null)
+					extract.Dispose();
+
+				extract = null;
+				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Function to retrieve the selected image.
 		/// </summary>
 		private void GetSelectedImage()
@@ -411,377 +783,5 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 			InitializeComponent();
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the SplitterMoved event of the splitImageList control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="T:System.Windows.Forms.SplitterEventArgs"/> instance containing the event data.</param>
-		private void splitImageList_SplitterMoved(object sender, SplitterEventArgs e)
-		{
-			if (Gorgon.IsInitialized)
-				Gorgon.Go();
-		}
-
-		/// <summary>
-		/// Handles the SelectedIndexChanged event of the listImages control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
-		private void listImages_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			GetSelectedImage();
-			ValidateForm();
-		}
-
-		/// <summary>
-		/// Handles the Click event of the buttonEditImage control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
-		private void buttonEditImage_Click(object sender, EventArgs e)
-		{
-			string imageName = string.Empty;		// Image file name.
-			ProcessStartInfo startInfo;				// Process start info.
-			Image editImage = null;					// Edit image.
-            DateTime originalTime;                  // Original file time.
-            DateTime updateTime;                    // Last update time.
-
-			try
-			{
-				Cursor.Current = Cursors.WaitCursor;
-				// Get the image filename.
-				editImage = ImageCache.Images[listImages.SelectedItems[0].Name];
-				imageName = Path.GetFullPath(editImage.Filename);
-
-				if (!File.Exists(_imageEditorPath))
-				{
-					UI.ErrorBox(MainForm, "Unable to locate the image editor at '" + _imageEditorPath + "'.");
-					return;
-				}
-
-				if (!File.Exists(imageName))
-				{
-					UI.ErrorBox(MainForm, "Unable to locate the image at the specified location '" + imageName + "'.");
-					return;
-				}
-
-                updateTime = originalTime = File.GetLastWriteTimeUtc(imageName);
-                startInfo = new ProcessStartInfo("\"" + _imageEditorPath + "\"");
-				startInfo.Arguments = "\"" + imageName + "\"";
-				startInfo.WorkingDirectory = Path.GetDirectoryName(imageName);
-				Process.Start(startInfo).WaitForExit();
-
-				// Reload this image.
-				if (editImage != null)
-				{
-                    updateTime = File.GetLastWriteTimeUtc(imageName);
-                    if (updateTime > originalTime)
-                    {
-                        // Destroy the previous image.
-                        editImage.Dispose();
-
-                        // Re-load it.
-                        editImage = Image.FromFile(imageName);
-
-                        // Reassociate with the sprites.
-                        foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
-                        {
-							if (string.Compare(sprite.Sprite.Image.Name, editImage.Name) == 0)
-								sprite.BoundImage = editImage;
-                        }
-                    }
-				}
-
-				// Refresh the image.
-				listImages.SelectedItems[0].SubItems[1].Text = editImage.Width + "x" + editImage.Height;
-				listImages.SelectedItems[0].SubItems[2].Text = editImage.Format.ToString();
-				GetSelectedImage();
-			}
-			catch (Win32Exception wEx)
-			{
-				UI.ErrorBox(MainForm, "Unable to edit the selected image '" + imageName + "'.", wEx);
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(MainForm, "Unable to edit the selected image '" + imageName + "'.", ex);
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-		}
-
-		/// <summary>
-		/// Handles the Click event of the buttonRemoveImages control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
-		private void buttonRemoveImages_Click(object sender, EventArgs e)
-		{
-			ConfirmationResult result;		// Confirmation result.
-
-			try
-			{
-				if (UI.ConfirmBox(MainForm, "Are you sure you wish to remove the selected images?") == ConfirmationResult.No)
-					return;
-
-				Cursor.Current = Cursors.WaitCursor;
-
-				foreach (ListViewItem item in listImages.SelectedItems)
-				{
-					result = ConfirmationResult.None;
-
-					// Unbind image from any loaded sprites.
-					foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
-					{
-						Image image = ImageCache.Images[item.Name];		// Current image.
-
-						if (image == sprite.Sprite.Image)
-						{
-							if ((result & ConfirmationResult.ToAll) == 0)
-								result = UI.ConfirmBox(MainForm, "The image '" + item.Name + "' is bound to the sprite '" + sprite.Name + "'.  It cannot be removed unless the sprite is unbound.\nRemove the binding to the sprite?", true, true);
-
-							if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-							{
-								sprite.Bind(null);
-								MainForm.SpriteManager.RefreshList();
-							}
-
-							// Exit.
-							if (result == ConfirmationResult.Cancel)
-								return;
-						}
-					}
-
-					if (((result & ConfirmationResult.Yes) == ConfirmationResult.Yes) || (result == ConfirmationResult.None))
-						ImageCache.Images[item.Name].Dispose();
-
-				}
-
-				RefreshList();
-				GetSelectedImage();
-
-				// Update the status.
-				MainForm.ProjectChanged = true;
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(MainForm, "There was an error attempting to remove the selected image(s).", ex);
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-		}
-
-		/// <summary>
-		/// Handles the SplitterMoving event of the splitImageList control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.Forms.SplitterCancelEventArgs"/> instance containing the event data.</param>
-		private void splitImageList_SplitterMoving(object sender, SplitterCancelEventArgs e)
-		{
-			if (Gorgon.IsInitialized)
-				Gorgon.Stop();
-		}
-
-		/// <summary>
-		/// Handles the Click event of the buttonExtractSprites control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonExtractSprites_Click(object sender, EventArgs e)
-		{
-			formSpriteExtractOptions extract = null;				// Sprite extraction interface.
-			Drawing.RectangleF[] rectangles = null;					// Rectangle list.
-			SpriteDocumentList spriteDocs = null;					// Sprite documents.
-			SpriteDocument sprite = null;							// Sprite.
-			int counter = 0;										// Sprite counter.
-			string spriteName = string.Empty;						// Sprite name.
-			ConfirmationResult result = ConfirmationResult.None;	// Dialog result.
-			
-			try
-			{
-				extract = new formSpriteExtractOptions();
-				extract.GetSettings();
-
-				// Get sprite documents.
-				spriteDocs = MainForm.SpriteManager.Sprites;
-
-				// Begin extraction.
-				if (extract.ShowDialog(MainForm) == DialogResult.OK)
-				{
-					System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-					// Extract from all selected images.
-					foreach (ListViewItem item in listImages.SelectedItems)
-					{
-						// Send the image to the finder.
-						extract.Finder.GetGDIImage(ImageCache.Images[item.Name]);
-
-						// Get sprite rectangles.
-						rectangles = extract.Finder.GetRectangles();
-
-						// Begin sprite creation.
-						foreach (Drawing.RectangleF rectangle in rectangles)
-						{
-							spriteName = extract.Prefix + counter.ToString();
-
-							// If a sprite exists with this name, then ask to overwrite it.
-							while (spriteDocs.Contains(spriteName))
-							{
-								if ((result & ConfirmationResult.ToAll) == 0)
-									result = UI.ConfirmBox(MainForm, "The sprite '" + spriteName + "' already exists.  Replace it?", false, true);
-
-								if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-									spriteDocs.Remove(spriteName);
-								else
-									spriteName += "." + counter.ToString();
-							}
-
-							sprite = spriteDocs.Create(spriteName, ImageCache.Images[item.Name]);
-							sprite.SetRegion(rectangle);
-							counter++;
-						}
-					}
-
-					MainForm.SpriteManager.RefreshList();
-				}
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", ex);
-			}
-			finally
-			{
-				if (extract != null)
-					extract.Dispose();
-
-				extract = null;
-				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-			}
-		}
-
-		/// <summary>
-		/// Handles the Click event of the buttonRefresh control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonRefresh_Click(object sender, EventArgs e)
-		{
-			Image image = null;		// Image to refresh.
-
-			try
-			{
-				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-
-				// Go through each image and re-load from disk.
-				foreach (ListViewItem item in listImages.SelectedItems)
-				{
-					image = ImageCache.Images[item.Name];
-					if ((image != null) && (File.Exists(image.Filename)))
-					{
-						// Re-load the image.
-						image.Dispose();
-						image = Image.FromFile(image.Filename);
-
-						// Reassociate with the sprites.
-						foreach (SpriteDocument sprite in MainForm.SpriteManager.Sprites)
-						{
-							if (string.Compare(sprite.Sprite.Image.Name, image.Name) == 0)
-								sprite.BoundImage = image;
-						}
-					}
-					else
-						UI.ErrorBox(MainForm, "The image '" + item.Name + "' does not exist.");
-				}
-
-				GetSelectedImage();
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(MainForm, "Unable to refresh the selected images.", ex);
-			}
-			finally
-			{
-				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-			}
-		}
-
-		/// <summary>
-		/// Handles the Click event of the buttonGridExtract control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonGridExtract_Click(object sender, EventArgs e)
-		{
-			formSpriteGridExtractOptions extract = null;			// Sprite grid extraction interface.
-			Drawing.RectangleF[] rectangles = null;					// Rectangle list.
-			SpriteDocumentList spriteDocs = null;					// Sprite documents.
-			SpriteDocument sprite = null;							// Sprite.
-			int counter = 0;										// Sprite counter.
-			string spriteName = string.Empty;						// Sprite name.
-			ConfirmationResult result = ConfirmationResult.None;	// Dialog result.
-
-			try
-			{
-				extract = new formSpriteGridExtractOptions();
-				extract.GetSettings();
-
-				// Get sprite documents.
-				spriteDocs = MainForm.SpriteManager.Sprites;
-
-				// Begin extraction.
-				if (extract.ShowDialog(MainForm) == DialogResult.OK)
-				{
-					System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-					// Extract from all selected images.
-					foreach (ListViewItem item in listImages.SelectedItems)
-					{
-						// Send the image to the finder.
-						extract.Finder.GetGDIImage(ImageCache.Images[item.Name]);
-
-						// Get sprite rectangles.
-						rectangles = extract.Finder.GetGridRectangles();
-
-						// Begin sprite creation.
-						foreach (Drawing.RectangleF rectangle in rectangles)
-						{
-							spriteName = extract.Prefix + counter.ToString();
-
-							// If a sprite exists with this name, then ask to overwrite it.
-							while (spriteDocs.Contains(spriteName))
-							{
-								if ((result & ConfirmationResult.ToAll) == 0)
-									result = UI.ConfirmBox(MainForm, "The sprite '" + spriteName + "' already exists.  Replace it?", false, true);
-
-								if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-									spriteDocs.Remove(spriteName);
-								else
-									spriteName += "." + counter.ToString();
-							}
-
-							sprite = spriteDocs.Create(spriteName, ImageCache.Images[item.Name]);
-							sprite.SetRegion(rectangle);
-							counter++;
-						}
-					}
-
-					MainForm.SpriteManager.RefreshList();
-				}
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(MainForm, "Unable to extract the sprites from the selected image(s).", ex);
-			}
-			finally
-			{
-				if (extract != null)
-					extract.Dispose();
-
-				extract = null;
-				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-			}
-		}
 	}
 }
