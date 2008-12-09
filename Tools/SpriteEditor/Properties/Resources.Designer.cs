@@ -221,6 +221,13 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap element_copy {
+            get {
+                object obj = ResourceManager.GetObject("element_copy", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap extract_grid {
             get {
                 object obj = ResourceManager.GetObject("extract_grid", resourceCulture);
@@ -455,6 +462,13 @@ namespace GorgonLibrary.Graphics.Tools.Properties {
         internal static System.Drawing.Bitmap updown {
             get {
                 object obj = ResourceManager.GetObject("updown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap view {
+            get {
+                object obj = ResourceManager.GetObject("view", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

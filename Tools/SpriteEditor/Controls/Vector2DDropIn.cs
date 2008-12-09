@@ -72,11 +72,44 @@ namespace GorgonLibrary.Graphics.Tools
 						numericY.Value = (Decimal)currentFrame.Value.Y;
 					}
 				}
+				else
+					InheritValues();
 			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to inherit values from the image frame if one exists.
+		/// </summary>
+		private void InheritValues()
+		{
+			if ((CurrentTrack.KeyCount == 0) && (CurrentTrack.Owner.Tracks["Image"].KeyCount > 0))
+			{
+				KeyImage image = CurrentTrack.Owner.Tracks["Image"][CurrentTime] as KeyImage;
+				if (image != null)
+				{
+					switch (CurrentTrack.Name.ToLower())
+					{
+						case "imageoffset":
+							numericX.Value = (Decimal)image.ImageOffset.X;
+							numericY.Value = (Decimal)image.ImageOffset.Y;
+							break;
+						case "size":
+							numericX.Value = (Decimal)image.ImageSize.X;
+							numericY.Value = (Decimal)image.ImageSize.Y;
+							break;
+						case "width":
+							numericX.Value = (Decimal)image.ImageSize.X;
+							break;
+						case "height":
+							numericY.Value = (Decimal)image.ImageSize.Y;
+							break;
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Handles the MouseDown event of the panelRender control.
 		/// </summary>
@@ -209,6 +242,33 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			_currentValue.X = (float)numericX.Value;
 			_currentValue.Y = (float)numericY.Value;
+		}
+
+		/// <summary>
+		/// Function to cut a frame.
+		/// </summary>
+		protected override void CutFrame()
+		{
+			base.CutFrame();			
+			InheritValues();
+		}
+
+		/// <summary>
+		/// Function to remove a key frame.
+		/// </summary>
+		protected override void RemoveKeyFrame()
+		{
+			base.RemoveKeyFrame();
+			InheritValues();
+		}
+
+		/// <summary>
+		/// Function to clear all the key frames.
+		/// </summary>
+		protected override void ClearKeyFrames()
+		{
+			base.ClearKeyFrames();
+			InheritValues();			
 		}
 
 		/// <summary>
