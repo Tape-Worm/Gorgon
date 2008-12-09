@@ -306,16 +306,6 @@ namespace GorgonLibrary.Graphics.Tools
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void panelKeyList_MouseClick(object sender, MouseEventArgs e)
 		{
-			for (int i = 0; i < _keyBoxes.Count; i++)
-			{
-				if (_keyBoxes[i].Box.Contains(e.Location))
-				{
-					OwnerForm.SetTime(_keyBoxes[i].KeyTime);
-					OwnerForm.DropIn.CurrentTime = _keyBoxes[i].KeyTime;
-					break;
-				}
-			}
-
 			OnMouseClick(e);
 		}
 
@@ -327,6 +317,22 @@ namespace GorgonLibrary.Graphics.Tools
 		private void panelKeyList_MouseDown(object sender, MouseEventArgs e)
 		{
 			OnMouseDown(e);
+
+			if (_keyBoxes.Count == 0)
+			{
+				panelKeyList.Invalidate();
+				Application.DoEvents();
+			}
+
+			for (int i = 0; i < _keyBoxes.Count; i++)
+			{
+				if (_keyBoxes[i].Box.Contains(e.Location))
+				{
+					OwnerForm.SetTime(_keyBoxes[i].KeyTime);
+					OwnerForm.DropIn.CurrentTime = _keyBoxes[i].KeyTime;
+					break;
+				}
+			}
 		}
 
 		/// <summary>

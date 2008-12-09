@@ -108,6 +108,14 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseWheel"/> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs"/> that contains the event data.</param>
+		protected override void OnMouseWheel(MouseEventArgs e)
+		{
+		}
+
+		/// <summary>
 		/// Function to find and scroll to the specified control.
 		/// </summary>
 		/// <param name="control">Control to scroll to.</param>
