@@ -176,6 +176,12 @@
     <Compile Include="formAnimationEditor.Designer.cs">
       <DependentUpon>formAnimationEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="formBackImageEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formBackImageEdit.Designer.cs">
+      <DependentUpon>formBackImageEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="formListAll.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -318,6 +324,9 @@
     <EmbeddedResource Include="formAnimationEditor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>formAnimationEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formBackImageEdit.resx">
+      <DependentUpon>formBackImageEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formListAll.resx">
       <SubType>Designer</SubType>

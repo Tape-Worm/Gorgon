@@ -51,6 +51,33 @@ namespace GorgonLibrary.Graphics.Tools
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return the background image size.
+		/// </summary>
+		public Vector2D ImageSize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the image location offset.
+		/// </summary>
+		public Vector2D ImageLocation
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the image to use as a background.
+		/// </summary>
+		public Image ImageBackground
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
 		/// Property to return the current drop-in.
 		/// </summary>
 		public AnimationDropIn DropIn
@@ -173,15 +200,7 @@ namespace GorgonLibrary.Graphics.Tools
 			comboTrack.Items.Clear();
 			if (_animation.Tracks.Count > 0)
 			{
-				// Only add the width & height track if we have no image keys.
-				// This is an ugly hack, but it'll do for the time being.
-				// TODO: Consider putting an exclusion attribute on the properties.
-				var tracks = from track in _animation.Tracks
-							 where ((_animation.Tracks["Image"].KeyCount > 0) && (string.Compare(track.Name, "height", true) != 0) 
-									&& (string.Compare(track.Name, "width", true) != 0) && (string.Compare(track.Name, "size", true) != 0)) 
-									|| (_animation.Tracks["Image"].KeyCount == 0)
-							 select track;
-				foreach (Track track in tracks)
+				foreach (Track track in _animation.Tracks)
 					comboTrack.Items.Add(track.Name);
 			}
 		}
@@ -304,7 +323,7 @@ namespace GorgonLibrary.Graphics.Tools
 							break;
 					}
 				}
-
+								
 				UpdateTrackView();
 			}
 			catch (Exception ex)
@@ -371,12 +390,9 @@ namespace GorgonLibrary.Graphics.Tools
 				if (_animation.Tracks.Count > 0)
 				{
 
-					var tracks = from track in _animation.Tracks
-								 where ((_animation.Tracks["Image"].KeyCount > 0) && (string.Compare(track.Name, "height", true) != 0)
-										&& (string.Compare(track.Name, "width", true) != 0) && (string.Compare(track.Name, "size", true) != 0))
-										|| (_animation.Tracks["Image"].KeyCount == 0)
-								 select track;
+					bool hasImageKeys = _animation.Tracks["Image"].KeyCount > 0;
 
+					panelTrackNames.ResetScroll();
 					Point lastOffset = panelTrackDisplay.AutoScrollPosition;
 					panelTrackDisplay.AutoScroll = false;
 					panelTrackDisplay.AutoScrollMinSize = new Size(3, 3);
@@ -392,8 +408,7 @@ namespace GorgonLibrary.Graphics.Tools
 					if (rows < 1)
 						rows = 1;
 
-					panelTrackNames.ResetScroll();
-					foreach (Track track in tracks)
+					foreach (Track track in _animation.Tracks)
 					{
 						TrackKeyDisplay display = null;
 						TrackNameButton button = null;
@@ -452,6 +467,7 @@ namespace GorgonLibrary.Graphics.Tools
 					panelTrackDisplay.AutoScroll = true;					
 					panelTrackDisplay.AutoScrollMinSize = new Size(maxWidth, height);
 					panelTrackDisplay.AutoScrollPosition = new Point(-lastOffset.X, -lastOffset.Y);
+					panelTrackDisplay_Scroll(this, new ScrollEventArgs(ScrollEventType.First, 0));
 				}
 			}
 			catch (Exception ex)
@@ -482,6 +498,8 @@ namespace GorgonLibrary.Graphics.Tools
 						if (otherButtons != button)
 							otherButtons.Selected = false;							
 					}
+					panelTrackNames.ResetScroll();
+					panelTrackDisplay_Scroll(this, new ScrollEventArgs(ScrollEventType.First, 0));
 				}
 			}			
 		}
@@ -530,6 +548,8 @@ namespace GorgonLibrary.Graphics.Tools
 						else
 							button.Selected = true;
 					}
+					panelTrackNames.ResetScroll();
+					panelTrackDisplay_Scroll(this, new ScrollEventArgs(ScrollEventType.First, 0));
 				}
 			}
 		}

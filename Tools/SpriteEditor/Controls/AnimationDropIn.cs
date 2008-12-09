@@ -58,6 +58,8 @@ namespace GorgonLibrary.Graphics.Tools
 		private bool _showBoundingBox = false;					// Flag to show a bounding box around the sprite.
 		private bool _showBoundingCircle = false;				// Flagt o show a bounding circle around the sprite.
 		private Drawing.Color _axisColor = Drawing.Color.Red;	// Axis color.
+		private Vector2D _originalSize = Vector2D.Zero;			// Original size for the sprite.
+		private Vector2D _originalStart = Vector2D.Zero;		// Original image location start for the sprite.
 		#endregion
 
 		#region Properties.		
@@ -455,6 +457,14 @@ namespace GorgonLibrary.Graphics.Tools
 
 			_display.Clear(_backgroundColor);
 
+			if (Editor.ImageBackground != null)
+			{
+				if (Editor.ImageSize == Vector2D.Zero)
+					Editor.ImageBackground.Blit(Editor.ImageLocation.X, Editor.ImageLocation.Y);
+				else
+					Editor.ImageBackground.Blit(Editor.ImageLocation.X, Editor.ImageLocation.Y, Editor.ImageSize.X, Editor.ImageSize.Y);
+			}
+
 			// Only display if the key count is valid.
 			Sprite.Sprite.Position = Vector2D.Subtract(Vector2D.Add(new Vector2D(_display.Width / 2.0f, _display.Height / 2.0f), Sprite.Sprite.Axis), new Vector2D(Sprite.Sprite.Width / 2.0f, Sprite.Sprite.Height / 2.0f));
 			Sprite.Sprite.Draw();
@@ -577,16 +587,24 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			try
 			{
-				_copiedFrame = CurrentTrack[CurrentTime].Clone();
-				CurrentTrack.Remove(CurrentTime);
-				ValidateForm();
-				if (Editor != null)
-					Editor.RefreshTrackView();
+				CutFrame();
 			}
 			catch (Exception ex)
 			{
 				UI.ErrorBox(this.ParentForm, "Error trying to cut the frame.", ex);
 			}
+		}
+
+		/// <summary>
+		/// Function to cut a frame.
+		/// </summary>
+		protected virtual void CutFrame()
+		{
+			_copiedFrame = CurrentTrack[CurrentTime].Clone();
+			CurrentTrack.Remove(CurrentTime);
+			ValidateForm();
+			if (Editor != null)
+				Editor.RefreshTrackView();
 		}
 
 		/// <summary>
@@ -625,6 +643,118 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Handles the Click event of the menuitemOffset control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void menuitemOffset_Click(object sender, EventArgs e)
+		{
+			formBackImageEdit edit = null;
+
+			try
+			{
+				edit = new formBackImageEdit();
+				edit.Text = "Update background offset.";
+				edit.labelImageData.Text = "Offset:";
+				edit.numericX.Value = (Decimal)Editor.ImageLocation.X;
+				edit.numericY.Value = (Decimal)Editor.ImageLocation.Y;
+				if (edit.ShowDialog(Editor) == DialogResult.OK)
+					Editor.ImageLocation = new Vector2D((float)edit.numericX.Value, (float)edit.numericY.Value);
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(Editor, ex);
+			}
+			finally
+			{
+				if (edit != null)
+					edit.Dispose();
+				edit = null;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the menuitemClearImage control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void menuitemClearImage_Click(object sender, EventArgs e)
+		{
+			Editor.ImageBackground = null;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the menuitemStretchImage control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void menuitemStretchImage_Click(object sender, EventArgs e)
+		{
+			formBackImageEdit edit = null;
+
+			try
+			{
+				edit = new formBackImageEdit();
+				edit.Text = "Update background size.";
+				edit.labelImageData.Text = "Size:";
+				if (Editor.ImageSize != Vector2D.Zero)
+				{
+					edit.numericX.Value = (Decimal)Editor.ImageSize.X;
+					edit.numericY.Value = (Decimal)Editor.ImageSize.Y;
+				}
+				else
+				{
+					edit.numericX.Value = (Decimal)Editor.ImageBackground.Width;
+					edit.numericY.Value = (Decimal)Editor.ImageBackground.Height;
+				}
+				if (edit.ShowDialog(Editor) == DialogResult.OK)
+					Editor.ImageSize = new Vector2D((float)edit.numericX.Value, (float)edit.numericY.Value);
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(Editor, ex);
+			}
+			finally
+			{
+				if (edit != null)
+					edit.Dispose();
+				edit = null;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the menuItemLoadImage control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void menuItemLoadImage_Click(object sender, EventArgs e)
+		{
+			formImageManager imageManager = null;
+
+			try
+			{
+				imageManager = new formImageManager(formMain.Me);
+				imageManager.StartPosition = FormStartPosition.CenterParent;
+				imageManager.ShowDialog(Editor);
+				formMain.Me.ImageManager.RefreshList();
+				Editor.ImageBackground = imageManager.ImageManager.SelectedImage;
+				Editor.ImageLocation = Vector2D.Zero;
+				Editor.ImageSize = Vector2D.Zero;
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(Editor, ex);
+			}
+			finally
+			{
+				if (imageManager != null)
+					imageManager.Dispose();
+				imageManager = null;
+				ValidateForm();
+			}
+		}
+
+		/// <summary>
 		/// Function to validate the form.
 		/// </summary>
 		protected virtual void ValidateForm()
@@ -643,6 +773,9 @@ namespace GorgonLibrary.Graphics.Tools
 			buttonPasteFrame.Enabled = false;
 			buttonPlayOther.Enabled = false;
 			buttonViewTracks.Enabled = false;
+			menuitemClearImage.Enabled = false;
+			menuitemOffset.Enabled = false;
+			menuitemStretchImage.Enabled = false;
 
 			if (_animation == null)
 				return;
@@ -693,6 +826,13 @@ namespace GorgonLibrary.Graphics.Tools
 
 			if (CurrentTrack.KeyCount > 0)
 				_keyIndex = CurrentTrack.IndexOfKey(CurrentTime);
+
+			if (Editor.ImageBackground != null)
+			{
+				menuitemClearImage.Enabled = true;
+				menuitemOffset.Enabled = true;
+				menuitemStretchImage.Enabled = true;
+			}
 		}
 
 		/// <summary>
@@ -762,14 +902,12 @@ namespace GorgonLibrary.Graphics.Tools
 				case "alphamaskvalue":
 					Sprite.Sprite.AlphaMaskValue = 0;
 					break;
-				case "size":
-					Sprite.Sprite.Size = new Vector2D(Sprite.Sprite.Image.Width, Sprite.Sprite.Image.Height);
-					break;
 				case "axis":
 					Sprite.Sprite.Axis = Vector2D.Zero;
 					break;
 				case "imageoffset":
-					Sprite.Sprite.ImageOffset = Vector2D.Zero;
+					if (_animation.Tracks["Image"].KeyCount == 0)
+						Sprite.Sprite.ImageOffset = _originalStart;
 					break;
 				case "position":
 					Sprite.Sprite.Position = Vector2D.Zero;
@@ -783,11 +921,17 @@ namespace GorgonLibrary.Graphics.Tools
 				case "opacity":
 					Sprite.Sprite.Opacity = 255;
 					break;
+				case "size":
+					if (_animation.Tracks["Image"].KeyCount == 0)
+						Sprite.Sprite.Size = _originalSize;
+					break;
 				case "width":
-					Sprite.Sprite.Width = Sprite.Sprite.Image.Width;
+					if (_animation.Tracks["Image"].KeyCount == 0)
+						Sprite.Sprite.Width = _originalSize.X;
 					break;
 				case "height":
-					Sprite.Sprite.Height = Sprite.Sprite.Image.Height;
+					if (_animation.Tracks["Image"].KeyCount == 0)
+						Sprite.Sprite.Height = _originalSize.Y;
 					break;
 			}
 		}
@@ -826,6 +970,8 @@ namespace GorgonLibrary.Graphics.Tools
 				_owner.Sprite.Position = Vector2D.Zero;
 				_owner.Sprite.Rotation = 0.0f;
 				_owner.Sprite.UniformScale = 1.0f;
+				_originalSize = _owner.Size;
+				_originalStart = _owner.ImageLocation;
 				_keyIndex = 0;
 				_animation.AnimationStopped += new EventHandler(_animation_AnimationStopped);
 				_animation.AnimationState = AnimationState.Playing;
@@ -903,22 +1049,5 @@ namespace GorgonLibrary.Graphics.Tools
 			IsEmpty = true;
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the Click event of the buttonViewTracks control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonViewTracks_Click(object sender, EventArgs e)
-		{
-			try
-			{
-				_editor.ShowViewer();
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(ParentForm, "Error viewing tracks/keys.", ex);
-			}
-		}
 	}
 }

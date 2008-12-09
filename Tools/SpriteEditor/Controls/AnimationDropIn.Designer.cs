@@ -84,6 +84,12 @@ namespace GorgonLibrary.Graphics.Tools
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonPlayOther = new System.Windows.Forms.ToolStripButton();
 			this.buttonViewTracks = new System.Windows.Forms.ToolStripButton();
+			this.dropdownImage = new System.Windows.Forms.ToolStripDropDownButton();
+			this.menuItemLoadImage = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuitemClearImage = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuitemStretchImage = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuitemOffset = new System.Windows.Forms.ToolStripMenuItem();
 			this.containerAnimation.ContentPanel.SuspendLayout();
 			this.containerAnimation.TopToolStripPanel.SuspendLayout();
 			this.containerAnimation.SuspendLayout();
@@ -167,7 +173,8 @@ namespace GorgonLibrary.Graphics.Tools
             this.buttonStop,
             this.toolStripSeparator5,
             this.buttonPlayOther,
-            this.buttonViewTracks});
+            this.buttonViewTracks,
+            this.dropdownImage});
 			this.stripAnimation.Location = new System.Drawing.Point(0, 0);
 			this.stripAnimation.Name = "stripAnimation";
 			this.stripAnimation.Size = new System.Drawing.Size(629, 25);
@@ -353,7 +360,61 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonViewTracks.Name = "buttonViewTracks";
 			this.buttonViewTracks.Size = new System.Drawing.Size(23, 22);
 			this.buttonViewTracks.Text = "View all tracks/keys";
-			this.buttonViewTracks.Click += new System.EventHandler(this.buttonViewTracks_Click);
+			// 
+			// dropdownImage
+			// 
+			this.dropdownImage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.dropdownImage.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemLoadImage,
+            this.menuitemClearImage,
+            this.toolStripSeparator6,
+            this.menuitemStretchImage,
+            this.menuitemOffset});
+			this.dropdownImage.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.photo_scenery;
+			this.dropdownImage.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.dropdownImage.Name = "dropdownImage";
+			this.dropdownImage.Size = new System.Drawing.Size(29, 22);
+			this.dropdownImage.Text = "Background image options";
+			// 
+			// menuItemLoadImage
+			// 
+			this.menuItemLoadImage.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.photo_scenery;
+			this.menuItemLoadImage.Name = "menuItemLoadImage";
+			this.menuItemLoadImage.Size = new System.Drawing.Size(212, 22);
+			this.menuItemLoadImage.Text = "&Load background image...";
+			this.menuItemLoadImage.Click += new System.EventHandler(this.menuItemLoadImage_Click);
+			// 
+			// menuitemClearImage
+			// 
+			this.menuitemClearImage.Enabled = false;
+			this.menuitemClearImage.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.delete2;
+			this.menuitemClearImage.Name = "menuitemClearImage";
+			this.menuitemClearImage.Size = new System.Drawing.Size(212, 22);
+			this.menuitemClearImage.Text = "Clear background image";
+			this.menuitemClearImage.Click += new System.EventHandler(this.menuitemClearImage_Click);
+			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(209, 6);
+			// 
+			// menuitemStretchImage
+			// 
+			this.menuitemStretchImage.Enabled = false;
+			this.menuitemStretchImage.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.view;
+			this.menuitemStretchImage.Name = "menuitemStretchImage";
+			this.menuitemStretchImage.Size = new System.Drawing.Size(212, 22);
+			this.menuitemStretchImage.Text = "Stretch to size...";
+			this.menuitemStretchImage.Click += new System.EventHandler(this.menuitemStretchImage_Click);
+			// 
+			// menuitemOffset
+			// 
+			this.menuitemOffset.Enabled = false;
+			this.menuitemOffset.Image = global::GorgonLibrary.Graphics.Tools.Properties.Resources.element_copy;
+			this.menuitemOffset.Name = "menuitemOffset";
+			this.menuitemOffset.Size = new System.Drawing.Size(212, 22);
+			this.menuitemOffset.Text = "Offset...";
+			this.menuitemOffset.Click += new System.EventHandler(this.menuitemOffset_Click);
 			// 
 			// AnimationDropIn
 			// 
@@ -400,5 +461,11 @@ namespace GorgonLibrary.Graphics.Tools
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripButton buttonPlayOther;
 		private System.Windows.Forms.ToolStripButton buttonViewTracks;
+		private System.Windows.Forms.ToolStripDropDownButton dropdownImage;
+		private System.Windows.Forms.ToolStripMenuItem menuItemLoadImage;
+		private System.Windows.Forms.ToolStripMenuItem menuitemClearImage;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripMenuItem menuitemStretchImage;
+		private System.Windows.Forms.ToolStripMenuItem menuitemOffset;
 	}
 }
