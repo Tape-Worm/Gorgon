@@ -360,6 +360,7 @@ namespace GorgonLibrary.Graphics.Tools
 			this.buttonViewTracks.Name = "buttonViewTracks";
 			this.buttonViewTracks.Size = new System.Drawing.Size(23, 22);
 			this.buttonViewTracks.Text = "View all tracks/keys";
+			this.buttonViewTracks.Click += new System.EventHandler(this.buttonViewTracks_Click);
 			// 
 			// dropdownImage
 			// 
