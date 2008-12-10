@@ -723,6 +723,16 @@ namespace GorgonLibrary.Graphics.Tools
 		}
 
 		/// <summary>
+		/// Handles the Click event of the buttonViewTracks control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonViewTracks_Click(object sender, EventArgs e)
+		{
+			Editor.ShowViewer();
+		}
+
+		/// <summary>
 		/// Handles the Click event of the menuItemLoadImage control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
