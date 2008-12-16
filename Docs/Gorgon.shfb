@@ -71,7 +71,7 @@ But really, these are internal functions for use by Gorgon only.  They should ra
     <FeedbackEMailAddress>tape_worm@tape-worm.net</FeedbackEMailAddress>
     <FeedbackEMailLinkText />
     <HeaderText />
-    <FooterText>Gorgon v1.1.3246.24958</FooterText>
+    <FooterText>Gorgon v1.1.3266.898</FooterText>
     <ProjectLinkType>Local</ProjectLinkType>
     <SdkLinkType>Msdn</SdkLinkType>
     <SdkLinkTarget>Self</SdkLinkTarget>
