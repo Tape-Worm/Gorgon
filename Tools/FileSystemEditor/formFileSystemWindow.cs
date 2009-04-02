@@ -247,7 +247,8 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// <param name="files">List of files to copy.</param>
 		/// <param name="destination">Folder to copy into.</param>
 		/// <param name="copyFolders">TRUE to copy the folders, FALSE to just copy files.</param>
-		private void CopyFiles(List<FileSystemFile> files, string destination, bool copyFolders)
+		/// <param name="copyFS">TRUE to copy the file system entirely, FALSE to copy selections.</param>
+		private void CopyFiles(List<FileSystemFile> files, string destination, bool copyFolders, bool copyFS)
 		{
 			Stream stream = null;
 			ConfirmationResult result = ConfirmationResult.None;
@@ -266,22 +267,26 @@ namespace GorgonLibrary.FileSystems.Tools
 					string fileName = destination + Path.DirectorySeparatorChar.ToString();
 					string directory = string.Empty;
 
-					if (copyFolders)
+					if ((copyFolders) || (copyFS))
 					{
 						string filePath = file.FullPath;
-						FileSystemPath fsPath = treePaths.SelectedNode.Tag as FileSystemPath;
+						FileSystemPath fsPath = null;
+						if (!copyFS)
+							fsPath = treePaths.SelectedNode.Tag as FileSystemPath;
+						else
+							fsPath = _fileSystem.Paths;
 
 						if (filePath.StartsWith(fsPath.FullPath, StringComparison.CurrentCultureIgnoreCase))
 							filePath = filePath.Substring(fsPath.FullPath.Length);
 
 						fileName += filePath;
 						directory = Path.GetDirectoryName(fileName);
+
+						if (!Directory.Exists(directory))
+							Directory.CreateDirectory(directory);
 					}
 					else
 						fileName += file.Name;
-
-					if (!Directory.Exists(directory))
-						Directory.CreateDirectory(directory);
 
 					if ((File.Exists(fileName)) && ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll))
 					{
@@ -324,7 +329,7 @@ namespace GorgonLibrary.FileSystems.Tools
 				dialogFolders.SelectedPath = _parentWindow.LastExportDirectory;
 				if (dialogFolders.ShowDialog() == DialogResult.OK)
 				{
-					if (sender == viewFiles)
+					if (sender == menuItemCopyToExplorer)
 					{
 						foreach (ListViewItem item in viewFiles.SelectedItems)
 							files.Add(item.Tag as FileSystemFile);
@@ -346,7 +351,7 @@ namespace GorgonLibrary.FileSystems.Tools
 						return;
 					}
 
-					CopyFiles(files, dialogFolders.SelectedPath, sender != viewFiles);
+					CopyFiles(files, dialogFolders.SelectedPath, sender != menuItemCopyToExplorer, sender == buttonCopyToExplorer);
 				}
 			}
 			catch (Exception ex)
