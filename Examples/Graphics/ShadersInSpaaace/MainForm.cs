@@ -91,13 +91,14 @@ namespace GorgonLibrary.Example
 			Vector2D pos = Vector2D.Zero;	// Position.
 
 			Gorgon.CurrentRenderTarget = _grainTarget;
-			_grainTarget.Clear(Drawing.Color.FromArgb((byte)_rnd.Next(32), 255, 255, 255));
+			_grainTarget.Clear(Drawing.Color.FromArgb((byte)_rnd.Next(32), 0, 0, 0));
+			
 			_grainTarget.BeginDrawing();
 			for (int i = 0; i < 25; i++)
 			{
 				c = (byte)_rnd.Next(255);
 
-				_grainTarget.SetPoint(_rnd.Next(_grainTarget.Width), _rnd.Next(_grainTarget.Height), Drawing.Color.FromArgb(c, c, c, c));
+				_grainTarget.SetPoint(_rnd.Next(_grainTarget.Width), _rnd.Next(_grainTarget.Height), Drawing.Color.FromArgb(255, c, c, c));
 
 				// Create random "hair" lines.
 				if (_rnd.Next(100) > 97)
@@ -109,7 +110,7 @@ namespace GorgonLibrary.Example
 					for (int j = 0; j < _rnd.Next(_grainTarget.Width / 4); j++)
 					{						
 						if (c > 0)
-							_grainTarget.SetPoint(pos.X + j, pos.Y, Drawing.Color.FromArgb(c, c, c, c));
+							_grainTarget.SetPoint(pos.X + j, pos.Y, Drawing.Color.FromArgb(255, c, c, c));
 						else
 							_grainTarget.SetPoint(pos.X + j, pos.Y, Drawing.Color.FromArgb(255, 0, 0, 0));
 						pos.Y += _rnd.Next(2) - 1;
@@ -117,7 +118,6 @@ namespace GorgonLibrary.Example
 				}
 			}
 			_grainTarget.EndDrawing();
-			Gorgon.CurrentRenderTarget = _finalBuffer;
 		}
 
 		/// <summary>
@@ -205,15 +205,15 @@ namespace GorgonLibrary.Example
 		/// <param name="e">The <see cref="GorgonLibrary.Graphics.FrameEventArgs"/> instance containing the event data.</param>
 		private void Gorgon_Idle(object sender, FrameEventArgs e)
 		{
-			Gorgon.Screen.Clear();
+			Gorgon.Screen.Clear(Drawing.Color.Black);
 			// Do nothing here.  When we need to update, we will.
-			Gorgon.CurrentRenderTarget = _finalBuffer;
-			Gorgon.CurrentRenderTarget.Clear();
+			_finalBuffer.Clear(Drawing.Color.Black);
+			Gorgon.CurrentRenderTarget = _finalBuffer;			
 
 			_backgroundImage.Blit(0, 0, Gorgon.Screen.Width, Gorgon.Screen.Height);
 			DrawCloakedShip(e.FrameDeltaTime);			
 
-			Gorgon.CurrentRenderTarget = null;
+			Gorgon.CurrentShader = null;
 
 			_scratchShader.Parameters["Timer"].SetValue((float)DateTime.Now.Millisecond * e.FrameDeltaTime);
 
@@ -223,11 +223,12 @@ namespace GorgonLibrary.Example
 				_offset.Y = (float)_rnd.Next(6) - 3;
 			}
 
-			if (_frameTimer.Milliseconds > 200)
+			if (_frameTimer.Milliseconds > 250)
 			{
 				DrawGrain();
 				_frameTimer.Reset();
 			}
+			Gorgon.CurrentRenderTarget = null;
 
 			_bufferSprite.Position = _offset;
 			Gorgon.CurrentShader = _scratchShader;
@@ -262,6 +263,7 @@ namespace GorgonLibrary.Example
 			_backTarget = new RenderImage("BackTarget", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8);
 			_finalBuffer = new RenderImage("FinalBuffer", Gorgon.Screen.Width, Gorgon.Screen.Height, ImageBufferFormats.BufferRGB888X8);
 			_grainTarget = new RenderImage("Grain", 512, 512, ImageBufferFormats.BufferRGB888A8);
+			_grainTarget.Clear(Drawing.Color.Black);
 
 			_grainSprite = new Sprite("GrainSprite", _grainTarget);
 			_grainSprite.BlendingMode = BlendingModes.Additive;

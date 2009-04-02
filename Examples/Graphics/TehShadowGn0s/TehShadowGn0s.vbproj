@@ -68,7 +68,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon, Version=1.1.3090.20323, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="Gorgon, Version=1.1.3266.898, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
     </Reference>
