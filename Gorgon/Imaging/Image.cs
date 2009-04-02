@@ -555,14 +555,23 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		///// <summary>
+		///// Function called when a texture is filled.
+		///// </summary>
+		///// <param name="textureCoordinate">Texture coordinate.</param>
+		///// <param name="textureSize">Size of the texel.</param>
+		//private DX.Vector4 ClearTextureCallback(DX.Vector2 textureCoordinate, DX.Vector2 textureSize)
+		//{
+		//    return new DX.Vector4(_fillColor.R, _fillColor.G, _fillColor.B, _fillColor.A);
+		//}
 		/// <summary>
 		/// Function called when a texture is filled.
 		/// </summary>
 		/// <param name="textureCoordinate">Texture coordinate.</param>
 		/// <param name="textureSize">Size of the texel.</param>
-		private DX.Vector4 ClearTextureCallback(DX.Vector2 textureCoordinate, DX.Vector2 textureSize)
+		private DX.Color4 ClearTextureCallback(DX.Vector2 textureCoordinate, DX.Vector2 textureSize)
 		{
-			return new DX.Vector4(_fillColor.R, _fillColor.G, _fillColor.B, _fillColor.A);
+			return new DX.Color4(_fillColor);
 		}
 
 		/// <summary>
@@ -1684,11 +1693,27 @@ namespace GorgonLibrary.Graphics
 				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
 					throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
+				// If we specified unknown for the buffer format, assume 32 bit.
+				if (format == ImageBufferFormats.BufferUnknown)
+				{
+					format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, _imageType);
+
+					if (!SupportsFormat(format, _imageType))
+						throw new GorgonException(GorgonErrors.InvalidFormat);
+				}
+				else
+				{
+					// Throw an exception if the format requested is not supported.
+					if (!SupportsFormat(format, _imageType))
+						throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
+				}
+
 				// Copy the texture data to a stream.
 				memoryImage = D3D9.Texture.ToStream(image.D3DTexture, D3D9.ImageFileFormat.Png);
+
 				try
 				{
-					_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
+					_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, (int)memoryImage.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
 				}
 				catch (Exception ex)
 				{
@@ -1854,7 +1879,7 @@ namespace GorgonLibrary.Graphics
 
 				try
 				{
-					_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
+					_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, (int)memoryImage.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
 				}
 				catch (Exception ex)
 				{
