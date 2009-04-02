@@ -51,7 +51,6 @@
       <HintPath>..\..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
     </Reference>
     <Reference Include="SlimDX, Version=2.0.7.41, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\assemblies\slimdx_mar09\Bin\x86\SlimDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
