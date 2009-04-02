@@ -91,7 +91,7 @@ namespace GorgonLibrary.Example
 			Vector2D pos = Vector2D.Zero;	// Position.
 
 			Gorgon.CurrentRenderTarget = _grainTarget;
-			_grainTarget.Clear(Drawing.Color.FromArgb((byte)_rnd.Next(32), 0, 0, 0));
+			_grainTarget.Clear(Drawing.Color.FromArgb((byte)_rnd.Next(32), 255, 255, 255));
 			
 			_grainTarget.BeginDrawing();
 			for (int i = 0; i < 25; i++)
