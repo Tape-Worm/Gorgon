@@ -652,8 +652,8 @@ namespace GorgonLibrary.FileSystems.Tools
 			this.buttonCopyToExplorer.Image = global::GorgonLibrary.FileSystems.Tools.Properties.Resources.folder_into;
 			this.buttonCopyToExplorer.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonCopyToExplorer.Name = "buttonCopyToExplorer";
-			this.buttonCopyToExplorer.Size = new System.Drawing.Size(147, 22);
-			this.buttonCopyToExplorer.Text = "Copy to external folder";
+			this.buttonCopyToExplorer.Size = new System.Drawing.Size(206, 22);
+			this.buttonCopyToExplorer.Text = "Copy file system to external folder";
 			this.buttonCopyToExplorer.ToolTipText = "Copies the contents of the file system to the harddrive.";
 			this.buttonCopyToExplorer.Click += new System.EventHandler(this.menuItemCopyToExplorer_Click);
 			// 
