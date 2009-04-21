@@ -124,11 +124,11 @@ namespace GorgonLibrary.Graphics
         BufferRGB555X1 = 36,
         /// <summary>12 bit color.</summary>
         BufferRGB444X4 = 37,
-        /// <summary>24 bit color.</summary>
+        /// <summary>32 bit color.</summary>
         BufferRGB888X8 = 38,
-        /// <summary>24 bit bumpmap.</summary>
+        /// <summary>32 bit bumpmap.</summary>
         BufferLVU888X8 = 39,
-        /// <summary>24 bit color (BGR).</summary>
+        /// <summary>32 bit color (BGR).</summary>
         BufferBGR888X8 = 40,
         /// <summary>4 bit bumpmap.</summary>
         BufferYUY2 = 41,
@@ -138,7 +138,7 @@ namespace GorgonLibrary.Graphics
         BufferA8L8 = 43,
         /// <summary>8 bit alpha, 8 bit indexed color.</summary>
         BufferA8P8 = 44,
-        /// <summary>32 bit color (GR), floating point.</summary>
+        /// <summary>64 bit color (GR), floating point.</summary>
         BufferGR3232F = 45,
         /// <summary>16 bit color.</summary>
         BufferRGB565 = 46

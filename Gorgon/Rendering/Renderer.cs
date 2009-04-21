@@ -497,12 +497,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to flip the backbuffer to the screen.
 		/// </summary>
-		public void Flip()
+		/// <param name="target">Target to page flip.</param>
+		public void Flip(RenderWindow target)
 		{
-			RenderWindow target = null;		// Current target.
-
 			if (Gorgon.Screen == null)
 				throw new GorgonException(GorgonErrors.NoDevice);
+
+			if (target == null)
+				target = Gorgon.Screen;
 
 			// Attempt to reset the device if it's in a lost state.
 			if (Gorgon.Screen.DeviceNotReset)
@@ -511,9 +513,7 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			target = Gorgon.CurrentRenderTarget as RenderWindow;
-
-			if ((target != null) && (target.D3DFlip() == D3D9.ResultCode.DeviceLost) && (!Gorgon.Screen.DeviceNotReset))
+			if ((target.D3DFlip() == D3D9.ResultCode.DeviceLost) && (!Gorgon.Screen.DeviceNotReset))
 				Gorgon.Screen.ResetLostDevice();
 		}
 
