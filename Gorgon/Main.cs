@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Linq;
 using Forms = System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Collections;
@@ -154,7 +155,7 @@ namespace GorgonLibrary
 		private static FrameEventArgs _frameEventArgs = null;			// Frame event arguments.
 		private static VideoMode _desktopVideoMode;						// Current video mode of the desktop.
 		private static SpriteStateCache _stateCache = null;				// Sprite state cache.
-		private static RenderTarget _currentTarget = null;				// Currently active render target.
+		private static RenderTarget[] _currentTarget = null;			// Currently active render target(s).
 		private static ClearTargets _clearTargets;						// Target buffers to clear.
 		private static Viewport _clippingView = null;					// Clipping viewport.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
@@ -408,7 +409,7 @@ namespace GorgonLibrary
 
 				// Reset the view to the current target view.
 				if (value == null)
-					value = _currentTarget.DefaultView;
+					value = _currentTarget[0].DefaultView;
 
 				// Don't bother to set the same clipping view.
 				if ((_clippingView == value) && (!_clippingView.Updated))
@@ -421,10 +422,10 @@ namespace GorgonLibrary
 				if (_currentDriver.SupportScissorTesting)
 				{
 					// Set the scissor rectangle.
-					if ((value == null) || (value == _currentTarget.DefaultView))
+					if ((value == null) || (value == _currentTarget[0].DefaultView))
 					{						
 						_renderer.RenderStates.ScissorTesting = false;
-						_clippingView = _currentTarget.DefaultView;
+						_clippingView = _currentTarget[0].DefaultView;
 					}
 					else
 					{
@@ -437,11 +438,11 @@ namespace GorgonLibrary
 				{
 					// If we don't support scissor testing, then we need to use the viewport
 					// to clip the screen.
-					if ((value == null) || (value == _currentTarget.DefaultView))
+					if ((value == null) || (value == _currentTarget[0].DefaultView))
 					{
-						_renderer.CurrentProjectionMatrix = _currentTarget.ProjectionMatrix;
-						_renderer.CurrentViewport = _currentTarget.DefaultView;
-						_clippingView = _currentTarget.DefaultView;
+						_renderer.CurrentProjectionMatrix = _currentTarget[0].ProjectionMatrix;
+						_renderer.CurrentViewport = _currentTarget[0].DefaultView;
+						_clippingView = _currentTarget[0].DefaultView;
 					}
 					else
 					{
@@ -477,8 +478,9 @@ namespace GorgonLibrary
 		/// <remarks>Use this to apply a shader to the rendering pass.  You can apply either a <see cref="GorgonLibrary.Graphics.Shader"/>, <see cref="GorgonLibrary.Graphics.ShaderTechnique"/> or a <see cref="GorgonLibrary.Graphics.ShaderPass"/>.  
 		/// When applying a shader there's a very small performance hit on the first pass of rendering as it attempts to locate the first valid shader technique.</remarks>
 		/// <value>A shader renderer output to apply to the scene when rendering.</value>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.
+		/// <para>Thrown when <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">Gorgon.SetMode()</see> has not been called.</para>
+		/// </exception>
 		public static IShaderRenderer CurrentShader
 		{
 			get
@@ -513,57 +515,21 @@ namespace GorgonLibrary
 		/// Set this property to NULL to continue drawing to the primary screen.</para>
 		/// 	<para>Please note that when the render target is switched the <see cref="GorgonLibrary.Gorgon.CurrentClippingViewport">clipping viewport</see> is reset to the size of the render target being assigned.</para>
 		/// </remarks>
-		/// <value>A render target to use as a canvas for drawing.  This can be a <see cref="GorgonLibrary.Graphics.RenderImage">RenderImage</see> or a <see cref="GorgonLibrary.Graphics.RenderWindow">RenderWindow</see>.</value>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode">Gorgon.SetMode()</see> has not been called.</exception>
+		/// <seealso cref="GorgonLibrary.Gorgon.SetAdditionalRenderTarget">SetAdditionalRenderTarget</seealso>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.<para>
+		/// Thrown when <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">Gorgon.SetMode()</see> has not been called.</para></exception>
 		public static RenderTarget CurrentRenderTarget
 		{
 			get
 			{
-				return _currentTarget;
+				return _currentTarget[0];
 			}
 			set
 			{
-				if (!IsInitialized)
-					throw new GorgonException(GorgonErrors.NotInitialized);
-
-				// No device?  Throw an exception.
-				if (Screen == null)
-					throw new GorgonException(GorgonErrors.NoDevice);
-
-				// If we specify NULL, then use the screen.
 				if (value == null)
 					value = Screen;
 
-				// Set render target if it's changed.
-				if (!Screen.DeviceNotReset)
-				{
-					if (_currentTarget != value)
-					{
-						// Flush the renderer.
-						_renderer.Render();
-
-						// Force scissor testing to off.
-						if ((_currentDriver.SupportScissorTesting) && (_renderer.RenderStates.ScissorTesting))
-							_renderer.RenderStates.ScissorTesting = false;
-
-						Screen.Device.SetRenderTarget(0, value.SurfaceBuffer);
-                        Screen.Device.DepthStencilSurface = value.DepthBuffer;
-
-						// Reset the active view.
-						_currentTarget = value;
-						_currentTarget.Refresh();
-
-						// Reset.
-						_renderer.CurrentViewport = _currentTarget.DefaultView;
-						_renderer.CurrentProjectionMatrix = _currentTarget.ProjectionMatrix;
-
-						// Change the clipper to the render target dimensions.
-						CurrentClippingViewport = _currentTarget.DefaultView;
-					}
-					else
-						_currentTarget = value;
-				}
+				SetAdditionalRenderTarget(0, value);
 			}
 		}
 
@@ -574,7 +540,7 @@ namespace GorgonLibrary
 		/// There is only one of these <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> objects active at any given time.  Other controls that have render targets use <see cref="GorgonLibrary.Graphics.RenderWindow">RenderWindow</see> objects.
 		/// <para>When the primary video mode bound to the control is closed, then all other render targets are automatically destroyed.</para>
 		/// </remarks>
-		/// <value>The primary rendering window or the "Screen".  This can be any control and is the primary render target that is setup during the <see cref="M:GorgonLibrary.Gorgon.SetMode">SetMode()</see> function.  As such, this is the initial render target when a video mode is set.</value>
+		/// <value>The primary rendering window or the "Screen".  This can be any control and is the primary render target that is setup during the <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">SetMode()</see> function.  As such, this is the initial render target when a video mode is set.</value>
 		public static PrimaryRenderWindow Screen
 		{
 			get;
@@ -732,6 +698,7 @@ namespace GorgonLibrary
 				// Recreate renderer.
 				_renderer = new Renderer();
 				_stateCache = new SpriteStateCache();
+				_currentTarget = new RenderTarget[_currentDriver.MaximumSimultaneousRenderTargets];				
 
 				Gorgon.Log.Print("Gorgon", "Driver changed to {0} ({1}).", LoggingLevel.Simple, value.Description, value.DriverName);
 
@@ -847,7 +814,11 @@ namespace GorgonLibrary
 
 						if ((Screen != null) && (_currentTarget != null))
 						{
-							_currentTarget.Update();
+							for (int i = 0; i < _currentTarget.Length; i++)
+							{
+								if (_currentTarget[i] != null)
+									_currentTarget[i].Update();
+							}
 
 							// Give up some time if we don't have focus and we're windowed.
 							if ((!Screen.OwnerForm.ContainsFocus) && (Screen.Windowed))
@@ -899,7 +870,9 @@ namespace GorgonLibrary
 			if (DeviceLost != null)
 				DeviceLost(_renderer, EventArgs.Empty);
 
-			_currentTarget = null;
+			for (int i = 0; i < _currentTarget.Length; i++)
+				_currentTarget[i] = null;
+
 			_clippingView = null;
 			DeviceStateList.DeviceWasLost();
 			_timer.Reset();
@@ -921,6 +894,96 @@ namespace GorgonLibrary
 				DeviceReset(_renderer, EventArgs.Empty);
 
 			Gorgon.Log.Print("Gorgon", "Device has been reset.", LoggingLevel.Intermediate);
+		}
+
+		/// <summary>
+		/// Function to determine if a render target is active.
+		/// </summary>
+		/// <param name="target">Target to check.</param>
+		/// <returns>TRUE if the render target is active, FALSE if not.</returns>
+		internal static bool IsRenderTargetActive(RenderTarget target)
+		{
+			return _currentTarget.Count(isTarget => target == isTarget) > 0;
+		}
+
+		/// <summary>
+		/// Function to set additional render targets.
+		/// </summary>
+		/// <param name="index">An index value from 0 to <see cref="GorgonLibrary.Driver.MaximumSimultaneousRenderTargets">Driver.MaximumSimultaneousRenderTargets</see>-1.</param>
+		/// <param name="target">A render target to bind to the index.</param>
+		/// <remarks>This will allow the user to set more than one render target at a time for simultaneous rendering.  Please note that using multiple render targets is only supported when
+		/// using shaders.
+		/// <para>An index of 0 will set the current primary render target which is identical to using <see cref="GorgonLibrary.Gorgon.CurrentRenderTarget">Gorgon.CurrentRenderTarget</see>.</para>
+		/// <para>There are some limitations to setting multiple render targets:  The render targets should have the same width and height.  They can use a different 
+		/// <see cref="GorgonLibrary.Graphics.ImageBufferFormats">image format</see> but the image formats of the targets must have the same bit count.  This restriction is lifted for 
+		/// devices that have <see cref="GorgonLibrary.Driver.SupportMRTIndependentBitDepths">Driver.SupportMRTIndepenedentBitDepths</see> set to true.</para>
+		/// <para>If <see cref="GorgonLibrary.Driver.SupportMRTPostPixelShaderBlending">Driver.SupportMRTPostPixelShaderBlending</see> is true then post pixel shader blending operations can 
+		/// be performed by the video card.  However, if it is supported, the render target must queried to see if it will support post pixel shader blending operations via 
+		/// the <see cref="GorgonLibrary.Graphics.RenderTarget.IsValidForMRTPostPixelShaderBlending">RenderTarget.IsValidForMRTPostPixelShaderBlending</see> property.</para>
+		/// <para>Passing NULL (Nothing in Visual Basic) with an index of 0 will set the render target to the <see cref="GorgonLibrary.Gorgon.Screen">Gorgon.Screen</see> render target.</para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize</see> has not been called, 
+		/// <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">Gorgon.SetMode</see> wasn't called or the target cannot be bound.</exception>
+		public static void SetAdditionalRenderTarget(int index, RenderTarget target)
+		{
+			if (!IsInitialized)
+				throw new GorgonException(GorgonErrors.NotInitialized);
+
+			// No device?  Throw an exception.
+			if (Screen == null)
+				throw new GorgonException(GorgonErrors.NoDevice);
+
+			if (index > _currentTarget.Length)
+				throw new GorgonException(GorgonErrors.CannotBindTarget, "The index of the target exceeds the maximum number of simultaneous render targets for the system (" + _currentDriver.MaximumSimultaneousRenderTargets.ToString() + ").");
+
+			if (index < 0)
+				throw new GorgonException(GorgonErrors.CannotBindTarget, "The index of the target must be greater than zero.");
+
+			if (!Screen.DeviceNotReset)
+			{
+				// Force a flush to the renderer.
+				if (index == 0)
+					_renderer.Render();
+
+				// Force scissor testing to off.
+				if ((_currentDriver.SupportScissorTesting) && (_renderer.RenderStates.ScissorTesting))
+					_renderer.RenderStates.ScissorTesting = false;
+
+				if ((index == 0) && (target == null))
+					target = Screen;
+
+				if (target != _currentTarget[index])
+				{
+					if (target != null)
+						Screen.Device.SetRenderTarget(index, target.SurfaceBuffer);
+					else
+						Screen.Device.SetRenderTarget(index, null);
+
+					if (index == 0)
+						Screen.Device.DepthStencilSurface = target.DepthBuffer;
+
+					if (target != null)
+						target.Refresh();
+					_currentTarget[index] = target;
+
+					// Reset the view ports.
+					_renderer.CurrentViewport = _currentTarget[0].DefaultView;
+					_renderer.CurrentProjectionMatrix = _currentTarget[0].ProjectionMatrix;
+
+					// Change the clipper to the render target dimensions.
+					CurrentClippingViewport = _currentTarget[0].DefaultView;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to return an additional render target from the active render target list.
+		/// </summary>
+		/// <param name="index">An index value from 0 to <see cref="GorgonLibrary.Driver.MaximumSimultaneousRenderTargets">Driver.MaximumSimultaneousRenderTargets</see>-1.</param>
+		/// <returns>The render target at the specified index.</returns>
+		public static RenderTarget GetAdditionalRenderTarget(int index)
+		{
+			return _currentTarget[index];
 		}
 
 		/// <summary>
@@ -1111,7 +1174,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>The application does not begin rendering right away when this function is called, it merely tells the library that the application is ready for rendering to begin when it's ready.</remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="M:GorgonLibrary.Gorgon.SetMode(Control)">SetMode()</see> has not been called.</exception>		
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">SetMode()</see> has not been called.</exception>		
 		public static void Go()
 		{
 			if (!IsInitialized)
@@ -1129,8 +1192,15 @@ namespace GorgonLibrary
 			// Reset all timers.
 			_timer.Reset();
 			FrameStats.Reset();
+
 			if (_currentTarget != null)
-				_currentTarget.Refresh();
+			{
+				for (int i = 0; i < _currentTarget.Length; i++)
+				{
+					if (_currentTarget[i] != null)
+						_currentTarget[i].Refresh();
+				}
+			}
 
 			Forms.Application.Idle += new EventHandler(Run);
 

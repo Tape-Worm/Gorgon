@@ -876,6 +876,28 @@ namespace GorgonLibrary
 				return _supportStencil;
 			}
 		}
+
+		/// <summary>
+		/// Property to return whether the device supports independent bit depths when rendering to multiple render targets.
+		/// </summary>
+		public bool SupportMRTIndependentBitDepths
+		{
+			get
+			{
+				return (_caps.PrimitiveMiscCaps & D3D9.PrimitiveMiscCaps.MrtIndependentBitDepths) == D3D9.PrimitiveMiscCaps.MrtIndependentBitDepths;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the device supports post pixel shader blending operations.
+		/// </summary>
+		public bool SupportMRTPostPixelShaderBlending
+		{
+			get
+			{
+				return (_caps.PrimitiveMiscCaps & D3D9.PrimitiveMiscCaps.MrtPostPixelShaderBlending) == D3D9.PrimitiveMiscCaps.MrtPostPixelShaderBlending;
+			}
+		}
 		#endregion
 
 		#region Methods.

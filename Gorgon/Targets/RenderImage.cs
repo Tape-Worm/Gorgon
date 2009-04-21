@@ -50,6 +50,23 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
+		/// Property to return whether this render target is valid for post pixel shader blending.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// If the driver supports post pixel shader blending of render targets (<see cref="GorgonLibrary.Driver.SupportMRTPostPixelShaderBlending">Driver.SupportMRTPostPixelShaderBlending</see> = True) 
+		/// then this property needs to be queried to find out if the particular render target can support post pixel shader blending.
+		/// </remarks>
+		public override bool IsValidForMRTPostPixelShaderBlending
+		{
+			get
+			{
+				return Gorgon.Direct3D.CheckDeviceFormat(Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, Converter.Convert(_format), 
+					D3D9.Usage.QueryPostPixelShaderBlending | D3D9.Usage.RenderTarget, D3D9.ResourceType.Surface, Converter.Convert(_format));
+			}
+		}
+
+		/// <summary>
 		/// Property to return the depth buffer format.
 		/// </summary>
 		public DepthBufferFormats DepthBufferFormat

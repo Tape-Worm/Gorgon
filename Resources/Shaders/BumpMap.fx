@@ -1,19 +1,23 @@
 float4x4 _projectionMatrix;
+float4x4 invWorldMatrix;
 
-float3 Position;
-float4 Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
-float Intensity = 1.0f;
-float SpecularIntensity = 64.0f;
-float4 Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
-float4 Ambient = float4(0.25f, 0.25f, 0.25f, 1.0f);
+#define MAX_LIGHTS 4
+
+float3 LightPosition[MAX_LIGHTS];
+float4 LightColor[MAX_LIGHTS];// = {float4(1.0f, 1.0f, 1.0f, 1.0f), float4(1.0f, 1.0f, 1.0f, 1.0f), float4(1.0f, 1.0f, 1.0f, 1.0f), float4(1.0f, 1.0f, 1.0f, 1.0f)};
+float4 LightAmbientColor[MAX_LIGHTS];// = {float4(0.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 0.0f, 0.0f, 1.0f)};
+float4 LightSpecularColor[MAX_LIGHTS];// = {float4(1.0f, 1.0f, 1.0f, 1.0f), float4(1.0f, 1.0f, 1.0f, 1.0f), float4(1.0f, 1.0f, 1.0f, 1.0f), float4(1.0f, 1.0f, 1.0f, 1.0f)};
+float LightIntensity[MAX_LIGHTS];// = {1.0f, 1.0f, 1.0f, 1.0f};
+float LightSpecular[MAX_LIGHTS];// = {65536.0f, 65536.0f, 65536.0f, 65536.0f};
 float4 GlobalAmbient = float4(0.25f, 0.25f, 0.25f, 1.0f);
-bool UseAdditiveLighting = false;
+bool LightEnabled[MAX_LIGHTS];
+bool LightSpecularEnabled[MAX_LIGHTS];
 
 float2 TextureSize;
 
 texture ColorMap;
 texture NormalMap;
-texture SpecMap;
+texture SpecularMap;
 
 sampler2D colorSampler = sampler_state 
 { 
@@ -25,9 +29,9 @@ sampler2D normalSampler = sampler_state
 	texture = <NormalMap>;
 };
 
-sampler2D specSampler = sampler_state
+sampler2D specularSampler = sampler_state
 {
-	texture = <SpecMap>;
+	texture = <SpecularMap>;
 };
 
 struct VTX
@@ -39,22 +43,33 @@ struct VTX
 
 float4 psBump(float2 coloruv : TEXCOORD0, float4 color : COLOR0) : COLOR0
 {
-	float4 tex = tex2D(colorSampler, coloruv);
+	float4 texDiffuse = tex2D(colorSampler, coloruv);
 	float3 normal = tex2D(normalSampler, coloruv) * 2.0f - 1.0f;	
-	float3 pixelPosition = float3(TextureSize.x * coloruv.x, TextureSize.y * coloruv.y, 0);                                  
-    float3 lightDir = (Position - pixelPosition);    
-	float lightAmount = max(dot(normal, normalize(lightDir)), 0) * Intensity;
-	float spec = pow(saturate(lightAmount), SpecularIntensity);
+	float3 pixelPosition = float3(TextureSize.x * coloruv.x, TextureSize.y * coloruv.y, 0);
+	float4 result = float4(0, 0, 0 , 1.0f);
+    float3 lightDir;
+	float lightAmount;
+	float specularAmount;
 	
-	float4 result;
-	if (!UseAdditiveLighting)
-		result = tex * color * lightAmount * Color;
-	else
-		result = tex + (color * lightAmount * Color);
-		
-	result += 2 * (tex2D(specSampler, coloruv) * Specular) * (spec * result);
-	result += (Ambient * GlobalAmbient);
-	result.a = tex.a;		
+	normal = mul(normal, invWorldMatrix).xyz;
+	
+	for (int i = 0; i < MAX_LIGHTS; i++)
+	{
+		if (LightEnabled[i])
+		{
+			lightDir = LightPosition[i] - pixelPosition;
+			lightAmount = max(dot(normal, normalize(lightDir)), 0) * LightIntensity[i];
+			specularAmount = pow(saturate(lightAmount), LightSpecular[i]);
+			
+			float4 diffuse = (texDiffuse * color * lightAmount * LightColor[i]);
+			result += diffuse;
+			if (LightSpecularEnabled[i])
+				result += 2.0f * (tex2D(specularSampler, coloruv) * LightSpecularColor[i]) * (specularAmount * diffuse);
+			result += (LightAmbientColor[i] * GlobalAmbient);		
+		}
+	}
+	
+	result.a = texDiffuse.a * color.a;		
 	return result;
 }
 
@@ -73,25 +88,7 @@ technique Bump
 {
 	pass P1
 	{	
-		MagFilter[0] = Point;
-		MinFilter[0] = Point;
-		MagFilter[1] = Point;
-		MinFilter[1] = Point;
-		VertexShader = compile vs_2_0 vsBump();
-		PixelShader = compile ps_2_0 psBump();
+		VertexShader = compile vs_3_0 vsBump();
+		PixelShader = compile ps_3_0 psBump();
 	}
 }
-
-technique BumpSmooth
-{
-	pass P1
-	{	
-		MagFilter[0] = Linear;
-		MinFilter[0] = Linear;
-		MagFilter[1] = Linear;
-		MinFilter[1] = Linear;
-		VertexShader = compile vs_2_0 vsBump();
-		PixelShader = compile ps_2_0 psBump();
-	}
-}
-
