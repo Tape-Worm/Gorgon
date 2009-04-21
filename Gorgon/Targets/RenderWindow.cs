@@ -74,6 +74,23 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return whether this render target is valid for post pixel shader blending.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// If the driver supports post pixel shader blending of render targets (<see cref="GorgonLibrary.Driver.SupportMRTPostPixelShaderBlending">Driver.SupportMRTPostPixelShaderBlending</see> = True)
+		/// then this property needs to be queried to find out if the particular render target can support post pixel shader blending.
+		/// </remarks>
+		public override bool IsValidForMRTPostPixelShaderBlending
+		{
+			get 
+			{
+				return Gorgon.Direct3D.CheckDeviceFormat(Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, Converter.Convert(_currentVideoMode.Format), 
+					D3D9.Usage.QueryPostPixelShaderBlending | D3D9.Usage.RenderTarget, D3D9.ResourceType.Surface, Converter.Convert(_currentVideoMode.Format));
+			}
+		}
+
+		/// <summary>
 		/// Property to return the presentation interval.
 		/// </summary>
 		public VSyncIntervals VSyncInterval
@@ -446,29 +463,14 @@ namespace GorgonLibrary.Graphics
 
 			UpdateDepthStencilFormat(UseStencilBuffer, UseDepthBuffer);
 		}
-			
+
 		/// <summary>
 		/// Function to render the scene for this target.
 		/// </summary>
 		public override void Update()
 		{
-			RenderTarget previousTarget = null;		// Previous render target.
-
 			Gorgon.Renderer.Render();
-
-			// Switch to the proper render target.
-			if ((Gorgon.CurrentRenderTarget != this) || ((Gorgon.CurrentRenderTarget == null) && (this == Gorgon.Screen)))
-			{
-				previousTarget = Gorgon.CurrentRenderTarget;
-				Gorgon.CurrentRenderTarget = this;
-			}
-
-			// Flip to front.
-			Gorgon.Renderer.Flip();
-
-			// Switch back to the previous target.
-			if (previousTarget != Gorgon.CurrentRenderTarget)
-				Gorgon.CurrentRenderTarget = previousTarget;
+			Gorgon.Renderer.Flip(this);
 		}
 
 		/// <summary>

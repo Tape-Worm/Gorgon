@@ -224,6 +224,17 @@ namespace GorgonLibrary
 				return new GorgonError("CannotBindInputDevice", ErrorBase + 0x10, "Error binding the input device.");
 			}
 		}
+
+		/// <summary>
+		/// Cannot bind render target(s).
+		/// </summary>
+		public static GorgonError CannotBindTarget
+		{
+			get
+			{
+				return new GorgonError("CannotBindTarget", ErrorBase + 0x11, "Cannot bind render target(s).");
+			}
+		}
 	}
 
 	/// <summary>

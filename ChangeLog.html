@@ -119,8 +119,12 @@
 
 <div>
 	<pre>
-April 2/2009 - Version - Current
+April 15/2009 - Version - Current
 ===============================================================================================
++ Added two new methods:  SetAdditionalRenderTarget and GetAdditionalRenderTarget.  These two
+  functions are in place to facilitate multiple render targets (MRT) when using shaders which
+  allows rendering in one pass to multiple destinations.
+  
 * Updated to use SlimDX Mar 09 release.  And modified changed code accordingly.  Worked around
   bug in SlimDX Texture.FromStream for Image files.
 

@@ -107,6 +107,18 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return whether this render target is valid for post pixel shader blending.
+		/// </summary>
+		/// <remarks>
+		/// If the driver supports post pixel shader blending of render targets (<see cref="GorgonLibrary.Driver.SupportMRTPostPixelShaderBlending">Driver.SupportMRTPostPixelShaderBlending</see> = True) 
+		/// then this property needs to be queried to find out if the particular render target can support post pixel shader blending.
+		/// </remarks>
+		public abstract bool IsValidForMRTPostPixelShaderBlending
+		{
+			get;
+		}
+				
+		/// <summary>
 		/// Property to set or return the color of the border when the wrapping mode is set to Border.
 		/// </summary>
 		public Drawing.Color BorderColor
@@ -477,14 +489,14 @@ namespace GorgonLibrary.Graphics
 			Gorgon.CurrentRenderTarget = _lastTarget;
 			_lastTarget = null;
 		}
-		
+
 		/// <summary>
 		/// Function to lock a layer so that we can begin drawing.
 		/// </summary>
 		public void BeginDrawing()
 		{
 			// This doesn't mean anything on the same render target.
-			if (Gorgon.CurrentRenderTarget == this)
+			if (Gorgon.IsRenderTargetActive(this))
 				return;
 
 			if (_lastTarget == null)
