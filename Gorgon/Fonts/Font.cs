@@ -28,8 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Reflection;
+using System.Resources;
 using Drawing = System.Drawing;
 using GorgonLibrary;
+using GorgonLibrary.FileSystems;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -520,6 +524,479 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to read the font from a stream.
+		/// </summary>
+		/// <param name="name">Name of the font to load.</param>
+		/// <param name="stream">Stream containing the font data.</param>
+		/// <param name="sizeInBytes">Size of the font in bytes.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <param name="italic">TRUE if the font is italicized, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">The <paramref name="sizeInBytes"/> parameter is too small.</exception>
+		public static Font FromStream(string name, Stream stream, int sizeInBytes, float fontSize, bool antiAliased, bool bold, bool underlined, bool italic)
+		{
+			IntPtr memPtr = IntPtr.Zero;						// Pointer to the font in memory.
+			byte[] buffer = null;								// Buffer holding our font.
+			Drawing.Text.PrivateFontCollection fonts = null;	// Our font collection.
+			Font result = null;									// Our gorgon font.
+			Drawing.FontFamily gdiFont = null;					// Font family.
+
+			if (stream == null)
+				throw new ArgumentNullException("stream");
+
+			if (sizeInBytes < 1)
+				throw new ArgumentOutOfRangeException("sizeInBytes", "Font data size is too small.");
+
+			try
+			{
+				buffer = new byte[sizeInBytes];
+				stream.Read(buffer, 0, sizeInBytes);
+				
+				memPtr = Marshal.AllocCoTaskMem(sizeInBytes);
+				Marshal.Copy(buffer, 0, memPtr, sizeInBytes);
+
+				fonts = new Drawing.Text.PrivateFontCollection();
+				fonts.AddMemoryFont(memPtr, sizeInBytes);
+
+				gdiFont = FontCache.AddGDIFontFromMemory(fonts.Families[0].Name, memPtr, sizeInBytes);
+				result = new Font(name, gdiFont, fontSize, antiAliased, bold, underlined, italic);
+			}
+			finally
+			{
+				if (fonts != null)
+					fonts.Dispose();
+				if (memPtr != IntPtr.Zero)
+					Marshal.FreeCoTaskMem(memPtr);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to read the font from a stream.
+		/// </summary>
+		/// <param name="name">Name of the font to load.</param>
+		/// <param name="stream">Stream containing the font data.</param>
+		/// <param name="sizeInBytes">Size of the font in bytes.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">The <paramref name="sizeInBytes"/> parameter is too small.</exception>
+		public static Font FromStream(string name, Stream stream, int sizeInBytes, float fontSize, bool antiAliased, bool bold, bool underlined)
+		{
+			return FromStream(name, stream, sizeInBytes, fontSize, antiAliased, bold, underlined, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a stream.
+		/// </summary>
+		/// <param name="name">Name of the font to load.</param>
+		/// <param name="stream">Stream containing the font data.</param>
+		/// <param name="sizeInBytes">Size of the font in bytes.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">The <paramref name="sizeInBytes"/> parameter is too small.</exception>
+		public static Font FromStream(string name, Stream stream, int sizeInBytes, float fontSize, bool antiAliased, bool bold)
+		{
+			return FromStream(name, stream, sizeInBytes, fontSize, antiAliased, bold, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a stream.
+		/// </summary>
+		/// <param name="name">Name of the font to load.</param>
+		/// <param name="stream">Stream containing the font data.</param>
+		/// <param name="sizeInBytes">Size of the font in bytes.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">The <paramref name="sizeInBytes"/> parameter is too small.</exception>
+		public static Font FromStream(string name, Stream stream, int sizeInBytes, float fontSize, bool antiAliased)
+		{
+			return FromStream(name, stream, sizeInBytes, fontSize, antiAliased, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a stream.
+		/// </summary>
+		/// <param name="name">Name of the font to load.</param>
+		/// <param name="stream">Stream containing the font data.</param>
+		/// <param name="sizeInBytes">Size of the font in bytes.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">The <paramref name="sizeInBytes"/> parameter is too small.</exception>
+		public static Font FromStream(string name, Stream stream, int sizeInBytes, float fontSize)
+		{
+			return FromStream(name, stream, sizeInBytes, fontSize, false, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a file.
+		/// </summary>
+		/// <param name="filename">Filename of the font to load.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <param name="italic">TRUE if the font is italicized, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL.</exception>
+		public static Font FromFile(string filename, float fontSize, bool antiAliased, bool bold, bool underlined, bool italic)
+		{
+			FileStream stream = null;			// File to read.
+			string name = string.Empty;			// Name of the font.
+
+			if (string.IsNullOrEmpty(filename))
+				throw new ArgumentNullException("filename");
+
+			try
+			{
+				name = Path.GetFileNameWithoutExtension(filename);
+				if (FontCache.Fonts.Contains(name))
+					name = Path.GetFileNameWithoutExtension(filename) + fontSize.ToString("0.0") + "pt";
+				stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+				return FromStream(name, stream, (int)stream.Length, fontSize, antiAliased, bold, underlined, italic);				
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Function to read the font from a file.
+		/// </summary>
+		/// <param name="filename">Filename of the font to load.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL.</exception>
+		public static Font FromFile(string filename, float fontSize, bool antiAliased, bool bold, bool underlined)
+		{
+			return FromFile(filename, fontSize, antiAliased, bold, underlined, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a file.
+		/// </summary>
+		/// <param name="filename">Filename of the font to load.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL.</exception>
+		public static Font FromFile(string filename, float fontSize, bool antiAliased, bool bold)
+		{
+			return FromFile(filename, fontSize, antiAliased, bold, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a file.
+		/// </summary>
+		/// <param name="filename">Filename of the font to load.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL.</exception>
+		public static Font FromFile(string filename, float fontSize, bool antiAliased)
+		{
+			return FromFile(filename, fontSize, antiAliased, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a file.
+		/// </summary>
+		/// <param name="filename">Filename of the font to load.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL.</exception>
+		public static Font FromFile(string filename, float fontSize)
+		{
+			return FromFile(filename, fontSize, false, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a file system.
+		/// </summary>
+		/// <param name="fileSystem">File system containing the font file to load.</param>
+		/// <param name="filename">Path and filename of the font.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <param name="italic">TRUE if the font is italicized, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL or <paramref name="fileSystem"/> is NULL.</exception>
+		public static Font FromFileSystem(FileSystem fileSystem, string filename, float fontSize, bool antiAliased, bool bold, bool underlined, bool italic)
+		{
+			MemoryStream stream = null;
+			string name = string.Empty;
+
+			if (fileSystem == null)
+				throw new ArgumentNullException("fileSystem");
+
+			if (string.IsNullOrEmpty(filename))
+				throw new ArgumentNullException("filename");
+
+			try
+			{
+				stream = new MemoryStream(fileSystem.ReadFile(filename));
+				return FromStream(fileSystem.FindFile(filename).Filename, stream, (int)stream.Length, fontSize, antiAliased, bold, underlined, italic);				
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Function to read the font from a file system.
+		/// </summary>
+		/// <param name="fileSystem">File system containing the font file to load.</param>
+		/// <param name="filename">Path and filename of the font.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL or <paramref name="fileSystem"/> is NULL.</exception>
+		public static Font FromFileSystem(FileSystem fileSystem, string filename, float fontSize, bool antiAliased, bool bold, bool underlined)
+		{
+			return FromFileSystem(fileSystem, filename, fontSize, antiAliased, bold, underlined, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a file system.
+		/// </summary>
+		/// <param name="fileSystem">File system containing the font file to load.</param>
+		/// <param name="filename">Path and filename of the font.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL or <paramref name="fileSystem"/> is NULL.</exception>
+		public static Font FromFileSystem(FileSystem fileSystem, string filename, float fontSize, bool antiAliased, bool bold)
+		{
+			return FromFileSystem(fileSystem, filename, fontSize, antiAliased, bold, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a file system.
+		/// </summary>
+		/// <param name="fileSystem">File system containing the font file to load.</param>
+		/// <param name="filename">Path and filename of the font.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL or <paramref name="fileSystem"/> is NULL.</exception>
+		public static Font FromFileSystem(FileSystem fileSystem, string filename, float fontSize, bool antiAliased)
+		{
+			return FromFileSystem(fileSystem, filename, fontSize, antiAliased, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from a file system.
+		/// </summary>
+		/// <param name="fileSystem">File system containing the font file to load.</param>
+		/// <param name="filename">Path and filename of the font.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="filename"/> is empty or NULL or <paramref name="fileSystem"/> is NULL.</exception>
+		public static Font FromFileSystem(FileSystem fileSystem, string filename, float fontSize)
+		{
+			return FromFileSystem(fileSystem, filename, fontSize, false, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="manager">Resource manager that contains the resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <param name="italic">TRUE if the font is italicized, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, ResourceManager manager, float fontSize, bool antiAliased, bool bold, bool underlined, bool italic)
+		{
+			MemoryStream stream = null;			
+			Assembly assembly = null;
+			byte[] fontData = null;
+
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name");
+
+			try
+			{
+				// Try to use the default manager.
+				if (manager == null)
+				{
+					assembly = Assembly.GetEntryAssembly();
+					manager = new ResourceManager(assembly.GetName().Name + ".Properties.Resources", assembly);
+				}
+
+				fontData = manager.GetObject(name) as byte[];
+
+				if (fontData == null)
+					throw new GorgonException(GorgonErrors.CannotReadData, "There is no font named '" + name + "' within the resource manifest of this assembly.");
+
+				stream = new MemoryStream(fontData);
+				return FromStream(name, stream, (int)stream.Length, fontSize, antiAliased, bold, underlined, italic);
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="manager">Resource manager that contains the resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, ResourceManager manager, float fontSize, bool antiAliased, bool bold, bool underlined)
+		{
+			return FromResource(name, manager, fontSize, antiAliased, bold, underlined, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="manager">Resource manager that contains the resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, ResourceManager manager, float fontSize, bool antiAliased, bool bold)
+		{
+			return FromResource(name, manager, fontSize, antiAliased, bold, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="manager">Resource manager that contains the resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, ResourceManager manager, float fontSize, bool antiAliased)
+		{
+			return FromResource(name, manager, fontSize, antiAliased, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="manager">Resource manager that contains the resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, ResourceManager manager, float fontSize)
+		{
+			return FromResource(name, manager, fontSize, false, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <param name="italic">TRUE if the font is italicized, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, float fontSize, bool antiAliased, bool bold, bool underlined, bool italic)
+		{
+			return FromResource(name, null, fontSize, antiAliased, bold, underlined, italic);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <param name="underlined">TRUE if the font should be underlined, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, float fontSize, bool antiAliased, bool bold, bool underlined)
+		{
+			return FromResource(name, null, fontSize, antiAliased, bold, underlined, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <param name="bold">TRUE if the font should be bold, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, float fontSize, bool antiAliased, bool bold)
+		{
+			return FromResource(name, null, fontSize, antiAliased, bold, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <param name="antiAliased">TRUE if the font should be anti-aliased, FALSE if not.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, float fontSize, bool antiAliased)
+		{
+			return FromResource(name, null, fontSize, antiAliased, false, false, false);
+		}
+
+		/// <summary>
+		/// Function to read the font from an embedded resource.
+		/// </summary>
+		/// <param name="name">Name of the font resource.</param>
+		/// <param name="fontSize">Point size of the font.</param>
+		/// <returns>A new font object based on the item in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> is empty or NULL.</exception>
+		public static Font FromResource(string name, float fontSize)
+		{
+			return FromResource(name, null, fontSize, false, false, false, false);
+		}
+
 		/// <summary>
 		/// Function to retrieve the width of a character.
 		/// </summary>

@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System.Drawing.Text;
 
 namespace GorgonLibrary.Graphics
 {
@@ -36,7 +38,8 @@ namespace GorgonLibrary.Graphics
 	public static class FontCache
 	{
 		#region Variables.
-		private static FontList _fonts = null;			// List of fonts.
+		private static FontList _fonts = null;							// List of fonts.
+		private static PrivateFontCollection _fontCollection;			// Private font collection for GDI fonts loaded from streams.
 		#endregion
 
 		#region Properties.
@@ -52,7 +55,37 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
+		/// <summary>
+		/// Function to add a GDI font to the internal private collection.
+		/// </summary>
+		/// <param name="familyName">Family name to load.</param>
+		/// <param name="fontPtr">Pointer to the font data.</param>
+		/// <param name="sizeInBytes">Size of the font in bytes.</param>
+		/// <returns>The font family contained within the pointer.</returns>
+		internal static System.Drawing.FontFamily AddGDIFontFromMemory(string familyName, IntPtr fontPtr, int sizeInBytes)
+		{
+			if (string.IsNullOrEmpty(familyName))
+				throw new ArgumentNullException("familyName");
+
+			if (fontPtr == IntPtr.Zero)
+				throw new ArgumentNullException("fontPtr");
+
+			if (sizeInBytes < 1)
+				throw new ArgumentOutOfRangeException("sizeInBytes", "The memory size is too small.");
+
+			if (_fontCollection == null)
+				_fontCollection = new PrivateFontCollection();
+
+			// If we already have this family loaded, then return it.
+			if (_fontCollection.Families.Count((family) => string.Compare(family.Name, familyName, true) == 0) > 0)
+				return _fontCollection.Families.Where((family) => string.Compare(family.Name, familyName, true) == 0).FirstOrDefault();
+
+			// Otherwise just add it.
+			_fontCollection.AddMemoryFont(fontPtr, sizeInBytes);
+			return _fontCollection.Families.Where((family) => string.Compare(family.Name, familyName, true) == 0).FirstOrDefault(); 
+		}
+
 		/// <summary>
 		/// Function to destroy all the loaded fonts.
 		/// </summary>
@@ -61,6 +94,10 @@ namespace GorgonLibrary.Graphics
 			// Destroy all the fonts.
 			while (_fonts.Count > 0)
 				_fonts[0].Dispose();
+
+			if (_fontCollection != null)
+				_fontCollection.Dispose();
+			_fontCollection = null;
 		}
 		#endregion
 
