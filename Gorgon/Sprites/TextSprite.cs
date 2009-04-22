@@ -710,22 +710,22 @@ namespace GorgonLibrary.Graphics
 			switch (_alignment)
 			{
 				case Alignment.UpperCenter:
-					calc = ((Bounds.Width / 2.0f) - (maxLineSize / 2.0f));
+					calc = (int)((Bounds.Width / 2.0f) - (maxLineSize / 2.0f));
 					x1 += calc;
 					x2 += calc;
 					break;
 				case Alignment.UpperRight:
-					calc = (Bounds.Width - maxLineSize);
+					calc = (int)(Bounds.Width - maxLineSize);
 					x1 += calc;
 					x2 += calc;
 					break;
 				case Alignment.Left:
-					calc = ((Bounds.Height / 2.0f) - (bounds.Height / 2.0f));
+					calc = (int)((Bounds.Height / 2.0f) - (bounds.Height / 2.0f));
 					y1 += calc;
 					y2 += calc;
 					break;
 				case Alignment.Right:
-					calc = (Bounds.Width - maxLineSize);
+					calc = (int)(Bounds.Width - maxLineSize);
 					x1 += calc;
 					x2 += calc;
 					calc = ((Bounds.Height / 2.0f) - (bounds.Height / 2.0f));
@@ -733,31 +733,31 @@ namespace GorgonLibrary.Graphics
 					y2 += calc;
 					break;
 				case Alignment.Center:
-					calc = ((Bounds.Width / 2.0f) - (maxLineSize / 2.0f));
+					calc = (int)((Bounds.Width / 2.0f) - (maxLineSize / 2.0f));
 					x1 += calc;
 					x2 += calc;
-					calc = ((Bounds.Height / 2.0f) - (bounds.Height / 2.0f));
+					calc = (int)((Bounds.Height / 2.0f) - (bounds.Height / 2.0f));
 					y1 += calc;
 					y2 += calc;
 					break;
 				case Alignment.LowerLeft:
-					calc = (Bounds.Height - bounds.Height);
+					calc = (int)(Bounds.Height - bounds.Height);
 					y1 += calc;
 					y2 += calc;
 					break;
 				case Alignment.LowerCenter:
-					calc = ((Bounds.Width / 2.0f) - (maxLineSize / 2.0f));
+					calc = (int)((Bounds.Width / 2.0f) - (maxLineSize / 2.0f));
 					x1 += calc;
 					x2 += calc;
-					calc = (Bounds.Height - bounds.Height);
+					calc = (int)(Bounds.Height - bounds.Height);
 					y1 += calc;
 					y2 += calc;
 					break;
 				case Alignment.LowerRight:
-					calc = (Bounds.Width - maxLineSize);
+					calc = (int)(Bounds.Width - maxLineSize);
 					x1 += calc;
 					x2 += calc;
-					calc = (Bounds.Height - bounds.Height);
+					calc = (int)(Bounds.Height - bounds.Height);
 					y1 += calc;
 					y2 += calc;
 					break;
