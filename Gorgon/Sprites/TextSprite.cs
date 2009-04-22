@@ -1145,7 +1145,7 @@ namespace GorgonLibrary.Graphics
             else
                 lines = _lines;
 
-			maxHeight = _font.CharacterHeight * lines.Count;
+			maxHeight = _font.LineHeight * lines.Count;
 			for (int i = 0; i < lines.Count; i++)
 			{
                 if (text.Equals(_text))
