@@ -119,8 +119,12 @@
 
 <div>
 	<pre>
-April 15/2009 - Version - Current
+April 22/2009 - Version - Current
 ===============================================================================================
++ Added static From* methods to the Font object.  Now users can load TTF files directly without 
+  having to set up their own PrivateFontCollections.  Fonts can be read from a stream, file, 
+  embedded resource or a Gorgon file system.
+  
 + Added two new methods:  SetAdditionalRenderTarget and GetAdditionalRenderTarget.  These two
   functions are in place to facilitate multiple render targets (MRT) when using shaders which
   allows rendering in one pass to multiple destinations.
