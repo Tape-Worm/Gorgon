@@ -1291,7 +1291,7 @@ namespace GorgonLibrary.Graphics
 
 				foreach (KeyValuePair<char, Glyph> glyph in _glyphData)
 				{
-					if (glyph.Value.Size.Height > _characterHeight)
+					if (glyph.Value.Size.Height > _characterHeight) 
 						_characterHeight = glyph.Value.Size.Height;
 				}
 

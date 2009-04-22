@@ -1133,8 +1133,6 @@ namespace GorgonLibrary.Graphics
 					_textImage.Dispose();
 				_textImage = null;
 
-				imageSize = _textSprite.MeasureText(new StringBuilder(_textSprite.Text), (int)_textSprite.Bounds.Width, _textSprite.WordWrap);
-
 				// Create a target to send our data into.
 				if (!_textSprite.HasBounds)
 				{
@@ -1159,6 +1157,7 @@ namespace GorgonLibrary.Graphics
 				if (imageSize.Height > MaximumImageBufferSize.Y)
 					imageSize.Height = MaximumImageBufferSize.Y;
 
+				imageSize.Height = 64;
 				_textImage = new RenderImage("@" + Name + ".TextSprite.RenderImage", (int)imageSize.Width, (int)imageSize.Height, ImageBufferFormats.BufferRGB888A8);
 
 				Gorgon.CurrentRenderTarget = _textImage;
@@ -1175,8 +1174,6 @@ namespace GorgonLibrary.Graphics
 				_textSprite.Opacity = 255;
 				_textSprite.UniformScale = 1.0f;
 				// We need to draw this twice, if not, anti-aliased sprites get faded.
-				if (_textSprite.Font.AntiAlias)
-					_textSprite.Draw();
 				_textSprite.Draw(true);
 
 				// Text sprite.
