@@ -59,7 +59,6 @@ namespace GorgonLibrary.Example
 		private float _rotator;								// Rotation angle.
 		private Viewport _clippedView;						// Clipped text viewport.
 		private Viewport _wrapView;							// Wrapped text viewport.
-		private Drawing.Text.PrivateFontCollection _fonts;	// Font collection.
 		private PreciseTimer _timer = null;					// Timer.
 		private List<Font> _fontList = null;				// List of fonts.
 		private int _fontIndex = 0;							// Index of current font.
@@ -205,17 +204,11 @@ namespace GorgonLibrary.Example
 			// Smooth text.
 			Gorgon.GlobalStateSettings.GlobalSmoothing = Smoothing.Smooth;
 
-			// Get fonts.
-			_fonts = new Drawing.Text.PrivateFontCollection();
-			_fonts.AddFontFile(@"..\..\..\..\Resources\Fonts\FontsOPlenty\6809CHAR.TTF");
-			_fonts.AddFontFile(@"..\..\..\..\Resources\Fonts\FontsOPlenty\WetPet.TTF");
-			_fonts.AddFontFile(@"..\..\..\..\Resources\Fonts\FontsOPlenty\Betsy.TTF");
-
 			// Load fonts.
-			_6809Font = new Font("680914pt", _fonts.Families[0], 14.0f, true);
+			_6809Font = GorgonLibrary.Graphics.Font.FromFile(@"..\..\..\..\Resources\Fonts\FontsOPlenty\6809CHAR.TTF", 14.0f, true);
 			_arialFont = new Font("Arial9pt", "Arial", 9.0f, true, true);
-			_betsyFont = new Font("Betsy36pt", _fonts.Families[1], 36.0f, true);
-			_wetPetFont = new Font("WetPet18pt", _fonts.Families[2], 18.0f, true);
+			_betsyFont = GorgonLibrary.Graphics.Font.FromFile(@"..\..\..\..\Resources\Fonts\FontsOPlenty\Betsy.TTF", 36.0f, true);
+			_wetPetFont = GorgonLibrary.Graphics.Font.FromResource("WetPet", Properties.Resources.ResourceManager, 18.0f, true);
 			_papyFont = new Font("Papyrus14pt", "Papyrus", 14.0f, true, true);
 			_courierFont = new Font("CourierNew12pt", "Courier New", 12, true, true);
 			_courierFont.OutlineWidth = 1.0f;
@@ -262,10 +255,6 @@ namespace GorgonLibrary.Example
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
-
-			// Clean up custom fonts.
-			if (_fonts != null)
-				_fonts.Dispose();
 
 			// Perform clean up.
 			Gorgon.Terminate();
