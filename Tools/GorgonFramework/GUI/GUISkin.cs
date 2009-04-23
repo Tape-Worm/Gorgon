@@ -87,11 +87,6 @@ namespace GorgonLibrary.GUI
 
 			try
 			{
-				if (!skinFileSystem.PathExists("/Images"))
-					skinFileSystem.Mount("/Images", false);
-				if (!skinFileSystem.PathExists("/Elements"))
-					skinFileSystem.Mount("/Elements", true);
-
 				images = skinFileSystem.Paths.ChildPaths["Images"];
 				elements = skinFileSystem.Paths.ChildPaths["Elements"];
 

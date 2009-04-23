@@ -284,7 +284,16 @@ namespace GorgonLibrary.FileSystems
 
 			_owner = owner;
 			_filename = Path.GetFileNameWithoutExtension(name);
-			_extension = Path.GetExtension(name);			
+			_extension = Path.GetExtension(name);
+
+			if ((string.IsNullOrEmpty(_filename)) && (string.IsNullOrEmpty(_extension)))
+				throw new ArgumentException("The filename '" + name + "' is invalid.", "name");
+
+			if ((string.IsNullOrEmpty(_filename)) && (!String.IsNullOrEmpty(_extension)) && (name.StartsWith(".")))
+			{				
+				_filename = _extension;
+				_extension = string.Empty;
+			}
 
 			_size = originalSize;
 			_compressedSize = compressedSize;

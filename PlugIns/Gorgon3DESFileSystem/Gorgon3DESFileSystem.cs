@@ -39,7 +39,7 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
 	/// Object representing a packed file system encrypted with 3DES encryption.
     /// </summary>
-	[FileSystemInfo("Triple DES File System", false, true, true, "GORPACK1.3DES")]
+	[FileSystemInfo("Triple DES File System", false, true, true, "GORPACK1.3DES", "Gorgon packed file systems (*.gorPack)|*.gorPack")]
     public class Gorgon3DESFileSystem
         : FileSystem
     {
@@ -195,6 +195,8 @@ namespace GorgonLibrary.FileSystems
 
 			// Validate the index XML.
 			ValidateIndexXML();
+
+			Mount();
 		}
 
 		/// <summary>
@@ -244,6 +246,8 @@ namespace GorgonLibrary.FileSystems
 
 			// Validate the index XML.
 			ValidateIndexXML();
+
+			Mount();
 		}
 		#endregion
 
@@ -528,6 +532,45 @@ namespace GorgonLibrary.FileSystems
 		protected override void SaveFileData(string filePath, FileSystemFile file)
 		{
 			_fileStream.Write(file.Data, 0, file.Data.Length);
+		}
+
+		/// <summary>
+		/// Function return whether a file system is valid for a given file system provider.
+		/// </summary>
+		/// <param name="provider">Provider to test.</param>
+		/// <param name="fileSystemStream">Stream containing the file system root.</param>
+		/// <returns>
+		/// TRUE if the provider can support this filesystem, FALSE if not.
+		/// </returns>
+		public override bool IsValidForProvider(FileSystemProvider provider, Stream fileSystemStream)
+		{
+			BinaryReaderEx reader = null;
+
+			if (provider == null)
+				throw new ArgumentNullException("provider");
+			if (fileSystemStream == null)
+				throw new ArgumentNullException("fileSystemStream");
+
+			long streamPosition = fileSystemStream.Position;		// Remember where we were.
+
+			if (!fileSystemStream.CanSeek)
+				throw new ArgumentException("Stream is incapable of seeking.");
+
+			try
+			{
+				reader = new BinaryReaderEx(fileSystemStream, true);
+				string fileID = reader.ReadString();
+
+				return fileID == provider.ID;
+			}
+			finally
+			{
+				if ((fileSystemStream != null) && (fileSystemStream.CanSeek))
+					fileSystemStream.Position = streamPosition;
+
+				if (reader != null)
+					reader.Close();
+			}
 		}
 
         /// <summary>

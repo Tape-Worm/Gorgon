@@ -224,7 +224,7 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="parent">Parent XML node.</param>
 		/// <param name="path">Path to add.</param>
-		private void AddXMLEntry(XmlNode parent, FileSystemPath path)
+		protected void AddXMLEntry(XmlNode parent, FileSystemPath path)
 		{
 			XmlElement fileElement = null;			// File element.
 			XmlElement pathElement = null;			// Path element.
@@ -369,11 +369,22 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		protected void RebuildIndex()
 		{
+			RebuildIndex(false);
+		}
+
+		/// <summary>
+		/// Function to reset the directory index XML.
+		/// </summary>
+		/// <param name="getFileEntries">TRUE to get all the path and file entries, FALSE to create a stub.</param>
+		protected void RebuildIndex(bool getFileEntries)
+		{
 			XmlProcessingInstruction xmlHeader = null;	// XML processing instruction.
 			XmlComment comment = null;					// Comment node.
 			XmlElement fsElement = null;				// File system.
 			XmlElement header = null;					// Header.
 			XmlElement purgeFlag = null;				// Purge flag element.
+			FileList allFiles = null;					// List of all files.
+			long offset = 0;							// File offset.
 
 			// Set up index file.
 			_fileIndex.RemoveAll();
@@ -408,6 +419,24 @@ namespace GorgonLibrary.FileSystems
 				header.InnerText = "GORFS1.0";
 				fsElement.AppendChild(header);
 			}
+
+			if (getFileEntries)
+			{
+				allFiles = Paths.GetFiles();
+
+				// Update the file offsets.
+				foreach (FileSystemFile file in allFiles)
+				{
+					file.Offset = offset;
+					if (file.IsCompressed)
+						offset += file.CompressedSize;
+					else
+						offset += file.Size;
+				}
+
+				// Build the path/file index.
+				AddXMLEntry(fsElement, Paths);
+			}
 		}
 
 		/// <summary>
@@ -440,7 +469,7 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="file">File to read.</param>
 		/// <returns>The raw binary data for the file.</returns>
 		protected abstract byte[] DecodeData(FileSystemFile file);
-		
+	
 		/// <summary>
 		/// Function clear files and paths.
 		/// </summary>
@@ -514,7 +543,118 @@ namespace GorgonLibrary.FileSystems
 			Clear();
 			_root = rootPath;
 		}
-		
+
+		/// <summary>
+		/// Function to add a path and all files under it to the file system.
+		/// </summary>
+		protected void Mount()
+		{
+			XmlNodeList nodes = null;				// XML node list.
+			XmlNodeList files = null;				// XML file list.
+			XmlNode fileProperty = null;			// File property.
+			FileSystemPath newPath = null;			// Path that was created.
+			FileSystemFile newFile = null;			// File system file.
+			int fileCompressedSize = 0;				// Compressed size of the file.
+			int fileSize = 0;						// Size of the file.
+			long fileOffset = 0;					// Offset of the file.
+			bool fileEncrypted = false;				// Flag to indicate that the file is encrypted.
+			string fileType = string.Empty;			// File type.
+			string filePath = string.Empty;			// Path to the file.
+			DateTime fileDate = DateTime.MinValue;	// File date & time.
+			string fileComment = string.Empty;		// File comment.
+			string path = string.Empty;				// Root path.
+
+			// Get the path name.
+			path = FileSystem.FullPathName(@"\");
+
+			if (!FileSystemPath.ValidPath(path))
+				throw new ArgumentNullException("The path '" + path + "' is not valid.");
+
+			// Get file system paths.
+			nodes = _fileIndex.SelectNodes("//Path[@FullPath[starts-with(.,'" + path + "')]]");
+
+			if (nodes.Count == 0)
+				throw new System.IO.DirectoryNotFoundException("The path '" + path + "' was not found.");
+
+			// Add paths.
+			foreach (XmlNode pathNode in nodes)
+			{
+				CreatePath(pathNode.Attributes["FullPath"].Value);
+
+				// Get file list.
+				files = pathNode.SelectNodes("File");
+
+				// Get the parent path object.
+				newPath = GetPath(pathNode.Attributes["FullPath"].Value);
+
+				// Add each new file.
+				foreach (XmlNode fileNode in files)
+				{
+					// Get file path.
+					fileProperty = fileNode.SelectSingleNode("Filename");
+					if ((fileProperty != null) && (fileProperty.InnerText != string.Empty))
+						filePath = fileProperty.InnerText;
+					else
+						throw new GorgonException(GorgonErrors.CannotReadData, "The file system appears to be corrupted.");
+
+					fileProperty = fileNode.SelectSingleNode("Extension");
+					if (fileProperty != null)
+						filePath += fileProperty.InnerText;
+
+					// Get offset.
+					fileProperty = fileNode.SelectSingleNode("Offset");
+					if (fileProperty != null)
+						fileOffset = Convert.ToInt64(fileProperty.InnerText);
+
+					// Get size.
+					fileProperty = fileNode.SelectSingleNode("Size");
+					if (fileProperty != null)
+						fileSize = Convert.ToInt32(fileProperty.InnerText);
+
+					// Get compressed size.
+					fileProperty = fileNode.SelectSingleNode("CompressedSize");
+					if (fileProperty != null)
+						fileCompressedSize = Convert.ToInt32(fileProperty.InnerText);
+
+					// Get file date.
+					fileProperty = fileNode.SelectSingleNode("FileDate");
+					if (fileProperty != null)
+						DateTime.TryParse(fileProperty.InnerText, System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat, System.Globalization.DateTimeStyles.None, out fileDate);
+
+					// Get encrypted flag.
+					fileProperty = fileNode.SelectSingleNode("Encrypted");
+					if (fileProperty != null)
+						fileEncrypted = (string.Compare(fileProperty.InnerText, "true", true) == 0);
+
+					// Get comment.
+					fileProperty = fileNode.SelectSingleNode("Comment");
+					if (fileProperty != null)
+						fileComment = fileProperty.InnerText;
+
+					if (!newPath.Files.Contains(filePath))
+						newFile = newPath.Files.Add(filePath, null, fileSize, fileCompressedSize, fileDate, fileEncrypted);
+					else
+					{
+						newPath.Files.Remove(filePath);
+						newFile = newPath.Files.Add(filePath, null, fileSize, fileCompressedSize, fileDate, fileEncrypted);
+					}
+					newFile.Comment = fileComment;
+					newFile.Offset = fileOffset;
+
+					// Attempt to load the file data from the disk.
+					Load(newFile);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function return whether a file system is valid for a given file system provider.
+		/// </summary>
+		/// <param name="provider">Provider to test.</param>
+		/// <param name="fileSystemStream">Stream containing the file system root.</param>
+		/// <returns>TRUE if the provider can support this filesystem, FALSE if not.</returns>
+		public abstract bool IsValidForProvider(FileSystemProvider provider, Stream fileSystemStream);
+
 		/// <summary>
         /// Function used to create a user friendly authorization interface.
         /// </summary>
@@ -671,181 +811,6 @@ namespace GorgonLibrary.FileSystems
 
 			return newPath;
 		}
-
-		/// <summary>
-		/// Function to add a path and all files under it to the file system.
-		/// </summary>
-		/// <param name="path">Path to add.</param>
-		/// <param name="recurse">TRUE to search sub directories, FALSE to only search the top level.</param>
-		public void Mount(string path, bool recurse)
-		{
-			XmlNodeList nodes = null;				// XML node list.
-			XmlNodeList files = null;				// XML file list.
-			XmlNode fileProperty = null;			// File property.
-			FileSystemPath newPath = null;			// Path that was created.
-			FileSystemFile newFile = null;			// File system file.
-			int fileCompressedSize = 0;				// Compressed size of the file.
-			int fileSize = 0;						// Size of the file.
-			long fileOffset = 0;					// Offset of the file.
-			bool fileEncrypted = false;				// Flag to indicate that the file is encrypted.
-			string fileType = string.Empty;			// File type.
-			string filePath = string.Empty;			// Path to the file.
-			DateTime fileDate = DateTime.MinValue;	// File date & time.
-			string fileComment = string.Empty;		// File comment.
-
-			if (string.IsNullOrEmpty(path))
-				path = @"\";
-			
-			// Get the path name.
-			path = FileSystem.FullPathName(path);
-
-			if (!FileSystemPath.ValidPath(path))
-				throw new ArgumentNullException("The path '" + path + "' is not valid.");
-
-			// Get file system paths.
-			if (recurse)
-				nodes = _fileIndex.SelectNodes("//Path[@FullPath[starts-with(.,'" + path + "')]]");
-			else
-				nodes = _fileIndex.SelectNodes("//Path[@FullPath='" + path + "']");
-
-			if (nodes.Count == 0)
-				throw new System.IO.DirectoryNotFoundException("The path '" + path + "' was not found.");
-
-			// Add paths.
-			foreach (XmlNode pathNode in nodes)
-			{
-				CreatePath(pathNode.Attributes["FullPath"].Value);
-
-				// Get file list.
-				files = pathNode.SelectNodes("File");
-
-				// Get the parent path object.
-				newPath = GetPath(pathNode.Attributes["FullPath"].Value);					
-
-				// Add each new file.
-				foreach (XmlNode fileNode in files)
-				{
-					// Get file path.
-					fileProperty = fileNode.SelectSingleNode("Filename");
-					if ((fileProperty != null) && (fileProperty.InnerText != string.Empty))
-						filePath = fileProperty.InnerText;
-					else
-						throw new GorgonException(GorgonErrors.CannotReadData, "The file system appears to be corrupted.");
-
-					fileProperty = fileNode.SelectSingleNode("Extension");
-					if (fileProperty != null)
-						filePath += fileProperty.InnerText;
-
-					// Get offset.
-					fileProperty = fileNode.SelectSingleNode("Offset");
-					if (fileProperty != null)
-						fileOffset = Convert.ToInt64(fileProperty.InnerText);
-					
-					// Get size.
-					fileProperty = fileNode.SelectSingleNode("Size");
-					if (fileProperty != null)
-						fileSize = Convert.ToInt32(fileProperty.InnerText);
-
-					// Get compressed size.
-					fileProperty = fileNode.SelectSingleNode("CompressedSize");
-					if (fileProperty != null)
-						fileCompressedSize = Convert.ToInt32(fileProperty.InnerText);
-
-					// Get file date.
-					fileProperty = fileNode.SelectSingleNode("FileDate");
-                    if (fileProperty != null)
-                        DateTime.TryParse(fileProperty.InnerText, System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat, System.Globalization.DateTimeStyles.None, out fileDate);
-
-					// Get encrypted flag.
-					fileProperty = fileNode.SelectSingleNode("Encrypted");
-					if (fileProperty != null)
-						fileEncrypted = (string.Compare(fileProperty.InnerText, "true", true) == 0);
-
-					// Get comment.
-					fileProperty = fileNode.SelectSingleNode("Comment");
-					if (fileProperty != null)
-						fileComment = fileProperty.InnerText;
-
-					newFile = newPath.Files.Add(filePath, null, fileSize, fileCompressedSize, fileDate, fileEncrypted);
-					newFile.Comment = fileComment;
-					newFile.Offset = fileOffset;
-
-					// Attempt to load the file data from the disk.
-					Load(newFile);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Function to mount all directories in the file system.
-		/// </summary>
-		public void Mount()
-		{
-			Mount(@"\", true);
-		}
-
-        /// <summary>
-        /// Function to add a path and all files under it to the file system.
-        /// </summary>
-        /// <param name="path">Path to add.</param>
-        public void Mount(string path)
-        {
-            Mount(path, false);
-        }
-
-        /// <summary>
-        /// Function to unload file data from all file system files to keep memory consumption down.
-        /// </summary>
-        /// <param name="path">Path to remove.</param>
-		/// <param name="recurse">TRUE to recursively remove data, FALSE to only remove data for the current path.</param>
-		/// <remarks>Trying to save a file system with unmounted data will throw an exception.</remarks>
-        public void Unmount(string path, bool recurse)
-        {
-			FileList removed = null;	// Removed entries.
-			
-			path = FileSystem.FullPathName(path);
-
-			if (!FileSystemPath.ValidPath(path))
-				throw new ArgumentException("The path '" + path + "' is not a valid path.");
-
-			if (!PathExists(path))
-				throw new System.IO.DirectoryNotFoundException("The path '" + path + "' was not found.");
-
-			// All the files to be unmounted.
-			removed = GetPath(path).GetFiles();
-
-			// Destroy all the data.
-			foreach (FileSystemFile file in removed)
-			{
-				if (recurse)
-				{
-					if (file.Owner.FullPath.ToLower().StartsWith(path.ToLower()))
-						file.Data = null;
-				}
-				else
-				{
-					if (file.Owner.FullPath.ToLower() == path.ToLower())
-						file.Data = null;
-				}
-			}
-        }
-
-		/// <summary>
-		/// Function to clear all file data from the specified path.
-		/// </summary>
-		/// <param name="path">Path to remove.</param>
-		public void Unmount(string path)
-		{
-			Unmount(path, false);
-		}
-
-        /// <summary>
-        /// Function to clear all file data from the file system.
-        /// </summary>
-        public void Unmount()
-        {
-			Unmount(@"\", true);
-        }
 
 		/// <summary>
 		/// Function to return the size of the file system in bytes.
@@ -1202,8 +1167,8 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="filePath">Path to save the file system into.</param>
 		public virtual void Save(string filePath)
 		{
-			XmlElement fsElement = null;				// File system.
-			long offset = 0;							// File offset.
+			//XmlElement fsElement = null;				// File system.
+			//long offset = 0;							// File offset.
 			FileList allFiles = null;					// All files.
 
 			if (((filePath == string.Empty) || (filePath == null)) && (!IsRootInStream))
@@ -1213,29 +1178,10 @@ namespace GorgonLibrary.FileSystems
 			allFiles = Paths.GetFiles();
 
 			// Reset the XML index.
-			RebuildIndex();
-
-			// Get the file system node.
-			fsElement = _fileIndex.SelectSingleNode("//FileSystem") as XmlElement;
-
-			if (fsElement == null)
-				throw new GorgonException(GorgonErrors.CannotReadData, "The file system index is corrupt.");
+			RebuildIndex(true);
 
 			try
 			{
-				// Update the file offsets.
-				foreach (FileSystemFile file in allFiles)
-				{
-					file.Offset = offset;
-					if (file.IsCompressed)
-						offset += file.CompressedSize;
-					else
-						offset += file.Size;
-				}
-
-				// Build the path/file index.
-				AddXMLEntry(fsElement, Paths);
-
 				// Initialize the saving.
 				SaveInitialize(filePath);
 

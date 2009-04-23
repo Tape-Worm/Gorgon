@@ -203,6 +203,17 @@ namespace GorgonLibrary.FileSystems
 				return _info.ID;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the extensions associated with this file system provider.
+		/// </summary>
+		public string FileExtensions
+		{
+			get
+			{
+				return _info.FileExtensions;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -223,7 +234,7 @@ namespace GorgonLibrary.FileSystems
 
 			return fileSystems;
 		}
-		
+
 		/// <summary>
 		/// Function to create a file system.
 		/// </summary>
