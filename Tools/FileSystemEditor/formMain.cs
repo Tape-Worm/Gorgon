@@ -32,6 +32,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml;
+using System.Linq;
 using GorgonLibrary;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.FileSystems;
@@ -224,9 +225,10 @@ namespace GorgonLibrary.FileSystems.Tools
 				Cursor.Current = Cursors.WaitCursor;
 				current = (formFileSystemWindow)this.ActiveMdiChild;
 
-				// Show the dialog.
+				// Show the dialog.				
 				if (current.FileSystem.Provider.IsPackedFile)
 				{
+					dialogFileSave.Filter = current.FileSystem.Provider.FileExtensions + "|All files (*.*)|*.*";					
 					dialogFileSave.InitialDirectory = _lastSaveDir;
 					result = dialogFileSave.ShowDialog(this);
 				}
@@ -395,10 +397,8 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// <returns>TRUE if we can load the file system, FALSE if not.</returns>
 		private bool GetFileSystemFromFile(string filePath, out FileSystem newFileSystem)
 		{
-			BinaryReader reader = null;			// Header reader.
-			Stream headerStream = null;			// Stream for reading the header.
-			string headerValue = string.Empty;	// Header value.
 			string fsName = string.Empty;		// File system name.
+			Stream stream = null;				// Stream to the file system.
 
 			Cursor.Current = Cursors.WaitCursor;
 			newFileSystem = null;
@@ -414,46 +414,49 @@ namespace GorgonLibrary.FileSystems.Tools
                     return false;
                 }
 
-                // Open the file and read the header ID.
-                headerStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                reader = new BinaryReader(headerStream, Encoding.UTF8);
-                headerValue = reader.ReadString();
+				stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
                 // Try to match up the header.
                 foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
                 {
-                    if (string.Compare(provider.ID, headerValue, true) == 0)
-                    {
-                        if (!provider.IsPackedFile)
-                            fsName = Path.GetDirectoryName(filePath);
-                        else
-                            fsName = Path.GetFileNameWithoutExtension(filePath);
+					if (!provider.IsPackedFile)
+						fsName = Path.GetDirectoryName(filePath);
+					else
+						fsName = Path.GetFileNameWithoutExtension(filePath);
 
-                        // Do nothing if this file system is loaded already.
-                        if (FileSystemCache.FileSystems.Contains(fsName))
-                        {
-                            newFileSystem = null;
-                            return true;
-                        }
+					// Do nothing if this file system is loaded already.
+					if (FileSystemCache.FileSystems.Contains(fsName))
+					{
+						newFileSystem = null;
+						return true;
+					}
+					newFileSystem = FileSystem.Create(fsName, provider);
 
-                        newFileSystem = FileSystem.Create(fsName, provider);
-                        // If the file system provider is encrypted, then we need access.
-                        if (provider.IsEncrypted)
-                        {
-                            if (newFileSystem.GetAuthorization(this) == 0)
-                            {
-                                UI.ErrorBox(this, "This file system needs authorization to open.");
-                                newFileSystem.Dispose();
-                                newFileSystem = null;
-                                return true;
-                            }
-                        }
+					if (newFileSystem.IsValidForProvider(provider, stream))
+					{
+						// If the file system provider is encrypted, then we need access.
+						if (provider.IsEncrypted)
+						{
+							if (newFileSystem.GetAuthorization(this) == 0)
+							{
+								UI.ErrorBox(this, "This file system needs authorization to open.");
+								newFileSystem.Dispose();
+								newFileSystem = null;
+								return true;
+							}
+						}
 						if (!provider.IsPackedFile)
 							newFileSystem.AssignRoot(Path.GetDirectoryName(filePath));
 						else
 							newFileSystem.AssignRoot(filePath);
-                        break;
-                    }
+						break;
+					}
+					else
+					{
+						if (newFileSystem != null)
+							newFileSystem.Dispose();
+						newFileSystem = null;
+					}
                 }
 
                 if (newFileSystem == null)
@@ -489,12 +492,8 @@ namespace GorgonLibrary.FileSystems.Tools
             }
 			finally
 			{
-				if (headerStream != null)
-					headerStream.Dispose();
-				headerStream = null;
-				if (reader != null)
-					reader.Close();
-				reader = null;
+				if (stream != null)
+					stream.Dispose();
 				Cursor.Current = Cursors.Default;
 			}
 		}
@@ -526,7 +525,6 @@ namespace GorgonLibrary.FileSystems.Tools
 				newFS.MdiParent = this;
 				newFS.FileSystem = fileSystem;
 				newFS.RootPath = fileSystem.Root;
-				newFS.FileSystem.Mount(@"\", true);
 				newFS.Show();				
 			}
 			catch (Exception ex)
@@ -551,6 +549,26 @@ namespace GorgonLibrary.FileSystems.Tools
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemOpen_Click(object sender, EventArgs e)
 		{
+			List<string> extensions = new List<string>();
+			string extensionList = string.Empty;
+			
+			// Gather all file extensions from all providers.
+			foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
+			{
+				if (extensions.Count((extension) => string.Compare(extension, provider.FileExtensions, true) == 0) == 0)
+					extensions.Add(provider.FileExtensions);
+			}
+
+			var sortedExtensions = from extensionFilters in extensions
+								   orderby extensionFilters
+								   select extensionFilters;
+
+			foreach (var extension in sortedExtensions)
+				extensionList += extension + "|";
+
+			extensionList += "All files (*.*)|*.*";
+
+			dialogOpenFileSystem.Filter = extensionList;
 			if (dialogOpenFileSystem.ShowDialog(this) == DialogResult.OK)
 			{
 				foreach(string fileName in dialogOpenFileSystem.FileNames)
@@ -565,9 +583,8 @@ namespace GorgonLibrary.FileSystems.Tools
         /// <returns>TRUE to continue, FALSE to cancel.</returns>
         private bool CheckForFileSystemProvider(string filePath)
         {
-            BinaryReader reader = null;			// Header reader.
             Stream headerStream = null;			// Stream for reading the header.
-            string headerValue = string.Empty;	// Header value.
+			FileSystem tempFS = null;			// Temporary file system.
 
             Cursor.Current = Cursors.WaitCursor;
 
@@ -585,16 +602,18 @@ namespace GorgonLibrary.FileSystems.Tools
 
                 // Open the file and read the header ID.
                 headerStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                reader = new BinaryReader(headerStream, Encoding.UTF8);
-                headerValue = reader.ReadString();
 
                 // Try to match up the header.
                 foreach (FileSystemProvider provider in FileSystemProviderCache.Providers)
                 {
-                    if (string.Compare(provider.ID, headerValue, true) == 0)
-                        return true;
+					using (tempFS = FileSystem.Create("TempFS" + provider.Name, provider))
+					{
+						if (tempFS.IsValidForProvider(provider, headerStream))
+							return true;
+					}
+					tempFS = null;
                 }
-
+				
                 return false;
             }
             catch (Exception ex)
@@ -604,12 +623,11 @@ namespace GorgonLibrary.FileSystems.Tools
             }
             finally
             {
+				if (tempFS != null)
+					tempFS.Dispose();
                 if (headerStream != null)
                     headerStream.Dispose();
                 headerStream = null;
-                if (reader != null)
-                    reader.Close();
-                reader = null;
                 Cursor.Current = Cursors.Default;
             }
         }

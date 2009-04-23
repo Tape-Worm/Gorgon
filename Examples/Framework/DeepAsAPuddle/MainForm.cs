@@ -245,7 +245,6 @@ namespace GorgonLibrary.Example
 		/// </summary>
 		protected override void Initialize()
 		{			
-			FileSystems[ApplicationName].Mount();
 			_spriteImage = Image.FromFileSystem(FileSystems[ApplicationName], "/Images/0_GuyAnimation.png");
 			_guy = Sprite.FromFileSystem(FileSystems[ApplicationName], "/Sprites/Guy.gorSprite");
 			_iceTiles = Sprite.FromFileSystem(FileSystems[ApplicationName], "/Sprites/Snow.gorSprite");

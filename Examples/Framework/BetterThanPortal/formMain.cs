@@ -283,7 +283,6 @@ namespace GorgonLibrary.Example
 			_camera = new Camera(Vector2D.Zero);
 
 			// Load in the objects.
-			FileSystems[ApplicationName].Mount();
 			_spriteSheet1 = Image.FromFileSystem(FileSystems[ApplicationName], "Images/SpaceStuff.png");
 
 			_planet = new PlanetaryObject(Sprite.FromFileSystem(FileSystems[ApplicationName], "Sprites/Planet.gorSprite"), new Vector2D(-1000.0f, -1000.0f));

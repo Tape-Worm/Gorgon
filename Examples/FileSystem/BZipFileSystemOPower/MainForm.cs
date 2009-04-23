@@ -168,14 +168,6 @@ namespace GorgonLibrary.Example
 			// Mount the file system.
 			_bzipFS.AssignRoot(@"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack");
 
-			// Mount the root, but do not recurse.
-			_bzipFS.Mount(@"\", false);
-
-			// Mount the images and sprites directories.
-			_bzipFS.Mount(@"\Images");
-			_bzipFS.Mount(@"\Sprites");
-			_bzipFS.Mount(@"\Shaders");
-
 			// Get the sprite image.
 			_spriteImage = Image.FromFileSystem(_bzipFS, @"\Images\0_HardVacuum.png");
 
