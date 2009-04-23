@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2006 Michael Winsor
+// Copyright (C) 2009 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, November 16, 2006 11:21:01 PM
+// Created: Wednesday, April 22, 2009 4:39:14 PM
 // 
 #endregion
 
@@ -29,25 +29,27 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Linq;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Serialization;
-using ICSharpCode.SharpZipLib.BZip2;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace GorgonLibrary.FileSystems
 {
     /// <summary>
-	/// Object representing a packed file system compressed with SharpZip.854's BZip2 compression.
+	/// Object representing a packed file system compressed using Zip (WinZip) compression.
     /// </summary>
-	[FileSystemInfo("SharpZip.BZip2 File System", true, true, false, "GORPACK1.SharpZip.BZ2", "Gorgon packed file systems (*.gorPack)|*.gorPack")]
-    public class GorgonBZip2FileSystem
+	[FileSystemInfo("SharpZip.Zip File System", true, true, false, "PK\x03\x04", "Zip compressed archive files (*.zip)|*.zip")]
+    public class GorgonZipFileSystem
         : FileSystem
     {
         #region Variables.
         private MemoryStream _dataStream = null;        // Data stream.   
-		private long _fileOffset = 0;					// Offset within the archive of the file data.
 		private Stream _fileStream = null;				// File stream for packed file.
 		private bool _streamIsRoot = false;				// Flag to indicate that the root of the file system is from a stream.
 		private long _fileSystemOffset = 0;				// Offset within the file system.
+		private ZipOutputStream _zipOut = null;			// Zip output stream.
+		private bool _disposed = false;					// Flag to indicate that the object is disposed.
         #endregion
 
 		#region Properties.
@@ -58,7 +60,7 @@ namespace GorgonLibrary.FileSystems
 		{
 			get 
 			{
-				return "GORPACK1.SharpZip.BZ2";
+				return "PK\x03\x04";
 			}
 		}
 
@@ -103,102 +105,56 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="fileSystemStream">Stream that contains the index.</param>
 		private void ReadIndex(Stream fileSystemStream)
 		{
-			BinaryReaderEx reader = null;		// Binary reader.
-			string xmlData = string.Empty;		// String to contain the XML data.
+			ZipInputStream zipStream = null;	// Zip file stream.
 			string header = string.Empty;       // Header text.
-			int indexSize = 0;					// Size of the directory index.
+			string dirPath = string.Empty;		// Directory path.
+			long lastPosition = 0;				// Last stream position.
+			byte[] headerBytes = new byte[4];	// Header bytes.
 
+			// Read the header.
+			if (!fileSystemStream.CanSeek)
+				throw new GorgonException(GorgonErrors.CannotReadData, "Cannot read file system stream.  Cannot use non-seeking stream.");
+
+			lastPosition = fileSystemStream.Position;
 			try
 			{
-				reader = new BinaryReaderEx(fileSystemStream, true);
-
-				// Read the header.
-				header = reader.ReadString();
-				if (string.Compare(header, FileSystemHeader, true) != 0)
+				fileSystemStream.Read(headerBytes, 0, 4);
+				header = Encoding.UTF8.GetString(headerBytes);
+				if (header != FileSystemHeader)
 					throw new Exception("Invalid pack file format.");
+				fileSystemStream.Position = lastPosition;
 
-				// Get the index size (compressed).
-				indexSize = reader.ReadInt32();
+				using (zipStream = new ZipInputStream(fileSystemStream))
+				{
+					ZipEntry entry = null;
+					zipStream.IsStreamOwner = false;
 
-				// Get the XML.
-				xmlData = Encoding.UTF8.GetString(DecompressData(reader.ReadBytes(indexSize)));
+					// Get zip directory entries.
+					while ((entry = zipStream.GetNextEntry()) != null)
+					{
+						if (entry.IsDirectory)
+							CreatePath(entry.Name);
+						else
+						{
+							dirPath = Path.GetDirectoryName(entry.Name);
+							if (!PathExists(dirPath))
+								CreatePath(dirPath);
+							FileSystemPath path = GetPath(dirPath);
 
-				// Load into the XML document object.
-				FileIndexXML.LoadXml(xmlData);
+							path.Files.Add(entry.Name, null, (int)entry.Size, (int)entry.CompressedSize, entry.DateTime, false);
+						}
+					}
+				}
 
-				// Get the file offset.				
-				_fileOffset = fileSystemStream.Position - _fileSystemOffset;
+				// Clear the current index.
+				RebuildIndex(true);
 			}
 			finally
 			{
-				if (reader != null)
-					reader.Close();
-			}
-		}
+				fileSystemStream.Position = lastPosition;
 
-		/// <summary>
-		/// Function to compress a block of data.
-		/// </summary>
-		/// <param name="data">Data block to compress.</param>
-		/// <returns>A block of compressed data.</returns>
-		private byte[] CompressData(byte[] data)
-		{
-			MemoryStream compressedStream = null;	// Compressed stream.
-			
-			try
-			{
-				// Prepare compression streams.
-				_dataStream = new MemoryStream(data);
-				_dataStream.Position = 0;
-				compressedStream = new MemoryStream();
-
-				// Compress using best compression.
-				BZip2.Compress(_dataStream, compressedStream, BZip2Constants.baseBlockSize * 9);
-				return compressedStream.ToArray();
-			}
-			finally
-			{
-				if (_dataStream != null)
-					_dataStream.Dispose();
-				if (compressedStream != null)
-					compressedStream.Dispose();
-
-				_dataStream = null;
-				compressedStream = null;
-			}
-		}
-
-		/// <summary>
-		/// Function to decompress a block of data.
-		/// </summary>
-		/// <param name="data">Data block to compress.</param>
-		/// <returns>Block of data that was compressed.</returns>
-		private byte[] DecompressData(byte[] data)
-		{
-			MemoryStream uncompressedStream = null;	// Uncompressed stream.
-
-			try
-			{
-				// Get the compressed data.
-				_dataStream = new MemoryStream(data);
-				_dataStream.Position = 0;
-				uncompressedStream = new MemoryStream();
-
-				// Decompress.				
-				BZip2.Decompress(_dataStream, uncompressedStream);				
-
-				// Get the data.
-				return uncompressedStream.ToArray();
-			}
-			finally
-			{
-				if (uncompressedStream != null)
-					uncompressedStream.Dispose();
-				if (_dataStream != null)
-					_dataStream.Dispose();
-
-				uncompressedStream = null;
-				_dataStream = null;
+				if (zipStream != null)
+					zipStream.Dispose();
 			}
 		}
 
@@ -209,14 +165,66 @@ namespace GorgonLibrary.FileSystems
 		/// <returns>The raw binary data for the file.</returns>
 		protected override byte[] DecodeData(FileSystemFile file)
 		{
+			ZipEntry entry = null;
+			ZipInputStream stream = null;
+			Stream baseStream = null;
+			MemoryStream outputStream = null;
+			byte[] result = null;
+
 			if (file == null)
 				throw new ArgumentNullException("file");
 
-			// If not compressed, then leave.
-			if (!file.IsCompressed)
-				return file.Data;
-			
-			return DecompressData(file.Data);
+			try
+			{
+				if (IsRootInStream)
+				{
+					_fileStream.Position = _fileSystemOffset;
+					stream = new ZipInputStream(_fileStream);
+					stream.IsStreamOwner = false;
+				}
+				else
+				{
+					baseStream = File.Open(Root, FileMode.Open, FileAccess.Read, FileShare.Read);
+					stream = new ZipInputStream(baseStream);					
+				}
+
+				outputStream = new MemoryStream();
+
+				// Find our file.
+				while ((entry = stream.GetNextEntry()) != null)
+				{
+					if (entry.IsFile)
+					{
+						string entryName = entry.Name;
+
+						entryName = entryName.Replace('/', '\\');
+						if (!entryName.StartsWith(@"\"))
+							entryName = @"\" + entryName;
+
+						if (string.Compare(entryName, file.FullPath, true) == 0)
+						{
+							byte[] chunk = new byte[entry.Size];
+							stream.Read(chunk, 0, (int)entry.Size);
+							outputStream.Write(chunk, 0, (int)entry.Size);
+							result = outputStream.ToArray();
+							break;
+						}
+					}
+				}				
+			}
+			finally
+			{
+				if (IsRootInStream)
+					_fileStream.Position = _fileSystemOffset;
+				if (stream != null)
+					stream.Dispose();
+				if (baseStream != null)
+					baseStream.Dispose();
+				if (outputStream != null)
+					outputStream.Dispose();
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -228,27 +236,7 @@ namespace GorgonLibrary.FileSystems
 		/// <returns>A new file system entry.</returns>
 		protected override FileSystemFile EncodeData(FileSystemPath path, string filePath, byte[] data)
 		{
-			byte[] compressedData = null;			// Compressed data.
-			int compressedSize = 0;					// Compressed size in bytes.
-			FileSystemFile file = null;				// File.
-			double ratio = 0.0f;					// Compression ratio.
-
-			// Get compressed data.
-			compressedData = CompressData(data);
-
-			// Get compression ratio.
-			ratio = ((double)(data.Length - compressedData.Length) / (double)data.Length) * 100.0;
-
-			// If less than 64 bytes of compression, then don't bother.
-			if ((data.Length - compressedData.Length) <= 64)
-				compressedData = data;
-			else
-				compressedSize = compressedData.Length;
-
-			file = path.Files.Add(filePath, compressedData, data.Length, compressedSize, DateTime.Now, false);
-
-			// Add the entry.
-			return file;
+			return path.Files.Add(filePath, data, data.Length, data.Length, DateTime.Now, false);
 		}
 
 		/// <summary>
@@ -257,49 +245,7 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="file">File system entry for the object.</param>
 		protected override void Load(FileSystemFile file)
 		{
-			BinaryReaderEx reader = null;				// Binary data reader.
-			int fileSize = 0;							// File size.
-
-			if (file == null)
-				throw new ArgumentNullException("file");
-
-			try
-			{
-				if (file.IsCompressed)
-					fileSize = file.CompressedSize;
-				else
-					fileSize = file.Size;
-
-				// Open the archive for reading.
-				if (IsRootInStream)
-					reader = new BinaryReaderEx(_fileStream, true);
-				else
-					reader = new BinaryReaderEx(File.Open(Root, FileMode.Open, FileAccess.Read, FileShare.Read), false);
-
-				// Move to the data.
-				if (!IsRootInStream)
-					reader.BaseStream.Position = _fileOffset + file.Offset;
-				else
-					reader.BaseStream.Position = _fileSystemOffset + _fileOffset + file.Offset;
-				file.Data = reader.ReadBytes(fileSize);
-
-				// Close the file to get around concurrency issues.
-				if (reader != null)
-					reader.Close();
-				reader = null;
-
-				if ((file.Data == null) || (file.Data.Length != fileSize))
-					throw new GorgonException(GorgonErrors.CannotReadData, "Cannot read file system file '" + file.FullPath + "'");
-
-				// Fire the event.
-				OnDataLoad(this, new FileSystemDataIOEventArgs(file));
-			}
-			finally
-			{
-				if (reader != null)
-					reader.Close();
-				reader = null;
-			}
+			// This is unnecessary for the zip file.
 		}
 
 		/// <summary>
@@ -310,13 +256,22 @@ namespace GorgonLibrary.FileSystems
 		{
 			// Append the file system extension.
 			if ((Path.GetExtension(filePath) == string.Empty) && (!IsRootInStream))
-				filePath += ".gorPack";
+				filePath += ".zip";
+
+			var files = Paths.GetFiles().Where((path) => path.Data == null);
+			// If we don't have the file data loaded, then load it in for saving.
+			foreach (var file in files)
+				file.Data = DecodeData(file);
 
 			// Open the stream for writing.
 			if (!IsRootInStream)
 				_fileStream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
 			else
 				_fileStream.Position = _fileSystemOffset;
+
+			_zipOut = new ZipOutputStream(_fileStream);
+			_zipOut.IsStreamOwner = !IsRootInStream;
+			_zipOut.SetLevel(9);
 		}
 
 		/// <summary>
@@ -325,12 +280,39 @@ namespace GorgonLibrary.FileSystems
 		/// <remarks>This function is called at the end of the save function, regardless of whether the save was successful or not.</remarks>
 		protected override void SaveFinalize()
 		{
+			if (_zipOut != null)
+				_zipOut.Dispose();
+			_zipOut = null;
+
+			// We will have to remount the file system in order to see our changes.
 			if (IsRootInStream)
+			{
+				_fileStream.Position = _fileSystemOffset;
+				AssignRoot(_fileStream);
 				return;
+			}
 
 			if (_fileStream != null)
 				_fileStream.Dispose();
 			_fileStream = null;
+
+			AssignRoot(Root);
+		}
+
+		/// <summary>
+		/// Function to save the empty directory entries into the zip file.
+		/// </summary>
+		/// <param name="path">The path to the empty directory.</param>
+		private void SaveEmptyDirectory(FileSystemPath path)
+		{
+			if (path.ChildPaths.Count > 0)
+			{
+				foreach(FileSystemPath childPath in path.ChildPaths)
+					SaveEmptyDirectory(childPath);
+			}
+
+			if (path.Files.Count == 0)
+				_zipOut.PutNextEntry(new ZipEntry(path.FullPath));
 		}
 
 		/// <summary>
@@ -339,25 +321,8 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="filePath">Root of the file system on the disk.</param>
 		protected override void SaveIndex(string filePath)
 		{
-			byte[] compressed = null;		// Compressed index data.
-			BinaryWriterEx writer = null;	// Binary writer.
-			
-			try
-			{
-				// Save the index file.
-				compressed = CompressData(Encoding.UTF8.GetBytes(FileIndexXML.OuterXml));				
-
-				writer = new BinaryWriterEx(_fileStream, true);
-				writer.Write(FileSystemHeader);
-				writer.Write(compressed.Length);
-				writer.Write(compressed);
-			}
-			finally			
-			{
-				if (writer != null)
-					writer.Close();
-				writer = null;
-			}
+			// Store only paths that have no files
+			SaveEmptyDirectory(Paths);
 		}
 
 		/// <summary>
@@ -367,7 +332,32 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="file">File to save.</param>
 		protected override void SaveFileData(string filePath, FileSystemFile file)
 		{
-			_fileStream.Write(file.Data, 0, file.Data.Length);
+			ZipEntry entry = new ZipEntry(file.FullPath);
+
+			entry.DateTime = DateTime.Now;
+			_zipOut.PutNextEntry(entry);
+			_zipOut.Write(file.Data, 0, file.Data.Length);
+		}
+
+		/// <summary>
+		/// Function to perform clean up.
+		/// </summary>
+		/// <param name="disposing">TRUE to release all resources, FALSE to only release unmanaged.</param>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (_zipOut != null)
+						_zipOut.Dispose();
+					_zipOut = null;
+				}
+
+				_disposed = true;
+			}
 		}
 
 		/// <summary>
@@ -380,7 +370,7 @@ namespace GorgonLibrary.FileSystems
 		/// </returns>
 		public override bool IsValidForProvider(FileSystemProvider provider, Stream fileSystemStream)
 		{
-			BinaryReaderEx reader = null;
+			byte[] zipID = new byte[4];
 
 			if (provider == null)
 				throw new ArgumentNullException("provider");
@@ -394,18 +384,16 @@ namespace GorgonLibrary.FileSystems
 
 			try
 			{
-				reader = new BinaryReaderEx(fileSystemStream, true);
-				string fileID = reader.ReadString();
+				fileSystemStream.Read(zipID, 0, 4);
 
-				return fileID == provider.ID;
+				string zipMagic = Encoding.UTF8.GetString(zipID);
+
+				return zipMagic == provider.ID;
 			}
 			finally
 			{
 				if ((fileSystemStream != null) && (fileSystemStream.CanSeek))
 					fileSystemStream.Position = streamPosition;
-
-				if (reader != null)
-					reader.Close();
 			}
 		}
 	
@@ -522,12 +510,12 @@ namespace GorgonLibrary.FileSystems
         #endregion
 
         #region Constructor.
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="name">Name of this file system.</param>
-        /// <param name="provider">File system provider.</param>
-		internal GorgonBZip2FileSystem(string name, FileSystemProvider provider)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonZipFileSystem"/> class.
+		/// </summary>
+		/// <param name="name">Name of this file system.</param>
+		/// <param name="provider">File system provider.</param>
+		internal GorgonZipFileSystem(string name, FileSystemProvider provider)
             : base(name, provider)
         {
         }

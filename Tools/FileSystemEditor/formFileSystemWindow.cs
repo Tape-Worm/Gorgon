@@ -240,6 +240,23 @@ namespace GorgonLibrary.FileSystems.Tools
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to update the tags for the file system path nodes.
+		/// </summary>
+		/// <param name="root">Root node collection on the tree.</param>
+		private void UpdateNodeTags(TreeNodeCollection root)
+		{
+			FileSystemPath path = null;
+
+			foreach (TreeNode node in root)
+			{
+				if (node.Nodes.Count > 0)
+					UpdateNodeTags(node.Nodes);
+
+				path = _fileSystem.GetPath(FixNodePath(node));
+				node.Tag = path;
+			}
+		}
 
 		/// <summary>
 		/// Function to copy a list of files to a specified directory.
@@ -2385,6 +2402,10 @@ namespace GorgonLibrary.FileSystems.Tools
 
 			// Write the settings file.
 			_parentWindow.WriteSettings();
+
+			// Refresh the tree in case we've updated the structure.
+			UpdateNodeTags(treePaths.Nodes);
+			SetViewState(_view);
 		}
 		#endregion
 

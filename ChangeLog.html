@@ -121,6 +121,13 @@
 	<pre>
 April 22/2009 - Version - Current
 ===============================================================================================
+- Removed the Mount()/Unmount() functions from the file system.  These really served no 
+  purpose to the user.  The Mount() function is still in place for plug-in development just in
+  case.
+  
++ Added a new file system plug-in.  This one will read/write .zip files (Winzip) so now the 
+  user can use WinZip or other .zip supported archiver to manipulate file systems.
+
 * Modified alignment issues with TextSprite where the text would become jagged if it was 
   between a pixels.
   

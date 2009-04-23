@@ -32,11 +32,11 @@ using GorgonLibrary.PlugIns;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("GorgonZLibFileSystem")]
-[assembly: AssemblyDescription("ZLib compressed packed file system.")]
+[assembly: AssemblyTitle("Gorgon BZip2 Filesystem")]
+[assembly: AssemblyDescription("BZip2 compressed packed file system.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mike Winsor")]
-[assembly: AssemblyProduct("GorgonZLibFileSystem")]
+[assembly: AssemblyProduct("GorgonBZip2FileSystem")]
 [assembly: AssemblyCopyright("Copyright © Mike Winsor 2006.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

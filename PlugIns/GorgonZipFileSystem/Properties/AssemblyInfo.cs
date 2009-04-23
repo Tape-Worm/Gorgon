@@ -1,7 +1,7 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2008 Michael Winsor
+// Copyright (C) 2009 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, April 01, 2008 5:40:58 PM
+// Created: Wednesday, April 22, 2009 4:39:19 PM
 // 
 #endregion
 
@@ -32,12 +32,12 @@ using GorgonLibrary.PlugIns;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Gorgon 3DES Encrypted Filesystem")]
-[assembly: AssemblyDescription("3DES encrypted packed file system.")]
+[assembly: AssemblyTitle("Gorgon Zip Filesystem")]
+[assembly: AssemblyDescription("Zip (WinZip compatible) compressed packed file system.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mike Winsor")]
-[assembly: AssemblyProduct("Gorgon3DESFileSystem")]
-[assembly: AssemblyCopyright("Copyright © Mike Winsor 2008.")]
+[assembly: AssemblyProduct("GorgonZipFileSystem")]
+[assembly: AssemblyCopyright("Copyright © Mike Winsor 2009.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: PlugIn()]
@@ -48,7 +48,7 @@ using GorgonLibrary.PlugIns;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("A9FFE27B-5233-4a99-96DB-7CBBC1A5C3D3")]
+[assembly: Guid("aee2719d-09a3-48a7-b428-9d0f1d64fc83")]
 
 // Version information for an assembly consists of the following four values:
 //

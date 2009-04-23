@@ -101,6 +101,15 @@ namespace GorgonLibrary.FileSystems
                 return _isEncrypted;
             }
         }
+
+		/// <summary>
+		/// Property to return the file extensions associated with this provider.
+		/// </summary>
+		public string FileExtensions
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -112,13 +121,19 @@ namespace GorgonLibrary.FileSystems
 		/// <param name="ispackfile">TRUE if the file system is a pack file, FALSE if folder based.</param>
         /// <param name="isencrypted">TRUE if the file system is encrypted, FALSE if not.</param>
         /// <param name="fileSystemID">ID of the file system.</param>
-		public FileSystemInfoAttribute(string description, bool iscompressed, bool ispackfile, bool isencrypted, string fileSystemID)
+		/// <param name="fileExtensions">File extensions associated with this provider.</param>
+		public FileSystemInfoAttribute(string description, bool iscompressed, bool ispackfile, bool isencrypted, string fileSystemID, string fileExtensions)
 		{
             if (string.IsNullOrEmpty(description))
                 throw new ArgumentNullException("description");
 
             if (string.IsNullOrEmpty(fileSystemID))
                 throw new ArgumentNullException("fileSystemID");
+
+			if (string.IsNullOrEmpty(fileExtensions))
+				FileExtensions = "All Files (*.*)|*.*";
+			else
+				FileExtensions = fileExtensions;
 
 			_description = description;
 			_isCompressed = iscompressed;
