@@ -466,7 +466,7 @@ namespace GorgonLibrary.FileSystems
 		/// </summary>
 		/// <param name="path">Path to the root of the file system.</param>
 		/// <remarks>Path can be a folder that contains the file system XML index for a folder file system or a file (typically
-		/// ending with extension .gorPack) for a packed file system.</remarks>		
+		/// ending with extension .zip) for a packed file system.</remarks>		
 		public override void AssignRoot(string path)
 		{
 			FileStream stream = null;					// File stream.
@@ -476,7 +476,7 @@ namespace GorgonLibrary.FileSystems
 
 			// Append default extension.
 			if (Path.GetExtension(path) == string.Empty)
-				path = Path.ChangeExtension(path, ".gorPack");
+				path = Path.ChangeExtension(path, ".zip");
 
 			InitializeIndex(path);
 
