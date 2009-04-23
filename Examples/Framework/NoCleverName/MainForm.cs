@@ -404,8 +404,6 @@ namespace GorgonLibrary.Example
 				_alienTimer = new PreciseTimer();
 				_fonts = new Drawing.Text.PrivateFontCollection();
 
-				FileSystems["NoCleverNameFS"].Mount();
-
 				// Load the font.
 				LoadFont("/Fonts/JOYSTIX.TTF");
 				_text = new TextSprite("GameText", string.Empty, _font, Drawing.Color.Black);

@@ -162,14 +162,6 @@ namespace GorgonLibrary.Example
 			// Mount the file system.
 			_folderFS.AssignRoot(@"..\..\..\..\Resources\FileSystems\FolderSystem");
 
-			// Mount the root, but do not recurse.
-			_folderFS.Mount(@"\", false);
-
-			// Mount the images and sprites directories.
-			_folderFS.Mount(@"\Images");
-			_folderFS.Mount(@"\Sprites");
-			_folderFS.Mount(@"\Shaders");
-
 			// Get the sprite image.
 			_spriteImage = Image.FromFileSystem(_folderFS, @"\Images\0_HardVacuum.png");
 

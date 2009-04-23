@@ -37,7 +37,7 @@ namespace GorgonLibrary.FileSystems
     /// <summary>
     /// Object representing a standard disk based filesystem.
     /// </summary>
-	[FileSystemInfo("Folder File System", false, false, false, "GORPACK1.GorgonFolderSystem")]
+	[FileSystemInfo("Folder File System", false, false, false, "GORPACK1.GorgonFolderSystem", "Gorgon folder file system.|header.folderSystem")]
     public class FolderFileSystem
         : FileSystem
 	{
@@ -292,6 +292,45 @@ namespace GorgonLibrary.FileSystems
 		}
 
 		/// <summary>
+		/// Function return whether a file system is valid for a given file system provider.
+		/// </summary>
+		/// <param name="provider">Provider to test.</param>
+		/// <param name="fileSystemStream">Stream containing the file system root.</param>
+		/// <returns>
+		/// TRUE if the provider can support this filesystem, FALSE if not.
+		/// </returns>
+		public override bool IsValidForProvider(FileSystemProvider provider, Stream fileSystemStream)
+		{
+			BinaryReaderEx reader = null;
+
+			if (provider == null)
+				throw new ArgumentNullException("provider");
+			if (fileSystemStream == null)
+				throw new ArgumentNullException("fileSystemStream");
+
+			long streamPosition = fileSystemStream.Position;		// Remember where we were.
+
+			if (!fileSystemStream.CanSeek)
+				throw new ArgumentException("Stream is incapable of seeking.");
+
+			try
+			{
+				reader = new BinaryReaderEx(fileSystemStream, true);
+				string fileID = reader.ReadString();
+
+				return fileID == provider.ID;
+			}
+			finally
+			{
+				if ((fileSystemStream != null) && (fileSystemStream.CanSeek))
+					fileSystemStream.Position = streamPosition;
+
+				if (reader != null)
+					reader.Close();
+			}
+		}
+
+		/// <summary>
 		/// Function to assign the root of this file system.
 		/// </summary>
 		/// <param name="path">Path to the root of the file system.</param>
@@ -331,6 +370,8 @@ namespace GorgonLibrary.FileSystems
 
 			// Validate the index XML.
 			ValidateIndexXML();
+
+			Mount();
 		}
 		#endregion
 
