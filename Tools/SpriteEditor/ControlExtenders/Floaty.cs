@@ -80,7 +80,7 @@ namespace ControlExtenders
         // to the floaty forms. It is used particularly to switch between start dragging a docked panel
         // to dragging a floaty form.
         [DllImport("User32.dll", EntryPoint = "SendMessage")]
-        private static extern int SendMessage(int hWnd, int Msg, int wParam, int lParam);
+        private static extern int SendMessage(IntPtr hwnd, int Msg, int wParam, int lParam);
         #endregion private members
 
         #region private members
@@ -471,7 +471,7 @@ namespace ControlExtenders
 
             // this is kind of tricky
             // disable the mousemove events of the handle
-            SendMessage(_dockState.Handle.Handle.ToInt32(), WM_LBUTTONUP, 0, 0);
+            SendMessage(_dockState.Handle.Handle, WM_LBUTTONUP, 0, 0);
             ps.X -= offsetx;
             ps.Y -= offsety;
 
@@ -480,7 +480,7 @@ namespace ControlExtenders
             _isFloating = true;
             Show();
             // enable the mousemove events of the new floating form, start dragging the form immediately
-            SendMessage(this.Handle.ToInt32(), WM_SYSCOMMAND, SC_MOVE | 0x02, 0);
+            SendMessage(this.Handle, WM_SYSCOMMAND, SC_MOVE | 0x02, 0);
         }
 
         /// <summary>
