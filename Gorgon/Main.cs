@@ -84,7 +84,13 @@ namespace GorgonLibrary
 				if ((((WindowMessages)m.Msg) == WindowMessages.SysCommand) && (!Gorgon.AllowScreenSaver))
 				{
 					// Trap screen saver.
-					switch ((SysCommands)(m.WParam.ToInt32() & 0xFFF0))
+					long wParamValue = 0;
+					if (IntPtr.Size == 4)
+						wParamValue = m.WParam.ToInt32() & 0xFFF0;
+					else
+						wParamValue = m.WParam.ToInt64() & 0xFFF0;
+
+					switch ((SysCommands)(wParamValue))
 					{
 						case SysCommands.MonitorPower:
 						case SysCommands.ScreenSave:
