@@ -546,7 +546,10 @@ namespace GorgonLibrary.Graphics
 			_requestedVideoMode = Gorgon.DesktopVideoMode;
 			_currentVideoMode = Gorgon.DesktopVideoMode;
 
-			Gorgon.Log.Print("RenderWindow", "Bound to control: {0} (0x{1:x8}) of type {2}.  Parent form: {3} (0x{4:x8})", LoggingLevel.Verbose, owner.Name, owner.Handle.ToInt32(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt32().ToString("x").PadLeft(8, '0'));
+			if (IntPtr.Size == 4)
+				Gorgon.Log.Print("RenderWindow", "Bound to control: {0} (0x{1:x8}) of type {2}.  Parent form: {3} (0x{4:x8})", LoggingLevel.Verbose, owner.Name, owner.Handle.ToInt32(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt32().ToString("x").PadLeft(8, '0'));
+			else
+				Gorgon.Log.Print("RenderWindow", "Bound to control: {0} (0x{1:x16}) of type {2}.  Parent form: {3} (0x{4:x16})", LoggingLevel.Verbose, owner.Name, owner.Handle.ToInt64(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt64().ToString("x").PadLeft(16, '0'));
 			Gorgon.Log.Print("RenderWindow", "Rendering window '{0}' created.", LoggingLevel.Intermediate, name);
 		}
 
@@ -606,7 +609,10 @@ namespace GorgonLibrary.Graphics
 			_requestedVideoMode = Gorgon.DesktopVideoMode;
 			_currentVideoMode = Gorgon.DesktopVideoMode;
 
-			Gorgon.Log.Print("RenderWindow", "Bound to control: {0} (0x{1:x8}) of type {2}.  Parent form: {3} (0x{4:x8})", LoggingLevel.Verbose, owner.Name, owner.Handle.ToInt32(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt32().ToString("x").PadLeft(8, '0'));
+			if (IntPtr.Size == 4)
+				Gorgon.Log.Print("RenderWindow", "Bound to control: {0} (0x{1:x8}) of type {2}.  Parent form: {3} (0x{4:x8})", LoggingLevel.Verbose, owner.Name, owner.Handle.ToInt32(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt32().ToString("x").PadLeft(8, '0'));
+			else
+				Gorgon.Log.Print("RenderWindow", "Bound to control: {0} (0x{1:x16}) of type {2}.  Parent form: {3} (0x{4:x16})", LoggingLevel.Verbose, owner.Name, owner.Handle.ToInt64(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt64().ToString("x").PadLeft(16, '0'));
 			Gorgon.Log.Print("RenderWindow", "Rendering window '{0}' created.", LoggingLevel.Intermediate, name);
 
 			// Create the swap chain.
