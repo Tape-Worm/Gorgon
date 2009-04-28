@@ -226,6 +226,7 @@
     <Compile Include="Shaders\ShaderParameterList.cs" />
     <Compile Include="Shaders\ImageShader.cs" />
     <Compile Include="Shaders\VertexShader.cs" />
+    <Compile Include="Sprites\Batch.cs" />
     <Compile Include="Sprites\Geometry.cs" />
     <Compile Include="Sprites\StaticTextSprite.cs" />
     <Compile Include="Sprites\TextSprite.cs" />
