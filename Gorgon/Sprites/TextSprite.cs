@@ -28,6 +28,7 @@ using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using Drawing = System.Drawing;
 using GorgonLibrary;
 using GorgonLibrary.Internal;
@@ -685,12 +686,13 @@ namespace GorgonLibrary.Graphics
 		/// Function to update the colors of the vertices.
 		/// </summary>
 		/// <param name="charIndex">Vertex index of the character quad to update.</param>
-		private void UpdateColor(int charIndex)
+		/// <param name="vertices">List of vertices to update.</param>
+		private void UpdateColor(int charIndex, VertexTypeList.PositionDiffuse2DTexture1[] vertices)
 		{
-			Vertices[charIndex].Color = _vertexColors[(int)VertexLocations.UpperLeft];
-			Vertices[charIndex + 1].Color = _vertexColors[(int)VertexLocations.UpperRight];
-			Vertices[charIndex + 2].Color = _vertexColors[(int)VertexLocations.LowerRight];
-			Vertices[charIndex + 3].Color = _vertexColors[(int)VertexLocations.LowerLeft];
+			vertices[charIndex].Color = _vertexColors[(int)VertexLocations.UpperLeft];
+			vertices[charIndex + 1].Color = _vertexColors[(int)VertexLocations.UpperRight];
+			vertices[charIndex + 2].Color = _vertexColors[(int)VertexLocations.LowerRight];
+			vertices[charIndex + 3].Color = _vertexColors[(int)VertexLocations.LowerLeft];
 		}
 
 		/// <summary>
@@ -767,6 +769,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to update the transformation of the vertices.
 		/// </summary>
+		/// <param name="vertices">Vertex list to update.</param>
 		/// <param name="bounds">Boundaries for the text.</param>
 		/// <param name="charIndex">Vertex index of the character quad to update.</param>		
 		/// <param name="character">Character to use.</param>
@@ -774,9 +777,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="characterInfo">Font information about the character.</param>
 		/// <param name="calcAABB">TRUE to calculate AABB extents, FALSE to ignore.</param>
 		/// <param name="position">Position of the character.</param>
-		/// <param name="aabbUpdate">Updated AABB.</param>
+		/// <param name="aabbUpdate">Updated AABB.</param>		
 		/// <returns>TRUE to advance the relative position pointer, FALSE to leave where it is.</returns>
-		private void UpdateTransform(Drawing.RectangleF bounds, int charIndex, char character, float lineLength, Glyph characterInfo, bool calcAABB, ref Vector2D position, ref Drawing.RectangleF aabbUpdate)
+		private void UpdateTransform(VertexTypeList.PositionDiffuse2DTexture1[] vertices, Drawing.RectangleF bounds, int charIndex, char character, float lineLength, Glyph characterInfo, bool calcAABB, ref Vector2D position, ref Drawing.RectangleF aabbUpdate)
 		{
 			float posX1;							// Horizontal position 1.
 			float posX2;							// Horizontal position 2.
@@ -820,10 +823,10 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Set the Z position, although we don't really need it, it may fuck something up if we don't.
-			Vertices[charIndex].Position.Z = -Depth;
-			Vertices[charIndex + 1].Position.Z = -Depth;
-			Vertices[charIndex + 2].Position.Z = -Depth;
-			Vertices[charIndex + 3].Position.Z = -Depth;
+			vertices[charIndex].Position.Z = -Depth;
+			vertices[charIndex + 1].Position.Z = -Depth;
+			vertices[charIndex + 2].Position.Z = -Depth;
+			vertices[charIndex + 3].Position.Z = -Depth;
 
 			// Set rotation.
 			if (FinalRotation != 0.0f)
@@ -837,43 +840,43 @@ namespace GorgonLibrary.Graphics
 				sinVal = MathUtility.Sin(angle);
 
 				// Rotate the vertices.
-                Vertices[charIndex].Position.X = (posX1 * cosVal - posY1 * sinVal);
-                Vertices[charIndex].Position.Y = (posX1 * sinVal + posY1 * cosVal);
-                Vertices[charIndex + 1].Position.X = (posX2 * cosVal - posY1 * sinVal);
-                Vertices[charIndex + 1].Position.Y = (posX2 * sinVal + posY1 * cosVal);
-                Vertices[charIndex + 2].Position.X = (posX2 * cosVal - posY2 * sinVal);
-                Vertices[charIndex + 2].Position.Y = (posX2 * sinVal + posY2 * cosVal);
-                Vertices[charIndex + 3].Position.X = (posX1 * cosVal - posY2 * sinVal);
-                Vertices[charIndex + 3].Position.Y = (posX1 * sinVal + posY2 * cosVal);
+                vertices[charIndex].Position.X = (posX1 * cosVal - posY1 * sinVal);
+                vertices[charIndex].Position.Y = (posX1 * sinVal + posY1 * cosVal);
+                vertices[charIndex + 1].Position.X = (posX2 * cosVal - posY1 * sinVal);
+                vertices[charIndex + 1].Position.Y = (posX2 * sinVal + posY1 * cosVal);
+                vertices[charIndex + 2].Position.X = (posX2 * cosVal - posY2 * sinVal);
+                vertices[charIndex + 2].Position.Y = (posX2 * sinVal + posY2 * cosVal);
+                vertices[charIndex + 3].Position.X = (posX1 * cosVal - posY2 * sinVal);
+                vertices[charIndex + 3].Position.Y = (posX1 * sinVal + posY2 * cosVal);
 			}
 			else
 			{
 				// Else just keep the positions.
-				Vertices[charIndex].Position.X = posX1;
-                Vertices[charIndex].Position.Y = posY1;
-                Vertices[charIndex + 1].Position.X = posX2;
-                Vertices[charIndex + 1].Position.Y = posY1;
-                Vertices[charIndex + 2].Position.X = posX2;
-                Vertices[charIndex + 2].Position.Y = posY2;
-                Vertices[charIndex + 3].Position.X = posX1;
-                Vertices[charIndex + 3].Position.Y = posY2;
+				vertices[charIndex].Position.X = posX1;
+                vertices[charIndex].Position.Y = posY1;
+                vertices[charIndex + 1].Position.X = posX2;
+                vertices[charIndex + 1].Position.Y = posY1;
+                vertices[charIndex + 2].Position.X = posX2;
+                vertices[charIndex + 2].Position.Y = posY2;
+                vertices[charIndex + 3].Position.X = posX1;
+                vertices[charIndex + 3].Position.Y = posY2;
 			}
 
 			// Translate if necessary.
 			if (FinalPosition.X != 0.0)
 			{
-                Vertices[charIndex].Position.X += FinalPosition.X;
-                Vertices[charIndex + 1].Position.X += FinalPosition.X;
-                Vertices[charIndex + 2].Position.X += FinalPosition.X;
-                Vertices[charIndex + 3].Position.X += FinalPosition.X;
+                vertices[charIndex].Position.X += FinalPosition.X;
+                vertices[charIndex + 1].Position.X += FinalPosition.X;
+                vertices[charIndex + 2].Position.X += FinalPosition.X;
+                vertices[charIndex + 3].Position.X += FinalPosition.X;
 			}
 
 			if (FinalPosition.Y != 0.0)
 			{
-                Vertices[charIndex].Position.Y += FinalPosition.Y;
-                Vertices[charIndex + 1].Position.Y += FinalPosition.Y;
-                Vertices[charIndex + 2].Position.Y += FinalPosition.Y;
-                Vertices[charIndex + 3].Position.Y += FinalPosition.Y;
+                vertices[charIndex].Position.Y += FinalPosition.Y;
+                vertices[charIndex + 1].Position.Y += FinalPosition.Y;
+                vertices[charIndex + 2].Position.Y += FinalPosition.Y;
+                vertices[charIndex + 3].Position.Y += FinalPosition.Y;
 			}
 
 			if (calcAABB)
@@ -886,10 +889,10 @@ namespace GorgonLibrary.Graphics
 				// Calculate AABB extents.
 				for (int i = 0; i < 4; i++)
 				{
-					minX = MathUtility.Min(Vertices[charIndex + i].Position.X, minX);
-					minY = MathUtility.Min(Vertices[charIndex + i].Position.Y, minY);
-					maxX = MathUtility.Max(Vertices[charIndex + i].Position.X, maxX);
-					maxY = MathUtility.Max(Vertices[charIndex + i].Position.Y, maxY);
+					minX = MathUtility.Min(vertices[charIndex + i].Position.X, minX);
+					minY = MathUtility.Min(vertices[charIndex + i].Position.Y, minY);
+					maxX = MathUtility.Max(vertices[charIndex + i].Position.X, maxX);
+					maxY = MathUtility.Max(vertices[charIndex + i].Position.Y, maxY);
 				}
 
 				aabbUpdate = new Drawing.RectangleF(minX, minY, maxX - minX, maxY - minY);
@@ -901,64 +904,40 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="charIndex">Vertex index of the character quad to update.</param>
 		/// <param name="glyphInfo">Glyph information.</param>
-		private void UpdateTextureCoordinates(int charIndex, Glyph glyphInfo)
+		/// <param name="vertices">Vertices to update.</param>
+		private void UpdateTextureCoordinates(int charIndex, Glyph glyphInfo, VertexTypeList.PositionDiffuse2DTexture1[] vertices)
 		{
-			Vertices[charIndex].TextureCoordinates = new Vector2D(glyphInfo.ImageDimensions.Left, glyphInfo.ImageDimensions.Top);
-			Vertices[charIndex + 1].TextureCoordinates = new Vector2D(glyphInfo.ImageDimensions.Right, glyphInfo.ImageDimensions.Top);
-			Vertices[charIndex + 2].TextureCoordinates = new Vector2D(glyphInfo.ImageDimensions.Right, glyphInfo.ImageDimensions.Bottom);
-			Vertices[charIndex + 3].TextureCoordinates = new Vector2D(glyphInfo.ImageDimensions.Left, glyphInfo.ImageDimensions.Bottom);
+			vertices[charIndex].TextureCoordinates = new Vector2D(glyphInfo.ImageDimensions.Left, glyphInfo.ImageDimensions.Top);
+			vertices[charIndex + 1].TextureCoordinates = new Vector2D(glyphInfo.ImageDimensions.Right, glyphInfo.ImageDimensions.Top);
+			vertices[charIndex + 2].TextureCoordinates = new Vector2D(glyphInfo.ImageDimensions.Right, glyphInfo.ImageDimensions.Bottom);
+			vertices[charIndex + 3].TextureCoordinates = new Vector2D(glyphInfo.ImageDimensions.Left, glyphInfo.ImageDimensions.Bottom);
 		}
 
 		/// <summary>
-		/// Function to update the dimensions for an object.
+		/// Function to update the dimensions for the object.
 		/// </summary>
-		protected override void UpdateDimensions()
+		/// <param name="vertices">Vertex list to fill.</param>
+		private void UpdateDimensions(VertexTypeList.PositionDiffuse2DTexture1[] vertices)
 		{
-			int vertexCount = 0;				// Number of vertices.
-			string text = string.Empty;			// Text to update.
+			Vector2D position = Vector2D.Zero;	// Position.
 			char character = ' ';				// Character.
 			Glyph charInfo;						// Font character information.
-			Vector2D position = Vector2D.Zero;	// Position.
 			int vertexIndex = 0;				// Vertex index.
-			Drawing.RectangleF bounds;			// Boundaries.
 			float adjustment = 0.0f;			// Adjustment position.
-			Drawing.RectangleF aabbUpdate;		// Updated AABB.
-			bool calcAABB;						// Flag to calculate AABB.
-			
-			if (_font.NeedsUpdate)
-				_font.Refresh();
+			bool calcAABB = true;				// Flag to calculate AABB.
+			Drawing.RectangleF aabbUpdate;		// Updated AABB.			
+			Drawing.RectangleF bounds;			// Boundaries.			
+
+			if (vertices == null)
+				throw new ArgumentNullException("vertices");
 
 			// Get the untransformed AABB.
 			if ((MathUtility.EqualFloat(_size.X, 0.0f)) || (MathUtility.EqualFloat(_size.Y, 0.0f)))
 				UpdateAABB();
 
-			bounds = new System.Drawing.RectangleF(0, 0, _size.X, _size.Y); 
-
 			// Prepare to update the AABB.
-			calcAABB = true;
+			bounds = new System.Drawing.RectangleF(0, 0, _size.X, _size.Y);
 			aabbUpdate = Drawing.RectangleF.Empty;
-
-			// Calculate the number of vertices.
-			if (_shadowed)
-				vertexCount = _text.Length * 8;
-			else
-				vertexCount = _text.Length * 4;
-
-			// If no vertices, do nothing.
-			if (vertexCount == 0)
-			{
-				InitializeVertices(0);
-				return;
-			}
-
-			// Create a new set of vertices.
-			if ((Vertices == null) || (vertexCount > Vertices.Length))
-			{
-				InitializeVertices(vertexCount);
-				IsImageUpdated = true;
-				_colorUpdated = true;
-			}
-
 			position = Vector2D.Zero;
 			vertexIndex = 0;
 
@@ -983,7 +962,7 @@ namespace GorgonLibrary.Graphics
 					charInfo = _font.GetGlyph(character);
 
 					// We need to space it out if we hit a tab.
-					switch(character)
+					switch (character)
 					{
 						case '\t':
 							position.X += charInfo.Size.Width * _tabSpaces;
@@ -992,18 +971,18 @@ namespace GorgonLibrary.Graphics
 							position.X += charInfo.Size.Width;
 							break;
 						default:
-							UpdateTransform(bounds, vertexIndex, character, adjustment, charInfo, calcAABB, ref position, ref aabbUpdate);
+							UpdateTransform(vertices, bounds, vertexIndex, character, adjustment, charInfo, calcAABB, ref position, ref aabbUpdate);
 							position.X += charInfo.Size.Width;
 
-							UpdateTextureCoordinates(vertexIndex, charInfo);
+							UpdateTextureCoordinates(vertexIndex, charInfo, vertices);
 
 							if (_colorUpdated)
-								UpdateColor(vertexIndex);
+								UpdateColor(vertexIndex, vertices);
 
 
 							vertexIndex += 4;
 							break;
-					}						
+					}
 				}
 
 				// Wrap to next line.
@@ -1013,8 +992,192 @@ namespace GorgonLibrary.Graphics
 
 			// Set the new AABB.
 			SetAABB(aabbUpdate);
+		}
+
+		/// <summary>
+		/// Function to update the dimensions for an object.
+		/// </summary>
+		protected override void UpdateDimensions()
+		{
+			int vertexCount = 0;				// Number of vertices.
+			string text = string.Empty;			// Text to update.
+			
+			if (_font.NeedsUpdate)
+				_font.Refresh();
+
+			// Calculate the number of vertices.
+			if (_shadowed)
+				vertexCount = _text.Length * 8;
+			else
+				vertexCount = _text.Length * 4;
+
+			// If no vertices, do nothing.
+			if (vertexCount == 0)
+			{
+				InitializeVertices(0);
+				return;
+			}
+
+			// Create a new set of vertices.
+			if ((Vertices == null) || (vertexCount > Vertices.Length))
+			{
+				InitializeVertices(vertexCount);
+				IsImageUpdated = true;
+				_colorUpdated = true;
+			}
+
+			UpdateDimensions(Vertices);
 			_colorUpdated = false;
 			IsSizeUpdated = false;			
+		}
+
+		/// <summary>
+		/// Function to return the number of vertices for this object.
+		/// </summary>
+		/// <returns>
+		/// An array of vertices used for this renderable.
+		/// </returns>
+		protected internal override BatchVertex[] GetVertices()
+		{
+			int vertexIndex = 0;											// Current vertex index.
+			Vector2D offset = Vector2D.Zero;								// Shadow offset.
+			Glyph glyphData;												// Glyph data.
+			VertexTypeList.PositionDiffuse2DTexture1[] vertices = null;		// Resulting vertex data.
+			BatchVertex[] processed = null;									// Processed vertices.
+			BatchVertex[] result = null;									// Batch vertices.
+			int vertexCount = 0;											// Number of vertices required.
+
+			// Don't draw if we don't need to.
+			if (_text.Length == 0)
+				return null;
+
+			if (_font.NeedsUpdate)
+				_font.Refresh();
+
+			// Calculate the number of required vertices.
+			for (int i = 0; i < _text.Length; i++)
+			{
+				// Write the data to the buffer.			
+				if ((_text[i] != '\r') && (_text[i] != '\n') && (_text[i] != '\t') && (_text[i] != ' '))
+					vertexCount += 4;
+			}
+
+			// If no vertices, do nothing.
+			if (vertexCount == 0)
+				return null;
+
+			// Create a new set of vertices.
+			vertices = new VertexTypeList.PositionDiffuse2DTexture1[vertexCount];
+			processed = new BatchVertex[vertexCount];
+
+			if (_shadowed) 
+				result = new BatchVertex[vertexCount * 2];
+			else
+				result = new BatchVertex[vertexCount];
+
+			_colorUpdated = true;
+
+			// Update the data.
+			UpdateDimensions(vertices);
+
+			// Copy into our result			
+			for (int i = 0; i < _text.Length; i++)
+			{
+				// Write the data to the buffer.			
+				if ((_text[i] != '\r') && (_text[i] != '\n') && (_text[i] != '\t') && (_text[i] != ' '))
+				{
+					glyphData = Font.GetGlyph(_text[i]);
+
+					for (int j = 0; j < 4; j++)
+					{
+						processed[vertexIndex + j].Vertex = vertices[i];
+						processed[vertexIndex + j].ImageName = glyphData.GlyphImage.Name;
+					}
+
+					vertexIndex =+ 4;
+				}				
+			}
+
+
+			// Sort by texture.
+			var sortedVertices = (from vertex in processed
+								 group vertex by vertex.ImageName into vertexGroup
+								 orderby vertexGroup.Count() descending
+								 select vertexGroup);
+
+			vertexIndex = 0;
+
+			// For shadowed vertices we have more work to do.
+			foreach (var vertex in sortedVertices)
+			{
+				for (int i = 0; i < vertex.Count(); i += 4)
+				{
+					result[vertexIndex] = vertex.ElementAt(i);
+					if (_shadowed)
+					{
+						switch (_shadowDir)
+						{
+							case FontShadowDirection.LowerLeft:
+								offset = new Vector2D(-_shadowOffset.X, _shadowOffset.Y);
+								break;
+							case FontShadowDirection.LowerMiddle:
+								offset = new Vector2D(0.0f, _shadowOffset.Y);
+								break;
+							case FontShadowDirection.LowerRight:
+								offset = _shadowOffset;
+								break;
+							case FontShadowDirection.UpperLeft:
+								offset = new Vector2D(-_shadowOffset.X, -_shadowOffset.Y);
+								break;
+							case FontShadowDirection.UpperMiddle:
+								offset = new Vector2D(0.0f, -_shadowOffset.Y);
+								break;
+							case FontShadowDirection.UpperRight:
+								offset = new Vector2D(_shadowOffset.X, -_shadowOffset.Y);
+								break;
+							case FontShadowDirection.MiddleLeft:
+								offset = new Vector2D(-_shadowOffset.X, 0.0f);
+								break;
+							case FontShadowDirection.MiddleRight:
+								offset = new Vector2D(_shadowOffset.X, 0.0f);
+								break;
+						}
+
+						result[vertexIndex].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i).Vertex.TextureCoordinates);
+						result[vertexIndex].ImageName = vertex.ElementAt(i).ImageName;
+						result[vertexIndex + 1].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i).Vertex.TextureCoordinates);
+						result[vertexIndex + 1].ImageName = vertex.ElementAt(i + 1).ImageName;
+						result[vertexIndex + 2].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i).Vertex.TextureCoordinates);
+						result[vertexIndex + 2].ImageName = vertex.ElementAt(i + 2).ImageName;
+						result[vertexIndex + 3].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i).Vertex.TextureCoordinates);
+						result[vertexIndex + 3].ImageName = vertex.ElementAt(i + 3).ImageName;
+
+						result[vertexIndex + 4].Vertex = vertex.ElementAt(i + 4).Vertex;
+						result[vertexIndex + 4].ImageName = vertex.ElementAt(i + 4).ImageName;
+						result[vertexIndex + 5].Vertex = vertex.ElementAt(i + 5).Vertex;
+						result[vertexIndex + 5].ImageName = vertex.ElementAt(i + 5).ImageName;
+						result[vertexIndex + 6].Vertex = vertex.ElementAt(i + 6).Vertex;
+						result[vertexIndex + 6].ImageName = vertex.ElementAt(i + 6).ImageName;
+						result[vertexIndex + 7].Vertex = vertex.ElementAt(i + 7).Vertex;
+						result[vertexIndex + 7].ImageName = vertex.ElementAt(i + 7).ImageName;
+						vertexIndex += 8;
+					}
+					else
+					{
+						result[vertexIndex].Vertex = vertex.ElementAt(i).Vertex;
+						result[vertexIndex].ImageName = vertex.ElementAt(i).ImageName;
+						result[vertexIndex + 1].Vertex = vertex.ElementAt(i + 1).Vertex;
+						result[vertexIndex + 1].ImageName = vertex.ElementAt(i + 1).ImageName;
+						result[vertexIndex + 2].Vertex = vertex.ElementAt(i + 2).Vertex;
+						result[vertexIndex + 2].ImageName = vertex.ElementAt(i + 2).ImageName;
+						result[vertexIndex + 3].Vertex = vertex.ElementAt(i + 3).Vertex;
+						result[vertexIndex + 3].ImageName = vertex.ElementAt(i + 3).ImageName;
+						vertexIndex += 4;
+					}
+				}
+			}
+
+			return result;
 		}
 
 		/// <summary>
