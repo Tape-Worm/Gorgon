@@ -1511,28 +1511,28 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to return the number of vertices for this object.
+		/// </summary>
+		/// <returns>An array of vertices used for this renderable.</returns>
+		protected internal abstract BatchVertex[] GetVertices();
+
+		/// <summary>
 		/// Function to update children.
 		/// </summary>
 		public void UpdateChildren()
 		{
-			Renderable child = null;        // Child object.
-
 			if (_children.Count < 1)
 				return;
 
 			// Update children.
 			for (int i = 0; i < _children.Count; i++)
 			{
-				child = (Renderable)_children[i];
-				if (child != null)
-				{
-					child._needParentUpdate = true;
+				_children[i]._needParentUpdate = true;
 
-					child._parentPosition = FinalPosition;
-					child._parentRotation = FinalRotation;
-					child._parentScale = FinalScale;
-					_children[i].UpdateChildren();
-				}
+				_children[i]._parentPosition = FinalPosition;
+				_children[i]._parentRotation = FinalRotation;
+				_children[i]._parentScale = FinalScale;
+				_children[i].UpdateChildren();
 			}
 		}
 

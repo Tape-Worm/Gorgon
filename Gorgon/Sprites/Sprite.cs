@@ -515,6 +515,17 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to return the number of vertices for this object.
+		/// </summary>
+		/// <returns>
+		/// An array of vertices used for this renderable.
+		/// </returns>
+		protected internal override BatchVertex[] GetVertices()
+		{
+			return null;
+		}
+
+		/// <summary>
 		/// Function to return a sprite from a stream.
 		/// </summary>
 		/// <param name="stream">Stream that contains the sprite.</param>

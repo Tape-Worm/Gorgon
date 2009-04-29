@@ -228,6 +228,7 @@
     <Compile Include="Shaders\VertexShader.cs" />
     <Compile Include="Sprites\Batch.cs" />
     <Compile Include="Sprites\Geometry.cs" />
+    <Compile Include="Sprites\StateFence.cs" />
     <Compile Include="Sprites\StaticTextSprite.cs" />
     <Compile Include="Sprites\TextSprite.cs" />
     <Compile Include="Targets\PrimaryRenderWindow.cs" />
