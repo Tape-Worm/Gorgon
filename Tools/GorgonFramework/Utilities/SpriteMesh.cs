@@ -342,6 +342,17 @@ namespace GorgonLibrary.Graphics.Utilities
 
 			return (Vector3D)result;
 		}
+
+		/// <summary>
+		/// Function to return the number of vertices for this object.
+		/// </summary>
+		/// <returns>
+		/// An array of vertices used for this renderable.
+		/// </returns>
+		protected override VertexTypeList.PositionDiffuse2DTexture1[] GetVertices()
+		{
+			throw new NotImplementedException();
+		}
 		
 		/// <summary>
 		/// Function to update the dimensions for an object.
