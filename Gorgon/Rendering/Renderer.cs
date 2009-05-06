@@ -64,18 +64,17 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
+				if (Gorgon.CurrentRenderTarget == null)
+					return false;
+
 				if (Gorgon.Screen.DeviceNotReset)
 				{
-					// Reset offsets for buffers.
+					// Reset offsets for global buffers.
 					Geometry.VerticesWritten = 0;
 					Geometry.VertexOffset = 0;
 					Gorgon.GlobalStateSettings.DeviceLost();
 					return false;
 				}
-
-				// Do nothing if the active render target is to be drawn by the user.
-				if ((Gorgon.CurrentRenderTarget == null) || (Geometry.VerticesWritten < 1))
-					return false;
 
 				return true;
 			}
@@ -270,14 +269,32 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to draw cached triangles.
 		/// </summary>
-		internal void DrawCachedTriangles()
+		/// <param name="primitiveStyle">The type of triangle to draw.</param>
+		/// <param name="vertexOffset">Starting vertex to render.</param>
+		/// <param name="vertexCount">Number of vertices to render.</param>
+		/// <param name="indexOffset">Starting index to render.</param>
+		/// <param name="indexCount">Number of indices to render.</param>
+		internal void DrawCachedTriangles(PrimitiveStyle primitiveStyle, int vertexOffset, int vertexCount, int indexOffset, int indexCount)
 		{
 			DX.Configuration.ThrowOnError = false;
-			if ((Geometry.UseIndices) && (Geometry.IndicesWritten > 0))
-				D3DDevice.DrawIndexedPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, 0, Geometry.VerticesWritten, Geometry.IndexOffset, CalculateIndices(true, 0, Geometry.IndicesWritten, Geometry.PrimitiveStyle));
+			if ((indexCount > 0) && (this._currentIndexBuffer != null))
+				D3DDevice.DrawIndexedPrimitives(Converter.Convert(primitiveStyle), vertexOffset, 0, vertexCount, indexOffset, CalculateIndices(true, 0, indexCount, primitiveStyle));
 			else
-				D3DDevice.DrawPrimitives(Converter.Convert(Geometry.PrimitiveStyle), Geometry.VertexOffset, CalculateIndices(false, Geometry.VerticesWritten, 0, Geometry.PrimitiveStyle));
+				D3DDevice.DrawPrimitives(Converter.Convert(primitiveStyle), vertexOffset, CalculateIndices(false, vertexCount, 0, primitiveStyle));
 			DX.Configuration.ThrowOnError = true;
+		}
+
+		/// <summary>
+		/// Function to set the world transform.
+		/// </summary>
+		/// <param name="index">Index of the world transform to set.</param>
+		/// <param name="matrix">Matrix to set as the transform.</param>
+		public void SetWorldTransform(int index, Matrix matrix)
+		{
+			if (D3DDevice == null)
+				return;
+
+			D3DDevice.SetTransform(index, Converter.Convert(matrix));
 		}
 
 		/// <summary>
@@ -518,21 +535,50 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to perform rendering.
+		/// Function to perform rendering using the default render geometry.
 		/// </summary>
 		public void Render()
+		{
+			// Do nothing if the active render target is to be drawn by the user.
+			if ((Gorgon.CurrentRenderTarget == null) || (Geometry.VerticesWritten < 1))
+				return;
+
+			Render(Geometry.VertexType, Geometry.VertexBuffer, (Geometry.UseIndices ? Geometry.IndexBuffer : null), Geometry.PrimitiveStyle, Geometry.VertexOffset, Geometry.VerticesWritten, (Geometry.UseIndices ? Geometry.IndexOffset : 0), (Geometry.UseIndices ? Geometry.IndicesWritten : 0));
+
+			// Flush.
+			Geometry.VertexOffset = 0;
+			Geometry.VerticesWritten = 0;
+		}
+
+		/// <summary>
+		/// Function to perform rendering.
+		/// </summary>
+		/// <param name="vertexType">Type description of the vertex to render.</param>
+		/// <param name="vertexBuffer">Vertex buffer to render.</param>
+		/// <param name="indexBuffer">Optional index buffer.</param>
+		/// <param name="primitiveStyle">Style of primitive to use.</param>
+		/// <param name="vertexStart">Starting vertex to render.</param>
+		/// <param name="vertexCount">Number of vertices to render.</param>
+		/// <param name="indexStart">Starting index to render.</param>
+		/// <param name="indexCount">Number of indices to render.</param>
+		public void Render(VertexType vertexType, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, PrimitiveStyle primitiveStyle, int vertexStart, int vertexCount, int indexStart, int indexCount)
 		{
 			if (!CanRender)
 				return;
 
+			if (vertexType == null)
+				throw new ArgumentNullException("vertexType");
+			if (vertexBuffer == null)
+				throw new ArgumentNullException("vertexBuffer");
+
 			// Begin the rendering process.
 			BeginRendering();
+			
+			SetVertexType(vertexType);
+			SetStreamData(vertexBuffer);
 
-			SetVertexType(Geometry.VertexType);
-			SetStreamData(Geometry.VertexBuffer);
-
-			if ((Geometry.UseIndices) && (Geometry.IndicesWritten > 0))
-				SetIndexBuffer(Geometry.IndexBuffer);
+			if ((indexBuffer != null) && (indexCount > 0))
+				SetIndexBuffer(indexBuffer);
 
 			// Begin shader.
 			if (Gorgon.CurrentShader != null)
@@ -541,16 +587,12 @@ namespace GorgonLibrary.Graphics
 				if (shader != null)
 				{
 					shader.Begin();
-					shader.Render();
+					shader.Render(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 					shader.End();
 				}
 			}
 			else
-				DrawCachedTriangles();
-
-			// Flush.
-			Geometry.VertexOffset = 0;
-			Geometry.VerticesWritten = 0;
+				DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 
 			EndRendering();
 		}
