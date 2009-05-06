@@ -26,8 +26,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework", "Tools\Go
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonZipFileSystem", "PlugIns\GorgonZipFileSystem\GorgonZipFileSystem.csproj", "{95B2A3B4-AB25-4DA4-88C0-903B811CD944}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester2_x64", "Examples\Tester2\Tester2_x64.csproj", "{005AC34C-F568-4BB9-B58B-1CE87958B862}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,10 +72,6 @@ Global
 		{95B2A3B4-AB25-4DA4-88C0-903B811CD944}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95B2A3B4-AB25-4DA4-88C0-903B811CD944}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95B2A3B4-AB25-4DA4-88C0-903B811CD944}.Release|Any CPU.Build.0 = Release|Any CPU
-		{005AC34C-F568-4BB9-B58B-1CE87958B862}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{005AC34C-F568-4BB9-B58B-1CE87958B862}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{005AC34C-F568-4BB9-B58B-1CE87958B862}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{005AC34C-F568-4BB9-B58B-1CE87958B862}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
