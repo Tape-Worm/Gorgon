@@ -522,7 +522,26 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		protected internal override BatchVertex[] GetVertices()
 		{
-			return null;
+			BatchVertex[] result = new BatchVertex[Vertices.Length];
+
+			if (IsSizeUpdated)
+				UpdateDimensions();
+			if (IsImageUpdated)
+				UpdateImageLayer();
+
+			// Update the AABB.			
+			if (IsAABBUpdated)
+				UpdateAABB();
+			else
+				UpdateTransform();
+
+			for (int i = 0; i < Vertices.Length; i++)
+			{
+				result[i].Vertex = Vertices[i];
+				result[i].Image = Image;
+			}
+
+			return result;
 		}
 
 		/// <summary>

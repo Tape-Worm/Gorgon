@@ -108,7 +108,12 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function called when rendering with this shader.
 		/// </summary>
-		protected abstract void OnRender();
+		/// <param name="primitiveStyle">Type of primitive to render.</param>
+		/// <param name="vertexStart">Starting vertex to render.</param>
+		/// <param name="vertexCount">Number of vertices to render.</param>
+		/// <param name="indexStart">Starting index to render.</param>
+		/// <param name="indexCount">Number of indices to render.</param>
+		protected abstract void OnRender(PrimitiveStyle primitiveStyle, int vertexStart, int vertexCount, int indexStart, int indexCount);
 
 		/// <summary>
 		/// Function called after the rendering ends with this shader.
@@ -147,9 +152,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to render with the shader.
 		/// </summary>
-		void IShaderRenderer.Render()
+		/// <param name="primitiveStyle">Type of primitive to render.</param>
+		/// <param name="vertexStart">Starting vertex to render.</param>
+		/// <param name="vertexCount">Number of vertices to render.</param>
+		/// <param name="indexStart">Starting index to render.</param>
+		/// <param name="indexCount">Number of indices to render.</param>
+		void IShaderRenderer.Render(PrimitiveStyle primitiveStyle, int vertexStart, int vertexCount, int indexStart, int indexCount)
 		{
-			OnRender();
+			OnRender(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 		}
 		
 		/// <summary>

@@ -349,7 +349,7 @@ namespace GorgonLibrary.Graphics.Utilities
 		/// <returns>
 		/// An array of vertices used for this renderable.
 		/// </returns>
-		protected override VertexTypeList.PositionDiffuse2DTexture1[] GetVertices()
+		protected override BatchVertex[] GetVertices()
 		{
 			throw new NotImplementedException();
 		}

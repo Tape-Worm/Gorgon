@@ -119,8 +119,16 @@
 
 <div>
 	<pre>
-April 27/2009 - Version - Current
+April 29/2009 - Version - Current
 ===============================================================================================
++ Added a Batch object to facilitate quickly blitting sprites to a render target.
+
++ Added a protected GetVertices() to return the vertices composing a Renderable object.
+
+* Modified several internal rendering functions to take their data from various sources.
+
+* Fixed a BIG bug in TextSprite.Clone where hardly any properties were cloned.  How dumb of me.
+
 * Found and repaired some potential x64 issues.
 
 - Removed the Mount()/Unmount() functions from the file system.  These really served no 

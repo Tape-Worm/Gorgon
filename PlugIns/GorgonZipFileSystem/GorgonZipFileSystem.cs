@@ -44,7 +44,6 @@ namespace GorgonLibrary.FileSystems
         : FileSystem
     {
         #region Variables.
-        private MemoryStream _dataStream = null;        // Data stream.   
 		private Stream _fileStream = null;				// File stream for packed file.
 		private bool _streamIsRoot = false;				// Flag to indicate that the root of the file system is from a stream.
 		private long _fileSystemOffset = 0;				// Offset within the file system.
