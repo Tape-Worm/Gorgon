@@ -37,7 +37,10 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Object representing a static text sprite.
 	/// </summary>
-	/// <remarks>This sprite type is used optimize text display by keeping the text static.  Using dynamic text in this object will greatly hinder performance.</remarks>
+	/// <remarks>This sprite type is used optimize text display by keeping the text static.  Using dynamic text in this object will greatly hinder performance.
+	/// <para>This object is now obsolete and should not be used.  It will be removed in the next version.  Please use the <see cref="GorgonLibrary.Graphics.Batch">Batch</see> 
+	/// object instead.</para></remarks>
+	[Obsolete("This object is now obsolete and will be removed within the next version.  Please use the Batch object instead.")]
 	public class StaticTextSprite
 		: Renderable, IDisposable, IDeviceStateObject
 	{

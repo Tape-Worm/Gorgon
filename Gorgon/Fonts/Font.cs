@@ -1282,8 +1282,8 @@ namespace GorgonLibrary.Graphics
 				while (_invalidChars.Length > 0)
 				{
 					_needUpdate = true;
-					UpdateFont(_invalidChars);
 					_imageCount++;
+					UpdateFont(_invalidChars);					
 				}
 
 				// Reset character height.

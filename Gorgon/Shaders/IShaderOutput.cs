@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
 {
@@ -45,7 +46,12 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to render with the shader.
 		/// </summary>
-		void Render();
+		/// <param name="primitiveStyle">Type of primitive to render.</param>
+		/// <param name="vertexStart">Starting vertex to render.</param>
+		/// <param name="vertexCount">Number of vertices to render.</param>
+		/// <param name="indexStart">Starting index to render.</param>
+		/// <param name="indexCount">Number of indices to render.</param>
+		void Render(PrimitiveStyle primitiveStyle, int vertexStart, int vertexCount, int indexStart, int indexCount);
 
 		/// <summary>
 		/// Function to end rendering with the shader.
