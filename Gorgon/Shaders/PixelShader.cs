@@ -33,6 +33,7 @@ using System.Resources;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Serialization;
+using GorgonLibrary.Internal;
 using GorgonLibrary.FileSystems;
 
 namespace GorgonLibrary.Graphics
@@ -101,9 +102,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function called when rendering with this shader.
 		/// </summary>
-		protected override void OnRender()
+		/// <param name="primitiveStyle">Type of primitive to render.</param>
+		/// <param name="vertexStart">Starting vertex to render.</param>
+		/// <param name="vertexCount">Number of vertices to render.</param>
+		/// <param name="indexStart">Starting index to render.</param>
+		/// <param name="indexCount">Number of indices to render.</param>
+		protected override void OnRender(PrimitiveStyle primitiveStyle, int vertexStart, int vertexCount, int indexStart, int indexCount)
 		{
-			Gorgon.Renderer.DrawCachedTriangles();
+			Gorgon.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 		}
 
 		/// <summary>

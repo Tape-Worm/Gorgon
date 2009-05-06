@@ -979,8 +979,7 @@ namespace GorgonLibrary.Graphics
 							if (_colorUpdated)
 								UpdateColor(vertexIndex, vertices);
 
-
-							vertexIndex += 4;
+								vertexIndex += 4;
 							break;
 					}
 				}
@@ -1090,18 +1089,18 @@ namespace GorgonLibrary.Graphics
 
 					for (int j = 0; j < 4; j++)
 					{
-						processed[vertexIndex + j].Vertex = vertices[i];
-						processed[vertexIndex + j].ImageName = glyphData.GlyphImage.Name;
+						processed[vertexIndex + j].Vertex = vertices[vertexIndex + j];
+						processed[vertexIndex + j].Image = glyphData.GlyphImage;
 					}
 
-					vertexIndex =+ 4;
+					vertexIndex += 4;
 				}				
 			}
 
 
 			// Sort by texture.
 			var sortedVertices = (from vertex in processed
-								 group vertex by vertex.ImageName into vertexGroup
+								 group vertex by vertex.Image into vertexGroup
 								 orderby vertexGroup.Count() descending
 								 select vertexGroup);
 
@@ -1112,7 +1111,6 @@ namespace GorgonLibrary.Graphics
 			{
 				for (int i = 0; i < vertex.Count(); i += 4)
 				{
-					result[vertexIndex] = vertex.ElementAt(i);
 					if (_shadowed)
 					{
 						switch (_shadowDir)
@@ -1144,34 +1142,34 @@ namespace GorgonLibrary.Graphics
 						}
 
 						result[vertexIndex].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i).Vertex.TextureCoordinates);
-						result[vertexIndex].ImageName = vertex.ElementAt(i).ImageName;
-						result[vertexIndex + 1].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i).Vertex.TextureCoordinates);
-						result[vertexIndex + 1].ImageName = vertex.ElementAt(i + 1).ImageName;
-						result[vertexIndex + 2].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i).Vertex.TextureCoordinates);
-						result[vertexIndex + 2].ImageName = vertex.ElementAt(i + 2).ImageName;
-						result[vertexIndex + 3].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i).Vertex.TextureCoordinates);
-						result[vertexIndex + 3].ImageName = vertex.ElementAt(i + 3).ImageName;
+						result[vertexIndex].Image = vertex.ElementAt(i).Image;
+						result[vertexIndex + 1].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i + 1).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i + 1).Vertex.TextureCoordinates);
+						result[vertexIndex + 1].Image = vertex.ElementAt(i + 1).Image;
+						result[vertexIndex + 2].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i + 2).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i + 2).Vertex.TextureCoordinates);
+						result[vertexIndex + 2].Image = vertex.ElementAt(i + 2).Image;
+						result[vertexIndex + 3].Vertex = new VertexTypeList.PositionDiffuse2DTexture1(Vector3D.Add(vertex.ElementAt(i + 3).Vertex.Position, offset), _shadowColor, vertex.ElementAt(i + 3).Vertex.TextureCoordinates);
+						result[vertexIndex + 3].Image = vertex.ElementAt(i + 3).Image;
 
-						result[vertexIndex + 4].Vertex = vertex.ElementAt(i + 4).Vertex;
-						result[vertexIndex + 4].ImageName = vertex.ElementAt(i + 4).ImageName;
-						result[vertexIndex + 5].Vertex = vertex.ElementAt(i + 5).Vertex;
-						result[vertexIndex + 5].ImageName = vertex.ElementAt(i + 5).ImageName;
-						result[vertexIndex + 6].Vertex = vertex.ElementAt(i + 6).Vertex;
-						result[vertexIndex + 6].ImageName = vertex.ElementAt(i + 6).ImageName;
-						result[vertexIndex + 7].Vertex = vertex.ElementAt(i + 7).Vertex;
-						result[vertexIndex + 7].ImageName = vertex.ElementAt(i + 7).ImageName;
+						result[vertexIndex + 4].Vertex = vertex.ElementAt(i).Vertex;
+						result[vertexIndex + 4].Image = vertex.ElementAt(i).Image;
+						result[vertexIndex + 5].Vertex = vertex.ElementAt(i + 1).Vertex;
+						result[vertexIndex + 5].Image = vertex.ElementAt(i + 1).Image;
+						result[vertexIndex + 6].Vertex = vertex.ElementAt(i + 2).Vertex;
+						result[vertexIndex + 6].Image = vertex.ElementAt(i + 2).Image;
+						result[vertexIndex + 7].Vertex = vertex.ElementAt(i + 3).Vertex;
+						result[vertexIndex + 7].Image = vertex.ElementAt(i + 3).Image;
 						vertexIndex += 8;
 					}
 					else
 					{
 						result[vertexIndex].Vertex = vertex.ElementAt(i).Vertex;
-						result[vertexIndex].ImageName = vertex.ElementAt(i).ImageName;
+						result[vertexIndex].Image = vertex.ElementAt(i).Image;
 						result[vertexIndex + 1].Vertex = vertex.ElementAt(i + 1).Vertex;
-						result[vertexIndex + 1].ImageName = vertex.ElementAt(i + 1).ImageName;
+						result[vertexIndex + 1].Image = vertex.ElementAt(i + 1).Image;
 						result[vertexIndex + 2].Vertex = vertex.ElementAt(i + 2).Vertex;
-						result[vertexIndex + 2].ImageName = vertex.ElementAt(i + 2).ImageName;
+						result[vertexIndex + 2].Image = vertex.ElementAt(i + 2).Image;
 						result[vertexIndex + 3].Vertex = vertex.ElementAt(i + 3).Vertex;
-						result[vertexIndex + 3].ImageName = vertex.ElementAt(i + 3).ImageName;
+						result[vertexIndex + 3].Image = vertex.ElementAt(i + 3).Image;
 						vertexIndex += 4;
 					}
 				}
@@ -1458,19 +1456,31 @@ namespace GorgonLibrary.Graphics
 		{
 			TextSprite clone = new TextSprite(Name + ".Clone", _text.ToString(), _font);		// Create clone.
 
-			for (int i = 0; i < Vertices.Length; i++)
-				clone.Vertices[i] = Vertices[i];
-
 			clone.SetParent(Parent);
 			clone.Size = Size;
 			clone.Position = Position;
 			clone.Rotation = Rotation;
 			clone.Scale = Scale;
 			clone.Axis = Axis;
-			clone.SetAABB(AABB);
 			clone.ParentPosition = ParentPosition;
 			clone.ParentRotation = ParentRotation;
 			clone.ParentScale = ParentScale;
+			clone.ShadowColor = ShadowColor;
+			clone.ShadowDirection = ShadowDirection;
+			clone.Shadowed = Shadowed;
+			clone.Alignment = Alignment;
+			clone.Depth = Depth;
+			clone.AutoAdjustCRLF = AutoAdjustCRLF;
+			clone.BorderColor = BorderColor;
+			if (clone.Bounds != null)
+				clone.Bounds = new Viewport(Bounds.Dimensions.Left, Bounds.Dimensions.Top, Bounds.Dimensions.Width, Bounds.Dimensions.Height);
+			clone.Color = Color;
+			clone.Font = Font;
+			clone.ImageOffset = ImageOffset;
+			clone.Opacity = Opacity;
+			clone.TabSpaces = TabSpaces;
+			clone.Text = Text;
+			clone.WordWrap = WordWrap;
 
 			if (!InheritSmoothing)
 				clone.Smoothing = Smoothing;
@@ -1502,12 +1512,19 @@ namespace GorgonLibrary.Graphics
 				clone.StencilReference = StencilReference;
 			if (!InheritStencilMask)
 				clone.StencilMask = StencilMask;
+			if (!InheritDepthBias)
+				clone.DepthBufferBias = DepthBufferBias;
+			if (!InheritDepthTestFunction)
+				clone.DepthTestFunction = DepthTestFunction;
+			if (!InheritDepthWriteEnabled)
+				clone.DepthWriteEnabled = DepthWriteEnabled;
 
 			// Clone the animations.
 			Animations.CopyTo(clone.Animations);
 
 			clone.InheritScale = InheritScale;
 			clone.InheritRotation = InheritRotation;
+			clone.SetAABB(AABB);
 			clone.Refresh();
 
 			return clone;

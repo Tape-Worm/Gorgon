@@ -159,13 +159,18 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to render with the shader.
 		/// </summary>
-		void IShaderRenderer.Render()
+		/// <param name="primitiveStyle">Type of primitive to render.</param>
+		/// <param name="vertexStart">Starting vertex to render.</param>
+		/// <param name="vertexCount">Number of vertices to render.</param>
+		/// <param name="indexStart">Starting index to render.</param>
+		/// <param name="indexCount">Number of indices to render.</param>
+		void IShaderRenderer.Render(PrimitiveStyle primitiveStyle, int vertexStart, int vertexCount, int indexStart, int indexCount)
 		{
 			// Begin rendering each pass.
 			for (int i = 0; i < _passes.Count; i++)
 			{
 				_owner.D3DEffect.BeginPass(i);
-				Gorgon.Renderer.DrawCachedTriangles();
+				Gorgon.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 				_owner.D3DEffect.EndPass();
 			}
 		}
