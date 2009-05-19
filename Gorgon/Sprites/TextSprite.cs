@@ -1038,13 +1038,13 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		protected internal override BatchVertex[] GetVertices()
 		{
-			int vertexIndex = 0;											// Current vertex index.
-			Vector2D offset = Vector2D.Zero;								// Shadow offset.
-			Glyph glyphData;												// Glyph data.
+			int vertexIndex = 0;													// Current vertex index.
+			Vector2D offset = Vector2D.Zero;										// Shadow offset.
+			Glyph glyphData;														// Glyph data.
 			VertexTypeList.PositionDiffuse2DTexture1[] vertices = null;		// Resulting vertex data.
-			BatchVertex[] processed = null;									// Processed vertices.
-			BatchVertex[] result = null;									// Batch vertices.
-			int vertexCount = 0;											// Number of vertices required.
+			BatchVertex[] processed = null;											// Processed vertices.
+			BatchVertex[] result = null;											// Batch vertices.
+			int vertexCount = 0;													// Number of vertices required.
 
 			// Don't draw if we don't need to.
 			if (_text.Length == 0)

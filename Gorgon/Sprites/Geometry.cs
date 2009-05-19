@@ -39,9 +39,9 @@ namespace GorgonLibrary.Internal
 	{
 		#region Variables.
 		private static VertexCache<VertexTypeList.PositionDiffuse2DTexture1> _vertices;	// Cache vertex buffer.
-		private static IndexCache<short> _indices;										// Cache index buffer.			
-		private static PrimitiveStyle _currentPrimitiveStyle;							// Current used primitive style.
-		private static bool _currentUseIndices;											// Current use indices flag.			
+		private static IndexCache<short> _indices;												// Cache index buffer.			
+		private static PrimitiveStyle _currentPrimitiveStyle;									// Current used primitive style.
+		private static bool _currentUseIndices;													// Current use indices flag.			
 		#endregion
 
 		#region Properties.

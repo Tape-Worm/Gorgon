@@ -66,7 +66,7 @@ namespace GorgonLibrary.Graphics.Tools
 					_zoomerWindowSize = 512.0f;
 
 				Settings.Root = "Zoomer";
-				Settings.SetSetting("ZoomerWindowSize", _zoomerWindowSize.ToString("0.0"));
+				Settings.SetSetting("ZoomerWindowSize", _zoomerWindowSize.ToString("0.0", System.Globalization.CultureInfo.CurrentUICulture));
 				Settings.Root = null;
 				_zoomerSprite.Width = _zoomerWindowSize;
 				_zoomerSprite.Height = _zoomerWindowSize;
@@ -91,10 +91,10 @@ namespace GorgonLibrary.Graphics.Tools
 				if (_zoomerScale > 16.0f)
 					_zoomerScale = 16.0f;
 
-				_zoomerCaption.Text = "Zoomer - " + _zoomerScale.ToString("0.0") + "x";
+				_zoomerCaption.Text = "Zoomer - " + _zoomerScale.ToString("0.0", System.Globalization.CultureInfo.CurrentUICulture) + "x";
 
 				Settings.Root = "Zoomer";
-				Settings.SetSetting("ZoomerScale", _zoomerScale.ToString("0.0"));
+				Settings.SetSetting("ZoomerScale", _zoomerScale.ToString("0.0", System.Globalization.CultureInfo.CurrentUICulture));
 				Settings.Root = null;
 			}
 		}
@@ -127,11 +127,22 @@ namespace GorgonLibrary.Graphics.Tools
 		{
 			try
 			{
-				Settings.Root = "Zoomer";
-				_zoomerScale = Convert.ToSingle(Settings.GetSetting("ZoomerScale", "1.5"));
-				_zoomerCaption.Text = "Zoomer - " + _zoomerScale.ToString("0.0") + "x";
+				Settings.Root = "Zoomer";				
+				_zoomerScale = Convert.ToSingle(Settings.GetSetting("ZoomerScale", "1" + System.Globalization.CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator + "5"), System.Globalization.CultureInfo.CurrentUICulture);
 				_zoomerFollows = string.Compare(Settings.GetSetting("ZoomerFollowsCursor", "true"), "true", true) == 0;
-				_zoomerWindowSize = Convert.ToSingle(Settings.GetSetting("ZoomerWindowSize", "192.0"));
+				_zoomerWindowSize = Convert.ToSingle(Settings.GetSetting("ZoomerWindowSize", "192" + System.Globalization.CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator + "0"), System.Globalization.CultureInfo.CurrentUICulture);
+
+				if (_zoomerWindowSize < 128.0f)
+					_zoomerWindowSize = 128.0f;
+				if (_zoomerWindowSize > 512.0f)
+					_zoomerWindowSize = 512.0f;
+
+				if (_zoomerScale < 0.1f)
+					_zoomerScale = 0.1f;
+				if (_zoomerScale > 16.0f)
+					_zoomerScale = 16.0f;
+
+				_zoomerCaption.Text = "Zoomer - " + _zoomerScale.ToString("0.0", System.Globalization.CultureInfo.CurrentUICulture) + "x";
 				Settings.Root = null;
 			}
 			catch (Exception ex)
