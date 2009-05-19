@@ -41,10 +41,13 @@ namespace GorgonLibrary.Graphics
 		: NamedObject, IShaderRenderer
 	{
 		#region Variables.
-		private D3D9.EffectHandle _effectHandle;		// Handle to the technique.
-		private ShaderPassList _passes;					// List of passes.
-		private FXShader _owner;							// Shader that owns the technique.
-		private ShaderParameterList _parameters;		// Shader parameters.
+		private D3D9.EffectHandle _effectHandle;				// Handle to the technique.
+		private ShaderPassList _passes;							// List of passes.
+		private FXShader _owner;								// Shader that owns the technique.
+		private ShaderParameterList _parameters;				// Shader parameters.
+		private IShaderParameter _projectionMatrix = null;		// Projection matrix parameter.
+		private IShaderParameter _spriteImage = null;			// Sprite image parameter.
+		private IShaderParameter _spriteWorldMatrix = null;		// Sprite world matrix parameter.
 		#endregion
 
 		#region Properties.
@@ -143,13 +146,141 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region IShaderRenderer Members
+		#region Properties.
+		/// <summary>
+		/// Property to return whether a projection matrix is available in the shader.
+		/// </summary>
+		/// <remarks>This shader constant should be represented in the shader as: <c>float4x4 _projectionMatrix</c>.  If this constant is found, this value will return TRUE.
+		/// <para>If this is available the library will automatically assign a value to the constant for use in the shader.  This will contain a copy of the current projection <see cref="GorgonLibrary.Matrix">matrix</see> 
+		/// used by the current <see cref="GorgonLibrary.Graphics.Viewport">viewport</see>.</para></remarks>
+		public bool HasProjectionMatrix
+		{
+			get
+			{
+				return _projectionMatrix != null;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether a sprite image is available in the shader.
+		/// </summary>
+		/// <remarks>This shader constant should be represented in the shader as: <c>Texture _spriteImage</c>.  If this constant is found, this value will return TRUE.
+		/// <para>If this is available the library will automatically assign a value to the constant for use in the shader.  This will typically be the current image used by a <see cref="GorgonLibrary.Graphics.Sprite">sprite</see> 
+		/// or a series of sprites (if using the same image).</para></remarks>
+		public bool HasSpriteImage
+		{
+			get
+			{
+				return _spriteImage != null;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether a sprite transformation matrix is available in the shader.
+		/// </summary>
+		/// <remarks>This shader constant should be represented in the shader as: <c>float4x4 _spriteWorldMatrix</c>.  If this constant is found, this value will return TRUE.
+		/// <para>If this is available the library will automatically assign a value to the constant for use in the shader.  The constant will contain a <see cref="GorgonLibrary.Matrix">matrix</see> representing the all the transformations
+		/// for the vertices of the sprite.</para></remarks>
+		public bool HasSpriteWorldMatrix
+		{
+			get
+			{
+				return _spriteWorldMatrix != null;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the pre-defined constant parameters from a shader.
+		/// </summary>
+		/// <remarks>
+		/// A shader can contain pre-defined constant values that the library will update automatically.  This is done to cut down on some redundant code that the user will
+		/// typically always have to perform when calling a shader.  For example, the user may have 3 shaders and each time a shader is used the current sprite image would have to
+		/// be set by the user each time the image changed for each sprite.  Additionally, passing the transformations (i.e. rotation, scaling and translation) to the shader
+		/// is also more work than it needs to be.
+		/// <para>To use this "default" functionality your shader will have to implement one of these constants:
+		/// <list type="table">
+		/// 			<listheader>
+		/// 				<term>Constant type and name</term>
+		/// 				<description>Description</description>
+		/// 			</listheader>
+		/// 			<item>
+		/// 				<term>float4x4 _projectionMatrix</term>
+		/// 				<description>The current projection <see cref="GorgonLibrary.Matrix">matrix</see> defined by the current <see cref="GorgonLibrary.Graphics.Viewport">Viewport</see>.  Use this to transform vertices in a vertex shader into screen space.</description>
+		/// 			</item>
+		/// 			<item>
+		/// 				<term>Texture _spriteImage</term>
+		/// 				<description>This is the currently active <see cref="GorgonLibrary.Graphics.Image">image</see> (at index 0 in the texture stage) for a given <see cref="GorgonLibrary.Graphics.Sprite">Sprite</see> or series of sprites.</description>
+		/// 			</item>
+		/// 		</list>
+		/// 	</para>
+		/// 	<para>The constants are case sensitive and as such must be declared exactly as shown in the table above with the leading underscore character.  If the constant is not
+		/// named properly it will not be used as a default.</para>
+		/// 	<para>To test whether the default constants are available, check the return value of <see cref="GorgonLibrary.Graphics.IShaderRenderer.HasProjectionMatrix">HasProjectionMatrix</see>
+		/// or <see cref="GorgonLibrary.Graphics.IShaderRenderer.HasSpriteImage">HasSpriteImage</see> and if
+		/// these properties return TRUE, then the constant has been implemented.</para>
+		/// 	<para>This function is meant to be called internally by the shader.</para>
+		/// </remarks>
+		void IShaderRenderer.GetDefinedConstants()
+		{
+			_projectionMatrix = null;
+			_spriteImage = null;
+			_spriteWorldMatrix = null;
+
+			if (Owner.Parameters.Contains("_projectionMatrix"))
+				_projectionMatrix = Owner.Parameters["_projectionMatrix"];
+			if (Owner.Parameters.Contains("_spriteImage"))
+				_spriteImage = Owner.Parameters["_spriteImage"];
+			if (Owner.Parameters.Contains("_spriteWorldMatrix"))
+				_spriteWorldMatrix = Owner.Parameters["_spriteWorldMatrix"];
+		}
+
+		/// <summary>
+		/// Function to return the parameter associated with the predefiend constant.
+		/// </summary>
+		/// <param name="constant">Predefined constant representing the parameter.</param>
+		/// <returns>
+		/// The parameter interface for the <paramref name="constant"/>.
+		/// </returns>
+		/// <remarks>The function will return the associated parameter object for a given pre-defined constant.  The constant should be defined in the shader as one of:
+		/// <list type="table">
+		/// 		<listheader>
+		/// 			<term>Constant type and name</term>
+		/// 			<description>Description</description>
+		/// 		</listheader>
+		/// 		<item>
+		/// 			<term>float4x4 _projectionMatrix</term>
+		/// 			<description>The current projection <see cref="GorgonLibrary.Matrix">matrix</see> defined by the current <see cref="GorgonLibrary.Graphics.Viewport">Viewport</see>.  Use this to transform vertices in a vertex shader into screen space.</description>
+		/// 		</item>
+		/// 		<item>
+		/// 			<term>Texture _spriteImage</term>
+		/// 			<description>This is the currently active <see cref="GorgonLibrary.Graphics.Image">image</see> (at index 0 in the texture stage) for a given <see cref="GorgonLibrary.Graphics.Sprite">Sprite</see> or series of sprites.</description>
+		/// 		</item>
+		/// 	</list>
+		/// </remarks>
+		public IShaderParameter GetDefinedParameter(PredefinedShaderConstants constant)
+		{
+			switch (constant)
+			{
+				case PredefinedShaderConstants.ProjectionMatrix:
+					return _projectionMatrix;
+				case PredefinedShaderConstants.SpriteImage:
+					return _spriteImage;
+				default:
+					return null;
+			}
+		}
+
 		/// <summary>
 		/// Function to begin the rendering with the shader.
 		/// </summary>
 		void IShaderRenderer.Begin()
 		{
-			if (_owner.Parameters.Contains("_projectionMatrix"))
-				_owner.Parameters["_projectionMatrix"].SetValue(Gorgon.CurrentClippingViewport.ProjectionMatrix);
+			if (HasProjectionMatrix)
+				_projectionMatrix.SetValue(Gorgon.CurrentClippingViewport.ProjectionMatrix);
+			if (HasSpriteImage)
+				_spriteImage.SetValue(Gorgon.Renderer.GetImage(0));
 
 			_owner.D3DEffect.Technique = _effectHandle; 
 			_owner.D3DEffect.Begin(D3D9.FX.None);
@@ -182,6 +313,7 @@ namespace GorgonLibrary.Graphics
 		{
 			_owner.D3DEffect.End();
 		}
+		#endregion
 		#endregion
 	}
 }

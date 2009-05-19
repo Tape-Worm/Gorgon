@@ -124,7 +124,7 @@ namespace GorgonLibrary.Internal
 		{
 			VertexType newType;		// Vertex type.
 
-			// Position, Diffuse, 1 2D Texture Coord.
+			// Position, Diffuse, Normal, 1 2D Texture Coord.
 			newType = new VertexType();
 			newType.CreateField(0, 0, VertexFieldContext.Position, VertexFieldType.Float3);
 			newType.CreateField(0, 12, VertexFieldContext.Diffuse, VertexFieldType.Color);

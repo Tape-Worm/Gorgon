@@ -178,7 +178,6 @@ namespace GorgonLibrary.Example
 #else
 				_blur = FXShader.FromFileSystem(_folderFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
 #endif
-				_blur.Parameters["sourceImage"].SetValue(_spriteImage);
 			}
 
 			// Get poetry.

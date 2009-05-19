@@ -248,6 +248,8 @@ namespace GorgonLibrary.Graphics
 					Parameters.Add(new ConstantShaderParameter(desc.Name, handle, _function, type));
 				}
 			}
+
+			((IShaderRenderer)this).GetDefinedConstants();
 		}
 
 		/// <summary>
