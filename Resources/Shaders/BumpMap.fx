@@ -41,6 +41,34 @@ struct VTX
 	float2 uv : TEXCOORD0;
 };
 
+float4 psBump20(float2 coloruv : TEXCOORD0, float4 color : COLOR0) : COLOR0
+{
+	float4 texDiffuse = tex2D(colorSampler, coloruv);
+	float3 normal = tex2D(normalSampler, coloruv) * 2.0f - 1.0f;	
+	float3 pixelPosition = float3(TextureSize.x * coloruv.x, TextureSize.y * coloruv.y, 0);
+	float4 result = float4(0, 0, 0 , 1.0f);
+    	float3 lightDir;
+	float lightAmount;
+	
+	normal = mul(normal, invWorldMatrix).xyz;
+	
+	for (int i = 0; i < MAX_LIGHTS; i++)
+	{
+		if (LightEnabled[i])
+		{
+			lightDir = LightPosition[i] - pixelPosition;
+			lightAmount = max(dot(normal, normalize(lightDir)), 0) * LightIntensity[i];
+			
+			float4 diffuse = (texDiffuse * color * lightAmount * LightColor[i]);
+			result += diffuse;
+			result += (LightAmbientColor[i] * GlobalAmbient);		
+		}
+	}
+	
+	result.a = texDiffuse.a * color.a;		
+	return result;
+}
+
 float4 psBump(float2 coloruv : TEXCOORD0, float4 color : COLOR0) : COLOR0
 {
 	float4 texDiffuse = tex2D(colorSampler, coloruv);
@@ -90,5 +118,14 @@ technique Bump
 	{	
 		VertexShader = compile vs_3_0 vsBump();
 		PixelShader = compile ps_3_0 psBump();
+	}
+}
+
+technique Bump20
+{
+	pass P1	
+	{
+		VertexShader = compile vs_2_0 vsBump();
+		PixelShader = compile ps_2_0 psBump20();
 	}
 }

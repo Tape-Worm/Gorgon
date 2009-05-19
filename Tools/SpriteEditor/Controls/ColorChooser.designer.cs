@@ -386,9 +386,6 @@ namespace GorgonLibrary.Graphics.Tools
 			//
 			InitializeComponent();
 
-			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
 			// Calculate the coordinates of the three
 			// required regions on the form.
 			Rectangle SelectedColorRectangle =

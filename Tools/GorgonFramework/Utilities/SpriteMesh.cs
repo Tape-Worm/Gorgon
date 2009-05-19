@@ -48,7 +48,7 @@ namespace GorgonLibrary.Graphics.Utilities
 		private float _rowHeight = 0;									// Row height.
 		private int _rows = 0;											// Number of rows in the mesh.
 		private int _cols = 0;											// Number of columns in the mesh.
-		private VertexTypeList.PositionDiffuse2DTexture1[] _grid;		// List of grid vertices.
+		private VertexTypeList.PositionDiffuse2DTexture1[] _grid;	// List of grid vertices.
 		private BoundingCircle _boundCircle = BoundingCircle.Empty;		// Bounding circle.
 		private float _cosVal = 0.0f;									// Cached cosine.
 		private float _sinVal = 0.0f;									// Cached sine.
@@ -349,9 +349,12 @@ namespace GorgonLibrary.Graphics.Utilities
 		/// <returns>
 		/// An array of vertices used for this renderable.
 		/// </returns>
+		/// <remarks>This function is not implemented for a Sprite Mesh and will throw an exception when called.  
+		/// Do not use this with a <see cref="GorgonLibrary.Graphics.Batch">Batch</see> object or an exception will be thrown.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when using a SpriteMesh with a Batch object.</exception>
 		protected override BatchVertex[] GetVertices()
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException("This functionality is not supported by the SpriteMesh object.");
 		}
 		
 		/// <summary>

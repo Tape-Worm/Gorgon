@@ -198,11 +198,8 @@ namespace GorgonLibrary
 				if ((Screen.OwnerForm.WindowState == Forms.FormWindowState.Minimized) || ((!Screen.OwnerForm.ContainsFocus) && (!Screen.Windowed)))
 					return false;
 
-				if (!AllowBackgroundRendering)
-				{
-					if (!Screen.OwnerForm.ContainsFocus)
-						return false;
-				} 
+				if ((!AllowBackgroundRendering) && (!Screen.OwnerForm.ContainsFocus))
+					return false;
 	
 				return true;
 			}
@@ -811,7 +808,7 @@ namespace GorgonLibrary
 			while ((AppIdle) && (IsRunning))
 			{
 				if (HasFocus)
-				{					
+				{
 					// Update the screen.
 					if (FrameStats.Update())
 					{
@@ -833,7 +830,7 @@ namespace GorgonLibrary
 					}
 				}
 				else
-					System.Threading.Thread.Sleep(250);
+					break;
 			}
 		}
 

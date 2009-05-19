@@ -456,8 +456,6 @@ namespace GorgonLibrary.GUI
 		/// <param name="e">Event parameters.</param>
 		protected void DefaultKeyboardEvent(bool keyDown, KeyboardInputEventArgs e)
 		{
-			// TODO: In here we will check to see if a control within the window is focused.
-			// Then we can process the key and/or send it on to the control.
 			if (keyDown)
 				OnKeyDown(this, e);
 			else
