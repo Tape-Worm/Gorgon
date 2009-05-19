@@ -157,10 +157,7 @@ namespace GorgonLibrary.Example
 			_helpFont = new Font("Arial_9pt", "Arial", 10.0f, true, true);
 
 			// Get the file system provider.
-			if (Gorgon.Platform == PlatformID.x86)
-				FileSystemProvider.Load(@"..\..\..\..\PlugIns\bin\Release\GorgonBZip2FileSystem.dll");
-			else
-				FileSystemProvider.Load(@"..\..\..\..\PlugIns\bin64\Release\GorgonBZip2FileSystem.dll");
+			FileSystemProvider.Load(@"..\..\..\..\PlugIns\bin\Release\GorgonBZip2FileSystem.dll");
 
 			// Create the bzip file system.
             _bzipFS = FileSystem.Create("SomeBZipFileSystem", FileSystemProviderCache.Providers["Gorgon.BZip2FileSystem"]);
@@ -179,8 +176,6 @@ namespace GorgonLibrary.Example
 #else
 				_blur = FXShader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
 #endif
-				_blur.Parameters["sourceImage"].SetValue(_spriteImage);
-
 			}
 
 			// Get the sprites.

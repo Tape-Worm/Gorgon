@@ -1,4 +1,4 @@
-Texture sourceImage;
+Texture _spriteImage;
 
 // Amount to blur.
 float blurAmount 
@@ -14,7 +14,7 @@ float blurAmount
 // Our texture sampler.
 sampler2D sourceSampler = sampler_state 
 { 
-	texture = <sourceImage>;
+	texture = <_spriteImage>;
 };
 
 // Our processed vertex.

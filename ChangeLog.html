@@ -119,8 +119,23 @@
 
 <div>
 	<pre>
-April 29/2009 - Version - Current
+May 18/2009 - Version - Current
 ===============================================================================================
+- Removed the Changelog_v1.0.x.html file, it no longer serves any purpose.
+
+* Fixed an issue where any extra app windows would perform poorly when they received focus.
+
+* Fixed a localization bug in Sprite Editor.
+
++ Added functionality to shaders to allow the use of "default" variables for Sprites.  These
+  constants, when declared, will automatically be used by the library.  To use these constants 
+  you only have to place them in your shader source and name like this: 
+  Texture _spriteImage.
+  Note that the naming -is- case sensitive and must use the camel casing and "_" as a leading
+  character.
+
+* Modified GiveMeSomeControl example to remove usage of StaticTextSprite object.
+  
 + Added a Batch object to facilitate quickly blitting sprites to a render target.
 
 + Added a protected GetVertices() to return the vertices composing a Renderable object.

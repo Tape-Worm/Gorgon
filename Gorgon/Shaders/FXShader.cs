@@ -116,10 +116,16 @@ namespace GorgonLibrary.Graphics
 				// Check technique.
 				foreach (ShaderTechnique technique in Techniques)
 				{
+					((IShaderRenderer)technique).GetDefinedConstants(); 
 					if (_effect.IsParameterUsed(handle, technique.D3DEffectHandle))
 						technique.Parameters.Add(new ShaderParameter(description, handle, this, i));
+
+					foreach (ShaderPass pass in technique.Passes)
+						((IShaderRenderer)pass).GetDefinedConstants();
 				}
 			}
+
+			((IShaderRenderer)this).GetDefinedConstants();
 		}
 
 		/// <summary>
@@ -143,9 +149,6 @@ namespace GorgonLibrary.Graphics
 					if (_currentTechnique == null)
 						throw new GorgonException(GorgonErrors.CannotUpdate, "Unable to find a valid technique for shader '" + Name + "'.");
 				}
-
-				if (Parameters.Contains("_projectionMatrix"))
-					Parameters["_projectionMatrix"].SetValue(Gorgon.CurrentClippingViewport.ProjectionMatrix);
 
 				// NOTE: Note to self, we have to set the technique BEFORE calling Begin(), or else the handles become invalidated.
 				_effect.Technique = _currentTechnique.D3DEffectHandle;				

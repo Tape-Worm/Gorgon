@@ -879,6 +879,10 @@ namespace GorgonLibrary.Graphics.Tools.Controls
 				System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
 
 				Gorgon.Go();
+
+				if (newSprite != null)
+					newSprite.Dispose();
+				newSprite = null;
 			}
 		}
 

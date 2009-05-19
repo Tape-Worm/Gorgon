@@ -1,6 +1,5 @@
-float4x4 _projectionMatrix;
-
-Texture sourceImage;
+float4x4 _projectionMatrix;		// Predefined projection matrix constant.
+Texture _spriteImage;			// Predefined sprite image constant.
 
 // Amount to blur.
 float blurAmount 
@@ -16,7 +15,7 @@ float blurAmount
 // Our texture sampler.
 sampler2D sourceSampler = sampler_state 
 { 
-	texture = <sourceImage>;
+	texture = <_spriteImage>;
 };
 
 // Our processed vertex.

@@ -439,7 +439,7 @@ namespace GorgonLibrary.Graphics
 				Vertices[2].Position.Y = posY2;
                 Vertices[3].Position.X = posX1;
 				Vertices[3].Position.Y = posY2;
-            }
+			}
 
 			// Translate.
 			if (FinalPosition.X != 0.0f)

@@ -152,9 +152,14 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				_fixedSize = value;
 
+				if (_fixedSize.X < 1.0f)
+					_fixedSize.X = 1.0f;
+				if (_fixedSize.Y < 1.0f)
+					_fixedSize.Y = 1.0f;
+
 				Settings.Root = "Clipping";
-				Settings.SetSetting("FixedWidth", _fixedSize.X.ToString("0.0"));
-				Settings.SetSetting("FixedHeight", _fixedSize.Y.ToString("0.0"));
+				Settings.SetSetting("FixedWidth", _fixedSize.X.ToString("0.0", System.Globalization.CultureInfo.CurrentUICulture));
+				Settings.SetSetting("FixedHeight", _fixedSize.Y.ToString("0.0", System.Globalization.CultureInfo.CurrentUICulture));
 				Settings.Root = null;
 			}
 		}
@@ -211,7 +216,13 @@ namespace GorgonLibrary.Graphics.Tools
 			{
 				Settings.Root = "Clipping";
 				_fixedDimensions = string.Compare(Settings.GetSetting("FixedSize", "false"), "true", true) == 0;
-				_fixedSize = new Vector2D(Convert.ToSingle(Settings.GetSetting("FixedWidth", "16")), Convert.ToSingle(Settings.GetSetting("FixedHeight", "16")));
+				_fixedSize = new Vector2D(Convert.ToSingle(Settings.GetSetting("FixedWidth", "16"), System.Globalization.CultureInfo.CurrentUICulture), Convert.ToSingle(Settings.GetSetting("FixedHeight", "16"), System.Globalization.CultureInfo.CurrentUICulture));
+
+				if (_fixedSize.X < 1)
+					_fixedSize.X = 1;
+
+				if (_fixedSize.Y < 1)
+					_fixedSize.Y = 1;
 			}
 			catch (Exception ex)
 			{

@@ -33,11 +33,123 @@ using GorgonLibrary.Internal;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Interface to define a shader renderer.
+	/// A list of predefined shader constants.
+	/// </summary>
+	/// <remarks>The shader constants presented here reflect these values in a given shader:
+	/// <list type="table">
+	/// <listheader>
+	/// <term>Constant type and name</term>
+	/// <description>Description</description>
+	/// </listheader>
+	/// <item>
+	/// <term>float4x4 _projectionMatrix</term>
+	/// <description>The current projection <see cref="GorgonLibrary.Matrix">matrix</see> defined by the current <see cref="GorgonLibrary.Graphics.Viewport">Viewport</see>.  Use this to transform vertices in a vertex shader into screen space.</description>
+	/// </item>
+	/// <item>
+	/// <term>Texture _spriteImage</term>
+	/// <description>This is the currently active <see cref="GorgonLibrary.Graphics.Image">image</see> (at index 0 in the texture stage) for a given <see cref="GorgonLibrary.Graphics.Sprite">Sprite</see> or series of sprites.</description>
+	/// </item>
+	/// </list>
+	/// </remarks>
+	public enum PredefinedShaderConstants
+	{
+		/// <summary>
+		/// A projection matrix used to transform a vertex into screen space.
+		/// </summary>
+		ProjectionMatrix = 1,
+		/// <summary>
+		/// The currently active sprite image at stage 0.
+		/// </summary>
+		SpriteImage = 2
+	}
+
+	/// <summary>
+	/// Defines a shader used in the rendering process.
 	/// </summary>
 	/// <remarks>This defines the component of a shader that can be applied to the rendering of a scene.</remarks>
 	public interface IShaderRenderer
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to return whether a projection matrix is available in the shader.
+		/// </summary>
+		/// <remarks>This shader constant should be represented in the shader as: <c>float4x4 _projectionMatrix</c>.  If this constant is found, this value will return TRUE.
+		/// <para>If this is available the library will automatically assign a value to the constant for use in the shader.  This will contain a copy of the current projection <see cref="GorgonLibrary.Matrix">matrix</see> 
+		/// used by the current <see cref="GorgonLibrary.Graphics.Viewport">viewport</see>.</para></remarks>
+		bool HasProjectionMatrix
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return whether a sprite image is available in the shader.
+		/// </summary>
+		/// <remarks>This shader constant should be represented in the shader as: <c>Texture _spriteImage</c>.  If this constant is found, this value will return TRUE.
+		/// <para>If this is available the library will automatically assign a value to the constant for use in the shader.  This will typically be the current image used by a <see cref="GorgonLibrary.Graphics.Sprite">sprite</see> 
+		/// or a series of sprites (if using the same image).</para></remarks>
+		bool HasSpriteImage
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the pre-defined constant parameters from a shader.
+		/// </summary>
+		/// <remarks>
+		/// A shader can contain pre-defined constant values that the library will update automatically.  This is done to cut down on some redundant code that the user will
+		/// typically always have to perform when calling a shader.  For example, the user may have 3 shaders and each time a shader is used the current sprite image would have to 
+		/// be set by the user each time the image changed for each sprite.  Additionally, passing the transformations (i.e. rotation, scaling and translation) to the shader 
+		/// is also more work than it needs to be.
+		/// <para>To use this "default" functionality your shader will have to implement one of these constants:
+		/// <list type="table">
+		/// <listheader>
+		/// <term>Constant type and name</term>
+		/// <description>Description</description>
+		/// </listheader>
+		/// <item>
+		/// <term>float4x4 _projectionMatrix</term>
+		/// <description>The current projection <see cref="GorgonLibrary.Matrix">matrix</see> defined by the current <see cref="GorgonLibrary.Graphics.Viewport">Viewport</see>.  Use this to transform vertices in a vertex shader into screen space.</description>
+		/// </item>
+		/// <item>
+		/// <term>Texture _spriteImage</term>
+		/// <description>This is the currently active <see cref="GorgonLibrary.Graphics.Image">image</see> (at index 0 in the texture stage) for a given <see cref="GorgonLibrary.Graphics.Sprite">Sprite</see> or series of sprites.</description>
+		/// </item>
+		/// </list>
+		/// </para>
+		/// <para>The constants are case sensitive and as such must be declared exactly as shown in the table above with the leading underscore character.  If the constant is not
+		/// named properly it will not be used as a default.</para>
+		/// <para>To test whether the default constants are available, check the return value of <see cref="GorgonLibrary.Graphics.IShaderRenderer.HasProjectionMatrix">HasProjectionMatrix</see> 
+		/// or <see cref="GorgonLibrary.Graphics.IShaderRenderer.HasSpriteImage">HasSpriteImage</see> and if
+		/// these properties return TRUE, then the constant has been implemented.</para>
+		/// <para>This function is meant to be called internally by the shader.</para>
+		/// </remarks>
+		void GetDefinedConstants();
+
+		/// <summary>
+		/// Function to return the parameter associated with the predefiend constant.
+		/// </summary>
+		/// <param name="constant">Predefined constant representing the parameter.</param>
+		/// <returns>The parameter interface for the <paramref name="constant"/>.</returns>
+		/// <remarks>The function will return the associated parameter object for a given pre-defined constant.  The constant should be defined in the shader as one of:
+		/// <list type="table">
+		/// <listheader>
+		/// <term>Constant type and name</term>
+		/// <description>Description</description>
+		/// </listheader>
+		/// <item>
+		/// <term>float4x4 _projectionMatrix</term>
+		/// <description>The current projection <see cref="GorgonLibrary.Matrix">matrix</see> defined by the current <see cref="GorgonLibrary.Graphics.Viewport">Viewport</see>.  Use this to transform vertices in a vertex shader into screen space.</description>
+		/// </item>
+		/// <item>
+		/// <term>Texture _spriteImage</term>
+		/// <description>This is the currently active <see cref="GorgonLibrary.Graphics.Image">image</see> (at index 0 in the texture stage) for a given <see cref="GorgonLibrary.Graphics.Sprite">Sprite</see> or series of sprites.</description>
+		/// </item>
+		/// </list>
+		/// </remarks>
+		IShaderParameter GetDefinedParameter(PredefinedShaderConstants constant);
+
 		/// <summary>
 		/// Function to begin the rendering with the shader.
 		/// </summary>
@@ -57,5 +169,6 @@ namespace GorgonLibrary.Graphics
 		/// Function to end rendering with the shader.
 		/// </summary>
 		void End();
+		#endregion
 	}
 }
