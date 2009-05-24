@@ -136,6 +136,10 @@ namespace GorgonLibrary.FileSystems
 						else
 						{
 							dirPath = Path.GetDirectoryName(entry.Name);
+							
+							if (string.IsNullOrEmpty(dirPath))
+								dirPath = "/";
+
 							if (!PathExists(dirPath))
 								CreatePath(dirPath);
 							FileSystemPath path = GetPath(dirPath);
