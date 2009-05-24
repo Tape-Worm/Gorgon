@@ -248,12 +248,6 @@
     <Compile Include="formSpriteExtractOptions.Designer.cs">
       <DependentUpon>formSpriteExtractOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="formTest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="formTest.Designer.cs">
-      <DependentUpon>formTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="NVidiaAtlasImport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PropBag\IPropertyTableObject.cs" />
@@ -377,9 +371,6 @@
     <EmbeddedResource Include="formSpriteExtractOptions.resx">
       <SubType>Designer</SubType>
       <DependentUpon>formSpriteExtractOptions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="formTest.resx">
-      <DependentUpon>formTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
