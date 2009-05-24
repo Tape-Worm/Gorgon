@@ -47,7 +47,6 @@ namespace GorgonLibrary.Graphics
 		private ShaderParameterList _parameters;				// Shader parameters.
 		private IShaderParameter _projectionMatrix = null;		// Projection matrix parameter.
 		private IShaderParameter _spriteImage = null;			// Sprite image parameter.
-		private IShaderParameter _spriteWorldMatrix = null;		// Sprite world matrix parameter.
 		#endregion
 
 		#region Properties.
@@ -174,20 +173,6 @@ namespace GorgonLibrary.Graphics
 				return _spriteImage != null;
 			}
 		}
-
-		/// <summary>
-		/// Property to return whether a sprite transformation matrix is available in the shader.
-		/// </summary>
-		/// <remarks>This shader constant should be represented in the shader as: <c>float4x4 _spriteWorldMatrix</c>.  If this constant is found, this value will return TRUE.
-		/// <para>If this is available the library will automatically assign a value to the constant for use in the shader.  The constant will contain a <see cref="GorgonLibrary.Matrix">matrix</see> representing the all the transformations
-		/// for the vertices of the sprite.</para></remarks>
-		public bool HasSpriteWorldMatrix
-		{
-			get
-			{
-				return _spriteWorldMatrix != null;
-			}
-		}
 		#endregion
 
 		#region Methods.
@@ -226,14 +211,11 @@ namespace GorgonLibrary.Graphics
 		{
 			_projectionMatrix = null;
 			_spriteImage = null;
-			_spriteWorldMatrix = null;
 
 			if (Owner.Parameters.Contains("_projectionMatrix"))
 				_projectionMatrix = Owner.Parameters["_projectionMatrix"];
 			if (Owner.Parameters.Contains("_spriteImage"))
 				_spriteImage = Owner.Parameters["_spriteImage"];
-			if (Owner.Parameters.Contains("_spriteWorldMatrix"))
-				_spriteWorldMatrix = Owner.Parameters["_spriteWorldMatrix"];
 		}
 
 		/// <summary>
