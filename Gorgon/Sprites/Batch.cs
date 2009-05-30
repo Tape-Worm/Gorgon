@@ -426,7 +426,7 @@ namespace GorgonLibrary.Graphics
 
 			indexCount = (vertexCount * 6) / 4;
 
-			_vertices = new VertexBuffer(Gorgon.Renderer.VertexTypes["PositionNormalDiffuse2DTexture1"].VertexSize(0), vertexCount, BufferUsages.Static | BufferUsages.WriteOnly);
+			_vertices = new VertexBuffer(Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"].VertexSize(0), vertexCount, BufferUsages.Static | BufferUsages.WriteOnly);
 			_indices = new IndexBuffer(indexType, indexCount, BufferUsages.WriteOnly | BufferUsages.Static);
 
 			// Fill in the index buffer.
@@ -657,7 +657,7 @@ namespace GorgonLibrary.Graphics
 			foreach(Fence fence in _fences)
 			{
 				Gorgon.Renderer.SetImage(0, fence.Image);
-				Gorgon.Renderer.Render(Gorgon.Renderer.VertexTypes["PositionNormalDiffuse2DTexture1"], _vertices, _indices, PrimitiveStyle.TriangleList, fence.VertexStart, fence.VertexCount, fence.IndexStart, fence.IndexCount);
+				Gorgon.Renderer.Render(Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"], _vertices, _indices, PrimitiveStyle.TriangleList, fence.VertexStart, fence.VertexCount, fence.IndexStart, fence.IndexCount);
 			}
 
 			// Reset the world transform.
