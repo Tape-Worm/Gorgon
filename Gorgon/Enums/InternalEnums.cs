@@ -29,62 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace GorgonLibrary.Internal
-{
-    /// <summary>
-    /// Enumerator for vertex field contexts.
-    /// Used to define in which context the field will be used.
-    /// </summary>
-    public enum VertexFieldContext
-    {
-        /// Position, 3 reals per vertex.
-        Position,
-        /// Normal, 3 reals per vertex.
-        Normal,
-        /// Blending weights.
-        BlendWeights,
-        /// Blending indices.
-        BlendIndices,
-        /// Diffuse colors.
-        Diffuse,
-        /// Specular colors.
-        Specular,
-        /// Texture coordinates.
-        TexCoords,
-        /// Binormal (Y axis if normal is Z).
-        Binormal,
-        /// Tangent (X axis if normal is Z).
-        Tangent
-    }
-
-
-    /// <summary>
-    /// Enumerator for vertex field types.
-    /// Used to define what type of field we're using.
-    /// </summary>
-    public enum VertexFieldType
-    {
-        /// 1 Floating point number.
-        Float1,
-        /// 2 Floating point numbers.
-        Float2,
-        /// 3 Floating point numbers.
-        Float3,
-        /// 4 Floating point numbers.
-        Float4,
-        /// DWORD color value.
-        Color,
-        /// 1 signed short integers.
-        Short1,
-        /// 2 signed short integers.
-        Short2,
-        /// 3 signed short integers.
-        Short3,
-        /// 4 signed short integers.
-        Short4,
-        /// 4 Unsigned bytes.
-        UByte4
-    }
-    
+{    
     /// <summary>
     /// Enumeration for drawing modes.
     /// </summary>
@@ -109,38 +54,6 @@ namespace GorgonLibrary.Internal
         Gouraud = 1
     }
     
-    /// <summary>
-    /// Enumeration for primitive drawing style.
-    /// </summary>
-    public enum PrimitiveStyle
-    {
-        /// <summary>A series of individual points.</summary>
-        PointList = 0,
-        /// <summary>A series of individual lines.</summary>
-        LineList = 1,
-        /// <summary>A series of lines connected in a strip.</summary>
-        LineStrip = 2,
-        /// <summary>A series of individual triangles.</summary>
-        TriangleList = 3,
-        /// <summary>A series of triangles connected in a strip.</summary>
-        TriangleStrip = 4,
-        /// <summary>A series of triangles connected in a fan.</summary>
-        TriangleFan = 5
-    }
-
-    /// <summary>
-    /// Enumeration for culling modes.
-    /// </summary>
-    public enum CullingMode
-    {
-        /// <summary>Cull counter clockwise.</summary>
-        CounterClockwise = 0,
-        /// <summary>Cull clockwise.</summary>
-        Clockwise = 1,
-        /// <summary>No culling.</summary>
-        None = 2,
-    }
-
     /// <summary>
     /// Enumeration for buffer usage types.
     /// </summary>

@@ -263,11 +263,11 @@ namespace GorgonLibrary.Graphics.Utilities
 		/// Property to return the primitive style for the object.
 		/// </summary>
 		/// <value></value>
-		public override GorgonLibrary.Internal.PrimitiveStyle PrimitiveStyle
+		public override PrimitiveStyle PrimitiveStyle
 		{
 			get 
 			{
-				return GorgonLibrary.Internal.PrimitiveStyle.TriangleList;
+				return PrimitiveStyle.TriangleList;
 			}
 		}
 
@@ -296,7 +296,7 @@ namespace GorgonLibrary.Graphics.Utilities
 			{
 				_color = value;
 				for (int i = 0; i < _grid.Length; i++)
-					_grid[i].Color = _color.ToArgb();
+					_grid[i].Color = _color;
 			}
 		}
 
@@ -315,7 +315,7 @@ namespace GorgonLibrary.Graphics.Utilities
 				_color = Drawing.Color.FromArgb(value, _color);
 
 				for (int i = 0; i < _grid.Length; i++)
-					_grid[i].Color = _color.ToArgb();
+					_grid[i].Color = _color;
 			}
 		}
 		#endregion
@@ -409,7 +409,7 @@ namespace GorgonLibrary.Graphics.Utilities
 					}
 
 					_grid[y * _cols + x].Position = new Vector2D(x * _colWidth, y * _rowHeight);
-					_grid[y * _cols + x].Color = _color.ToArgb();
+					_grid[y * _cols + x].Color = _color;
 					_grid[y * _cols + x].Position.Z = Depth;
 				}
 			}
@@ -611,7 +611,7 @@ namespace GorgonLibrary.Graphics.Utilities
 		/// <param name="color">Color to set at the vertex.</param>
 		public void SetVertexColor(int column, int row, Drawing.Color color)
 		{
-			_grid[row * _cols + column].Color = color.ToArgb();
+			_grid[row * _cols + column].Color = color;
 		}
 
 		/// <summary>
@@ -622,7 +622,7 @@ namespace GorgonLibrary.Graphics.Utilities
 		/// <returns>Color to retrieve from the vertex.</returns>
 		public Drawing.Color GetVertexColor(int column, int row)
 		{
-			return Drawing.Color.FromArgb(_grid[row * _cols + column].Color);
+			return _grid[row * _cols + column].Color;
 		}
 
 		/// <summary>

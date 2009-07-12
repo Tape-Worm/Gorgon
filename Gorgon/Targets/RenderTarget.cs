@@ -312,6 +312,20 @@ namespace GorgonLibrary.Graphics
 				_primitiveDepth = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the culling mode.
+		/// </summary>
+		CullingMode IRenderableStates.CullingMode
+		{
+			get
+			{
+				return CullingMode.Clockwise;
+			}
+			set
+			{
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -543,7 +557,7 @@ namespace GorgonLibrary.Graphics
 				pointVertex[0].Position.X = (int)x;
 				pointVertex[0].Position.Y = (int)y;
 				pointVertex[0].Position.Z = -PrimitiveDepth;
-                pointVertex[0].Color = color.ToArgb();
+                pointVertex[0].ColorValue = color.ToArgb();
 
 				if (_drawingPattern == null)
 				{
@@ -776,14 +790,14 @@ namespace GorgonLibrary.Graphics
 			rectVertex[7].Position.Y = y;
 			rectVertex[7].Position.Z = -PrimitiveDepth;
 
-			rectVertex[0].Color = color.ToArgb();
-			rectVertex[1].Color = color.ToArgb();
-			rectVertex[2].Color = color.ToArgb();
-			rectVertex[3].Color = color.ToArgb();
-			rectVertex[4].Color = color.ToArgb();
-			rectVertex[5].Color = color.ToArgb();
-			rectVertex[6].Color = color.ToArgb();
-			rectVertex[7].Color = color.ToArgb();
+			rectVertex[0].ColorValue = color.ToArgb();
+			rectVertex[1].ColorValue = color.ToArgb();
+			rectVertex[2].ColorValue = color.ToArgb();
+			rectVertex[3].ColorValue = color.ToArgb();
+			rectVertex[4].ColorValue = color.ToArgb();
+			rectVertex[5].ColorValue = color.ToArgb();
+			rectVertex[6].ColorValue = color.ToArgb();
+			rectVertex[7].ColorValue = color.ToArgb();
 
 			if (_drawingPattern == null)
 			{
@@ -871,10 +885,10 @@ namespace GorgonLibrary.Graphics
 			lineVertex[3].Position.Y = (int)(y + height);
 			lineVertex[3].Position.Z = -PrimitiveDepth;
 
-			lineVertex[0].Color = color.ToArgb();
-			lineVertex[1].Color = color.ToArgb();
-			lineVertex[2].Color = color.ToArgb();
-			lineVertex[3].Color = color.ToArgb();
+			lineVertex[0].ColorValue = color.ToArgb();
+			lineVertex[1].ColorValue = color.ToArgb();
+			lineVertex[2].ColorValue = color.ToArgb();
+			lineVertex[3].ColorValue = color.ToArgb();
 
 			if (_drawingPattern == null)
 			{
@@ -939,8 +953,8 @@ namespace GorgonLibrary.Graphics
 				lineVertex[1].Position.X = (int)(x + width);
 				lineVertex[1].Position.Y = (int)y;
 				lineVertex[1].Position.Z = -PrimitiveDepth;
-				lineVertex[0].Color = color.ToArgb();
-				lineVertex[1].Color = color.ToArgb();
+				lineVertex[0].ColorValue = color.ToArgb();
+				lineVertex[1].ColorValue = color.ToArgb();
 
 				if (_drawingPattern == null)
 				{
@@ -1019,8 +1033,8 @@ namespace GorgonLibrary.Graphics
 				lineVertex[1].Position.X = (int)x;
 				lineVertex[1].Position.Y = (int)(y + height);
 				lineVertex[1].Position.Z = -PrimitiveDepth;
-				lineVertex[0].Color = color.ToArgb();
-				lineVertex[1].Color = color.ToArgb();
+				lineVertex[0].ColorValue = color.ToArgb();
+				lineVertex[1].ColorValue = color.ToArgb();
 
 				if (_drawingPattern == null)
 				{

@@ -60,6 +60,7 @@ namespace GorgonLibrary.Graphics
 			private bool _readOnly;					// Flag to indicate that the data is read-only or read-write.
 			private DX.DataStream _lockStream;		// Stream used by the lock.
 			private bool _disposed = false;			// Flag to indicate whether this is disposed already or not.
+			private D3D9.Surface _rtSurface = null;	// A temporary render target surface to lock.
 			#endregion
 
 			#region Properties.
@@ -161,7 +162,7 @@ namespace GorgonLibrary.Graphics
 					if (_lockStream == null)
 						return 0;
 
-					_lockStream.Position = (y * _pitch) + (x * (_pitch / _image.ActualWidth)); // Linear position.
+					_lockStream.Position = (y * _pitch) + (x * _bytesPerPixel); // Linear position.
 
 					// Get each byte.
 					switch (_bytesPerPixel)
@@ -183,7 +184,7 @@ namespace GorgonLibrary.Graphics
 
 					unsafe
 					{
-						_lockStream.Position = (y * _pitch) + (x * (_pitch / _image.ActualWidth)) ; // Linear position.
+						_lockStream.Position = (y * _pitch) + (x * _bytesPerPixel); // Linear position.
 
 						// Get each byte.
 						switch (_bytesPerPixel)
@@ -224,7 +225,15 @@ namespace GorgonLibrary.Graphics
 				try
 				{
 					_lockStream.Dispose();
-					_image.D3DTexture.UnlockRectangle(0);
+					if ((_rtSurface != null) && (_image.ImageType == ImageType.RenderTarget))
+					{
+						_rtSurface.UnlockRectangle();
+
+						// Copy back to the render target.
+						Gorgon.Screen.Device.UpdateSurface(_rtSurface, _image.RenderImage.SurfaceBuffer);
+					}
+					else
+						_image.D3DTexture.UnlockRectangle(0);
 				}
 				finally
 				{
@@ -245,7 +254,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="discard">TRUE to discard the data, FALSE to leave alone.</param>
 			public void Lock(bool discard)
 			{
-                DX.DataRectangle lockData;  // Lock data.
+                DX.DataRectangle lockData = null;  // Lock data.
 
 				if (Gorgon.Screen.DeviceNotReset)
 					return;
@@ -254,14 +263,8 @@ namespace GorgonLibrary.Graphics
 				if (_lockStream != null)
 					Unlock();
 
-                if (_image.ImageType == ImageType.RenderTarget)
-					throw new GorgonException(GorgonErrors.CannotLock, "Cannot lock a render image.");
-
                 if (_image.D3DTexture == null)
 					throw new GorgonException(GorgonErrors.CannotLock, "No backing store for this image.");
-
-                if ((_image.Pool == D3D9.Pool.Default) && (_image.ImageType != ImageType.Dynamic))
-					throw new GorgonException(GorgonErrors.CannotLock, "Cannot lock a dynamic image.");
 
                 try
 				{
@@ -273,13 +276,28 @@ namespace GorgonLibrary.Graphics
 						flags |= D3D9.LockFlags.Discard;
 
 					// Lock the image.
-					if (discard)
+					if (_image.ImageType != ImageType.RenderTarget)
 					{
-						_region = new Drawing.Rectangle(0, 0, _image.ActualWidth, _image.ActualHeight);
-						lockData = _image.D3DTexture.LockRectangle(0, flags);
+						if (discard)
+						{
+							_region = new Drawing.Rectangle(0, 0, _image.ActualWidth, _image.ActualHeight);
+							lockData = _image.D3DTexture.LockRectangle(0, flags);
+						}
+						else
+							lockData = _image.D3DTexture.LockRectangle(0, _region, flags);
 					}
 					else
-						lockData = _image.D3DTexture.LockRectangle(0, _region, flags);
+					{						
+						Gorgon.Screen.Device.GetRenderTargetData(_image.RenderImage.SurfaceBuffer, _rtSurface);
+
+						if (discard)
+						{
+							_region = new Drawing.Rectangle(0, 0, _image.ActualWidth, _image.ActualHeight);
+							lockData = _rtSurface.LockRectangle(flags);
+						}
+						else
+							lockData = _rtSurface.LockRectangle(_region, flags);
+					}
 
 					// Get locked data.				
 					_pitch = lockData.Pitch;
@@ -306,6 +324,10 @@ namespace GorgonLibrary.Graphics
 				_image = owner;
 				_region = region;
 
+				// Create the render target work surface.
+				if (owner.ImageType == ImageType.RenderTarget)
+					_rtSurface = D3D9.Surface.CreateOffscreenPlain(Gorgon.Screen.Device, _image.ActualWidth, _image.ActualHeight, Converter.Convert(_image.Format), D3D9.Pool.SystemMemory);
+
 				// Auto-lock.
 				Lock(false);
 			}
@@ -324,8 +346,12 @@ namespace GorgonLibrary.Graphics
 					{
 						if (_lockStream != null)
 							Unlock();
+
+						if (_rtSurface != null)
+							_rtSurface.Dispose();
 					}
 
+					_rtSurface = null;
 					_disposed = true;
 				}
 			}
@@ -555,15 +581,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		///// <summary>
-		///// Function called when a texture is filled.
-		///// </summary>
-		///// <param name="textureCoordinate">Texture coordinate.</param>
-		///// <param name="textureSize">Size of the texel.</param>
-		//private DX.Vector4 ClearTextureCallback(DX.Vector2 textureCoordinate, DX.Vector2 textureSize)
-		//{
-		//    return new DX.Vector4(_fillColor.R, _fillColor.G, _fillColor.B, _fillColor.A);
-		//}
 		/// <summary>
 		/// Function called when a texture is filled.
 		/// </summary>
@@ -1618,17 +1635,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="color">Color to clear with.</param>
 		public void Clear(Drawing.Color color)
 		{
-			try
-			{
-				if (_d3dImage == null)
-					return;
+			if (_d3dImage == null)
+				return;
 
-				_fillColor = color;
-				_d3dImage.Fill(ClearTextureCallback);
-			}
-			finally
-			{
-			}
+			_fillColor = color;
+			_d3dImage.Fill(ClearTextureCallback);
 		}
 
 		/// <summary>

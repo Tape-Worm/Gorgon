@@ -119,6 +119,31 @@
 
 <div>
 	<pre>
+July 11/2009 - Version - Current
+===============================================================================================
+* Updated an issue in the mouse interface of the Gorgon Raw Input plug-in.  The mouse wheel
+  delta value was not being reset when a Raw Input event was received by the mouse object.  
+  This caused the WheelDelta value to keep its value until the mouse wheel was moved again.
+
++ Added a new method to the Mouse object: ResetWheelDelta, which will allow users who are
+  manually polling the mouse to reset the mouse wheel delta value at their discretion.  
+
+* Modified the animation type to only accept objects that implement the IAnimated interface.
+
+- Removed the Clone() method on the Animation type, it was never meant to be used by outside
+  code.
+
++ Added a new example showing how to build a frame based (flipbook) animation via code.
+
+* Modified the KeyImage constructor to take additional parameters.
+
++ Added GetImageData() functions to RenderImage objects.  This will allow the user lock the 
+  render target directly.
+
+* Modified image object so that we can lock render targets for direct access (sort of).
+
++ Added polygon sprite object.  This will allow the user to draw an arbitrary polygon shape. 
+
 May 29/2009 - Version 1.1.3436.39405
 ===============================================================================================
 * STUPID TAPE_WORM!!! Left a wonderful bug in the library regarding Batch sprites.  Basically

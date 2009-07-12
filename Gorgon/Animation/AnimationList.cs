@@ -37,7 +37,7 @@ namespace GorgonLibrary.Graphics
         : Collection<Animation>
     {
         #region Variables.
-        private object _owner = null;          // Owner for the animation list.
+        private IAnimated _owner = null;          // Owner for the animation list.
         #endregion
 
         #region Methods.
@@ -115,26 +115,34 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to copy the animations in this animation list to another.
 		/// </summary>
-		/// <param name="destination">Animation list that will receive the animations.</param>
-		public void CopyTo(AnimationList destination)
+		/// <param name="destination">Animated object that will receive a copy of the animations in this list.</param>
+		public void CopyTo(IAnimated destination)
 		{
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
 			// Clone the animations.
 			foreach (Animation animation in this)
-				destination.Add(animation.Clone(destination._owner));
+			{
+				if (destination.Animations.Contains(animation.Name))
+					throw new ArgumentException("The destination object already contains an animation with the name '" + animation.Name + "'.");
+
+				destination.Animations.Add(animation.Clone(destination));
+			}
 		}
         #endregion
 
         #region Constructor/Destructor.
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="owner">Owner of this animation list.</param>
-        public AnimationList(object owner)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AnimationList"/> class.
+		/// </summary>
+		/// <param name="owner">Owner of this animation list.</param>
+        public AnimationList(IAnimated owner)
 			: base(false)
         {
+			if (owner == null)
+				throw new ArgumentNullException("owner");
+
             _owner = owner;
         }
         #endregion

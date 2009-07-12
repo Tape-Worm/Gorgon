@@ -80,7 +80,7 @@ namespace GorgonLibrary.Graphics
         : NamedObject, ISerializable
     {
         #region Variables.
-        private object _owner = null;								// Object that owns this animation.        
+        private IAnimated _owner = null;							// Object that owns this animation.        
         private float _length = 1000;								// Length of the track in milliseconds.
         private bool _loop;											// Flag to indicate that this animation should loop.
         private float _currentTime;									// Current time.
@@ -196,7 +196,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the owner of this animation.
         /// </summary>
-        public object Owner
+        public IAnimated Owner
         {
             get
             {
@@ -369,6 +369,19 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create a new animation object.
+		/// </summary>
+		/// <param name="name">Name of the animation object.</param>
+		/// <param name="length">Length of the animation in milliseconds.</param>
+		/// <returns>A new animation object.</returns>
+		/// <remarks>This function is meant to be overridden in a derived class to return a custom animation object type.
+		/// <para>This function is meant to only to be used internally by the <see cref="M:GorgonLibrary.Graphics.Animation.Clone">Clone</see> method.</para></remarks>
+		protected virtual Animation CreateAnimation(string name, float length)
+		{
+			return new Animation(name, length);
+		}
+		
+		/// <summary>
 		/// Function called when the animation needs to define an unknown track type.
 		/// </summary>
 		/// <param name="sender">Object that sent the event.</param>
@@ -383,7 +396,12 @@ namespace GorgonLibrary.Graphics
 		/// Function to set the owner for this animation.
 		/// </summary>
 		/// <param name="owner">Owner for the animation.</param>
-		protected internal void SetOwner(object owner)
+		/// <remarks>
+		/// This function will enumerate the properties on the <paramref name="owner"/> object that are marked with the <see cref="GorgonLibrary.Graphics.AnimatedAttribute">Animated</see> 
+		/// attribute and will create <see cref="GorgonLibrary.Graphics.Track">tracks</see> for each of the properties.  All keys assigned to those tracks will ultimately update 
+		/// the properties assigned to the tracks.<para>The types of the tracks correspond with the type value passed to the Animated attribute.</para>
+		/// <para>Calling this function will wipe out any keys and/or tracks in the animation.</para></remarks>
+		protected internal void SetOwner(IAnimated owner)
 		{
 			AnimatedAttribute attribute = null;					// List of attributes for the target object.
 			PropertyInfo[] properties = null;					// List of properties on the renderable.
@@ -454,7 +472,42 @@ namespace GorgonLibrary.Graphics
 			_owner = owner;
 		}
 
-        /// <summary>
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <param name="newOwner">New object that will own this animation.</param>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		internal Animation Clone(IAnimated newOwner)
+		{
+			string newName = Name;
+
+			while (newOwner.Animations.Contains(Name))
+				newName += ".clone";
+
+			Animation clone = CreateAnimation(newName, _length);
+			clone.SetOwner(newOwner);
+			clone._currentTime = _currentTime;
+			clone._enabled = _enabled;
+			clone._state = _state;
+			clone._loop = _loop;
+
+			// Add transforms.
+			foreach (Track track in _tracks)
+			{
+				// Copy only the corresponding tracks.
+				if (clone.Tracks.Contains(track.Name))
+				{
+					foreach (KeyFrame key in track)
+						clone.Tracks[track.Name].AddKey(key.Clone());
+				}
+			}
+
+			return clone;
+		}
+		
+		/// <summary>
         /// Function to apply the animation to this owning object.
         /// </summary>
         internal void ApplyAnimation()
@@ -469,37 +522,7 @@ namespace GorgonLibrary.Graphics
 					track[_currentTime].Update();
 			}
         }
-
-		/// <summary>
-		/// Creates a new object that is a copy of the current instance.
-		/// </summary>
-		/// <param name="newOwner">New object that will own this animation.</param>
-		/// <returns>
-		/// A new object that is a copy of this instance.
-		/// </returns>
-		public Animation Clone(object newOwner)
-		{
-			Animation clone = new Animation(Name, _length);
-
-			clone.SetOwner(newOwner);
-			clone._currentTime = _currentTime;
-			clone._enabled = _enabled;
-			clone._state = _state;
-			clone._loop = _loop;
-
-			// Add transforms.
-			foreach (Track track in _tracks)
-			{
-				if (clone.Tracks.Contains(track.Name))
-				{
-					foreach (KeyFrame key in track)
-						clone.Tracks[track.Name].AddKey(key.Clone());
-				}
-			}
-
-			return clone;
-		}
-		
+	
 		/// <summary>
         /// Function to advance the animation by a specific time in milliseconds.
         /// </summary>

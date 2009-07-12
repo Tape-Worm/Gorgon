@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using Drawing = System.Drawing;
 using GorgonLibrary.Serialization;
 
 namespace GorgonLibrary.Graphics
@@ -239,6 +240,46 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
+		/// <param name="image">Image to bind to the key.</param>
+		/// <param name="offset">The starting offset into the image to use when drawing.</param>
+		/// <param name="size">The width and height of the area to use when drawing.</param>
+		public KeyImage(float time, Image image, Vector2D offset, Vector2D size)
+			: base(time)
+		{
+			_image = image;
+			ImageOffset = offset;
+			ImageSize = size;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="KeyImage"/> class.
+		/// </summary>
+		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
+		/// <param name="image">Image to bind to the key.</param>
+		/// <param name="x">The horizontal offset into the image to start at when drawing.</param>
+		/// <param name="y">The vertical offset into the image to start at when drawing.</param>
+		/// <param name="width">The width of the area to use when drawing.</param>
+		/// <param name="height">The height of the area to use when drawing.</param>
+		public KeyImage(float time, Image image, float x, float y, float width, float height)
+			: this(time, image, new Vector2D(x, y), new Vector2D(width, height))
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="KeyImage"/> class.
+		/// </summary>
+		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
+		/// <param name="image">Image to bind to the key.</param>
+		/// <param name="imageRegion">The region of the image to use when drawing.</param>
+		public KeyImage(float time, Image image, Drawing.RectangleF imageRegion)
+			: this(time, image, imageRegion.Location, imageRegion.Size)
+		{
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="KeyImage"/> class.
 		/// </summary>
 		/// <param name="time">The time (in milliseconds) at which this keyframe exists within the track.</param>
@@ -247,6 +288,8 @@ namespace GorgonLibrary.Graphics
 			: base(time)
 		{
 			_image = image;
+			if (_image != null)
+				ImageSize = new Vector2D(image.Width, image.Height);
 		}
 		#endregion
 	}
