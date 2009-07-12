@@ -29,8 +29,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using Drawing = System.Drawing;
+using GorgonLibrary.Internal;
 
-namespace GorgonLibrary.Internal
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// Object representing a list of vertex types.
@@ -52,14 +53,94 @@ namespace GorgonLibrary.Internal
 			public Vector3D Position;
 
 			/// <summary>
-			/// Color of the vertex.
+			/// Color value of the vertex.
 			/// </summary>
-			public int Color;
+			internal int ColorValue;
 
 			/// <summary>
 			/// Texture coordinates.
 			/// </summary>
 			public Vector2D TextureCoordinates;
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to set or return the color as a <see cref="System.Drawing.Color"/> value.
+			/// </summary>
+			public Drawing.Color Color
+			{
+				get
+				{
+					return Drawing.Color.FromArgb(ColorValue);
+				}
+				set
+				{
+					ColorValue = value.ToArgb();
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Returns the fully qualified type name of this instance.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="T:System.String"/> containing a fully qualified type name.
+			/// </returns>
+			public override string ToString()
+			{
+				return string.Format("PositionDiffuse2DTexture1:\nPosition: X={0}, Y={1}, Z={2}\nDiffuse: R={3}, G={4}, B={5}, A={6}\n2D Texture coordinates (index 0): X={7}, Y={8}", Position.X, Position.Y, Position.Z, Color.R, Color.G, Color.B, Color.A, TextureCoordinates.X, TextureCoordinates.Y);
+			}
+
+			/// <summary>
+			/// Indicates whether this instance and a specified object are equal.
+			/// </summary>
+			/// <param name="obj">Another object to compare to.</param>
+			/// <returns>
+			/// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+			/// </returns>
+			public override bool Equals(object obj)
+			{
+				if (!(obj is PositionDiffuse2DTexture1))
+					return false;
+
+				PositionDiffuse2DTexture1 value = (PositionDiffuse2DTexture1)obj;
+
+				return (value.ColorValue == this.ColorValue) && (value.Position == this.Position) && (value.TextureCoordinates == this.TextureCoordinates);
+			}
+
+			/// <summary>
+			/// Returns the hash code for this instance.
+			/// </summary>
+			/// <returns>
+			/// A 32-bit signed integer that is the hash code for this instance.
+			/// </returns>
+			public override int GetHashCode()
+			{
+				return base.GetHashCode();
+			}
+			
+			/// <summary>
+			/// Implements the operator ==.
+			/// </summary>
+			/// <param name="left">The left value.</param>
+			/// <param name="right">The right value.</param>
+			/// <returns>The result of the operator.</returns>
+			public static bool operator ==(PositionDiffuse2DTexture1 left, PositionDiffuse2DTexture1 right)
+			{
+				return (left.Position == right.Position) && (left.TextureCoordinates == right.TextureCoordinates) && (left.ColorValue == right.ColorValue);
+			}
+
+			/// <summary>
+			/// Implements the operator !=.
+			/// </summary>
+			/// <param name="left">The left value.</param>
+			/// <param name="right">The right value.</param>
+			/// <returns>The result of the operator.</returns>
+			public static bool operator !=(PositionDiffuse2DTexture1 left, PositionDiffuse2DTexture1 right)
+			{
+				return (left.Position != right.Position) || (left.TextureCoordinates != right.TextureCoordinates) || (left.ColorValue != right.ColorValue);
+			}
 			#endregion
 
 			#region Constructor.
@@ -73,7 +154,7 @@ namespace GorgonLibrary.Internal
 			{
 				// Copy data.
 				Position = position;
-				Color = color.ToArgb();
+				ColorValue = color.ToArgb();
 				TextureCoordinates = textureCoordinates;
 			}
 			#endregion

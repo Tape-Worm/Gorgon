@@ -1280,6 +1280,20 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return the culling mode.
+		/// </summary>
+		CullingMode IRenderableStates.CullingMode
+		{
+			get
+			{
+				return CullingMode.Clockwise;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the wrapping mode to use.
 		/// </summary>
 		/// <value></value>
