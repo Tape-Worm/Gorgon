@@ -689,10 +689,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="vertices">List of vertices to update.</param>
 		private void UpdateColor(int charIndex, VertexTypeList.PositionDiffuse2DTexture1[] vertices)
 		{
-			vertices[charIndex].Color = _vertexColors[(int)VertexLocations.UpperLeft];
-			vertices[charIndex + 1].Color = _vertexColors[(int)VertexLocations.UpperRight];
-			vertices[charIndex + 2].Color = _vertexColors[(int)VertexLocations.LowerRight];
-			vertices[charIndex + 3].Color = _vertexColors[(int)VertexLocations.LowerLeft];
+			vertices[charIndex].ColorValue = _vertexColors[(int)VertexLocations.UpperLeft];
+			vertices[charIndex + 1].ColorValue = _vertexColors[(int)VertexLocations.UpperRight];
+			vertices[charIndex + 2].ColorValue = _vertexColors[(int)VertexLocations.LowerRight];
+			vertices[charIndex + 3].ColorValue = _vertexColors[(int)VertexLocations.LowerLeft];
 		}
 
 		/// <summary>
@@ -1398,7 +1398,7 @@ namespace GorgonLibrary.Graphics
 						{
 							Vertices[vertexIndex + j].Position.X += offset.X;
 							Vertices[vertexIndex + j].Position.Y += offset.Y;
-							Vertices[vertexIndex + j].Color = _shadowColor.ToArgb();
+							Vertices[vertexIndex + j].ColorValue = _shadowColor.ToArgb();
 						}
 
 						if (WriteVertexData(vertexIndex, 4) + 4 >= BufferSize)
@@ -1409,7 +1409,7 @@ namespace GorgonLibrary.Graphics
 						{
 							Vertices[vertexIndex + j].Position.X -= offset.X;
 							Vertices[vertexIndex + j].Position.Y -= offset.Y;
-							Vertices[vertexIndex + j].Color = _vertexColors[j];
+							Vertices[vertexIndex + j].ColorValue = _vertexColors[j];
 						}
 
 						vertexIndex += 4;
@@ -1520,7 +1520,7 @@ namespace GorgonLibrary.Graphics
 				clone.DepthWriteEnabled = DepthWriteEnabled;
 
 			// Clone the animations.
-			Animations.CopyTo(clone.Animations);
+			Animations.CopyTo(clone);
 
 			clone.InheritScale = InheritScale;
 			clone.InheritRotation = InheritRotation;

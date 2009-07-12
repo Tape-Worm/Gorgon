@@ -30,7 +30,94 @@ using System.Text;
 
 namespace GorgonLibrary.Graphics
 {
-    /// <summary>
+	/// <summary>
+	/// Enumeration for primitive drawing style.
+	/// </summary>
+	public enum PrimitiveStyle
+	{
+		/// <summary>A series of individual points.</summary>
+		PointList = 0,
+		/// <summary>A series of individual lines.</summary>
+		LineList = 1,
+		/// <summary>A series of lines connected in a strip.</summary>
+		LineStrip = 2,
+		/// <summary>A series of individual triangles.</summary>
+		TriangleList = 3,
+		/// <summary>A series of triangles connected in a strip.</summary>
+		TriangleStrip = 4,
+		/// <summary>A series of triangles connected in a fan.</summary>
+		TriangleFan = 5
+	}
+
+	/// <summary>
+	/// Enumeration for culling modes.
+	/// </summary>
+	public enum CullingMode
+	{
+		/// <summary>Cull counter clockwise.</summary>
+		CounterClockwise = 0,
+		/// <summary>Cull clockwise.</summary>
+		Clockwise = 1,
+		/// <summary>No culling.</summary>
+		None = 2,
+	}
+
+	/// <summary>
+	/// Enumerator for vertex field contexts.
+	/// Used to define in which context the field will be used.
+	/// </summary>
+	public enum VertexFieldContext
+	{
+		/// Position, 3 reals per vertex.
+		Position,
+		/// Normal, 3 reals per vertex.
+		Normal,
+		/// Blending weights.
+		BlendWeights,
+		/// Blending indices.
+		BlendIndices,
+		/// Diffuse colors.
+		Diffuse,
+		/// Specular colors.
+		Specular,
+		/// Texture coordinates.
+		TexCoords,
+		/// Binormal (Y axis if normal is Z).
+		Binormal,
+		/// Tangent (X axis if normal is Z).
+		Tangent
+	}
+
+
+	/// <summary>
+	/// Enumerator for vertex field types.
+	/// Used to define what type of field we're using.
+	/// </summary>
+	public enum VertexFieldType
+	{
+		/// 1 Floating point number.
+		Float1,
+		/// 2 Floating point numbers.
+		Float2,
+		/// 3 Floating point numbers.
+		Float3,
+		/// 4 Floating point numbers.
+		Float4,
+		/// DWORD color value.
+		Color,
+		/// 1 signed short integers.
+		Short1,
+		/// 2 signed short integers.
+		Short2,
+		/// 3 signed short integers.
+		Short3,
+		/// 4 signed short integers.
+		Short4,
+		/// 4 Unsigned bytes.
+		UByte4
+	}
+	
+	/// <summary>
     /// Enumeration containing modes for the blitters on the image/render image objects.
     /// </summary>
     public enum BlitterSizeMode
@@ -250,14 +337,21 @@ namespace GorgonLibrary.Graphics
     /// <summary>
     /// Enumeration containing the types of images we can create.
     /// </summary>
+	/// <remarks>The <typeparamref name="RenderTarget"/> value is used internally by Gorgon and should not be used when creating an image, however it can be used when validating an image format with 
+	/// <see cref="M:GorgonLibrary.Driver.ValidImageFormat">Driver.ValidImageFormat</see> or <see cref="M:GorgonLibrary.Graphics.Image.ValidateFormat">Image.ValidateFormat</see>.
+	/// <para>The <typeparamref name="Dynamic"/> value will ensure the image is dynamic whether the <see cref="P:GorgonLibrary.Driver.SupportDynamicTextures">Driver.SupportDynamicTextures</see> property is TRUE or FALSE.  
+	/// If the hardware supports dynamic textures then Gorgon will make use of it, otherwise the image will be a normal image placed in the default pool.</para>
+	/// </remarks>
     public enum ImageType
     {
-        /// <summary>A normal lockable image.</summary>
+        /// <summary>A normal static image.</summary>
         Normal = 0,
-        /// <summary>A render target.</summary>
-        RenderTarget = 1,
         /// <summary>Dynamic image.</summary>
-        Dynamic = 2
+        Dynamic = 1,
+		/// <summary>
+		/// A render target image.
+		/// </summary>
+		RenderTarget = 0x7FFF
     }
 
     /// <summary>

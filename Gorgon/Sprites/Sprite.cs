@@ -153,13 +153,13 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return Drawing.Color.FromArgb(Vertices[0].Color);
+				return Drawing.Color.FromArgb(Vertices[0].ColorValue);
 			}
 			set
 			{
 				int colorInt = value.ToArgb();		// Integer representation of the color.
 
-				Vertices[3].Color = Vertices[2].Color = Vertices[1].Color = Vertices[0].Color = colorInt;
+				Vertices[3].ColorValue = Vertices[2].ColorValue = Vertices[1].ColorValue = Vertices[0].ColorValue = colorInt;
 			}
 		}
 
@@ -170,15 +170,15 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return ((Vertices[0].Color >> 24) & 0xFF);
+				return ((Vertices[0].ColorValue >> 24) & 0xFF);
 			}
 			set
 			{
 				value &= 0xFF;
-				Vertices[0].Color = (value << 24) | (Vertices[0].Color & 0xFFFFFF);
-				Vertices[1].Color = (value << 24) | (Vertices[1].Color & 0xFFFFFF);
-				Vertices[2].Color = (value << 24) | (Vertices[2].Color & 0xFFFFFF);
-				Vertices[3].Color = (value << 24) | (Vertices[3].Color & 0xFFFFFF);
+				Vertices[0].ColorValue = (value << 24) | (Vertices[0].ColorValue & 0xFFFFFF);
+				Vertices[1].ColorValue = (value << 24) | (Vertices[1].ColorValue & 0xFFFFFF);
+				Vertices[2].ColorValue = (value << 24) | (Vertices[2].ColorValue & 0xFFFFFF);
+				Vertices[3].ColorValue = (value << 24) | (Vertices[3].ColorValue & 0xFFFFFF);
 			}
 		}
 
@@ -1030,7 +1030,7 @@ namespace GorgonLibrary.Graphics
 			if ((vertexPosition < VertexLocations.UpperLeft) || (vertexPosition > VertexLocations.LowerLeft))
 				throw new ArgumentOutOfRangeException("vertexPosition", "The sprite does not contain a vertex at the position " + ((int)vertexPosition).ToString());
 
-			return Drawing.Color.FromArgb(Vertices[(int)vertexPosition].Color);
+			return Drawing.Color.FromArgb(Vertices[(int)vertexPosition].ColorValue);
 		}
 
 		/// <summary>
@@ -1043,7 +1043,7 @@ namespace GorgonLibrary.Graphics
 			if ((vertexPosition < VertexLocations.UpperLeft) || (vertexPosition > VertexLocations.LowerLeft))
 				throw new ArgumentOutOfRangeException("vertexPosition", "The sprite does not contain a vertex at the position " + ((int)vertexPosition).ToString());
 
-			Vertices[(int)vertexPosition].Color = newColor.ToArgb();
+			Vertices[(int)vertexPosition].ColorValue = newColor.ToArgb();
 		}
 
 		/// <summary>
@@ -1168,7 +1168,7 @@ namespace GorgonLibrary.Graphics
 				clone.StencilMask = StencilMask;
 
 			// Clone the animations.
-			Animations.CopyTo(clone.Animations);
+			Animations.CopyTo(clone);
 
 			clone.InheritScale = InheritScale;
 			clone.InheritRotation = InheritRotation;
@@ -1209,7 +1209,7 @@ namespace GorgonLibrary.Graphics
 			Axis = axis;
 			_imagePosition = imageOffset;
 			// Set sprite colors.
-			Vertices[3].Color = Vertices[2].Color = Vertices[1].Color = Vertices[0].Color = Drawing.Color.White.ToArgb();
+			Vertices[3].ColorValue = Vertices[2].ColorValue = Vertices[1].ColorValue = Vertices[0].ColorValue = Drawing.Color.White.ToArgb();
 		}
 
 		/// <summary>
@@ -2004,7 +2004,6 @@ namespace GorgonLibrary.Graphics
                 for (int i = 0; i < animationCount; i++)
                 {
                     Animation animation = new Animation("@EmptyAnimation", 0.0f);
-					animation.SetOwner(this);					
 					if (spriteVersion == new Version(1, 1))
 						((ISerializable)animation).ReadData(reader);
 					else

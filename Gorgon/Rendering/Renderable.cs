@@ -37,7 +37,7 @@ namespace GorgonLibrary.Graphics
 	/// Object representing a renderable object.
 	/// </summary>
 	public abstract class Renderable
-		: NamedObject, IRenderableStates, ICloneable<Renderable>
+		: NamedObject, IRenderableStates, ICloneable<Renderable>, IAnimated
 	{
 		#region Variables.
 		private bool _inheritSmoothing;						// Flag to indicate that we inherit smoothing settings from the layer.
@@ -927,17 +927,6 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
-        /// Property to set or return animations for the object.
-        /// </summary>        
-        public AnimationList Animations
-        {
-            get 
-            {
-                return _animations;
-            }
-        }
-
-        /// <summary>
         /// Property to return the final position.
         /// </summary>
         public Vector2D FinalPosition
@@ -1250,6 +1239,21 @@ namespace GorgonLibrary.Graphics
 				Size = new Vector2D(_size.X, value);
 			}
 		}
+
+
+		/// <summary>
+		/// Property to set or return the culling mode.
+		/// </summary>
+		CullingMode IRenderableStates.CullingMode
+		{
+			get
+			{
+				return CullingMode.Clockwise;
+			}
+			set
+			{
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -1346,7 +1350,7 @@ namespace GorgonLibrary.Graphics
 
 			// Apply animations.
 			if (Animations.Count > 0)
-				((Renderable)this).ApplyAnimations();
+				ApplyAnimations();
 
 			// Set states.
 			if (stateChanged)
@@ -1537,16 +1541,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to apply animations to the object.
-		/// </summary>
-		public void ApplyAnimations()
-		{
-			// Update animations.
-			for (int i = 0; i < _animations.Count; i++)
-				_animations[i].ApplyAnimation();
-		}
-
-		/// <summary>
 		/// Function to set the anchor axis of the sprite.
 		/// </summary>
 		/// <param name="x">Horizontal position.</param>
@@ -1686,6 +1680,31 @@ namespace GorgonLibrary.Graphics
 		/// A new object that is a copy of this instance.
 		/// </returns>
 		public abstract Renderable Clone();
+		#endregion
+
+		#region IAnimated Members
+		/// <summary>
+		/// Property to return a list of animations attached to the object.
+		/// </summary>
+		public AnimationList Animations
+		{
+			get
+			{
+				return _animations;
+			}
+		}
+
+		/// <summary>
+		/// Function to apply the current time in an animation to the objects animated properties.
+		/// </summary>
+		/// <remarks>This function will do the actual work of updating the properties (marked with the <see cref="GorgonLibrary.Graphics.AnimatedAttribute">Animated</see> attribute).
+		/// It does this by applying the values at the current interpolated (or actual depending on time) key frame to the property that's bound to the track.</remarks>
+		public void ApplyAnimations()
+		{
+			// Update animations.
+			for (int i = 0; i < _animations.Count; i++)
+				_animations[i].ApplyAnimation();
+		}
 		#endregion
 	}
 }

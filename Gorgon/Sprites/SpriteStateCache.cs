@@ -520,6 +520,9 @@ namespace GorgonLibrary.Graphics
 			_renderStates.DepthBufferWriteEnabled = renderObject.DepthWriteEnabled;
 			_renderStates.DepthTestFunction = renderObject.DepthTestFunction;
 
+			// Set culling.
+			_renderStates.CullingMode = renderObject.CullingMode;
+
 			// Set dithering flag.
 			_renderStates.DitheringEnabled = _dither;
 			Geometry.PrimitiveStyle = renderObject.PrimitiveStyle;
@@ -603,11 +606,14 @@ namespace GorgonLibrary.Graphics
 			if (renderObject.DepthBufferBias != states.DepthBias)
 				return true;
 
+			if (renderObject.CullingMode != states.CullingMode)
+				return true;
+
 			if (Geometry.PrimitiveStyle != renderObject.PrimitiveStyle)
 				return true;
 
 			if (Geometry.UseIndices != renderObject.UseIndices)
-				return true;
+				return true;			
 
 			return false;
 		}

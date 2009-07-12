@@ -150,7 +150,10 @@ namespace GorgonLibrary.InputDevices
 			// Get position.
 			Position = Vector2D.Add(Position, new Vector2D(mouseData.LastX, mouseData.LastY));
 
-			// Get wheel data.
+			// Reset the last mouse wheel delta value.
+			ResetWheelDelta();
+
+			// Get wheel data.			
 			if ((mouseData.ButtonFlags & RawMouseButtons.MouseWheel) != 0)
 			{
 				WheelDelta = (int)((short)mouseData.ButtonData);

@@ -26,9 +26,8 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Internal
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// Fields to be used in a vertex declaration.
