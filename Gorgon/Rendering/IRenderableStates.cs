@@ -232,5 +232,14 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the culling mode.
+		/// </summary>
+		CullingMode CullingMode
+		{
+			get;
+			set;
+		}
 	}
 }

@@ -28,9 +28,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using D3D9 = SlimDX.Direct3D9;
-using GorgonLibrary.Graphics;
+using GorgonLibrary.Internal;
 
-namespace GorgonLibrary.Internal
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// Vertex declaration system.
@@ -482,7 +482,7 @@ namespace GorgonLibrary.Internal
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public VertexType()
+		internal VertexType()
 		{			
 			_fields = new List<VertexField>();
 			_changed = true;

@@ -103,6 +103,7 @@
     <Compile Include="Animation\EditorCanDragAttribute.cs" />
     <Compile Include="Animation\EditorRoundValuesAttribute.cs" />
     <Compile Include="Animation\EditorMinMaxAttribute.cs" />
+    <Compile Include="Animation\IAnimated.cs" />
     <Compile Include="Animation\KeyFrame.cs" />
     <Compile Include="Animation\TrackCollection.cs" />
     <Compile Include="Animation\Types\KeyByte.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="Shaders\VertexShader.cs" />
     <Compile Include="Sprites\Batch.cs" />
     <Compile Include="Sprites\Geometry.cs" />
+    <Compile Include="Sprites\PolygonSprite.cs" />
     <Compile Include="Sprites\StateFence.cs" />
     <Compile Include="Sprites\StaticTextSprite.cs" />
     <Compile Include="Sprites\TextSprite.cs" />

@@ -384,6 +384,15 @@ namespace GorgonLibrary.InputDevices
 		}
 
 		/// <summary>
+		/// Function to reset the last mouse wheel delta value to zero.
+		/// </summary>
+		/// <remarks>This function is used to manually reset the last mouse wheel delta value.  This may be required if manually polling using the <see cref="GorgonLibrary.InputDevices.Mouse.WheelDelta">WheelDelta</see> property.</remarks>
+		public void ResetWheelDelta()
+		{
+			WheelDelta = 0;
+		}
+
+		/// <summary>
 		/// Function to set the mouse position.
 		/// </summary>
 		/// <param name="x">Horizontal coordinate.</param>

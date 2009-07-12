@@ -513,6 +513,31 @@ namespace GorgonLibrary.Graphics
 				Gorgon.CurrentRenderTarget = current;
 			}
 		}
+
+		/// <summary>
+		/// Function to retrieve the underlying image data for direct access.
+		/// </summary>
+		/// <param name="lockRectangle">The area to lock.</param>
+		/// <returns>An <see cref="GorgonLibrary.Graphics.Image.ImageLockBox">Image.ImageLockBox</see> which contains the direct access to the underlying image.</returns>
+		/// <remarks>This function acts as a means of direct image maniuplation.  This means while the user is given direct control over the contents of the image the system will 
+		/// provide NO support for any data read/written to the lock area.  There will be no image resizing, no color conversion, the user will be on their own and must
+		/// be aware of the image format.</remarks>
+		public Image.ImageLockBox GetImageData(Drawing.Rectangle lockRectangle)
+		{
+			return _renderTarget.GetImageData(lockRectangle);
+		}
+
+		/// <summary>
+		/// Function to retrieve the underlying image data for direct access.
+		/// </summary>
+		/// <returns>An <see cref="GorgonLibrary.Graphics.Image.ImageLockBox">Image.ImageLockBox</see> which contains the direct access to the underlying image.</returns>
+		/// <remarks>This function acts as a means of direct image maniuplation.  This means while the user is given direct control over the contents of the image the system will 
+		/// provide NO support for any data read/written to the lock area.  There will be no image resizing, no color conversion, the user will be on their own and must
+		/// be aware of the image format.<para>This overload of the function will lock the entire image for reading/writing.</para></remarks>
+		public Image.ImageLockBox GetImageData()
+		{
+			return _renderTarget.GetImageData();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
