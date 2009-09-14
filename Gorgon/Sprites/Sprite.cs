@@ -2002,8 +2002,9 @@ namespace GorgonLibrary.Graphics
             {
                 // Read each animation.
                 for (int i = 0; i < animationCount; i++)
-                {
+                {					
                     Animation animation = new Animation("@EmptyAnimation", 0.0f);
+					animation.SetOwner(this);
 					if (spriteVersion == new Version(1, 1))
 						((ISerializable)animation).ReadData(reader);
 					else
