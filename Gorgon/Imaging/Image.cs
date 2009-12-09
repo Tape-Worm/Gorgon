@@ -1580,8 +1580,8 @@ namespace GorgonLibrary.Graphics
 				// Reload the image data within the new format.				
 				try
 				{
-					imageData = D3D9.Texture.ToStream(_d3dImage, D3D9.ImageFileFormat.Png);
-					newImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, imageData, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, 0);
+					imageData = D3D9.Texture.ToStream(_d3dImage, D3D9.ImageFileFormat.Png);					
+					newImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, imageData, (int)imageData.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, 0);
 				}
 				catch (Exception ex)
 				{
