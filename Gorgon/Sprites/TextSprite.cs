@@ -630,7 +630,10 @@ namespace GorgonLibrary.Graphics
 						for (int j = i; j >= 0; j--)
 						{
 							if ((newText[j] == '\r') || (newText[j] == '\n'))
+							{
+								found = true;
 								break;
+							}
 
 							if ((newText[j] == ' ') || (newText[j] == '\t'))
 							{
