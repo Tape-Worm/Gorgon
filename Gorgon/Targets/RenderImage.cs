@@ -44,7 +44,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private Image _renderTarget;						            // Image used as a render target.
 		private ImageBufferFormats _format;					            // Format of the image.
-		private DepthBufferFormats _depthFormat;			            // Depth buffer format.
+		private DepthBufferFormats _depthFormat;			            // Depth buffer forma.
 		private Sprite _blitter = null;						            // Sprite blitter.
 		#endregion
 
@@ -188,7 +188,7 @@ namespace GorgonLibrary.Graphics
 			if (_renderTarget == null)
 			{
 				// Create the image.
-				_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, false);
+				_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, true);
 				DeviceStateList.Remove(_renderTarget);
 			}
 			else
