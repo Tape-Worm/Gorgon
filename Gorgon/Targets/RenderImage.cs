@@ -188,7 +188,7 @@ namespace GorgonLibrary.Graphics
 			if (_renderTarget == null)
 			{
 				// Create the image.
-				_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, true);
+				_renderTarget = new Image("@RenderImage." + Name, ImageType.RenderTarget, Width, Height, format, false);
 				DeviceStateList.Remove(_renderTarget);
 			}
 			else
