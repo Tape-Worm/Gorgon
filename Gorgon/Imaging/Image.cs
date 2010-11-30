@@ -2221,9 +2221,6 @@ namespace GorgonLibrary.Graphics
 			_height = height;
 			_format = format;
 
-			// Perform the clear initially.
-			_clearOnInit = true;
-
 			// If this is a regular image, then add it to the state list.
 			if (_imageType != ImageType.RenderTarget)
 				DeviceStateList.Add(this);
