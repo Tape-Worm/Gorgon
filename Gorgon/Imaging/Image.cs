@@ -311,6 +311,54 @@ namespace GorgonLibrary.Graphics
 					throw GorgonException.Repackage(GorgonErrors.CannotLock, ex);
 				}
 			}
+
+			/// <summary>
+			/// Function to write directly to the DataStream.
+			/// </summary>
+			/// <param name="buffer">The buffer to write to the data stream</param>
+			/// <param name="offset">The offset in the buffer in which to start writing</param>
+			/// <param name="length">The length of the buffer to write to the data stream</param>
+			public void Write(byte[] buffer, int offset, int length)
+			{
+				if (_lockStream != null)
+					_lockStream.Write(buffer, offset, length);
+			}
+
+			/// <summary>
+			/// Function to write directly to the DataStream.
+			/// </summary>
+			/// <para>This overload of the function will not offset the buffer.</para>
+			/// <param name="buffer">The buffer to write to the data stream</param>
+			/// <param name="length">The length of the buffer to write to the data stream</param>
+			public void Write(byte[] buffer, int length)
+			{
+				Write(buffer, 0, length);
+			}
+
+			/// <summary>
+			/// Function to write directly to the DataStream.
+			/// </summary>
+			/// <para>This overload of the function will not offset the buffer.</para>
+			/// <para>This overload of the function will use the length of the buffer itself.</para>
+			/// <param name="buffer">The buffer to write to the data stream</param>
+			public void Write(byte[] buffer)
+			{
+				Write(buffer, buffer.Length);
+			}
+
+			/// <summary>
+			/// Function to get the entire DataStream as an array of bytes.
+			/// </summary>
+			/// <returns>The unformatted image data as bytes.</returns>
+			public byte[] ToArray()
+			{
+				_lockStream.Position = 0;
+
+				byte[] array = new byte[_lockStream.Length];
+				_lockStream.Read(array, 0, (int)_lockStream.Length);
+
+				return array;
+			}
 			#endregion
 
 			#region Constructor/Destructor.
