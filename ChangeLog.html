@@ -123,14 +123,14 @@ November 29/2010 - Version - Current
 ===============================================================================================
 * Added two new functions (minus simplicity overloads) to ImageLockBox to allow for
   SUPER FAST DATA TRANSITION!!! I found that if you read/write the entire stream, it is incredibly quicker.
-  (Example omitted for verbosity, see SVN)
+  (Example omitted for verbosity, see SVN) - Paril
 
 * Removed _clearOnInit being set to true so that the textures do not get automatically cleared
   on first initialization (the cause for slowdown for Images/RenderImages). This might be a
   breaking change for any project who creates an Image/RenderImage but does not clear it manually,
   however since the Gorgon demos push that they should be cleared, I do not think this will
-  be a problem.
-  
+  be a problem. - Paril
+
   Notes: Might also remove the actual usage code in Initialize, because I don't
   think it would ever get called under normal circumstances. Have to test this!
 
