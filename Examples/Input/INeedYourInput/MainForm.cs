@@ -71,6 +71,9 @@ namespace GorgonLibrary.Example
 				case KeyboardKeys.Escape:
 					Close();			// Close
 					break;
+			case KeyboardKeys.F:
+					Gorgon.Screen.Windowed = !Gorgon.Screen.Windowed;
+					break;
 				case KeyboardKeys.Down:
 					_radius -= 1.0f;
 					if (_radius < 2.0f)
@@ -226,7 +229,11 @@ namespace GorgonLibrary.Example
 		private void Gorgon_DeviceLost(object sender, EventArgs e)
 		{
 			// Copy to the backup image.
-			_backBuffer.CopyToImage(_backup);
+			using (var backBufferBox = _backBuffer.GetImageData())
+			{
+				using (var backupBox = _backup.GetImageData())
+					backupBox.Write(backBufferBox.ToArray());
+			}
 		}
 
 		/// <summary>
