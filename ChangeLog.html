@@ -119,6 +119,19 @@
 
 <div>
 	<pre>
+December 1/2010 - Version - Current
+===============================================================================================
+* Animations now let you specify looping via Animation.Loops.
+* Commented the DeviceNotReset check in LockBox.Lock/Unlock. After some testing on my end and on
+  Windows XP, it seems to be more or less not required at all, as during DeviceLost, Direct3D
+  has not actually closed yet, so it should be safe at all times, but there may be some very
+  special circumstances that this is false (such as trying to use a lockbox before Gorgon.SetMode);
+  these may require a whole different check (Gorgon.Screen.Initialized?) if one is not already in place. - Paril
+
+* GIF animation code, based on Cycor's code, is now in the Sprite.cs file. It works flawlessly! - Paril
+
+* Updated INeedYourInput to use the new LockBox methods, as well as a fullscreen toggle for testing. - Paril
+
 November 29/2010 - Version - Current
 ===============================================================================================
 * Added two new functions (minus simplicity overloads) to ImageLockBox to allow for

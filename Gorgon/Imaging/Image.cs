@@ -21,7 +21,9 @@
 // THE SOFTWARE.
 // 
 // Created: Friday, May 19, 2006 10:18:50 PM
-// 
+//
+// Code snippets submitted by:
+//   - Cycor (ImageLockBox.Write)
 #endregion
 
 using System;
@@ -213,8 +215,13 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			public void Unlock()
 			{
-				if (Gorgon.Screen.DeviceNotReset)
-					return;
+				// Paril, r349
+				// FIXME
+				// Commented this out because it seems to hinder some
+				// activities in DeviceLost events.
+				// Needs more testing to see if it is actually required.
+				//if (Gorgon.Screen.DeviceNotReset)
+				//	return;
 
 				if (_lockStream == null)
 					return;
@@ -254,10 +261,15 @@ namespace GorgonLibrary.Graphics
 			/// <param name="discard">TRUE to discard the data, FALSE to leave alone.</param>
 			public void Lock(bool discard)
 			{
-                DX.DataRectangle lockData = null;  // Lock data.
-
-				if (Gorgon.Screen.DeviceNotReset)
-					return;
+				// Paril, r349
+				// FIXME
+				// Commented this out because it seems to hinder some
+				// activities in DeviceLost events.
+				// Needs more testing to see if it is actually required.
+				//if (Gorgon.Screen.DeviceNotReset)
+				//	return;
+				
+				DX.DataRectangle lockData = null;  // Lock data.
 
 				// If locked, then unlock and re-lock.
 				if (_lockStream != null)
