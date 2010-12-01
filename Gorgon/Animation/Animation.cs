@@ -83,7 +83,9 @@ namespace GorgonLibrary.Graphics
         private IAnimated _owner = null;							// Object that owns this animation.        
         private float _length = 1000;								// Length of the track in milliseconds.
         private bool _loop;											// Flag to indicate that this animation should loop.
-        private float _currentTime;									// Current time.
+		private int _loops;											// Number of times to loop an animation. Anything equal or below 0 is infinite.
+		private int _loopTimes;										// Number of times the animation has currently looped.
+		private float _currentTime;									// Current time.
         private bool _enabled;										// Flag to indicate whether the animation is enabled or not.
 		private AnimationState _state = AnimationState.Stopped;		// State of action for the animation.
 		private TrackCollection _tracks = null;						// Tracks.
@@ -174,6 +176,40 @@ namespace GorgonLibrary.Graphics
                 _loop = value;
             }
         }
+
+		/// <summary>
+		/// Property to get or set the number of times an animation should loop before stopping.
+		/// Anything below or equal to 0 means infinite looping.
+		/// This property will automatically set Looped to true if it is disabled.
+		/// </summary>
+		public int Loops
+		{
+			get
+			{
+				return _loops;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+
+				_loops = value;
+
+				if (value != 0 && !Looped)
+					Looped = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to get the current loop that this animation is on.
+		/// </summary>
+		public int CurrentLoop
+		{
+			get
+			{
+				return _loopTimes;
+			}
+		}
 
         /// <summary>
         /// Property to set or return whether the animation is enabled or not.
@@ -290,7 +326,20 @@ namespace GorgonLibrary.Graphics
                 else
                     _currentTime = value;
 
-                if (_loop)
+				bool wrapAround = false;
+
+				// Check to see if we hit the loop limit
+				if (_loop && _currentTime > _length)
+				{
+					if (_loops == 0 || _loopTimes != _loops)
+					{
+						// Nope, keep on going
+						wrapAround = true;
+						_loopTimes++;
+					}
+				}
+
+				if (wrapAround)
                 {
                     // Reset to beginning.
                     _currentTime = _currentTime % _length;
@@ -546,6 +595,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Reset()
         {
+			_loopTimes = 0;
             _currentTime = 0;
 
 			foreach (Track track in _tracks)

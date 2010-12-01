@@ -21,7 +21,9 @@
 // THE SOFTWARE.
 // 
 // Created: Sunday, July 09, 2006 3:16:50 AM
-// 
+//
+// Code snippets submitted by:
+//   - Cycor (GIF animation code based upon original code)
 #endregion
 
 using System;
@@ -778,6 +780,58 @@ namespace GorgonLibrary.Graphics
 		public static Sprite FromResource(string spriteName)
 		{
 			return FromResource(spriteName, null, false, null);
+		}
+
+		private const int PropertyTagFrameDelay = 0x5100; // Frame delay interval tag in a GIF file
+		private const int PropertyTagLoopCount = 0x5101; // Loop count tag in a GIF file
+
+		/// <summary>
+		/// Returns a sprite, complete with animation, from an animated GIF (Graphics Interchange Format) file.
+		/// </summary>
+		/// <param name="spriteName">Name of the sprite.</param>
+		/// <param name="filePath">Filename/path to the GIF animation.</param>
+		/// <param name="looped">TRUE if the animation should be looped; FALSE if not.</param>
+		/// <returns>The sprite that was loaded from the GIF file.</returns>
+		public static Sprite FromAnimatedGIF(string spriteName, string filePath, bool looped)
+		{
+			// Are we even valid?
+			if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+				throw new FileNotFoundException("File not found: " + filePath);
+
+			// Create Sprite
+			Sprite gifSprite = new Sprite(spriteName);
+
+			// Load Gif File
+			using (System.Drawing.Image gifImg = System.Drawing.Image.FromFile(filePath))
+			{
+				Drawing.Imaging.FrameDimension dimension = new Drawing.Imaging.FrameDimension(gifImg.FrameDimensionsList[0]);
+				int interval = BitConverter.ToInt32(gifImg.GetPropertyItem(PropertyTagFrameDelay).Value, 0) * 10;
+				int loops = BitConverter.ToInt16(gifImg.GetPropertyItem(PropertyTagLoopCount).Value, 0);
+				int frames = gifImg.GetFrameCount(Drawing.Imaging.FrameDimension.Time);
+
+				// Create Animation
+				Animation anim = new Animation("GifAnimation", frames * interval);
+
+				anim.Looped = looped;
+				anim.Loops = loops;
+
+				KeyImage imageKeyFrame;
+				gifSprite.Animations.Add(anim);
+
+				// Add Frames to animation
+				for (int i = 0; i < frames; i++)
+				{
+					gifImg.SelectActiveFrame(dimension, i);
+					GorgonLibrary.Graphics.Image image = GorgonLibrary.Graphics.Image.FromBitmap(spriteName + ".frame" + i, gifImg);
+					imageKeyFrame = new KeyImage(i * interval, image);
+					imageKeyFrame.ImageOffset = new Vector2D(0, 0);
+					imageKeyFrame.ImageSize = new Vector2D(image.Width, image.Height);
+					anim.Tracks["Image"].AddKey(imageKeyFrame);
+				}
+			}
+
+			// return sprite
+			return gifSprite;
 		}
 
 		/// <summary>
