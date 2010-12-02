@@ -228,21 +228,12 @@ namespace GorgonLibrary.Example
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void Gorgon_DeviceLost(object sender, EventArgs e)
 		{
-			try
-			{
-				// Copy to the backup image.
-				using (var backBufferBox = _backBuffer.GetImageData())
-				{
-					using (var backupBox = _backup.GetImageData())
-						backupBox.Write(backBufferBox.ToArray());
-				}
-			}
-			catch (Exception ex)
-			{
-				UI.ErrorBox(this, ex);
-			}
 			// Copy to the backup image.
-			//_backBuffer.CopyToImage(_backup);
+			using (var backBufferBox = _backBuffer.GetImageData())
+			{
+				using (var backupBox = _backup.GetImageData())
+					backupBox.Write(backBufferBox.ToArray());
+			}
 		}
 
 		/// <summary>
