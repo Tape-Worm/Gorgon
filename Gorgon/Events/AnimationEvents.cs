@@ -43,24 +43,22 @@ namespace GorgonLibrary.Graphics
     public class AnimationAdvanceEventArgs
         : EventArgs
     {
-        #region Variables.
-        private float _frameDelta = 0.0f;           // Delta between last time and current time.
-
-        /// <summary>Current animation time.</summary>
-        public float CurrentFrameTime;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the time delta between this and the last frame.
         /// </summary>
-        public float Delta
-        {
-            get
-            {
-                return _frameDelta;
-            }
-        }
+		public float Delta
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>Current animation time.</summary>
+		public float CurrentFrameTime
+		{
+			get;
+			set;
+		}
         #endregion
 
         #region Constructor.
@@ -72,7 +70,7 @@ namespace GorgonLibrary.Graphics
         public AnimationAdvanceEventArgs(float currentTime, float delta)
         {
             CurrentFrameTime = currentTime;
-            _frameDelta = delta;
+            Delta = delta;
         }
         #endregion
     }

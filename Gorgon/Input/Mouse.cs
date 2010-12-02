@@ -459,6 +459,9 @@ namespace GorgonLibrary.InputDevices
 		protected internal Mouse(Input owner)
 			: base(owner)
 		{
+			if (owner == null)
+				throw new ArgumentNullException("owner");
+
 			DoubleClickDelay = 600;
 
 			_position = new Vector2D(owner.Window.ClientRectangle.Width / 2, owner.Window.ClientRectangle.Height / 2);

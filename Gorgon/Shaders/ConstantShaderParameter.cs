@@ -501,6 +501,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">An array of 4D vector values.</param>
 		public void SetValue(Vector4D[] value)
 		{
+			if (value == null)
+				throw new ArgumentNullException("value");
+
 			this.ValueType = ShaderParameterType.Vector4D;
 			_vector4DValues = new DX.Vector4[value.Length];
 
@@ -550,6 +553,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="transpose">TRUE to use transpose of the matrix, FALSE for standard matrix.</param>
 		public void SetValue(Matrix[] value, bool transpose)
 		{
+			if (value == null)
+				throw new ArgumentNullException("value");
+
 			this.ValueType = ShaderParameterType.Vector4D;
 			_matrixValues = new DX.Matrix[value.Length];
 
@@ -579,6 +585,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">An array of color values.</param>
 		public void SetValue(System.Drawing.Color[] value)
 		{
+			if (value == null)
+				throw new ArgumentNullException("value");
+
 			this.ValueType = ShaderParameterType.Color;
 			_colorValues = new SlimDX.Color4[value.Length];
 

@@ -1187,6 +1187,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="text">Text to append.</param>
 		public virtual void AppendText(string text)
 		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+
 			if (text.Length > 0)
 			{
 				_originalText.Append(text);
@@ -1210,7 +1213,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="text">Text to insert.</param>
 		public virtual void InsertText(int position, string text)
 		{
-			if ((position < 0) || ((position + text.Length) > _text.Length))
+			if (text == null)
+				throw new ArgumentNullException("text");
+			else if ((position < 0) || ((position + text.Length) > _text.Length))
 				return;
 
 			if (text.Length > 0)
@@ -1286,7 +1291,9 @@ namespace GorgonLibrary.Graphics
 			float maxHeight = 0.0f;											// Maximum height.
             StringCollection lines = null;                                  // Lines for the text.
 
-			if ((_font == null) || (text.Length == 0))
+			if (text == null)
+				throw new ArgumentNullException("text");
+			else if ((_font == null) || (text.Length == 0))
 				return Drawing.RectangleF.Empty;
 
 			if (_font.NeedsUpdate)

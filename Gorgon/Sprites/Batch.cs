@@ -43,12 +43,20 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A processed vertex.
 		/// </summary>
-		public VertexTypeList.PositionDiffuse2DTexture1 Vertex;
+		public VertexTypeList.PositionDiffuse2DTexture1 Vertex
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Image associated with the vertex.
 		/// </summary>
-		public Image Image;
+		public Image Image
+		{
+			get;
+			set;
+		}
 	}
 
 	/// <summary>
@@ -70,7 +78,7 @@ namespace GorgonLibrary.Graphics
 		/// The start of the index fence.
 		/// </summary>
 		public int IndexStart;
-				
+
 		/// <summary>
 		/// Number of vertices encompassed by the fence.
 		/// </summary>
