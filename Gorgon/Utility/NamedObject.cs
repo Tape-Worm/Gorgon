@@ -110,8 +110,11 @@ namespace GorgonLibrary.Internal
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the name parameter is NULL or a zero length string.</exception>
 		/// <param name="name">Name for this object.</param>
-		public NamedObject(string name)
+		protected NamedObject(string name)
 		{
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name");
+
 			Name = name;
 		}
 		#endregion

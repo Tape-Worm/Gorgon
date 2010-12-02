@@ -51,43 +51,93 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Caption of the control.
 			/// </summary>
-			public string Caption;
+			public string Caption
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Minimize box present.
 			/// </summary>
-			public bool MinimizeBox;
+			public bool MinimizeBox
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Maximize box present.
 			/// </summary>
-			public bool MaximizeBox;
+			public bool MaximizeBox
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Maximize box present.
 			/// </summary>
-			public bool ControlBox;
+			public bool ControlBox
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Top most form.
 			/// </summary>
-			public bool TopMost;
+			public bool TopMost
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Form border style.
 			/// </summary>
-			public FormBorderStyle Style;
+			public FormBorderStyle Style
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Form X position.
 			/// </summary>
-			public int Left;
+			public int Left
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Form Y position.
 			/// </summary>
-			public int Top;
+			public int Top
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Form width.
 			/// </summary>
-			public int Width;
+			public int Width
+			{
+				get;
+				set;
+			}
+
 			/// <summary>
 			/// Form height.
 			/// </summary>
-			public int Height;
+			public int Height
+			{
+				get;
+				set;
+			}
+
 			#endregion
 		}
 		#endregion

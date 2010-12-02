@@ -1418,6 +1418,9 @@ namespace GorgonLibrary.Graphics
 		public Font(string fontName, Drawing.FontFamily fontFamily, float fontSize, bool antiAlias, bool bold, bool underline, bool italic)
 			: this(fontName, fontFamily.Name, fontSize, antiAlias, bold, underline, italic)
 		{
+			if (fontFamily == null)
+				throw new ArgumentNullException("fontFamily");
+			
 			_family = fontFamily;
 			_needUpdate = true;
 		}
@@ -1480,6 +1483,9 @@ namespace GorgonLibrary.Graphics
 		public Font(string fontName, Drawing.Font font)
 			: this(fontName, font.FontFamily, font.Size, true, false, false, false)
 		{
+			if (font == null)
+				throw new ArgumentNullException("font");
+
 			// Copy settings.
 			Bold = font.Bold;
 			Underline = font.Underline;

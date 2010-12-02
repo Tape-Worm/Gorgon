@@ -119,10 +119,28 @@
 
 <div>
 	<pre>
+December 2/2010 - Verison - Current
+===============================================================================================
+* Fixed up many small standardization problems (publicly visible variables changed into auto-properties in a few
+  classes; left the structs alone because they caused problems with constructors)
+
+* Added some exception handlers for a few classes and methods
+
+* Changed name of EditorCanDragAttribute constructor argument "dragSprite" to "dragType" to match property
+
+* Made Matrix constructor less verbose by using params arguments
+
+* Changed NamedObject's constructor to protected since it is abstract
+
+* Since VideoMode.GetBpp was only used internally with the "Format" property but was still called by
+  Bpp property (which called GetBpp with Format), merged the two (non-breaking)
+
 December 1/2010 - Version - Current
 ===============================================================================================
 * Updated issue in INeedYourInput that caused an overflow of the locked image stream - TW
+
 * Animations now let you specify looping via Animation.Loops.
+
 * Commented the DeviceNotReset check in LockBox.Lock/Unlock. After some testing on my end and on
   Windows XP, it seems to be more or less not required at all, as during DeviceLost, Direct3D
   has not actually closed yet, so it should be safe at all times, but there may be some very

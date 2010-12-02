@@ -668,15 +668,17 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public Matrix(float p11,float p12,float p13,float p14,
-			float p21,float p22,float p23,float p24,
-			float p31,float p32,float p33,float p34,
-			float p41,float p42,float p43,float p44)
+		public Matrix(params float[] matrix)
 		{
-			m11 = p11; m12 = p12; m13 = p13; m14 = p14;
-			m21 = p21; m22 = p22; m23 = p23; m24 = p24;
-			m31 = p31; m32 = p32; m33 = p33; m34 = p34;
-			m41 = p41; m42 = p42; m43 = p43; m44 = p44;			
+			if (matrix == null)
+				throw new ArgumentNullException("matrix");
+			else if (matrix.Length != 16)
+				throw new GorgonException("\"matrix\" must have a length of 16");
+
+			m11 = matrix[0]; m12 = matrix[1]; m13 = matrix[2]; m14 = matrix[3];
+			m21 = matrix[4]; m22 = matrix[5]; m23 = matrix[6]; m24 = matrix[7];
+			m31 = matrix[8]; m32 = matrix[9]; m33 = matrix[10]; m34 = matrix[11];
+			m41 = matrix[12]; m42 = matrix[13]; m43 = matrix[14]; m44 = matrix[15];			
 		}
 		#endregion
 	}

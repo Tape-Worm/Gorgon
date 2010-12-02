@@ -78,6 +78,9 @@ namespace GorgonLibrary.Graphics
         /// <param name="child">Child object to remove.</param>
         public void Remove(Renderable child)
         {
+			if (child == null)
+				throw new ArgumentNullException("child");
+
 			RemoveItem(child.Name);
             child.SetParent(null);
         }
@@ -108,6 +111,9 @@ namespace GorgonLibrary.Graphics
         /// <param name="child">Child to add.</param>
         public void Add(Renderable child)
         {
+			if (child == null)
+				throw new ArgumentNullException("child");
+
             Add(child, child.Position);
         }
         #endregion
