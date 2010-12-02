@@ -82,7 +82,9 @@ namespace GorgonLibrary
 		/// <param name="key">Key of the item in the hash map.</param>
 		protected virtual T GetItem(string key)
 		{
-			if (!Contains(key))
+			if (key == null)
+				throw new ArgumentNullException("key");
+			else if (!Contains(key))
 				throw new KeyNotFoundException(key);
 
 			if (!_caseSensitive)
@@ -98,6 +100,9 @@ namespace GorgonLibrary
 		/// <param name="item">Item to add.</param>
 		protected virtual void AddItem(string key, T item)
 		{
+			if (key == null)
+				throw new ArgumentNullException("key");
+
 			string itemKey = key;
 			if (Contains(key))
 			{
@@ -121,7 +126,9 @@ namespace GorgonLibrary
 		/// <param name="key">Key of the object to remove.</param>
 		protected virtual void RemoveItem(string key)
 		{
-			if (!Contains(key))
+			if (key == null)
+				throw new ArgumentNullException("key");
+			else if (!Contains(key))
 				throw new KeyNotFoundException(key);
 
 			if (!_caseSensitive)
@@ -145,6 +152,9 @@ namespace GorgonLibrary
 		/// <returns>TRUE if the object exists, FALSE if not.</returns>
 		public virtual bool Contains(string key)
 		{
+			if (key == null)
+				throw new ArgumentNullException("key");
+
 			if (!_caseSensitive)
 				return _items.ContainsKey(key.ToLowerInvariant());
 			else

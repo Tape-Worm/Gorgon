@@ -41,6 +41,7 @@ namespace GorgonLibrary
 		/// Starting point in the range.
 		/// </summary>
 		public T Start;
+
 		/// <summary>
 		/// Ending point in the range.
 		/// </summary>

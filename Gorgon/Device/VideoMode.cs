@@ -56,34 +56,24 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return GetBpp(Format);
-			}
-		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to return the BPP of a specific format for a video mode.
-		/// </summary>
-		/// <param name="format">Format of the video mode.</param>
-		/// <returns>Bits per pixel for the video mode.</returns>
-		private int GetBpp(BackBufferFormats format)
-		{
-			switch(format)
-			{
+				switch (Format)
+				{
 				case BackBufferFormats.BufferRGB101010A2:
 				case BackBufferFormats.BufferRGB888:
 					return 32;
 				case BackBufferFormats.BufferRGB555:
 				case BackBufferFormats.BufferRGB565:
-					return 16;				
+					return 16;
 				case BackBufferFormats.BufferP8:
 					return 8;
 				default:
 					return 0;
+				}
 			}
 		}
+		#endregion
 
+		#region Methods.
 		/// <summary>
 		/// Function to determine if another object is equal to this one.
 		/// </summary>
@@ -120,7 +110,7 @@ namespace GorgonLibrary
 			string result = string.Empty;		// Resultant string.
 
 			result = "Video mode:\n";
-			result += "\t" + Width.ToString() + "x" + Height.ToString() + "x" + GetBpp(Format).ToString() + "\n";
+			result += "\t" + Width.ToString() + "x" + Height.ToString() + "x" + Bpp.ToString() + "\n";
 			result += "\tFormat: [" + Format + "]\n";			
 			result += "\tRefreshRate Rate: " + RefreshRate.ToString() + "Hz.";
 

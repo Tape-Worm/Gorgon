@@ -59,6 +59,9 @@ namespace GorgonLibrary
 		{
 			get
 			{
+				if (string.IsNullOrEmpty(driverName))
+					throw new ArgumentNullException("driverName");
+
 				// Look for the driver.
 				foreach (Driver drv in this)
 				{

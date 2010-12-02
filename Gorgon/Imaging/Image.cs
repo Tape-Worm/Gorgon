@@ -1214,6 +1214,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The loaded image.</returns>
 		public static Image FromBitmap(string name, Drawing.Image image, ImageBufferFormats format, Drawing.Color colorKey)
 		{
+			if (image == null)
+				throw new ArgumentNullException("image");
+
 			return FromBitmap(name, image, image.Width, image.Height, ImageBufferFormats.BufferUnknown, colorKey);
 		}
 
@@ -1226,6 +1229,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The loaded image.</returns>
 		public static Image FromBitmap(string name, Drawing.Image image, ImageBufferFormats format)
 		{
+			if (image == null)
+				throw new ArgumentNullException("image");
+
 			return FromBitmap(name, image, image.Width, image.Height, format, Drawing.Color.FromArgb(0, 0, 0, 0));
 		}
 
@@ -1237,6 +1243,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The loaded image.</returns>
 		public static Image FromBitmap(string name, Drawing.Image image)
 		{
+			if (image == null)
+				throw new ArgumentNullException("image");
+
 			return FromBitmap(name, image, image.Width, image.Height, ImageBufferFormats.BufferUnknown, Drawing.Color.FromArgb(0, 0, 0, 0));
 		}
 
@@ -1708,6 +1717,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="shader">Shader to use.</param>
 		public void FillFromShader(ImageShader shader)
 		{
+			if (shader == null)
+				throw new ArgumentNullException("shader");
+			
 			_d3dImage.Fill(shader.D3DShader);
 		}
 
@@ -1721,6 +1733,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="colorKey">Color to use for transparency.</param>
 		public void Copy(Image image, int width, int height, ImageBufferFormats format, Drawing.Color colorKey)
 		{
+			if (image == null)
+				throw new ArgumentNullException("image");
+
 			Stream memoryImage = null;			// Stream containing the image.
 
 			try
@@ -1900,6 +1915,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="colorKey">Color to use for transparency.</param>
 		public void Copy(Drawing.Image gdiImage, int width, int height, ImageBufferFormats format, Drawing.Color colorKey)
 		{
+			if (gdiImage == null)
+				throw new ArgumentNullException("gdiImage");
+			
 			Stream memoryImage = null;			// Stream containing the image.
 
 			try
@@ -2046,6 +2064,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="fileFormat">File format of the image.</param>
 		public void Save(Stream stream, ImageFileFormat fileFormat)
 		{
+			if (stream == null)
+				throw new ArgumentNullException("stream");
+
 			ImageSerializer serializer = null;		// Serializer object.
 			string filename = string.Empty;			// Filename.
 
@@ -2071,6 +2092,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="fileFormat">Format to use for the file.</param>
 		public void Save(FileSystem fileSystem, string filename, ImageFileFormat fileFormat)
 		{
+			if (fileSystem == null)
+				throw new ArgumentNullException("fileSystem");
+			
 			MemoryStream stream = null;			// File stream.
 			byte[] data = null;						// Binary image data.
 

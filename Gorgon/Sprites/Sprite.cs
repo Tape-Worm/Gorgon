@@ -588,6 +588,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The sprite contained within the file system.</returns>
 		public static Sprite FromFileSystem(FileSystem fileSystem, string path, Image alternateImage)
 		{
+			if (fileSystem == null)
+				throw new ArgumentNullException("fileSystem");
+
 			MemoryStream stream = null;		// Stream that contains the sprite data.
 
 			try

@@ -71,10 +71,10 @@ namespace GorgonLibrary.Internal
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EditorCanDragAttribute"/> class.
 		/// </summary>
-		/// <param name="dragSprite">Type of drag operation.</param>
-		public EditorCanDragAttribute(EditorDragType dragSprite)
+		/// <param name="dragType">Type of drag operation.</param>
+		public EditorCanDragAttribute(EditorDragType dragType)
 		{
-			DragType = dragSprite;
+			DragType = dragType;
 		}
 		#endregion
 	}
