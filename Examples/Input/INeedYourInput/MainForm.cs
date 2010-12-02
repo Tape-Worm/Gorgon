@@ -228,12 +228,21 @@ namespace GorgonLibrary.Example
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void Gorgon_DeviceLost(object sender, EventArgs e)
 		{
-			// Copy to the backup image.
-			using (var backBufferBox = _backBuffer.GetImageData())
+			try
 			{
-				using (var backupBox = _backup.GetImageData())
-					backupBox.Write(backBufferBox.ToArray());
+				// Copy to the backup image.
+				using (var backBufferBox = _backBuffer.GetImageData())
+				{
+					using (var backupBox = _backup.GetImageData())
+						backupBox.Write(backBufferBox.ToArray());
+				}
 			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(this, ex);
+			}
+			// Copy to the backup image.
+			//_backBuffer.CopyToImage(_backup);
 		}
 
 		/// <summary>
@@ -251,7 +260,9 @@ namespace GorgonLibrary.Example
 			if (_backup != null)
 				_backBuffer.CopyFromImage(_backup);
 
-			_mouse.SetPositionRange(0, 0, Gorgon.Screen.Width, Gorgon.Screen.Height);			
+			_mouse.SetPositionRange(0, 0, Gorgon.Screen.Width, Gorgon.Screen.Height);
+
+			_backup.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height);
 		}
 
 		/// <summary>
