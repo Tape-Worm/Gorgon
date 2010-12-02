@@ -469,6 +469,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Image that will receive the data.</param>
 		public override void CopyToImage(Image image)
 		{
+			if (image == null)
+				throw new ArgumentNullException("image");
+
 			if ((image.Width != Width) || (image.Height != Height) || (image.Format != Format) || (image.ImageType == ImageType.Normal))
 				ConvertToImageData(image);
 			else

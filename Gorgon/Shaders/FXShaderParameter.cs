@@ -506,6 +506,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="transpose">TRUE to use transpose of the matrix, FALSE for standard matrix.</param>
 		public void SetValue(Matrix[] value, bool transpose)
 		{
+			if (value == null)
+				throw new ArgumentNullException("value");
+
 			if (transpose)
 			{
 				foreach (Matrix matrix in value)
@@ -530,6 +533,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">An array of color values.</param>
 		public void SetValue(Color[] value)
 		{
+			if (value == null)
+				throw new ArgumentNullException("value");
+			
 			DX.Color4[] colors = new DX.Color4[value.Length];		// Color values.
 
 			// Convert the array.

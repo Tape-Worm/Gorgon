@@ -256,7 +256,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if left and right are equal, FALSE if not.</returns>
 		public static bool operator ==(VertexField left, VertexField right)
 		{
-			if ((left._context == right._context) && (left._index == right._index) && (left._offset == right._offset) && (left._stream == right._stream) && (left._type == right._type))
+			if (left != null && right != null && (left._context == right._context) && (left._index == right._index) && (left._offset == right._offset) && (left._stream == right._stream) && (left._type == right._type))
 				return true;
 
 			return false;

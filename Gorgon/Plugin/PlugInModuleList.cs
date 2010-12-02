@@ -106,6 +106,9 @@ namespace GorgonLibrary.PlugIns
 		/// <returns>TRUE if the object exists, FALSE if not.</returns>
 		public override bool Contains(string key)
 		{
+			if (key == null)
+				throw new ArgumentNullException("key");
+
 			return base.Contains(key.ToUpper());
 		}
 
