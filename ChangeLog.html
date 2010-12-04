@@ -119,27 +119,33 @@
 
 <div>
 	<pre>
-December 2/2010 - Verison - Current
+December 4/2010 - Version - Current
+===============================================================================================
+* Added faster versions of unfilled Circle and Ellipse drawing. Must use same technique for filled. - Paril
+
+* Spelling fixes - Paril
+
+December 2/2010 - Version - Current
 ===============================================================================================
 * Fixed up many small standardization problems (publicly visible variables changed into auto-properties in a few
-  classes; left the structs alone because they caused problems with constructors)
+  classes; left the structs alone because they caused problems with constructors) - Paril
 
-* Added some exception handlers for a few classes and methods
+* Added some exception handlers for a few classes and methods - Paril
 
-* Changed name of EditorCanDragAttribute constructor argument "dragSprite" to "dragType" to match property
+* Changed name of EditorCanDragAttribute constructor argument "dragSprite" to "dragType" to match property - Paril
 
-* Made Matrix constructor less verbose by using params arguments
+* Made Matrix constructor less verbose by using params arguments - Paril
 
-* Changed NamedObject's constructor to protected since it is abstract
+* Changed NamedObject's constructor to protected since it is abstract - Paril
 
 * Since VideoMode.GetBpp was only used internally with the "Format" property but was still called by
-  Bpp property (which called GetBpp with Format), merged the two (non-breaking)
+  Bpp property (which called GetBpp with Format), merged the two (non-breaking) - Paril
 
 December 1/2010 - Version - Current
 ===============================================================================================
 * Updated issue in INeedYourInput that caused an overflow of the locked image stream - TW
 
-* Animations now let you specify looping via Animation.Loops.
+* Animations now let you specify looping via Animation.Loops. - Paril
 
 * Commented the DeviceNotReset check in LockBox.Lock/Unlock. After some testing on my end and on
   Windows XP, it seems to be more or less not required at all, as during DeviceLost, Direct3D
