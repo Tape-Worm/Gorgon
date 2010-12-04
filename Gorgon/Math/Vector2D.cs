@@ -35,7 +35,7 @@ namespace GorgonLibrary
 	/// <remarks>
 	/// Vector mathematics are commonly used in graphical 3D applications.  And other
 	/// spatial related computations.
-	/// This type provides us a convienient way to use vectors and their operations.
+	/// This type provides us a convenient way to use vectors and their operations.
 	/// </remarks>
 	public struct Vector2D
 	{
