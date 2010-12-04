@@ -859,7 +859,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to draw an unfilled rectangle.
+		/// Function to draw a filled rectangle.
 		/// </summary>
 		/// <param name="x">Starting horizontal position.</param>
 		/// <param name="y">Starting vertical position.</param>
@@ -1096,83 +1096,70 @@ namespace GorgonLibrary.Graphics
 		/// <param name="colorValue">Color of the circle.</param>
 		/// <param name="penWidth">Width of the pen.</param>
 		/// <param name="penHeight">Height of the pen.</param>
-		/// <remarks>Taken from: SDL_gfx Written by Andreas Schiffler</remarks>
+		/// <remarks>Taken from: Wikipedia entry on circle drawing</remarks>
 		public void Circle(float x, float y, float radius, Drawing.Color colorValue, float penWidth, float penHeight)
 		{
-			float cx = 0;
-			float cy = radius;
-			float ocx = (float)0xffff;
-			float ocy = (float)0xffff;
-			float df = 1 - radius;
-			float d_e = 3;
-			float d_se = -2 * radius + 5;
-			float xpcx, xmcx, xpcy, xmcy;
-			float ypcy, ymcy, ypcx, ymcx;
-
-			/*
-			 * Sanity check radius 
-			 */
+			// Radius check
 			if (radius < 0)
 				return;
 
-			/*
-			 * Special case for r=0 - draw a point 
-			 */
+			// Draw a point for empty radius
 			if (radius == 0)
 			{
 				SetPoint(x, y, colorValue);
 				return;
 			}
 
-			/*
-			 * Draw 
-			 */
-			do {
-				if ((ocy != cy) || (ocx != cx)) {
-					xpcx = x + cx;
-					xmcx = x - cx;
-					if (cy > 0) {
-						ypcy = y + cy;
-						ymcy = y - cy;
-						SetPoint(xmcx, ypcy, colorValue, penWidth, penHeight);
-						SetPoint(xpcx, ypcy, colorValue, penWidth, penHeight);
-						SetPoint(xmcx, ymcy, colorValue, penWidth, penHeight);
-						SetPoint(xpcx, ymcy, colorValue, penWidth, penHeight);
-					} else {
-						SetPoint(xmcx, y, colorValue, penWidth, penHeight);
-						SetPoint(xpcx, y, colorValue, penWidth, penHeight);
-					}
-					ocy = cy;
-					xpcy = x + cy;
-					xmcy = x - cy;
-					if (cx > 0) {
-						ypcx = y + cx;
-						ymcx = y - cx;
-						SetPoint(xmcy, ypcx, colorValue, penWidth, penHeight);
-						SetPoint(xpcy, ypcx, colorValue, penWidth, penHeight);
-						SetPoint(xmcy, ymcx, colorValue, penWidth, penHeight);
-						SetPoint(xpcy, ymcx, colorValue, penWidth, penHeight);
-					} else {
-						SetPoint(xmcy, y, colorValue, penWidth, penHeight);
-						SetPoint(xpcy, y, colorValue, penWidth, penHeight);
-					}
-					ocx = cx;
+			float error = -radius;
+			float nx = radius;
+			float ny = 0;
+
+			// The following while loop may altered to 'while (x > y)' for a
+			// performance benefit, as long as a call to 'plot4points' follows
+			// the body of the loop. This allows for the elimination of the
+			// '(x != y') test in 'plot8points', providing a further benefit.
+			//
+			// For the sake of clarity, this is not shown here.
+			while (nx >= ny)
+			{
+				Circle_Plot8Points_Internal(x, y, nx, ny, colorValue, penWidth, penHeight);
+
+				error += ny;
+				++ny;
+				error += ny;
+
+				// The following test may be implemented in assembly language in
+				// most machines by testing the carry flag after adding 'y' to
+				// the value of 'error' in the previous step, since 'error'
+				// nominally has a negative value.
+				if (error >= 0)
+				{
+					--nx;
+					error -= nx;
+					error -= nx;
 				}
-				/*
-				 * Update 
-				 */
-				if (df < 0) {
-					df += d_e;
-					d_e += 2;
-					d_se += 2;
-				} else {
-					df += d_se;
-					d_e += 2;
-					d_se += 4;
-					cy--;
-				}
-				cx++;
-			} while (cx <= cy);
+			}
+		}
+
+		void Circle_Plot8Points_Internal(float cx, float cy, float x, float y, Drawing.Color color, float penWidth, float penHeight)
+		{
+			Circle_Plot4Points_Internal(cx, cy, x, y, color, penWidth, penHeight);
+
+			if (x != y)
+				Circle_Plot4Points_Internal(cx, cy, y, x, color, penWidth, penHeight);
+		}
+
+		void Circle_Plot4Points_Internal(float cx, float cy, float x, float y, Drawing.Color color, float penWidth, float penHeight)
+		{
+			SetPoint(cx + x, cy + y, color, penWidth, penHeight);
+
+			if (x != 0)
+				SetPoint(cx - x, cy + y, color, penWidth, penHeight);
+
+			if (y != 0)
+				SetPoint(cx + x, cy - y, color, penWidth, penHeight);
+
+			SetPoint(cx - x, cy - y, color, penWidth, penHeight);
 		}
 
 		/// <summary>
@@ -1334,7 +1321,7 @@ namespace GorgonLibrary.Graphics
 
 
 		/// <summary>
-		/// Function to draw an empty circle.
+		/// Function to draw a filled circle.
 		/// </summary>
 		/// <param name="x">Starting horizontal position of the circle.</param>
 		/// <param name="y">Starting vertical position of the circle.</param>
@@ -1456,156 +1443,86 @@ namespace GorgonLibrary.Graphics
 		/// <param name="color">Color of the ellipse.</param>
 		/// <param name="penWidth">Width of the pen.</param>
 		/// <param name="penHeight">Height of the pen.</param>
-		/// <remarks>Taken from: SDL_gfx Written by Andreas Schiffler</remarks>
+		/// <remarks>Taken from implementation of fast ellipse drawing paper for BASIC.</remarks>
 		public void Ellipse(float x, float y, float xradius, float yradius, Drawing.Color color, float penWidth, float penHeight)
 		{
-			int ix, iy;
-			int h, i, j, k;
-			int oh, oi, oj, ok;
-			int xmh, xph, ypk, ymk;
-			int xmi, xpi, ymj, ypj;
-			int xmj, xpj, ymi, ypi;
-			int xmk, xpk, ymh, yph;
+			float nx                = xradius;
+			float ny                = 0;
+			float XChange          = yradius * yradius * (1 - 2 * xradius);
+			float YChange          = xradius * xradius;
+			float EllipseError     = 0;
+			float TwoASquare       = 2 * xradius * xradius;
+			float TwoBSquare       = 2 * yradius * yradius;
+			float StoppingX        = TwoBSquare * xradius;
+			float StoppingY        = 0;
+			Vector2D penVector = new Vector2D(penWidth, penHeight);
 
-			/*
-			 * Sanity check radii 
-			 */
-			if ((xradius < 0) || (yradius < 0))
+			// Check radius
+			if (xradius < 0 || yradius < 0)
 				return;
 
-			/*
-			 * Special case for xradius=0 - draw a vline 
-			 */
+			// Line drawing
 			if (xradius == 0)
 			{
 				VerticalLine(x, y - yradius, yradius + yradius, color, penWidth, penHeight);
 				return;
 			}
 
-			/*
-			 * Special case for yradius=0 - draw a hline 
-			 */
+			// Line drawing
 			if (yradius == 0)
 			{
 				HorizontalLine(x - xradius, y, xradius + xradius, color, penWidth, penHeight);
 				return;
 			}
 
-			/*
-			 * Init vars 
-			 */
-			oh = oi = oj = ok = 0xFFFF;
-
-
-			if (xradius > yradius)
+			while (StoppingX >= StoppingY)
 			{
-				ix = 0;
-				iy = (int)xradius * 64;
+				SetPoint(x - nx, y + ny, color, penVector);
+				SetPoint(x + nx, y + ny, color, penVector);
+				SetPoint(x - nx, y - ny, color, penVector);
+				SetPoint(x + nx, y - ny, color, penVector);
 
-				do
+				ny++;
+				StoppingY += TwoASquare;
+				EllipseError += YChange;
+				YChange += TwoASquare;
+
+				if ((2 * EllipseError + XChange) > 0)
 				{
-					h = (ix + 32) >> 6;
-					i = (iy + 32) >> 6;
-					j = (h * (int)yradius) / (int)xradius;
-					k = (i * (int)yradius) / (int)xradius;
-
-					if (((ok != k) && (oj != k)) || ((oj != j) && (ok != j)) || (k != j))
-					{
-						xph = (int)x + h;
-						xmh = (int)x - h;
-						if (k > 0)
-						{
-							ypk = (int)y + k;
-							ymk = (int)y - k;
-							SetPoint(xmh, ypk, color, penWidth, penHeight);
-							SetPoint(xph, ypk, color, penWidth, penHeight);
-							SetPoint(xmh, ymk, color, penWidth, penHeight);
-							SetPoint(xph, ymk, color, penWidth, penHeight);
-						}
-						else
-						{
-							SetPoint(xmh, y, color, penWidth, penHeight);
-							SetPoint(xph, y, color, penWidth, penHeight);
-						}
-						ok = k;
-						xpi = (int)x + i;
-						xmi = (int)x - i;
-						if (j > 0)
-						{
-							ypj = (int)y + j;
-							ymj = (int)y - j;
-							SetPoint(xmi, ypj, color, penWidth, penHeight);
-							SetPoint(xpi, ypj, color, penWidth, penHeight);
-							SetPoint(xmi, ymj, color, penWidth, penHeight);
-							SetPoint(xpi, ymj, color, penWidth, penHeight);
-						}
-						else
-						{
-							SetPoint(xmi, y, color, penWidth, penHeight);
-							SetPoint(xpi, y, color, penWidth, penHeight);
-						}
-						oj = j;
-					}
-
-					ix = ix + iy / (int)xradius;
-					iy = iy - ix / (int)xradius;
-
-				} while (i > h);
+					nx--;
+					StoppingX -= TwoBSquare;
+					EllipseError += XChange;
+					XChange += TwoBSquare;
+				}
 			}
-			else
+
+			nx = 0;
+			ny = yradius;
+			XChange = yradius * yradius;
+			YChange = xradius * xradius * (1 - 2 * yradius);
+			EllipseError = 0;
+			StoppingX = 0;
+			StoppingY = TwoASquare * yradius;
+
+			while (StoppingX <= StoppingY)
 			{
-				ix = 0;
-				iy = (int)yradius * 64;
+				SetPoint(x - nx, y + ny, color, penVector);
+				SetPoint(x + nx, y + ny, color, penVector);
+				SetPoint(x - nx, y - ny, color, penVector);
+				SetPoint(x + nx, y - ny, color, penVector);
 
-				do
+				nx++;
+				StoppingX += TwoBSquare;
+				EllipseError += XChange;
+				XChange += TwoBSquare;
+
+				if ((2 * EllipseError + YChange) > 0)
 				{
-					h = (ix + 32) >> 6;
-					i = (iy + 32) >> 6;
-					j = (h * (int)xradius) / (int)yradius;
-					k = (i * (int)xradius) / (int)yradius;
-
-					if (((oi != i) && (oh != i)) || ((oh != h) && (oi != h) && (i != h)))
-					{
-						xmj = (int)x - j;
-						xpj = (int)x + j;
-						if (i > 0)
-						{
-							ypi = (int)y + i;
-							ymi = (int)y - i;
-							SetPoint(xmj, ypi, color, penWidth, penHeight);
-							SetPoint(xpj, ypi, color, penWidth, penHeight);
-							SetPoint(xmj, ymi, color, penWidth, penHeight);
-							SetPoint(xpj, ymi, color, penWidth, penHeight);
-						}
-						else
-						{
-							SetPoint(xmj, y, color, penWidth, penHeight);
-							SetPoint(xpj, y, color, penWidth, penHeight);
-						}
-						oi = i;
-						xmk = (int)x - k;
-						xpk = (int)x + k;
-						if (h > 0)
-						{
-							yph = (int)y + h;
-							ymh = (int)y - h;
-							SetPoint(xmk, yph, color, penWidth, penHeight);
-							SetPoint(xpk, yph, color, penWidth, penHeight);
-							SetPoint(xmk, ymh, color, penWidth, penHeight);
-							SetPoint(xpk, ymh, color, penWidth, penHeight);
-						}
-						else
-						{
-							SetPoint(xmk, y ,color, penWidth, penHeight);
-							SetPoint(xpk, y, color, penWidth, penHeight);
-						}
-						oh = h;
-					}
-
-					ix = ix + iy / (int)yradius;
-					iy = iy - ix / (int)yradius;
-
-				} while (i > h);
+					ny--;
+					StoppingY -= TwoASquare;
+					EllipseError += YChange;
+					YChange += TwoASquare;
+				}
 			}
 		}
 
