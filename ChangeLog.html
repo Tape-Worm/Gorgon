@@ -119,18 +119,35 @@
 
 <div>
 	<pre>
-December 4/2010 - Version - Current
+December 9/2010 - Version - Current
 ===============================================================================================
-* Added faster versions of unfilled Circle and Ellipse drawing. Must use same technique for filled. - Paril
++ Added a WriteRegion function to ImageLockBox that will write to the locked region.  This and the
+  Read method will determine if the entire image has been locked and dump the data in 
+  directly or if there's a smaller region, then it will write only to that region line by 
+  line.  This corrects an issue with Write where writing would not respect the region 
+  specified. - TW
+
++ Added ReadRegion function to the ImageLockBox object to read data within the locked region. - TW
+  
++ Added RegionPitch property to the ImageLockBox.  This will return the pitch for the region 
+  instead of the entire image.  This is merely for convenience instead of having to calculate 
+  the span of a region when making buffers. - TW
+  
++ Added LockPosition property to ImageLockBox to allow for movement within the lock data stream.
+  Read/Write methods use this to know where to read and write from within the lock data stream. - TW
+   
+- Removed ToArray() function, replaced by Read functions to be consistent with Stream objects. - TW
+
+* Updated issue with ImageLockBox.Write where the Position was not being set in the data stream. - TW
+
++ Added faster versions of unfilled Circle and Ellipse drawing. Must use same technique for filled. - Paril
 
 * Spelling fixes - Paril
 
-December 2/2010 - Version - Current
-===============================================================================================
 * Fixed up many small standardization problems (publicly visible variables changed into auto-properties in a few
   classes; left the structs alone because they caused problems with constructors) - Paril
 
-* Added some exception handlers for a few classes and methods - Paril
++ Added some exception handlers for a few classes and methods - Paril
 
 * Changed name of EditorCanDragAttribute constructor argument "dragSprite" to "dragType" to match property - Paril
 
@@ -141,11 +158,9 @@ December 2/2010 - Version - Current
 * Since VideoMode.GetBpp was only used internally with the "Format" property but was still called by
   Bpp property (which called GetBpp with Format), merged the two (non-breaking) - Paril
 
-December 1/2010 - Version - Current
-===============================================================================================
 * Updated issue in INeedYourInput that caused an overflow of the locked image stream - TW
 
-* Animations now let you specify looping via Animation.Loops. - Paril
++ Animations now let you specify looping via Animation.Loops. - Paril
 
 * Commented the DeviceNotReset check in LockBox.Lock/Unlock. After some testing on my end and on
   Windows XP, it seems to be more or less not required at all, as during DeviceLost, Direct3D
@@ -153,17 +168,15 @@ December 1/2010 - Version - Current
   special circumstances that this is false (such as trying to use a lockbox before Gorgon.SetMode);
   these may require a whole different check (Gorgon.Screen.Initialized?) if one is not already in place. - Paril
 
-* GIF animation code, based on Cycor's code, is now in the Sprite.cs file. It works flawlessly! - Paril
++ Added GIF animation code, based on Cycor's code, is now in the Sprite.cs file. It works flawlessly! - Paril
 
 * Updated INeedYourInput to use the new LockBox methods, as well as a fullscreen toggle for testing. - Paril
 
-November 29/2010 - Version - Current
-===============================================================================================
-* Added two new functions (minus simplicity overloads) to ImageLockBox to allow for
++ Added two new functions (minus simplicity overloads) to ImageLockBox to allow for
   SUPER FAST DATA TRANSITION!!! I found that if you read/write the entire stream, it is incredibly quicker.
   (Example omitted for verbosity, see SVN) - Paril
 
-* Removed _clearOnInit being set to true so that the textures do not get automatically cleared
+- Removed _clearOnInit being set to true so that the textures do not get automatically cleared
   on first initialization (the cause for slowdown for Images/RenderImages). This might be a
   breaking change for any project who creates an Image/RenderImage but does not clear it manually,
   however since the Gorgon demos push that they should be cleared, I do not think this will
@@ -172,8 +185,6 @@ November 29/2010 - Version - Current
   Notes: Might also remove the actual usage code in Initialize, because I don't
   think it would ever get called under normal circumstances. Have to test this!
 
-January 25/2010 - Version - Current
-===============================================================================================
 * Forum member domq found an issue where if the bounding rectangle of the TextSprite is very
   small and WordWrap = true then it would go into an infinite loop and crash.  This has been
   corrected.
