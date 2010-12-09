@@ -67,6 +67,26 @@ namespace GorgonLibrary.Graphics
 
 			#region Properties.
 			/// <summary>
+			/// Property to set or return the position in the locked data.
+			/// </summary>
+			public long LockPosition
+			{
+				get
+				{
+					if (_lockStream == null)
+						return 0;
+					return _lockStream.Position;
+				}
+				set
+				{
+					if (_lockStream == null)
+						return;
+
+					_lockStream.Position = value;
+				}
+			}
+
+			/// <summary>
 			/// Property to return the image that owns this lock box.
 			/// </summary>
 			public Image Owner
@@ -151,6 +171,16 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
+			/// Property to return the pitch for the locked region.
+			/// </summary>
+			/// <remarks>Use this to get the pitch value for the width of the region, this differs from <see cref="P:GorgonLibrary.Graphics.Image.ImageLockBox">Pitch</see> in that the Pitch property takes the entire width of the image into account, whereas this property only takes the width of the locked region.</remarks>
+			public int RegionPitch
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
 			/// Property to set or return image data.
 			/// </summary>
 			/// <remarks>This method does NOT perform any formatting on the data.</remarks>
@@ -164,47 +194,58 @@ namespace GorgonLibrary.Graphics
 					if (_lockStream == null)
 						return 0;
 
+					long lastPosition = _lockStream.Position;
+					long value = 0;
+
 					_lockStream.Position = (y * _pitch) + (x * _bytesPerPixel); // Linear position.
 
 					// Get each byte.
 					switch (_bytesPerPixel)
 					{
 						case 1:
-							return _lockStream.Read<byte>();
+							value = _lockStream.Read<byte>();
+							break;
 						case 2:
-							return _lockStream.Read<short>();
+							value = _lockStream.Read<short>();
+							break;
 						case 4:
-							return _lockStream.Read<int>();
+							value = _lockStream.Read<int>();
+							break;
 						default:
-							return _lockStream.Read<long>();
+							value = _lockStream.Read<long>();
+							break;
 					}
+
+					_lockStream.Position = lastPosition;
+
+					return value;
 				}
 				set
 				{
 					if (_lockStream == null)
 						return;
 
-					unsafe
-					{
-						_lockStream.Position = (y * _pitch) + (x * _bytesPerPixel); // Linear position.
+					long lastPosition = _lockStream.Position;
+					_lockStream.Position = (y * _pitch) + (x * _bytesPerPixel); // Linear position.
 
-						// Get each byte.
-						switch (_bytesPerPixel)
-						{
-							case 1:
-								_lockStream.Write<byte>((byte)(value & 0xFF));
-								break;
-							case 2:
-								_lockStream.Write<short>((short)(value & 0xFFFF));
-								break;
-							case 4:
-								_lockStream.Write<int>((int)(value & 0xFFFFFFFF));
-								break;
-							default:
-								_lockStream.Write<long>(value);
-								break;
-						}
+					// Get each byte.
+					switch (_bytesPerPixel)
+					{
+						case 1:
+							_lockStream.Write<byte>((byte)(value & 0xFF));
+							break;
+						case 2:
+							_lockStream.Write<short>((short)(value & 0xFFFF));
+							break;
+						case 4:
+							_lockStream.Write<int>((int)(value & 0xFFFFFFFF));
+							break;
+						default:
+							_lockStream.Write<long>(value);
+							break;
 					}
+
+					_lockStream.Position = lastPosition;
 				}
 			}
 			#endregion
@@ -247,6 +288,7 @@ namespace GorgonLibrary.Graphics
 					// Clear data.
 					_lockStream = null;
 					_pitch = 0;
+					RegionPitch = 0;
 					_bytesPerPixel = 0;
 
 					// Remove ourselves from the list.
@@ -316,6 +358,7 @@ namespace GorgonLibrary.Graphics
 					_lockStream = lockData.Data;
 
 					_bytesPerPixel = _pitch / _image.ActualWidth;
+					RegionPitch = _region.Width * _bytesPerPixel;
 					_image._locks.Add(this);
 				}
 				catch (Exception ex)
@@ -325,51 +368,156 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
-			/// Function to write directly to the DataStream.
+			/// Function to read data directly from the lock stream.
 			/// </summary>
-			/// <param name="buffer">The buffer to write to the data stream</param>
-			/// <param name="offset">The offset in the buffer in which to start writing</param>
-			/// <param name="length">The length of the buffer to write to the data stream</param>
-			public void Write(byte[] buffer, int offset, int length)
+			/// <param name="buffer">Buffer to fill with data from the lock stream.</param>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			public void Read(byte[] buffer)
 			{
-				if (_lockStream != null)
-					_lockStream.Write(buffer, offset, length);
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
+
+				Read(buffer, 0, buffer.Length);
 			}
 
 			/// <summary>
-			/// Function to write directly to the DataStream.
+			/// Function to read data directly from the lock stream.
 			/// </summary>
-			/// <para>This overload of the function will not offset the buffer.</para>
-			/// <param name="buffer">The buffer to write to the data stream</param>
-			/// <param name="length">The length of the buffer to write to the data stream</param>
-			public void Write(byte[] buffer, int length)
+			/// <param name="buffer">Buffer to fill with data from the lock stream.</param>
+			/// <param name="length">Number of bytes to read.</param>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			public void Read(byte[] buffer, int length)
 			{
-				Write(buffer, 0, length);
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
+
+				Read(buffer, 0, length);
 			}
 
 			/// <summary>
-			/// Function to write directly to the DataStream.
+			/// Function to read data directly from the lock stream.
 			/// </summary>
-			/// <para>This overload of the function will not offset the buffer.</para>
-			/// <para>This overload of the function will use the length of the buffer itself.</para>
-			/// <param name="buffer">The buffer to write to the data stream</param>
+			/// <param name="buffer">Buffer to fill with data from the lock stream.</param>
+			/// <param name="offset">Offset into the <paramref name="buffer"/> to start writing at.</param>
+			/// <param name="length">Number of bytes to read.</param>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			public void Read(byte[] buffer, int offset, int length)
+			{
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
+
+				_lockStream.Read(buffer, offset, length);
+			}
+
+			/// <summary>
+			/// Function to write data directly to the lock stream.
+			/// </summary>
+			/// <param name="buffer">Buffer containing data to write.</param>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
 			public void Write(byte[] buffer)
 			{
-				Write(buffer, buffer.Length);
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
+
+				Write(buffer, 0, buffer.Length);
 			}
 
 			/// <summary>
-			/// Function to get the entire DataStream as an array of bytes.
+			/// Function to write data directly to the lock stream.
 			/// </summary>
-			/// <returns>The unformatted image data as bytes.</returns>
-			public byte[] ToArray()
+			/// <param name="buffer">Buffer containing data to write.</param>
+			/// <param name="length">Number of bytes to write.</param>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			public void Write(byte[] buffer, int length)
 			{
-				_lockStream.Position = 0;
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
 
-				byte[] array = new byte[_lockStream.Length];
-				_lockStream.Read(array, 0, (int)_lockStream.Length);
+				Write(buffer, 0, length);
+			}
+			
+			/// <summary>
+			/// Function to write data directly to the lock stream.
+			/// </summary>
+			/// <param name="buffer">Buffer containing data to write.</param>
+			/// <param name="offset">Offset into the <paramref name="buffer"/> to start reading from.</param>
+			/// <param name="length">Number of bytes to write.</param>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			public void Write(byte[] buffer, int offset, int length)
+			{
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
 
-				return array;
+				_lockStream.Write(buffer, offset, length);
+			}
+
+			/// <summary>
+			/// Function to write data into the locked region.
+			/// </summary>
+			/// <param name="buffer">The buffer containing the image data to write to the region.</param>
+			/// <remarks>Ensure that the buffer size is at least equal to that of the locked region (in bytes).</remarks>
+			public void WriteRegion(byte[] buffer)
+			{
+				int offset = 0;
+				long lastPosition = _lockStream.Position;
+
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
+
+				if (buffer.Length < RegionPitch * _region.Height)
+					throw new ArgumentException("The buffer is too small for the region.", "buffer");
+
+				// If we've locked the entire image, read it all in one shot.
+				if ((_region.Width == _image.ActualWidth) && (_region.Height == _image.ActualHeight) && (_region.X == 0) && (_region.Y == 0))
+				{
+					if (buffer.Length > RegionPitch * _region.Height)
+						throw new ArgumentException("The buffer is too large for the locked region.", "buffer");
+
+					_lockStream.Position = 0;
+					_lockStream.Write(buffer, 0, buffer.Length);
+				}
+				else
+				{
+					for (int y = 0; y < _region.Height; y++)
+					{
+						_lockStream.Position = (y * _pitch);
+						_lockStream.Write(buffer, offset, RegionPitch);
+						offset += RegionPitch;
+					}
+				}
+
+				_lockStream.Position = lastPosition;
+			}
+
+			/// <summary>
+			/// Function to read data from the locked region on the image.
+			/// </summary>
+			/// <returns>The image data in the locked region.</returns>
+			public byte[] ReadRegion()
+			{
+				int offset = 0;
+				long lastPosition = _lockStream.Position;
+				byte[] result = new byte[RegionPitch * _region.Height];
+
+				// If we've locked the entire image, read it all in one shot.
+				if ((_region.Width == _image.ActualWidth) && (_region.Height == _image.ActualHeight) && (_region.X == 0) && (_region.Y == 0))
+				{
+					_lockStream.Position = 0;
+					_lockStream.Read(result, 0, result.Length);
+				}
+				else
+				{
+					for (int y = 0; y < _region.Height; y++)
+					{
+						_lockStream.Position = (y * _pitch);
+						_lockStream.Read(result, offset, RegionPitch);
+						offset += RegionPitch;
+					}
+				}
+
+				_lockStream.Position = lastPosition;
+
+				return result;
 			}
 			#endregion
 
