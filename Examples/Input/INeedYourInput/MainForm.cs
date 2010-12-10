@@ -51,7 +51,7 @@ namespace GorgonLibrary.Example
 		private RenderImage _backBuffer = null;						// Back buffer.
 		private float _radius = 4.0f;								// Pen radius.
 		private BlendingModes _blendMode = BlendingModes.Modulated;	// Blend mode.
-		private Image _backup = null;								// Screen backup.
+		private byte[] _backupImage = null;							// Saved image for backup when the render target goes through a mode switch.
 		private Joystick _joystick = null;							// Joystick.
 		private int _counter = 0;									// Joystick index counter.
 		private TextSprite _messageSprite = null;					// Message sprite.
@@ -67,11 +67,11 @@ namespace GorgonLibrary.Example
 		private void KeyboardEvent(object sender, KeyboardInputEventArgs e)
 		{
 			switch (e.Key)
-			{
+			{				
 				case KeyboardKeys.Escape:
 					Close();			// Close
 					break;
-			case KeyboardKeys.F:
+				case KeyboardKeys.F:
 					Gorgon.Screen.Windowed = !Gorgon.Screen.Windowed;
 					break;
 				case KeyboardKeys.Down:
@@ -231,8 +231,35 @@ namespace GorgonLibrary.Example
 			// Copy to the backup image.
 			using (var backBufferBox = _backBuffer.GetImageData())
 			{
-				using (var backupBox = _backup.GetImageData())
-					backupBox.Write(backBufferBox.ToArray());
+				_backupImage = backBufferBox.ReadRegion();
+			}
+		}
+
+		/// <summary>
+		/// Function to copy the image from the back up.
+		/// </summary>
+		/// <param name="lockBox">Locked region to update.</param>
+		/// <param name="backupSize">Old size for the area to read.</param>
+		private void CopyFromBackup(Image.ImageLockBox lockBox, Drawing.Size backupSize)
+		{
+			int offset = 0;
+			int stride = 0;
+
+			lockBox.LockPosition = 0;
+
+			stride = backupSize.Width * lockBox.BytesPerPixel;
+
+			if (backupSize.Width > lockBox.Region.Width)
+				backupSize.Width = lockBox.Region.Width;
+
+			if (backupSize.Height > lockBox.Region.Height)
+				backupSize.Height = lockBox.Region.Height;
+			
+			for (int y = 0; y < backupSize.Height; y++)
+			{
+				lockBox.LockPosition = y * lockBox.Pitch;
+				lockBox.Write(_backupImage, offset, backupSize.Width * lockBox.BytesPerPixel);
+				offset += stride;
 			}
 		}
 
@@ -243,17 +270,32 @@ namespace GorgonLibrary.Example
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void Gorgon_DeviceReset(object sender, EventArgs e)
 		{
-			// Reset the size of the back buffer.
-			_backBuffer.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height);
-			_backBuffer.Clear(Drawing.Color.White);
+			Drawing.Size backupSize = Drawing.Size.Empty;		// Previous size.
 
-			// If we have backup data then restore it.
-			if (_backup != null)
-				_backBuffer.CopyFromImage(_backup);
+			try
+			{
+				backupSize = new Drawing.Size(_backBuffer.Width, _backBuffer.Height);
 
-			_mouse.SetPositionRange(0, 0, Gorgon.Screen.Width, Gorgon.Screen.Height);
+				// Reset the size of the back buffer.
+				_backBuffer.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height);
+				_backBuffer.Clear(Drawing.Color.White);
 
-			_backup.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height);
+				// If we have backup data then restore it.
+				if ((_backupImage != null) && (_backupImage.Length > 0))				
+				{
+					using (var lockBox = _backBuffer.GetImageData())
+					{						
+						CopyFromBackup(lockBox, backupSize);
+						_backupImage = null;
+					}
+				}
+
+				_mouse.SetPositionRange(0, 0, Gorgon.Screen.Width, Gorgon.Screen.Height);
+			}
+			catch (Exception ex)
+			{
+				UI.ErrorBox(this, ex);
+			}
 		}
 
 		/// <summary>
@@ -325,7 +367,7 @@ namespace GorgonLibrary.Example
 
 				// Create a back buffer.
 				_backBuffer = new RenderImage("BackBuffer", 640, 480, ImageBufferFormats.BufferRGB888X8);
-				_backBuffer.Clear(Drawing.Color.White);				
+				_backBuffer.Clear(Drawing.Color.White);
 
 				// Set the mouse range and position.
 				Cursor.Position = PointToScreen(new Drawing.Point(320, 240));
@@ -336,9 +378,7 @@ namespace GorgonLibrary.Example
 				Gorgon.Idle += new FrameEventHandler(Gorgon_Idle);
 				Gorgon.DeviceLost += new EventHandler(Gorgon_DeviceLost);
 				Gorgon.DeviceReset += new EventHandler(Gorgon_DeviceReset);
-
-				// Create backup image.
-				_backup = new Image("BackupImage", _backBuffer.Width, _backBuffer.Height, _backBuffer.Format);
+				
 
  				Gorgon.Go();
 			}
