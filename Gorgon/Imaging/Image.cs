@@ -371,7 +371,9 @@ namespace GorgonLibrary.Graphics
 			/// Function to read data directly from the lock stream.
 			/// </summary>
 			/// <param name="buffer">Buffer to fill with data from the lock stream.</param>
-			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.
+			/// <para>Unlike <see cref="M:GorgonLibrary.Graphics.Image.ImageLockBox.ReadRegion">ReadRegion</see>, this function will NOT respect the region specified in the lock.  The user will be responsible for keeping the data within the region.</para>
+			/// </remarks>
 			public void Read(byte[] buffer)
 			{
 				if (buffer == null)
@@ -385,7 +387,9 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="buffer">Buffer to fill with data from the lock stream.</param>
 			/// <param name="length">Number of bytes to read.</param>
-			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.
+			/// <para>Unlike <see cref="M:GorgonLibrary.Graphics.Image.ImageLockBox.ReadRegion">ReadRegion</see>, this function will NOT respect the region specified in the lock.  The user will be responsible for keeping the data within the region.</para>
+			/// </remarks>
 			public void Read(byte[] buffer, int length)
 			{
 				if (buffer == null)
@@ -400,7 +404,9 @@ namespace GorgonLibrary.Graphics
 			/// <param name="buffer">Buffer to fill with data from the lock stream.</param>
 			/// <param name="offset">Offset into the <paramref name="buffer"/> to start writing at.</param>
 			/// <param name="length">Number of bytes to read.</param>
-			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.
+			/// <para>Unlike <see cref="M:GorgonLibrary.Graphics.Image.ImageLockBox.ReadRegion">ReadRegion</see>, this function will NOT respect the region specified in the lock.  The user will be responsible for keeping the data within the region.</para>
+			/// </remarks>
 			public void Read(byte[] buffer, int offset, int length)
 			{
 				if (buffer == null)
@@ -413,7 +419,9 @@ namespace GorgonLibrary.Graphics
 			/// Function to write data directly to the lock stream.
 			/// </summary>
 			/// <param name="buffer">Buffer containing data to write.</param>
-			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.
+			/// <para>Unlike <see cref="M:GorgonLibrary.Graphics.Image.ImageLockBox.ReadRegion">ReadRegion</see>, this function will NOT respect the region specified in the lock.  The user will be responsible for keeping the data within the region.</para>
+			/// </remarks>
 			public void Write(byte[] buffer)
 			{
 				if (buffer == null)
@@ -427,7 +435,9 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="buffer">Buffer containing data to write.</param>
 			/// <param name="length">Number of bytes to write.</param>
-			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.
+			/// <para>Unlike <see cref="M:GorgonLibrary.Graphics.Image.ImageLockBox.ReadRegion">ReadRegion</see>, this function will NOT respect the region specified in the lock.  The user will be responsible for keeping the data within the region.</para>
+			/// </remarks>
 			public void Write(byte[] buffer, int length)
 			{
 				if (buffer == null)
@@ -442,7 +452,9 @@ namespace GorgonLibrary.Graphics
 			/// <param name="buffer">Buffer containing data to write.</param>
 			/// <param name="offset">Offset into the <paramref name="buffer"/> to start reading from.</param>
 			/// <param name="length">Number of bytes to write.</param>
-			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.</remarks>
+			/// <remarks>This function depends on where the stream pointer is positioned.  You can adjust the position in the lock stream by using the <see cref="P:GorgonLibrary.Graphics.ImageLockBox.LockPosition">LockPosition</see> property.
+			/// <para>Unlike <see cref="M:GorgonLibrary.Graphics.Image.ImageLockBox.ReadRegion">ReadRegion</see>, this function will NOT respect the region specified in the lock.  The user will be responsible for keeping the data within the region.</para>
+			/// </remarks>
 			public void Write(byte[] buffer, int offset, int length)
 			{
 				if (buffer == null)
