@@ -392,30 +392,6 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to set or return whether to use scissor testing for clipping.
-		/// </summary>
-		/// <remarks>
-		/// This property is used to enable or disable scissor testing when performing <see cref="P:GorgonLibrary.Gorgon.CurrentClippingViewport">clipping</see>.  Some cards don't support scissor testing, and normally
-		/// this is handled automatically.  But in a case where scissor testing is failing (driver issues, etc...), then this will override the default
-		/// behaviour and force scissor testing on or off at the whim of the user.
-		/// </remarks>
-		/// <value>TRUE to enable the use of scissor testing, FALSE to disable.</value>
-		public static bool UseScissorTestForClipping
-		{
-			get
-			{
-				return _useScissorTest;
-			}
-			set
-			{
-				if ((!IsInitialized) || (Screen == null))
-					return;
-
-				_useScissorTest = value;
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return the currently active clipping viewport.
 		/// </summary>
 		/// <remarks>
@@ -447,7 +423,7 @@ namespace GorgonLibrary
 				_renderer.Render();
 
 				// If we can support scissor testing, then use that.
-				if ((_currentDriver.SupportScissorTesting) && (UseScissorTestForClipping))
+				if (_currentDriver.SupportScissorTesting) 
 				{
 					// Set the scissor rectangle.
 					if ((value == null) || (value == _currentTarget[0].DefaultView))
