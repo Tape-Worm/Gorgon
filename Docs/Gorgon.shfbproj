@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <!-- The configuration and platform will be used to determine which
          assemblies to include from solution and project documentation
@@ -7,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{bca1725b-f885-4024-90a0-46a241e31bd0}</ProjectGuid>
-    <SHFBSchemaVersion>1.8.0.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>1.9.3.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -40,28 +41,45 @@
     </WorkingPath>
     <BuildLogFile>
     </BuildLogFile>
-    <FrameworkVersion>3.5</FrameworkVersion>
+    <FrameworkVersion>.NET 3.5</FrameworkVersion>
     <Preliminary>True</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>Reference</RootNamespaceTitle>
     <HelpTitle>Gorgon</HelpTitle>
     <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
-    <CopyrightText>Copyright &amp;#169%3b 2008 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
+    <CopyrightText>Copyright &amp;#169%3b 2011 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
     <FeedbackEMailAddress>tape_worm%40tape-worm.net</FeedbackEMailAddress>
-    <FooterText>Gorgon v1.1.3425.38459</FooterText>
+    <FooterText>Gorgon v1.1.4119.34319</FooterText>
     <SdkLinkTarget>Self</SdkLinkTarget>
     <PresentationStyle>vs2005</PresentationStyle>
     <ShowFeedbackControl>True</ShowFeedbackControl>
     <IncludeFavorites>True</IncludeFavorites>
     <ComponentConfigurations>
-      <ComponentConfig id="Cached MSDN URL References" enabled="True" xmlns="">
-        <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <cache filename="{@ComponentsFolder}Cache\MsdnUrl.cache" />
-          <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@SDKLinks}" />
-          <targets files="reflection.xml" type="{@ProjectLinks}" />
+      <ComponentConfig id="Cached MSDN URL References" enabled="True">
+        <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" locale="{@Locale}" linkTarget="{@SdkLinkTarget}">
+          <helpOutput format="HtmlHelp1">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@HtmlSdkLinkType}" />
+            <targets files="reflection.xml" type="Local" />
+          </helpOutput>
+          <helpOutput format="MSHelp2">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelp2SdkLinkType}" />
+            <targets files="reflection.xml" type="Index" />
+          </helpOutput>
+          <helpOutput format="MSHelpViewer">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelpViewerSdkLinkType}" />
+            <targets files="reflection.xml" type="Id" />
+          </helpOutput>
+          <helpOutput format="Website">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@WebsiteSdkLinkType}" />
+            <targets files="reflection.xml" type="Local" />
+          </helpOutput>
         </component>
       </ComponentConfig>
-      <ComponentConfig id="Code Block Component" enabled="True" xmlns="">
+      <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
           <!-- Base path for relative filenames in source attributes
                  (optional) -->
@@ -82,7 +100,7 @@
           <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" copyImageUrl="../icons/CopyCode.gif" language="cs" numberLines="true" outlining="true" tabSize="0" defaultTitle="true" />
         </component>
       </ComponentConfig>
-      <ComponentConfig id="Post-transform Component" enabled="True" xmlns="">
+      <ComponentConfig id="Post-transform Component" enabled="True">
         <component id="Post-transform Component" type="SandcastleBuilder.Components.PostTransformComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
           <!-- Code colorizer files (required).
                  Attributes:
@@ -90,14 +108,16 @@
                     Script file (required)
                     "Copy" image file (required) -->
           <colorizer stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" copyImage="{@SHFBFolder}Colorizer\CopyCode.gif" />
-          <!-- Base output path for the files (required).  This should match
+          <!-- Base output paths for the files (required).  These should match
                  the parent folder of the output path of the HTML files (see
-                 SaveComponent). -->
-          <outputPath value="Output\" />
+                 each of the SaveComponent instances below). -->
+          <outputPaths>
+{@HelpFormatOutputPaths}
+            </outputPaths>
           <!-- Logo image file (optional).  Filename is required. The height,
                  width, altText, placement, and alignment attributes are
                  optional. -->
-          <logoFile filename="{@ProjectFolder}\Content\GorgonLogo3.jpg" height="0" width="0" altText="" placement="above" alignment="left" />
+          <logoFile filename="" height="0" width="0" altText="" placement="left" alignment="left" />
         </component>
       </ComponentConfig>
     </ComponentConfigurations>
@@ -132,6 +152,7 @@ But really, these are internal functions for use by Gorgon only.  They should ra
       <NamespaceSummaryItem name="GorgonLibrary.Properties" isDocumented="False" xmlns="" />
       <NamespaceSummaryItem name="GorgonLibrary.Serialization" isDocumented="True" xmlns="">This namespace contains objects to serialize and/or deserialize objects to and from a storage medium.</NamespaceSummaryItem>
     </NamespaceSummaries>
+    <PlugInConfigurations />
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
@@ -151,8 +172,8 @@ But really, these are internal functions for use by Gorgon only.  They should ra
   <ItemGroup>
     <Content Include="Content\rootPage.html" />
     <Content Include="Content\Redistribution.htm" />
-    <Content Include="Content\MIT.txt" />
     <Content Include="Content\GorgonLogo3.jpg" />
+    <Content Include="Content\MIT.html" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\_svn\all-wcprops" />
