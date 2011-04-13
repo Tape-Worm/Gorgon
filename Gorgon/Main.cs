@@ -166,7 +166,6 @@ namespace GorgonLibrary
 		private static Viewport _clippingView = null;					// Clipping viewport.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
 		private static IShaderRenderer _currentShader = null;			// Current shader.
-		private static bool _useScissorTest = true;						// Flag to use the scissor test when clipping (if applicable).
 #if INCLUDE_D3DREF
 		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
 #endif
