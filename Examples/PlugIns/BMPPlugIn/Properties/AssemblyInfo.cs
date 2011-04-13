@@ -63,5 +63,5 @@ using GorgonLibrary.PlugIns;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.1.3638.20767")]
-[assembly: AssemblyFileVersion("1.1.3638.20767")]
+[assembly: AssemblyVersion("1.1.4119.34319")]
+[assembly: AssemblyFileVersion("1.1.4119.34319")]
