@@ -119,6 +119,13 @@
 
 <div>
 	<pre>
+April 17/2011 - Version - Current
+===============================================================================================
+* Fixed a bug (or rather, something I forgot to implement) in the Image deserializer code.  This
+  broke the FromStream(string name, Stream stream, int bytes) method, and would have broken
+  any method that had the size in bytes passed in. - TW
+
+
 December 9/2010 - Version 1.1.4119.34319
 ===============================================================================================
 * Updated INeedYourInput to use new reading/writing routines for images.
