@@ -268,7 +268,15 @@ namespace GorgonLibrary.Serialization
 		/// <returns>Value in the stream.</returns>
 		public override byte[] ReadBytes(string name, int count)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			byte[] result = null;
+
+			if (count <= 0)
+				throw new ArgumentException("count");
+
+			result = new byte[count];
+			_reader.Read(result, 0, count);
+
+			return result;
 		}
 
 		/// <summary>
