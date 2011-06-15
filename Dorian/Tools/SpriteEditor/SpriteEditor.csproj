@@ -1,0 +1,428 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2F744206-1061-4382-833C-6C2B91ADBFF1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GorgonLibrary.Graphics.Tools</RootNamespace>
+    <AssemblyName>SpriteEditor</AssemblyName>
+    <ApplicationIcon>GorSprite.ico</ApplicationIcon>
+    <StartupObject>GorgonLibrary.Graphics.Tools.Program</StartupObject>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <DelaySign>false</DelaySign>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ABOOT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABOOT.Designer.cs">
+      <DependentUpon>ABOOT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\BetterPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackKeyDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackKeyDisplay.Designer.cs">
+      <DependentUpon>TrackKeyDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TrackNameButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackNameButton.Designer.cs">
+      <DependentUpon>TrackNameButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formAnimationSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formAnimationSelector.Designer.cs">
+      <DependentUpon>formAnimationSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Clipper.cs" />
+    <Compile Include="ControlExtenders\DockExtender.cs" />
+    <Compile Include="ControlExtenders\Floaty.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlExtenders\Overlay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\ByteDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ByteDropIn.Designer.cs">
+      <DependentUpon>ByteDropIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ColorChangedEventArgs.cs" />
+    <Compile Include="Controls\ColorChooser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\ColorChooser.designer.cs">
+      <DependentUpon>ColorChooser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ColorDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ColorDropIn.Designer.cs">
+      <DependentUpon>ColorDropIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ColorHandler.cs" />
+    <Compile Include="Controls\ColorPicker.cs" />
+    <Compile Include="Controls\ColorWheel.cs" />
+    <Compile Include="Controls\AnimationDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\AnimationDropIn.Designer.cs">
+      <DependentUpon>AnimationDropIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FloatDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\FloatDropIn.Designer.cs">
+      <DependentUpon>FloatDropIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ImageDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ImageDropIn.Designer.cs">
+      <DependentUpon>ImageDropIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ImageManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ImageManager.Designer.cs">
+      <DependentUpon>ImageManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Int32DropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Int32DropIn.Designer.cs">
+      <DependentUpon>Int32DropIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Manager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Manager.Designer.cs">
+      <DependentUpon>Manager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RenderTargetManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\RenderTargetManager.Designer.cs">
+      <DependentUpon>RenderTargetManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SpriteManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SpriteManager.Designer.cs">
+      <DependentUpon>SpriteManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Vector2DDropIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Vector2DDropIn.Designer.cs">
+      <DependentUpon>Vector2DDropIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formAnimationEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formAnimationEditor.Designer.cs">
+      <DependentUpon>formAnimationEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formBackImageEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formBackImageEdit.Designer.cs">
+      <DependentUpon>formBackImageEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formListAll.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formListAll.Designer.cs">
+      <DependentUpon>formListAll.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formNewAnimation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formNewAnimation.Designer.cs">
+      <DependentUpon>formNewAnimation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formPreferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formPreferences.Designer.cs">
+      <DependentUpon>formPreferences.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formSpriteGridExtractOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formSpriteGridExtractOptions.Designer.cs">
+      <DependentUpon>formSpriteGridExtractOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formBindImage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formBindImage.Designer.cs">
+      <DependentUpon>formBindImage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formImageManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formImageManager.Designer.cs">
+      <DependentUpon>formImageManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formMain.Designer.cs">
+      <DependentUpon>formMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formNewRenderTarget.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formNewRenderTarget.Designer.cs">
+      <DependentUpon>formNewRenderTarget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formNewSprite.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formNewSprite.Designer.cs">
+      <DependentUpon>formNewSprite.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formRenderTargetManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formRenderTargetManager.Designer.cs">
+      <DependentUpon>formRenderTargetManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formSpriteExtractOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formSpriteExtractOptions.Designer.cs">
+      <DependentUpon>formSpriteExtractOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NVidiaAtlasImport.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="PropBag\IPropertyTableObject.cs" />
+    <Compile Include="PropBag\IPropertyBagObject.cs" />
+    <Compile Include="PropBag\PropertyBag.cs" />
+    <Compile Include="PropBag\PropertyBagException.cs" />
+    <Compile Include="PropBag\PropertyCategoryAttribute.cs" />
+    <Compile Include="PropBag\PropertyDefaultAttribute.cs" />
+    <Compile Include="PropBag\PropertyDescriptionAttribute.cs" />
+    <Compile Include="PropBag\PropertyEnumerator.cs" />
+    <Compile Include="PropBag\PropertyIncludeFlagAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ABOOT.resx">
+      <DependentUpon>ABOOT.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TrackKeyDisplay.resx">
+      <DependentUpon>TrackKeyDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TrackNameButton.resx">
+      <DependentUpon>TrackNameButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formAnimationSelector.resx">
+      <DependentUpon>formAnimationSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ByteDropIn.resx">
+      <DependentUpon>ByteDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ColorChooser.resx">
+      <DependentUpon>ColorChooser.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\AnimationDropIn.resx">
+      <DependentUpon>AnimationDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ColorDropIn.resx">
+      <DependentUpon>ColorDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FloatDropIn.resx">
+      <DependentUpon>FloatDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ImageDropIn.resx">
+      <DependentUpon>ImageDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ImageManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ImageManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Int32DropIn.resx">
+      <DependentUpon>Int32DropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Manager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Manager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\RenderTargetManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>RenderTargetManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SpriteManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SpriteManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Vector2DDropIn.resx">
+      <DependentUpon>Vector2DDropIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formAnimationEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formAnimationEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formBackImageEdit.resx">
+      <DependentUpon>formBackImageEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formListAll.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formListAll.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formNewAnimation.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formNewAnimation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formPreferences.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formPreferences.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formSpriteGridExtractOptions.resx">
+      <DependentUpon>formSpriteGridExtractOptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formBindImage.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formBindImage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formImageManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formImageManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formMain.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formNewRenderTarget.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formNewRenderTarget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formNewSprite.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formNewSprite.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formRenderTargetManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formRenderTargetManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formSpriteExtractOptions.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>formSpriteExtractOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="SpriteDocument.cs" />
+    <Compile Include="SpriteDocumentList.cs" />
+    <Compile Include="SpriteFinder.cs" />
+    <Compile Include="TypeEditors\GorgonImageTypeConverter.cs" />
+    <Compile Include="TypeEditors\GorgonImageTypeEditor.cs" />
+    <Compile Include="TypeEditors\GorgonPointFConverter.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="Zoomer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GorSprite.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
+      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
+      <Name>Gorgon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DialogHelper\DialogHelper.csproj">
+      <Project>{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}</Project>
+      <Name>DialogHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>if exist "$(SolutionDir)PlugIns\bin\$(ConfigurationName)\GorgonInput.*" copy "$(SolutionDir)PlugIns\bin\$(ConfigurationName)\GorgonInput.dll" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

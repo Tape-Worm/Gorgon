@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone="yes"?>
+<GorgonSettings xmlns="http://tempuri.org/GorgonSettings.xsd">
+  <Paths>
+    <PathName>PlugInPath</PathName>
+    <Path>..\..\..\..\PlugIns\bin\Release</Path>
+  </Paths>
+  <InputPlugIns>
+    <InputPlugInName>Gorgon.RawInput</InputPlugInName>
+    <InputPlugInDLL>GorgonInput.dll</InputPlugInDLL>
+    <InputEnabled>true</InputEnabled>
+  </InputPlugIns>
+</GorgonSettings>

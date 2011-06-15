@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <!-- The configuration and platform will be used to determine which
+         assemblies to include from solution and project documentation
+         sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{bca1725b-f885-4024-90a0-46a241e31bd0}</ProjectGuid>
+    <SHFBSchemaVersion>1.9.3.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
+         Studio adds them anyway -->
+    <AssemblyName>Documentation</AssemblyName>
+    <RootNamespace>Documentation</RootNamespace>
+    <Name>Documentation</Name>
+    <!-- SHFB properties -->
+    <OutputPath>.\Help\</OutputPath>
+    <HtmlHelpName>Gorgon</HtmlHelpName>
+    <ApiFilter>
+      <Filter entryType="Namespace" fullName="GorgonLibrary.Framework" isExposed="False" xmlns="">
+        <Filter entryType="Class" fullName="GorgonLibrary.Framework.GorgonApplicationWindow" filterName="GorgonApplicationWindow" isExposed="True" />
+        <Filter entryType="Class" fullName="GorgonLibrary.Framework.SetupDialog" filterName="SetupDialog" isExposed="True" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="GorgonLibrary.Internal" isExposed="False" xmlns="">
+        <Filter entryType="Class" fullName="GorgonLibrary.Internal.D3DObjects" filterName="D3DObjects" isExposed="True" />
+        <Filter entryType="Class" fullName="GorgonLibrary.Internal.NamedObject" filterName="NamedObject" isExposed="True" />
+      </Filter>
+    </ApiFilter>
+    <ProjectSummary>
+    </ProjectSummary>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, TypeParameter</MissingTags>
+    <VisibleItems>ExplicitInterfaceImplementations, InheritedMembers, Protected</VisibleItems>
+    <HtmlHelp1xCompilerPath>
+    </HtmlHelp1xCompilerPath>
+    <HtmlHelp2xCompilerPath>
+    </HtmlHelp2xCompilerPath>
+    <SandcastlePath>
+    </SandcastlePath>
+    <WorkingPath>
+    </WorkingPath>
+    <BuildLogFile>
+    </BuildLogFile>
+    <FrameworkVersion>.NET 3.5</FrameworkVersion>
+    <Preliminary>True</Preliminary>
+    <RootNamespaceContainer>True</RootNamespaceContainer>
+    <RootNamespaceTitle>Reference</RootNamespaceTitle>
+    <HelpTitle>Gorgon</HelpTitle>
+    <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
+    <CopyrightText>Copyright &amp;#169%3b 2011 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
+    <FeedbackEMailAddress>tape_worm%40tape-worm.net</FeedbackEMailAddress>
+    <FooterText>Gorgon v1.1.4119.34319</FooterText>
+    <SdkLinkTarget>Self</SdkLinkTarget>
+    <PresentationStyle>vs2005</PresentationStyle>
+    <ShowFeedbackControl>True</ShowFeedbackControl>
+    <IncludeFavorites>True</IncludeFavorites>
+    <ComponentConfigurations>
+      <ComponentConfig id="Cached MSDN URL References" enabled="True">
+        <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" locale="{@Locale}" linkTarget="{@SdkLinkTarget}">
+          <helpOutput format="HtmlHelp1">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@HtmlSdkLinkType}" />
+            <targets files="reflection.xml" type="Local" />
+          </helpOutput>
+          <helpOutput format="MSHelp2">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelp2SdkLinkType}" />
+            <targets files="reflection.xml" type="Index" />
+          </helpOutput>
+          <helpOutput format="MSHelpViewer">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelpViewerSdkLinkType}" />
+            <targets files="reflection.xml" type="Id" />
+          </helpOutput>
+          <helpOutput format="Website">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@WebsiteSdkLinkType}" />
+            <targets files="reflection.xml" type="Local" />
+          </helpOutput>
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Code Block Component" enabled="True">
+        <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <!-- Base path for relative filenames in source attributes
+                 (optional) -->
+          <basePath value="{@ProjectFolder}" />
+          <!-- Connect to language filter (optional).  If omitted,
+                 language filtering is enabled by default. -->
+          <languageFilter value="true" />
+          <!-- Code colorizer options (required).
+                 Attributes:
+                    Language syntax configuration file (required)
+                    XSLT style file (required)
+                    "Copy" image file URL (required)
+                    Default language (optional)
+                    Enable line numbering (optional)
+                    Enable outlining (optional)
+                    Tab size override (optional, 0 = Use syntax file setting)
+                    Use language name as default title (optional) -->
+          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" copyImageUrl="../icons/CopyCode.gif" language="cs" numberLines="true" outlining="true" tabSize="0" defaultTitle="true" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Post-transform Component" enabled="True">
+        <component id="Post-transform Component" type="SandcastleBuilder.Components.PostTransformComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <!-- Code colorizer files (required).
+                 Attributes:
+                    Stylesheet file (required)
+                    Script file (required)
+                    "Copy" image file (required) -->
+          <colorizer stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" copyImage="{@SHFBFolder}Colorizer\CopyCode.gif" />
+          <!-- Base output paths for the files (required).  These should match
+                 the parent folder of the output path of the HTML files (see
+                 each of the SaveComponent instances below). -->
+          <outputPaths>
+{@HelpFormatOutputPaths}
+            </outputPaths>
+          <!-- Logo image file (optional).  Filename is required. The height,
+                 width, altText, placement, and alignment attributes are
+                 optional. -->
+          <logoFile filename="" height="0" width="0" altText="" placement="left" alignment="left" />
+        </component>
+      </ComponentConfig>
+    </ComponentConfigurations>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="..\Tools\DialogHelper\bin\Release\DialogHelper.dll" />
+      <DocumentationSource sourceFile="..\Tools\DialogHelper\bin\Release\DialogHelper.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\bin\Release\Gorgon.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\bin\Release\Gorgon.xml" />
+      <DocumentationSource sourceFile="..\Tools\GorgonFramework\bin\Release\GorgonFramework.dll" />
+      <DocumentationSource sourceFile="..\Tools\GorgonFramework\bin\Release\GorgonFramework.xml" />
+    </DocumentationSources>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
+      <NamespaceSummaryItem name="Dialogs" isDocumented="True" xmlns="">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Dialogs.Properties" isDocumented="False" xmlns="" />
+      <NamespaceSummaryItem name="GorgonLibrary" isDocumented="True" xmlns="">This is the primary namespace for Gorgon.  It contains the core functionality for the library.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.FileSystems" isDocumented="True" xmlns="">This namespace contains objects dealing with virtual file systems.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.FileSystems.Design" isDocumented="True" xmlns="">This namespace contains objects dealing with virtual file interfaces for use with the File System Editor.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Framework" isDocumented="True" xmlns="">This namespace contains an application framework for Gorgon to help get things up and running as quickly as possible.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Framework.Properties" isDocumented="False" xmlns="" />
+      <NamespaceSummaryItem name="GorgonLibrary.Graphics" isDocumented="True" xmlns="">This namespace contains graphics related objects such as sprites, text &amp;amp; font functionality, and more.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Graphics.Utilities" isDocumented="True" xmlns="">This namespace contains various high level graphics objects and utilities.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.GUI" isDocumented="True" xmlns="">This namespace contains a (very) minimal skinnable GUI system.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.InputDevices" isDocumented="True" xmlns="">This namespace contains objects relating to user input devices such as keyboards, mice and joysticks/joypads</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Internal" isDocumented="True" xmlns="">"These aren't the droids you're looking for.  He can move along." 
+
+"These aren't the droids we're looking for.  Move along.  Move along." 
+
+But really, these are internal functions for use by Gorgon only.  They should rarely, if ever, be needed by the user.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Internal.Native" isDocumented="False" xmlns="" />
+      <NamespaceSummaryItem name="GorgonLibrary.PlugIns" isDocumented="True" xmlns="">This namespace contains functionality for use in building and using plug-ins.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Properties" isDocumented="False" xmlns="" />
+      <NamespaceSummaryItem name="GorgonLibrary.Serialization" isDocumented="True" xmlns="">This namespace contains objects to serialize and/or deserialize objects to and from a storage medium.</NamespaceSummaryItem>
+    </NamespaceSummaries>
+    <PlugInConfigurations />
+  </PropertyGroup>
+  <!-- There are no properties for these two groups but they need to appear in
+       order for Visual Studio to perform the build. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <SiteMap Include="HelpMap.sitemap" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\" />
+    <Folder Include="Content\_svn\" />
+    <Folder Include="Content\_svn\text-base\" />
+    <Folder Include="Content\_svn\prop-base\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\rootPage.html" />
+    <Content Include="Content\Redistribution.htm" />
+    <Content Include="Content\GorgonLogo3.jpg" />
+    <Content Include="Content\MIT.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\_svn\all-wcprops" />
+    <None Include="Content\_svn\entries" />
+    <None Include="Content\_svn\text-base\GorgonLogo3.jpg.svn-base" />
+    <None Include="Content\_svn\text-base\MIT.txt.svn-base" />
+    <None Include="Content\_svn\text-base\Redistribution.htm.svn-base" />
+    <None Include="Content\_svn\text-base\rootPage.html.svn-base" />
+    <None Include="Content\_svn\prop-base\GorgonLogo3.jpg.svn-base" />
+  </ItemGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+</Project>
