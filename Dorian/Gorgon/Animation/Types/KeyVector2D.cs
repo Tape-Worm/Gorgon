@@ -144,7 +144,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyVector2D", true) != 0)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyVector2D");
+				throw new GorgonException(GorgonResult.CannotRead, "Got an unexpected key type: " + typeName + ", expected: KeyVector2D");
 
 			Time = serializer.ReadSingle("Time");
 			_value = new Vector2D(serializer.ReadSingle("X"), serializer.ReadSingle("Y"));

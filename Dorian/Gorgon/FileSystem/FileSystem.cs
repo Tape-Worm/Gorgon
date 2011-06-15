@@ -450,7 +450,7 @@ namespace GorgonLibrary.FileSystems
 
 			// Validate the index file.
 			if ((nodes == null) || (nodes.Count == 0) || ((string.Compare(nodes[0].InnerText, "gorfs1.0", true) != 0) && (string.Compare(nodes[0].InnerText, "gorfs1.1", true) != 0)))
-				throw new GorgonException(GorgonErrors.InvalidFormat, "The file system index is corrupt.");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "The file system index is corrupt.");
 
 			if (string.Compare(nodes[0].InnerText, "gorfs1.1", true) == 0)
 			{
@@ -595,7 +595,7 @@ namespace GorgonLibrary.FileSystems
 					if ((fileProperty != null) && (fileProperty.InnerText != string.Empty))
 						filePath = fileProperty.InnerText;
 					else
-						throw new GorgonException(GorgonErrors.CannotReadData, "The file system appears to be corrupted.");
+						throw new GorgonException(GorgonResult.CannotRead, "The file system appears to be corrupted.");
 
 					fileProperty = fileNode.SelectSingleNode("Extension");
 					if (fileProperty != null)

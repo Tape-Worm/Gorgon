@@ -857,7 +857,7 @@ namespace GorgonLibrary.Graphics
 				fontData = manager.GetObject(name) as byte[];
 
 				if (fontData == null)
-					throw new GorgonException(GorgonErrors.CannotReadData, "There is no font named '" + name + "' within the resource manifest of this assembly.");
+					throw new GorgonException(GorgonResult.CannotRead, "There is no font named '" + name + "' within the resource manifest of this assembly.");
 
 				stream = new MemoryStream(fontData);
 				return FromStream(name, stream, (int)stream.Length, fontSize, antiAliased, bold, underlined, italic);
@@ -1114,7 +1114,7 @@ namespace GorgonLibrary.Graphics
 						if (Image.ValidateFormat(ImageBufferFormats.BufferRGB332A8, ImageType.Normal) == ImageBufferFormats.BufferRGB555A1)
 							fontImageFormat = ImageBufferFormats.BufferRGB555A1;
 						else
-							throw new GorgonException(GorgonErrors.CannotCreate, "Cannot create font backing image(s).  No suitable alpha format was found.");
+							throw new GorgonException(GorgonResult.CannotCreate, "Cannot create font backing image(s).  No suitable alpha format was found.");
 				}
 			}
 

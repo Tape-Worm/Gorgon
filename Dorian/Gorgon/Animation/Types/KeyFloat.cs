@@ -144,7 +144,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyFloat", true) != 0)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyFloat");
+				throw new GorgonException(GorgonResult.CannotRead, "Got an unexpected key type: " + typeName + ", expected: KeyFloat");
 
 			Time = serializer.ReadSingle("Time");
 			_value = serializer.ReadSingle("Value");

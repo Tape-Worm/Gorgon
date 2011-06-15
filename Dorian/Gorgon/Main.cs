@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2005 Michael Winsor
+// Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, April 27, 2005 10:29:58 AM
+// Created: Tuesday, June 14, 2011 8:41:48 PM
 // 
 #endregion
 
@@ -37,6 +37,7 @@ using System.Threading;
 using Microsoft.Win32;
 using D3D9 = SlimDX.Direct3D9;
 using DX = SlimDX;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.FileSystems;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Internal.Native;
@@ -45,18 +46,23 @@ using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary
 {
+	#region Enumerations.
 	/// <summary>
-	/// Enumeration containing platform IDs.
+	/// CPU/OS platform type.
 	/// </summary>
-	public enum PlatformID
+	/// <remarks>This is a replacement for the old PlatformID code in the 1.x version of Gorgon.</remarks>
+	public enum PlatformArchitecture
 	{
-		/// <summary>Unknown platform.</summary>
-		Unknown = 0,
-		/// <summary>x86 32-bit architecture.</summary>
-		x86 = 1,
-		/// <summary>x64 64-bit architecture.</summary>
-		x64 = 2
+		/// <summary>
+		/// x86 architecture.
+		/// </summary>
+		x86 = 0,
+		/// <summary>
+		/// x64 architecture.
+		/// </summary>
+		x64 = 1
 	}
+	#endregion
 
 	/// <summary>
 	/// The primary interface into gorgon.
@@ -67,44 +73,6 @@ namespace GorgonLibrary
 	/// </para></remarks>
 	public static class Gorgon
 	{
-		#region Classes.
-		/// <summary>
-		/// Class to stop screensaver messages.
-		/// </summary>
-		private class SysMessageFilter : Forms.IMessageFilter
-		{
-			#region IMessageFilter Members
-			/// <summary>
-			/// Function to trap messages.
-			/// </summary>
-			/// <param name="m">Message data.</param>
-			/// <returns>TRUE if trapped, FALSE if skipped.</returns>
-			public bool PreFilterMessage(ref Forms.Message m)
-			{
-				if ((((WindowMessages)m.Msg) == WindowMessages.SysCommand) && (!Gorgon.AllowScreenSaver))
-				{
-					// Trap screen saver.
-					long wParamValue = 0;
-					if (IntPtr.Size == 4)
-						wParamValue = m.WParam.ToInt32() & 0xFFF0;
-					else
-						wParamValue = m.WParam.ToInt64() & 0xFFF0;
-
-					switch ((SysCommands)(wParamValue))
-					{
-						case SysCommands.MonitorPower:
-						case SysCommands.ScreenSave:
-							Gorgon.Log.Print("Gorgon", "Screen saver activated, disabling.", LoggingLevel.Verbose);
-							m.Result = IntPtr.Zero;
-							return true;
-					}
-				}
-				return false;
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Events.
 		/// <summary>Event fired when a driver is currently being changed.</summary>
 		public static event DriverChangingHandler DriverChanging;
@@ -152,8 +120,7 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Variables.
-		private static Logger _log;										// Log file.
-		private static SysMessageFilter _messageFilter;					// Windows message filter.
+		private static GorgonLogFile _log;								// Library log file.
 		private static PreciseTimer _timer;								// Main Gorgon timer.
 		private static DriverList _drivers = null;						// List of video drivers for the system.
 		private static Driver _currentDriver = null;					// Current driver.
@@ -222,7 +189,7 @@ namespace GorgonLibrary
 			get
 			{
 				if (!IsInitialized)					
-					throw new GorgonException(GorgonErrors.NotInitialized);
+					throw new GorgonException(GorgonResult.NotInitialized);
 
 				return _renderer;
 			}
@@ -232,20 +199,14 @@ namespace GorgonLibrary
 		/// Property to return the platform that this instance of Gorgon was compiled for.
 		/// </summary>
 		/// <remarks>When the library is compiled for 64-bit processors, then this will read x64, otherwise it'll be x86.  If the platform cannot be determined it will return unknown.</remarks>
-		public static PlatformID Platform
+		public static PlatformArchitecture Platform
 		{
 			get
 			{
-				// Set the platform ID here.
-                switch (IntPtr.Size)
-                {
-                    case 4:
-                        return PlatformID.x86;
-                    case 8:
-                        return PlatformID.x64;
-                    default:
-                        return PlatformID.Unknown;
-                }
+				if (Environment.Is64BitProcess)
+					return PlatformArchitecture.x64;
+				else
+					return PlatformArchitecture.x86;
 			}
 		}
 
@@ -384,7 +345,7 @@ namespace GorgonLibrary
 			get
 			{
 				if (!IsInitialized)
-					throw new GorgonException(GorgonErrors.NotInitialized);
+					throw new GorgonException(GorgonResult.NotInitialized);
 
 				return _stateCache;
 			}
@@ -408,7 +369,7 @@ namespace GorgonLibrary
 			set
 			{
 				if ((!IsInitialized) || (Screen == null))
-					throw new GorgonException(GorgonErrors.NotInitialized);
+					throw new GorgonException(GorgonResult.NotInitialized);
 
 				// Reset the view to the current target view.
 				if (value == null)
@@ -493,11 +454,11 @@ namespace GorgonLibrary
 			set
 			{
 				if (!IsInitialized)
-					throw new GorgonException(GorgonErrors.NotInitialized);
+					throw new GorgonException(GorgonResult.NotInitialized);
 
 				// No device?  Throw an exception.
 				if (Screen == null)
-					throw new GorgonException(GorgonErrors.NoDevice);
+					throw new GorgonException(GorgonResult.CannotBind, "No D3D device was created.");
 								
 				if (_currentShader == value)
 					return;
@@ -561,7 +522,7 @@ namespace GorgonLibrary
 			get
 			{
 				if (!IsInitialized)
-					throw new GorgonException(GorgonErrors.NotInitialized);
+					throw new GorgonException(GorgonResult.NotInitialized);
 
 				return _desktopVideoMode;
 			}
@@ -613,11 +574,9 @@ namespace GorgonLibrary
 #endif
 
 		/// <summary>
-		/// Property to return the logging object.
+		/// Property to return the library log file interface.
 		/// </summary>
-		/// <remarks>Usage of this property will require the SharpUtilities library and the SharpUtilities.Utility namespace.</remarks>
-		/// <value>The internal logging interface used by the library.</value>
-		public static Logger Log
+		public static GorgonLogFile Log
 		{
 			get
 			{
@@ -645,14 +604,14 @@ namespace GorgonLibrary
 			get
 			{
 				if (!IsInitialized)
-					throw new GorgonException(GorgonErrors.NotInitialized);
+					throw new GorgonException(GorgonResult.NotInitialized);
 
 				return _currentDriver;
 			}
 			set
 			{
 				if (!IsInitialized)
-					throw new GorgonException(GorgonErrors.NotInitialized);
+					throw new GorgonException(GorgonResult.NotInitialized);
 
 				Stop();
 
@@ -676,7 +635,7 @@ namespace GorgonLibrary
 				foreach (GorgonLibrary.Graphics.Font font in FontCache.Fonts)
 					font.ReleaseResources();
 
-				Gorgon.Log.Print("Gorgon", "Changing video drivers...", LoggingLevel.Simple);
+				Gorgon.Log.Print("Changing video drivers...", GorgonLoggingLevel.Simple);
 
 				// Do actual driver change.
 				if ((_renderer != null) && (!_renderer.IsDisposed))
@@ -703,7 +662,7 @@ namespace GorgonLibrary
 				_stateCache = new SpriteStateCache();
 				_currentTarget = new RenderTarget[_currentDriver.MaximumSimultaneousRenderTargets];				
 
-				Gorgon.Log.Print("Gorgon", "Driver changed to {0} ({1}).", LoggingLevel.Simple, value.Description, value.DriverName);
+				Gorgon.Log.Print("Driver changed to {0} ({1}).", GorgonLoggingLevel.Simple, value.Description, value.DriverName);
 
 				Gorgon.OnDriverChanged(new DriverChangedArgs(_currentDriver, value));
 			}
@@ -720,7 +679,7 @@ namespace GorgonLibrary
 			get
 			{
 				if (!IsInitialized)
-					throw new GorgonException(GorgonErrors.NotInitialized);
+					throw new GorgonException(GorgonResult.NotInitialized);
 
 				return _drivers;
 			}
@@ -749,22 +708,6 @@ namespace GorgonLibrary
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether we want to allow a screensaver to run or not.
-		/// </summary>
-		/// <remarks>
-		/// When this property is set to TRUE all power management/screen saver functionality will be suspended while the application is running.  
-		/// <para>
-		/// Due to an unknown reason (presumably this is for security purposes) in Windows, when the screensaver is set to return to the login/welcome screen after its deactivated the application will NOT suspend the screensaver/power management.  There currently is no workaround for this, however if you know of one, send the author an email explaining how to circumvent this.
-		/// </para>
-		/// </remarks>
-		/// <value>Set this property to TRUE if you wish to allow the screensaver/power management to kick in.  Set to FALSE if you want to suspend the screensaver/power management.</value>
-		public static bool AllowScreenSaver
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -881,7 +824,7 @@ namespace GorgonLibrary
 			_timer.Reset();
 			FrameStats.Reset();
 
-			Gorgon.Log.Print("Gorgon", "Device has been put into a lost state.", LoggingLevel.Intermediate);
+			Gorgon.Log.Print("Device has been put into a lost state.", GorgonLoggingLevel.Intermediate);
 		}
 
 		/// <summary>
@@ -896,7 +839,7 @@ namespace GorgonLibrary
 			if (DeviceReset != null)
 				DeviceReset(_renderer, EventArgs.Empty);
 
-			Gorgon.Log.Print("Gorgon", "Device has been reset.", LoggingLevel.Intermediate);
+			Gorgon.Log.Print("Device has been reset.", GorgonLoggingLevel.Intermediate);
 		}
 
 		/// <summary>
@@ -930,17 +873,17 @@ namespace GorgonLibrary
 		public static void SetAdditionalRenderTarget(int index, RenderTarget target)
 		{
 			if (!IsInitialized)
-				throw new GorgonException(GorgonErrors.NotInitialized);
+				throw new GorgonException(GorgonResult.NotInitialized);
 
 			// No device?  Throw an exception.
 			if (Screen == null)
-				throw new GorgonException(GorgonErrors.NoDevice);
+				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created.");
 
 			if (index > _currentTarget.Length)
-				throw new GorgonException(GorgonErrors.CannotBindTarget, "The index of the target exceeds the maximum number of simultaneous render targets for the system (" + _currentDriver.MaximumSimultaneousRenderTargets.ToString() + ").");
+				throw new GorgonException(GorgonResult.CannotBind, "The index of the target exceeds the maximum number of simultaneous render targets for the system (" + _currentDriver.MaximumSimultaneousRenderTargets.ToString() + ").");
 
 			if (index < 0)
-				throw new GorgonException(GorgonErrors.CannotBindTarget, "The index of the target must be greater than zero.");
+				throw new GorgonException(GorgonResult.CannotBind, "The index of the target must be greater than zero.");
 
 			if (!Screen.DeviceNotReset)
 			{
@@ -1181,7 +1124,7 @@ namespace GorgonLibrary
 		public static void Go()
 		{
 			if (!IsInitialized)
-				throw new GorgonException(GorgonErrors.NotInitialized);
+				throw new GorgonException(GorgonResult.NotInitialized);
 
 			if ((Gorgon.Screen != null) && (_currentTarget == null))
 				throw new InvalidOperationException("The render target is invalid.");
@@ -1190,7 +1133,7 @@ namespace GorgonLibrary
 				return;
 
 			// Enter render loop.
-			_log.Print("Gorgon", "Entering main render loop...",LoggingLevel.Verbose);
+			_log.Print("Entering main render loop...",GorgonLoggingLevel.Verbose);
 
 			// Reset all timers.
 			_timer.Reset();
@@ -1221,7 +1164,7 @@ namespace GorgonLibrary
 		public static void Stop()
 		{
 			if (!IsInitialized)
-				throw new GorgonException(GorgonErrors.NotInitialized);
+				throw new GorgonException(GorgonResult.NotInitialized);
 
 			if (IsRunning)
 			{
@@ -1232,7 +1175,7 @@ namespace GorgonLibrary
 				_timer.Reset();
 				FrameStats.Reset();
 
-				_log.Print("Gorgon", "Main render loop stopped.", LoggingLevel.Verbose);
+				_log.Print("Main render loop stopped.", GorgonLoggingLevel.Verbose);
 			}
 		}
 
@@ -1262,38 +1205,15 @@ namespace GorgonLibrary
 		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
 		public static void Initialize()
 		{
-			Initialize(false, false, false);
-		}
-
-		/// <summary>
-		/// Function to initialize Gorgon.
-		/// </summary>
-		/// <param name="allowBackgroundRender">TRUE to allow rendering when the application loses focus, FALSE to suspend rendering.</param>
-		/// <param name="allowScreenSaver">TRUE to allow the screen saver to run, FALSE to suspend it.</param>
-		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
-		public static void Initialize(bool allowBackgroundRender, bool allowScreenSaver)
-		{
-			Initialize(allowBackgroundRender, allowScreenSaver, false);
-		}
-
-		/// <summary>
-		/// Function to initialize Gorgon.
-		/// </summary>
-		/// <param name="allowBackgroundRender">TRUE to allow rendering when the application loses focus, FALSE to suspend rendering.</param>
-		/// <param name="allowScreenSaver">TRUE to allow the screen saver to run, FALSE to suspend it.</param>
-		/// <param name="checkDriverWHQL">TRUE to check for WHQL information, FALSE to ignore.</param>
-		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
-		public static void Initialize(bool allowBackgroundRender, bool allowScreenSaver, bool checkDriverWHQL)
-		{
 			// Terminate if already initialized.
 			if (IsInitialized)
 				Terminate();
 
-			IsInitialized = true;			
+			IsInitialized = true;
 
 			// Initialize.
 #if DEBUG
-            DX.Configuration.EnableObjectTracking = true;
+			DX.Configuration.EnableObjectTracking = true;
 #else
             DX.Configuration.EnableObjectTracking = false;
 #endif
@@ -1302,34 +1222,18 @@ namespace GorgonLibrary
 			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceNotReset, SlimDX.ResultWatchFlags.AlwaysIgnore);
 
 			Direct3D = new D3D9.Direct3D();
-			Direct3D.CheckWhql = checkDriverWHQL;
+			Direct3D.CheckWhql = false;
 
 			try
 			{
 				// Open log object.
-				string logPath = string.Empty;		// Log file path.
+				_log = new GorgonLogFile("GorgonLibrary");
 
-				logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Tape_Worm\Gorgon\LibLog\";
-
-				// Force the directory if necessary.
-				try
-				{
-					if (!Directory.Exists(logPath))
-						Directory.CreateDirectory(logPath);
-				}
-				finally
-				{
-					// Do nothing if we fail.
-				}
-
-				logPath += Assembly.GetExecutingAssembly().GetName().Name + "_" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
-				_log = new Logger(Assembly.GetEntryAssembly().GetName().Name, logPath);
 				// Set this to intermediate, simple or none to have a smaller log file.
 #if DEBUG
-				_log.LogFilterLevel = LoggingLevel.Verbose;
+				_log.LogFilterLevel = GorgonLoggingLevel.Verbose;
 #else
-				_log.LogFilterLevel = LoggingLevel.None;
+				_log.LogFilterLevel = GorgonLoggingLevel.None;
 #endif
 
 				try
@@ -1337,24 +1241,20 @@ namespace GorgonLibrary
 					_log.Open();
 					GorgonException.Log = _log;
 				}
-				catch(GorgonException gEx)
+				catch (GorgonException gEx)
 				{
 #if DEBUG
 					// By rights, we should never see this error.  Better safe than sorry.
-                    System.Windows.Forms.MessageBox.Show("Could not create a log file.\n" + gEx.Message, "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+					System.Windows.Forms.MessageBox.Show("Could not create a log file.\n" + gEx.Message, "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 #else
 					Debug.WriteLine("Error opening log.\n" + gEx.Message);
 #endif
 				}
 
-				Gorgon.Log.Print("Gorgon", "Initializing...", LoggingLevel.Simple);
+				Gorgon.Log.Print("Initializing...", GorgonLoggingLevel.Simple);
 
-				Gorgon.Log.Print("Gorgon", "Allow background processing: {0}", LoggingLevel.Verbose, allowBackgroundRender.ToString());
-				Gorgon.Log.Print("Gorgon", "Allow screen saver: {0}", LoggingLevel.Verbose, allowScreenSaver.ToString());
-
-				AllowBackgroundRendering = allowBackgroundRender;
-				AllowScreenSaver = allowScreenSaver;
-				IsRunning = false;				
+				AllowBackgroundRendering = true;
+				IsRunning = false;
 
 				// Enumerate drivers and video modes.
 				_drivers = new DriverList();
@@ -1362,10 +1262,6 @@ namespace GorgonLibrary
 
 				// Create timing data.
 				_timer = new PreciseTimer();
-
-				// Create a message filter to trap screen saver messages.
-				_messageFilter = new SysMessageFilter();
-				Forms.Application.AddMessageFilter(_messageFilter);
 
 				// Assign the initial driver, this will also create the renderer..
 				CurrentDriver = _drivers[0];
@@ -1381,7 +1277,7 @@ namespace GorgonLibrary
 
 				FrameStatsTextColor = Color.White;
 
-				_log.Print("Gorgon", "Initialized Successfully.", LoggingLevel.Simple);
+				_log.Print("Initialized Successfully.", GorgonLoggingLevel.Simple);
 			}
 			catch (Exception ex)
 			{
@@ -1405,8 +1301,6 @@ namespace GorgonLibrary
 
 			// Stop the engine.
 			Stop();
-
-			Forms.Application.RemoveMessageFilter(_messageFilter);
 
 			// Unload fonts.
 			FontCache.DestroyAll();
@@ -1443,11 +1337,11 @@ namespace GorgonLibrary
 				Direct3D.Dispose();
 			Direct3D = null;
 
-			_log.Print("Gorgon", "Shutting down.", LoggingLevel.Simple);
+			_log.Print("Shutting down.", GorgonLoggingLevel.Simple);
 
 			// Destroy log.
 			if (_log != null)
-				_log.Dispose();
+				_log.Close();
 
 			_currentTarget = null;
 			Screen = null;

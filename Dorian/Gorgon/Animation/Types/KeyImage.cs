@@ -179,7 +179,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyImage", true) != 0)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyImage");
+				throw new GorgonException(GorgonResult.CannotRead, "Got an unexpected key type: " + typeName + ", expected: KeyImage");
 
 			Time = serializer.ReadSingle("Time");
 			_image = null;

@@ -166,7 +166,7 @@ namespace GorgonLibrary.Internal
 					return D3D9.DeclarationUsage.TextureCoordinate;
 			}
 
-			throw new GorgonException(GorgonErrors.InvalidFormat, "Vertex field context '" + context.ToString() + "' has no Direct3D equivalent.");
+			throw new GorgonException(GorgonResult.FormatNotSupported, "Vertex field context '" + context.ToString() + "' has no Direct3D equivalent.");
 		}
 
 		/// <summary>
@@ -198,7 +198,7 @@ namespace GorgonLibrary.Internal
 					return D3D9.DeclarationType.Ubyte4;
 			}
 
-			throw new GorgonException(GorgonErrors.InvalidFormat, "Vertex field type '" + fieldType.ToString() + "' has no Direct3D equivalent.");
+			throw new GorgonException(GorgonResult.FormatNotSupported, "Vertex field type '" + fieldType.ToString() + "' has no Direct3D equivalent.");
 		}
 
 		/// <summary>
@@ -402,7 +402,7 @@ namespace GorgonLibrary.Internal
 				case BackBufferFormats.BufferP8:
 					return D3D9.Format.P8;
 				default:
-					throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
+					throw new GorgonException(GorgonResult.FormatNotSupported, format.ToString() + " is not a valid format.");
 			}
 		}
 
@@ -424,7 +424,7 @@ namespace GorgonLibrary.Internal
 				case BackBufferFormats.BufferRGB888:
 					return ImageBufferFormats.BufferRGB888X8;
 				default:
-					throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
+					throw new GorgonException(GorgonResult.FormatNotSupported, format.ToString() + " is not a valid format.");
 			}
 		}
 
@@ -448,7 +448,7 @@ namespace GorgonLibrary.Internal
 				case D3D9.Format.P8:
 					return BackBufferFormats.BufferP8;
 				default:
-					throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
+					throw new GorgonException(GorgonResult.FormatNotSupported, format.ToString() + " is not a valid format.");
 			}
 		}
 

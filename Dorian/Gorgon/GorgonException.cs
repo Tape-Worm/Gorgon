@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2005 Michael Winsor
+// Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, April 27, 2005 10:30:08 AM
+// Created: Tuesday, June 14, 2011 8:56:44 PM
 // 
 #endregion
 
 using System;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
-using GorgonLibrary.Internal;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary
 {
 	/// <summary>
 	/// Delegate to define an exception handler.
 	/// </summary>
-	/// <param name="ex">Exception passed to the handler.</param>
-	public delegate void GorgonExceptionHandler(Exception ex);
+	public delegate void GorgonExceptionHandler();
 
 	/// <summary>
-	/// Gorgon exception object.
+	/// Primary exception used for Gorgon.
 	/// </summary>
-	/// <remarks>This is the library specific exception, meaning that it's meant for library specific functionality.<para>
-	/// When this exception is consumed, the user can check the <see cref="GorgonLibrary.GorgonError">ResultCode</see> property to examine the context of the exception.</para>
-	/// </remarks>
 	public class GorgonException
 		: Exception
 	{
@@ -50,7 +45,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to set or return the log system to use when dumping exceptions to the log.
 		/// </summary>
-		public static Logger Log
+		public static GorgonLogFile Log
 		{
 			get;
 			set;
@@ -59,7 +54,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return the exception result code.
 		/// </summary>
-		public GorgonError ResultCode
+		public GorgonResult ResultCode
 		{
 			get;
 			private set;
@@ -73,7 +68,7 @@ namespace GorgonLibrary
 		/// <param name="stack">Stack trace to format.</param>
 		/// <param name="indicator">Inner exception indicator.</param>
 		/// <param name="logLevel">Logging level to use.</param>
-		private static void FormatStackTrace(string stack, string indicator, LoggingLevel logLevel)
+		private static void FormatStackTrace(string stack, string indicator, GorgonLoggingLevel logLevel)
 		{
 			string[] lines = null;		// List of lines.
 
@@ -95,7 +90,32 @@ namespace GorgonLibrary
 				Log.Print("{1}{0}", logLevel, lines[i], indicator);
 			}
 
-			Log.Print("{0}<<<Beginning of stack>>>", logLevel, indicator);
+			Log.Print("{0}<<<END>>>", logLevel, indicator);
+		}
+
+		/// <summary>
+		/// Function to format the exception message for the log output.
+		/// </summary>
+		/// <param name="message">Message to format.</param>
+		/// <param name="indicator">Inner exception indicator.</param>
+		/// <param name="logLevel">Logging level to use.</param>
+		private static void FormatMessage(string message, string indicator, GorgonLoggingLevel logLevel)
+		{
+			string[] lines = null;		// List of lines.
+
+			if (string.IsNullOrEmpty(message))
+				return;
+
+			message = message.Replace('\t', ' ');
+			lines = message.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+			for (int i = 0; i < lines.Length; i++)
+			{
+				if (i == 0)
+					Log.Print("{1}Exception: {0}", logLevel, lines[i], indicator);
+				else
+					Log.Print("{1}           {0}", logLevel, lines[i], indicator);
+			}
 		}
 
 		/// <summary>
@@ -112,25 +132,25 @@ namespace GorgonLibrary
 			if (ex == null)
 				return;
 
-			Log.Print("", LoggingLevel.All);
-			Log.Print("================================================", LoggingLevel.All);
-			Log.Print("\tEXCEPTION!!", LoggingLevel.All);
-			Log.Print("================================================", LoggingLevel.All);
+			Log.Print("", GorgonLoggingLevel.All);
+			Log.Print("================================================", GorgonLoggingLevel.All);
+			Log.Print("\tEXCEPTION!!", GorgonLoggingLevel.All);
+			Log.Print("================================================", GorgonLoggingLevel.All);
 
 			inner = ex;
 			while (inner != null)
 			{
 				GorgonException gorgonException = inner as GorgonException;
 
-				Log.Print("{1}Exception: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Message, indicator);
-				Log.Print("{1}Type: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator);
+				FormatMessage(inner.Message, indicator, (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose);
+				Log.Print("{1}Type: {0}", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, inner.GetType().FullName, indicator);
 				if (inner.Source != null)
-					Log.Print("{1}Source: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator);
+					Log.Print("{1}Source: {0}", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, inner.Source, indicator);
 				if (inner.TargetSite != null)
-					Log.Print("{1}Target site: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
+					Log.Print("{1}Target site: {0}", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
 				if (gorgonException != null)
-					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
-				FormatStackTrace(inner.StackTrace, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
+					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
+				FormatStackTrace(inner.StackTrace, indicator, (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose);
 
 
 				if (inner.InnerException != null)
@@ -139,15 +159,15 @@ namespace GorgonLibrary
 						indicator = "-" + indicator;
 					else
 						indicator = "> ";
-					Log.Print("", LoggingLevel.All);
-					Log.Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
-					Log.Print("{0}  Inner exception from \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message);
-					Log.Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
+					Log.Print("", GorgonLoggingLevel.All);
+					Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, indicator);
+					Log.Print("{0}  Inner exception from \"{1}\"", GorgonLoggingLevel.Verbose, indicator, inner.Message);
+					Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, indicator);
 				}
 
 				inner = inner.InnerException;
 			}
-			Log.Print("", LoggingLevel.All);
+			Log.Print("", GorgonLoggingLevel.All);
 		}
 
 		/// <summary>
@@ -164,7 +184,7 @@ namespace GorgonLibrary
 		{
 			base.GetObjectData(info, context);
 
-			info.AddValue("ResultCode", ResultCode, typeof(GorgonError));
+			info.AddValue("ResultCode", ResultCode, typeof(GorgonResult));
 		}
 
 		/// <summary>
@@ -172,6 +192,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="ex">Exception to catch.</param>
 		/// <returns>The exception that was caught.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		public static Exception Catch(Exception ex)
 		{
 			if (ex == null)
@@ -188,6 +209,7 @@ namespace GorgonLibrary
 		/// <param name="ex">Exception to pass to the handler.</param>
 		/// <param name="handler">Handler to handle the exception.</param>
 		/// <returns>The exception that was caught.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> or <paramref name="handler"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		public static Exception Catch(Exception ex, GorgonExceptionHandler handler)
 		{
 			if (ex == null)
@@ -197,20 +219,21 @@ namespace GorgonLibrary
 				throw new ArgumentNullException("handler");
 
 			LogException(ex);
-			handler(ex);
+			handler();
 
 			return ex;
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as a gorgon exception.
+		/// Function to repackage an arbitrary exception as an Orpheus exception.
 		/// </summary>
 		/// <param name="result">Result code to use.</param>
 		/// <param name="message">Message to append to the result.</param>
 		/// <param name="ex">Exception to capture and rethrow.</param>
-		/// <returns>A new Gorgon exception to throw.</returns>
-		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonLibrary.GorgonException"/>.</remarks>
-		public static GorgonException Repackage(GorgonError result, string message, Exception ex)
+		/// <returns>A new Orpheus exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:OrpheusFramework.OrpheusException"/>.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		public static GorgonException Repackage(GorgonResult result, string message, Exception ex)
 		{
 			if (ex == null)
 				throw new ArgumentNullException("ex");
@@ -219,13 +242,14 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as a gorgon exception.
+		/// Function to repackage an arbitrary exception as an Orpheus exception.
 		/// </summary>
 		/// <param name="result">Result code to use.</param>
 		/// <param name="ex">Exception to capture and rethrow.</param>
-		/// <returns>A new Gorgon exception to throw.</returns>
-		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonLibrary.GorgonException"/>.</remarks>
-		public static GorgonException Repackage(GorgonError result, Exception ex)
+		/// <returns>A new Orpheus exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:OrpheusFramework.OrpheusException"/>.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		public static GorgonException Repackage(GorgonResult result, Exception ex)
 		{
 			if (ex == null)
 				throw new ArgumentNullException("ex");
@@ -234,12 +258,13 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as a gorgon exception.
+		/// Function to repackage an arbitrary exception as an Orpheus exception.
 		/// </summary>
 		/// <param name="message">New message to pass to the new exception.</param>
 		/// <param name="ex">Exception to capture and rethrow.</param>
-		/// <returns>A new Gorgon exception to throw.</returns>
-		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonLibrary.GorgonException"/>.</remarks>
+		/// <returns>A new Orpheus exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:OrpheusFramework.OrpheusException"/>.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		public static GorgonException Repackage(string message, Exception ex)
 		{
 			if (ex == null)
@@ -258,7 +283,7 @@ namespace GorgonLibrary
 		public GorgonException(string errorMessage, Exception innerException)
 			: base(errorMessage, innerException)
 		{
-			ResultCode = new GorgonError("GorgonException", this.HResult, errorMessage);
+			ResultCode = new GorgonResult("OrpheusException", this.HResult, errorMessage);
 		}
 
 		/// <summary>
@@ -268,7 +293,7 @@ namespace GorgonLibrary
 		public GorgonException(string errorMessage)
 			: base(errorMessage)
 		{
-			ResultCode = new GorgonError("GorgonException", this.HResult, errorMessage);
+			ResultCode = new GorgonResult("OrpheusException", this.HResult, errorMessage);
 		}
 
 		/// <summary>
@@ -279,10 +304,10 @@ namespace GorgonLibrary
 		protected GorgonException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			if (info.FullTypeName == typeof(GorgonError).FullName)
-				ResultCode = (GorgonError)info.GetValue("ResultCode", typeof(GorgonError));
+			if (info.FullTypeName == typeof(GorgonResult).FullName)
+				ResultCode = (GorgonResult)info.GetValue("ResultCode", typeof(GorgonResult));
 			else
-				ResultCode = new GorgonError("Exception", info.GetInt32("HResult"), info.GetString("Message"));
+				ResultCode = new GorgonResult("Exception", info.GetInt32("HResult"), info.GetString("Message"));
 		}
 
 		/// <summary>
@@ -291,8 +316,8 @@ namespace GorgonLibrary
 		/// <param name="result">The result.</param>
 		/// <param name="message">Message data to append to the error.</param>
 		/// <param name="inner">The inner exception.</param>
-		public GorgonException(GorgonError result, string message, Exception inner)
-			: base(result.Description + (!string.IsNullOrEmpty(message) ? "\n"+ message : string.Empty), inner)
+		public GorgonException(GorgonResult result, string message, Exception inner)
+			: base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty), inner)
 		{
 			ResultCode = result;
 		}
@@ -302,7 +327,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="result">The result.</param>
 		/// <param name="message">Message data to append to the error.</param>
-		public GorgonException(GorgonError result, string message)
+		public GorgonException(GorgonResult result, string message)
 			: base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty))
 		{
 			ResultCode = result;
@@ -313,7 +338,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="result">The result.</param>
 		/// <param name="inner">The inner exception.</param>
-		public GorgonException(GorgonError result, Exception inner)
+		public GorgonException(GorgonResult result, Exception inner)
 			: this(result, null, inner)
 		{
 		}
@@ -322,7 +347,7 @@ namespace GorgonLibrary
 		/// Initializes a new instance of the <see cref="GorgonException"/> class.
 		/// </summary>
 		/// <param name="result">The result.</param>
-		public GorgonException(GorgonError result)
+		public GorgonException(GorgonResult result)
 			: this(result, null, null)
 		{
 		}
@@ -332,8 +357,8 @@ namespace GorgonLibrary
 		/// </summary>
 		public GorgonException()
 		{
-			ResultCode = new GorgonError("GorgonException", int.MinValue, string.Empty);
+			ResultCode = new GorgonResult("GorgonException", int.MinValue, string.Empty);
 		}
 		#endregion
-	}	
+	}
 }

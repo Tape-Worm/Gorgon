@@ -139,7 +139,7 @@ namespace GorgonLibrary.FileSystems
 				throw new ArgumentNullException("file");
 
 			if (!File.Exists(Root + file.FullPath))
-				throw new GorgonException(GorgonErrors.CannotLoad, "File '" + Root + file.FullPath + "' was not found in the file system.");
+				throw new GorgonException(GorgonResult.CannotRead, "File '" + Root + file.FullPath + "' was not found in the file system.");
 
             try
 			{
@@ -360,11 +360,11 @@ namespace GorgonLibrary.FileSystems
 			InitializeIndex(path);
 
 			if (!File.Exists(Root + "Header.folderSystem"))
-				throw new GorgonException(GorgonErrors.CannotLoad, "The file system header data was not found at the root location: '" + Root + "'.");
+				throw new GorgonException(GorgonResult.CannotRead, "The file system header data was not found at the root location: '" + Root + "'.");
 
 			// Load the index file.
 			if (!File.Exists(Root + "FileSystem.Index.xml"))
-				throw new GorgonException(GorgonErrors.CannotLoad, "The file system index was not found at the root location: '" + Root + "'.");
+				throw new GorgonException(GorgonResult.CannotRead, "The file system index was not found at the root location: '" + Root + "'.");
 
 			FileIndexXML.Load(Root + "FileSystem.Index.xml");
 

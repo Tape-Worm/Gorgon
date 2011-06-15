@@ -140,7 +140,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyByte", true) != 0)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyByte");
+				throw new GorgonException(GorgonResult.CannotRead, "Got an unexpected key type: " + typeName + ", expected: KeyByte");
 
 			Time = serializer.ReadSingle("Time");
 			_value = serializer.ReadByte("Value");

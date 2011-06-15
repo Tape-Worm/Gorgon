@@ -58,7 +58,7 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (Exception ex)
 			{
-				throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while retrieving the HLSL techniques.", ex);
+				throw GorgonException.Repackage(GorgonResult.CannotCreate, "Error while retrieving the HLSL techniques.", ex);
 			}
 
 			// Get technique handle.
@@ -74,7 +74,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			if (techniqueInfo.Passes < 1)
-				throw new GorgonException(GorgonErrors.CannotCreate, "The are no passes for the technique '" + techniqueInfo.Name + "'.");
+				throw new GorgonException(GorgonResult.CannotCreate, "The are no passes for the technique '" + techniqueInfo.Name + "'.");
         }
 		#endregion
 

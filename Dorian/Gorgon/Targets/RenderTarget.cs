@@ -377,9 +377,9 @@ namespace GorgonLibrary.Graphics
 				if (image == null)
 					throw new ArgumentNullException("image");
 				if ((image.ImageType != ImageType.Dynamic) && (image.ImageType != ImageType.RenderTarget))
-					throw new GorgonException(GorgonErrors.CannotUpdate, "The destination image is not a dynamic image or a render target.");
+					throw new GorgonException(GorgonResult.CannotWrite, "The destination image is not a dynamic image or a render target.");
 				if (image.Format != targetFormat)
-					throw new GorgonException(GorgonErrors.CannotUpdate, "The destination image format does not match that of the render target.");
+					throw new GorgonException(GorgonResult.CannotWrite, "The destination image format does not match that of the render target.");
 
 				// Flush the render buffer.
 				if (Gorgon.IsRunning)

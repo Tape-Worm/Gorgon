@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2005 Michael Winsor
+// Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, July 10, 2005 6:53:23 PM
+// Created: Tuesday, June 14, 2011 9:46:01 PM
 // 
 #endregion
 
@@ -32,6 +32,7 @@ using Drawing = System.Drawing;
 using Microsoft.Win32;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -518,7 +519,7 @@ namespace GorgonLibrary.Graphics
 		public void Flip(RenderWindow target)
 		{
 			if (Gorgon.Screen == null)
-				throw new GorgonException(GorgonErrors.NoDevice);
+				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created");
 
 			if (target == null)
 				target = Gorgon.Screen;
@@ -604,13 +605,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal Renderer()
 		{
-			Gorgon.Log.Print("Renderer", "Starting renderer...", LoggingLevel.Simple);
+			Gorgon.Log.Print("Starting renderer...", GorgonLoggingLevel.Simple);
 
 			if (IsD3DDebug)
-				Gorgon.Log.Print("Renderer", "[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", LoggingLevel.Verbose);
+				Gorgon.Log.Print("[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", GorgonLoggingLevel.Verbose);
 #if INCLUDE_D3DREF
 			if (Gorgon.UseReferenceDevice)
-				Gorgon.Log.Print("Renderer", "[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", LoggingLevel.All);
+				Gorgon.Log.Print("[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", GorgonLoggingLevel.All);
 #endif
 			_vertexTypes = new VertexTypeList();
 
@@ -656,7 +657,7 @@ namespace GorgonLibrary.Graphics
 			_imageLayerStates[0].HorizontalAddressing = ImageAddressing.Clamp;
 			_imageLayerStates[0].VerticalAddressing = ImageAddressing.Clamp;
 
-			Gorgon.Log.Print("Renderer", "Renderer successfully initialized.", LoggingLevel.Intermediate);
+			Gorgon.Log.Print("Renderer successfully initialized.", GorgonLoggingLevel.Intermediate);
 		}
 		#endregion
 
@@ -677,7 +678,7 @@ namespace GorgonLibrary.Graphics
 				if (_vertexTypes != null)
 					_vertexTypes.Dispose();
 
-				Gorgon.Log.Print("Renderer", "Renderer destroyed.", LoggingLevel.Simple);
+				Gorgon.Log.Print("Renderer destroyed.", GorgonLoggingLevel.Simple);
 			}
 
 			DeviceStateList.Clear();

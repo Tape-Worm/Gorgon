@@ -1879,7 +1879,7 @@ namespace GorgonLibrary.Graphics
 					spriteVersion = new Version(1, 1);
 					break;
 				default:
-					throw new GorgonException(GorgonErrors.CannotLoad, "Sprite file type is unknown or corrupted.");
+					throw new GorgonException(GorgonResult.CannotRead, "Sprite file type is unknown or corrupted.");
 			}
 
 			// Get sprite data.

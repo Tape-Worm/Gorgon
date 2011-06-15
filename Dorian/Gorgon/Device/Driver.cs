@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2005 Michael Winsor
+// Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, July 11, 2005 2:24:06 PM
+// Created: Tuesday, June 14, 2011 9:51:01 PM
 // 
 #endregion
 
@@ -28,6 +28,7 @@ using System;
 using System.Reflection;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Graphics;
 
@@ -967,24 +968,15 @@ namespace GorgonLibrary
 					_WHQL = "Driver is not WHQL certified.";
 			}
 
-			// Log card information.			
-			if (Gorgon.Direct3D.CheckWhql)
-				Gorgon.Log.Print("Driver", "WHQL Data enumerated.", LoggingLevel.Verbose);
-			else
-				Gorgon.Log.Print("Driver", "WHQL Data not enumerated.", LoggingLevel.Verbose);
-
-			Gorgon.Log.Print("Driver", "Driver Name: {0}", LoggingLevel.Verbose, _driverName);
-			Gorgon.Log.Print("Driver", "Device Name: {0}", LoggingLevel.Verbose, _deviceName);
-			Gorgon.Log.Print("Driver", "Description: {0}", LoggingLevel.Intermediate, _description);
-			Gorgon.Log.Print("Driver", "GUID: {{{0}}}", LoggingLevel.Verbose, _GUID);
-			Gorgon.Log.Print("Driver", "Version: {0}", LoggingLevel.Verbose, _version);
-			Gorgon.Log.Print("Driver", "Vendor ID: 0x{0}", LoggingLevel.Verbose, _vendor.ToString("x").PadLeft(8, '0'));
-			Gorgon.Log.Print("Driver", "Device ID: 0x{0}", LoggingLevel.Verbose, _deviceID.ToString("x").PadLeft(8, '0'));
-			Gorgon.Log.Print("Driver", "Sub-System ID: 0x{0}", LoggingLevel.Verbose, _subSystem.ToString("x").PadLeft(8, '0'));
-			Gorgon.Log.Print("Driver", "Revision: {0}", LoggingLevel.Verbose, _revision);
-
-			if (Gorgon.Direct3D.CheckWhql)
-				Gorgon.Log.Print("Driver", "WHQL: {0}", LoggingLevel.Verbose, _WHQL);
+			Gorgon.Log.Print("Driver Name: {0}", GorgonLoggingLevel.Verbose, _driverName);
+			Gorgon.Log.Print("Device Name: {0}", GorgonLoggingLevel.Verbose, _deviceName);
+			Gorgon.Log.Print("Description: {0}", GorgonLoggingLevel.Intermediate, _description);
+			Gorgon.Log.Print("GUID: {{{0}}}", GorgonLoggingLevel.Verbose, _GUID);
+			Gorgon.Log.Print("Version: {0}", GorgonLoggingLevel.Verbose, _version);
+			Gorgon.Log.Print("Vendor ID: 0x{0}", GorgonLoggingLevel.Verbose, _vendor.ToString("x").PadLeft(8, '0'));
+			Gorgon.Log.Print("Device ID: 0x{0}", GorgonLoggingLevel.Verbose, _deviceID.ToString("x").PadLeft(8, '0'));
+			Gorgon.Log.Print("Sub-System ID: 0x{0}", GorgonLoggingLevel.Verbose, _subSystem.ToString("x").PadLeft(8, '0'));
+			Gorgon.Log.Print("Revision: {0}", GorgonLoggingLevel.Verbose, _revision);
 
 			PropertyInfo[] properties = null;		// Property list.
 
@@ -1007,7 +999,7 @@ namespace GorgonLibrary
 					(string.Compare(property.Name, "subsystem", true) != 0) &&
 					(string.Compare(property.Name, "vendor", true) != 0) &&
 					(string.Compare(property.Name, "whql", true) != 0))
-					Gorgon.Log.Print(Description + " Driver Capabilities", "{0}: {1}", LoggingLevel.Verbose, property.Name, property.GetValue(this, null));
+					Gorgon.Log.Print("{0}: {1}", GorgonLoggingLevel.Verbose, property.Name, property.GetValue(this, null));
 			}
 
 			// Get video mode list.

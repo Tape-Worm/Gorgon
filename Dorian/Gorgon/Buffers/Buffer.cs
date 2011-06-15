@@ -165,7 +165,7 @@ namespace GorgonLibrary.Internal
 			{
 				LockOffsetInBytes = 0;
 				LockSizeInBytes = 0;
-				throw new GorgonException(GorgonErrors.CannotLock, ex);
+				throw new GorgonException(GorgonResult.AccessDenied,"Cannot obtain a lock on the buffer.", ex);
 			}
 		}
 
@@ -178,7 +178,7 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				throw new GorgonException(GorgonResult.AccessDenied, "Buffer was not locked.");
 
 			_lockStream.Write<T>(data);
 		}
@@ -192,7 +192,7 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				throw new GorgonException(GorgonResult.CannotWrite, "Buffer was not locked.");
 
 			_lockStream.WriteRange<T>(data);
 		}
@@ -208,7 +208,7 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				throw new GorgonException(GorgonResult.CannotWrite, "Buffer was not locked.");
 
 			_lockStream.WriteRange<T>(data, startIndex, count);
 		}
@@ -222,7 +222,7 @@ namespace GorgonLibrary.Internal
 		public virtual void Write(byte[] data, int startIndex, int count)
 		{
 			if (!IsLocked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				throw new GorgonException(GorgonResult.CannotWrite, "Buffer was not locked");
 
 			_lockStream.Write(data, startIndex, count);
 		}
@@ -235,7 +235,7 @@ namespace GorgonLibrary.Internal
 		public virtual void Write(IntPtr pointer, int count)
 		{
 			if (!IsLocked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				throw new GorgonException(GorgonResult.CannotWrite, "Buffer was not locked");
 
 			_lockStream.WriteRange(pointer, count);
 		}
@@ -249,10 +249,10 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				throw new GorgonException(GorgonResult.CannotRead, "Buffer was not locked.");
 
 			if ((BufferUsage & BufferUsages.WriteOnly) == BufferUsages.WriteOnly)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Buffer is write-only.");
+				throw new GorgonException(GorgonResult.CannotRead, "Buffer is write-only.");
 
 			return _lockStream.Read<T>();
 		}
@@ -267,10 +267,10 @@ namespace GorgonLibrary.Internal
 			where T : struct
 		{
 			if (!IsLocked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				throw new GorgonException(GorgonResult.CannotRead, "Buffer was not locked.");
 
 			if ((BufferUsage & BufferUsages.WriteOnly) == BufferUsages.WriteOnly)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Buffer is write-only.");
+				throw new GorgonException(GorgonResult.CannotRead, "Buffer is write-only.");
 
 			return _lockStream.ReadRange<T>(count);
 		}
@@ -288,10 +288,10 @@ namespace GorgonLibrary.Internal
 				throw new ArgumentNullException("data");
 
 			if (!IsLocked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				throw new GorgonException(GorgonResult.CannotRead, "Buffer was not locked.");
 
 			if ((BufferUsage & BufferUsages.WriteOnly) == BufferUsages.WriteOnly)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Buffer is write-only.");
+				throw new GorgonException(GorgonResult.CannotRead, "Buffer is write-only.");
 
 			return _lockStream.Read(data, offset, count);
 		}
@@ -308,7 +308,7 @@ namespace GorgonLibrary.Internal
 		public virtual void Unlock()
 		{
 			if (!_locked)
-				throw new GorgonException(GorgonErrors.NotLocked);
+				return;
 
 			_lockStream.Dispose();
 			_lockStream = null;
