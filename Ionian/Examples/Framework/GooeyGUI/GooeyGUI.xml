@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="yes"?>
+<GorgonSettings xmlns="http://tempuri.org/GorgonSettings.xsd">
+  <Paths>
+    <PathName>ResourcePath</PathName>
+    <Path>..\..\..\..\Resources</Path>
+  </Paths>
+  <Paths>
+    <PathName>PlugInPath</PathName>
+    <Path>..\..\..\..\PlugIns\bin\Release</Path>
+  </Paths>
+  <FileSystems>
+    <FileSystemName>GUISkin</FileSystemName>
+    <FileSystemProviderDLL>GorgonBZip2FileSystem.dll</FileSystemProviderDLL>
+    <FileSystemRoot>DefaultGUISkin.gorPack</FileSystemRoot>
+    <FileSystemProviderName>Gorgon.BZip2FileSystem</FileSystemProviderName>
+    <FileSystemEnabled>true</FileSystemEnabled>
+  </FileSystems>
+  <InputPlugIns>
+    <InputPlugInName>Gorgon.RawInput</InputPlugInName>
+    <InputPlugInDLL>GorgonInput.dll</InputPlugInDLL>
+    <InputEnabled>true</InputEnabled>
+  </InputPlugIns>
+</GorgonSettings>

@@ -1,0 +1,334 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{933569ED-52A9-4232-A929-1D4C4489B5A1}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>GorIcon.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Gorgon</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>GorgonLibrary</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SignAssembly>false</SignAssembly>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>4194304</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;INCLUDE_D3DREF</DefineConstants>
+    <DocumentationFile>bin\Debug\Gorgon.XML</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>4194304</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;PLATFORM_X86</DefineConstants>
+    <DocumentationFile>bin\Release\Gorgon.XML</DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SlimDX, Version=2.0.7.41, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Animation\AnimatedAttribute.cs" />
+    <Compile Include="Animation\Animation.cs" />
+    <Compile Include="Animation\AnimationList.cs" />
+    <Compile Include="Animation\EditorCanDragAttribute.cs" />
+    <Compile Include="Animation\EditorRoundValuesAttribute.cs" />
+    <Compile Include="Animation\EditorMinMaxAttribute.cs" />
+    <Compile Include="Animation\IAnimated.cs" />
+    <Compile Include="Animation\KeyFrame.cs" />
+    <Compile Include="Animation\TrackCollection.cs" />
+    <Compile Include="Animation\Types\KeyByte.cs" />
+    <Compile Include="Animation\Types\KeyColor.cs" />
+    <Compile Include="Animation\Types\KeyFloat.cs" />
+    <Compile Include="Animation\Types\KeyImage.cs" />
+    <Compile Include="Animation\Types\KeyInt32.cs" />
+    <Compile Include="Animation\Types\KeyVector2D.cs" />
+    <Compile Include="Animation\Track.cs" />
+    <Compile Include="Animation\Types\TrackByte.cs" />
+    <Compile Include="Animation\Types\TrackColor.cs" />
+    <Compile Include="Animation\Types\TrackFloat.cs" />
+    <Compile Include="Animation\Types\TrackImage.cs" />
+    <Compile Include="Animation\Types\TrackInt32.cs" />
+    <Compile Include="Animation\Types\TrackVector2D.cs" />
+    <Compile Include="Buffers\Buffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buffers\IndexBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buffers\VertexBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collections\Collection.cs" />
+    <Compile Include="Collections\Dictionary.cs" />
+    <Compile Include="Collections\DynamicArray.cs" />
+    <Compile Include="Direct3DUtility.cs" />
+    <Compile Include="Enums\AnimationEnums.cs" />
+    <Compile Include="Enums\Enums.cs" />
+    <Compile Include="Enums\FontEnums.cs" />
+    <Compile Include="Enums\GraphicsEnums.cs" />
+    <Compile Include="Enums\InternalEnums.cs" />
+    <Compile Include="Events\AnimationEvents.cs" />
+    <Compile Include="Enums\InputEnums.cs" />
+    <Compile Include="Enums\ShaderEnums.cs" />
+    <Compile Include="Events\FileSystemEvents.cs" />
+    <Compile Include="Events\FrameEvents.cs" />
+    <Compile Include="Events\InputEvents.cs" />
+    <Compile Include="FileSystem\Design\formAuthentication.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileSystem\Design\formAuthentication.Designer.cs">
+      <DependentUpon>formAuthentication.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileSystem\FileList.cs" />
+    <Compile Include="FileSystem\FileSystemCache.cs" />
+    <Compile Include="FileSystem\FileSystemEditorInfoAttribute.cs" />
+    <Compile Include="FileSystem\FileSystemFile.cs" />
+    <Compile Include="FileSystem\FileSystemFileList.cs" />
+    <Compile Include="FileSystem\FileSystemPath.cs" />
+    <Compile Include="FileSystem\FileSystemPathList.cs" />
+    <Compile Include="FileSystem\FileSystemPlugIn.cs" />
+    <Compile Include="FileSystem\FileSystemList.cs" />
+    <Compile Include="FileSystem\FileSystem.cs" />
+    <Compile Include="FileSystem\FileSystemProvider.cs" />
+    <Compile Include="FileSystem\FileSystemProviderCache.cs" />
+    <Compile Include="FileSystem\FileSystemProviderList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FileSystem\FolderFileSystem\FolderFileSystem.cs" />
+    <Compile Include="FileSystem\IAuthData.cs" />
+    <Compile Include="Fonts\Font.cs" />
+    <Compile Include="Fonts\Glyph.cs" />
+    <Compile Include="Fonts\GlyphTree.cs" />
+    <Compile Include="Fonts\FontCache.cs" />
+    <Compile Include="Fonts\FontList.cs" />
+    <Compile Include="GorgonErrors.cs" />
+    <Compile Include="Imaging\ImageCache.cs" />
+    <Compile Include="Imaging\ImageList.cs" />
+    <Compile Include="Input\Input.cs" />
+    <Compile Include="Input\InputPlugIn.cs" />
+    <Compile Include="Input\Joystick.cs" />
+    <Compile Include="Input\JoystickList.cs" />
+    <Compile Include="Input\Keyboard.cs" />
+    <Compile Include="Input\InputDevice.cs" />
+    <Compile Include="Input\Mouse.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Math\BoundingCircle.cs" />
+    <Compile Include="Math\MathUtility.cs" />
+    <Compile Include="Math\Matrix.cs" />
+    <Compile Include="Math\Spline.cs" />
+    <Compile Include="Math\Vector2D.cs" />
+    <Compile Include="Math\Vector3D.cs" />
+    <Compile Include="Math\Vector4D.cs" />
+    <Compile Include="Native\Win32API.cs" />
+    <Compile Include="Native\Win32Enums.cs" />
+    <Compile Include="Plugin\PlugInEntryPoint.cs" />
+    <Compile Include="Plugin\PlugInFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\IRenderableStates.cs" />
+    <Compile Include="Rendering\RenderableChildren.cs" />
+    <Compile Include="Rendering\Renderable.cs" />
+    <Compile Include="Rendering\Renderer.cs" />
+    <Compile Include="Serialization\BinaryReaderEx.cs" />
+    <Compile Include="Serialization\BinaryWriterEx.cs" />
+    <Compile Include="Serialization\FXShaderSerializer.cs" />
+    <Compile Include="Serialization\ShaderSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\StreamReaderEx.cs" />
+    <Compile Include="Serialization\StreamWriterEx.cs" />
+    <Compile Include="Shaders\BaseShader.cs" />
+    <Compile Include="Shaders\ConstantShaderParameter.cs" />
+    <Compile Include="Shaders\DefaultPixelShader.cs" />
+    <Compile Include="Shaders\DefaultVertexShader.cs" />
+    <Compile Include="Shaders\DualShader.cs" />
+    <Compile Include="Shaders\FXShader.cs" />
+    <Compile Include="Shaders\FXShaderParameter.cs" />
+    <Compile Include="Shaders\IShaderOutput.cs" />
+    <Compile Include="Shaders\IShaderParameter.cs" />
+    <Compile Include="Shaders\PixelShader.cs" />
+    <Compile Include="Shaders\Shader.cs" />
+    <Compile Include="Shaders\ShaderCache.cs" />
+    <Compile Include="Shaders\ShaderFunction.cs" />
+    <Compile Include="Shaders\ShaderParameterList.cs" />
+    <Compile Include="Shaders\ImageShader.cs" />
+    <Compile Include="Shaders\VertexShader.cs" />
+    <Compile Include="Sprites\Batch.cs" />
+    <Compile Include="Sprites\Geometry.cs" />
+    <Compile Include="Sprites\PolygonSprite.cs" />
+    <Compile Include="Sprites\StateFence.cs" />
+    <Compile Include="Sprites\StaticTextSprite.cs" />
+    <Compile Include="Sprites\TextSprite.cs" />
+    <Compile Include="Targets\PrimaryRenderWindow.cs" />
+    <Compile Include="Serialization\BinarySerializer.cs" />
+    <Compile Include="Serialization\ImageSerializer.cs" />
+    <Compile Include="Serialization\ISerializable.cs" />
+    <Compile Include="Serialization\Serializer.cs" />
+    <Compile Include="Serialization\XMLSerializer.cs" />
+    <Compile Include="Shaders\ShaderList.cs" />
+    <Compile Include="Shaders\ShaderPass.cs" />
+    <Compile Include="Shaders\ShaderPassList.cs" />
+    <Compile Include="Shaders\ShaderTechnique.cs" />
+    <Compile Include="Shaders\ShaderTechniqueList.cs" />
+    <Compile Include="Sprites\SpriteStateCache.cs" />
+    <Compile Include="Imaging\Image.cs" />
+    <Compile Include="Imaging\ImageLayerState.cs" />
+    <Compile Include="Sprites\Sprite.cs" />
+    <Compile Include="Targets\RenderImage.cs" />
+    <Compile Include="Targets\RenderTargetCache.cs" />
+    <Compile Include="Targets\RenderWindow.cs" />
+    <Compile Include="Timing\TimingData.cs" />
+    <Compile Include="Math\MinMaxRange.cs" />
+    <Compile Include="Utility\ICloneable.cs" />
+    <Compile Include="Utility\Logger.cs" />
+    <Compile Include="Utility\LoggerExceptions.cs" />
+    <Compile Include="Utility\NamedObject.cs" />
+    <Compile Include="Utility\Range.cs" />
+    <Compile Include="Vertex Data\VertexTypeList.cs" />
+    <Compile Include="Viewports\Viewport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buffers\IDataCache.cs" />
+    <Compile Include="Converter.cs" />
+    <Compile Include="Enums\PlugInTypeEnums.cs" />
+    <Compile Include="Plugin\PlugInAttribute.cs" />
+    <Compile Include="Plugin\PlugInList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Plugin\PlugInModuleList.cs" />
+    <Compile Include="Rendering\RenderStates.cs" />
+    <Compile Include="Events\DriverChangeEvent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GorgonException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Device\DeviceStateList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Device\Driver.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Device\DriverList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Device\IDeviceStateObject.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Targets\RenderTarget.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Targets\RenderTargetList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Device\VideoMode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Device\VideoModeList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Timing\Timer.cs" />
+    <Compile Include="Vertex Data\IndexCache.cs" />
+    <Compile Include="Vertex Data\VertexCache.cs" />
+    <Compile Include="Vertex Data\VertexField.cs" />
+    <Compile Include="Vertex Data\VertexType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FileSystem\Design\formAuthentication.resx">
+      <DependentUpon>formAuthentication.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GorIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GorIcon.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
