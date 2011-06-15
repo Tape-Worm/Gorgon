@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary
@@ -84,7 +85,7 @@ namespace GorgonLibrary
 			D3D9.Capabilities driverCapabilities;	// Driver capabilities.
 			int i;									// Loop.
 
-			Gorgon.Log.Print("DriverList", "Retrieving driver list...", LoggingLevel.Intermediate);
+			Gorgon.Log.Print("Retrieving driver list...", GorgonLoggingLevel.Intermediate);
 
 			ClearItems();
 
@@ -101,17 +102,17 @@ namespace GorgonLibrary
 				if ((driverCapabilities.DeviceCaps & D3D9.DeviceCaps.HWRasterization) == D3D9.DeviceCaps.HWRasterization)
 #endif
 				{
-					Gorgon.Log.Print("DriverList", "Getting video adapter information for device #{0}...", LoggingLevel.Intermediate, i);
+					Gorgon.Log.Print("Getting video adapter information for device #{0}...", GorgonLoggingLevel.Intermediate, i);
 					driver = new Driver(i);						
 					Items.Add(driver);
-					Gorgon.Log.Print("DriverList", "Driver information for {0} retrieved.", LoggingLevel.Intermediate, Items[Count - 1].Description);
+					Gorgon.Log.Print("Driver information for {0} retrieved.", GorgonLoggingLevel.Intermediate, Items[Count - 1].Description);
 				}
 			}
-			Gorgon.Log.Print("DriverList", "{0} drivers enumerated.", LoggingLevel.Simple, Count);
+			Gorgon.Log.Print("{0} drivers enumerated.", GorgonLoggingLevel.Simple, Count);
 
             // If we didn't find any adapters that met the hardware only criteria, then quit out.
 			if (Count == 0)
-				throw new GorgonException(GorgonErrors.NoHALDevices);
+				throw new GorgonException(GorgonResult.DriverError, "No hardware accelerated devices are present on the system.");
 		}
 		#endregion
 

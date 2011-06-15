@@ -49,7 +49,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("shader");
 
 			if (shader.D3DEffect.Description.Techniques < 1)
-				throw new GorgonException(GorgonErrors.CannotCreate, "There are no techniues in '" + shader.Name + "'.");
+				throw new GorgonException(GorgonResult.CannotCreate, "There are no techniues in '" + shader.Name + "'.");
                         
 			ShaderTechnique newTechnique = null;			// Technique.
 

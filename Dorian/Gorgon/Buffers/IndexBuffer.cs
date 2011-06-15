@@ -156,7 +156,7 @@ namespace GorgonLibrary.Internal
 			}
 			catch (Exception ex)
 			{
-				throw GorgonException.Repackage(GorgonErrors.CannotCreate, "There was an error creating the D3D index buffer.", ex);
+				throw GorgonException.Repackage(GorgonResult.CannotCreate, "There was an error creating the D3D index buffer.", ex);
 			}
 		}
 

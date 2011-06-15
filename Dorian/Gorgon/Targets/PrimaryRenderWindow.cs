@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2007 Michael Winsor
+// Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, April 27, 2007 9:10:23 PM
+// Created: Tuesday, June 14, 2011 9:22:06 PM
 // 
 #endregion
 
@@ -31,6 +31,7 @@ using System.Windows.Forms;
 using Drawing = System.Drawing;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -225,7 +226,7 @@ namespace GorgonLibrary.Graphics
 				// Force windowed mode if we're on a control.
 				if ((!(_owner is Form)) && (!value))
 				{
-					Gorgon.Log.Print("RenderWindow", "Cannot go to full screen mode with render target bound to a child control.", LoggingLevel.Verbose);
+					Gorgon.Log.Print("Cannot go to full screen mode with render target bound to a child control.", GorgonLoggingLevel.Verbose);
 					_windowedMode = true;
 					return;
 				}
@@ -237,7 +238,7 @@ namespace GorgonLibrary.Graphics
 					{
 						if (target is RenderWindow)
 						{
-							Gorgon.Log.Print("RenderWindow", "Cannot go to full screen mode with additional render target windows present.", LoggingLevel.Verbose);
+							Gorgon.Log.Print("Cannot go to full screen mode with additional render target windows present.", GorgonLoggingLevel.Verbose);
 							_windowedMode = true;
 							return;
 						}
@@ -381,7 +382,7 @@ namespace GorgonLibrary.Graphics
 		private void ResetMode(bool resize, int resizewidth, int resizeheight)
 		{
 			if (_device == null)
-				throw new GorgonException(GorgonErrors.NoDevice);
+				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created.");
 
 			// Don't reset if the device is not in a lost state.
 			_deviceWasLost = true;
@@ -390,7 +391,7 @@ namespace GorgonLibrary.Graphics
 			_allowResizeEvent = false;
 
 			// Do not perform a reset while minimized.
-			Gorgon.Log.Print("RenderWindow", "Resetting device...", LoggingLevel.Verbose);
+			Gorgon.Log.Print( "Resetting device...", GorgonLoggingLevel.Verbose);
 
 			// Force required resources to free.
 			Gorgon.OnDeviceLost();
@@ -433,8 +434,8 @@ namespace GorgonLibrary.Graphics
 				_ownerForm.Show();
 			}
 
-			Gorgon.Log.Print("RenderWindow", "Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", LoggingLevel.Verbose, Gorgon.Screen.Mode.Width, Gorgon.Screen.Mode.Height, Gorgon.Screen.Mode.Bpp, Gorgon.Screen.Mode.RefreshRate, Gorgon.Screen.Mode.Format.ToString());
-			Gorgon.Log.Print("RenderWindow", "Device reset.", LoggingLevel.Verbose);
+			Gorgon.Log.Print("Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", GorgonLoggingLevel.Verbose, Gorgon.Screen.Mode.Width, Gorgon.Screen.Mode.Height, Gorgon.Screen.Mode.Bpp, Gorgon.Screen.Mode.RefreshRate, Gorgon.Screen.Mode.Format.ToString());
+			Gorgon.Log.Print("Device reset.", GorgonLoggingLevel.Verbose);
 
 			// Reset render states to their previous values.
 			Gorgon.Renderer.RenderStates.SetStates();
@@ -513,7 +514,7 @@ namespace GorgonLibrary.Graphics
 				if (_device != null)
 					_device.Dispose();
 
-				Gorgon.Log.Print("RenderWindow", "Direct 3D device destroyed.", LoggingLevel.Intermediate);
+				Gorgon.Log.Print("Direct 3D device destroyed.", GorgonLoggingLevel.Intermediate);
 				_deviceWasLost = true;
 
 				if (_owner is Form)
@@ -544,12 +545,12 @@ namespace GorgonLibrary.Graphics
 			if (!resize)
 			{
 				if (!usewindow)
-					Gorgon.Log.Print("RenderWindow", "Setting fullscreen mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
+					Gorgon.Log.Print("Setting fullscreen mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 				else
-					Gorgon.Log.Print("RenderWindow", "Setting windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
+					Gorgon.Log.Print("Setting windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 			}
 			else
-				Gorgon.Log.Print("RenderWindow", "Resizing windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", LoggingLevel.Simple, resizewidth, resizeheight, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
+				Gorgon.Log.Print("Resizing windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, resizewidth, resizeheight, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 
 			// Don't go too small.
 			if (resizewidth < 32)
@@ -642,13 +643,13 @@ namespace GorgonLibrary.Graphics
 				// Set up presentation delays.
 				if (_VSyncInterval != VSyncIntervals.IntervalNone)
 				{
-					Gorgon.Log.Print("RenderWindow", "VSync enabled ({0}).", LoggingLevel.Verbose, _VSyncInterval.ToString());
+					Gorgon.Log.Print("VSync enabled ({0}).", GorgonLoggingLevel.Verbose, _VSyncInterval.ToString());
 					_presentParameters.PresentationInterval = Converter.Convert(_VSyncInterval);
 					_presentParameters.FullScreenRefreshRateInHertz = _currentVideoMode.RefreshRate;
 				}
 				else
 				{
-					Gorgon.Log.Print("RenderWindow", "VSync disabled.", LoggingLevel.Verbose);
+					Gorgon.Log.Print("VSync disabled.", GorgonLoggingLevel.Verbose);
 					_presentParameters.PresentationInterval = Converter.Convert(VSyncIntervals.IntervalNone);
 					_presentParameters.FullScreenRefreshRateInHertz = 0;
 				}
@@ -656,7 +657,7 @@ namespace GorgonLibrary.Graphics
 			else
 			{
 				// Default to immediate presentation for windowed mode.
-				Gorgon.Log.Print("RenderWindow", "VSync is disabled in windowed mode.", LoggingLevel.Verbose);
+				Gorgon.Log.Print("VSync is disabled in windowed mode.", GorgonLoggingLevel.Verbose);
 				_presentParameters.PresentationInterval = D3D9.PresentInterval.Immediate;
 				_presentParameters.FullScreenRefreshRateInHertz = 0;
 			}
@@ -698,16 +699,16 @@ namespace GorgonLibrary.Graphics
 			if ((_VSyncInterval & Gorgon.CurrentDriver.PresentIntervalSupport) == 0)
 			{
 				_VSyncInterval = VSyncIntervals.IntervalNone;
-				Gorgon.Log.Print("RenderWindow", "Requested interval not available.", LoggingLevel.Verbose);
+				Gorgon.Log.Print("Requested interval not available.", GorgonLoggingLevel.Verbose);
 			}
 
-			Gorgon.Log.Print("RenderWindow", "Requested vertical sync interval: {0}.  Final interval: {1}", LoggingLevel.Verbose, vSyncInterval.ToString(), _VSyncInterval.ToString());
+			Gorgon.Log.Print("Requested vertical sync interval: {0}.  Final interval: {1}", GorgonLoggingLevel.Verbose, vSyncInterval.ToString(), _VSyncInterval.ToString());
 
 			if (!_windowedMode)
 			{
 				if (!(_owner is Form))
 				{
-					Gorgon.Log.Print("RenderWindow", "Cannot go to full screen mode with primary render target bound to a child control.", LoggingLevel.Verbose);
+					Gorgon.Log.Print("Cannot go to full screen mode with primary render target bound to a child control.", GorgonLoggingLevel.Verbose);
 					_windowedMode = true;
 				}
 				else
@@ -718,7 +719,7 @@ namespace GorgonLibrary.Graphics
 					{
 						if (target is RenderWindow)
 						{
-							Gorgon.Log.Print("RenderWindow", "Cannot go to full screen mode with additional render target windows present.", LoggingLevel.Verbose);
+							Gorgon.Log.Print("Cannot go to full screen mode with additional render target windows present.", GorgonLoggingLevel.Verbose);
 							_windowedMode = true;
 							break;
 						}
@@ -732,7 +733,7 @@ namespace GorgonLibrary.Graphics
 			// We may need to force a reset.
 			if (!dontCreate)
 			{
-				Gorgon.Log.Print("RenderWindow", "Creating Direct 3D device object...", LoggingLevel.Intermediate);
+				Gorgon.Log.Print("Creating Direct 3D device object...", GorgonLoggingLevel.Intermediate);
 
 				// Center on screen.
 				if (_presentParameters.Windowed)
@@ -744,12 +745,12 @@ namespace GorgonLibrary.Graphics
 				if (Gorgon.CurrentDriver.HardwareTransformAndLighting)
 				{
 					flags |= D3D9.CreateFlags.HardwareVertexProcessing;
-					Gorgon.Log.Print("RenderWindow", "Using hardware vertex processing.", LoggingLevel.Verbose);
+					Gorgon.Log.Print("Using hardware vertex processing.", GorgonLoggingLevel.Verbose);
 				}
 				else
 				{
 					flags |= D3D9.CreateFlags.SoftwareVertexProcessing;
-					Gorgon.Log.Print("RenderWindow", "Using software vertex processing.", LoggingLevel.Verbose);
+					Gorgon.Log.Print("Using software vertex processing.", GorgonLoggingLevel.Verbose);
 				}
 
 				try
@@ -759,7 +760,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					throw new GorgonException(GorgonErrors.CannotCreate, "Error trying to create the Direct3D device object.", ex);
+					throw new GorgonException(GorgonResult.CannotCreate, "Error trying to create the Direct3D device object.", ex);
 				}
 				_deviceWasLost = false;
 
@@ -771,7 +772,7 @@ namespace GorgonLibrary.Graphics
 				for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
 					Gorgon.Renderer.ImageLayerStates[i].SetStates();
 
-				Gorgon.Log.Print("RenderWindow", "Direct 3D device object created.", LoggingLevel.Intermediate);
+				Gorgon.Log.Print("Direct 3D device object created.", GorgonLoggingLevel.Intermediate);
 
 				_allowResizeEvent = true;
 				SetDimensions(_currentVideoMode.Width, _currentVideoMode.Height);
@@ -810,7 +811,7 @@ namespace GorgonLibrary.Graphics
 				DeviceReset();
 			}
 
-			Gorgon.Log.Print("RenderWindow", "Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been set.", LoggingLevel.Simple, Width, Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString());
+			Gorgon.Log.Print("Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been set.", GorgonLoggingLevel.Simple, Width, Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString());
 		}
 
 		/// <summary>
@@ -832,7 +833,7 @@ namespace GorgonLibrary.Graphics
                 ResetMode(false, 0, 0);
             }
 			if (coopLevel == D3D9.ResultCode.DriverInternalError)
-				throw new GorgonException(GorgonErrors.HardwareError, "Device could not reset.");
+				throw new GorgonException(GorgonResult.DriverError, "Device could not reset.");
 		}
 
 		/// <summary>

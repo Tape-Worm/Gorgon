@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2005 Michael Winsor
+// Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, July 12, 2005 12:34:12 AM
+// Created: Tuesday, June 14, 2011 9:08:35 PM
 // 
 #endregion
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Internal
 {
@@ -96,7 +97,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="deviceStateObject">Device state object to add.</param>
 		public static void Add(IDeviceStateObject deviceStateObject)
 		{
-			Gorgon.Log.Print("DeviceStateList", "Adding state object: {0}: {1}", LoggingLevel.Verbose, deviceStateObject.GetType().Name,deviceStateObject.ToString());
+			Gorgon.Log.Print("Adding state object: {0}: {1}", GorgonLoggingLevel.Verbose, deviceStateObject.GetType().Name,deviceStateObject.ToString());
 			_list.Add(deviceStateObject);
 		}
 
@@ -106,7 +107,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="deviceStateObject">Object to remove.</param>
 		public static void Remove(IDeviceStateObject deviceStateObject)
 		{
-			Gorgon.Log.Print("DeviceStateList", "Removing state object: {0}", LoggingLevel.Verbose, deviceStateObject.GetType().Name);
+			Gorgon.Log.Print("Removing state object: {0}", GorgonLoggingLevel.Verbose, deviceStateObject.GetType().Name);
 			_list.Remove(deviceStateObject);
 		}
 

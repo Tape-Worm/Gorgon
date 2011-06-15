@@ -136,7 +136,7 @@ namespace GorgonLibrary.Graphics
 
 			typeName = serializer.ReadString("Type");
 			if (string.Compare(typeName, "KeyColor", true) != 0)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Got an unexpected key type: " + typeName + ", expected: KeyColor");
+				throw new GorgonException(GorgonResult.CannotRead, "Got an unexpected key type: " + typeName + ", expected: KeyColor");
 
 			Time = serializer.ReadSingle("Time");
 			_value = Color.FromArgb(serializer.ReadInt32("Value"));

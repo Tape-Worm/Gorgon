@@ -331,10 +331,10 @@ namespace GorgonLibrary.Internal
         internal D3DObjects()
         {
 			if (!Gorgon.IsInitialized)
-				throw new GorgonException(GorgonErrors.NotInitialized);
+				throw new GorgonException(GorgonResult.NotInitialized);
 
 			if (Gorgon.Screen == null)
-				throw new GorgonException(GorgonErrors.NoDevice);
+				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created.");
 
             DeviceStateList.Add(this);
         }

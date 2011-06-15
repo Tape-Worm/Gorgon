@@ -1,7 +1,7 @@
 #region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2005 Michael Winsor
+// Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, July 11, 2005 5:35:47 PM
+// Created: Tuesday, June 14, 2011 9:19:15 PM
 // 
 #endregion
 
@@ -31,6 +31,7 @@ using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary
 {
@@ -164,8 +165,8 @@ namespace GorgonLibrary
 			ClearItems();
 
 #if DEBUG
-			Gorgon.Log.Print("VideoModeList", "Enumerating video modes...", LoggingLevel.Verbose);
-			Gorgon.Log.Print("VideoModeList", "Filtering: {0}, Parameters: {1}x{2}x{3} {4}Hz.", LoggingLevel.Verbose,
+			Gorgon.Log.Print("Enumerating video modes...", GorgonLoggingLevel.Verbose);
+			Gorgon.Log.Print("Filtering: {0}, Parameters: {1}x{2}x{3} {4}Hz.", GorgonLoggingLevel.Verbose,
 				FilterCompare.ToString(), (WidthFilter == -1) ? "*" : WidthFilter.ToString(), (HeightFilter == -1) ? "*" : HeightFilter.ToString(), (BppFilter == -1) ? "*" : BppFilter.ToString(), (RefreshFilter == -1) ? "*" : RefreshFilter.ToString());
 			modeCount = 0;
 #endif
@@ -219,8 +220,8 @@ namespace GorgonLibrary
 #if DEBUG
 			modeCount = 0;
 			modeString = new StringBuilder(256);
-			Gorgon.Log.Print("VideoModeList", "W x H x Bpp\tFormat\t\tRefresh Rate\tW x H x Bpp\tFormat\t\tRefresh Rate\tW x H x Bpp\tFormat\t\tRefresh Rate\tW x H x Bpp\tFormat\t\tRefresh Rate", LoggingLevel.Verbose);
-			Gorgon.Log.Print("VideoModeList", "===========\t======\t\t============\t===========\t======\t\t============\t===========\t======\t\t============\t===========\t======\t\t============", LoggingLevel.Verbose);
+			Gorgon.Log.Print("W x H x Bpp\tFormat\t\tRefresh Rate\tW x H x Bpp\tFormat\t\tRefresh Rate\tW x H x Bpp\tFormat\t\tRefresh Rate\tW x H x Bpp\tFormat\t\tRefresh Rate", GorgonLoggingLevel.Verbose);
+			Gorgon.Log.Print("===========\t======\t\t============\t===========\t======\t\t============\t===========\t======\t\t============\t===========\t======\t\t============", GorgonLoggingLevel.Verbose);
 			// Do logging.
 			foreach (VideoMode mode in Items)
 			{
@@ -232,7 +233,7 @@ namespace GorgonLibrary
 					if (modeCount >= 4)
 					{
 						// Flush to the log.
-						Gorgon.Log.Print("VideoModeList", modeString.ToString(), LoggingLevel.Verbose);
+						Gorgon.Log.Print(modeString.ToString(), GorgonLoggingLevel.Verbose);
 						modeCount = 0;
 						modeString.Length = 0;
 					}
@@ -240,7 +241,7 @@ namespace GorgonLibrary
 			}
 #endif
 
-			Gorgon.Log.Print("VideoModeList", "{0} video modes enumerated.", LoggingLevel.Intermediate, Count);
+			Gorgon.Log.Print("{0} video modes enumerated.", GorgonLoggingLevel.Intermediate, Count);
 		}
 		#endregion
 

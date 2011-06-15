@@ -181,7 +181,7 @@ namespace GorgonLibrary.Graphics
 					return sizeof(byte) * 4;
 			}
 
-			throw new GorgonException(GorgonErrors.InvalidFormat, "Vertex field type '" + type.ToString() + "' is not recognized.");
+			throw new GorgonException(GorgonResult.FormatNotSupported, "Vertex field type '" + type.ToString() + "' is not recognized.");
 		}
 
 		/// <summary>
@@ -215,7 +215,7 @@ namespace GorgonLibrary.Graphics
 					return 4;
 			}
 
-			throw new GorgonException(GorgonErrors.InvalidFormat, "Vertex field type '" + type.ToString() + "' is not recognized.");
+			throw new GorgonException(GorgonResult.FormatNotSupported, "Vertex field type '" + type.ToString() + "' is not recognized.");
 		}
 
 		/// <summary>

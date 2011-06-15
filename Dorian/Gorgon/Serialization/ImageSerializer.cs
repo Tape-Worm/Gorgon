@@ -70,10 +70,10 @@ namespace GorgonLibrary.Serialization
 		public override void Serialize()
 		{
 			if (SerializationStream == null)
-				throw new GorgonException(GorgonErrors.CannotSave, "The serializer stream is not open.");
+				throw new GorgonException(GorgonResult.CannotWrite, "The serializer stream is not open.");
 
 			if (_writer != null)
-				throw new GorgonException(GorgonErrors.CannotSave, "The serializer is already open for writing.");
+				throw new GorgonException(GorgonResult.CannotWrite, "The serializer is already open for writing.");
 			
 			// Use the stream for writing binary data.
 			_writer = new BinaryWriterEx(SerializationStream, DontCloseStream);
@@ -86,10 +86,10 @@ namespace GorgonLibrary.Serialization
 		public override void Deserialize()
 		{
 			if (SerializationStream == null)
-				throw new GorgonException(GorgonErrors.CannotSave, "The serializer stream is not open.");
+				throw new GorgonException(GorgonResult.CannotWrite, "The serializer stream is not open.");
 
 			if (_reader != null)
-				throw new GorgonException(GorgonErrors.CannotSave, "The serializer is already open for reading.");
+				throw new GorgonException(GorgonResult.CannotWrite, "The serializer is already open for reading.");
 
 			// Use the stream for reading binary data.
 			_reader = new BinaryReaderEx(SerializationStream, DontCloseStream);

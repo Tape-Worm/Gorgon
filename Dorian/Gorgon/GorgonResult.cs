@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2008 Michael Winsor
+// Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,228 +20,145 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, September 26, 2008 1:20:47 AM
+// Created: Tuesday, June 14, 2011 8:57:48 PM
 // 
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace GorgonLibrary
 {
 	/// <summary>
-	/// A list of predefined error messages to package with <see cref="GorgonLibrary.GorgonException"/>.
+	/// A defined error message to be packaged with <see cref="GorgonLibrary.GorgonException"/>.
 	/// </summary>
-	public static class GorgonErrors
+	public struct GorgonResult
+		: INamedObject
 	{
+		#region Predefined error codes.
 		private const int ErrorBase = 0x7FF000;		// Base error code.
 
 		/// <summary>
 		/// Library was not initialized.
 		/// </summary>
-		public static GorgonError NotInitialized
+		public static GorgonResult NotInitialized
 		{
 			get
 			{
-				return new GorgonError("NotInitialized", ErrorBase + 1, "The library was not initialized.");
+				return new GorgonResult("NotInitialized", ErrorBase + 1, "The library was not initialized.");
 			}
 		}
 
 		/// <summary>
 		/// Error creating an object.
 		/// </summary>
-		public static GorgonError CannotCreate
+		public static GorgonResult CannotCreate
 		{
 			get
 			{
-				return new GorgonError("CannotCreate", ErrorBase + 2, "Error while trying to create an object.");
-			}
-		}
-
-		/// <summary>
-		/// Error updating an object.
-		/// </summary>
-		public static GorgonError CannotUpdate
-		{
-			get
-			{
-				return new GorgonError("CannotCreate", ErrorBase + 2, "Error while trying to update.");
-			}
-		}
-
-		/// <summary>
-		/// Error while trying to load an object.
-		/// </summary>
-		public static GorgonError CannotLoad
-		{
-			get
-			{
-				return new GorgonError("CannotLoad", ErrorBase + 3, "Cannot load the requested data.");
-			}
-		}
-
-		/// <summary>
-		/// Error while trying to load an object.
-		/// </summary>
-		public static GorgonError CannotSave
-		{
-			get
-			{
-				return new GorgonError("CannotSave", ErrorBase + 4, "Cannot save the data.");
-			}
-		}
-
-		/// <summary>
-		/// Error while trying to lock some data.
-		/// </summary>
-		public static GorgonError CannotLock
-		{
-			get
-			{
-				return new GorgonError("CannotLock", ErrorBase + 5, "Cannot lock the data.");
-			}
-		}
-
-		/// <summary>
-		/// Data was not locked.
-		/// </summary>
-		public static GorgonError NotLocked
-		{
-			get
-			{
-				return new GorgonError("NotLocked", ErrorBase + 6, "Data was not locked.");
-			}
-		}
-
-		/// <summary>
-		/// No applicable hardware accelerated devices were found.
-		/// </summary>
-		public static GorgonError NoHALDevices
-		{
-			get
-			{
-				return new GorgonError("NoHALDevices", ErrorBase + 7, "No applicable hardware accelerated devices were found.");
-			}
-		}
-
-		/// <summary>
-		/// Shader compilation failed.
-		/// </summary>
-		public static GorgonError ShaderCompilationFailed
-		{
-			get
-			{
-				return new GorgonError("ShaderCompilationFailed", ErrorBase + 8, "Shader compilation failed.");
-			}
-		}
-
-		/// <summary>
-		/// Cannot read data.
-		/// </summary>
-		public static GorgonError CannotReadData
-		{
-			get
-			{
-				return new GorgonError("CannotReadData", ErrorBase + 9, "Error reading the data.");
-			}
-		}
-
-		/// <summary>
-		/// Invalid format.
-		/// </summary>
-		public static GorgonError InvalidFormat
-		{
-			get
-			{
-				return new GorgonError("InvalidFormat", ErrorBase + 0xA, "The format is not valid or unable to find a valid format.");
-			}
-		}
-
-		/// <summary>
-		/// No valid device object was found.
-		/// </summary>
-		public static GorgonError NoDevice
-		{
-			get
-			{
-				return new GorgonError("NoDevice", ErrorBase + 0xB, "There is no device object for this operation.");
-			}
-		}
-
-		/// <summary>
-		/// Driver reported an internal error.
-		/// </summary>
-		public static GorgonError HardwareError
-		{
-			get
-			{
-				return new GorgonError("HardwareError", ErrorBase + 0xC, "There was an internal driver or hardware exception.");
-			}
-		}
-
-		/// <summary>
-		/// The plug-in type is not valid.
-		/// </summary>
-		public static GorgonError InvalidPlugin
-		{
-			get
-			{
-				return new GorgonError("InvalidPlugin", ErrorBase + 0xD, "This plug-in type is not valid.");
+				return new GorgonResult("CannotCreate", ErrorBase + 2, "Error while trying to create an object.");
 			}
 		}
 
 		/// <summary>
 		/// Error while writing data.
 		/// </summary>
-		public static GorgonError CannotWriteData
+		public static GorgonResult CannotWrite
 		{
 			get
 			{
-				return new GorgonError("CannotWrite", ErrorBase + 0xE, "Error writing the data.");
+				return new GorgonResult("CannotWrite", ErrorBase + 0xa, "Error while writing data.");
 			}
 		}
 
 		/// <summary>
 		/// Access is denied.
 		/// </summary>
-		public static GorgonError AccessDenied
+		public static GorgonResult AccessDenied
 		{
 			get
 			{
-				return new GorgonError("AccessDenied", ErrorBase + 0xF, "Access is denied.");
+				return new GorgonResult("AccessDenied", ErrorBase + 3, "Access is denied.");
 			}
 		}
 
 		/// <summary>
-		/// Cannot bind an input device.
+		/// Error accessing driver.
 		/// </summary>
-		public static GorgonError CannotBindInputDevice
+		public static GorgonResult DriverError
 		{
 			get
 			{
-				return new GorgonError("CannotBindInputDevice", ErrorBase + 0x10, "Error binding the input device.");
+				return new GorgonResult("DriverError", ErrorBase + 4, "Error while accessing driver.");
 			}
 		}
 
 		/// <summary>
-		/// Cannot bind render target(s).
+		/// Error while reading data.
 		/// </summary>
-		public static GorgonError CannotBindTarget
+		public static GorgonResult CannotRead
 		{
 			get
 			{
-				return new GorgonError("CannotBindTarget", ErrorBase + 0x11, "Cannot bind render target(s).");
+				return new GorgonResult("CannotRead", ErrorBase + 5, "Error while reading data.");
 			}
 		}
-	}
 
-	/// <summary>
-	/// A defined error message to be packaged with <see cref="GorgonLibrary.GorgonException"/>.
-	/// </summary>
-	public struct GorgonError
-	{
+		/// <summary>
+		/// Error trying to bind.
+		/// </summary>
+		public static GorgonResult CannotBind
+		{
+			get
+			{
+				return new GorgonResult("CannotBind", ErrorBase + 6, "Error trying to bind to object.");
+			}
+		}
+
+		/// <summary>
+		/// Error trying to enumerate objects.
+		/// </summary>
+		public static GorgonResult CannotEnumerate
+		{
+			get
+			{
+				return new GorgonResult("CannotEnumerate", ErrorBase + 7, "Unable to perform enumeration.");
+			}
+		}
+
+		/// <summary>
+		/// Format is not supported.
+		/// </summary>
+		public static GorgonResult FormatNotSupported
+		{
+			get
+			{
+				return new GorgonResult("FormatNotSupported", ErrorBase + 8, "The requested format is not supported.");
+			}
+		}
+
+		/// <summary>
+		/// File format is not supported.
+		/// </summary>
+		public static GorgonResult InvalidFileFormat
+		{
+			get
+			{
+				return new GorgonResult("InvalidFileFormat", ErrorBase + 9, "The file format is not supported.");
+			}
+		}
+
+		/// <summary>
+		/// Error while trying to perform a rollback operation.
+		/// </summary>
+		public static GorgonResult CannotRollback
+		{
+			get
+			{
+				return new GorgonResult("CannotWrite", ErrorBase + 0xb, "Unable to perform rollback operation.");
+			}
+		}
+		#endregion
+
 		#region Variables.
 		private string _description;				// Description of th error.
 		private int _code;							// Error code.
@@ -293,9 +210,9 @@ namespace GorgonLibrary
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonError)
+			if (obj is GorgonResult)
 			{
-				GorgonError error = (GorgonError)obj;
+				GorgonResult error = (GorgonResult)obj;
 				return ((string.Compare(error.Name, this.Name, true) == 0) && (error.Code == this.Code));
 			}
 
@@ -332,7 +249,7 @@ namespace GorgonLibrary
 		/// <param name="left">The left item to test.</param>
 		/// <param name="right">The right item to test.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool operator ==(GorgonError left, GorgonError right)
+		public static bool operator ==(GorgonResult left, GorgonResult right)
 		{
 			return ((left.Code == right.Code) && (string.Compare(left.Name, right.Name, true) == 0));
 		}
@@ -343,7 +260,7 @@ namespace GorgonLibrary
 		/// <param name="left">The left item to test.</param>
 		/// <param name="right">The right item to test.</param>
 		/// <returns>TRUE if not equal, FALSE if the items are equal.</returns>
-		public static bool operator !=(GorgonError left, GorgonError right)
+		public static bool operator !=(GorgonResult left, GorgonResult right)
 		{
 			return !(left == right);
 		}
@@ -351,18 +268,17 @@ namespace GorgonLibrary
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonError"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonResult"/> struct.
 		/// </summary>
 		/// <param name="name">Name for the error.</param>
 		/// <param name="code">The code.</param>
 		/// <param name="description">The description.</param>
-		public GorgonError(string name, int code, string description)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is NULL (or Nothing in VB.NET)</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
+		public GorgonResult(string name, int code, string description)
 		{
-			if (string.IsNullOrEmpty(name))
-				throw new ArgumentNullException("name");
-
-			if (string.IsNullOrEmpty(description))
-				throw new ArgumentNullException("description");
+			GorgonUtility.AssertParamString(name, "name");
+			GorgonUtility.AssertParamString(description, "description");
 
 			_name = name;
 			_description = description;

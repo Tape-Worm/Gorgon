@@ -31,6 +31,7 @@ using System.IO;
 using Drawing = System.Drawing;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -199,7 +200,7 @@ namespace GorgonLibrary.Graphics
 
 			// Get a copy of the color buffer.			
 			SetColorBuffer(_renderTarget.D3DTexture.GetSurfaceLevel(0));
-			Gorgon.Log.Print("RenderImage", "Color buffer acquired.", LoggingLevel.Verbose);
+			Gorgon.Log.Print("Color buffer acquired.", GorgonLoggingLevel.Verbose);
 
 			// Get stencil type.
 			if ((useDepthBuffer) || (useStencil))
@@ -208,13 +209,13 @@ namespace GorgonLibrary.Graphics
 				if (_depthFormat != DepthBufferFormats.BufferUnknown)
 				{
 					SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon.Screen.Device, Width, Height, Converter.ConvertDepthFormat(_depthFormat), D3D9.MultisampleType.None, 0, false));
-					Gorgon.Log.Print("RenderImage", "Depth buffer acquired: {0}.", LoggingLevel.Verbose, _depthFormat.ToString());
+					Gorgon.Log.Print("Depth buffer acquired: {0}.", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
 				}
 				else
-					Gorgon.Log.Print("RenderImage", "Could not find suitable depth/stencil format.", LoggingLevel.Verbose);
+					Gorgon.Log.Print("Could not find suitable depth/stencil format.", GorgonLoggingLevel.Verbose);
 			}
 
-			Gorgon.Log.Print("RenderImage", "Render image: {0}x{1}, Format: {2}, Depth buffer:{3}, Stencil buffer:{4}, Depth Format: {5}.", LoggingLevel.Intermediate, _renderTarget.ActualWidth, _renderTarget.ActualHeight, _format, useDepthBuffer, useStencil, _depthFormat);
+			Gorgon.Log.Print("Render image: {0}x{1}, Format: {2}, Depth buffer:{3}, Stencil buffer:{4}, Depth Format: {5}.", GorgonLoggingLevel.Intermediate, _renderTarget.ActualWidth, _renderTarget.ActualHeight, _format, useDepthBuffer, useStencil, _depthFormat);
 
 			// Set default states.
 			Gorgon.Renderer.RenderStates.SetStates();
@@ -245,7 +246,7 @@ namespace GorgonLibrary.Graphics
 			if ((!Gorgon.CurrentDriver.SupportStencil) && (usestencil))
 			{
 				usestencil = false;
-				Gorgon.Log.Print("RenderWindow", "Stencil buffer was requested, but the driver doesn't support it.", LoggingLevel.Verbose);
+				Gorgon.Log.Print("Stencil buffer was requested, but the driver doesn't support it.", GorgonLoggingLevel.Verbose);
 			}
 
 			if ((usestencil) && (usedepth))
@@ -258,7 +259,7 @@ namespace GorgonLibrary.Graphics
 						_depthFormat = Converter.ConvertDepthFormat(dsFormats[0][i]);
 						base.UseStencilBuffer = true;
 						base.UseDepthBuffer = true;
-						Gorgon.Log.Print("RenderImage", "Stencil and depth buffer requested and found.  Using stencil buffer. ({0})", LoggingLevel.Verbose, _depthFormat.ToString());
+						Gorgon.Log.Print("Stencil and depth buffer requested and found.  Using stencil buffer. ({0})", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
 						break;
 					}
 				}
@@ -274,14 +275,14 @@ namespace GorgonLibrary.Graphics
 					{
 						_depthFormat = Converter.ConvertDepthFormat(dsFormats[1][i]);
 						base.UseDepthBuffer = true;
-						Gorgon.Log.Print("RenderImage", "Stencil buffer not requested or found.  Using depth buffer. ({0}).", LoggingLevel.Verbose, _depthFormat.ToString());
+						Gorgon.Log.Print("Stencil buffer not requested or found.  Using depth buffer. ({0}).", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
 						break;
 					}
 				}
 			}
 
 			if (!UseDepthBuffer)
-				Gorgon.Log.Print("RenderImage", "No acceptable depth/stencil buffer found or requested.  Driver may use alternate form of HSR.", LoggingLevel.Verbose);
+				Gorgon.Log.Print("No acceptable depth/stencil buffer found or requested.  Driver may use alternate form of HSR.", GorgonLoggingLevel.Verbose);
 		}
 
 		/// <summary>
@@ -556,10 +557,10 @@ namespace GorgonLibrary.Graphics
 		public RenderImage(string name, int width, int height, ImageBufferFormats format, bool useDepthBuffer, bool useStencilBuffer)
 			: base(name,width,height)
 		{
-			Gorgon.Log.Print("RenderImage", "Creating rendering image '{0}' ...", LoggingLevel.Intermediate, name);
+			Gorgon.Log.Print("Creating rendering image '{0}' ...", GorgonLoggingLevel.Intermediate, name);
 			_depthFormat = DepthBufferFormats.BufferUnknown;
 			_renderTarget = null;
-			Gorgon.Log.Print("RenderImage", "Rendering image '{0}' created.", LoggingLevel.Intermediate, name);
+			Gorgon.Log.Print("Rendering image '{0}' created.", GorgonLoggingLevel.Intermediate, name);
 
 			// Create render target.
 			CreateRenderTarget(format, useDepthBuffer, useStencilBuffer, false);
@@ -590,16 +591,16 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)
 			{
-				Gorgon.Log.Print("RenderImage", "Destroying render image '{0}'.", LoggingLevel.Intermediate, Name);
+				Gorgon.Log.Print("Destroying render image '{0}'.", GorgonLoggingLevel.Intermediate, Name);
 
 				SetColorBuffer(null);
-				Gorgon.Log.Print("RenderImage", "Releasing color buffer.", LoggingLevel.Verbose);
+				Gorgon.Log.Print("Releasing color buffer.", GorgonLoggingLevel.Verbose);
 				SetDepthBuffer(null);
-				Gorgon.Log.Print("RenderImage", "Releasing depth buffer.", LoggingLevel.Verbose);
+				Gorgon.Log.Print("Releasing depth buffer.", GorgonLoggingLevel.Verbose);
 				if (_renderTarget != null)
 					_renderTarget.Dispose();
 
-				Gorgon.Log.Print("RenderImage", "Render Image '{0}' destroyed.", LoggingLevel.Intermediate, Name);
+				Gorgon.Log.Print("Render Image '{0}' destroyed.", GorgonLoggingLevel.Intermediate, Name);
 			}
 
 			_renderTarget = null;

@@ -493,7 +493,7 @@ namespace GorgonLibrary.Graphics
 				if (renderableVertices != null)
 					vertices.AddRange(renderableVertices);
 				else
-					throw new GorgonException(GorgonErrors.CannotWriteData, "Could not fill the vertex buffer.  The renderable '" + renderable.Name + "' does not support batching.");
+					throw new GorgonException(GorgonResult.CannotWrite, "Could not fill the vertex buffer.  The renderable '" + renderable.Name + "' does not support batching.");
 			}
 
 			if ((_vertices == null) || (_indices == null) || (vertices.Count > _vertices.VertexCount))

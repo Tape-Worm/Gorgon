@@ -35,6 +35,7 @@ using System.Reflection;
 using Drawing = System.Drawing;
 using DX = SlimDX;
 using D3D9 = SlimDX.Direct3D9;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
 using GorgonLibrary.FileSystems;
@@ -318,7 +319,7 @@ namespace GorgonLibrary.Graphics
 					Unlock();
 
                 if (_image.D3DTexture == null)
-					throw new GorgonException(GorgonErrors.CannotLock, "No backing store for this image.");
+					throw new GorgonException(GorgonResult.AccessDenied, "No backing store for this image.");
 
                 try
 				{
@@ -363,7 +364,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					throw GorgonException.Repackage(GorgonErrors.CannotLock, ex);
+					throw GorgonException.Repackage(GorgonResult.AccessDenied, ex);
 				}
 			}
 
@@ -817,7 +818,7 @@ namespace GorgonLibrary.Graphics
 		private void Initialize()
 		{
 			if (Gorgon.Screen == null)
-				throw new GorgonException(GorgonErrors.NoDevice);
+				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device created.");
 
 			D3D9.SurfaceDescription surfaceDesc = default(D3D9.SurfaceDescription);			// Surface description.
 
@@ -826,7 +827,7 @@ namespace GorgonLibrary.Graphics
 				_d3dImage.Dispose();
 			_d3dImage = null;
 
-			Gorgon.Log.Print("Image", "Creating image \"{0}\": {1}x{2}, Format: {3}.", LoggingLevel.Simple, Name, _width, _height, _format.ToString());
+			Gorgon.Log.Print("Creating image \"{0}\": {1}x{2}, Format: {3}.", GorgonLoggingLevel.Simple, Name, _width, _height, _format.ToString());
 
 			// Start out with the same size.
 			_actualWidth = _width;
@@ -853,7 +854,7 @@ namespace GorgonLibrary.Graphics
 
 			// Ensure the image is the correct size.
 			if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-				throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
+				throw new GorgonException(GorgonResult.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 			// If we specified unknown for the buffer format, assume 32 bit.
 			if (_format == ImageBufferFormats.BufferUnknown)
@@ -861,13 +862,13 @@ namespace GorgonLibrary.Graphics
 				_format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, _imageType);
 
 				if (!SupportsFormat(_format, _imageType))
-					throw new GorgonException(GorgonErrors.InvalidFormat);
+					throw new GorgonException(GorgonResult.FormatNotSupported);
 			}
 			else
 			{
 				// Throw an exception if the format requested is not supported.
 				if (!SupportsFormat(_format, _imageType))
-					throw new GorgonException(GorgonErrors.InvalidFormat, _format.ToString() + " is not a valid format.");
+					throw new GorgonException(GorgonResult.FormatNotSupported, _format.ToString() + " is not a valid format.");
 			}
 
 			// Create the image.
@@ -883,13 +884,13 @@ namespace GorgonLibrary.Graphics
 			}
 			catch(Exception ex)
 			{
-				throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Unable to create the D3D texture object.", ex);
+				throw GorgonException.Repackage(GorgonResult.CannotCreate, "Unable to create the D3D texture object.", ex);
 			}
 
 			_format = Converter.ConvertD3DImageFormat(surfaceDesc.Format);
 			_filename = string.Empty;
 			_isResource = false;
-			Gorgon.Log.Print("Image", "Image \"{0}\" created: {1}x{2} (actual texture size: {4}x{5}), Format: {3}.", LoggingLevel.Simple, Name, _width, _height, _format.ToString(), _actualWidth, _actualHeight);
+			Gorgon.Log.Print("Image \"{0}\" created: {1}x{2} (actual texture size: {4}x{5}), Format: {3}.", GorgonLoggingLevel.Simple, Name, _width, _height, _format.ToString(), _actualWidth, _actualHeight);
 
 			// Clear the buffer.
 			if (_clearOnInit)
@@ -974,7 +975,7 @@ namespace GorgonLibrary.Graphics
 			D3D9.Pool pool;							// Resource pool.
 
 			if (Gorgon.Screen == null)
-				throw new GorgonException(GorgonErrors.NoDevice);
+				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device created.");
 
 			if ((type == ImageType.RenderTarget) || (type == ImageType.Dynamic))
 				pool = D3D9.Pool.Default;
@@ -1789,7 +1790,7 @@ namespace GorgonLibrary.Graphics
 
 				// Ensure the image is the correct size.
 				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-					throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
+					throw new GorgonException(GorgonResult.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// If we specified unknown for the buffer format, assume 32 bit.
 				if (format == ImageBufferFormats.BufferUnknown)
@@ -1797,13 +1798,13 @@ namespace GorgonLibrary.Graphics
 					format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, _imageType);
 
 					if (!SupportsFormat(format, _imageType))
-						throw new GorgonException(GorgonErrors.InvalidFormat);
+						throw new GorgonException(GorgonResult.FormatNotSupported);
 				}
 				else
 				{
 					// Throw an exception if the format requested is not supported.
 					if (!SupportsFormat(format, _imageType))
-						throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
+						throw new GorgonException(GorgonResult.FormatNotSupported, format.ToString() + " is not a valid format.");
 				}
 
 				// Reload the image data within the new format.				
@@ -1814,7 +1815,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					throw GorgonException.Repackage(GorgonErrors.CannotUpdate, "Cannot update the D3D texture object.", ex);
+					throw GorgonException.Repackage(GorgonResult.CannotWrite, "Cannot update the D3D texture object.", ex);
 				}
 
 				// Clean up the previous image.
@@ -1937,7 +1938,7 @@ namespace GorgonLibrary.Graphics
 
 				// Ensure the image is the correct size.
 				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-					throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
+					throw new GorgonException(GorgonResult.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// If we specified unknown for the buffer format, assume 32 bit.
 				if (format == ImageBufferFormats.BufferUnknown)
@@ -1945,13 +1946,13 @@ namespace GorgonLibrary.Graphics
 					format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, _imageType);
 
 					if (!SupportsFormat(format, _imageType))
-						throw new GorgonException(GorgonErrors.InvalidFormat);
+						throw new GorgonException(GorgonResult.FormatNotSupported);
 				}
 				else
 				{
 					// Throw an exception if the format requested is not supported.
 					if (!SupportsFormat(format, _imageType))
-						throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
+						throw new GorgonException(GorgonResult.FormatNotSupported, format.ToString() + " is not a valid format.");
 				}
 
 				// Copy the texture data to a stream.
@@ -1963,7 +1964,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Error while trying to create the D3D texture.",ex);
+					throw GorgonException.Repackage(GorgonResult.CannotCreate, "Error while trying to create the D3D texture.",ex);
 				}
 				surfaceInfo = _d3dImage.GetLevelDescription(0);
 				_actualWidth = surfaceInfo.Width;
@@ -2119,7 +2120,7 @@ namespace GorgonLibrary.Graphics
 
 				// Ensure the image is the correct size.
 				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
-					throw new GorgonException(GorgonErrors.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
+					throw new GorgonException(GorgonResult.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// Load the image.
 				memoryImage = new MemoryStream();
@@ -2132,7 +2133,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					throw GorgonException.Repackage(GorgonErrors.CannotLoad, "Could not load the D3D texture from the stream.", ex);
+					throw GorgonException.Repackage(GorgonResult.CannotRead, "Could not load the D3D texture from the stream.", ex);
 				}
 				surfaceInfo = _d3dImage.GetLevelDescription(0);
 				_actualWidth = surfaceInfo.Width;
@@ -2429,7 +2430,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("name");
 
 			if (Gorgon.Screen == null)
-				throw new GorgonException(GorgonErrors.NoDevice);
+				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created.");
 
 			_actualHeight = -1;
 			_actualWidth = -1;
@@ -2554,7 +2555,7 @@ namespace GorgonLibrary.Graphics
 					if (ImageCache.Images.Contains(Name))
 						ImageCache.Images.Remove(Name);
 
-					Gorgon.Log.Print("Image", "Destroying image \"{0}\".", LoggingLevel.Simple, Name);
+					Gorgon.Log.Print("Destroying image \"{0}\".", GorgonLoggingLevel.Simple, Name);
 				}
 
 				_disposed = true;
@@ -2638,7 +2639,7 @@ namespace GorgonLibrary.Graphics
 			D3D9.ImageFileFormat fileFormat;	// Image file format.
 
 			if (!serializer.Parameters.Contains("FileFormat"))
-				throw new GorgonException(GorgonErrors.InvalidFormat, "The file format was not supplied as a serialization parameter.");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "The file format was not supplied as a serialization parameter.");
 
 			try
 			{
@@ -2681,7 +2682,7 @@ namespace GorgonLibrary.Graphics
 			if ((!serializer.Parameters.Contains("byteSize")) || (!serializer.Parameters.Contains("Width")) ||
 				(!serializer.Parameters.Contains("Height")) || (!serializer.Parameters.Contains("Format")) ||
 				(!serializer.Parameters.Contains("ColorKey")))
-				throw new GorgonException(GorgonErrors.InvalidFormat, "Some serialization parameters are missing for this image.");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "Some serialization parameters are missing for this image.");
 
 			// Get image parameters.
 			size = (int)serializer.Parameters["byteSize"];
@@ -2713,13 +2714,13 @@ namespace GorgonLibrary.Graphics
 				format = ValidateFormat(ImageBufferFormats.BufferRGB888A8, ImageType.Normal);
 
 				if (!SupportsFormat(format, ImageType.Normal))
-					throw new GorgonException(GorgonErrors.InvalidFormat);					
+					throw new GorgonException(GorgonResult.FormatNotSupported);					
 			}
 			else
 			{
 				// Throw an exception if the format requested is not supported.
 				if (!SupportsFormat(format, ImageType.Normal))
-					throw new GorgonException(GorgonErrors.InvalidFormat, format.ToString() + " is not a valid format.");
+					throw new GorgonException(GorgonResult.FormatNotSupported, format.ToString() + " is not a valid format.");
 			}
 			
 

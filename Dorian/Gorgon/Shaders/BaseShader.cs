@@ -262,15 +262,15 @@ namespace GorgonLibrary.Graphics
 			byte[] psData = null;			// Pixel shader data.
 
 			if (!serializer.Parameters.Contains("Binary"))
-				throw new GorgonException(GorgonErrors.CannotWriteData, "Missing binary parameter for serialization.");
+				throw new GorgonException(GorgonResult.CannotWrite, "Missing binary parameter for serialization.");
 
 			binary = (bool)serializer.Parameters["Binary"];
 
 			if ((!IsCompiled) && (binary))
-				throw new GorgonException(GorgonErrors.CannotWriteData, "Cannot write a binary shader that was not compiled.");
+				throw new GorgonException(GorgonResult.CannotWrite, "Cannot write a binary shader that was not compiled.");
 
 			if ((!binary) && (ShaderSource == string.Empty))
-				throw new GorgonException(GorgonErrors.CannotWriteData, "Cannot write a source code shader without source code.");
+				throw new GorgonException(GorgonResult.CannotWrite, "Cannot write a source code shader without source code.");
 						
 			// Write to the stream.			
 			IsBinary = binary;			
@@ -310,25 +310,25 @@ namespace GorgonLibrary.Graphics
 				IsResource = (bool)serializer.Parameters["IsResource"];
 
 			if (!serializer.Parameters.Contains("Function"))
-				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'Function'");
+				throw new GorgonException(GorgonResult.CannotRead, "Missing serialization parameter 'Function'");
 			else
 				function = serializer.Parameters["Function"].ToString();
 
 			if (!serializer.Parameters.Contains("Target"))
-				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'Target'");
+				throw new GorgonException(GorgonResult.CannotRead, "Missing serialization parameter 'Target'");
 			else
 				target = serializer.Parameters["Target"] as Version;
 
 			if (serializer.Parameters.Contains("byteSize"))
 				size = (int)serializer.Parameters["byteSize"];
 			else
-				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'byteSize'");
+				throw new GorgonException(GorgonResult.CannotRead, "Missing serialization parameter 'byteSize'");
 
 			if (!serializer.Parameters.Contains("Binary"))
-				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'Binary'");
+				throw new GorgonException(GorgonResult.CannotRead, "Missing serialization parameter 'Binary'");
 
 			if (!serializer.Parameters.Contains("flags"))
-				throw new GorgonException(GorgonErrors.CannotLoad, "Missing serialization parameter 'flags'");
+				throw new GorgonException(GorgonResult.CannotRead, "Missing serialization parameter 'flags'");
 
 			try
 			{
@@ -716,7 +716,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("target");
 
 			if (string.IsNullOrEmpty(ShaderSource))
-				throw new GorgonException(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' has no source code");
+				throw new GorgonException(GorgonResult.CannotCreate, "The shader '" + Name + "' has no source code");
 
 			try
 			{
@@ -742,10 +742,10 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					throw GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
+					throw GorgonException.Repackage(GorgonResult.CannotCreate, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
 				}
 				if (functionHandle == null)
-					throw new GorgonException(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' does not contain the function '" + functionName + "'.");
+					throw new GorgonException(GorgonResult.CannotCreate, "The shader '" + Name + "' does not contain the function '" + functionName + "'.");
 				_function = new ShaderFunction(functionName, this, compiler.CompileShader(functionHandle, ShaderProfile(target), d3dflags, out errors), ShaderProfile(target));
 				CreateShader();
 				GetParameters();

@@ -104,7 +104,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					throw GorgonException.Repackage(GorgonErrors.CannotCreate, "Error trying to retrieve the shader parameters.",ex);
+					throw GorgonException.Repackage(GorgonResult.CannotCreate, "Error trying to retrieve the shader parameters.",ex);
 				}			
 
 				// Get the parameter.
@@ -147,7 +147,7 @@ namespace GorgonLibrary.Graphics
 					}
 
 					if (_currentTechnique == null)
-						throw new GorgonException(GorgonErrors.CannotUpdate, "Unable to find a valid technique for shader '" + Name + "'.");
+						throw new GorgonException(GorgonResult.CannotRead, "Unable to find a valid technique for shader '" + Name + "'.");
 				}
 
 				// NOTE: Note to self, we have to set the technique BEFORE calling Begin(), or else the handles become invalidated.
@@ -336,7 +336,7 @@ namespace GorgonLibrary.Graphics
 				if (_effect != null)
 					_effect.Dispose();
 
-				throw GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
+				throw GorgonException.Repackage(GorgonResult.CannotCreate, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
 			}
 			finally
 			{
@@ -383,7 +383,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("shaderTarget");
 
 			if (string.IsNullOrEmpty(ShaderSource))
-				throw new GorgonException(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' has no souce to compile.");
+				throw new GorgonException(GorgonResult.CannotCreate, "The shader '" + Name + "' has no souce to compile.");
 
 			try
 			{
@@ -402,7 +402,7 @@ namespace GorgonLibrary.Graphics
 				}
 				catch (Exception ex)
 				{
-					throw GorgonException.Repackage(GorgonErrors.ShaderCompilationFailed, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
+					throw GorgonException.Repackage(GorgonResult.CannotCreate, "The shader '" + Name + "' had compilation errors.\n\nErrors:\n" + errors, ex);
 				}
 
 				return new ShaderFunction(function, this, byteCode, shaderTarget);
@@ -762,15 +762,15 @@ namespace GorgonLibrary.Graphics
 			bool binary = false;			// Flag for binary mode.
 
 			if (!serializer.Parameters.Contains("Binary"))
-				throw new GorgonException(GorgonErrors.CannotSave, "The serializer parameter 'Binary' is missing.");
+				throw new GorgonException(GorgonResult.CannotWrite, "The serializer parameter 'Binary' is missing.");
 
 			binary = (bool)serializer.Parameters["Binary"];
 
 			if ((Compiled == null) && (binary))
-				throw new GorgonException(GorgonErrors.CannotSave, "Cannot save a binary shader without compiled shader code.");
+				throw new GorgonException(GorgonResult.CannotWrite, "Cannot save a binary shader without compiled shader code.");
 
 			if ((!binary) && (ShaderSource == string.Empty))
-				throw new GorgonException(GorgonErrors.CannotSave, "Cannot save a non-binary shader without source code.");
+				throw new GorgonException(GorgonResult.CannotWrite, "Cannot save a non-binary shader without source code.");
 
 			// Write to the stream.			
 			IsBinary = binary;
@@ -796,13 +796,13 @@ namespace GorgonLibrary.Graphics
 			if (serializer.Parameters.Contains("byteSize"))
 				size = (int)serializer.Parameters["byteSize"];
 			else
-				throw new GorgonException(GorgonErrors.CannotLoad, "The serializer is missing a parameter 'byteSize'");				
+				throw new GorgonException(GorgonResult.CannotRead, "The serializer is missing a parameter 'byteSize'");				
 
 			if (!serializer.Parameters.Contains("Binary"))
-				throw new GorgonException(GorgonErrors.CannotLoad, "The serializer is missing a parameter 'Binary'");
+				throw new GorgonException(GorgonResult.CannotRead, "The serializer is missing a parameter 'Binary'");
 
 			if (!serializer.Parameters.Contains("flags"))
-				throw new GorgonException(GorgonErrors.CannotLoad, "The serializer is missing a parameter 'flags'");
+				throw new GorgonException(GorgonResult.CannotRead, "The serializer is missing a parameter 'flags'");
 
 			try
 			{
@@ -828,7 +828,7 @@ namespace GorgonLibrary.Graphics
 					}
 					catch (Exception ex)
 					{
-						throw GorgonException.Repackage(GorgonErrors.CannotLoad, "The shader '" + Name + "' had loading errors.\n\nErrors:\n" + errors, ex);
+						throw GorgonException.Repackage(GorgonResult.CannotRead, "The shader '" + Name + "' had loading errors.\n\nErrors:\n" + errors, ex);
 					}
 
 					// Add techniques and passes.

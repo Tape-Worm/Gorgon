@@ -256,7 +256,7 @@ namespace GorgonLibrary.FileSystems
 		{
 			// We can't return a stream to empty data.
 			if (_data == null)
-				throw new GorgonException(GorgonErrors.CannotReadData, "Error reading the file data from '" + FullPath + "'.");
+				throw new GorgonException(GorgonResult.CannotRead, "Error reading the file data from '" + FullPath + "'.");
 
 			return new MemoryStream(_data);
 		}
