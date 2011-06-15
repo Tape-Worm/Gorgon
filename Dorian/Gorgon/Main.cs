@@ -217,7 +217,7 @@ namespace GorgonLibrary
 		/// Property to return the platform that this instance of Gorgon was compiled for.
 		/// </summary>
 		/// <remarks>When the library is compiled for 64-bit processors, then this will read x64, otherwise it'll be x86.  If the platform cannot be determined it will return unknown.</remarks>
-		public static PlatformArchitecture Platform
+		public static PlatformArchitecture PlatformArchitecture
 		{
 			get
 			{
@@ -1218,10 +1218,14 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Function to initialize Gorgon.
 		/// </summary>
-		/// <param name="applicationWindow">Control that will be used for the application.</param>
+		/// <param name="applicationWindow">Windows form control that will be used for the application.</param>
 		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="applicationWindow"/> parameter is NULL (Nothing in VB.NET).</exception>
 		public static void Initialize(Forms.Control applicationWindow)
 		{
+			if (applicationWindow == null)
+				throw new ArgumentNullException("applicationWindow", "Gorgon requires a windows form or control to run.");
+
 			// Terminate if already initialized.
 			if (IsInitialized)
 				Terminate();
@@ -1269,10 +1273,31 @@ namespace GorgonLibrary
 				}
 
 				Gorgon.Log.Print("Initializing...", GorgonLoggingLevel.Simple);
+				Gorgon.Log.Print("Architecture: {0}", GorgonLoggingLevel.Verbose, PlatformArchitecture.ToString());
 
 				ApplicationWindow = applicationWindow;
 
+				// If the application window is a form, then assign it as its own parent.
+				if (ApplicationWindow is Forms.Form)
+					ParentWindow = ApplicationWindow as Forms.Form;
+
 				// Find the parent of the control.
+				Forms.Control parentControl = ApplicationWindow.Parent;
+
+				while ((parentControl != null) && (ParentWindow == null))
+				{
+					ParentWindow = parentControl as Forms.Form;
+					parentControl = parentControl.Parent;
+				}
+
+				if (ParentWindow == null)
+					throw new GorgonException(GorgonResult.CannotEnumerate, "The window at '" + GorgonUtility.FormatHex(ApplicationWindow.Handle) + "' has no parent form.");
+				else
+				{
+					Gorgon.Log.Print("Using window at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ApplicationWindow.Handle));
+					if (ParentWindow != ApplicationWindow)
+						Gorgon.Log.Print("Using parent window of application window at '0x{0}'.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ParentWindow.Handle));
+				}
 
 
 				AllowBackgroundRendering = true;
