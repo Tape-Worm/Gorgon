@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GorgonLibrary.Framework</RootNamespace>
+    <AssemblyName>GorgonFramework</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\Debug\GorgonFramework.XML</DocumentationFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\GorgonFramework.XML</DocumentationFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationFramework\DeviceInformationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ApplicationFramework\DeviceInformationDialog.Designer.cs">
+      <DependentUpon>DeviceInformationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicationFramework\GorgonApplication.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ApplicationFramework\GorgonApplication.Designer.cs">
+      <DependentUpon>GorgonApplication.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicationFramework\GorgonAppSettings.cs" />
+    <Compile Include="ApplicationFramework\SetupDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ApplicationFramework\SetupDialog.Designer.cs">
+      <DependentUpon>SetupDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GorgonSettings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GorgonSettings.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\GUIButton.cs" />
+    <Compile Include="GUI\GUICheckbox.cs" />
+    <Compile Include="GUI\GUIDesktop.cs" />
+    <Compile Include="GUI\GUIElement.cs" />
+    <Compile Include="GUI\GUIElementCollection.cs" />
+    <Compile Include="GUI\GUIEnums.cs" />
+    <Compile Include="GUI\GUILabel.cs" />
+    <Compile Include="GUI\GUIObject.cs" />
+    <Compile Include="GUI\GUIObjectCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GUI\GUIPanel.cs" />
+    <Compile Include="GUI\GUISkin.cs" />
+    <Compile Include="GUI\GUICanvas.cs" />
+    <Compile Include="GUI\GUIWindow.cs" />
+    <Compile Include="GUI\GUIWindowCollection.cs" />
+    <Compile Include="GUI\IGUIContainer.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\ParticleEmitter.cs" />
+    <Compile Include="Utilities\SpriteMesh.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
+      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
+      <Name>Gorgon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DialogHelper\DialogHelper.csproj">
+      <Project>{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}</Project>
+      <Name>DialogHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ApplicationFramework\DeviceInformationDialog.resx">
+      <DependentUpon>DeviceInformationDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ApplicationFramework\GorgonApplication.resx">
+      <DependentUpon>GorgonApplication.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ApplicationFramework\SetupDialog.resx">
+      <DependentUpon>SetupDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GorgonSettings.xsc">
+      <DependentUpon>GorgonSettings.xsd</DependentUpon>
+    </None>
+    <None Include="GorgonSettings.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>GorgonSettings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="GorgonSettings.xss">
+      <DependentUpon>GorgonSettings.xsd</DependentUpon>
+    </None>
+    <None Include="Resources\Blur.fxo" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GorGUI.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
