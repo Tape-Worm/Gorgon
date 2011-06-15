@@ -43,11 +43,11 @@ namespace GorgonLibrary.Internal
 		/// </summary>
 		/// <param name="viewport">Viewport to convert.</param>
 		/// <returns>A D3D viewport.</returns>
-		static public DX.Viewport Convert(Viewport viewport)
+		static public D3D9.Viewport Convert(Viewport viewport)
 		{
-			DX.Viewport result;			// Resultant viewport.
+			D3D9.Viewport result;			// Resultant viewport.
 
-			result = new DX.Viewport();
+			result = new D3D9.Viewport();
 			result.X = viewport.View.Left;
 			result.Y = viewport.View.Top;
 			result.Width = viewport.View.Width;
