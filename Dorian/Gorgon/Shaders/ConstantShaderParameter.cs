@@ -539,11 +539,15 @@ namespace GorgonLibrary.Graphics
 		public void SetValue(Matrix value, bool transpose)
 		{
 			this.ValueType = ShaderParameterType.Matrix;
-			_matrixValue = Converter.Convert(value);
 			if (!transpose)
-				_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _matrixValue);
+				_matrixValue = Converter.Convert(value);
 			else
-				_shaderCode.ConstantTable.SetValueTranspose(Gorgon.Screen.Device, _handle, _matrixValue);
+			{
+				DX.Matrix d3dMatrix = Converter.Convert(value);
+				DX.Matrix.Transpose(ref d3dMatrix, out _matrixValue);			
+			}
+
+			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _matrixValue);
 		}
 
 		/// <summary>
@@ -560,11 +564,17 @@ namespace GorgonLibrary.Graphics
 			_matrixValues = new DX.Matrix[value.Length];
 
 			for (int i = 0; i < _matrixValues.Length; i++)
-				_matrixValues[i] = Converter.Convert(value[i]);
-			if (transpose)
-				_shaderCode.ConstantTable.SetValueTranspose(Gorgon.Screen.Device, _handle, _matrixValues);
-			else
-				_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _matrixValues);
+			{
+				if (!transpose)
+					_matrixValues[i] = Converter.Convert(value[i]);
+				else
+				{
+					DX.Matrix d3dMatrix = Converter.Convert(value[i]);
+					DX.Matrix.Transpose(ref d3dMatrix, out _matrixValues[i]);
+				}
+			}
+
+			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _matrixValues);
 			_arrayLength = value.Length;
 		}
 

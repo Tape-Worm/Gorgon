@@ -43,8 +43,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("Gorgon - BETA - DEVELOPMENT VERSION")]
 [assembly: AssemblyDescription("DirectX based 2D graphics library. - DEVELOPMENT VERSION - BETA")]
 #else
-[assembly: AssemblyTitle("Gorgon - DEVELOPMENT VERSION")]
-[assembly: AssemblyDescription("DirectX based 2D graphics library. - DEVELOPMENT VERSION")]
+[assembly: AssemblyTitle("Gorgon")]
+[assembly: AssemblyDescription("DirectX based 2D graphics library.")]
 #endif
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
@@ -59,15 +59,12 @@ using System.Runtime.CompilerServices;
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
 #if DEBUG
-[assembly: AssemblyProduct("Gorgon Graphics Library. - DEVELOPMENT VERSION")]
+[assembly: AssemblyProduct("Gorgon Graphics Library.")]
 #else
 [assembly: AssemblyProduct("Gorgon Graphics Library.")]
 #endif
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2006")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
-[assembly: FileIOPermission(SecurityAction.RequestMinimum,AllFiles=FileIOPermissionAccess.AllAccess)]
-[assembly: ReflectionPermission(SecurityAction.RequestMinimum,Flags=ReflectionPermissionFlag.MemberAccess)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum,UnmanagedCode=true)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -88,5 +85,5 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.1.*")]
-[assembly: AssemblyFileVersion("1.1.4119.34319")]
+[assembly: AssemblyVersion("2.0.*")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
