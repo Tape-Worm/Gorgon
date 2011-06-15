@@ -145,9 +145,13 @@
     <Compile Include="Buffers\VertexBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\Collection.cs" />
-    <Compile Include="Collections\Dictionary.cs" />
-    <Compile Include="Collections\DynamicArray.cs" />
+    <Compile Include="Collections\RemoveThese\Collection.cs" />
+    <Compile Include="Collections\RemoveThese\Dictionary.cs" />
+    <Compile Include="Collections\RemoveThese\DynamicArray.cs" />
+    <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
+    <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
+    <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
+    <Compile Include="Collections\GorgonNamedObjectReadOnlyCollection.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
     <Compile Include="Direct3DUtility.cs" />
     <Compile Include="Enums\AnimationEnums.cs" />
@@ -210,6 +214,7 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="GorgonResult.cs" />
+    <Compile Include="GorgonNamedObject.cs" />
     <Compile Include="Plugin\PlugInEntryPoint.cs" />
     <Compile Include="Plugin\PlugInFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

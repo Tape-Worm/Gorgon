@@ -120,7 +120,6 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Variables.
-		private static GorgonLogFile _log;								// Library log file.
 		private static PreciseTimer _timer;								// Main Gorgon timer.
 		private static DriverList _drivers = null;						// List of video drivers for the system.
 		private static Driver _currentDriver = null;					// Current driver.
@@ -193,6 +192,25 @@ namespace GorgonLibrary
 
 				return _renderer;
 			}
+		}
+
+		/// <summary>
+		/// Property to return the parent window interface for the <see cref="GorgonLibrary.Gorgon.ApplicationWindow">ApplicationWindow</see> window bound to Gorgon.
+		/// </summary>
+		/// <remarks>This is often the same object pointed to by <seealso cref="GorgonLibrary.Gorgon.ApplicationWindow">ApplicationWindow</seealso>.  When the application window is set to a control, then this will be set to the parent form of the control.</remarks>
+		public static Forms.Form ParentWindow
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the application window bound to Gorgon.
+		/// </summary>
+		public static Forms.Control ApplicationWindow
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -578,10 +596,8 @@ namespace GorgonLibrary
 		/// </summary>
 		public static GorgonLogFile Log
 		{
-			get
-			{
-				return _log;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -1133,7 +1149,7 @@ namespace GorgonLibrary
 				return;
 
 			// Enter render loop.
-			_log.Print("Entering main render loop...",GorgonLoggingLevel.Verbose);
+			Log.Print("Entering main render loop...",GorgonLoggingLevel.Verbose);
 
 			// Reset all timers.
 			_timer.Reset();
@@ -1175,7 +1191,7 @@ namespace GorgonLibrary
 				_timer.Reset();
 				FrameStats.Reset();
 
-				_log.Print("Main render loop stopped.", GorgonLoggingLevel.Verbose);
+				Log.Print("Main render loop stopped.", GorgonLoggingLevel.Verbose);
 			}
 		}
 
@@ -1202,8 +1218,9 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Function to initialize Gorgon.
 		/// </summary>
+		/// <param name="applicationWindow">Control that will be used for the application.</param>
 		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
-		public static void Initialize()
+		public static void Initialize(Forms.Control applicationWindow)
 		{
 			// Terminate if already initialized.
 			if (IsInitialized)
@@ -1227,31 +1244,36 @@ namespace GorgonLibrary
 			try
 			{
 				// Open log object.
-				_log = new GorgonLogFile("GorgonLibrary");
+				Log = new GorgonLogFile("GorgonLibrary");
 
 				// Set this to intermediate, simple or none to have a smaller log file.
 #if DEBUG
-				_log.LogFilterLevel = GorgonLoggingLevel.Verbose;
+				Log.LogFilterLevel = GorgonLoggingLevel.Verbose;
 #else
-				_log.LogFilterLevel = GorgonLoggingLevel.None;
+				Log.LogFilterLevel = GorgonLoggingLevel.None;
 #endif
 
 				try
 				{
-					_log.Open();
-					GorgonException.Log = _log;
+					Log.Open();
+					GorgonException.Log = Log;
 				}
-				catch (GorgonException gEx)
+				catch(Exception ex)
 				{
 #if DEBUG
 					// By rights, we should never see this error.  Better safe than sorry.
-					System.Windows.Forms.MessageBox.Show("Could not create a log file.\n" + gEx.Message, "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+					System.Windows.Forms.MessageBox.Show("Could not create a log file.\n" + ex.Message, "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 #else
 					Debug.WriteLine("Error opening log.\n" + gEx.Message);
 #endif
 				}
 
 				Gorgon.Log.Print("Initializing...", GorgonLoggingLevel.Simple);
+
+				ApplicationWindow = applicationWindow;
+
+				// Find the parent of the control.
+
 
 				AllowBackgroundRendering = true;
 				IsRunning = false;
@@ -1277,7 +1299,7 @@ namespace GorgonLibrary
 
 				FrameStatsTextColor = Color.White;
 
-				_log.Print("Initialized Successfully.", GorgonLoggingLevel.Simple);
+				Log.Print("Initialized Successfully.", GorgonLoggingLevel.Simple);
 			}
 			catch (Exception ex)
 			{
@@ -1337,18 +1359,18 @@ namespace GorgonLibrary
 				Direct3D.Dispose();
 			Direct3D = null;
 
-			_log.Print("Shutting down.", GorgonLoggingLevel.Simple);
+			Log.Print("Shutting down.", GorgonLoggingLevel.Simple);
 
 			// Destroy log.
-			if (_log != null)
-				_log.Close();
+			if (Log != null)
+				Log.Close();
 
 			_currentTarget = null;
 			Screen = null;
 			FrameStats = null;
 			_stateCache = null;
 			_timer = null;
-			_log = null;
+			Log = null;
 			_renderer = null;
 			IsInitialized = false;
 		}
