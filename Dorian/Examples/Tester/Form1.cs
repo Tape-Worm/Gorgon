@@ -17,7 +17,7 @@ namespace Tester
 		{
 			base.OnLoad(e);
 
-			Gorgon.Initialize();
+			Gorgon.Initialize(this);
 
 			Gorgon.SetMode(this);
 
