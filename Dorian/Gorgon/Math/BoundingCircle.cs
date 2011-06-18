@@ -233,7 +233,7 @@ namespace GorgonLibrary
 			if ((left._empty) || (right._empty))
 				return false;
 
-			if ((left.Center == right.Center) && (MathUtility.EqualFloat(left.Radius, right.Radius)))
+			if ((left.Center == right.Center) && (GorgonMathUtility.EqualFloat(left.Radius, right.Radius)))
 				return true;
 
 			return false;

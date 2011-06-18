@@ -64,7 +64,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return MathUtility.Sqrt(X * X + Y * Y);
+				return GorgonMathUtility.Sqrt(X * X + Y * Y);
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace GorgonLibrary
 		/// <returns>The angle between the vector components in radians.</returns>
 		public float Angle()
 		{
-			return MathUtility.ATan(Y, X);
+			return GorgonMathUtility.ATan(Y, X);
 		}
 
 		/// <summary>
@@ -161,7 +161,7 @@ namespace GorgonLibrary
 		{
 			vector1.Normalize();
 			vector2.Normalize();
-			return MathUtility.ACos(Vector2D.DotProduct(vector1, vector2));
+			return GorgonMathUtility.ACos(Vector2D.DotProduct(vector1, vector2));
 		}
 
 		/// <summary>
@@ -339,7 +339,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(Vector2D left,Vector2D right)
 		{
-			return (MathUtility.EqualFloat(left.X, right.X) && MathUtility.EqualFloat(left.Y, right.Y));
+			return (GorgonMathUtility.EqualFloat(left.X, right.X) && GorgonMathUtility.EqualFloat(left.Y, right.Y));
 		}
 
 		/// <summary>
