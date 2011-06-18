@@ -225,13 +225,13 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as an Orpheus exception.
+		/// Function to repackage an arbitrary exception as an Gorgon exception.
 		/// </summary>
 		/// <param name="result">Result code to use.</param>
 		/// <param name="message">Message to append to the result.</param>
 		/// <param name="ex">Exception to capture and rethrow.</param>
-		/// <returns>A new Orpheus exception to throw.</returns>
-		/// <remarks>The original exception will be the inner exception of the new <see cref="T:OrpheusFramework.OrpheusException"/>.</remarks>
+		/// <returns>A new Gorgon exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonFramework.GorgonException"/>.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		public static GorgonException Repackage(GorgonResult result, string message, Exception ex)
 		{
@@ -242,12 +242,12 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as an Orpheus exception.
+		/// Function to repackage an arbitrary exception as an Gorgon exception.
 		/// </summary>
 		/// <param name="result">Result code to use.</param>
 		/// <param name="ex">Exception to capture and rethrow.</param>
-		/// <returns>A new Orpheus exception to throw.</returns>
-		/// <remarks>The original exception will be the inner exception of the new <see cref="T:OrpheusFramework.OrpheusException"/>.</remarks>
+		/// <returns>A new Gorgon exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonFramework.GorgonException"/>.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		public static GorgonException Repackage(GorgonResult result, Exception ex)
 		{
@@ -258,12 +258,12 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as an Orpheus exception.
+		/// Function to repackage an arbitrary exception as an Gorgon exception.
 		/// </summary>
 		/// <param name="message">New message to pass to the new exception.</param>
 		/// <param name="ex">Exception to capture and rethrow.</param>
-		/// <returns>A new Orpheus exception to throw.</returns>
-		/// <remarks>The original exception will be the inner exception of the new <see cref="T:OrpheusFramework.OrpheusException"/>.</remarks>
+		/// <returns>A new Gorgon exception to throw.</returns>
+		/// <remarks>The original exception will be the inner exception of the new <see cref="T:GorgonFramework.GorgonException"/>.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		public static GorgonException Repackage(string message, Exception ex)
 		{
@@ -283,7 +283,7 @@ namespace GorgonLibrary
 		public GorgonException(string errorMessage, Exception innerException)
 			: base(errorMessage, innerException)
 		{
-			ResultCode = new GorgonResult("OrpheusException", this.HResult, errorMessage);
+			ResultCode = new GorgonResult("GorgonException", this.HResult, errorMessage);
 		}
 
 		/// <summary>
@@ -293,7 +293,7 @@ namespace GorgonLibrary
 		public GorgonException(string errorMessage)
 			: base(errorMessage)
 		{
-			ResultCode = new GorgonResult("OrpheusException", this.HResult, errorMessage);
+			ResultCode = new GorgonResult("GorgonException", this.HResult, errorMessage);
 		}
 
 		/// <summary>

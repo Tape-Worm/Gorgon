@@ -27,7 +27,7 @@
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Diagnostics
-{
+{	
 	/// <summary>
 	/// Data used for frame rate timing operations.
 	/// </summary>
@@ -42,7 +42,6 @@ namespace GorgonLibrary.Diagnostics
 		private double _lastTimerValue = 0.0;				// Last timer value.
 		private float _averageFPSTotal = 0.0f;				// Average FPS total.
 		private float _averageDTTotal = 0.0f;				// Average draw time total.
-		private static double _fixedDrawTime = 0.0;			// Fixed frame draw time.
 		#endregion
 
 		#region Properties.

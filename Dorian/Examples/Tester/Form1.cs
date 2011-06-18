@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary;
+using GorgonLibrary.UI;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 
 namespace Tester
@@ -17,19 +19,25 @@ namespace Tester
 		{
 			base.OnLoad(e);
 
-			Gorgon.Initialize(this);
+			try
+			{
+				//Gorgon.Initialize(this);
 
-			Gorgon.SetMode(this);
+				//Gorgon.SetMode(this);
 
-			Gorgon.Idle += new FrameEventHandler(Gorgon_Idle);
-
-			Gorgon.Go();
-		}
-
-		void Gorgon_Idle(object sender, FrameEventArgs e)
-		{
-			Gorgon.Screen.Clear();
-			Gorgon.Screen.FilledCircle(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2, 25.0f, Color.Black);
+				Gorgon.Go((timingData) =>
+				{
+					Gorgon.Screen.Clear();
+					Gorgon.Screen.FilledCircle(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2, 25.0f, Color.Black);
+					Gorgon.Screen.Update();
+					return true;
+				}
+				);
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+			}
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)

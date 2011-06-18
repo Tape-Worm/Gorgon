@@ -152,6 +152,7 @@
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
     <Compile Include="Collections\GorgonNamedObjectReadOnlyCollection.cs" />
+    <Compile Include="Diagnostics\GorgonDefaultAppLoop.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
     <Compile Include="Diagnostics\GorgonFrameRate.cs" />
     <Compile Include="Diagnostics\GorgonTimer.cs" />
@@ -280,6 +281,31 @@
     <Compile Include="Targets\RenderWindow.cs" />
     <Compile Include="Timing\TimingData.cs" />
     <Compile Include="Math\MinMaxRange.cs" />
+    <Compile Include="UI\BaseDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\BaseDialog.designer.cs">
+      <DependentUpon>BaseDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ConfirmationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ConfirmationDialog.designer.cs">
+      <DependentUpon>ConfirmationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ConfirmationDialogEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ConfirmationDialogEx.designer.cs">
+      <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ErrorDialog.designer.cs">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\GorgonDialogs.cs" />
     <Compile Include="Utility\ICloneable.cs" />
     <Compile Include="Utility\NamedObject.cs" />
     <Compile Include="Utility\Range.cs" />
@@ -343,12 +369,30 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\BaseDialog.resx">
+      <DependentUpon>BaseDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ConfirmationDialog.resx">
+      <DependentUpon>ConfirmationDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ConfirmationDialogEx.resx">
+      <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ErrorDialog.resx">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GorIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
+    <None Include="Resources\information.png" />
+    <None Include="Resources\Default.png" />
+    <None Include="Resources\OK.png" />
+    <None Include="Resources\Error.png" />
+    <None Include="Resources\Confirmation.png" />
+    <None Include="Resources\cancel.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
