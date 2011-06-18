@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary
+namespace GorgonLibrary.Math
 {
 	/// <summary>
 	/// Utility class for mathematics.
@@ -37,13 +37,13 @@ namespace GorgonLibrary
 	public static class GorgonMathUtility
 	{
 		#region Constants.
-		private const float degConvert = ((float)Math.PI / 180.0f);		// Constant containing the value used to convert degrees to radians.
-		private const float radConvert = (180.0f / (float)Math.PI);		// Constant containing the value used to convert radians to degrees.
+		private const float degConvert = ((float)System.Math.PI / 180.0f);		// Constant containing the value used to convert degrees to radians.
+		private const float radConvert = (180.0f / (float)System.Math.PI);		// Constant containing the value used to convert radians to degrees.
 
 		/// <summary>
 		/// Constant containing the value of PI.
 		/// </summary>
-		public const float PI = (float)Math.PI;
+		public const float PI = (float)System.Math.PI;
 		#endregion
 
 		#region Methods.
@@ -55,7 +55,7 @@ namespace GorgonLibrary
 		/// <returns>The value raised to the power.</returns>
 		public static float Pow(float value, float power)
 		{
-			return (float)Math.Pow(value, power);
+			return (float)System.Math.Pow(value, power);
 		}
 
 		/// <summary>
@@ -65,7 +65,7 @@ namespace GorgonLibrary
 		/// <returns>Rounded value.</returns>
 		public static int RoundInt(float value)
 		{
-			return (int)Math.Round(value);
+			return (int)System.Math.Round(value);
 		}
 
 		/// <summary>
@@ -75,7 +75,7 @@ namespace GorgonLibrary
 		/// <returns>Rounded value.</returns>
 		public static float Round(float value)
 		{
-			return (float)Math.Round(value);
+			return (float)System.Math.Round(value);
 		}
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace GorgonLibrary
 		/// <returns>Rounded value.</returns>
 		public static float Round(float value, int decimalPlaceCount)
 		{
-			return (float)Math.Round(value, decimalPlaceCount);
+			return (float)System.Math.Round(value, decimalPlaceCount);
 		}
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace GorgonLibrary
 		/// <returns>Rounded value.</returns>
 		public static float Round(float value, int decimalPlaceCount, MidpointRounding rounding)
 		{
-			return (float)Math.Round(value, decimalPlaceCount, rounding);
+			return (float)System.Math.Round(value, decimalPlaceCount, rounding);
 		}
 
 		/// <summary>
@@ -108,7 +108,7 @@ namespace GorgonLibrary
 		/// <returns>Cosine.</returns>
 		public static float Cos(float radians)
 		{
-			return (float)Math.Cos(radians);
+			return (float)System.Math.Cos(radians);
 		}
 
 		/// <summary>
@@ -118,7 +118,7 @@ namespace GorgonLibrary
 		/// <returns>Sine.</returns>
 		public static float Sin(float radians)
 		{
-			return (float)Math.Sin(radians);
+			return (float)System.Math.Sin(radians);
 		}
 
 		/// <summary>
@@ -128,7 +128,7 @@ namespace GorgonLibrary
 		/// <returns>Tangent.</returns>
 		public static float Tan(float radians)
 		{
-			return (float)Math.Tan(radians);
+			return (float)System.Math.Tan(radians);
 		}
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace GorgonLibrary
 		/// <returns>Angle in radians.</returns>
 		public static float ACos(float cosine)
 		{
-			return (float)Math.Acos(cosine);
+			return (float)System.Math.Acos(cosine);
 		}
 
 		/// <summary>
@@ -148,7 +148,7 @@ namespace GorgonLibrary
 		/// <returns>Angle in radians.</returns>
 		public static float ASin(float sine)
 		{
-			return (float)Math.Asin(sine);
+			return (float)System.Math.Asin(sine);
 		}
 
 		/// <summary>
@@ -159,7 +159,7 @@ namespace GorgonLibrary
 		/// <returns>Angle in radians.</returns>
 		public static float ATan(float y, float x)
 		{
-			return (float)Math.Atan2(y, x);
+			return (float)System.Math.Atan2(y, x);
 		}
 
 		/// <summary>
@@ -169,7 +169,7 @@ namespace GorgonLibrary
 		/// <returns>Square root of the number.</returns>
 		public static float Sqrt(float sqvalue)
 		{
-			return (float)Math.Sqrt(sqvalue);
+			return (float)System.Math.Sqrt(sqvalue);
 		}
 
 		/// <summary>
@@ -189,7 +189,7 @@ namespace GorgonLibrary
 		/// <returns>Absolute value of the number.</returns>
 		public static double Abs(double number)
 		{
-			return Math.Abs(number);
+			return System.Math.Abs(number);
 		}
 
 		/// <summary>
@@ -199,7 +199,7 @@ namespace GorgonLibrary
 		/// <returns>Absolute value of the number.</returns>
 		public static float Abs(float number)
 		{
-			return Math.Abs(number);
+			return System.Math.Abs(number);
 		}
 
 		/// <summary>
@@ -209,7 +209,7 @@ namespace GorgonLibrary
 		/// <returns>Absolute value of the number.</returns>
 		public static int Abs(int number)
 		{
-			return Math.Abs(number);
+			return System.Math.Abs(number);
 		}
 
 		/// <summary>
