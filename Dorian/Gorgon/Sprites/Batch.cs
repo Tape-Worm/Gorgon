@@ -32,6 +32,7 @@ using Drawing = System.Drawing;
 using System.Runtime.InteropServices;
 using GorgonLibrary;
 using GorgonLibrary.Internal;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -539,8 +540,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void UpdateTransform()
 		{
-			float cos = MathUtility.Cos(MathUtility.Radians(_angle));
-			float sin = MathUtility.Sin(MathUtility.Radians(_angle));
+			float cos = GorgonMathUtility.Cos(GorgonMathUtility.Radians(_angle));
+			float sin = GorgonMathUtility.Sin(GorgonMathUtility.Radians(_angle));
 
 			Matrix axisOffset = Matrix.Identity;
 			Matrix scale = Matrix.Identity;

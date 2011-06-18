@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using GorgonLibrary.Serialization;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -118,7 +119,7 @@ namespace GorgonLibrary.Graphics
 				{
 					_value = previous.Value + (Time * (next.Value - previous.Value));
 					if (Owner.RoundValues)
-						_value = MathUtility.Round(_value);
+						_value = GorgonMathUtility.Round(_value);
 				}
 				else
 				{

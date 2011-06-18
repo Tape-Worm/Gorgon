@@ -153,6 +153,8 @@
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
     <Compile Include="Collections\GorgonNamedObjectReadOnlyCollection.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
+    <Compile Include="Diagnostics\GorgonFrameRate.cs" />
+    <Compile Include="Diagnostics\GorgonTimer.cs" />
     <Compile Include="Direct3DUtility.cs" />
     <Compile Include="Enums\AnimationEnums.cs" />
     <Compile Include="Enums\Enums.cs" />
@@ -205,12 +207,13 @@
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Math\BoundingCircle.cs" />
-    <Compile Include="Math\MathUtility.cs" />
+    <Compile Include="Math\GorgonMathUtility.cs" />
     <Compile Include="Math\Matrix.cs" />
     <Compile Include="Math\Spline.cs" />
     <Compile Include="Math\Vector2D.cs" />
     <Compile Include="Math\Vector3D.cs" />
     <Compile Include="Math\Vector4D.cs" />
+    <Compile Include="Native\Win32.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="GorgonResult.cs" />

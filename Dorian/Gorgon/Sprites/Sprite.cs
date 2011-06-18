@@ -37,6 +37,7 @@ using Drawing = System.Drawing;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Serialization;
 using GorgonLibrary.FileSystems;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -415,9 +416,9 @@ namespace GorgonLibrary.Graphics
 				float sinVal;		// Cached sine.
 				float angle;		// Angle in radians.
 
-                angle = MathUtility.Radians(FinalRotation);
-				cosVal = (float)Math.Cos(angle);
-				sinVal = (float)Math.Sin(angle);
+                angle = GorgonMathUtility.Radians(FinalRotation);
+				cosVal = (float)System.Math.Cos(angle);
+				sinVal = (float)System.Math.Sin(angle);
 
                 Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal);
                 Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal);
@@ -1013,16 +1014,16 @@ namespace GorgonLibrary.Graphics
 			for (int i = 0; i < 4;i++)
 			{
 				// Create bounding.			
-				min.X = MathUtility.Min(min.X, Vertices[i].Position.X);
-				min.Y = MathUtility.Min(min.Y, Vertices[i].Position.Y);
-				max.X = MathUtility.Max(max.X, Vertices[i].Position.X);
-				max.Y = MathUtility.Max(max.Y, Vertices[i].Position.Y);
+				min.X = GorgonMathUtility.Min(min.X, Vertices[i].Position.X);
+				min.Y = GorgonMathUtility.Min(min.Y, Vertices[i].Position.Y);
+				max.X = GorgonMathUtility.Max(max.X, Vertices[i].Position.X);
+				max.Y = GorgonMathUtility.Max(max.Y, Vertices[i].Position.Y);
 			}
 
 			SetAABB(min, max);
 			_boundCircle.Center = new Vector2D(min.X + (max.X - min.X) / 2.0f, min.Y + (max.Y - min.Y) / 2.0f);
-			xradius = MathUtility.Abs(max.X - min.X) / 2.0f;
-			yradius = MathUtility.Abs(max.Y - min.Y) / 2.0f;
+			xradius = GorgonMathUtility.Abs(max.X - min.X) / 2.0f;
+			yradius = GorgonMathUtility.Abs(max.Y - min.Y) / 2.0f;
 			if (xradius > yradius)
 				_boundCircle.Radius = xradius;
 			else

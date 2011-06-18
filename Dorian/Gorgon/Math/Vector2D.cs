@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary
 {
@@ -142,6 +143,39 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to round a vectors values.
+		/// </summary>
+		/// <param name="value">Value to round.</param>
+		/// <returns>The rounded value.</returns>
+		public static Vector2D Round(Vector2D value)
+		{
+			return new Vector2D(GorgonMathUtility.Round(value.X, 0, MidpointRounding.AwayFromZero), GorgonMathUtility.Round(value.Y, 0, MidpointRounding.AwayFromZero));
+		}
+
+		/// <summary>
+		/// Function to round a vectors values.
+		/// </summary>
+		/// <param name="value">Value to round.</param>
+		/// <param name="decimalCount">Number of decimals to keep.</param>
+		/// <returns>The rounded value.</returns>
+		public static Vector2D Round(Vector2D value, int decimalCount)
+		{
+			return new Vector2D(GorgonMathUtility.Round(value.X, decimalCount, MidpointRounding.AwayFromZero), GorgonMathUtility.Round(value.Y, decimalCount, MidpointRounding.AwayFromZero));
+		}
+
+		/// <summary>
+		/// Function to round a vectors values.
+		/// </summary>
+		/// <param name="value">Value to round.</param>
+		/// <param name="decimalCount">Number of decimals to keep.</param>
+		/// <param name="midPointRounding">Rounding method to use.</param>
+		/// <returns>The rounded value.</returns>
+		public static Vector2D Round(Vector2D value, int decimalCount, MidpointRounding midPointRounding)
+		{
+			return new Vector2D(GorgonMathUtility.Round(value.X, decimalCount, midPointRounding), GorgonMathUtility.Round(value.Y, decimalCount, midPointRounding));
+		}
+
 		/// <summary>
 		/// Function to return the angle between two vectors in radians.
 		/// </summary>

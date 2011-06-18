@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using GorgonLibrary.Serialization;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -118,7 +119,7 @@ namespace GorgonLibrary.Graphics
 				{
 					_value = Vector2D.Add(previous.Value, Vector2D.Multiply(Vector2D.Subtract(next.Value, previous.Value), Time));
 					if (Owner.RoundValues)
-						_value = MathUtility.Round(_value);
+						_value = Vector2D.Round(_value);
 				}
 				else
 				{

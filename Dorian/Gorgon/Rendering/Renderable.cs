@@ -30,6 +30,7 @@ using System.Text;
 using Drawing = System.Drawing;
 using GorgonLibrary;
 using GorgonLibrary.Internal;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -1414,9 +1415,9 @@ namespace GorgonLibrary.Graphics
             }
             else
             {
-                float angle = MathUtility.Radians(_parentRotation);     // Angle in radians.
-                float cos = MathUtility.Cos(angle);                     // Cached cosine.
-                float sin = MathUtility.Sin(angle);                     // Cached sine.
+                float angle = GorgonMathUtility.Radians(_parentRotation);     // Angle in radians.
+                float cos = GorgonMathUtility.Cos(angle);                     // Cached cosine.
+                float sin = GorgonMathUtility.Sin(angle);                     // Cached sine.
 
                 // Rotate around the offset from the parent.
                 _finalPosition.X = ((_position.X * _parentScale.X) * cos) - ((_position.Y * _parentScale.Y) * sin);

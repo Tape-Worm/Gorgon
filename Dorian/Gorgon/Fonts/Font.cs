@@ -1007,7 +1007,7 @@ namespace GorgonLibrary.Graphics
 		private int GetCharWidth(Drawing.Bitmap context, Drawing.Font font,char c)
 		{
 			using (Drawing.Graphics g = Drawing.Graphics.FromImage(context))
-				return (int)Math.Ceiling(g.MeasureString(c.ToString(), font).Width);
+				return (int)System.Math.Ceiling(g.MeasureString(c.ToString(), font).Width);
 		}
 
 		/// <summary>
@@ -1155,7 +1155,7 @@ namespace GorgonLibrary.Graphics
 				gdiFont = new Drawing.Font(_family, _fontSize, style, Drawing.GraphicsUnit.Point);
 
 			// Calculate required image size, try to fit at least 16x16 glyphs on here.
-			int lineHeight = (int)Math.Ceiling(((double)gdiFont.Height * (double)gdiFont.FontFamily.GetLineSpacing(style)) / (double)gdiFont.FontFamily.GetEmHeight(style));
+			int lineHeight = (int)System.Math.Ceiling(((double)gdiFont.Height * (double)gdiFont.FontFamily.GetLineSpacing(style)) / (double)gdiFont.FontFamily.GetEmHeight(style));
 			
 			newSize.Width = (lineHeight + _leftPadding + _widthPadding) * 16;
 			newSize.Height = (lineHeight + _topPadding + _heightPadding) * 16;
@@ -1193,9 +1193,9 @@ namespace GorgonLibrary.Graphics
 					g.PageUnit = Drawing.GraphicsUnit.Pixel;
 
 					// Perform calculations.
-					_lineHeight = (int)Math.Ceiling(((double)gdiFont.GetHeight(g) * (double)gdiFont.FontFamily.GetLineSpacing(style)) / (double)gdiFont.FontFamily.GetEmHeight(style));
-					_ascent = (int)Math.Ceiling(((double)gdiFont.FontFamily.GetCellAscent(style) * (double)gdiFont.GetHeight(g)) / (double)gdiFont.FontFamily.GetEmHeight(style));
-					_descent = (int)Math.Ceiling(((double)gdiFont.FontFamily.GetCellDescent(style) * (double)gdiFont.GetHeight(g)) / (double)gdiFont.FontFamily.GetEmHeight(style));
+					_lineHeight = (int)System.Math.Ceiling(((double)gdiFont.GetHeight(g) * (double)gdiFont.FontFamily.GetLineSpacing(style)) / (double)gdiFont.FontFamily.GetEmHeight(style));
+					_ascent = (int)System.Math.Ceiling(((double)gdiFont.FontFamily.GetCellAscent(style) * (double)gdiFont.GetHeight(g)) / (double)gdiFont.FontFamily.GetEmHeight(style));
+					_descent = (int)System.Math.Ceiling(((double)gdiFont.FontFamily.GetCellDescent(style) * (double)gdiFont.GetHeight(g)) / (double)gdiFont.FontFamily.GetEmHeight(style));
 
 					if (_lineHeight < gdiFont.Height)
 						_lineHeight = gdiFont.Height;

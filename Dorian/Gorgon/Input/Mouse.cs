@@ -96,8 +96,8 @@ namespace GorgonLibrary.InputDevices
 			}
 			set
 			{
-				_doubleClickRange.X = Math.Abs(value.X);
-				_doubleClickRange.Y = Math.Abs(value.Y);
+				_doubleClickRange.X = System.Math.Abs(value.X);
+				_doubleClickRange.Y = System.Math.Abs(value.Y);
 			}
 		}
 
@@ -409,8 +409,8 @@ namespace GorgonLibrary.InputDevices
 		/// <param name="y">Number of vertial pixels.</param>
 		public void SetDoubleClickRange(float x, float y)
 		{
-			_doubleClickRange.X = Math.Abs(x);
-			_doubleClickRange.Y = Math.Abs(y);
+			_doubleClickRange.X = System.Math.Abs(x);
+			_doubleClickRange.Y = System.Math.Abs(y);
 		}
 
 		/// <summary>

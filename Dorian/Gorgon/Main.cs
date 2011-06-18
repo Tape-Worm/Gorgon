@@ -40,7 +40,6 @@ using DX = SlimDX;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.FileSystems;
 using GorgonLibrary.Internal;
-using GorgonLibrary.Internal.Native;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.PlugIns;
 
@@ -145,9 +144,9 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				MSG message;		// Message to retrieve.
+				Win32.MSG message = new Win32.MSG();		// Message to retrieve.
 
-				return !Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove);
+				return !Win32.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove);
 			}
 		}
 
@@ -1201,13 +1200,13 @@ namespace GorgonLibrary
 		/// <remarks>This function should be used when control over the message loop is necessary.</remarks>
 		public static void ProcessMessages()
 		{
-			MSG message;		// Message to retrieve.
+			Win32.MSG message = new Win32.MSG();		// Message to retrieve.
 
 			// Forward the messages.
-			while (Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.Remove))
+			while (Win32.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.Remove))
 			{
-				Win32API.TranslateMessage(ref message);
-				Win32API.DispatchMessage(ref message);
+				Win32.TranslateMessage(ref message);
+				Win32.DispatchMessage(ref message);
 			}
 
 			// Continue on.
@@ -1278,8 +1277,7 @@ namespace GorgonLibrary
 				ApplicationWindow = applicationWindow;
 
 				// If the application window is a form, then assign it as its own parent.
-				if (ApplicationWindow is Forms.Form)
-					ParentWindow = ApplicationWindow as Forms.Form;
+				ParentWindow = ApplicationWindow as Forms.Form;
 
 				// Find the parent of the control.
 				Forms.Control parentControl = ApplicationWindow.Parent;
