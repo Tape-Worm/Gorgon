@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using GorgonLibrary.Internal.Native;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary
 {
@@ -201,7 +202,7 @@ namespace GorgonLibrary
 					if ((msDrift < -100) || (msDrift > 100))
 					{
 						// Get adjustment amount.
-						long adjust = Math.Min(msDrift * _frequency / 1000000, _ticks - _lastTicks);
+						long adjust = System.Math.Min(msDrift * _frequency / 1000000, _ticks - _lastTicks);
 						_startingTick += adjust;
 						_ticks -= adjust;
 

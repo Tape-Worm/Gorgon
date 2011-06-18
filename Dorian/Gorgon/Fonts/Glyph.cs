@@ -117,11 +117,11 @@ namespace GorgonLibrary.Internal
 			{
 				using (Drawing.Graphics g = Drawing.Graphics.FromImage(bmp))
 				{
-					_size.Height = (int)Math.Ceiling(_gdiFont.GetHeight(g));
+					_size.Height = (int)System.Math.Ceiling(_gdiFont.GetHeight(g));
 					width = g.MeasureString(_glyph.ToString(), _gdiFont, 16384, Drawing.StringFormat.GenericTypographic).Width;
 					if (width <= 0)
 						width = _gdiFont.SizeInPoints * 0.5f;
-					_size.Width = (int)Math.Ceiling(width);
+					_size.Width = (int)System.Math.Ceiling(width);
 				}
 			}
 		}

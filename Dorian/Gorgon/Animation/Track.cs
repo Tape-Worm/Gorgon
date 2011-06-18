@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using GorgonLibrary.Internal;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -184,7 +185,7 @@ namespace GorgonLibrary.Graphics
                 }
 
                 // Same frame.
-                if (MathUtility.EqualFloat(_previousKey.Time, _keyTimeDelta, 0.001f))
+                if (GorgonMathUtility.EqualFloat(_previousKey.Time, _keyTimeDelta, 0.001f))
                     _keyTimeDelta = 0;
                 else
                     _keyTimeDelta = (requestedTime - _previousKey.Time) / (_keyTimeDelta - _previousKey.Time);
@@ -216,7 +217,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			public int Compare(float x, float y)
 			{
-				if (MathUtility.EqualFloat(x, y, 0.001f))
+				if (GorgonMathUtility.EqualFloat(x, y, 0.001f))
 					return 0;
 
 				if (x < y)
@@ -407,7 +408,7 @@ namespace GorgonLibrary.Graphics
 			if (scaleValue < 0.0001f)
 				return;
 
-			if (MathUtility.EqualFloat(scaleValue, 1.0f))
+			if (GorgonMathUtility.EqualFloat(scaleValue, 1.0f))
 				return;
 
 			// Create key array.
@@ -482,7 +483,7 @@ namespace GorgonLibrary.Graphics
 		{
 			for (int i = 0; i < _keys.Keys.Count; i++)
 			{
-				if (MathUtility.EqualFloat(_keys.Keys[i], time, 0.001f))
+				if (GorgonMathUtility.EqualFloat(_keys.Keys[i], time, 0.001f))
 					return true;
 			}
 			return false;
@@ -497,7 +498,7 @@ namespace GorgonLibrary.Graphics
 		{
 			for (int i = 0; i < _keys.Keys.Count; i++)
 			{
-				if (MathUtility.EqualFloat(_keys.Keys[i], time, 0.001f))
+				if (GorgonMathUtility.EqualFloat(_keys.Keys[i], time, 0.001f))
 					return i;
 			}
 			return -1;

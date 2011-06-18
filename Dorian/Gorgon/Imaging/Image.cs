@@ -1573,19 +1573,19 @@ namespace GorgonLibrary.Graphics
 			double power = 0;		// Exponent power.
 
 			// Do width.
-			power = Math.Log((double)width, 2);
+			power = System.Math.Log((double)width, 2);
 			while ((power % 1) != 0)
 			{
 				width++;
-				power = Math.Log((double)width, 2);
+				power = System.Math.Log((double)width, 2);
 			}
 
 			// Do height.
-			power = Math.Log((double)height, 2);
+			power = System.Math.Log((double)height, 2);
 			while ((power % 1) != 0)
 			{
 				height++;
-				power = Math.Log((double)height, 2);
+				power = System.Math.Log((double)height, 2);
 			}
 
 			return new Drawing.Size(width, height);

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using GorgonLibrary.Serialization;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -123,7 +124,7 @@ namespace GorgonLibrary.Graphics
 						SetupSplines();
 
 					// Calculate transforms.
-					_value = (int)MathUtility.Round(_splineValue[keyData.PreviousKeyIndex, Time].X);
+					_value = (int)GorgonMathUtility.Round(_splineValue[keyData.PreviousKeyIndex, Time].X);
 				}
 			}
 

@@ -32,6 +32,7 @@ using System.Linq;
 using Drawing = System.Drawing;
 using GorgonLibrary;
 using GorgonLibrary.Internal;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -386,7 +387,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				// If we don't have a measurement, try and get one.
-				if (MathUtility.EqualFloat(_size.X, 0.0f))
+				if (GorgonMathUtility.EqualFloat(_size.X, 0.0f))
 					UpdateAABB();
 				return _size.X;
 			}
@@ -403,7 +404,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				// If we don't have a measurement, try and get one.
-				if (MathUtility.EqualFloat(_size.Y, 0.0f))
+				if (GorgonMathUtility.EqualFloat(_size.Y, 0.0f))
 					UpdateAABB();
 				return _size.Y;
 			}
@@ -838,9 +839,9 @@ namespace GorgonLibrary.Graphics
 				float sinVal;		// Cached sine.
 				float angle;		// Angle in radians.
 
-			    angle = MathUtility.Radians(FinalRotation);
-				cosVal = MathUtility.Cos(angle);
-				sinVal = MathUtility.Sin(angle);
+			    angle = GorgonMathUtility.Radians(FinalRotation);
+				cosVal = GorgonMathUtility.Cos(angle);
+				sinVal = GorgonMathUtility.Sin(angle);
 
 				// Rotate the vertices.
                 vertices[charIndex].Position.X = (posX1 * cosVal - posY1 * sinVal);
@@ -892,10 +893,10 @@ namespace GorgonLibrary.Graphics
 				// Calculate AABB extents.
 				for (int i = 0; i < 4; i++)
 				{
-					minX = MathUtility.Min(vertices[charIndex + i].Position.X, minX);
-					minY = MathUtility.Min(vertices[charIndex + i].Position.Y, minY);
-					maxX = MathUtility.Max(vertices[charIndex + i].Position.X, maxX);
-					maxY = MathUtility.Max(vertices[charIndex + i].Position.Y, maxY);
+					minX = GorgonMathUtility.Min(vertices[charIndex + i].Position.X, minX);
+					minY = GorgonMathUtility.Min(vertices[charIndex + i].Position.Y, minY);
+					maxX = GorgonMathUtility.Max(vertices[charIndex + i].Position.X, maxX);
+					maxY = GorgonMathUtility.Max(vertices[charIndex + i].Position.Y, maxY);
 				}
 
 				aabbUpdate = new Drawing.RectangleF(minX, minY, maxX - minX, maxY - minY);
@@ -935,7 +936,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("vertices");
 
 			// Get the untransformed AABB.
-			if ((MathUtility.EqualFloat(_size.X, 0.0f)) || (MathUtility.EqualFloat(_size.Y, 0.0f)))
+			if ((GorgonMathUtility.EqualFloat(_size.X, 0.0f)) || (GorgonMathUtility.EqualFloat(_size.Y, 0.0f)))
 				UpdateAABB();
 
 			// Prepare to update the AABB.
@@ -945,7 +946,7 @@ namespace GorgonLibrary.Graphics
 			vertexIndex = 0;
 
 			// Don't calculate AABB unless we absolutely need it.
-			if ((MathUtility.EqualFloat(FinalRotation, 0.0f)) && (MathUtility.EqualFloat(FinalScale.X, 1.0f)) && (MathUtility.EqualFloat(FinalScale.Y, 1.0f)))
+			if ((GorgonMathUtility.EqualFloat(FinalRotation, 0.0f)) && (GorgonMathUtility.EqualFloat(FinalScale.X, 1.0f)) && (GorgonMathUtility.EqualFloat(FinalScale.Y, 1.0f)))
 			{
 				aabbUpdate = new Drawing.RectangleF(FinalPosition.X, FinalPosition.Y, _size.X, _size.Y);
 				calcAABB = false;
@@ -1320,9 +1321,9 @@ namespace GorgonLibrary.Graphics
 			for (int i = 0; i < lines.Count; i++)
 			{
                 if (text.Equals(_text))
-				    maxWidth = MathUtility.Max(maxWidth, MeasureLine(i));
+				    maxWidth = GorgonMathUtility.Max(maxWidth, MeasureLine(i));
                 else
-                    maxWidth = MathUtility.Max(maxWidth, MeasureLine(lines[i]));
+                    maxWidth = GorgonMathUtility.Max(maxWidth, MeasureLine(lines[i]));
 				if ((maxWidth > desiredWidth) && (desiredWidth != 0.0f))
 					maxWidth = desiredWidth;
 			}

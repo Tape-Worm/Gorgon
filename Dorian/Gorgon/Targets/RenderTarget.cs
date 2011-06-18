@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Drawing = System.Drawing;
 using D3D9 = SlimDX.Direct3D9;
 using GorgonLibrary.Internal;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -654,8 +655,8 @@ namespace GorgonLibrary.Graphics
 			x2 = x + width;
 			y2 = y + height;
 
-			dx = MathUtility.Abs(x2 - x1);
-			dy = MathUtility.Abs(y2 - y1);
+			dx = GorgonMathUtility.Abs(x2 - x1);
+			dy = GorgonMathUtility.Abs(y2 - y1);
 
 			if (dx >= dy)
 			{

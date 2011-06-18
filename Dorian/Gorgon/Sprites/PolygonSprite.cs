@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using Drawing = System.Drawing;
 using GorgonLibrary.Internal;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -939,13 +940,13 @@ namespace GorgonLibrary.Graphics
 				position.Translate(Position);
 				_worldMatrix.Translate(-Axis.X, -Axis.Y, 0.0f);
 
-				if (!MathUtility.EqualFloat(Rotation, 0.0f))
+				if (!GorgonMathUtility.EqualFloat(Rotation, 0.0f))
 				{
 					rotation.RotateZ(Rotation);
 					_worldMatrix = Matrix.Multiply(rotation, _worldMatrix);
 				}
 
-				if (!(MathUtility.EqualFloat(Scale.X, 1.0f)) || (!MathUtility.EqualFloat(Scale.Y, 1.0f)))
+				if (!(GorgonMathUtility.EqualFloat(Scale.X, 1.0f)) || (!GorgonMathUtility.EqualFloat(Scale.Y, 1.0f)))
 				{
 					scale.Scale(Scale.X, Scale.Y, 1.0f);
 					_worldMatrix = Matrix.Multiply(scale, _worldMatrix);
@@ -975,8 +976,8 @@ namespace GorgonLibrary.Graphics
 				_aabb = new Drawing.RectangleF(min.X, min.Y, max.X - min.X, max.Y - min.Y);
 
 				_boundCircle.Center = new Vector2D(min.X + (max.X - min.X) / 2.0f, min.Y + (max.Y - min.Y) / 2.0f);
-				float xradius = MathUtility.Abs(max.X - min.X) / 2.0f;
-				float yradius = MathUtility.Abs(max.Y - min.Y) / 2.0f;
+				float xradius = GorgonMathUtility.Abs(max.X - min.X) / 2.0f;
+				float yradius = GorgonMathUtility.Abs(max.Y - min.Y) / 2.0f;
 				if (xradius > yradius)
 					_boundCircle.Radius = xradius;
 				else
