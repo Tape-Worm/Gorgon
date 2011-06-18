@@ -282,7 +282,7 @@ namespace GorgonLibrary
 		/// <returns>Rounded integer range.</returns>
 		public static MinMaxRange Round(MinMaxRangeF range)
 		{
-			return new MinMaxRange(MathUtility.RoundInt(range.Minimum), MathUtility.RoundInt(range.Maximum));
+			return new MinMaxRange(GorgonMathUtility.RoundInt(range.Minimum), GorgonMathUtility.RoundInt(range.Maximum));
 		}
 		#endregion
 
@@ -691,7 +691,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(MinMaxRangeF range1, MinMaxRangeF range2)
 		{
-			if ((MathUtility.EqualFloat(range1.Minimum, range2.Minimum)) && (MathUtility.EqualFloat(range1.Maximum, range2.Maximum)))
+			if ((GorgonMathUtility.EqualFloat(range1.Minimum, range2.Minimum)) && (GorgonMathUtility.EqualFloat(range1.Maximum, range2.Maximum)))
 				return true;
 			else
 				return false;

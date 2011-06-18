@@ -72,7 +72,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return MathUtility.Sqrt(X * X + Y * Y + Z * Z + W * W);
+				return GorgonMathUtility.Sqrt(X * X + Y * Y + Z * Z + W * W);
 			}
 		}
 

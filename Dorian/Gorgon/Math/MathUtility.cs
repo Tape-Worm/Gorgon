@@ -34,7 +34,7 @@ namespace GorgonLibrary
 	/// <remarks>
 	/// This just provides a convenient interface for commonly used mathematical functions and constants.
 	/// </remarks>
-	public static class MathUtility
+	public static class GorgonMathUtility
 	{
 		#region Constants.
 		private const float degConvert = ((float)Math.PI / 180.0f);		// Constant containing the value used to convert degrees to radians.
@@ -44,7 +44,6 @@ namespace GorgonLibrary
 		/// Constant containing the value of PI.
 		/// </summary>
 		public const float PI = (float)Math.PI;
-
 		#endregion
 
 		#region Methods.
@@ -103,39 +102,6 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to round a vector value's components.
-		/// </summary>
-		/// <param name="value">The vector to round.</param>
-		/// <param name="decimalPlaceCount">Number of decimal places to keep.</param>
-		/// <param name="rounding">Determines how to round mid point numbers.</param>
-		/// <returns>A vector with its component values rounded.</returns>
-		public static Vector2D Round(Vector2D value, int decimalPlaceCount, MidpointRounding rounding)
-		{
-			return new Vector2D(Round(value.X, decimalPlaceCount, rounding), Round(value.Y, decimalPlaceCount, rounding));
-		}
-
-		/// <summary>
-		/// Function to round a vector value's components.
-		/// </summary>
-		/// <param name="value">The vector to round.</param>
-		/// <param name="decimalPlaceCount">Number of decimal places to keep.</param>
-		/// <returns>A vector with its component values rounded.</returns>
-		public static Vector2D Round(Vector2D value, int decimalPlaceCount)
-		{
-			return new Vector2D(Round(value.X, decimalPlaceCount), Round(value.Y, decimalPlaceCount));
-		}
-
-		/// <summary>
-		/// Function to round a vector value's components.
-		/// </summary>
-		/// <param name="value">The vector to round.</param>
-		/// <returns>A vector with its component values rounded.</returns>
-		public static Vector2D Round(Vector2D value)
-		{
-			return new Vector2D(Round(value.X), Round(value.Y));
-		}
-
-		/// <summary>
 		/// Function to return the cosine of an angle in radians.
 		/// </summary>
 		/// <param name="radians">Angle in radians.</param>
@@ -191,9 +157,9 @@ namespace GorgonLibrary
 		/// <param name="y">Sin value to convert.</param>
 		/// <param name="x">Cosine value to convert.</param>
 		/// <returns>Angle in radians.</returns>
-		public static float ATan(float y,float x)
+		public static float ATan(float y, float x)
 		{
-			return (float)Math.Atan2(y,x);
+			return (float)Math.Atan2(y, x);
 		}
 
 		/// <summary>
@@ -213,7 +179,17 @@ namespace GorgonLibrary
 		/// <returns>Inverted square root.</returns>
 		public static float InverseSqrt(float sqvalue)
 		{
-			return 1.0f/Sqrt(sqvalue);
+			return 1.0f / Sqrt(sqvalue);
+		}
+
+		/// <summary>
+		/// Function to return the absolute value of a number.
+		/// </summary>
+		/// <param name="number">Number to get the absolute value of.</param>
+		/// <returns>Absolute value of the number.</returns>
+		public static double Abs(double number)
+		{
+			return Math.Abs(number);
 		}
 
 		/// <summary>
@@ -237,18 +213,38 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to return if two double precision numbers are equal within a threshold.
+		/// </summary>
+		/// <param name="value1">First double value to compare.</param>
+		/// <param name="value2">Second double value to compare.</param>
+		/// <param name="delta">Delta to account for error between the two values.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool EqualDouble(double value1, double value2, double delta)
+		{
+			return (Abs(value2 - value1) <= delta);
+		}
+
+		/// <summary>
+		/// Function to return if two double precision numbers are equal within a threshold.
+		/// </summary>
+		/// <param name="value1">First double value to compare.</param>
+		/// <param name="value2">Second double value to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool EqualDouble(double value1, double value2)
+		{
+			return EqualDouble(value1, value2, 0.0);
+		}
+
+		/// <summary>
 		/// Function to return if two floating point numbers are equal within a threshold.
 		/// </summary>
 		/// <param name="value1">First float value to compare.</param>
 		/// <param name="value2">Second float value to compare.</param>
 		/// <param name="epsilon">Tolerance of floating point error.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool EqualFloat(float value1,float value2,float epsilon)
+		public static bool EqualFloat(float value1, float value2, float epsilon)
 		{
-			if (Abs(value2 - value1) <= epsilon)
-				return true;
-			
-			return false;
+			return (Abs(value2 - value1) <= epsilon);
 		}
 
 		/// <summary>
@@ -257,9 +253,9 @@ namespace GorgonLibrary
 		/// <param name="value1">First float value to compare.</param>
 		/// <param name="value2">Second float value to compare.</param>		
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool EqualFloat(float value1,float value2)
+		public static bool EqualFloat(float value1, float value2)
 		{
-			return EqualFloat(value1,value2,0.000001f);
+			return EqualFloat(value1, value2, 0.000001f);
 		}
 
 		/// <summary>
@@ -280,17 +276,17 @@ namespace GorgonLibrary
 		public static float Degrees(float radians)
 		{
 			return radConvert * radians;
-		}		
+		}
 
 		/// <summary>
 		/// Function to return the highest of two values.
 		/// </summary>
 		/// <returns>Highest of the values supplied.</returns>
-		public static float Max(float value1,float value2)
+		public static float Max(float value1, float value2)
 		{
 			if (value1 > value2)
 				return value1;
-			
+
 			return value2;
 		}
 
@@ -298,11 +294,11 @@ namespace GorgonLibrary
 		/// Function to return the lowest of two values.
 		/// </summary>
 		/// <returns>Highest of the values supplied.</returns>
-		public static float Min(float value1,float value2)
+		public static float Min(float value1, float value2)
 		{
 			if (value1 < value2)
 				return value1;
-			
+
 			return value2;
 		}
 
@@ -310,11 +306,11 @@ namespace GorgonLibrary
 		/// Function to return the highest of two values.
 		/// </summary>
 		/// <returns>Highest of the values supplied.</returns>
-		public static short Max(short value1,short value2)
+		public static short Max(short value1, short value2)
 		{
 			if (value1 > value2)
 				return value1;
-			
+
 			return value2;
 		}
 
@@ -322,23 +318,23 @@ namespace GorgonLibrary
 		/// Function to return the lowest of two values.
 		/// </summary>
 		/// <returns>Highest of the values supplied.</returns>
-		public static short Min(short value1,short value2)
+		public static short Min(short value1, short value2)
 		{
 			if (value1 < value2)
 				return value1;
-			
-			return value2;			
+
+			return value2;
 		}
 
 		/// <summary>
 		/// Function to return the highest of two values.
 		/// </summary>
 		/// <returns>Highest of the values supplied.</returns>
-		public static int Max(int value1,int value2)
+		public static int Max(int value1, int value2)
 		{
 			if (value1 > value2)
 				return value1;
-			
+
 			return value2;
 		}
 
@@ -346,11 +342,11 @@ namespace GorgonLibrary
 		/// Function to return the lowest of two values.
 		/// </summary>
 		/// <returns>Highest of the values supplied.</returns>
-		public static int Min(int value1,int value2)
+		public static int Min(int value1, int value2)
 		{
 			if (value1 < value2)
 				return value1;
-			
+
 			return value2;
 		}
 		#endregion

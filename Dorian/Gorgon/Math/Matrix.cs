@@ -278,9 +278,9 @@ namespace GorgonLibrary
 		public void RotateX(float degrees)
 		{
 			// Stored sin & cos values.
-			float radDegs = MathUtility.Radians(degrees);
-			float sin = MathUtility.Sin(radDegs);
-			float cos = MathUtility.Cos(radDegs);
+			float radDegs = GorgonMathUtility.Radians(degrees);
+			float sin = GorgonMathUtility.Sin(radDegs);
+			float cos = GorgonMathUtility.Cos(radDegs);
 
 			m22 = cos;
 			m23 = -sin;
@@ -295,9 +295,9 @@ namespace GorgonLibrary
 		public void RotateY(float degrees)
 		{
 			// Stored sin & cos values.
-			float radDegs = MathUtility.Radians(degrees);
-			float sin = MathUtility.Sin(radDegs);
-			float cos = MathUtility.Cos(radDegs);
+			float radDegs = GorgonMathUtility.Radians(degrees);
+			float sin = GorgonMathUtility.Sin(radDegs);
+			float cos = GorgonMathUtility.Cos(radDegs);
 
 			m11 = cos;
 			m13 = sin;
@@ -312,9 +312,9 @@ namespace GorgonLibrary
 		public void RotateZ(float degrees)
 		{
 			// Stored sin & cos values.
-			float radDegs = MathUtility.Radians(degrees);
-			float sin = MathUtility.Sin(radDegs);
-			float cos = MathUtility.Cos(radDegs);
+			float radDegs = GorgonMathUtility.Radians(degrees);
+			float sin = GorgonMathUtility.Sin(radDegs);
+			float cos = GorgonMathUtility.Cos(radDegs);
 
 			m11 = cos;
 			m12 = -sin;
@@ -335,17 +335,17 @@ namespace GorgonLibrary
 			// Or so I've read...
 
 			// Yaw cosine & sine values.
-			float radYaw = MathUtility.Radians(yaw);
-			float ycos = MathUtility.Cos(radYaw);
-			float ysin = MathUtility.Sin(radYaw);
+			float radYaw = GorgonMathUtility.Radians(yaw);
+			float ycos = GorgonMathUtility.Cos(radYaw);
+			float ysin = GorgonMathUtility.Sin(radYaw);
 			// Pitch cosine & sine values.
-			float radPitch = MathUtility.Radians(pitch);
-			float pcos = MathUtility.Cos(radPitch);
-			float psin = MathUtility.Sin(radPitch);
+			float radPitch = GorgonMathUtility.Radians(pitch);
+			float pcos = GorgonMathUtility.Cos(radPitch);
+			float psin = GorgonMathUtility.Sin(radPitch);
 			// Roll cosine & sine values.
-			float radRoll = MathUtility.Radians(roll);
-			float rcos = MathUtility.Cos(radRoll);
-			float rsin = MathUtility.Sin(radRoll);
+			float radRoll = GorgonMathUtility.Radians(roll);
+			float rcos = GorgonMathUtility.Cos(radRoll);
+			float rsin = GorgonMathUtility.Sin(radRoll);
 
 			// Common multiplication.
 			float ySinpCos = ysin * pcos;
