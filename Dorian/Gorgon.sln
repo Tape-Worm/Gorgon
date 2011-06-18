@@ -20,8 +20,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas", "Tools\Atlas\Atlas.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon3DESFileSystem", "PlugIns\Gorgon3DESFileSystem\Gorgon3DESFileSystem.csproj", "{434387DC-0059-4645-B0B9-581F2788E228}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogHelper", "Tools\DialogHelper\DialogHelper.csproj", "{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework", "Tools\GorgonFramework\GorgonFramework.csproj", "{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonZipFileSystem", "PlugIns\GorgonZipFileSystem\GorgonZipFileSystem.csproj", "{95B2A3B4-AB25-4DA4-88C0-903B811CD944}"
@@ -96,14 +94,6 @@ Global
 		{434387DC-0059-4645-B0B9-581F2788E228}.Release|Any CPU.Build.0 = Release|Any CPU
 		{434387DC-0059-4645-B0B9-581F2788E228}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{434387DC-0059-4645-B0B9-581F2788E228}.Release|x86.ActiveCfg = Release|Any CPU
-		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{8D49EEDF-2118-4DAD-A8E9-5EBA27F38910}.Release|x86.ActiveCfg = Release|Any CPU
 		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

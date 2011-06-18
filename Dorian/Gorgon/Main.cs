@@ -62,6 +62,16 @@ namespace GorgonLibrary
 		x64 = 1
 	}
 	#endregion
+	
+	#region Delegates.
+	/// <summary>
+	/// Delegate for an application loop.
+	/// </summary>
+	/// <param name="timingData">Data used for frame rate timing.</param>
+	/// <returns>TRUE to continue processing, FALSE to stop.</returns>
+	/// <remarks>Use this to define the main loop for your application.</remarks>
+	public delegate bool ApplicationLoop(GorgonFrameRate timingData);
+	#endregion
 
 	/// <summary>
 	/// The primary interface into gorgon.
@@ -111,11 +121,6 @@ namespace GorgonLibrary
 		/// <para>Some objects will need to be re-created during a device loss/reset event.  In this event you put in clean up code to remove data for objects that need to be reset.</para>
 		/// </remarks>		
 		public static event EventHandler DeviceLost;
-		/// <summary>
-		/// Event fired when rendering begins for a new frame.
-		/// </summary>
-		/// <remarks>This event is where all the application logic and drawing should take place.  It is called once per frame and will return frame statistics to help with things like keeping sprite transformation speed independant of the processor speed.</remarks>
-		public static event FrameEventHandler Idle;
 		#endregion
 
 		#region Variables.
@@ -131,6 +136,9 @@ namespace GorgonLibrary
 		private static Viewport _clippingView = null;					// Clipping viewport.
 		private static double _targetFrameTime = 0.0;					// Target frame time.
 		private static IShaderRenderer _currentShader = null;			// Current shader.
+		private static ApplicationLoop _loop = null;					// Application loop.
+		private static GorgonDefaultAppLoop _defaultApp = null;			// Default application loop.
+		private static GorgonFrameRate _timingData = null;				// Frame rate timing data.
 #if INCLUDE_D3DREF
 		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
 #endif
@@ -190,6 +198,30 @@ namespace GorgonLibrary
 					throw new GorgonException(GorgonResult.NotInitialized);
 
 				return _renderer;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the application idle loop.
+		/// </summary>
+		/// <remarks>This is used to call the users code when the application is in an idle state.
+		/// <para>Users should call the <see cref="M:GorgonLibrary.Gorgon.Stop">Stop()</see> method before attempting to change the application idle funtion.</para></remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the application is in a <see cref="P:GorgonLibrary.Gorgon.IsInitialized">running state</see>.</exception>		
+		public static ApplicationLoop ApplicationIdleLoop
+		{
+			get
+			{
+				return _loop;
+			}
+			set
+			{
+				if (IsRunning)
+					throw new GorgonException(GorgonResult.AccessDenied, "Cannot assign a new idle function while the application is in a running state.");
+
+				if (value == null)
+					_loop = new ApplicationLoop(_defaultApp.ApplicationIdle);
+				else
+					_loop = value;
 			}
 		}
 
@@ -753,42 +785,46 @@ namespace GorgonLibrary
 				_targetFrameTime = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the amount of time in milliseconds to sleep when the application window is not focused.
+		/// </summary>
+		/// <remarks>
+		/// Set this value to 0 to use all CPU time when the application is not focused.  The default is 10 milliseconds.
+		/// <para>This is handy in situations when the application is in the background and processing does not need to continue.  For laptops this means battery savings when the application is not focused.
+		/// </para>
+		/// </remarks>
+		public static int UnfocusedSleepTime
+		{
+			get;
+			set;
+		}
 		#endregion
 
-		#region Methods.
+		#region Methods.		
 		/// <summary>
-		/// Function to actually do processing for the application.
+		/// Handles the Idle event of the Application control.
 		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="e">Event arguments.</param>
-		private static void Run(object sender, EventArgs e)
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private static void Application_Idle(object sender, EventArgs e)
 		{
 			while ((AppIdle) && (IsRunning))
 			{
-				if (HasFocus)
-				{
-					// Update the screen.
-					if (FrameStats.Update())
-					{
-						// Call idle event.					
-						OnIdle(sender, _frameEventArgs);
-
-						if ((Screen != null) && (_currentTarget != null))
-						{
-							for (int i = 0; i < _currentTarget.Length; i++)
-							{
-								if (_currentTarget[i] != null)
-									_currentTarget[i].Update();
-							}
-
-							// Give up some time if we don't have focus and we're windowed.
-							if ((!Screen.OwnerForm.ContainsFocus) && (Screen.Windowed))
-								System.Threading.Thread.Sleep(10);
-						}
-					}
-				}
-				else
+				if (!HasFocus)
 					break;
+
+				_timingData.Update();
+
+				if (!ApplicationIdleLoop(_timingData))
+				{
+					Stop();
+					break;
+				}
+
+				// Give up CPU time if we're not focused.
+				if ((!ParentWindow.ContainsFocus) && (UnfocusedSleepTime > 0))
+					System.Threading.Thread.Sleep(UnfocusedSleepTime);
 			}
 		}
 
@@ -810,17 +846,6 @@ namespace GorgonLibrary
 		{
 			if (DriverChanged != null)
 				DriverChanged(_drivers, e);
-		}
-
-		/// <summary>
-		/// Function to trigger the idle event.
-		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="e">Frame arguments.</param>
-		internal static void OnIdle(object sender, FrameEventArgs e)
-		{
-			if (Idle != null)
-				Idle(sender, e);
 		}
 
 		/// <summary>
@@ -1130,44 +1155,32 @@ namespace GorgonLibrary
 			SetMode(owner, owner.ClientSize.Width, owner.ClientSize.Height, DesktopVideoMode.Format, true, false, false, 60, VSyncIntervals.IntervalNone);
 		}
 
+
 		/// <summary>
-		/// Function to start the engine rendering.
+		/// Function to start the application message processing.
 		/// </summary>
-		/// <remarks>The application does not begin rendering right away when this function is called, it merely tells the library that the application is ready for rendering to begin when it's ready.</remarks>
+		/// <remarks>The application does not begin running right away when this function is called, it merely tells the library that the application is ready to begin.</remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">SetMode()</see> has not been called.</exception>		
-		public static void Go()
+		public static void Go(ApplicationLoop idleLoop)
 		{
 			if (!IsInitialized)
-				throw new GorgonException(GorgonResult.NotInitialized);
-
-			if ((Gorgon.Screen != null) && (_currentTarget == null))
-				throw new InvalidOperationException("The render target is invalid.");
+				throw new GorgonException(GorgonResult.NotInitialized, "Please call Initialize() before calling this function.");
 
 			if (IsRunning)
 				return;
 
-			// Enter render loop.
-			Log.Print("Entering main render loop...",GorgonLoggingLevel.Verbose);
+			_timingData = new GorgonFrameRate();
+			ApplicationIdleLoop = idleLoop;
 
-			// Reset all timers.
-			_timer.Reset();
-			FrameStats.Reset();
+			Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
 
-			if (_currentTarget != null)
-			{
-				for (int i = 0; i < _currentTarget.Length; i++)
-				{
-					if (_currentTarget[i] != null)
-						_currentTarget[i].Refresh();
-				}
-			}
+			if (!ApplicationWindow.Visible)
+				ApplicationWindow.Visible = true;
 
-			Forms.Application.Idle += new EventHandler(Run);
-
+			Forms.Application.Idle += new EventHandler(Application_Idle);
 			IsRunning = true;
 		}
-
+	
 		/// <summary>
 		/// Function to stop the engine from rendering.
 		/// </summary>
@@ -1183,14 +1196,14 @@ namespace GorgonLibrary
 
 			if (IsRunning)
 			{
-				Forms.Application.Idle -= new EventHandler(Run);
+				Forms.Application.Idle -= new EventHandler(Application_Idle);
 				IsRunning = false;
 
 				// Reset all timers.
 				_timer.Reset();
 				FrameStats.Reset();
 
-				Log.Print("Main render loop stopped.", GorgonLoggingLevel.Verbose);
+				Log.Print("Application loop stopped.", GorgonLoggingLevel.Verbose);
 			}
 		}
 
@@ -1211,7 +1224,7 @@ namespace GorgonLibrary
 
 			// Continue on.
 			if ((IsRunning) && (Screen != null))
-				Run(Screen, EventArgs.Empty);
+				Application_Idle(Screen, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -1229,7 +1242,7 @@ namespace GorgonLibrary
 			if (IsInitialized)
 				Terminate();
 
-			IsInitialized = true;
+			IsInitialized = true;			
 
 			// Initialize.
 #if DEBUG
@@ -1273,6 +1286,9 @@ namespace GorgonLibrary
 
 				Gorgon.Log.Print("Initializing...", GorgonLoggingLevel.Simple);
 				Gorgon.Log.Print("Architecture: {0}", GorgonLoggingLevel.Verbose, PlatformArchitecture.ToString());
+
+				// Default to using 10 milliseconds of sleep time when the application is not focused.
+				UnfocusedSleepTime = 10;
 
 				ApplicationWindow = applicationWindow;
 
