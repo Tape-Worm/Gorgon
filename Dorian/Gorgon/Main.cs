@@ -80,7 +80,7 @@ namespace GorgonLibrary
 	/// and call <see cref="M:GorgonLibrary.Terminate">Terminate</see> when finished.<para>This static class is used to change the global states of objects such as a global rendering setting to which render target is current.
 	/// It will also control the execution and rendering flow for the application.
 	/// </para></remarks>
-	public static class Gorgon
+	public static class Main
 	{
 		#region Variables.
 		private static ApplicationLoop _loop = null;					// Application loop.
