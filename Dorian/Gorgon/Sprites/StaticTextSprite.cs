@@ -336,9 +336,9 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				if (value.X < 1)
-					value.X = Gorgon.CurrentDriver.MaximumTextureWidth;
+					value.X = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth;
 				if (value.Y < 1)
-					value.Y = Gorgon.CurrentDriver.MaximumTextureHeight;
+					value.Y = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight;
 				_maxImageSize = value;
 				_initialized = false;
 			}
@@ -1141,7 +1141,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_initialized = false;
 
-				lastTarget = Gorgon.CurrentRenderTarget;
+				lastTarget = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget;
 
 				if (_textImage != null)
 					_textImage.Dispose();
@@ -1174,7 +1174,7 @@ namespace GorgonLibrary.Graphics
 				imageSize.Height = 64;
 				_textImage = new RenderImage("@" + Name + ".TextSprite.RenderImage", (int)imageSize.Width, (int)imageSize.Height, ImageBufferFormats.BufferRGB888A8);
 
-				Gorgon.CurrentRenderTarget = _textImage;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = _textImage;
 
 				_textImage.Clear(Drawing.Color.FromArgb(0, 0, 0, 0));
 
@@ -1195,7 +1195,7 @@ namespace GorgonLibrary.Graphics
 				_displaySprite.Height = _textImage.Height;
 				_displaySprite.Image = _textImage.Image;
 
-				Gorgon.CurrentRenderTarget = lastTarget;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = lastTarget;
 
 				UpdateAABB();
 
@@ -1203,7 +1203,7 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				Gorgon.CurrentRenderTarget = lastTarget;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = lastTarget;
 			}
 		}
 

@@ -122,7 +122,7 @@ namespace GorgonLibrary.PlugIns
 		{
 			Assembly newModule;			// Module to load.
 
-			Gorgon.Log.Print("Attempting to load plug-in module \"{0}\".", GorgonLoggingLevel.Intermediate,moduleName);							
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Attempting to load plug-in module \"{0}\".", GorgonLoggingLevel.Intermediate,moduleName);							
 			newModule = AssemblyExists(moduleName);
 
 			// If the module is not in the application domain, then load it.
@@ -135,13 +135,13 @@ namespace GorgonLibrary.PlugIns
 					newModule = Assembly.LoadFrom(moduleName);
 			}
 			else
-				Gorgon.Log.Print("Plug-in module already exists, using version from the current app domain.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Plug-in module already exists, using version from the current app domain.", GorgonLoggingLevel.Verbose);
 
 			// If it's not in our list, then add it, else get its reference.
 			if (!Contains(newModule.FullName))
 				AddItem(newModule.FullName, newModule);
 
-			Gorgon.Log.Print("Plug-in module \"{0}\" loaded successfully.", GorgonLoggingLevel.Intermediate, newModule.FullName);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Plug-in module \"{0}\" loaded successfully.", GorgonLoggingLevel.Intermediate, newModule.FullName);
 			return newModule;
 		}
 		#endregion

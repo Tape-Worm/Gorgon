@@ -226,7 +226,7 @@ namespace GorgonLibrary.Internal
 			_indices = new IndexCache<short>();
 
 			// Initialize vertex type.
-			_vertices.VertexType = Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"];
+			_vertices.VertexType = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.VertexTypes["PositionDiffuse2DTexture1"];
 
 			// Set up access types.
 			_vertices.BufferUsage = BufferUsages.Dynamic | BufferUsages.WriteOnly;

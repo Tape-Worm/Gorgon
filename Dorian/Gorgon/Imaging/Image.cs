@@ -279,7 +279,7 @@ namespace GorgonLibrary.Graphics
 						_rtSurface.UnlockRectangle();
 
 						// Copy back to the render target.
-						Gorgon.Screen.Device.UpdateSurface(_rtSurface, _image.RenderImage.SurfaceBuffer);
+						Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.UpdateSurface(_rtSurface, _image.RenderImage.SurfaceBuffer);
 					}
 					else
 						_image.D3DTexture.UnlockRectangle(0);
@@ -343,7 +343,7 @@ namespace GorgonLibrary.Graphics
 					}
 					else
 					{						
-						Gorgon.Screen.Device.GetRenderTargetData(_image.RenderImage.SurfaceBuffer, _rtSurface);
+						Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.GetRenderTargetData(_image.RenderImage.SurfaceBuffer, _rtSurface);
 
 						if (discard)
 						{
@@ -547,7 +547,7 @@ namespace GorgonLibrary.Graphics
 
 				// Create the render target work surface.
 				if (owner.ImageType == ImageType.RenderTarget)
-					_rtSurface = D3D9.Surface.CreateOffscreenPlain(Gorgon.Screen.Device, _image.ActualWidth, _image.ActualHeight, Converter.Convert(_image.Format), D3D9.Pool.SystemMemory);
+					_rtSurface = D3D9.Surface.CreateOffscreenPlain(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _image.ActualWidth, _image.ActualHeight, Converter.Convert(_image.Format), D3D9.Pool.SystemMemory);
 
 				// Auto-lock.
 				Lock(false);
@@ -632,7 +632,7 @@ namespace GorgonLibrary.Graphics
 				D3D9.Usage flags = D3D9.Usage.None;		// Usage flags.
 
 				// Set up for dynamic images.
-				if ((_imageType == ImageType.Dynamic) && (Gorgon.CurrentDriver.SupportDynamicTextures))
+				if ((_imageType == ImageType.Dynamic) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportDynamicTextures))
 					flags |= D3D9.Usage.Dynamic;
 
 				// Force flags and pool for render targets.
@@ -817,7 +817,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void Initialize()
 		{
-			if (Gorgon.Screen == null)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen == null)
 				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device created.");
 
 			D3D9.SurfaceDescription surfaceDesc = default(D3D9.SurfaceDescription);			// Surface description.
@@ -827,14 +827,14 @@ namespace GorgonLibrary.Graphics
 				_d3dImage.Dispose();
 			_d3dImage = null;
 
-			Gorgon.Log.Print("Creating image \"{0}\": {1}x{2}, Format: {3}.", GorgonLoggingLevel.Simple, Name, _width, _height, _format.ToString());
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Creating image \"{0}\": {1}x{2}, Format: {3}.", GorgonLoggingLevel.Simple, Name, _width, _height, _format.ToString());
 
 			// Start out with the same size.
 			_actualWidth = _width;
 			_actualHeight = _height;
 
 			// If the device only supports square images, then make square.
-			if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
+			if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonSquareTexture)
 			{
 				if (_actualWidth > _actualHeight)
 					_actualHeight = _actualWidth;
@@ -843,7 +843,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Resize to the power of two.
-			if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+			if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
 			{
 				Drawing.Size newSize;		// New image size.
 
@@ -853,7 +853,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Ensure the image is the correct size.
-			if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
+			if ((_actualWidth > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
 				throw new GorgonException(GorgonResult.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 			// If we specified unknown for the buffer format, assume 32 bit.
@@ -874,7 +874,7 @@ namespace GorgonLibrary.Graphics
 			// Create the image.
 			try
 			{
-				_d3dImage = new D3D9.Texture(Gorgon.Screen.Device,
+				_d3dImage = new D3D9.Texture(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device,
 					_actualWidth, _actualHeight, 1,
 					Usage,
 					Converter.Convert(_format),
@@ -890,7 +890,7 @@ namespace GorgonLibrary.Graphics
 			_format = Converter.ConvertD3DImageFormat(surfaceDesc.Format);
 			_filename = string.Empty;
 			_isResource = false;
-			Gorgon.Log.Print("Image \"{0}\" created: {1}x{2} (actual texture size: {4}x{5}), Format: {3}.", GorgonLoggingLevel.Simple, Name, _width, _height, _format.ToString(), _actualWidth, _actualHeight);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Image \"{0}\" created: {1}x{2} (actual texture size: {4}x{5}), Format: {3}.", GorgonLoggingLevel.Simple, Name, _width, _height, _format.ToString(), _actualWidth, _actualHeight);
 
 			// Clear the buffer.
 			if (_clearOnInit)
@@ -974,7 +974,7 @@ namespace GorgonLibrary.Graphics
 			D3D9.TextureRequirements requires;		// Texture requirements.
 			D3D9.Pool pool;							// Resource pool.
 
-			if (Gorgon.Screen == null)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen == null)
 				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device created.");
 
 			if ((type == ImageType.RenderTarget) || (type == ImageType.Dynamic))
@@ -983,7 +983,7 @@ namespace GorgonLibrary.Graphics
 				pool = D3D9.Pool.Managed;
 
 			// Get the requirements.
-			requires = D3D9.Texture.CheckRequirements(Gorgon.Screen.Device, 0, 0, 0, D3D9.Usage.None, Converter.Convert(format), pool);
+			requires = D3D9.Texture.CheckRequirements(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, 0, 0, 0, D3D9.Usage.None, Converter.Convert(format), pool);
 
 			// Return the best matching format.
 			return Converter.ConvertD3DImageFormat(requires.Format);
@@ -1608,9 +1608,9 @@ namespace GorgonLibrary.Graphics
 			imageSize.Height = imageInfo.Height;
 
 			// If the device only supports square images, then make square.
-			if ((adjust) && (Gorgon.CurrentDriver != default(Driver)))
+			if ((adjust) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver != default(Driver)))
 			{
-				if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
+				if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonSquareTexture)
 				{
 					if (imageSize.Width > imageSize.Height)
 						imageSize.Height = imageSize.Width;
@@ -1619,7 +1619,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				// Resize to the power of two.
-				if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+				if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
 					imageSize = ResizePowerOf2(imageSize.Width, imageSize.Height);
 			}
 
@@ -1678,34 +1678,34 @@ namespace GorgonLibrary.Graphics
 				_blitter.Position = new Vector2D(x, y);
 
 			// Inherit the target states.
-			if (_blitter.Smoothing != Gorgon.CurrentRenderTarget.Smoothing)
-				_blitter.Smoothing = Gorgon.CurrentRenderTarget.Smoothing;
-			if (_blitter.SourceBlend != Gorgon.CurrentRenderTarget.SourceBlend)
-				_blitter.SourceBlend = Gorgon.CurrentRenderTarget.SourceBlend;
-			if (_blitter.DestinationBlend != Gorgon.CurrentRenderTarget.DestinationBlend)
-				_blitter.DestinationBlend = Gorgon.CurrentRenderTarget.DestinationBlend;
-			if (_blitter.HorizontalWrapMode != Gorgon.CurrentRenderTarget.HorizontalWrapMode)
-				_blitter.HorizontalWrapMode = Gorgon.CurrentRenderTarget.HorizontalWrapMode;
-			if (_blitter.VerticalWrapMode != Gorgon.CurrentRenderTarget.VerticalWrapMode)
-				_blitter.VerticalWrapMode = Gorgon.CurrentRenderTarget.VerticalWrapMode;
-			if (_blitter.AlphaMaskFunction != Gorgon.CurrentRenderTarget.AlphaMaskFunction)
-				_blitter.AlphaMaskFunction = Gorgon.CurrentRenderTarget.AlphaMaskFunction;
-			if (_blitter.AlphaMaskValue != Gorgon.CurrentRenderTarget.AlphaMaskValue)
-				_blitter.AlphaMaskValue = Gorgon.CurrentRenderTarget.AlphaMaskValue;
-			if (_blitter.StencilCompare != Gorgon.CurrentRenderTarget.StencilCompare)
-				_blitter.StencilCompare = Gorgon.CurrentRenderTarget.StencilCompare;
-			if (_blitter.StencilEnabled != Gorgon.CurrentRenderTarget.StencilEnabled)
-				_blitter.StencilEnabled = Gorgon.CurrentRenderTarget.StencilEnabled;
-			if (_blitter.StencilFailOperation != Gorgon.CurrentRenderTarget.StencilFailOperation)
-				_blitter.StencilFailOperation = Gorgon.CurrentRenderTarget.StencilFailOperation;
-			if (_blitter.StencilMask != Gorgon.CurrentRenderTarget.StencilMask)
-				_blitter.StencilMask = Gorgon.CurrentRenderTarget.StencilMask;
-			if (_blitter.StencilPassOperation != Gorgon.CurrentRenderTarget.StencilPassOperation)
-				_blitter.StencilPassOperation = Gorgon.CurrentRenderTarget.StencilPassOperation;
-			if (_blitter.StencilReference != Gorgon.CurrentRenderTarget.StencilReference)
-				_blitter.StencilReference = Gorgon.CurrentRenderTarget.StencilReference;
-			if (_blitter.StencilZFailOperation != Gorgon.CurrentRenderTarget.StencilZFailOperation)
-				_blitter.StencilZFailOperation = Gorgon.CurrentRenderTarget.StencilZFailOperation;
+			if (_blitter.Smoothing != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.Smoothing)
+				_blitter.Smoothing = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.Smoothing;
+			if (_blitter.SourceBlend != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.SourceBlend)
+				_blitter.SourceBlend = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.SourceBlend;
+			if (_blitter.DestinationBlend != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DestinationBlend)
+				_blitter.DestinationBlend = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DestinationBlend;
+			if (_blitter.HorizontalWrapMode != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.HorizontalWrapMode)
+				_blitter.HorizontalWrapMode = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.HorizontalWrapMode;
+			if (_blitter.VerticalWrapMode != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.VerticalWrapMode)
+				_blitter.VerticalWrapMode = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.VerticalWrapMode;
+			if (_blitter.AlphaMaskFunction != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.AlphaMaskFunction)
+				_blitter.AlphaMaskFunction = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.AlphaMaskFunction;
+			if (_blitter.AlphaMaskValue != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.AlphaMaskValue)
+				_blitter.AlphaMaskValue = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.AlphaMaskValue;
+			if (_blitter.StencilCompare != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilCompare)
+				_blitter.StencilCompare = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilCompare;
+			if (_blitter.StencilEnabled != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilEnabled)
+				_blitter.StencilEnabled = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilEnabled;
+			if (_blitter.StencilFailOperation != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilFailOperation)
+				_blitter.StencilFailOperation = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilFailOperation;
+			if (_blitter.StencilMask != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilMask)
+				_blitter.StencilMask = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilMask;
+			if (_blitter.StencilPassOperation != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilPassOperation)
+				_blitter.StencilPassOperation = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilPassOperation;
+			if (_blitter.StencilReference != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilReference)
+				_blitter.StencilReference = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilReference;
+			if (_blitter.StencilZFailOperation != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilZFailOperation)
+				_blitter.StencilZFailOperation = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.StencilZFailOperation;
 			_blitter.Draw();
 		}
 
@@ -1770,7 +1770,7 @@ namespace GorgonLibrary.Graphics
 				_actualHeight = height;
 
 				// If the device only supports square images, then make square.
-				if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
+				if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonSquareTexture)
 				{
 					if (_actualWidth > _actualHeight)
 						_actualHeight = _actualWidth;
@@ -1779,7 +1779,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				// Resize to the power of two.
-				if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+				if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
 				{
 					Drawing.Size newSize;		// New image size.
 
@@ -1789,7 +1789,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				// Ensure the image is the correct size.
-				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
+				if ((_actualWidth > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
 					throw new GorgonException(GorgonResult.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// If we specified unknown for the buffer format, assume 32 bit.
@@ -1811,7 +1811,7 @@ namespace GorgonLibrary.Graphics
 				try
 				{
 					imageData = D3D9.Texture.ToStream(_d3dImage, D3D9.ImageFileFormat.Png);					
-					newImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, imageData, (int)imageData.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, 0);
+					newImage = D3D9.Texture.FromStream(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, imageData, (int)imageData.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, 0);
 				}
 				catch (Exception ex)
 				{
@@ -1918,7 +1918,7 @@ namespace GorgonLibrary.Graphics
 				_actualHeight = height;
 
 				// If the device only supports square images, then make square.
-				if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
+				if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonSquareTexture)
 				{
 					if (_actualWidth > _actualHeight)
 						_actualHeight = _actualWidth;
@@ -1927,7 +1927,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				// Resize to the power of two.
-				if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+				if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
 				{
 					Drawing.Size newSize;		// New image size.
 
@@ -1937,7 +1937,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				// Ensure the image is the correct size.
-				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
+				if ((_actualWidth > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
 					throw new GorgonException(GorgonResult.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// If we specified unknown for the buffer format, assume 32 bit.
@@ -1960,7 +1960,7 @@ namespace GorgonLibrary.Graphics
 
 				try
 				{
-					_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, (int)memoryImage.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
+					_d3dImage = D3D9.Texture.FromStream(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, memoryImage, (int)memoryImage.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
 				}
 				catch (Exception ex)
 				{
@@ -2100,7 +2100,7 @@ namespace GorgonLibrary.Graphics
 				_actualHeight = height;
 
 				// If the device only supports square images, then make square.
-				if (!Gorgon.CurrentDriver.SupportNonSquareTexture)
+				if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonSquareTexture)
 				{
 					if (_actualWidth > _actualHeight)
 						_actualHeight = _actualWidth;
@@ -2109,7 +2109,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				// Resize to the power of two.
-				if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+				if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTexture) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
 				{
 					Drawing.Size newSize;		// New image size.
 
@@ -2119,7 +2119,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				// Ensure the image is the correct size.
-				if ((_actualWidth > Gorgon.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
+				if ((_actualWidth > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth) || (_actualHeight > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight) || (_actualWidth < 0) || (_actualHeight < 0))
 					throw new GorgonException(GorgonResult.CannotCreate, "The image size of " + _actualWidth.ToString() + "x" + _actualHeight.ToString() + " is too large/small for the video card.");
 
 				// Load the image.
@@ -2129,7 +2129,7 @@ namespace GorgonLibrary.Graphics
 
 				try
 				{
-					_d3dImage = D3D9.Texture.FromStream(Gorgon.Screen.Device, memoryImage, (int)memoryImage.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
+					_d3dImage = D3D9.Texture.FromStream(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, memoryImage, (int)memoryImage.Length, _actualWidth, _actualHeight, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorKey.ToArgb());
 				}
 				catch (Exception ex)
 				{
@@ -2178,7 +2178,7 @@ namespace GorgonLibrary.Graphics
 		public static bool SupportsFormat(ImageBufferFormats format, ImageType type)
 		{
 			// Check to see if the device can handle the image format.
-			if (!Gorgon.CurrentDriver.ValidImageFormat(format, type))
+			if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.ValidImageFormat(format, type))
 				return false;
 
 			return (ValidateFormat(format, type) == format);
@@ -2429,7 +2429,7 @@ namespace GorgonLibrary.Graphics
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name");
 
-			if (Gorgon.Screen == null)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen == null)
 				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created.");
 
 			_actualHeight = -1;
@@ -2441,7 +2441,7 @@ namespace GorgonLibrary.Graphics
 			// Determine format from the video mode.
 			if (format == ImageBufferFormats.BufferUnknown)
 			{
-				switch (Gorgon.CurrentVideoMode.Format)
+				switch (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentVideoMode.Format)
 				{
 					case BackBufferFormats.BufferRGB888:
 						format = ImageBufferFormats.BufferRGB888X8;
@@ -2555,7 +2555,7 @@ namespace GorgonLibrary.Graphics
 					if (ImageCache.Images.Contains(Name))
 						ImageCache.Images.Remove(Name);
 
-					Gorgon.Log.Print("Destroying image \"{0}\".", GorgonLoggingLevel.Simple, Name);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Destroying image \"{0}\".", GorgonLoggingLevel.Simple, Name);
 				}
 
 				_disposed = true;
@@ -2697,10 +2697,10 @@ namespace GorgonLibrary.Graphics
 			_d3dImage = null;
 
 			// Ensure the image is the correct size.
-			if (width > Gorgon.CurrentDriver.MaximumTextureWidth)
-				width = Gorgon.CurrentDriver.MaximumTextureWidth;
-			if (height > Gorgon.CurrentDriver.MaximumTextureHeight)
-				height = Gorgon.CurrentDriver.MaximumTextureHeight;
+			if (width > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth)
+				width = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth;
+			if (height > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight)
+				height = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight;
 
 			// Set to defaults.
 			if (width < 0)
@@ -2743,7 +2743,7 @@ namespace GorgonLibrary.Graphics
 				width = imageInfo.Width;
 			if (height <= 0)
 				height = imageInfo.Height;
-			_d3dImage = D3D9.Texture.FromMemory(Gorgon.Screen.Device, imageData, width, height, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorkey.ToArgb());
+			_d3dImage = D3D9.Texture.FromMemory(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, imageData, width, height, 1, Usage, Converter.Convert(format), Pool, D3D9.Filter.None, D3D9.Filter.None, colorkey.ToArgb());
 
 			surfaceInfo = _d3dImage.GetLevelDescription(0);
 			_actualWidth = surfaceInfo.Width;

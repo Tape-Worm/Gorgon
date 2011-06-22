@@ -152,6 +152,7 @@
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
     <Compile Include="Collections\GorgonNamedObjectReadOnlyCollection.cs" />
+    <Compile Include="Gorgon.cs" />
     <Compile Include="Diagnostics\GorgonDefaultAppLoop.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
     <Compile Include="Diagnostics\GorgonFrameRate.cs" />
@@ -279,7 +280,6 @@
     <Compile Include="Targets\RenderImage.cs" />
     <Compile Include="Targets\RenderTargetCache.cs" />
     <Compile Include="Targets\RenderWindow.cs" />
-    <Compile Include="Timing\TimingData.cs" />
     <Compile Include="Math\MinMaxRange.cs" />
     <Compile Include="UI\BaseDialog.cs">
       <SubType>Form</SubType>

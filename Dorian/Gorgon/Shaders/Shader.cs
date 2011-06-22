@@ -258,9 +258,9 @@ namespace GorgonLibrary.Graphics
 		void IShaderRenderer.Begin()
 		{
 			if (HasProjectionMatrix)
-				_projectionMatrix.SetValue(Gorgon.CurrentClippingViewport.ProjectionMatrix);
+				_projectionMatrix.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport.ProjectionMatrix);
 			if (HasSpriteImage)
-				_spriteImage.SetValue(Gorgon.Renderer.GetImage(0));
+				_spriteImage.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.GetImage(0));
 
 			OnRenderBegin();
 		}
@@ -299,8 +299,8 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					if (Gorgon.CurrentShader == this)
-						Gorgon.CurrentShader = null;
+					if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentShader == this)
+						Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentShader = null;
 
 					if (ShaderCache.Shaders.Contains(Name))
 						ShaderCache.Shaders.Remove(Name);

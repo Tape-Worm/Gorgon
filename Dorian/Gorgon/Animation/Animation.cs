@@ -582,15 +582,6 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
-        /// Function to advance the animation by the timing data provided.
-        /// </summary>
-        /// <param name="data">Timing data to use.</param>
-        public void Advance(TimingData data)
-        {
-            Advance((float)data.FrameDrawTime);
-        }
-
-        /// <summary>
 		/// Function to reset the animation.
 		/// </summary>
 		public void Reset()

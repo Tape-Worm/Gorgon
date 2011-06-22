@@ -65,15 +65,15 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (Gorgon.CurrentRenderTarget == null)
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == null)
 					return false;
 
-				if (Gorgon.Screen.DeviceNotReset)
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset)
 				{
 					// Reset offsets for global buffers.
 					Geometry.VerticesWritten = 0;
 					Geometry.VertexOffset = 0;
-					Gorgon.GlobalStateSettings.DeviceLost();
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.DeviceLost();
 					return false;
 				}
 
@@ -88,11 +88,11 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if ((Gorgon.Screen == null) || (Gorgon.Screen.DeviceNotReset))
+				if ((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen == null) || (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset))
 					return null;
 
 				if (_device == null)
-					_device = Gorgon.Screen.Device;
+					_device = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device;
 
 				return _device;
 			}
@@ -223,7 +223,7 @@ namespace GorgonLibrary.Graphics
 				{
 					// If null, then use the main default view port.
 					if (value == null)
-						value = Gorgon.CurrentRenderTarget.DefaultView;
+						value = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DefaultView;
 
 					// Set the viewport.
 					if ((_currentView != value) || (value.Updated))
@@ -349,7 +349,7 @@ namespace GorgonLibrary.Graphics
 				return;
 
 			if ((_currentVertexBuffer != vertexData) || (
-				(Gorgon.CurrentDriver.Vendor == 0x8086) && (Gorgon.CurrentDriver.ID < 0x29A2)))		// This is a fix to bypass this check if you're running an older Intel (pre G?965) card.
+				(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.Vendor == 0x8086) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.ID < 0x29A2)))		// This is a fix to bypass this check if you're running an older Intel (pre G?965) card.
 			{
 				_currentVertexBuffer = vertexData;
 
@@ -391,13 +391,13 @@ namespace GorgonLibrary.Graphics
 		{
 			DeviceStateList.DeviceWasReset();
 
-			if ((Gorgon.Screen != null) && (D3DDevice != null))
+			if ((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen != null) && (D3DDevice != null))
 			{
 				// Unbind streams.
 				SetStreamData(null);
 
 				// Turn off all textures.
-				for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
+				for (int i = 0; i < Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages; i++)
 					SetImage(i, null);
 
 				// Turn off current vertex type (should get reset on next render pass).
@@ -405,7 +405,7 @@ namespace GorgonLibrary.Graphics
 				SetIndexBuffer(null);
 
 				// Reset the current render target.
-				Gorgon.CurrentRenderTarget = null;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = null;
 			}
 		}
 
@@ -490,23 +490,23 @@ namespace GorgonLibrary.Graphics
 			if (D3DDevice == null)
 				return;
 
-			if (Gorgon.CurrentRenderTarget == null)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == null)
 				return;
 
 			// Do nothing.
-			if (((clearTargets & ClearTargets.None) == ClearTargets.None) && (Gorgon.CurrentRenderTarget != Gorgon.Screen))
+			if (((clearTargets & ClearTargets.None) == ClearTargets.None) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen))
 				return;
 
 			// The primary window will -always- clear its backbuffer.
-			if (((clearTargets & ClearTargets.BackBuffer) != 0) || (Gorgon.CurrentRenderTarget == Gorgon.Screen))
+			if (((clearTargets & ClearTargets.BackBuffer) != 0) || (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen))
 				flags |= D3D9.ClearFlags.Target;
 
 			// If we have a depth buffer, overwrite it.
-			if (((clearTargets & ClearTargets.DepthBuffer) != 0) && (Gorgon.CurrentRenderTarget.UseDepthBuffer))
+			if (((clearTargets & ClearTargets.DepthBuffer) != 0) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.UseDepthBuffer))
 				flags |= D3D9.ClearFlags.ZBuffer;
 
 			// If we have a stencil buffer, overwrite it.
-			if (((clearTargets & ClearTargets.StencilBuffer) != 0) && (Gorgon.CurrentRenderTarget.UseStencilBuffer))
+			if (((clearTargets & ClearTargets.StencilBuffer) != 0) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.UseStencilBuffer))
 				flags |= D3D9.ClearFlags.Stencil;
 
 			D3DDevice.Clear(flags, color, depthValue, stencilValue);
@@ -518,21 +518,21 @@ namespace GorgonLibrary.Graphics
 		/// <param name="target">Target to page flip.</param>
 		public void Flip(RenderWindow target)
 		{
-			if (Gorgon.Screen == null)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen == null)
 				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created");
 
 			if (target == null)
-				target = Gorgon.Screen;
+				target = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen;
 
 			// Attempt to reset the device if it's in a lost state.
-			if (Gorgon.Screen.DeviceNotReset)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset)
 			{
-				Gorgon.Screen.ResetLostDevice();
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.ResetLostDevice();
 				return;
 			}
 
-			if ((target.D3DFlip() == D3D9.ResultCode.DeviceLost) && (!Gorgon.Screen.DeviceNotReset))
-				Gorgon.Screen.ResetLostDevice();
+			if ((target.D3DFlip() == D3D9.ResultCode.DeviceLost) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset))
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.ResetLostDevice();
 		}
 
 		/// <summary>
@@ -541,7 +541,7 @@ namespace GorgonLibrary.Graphics
 		public void Render()
 		{
 			// Do nothing if the active render target is to be drawn by the user.
-			if ((Gorgon.CurrentRenderTarget == null) || (Geometry.VerticesWritten < 1))
+			if ((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == null) || (Geometry.VerticesWritten < 1))
 				return;
 
 			Render(Geometry.VertexType, Geometry.VertexBuffer, (Geometry.UseIndices ? Geometry.IndexBuffer : null), Geometry.PrimitiveStyle, Geometry.VertexOffset, Geometry.VerticesWritten, (Geometry.UseIndices ? Geometry.IndexOffset : 0), (Geometry.UseIndices ? Geometry.IndicesWritten : 0));
@@ -582,9 +582,9 @@ namespace GorgonLibrary.Graphics
 				SetIndexBuffer(indexBuffer);
 
 			// Begin shader.
-			if (Gorgon.CurrentShader != null)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentShader != null)
 			{
-				IShaderRenderer shader = Gorgon.CurrentShader as IShaderRenderer;
+				IShaderRenderer shader = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentShader as IShaderRenderer;
 				if (shader != null)
 				{
 					shader.Begin();
@@ -605,14 +605,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal Renderer()
 		{
-			Gorgon.Log.Print("Starting renderer...", GorgonLoggingLevel.Simple);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Starting renderer...", GorgonLoggingLevel.Simple);
 
 			if (IsD3DDebug)
-				Gorgon.Log.Print("[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", GorgonLoggingLevel.Verbose);
-#if INCLUDE_D3DREF
-			if (Gorgon.UseReferenceDevice)
-				Gorgon.Log.Print("[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", GorgonLoggingLevel.All);
-#endif
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", GorgonLoggingLevel.Verbose);
 			_vertexTypes = new VertexTypeList();
 
 			// Remove any left over state objects.
@@ -625,7 +621,7 @@ namespace GorgonLibrary.Graphics
 			_currentView = null;
 
 			// Default to windows control colors for the default material.
-			_currentImages = new Image[Gorgon.CurrentDriver.MaximumTextureStages];
+			_currentImages = new Image[Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages];
 
 			// Create render state tracker.
 			_renderStates = new RenderStates();
@@ -643,8 +639,8 @@ namespace GorgonLibrary.Graphics
 			_renderStates.ScissorTesting = false;
 
 			// Set initial layer states.
-			_imageLayerStates = new ImageLayerStates[Gorgon.CurrentDriver.MaximumTextureStages];
-			for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
+			_imageLayerStates = new ImageLayerStates[Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages];
+			for (int i = 0; i < Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages; i++)
 				_imageLayerStates[i] = new ImageLayerStates(i);
 
 			// Set initial state.
@@ -657,7 +653,7 @@ namespace GorgonLibrary.Graphics
 			_imageLayerStates[0].HorizontalAddressing = ImageAddressing.Clamp;
 			_imageLayerStates[0].VerticalAddressing = ImageAddressing.Clamp;
 
-			Gorgon.Log.Print("Renderer successfully initialized.", GorgonLoggingLevel.Intermediate);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Renderer successfully initialized.", GorgonLoggingLevel.Intermediate);
 		}
 		#endregion
 
@@ -678,7 +674,7 @@ namespace GorgonLibrary.Graphics
 				if (_vertexTypes != null)
 					_vertexTypes.Dispose();
 
-				Gorgon.Log.Print("Renderer destroyed.", GorgonLoggingLevel.Simple);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Renderer destroyed.", GorgonLoggingLevel.Simple);
 			}
 
 			DeviceStateList.Clear();

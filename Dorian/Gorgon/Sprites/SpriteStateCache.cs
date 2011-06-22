@@ -72,17 +72,17 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if ((Gorgon.CurrentRenderTarget == null) || (!Gorgon.CurrentRenderTarget.UseDepthBuffer))
+				if ((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == null) || (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.UseDepthBuffer))
 					return false;
 
-				return Gorgon.Renderer.RenderStates.DepthBufferEnabled;
+				return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates.DepthBufferEnabled;
 			}
 			set
 			{
-				if ((Gorgon.CurrentRenderTarget == null) || (!Gorgon.CurrentRenderTarget.UseDepthBuffer))
+				if ((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == null) || (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.UseDepthBuffer))
 					return;
 
-				Gorgon.Renderer.RenderStates.DepthBufferEnabled = true;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates.DepthBufferEnabled = true;
 			}
 		}
 		
@@ -541,9 +541,9 @@ namespace GorgonLibrary.Graphics
 			ImageLayerStates _imageStates;	// Image layer states.
 
 			states = _renderStates;
-			_imageStates = Gorgon.Renderer.ImageLayerStates[0];
+			_imageStates = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates[0];
 
-			if (image != Gorgon.Renderer.GetImage(0))
+			if (image != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.GetImage(0))
 				return true;
 
 			if (renderObject.BorderColor != _imageStates.BorderColor)
@@ -645,8 +645,8 @@ namespace GorgonLibrary.Graphics
 			_globalDepthBias = 0.0f;
 			_globalDepthTestFunction = CompareFunctions.LessThanOrEqual;
 			_globalDepthWriteEnabled = true;
-			_renderStates = Gorgon.Renderer.RenderStates;
-			_imageStates = Gorgon.Renderer.ImageLayerStates[0];
+			_renderStates = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates;
+			_imageStates = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates[0];
 
 			// Create the render manager.
 			DeviceStateList.Add(this);

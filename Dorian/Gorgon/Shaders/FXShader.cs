@@ -171,7 +171,7 @@ namespace GorgonLibrary.Graphics
 				for (int i = 0; i < _currentTechnique.Passes.Count; i++)
 				{
 					_effect.BeginPass(i);
-					Gorgon.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 					_effect.EndPass();
 				}
 			}
@@ -325,7 +325,7 @@ namespace GorgonLibrary.Graphics
 				data.Position = 0;
 
 				// Create the effect.
-				_effect = D3D9.Effect.FromStream(Gorgon.Screen.Device, data, null, null, null, d3dflags, null, out errors);
+				_effect = D3D9.Effect.FromStream(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, data, null, null, null, d3dflags, null, out errors);
 
 				// Add techniques and passes.
 				_techniques.Add(this);
@@ -824,7 +824,7 @@ namespace GorgonLibrary.Graphics
 					stream = new MemoryStream(code);
 					try
 					{
-						_effect = D3D9.Effect.FromStream(Gorgon.Screen.Device, stream, null, null, null, flags, null, out errors);
+						_effect = D3D9.Effect.FromStream(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, stream, null, null, null, flags, null, out errors);
 					}
 					catch (Exception ex)
 					{

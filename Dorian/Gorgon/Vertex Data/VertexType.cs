@@ -101,7 +101,7 @@ namespace GorgonLibrary.Graphics
 					elements[_fields.Count] = D3D9.VertexElement.VertexDeclarationEnd;
 
 					// Create the declaration.
-					_declaration = new D3D9.VertexDeclaration(Gorgon.Screen.Device, elements);
+					_declaration = new D3D9.VertexDeclaration(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, elements);
 
 					_changed = false;
 					_sizeChanged = true;

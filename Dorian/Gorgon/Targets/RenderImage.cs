@@ -62,7 +62,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return Gorgon.Direct3D.CheckDeviceFormat(Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, Converter.Convert(_format), 
+				return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Direct3D.CheckDeviceFormat(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DriverIndex, Driver.DeviceType, Converter.Convert(_format), 
 					D3D9.Usage.QueryPostPixelShaderBlending | D3D9.Usage.RenderTarget, D3D9.ResourceType.Surface, Converter.Convert(_format));
 			}
 		}
@@ -180,8 +180,8 @@ namespace GorgonLibrary.Graphics
 		private void CreateRenderTarget(ImageBufferFormats format, bool useDepthBuffer, bool useStencil, bool preserve)
 		{
 			// Turn off active render target.
-			if (Gorgon.CurrentRenderTarget == this)
-				Gorgon.CurrentRenderTarget = null;
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == this)
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = null;
 
 			SetColorBuffer(null);
 			SetDepthBuffer(null);
@@ -200,7 +200,7 @@ namespace GorgonLibrary.Graphics
 
 			// Get a copy of the color buffer.			
 			SetColorBuffer(_renderTarget.D3DTexture.GetSurfaceLevel(0));
-			Gorgon.Log.Print("Color buffer acquired.", GorgonLoggingLevel.Verbose);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Color buffer acquired.", GorgonLoggingLevel.Verbose);
 
 			// Get stencil type.
 			if ((useDepthBuffer) || (useStencil))
@@ -208,20 +208,20 @@ namespace GorgonLibrary.Graphics
 				UpdateDepthStencilFormat(useStencil, useDepthBuffer);
 				if (_depthFormat != DepthBufferFormats.BufferUnknown)
 				{
-					SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon.Screen.Device, Width, Height, Converter.ConvertDepthFormat(_depthFormat), D3D9.MultisampleType.None, 0, false));
-					Gorgon.Log.Print("Depth buffer acquired: {0}.", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
+					SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, Width, Height, Converter.ConvertDepthFormat(_depthFormat), D3D9.MultisampleType.None, 0, false));
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Depth buffer acquired: {0}.", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
 				}
 				else
-					Gorgon.Log.Print("Could not find suitable depth/stencil format.", GorgonLoggingLevel.Verbose);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Could not find suitable depth/stencil format.", GorgonLoggingLevel.Verbose);
 			}
 
-			Gorgon.Log.Print("Render image: {0}x{1}, Format: {2}, Depth buffer:{3}, Stencil buffer:{4}, Depth Format: {5}.", GorgonLoggingLevel.Intermediate, _renderTarget.ActualWidth, _renderTarget.ActualHeight, _format, useDepthBuffer, useStencil, _depthFormat);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Render image: {0}x{1}, Format: {2}, Depth buffer:{3}, Stencil buffer:{4}, Depth Format: {5}.", GorgonLoggingLevel.Intermediate, _renderTarget.ActualWidth, _renderTarget.ActualHeight, _format, useDepthBuffer, useStencil, _depthFormat);
 
 			// Set default states.
-			Gorgon.Renderer.RenderStates.SetStates();
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates.SetStates();
 			// Set default image layer states.
-			for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-				Gorgon.Renderer.ImageLayerStates[i].SetStates();
+			for (int i = 0; i < Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages; i++)
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates[i].SetStates();
 
 			Refresh();
 		}
@@ -243,10 +243,10 @@ namespace GorgonLibrary.Graphics
 			base.UseDepthBuffer = false;
 
 			// Deny the stencil buffer if it's not supported.
-			if ((!Gorgon.CurrentDriver.SupportStencil) && (usestencil))
+			if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportStencil) && (usestencil))
 			{
 				usestencil = false;
-				Gorgon.Log.Print("Stencil buffer was requested, but the driver doesn't support it.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Stencil buffer was requested, but the driver doesn't support it.", GorgonLoggingLevel.Verbose);
 			}
 
 			if ((usestencil) && (usedepth))
@@ -254,12 +254,12 @@ namespace GorgonLibrary.Graphics
 				// If we want a stencil buffer, find an appropriate format.
 				for (i = 0; i < dsFormats[0].Length; i++)
 				{
-					if (Gorgon.CurrentDriver.DepthFormatSupported(_format, Converter.ConvertDepthFormat(dsFormats[0][i])))
+					if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DepthFormatSupported(_format, Converter.ConvertDepthFormat(dsFormats[0][i])))
 					{
 						_depthFormat = Converter.ConvertDepthFormat(dsFormats[0][i]);
 						base.UseStencilBuffer = true;
 						base.UseDepthBuffer = true;
-						Gorgon.Log.Print("Stencil and depth buffer requested and found.  Using stencil buffer. ({0})", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
+						Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Stencil and depth buffer requested and found.  Using stencil buffer. ({0})", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
 						break;
 					}
 				}
@@ -271,18 +271,18 @@ namespace GorgonLibrary.Graphics
 				// Find depth buffers without a stencil buffer.
 				for (i = 0; i < dsFormats[1].Length; i++)
 				{
-					if (Gorgon.CurrentDriver.DepthFormatSupported(_format, Converter.ConvertDepthFormat(dsFormats[1][i])))
+					if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DepthFormatSupported(_format, Converter.ConvertDepthFormat(dsFormats[1][i])))
 					{
 						_depthFormat = Converter.ConvertDepthFormat(dsFormats[1][i]);
 						base.UseDepthBuffer = true;
-						Gorgon.Log.Print("Stencil buffer not requested or found.  Using depth buffer. ({0}).", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
+						Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Stencil buffer not requested or found.  Using depth buffer. ({0}).", GorgonLoggingLevel.Verbose, _depthFormat.ToString());
 						break;
 					}
 				}
 			}
 
 			if (!UseDepthBuffer)
-				Gorgon.Log.Print("No acceptable depth/stencil buffer found or requested.  Driver may use alternate form of HSR.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("No acceptable depth/stencil buffer found or requested.  Driver may use alternate form of HSR.", GorgonLoggingLevel.Verbose);
 		}
 
 		/// <summary>
@@ -290,7 +290,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public override void Update()
 		{
-			Gorgon.Renderer.Render();
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 		}
 
 		/// <summary>
@@ -313,7 +313,7 @@ namespace GorgonLibrary.Graphics
         public void Blit(float x, float y, float width, float height, Drawing.Color color, BlitterSizeMode mode)
 		{
 			// We shouldn't blit to ourselves.
-			if (Gorgon.CurrentRenderTarget == this)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == this)
 				return;
 
 			// Create new sprite blitter.
@@ -497,7 +497,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Image that will be copied.</param>
 		public void CopyFromImage(Image image)
 		{
-			RenderTarget current = Gorgon.CurrentRenderTarget;		// Current render target.
+			RenderTarget current = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget;		// Current render target.
 			BlendingModes currentMode = BlendingMode;				// Current blending mode.
 
 			if (image == null)
@@ -506,7 +506,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				// Set us as the current target.				
-				Gorgon.CurrentRenderTarget = this;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = this;
 				BlendingMode = BlendingModes.None;
 				image.Blit();
 			}
@@ -514,7 +514,7 @@ namespace GorgonLibrary.Graphics
 			{
 				// Restore.
 				BlendingMode = currentMode;
-				Gorgon.CurrentRenderTarget = current;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = current;
 			}
 		}
 
@@ -557,10 +557,10 @@ namespace GorgonLibrary.Graphics
 		public RenderImage(string name, int width, int height, ImageBufferFormats format, bool useDepthBuffer, bool useStencilBuffer)
 			: base(name,width,height)
 		{
-			Gorgon.Log.Print("Creating rendering image '{0}' ...", GorgonLoggingLevel.Intermediate, name);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Creating rendering image '{0}' ...", GorgonLoggingLevel.Intermediate, name);
 			_depthFormat = DepthBufferFormats.BufferUnknown;
 			_renderTarget = null;
-			Gorgon.Log.Print("Rendering image '{0}' created.", GorgonLoggingLevel.Intermediate, name);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Rendering image '{0}' created.", GorgonLoggingLevel.Intermediate, name);
 
 			// Create render target.
 			CreateRenderTarget(format, useDepthBuffer, useStencilBuffer, false);
@@ -591,16 +591,16 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)
 			{
-				Gorgon.Log.Print("Destroying render image '{0}'.", GorgonLoggingLevel.Intermediate, Name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Destroying render image '{0}'.", GorgonLoggingLevel.Intermediate, Name);
 
 				SetColorBuffer(null);
-				Gorgon.Log.Print("Releasing color buffer.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Releasing color buffer.", GorgonLoggingLevel.Verbose);
 				SetDepthBuffer(null);
-				Gorgon.Log.Print("Releasing depth buffer.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Releasing depth buffer.", GorgonLoggingLevel.Verbose);
 				if (_renderTarget != null)
 					_renderTarget.Dispose();
 
-				Gorgon.Log.Print("Render Image '{0}' destroyed.", GorgonLoggingLevel.Intermediate, Name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Render Image '{0}' destroyed.", GorgonLoggingLevel.Intermediate, Name);
 			}
 
 			_renderTarget = null;
@@ -614,7 +614,7 @@ namespace GorgonLibrary.Graphics
 		public override void DeviceLost()
 		{
 			base.DeviceLost();
-			Gorgon.CurrentRenderTarget = null;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = null;
 
 			// Remove the image since it won't get updated automatically.
 			if (_renderTarget != null)

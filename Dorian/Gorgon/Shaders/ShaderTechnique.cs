@@ -260,9 +260,9 @@ namespace GorgonLibrary.Graphics
 		void IShaderRenderer.Begin()
 		{
 			if (HasProjectionMatrix)
-				_projectionMatrix.SetValue(Gorgon.CurrentClippingViewport.ProjectionMatrix);
+				_projectionMatrix.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport.ProjectionMatrix);
 			if (HasSpriteImage)
-				_spriteImage.SetValue(Gorgon.Renderer.GetImage(0));
+				_spriteImage.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.GetImage(0));
 
 			_owner.D3DEffect.Technique = _effectHandle; 
 			_owner.D3DEffect.Begin(D3D9.FX.None);
@@ -283,7 +283,7 @@ namespace GorgonLibrary.Graphics
 			for (int i = 0; i < _passes.Count; i++)
 			{
 				_owner.D3DEffect.BeginPass(i);
-				Gorgon.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 				_owner.D3DEffect.EndPass();
 			}
 		}
