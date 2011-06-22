@@ -68,11 +68,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-#if INCLUDE_D3DREF
-				return Gorgon.UseReferenceDevice ? D3D9.DeviceType.Reference : D3D9.DeviceType.Hardware;
-#else
 				return D3D9.DeviceType.Hardware;
-#endif
 			}
 		}
 

@@ -96,11 +96,7 @@ namespace GorgonLibrary
 
 				// Only add drivers that support hardware rendering, or if we've chosen the 
 				// reference device upon startup, then allow all drivers.
-#if INCLUDE_D3DREF
-				if (((driverCapabilities.DeviceCaps & D3D9.DeviceCaps.HWRasterization) == D3D9.DeviceCaps.HWRasterization) || (Gorgon.UseReferenceDevice))
-#else
 				if ((driverCapabilities.DeviceCaps & D3D9.DeviceCaps.HWRasterization) == D3D9.DeviceCaps.HWRasterization)
-#endif
 				{
 					Gorgon.Log.Print("Getting video adapter information for device #{0}...", GorgonLoggingLevel.Intermediate, i);
 					driver = new Driver(i);						

@@ -21,18 +21,7 @@ namespace Tester
 
 			try
 			{
-				//Gorgon.Initialize(this);
-
-				//Gorgon.SetMode(this);
-
-				Gorgon.Go((timingData) =>
-				{
-					Gorgon.Screen.Clear();
-					Gorgon.Screen.FilledCircle(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2, 25.0f, Color.Black);
-					Gorgon.Screen.Update();
-					return true;
-				}
-				);
+				Gorgon.Initialize(this);
 			}
 			catch (Exception ex)
 			{
