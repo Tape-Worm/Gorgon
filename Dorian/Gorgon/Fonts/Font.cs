@@ -443,11 +443,11 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) || (Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+				if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTexture) || (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
 					value = Image.ResizePowerOf2(value, _maxImageSize.Height).Width;
 
-				if ((value < 1) || (value > Gorgon.CurrentDriver.MaximumTextureWidth))
-					throw new ArgumentException("Font image width must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureWidth.ToString() + ".");
+				if ((value < 1) || (value > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth))
+					throw new ArgumentException("Font image width must be between 1 - " + Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth.ToString() + ".");
 
 				_maxImageSize = new Drawing.Size(value, _maxImageSize.Height);
 
@@ -466,11 +466,11 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) || (Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+				if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTexture) || (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
 					value = Image.ResizePowerOf2(_maxImageSize.Width, value).Height;
 
-				if ((value < 1) || (value > Gorgon.CurrentDriver.MaximumTextureHeight))
-					throw new ArgumentException("Font image height must be between 1 - " + Gorgon.CurrentDriver.MaximumTextureHeight.ToString() + ".");
+				if ((value < 1) || (value > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight))
+					throw new ArgumentException("Font image height must be between 1 - " + Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight.ToString() + ".");
 
 				_maxImageSize = new Drawing.Size(_maxImageSize.Width, value);
 
@@ -1166,14 +1166,14 @@ namespace GorgonLibrary.Graphics
 				newSize.Height = _maxImageSize.Height;
 
 			// Resize to power of two if the card requires it.
-			if ((!Gorgon.CurrentDriver.SupportNonPowerOfTwoTexture) || (Gorgon.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
+			if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTexture) || (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportNonPowerOfTwoTextureConditional))
 				newSize = Image.ResizePowerOf2(newSize.Width, newSize.Height);
 
 			// Ensure the backing image will fit into the valid texture dimensions allowed by the video card.
-			if (newSize.Width > Gorgon.CurrentDriver.MaximumTextureWidth)
-				newSize.Width = Gorgon.CurrentDriver.MaximumTextureWidth;
-			if (newSize.Height > Gorgon.CurrentDriver.MaximumTextureHeight)
-				newSize.Height = Gorgon.CurrentDriver.MaximumTextureHeight;
+			if (newSize.Width > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth)
+				newSize.Width = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureWidth;
+			if (newSize.Height > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight)
+				newSize.Height = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureHeight;
 			if (newSize.Width < 1)
 				newSize.Width = 1;
 			if (newSize.Height < 1)

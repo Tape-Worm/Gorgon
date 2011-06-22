@@ -152,7 +152,7 @@ namespace GorgonLibrary.Internal
 				}
 
 				// Create the index buffer.
-				_indexBuffer = new D3D9.IndexBuffer(Gorgon.Screen.Device, BufferSize, flags, pool, _indexSize == IndexBufferType.Index16);
+				_indexBuffer = new D3D9.IndexBuffer(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, BufferSize, flags, pool, _indexSize == IndexBufferType.Index16);
 			}
 			catch (Exception ex)
 			{
@@ -284,14 +284,14 @@ namespace GorgonLibrary.Internal
 				_indexType = typeof(ushort);
 			else
 			{
-				if (!Gorgon.CurrentDriver.SupportIndex32)
+				if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportIndex32)
 					throw new ArgumentException("The video card does not support 32 bit indices.", "indexType");
 
 				_indexType = typeof(uint);
 			}
             
             // Force software processing if no transform/lighting acceleration is present.
-			if (!Gorgon.CurrentDriver.HardwareTransformAndLighting)
+			if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.HardwareTransformAndLighting)
 				BufferUsage |= BufferUsages.ForceSoftware;
         
             _indexCount = numindices;

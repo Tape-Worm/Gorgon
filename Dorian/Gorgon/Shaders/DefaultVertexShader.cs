@@ -48,12 +48,12 @@ namespace GorgonLibrary.Graphics
 #if !DEBUG
 				CompileShader("vMain", Gorgon.CurrentDriver.VertexShaderVersion, ShaderCompileOptions.OptimizationLevel3);
 #else
-				CompileShader("vMain", Gorgon.CurrentDriver.VertexShaderVersion, ShaderCompileOptions.Debug);
+				CompileShader("vMain", Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.VertexShaderVersion, ShaderCompileOptions.Debug);
 #endif
 			}
 
 			// Automatically send the default projection matrix for the current render target.
-			Parameters["proj"].SetValue(Gorgon.CurrentRenderTarget.ProjectionMatrix);
+			Parameters["proj"].SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.ProjectionMatrix);
 
 			base.OnRenderBegin();
 		}
@@ -89,7 +89,7 @@ namespace GorgonLibrary.Graphics
 #if !DEBUG
 			CompileShader("vMain", Gorgon.CurrentDriver.VertexShaderVersion, ShaderCompileOptions.OptimizationLevel3);
 #else
-			CompileShader("vMain", Gorgon.CurrentDriver.VertexShaderVersion, ShaderCompileOptions.Debug);
+			CompileShader("vMain", Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.VertexShaderVersion, ShaderCompileOptions.Debug);
 #endif
 		}
 		#endregion

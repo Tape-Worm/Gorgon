@@ -50,8 +50,8 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (Gorgon.CurrentDriver != default(Driver))
-					return Gorgon.CurrentDriver.SupportScissorTesting;
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver != default(Driver))
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportScissorTesting;
 				else
 					return false;
 			}
@@ -66,7 +66,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if ((_viewPort == Rectangle.Empty) || (_updated))
 				{
-					Refresh(Gorgon.CurrentRenderTarget);
+					Refresh(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget);
 					_projectionChanged = true;
 				}
 
@@ -102,7 +102,7 @@ namespace GorgonLibrary.Graphics
 			{
 
 				_windowRect.X = value;
-				Refresh(Gorgon.CurrentRenderTarget);
+				Refresh(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget);
 			}
 		}
 
@@ -119,7 +119,7 @@ namespace GorgonLibrary.Graphics
 			{
 
 				_windowRect.Y = value;
-				Refresh(Gorgon.CurrentRenderTarget);
+				Refresh(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget);
 			}
 		}
 
@@ -137,7 +137,7 @@ namespace GorgonLibrary.Graphics
 
 				_windowRect.Width = value;
 				_projectionChanged = true;
-				Refresh(Gorgon.CurrentRenderTarget);
+				Refresh(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget);
 			}
 		}
 
@@ -154,7 +154,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_windowRect.Height = value;
 				_projectionChanged = true;
-				Refresh(Gorgon.CurrentRenderTarget);
+				Refresh(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget);
 			}
 		}
 
@@ -167,13 +167,13 @@ namespace GorgonLibrary.Graphics
 			{
 				if ((_viewPort == Rectangle.Empty) || (_updated))
 				{
-					this.Refresh(Gorgon.CurrentRenderTarget);
+					this.Refresh(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget);
 					_projectionChanged = true;
 				}
 
 				if (_projectionChanged)
 				{
-					_orthoMatrix = Gorgon.Renderer.CreateOrthoProjectionMatrix(_viewPort.Left, _viewPort.Top, _viewPort.Width, _viewPort.Height);					
+					_orthoMatrix = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.CreateOrthoProjectionMatrix(_viewPort.Left, _viewPort.Top, _viewPort.Width, _viewPort.Height);					
 					_projectionChanged = false;
 				}
 				
@@ -195,7 +195,7 @@ namespace GorgonLibrary.Graphics
 				if ((value.Width != _windowRect.Width) || (value.Height != _windowRect.Height))
 					_projectionChanged = true;
 				_windowRect = value;
-				Refresh(Gorgon.CurrentRenderTarget);
+				Refresh(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget);
 			}
 		}
 
@@ -209,11 +209,11 @@ namespace GorgonLibrary.Graphics
 				Rectangle targetDimensions = Rectangle.Empty;			// Render target dimensions.
 				Rectangle dimensions = Rectangle.Empty;					// Dimensions.
 
-				if (Gorgon.CurrentRenderTarget == null)
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == null)
 					return Rectangle.Empty;
 
 				dimensions = _windowRect;
-				targetDimensions = new Rectangle(0, 0, Gorgon.CurrentRenderTarget.Width, Gorgon.CurrentRenderTarget.Height);
+				targetDimensions = new Rectangle(0, 0, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.Width, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.Height);
 
 				// Clip to the target if necessary.
 				if (!targetDimensions.Contains(dimensions))
@@ -267,7 +267,7 @@ namespace GorgonLibrary.Graphics
 				_projectionChanged = true;
 			_windowRect.Width = width;
 			_windowRect.Height = height;
-			Refresh(Gorgon.CurrentRenderTarget);
+			Refresh(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget);
 		}
 		
 		/// <summary>
@@ -287,7 +287,7 @@ namespace GorgonLibrary.Graphics
 		{
 			Rectangle target;		// Render target dimensions.
 
-			if (!Gorgon.IsInitialized)
+			if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.IsInitialized)
 				return;
 
 			// Do nothing without an active render target.

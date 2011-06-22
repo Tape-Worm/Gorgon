@@ -85,26 +85,26 @@ namespace GorgonLibrary
 			D3D9.Capabilities driverCapabilities;	// Driver capabilities.
 			int i;									// Loop.
 
-			Gorgon.Log.Print("Retrieving driver list...", GorgonLoggingLevel.Intermediate);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Retrieving driver list...", GorgonLoggingLevel.Intermediate);
 
 			ClearItems();
 
 			// Loop through list and build.
-			for (i = 0; i < Gorgon.Direct3D.Adapters.Count; i++)
+			for (i = 0; i < Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Direct3D.Adapters.Count; i++)
 			{
-				driverCapabilities = Gorgon.Direct3D.GetDeviceCaps(i, Driver.DeviceType);
+				driverCapabilities = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Direct3D.GetDeviceCaps(i, Driver.DeviceType);
 
 				// Only add drivers that support hardware rendering, or if we've chosen the 
 				// reference device upon startup, then allow all drivers.
 				if ((driverCapabilities.DeviceCaps & D3D9.DeviceCaps.HWRasterization) == D3D9.DeviceCaps.HWRasterization)
 				{
-					Gorgon.Log.Print("Getting video adapter information for device #{0}...", GorgonLoggingLevel.Intermediate, i);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Getting video adapter information for device #{0}...", GorgonLoggingLevel.Intermediate, i);
 					driver = new Driver(i);						
 					Items.Add(driver);
-					Gorgon.Log.Print("Driver information for {0} retrieved.", GorgonLoggingLevel.Intermediate, Items[Count - 1].Description);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Driver information for {0} retrieved.", GorgonLoggingLevel.Intermediate, Items[Count - 1].Description);
 				}
 			}
-			Gorgon.Log.Print("{0} drivers enumerated.", GorgonLoggingLevel.Simple, Count);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("{0} drivers enumerated.", GorgonLoggingLevel.Simple, Count);
 
             // If we didn't find any adapters that met the hardware only criteria, then quit out.
 			if (Count == 0)

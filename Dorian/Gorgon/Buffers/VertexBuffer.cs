@@ -148,7 +148,7 @@ namespace GorgonLibrary.Internal
 				}
 
 				// Create the vertex buffer.
-				_vertexBuffer = new D3D9.VertexBuffer(Gorgon.Screen.Device, BufferSize, flags, D3D9.VertexFormat.None, pool);
+				_vertexBuffer = new D3D9.VertexBuffer(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, BufferSize, flags, D3D9.VertexFormat.None, pool);
 			}
 			catch (Exception ex)
 			{
@@ -277,7 +277,7 @@ namespace GorgonLibrary.Internal
 			: base(bufferusage)
 		{
 			// Force software processing if no transform/lighting acceleration is present.
-			if (!Gorgon.CurrentDriver.HardwareTransformAndLighting)
+			if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.HardwareTransformAndLighting)
 				BufferUsage |= BufferUsages.ForceSoftware;
 
             _vertexSize = vertexsize;

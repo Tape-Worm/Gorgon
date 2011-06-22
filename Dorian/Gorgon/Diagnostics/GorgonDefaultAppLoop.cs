@@ -26,7 +26,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <returns>TRUE if the application should continue processing, FALSE if not.</returns>
 		public bool ApplicationIdle(GorgonFrameRate timingData)
 		{
-			if (!Gorgon.IsInitialized)
+			if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.IsInitialized)
 				return true;
 
 			// TODO: Maybe put a default logo or timing data if the application can display it.

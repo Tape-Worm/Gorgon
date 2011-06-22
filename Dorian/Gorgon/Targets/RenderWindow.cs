@@ -86,7 +86,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				return Gorgon.Direct3D.CheckDeviceFormat(Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, Converter.Convert(_currentVideoMode.Format), 
+				return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Direct3D.CheckDeviceFormat(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DriverIndex, Driver.DeviceType, Converter.Convert(_currentVideoMode.Format), 
 					D3D9.Usage.QueryPostPixelShaderBlending | D3D9.Usage.RenderTarget, D3D9.ResourceType.Surface, Converter.Convert(_currentVideoMode.Format));
 			}
 		}
@@ -219,7 +219,7 @@ namespace GorgonLibrary.Graphics
 		private void CreateSwapChain(VideoMode mode, bool usedepth, bool usestencil, bool resize, bool preserveBackBuffer)
 		{
 			// Ensure we have the device.
-			if (Gorgon.Screen.DeviceNotReset)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset)
 				return;
 
 			_owner.Resize -= new EventHandler(OnOwnerResized);
@@ -234,14 +234,14 @@ namespace GorgonLibrary.Graphics
 			// Try to create the swap chain.
 			try
 			{
-				_swapChain = new D3D9.SwapChain(Gorgon.Screen.Device, _presentParameters);
+				_swapChain = new D3D9.SwapChain(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _presentParameters);
 			}
 			catch (Exception ex)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, "Error creating the D3D render target object.", ex);
 			}
 
-			Gorgon.Log.Print("Swap chain created.", GorgonLoggingLevel.Verbose);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Swap chain created.", GorgonLoggingLevel.Verbose);
 
 			// Get the color buffer.
 			SetColorBuffer(_swapChain.GetBackBuffer(0));
@@ -249,8 +249,8 @@ namespace GorgonLibrary.Graphics
 			// If we have a Z Buffer, then try to create it.
 			if (_presentParameters.EnableAutoDepthStencil)
 			{
-				SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon.Screen.Device, _currentVideoMode.Width, _currentVideoMode.Height, _presentParameters.AutoDepthStencilFormat, D3D9.MultisampleType.None, 0, false));
-				Gorgon.Log.Print("Depth buffer created.", GorgonLoggingLevel.Verbose);
+				SetDepthBuffer(D3D9.Surface.CreateDepthStencil(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _currentVideoMode.Width, _currentVideoMode.Height, _presentParameters.AutoDepthStencilFormat, D3D9.MultisampleType.None, 0, false));
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Depth buffer created.", GorgonLoggingLevel.Verbose);
 			}
 			else
 				SetDepthBuffer(null);
@@ -264,7 +264,7 @@ namespace GorgonLibrary.Graphics
 
 			_owner.Resize += new EventHandler(OnOwnerResized);
 
-			Gorgon.Log.Print("Swap chain mode {0}x{1}x{2} ({3}) has been set.", GorgonLoggingLevel.Simple, Width, Height, mode.Bpp, mode.Format.ToString());
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Swap chain mode {0}x{1}x{2} ({3}) has been set.", GorgonLoggingLevel.Simple, Width, Height, mode.Bpp, mode.Format.ToString());
 		}
 
 		/// <summary>
@@ -339,10 +339,10 @@ namespace GorgonLibrary.Graphics
 				_owner.Visible = true;
 
 			// Deny the stencil buffer if it's not supported.
-			if ((!Gorgon.CurrentDriver.SupportStencil) && (usestencil))
+			if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportStencil) && (usestencil))
 			{
 				usestencil = false;
-				Gorgon.Log.Print("Stencil buffer was requested, but the driver doesn't support it.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Stencil buffer was requested, but the driver doesn't support it.", GorgonLoggingLevel.Verbose);
 			}
 
 			// Do nothing if we don't want either.
@@ -354,13 +354,13 @@ namespace GorgonLibrary.Graphics
 				// If we want a stencil buffer, find an appropriate format.
 				for (i = 0; i < dsFormats[0].Length; i++)
 				{
-					if ((!_presentParameters.EnableAutoDepthStencil) && (Gorgon.CurrentDriver.DepthFormatSupported(Converter.Convert(_presentParameters.BackBufferFormat), Converter.ConvertDepthFormat(dsFormats[0][i]))))
+					if ((!_presentParameters.EnableAutoDepthStencil) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DepthFormatSupported(Converter.Convert(_presentParameters.BackBufferFormat), Converter.ConvertDepthFormat(dsFormats[0][i]))))
 					{
 						_presentParameters.EnableAutoDepthStencil = true;
 						_presentParameters.AutoDepthStencilFormat = dsFormats[0][i];
 						base.UseStencilBuffer = true;
 						base.UseDepthBuffer = true;
-						Gorgon.Log.Print("Stencil and depth buffer requested and found.  Using stencil buffer. ({0})", GorgonLoggingLevel.Verbose, Converter.ConvertDepthFormat(dsFormats[0][i]).ToString());
+						Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Stencil and depth buffer requested and found.  Using stencil buffer. ({0})", GorgonLoggingLevel.Verbose, Converter.ConvertDepthFormat(dsFormats[0][i]).ToString());
 						break;
 					}
 				}
@@ -372,19 +372,19 @@ namespace GorgonLibrary.Graphics
 				// Find depth buffers without a stencil buffer.
 				for (i = 0; i < dsFormats[1].Length; i++)
 				{
-					if ((!_presentParameters.EnableAutoDepthStencil) && (Gorgon.CurrentDriver.DepthFormatSupported(Converter.Convert(_presentParameters.BackBufferFormat), Converter.ConvertDepthFormat(dsFormats[1][i]))))
+					if ((!_presentParameters.EnableAutoDepthStencil) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DepthFormatSupported(Converter.Convert(_presentParameters.BackBufferFormat), Converter.ConvertDepthFormat(dsFormats[1][i]))))
 					{
 						_presentParameters.EnableAutoDepthStencil = true;
 						_presentParameters.AutoDepthStencilFormat = dsFormats[1][i];
 						base.UseDepthBuffer = true;
-						Gorgon.Log.Print("Stencil buffer not requested or found.  Using depth buffer. ({0}).", GorgonLoggingLevel.Verbose, Converter.ConvertDepthFormat(dsFormats[1][i]).ToString());
+						Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Stencil buffer not requested or found.  Using depth buffer. ({0}).", GorgonLoggingLevel.Verbose, Converter.ConvertDepthFormat(dsFormats[1][i]).ToString());
 						break;
 					}
 				}
 			}
 
 			if (!_presentParameters.EnableAutoDepthStencil)
-				Gorgon.Log.Print("No acceptable depth/stencil buffer found or requested.  Driver may use alternate form of HSR.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("No acceptable depth/stencil buffer found or requested.  Driver may use alternate form of HSR.", GorgonLoggingLevel.Verbose);
 		}
 
 		/// <summary>
@@ -399,13 +399,13 @@ namespace GorgonLibrary.Graphics
 		protected virtual void SetPresentParams(VideoMode mode, bool usewindow, bool resize, int resizewidth, int resizeheight, bool preserveBackBuffer)
 		{
 			// Make sure the desktop can be used for rendering.
-			if ((usewindow) && (!Gorgon.CurrentDriver.DesktopFormatSupported(mode)))
+			if ((usewindow) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DesktopFormatSupported(mode)))
 				throw new ArgumentException("The desktop video mode (" + mode.ToString() + ") will not support the device object.");
 
 			if (!resize)
-				Gorgon.Log.Print("Setting swap chain to {0}x{1}x{2} ({3}) on '{4}'.", GorgonLoggingLevel.Intermediate, mode.Width, mode.Height, mode.Bpp, mode.Format.ToString(), Name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Setting swap chain to {0}x{1}x{2} ({3}) on '{4}'.", GorgonLoggingLevel.Intermediate, mode.Width, mode.Height, mode.Bpp, mode.Format.ToString(), Name);
 			else
-				Gorgon.Log.Print("Resizing swap chain to {0}x{1}x{2} ({3}) on '{4}'.", GorgonLoggingLevel.Intermediate, resizewidth, resizeheight, mode.Bpp, mode.Format.ToString(), Name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Resizing swap chain to {0}x{1}x{2} ({3}) on '{4}'.", GorgonLoggingLevel.Intermediate, resizewidth, resizeheight, mode.Bpp, mode.Format.ToString(), Name);
 
 			// Don't go too small.
 			if (resizewidth < 32)
@@ -449,7 +449,7 @@ namespace GorgonLibrary.Graphics
 				_currentVideoMode.Width = resizewidth;
 				_currentVideoMode.Height = resizeheight;
 			}
-			_currentVideoMode.RefreshRate = Gorgon.DesktopVideoMode.RefreshRate;
+			_currentVideoMode.RefreshRate = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.RefreshRate;
 			_currentVideoMode.Format = mode.Format;
 
 			if (_presentParameters.SwapEffect == D3D9.SwapEffect.Copy)
@@ -470,8 +470,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public override void Update()
 		{
-			Gorgon.Renderer.Render();
-			Gorgon.Renderer.Flip(this);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Flip(this);
 		}
 
 		/// <summary>
@@ -516,12 +516,12 @@ namespace GorgonLibrary.Graphics
 			if (RenderTargetCache.Targets.Contains(name))
 				throw new ArgumentException("'" + name + "' already exists.");
 
-			Gorgon.Log.Print("Creating rendering window '{0}' ...", GorgonLoggingLevel.Intermediate, name);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Creating rendering window '{0}' ...", GorgonLoggingLevel.Intermediate, name);
 
 			_owner = owner;
 
 			// Make sure we're in windowed mode if we've already set the primary window.
-			if ((Gorgon.Screen != null) && (!Gorgon.Screen.Windowed))
+			if ((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen != null) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Windowed))
 				throw new InvalidOperationException("Cannot create multiple swapchains while in full-screen mode.");
 
 			// Create presentation parameters.
@@ -544,14 +544,14 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Get settings from current desktop video mode.
-			_requestedVideoMode = Gorgon.DesktopVideoMode;
-			_currentVideoMode = Gorgon.DesktopVideoMode;
+			_requestedVideoMode = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode;
+			_currentVideoMode = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode;
 
 			if (IntPtr.Size == 4)
-				Gorgon.Log.Print("Bound to control: {0} (0x{1:x8}) of type {2}.  Parent form: {3} (0x{4:x8})", GorgonLoggingLevel.Verbose, owner.Name, owner.Handle.ToInt32(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt32().ToString("x").PadLeft(8, '0'));
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Bound to control: {0} (0x{1:x8}) of type {2}.  Parent form: {3} (0x{4:x8})", GorgonLoggingLevel.Verbose, owner.Name, owner.Handle.ToInt32(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt32().ToString("x").PadLeft(8, '0'));
 			else
-				Gorgon.Log.Print("Bound to control: {0} (0x{1:x16}) of type {2}.  Parent form: {3} (0x{4:x16})", GorgonLoggingLevel.Verbose, owner.Name, owner.Handle.ToInt64(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt64().ToString("x").PadLeft(16, '0'));
-			Gorgon.Log.Print("Rendering window '{0}' created.", GorgonLoggingLevel.Intermediate, name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Bound to control: {0} (0x{1:x16}) of type {2}.  Parent form: {3} (0x{4:x16})", GorgonLoggingLevel.Verbose, owner.Name, owner.Handle.ToInt64(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt64().ToString("x").PadLeft(16, '0'));
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Rendering window '{0}' created.", GorgonLoggingLevel.Intermediate, name);
 		}
 
 		/// <summary>
@@ -579,12 +579,12 @@ namespace GorgonLibrary.Graphics
 			if (RenderTargetCache.Targets.Contains(name))
 				throw new ArgumentException("'" + name + "' already exists.");
 
-			Gorgon.Log.Print("Creating rendering window '{0}' ...", GorgonLoggingLevel.Intermediate, name);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Creating rendering window '{0}' ...", GorgonLoggingLevel.Intermediate, name);
 
 			_owner = owner;
 
 			// Make sure we're in windowed mode if we've already set the primary window.
-			if ((Gorgon.Screen != null) && (!Gorgon.Screen.Windowed))
+			if ((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen != null) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Windowed))
 				throw new InvalidOperationException("Cannot create multiple swapchains while in full-screen mode.");
 
 			// Create presentation parameters.
@@ -607,14 +607,14 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Get settings from current desktop video mode.
-			_requestedVideoMode = Gorgon.DesktopVideoMode;
-			_currentVideoMode = Gorgon.DesktopVideoMode;
+			_requestedVideoMode = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode;
+			_currentVideoMode = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode;
 
 			if (IntPtr.Size == 4)
-				Gorgon.Log.Print("Bound to control: {0} (0x{1:x8}) of type {2}.  Parent form: {3} (0x{4:x8})", GorgonLoggingLevel.Verbose, owner.Name, owner.Handle.ToInt32(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt32().ToString("x").PadLeft(8, '0'));
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Bound to control: {0} (0x{1:x8}) of type {2}.  Parent form: {3} (0x{4:x8})", GorgonLoggingLevel.Verbose, owner.Name, owner.Handle.ToInt32(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt32().ToString("x").PadLeft(8, '0'));
 			else
-				Gorgon.Log.Print("Bound to control: {0} (0x{1:x16}) of type {2}.  Parent form: {3} (0x{4:x16})", GorgonLoggingLevel.Verbose, owner.Name, owner.Handle.ToInt64(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt64().ToString("x").PadLeft(16, '0'));
-			Gorgon.Log.Print("Rendering window '{0}' created.", GorgonLoggingLevel.Intermediate, name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Bound to control: {0} (0x{1:x16}) of type {2}.  Parent form: {3} (0x{4:x16})", GorgonLoggingLevel.Verbose, owner.Name, owner.Handle.ToInt64(), owner.GetType().ToString(), _ownerForm.Name, _ownerForm.Handle.ToInt64().ToString("x").PadLeft(16, '0'));
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Rendering window '{0}' created.", GorgonLoggingLevel.Intermediate, name);
 
 			// Create the swap chain.
 			CreateSwapChain(new VideoMode(width, height, 0, format), useDepth, useStencil, false, preserveBackBuffer);
@@ -661,7 +661,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="height">Height of the render window.</param>
 		/// <param name="preserveBackBuffer">TRUE to preserve the contents of the back buffer when the target is updated, FALSE to discard.</param>
 		public RenderWindow(string name, Control owner, int width, int height, bool preserveBackBuffer)
-			: this(name, owner, width, height, Gorgon.DesktopVideoMode.Format, false, false, preserveBackBuffer)
+			: this(name, owner, width, height, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.Format, false, false, preserveBackBuffer)
 		{
 		}
 
@@ -672,7 +672,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="owner">Owning window of this render target.</param>
 		/// <param name="preserveBackBuffer">TRUE to preserve the contents of the back buffer when the target is updated, FALSE to discard.</param>
 		public RenderWindow(string name, Control owner, bool preserveBackBuffer)
-			: this(name, owner, owner.Width, owner.Height, Gorgon.DesktopVideoMode.Format, false, false, preserveBackBuffer)
+			: this(name, owner, owner.Width, owner.Height, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.Format, false, false, preserveBackBuffer)
 		{
 		}
 
@@ -686,29 +686,29 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)			
 			{
-				Gorgon.Log.Print("Destroying render window '{0}'...", GorgonLoggingLevel.Intermediate, Name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Destroying render window '{0}'...", GorgonLoggingLevel.Intermediate, Name);
 
 				// Remove resizing handler.
 				_owner.Resize -= new EventHandler(OnOwnerResized);
 
 				// Remove buffer hooks.
 				SetColorBuffer(null);
-				Gorgon.Log.Print("Color buffer destroyed.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Color buffer destroyed.", GorgonLoggingLevel.Verbose);
 
 				SetDepthBuffer(null);
-				Gorgon.Log.Print("Depth buffer destroyed.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Depth buffer destroyed.", GorgonLoggingLevel.Verbose);
 
 				if (_swapChain != null)
 				{
 					_swapChain.Dispose();
-					Gorgon.Log.Print("Swap chain destroyed.", GorgonLoggingLevel.Verbose);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Swap chain destroyed.", GorgonLoggingLevel.Verbose);
 				}
 
 				// Turn off the active render target.
-				if (Gorgon.CurrentRenderTarget == this)
-					Gorgon.CurrentRenderTarget = null;
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget == this)
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = null;
 
-				Gorgon.Log.Print("Render window '{0}' destroyed.", GorgonLoggingLevel.Intermediate, Name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Render window '{0}' destroyed.", GorgonLoggingLevel.Intermediate, Name);
 			}			
 
 			// Do unmanaged clean up.
@@ -723,7 +723,7 @@ namespace GorgonLibrary.Graphics
 		public override void DeviceLost()
 		{
 			base.DeviceLost();
-			Gorgon.CurrentRenderTarget = null;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = null;
 
 			SetDepthBuffer(null);
 			SetColorBuffer(null);

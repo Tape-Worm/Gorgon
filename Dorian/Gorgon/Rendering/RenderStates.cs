@@ -83,7 +83,7 @@ namespace GorgonLibrary.Internal
 				if ((Device == null) || (!_enableStateSetting))
 					return false;
 
-				return !Gorgon.Screen.DeviceNotReset;
+				return !Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset;
 			}
 		}
 
@@ -94,11 +94,11 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				if (Gorgon.Screen == null)
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen == null)
 					return null;
 
 				if (_device == null)
-					_device = Gorgon.Screen.Device;
+					_device = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device;
 
 				return _device;
 			}
@@ -269,7 +269,7 @@ namespace GorgonLibrary.Internal
 				// Reset the scissor rectangle.
 				_scissorRectangle = Drawing.Rectangle.Empty;
 
-				if (Gorgon.CurrentDriver.SupportScissorTesting)
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportScissorTesting)
 				{
 					SetScissorTest(value);
 					_scissorTest = value;
@@ -293,7 +293,7 @@ namespace GorgonLibrary.Internal
 				if (value == _scissorRectangle)
 					return;
 
-				if (Gorgon.CurrentDriver.SupportScissorTesting)
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportScissorTesting)
 				{
 					SetScissorRectangle(value);
 					_scissorRectangle = value;
@@ -529,8 +529,8 @@ namespace GorgonLibrary.Internal
 				if (value < 1.0f)
 					value = 1.0f;
 
-				if (value > Gorgon.CurrentDriver.MaximumPointSize)
-					value = Gorgon.CurrentDriver.MaximumPointSize;
+				if (value > Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumPointSize)
+					value = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumPointSize;
 				SetVertexPointSize(value);
 				_vertexPointSize = value;
 			}

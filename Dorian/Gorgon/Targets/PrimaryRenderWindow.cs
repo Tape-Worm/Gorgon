@@ -186,9 +186,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (InheritClearFlags)
-					return (Gorgon.ClearEachFrame | ClearTargets.BackBuffer) & ~ClearTargets.None;
-
 				return base.ClearEachFrame;
 			}
 			set
@@ -226,7 +223,7 @@ namespace GorgonLibrary.Graphics
 				// Force windowed mode if we're on a control.
 				if ((!(_owner is Form)) && (!value))
 				{
-					Gorgon.Log.Print("Cannot go to full screen mode with render target bound to a child control.", GorgonLoggingLevel.Verbose);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Cannot go to full screen mode with render target bound to a child control.", GorgonLoggingLevel.Verbose);
 					_windowedMode = true;
 					return;
 				}
@@ -238,7 +235,7 @@ namespace GorgonLibrary.Graphics
 					{
 						if (target is RenderWindow)
 						{
-							Gorgon.Log.Print("Cannot go to full screen mode with additional render target windows present.", GorgonLoggingLevel.Verbose);
+							Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Cannot go to full screen mode with additional render target windows present.", GorgonLoggingLevel.Verbose);
 							_windowedMode = true;
 							return;
 						}
@@ -277,37 +274,37 @@ namespace GorgonLibrary.Graphics
 				return;
 
 			// Draw background.
-			Gorgon.CurrentRenderTarget.BeginDrawing();
-			lastBlend = Gorgon.CurrentRenderTarget.BlendingMode;
-			lastDepthCompare = Gorgon.CurrentRenderTarget.DepthTestFunction;
-			Gorgon.CurrentRenderTarget.DepthTestFunction = CompareFunctions.Always;
-			Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
-			Gorgon.CurrentRenderTarget.FilledRectangle(0, 0, Gorgon.CurrentRenderTarget.Width, 80, Drawing.Color.FromArgb(160, Drawing.Color.Black));
-			Gorgon.CurrentRenderTarget.HorizontalLine(0, 80, Gorgon.CurrentRenderTarget.Width, Drawing.Color.White);
-			Gorgon.CurrentRenderTarget.BlendingMode = lastBlend;
-			Gorgon.CurrentRenderTarget.DepthTestFunction = lastDepthCompare;
-			Gorgon.CurrentRenderTarget.EndDrawing();
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.BeginDrawing();
+			lastBlend = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.BlendingMode;
+			lastDepthCompare = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DepthTestFunction;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DepthTestFunction = CompareFunctions.Always;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.FilledRectangle(0, 0, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.Width, 80, Drawing.Color.FromArgb(160, Drawing.Color.Black));
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.HorizontalLine(0, 80, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.Width, Drawing.Color.White);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.BlendingMode = lastBlend;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DepthTestFunction = lastDepthCompare;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.EndDrawing();
 
 			// Reset the clipping view.			
-			if (Gorgon.CurrentClippingViewport != DefaultView)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport != DefaultView)
 			{
-				lastClip = Gorgon.CurrentClippingViewport;
-				Gorgon.CurrentClippingViewport = null;
+				lastClip = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport = null;
 			}
 
-			if (_logoStats.Color != Gorgon.FrameStatsTextColor)
-				_logoStats.Color = Gorgon.FrameStatsTextColor;
-			_logoStats.Text = "Frame draw time: " + Convert.ToSingle(Gorgon.FrameStats.FrameDrawTime).ToString("0.0") + "ms\n" +
-								"Current FPS: " + Gorgon.FrameStats.CurrentFps.ToString("0.0") + "\n" +
-								"Average FPS: " + Gorgon.FrameStats.AverageFps.ToString("0.0") + "\n" +
-								"Highest FPS: " + Gorgon.FrameStats.HighestFps.ToString("0.0") + "\n" +
-								"Lowest FPS: " + Gorgon.FrameStats.LowestFps.ToString("0.0") + "\n";
+			if (_logoStats.Color != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.FrameStatsTextColor)
+				_logoStats.Color = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.FrameStatsTextColor;
+			//_logoStats.Text = "Frame draw time: " + Convert.ToSingle(Gorgon.FrameStats.FrameDrawTime).ToString("0.0") + "ms\n" +
+			//                    "Current FPS: " + Gorgon.FrameStats.CurrentFps.ToString("0.0") + "\n" +
+			//                    "Average FPS: " + Gorgon.FrameStats.AverageFps.ToString("0.0") + "\n" +
+			//                    "Highest FPS: " + Gorgon.FrameStats.HighestFps.ToString("0.0") + "\n" +
+			//                    "Lowest FPS: " + Gorgon.FrameStats.LowestFps.ToString("0.0") + "\n";
 			_logoStats.DepthTestFunction = CompareFunctions.Always;
 			_logoStats.Draw();
 
 			// Reset the clipper to the previous value.
 			if (lastClip != null)
-				Gorgon.CurrentClippingViewport = lastClip;			
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport = lastClip;			
 		}
 
 		/// <summary>
@@ -317,14 +314,14 @@ namespace GorgonLibrary.Graphics
 		{
 			Viewport lastClip = null;	// Last clipping view.
 
-			if ((_logoSprite == null) || (_logoImage == null) || (this != Gorgon.Screen))
+			if ((_logoSprite == null) || (_logoImage == null) || (this != Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen))
 				return;
 
 			// Reset the clipping view.
-			if (Gorgon.CurrentClippingViewport != DefaultView)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport != DefaultView)
 			{
-				lastClip = Gorgon.CurrentClippingViewport;
-				Gorgon.CurrentClippingViewport = DefaultView;
+				lastClip = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport = DefaultView;
 			}
 
 			_logoSprite.SetPosition(Width - _logoSprite.Width, Height - _logoSprite.Height);
@@ -336,7 +333,7 @@ namespace GorgonLibrary.Graphics
 
 			// Reset the clipper to the previous value.
 			if (lastClip != null)
-				Gorgon.CurrentClippingViewport = lastClip;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport = lastClip;
 		}
 
 		/// <summary>
@@ -391,10 +388,10 @@ namespace GorgonLibrary.Graphics
 			_allowResizeEvent = false;
 
 			// Do not perform a reset while minimized.
-			Gorgon.Log.Print( "Resetting device...", GorgonLoggingLevel.Verbose);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print( "Resetting device...", GorgonLoggingLevel.Verbose);
 
 			// Force required resources to free.
-			Gorgon.OnDeviceLost();
+			//Gorgon.OnDeviceLost();
 
 			// Do not change parameters while minimized.
 			if (_ownerForm.WindowState != FormWindowState.Minimized)
@@ -424,31 +421,31 @@ namespace GorgonLibrary.Graphics
 			if ((_presentParameters.Windowed) && (_owner is Form) && (!resize))
 			{
 				_ownerForm.Hide();
-				_ownerForm = Gorgon.Screen.OwnerForm;
+				_ownerForm = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.OwnerForm;
 				_ownerForm.MinimizeBox = _formSettings.MinimizeBox;
 				_ownerForm.MaximizeBox = _formSettings.MaximizeBox;
 				_ownerForm.ControlBox = _formSettings.ControlBox;
 				_ownerForm.TopMost = _formSettings.TopMost;
 				_ownerForm.FormBorderStyle = _formSettings.Style;
-				_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
+				_ownerForm.SetDesktopLocation((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
 				_ownerForm.Show();
 			}
 
-			Gorgon.Log.Print("Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", GorgonLoggingLevel.Verbose, Gorgon.Screen.Mode.Width, Gorgon.Screen.Mode.Height, Gorgon.Screen.Mode.Bpp, Gorgon.Screen.Mode.RefreshRate, Gorgon.Screen.Mode.Format.ToString());
-			Gorgon.Log.Print("Device reset.", GorgonLoggingLevel.Verbose);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been reset.", GorgonLoggingLevel.Verbose, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Mode.Width, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Mode.Height, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Mode.Bpp, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Mode.RefreshRate, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Mode.Format.ToString());
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Device reset.", GorgonLoggingLevel.Verbose);
 
 			// Reset render states to their previous values.
-			Gorgon.Renderer.RenderStates.SetStates();
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates.SetStates();
 
 			// Set default image layer states.
-			for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-				Gorgon.Renderer.ImageLayerStates[i].SetStates();
+			for (int i = 0; i < Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages; i++)
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates[i].SetStates();
 
 			// Set the view matrix.
 			_device.SetTransform(D3D9.TransformState.View, DX.Matrix.Identity);
 
 			// Restore device state if reset was successful.
-			Gorgon.OnDeviceReset();
+			//Gorgon.OnDeviceReset();
 
 			_allowResizeEvent = true;
 		}
@@ -474,7 +471,7 @@ namespace GorgonLibrary.Graphics
 			// Ensure we need to intercept this event.
 			if (_allowResizeEvent)
 			{
-				if ((!Gorgon.FastResize) && (_device != null))
+				if ((!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.FastResize) && (_device != null))
 				{
                     DX.Result level;                // Cooperative level.
 
@@ -514,7 +511,7 @@ namespace GorgonLibrary.Graphics
 				if (_device != null)
 					_device.Dispose();
 
-				Gorgon.Log.Print("Direct 3D device destroyed.", GorgonLoggingLevel.Intermediate);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Direct 3D device destroyed.", GorgonLoggingLevel.Intermediate);
 				_deviceWasLost = true;
 
 				if (_owner is Form)
@@ -539,18 +536,18 @@ namespace GorgonLibrary.Graphics
 		protected override void SetPresentParams(VideoMode mode, bool usewindow, bool resize, int resizewidth, int resizeheight, bool preserveBackBuffer)
 		{
 			// Make sure the desktop can be used for rendering.
-			if ((usewindow) && (!Gorgon.CurrentDriver.DesktopFormatSupported(mode)))
+			if ((usewindow) && (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DesktopFormatSupported(mode)))
 				throw new ArgumentException("The desktop video mode (" + mode.ToString() + ") will not support the device object.");
 
 			if (!resize)
 			{
 				if (!usewindow)
-					Gorgon.Log.Print("Setting fullscreen mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Setting fullscreen mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 				else
-					Gorgon.Log.Print("Setting windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Setting windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, mode.Width, mode.Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 			}
 			else
-				Gorgon.Log.Print("Resizing windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, resizewidth, resizeheight, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Resizing windowed mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz on '{5}'.", GorgonLoggingLevel.Simple, resizewidth, resizeheight, mode.Bpp, mode.RefreshRate, mode.Format.ToString(), Name);
 
 			// Don't go too small.
 			if (resizewidth < 32)
@@ -587,7 +584,7 @@ namespace GorgonLibrary.Graphics
 					_ownerForm.FormBorderStyle = FormBorderStyle.None;
 
 					// Make sure we can reach this video mode.
-					_currentVideoMode = Gorgon.Drivers[Gorgon.CurrentDriver.DriverName].VideoModes[mode];
+					_currentVideoMode = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Drivers[Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DriverName].VideoModes[mode];
 				}
 				else
 				{
@@ -601,7 +598,7 @@ namespace GorgonLibrary.Graphics
 						_currentVideoMode.Width = resizewidth;
 						_currentVideoMode.Height = resizeheight;
 					}
-					_currentVideoMode.RefreshRate = Gorgon.DesktopVideoMode.RefreshRate;
+					_currentVideoMode.RefreshRate = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.RefreshRate;
 					_currentVideoMode.Format = mode.Format;
 				}
 
@@ -627,7 +624,7 @@ namespace GorgonLibrary.Graphics
 					_currentVideoMode.Width = resizewidth;
 					_currentVideoMode.Height = resizeheight;
 				}
-				_currentVideoMode.RefreshRate = Gorgon.DesktopVideoMode.RefreshRate;
+				_currentVideoMode.RefreshRate = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.RefreshRate;
 				_currentVideoMode.Format = mode.Format;
 			}
 
@@ -643,13 +640,13 @@ namespace GorgonLibrary.Graphics
 				// Set up presentation delays.
 				if (_VSyncInterval != VSyncIntervals.IntervalNone)
 				{
-					Gorgon.Log.Print("VSync enabled ({0}).", GorgonLoggingLevel.Verbose, _VSyncInterval.ToString());
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("VSync enabled ({0}).", GorgonLoggingLevel.Verbose, _VSyncInterval.ToString());
 					_presentParameters.PresentationInterval = Converter.Convert(_VSyncInterval);
 					_presentParameters.FullScreenRefreshRateInHertz = _currentVideoMode.RefreshRate;
 				}
 				else
 				{
-					Gorgon.Log.Print("VSync disabled.", GorgonLoggingLevel.Verbose);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("VSync disabled.", GorgonLoggingLevel.Verbose);
 					_presentParameters.PresentationInterval = Converter.Convert(VSyncIntervals.IntervalNone);
 					_presentParameters.FullScreenRefreshRateInHertz = 0;
 				}
@@ -657,7 +654,7 @@ namespace GorgonLibrary.Graphics
 			else
 			{
 				// Default to immediate presentation for windowed mode.
-				Gorgon.Log.Print("VSync is disabled in windowed mode.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("VSync is disabled in windowed mode.", GorgonLoggingLevel.Verbose);
 				_presentParameters.PresentationInterval = D3D9.PresentInterval.Immediate;
 				_presentParameters.FullScreenRefreshRateInHertz = 0;
 			}
@@ -682,8 +679,8 @@ namespace GorgonLibrary.Graphics
 			DeviceLost();
 
 			// Show the form if it's hidden.
-			if (!Gorgon.Screen.OwnerForm.Visible)
-				Gorgon.Screen.OwnerForm.Visible = true;
+			if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.OwnerForm.Visible)
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.OwnerForm.Visible = true;
 
 			// Turn off resizing handler.
 			_allowResizeEvent = false;
@@ -696,19 +693,19 @@ namespace GorgonLibrary.Graphics
 			_VSyncInterval = vSyncInterval;
 
 			// If we don't support the requested vsync setting, then default to immediate.
-			if ((_VSyncInterval & Gorgon.CurrentDriver.PresentIntervalSupport) == 0)
+			if ((_VSyncInterval & Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.PresentIntervalSupport) == 0)
 			{
 				_VSyncInterval = VSyncIntervals.IntervalNone;
-				Gorgon.Log.Print("Requested interval not available.", GorgonLoggingLevel.Verbose);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Requested interval not available.", GorgonLoggingLevel.Verbose);
 			}
 
-			Gorgon.Log.Print("Requested vertical sync interval: {0}.  Final interval: {1}", GorgonLoggingLevel.Verbose, vSyncInterval.ToString(), _VSyncInterval.ToString());
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Requested vertical sync interval: {0}.  Final interval: {1}", GorgonLoggingLevel.Verbose, vSyncInterval.ToString(), _VSyncInterval.ToString());
 
 			if (!_windowedMode)
 			{
 				if (!(_owner is Form))
 				{
-					Gorgon.Log.Print("Cannot go to full screen mode with primary render target bound to a child control.", GorgonLoggingLevel.Verbose);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Cannot go to full screen mode with primary render target bound to a child control.", GorgonLoggingLevel.Verbose);
 					_windowedMode = true;
 				}
 				else
@@ -719,7 +716,7 @@ namespace GorgonLibrary.Graphics
 					{
 						if (target is RenderWindow)
 						{
-							Gorgon.Log.Print("Cannot go to full screen mode with additional render target windows present.", GorgonLoggingLevel.Verbose);
+							Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Cannot go to full screen mode with additional render target windows present.", GorgonLoggingLevel.Verbose);
 							_windowedMode = true;
 							break;
 						}
@@ -733,30 +730,30 @@ namespace GorgonLibrary.Graphics
 			// We may need to force a reset.
 			if (!dontCreate)
 			{
-				Gorgon.Log.Print("Creating Direct 3D device object...", GorgonLoggingLevel.Intermediate);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Creating Direct 3D device object...", GorgonLoggingLevel.Intermediate);
 
 				// Center on screen.
 				if (_presentParameters.Windowed)
-					_ownerForm.SetDesktopLocation((Gorgon.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
+					_ownerForm.SetDesktopLocation((Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.Width / 2) - (_ownerForm.Width / 2), (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.DesktopVideoMode.Height / 2) - (_ownerForm.Height / 2));
 
 				flags = D3D9.CreateFlags.FpuPreserve | D3D9.CreateFlags.Multithreaded;
 
 				// Determine processing.
-				if (Gorgon.CurrentDriver.HardwareTransformAndLighting)
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.HardwareTransformAndLighting)
 				{
 					flags |= D3D9.CreateFlags.HardwareVertexProcessing;
-					Gorgon.Log.Print("Using hardware vertex processing.", GorgonLoggingLevel.Verbose);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Using hardware vertex processing.", GorgonLoggingLevel.Verbose);
 				}
 				else
 				{
 					flags |= D3D9.CreateFlags.SoftwareVertexProcessing;
-					Gorgon.Log.Print("Using software vertex processing.", GorgonLoggingLevel.Verbose);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Using software vertex processing.", GorgonLoggingLevel.Verbose);
 				}
 
 				try
 				{
 					// Create the device.
-					_device = new D3D9.Device(Gorgon.Direct3D, Gorgon.CurrentDriver.DriverIndex, Driver.DeviceType, _ownerForm.Handle, flags, _presentParameters);
+					_device = new D3D9.Device(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Direct3D, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.DriverIndex, Driver.DeviceType, _ownerForm.Handle, flags, _presentParameters);
 				}
 				catch (Exception ex)
 				{
@@ -766,13 +763,13 @@ namespace GorgonLibrary.Graphics
 
 
 				// Set default states.
-				Gorgon.Renderer.RenderStates.SetStates();
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates.SetStates();
 
 				// Set default image layer states.
-				for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-					Gorgon.Renderer.ImageLayerStates[i].SetStates();
+				for (int i = 0; i < Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages; i++)
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates[i].SetStates();
 
-				Gorgon.Log.Print("Direct 3D device object created.", GorgonLoggingLevel.Intermediate);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Direct 3D device object created.", GorgonLoggingLevel.Intermediate);
 
 				_allowResizeEvent = true;
 				SetDimensions(_currentVideoMode.Width, _currentVideoMode.Height);
@@ -784,12 +781,12 @@ namespace GorgonLibrary.Graphics
 				if (this._presentParameters.AutoDepthStencilFormat != D3D9.Format.Unknown)
 				{
 					SetDepthBuffer(_device.DepthStencilSurface);
-					Gorgon.Renderer.RenderStates.DepthBufferEnabled = true;
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates.DepthBufferEnabled = true;
 				}
 				else
 				{
 					SetDepthBuffer(null);
-					Gorgon.Renderer.RenderStates.DepthBufferEnabled = false;
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates.DepthBufferEnabled = false;
 				}
 
 				// Set the view matrix.
@@ -811,7 +808,7 @@ namespace GorgonLibrary.Graphics
 				DeviceReset();
 			}
 
-			Gorgon.Log.Print("Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been set.", GorgonLoggingLevel.Simple, Width, Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString());
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Video mode {0}x{1}x{2} ({4}) Refresh Rate: {3}Hz has been set.", GorgonLoggingLevel.Simple, Width, Height, mode.Bpp, mode.RefreshRate, mode.Format.ToString());
 		}
 
 		/// <summary>
@@ -842,9 +839,9 @@ namespace GorgonLibrary.Graphics
 		public override void Update()
 		{
 			// Draw the logo.
-			if (Gorgon.LogoVisible)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.LogoVisible)
 				DrawLogo();
-			if (Gorgon.FrameStatsVisible)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.FrameStatsVisible)
 				DrawStats();
 
 			base.Update();

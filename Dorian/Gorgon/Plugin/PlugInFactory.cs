@@ -148,17 +148,17 @@ namespace GorgonLibrary.PlugIns
 				if (entry == null)
 					throw new GorgonException(GorgonResult.CannotCreate, "Error trying to create the plug-in entry point interface.");
 
-				Gorgon.Log.Print("Plug-in type: {0}, Module: {1}.", GorgonLoggingLevel.Intermediate, entry.PlugInType.ToString(), entry.GetType().ToString());
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Plug-in type: {0}, Module: {1}.", GorgonLoggingLevel.Intermediate, entry.PlugInType.ToString(), entry.GetType().ToString());
 
 				// Match name or load all plug-ins from the assembly. 
 				if ((pluginName == string.Empty) || (string.Compare(pluginName,entry.Name, true) == 0))
 				{
-					Gorgon.Log.Print("Loading plug-in \"{0}\".", GorgonLoggingLevel.Simple, entry.Name);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Loading plug-in \"{0}\".", GorgonLoggingLevel.Simple, entry.Name);
 
 					if (!_plugIns.Contains(entry.Name))
 						_plugIns.Add(entry);
 
-					Gorgon.Log.Print("Plug-in \"{0}\" was loaded successfully.", GorgonLoggingLevel.Simple, entry.Name);
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Plug-in \"{0}\" was loaded successfully.", GorgonLoggingLevel.Simple, entry.Name);
 
 					if (pluginName != string.Empty)
 						return entry;

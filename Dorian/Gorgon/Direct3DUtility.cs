@@ -69,7 +69,7 @@ namespace GorgonLibrary.Internal
         {
             get
             {
-                return Gorgon.Screen.DeviceNotReset;
+                return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset;
             }
         }
 
@@ -80,7 +80,7 @@ namespace GorgonLibrary.Internal
         {
             get
             {
-                return Gorgon.Screen.Device;
+                return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device;
             }
         }        
 
@@ -113,7 +113,7 @@ namespace GorgonLibrary.Internal
         {
             get
             {
-                return Gorgon.Renderer.VertexTypes[0].D3DVertexDeclaration;
+                return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.VertexTypes[0].D3DVertexDeclaration;
             }
         }
 
@@ -124,7 +124,7 @@ namespace GorgonLibrary.Internal
         {
             get
             {
-                return Gorgon.Renderer.VertexTypes[0].VertexSize(0);
+                return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.VertexTypes[0].VertexSize(0);
             }
         }
 
@@ -135,7 +135,7 @@ namespace GorgonLibrary.Internal
         {
             get
             {
-                return Gorgon.Renderer.RenderStates;
+                return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates;
             }
         }
 
@@ -146,7 +146,7 @@ namespace GorgonLibrary.Internal
         {
             get
             {
-                return Gorgon.Renderer.ImageLayerStates;
+                return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates;
             }
         }
         #endregion
@@ -157,7 +157,7 @@ namespace GorgonLibrary.Internal
         /// </summary>
         public void Flush()
         {
-            Gorgon.Renderer.Render();
+            Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
         }
 
         /// <summary>
@@ -165,14 +165,14 @@ namespace GorgonLibrary.Internal
         /// </summary>
         public void ResetProjectionViewState()
         {
-            if (!Gorgon.Screen.DeviceNotReset)
+            if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset)
             {
                 // Reset.
-                Gorgon.Renderer.CurrentViewport = Gorgon.CurrentRenderTarget.DefaultView;
-                Gorgon.Renderer.CurrentProjectionMatrix = Gorgon.CurrentRenderTarget.ProjectionMatrix;
+                Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.CurrentViewport = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DefaultView;
+                Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.CurrentProjectionMatrix = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.ProjectionMatrix;
 
                 // Change the clipper to the render target dimensions.
-                Gorgon.CurrentClippingViewport = Gorgon.CurrentRenderTarget.DefaultView;
+                Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentClippingViewport = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DefaultView;
             }
         }
 
@@ -183,7 +183,7 @@ namespace GorgonLibrary.Internal
         /// <param name="image">Image to set.</param>
         public void SetImage(int stage, Image image)
         {
-            Gorgon.Renderer.SetImage(stage, image);
+            Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetImage(stage, image);
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace GorgonLibrary.Internal
         /// <returns>The currently set image at the specified stage.</returns>
         public Image GetImage(int stage)
         {
-            return Gorgon.Renderer.GetImage(stage);
+            return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.GetImage(stage);
         }        
 
         /// <summary>
@@ -281,20 +281,20 @@ namespace GorgonLibrary.Internal
             _lastImage = GetImage(0);
 
             if (_renderStates == null)
-                _renderStates = new RenderStates(Gorgon.Renderer.RenderStates);
+                _renderStates = new RenderStates(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates);
             else
-                _renderStates.CopyStates(Gorgon.Renderer.RenderStates);
+                _renderStates.CopyStates(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates);
 
             if (_imageStates == null)
             {
-                _imageStates = new ImageLayerStates[Gorgon.CurrentDriver.MaximumTextureStages];
+                _imageStates = new ImageLayerStates[Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages];
                 for (int i = 0; i < _imageStates.Length; i++)
-                    _imageStates[i] = new ImageLayerStates(Gorgon.Renderer.ImageLayerStates[i]);
+                    _imageStates[i] = new ImageLayerStates(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates[i]);
             }
             else
             {
                 for (int i = 0; i < _imageStates.Length; i++)
-                    _imageStates[i].CopyStates(Gorgon.Renderer.ImageLayerStates[i]);
+                    _imageStates[i].CopyStates(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates[i]);
             }
 
             Flush();
@@ -315,11 +315,11 @@ namespace GorgonLibrary.Internal
             Device.Indices = SystemIndexBuffer;
 
             if (_renderStates != null)
-                Gorgon.Renderer.RenderStates.CopyStates(_renderStates);
+                Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.RenderStates.CopyStates(_renderStates);
             if (_imageStates != null)
             {
                 for (int i = 0; i < _imageStates.Length - 1; i++)
-                    _imageStates[i].CopyStates(Gorgon.Renderer.ImageLayerStates[i]);
+                    _imageStates[i].CopyStates(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.ImageLayerStates[i]);
             }
         }
         #endregion
@@ -330,10 +330,10 @@ namespace GorgonLibrary.Internal
         /// </summary>
         internal D3DObjects()
         {
-			if (!Gorgon.IsInitialized)
+			if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.IsInitialized)
 				throw new GorgonException(GorgonResult.NotInitialized);
 
-			if (Gorgon.Screen == null)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen == null)
 				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created.");
 
             DeviceStateList.Add(this);

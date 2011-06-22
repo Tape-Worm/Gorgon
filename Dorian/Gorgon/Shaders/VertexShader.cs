@@ -90,7 +90,7 @@ namespace GorgonLibrary.Graphics
 					Function.ByteCode.Data.Position = 0;
 					Function.ByteCode.Data.Read(streamData, 0, streamData.Length);
 					byteCode = new SlimDX.Direct3D9.ShaderBytecode(streamData);
-					_shader = new D3D9.VertexShader(Gorgon.Screen.Device, byteCode);
+					_shader = new D3D9.VertexShader(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, byteCode);
 				}
 				catch
 				{
@@ -117,7 +117,7 @@ namespace GorgonLibrary.Graphics
 		protected override void OnRenderBegin()
 		{
 			if (_shader != null)
-				Gorgon.Screen.Device.VertexShader = _shader;
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.VertexShader = _shader;
 		}
 
 		/// <summary>
@@ -130,7 +130,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="indexCount">Number of indices to render.</param>
 		protected override void OnRender(PrimitiveStyle primitiveStyle, int vertexStart, int vertexCount, int indexStart, int indexCount)
 		{
-			Gorgon.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 		}
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnRenderEnd()
 		{
-			Gorgon.Screen.Device.VertexShader = null;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.VertexShader = null;
 		}
 
 		/// <summary>

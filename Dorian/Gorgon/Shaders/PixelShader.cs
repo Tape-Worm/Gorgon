@@ -85,8 +85,8 @@ namespace GorgonLibrary.Graphics
 		{
 			if (_shader != null)
 			{
-				Gorgon.Screen.Device.PixelShader = _shader;
-				_lastImage = Gorgon.Renderer.GetImage(0);				
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.PixelShader = _shader;
+				_lastImage = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.GetImage(0);				
 				
 				// Get parameters bound to the samplers.
 				var parameters = from parameter in Parameters
@@ -109,7 +109,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="indexCount">Number of indices to render.</param>
 		protected override void OnRender(PrimitiveStyle primitiveStyle, int vertexStart, int vertexCount, int indexStart, int indexCount)
 		{
-			Gorgon.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.DrawCachedTriangles(primitiveStyle, vertexStart, vertexCount, indexStart, indexCount);
 		}
 
 		/// <summary>
@@ -117,12 +117,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnRenderEnd()
 		{
-			Gorgon.Screen.Device.PixelShader = null;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.PixelShader = null;
 			// Reset the texture stages.
-			for (int i = 0; i < Gorgon.CurrentDriver.MaximumTextureStages; i++)
-				Gorgon.Renderer.SetImage(i, null);
+			for (int i = 0; i < Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.MaximumTextureStages; i++)
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetImage(i, null);
 
-			Gorgon.Renderer.SetImage(0, _lastImage);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetImage(0, _lastImage);
 		}
 
 		/// <summary>
@@ -141,7 +141,7 @@ namespace GorgonLibrary.Graphics
 					Function.ByteCode.Data.Position = 0;
 					Function.ByteCode.Data.Read(streamData, 0, streamData.Length);
 					byteCode = new SlimDX.Direct3D9.ShaderBytecode(streamData);
-					_shader = new D3D9.PixelShader(Gorgon.Screen.Device, byteCode);
+					_shader = new D3D9.PixelShader(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, byteCode);
 				}
 				catch
 				{

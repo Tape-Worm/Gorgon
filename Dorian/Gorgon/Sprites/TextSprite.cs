@@ -475,8 +475,8 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if ((_clipping == null) && (Gorgon.CurrentRenderTarget != null))
-					return Gorgon.CurrentRenderTarget.DefaultView;
+				if ((_clipping == null) && (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget != null))
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget.DefaultView;
 
 				return _clipping;
 			}
@@ -1592,7 +1592,7 @@ namespace GorgonLibrary.Graphics
 			
 			// Get size.
 			base.UpdateAABB();
-			SetAABB(MeasureText(_text, Gorgon.Screen.DefaultView.Dimensions.Width, _wordWrap));
+			SetAABB(MeasureText(_text, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DefaultView.Dimensions.Width, _wordWrap));
 
 			Size = new Vector2D(AABB.Width, AABB.Height);
 		}

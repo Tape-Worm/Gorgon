@@ -97,7 +97,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="deviceStateObject">Device state object to add.</param>
 		public static void Add(IDeviceStateObject deviceStateObject)
 		{
-			Gorgon.Log.Print("Adding state object: {0}: {1}", GorgonLoggingLevel.Verbose, deviceStateObject.GetType().Name,deviceStateObject.ToString());
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Adding state object: {0}: {1}", GorgonLoggingLevel.Verbose, deviceStateObject.GetType().Name,deviceStateObject.ToString());
 			_list.Add(deviceStateObject);
 		}
 
@@ -107,7 +107,7 @@ namespace GorgonLibrary.Internal
 		/// <param name="deviceStateObject">Object to remove.</param>
 		public static void Remove(IDeviceStateObject deviceStateObject)
 		{
-			Gorgon.Log.Print("Removing state object: {0}", GorgonLoggingLevel.Verbose, deviceStateObject.GetType().Name);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Log.Print("Removing state object: {0}", GorgonLoggingLevel.Verbose, deviceStateObject.GetType().Name);
 			_list.Remove(deviceStateObject);
 		}
 

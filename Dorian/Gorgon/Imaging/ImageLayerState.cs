@@ -70,7 +70,7 @@ namespace GorgonLibrary.Internal
 				if ((Device == null) || (!_enableStateSetting))
 					return false;
 
-				return !Gorgon.Screen.DeviceNotReset;
+				return !Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.DeviceNotReset;
 			}
 		}
 
@@ -81,11 +81,11 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				if (Gorgon.Screen == null)
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen == null)
 					return null;
 
 				if (_device == null)
-					_device = Gorgon.Screen.Device;
+					_device = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device;
 
 				return _device;
 			}

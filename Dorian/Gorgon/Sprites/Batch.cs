@@ -427,7 +427,7 @@ namespace GorgonLibrary.Graphics
 
 			if (vertexCount > 65535)
 			{
-				if (!Gorgon.CurrentDriver.SupportIndex32)
+				if (!Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.SupportIndex32)
 					vertexCount = 65535;
 				else
 					indexType = IndexBufferType.Index32;
@@ -435,7 +435,7 @@ namespace GorgonLibrary.Graphics
 
 			indexCount = (vertexCount * 6) / 4;
 
-			_vertices = new VertexBuffer(Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"].VertexSize(0), vertexCount, BufferUsages.Static | BufferUsages.WriteOnly);
+			_vertices = new VertexBuffer(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.VertexTypes["PositionDiffuse2DTexture1"].VertexSize(0), vertexCount, BufferUsages.Static | BufferUsages.WriteOnly);
 			_indices = new IndexBuffer(indexType, indexCount, BufferUsages.WriteOnly | BufferUsages.Static);
 
 			// Fill in the index buffer.
@@ -653,24 +653,24 @@ namespace GorgonLibrary.Graphics
 				RefreshBuffers();
 
 			// Flush the renderer before drawing.
-			Gorgon.Renderer.Render();
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 
-			if (Gorgon.GlobalStateSettings.StateChanged(this, Gorgon.Renderer.GetImage(0)))
-				Gorgon.GlobalStateSettings.SetStates(this);
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.StateChanged(this, Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.GetImage(0)))
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.SetStates(this);
 
 			if (_needsTransform)
 				UpdateTransform();
 
-			Gorgon.Renderer.SetWorldTransform(0, _worldTransform);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetWorldTransform(0, _worldTransform);
 
 			foreach(Fence fence in _fences)
 			{
-				Gorgon.Renderer.SetImage(0, fence.Image);
-				Gorgon.Renderer.Render(Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"], _vertices, _indices, PrimitiveStyle.TriangleList, fence.VertexStart, fence.VertexCount, fence.IndexStart, fence.IndexCount);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetImage(0, fence.Image);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.VertexTypes["PositionDiffuse2DTexture1"], _vertices, _indices, PrimitiveStyle.TriangleList, fence.VertexStart, fence.VertexCount, fence.IndexStart, fence.IndexCount);
 			}
 
 			// Reset the world transform.
-			Gorgon.Renderer.SetWorldTransform(0, Matrix.Identity);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetWorldTransform(0, Matrix.Identity);
 		}
 		#endregion
 
@@ -972,7 +972,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritHorizontalWrapping)
-					return Gorgon.GlobalStateSettings.GlobalHorizontalWrapMode;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalHorizontalWrapMode;
 				return _hwrapMode;
 			}
 			set
@@ -991,7 +991,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritVerticalWrapping)
-					return Gorgon.GlobalStateSettings.GlobalVerticalWrapMode;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalVerticalWrapMode;
 				return _vwrapMode;
 			}
 			set
@@ -1020,7 +1020,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritSmoothing)
-					return Gorgon.GlobalStateSettings.GlobalSmoothing;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalSmoothing;
 
 				return _smoothing;
 			}
@@ -1040,7 +1040,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritAlphaMaskFunction)
-					return Gorgon.GlobalStateSettings.GlobalAlphaMaskFunction;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalAlphaMaskFunction;
 
 				return _alphaCompareFunction;
 			}
@@ -1060,7 +1060,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritAlphaMaskValue)
-					return Gorgon.GlobalStateSettings.GlobalAlphaMaskValue;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalAlphaMaskValue;
 
 				return _alphaTestCompareValue;
 			}
@@ -1080,7 +1080,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritBlending)
-					return Gorgon.GlobalStateSettings.GlobalBlending;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalBlending;
 
 				return _blendMode;
 			}
@@ -1100,7 +1100,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritBlending)
-					return Gorgon.GlobalStateSettings.GlobalSourceBlend;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalSourceBlend;
 
 				return _sourceBlendOp;
 			}
@@ -1120,7 +1120,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritBlending)
-					return Gorgon.GlobalStateSettings.GlobalDestinationBlend;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalDestinationBlend;
 
 				return _destBlendOp;
 			}
@@ -1139,7 +1139,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritStencilEnabled)
-					return Gorgon.GlobalStateSettings.GlobalStencilEnabled;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilEnabled;
 				return _useStencil;
 			}
 			set
@@ -1157,7 +1157,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritStencilReference)
-					return Gorgon.GlobalStateSettings.GlobalStencilReference;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilReference;
 				return _stencilReference;
 			}
 			set
@@ -1175,7 +1175,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritStencilMask)
-					return Gorgon.GlobalStateSettings.GlobalStencilMask;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilMask;
 
 				return _stencilMask;
 			}
@@ -1194,7 +1194,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritStencilPassOperation)
-					return Gorgon.GlobalStateSettings.GlobalStencilPassOperation;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilPassOperation;
 
 				return _stencilPassOperation;
 			}
@@ -1213,7 +1213,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritStencilFailOperation)
-					return Gorgon.GlobalStateSettings.GlobalStencilFailOperation;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilFailOperation;
 
 				return _stencilFailOperation;
 			}
@@ -1232,7 +1232,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritStencilZFailOperation)
-					return Gorgon.GlobalStateSettings.GlobalStencilZFailOperation;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilZFailOperation;
 
 				return _stencilZFailOperation;
 			}
@@ -1251,7 +1251,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritStencilCompare)
-					return Gorgon.GlobalStateSettings.GlobalStencilCompare;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilCompare;
 
 				return _stencilCompare;
 			}
@@ -1309,7 +1309,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritHorizontalWrapping)
-					return Gorgon.GlobalStateSettings.GlobalHorizontalWrapMode;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalHorizontalWrapMode;
 				else
 					return _hwrapMode;
 			}
@@ -1327,7 +1327,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritDepthWriteEnabled)
-					return Gorgon.GlobalStateSettings.GlobalDepthWriteEnabled;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalDepthWriteEnabled;
 				return _depthWriteEnabled;
 			}
 			set
@@ -1345,7 +1345,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritDepthBias)
-					return Gorgon.GlobalStateSettings.GlobalDepthBufferBias;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalDepthBufferBias;
 				return _depthBias;
 			}
 			set
@@ -1363,7 +1363,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (InheritDepthTestFunction)
-					return Gorgon.GlobalStateSettings.GlobalDepthBufferTestFunction;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalDepthBufferTestFunction;
 				return _depthCompare;
 			}
 			set

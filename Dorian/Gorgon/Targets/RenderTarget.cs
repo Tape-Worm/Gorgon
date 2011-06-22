@@ -165,9 +165,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (_inheritClearTargets)
-					return Gorgon.ClearEachFrame;
-
 				return _clearTargets;
 			}
 			set
@@ -211,8 +208,6 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				_inheritClearTargets = value;
-				if (value)
-					_clearTargets = Gorgon.ClearEachFrame;
 			}
 		}
 
@@ -340,14 +335,14 @@ namespace GorgonLibrary.Graphics
 			int count = 0;						// Vertex count.
 			bool stateChanged = false;			// Flag to indicate a state change.
 
-			manager = Gorgon.GlobalStateSettings;
+			manager = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings;
 			count = Geometry.VertexCount;
 
 			stateChanged = manager.StateChanged(this, _drawingPattern);
 
 			// If we're at the end of the buffer, wrap around.
 			if (((Geometry.VerticesWritten + vertices.Length >= count) || (stateChanged)) && (Geometry.VerticesWritten != 0))
-				Gorgon.Renderer.Render();
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 
 			// Set the state for this sprite.
 			if ((stateChanged) && (((_setOnce) && (!_statesSet)) || (!_setOnce)))
@@ -356,7 +351,7 @@ namespace GorgonLibrary.Graphics
 				_statesSet = true;
 
 				// Set the currently active image.
-                Gorgon.Renderer.SetImage(0, _drawingPattern);
+                Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetImage(0, _drawingPattern);
 			}            
 
 			// Write the data to the buffer.			
@@ -383,18 +378,18 @@ namespace GorgonLibrary.Graphics
 					throw new GorgonException(GorgonResult.CannotWrite, "The destination image format does not match that of the render target.");
 
 				// Flush the render buffer.
-				if (Gorgon.IsRunning)
-					Gorgon.Renderer.Render();
+				if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.IsRunning)
+					Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 
 				// Create a conversion buffer if necessary.
 				if ((_convertBuffer == null) || (_convertBuffer.Description.Width != Width) || (_convertBuffer.Description.Height != Height) || (Converter.Convert(targetFormat) != _convertBuffer.Description.Format))
 				{
 					if (_convertBuffer != null)
 						_convertBuffer.Dispose();
-					_convertBuffer = D3D9.Surface.CreateOffscreenPlain(Gorgon.Screen.Device, Width, Height, Converter.Convert(targetFormat), D3D9.Pool.SystemMemory);
+					_convertBuffer = D3D9.Surface.CreateOffscreenPlain(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, Width, Height, Converter.Convert(targetFormat), D3D9.Pool.SystemMemory);
 				}
 
-				Gorgon.Screen.Device.GetRenderTargetData(SurfaceBuffer, _convertBuffer);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.GetRenderTargetData(SurfaceBuffer, _convertBuffer);
 				sourceRect = new Drawing.Rectangle(0, 0, Width, Height);
 
 				if (sourceRect.Width > image.Width)
@@ -406,7 +401,7 @@ namespace GorgonLibrary.Graphics
 				imageSurface = image.D3DTexture.GetSurfaceLevel(0);
 
 				// Send the render target data to the surface.
-				Gorgon.Screen.Device.UpdateSurface(_convertBuffer, sourceRect, imageSurface, Drawing.Point.Empty);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.UpdateSurface(_convertBuffer, sourceRect, imageSurface, Drawing.Point.Empty);
 			}
 			finally
 			{
@@ -492,8 +487,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected internal void SetActive()
 		{
-			_lastTarget = Gorgon.CurrentRenderTarget;
-			Gorgon.CurrentRenderTarget = this;
+			_lastTarget = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = this;
 		}
 
 		/// <summary>
@@ -501,7 +496,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected internal void RestoreActive()
 		{
-			Gorgon.CurrentRenderTarget = _lastTarget;
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentRenderTarget = _lastTarget;
 			_lastTarget = null;
 		}
 
@@ -511,13 +506,13 @@ namespace GorgonLibrary.Graphics
 		public void BeginDrawing()
 		{
 			// This doesn't mean anything on the same render target.
-			if (Gorgon.IsRenderTargetActive(this))
-				return;
+			//if (Gorgon.IsRenderTargetActive(this))
+			//    return;
 
 			if (_lastTarget == null)
 			{
 				// Flush rendering before changing.
-				Gorgon.Renderer.Render();
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 
 				// Set this target as the active target.
 				SetActive();
@@ -530,7 +525,7 @@ namespace GorgonLibrary.Graphics
 		public void EndDrawing()
 		{
 			// Dump data to the target.
-			Gorgon.Renderer.Render();
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 
 			if (_lastTarget == null)
 				return;
@@ -1547,7 +1542,7 @@ namespace GorgonLibrary.Graphics
 		public void Clear(Drawing.Color color, float depthValue, int stencilValue)
 		{
 			BeginDrawing();
-			Gorgon.Renderer.Clear(color, depthValue, stencilValue, ClearEachFrame);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Clear(color, depthValue, stencilValue, ClearEachFrame);
 			EndDrawing();
 		}
 
@@ -1559,7 +1554,7 @@ namespace GorgonLibrary.Graphics
 		public void Clear(Drawing.Color color, float depthValue)
 		{
 			BeginDrawing();
-			Gorgon.Renderer.Clear(color, depthValue, 0, ClearEachFrame);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Clear(color, depthValue, 0, ClearEachFrame);
 			EndDrawing();
 		}
 
@@ -1570,7 +1565,7 @@ namespace GorgonLibrary.Graphics
 		public void Clear(Drawing.Color color)
 		{
 			BeginDrawing();
-			Gorgon.Renderer.Clear(color, 1.0f, 0, ClearEachFrame);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Clear(color, 1.0f, 0, ClearEachFrame);
 			EndDrawing();
 		}
 
@@ -1618,7 +1613,6 @@ namespace GorgonLibrary.Graphics
 			_width = width;
 			_height = height;
 			_backColor = Drawing.Color.White;			
-			_clearTargets = Gorgon.ClearEachFrame;
 			_inheritClearTargets = true;
 			_lastTarget = null;
 			_smoothing = Smoothing.None;

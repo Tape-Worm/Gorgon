@@ -48,12 +48,12 @@ namespace GorgonLibrary.Graphics
 #if !DEBUG
 				CompileShader("pMain", Gorgon.CurrentDriver.PixelShaderVersion, ShaderCompileOptions.OptimizationLevel3);
 #else
-				CompileShader("pMain", Gorgon.CurrentDriver.PixelShaderVersion, ShaderCompileOptions.Debug);
+				CompileShader("pMain", Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.PixelShaderVersion, ShaderCompileOptions.Debug);
 #endif
 			}
 
 			// Default to the currently set texture.
-			Parameters["defaultTexture"].SetValue(Gorgon.Renderer.GetImage(0));
+			Parameters["defaultTexture"].SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.GetImage(0));
 
 			base.OnRenderBegin();
 		}
@@ -79,7 +79,7 @@ namespace GorgonLibrary.Graphics
 #if !DEBUG
 			CompileShader("pMain", Gorgon.CurrentDriver.PixelShaderVersion, ShaderCompileOptions.OptimizationLevel3);
 #else
-			CompileShader("pMain", Gorgon.CurrentDriver.PixelShaderVersion, ShaderCompileOptions.Debug);
+			CompileShader("pMain", Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.CurrentDriver.PixelShaderVersion, ShaderCompileOptions.Debug);
 #endif
 		}
 		#endregion

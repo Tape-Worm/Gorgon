@@ -228,7 +228,7 @@ namespace GorgonLibrary
 		/// <remarks>This function will take into account whether the application is x64 or x86 and will format accordingly.</remarks>
 		public static string FormatHex(IntPtr pointer)
 		{
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.PlatformArchitecture == PlatformArchitecture.x64)
 				return pointer.ToInt64().ToString("x").PadLeft(16, '0');
 			else
 				return pointer.ToInt32().ToString("x").PadLeft(8, '0');

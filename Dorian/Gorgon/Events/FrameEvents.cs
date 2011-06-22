@@ -42,63 +42,17 @@ namespace GorgonLibrary.Graphics
 		: EventArgs
 	{
 		#region Variables.
-		private TimingData _timingData = null;				// Timing data to grab information from.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the timing data.
-		/// </summary>
-		public TimingData TimingData
-		{
-			get
-			{
-				return _timingData;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the frame delta time.
-		/// </summary>
-		public float FrameDeltaTime
-		{
-			get
-			{
-				return (float)(_timingData.FrameDrawTime / 1000.0);
-			}
-		}
-
-		/// <summary>
-		/// Property to return the current number of frames rendered.
-		/// </summary>
-		public long FrameCount
-		{
-			get
-			{
-				return _timingData.FrameCount;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the current frames/second.
-		/// </summary>
-		public float FPS
-		{
-			get
-			{
-				return _timingData.CurrentFps;
-			}
-		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="timingData">Timing data to withdraw data from.</param>
-		public FrameEventArgs(TimingData timingData)
+		public FrameEventArgs()
 		{
-			_timingData = timingData;
 		}
 		#endregion
 	}

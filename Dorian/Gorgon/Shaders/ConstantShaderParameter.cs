@@ -115,7 +115,7 @@ namespace GorgonLibrary.Graphics
 			int textureUnit = -1;		// Texture unit.
 
 			textureUnit = _shaderCode.ConstantTable.GetSamplerIndex(sampler);
-			Gorgon.Screen.Device.SetTexture(textureUnit, _imageValue);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device.SetTexture(textureUnit, _imageValue);
 		}
 		#endregion
 
@@ -417,7 +417,7 @@ namespace GorgonLibrary.Graphics
 		{
 			this.ValueType = ShaderParameterType.Boolean;
 			_boolValue = value;
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, value);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, value);
 		}
 
 		/// <summary>
@@ -428,7 +428,7 @@ namespace GorgonLibrary.Graphics
 		{
 			this.ValueType = ShaderParameterType.Boolean;
 			_boolValues = SetArrayValues<bool>(value);
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, value);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, value);
 		}
 
 		/// <summary>
@@ -439,7 +439,7 @@ namespace GorgonLibrary.Graphics
 		{
 			this.ValueType = ShaderParameterType.Float;
 			_floatValue = value;
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, value);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, value);
 		}
 
 		/// <summary>
@@ -450,7 +450,7 @@ namespace GorgonLibrary.Graphics
 		{
 			this.ValueType = ShaderParameterType.Float;
 			_floatValues = SetArrayValues<float>(value);
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, value);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, value);
 		}
 
 		/// <summary>
@@ -461,7 +461,7 @@ namespace GorgonLibrary.Graphics
 		{
 			this.ValueType = ShaderParameterType.Integer;
 			_intValue = value;
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, value);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, value);
 		}
 
 		/// <summary>
@@ -472,7 +472,7 @@ namespace GorgonLibrary.Graphics
 		{
 			this.ValueType = ShaderParameterType.Integer;
 			_intValues = SetArrayValues<int>(value);
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, value);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, value);
 		}
 
 		/// <summary>
@@ -492,7 +492,7 @@ namespace GorgonLibrary.Graphics
 		{
 			this.ValueType = ShaderParameterType.Vector4D;
 			_vector4DValue = Converter.Convert(value);
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _vector4DValue);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, _vector4DValue);
 		}
 
 		/// <summary>
@@ -509,7 +509,7 @@ namespace GorgonLibrary.Graphics
 
 			for (int i = 0; i < _vector4DValues.Length; i++)
 				_vector4DValues[i] = Converter.Convert(value[i]);
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _vector4DValues);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, _vector4DValues);
 			_arrayLength = value.Length;
 		}
 
@@ -547,7 +547,7 @@ namespace GorgonLibrary.Graphics
 				DX.Matrix.Transpose(ref d3dMatrix, out _matrixValue);			
 			}
 
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _matrixValue);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, _matrixValue);
 		}
 
 		/// <summary>
@@ -574,7 +574,7 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _matrixValues);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, _matrixValues);
 			_arrayLength = value.Length;
 		}
 
@@ -586,7 +586,7 @@ namespace GorgonLibrary.Graphics
 		{
 			this.ValueType = ShaderParameterType.Color;
 			_colorValue = new DX.Color4(value);
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, value);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, value);
 		}
 
 		/// <summary>
@@ -603,7 +603,7 @@ namespace GorgonLibrary.Graphics
 
 			for (int i = 0; i < value.Length; i++)
 				_colorValues[i] = new DX.Color4(value[i]);
-			_shaderCode.ConstantTable.SetValue(Gorgon.Screen.Device, _handle, _colorValues);
+			_shaderCode.ConstantTable.SetValue(Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Screen.Device, _handle, _colorValues);
 			_arrayLength = value.Length;
 		}
 

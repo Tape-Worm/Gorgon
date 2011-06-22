@@ -231,7 +231,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritUseStencil)
-					return Gorgon.GlobalStateSettings.GlobalStencilEnabled;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilEnabled;
 				else
 					return _useStencil;
 			}
@@ -250,7 +250,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritStencilReference)
-					return Gorgon.GlobalStateSettings.GlobalStencilReference;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilReference;
 				else
 					return _stencilReference;
 			}
@@ -269,7 +269,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritStencilMask)
-					return Gorgon.GlobalStateSettings.GlobalStencilMask;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilMask;
 
 				return _stencilMask;
 			}
@@ -288,7 +288,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritStencilPassOperation)
-					return Gorgon.GlobalStateSettings.GlobalStencilPassOperation;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilPassOperation;
 
 				return _stencilPassOperation;
 			}
@@ -307,7 +307,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritStencilFailOperation)
-					return Gorgon.GlobalStateSettings.GlobalStencilFailOperation;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilFailOperation;
 
 				return _stencilFailOperation;
 			}
@@ -326,7 +326,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritStencilZFailOperation)
-					return Gorgon.GlobalStateSettings.GlobalStencilZFailOperation;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilZFailOperation;
 
 				return _stencilZFailOperation;
 			}
@@ -345,7 +345,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritStencilCompare)
-					return Gorgon.GlobalStateSettings.GlobalStencilCompare;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalStencilCompare;
 
 				return _stencilCompare;
 			}
@@ -364,7 +364,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritBlending)
-					return Gorgon.GlobalStateSettings.GlobalSourceBlend;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalSourceBlend;
 				else
 					return _sourceBlend;
 			}
@@ -383,7 +383,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritBlending)
-					return Gorgon.GlobalStateSettings.GlobalDestinationBlend;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalDestinationBlend;
 				else
 					return _destBlend;
 			}
@@ -402,7 +402,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritHorizontalWrap)
-					return Gorgon.GlobalStateSettings.GlobalHorizontalWrapMode;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalHorizontalWrapMode;
 				else
 					return _wrapHMode;
 			}
@@ -420,7 +420,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritHorizontalWrap)
-					return Gorgon.GlobalStateSettings.GlobalHorizontalWrapMode;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalHorizontalWrapMode;
 				else
 					return _wrapHMode;
 			}
@@ -439,7 +439,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritVerticalWrap)
-					return Gorgon.GlobalStateSettings.GlobalVerticalWrapMode;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalVerticalWrapMode;
 				else
 					return _wrapVMode;
 			}
@@ -748,7 +748,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritSmoothing)
-					return Gorgon.GlobalStateSettings.GlobalSmoothing;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalSmoothing;
 				else
 					return _smoothing;
 			}
@@ -767,7 +767,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritMaskFunction)
-					return Gorgon.GlobalStateSettings.GlobalAlphaMaskFunction;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalAlphaMaskFunction;
 				else
 					return _maskFunction;
 			}
@@ -788,7 +788,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritMaskValue)
-					return Gorgon.GlobalStateSettings.GlobalAlphaMaskValue;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalAlphaMaskValue;
 				else
 					return _maskValue;
 			}
@@ -807,7 +807,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritBlending)
-					return Gorgon.GlobalStateSettings.GlobalBlending;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalBlending;
 				else
 					return _blending;
 			}
@@ -827,7 +827,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritDepthWriteEnable)
-					return Gorgon.GlobalStateSettings.GlobalDepthWriteEnabled;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalDepthWriteEnabled;
 				else
 					return _depthWriteEnabled;
 			}
@@ -846,7 +846,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritDepthBias)
-					return Gorgon.GlobalStateSettings.GlobalDepthBufferBias;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalDepthBufferBias;
 				else
 					return _depthBias;
 			}
@@ -865,7 +865,7 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_inheritDepthTestCompare)
-					return Gorgon.GlobalStateSettings.GlobalDepthBufferTestFunction;
+					return Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.GlobalDepthBufferTestFunction;
 				else
 					return _depthCompare;
 			}
@@ -1307,7 +1307,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if set, FALSE if not.</returns>
 		protected bool IsImageCurrent(Image image)
 		{
-			return image == Gorgon.Renderer.GetImage(0);
+			return image == Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.GetImage(0);
 		}
 
 		/// <summary>
@@ -1316,7 +1316,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Image to set.</param>
 		protected void SetCurrentImage(Image image)
 		{
-			Gorgon.Renderer.SetImage(0, image);
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetImage(0, image);
 		}
 
 		/// <summary>
@@ -1345,9 +1345,9 @@ namespace GorgonLibrary.Graphics
 			else
 				vertexCount = Geometry.VerticesWritten;
 
-			stateChanged = Gorgon.GlobalStateSettings.StateChanged(this, Image);
+			stateChanged = Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.StateChanged(this, Image);
 			if (((vertexCount >= Geometry.VertexCount) || (stateChanged)) && (Geometry.VerticesWritten != 0))
-				Gorgon.Renderer.Render();
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 
 			// Apply animations.
 			if (Animations.Count > 0)
@@ -1356,9 +1356,9 @@ namespace GorgonLibrary.Graphics
 			// Set states.
 			if (stateChanged)
 			{
-				Gorgon.GlobalStateSettings.SetStates(this);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.GlobalStateSettings.SetStates(this);
 				// Set the currently active image.
-				Gorgon.Renderer.SetImage(0, Image);
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.SetImage(0, Image);
 			}
 		}
 
@@ -1367,7 +1367,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected void FlushToRenderer()
 		{
-			Gorgon.Renderer.Render();
+			Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 		}
 
 		/// <summary>
@@ -1395,7 +1395,7 @@ namespace GorgonLibrary.Graphics
 		protected void EndRendering(bool flush)
 		{
 			if (flush)
-				Gorgon.Renderer.Render();
+				Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.Renderer.Render();
 		}
 
 
