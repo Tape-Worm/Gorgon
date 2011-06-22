@@ -207,7 +207,7 @@
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\Mouse.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="OLDE\Main.cs" />
     <Compile Include="Math\BoundingCircle.cs" />
     <Compile Include="Math\GorgonMathUtility.cs" />
     <Compile Include="Math\Matrix.cs" />
