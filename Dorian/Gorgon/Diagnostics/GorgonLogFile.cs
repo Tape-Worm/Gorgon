@@ -114,7 +114,7 @@ namespace GorgonLibrary.Diagnostics
 				{
 					outputLine.Append("[");
 					outputLine.Append(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
-					outputLine.Append("]\n");
+					outputLine.Append("]\r\n");
 				}
 				else
 				{
@@ -126,7 +126,7 @@ namespace GorgonLibrary.Diagnostics
 						outputLine.Append(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
 						outputLine.Append("] ");
 
-						outputLine.Append(string.Format(lines[i] + "\n", arguments));
+						outputLine.Append(string.Format(lines[i] + "\r\n", arguments));
 					}
 				}
 		

@@ -82,66 +82,10 @@ namespace GorgonLibrary
 	/// </para></remarks>
 	public static class Gorgon
 	{
-		#region Events.
-		/// <summary>Event fired when a driver is currently being changed.</summary>
-		public static event DriverChangingHandler DriverChanging;
-		/// <summary>Event fired when a driver has changed.</summary>
-		public static event DriverChangedHandler DriverChanged;
-		/// <summary>Event fired when the device has been reset from a lost state.</summary>
-		/// <example>
-		/// An example of handling a resize of a render target after the window has been resized:
-		/// <code>
-		/// RenderImage myRenderTarget = null;	// Our render target.
-		/// 
-		/// public void DeviceReset(object sender, EventArgs e)
-		/// {
-		///    // Reize our render target to match the new dimensions of the screen.
-		///    myRenderTarget.SetDimensions(Gorgon.Screen.Width, Gorgon.Screen.Height);
-		/// }
-		/// 
-		/// public void Main()
-		/// {
-		///    // Do stuff, etc...
-		/// 
-		///    // Create a render target that is the same size as our screen.
-		///    myRenderTarget = RenderTarget.CreateRenderImage("MyTarget", Gorgon.Screen.Width, Gorgon.Screen.Height)
-		///    Gorgon.DeviceReset += new EventHandler(DeviceReset);
-		/// }
-		/// </code>
-		/// </example>
-		/// <remarks>
-		/// A number of events can put the device into a lost state.  For example, resizing the control that is bound to the primary render window.
-		/// <para>Some objects will need to be re-created during a device loss/reset event.  In this event you put in the code to rebuild the object that needs to be reset.  
-		/// </para>
-		/// </remarks>
-		public static event EventHandler DeviceReset;
-		/// <summary>Event fired when the device has been put into a lost state.</summary>
-		/// <remarks>
-		/// A number of events can put the device into a lost state.  For example, resizing the control that is bound to the primary render window.
-		/// <para>Some objects will need to be re-created during a device loss/reset event.  In this event you put in clean up code to remove data for objects that need to be reset.</para>
-		/// </remarks>		
-		public static event EventHandler DeviceLost;
-		#endregion
-
 		#region Variables.
-		private static PreciseTimer _timer;								// Main Gorgon timer.
-		private static DriverList _drivers = null;						// List of video drivers for the system.
-		private static Driver _currentDriver = null;					// Current driver.
-		private static Renderer _renderer = null;						// Interface to the renderer.
-		private static FrameEventArgs _frameEventArgs = null;			// Frame event arguments.
-		private static VideoMode _desktopVideoMode;						// Current video mode of the desktop.
-		private static SpriteStateCache _stateCache = null;				// Sprite state cache.
-		private static RenderTarget[] _currentTarget = null;			// Currently active render target(s).
-		private static ClearTargets _clearTargets;						// Target buffers to clear.
-		private static Viewport _clippingView = null;					// Clipping viewport.
-		private static double _targetFrameTime = 0.0;					// Target frame time.
-		private static IShaderRenderer _currentShader = null;			// Current shader.
 		private static ApplicationLoop _loop = null;					// Application loop.
 		private static GorgonDefaultAppLoop _defaultApp = null;			// Default application loop.
 		private static GorgonFrameRate _timingData = null;				// Frame rate timing data.
-#if INCLUDE_D3DREF
-		private static bool _refDevice;									// Flag to indicate if we're using a reference device or HAL device.
-#endif
 		#endregion
 
 		#region Properties.
@@ -194,10 +138,8 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (!IsInitialized)					
-					throw new GorgonException(GorgonResult.NotInitialized);
-
-				return _renderer;
+				// TODO: We will be removing this.
+				return null;
 			}
 		}
 
@@ -264,8 +206,8 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>This only applies if <see cref="GorgonLibrary.Gorgon.FrameStatsVisible">FrameStatsVisible</see> is TRUE.</remarks>
 		/// <value>The color of the text for the frame statistics.</value>
-		public static Color FrameStatsTextColor
-		{
+		internal static Color FrameStatsTextColor
+		{	// TODO: Remove this.
 			get;
 			set;
 		}
@@ -278,8 +220,8 @@ namespace GorgonLibrary
 		/// <para>If FALSE, then the device will undergo a reset operation and the video mode will be adjusted to match the new client size of the owning control/window.  This will keep the sharpness of the rendered image regardless of the client size of the control/window. The caveat is that some resources will need to be re-loaded/re-created when the device reset occurs.  This is the exact behaviour of the system when a full screen application loses and regains focus.  Furthermore, window resizing will be much slower (hence the "Fast" portion of FastResize). </para>
 		/// </remarks>
 		/// <value>TRUE will enable a fast resizing, FALSE will disable it.</value>
-		public static bool FastResize
-		{
+		internal static bool FastResize
+		{	// TODO: Remove this.
 			get;
 			set;
 		}
@@ -288,8 +230,8 @@ namespace GorgonLibrary
 		/// Property to set or return whether the logo is shown or not.
 		/// </summary>
 		/// <value>TRUE to show the Gorgon logo in the lower right corner of the screen while rendering, FALSE to hide.</value>
-		public static bool LogoVisible
-		{
+		internal static bool LogoVisible
+		{   // TODO: Remove this.
 			get;
 			set;
 		}
@@ -298,75 +240,10 @@ namespace GorgonLibrary
 		/// Property to set or return whether the frame timing data is shown or not.
 		/// </summary>
 		/// <value>TRUE to show the current frame statistics (i.e. Frames Per Second, frame delta time, etc...) in the upper left corner of the screen while rendering.  FALSE to hide.</value>
-		public static bool FrameStatsVisible
-		{
+		internal static bool FrameStatsVisible
+		{	// TODO: Remove this.
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to set or return which buffers are cleared per frame.
-		/// </summary>
-		/// <example>
-		/// To clear the back buffer and depth buffer, you should specify:
-		/// <code>
-		/// gorgonObject.ClearEachFrame = ClearTargets.BackBuffer | ClearTargets.DepthBuffer;
-		/// </code>
-		/// </example>
-		/// <example>
-		/// To clear no buffers:
-		/// <code>
-		/// gorgonObject.ClearEachFrame = ClearTargets.None;
-		/// </code>
-		/// </example>
-		/// <remarks>
-		/// All the <seealso cref="ClearTargets">ClearTargets</seealso> fields are inclusive, except the ClearTargets.None.  
-		/// Setting the field to None will tell the system that no buffers are to be cleared.
-		/// <para>
-		/// Clearing the buffer(s) each frame can be an expensive process, especially on computers not equipped with the latest and greatest hardware.  Thus, for optimization, it's best to clear only what you need.  If you aren't making use of your stencil buffer, then don't bother to clear it each frame and so forth.
-		/// </para>
-		/// </remarks>
-		/// <value>
-		/// Set to one or a combination of the <see cref="ClearTargets">ClearTargets</see> fields to tell the system which buffers should be cleared each frame.
-		/// <para>
-		/// The property can be set to one or more of:
-		/// <list type="table">
-		/// 			<listheader>
-		/// 				<term>Buffer type.</term>
-		/// 				<description>Action.</description>
-		/// 			</listheader>
-		/// 			<item>
-		/// 				<term>None</term>
-		/// 				<description>Don't clear any buffers.  This flag cannot be used in conjunction with any of the other flags.</description>
-		/// 			</item>
-		/// 			<item>
-		/// 				<term>BackBuffer</term>
-		/// 				<description>Clear the back buffer.</description>
-		/// 			</item>
-		/// 			<item>
-		/// 				<term>DepthBuffer</term>
-		/// 				<description>Clear the depth buffer.</description>
-		/// 			</item>
-		/// 			<item>
-		/// 				<term>StencilBuffer</term>
-		/// 				<description>Clear the stencil buffer.</description>
-		/// 			</item>
-		/// 		</list>
-		/// 	</para>
-		/// </value>
-		public static ClearTargets ClearEachFrame
-		{
-			get
-			{
-				return _clearTargets;
-			}
-			set
-			{
-				if ((value & ClearTargets.None) > 0)
-					_clearTargets = ClearTargets.None;
-				else
-					_clearTargets = value;
-			}
 		}
 
 		/// <summary>
@@ -389,14 +266,12 @@ namespace GorgonLibrary
 		/// <remarks>Changing the states in this property will result in that state being applied to all renderable objects.  The exception to this is when the state has been changed directly on the renderable object itself.</remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
 		/// <value>A list of global settings that <see cref="GorgonLibrary.Graphics.Sprite">sprites</see> and <see cref="GorgonLibrary.Graphics.TextSprite">text sprites</see> will use as initial and inherited values.</value>		
-		public static SpriteStateCache GlobalStateSettings
+		internal static SpriteStateCache GlobalStateSettings
 		{
 			get
 			{
-				if (!IsInitialized)
-					throw new GorgonException(GorgonResult.NotInitialized);
-
-				return _stateCache;
+				// TODO: We will be removing this.
+				return null;
 			}
 		}
 
@@ -409,63 +284,15 @@ namespace GorgonLibrary
 		/// </remarks>
 		/// <value>A rectangular region that defines what area of the screen (or other render target) to update.</value>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		public static Viewport CurrentClippingViewport
+		internal static Viewport CurrentClippingViewport
 		{
 			get
 			{
-				return _clippingView;
+				// TODO: We will be removing this.
+				return null;
 			}
 			set
 			{
-				if ((!IsInitialized) || (Screen == null))
-					throw new GorgonException(GorgonResult.NotInitialized);
-
-				// Reset the view to the current target view.
-				if (value == null)
-					value = _currentTarget[0].DefaultView;
-
-				// Don't bother to set the same clipping view.
-				if ((_clippingView == value) && (!_clippingView.Updated))
-					return;
-
-				// Flush the renderer.
-				_renderer.Render();
-
-				// If we can support scissor testing, then use that.
-				if (_currentDriver.SupportScissorTesting) 
-				{
-					// Set the scissor rectangle.
-					if ((value == null) || (value == _currentTarget[0].DefaultView))
-					{						
-						_renderer.RenderStates.ScissorTesting = false;
-						_clippingView = _currentTarget[0].DefaultView;
-					}
-					else
-					{
-						_renderer.RenderStates.ScissorTesting = true;
-						_renderer.RenderStates.ScissorRectangle = value.ClippedDimensions;
-						_clippingView = value;
-					}
-				}
-				else
-				{
-					// If we don't support scissor testing, then we need to use the viewport
-					// to clip the screen.
-					if ((value == null) || (value == _currentTarget[0].DefaultView))
-					{
-						_renderer.CurrentProjectionMatrix = _currentTarget[0].ProjectionMatrix;
-						_renderer.CurrentViewport = _currentTarget[0].DefaultView;
-						_clippingView = _currentTarget[0].DefaultView;
-					}
-					else
-					{
-						_renderer.CurrentProjectionMatrix = value.ProjectionMatrix;
-						_renderer.CurrentViewport = value;
-						_clippingView = value;
-					}
-				}
-
-				_clippingView.Updated = false;
 			}
 		}
 
@@ -474,14 +301,12 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>If a video mode has not been set, and <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has been called, then the current desktop video mode is returned instead.</remarks>
 		/// <value>The currently active <see cref="VideoMode">video mode</see> information.</value>
-		public static VideoMode CurrentVideoMode
+		internal static VideoMode CurrentVideoMode
 		{
 			get
 			{
-				if (Screen != null)
-					return Screen.Mode;
-				else
-					return _desktopVideoMode;
+				// TODO: We will be removing this.
+				return default(VideoMode);
 			}
 		}
 
@@ -494,28 +319,15 @@ namespace GorgonLibrary
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.
 		/// <para>Thrown when <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">Gorgon.SetMode()</see> has not been called.</para>
 		/// </exception>
-		public static IShaderRenderer CurrentShader
+		internal static IShaderRenderer CurrentShader
 		{
 			get
 			{
-				return _currentShader;
+				// TODO: We will be removing this.
+				return null;
 			}
 			set
 			{
-				if (!IsInitialized)
-					throw new GorgonException(GorgonResult.NotInitialized);
-
-				// No device?  Throw an exception.
-				if (Screen == null)
-					throw new GorgonException(GorgonResult.CannotBind, "No D3D device was created.");
-								
-				if (_currentShader == value)
-					return;
-
-				// Force a flush of the rendering pipeline whenever we change this.
-				Renderer.Render();
-				
-				_currentShader = value;
 			}
 		}
 
@@ -531,18 +343,15 @@ namespace GorgonLibrary
 		/// <seealso cref="GorgonLibrary.Gorgon.SetAdditionalRenderTarget">SetAdditionalRenderTarget</seealso>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.<para>
 		/// Thrown when <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">Gorgon.SetMode()</see> has not been called.</para></exception>
-		public static RenderTarget CurrentRenderTarget
+		internal static RenderTarget CurrentRenderTarget
 		{
 			get
 			{
-				return _currentTarget[0];
+				// TODO: We will be removing this.
+				return null;
 			}
 			set
 			{
-				if (value == null)
-					value = Screen;
-
-				SetAdditionalRenderTarget(0, value);
 			}
 		}
 
@@ -554,8 +363,8 @@ namespace GorgonLibrary
 		/// <para>When the primary video mode bound to the control is closed, then all other render targets are automatically destroyed.</para>
 		/// </remarks>
 		/// <value>The primary rendering window or the "Screen".  This can be any control and is the primary render target that is setup during the <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">SetMode()</see> function.  As such, this is the initial render target when a video mode is set.</value>
-		public static PrimaryRenderWindow Screen
-		{
+		internal static PrimaryRenderWindow Screen
+		{// TODO: We will be removing this.
 			get;
 			private set;
 		}
@@ -566,26 +375,13 @@ namespace GorgonLibrary
 		/// <remarks></remarks>
 		/// <value>The desktop <see cref="VideoMode">video mode</see> information.</value>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		public static VideoMode DesktopVideoMode
+		internal static VideoMode DesktopVideoMode
 		{
 			get
 			{
-				if (!IsInitialized)
-					throw new GorgonException(GorgonResult.NotInitialized);
-
-				return _desktopVideoMode;
+				// TODO: We will be removing this.
+				return default(VideoMode);
 			}
-		}
-
-		/// <summary>
-		/// Property to return the current frame timing stats.
-		/// </summary>
-		/// <remarks>This is usually used for internal purposes, please use the <see cref="GorgonLibrary.Graphics.FrameEventArgs">FrameEventArgs</see> timing information in the <see cref="M:GorgonLibrary.Idle">Idle event</see> instead.</remarks>
-		/// <value>Returns a <see cref="GorgonLibrary.TimingData">TimingData</see> object containing information about the most current frame statistics.</value>
-		public static TimingData FrameStats
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
@@ -597,30 +393,6 @@ namespace GorgonLibrary
 			get;
 			private set;
 		}
-
-#if INCLUDE_D3DREF
-		/// <summary>
-		/// Property to return whether we're using the Direct 3D reference device.
-		/// </summary>
-		/// <returns>TRUE if we're using a Direct 3D reference device, FALSE if not (HAL).</returns>
-		/// <remarks>
-		/// This is *ONLY* available when the library is compiled with INCLUDE_D3DREF.
-		/// <para>The Direct X SDK MUST be installed to use this device.</para>
-		/// 	<para>It should also be noted that the reference device is extremely slow and is only useful for diagnosing issues that appear in the HAL device.</para>
-		/// </remarks>
-		/// <value>TRUE to use the Direct 3D reference device, FALSE to exclude it.</value>
-		public static bool UseReferenceDevice
-		{
-			get
-			{
-				return _refDevice;
-			}
-			set
-			{
-				_refDevice = value;
-			}
-		}
-#endif
 
 		/// <summary>
 		/// Property to return the library log file interface.
@@ -646,72 +418,15 @@ namespace GorgonLibrary
 		/// </remarks>
 		/// <value>This will get/set the current video driver index, which is ranged from 0 to <see cref="GorgonLibrary.DriverList">DriverList</see>.Count - 1.</value>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		public static Driver CurrentDriver
+		internal static Driver CurrentDriver
 		{
 			get
 			{
-				if (!IsInitialized)
-					throw new GorgonException(GorgonResult.NotInitialized);
-
-				return _currentDriver;
+				// TODO: We will be removing this.
+				return null;
 			}
 			set
 			{
-				if (!IsInitialized)
-					throw new GorgonException(GorgonResult.NotInitialized);
-
-				Stop();
-
-				// Don't set the same driver twice.
-				if ((value != null) && (value == _currentDriver))
-					return;
-
-				DriverChangingArgs changingArgs = new DriverChangingArgs(_currentDriver, value);
-
-				Gorgon.OnDriverChanging(changingArgs);
-
-				// Don't allow change if we cancel.
-				if (changingArgs.Cancel)
-					return;
-
-				// Remove all buffers.
-				if ((_currentDriver != null) && (_renderer != null))
-					DeviceStateList.ForceRelease();
-
-				// Remove all fonts.
-				foreach (GorgonLibrary.Graphics.Font font in FontCache.Fonts)
-					font.ReleaseResources();
-
-				Gorgon.Log.Print("Changing video drivers...", GorgonLoggingLevel.Simple);
-
-				// Do actual driver change.
-				if ((_renderer != null) && (!_renderer.IsDisposed))
-				{
-					if (_stateCache != null)
-						_stateCache.Dispose();
-
-					_renderer.Dispose();
-				}
-				_renderer = null;
-				_stateCache = null;
-
-				// Retrieve the desktop video mode for the driver.
-				_desktopVideoMode = new VideoMode();
-				_desktopVideoMode.Width = Gorgon.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Width;
-				_desktopVideoMode.Height = Gorgon.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Height;
-				_desktopVideoMode.RefreshRate = Gorgon.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.RefreshRate;
-				_desktopVideoMode.Format = Converter.Convert(Gorgon.Direct3D.Adapters[value.DriverIndex].CurrentDisplayMode.Format);
-
-				_currentDriver = value;
-
-				// Recreate renderer.
-				_renderer = new Renderer();
-				_stateCache = new SpriteStateCache();
-				_currentTarget = new RenderTarget[_currentDriver.MaximumSimultaneousRenderTargets];				
-
-				Gorgon.Log.Print("Driver changed to {0} ({1}).", GorgonLoggingLevel.Simple, value.Description, value.DriverName);
-
-				Gorgon.OnDriverChanged(new DriverChangedArgs(_currentDriver, value));
 			}
 		}
 
@@ -721,14 +436,12 @@ namespace GorgonLibrary
 		/// <remarks>If a driver does not have hardware acceleration, it will not be included in the list.</remarks>
 		/// <value>The list of installed <see cref="GorgonLibrary.Driver">video drivers</see>.</value>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize()</see> has not been called.</exception>
-		public static DriverList Drivers
+		internal static DriverList Drivers
 		{
 			get
 			{
-				if (!IsInitialized)
-					throw new GorgonException(GorgonResult.NotInitialized);
-
-				return _drivers;
+				// TODO: We will be removing this.
+				return null;
 			}
 		}
 
@@ -740,8 +453,8 @@ namespace GorgonLibrary
 		/// <para>When the property is set to FALSE, the CPU usage will only be at 100% when the application is in the foreground and will throttle back to 0% when the application is in the background.  This is much more efficient, however the drawback is that the application will not update while in the background.</para>
 		/// </remarks>
 		/// <value>Setting this to TRUE will allow the engine to render while the window is not in the foreground or minimized.  Setting this to FALSE will halt rendering until the window is in the foreground.</value>
-		public static bool AllowBackgroundRendering
-		{
+		internal static bool AllowBackgroundRendering
+		{// TODO: We will be removing this.
 			get;
 			set;
 		}
@@ -755,35 +468,6 @@ namespace GorgonLibrary
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the minimum amount of time to wait between frames (in milliseconds).
-		/// </summary>
-		/// <example>
-		/// The following code will limit the frame rate to 30 FPS:
-		/// <code>
-		/// Gorgon.MinimumFrameTime = PreciseTimer.FpsToMilliseconds(30);
-		/// </code>
-		/// </example>
-		/// <remarks>
-		/// This can be used as a frame rate limiting mechanism.  By stalling for the appropriate number of milliseconds before the frame is rendered the frame rate can be kept at a desired level.
-		/// <para>The static function <see cref="GorgonLibrary.PreciseTimer.FpsToMilliseconds">PreciseTimer.FpsToMilliseconds</see> can be used to determine how many milliseconds are required for a particular frame rate.</para>
-		/// </remarks>
-		/// <value>This number will pause the renderer for the number of milliseconds requested before rendering the frame.  The lowest value that can be set is 0.001.</value>
-		public static double MinimumFrameTime
-		{
-			get
-			{
-				return _targetFrameTime;
-			}
-			set
-			{
-				if (value < 0.0)
-					value = 0.0;
-
-				_targetFrameTime = value;
-			}
 		}
 
 		/// <summary>
@@ -801,7 +485,7 @@ namespace GorgonLibrary
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Handles the Idle event of the Application control.
 		/// </summary>
@@ -829,70 +513,6 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to trigger driver changing event.
-		/// </summary>
-		/// <param name="e">Parameters for event.</param>
-		internal static void OnDriverChanging(DriverChangingArgs e)
-		{
-			if (DriverChanging != null)
-				DriverChanging(_drivers, e);
-		}
-
-		/// <summary>
-		/// Function to trigger driver changing event.
-		/// </summary>
-		/// <param name="e">Parameters for event.</param>
-		internal static void OnDriverChanged(DriverChangedArgs e)
-		{
-			if (DriverChanged != null)
-				DriverChanged(_drivers, e);
-		}
-
-		/// <summary>
-		/// Function to call the device lost event.
-		/// </summary>
-		internal static void OnDeviceLost()
-		{
-			if (DeviceLost != null)
-				DeviceLost(_renderer, EventArgs.Empty);
-
-			for (int i = 0; i < _currentTarget.Length; i++)
-				_currentTarget[i] = null;
-
-			_clippingView = null;
-			DeviceStateList.DeviceWasLost();
-			_timer.Reset();
-			FrameStats.Reset();
-
-			Gorgon.Log.Print("Device has been put into a lost state.", GorgonLoggingLevel.Intermediate);
-		}
-
-		/// <summary>
-		/// Functio to call the device reset event.
-		/// </summary>
-		internal static void OnDeviceReset()
-		{
-			_renderer.Reset();
-			_timer.Reset();
-			FrameStats.Reset();
-
-			if (DeviceReset != null)
-				DeviceReset(_renderer, EventArgs.Empty);
-
-			Gorgon.Log.Print("Device has been reset.", GorgonLoggingLevel.Intermediate);
-		}
-
-		/// <summary>
-		/// Function to determine if a render target is active.
-		/// </summary>
-		/// <param name="target">Target to check.</param>
-		/// <returns>TRUE if the render target is active, FALSE if not.</returns>
-		internal static bool IsRenderTargetActive(RenderTarget target)
-		{
-			return _currentTarget.Count(isTarget => target == isTarget) > 0;
-		}
-
-		/// <summary>
 		/// Function to set additional render targets.
 		/// </summary>
 		/// <param name="index">An index value from 0 to <see cref="GorgonLibrary.Driver.MaximumSimultaneousRenderTargets">Driver.MaximumSimultaneousRenderTargets</see>-1.</param>
@@ -910,56 +530,9 @@ namespace GorgonLibrary
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Gorgon.Initialize</see> has not been called, 
 		/// <see cref="GorgonLibrary.Gorgon.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">Gorgon.SetMode</see> wasn't called or the target cannot be bound.</exception>
-		public static void SetAdditionalRenderTarget(int index, RenderTarget target)
+		internal static void SetAdditionalRenderTarget(int index, RenderTarget target)
 		{
-			if (!IsInitialized)
-				throw new GorgonException(GorgonResult.NotInitialized);
-
-			// No device?  Throw an exception.
-			if (Screen == null)
-				throw new GorgonException(GorgonResult.NotInitialized, "No D3D device was created.");
-
-			if (index > _currentTarget.Length)
-				throw new GorgonException(GorgonResult.CannotBind, "The index of the target exceeds the maximum number of simultaneous render targets for the system (" + _currentDriver.MaximumSimultaneousRenderTargets.ToString() + ").");
-
-			if (index < 0)
-				throw new GorgonException(GorgonResult.CannotBind, "The index of the target must be greater than zero.");
-
-			if (!Screen.DeviceNotReset)
-			{
-				// Force a flush to the renderer.
-				if (index == 0)
-					_renderer.Render();
-
-				// Force scissor testing to off.
-				if ((_currentDriver.SupportScissorTesting) && (_renderer.RenderStates.ScissorTesting))
-					_renderer.RenderStates.ScissorTesting = false;
-
-				if ((index == 0) && (target == null))
-					target = Screen;
-
-				if (target != _currentTarget[index])
-				{
-					if (target != null)
-						Screen.Device.SetRenderTarget(index, target.SurfaceBuffer);
-					else
-						Screen.Device.SetRenderTarget(index, null);
-
-					if (index == 0)
-						Screen.Device.DepthStencilSurface = target.DepthBuffer;
-
-					if (target != null)
-						target.Refresh();
-					_currentTarget[index] = target;
-
-					// Reset the view ports.
-					_renderer.CurrentViewport = _currentTarget[0].DefaultView;
-					_renderer.CurrentProjectionMatrix = _currentTarget[0].ProjectionMatrix;
-
-					// Change the clipper to the render target dimensions.
-					CurrentClippingViewport = _currentTarget[0].DefaultView;
-				}
-			}
+			// TODO: We will be removing this.
 		}
 
 		/// <summary>
@@ -967,17 +540,19 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="index">An index value from 0 to <see cref="GorgonLibrary.Driver.MaximumSimultaneousRenderTargets">Driver.MaximumSimultaneousRenderTargets</see>-1.</param>
 		/// <returns>The render target at the specified index.</returns>
-		public static RenderTarget GetAdditionalRenderTarget(int index)
+		internal static RenderTarget GetAdditionalRenderTarget(int index)
 		{
-			return _currentTarget[index];
+			// TODO: We will be removing this.
+			return null;
 		}
 
 		/// <summary>
 		/// Function to close the currently active video mode.
 		/// </summary>
 		/// <remarks>Some resources may have to be re-loaded or re-created when this function is called and another call to SetMode is made.</remarks>
-		public static void CloseMode()
+		internal static void CloseMode()
 		{
+			// TODO: We will be removing this.
 			Stop();
 
 			// Clean up resources.
@@ -1015,31 +590,9 @@ namespace GorgonLibrary
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil, int refresh, VSyncIntervals vSyncInterval)
+		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil, int refresh, VSyncIntervals vSyncInterval)
 		{
-			if (owner == null)
-				throw new ArgumentNullException("owner");
-
-			// Force the application to stop.
-			Gorgon.Stop();
-
-			// Create the video mode if we haven't set the primary window, otherwise
-			// just reset the video device object.
-			if (Screen == null)
-			{
-				Screen = new PrimaryRenderWindow(owner);
-				Screen.SetMode(new VideoMode(width, height, refresh, format), windowed, usedepth, usestencil, false, vSyncInterval);
-			}
-			else
-				Screen.SetMode(new VideoMode(width, height, refresh, format), windowed, usedepth, usestencil, true, vSyncInterval);
-
-			// Reset the buffers.
-			Geometry.UpdateVertexData(GlobalStateSettings.MaxSpritesPerBatch * 4);
-
-			// Reset the target.
-			CurrentRenderTarget = Screen;
-			CurrentRenderTarget.DefaultView.Refresh(CurrentRenderTarget);
-			CurrentClippingViewport = null;
+			// TODO: We will be removing this.
 		}
 
 		/// <summary>
@@ -1063,7 +616,7 @@ namespace GorgonLibrary
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil, int refresh)
+		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil, int refresh)
 		{
 			SetMode(owner, width, height, format, windowed, usedepth, usestencil, refresh, VSyncIntervals.IntervalNone);
 		}
@@ -1087,7 +640,7 @@ namespace GorgonLibrary
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil)
+		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil)
 		{
 			SetMode(owner, width, height, format, windowed, usedepth, usestencil, 60, VSyncIntervals.IntervalNone);
 		}
@@ -1110,7 +663,7 @@ namespace GorgonLibrary
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed)
+		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed)
 		{
 			SetMode(owner, width, height, format, windowed, false, false, 60, VSyncIntervals.IntervalNone);
 		}
@@ -1131,7 +684,7 @@ namespace GorgonLibrary
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		public static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format)
+		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format)
 		{
 			SetMode(owner, width, height, format, false, false, false, 60, VSyncIntervals.IntervalNone);
 		}
@@ -1147,7 +700,7 @@ namespace GorgonLibrary
 		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		public static void SetMode(Forms.Control owner)
+		internal static void SetMode(Forms.Control owner)
 		{
 			if (owner == null)
 				throw new ArgumentNullException("owner");
@@ -1198,10 +751,6 @@ namespace GorgonLibrary
 			{
 				Forms.Application.Idle -= new EventHandler(Application_Idle);
 				IsRunning = false;
-
-				// Reset all timers.
-				_timer.Reset();
-				FrameStats.Reset();
 
 				Log.Print("Application loop stopped.", GorgonLoggingLevel.Verbose);
 			}
@@ -1317,26 +866,26 @@ namespace GorgonLibrary
 				AllowBackgroundRendering = true;
 				IsRunning = false;
 
-				// Enumerate drivers and video modes.
-				_drivers = new DriverList();
-				_drivers.Refresh();
+				//// Enumerate drivers and video modes.
+				//_drivers = new DriverList();
+				//_drivers.Refresh();
 
-				// Create timing data.
-				_timer = new PreciseTimer();
+				//// Create timing data.
+				//_timer = new PreciseTimer();
 
-				// Assign the initial driver, this will also create the renderer..
-				CurrentDriver = _drivers[0];
+				//// Assign the initial driver, this will also create the renderer..
+				//CurrentDriver = _drivers[0];
 
-				// Create timing statistics.
-				FrameStats = new TimingData(_timer);
+				//// Create timing statistics.
+				//FrameStats = new TimingData(_timer);
 
-				// Create event arguments for idle event.
-				_frameEventArgs = new FrameEventArgs(FrameStats);
+				//// Create event arguments for idle event.
+				//_frameEventArgs = new FrameEventArgs(FrameStats);
 
-				// Set default clear parameters.
-				_clearTargets = ClearTargets.BackBuffer | ClearTargets.DepthBuffer | ClearTargets.StencilBuffer;
+				//// Set default clear parameters.
+				//_clearTargets = ClearTargets.BackBuffer | ClearTargets.DepthBuffer | ClearTargets.StencilBuffer;
 
-				FrameStatsTextColor = Color.White;
+				//FrameStatsTextColor = Color.White;
 
 				Log.Print("Initialized Successfully.", GorgonLoggingLevel.Simple);
 			}
