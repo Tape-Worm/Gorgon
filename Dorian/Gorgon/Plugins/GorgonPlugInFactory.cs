@@ -37,10 +37,28 @@ namespace GorgonLibrary.PlugIns
 	/// </summary>
 	/// <remarks>Use this object to control loading and unloading of plug-ins.
 	/// <para>This collection is not case-sensitive.</para></remarks>
-	public class GorgonPlugInCollection
+	public class GorgonPlugInFactory
 		: GorgonBaseNamedObjectCollection<GorgonPlugIn>
 	{
+		#region Variables.
+		private static GorgonPlugInFactory _factory = null;		// Factory instance.
+		#endregion
+
 		#region Properties.
+		/// <summary>
+		/// Property to return the list of plug-in types available for use.
+		/// </summary>
+		public static GorgonPlugInFactory PlugIns
+		{
+			get
+			{
+				if (_factory == null)
+					_factory = new GorgonPlugInFactory();
+
+				return _factory;
+			}
+		}
+
 		/// <summary>
 		/// Property to return a plug-in by its index in the list.
 		/// </summary>
@@ -125,11 +143,11 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to filter.</param>
 		/// <returns>A read-only list of plug-ins.</returns>
-		public GorgonNamedObjectReadOnlyCollection<GorgonPlugIn> GetPlugInsFrom(AssemblyName assemblyName)
+		public static GorgonNamedObjectReadOnlyCollection<GorgonPlugIn> GetPlugInsFrom(AssemblyName assemblyName)
 		{
 			List<GorgonPlugIn> plugIns = new List<GorgonPlugIn>();
 
-			foreach (GorgonPlugIn plugIn in this)
+			foreach (GorgonPlugIn plugIn in PlugIns)
 			{
 				Type plugInType = plugIn.GetType();
 
@@ -143,9 +161,9 @@ namespace GorgonLibrary.PlugIns
 		/// <summary>
 		/// Function to unload all the plug-ins.
 		/// </summary>
-		public void UnloadAll()
+		public static void UnloadAll()
 		{
-			ClearItems();
+			PlugIns.ClearItems();
 		}
 
 		/// <summary>
@@ -154,10 +172,10 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="name">Name of the plug-in to remove.</param>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="name"/> was NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">The name was an empty string..</exception>
-		public void Unload(string name)
+		public static void Unload(string name)
 		{
 			GorgonUtility.AssertParamString(name, "name");
-			RemoveItem(name);
+			PlugIns.RemoveItem(name);
 		}
 
 		/// <summary>
@@ -165,9 +183,9 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="index">Index of the plug-in to remove.</param>
 		/// <exception cref="System.IndexOutOfRangeException">The <paramRef name="index"/> parameter was less than 0 or greater than or equal to <see cref="P:Engine.PlugIns.EnginePlugInList.Count">Count</see>.</exception>
-		public void Unload(int index)
+		public static void Unload(int index)
 		{
-			RemoveItem(index);
+			PlugIns.RemoveItem(index);
 		}
 
 		/// <summary>
@@ -175,12 +193,12 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="plugIn">Plug-in to remove.</param>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="plugIn"/> parameter was NULL (Nothing in VB.Net).</exception>
-		public void Unload(GorgonPlugIn plugIn)
+		public static void Unload(GorgonPlugIn plugIn)
 		{
 			if (plugIn == null)
 				throw new ArgumentNullException("plugIn");
 
-			RemoveItem(plugIn);
+			PlugIns.RemoveItem(plugIn);
 		}
 
 		/// <summary>
@@ -190,7 +208,7 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
-		public AssemblyName LoadPlugInAssembly(string assemblyPath)
+		public static AssemblyName LoadPlugInAssembly(string assemblyPath)
 		{
 			return LoadPlugInAssembly(assemblyPath, false, null);
 		}
@@ -209,7 +227,7 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="Engine.EngineException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
 		/// or the assembly key does not match <paramref name="publicKeyCompare"/>.</exception>
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
-		public AssemblyName LoadPlugInAssembly(string assemblyPath, bool mustBeSigned, byte[] publicKeyCompare)
+		public static AssemblyName LoadPlugInAssembly(string assemblyPath, bool mustBeSigned, byte[] publicKeyCompare)
 		{
 			AssemblyName plugInAssemblyName = null;
 
@@ -227,7 +245,7 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
-		public void LoadPlugInAssembly(AssemblyName assemblyName)
+		public static void LoadPlugInAssembly(AssemblyName assemblyName)
 		{
 			LoadPlugInAssembly(assemblyName);
 		}
@@ -244,7 +262,7 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="Engine.EngineException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
 		/// or the assembly key does not match <paramref name="publicKeyCompare"/> or there are no plug-ins in the assembly.</exception>
-		public void LoadPlugInAssembly(AssemblyName assemblyName, bool mustBeSigned, byte[] publicKeyCompare)
+		public static void LoadPlugInAssembly(AssemblyName assemblyName, bool mustBeSigned, byte[] publicKeyCompare)
 		{
 			Assembly plugInAssembly = null;
 			byte[] publicKey = null;
@@ -288,14 +306,14 @@ namespace GorgonLibrary.PlugIns
 					GorgonPlugIn plugIn = plugInType.Assembly.CreateInstance(plugInType.FullName, false, BindingFlags.CreateInstance, null, null, null, null) as GorgonPlugIn;
 					if (plugIn == null)
 						throw new GorgonException(GorgonResult.CannotCreate, "Could not create the plug-in type '" + plugInType.FullName + "' in assembly '" + plugInType.Assembly.FullName + "'.  It was not of type EnginePlugIn.");
-					if (!Contains(plugIn.Name))
-						AddItem(plugIn);
+					if (!PlugIns.Contains(plugIn.Name))
+						PlugIns.AddItem(plugIn);
 					else
 					{
-						if (plugIn.GetType() != this[plugIn.Name].GetType())
+						if (plugIn.GetType() != PlugIns[plugIn.Name].GetType())
 						{
 							throw new GorgonException(GorgonResult.CannotCreate, "The plug-in '" + plugIn.Name + "' in assembly '" + plugInType.Assembly.FullName +
-									"' already exists in another plug-in assembly '" + this[plugIn.Name].GetType().Assembly.FullName + "' and is not the same type.");
+									"' already exists in another plug-in assembly '" + PlugIns[plugIn.Name].GetType().Assembly.FullName + "' and is not the same type.");
 						}
 					}
 				}
@@ -318,11 +336,19 @@ namespace GorgonLibrary.PlugIns
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPlugInCollection"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPlugInFactory"/> class.
 		/// </summary>
-		internal GorgonPlugInCollection()
+		private GorgonPlugInFactory()
 			: base(false)
 		{
+		}
+
+		/// <summary>
+		/// Initializes the <see cref="GorgonPlugInFactory"/> class.
+		/// </summary>
+		static GorgonPlugInFactory()
+		{
+			_factory = new GorgonPlugInFactory();
 		}
 		#endregion
 	}

@@ -23,8 +23,8 @@ namespace Tester
 			try
 			{
 				Gorgon.Initialize(this);
-				Gorgon.PlugIns.LoadPlugInAssembly(@"..\..\..\TesterPlugIn\Bin\Debug\TesterPlugIn.dll");
-				GorgonPlugIn plugIn = Gorgon.PlugIns["TesterPlugIn.EntryPoint"];
+				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\TesterPlugIn\Bin\Debug\TesterPlugIn.dll");
+				GorgonPlugIn plugIn = GorgonPlugInFactory.PlugIns["TesterPlugIn.EntryPoint"];
 
 				plugIn.GetType().GetMethod("ShowShit").Invoke(plugIn, null);
 			}
