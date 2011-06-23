@@ -220,11 +220,11 @@
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
-    <Compile Include="Plugin\GorgonAssemblyCache.cs" />
-    <Compile Include="Plugin\GorgonPlugIn.cs" />
-    <Compile Include="Plugin\PlugInEntryPoint.cs" />
-    <Compile Include="Plugin\GorgonPlugInCollection.cs" />
-    <Compile Include="Plugin\__PlugInFactory.cs" />
+    <Compile Include="Plugins\GorgonAssemblyCache.cs" />
+    <Compile Include="Plugins\GorgonPlugIn.cs" />
+    <Compile Include="OLDE\PlugInEntryPoint.cs" />
+    <Compile Include="Plugins\GorgonPlugInCollection.cs" />
+    <Compile Include="OLDE\__PlugInFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -320,11 +320,11 @@
     <Compile Include="Buffers\IDataCache.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Enums\PlugInTypeEnums.cs" />
-    <Compile Include="Plugin\PlugInAttribute.cs" />
-    <Compile Include="Plugin\PlugInList.cs">
+    <Compile Include="OLDE\PlugInAttribute.cs" />
+    <Compile Include="OLDE\PlugInList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Plugin\PlugInModuleList.cs" />
+    <Compile Include="OLDE\PlugInModuleList.cs" />
     <Compile Include="Rendering\RenderStates.cs" />
     <Compile Include="Events\DriverChangeEvent.cs">
       <SubType>Code</SubType>
