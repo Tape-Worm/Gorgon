@@ -145,9 +145,9 @@
     <Compile Include="Buffers\VertexBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\RemoveThese\Collection.cs" />
-    <Compile Include="Collections\RemoveThese\Dictionary.cs" />
-    <Compile Include="Collections\RemoveThese\DynamicArray.cs" />
+    <Compile Include="OLDE\Collection.cs" />
+    <Compile Include="OLDE\Dictionary.cs" />
+    <Compile Include="OLDE\DynamicArray.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
@@ -200,13 +200,13 @@
     <Compile Include="Imaging\ImageCache.cs" />
     <Compile Include="Imaging\ImageList.cs" />
     <Compile Include="INamedObject.cs" />
-    <Compile Include="Input\Input.cs" />
-    <Compile Include="Input\InputPlugIn.cs" />
-    <Compile Include="Input\Joystick.cs" />
-    <Compile Include="Input\JoystickList.cs" />
-    <Compile Include="Input\Keyboard.cs" />
-    <Compile Include="Input\InputDevice.cs" />
-    <Compile Include="Input\Mouse.cs" />
+    <Compile Include="OLDE\Input.cs" />
+    <Compile Include="OLDE\InputPlugIn.cs" />
+    <Compile Include="OLDE\Joystick.cs" />
+    <Compile Include="OLDE\JoystickList.cs" />
+    <Compile Include="OLDE\Keyboard.cs" />
+    <Compile Include="OLDE\InputDevice.cs" />
+    <Compile Include="OLDE\Mouse.cs" />
     <Compile Include="OLDE\Main.cs" />
     <Compile Include="Math\BoundingCircle.cs" />
     <Compile Include="Math\GorgonMathUtility.cs" />
@@ -223,7 +223,7 @@
     <Compile Include="Plugins\GorgonAssemblyCache.cs" />
     <Compile Include="Plugins\GorgonPlugIn.cs" />
     <Compile Include="OLDE\PlugInEntryPoint.cs" />
-    <Compile Include="Plugins\GorgonPlugInCollection.cs" />
+    <Compile Include="Plugins\GorgonPlugInFactory.cs" />
     <Compile Include="OLDE\__PlugInFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -413,6 +413,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Input\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

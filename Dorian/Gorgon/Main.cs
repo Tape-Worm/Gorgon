@@ -202,16 +202,6 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to return the plug-in interface.
-		/// </summary>
-		/// <remarks>Use this interface to load and unload plug-ins from an assembly.  All plug-in types are registered from an assembly when it is loaded and will be accessible from this interface.</remarks>
-		public static GorgonPlugInCollection PlugIns
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to set or return the frame statistics text color.
 		/// </summary>
 		/// <remarks>This only applies if <see cref="GorgonLibrary.FrameStatsVisible">FrameStatsVisible</see> is TRUE.</remarks>
@@ -872,9 +862,6 @@ namespace GorgonLibrary
 						Log.Print("Using parent window of application window at '0x{0}'.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ParentWindow.Handle));
 				}
 
-				PlugIns = new GorgonPlugInCollection();
-				Log.Print("Plug-in interface created.", GorgonLoggingLevel.Verbose);
-
 				AllowBackgroundRendering = true;
 				IsRunning = false;
 
@@ -923,9 +910,6 @@ namespace GorgonLibrary
 
 			// Stop the engine.
 			Stop();
-
-			// Remove all plug-ins.
-			PlugIns.UnloadAll();
 
 			// Unload fonts.
 			FontCache.DestroyAll();
