@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonZipFileSystem", "Plug
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Examples\Tester\Tester.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TesterPlugIn", "Examples\TesterPlugIn\TesterPlugIn.csproj", "{170AC857-3C7A-4503-92CE-EFC0F9CC4524}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,6 +122,16 @@ Global
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|Mixed Platforms.Build.0 = Release|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|x86.ActiveCfg = Release|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|x86.Build.0 = Release|x86
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{170AC857-3C7A-4503-92CE-EFC0F9CC4524}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
