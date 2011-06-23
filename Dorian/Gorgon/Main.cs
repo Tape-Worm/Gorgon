@@ -80,7 +80,7 @@ namespace GorgonLibrary
 	/// and call <see cref="M:GorgonLibrary.Terminate">Terminate</see> when finished.<para>This static class is used to change the global states of objects such as a global rendering setting to which render target is current.
 	/// It will also control the execution and rendering flow for the application.
 	/// </para></remarks>
-	public static class Main
+	public static class Gorgon
 	{
 		#region Variables.
 		private static ApplicationLoop _loop = null;					// Application loop.
@@ -199,6 +199,16 @@ namespace GorgonLibrary
 				else
 					return PlatformArchitecture.x86;
 			}
+		}
+
+		/// <summary>
+		/// Property to return the plug-in interface.
+		/// </summary>
+		/// <remarks>Use this interface to load and unload plug-ins from an assembly.  All plug-in types are registered from an assembly when it is loaded and will be accessible from this interface.</remarks>
+		public static GorgonPlugInCollection PlugIns
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -862,6 +872,8 @@ namespace GorgonLibrary
 						Log.Print("Using parent window of application window at '0x{0}'.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ParentWindow.Handle));
 				}
 
+				PlugIns = new GorgonPlugInCollection();
+				Log.Print("Plug-in interface created.", GorgonLoggingLevel.Verbose);
 
 				AllowBackgroundRendering = true;
 				IsRunning = false;
@@ -911,6 +923,9 @@ namespace GorgonLibrary
 
 			// Stop the engine.
 			Stop();
+
+			// Remove all plug-ins.
+			PlugIns.UnloadAll();
 
 			// Unload fonts.
 			FontCache.DestroyAll();
