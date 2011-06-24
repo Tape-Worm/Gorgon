@@ -11,11 +11,21 @@ using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Input;
 
 namespace Tester
 {
 	public partial class Form1 : Form
 	{
+		GorgonLibrary.Input.Raw.RawInputFactory input = null;
+		GorgonPointingDevice mouse = null;
+
+		private bool Idle(GorgonFrameRate timing)
+		{
+			labelMouse.Text = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString();
+			return true;
+		}
+
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
@@ -25,8 +35,11 @@ namespace Tester
 				Gorgon.Initialize(this);
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\TesterPlugIn\Bin\Debug\TesterPlugIn.dll");
 				GorgonPlugIn plugIn = GorgonPlugInFactory.PlugIns["TesterPlugIn.EntryPoint"];
+				input = new GorgonLibrary.Input.Raw.RawInputFactory();
+				mouse = input.CreatePointingDevice();
+				mouse.PositionRange = new RectangleF((PointF)this.PointToClient(new Point(this.Location.X, this.Location.Y)), new SizeF(100,100));
 
-				plugIn.GetType().GetMethod("ShowShit").Invoke(plugIn, null);
+				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
 			{
@@ -38,6 +51,7 @@ namespace Tester
 		{
 			base.OnFormClosing(e);
 
+			mouse.Dispose();
 			Gorgon.Terminate();
 		}
 

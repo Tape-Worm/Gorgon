@@ -145,6 +145,7 @@
     <Compile Include="Buffers\VertexBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Math\GorgonRange.cs" />
     <Compile Include="OLDE\Collection.cs" />
     <Compile Include="OLDE\Dictionary.cs" />
     <Compile Include="OLDE\DynamicArray.cs" />
@@ -208,13 +209,13 @@
     <Compile Include="OLDE\InputDevice.cs" />
     <Compile Include="OLDE\Mouse.cs" />
     <Compile Include="OLDE\Main.cs" />
-    <Compile Include="Math\BoundingCircle.cs" />
+    <Compile Include="OLDE\BoundingCircle.cs" />
     <Compile Include="Math\GorgonMathUtility.cs" />
-    <Compile Include="Math\Matrix.cs" />
-    <Compile Include="Math\Spline.cs" />
-    <Compile Include="Math\Vector2D.cs" />
-    <Compile Include="Math\Vector3D.cs" />
-    <Compile Include="Math\Vector4D.cs" />
+    <Compile Include="OLDE\Matrix.cs" />
+    <Compile Include="OLDE\Spline.cs" />
+    <Compile Include="OLDE\Vector2D.cs" />
+    <Compile Include="OLDE\Vector3D.cs" />
+    <Compile Include="OLDE\Vector4D.cs" />
     <Compile Include="Native\Win32.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
@@ -283,7 +284,7 @@
     <Compile Include="Targets\RenderImage.cs" />
     <Compile Include="Targets\RenderTargetCache.cs" />
     <Compile Include="Targets\RenderWindow.cs" />
-    <Compile Include="Math\MinMaxRange.cs" />
+    <Compile Include="OLDE\MinMaxRange.cs" />
     <Compile Include="UI\BaseDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -414,9 +415,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Input\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
