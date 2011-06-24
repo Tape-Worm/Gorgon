@@ -224,7 +224,7 @@ namespace GorgonLibrary.PlugIns
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
-		/// <exception cref="Engine.EngineException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
+		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
 		/// or the assembly key does not match <paramref name="publicKeyCompare"/>.</exception>
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
 		public static AssemblyName LoadPlugInAssembly(string assemblyPath, bool mustBeSigned, byte[] publicKeyCompare)
@@ -260,7 +260,7 @@ namespace GorgonLibrary.PlugIns
 		/// <para>To just check if the assembly is signed, pass NULL (Nothing in VB.NET) to publicKeyToken.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="Engine.EngineException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
+		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
 		/// or the assembly key does not match <paramref name="publicKeyCompare"/> or there are no plug-ins in the assembly.</exception>
 		public static void LoadPlugInAssembly(AssemblyName assemblyName, bool mustBeSigned, byte[] publicKeyCompare)
 		{

@@ -109,13 +109,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (Screen == null)
-					return true;
-
-				if ((Screen.OwnerForm.WindowState == Forms.FormWindowState.Minimized) || ((!Screen.OwnerForm.ContainsFocus) && (!Screen.Windowed)))
-					return false;
-
-				if ((!AllowBackgroundRendering) && (!Screen.OwnerForm.ContainsFocus))
+				if ((ParentWindow.WindowState == Forms.FormWindowState.Minimized) || (!ParentWindow.ContainsFocus))
 					return false;
 	
 				return true;
@@ -168,9 +162,9 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to return the parent window interface for the <see cref="GorgonLibrary.ApplicationWindow">ApplicationWindow</see> window bound to 
+		/// Property to return the parent window interface for the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">ApplicationWindow</see> window bound to 
 		/// </summary>
-		/// <remarks>This is often the same object pointed to by <seealso cref="GorgonLibrary.ApplicationWindow">ApplicationWindow</seealso>.  When the application window is set to a control, then this will be set to the parent form of the control.</remarks>
+		/// <remarks>This is often the same object pointed to by <seealso cref="P:GorgonLibrary.Gorgon.ApplicationWindow">ApplicationWindow</seealso>.  When the application window is set to a control, then this will be set to the parent form of the control.</remarks>
 		public static Forms.Form ParentWindow
 		{
 			get;
@@ -202,189 +196,6 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to set or return the frame statistics text color.
-		/// </summary>
-		/// <remarks>This only applies if <see cref="GorgonLibrary.FrameStatsVisible">FrameStatsVisible</see> is TRUE.</remarks>
-		/// <value>The color of the text for the frame statistics.</value>
-		internal static Color FrameStatsTextColor
-		{	// TODO: Remove this.
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether or not the resizing the window will reset the display.
-		/// </summary>
-		/// <remarks>
-		/// When TRUE, the contents of the window client area will be stretched to match the size of the resized client area.  However, no actual change to the <see cref="GorgonLibrary.VideoMode">video mode</see> will be made.  If it was set to 640x480 before the resizing, the screen dimensions after resizing the window will still be 640x480.  This will produce a blurry looking image when resized larger than the previous size.  When fast resizing is enabled, all resources are preserved because there was no actual change to the video device.
-		/// <para>If FALSE, then the device will undergo a reset operation and the video mode will be adjusted to match the new client size of the owning control/window.  This will keep the sharpness of the rendered image regardless of the client size of the control/window. The caveat is that some resources will need to be re-loaded/re-created when the device reset occurs.  This is the exact behaviour of the system when a full screen application loses and regains focus.  Furthermore, window resizing will be much slower (hence the "Fast" portion of FastResize). </para>
-		/// </remarks>
-		/// <value>TRUE will enable a fast resizing, FALSE will disable it.</value>
-		internal static bool FastResize
-		{	// TODO: Remove this.
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether the logo is shown or not.
-		/// </summary>
-		/// <value>TRUE to show the Gorgon logo in the lower right corner of the screen while rendering, FALSE to hide.</value>
-		internal static bool LogoVisible
-		{   // TODO: Remove this.
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether the frame timing data is shown or not.
-		/// </summary>
-		/// <value>TRUE to show the current frame statistics (i.e. Frames Per Second, frame delta time, etc...) in the upper left corner of the screen while rendering.  FALSE to hide.</value>
-		internal static bool FrameStatsVisible
-		{	// TODO: Remove this.
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the render state cache for renderables.
-		/// </summary>
-		/// <example>
-		/// To turn off blending for all sprites except the sprite named Bob we can do the following:
-		/// <code>
-		/// Sprite Bob;
-		/// Sprite Joe;
-		/// Sprite Blah;
-		/// 
-		/// // ... Time passes ... stuff is done, a grue eats someone, etc...
-		/// 
-		/// GlobalStateSettings.GlobalBlending = BlendingModes.None;
-		/// // Keep the normal blending for the Bob sprite.
-		/// Bob.BlendingMode = BlendingModes.Normal;
-		/// </code>
-		/// </example>
-		/// <remarks>Changing the states in this property will result in that state being applied to all renderable objects.  The exception to this is when the state has been changed directly on the renderable object itself.</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.</exception>
-		/// <value>A list of global settings that <see cref="GorgonLibrary.Graphics.Sprite">sprites</see> and <see cref="GorgonLibrary.Graphics.TextSprite">text sprites</see> will use as initial and inherited values.</value>		
-		internal static SpriteStateCache GlobalStateSettings
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return null;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the currently active clipping viewport.
-		/// </summary>
-		/// <remarks>
-		/// Use this property to clip any drawing outside of the rectangle region specified.  
-		/// <para>Setting this property to NULL will set the clipping viewport dimensions to the size of the current render target dimensions.</para>
-		/// </remarks>
-		/// <value>A rectangular region that defines what area of the screen (or other render target) to update.</value>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.</exception>
-		internal static Viewport CurrentClippingViewport
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return null;
-			}
-			set
-			{
-			}
-		}
-
-		/// <summary>
-		/// Property to return information about the current video mode.
-		/// </summary>
-		/// <remarks>If a video mode has not been set, and <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has been called, then the current desktop video mode is returned instead.</remarks>
-		/// <value>The currently active <see cref="VideoMode">video mode</see> information.</value>
-		internal static VideoMode CurrentVideoMode
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return default(VideoMode);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the currently active shader.
-		/// </summary>
-		/// <remarks>Use this to apply a shader to the rendering pass.  You can apply either a <see cref="GorgonLibrary.Graphics.Shader"/>, <see cref="GorgonLibrary.Graphics.ShaderTechnique"/> or a <see cref="GorgonLibrary.Graphics.ShaderPass"/>.  
-		/// When applying a shader there's a very small performance hit on the first pass of rendering as it attempts to locate the first valid shader technique.</remarks>
-		/// <value>A shader renderer output to apply to the scene when rendering.</value>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.
-		/// <para>Thrown when <see cref="GorgonLibrary.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">SetMode()</see> has not been called.</para>
-		/// </exception>
-		internal static IShaderRenderer CurrentShader
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return null;
-			}
-			set
-			{
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the currently active render target.
-		/// </summary>
-		/// <remarks>
-		/// Use this to change where sprites, primitives and text will be drawn.  This will allow for objects to be drawn off-screen or into another control that's bound with a <see cref="GorgonLibrary.Graphics.RenderWindow">RenderWindow</see>.
-		/// <para>
-		/// Set this property to NULL to continue drawing to the primary screen.</para>
-		/// 	<para>Please note that when the render target is switched the <see cref="GorgonLibrary.CurrentClippingViewport">clipping viewport</see> is reset to the size of the render target being assigned.</para>
-		/// </remarks>
-		/// <seealso cref="GorgonLibrary.SetAdditionalRenderTarget">SetAdditionalRenderTarget</seealso>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.<para>
-		/// Thrown when <see cref="GorgonLibrary.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">SetMode()</see> has not been called.</para></exception>
-		internal static RenderTarget CurrentRenderTarget
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return null;
-			}
-			set
-			{
-			}
-		}
-
-		/// <summary>
-		/// Property to return the primary rendering window.
-		/// </summary>
-		/// <remarks>
-		/// There is only one of these <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> objects active at any given time.  Other controls that have render targets use <see cref="GorgonLibrary.Graphics.RenderWindow">RenderWindow</see> objects.
-		/// <para>When the primary video mode bound to the control is closed, then all other render targets are automatically destroyed.</para>
-		/// </remarks>
-		/// <value>The primary rendering window or the "Screen".  This can be any control and is the primary render target that is setup during the <see cref="GorgonLibrary.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">SetMode()</see> function.  As such, this is the initial render target when a video mode is set.</value>
-		internal static PrimaryRenderWindow Screen
-		{// TODO: We will be removing this.
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the video mode information for the desktop.
-		/// </summary>
-		/// <remarks></remarks>
-		/// <value>The desktop <see cref="VideoMode">video mode</see> information.</value>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.</exception>
-		internal static VideoMode DesktopVideoMode
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return default(VideoMode);
-			}
-		}
-
-		/// <summary>
 		/// Property to return whether the library has been initialized or not.
 		/// </summary>
 		/// <value>TRUE if <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has been called, FALSE if not.</value>
@@ -404,65 +215,9 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to set or return the currently active driver.
-		/// </summary>
-		/// <remarks>
-		/// Setting this property to another driver index will make the video mode reset and all data uploaded to the video card (such as textures) will be destroyed and will have to be reset after the video mode has been set again.
-		/// <para>The reason it does this is due to the uncertainty of using multiple video cards: If video card A has only 640x480x16 and video card B has 800x600x32 and 640x480x32, and we are currently using B, then upon switching to A we have to allow the user to change to a video mode that is supported by card A.</para>
-		/// 	<para>
-		/// After the driver ID is changed, it is up to the client program to determine if the mode is supported and reset to that mode, else set to a default video mode.
-		/// </para>
-		/// 	<para>
-		/// You should confirm how many drivers are installed in the system via the <see cref="DriverList">Drivers</see>.Count property before setting the driver index.
-		/// </para>
-		/// </remarks>
-		/// <value>This will get/set the current video driver index, which is ranged from 0 to <see cref="GorgonLibrary.DriverList">DriverList</see>.Count - 1.</value>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.</exception>
-		internal static Driver CurrentDriver
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return null;
-			}
-			set
-			{
-			}
-		}
-
-		/// <summary>
-		/// Property to return a list of video drivers available for rendering.
-		/// </summary>
-		/// <remarks>If a driver does not have hardware acceleration, it will not be included in the list.</remarks>
-		/// <value>The list of installed <see cref="GorgonLibrary.Driver">video drivers</see>.</value>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.</exception>
-		internal static DriverList Drivers
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return null;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return a flag that controls background rendering.
-		/// </summary>
-		/// <remarks>
-		/// When this property is set to TRUE the CPU usage will jump to 100% while the application is running.  This is because it will continuously update and receive messages from the system while in the background.  This may cause the system to slow down (if you have a slow video card/CPU) when background rendering is on.
-		/// <para>When the property is set to FALSE, the CPU usage will only be at 100% when the application is in the foreground and will throttle back to 0% when the application is in the background.  This is much more efficient, however the drawback is that the application will not update while in the background.</para>
-		/// </remarks>
-		/// <value>Setting this to TRUE will allow the engine to render while the window is not in the foreground or minimized.  Setting this to FALSE will halt rendering until the window is in the foreground.</value>
-		internal static bool AllowBackgroundRendering
-		{// TODO: We will be removing this.
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to return if the app is in a running state or not.
 		/// </summary>
-		/// <remarks>This flag is set to TRUE when the <see cref="GorgonLibrary.Go">Go()</see> function is called and FALSE when the <see cref="GorgonLibrary.Stop">Stop()</see> function is called.</remarks>
+		/// <remarks>This flag is set to TRUE when the <see cref="M:GorgonLibrary.Gorgon.Go">Go()</see> function is called and FALSE when the <see cref="M:GorgonLibrary.Gorgon.Stop">Stop()</see> function is called.</remarks>
 		/// <value>TRUE if the application is running, and FALSE if not.</value>
 		public static bool IsRunning
 		{
@@ -513,203 +268,6 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to set additional render targets.
-		/// </summary>
-		/// <param name="index">An index value from 0 to <see cref="GorgonLibrary.Driver.MaximumSimultaneousRenderTargets">Driver.MaximumSimultaneousRenderTargets</see>-1.</param>
-		/// <param name="target">A render target to bind to the index.</param>
-		/// <remarks>This will allow the user to set more than one render target at a time for simultaneous rendering.  Please note that using multiple render targets is only supported when
-		/// using shaders.
-		/// <para>An index of 0 will set the current primary render target which is identical to using <see cref="GorgonLibrary.CurrentRenderTarget">CurrentRenderTarget</see>.</para>
-		/// <para>There are some limitations to setting multiple render targets:  The render targets should have the same width and height.  They can use a different 
-		/// <see cref="GorgonLibrary.Graphics.ImageBufferFormats">image format</see> but the image formats of the targets must have the same bit count.  This restriction is lifted for 
-		/// devices that have <see cref="GorgonLibrary.Driver.SupportMRTIndependentBitDepths">Driver.SupportMRTIndepenedentBitDepths</see> set to true.</para>
-		/// <para>If <see cref="GorgonLibrary.Driver.SupportMRTPostPixelShaderBlending">Driver.SupportMRTPostPixelShaderBlending</see> is true then post pixel shader blending operations can 
-		/// be performed by the video card.  However, if it is supported, the render target must queried to see if it will support post pixel shader blending operations via 
-		/// the <see cref="GorgonLibrary.Graphics.RenderTarget.IsValidForMRTPostPixelShaderBlending">RenderTarget.IsValidForMRTPostPixelShaderBlending</see> property.</para>
-		/// <para>Passing NULL (Nothing in Visual Basic) with an index of 0 will set the render target to the <see cref="GorgonLibrary.Screen">Screen</see> render target.</para>
-		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize</see> has not been called, 
-		/// <see cref="GorgonLibrary.SetMode(System.Windows.Forms.Control, Int32, Int32, GorgonLibrary.BackBufferFormats, Boolean, Boolean, Boolean, Int32, GorgonLibrary.VSyncIntervals)">SetMode</see> wasn't called or the target cannot be bound.</exception>
-		internal static void SetAdditionalRenderTarget(int index, RenderTarget target)
-		{
-			// TODO: We will be removing this.
-		}
-
-		/// <summary>
-		/// Function to return an additional render target from the active render target list.
-		/// </summary>
-		/// <param name="index">An index value from 0 to <see cref="GorgonLibrary.Driver.MaximumSimultaneousRenderTargets">Driver.MaximumSimultaneousRenderTargets</see>-1.</param>
-		/// <returns>The render target at the specified index.</returns>
-		internal static RenderTarget GetAdditionalRenderTarget(int index)
-		{
-			// TODO: We will be removing this.
-			return null;
-		}
-
-		/// <summary>
-		/// Function to close the currently active video mode.
-		/// </summary>
-		/// <remarks>Some resources may have to be re-loaded or re-created when this function is called and another call to SetMode is made.</remarks>
-		internal static void CloseMode()
-		{
-			// TODO: We will be removing this.
-			Stop();
-
-			// Clean up resources.
-			FontCache.DestroyAll();
-			RenderTargetCache.DestroyAll();
-			ShaderCache.DestroyAll();
-			ImageCache.DestroyAll();
-
-			// Destroy anything that's not tracked.
-			DeviceStateList.ForceRelease();
-
-			if (Screen != null)
-				Screen.Dispose();
-			Screen = null;
-		}
-
-		/// <summary>
-		/// Function to set the video mode and primary rendering window.
-		/// </summary>
-		/// <remarks>
-		/// When this function is successful it will create a new <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and assign it to the <see cref="GorgonLibrary.Screen">Screen</see> property, and will bind the primary render target to its owner control.
-		/// <para>If the client size of the owning control does not match the width and height passed in to the function and the windowed parameter is TRUE, and the owning control is a Form, then the client size of the form will be adjusted to match that of the width and height passed in.  If the owning control is not a form, then the width and height will adjusted to the client size of the owning control.</para>
-		/// 	<para>When in windowed mode, the vsync parameter and refresh rate parameter will be ignored.</para>
-		/// 	<para>When going to full screen mode the width and height must match one of the video modes listed in the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  If not, an exception will be thrown.</para>
-		/// </remarks>
-		/// <param name="owner">Control that will be bound to the <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and will be the initial canvas to receive drawing commands.</param>
-		/// <param name="width">Width of the video mode.</param>
-		/// <param name="height">Height of the video mode.</param>
-		/// <param name="format">Buffer format for the video mode.</param>
-		/// <param name="windowed">TRUE to use windowed mode, FALSE to go fullscreen.</param>
-		/// <param name="usedepth">TRUE to create a depth buffer, FALSE to not create.</param>
-		/// <param name="usestencil">TRUE to create a stencil buffer, FALSE to not create.</param>
-		/// <param name="refresh">Refresh rate of the video mode.</param>
-		/// <param name="vSyncInterval">V-sync interval for presentation.</param>
-		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil, int refresh, VSyncIntervals vSyncInterval)
-		{
-			// TODO: We will be removing this.
-		}
-
-		/// <summary>
-		/// Function to set the video mode and primary rendering window.
-		/// </summary>
-		/// <remarks>
-		/// When this function is successful it will create a new <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and assign it to the <see cref="GorgonLibrary.Screen">Screen</see> property, and will bind the primary render target to its owner control.
-		/// <para>If the client size of the owning control does not match the width and height passed in to the function and the windowed parameter is TRUE, and the owning control is a Form, then the client size of the form will be adjusted to match that of the width and height passed in.  If the owning control is not a form, then the width and height will adjusted to the client size of the owning control.</para>
-		/// 	<para>When in windowed mode, the vsync parameter and refresh rate parameter will be ignored.</para>
-		/// 	<para>When going to full screen mode the width and height must match one of the video modes listed in the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  If not, an exception will be thrown.</para>
-		/// <para>This overload of the function will default to <see cref="GorgonLibrary.VSyncIntervals">VSyncIntervals.None</see>.</para>
-		/// </remarks>
-		/// <param name="owner">Control that will be bound to the <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and will be the initial canvas to receive drawing commands.</param>
-		/// <param name="width">Width of the video mode.</param>
-		/// <param name="height">Height of the video mode.</param>		
-		/// <param name="format">Buffer format for the video mode.</param>
-		/// <param name="windowed">TRUE to use windowed mode, FALSE to go fullscreen.</param>		
-		/// <param name="usedepth">TRUE to create a depth buffer, FALSE to not create.</param>
-		/// <param name="usestencil">TRUE to create a stencil buffer, FALSE to not create.</param>
-		/// <param name="refresh">Refresh rate of the video mode.</param>
-		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil, int refresh)
-		{
-			SetMode(owner, width, height, format, windowed, usedepth, usestencil, refresh, VSyncIntervals.IntervalNone);
-		}
-
-		/// <summary>
-		/// Function to set the video mode and primary rendering window.
-		/// </summary>
-		/// <remarks>
-		/// When this function is successful it will create a new <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and assign it to the <see cref="GorgonLibrary.Screen">Screen</see> property, and will bind the primary render target to its owner control.
-		/// <para>If the client size of the owning control does not match the width and height passed in to the function and the windowed parameter is TRUE, and the owning control is a Form, then the client size of the form will be adjusted to match that of the width and height passed in.  If the owning control is not a form, then the width and height will adjusted to the client size of the owning control.</para>
-		/// 	<para>When going to full screen mode the width and height must match one of the video modes listed in the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  If not, an exception will be thrown.</para>
-		/// <para>This overload of the function will use a default refresh rate of 60Hz and will default to <see cref="GorgonLibrary.VSyncIntervals">VSyncIntervals.None</see>.</para>
-		/// </remarks>
-		/// <param name="owner">Control that will be bound to the <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and will be the initial canvas to receive drawing commands.</param>
-		/// <param name="width">Width of the video mode.</param>
-		/// <param name="height">Height of the video mode.</param>		
-		/// <param name="format">Buffer format for the video mode.</param>
-		/// <param name="windowed">TRUE to use windowed mode, FALSE to go fullscreen.</param>		
-		/// <param name="usedepth">TRUE to create a depth buffer, FALSE to not create.</param>
-		/// <param name="usestencil">TRUE to create a stencil buffer, FALSE to not create.</param>
-		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed, bool usedepth, bool usestencil)
-		{
-			SetMode(owner, width, height, format, windowed, usedepth, usestencil, 60, VSyncIntervals.IntervalNone);
-		}
-
-		/// <summary>
-		/// Function to set the video mode and primary rendering window.
-		/// </summary>
-		/// <remarks>
-		/// When this function is successful it will create a new <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and assign it to the <see cref="GorgonLibrary.Screen">Screen</see> property, and will bind the primary render target to its owner control.
-		/// <para>If the client size of the owning control does not match the width and height passed in to the function and the windowed parameter is TRUE, and the owning control is a Form, then the client size of the form will be adjusted to match that of the width and height passed in.  If the owning control is not a form, then the width and height will adjusted to the client size of the owning control.</para>
-		/// 	<para>When in windowed mode, the vsync parameter and refresh rate parameter will be ignored.</para>
-		/// 	<para>When going to full screen mode the width and height must match one of the video modes listed in the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  If not, an exception will be thrown.</para>
-		/// <para>This overload of the function will use a default refresh rate of 60Hz and will default to <see cref="GorgonLibrary.VSyncIntervals">VSyncIntervals.None</see>.  Stencil and depth buffers will not be created with this function.</para>		
-		/// </remarks>
-		/// <param name="owner">Control that will be bound to the <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and will be the initial canvas to receive drawing commands.</param>
-		/// <param name="width">Width of the video mode.</param>
-		/// <param name="height">Height of the video mode.</param>		
-		/// <param name="format">Buffer format for the video mode.</param>
-		/// <param name="windowed">TRUE to use windowed mode, FALSE to go fullscreen.</param>		
-		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format, bool windowed)
-		{
-			SetMode(owner, width, height, format, windowed, false, false, 60, VSyncIntervals.IntervalNone);
-		}
-
-		/// <summary>
-		/// Function to set the video mode and primary rendering window.
-		/// </summary>
-		/// <remarks>
-		/// When this function is successful it will create a new <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and assign it to the <see cref="GorgonLibrary.Screen">Screen</see> property, and will bind the primary render target to its owner control.		
-		/// <para>This overload will default to full screen mode.</para>
-		/// 	<para>The width and height must match one of the video modes listed in the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  If not, an exception will be thrown.</para>
-		/// <para>This overload of the function will use a default refresh rate of 60Hz and will default to <see cref="GorgonLibrary.VSyncIntervals">VSyncIntervals.None</see>.  Stencil and depth buffers will not be created with this function</para>		
-		/// </remarks>
-		/// <param name="owner">Control that will be bound to the <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and will be the initial canvas to receive drawing commands.</param>
-		/// <param name="width">Width of the video mode.</param>
-		/// <param name="height">Height of the video mode.</param>		
-		/// <param name="format">Buffer format for the video mode.</param>
-		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		internal static void SetMode(Forms.Control owner, int width, int height, BackBufferFormats format)
-		{
-			SetMode(owner, width, height, format, false, false, false, 60, VSyncIntervals.IntervalNone);
-		}
-
-		/// <summary>
-		/// Function to set the video mode and primary rendering window.
-		/// </summary>
-		/// <remarks>
-		/// When this function is successful it will create a new <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and assign it to the <see cref="GorgonLibrary.Screen">Screen</see> property, and will bind the primary render target to its owner control.
-		/// <para>In this overload of the function the width and height of the video mode are set to the client width and height of the owner control.  The video mode will also be forced into windowed mode and the format will be set to the desktop video mode format.</para>
-		/// </remarks>
-		/// <param name="owner">Control that will be bound to the <see cref="GorgonLibrary.Graphics.PrimaryRenderWindow">PrimaryRenderWindow</see> and will be the initial canvas to receive drawing commands.</param>
-		/// <exception cref="ArgumentNullException">Thrown when NULL is passed in for the owner parameter.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when a video device object could not be created.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when full screen mode is chosen and the video mode does not match a video mode on the <see cref="GorgonLibrary.Driver.VideoModes">CurrentDriver.VideoModes</see> list.  Can also be thrown if the desktop video mode does not support hardware acceleration.</exception>
-		internal static void SetMode(Forms.Control owner)
-		{
-			if (owner == null)
-				throw new ArgumentNullException("owner");
-
-			SetMode(owner, owner.ClientSize.Width, owner.ClientSize.Height, DesktopVideoMode.Format, true, false, false, 60, VSyncIntervals.IntervalNone);
-		}
-
-
-		/// <summary>
 		/// Function to start the application message processing.
 		/// </summary>
 		/// <remarks>The application does not begin running right away when this function is called, it merely tells the library that the application is ready to begin.</remarks>
@@ -738,7 +296,7 @@ namespace GorgonLibrary
 		/// Function to stop the engine from rendering.
 		/// </summary>
 		/// <remarks>
-		/// This will merely stop the rendering process, it can be restarted with the <see cref="GorgonLibrary.Go">Go()</see> function.
+		/// This will merely stop the rendering process, it can be restarted with the <see cref="M:GorgonLibrary.Gorgon.Go">Go()</see> function.
 		/// <para>Note that this function does -not- affect the video mode.</para>
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.</exception>
@@ -772,8 +330,8 @@ namespace GorgonLibrary
 			}
 
 			// Continue on.
-			if ((IsRunning) && (Screen != null))
-				Application_Idle(Screen, EventArgs.Empty);
+			if (IsRunning)
+				Application_Idle(ParentWindow, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -862,7 +420,6 @@ namespace GorgonLibrary
 						Log.Print("Using parent window of application window at '0x{0}'.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ParentWindow.Handle));
 				}
 
-				AllowBackgroundRendering = true;
 				IsRunning = false;
 
 				//// Enumerate drivers and video modes.
@@ -900,7 +457,6 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>
 		/// You must call this when finished with Gorgon, failure to do so can result in memory leaks.
-		/// <para>This function will call <see cref="GorgonLibrary.CloseMode">CloseMode</see> implicitly.</para>
 		/// </remarks>
 		public static void Terminate()
 		{
@@ -929,9 +485,6 @@ namespace GorgonLibrary
 			// Remove all the images.
 			ImageCache.DestroyAll();
 
-			if (Screen != null)
-				Screen.Dispose();
-
 			// Terminate Direct 3D.
 			if (Direct3D != null)
 				Direct3D.Dispose();
@@ -943,7 +496,6 @@ namespace GorgonLibrary
 			if (Log != null)
 				Log.Close();
 
-			Screen = null;
 			Log = null;
 			IsInitialized = false;
 		}
