@@ -84,10 +84,6 @@
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Gorgon.Input\Gorgon.Input.csproj">
-      <Project>{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}</Project>
-      <Name>Gorgon.Input</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

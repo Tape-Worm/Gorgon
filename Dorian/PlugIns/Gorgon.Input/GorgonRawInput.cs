@@ -32,9 +32,10 @@ using Microsoft.Win32;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Win32;
+using GorgonLibrary.Input;
 using Forms = System.Windows.Forms;
 
-namespace GorgonLibrary.Input.Raw
+namespace GorgonLibrary.RawInput
 {
 	/// <summary>
 	/// Object representing the main interface to the input library.

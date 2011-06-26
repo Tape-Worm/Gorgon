@@ -27,6 +27,7 @@
 using System;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.Collections;
+using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.Input
 {
@@ -91,6 +92,26 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
 		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> EnumerateJoysticksDevices();
+
+		/// <summary>
+		/// Function to create a new input factory object.
+		/// </summary>
+		/// <param name="plugInType">The fully qualified type name of the plug-in.</param>
+		/// <returns>A new input factory plug-in interface.</returns>
+		public static GorgonInputFactory LoadPlugIn(string plugInType)
+		{
+			GorgonInputPlugIn plugIn = null;
+
+			if (!GorgonPlugInFactory.PlugIns.Contains(plugInType))
+				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");
+
+			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonInputPlugIn;
+
+			if (plugIn == null)
+				throw new ArgumentException("The plug-in '" + plugInType + "' is not an input plug-in.", "plugInType");
+
+			return plugIn.CreateFactory();
+		}
 
 		/// <summary>
 		/// Function to create a keyboard interface.

@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Examples\Tester\T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TesterPlugIn", "Examples\TesterPlugIn\TesterPlugIn.csproj", "{170AC857-3C7A-4503-92CE-EFC0F9CC4524}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input", "Libraries\Gorgon.Input\Gorgon.Input.csproj", "{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.RawInput", "PlugIns\Gorgon.Input\Gorgon.RawInput.csproj", "{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -20,54 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, June 24, 2011 10:04:46 AM
+// Created: Sunday, June 26, 2011 1:57:01 PM
 // 
 #endregion
 
 using System;
-using GorgonLibrary.Win32;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.Input.Raw
+namespace GorgonLibrary.Input
 {
 	/// <summary>
-	/// Object representing a message loop filter.
+	/// Plug-in interface for an input plug-in.
 	/// </summary>
-	internal class MessageFilter
-		: System.Windows.Forms.IMessageFilter
+	public abstract class GorgonInputPlugIn
+		: GorgonPlugIn
 	{
-		#region Events.
+		#region Methods.
 		/// <summary>
-		/// Event fired when a raw input event occours.
+		/// Function to perform the actual creation of the input factory object.
 		/// </summary>
-		public event EventHandler<RawInputEventArgs> RawInputData = null;
-		#endregion
+		/// <returns>The interface for the input factory.</returns>
+		protected abstract GorgonInputFactory GetFactory();
 
-		#region Variables.
-		private RawInputData _data = null;					// Raw input data.
-		#endregion
-
-		#region IMessageFilter Members
 		/// <summary>
-		/// Filters out a message before it is dispatched.
+		/// Function to create the input factory.
 		/// </summary>
-		/// <param name="m">The message to be dispatched. You cannot modify this message.</param>
-		/// <returns>
-		/// true to filter the message and stop it from being dispatched; false to allow the message to continue to the next filter or control.
-		/// </returns>
-		public bool PreFilterMessage(ref System.Windows.Forms.Message m)
+		/// <returns>The interface for the input factory.</returns>
+		internal GorgonInputFactory CreateFactory()
 		{
-			// Handle raw input messages.
-			if ((WindowMessages)m.Msg == WindowMessages.RawInput)
-			{
-				if (_data == null)
-					_data = new RawInputData();
+			return GetFactory();
+		}
+		#endregion
 
-				_data.GetRawInputData(m.LParam);
-				if (RawInputData != null)
-					RawInputData(this, new RawInputEventArgs(_data));
-			}
-
-			return false;
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonInputPlugIn"/> class.
+		/// </summary>
+		/// <param name="description">Optional description of the plug-in.</param>
+		protected GorgonInputPlugIn(string description)
+			: base(description)
+		{
 		}
 		#endregion
 	}
