@@ -8,8 +8,8 @@
     <ProjectGuid>{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Input</RootNamespace>
-    <AssemblyName>Gorgon.Input</AssemblyName>
+    <RootNamespace>GorgonLibrary.RawInput</RootNamespace>
+    <AssemblyName>Gorgon.RawInput</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon.Input.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Gorgon.RawInput.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Gorgon.Input.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Gorgon.RawInput.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup>
