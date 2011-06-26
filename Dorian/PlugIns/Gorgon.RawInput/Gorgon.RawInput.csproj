@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GorgonRawInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Devices\RawKeyboard.cs" />
     <Compile Include="Devices\RawPointingDevice.cs" />
@@ -66,7 +67,7 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="Native\Win32Types.cs" />
-    <Compile Include="GorgonRawInput.cs" />
+    <Compile Include="GorgonRawInputFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />

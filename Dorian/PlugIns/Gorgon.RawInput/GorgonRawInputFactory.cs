@@ -40,7 +40,7 @@ namespace GorgonLibrary.RawInput
 	/// <summary>
 	/// Object representing the main interface to the input library.
 	/// </summary>
-	public class GorgonRawInputFactory
+	internal class GorgonRawInputFactory
 		: GorgonInputFactory
 	{
 		#region Methods.

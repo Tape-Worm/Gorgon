@@ -33,12 +33,9 @@ namespace Tester
 			try
 			{
 				Gorgon.Initialize(this);
-				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\PlugIns\Gorgon.RawInput\Debug\TesterPlugIn.dll");
-				GorgonPlugIn plugIn = GorgonPlugInFactory.PlugIns["TesterPlugIn.EntryPoint"];
-				input = new GorgonLibrary.Input.Raw.GorgonRawInputFactory();
+				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.RawInput\bin\Debug\Gorgon.RawInput.dll");
+				input = GorgonInputFactory.Create("GorgonLibrary.Input.GorgonRawInput");
 				mouse = input.CreatePointingDevice();
-				mouse.Exclusive = true;				
-				mouse.PositionRange = new RectangleF(50,50, 100, 100);
 
 				Gorgon.Go(Idle);
 			}
