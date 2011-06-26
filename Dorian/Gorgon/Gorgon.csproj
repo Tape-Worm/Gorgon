@@ -145,7 +145,7 @@
     <Compile Include="Buffers\VertexBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Input\GorgonInput.cs" />
+    <Compile Include="Input\GorgonInputFactory.cs" />
     <Compile Include="Input\GorgonInputDevice.cs" />
     <Compile Include="Input\GorgonInputDeviceName.cs" />
     <Compile Include="Input\GorgonInputEnums.cs" />
