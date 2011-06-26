@@ -326,7 +326,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="boundWindow">The window to bind the joystick with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
-		internal WMMJoystick(RawInputFactory owner, int ID, string name, Control boundWindow)
+		internal WMMJoystick(GorgonRawInputFactory owner, int ID, string name, Control boundWindow)
 			: base(owner, name, boundWindow)
 		{
 			JOYCAPS caps = default(JOYCAPS);		// Joystick capabilities.
