@@ -17,7 +17,7 @@ namespace Tester
 {
 	public partial class Form1 : Form
 	{
-		GorgonLibrary.Input.Raw.GorgonRawInputFactory input = null;
+		GorgonInputFactory input = null;
 		GorgonPointingDevice mouse = null;
 
 		private bool Idle(GorgonFrameRate timing)
@@ -33,7 +33,7 @@ namespace Tester
 			try
 			{
 				Gorgon.Initialize(this);
-				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\TesterPlugIn\Bin\Debug\TesterPlugIn.dll");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\PlugIns\Gorgon.RawInput\Debug\TesterPlugIn.dll");
 				GorgonPlugIn plugIn = GorgonPlugInFactory.PlugIns["TesterPlugIn.EntryPoint"];
 				input = new GorgonLibrary.Input.Raw.GorgonRawInputFactory();
 				mouse = input.CreatePointingDevice();

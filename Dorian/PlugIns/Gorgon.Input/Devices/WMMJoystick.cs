@@ -29,8 +29,9 @@ using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Win32;
 using GorgonLibrary.Math;
+using GorgonLibrary.Input;
 
-namespace GorgonLibrary.Input.Raw
+namespace GorgonLibrary.RawInput
 {
 	/// <summary>
 	/// Windows Multimedia based joystick interface.
