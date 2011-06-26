@@ -98,7 +98,7 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <param name="plugInType">The fully qualified type name of the plug-in.</param>
 		/// <returns>A new input factory plug-in interface.</returns>
-		public static GorgonInputFactory Create(string plugInType)
+		public static GorgonInputFactory CreateFactory(string plugInType)
 		{
 			GorgonInputPlugIn plugIn = null;
 

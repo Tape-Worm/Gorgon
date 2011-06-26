@@ -32,11 +32,10 @@ namespace Tester
 
 			try
 			{
-				Gorgon.Initialize(this);
+				Gorgon.Initialize(this);				
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.RawInput\bin\Debug\Gorgon.RawInput.dll");
-				input = GorgonInputFactory.Create("GorgonLibrary.Input.GorgonRawInput");
+				input = GorgonInputFactory.CreateFactory("GorgonLibrary.Input.GorgonRawInput");
 				mouse = input.CreatePointingDevice();
-
 				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
