@@ -39,7 +39,7 @@ namespace GorgonLibrary.Input.Raw
 	/// <summary>
 	/// Object representing the main interface to the input library.
 	/// </summary>
-	public class RawInputFactory
+	public class GorgonRawInputFactory
 		: GorgonInputFactory
 	{
 		#region Methods.
@@ -294,9 +294,9 @@ namespace GorgonLibrary.Input.Raw
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RawInputFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRawInputFactory"/> class.
 		/// </summary>
-		public RawInputFactory()
+		public GorgonRawInputFactory()
 			: base()
 		{
 		}
