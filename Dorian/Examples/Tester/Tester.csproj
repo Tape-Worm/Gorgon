@@ -84,6 +84,10 @@
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
+      <Project>{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}</Project>
+      <Name>Gorgon.FileSystem</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

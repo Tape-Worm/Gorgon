@@ -176,32 +176,32 @@
     <Compile Include="Events\AnimationEvents.cs" />
     <Compile Include="Enums\InputEnums.cs" />
     <Compile Include="Enums\ShaderEnums.cs" />
-    <Compile Include="Events\FileSystemEvents.cs" />
-    <Compile Include="Events\FrameEvents.cs" />
-    <Compile Include="Events\InputEvents.cs" />
-    <Compile Include="FileSystem\Design\formAuthentication.cs">
+    <Compile Include="OLDE\FileSystemEvents.cs" />
+    <Compile Include="OLDE\FrameEvents.cs" />
+    <Compile Include="OLDE\InputEvents.cs" />
+    <Compile Include="OLDE\Design\formAuthentication.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FileSystem\Design\formAuthentication.Designer.cs">
+    <Compile Include="OLDE\Design\formAuthentication.Designer.cs">
       <DependentUpon>formAuthentication.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileSystem\FileList.cs" />
-    <Compile Include="FileSystem\FileSystemCache.cs" />
-    <Compile Include="FileSystem\FileSystemEditorInfoAttribute.cs" />
-    <Compile Include="FileSystem\FileSystemFile.cs" />
-    <Compile Include="FileSystem\FileSystemFileList.cs" />
-    <Compile Include="FileSystem\FileSystemPath.cs" />
-    <Compile Include="FileSystem\FileSystemPathList.cs" />
-    <Compile Include="FileSystem\FileSystemPlugIn.cs" />
-    <Compile Include="FileSystem\FileSystemList.cs" />
-    <Compile Include="FileSystem\FileSystem.cs" />
-    <Compile Include="FileSystem\FileSystemProvider.cs" />
-    <Compile Include="FileSystem\FileSystemProviderCache.cs" />
-    <Compile Include="FileSystem\FileSystemProviderList.cs">
+    <Compile Include="OLDE\FileList.cs" />
+    <Compile Include="OLDE\FileSystemCache.cs" />
+    <Compile Include="OLDE\FileSystemEditorInfoAttribute.cs" />
+    <Compile Include="OLDE\FileSystemFile.cs" />
+    <Compile Include="OLDE\FileSystemFileList.cs" />
+    <Compile Include="OLDE\FileSystemPath.cs" />
+    <Compile Include="OLDE\FileSystemPathList.cs" />
+    <Compile Include="OLDE\FileSystemPlugIn.cs" />
+    <Compile Include="OLDE\FileSystemList.cs" />
+    <Compile Include="OLDE\FileSystem.cs" />
+    <Compile Include="OLDE\FileSystemProvider.cs" />
+    <Compile Include="OLDE\FileSystemProviderCache.cs" />
+    <Compile Include="OLDE\FileSystemProviderList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FileSystem\FolderFileSystem\FolderFileSystem.cs" />
-    <Compile Include="FileSystem\IAuthData.cs" />
+    <Compile Include="OLDE\FolderFileSystem\FolderFileSystem.cs" />
+    <Compile Include="OLDE\IAuthData.cs" />
     <Compile Include="Fonts\Font.cs" />
     <Compile Include="Fonts\Glyph.cs" />
     <Compile Include="Fonts\GlyphTree.cs" />
@@ -373,7 +373,7 @@
     <Compile Include="Vertex Data\VertexType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FileSystem\Design\formAuthentication.resx">
+    <EmbeddedResource Include="OLDE\Design\formAuthentication.resx">
       <DependentUpon>formAuthentication.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

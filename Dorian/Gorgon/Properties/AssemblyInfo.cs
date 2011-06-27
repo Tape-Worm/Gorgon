@@ -44,7 +44,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("DirectX based 2D graphics library. - DEVELOPMENT VERSION - BETA")]
 #else
 [assembly: AssemblyTitle("Gorgon")]
-[assembly: AssemblyDescription("DirectX based 2D graphics library.")]
+[assembly: AssemblyDescription("The root object for the Gorgon libraries.")]
 #endif
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
