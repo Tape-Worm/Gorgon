@@ -38,7 +38,6 @@ using Microsoft.Win32;
 using D3D9 = SlimDX.Direct3D9;
 using DX = SlimDX;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.FileSystems;
 using GorgonLibrary.Internal;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.PlugIns;
@@ -469,9 +468,6 @@ namespace GorgonLibrary
 
 			// Unload fonts.
 			FontCache.DestroyAll();
-
-			// Unload all the file systems.
-			FileSystemProviderCache.UnloadAll();
 
 			// Unload all plug-ins.
 			PlugInFactory.DestroyAll();

@@ -12,6 +12,7 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
+using GorgonLibrary.FileSystem;
 
 namespace Tester
 {
@@ -19,6 +20,7 @@ namespace Tester
 	{
 		GorgonInputFactory input = null;
 		GorgonPointingDevice mouse = null;
+		GorgonFileSystem fileSystem = null;
 
 		private bool Idle(GorgonFrameRate timing)
 		{
@@ -34,8 +36,18 @@ namespace Tester
 			{
 				Gorgon.Initialize(this);				
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.RawInput\bin\Debug\Gorgon.RawInput.dll");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.FileSystem.Zip\bin\Debug\Gorgon.FileSystem.zip.dll");
 				input = GorgonInputFactory.CreateFactory("GorgonLibrary.Input.GorgonRawInput");
 				mouse = input.CreatePointingDevice();
+
+				fileSystem = new GorgonFileSystem();
+				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
+				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\FS\", "/FS");
+				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\ParilTest.zip", "/Zip");
+
+				System.IO.Stream stream = fileSystem.GetFile("/Zip/Grid.png").OpenStream(false);
+				byte[] file = fileSystem.GetFile("/FS/IFRSImport.exe").Read();
+				
 				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
