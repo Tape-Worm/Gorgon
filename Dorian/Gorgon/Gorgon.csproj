@@ -145,15 +145,6 @@
     <Compile Include="Buffers\VertexBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Input\GorgonInputFactory.cs" />
-    <Compile Include="Input\GorgonInputDevice.cs" />
-    <Compile Include="Input\GorgonInputDeviceName.cs" />
-    <Compile Include="Input\GorgonInputEnums.cs" />
-    <Compile Include="Input\GorgonInputEvents.cs" />
-    <Compile Include="Input\GorgonInputPlugIn.cs" />
-    <Compile Include="Input\GorgonJoystick.cs" />
-    <Compile Include="Input\GorgonKeyboard.cs" />
-    <Compile Include="Input\GorgonPointingDevice.cs" />
     <Compile Include="Math\GorgonRange.cs" />
     <Compile Include="OLDE\Collection.cs" />
     <Compile Include="OLDE\Dictionary.cs" />
