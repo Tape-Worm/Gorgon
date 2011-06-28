@@ -295,19 +295,6 @@ namespace GorgonLibrary.HID
 			}
 		}
 
-		/// <summary>
-		/// Property to return whether a key has been pressed or not.
-		/// </summary>
-		/// <param name="key">Key that has been pressed.</param>
-        [Obsolete("Use Keyboard.KeyStates instead.  This will be removed in the next iteration.")]
-		public virtual bool this[KeyboardKeys key]
-		{
-			get
-			{
-                return (_keyStates[key] == KeyState.Down);
-			}
-		}
-
         /// <summary>
         /// Property to return the key states.
         /// </summary>
