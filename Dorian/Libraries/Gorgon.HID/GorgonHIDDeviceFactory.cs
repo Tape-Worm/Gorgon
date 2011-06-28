@@ -34,14 +34,14 @@ namespace GorgonLibrary.HID
 	/// <summary>
 	/// Base for the HID device factory object.
 	/// </summary>
-	public abstract class GorgonHIDDeviceFactory
+	public abstract class GorgonInputDeviceFactory
 		: GorgonNamedObject
     {
 		#region Properties.
 		/// <summary>
 		/// Property to return the names of the pointing devices attached to the system.
 		/// </summary>
-		public GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> PointingDevices
+		public GorgonNamedObjectReadOnlyCollection<GorgonHIDDeviceName> PointingDevices
 		{
 			get;
 			private set;
@@ -50,7 +50,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to return the names of the keyboard devices attached to the system.
 		/// </summary>
-		public GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> KeyboardDevices
+		public GorgonNamedObjectReadOnlyCollection<GorgonHIDDeviceName> KeyboardDevices
 		{
 			get;
 			private set;
@@ -59,7 +59,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to return the names of the joystick devices attached to the system.
 		/// </summary>
-		public GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> JoystickDevices
+		public GorgonNamedObjectReadOnlyCollection<GorgonHIDDeviceName> JoystickDevices
 		{
 			get;
 			private set;
@@ -80,19 +80,19 @@ namespace GorgonLibrary.HID
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>
-		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> EnumeratePointingDevices();
+		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonHIDDeviceName> EnumeratePointingDevices();
 
 		/// <summary>
 		/// Function to enumerate the keyboard devices on the system.
 		/// </summary>
 		/// <returns>A list of keyboard device names.</returns>
-		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> EnumerateKeyboardDevices();
+		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonHIDDeviceName> EnumerateKeyboardDevices();
 
 		/// <summary>
 		/// Function to enumerate the joystick devices attached to the system.
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
-		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> EnumerateJoysticksDevices();
+		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonHIDDeviceName> EnumerateJoysticksDevices();
 
 		/// <summary>
 		/// Function to create a keyboard interface.
@@ -102,12 +102,12 @@ namespace GorgonLibrary.HID
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing NULL for <paramref name="keyboardName"/> will use the system keyboard.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para></remarks>		
-		public abstract GorgonKeyboard CreateKeyboard(GorgonDeviceName keyboardName, Forms.Control window);
+		public abstract GorgonKeyboard CreateKeyboard(GorgonHIDDeviceName keyboardName, Forms.Control window);
 
 		/// <summary>
 		/// Function to create a keyboard interface.
 		/// </summary>
-		/// <param name="keyboardName">A <see cref="GorgonLibrary.HID.GorgonDeviceName">GorgonDeviceName</see> object containing the keyboard information.</param>
+		/// <param name="keyboardName">A <see cref="GorgonLibrary.HID.GorgonHIDDeviceName">GorgonDeviceName</see> object containing the keyboard information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing an empty string for <paramref name="keyboardName"/> will use the system keyboard.
@@ -116,7 +116,7 @@ namespace GorgonLibrary.HID
 		public GorgonKeyboard CreateKeyboard(string keyboardName, Forms.Control window)
 		{
 			if (string.IsNullOrEmpty(keyboardName))
-				return CreateKeyboard((GorgonDeviceName)null, window);
+				return CreateKeyboard((GorgonHIDDeviceName)null, window);
 			else
 				return CreateKeyboard(KeyboardDevices[keyboardName], window);
 		}
@@ -150,12 +150,12 @@ namespace GorgonLibrary.HID
 		/// <remarks>Passing NULL for <paramref name="pointingDeviceName"/> will use the system pointing device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para>
 		/// </remarks>
-		public abstract GorgonPointingDevice CreatePointingDevice(GorgonDeviceName pointingDeviceName, Forms.Control window);
+		public abstract GorgonPointingDevice CreatePointingDevice(GorgonHIDDeviceName pointingDeviceName, Forms.Control window);
 
 		/// <summary>
 		/// Function to create a pointing device interface.
 		/// </summary>
-		/// <param name="pointingDeviceName">A <see cref="GorgonLibrary.HID.GorgonDeviceName">GorgonDeviceName</see> object containing the pointing device information.</param>
+		/// <param name="pointingDeviceName">A <see cref="GorgonLibrary.HID.GorgonHIDDeviceName">GorgonDeviceName</see> object containing the pointing device information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new pointing device interface.</returns>
 		/// <remarks>Passing an empty string for <paramref name="pointingDeviceName"/> will use the system pointing device.
@@ -164,7 +164,7 @@ namespace GorgonLibrary.HID
 		public GorgonPointingDevice CreatePointingDevice(string pointingDeviceName, Forms.Control window)
 		{
 			if (string.IsNullOrEmpty(pointingDeviceName))
-				return CreatePointingDevice((GorgonDeviceName)null, window);
+				return CreatePointingDevice((GorgonHIDDeviceName)null, window);
 			else
 				return CreatePointingDevice(PointingDevices[pointingDeviceName], window);
 		}
@@ -223,12 +223,12 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonHIDDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickName"/> is NULL.</exception>
-		public abstract GorgonJoystick CreateJoystick(GorgonDeviceName joystickName, Forms.Control window);
+		public abstract GorgonJoystick CreateJoystick(GorgonHIDDeviceName joystickName, Forms.Control window);
 
 		/// <summary>
 		/// Function to enumerate devices attached to the system.
@@ -243,12 +243,12 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonHIDDeviceFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputDeviceFactory"/> class.
 		/// </summary>
 		/// <param name="name">The name of the device manager.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (or Nothing) in VB.NET.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		protected GorgonHIDDeviceFactory(string name)
+		protected GorgonInputDeviceFactory(string name)
 			: base(name)
 		{
 			EnumerateDevices();

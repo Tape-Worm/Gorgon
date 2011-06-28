@@ -33,7 +33,7 @@ namespace GorgonLibrary.HID
 	/// Object that will represent joystick data.
 	/// </summary>
 	public abstract class GorgonJoystick
-		: GorgonInputDevice 
+		: GorgonHIDDevice 
 	{
 		#region Variables.
 		private float[] _axisValues = null;			// Axis values.
@@ -320,7 +320,7 @@ namespace GorgonLibrary.HID
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
-		protected internal GorgonJoystick(GorgonHIDDeviceFactory owner, string deviceName, Control boundWindow)
+		protected internal GorgonJoystick(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
 		}

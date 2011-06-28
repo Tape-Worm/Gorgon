@@ -32,7 +32,7 @@ namespace GorgonLibrary.HID
 	/// <summary>
 	/// Pointing device event arguments.
 	/// </summary>
-	public class PointingDeviceInputEventArgs
+	public class PointingDeviceHIDEventArgs
 		: EventArgs
 	{
 		#region Variables.
@@ -146,7 +146,7 @@ namespace GorgonLibrary.HID
 		/// <param name="relativePosition">Relative position of the mouse.</param>
 		/// <param name="wheelDelta">Relative position of the wheel.</param>
 		/// <param name="clickCount">Number of clicks in a timed period.</param>
-		public PointingDeviceInputEventArgs(PointingDeviceButtons buttons, PointingDeviceButtons shiftButtons, PointF position, int wheelPosition, PointF relativePosition, int wheelDelta, int clickCount)
+		public PointingDeviceHIDEventArgs(PointingDeviceButtons buttons, PointingDeviceButtons shiftButtons, PointF position, int wheelPosition, PointF relativePosition, int wheelDelta, int clickCount)
 		{
 			_button = buttons;
 			_shiftButtons = shiftButtons;
@@ -162,7 +162,7 @@ namespace GorgonLibrary.HID
 	/// <summary>
 	/// Keyboard event arguments.
 	/// </summary>
-	public class KeyboardInputEventArgs
+	public class KeyboardHIDEventArgs
 		: EventArgs
 	{
 		#region Variables.
@@ -285,7 +285,7 @@ namespace GorgonLibrary.HID
 		/// <param name="scanData">Scan code data.</param>
 		/// <param name="left">TRUE if the modifier is left, FALSE if not.</param>
 		/// <param name="right">TRUE if the modifier is right, FALSE if not.</param>
-		public KeyboardInputEventArgs(KeyboardKeys key, KeyboardKeys modifierKey, GorgonKeyboard.KeyCharMap character, int scanData, bool left, bool right)
+		public KeyboardHIDEventArgs(KeyboardKeys key, KeyboardKeys modifierKey, GorgonKeyboard.KeyCharMap character, int scanData, bool left, bool right)
 		{
 			_key = key;
 			_modifierKey = modifierKey;

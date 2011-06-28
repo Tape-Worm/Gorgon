@@ -36,14 +36,14 @@ namespace GorgonLibrary.HID
 	/// A collection of HID factories.
 	/// </summary>
 	/// <remarks>This collection is not case sensitive.</remarks>
-	public class GorgonInputCollection
-		: GorgonBaseNamedObjectCollection<GorgonHIDDeviceFactory>
+	public class GorgonHIDDeviceFactoryCollection
+		: GorgonBaseNamedObjectCollection<GorgonInputDeviceFactory>
 	{		
 		#region Properties.
 		/// <summary>
 		/// Property to return a HID device factory from the collection by index.
 		/// </summary>
-		public GorgonHIDDeviceFactory this[int index]
+		public GorgonInputDeviceFactory this[int index]
 		{
 			get
 			{
@@ -54,7 +54,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to return a HID device factory from the collection by its name.
 		/// </summary>
-		public GorgonHIDDeviceFactory this[string name]
+		public GorgonInputDeviceFactory this[string name]
 		{
 			get
 			{
@@ -68,7 +68,7 @@ namespace GorgonLibrary.HID
 		/// Function to add a HID device factory manager to the collection.
 		/// </summary>
 		/// <param name="deviceManager">HID device factory manager to add.</param>
-		internal void Add(GorgonHIDDeviceFactory deviceManager)
+		internal void Add(GorgonInputDeviceFactory deviceManager)
 		{
 			if (deviceManager == null)
 				throw new ArgumentNullException("deviceManager");
@@ -80,7 +80,7 @@ namespace GorgonLibrary.HID
 		/// Function to remove a HID device factory from the collection.
 		/// </summary>
 		/// <param name="deviceManager">HID device factory to remove.</param>
-		internal void Remove(GorgonHIDDeviceFactory deviceManager)
+		internal void Remove(GorgonInputDeviceFactory deviceManager)
 		{
 			if (deviceManager == null)
 				throw new ArgumentNullException("deviceManager");
@@ -119,9 +119,9 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputCollection"/> class.
+		/// Initializes a new instance of the <see cref="GorgonHIDDeviceFactoryCollection"/> class.
 		/// </summary>
-		internal GorgonInputCollection()
+		internal GorgonHIDDeviceFactoryCollection()
 			: base(false)
 		{
 		}
