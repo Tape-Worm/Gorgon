@@ -35,7 +35,7 @@ namespace GorgonLibrary.HID
 	/// </summary>
 	/// <remarks>A pointing device can be any type of device.  For instance a trackball may be considered a pointing device.</remarks>
 	public abstract class GorgonPointingDevice
-		: GorgonHIDDevice
+		: GorgonInputDevice
 	{
 		#region Variables.
 		private bool _disposed = false;												// Flag to indicate that the object was disposed.

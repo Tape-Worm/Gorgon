@@ -36,12 +36,12 @@ namespace GorgonLibrary.HID
 	/// A collection of HID factories.
 	/// </summary>
 	/// <remarks>This collection is not case sensitive.</remarks>
-	public class GorgonHIDDeviceFactoryCollection
+	public class GorgonInputDeviceFactoryCollection
 		: GorgonBaseNamedObjectCollection<GorgonInputDeviceFactory>
 	{		
 		#region Properties.
 		/// <summary>
-		/// Property to return a HID device factory from the collection by index.
+		/// Property to return a input device factory from the collection by index.
 		/// </summary>
 		public GorgonInputDeviceFactory this[int index]
 		{
@@ -52,7 +52,7 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Property to return a HID device factory from the collection by its name.
+		/// Property to return a input device factory from the collection by its name.
 		/// </summary>
 		public GorgonInputDeviceFactory this[string name]
 		{
@@ -65,9 +65,9 @@ namespace GorgonLibrary.HID
 
 		#region Methods.
 		/// <summary>
-		/// Function to add a HID device factory manager to the collection.
+		/// Function to add a input device factory manager to the collection.
 		/// </summary>
-		/// <param name="deviceManager">HID device factory manager to add.</param>
+		/// <param name="deviceManager">input device factory manager to add.</param>
 		internal void Add(GorgonInputDeviceFactory deviceManager)
 		{
 			if (deviceManager == null)
@@ -77,9 +77,9 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Function to remove a HID device factory from the collection.
+		/// Function to remove a input device factory from the collection.
 		/// </summary>
-		/// <param name="deviceManager">HID device factory to remove.</param>
+		/// <param name="deviceManager">input device factory to remove.</param>
 		internal void Remove(GorgonInputDeviceFactory deviceManager)
 		{
 			if (deviceManager == null)
@@ -89,9 +89,9 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Function to remove a HID device factory from the collection by name.
+		/// Function to remove a input device factory from the collection by name.
 		/// </summary>
-		/// <param name="name">Name of the HID device factory to remove.</param>
+		/// <param name="name">Name of the input device factory to remove.</param>
 		internal void Remove(string name)
 		{
 			GorgonUtility.AssertParamString(name, "name");
@@ -100,9 +100,9 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Function to remove a HID device factory from the collection by index.
+		/// Function to remove a input device factory from the collection by index.
 		/// </summary>
-		/// <param name="index">Index of the HID device factory to remove.</param>
+		/// <param name="index">Index of the input device factory to remove.</param>
 		internal void Remove(int index)
 		{
 			RemoveItem(index);
@@ -119,9 +119,9 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonHIDDeviceFactoryCollection"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputDeviceFactoryCollection"/> class.
 		/// </summary>
-		internal GorgonHIDDeviceFactoryCollection()
+		internal GorgonInputDeviceFactoryCollection()
 			: base(false)
 		{
 		}

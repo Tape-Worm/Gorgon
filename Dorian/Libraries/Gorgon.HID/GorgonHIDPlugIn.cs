@@ -33,9 +33,9 @@ using GorgonLibrary.PlugIns;
 namespace GorgonLibrary.HID
 {
 	/// <summary>
-	/// Plug-in interface for an input plug-in.
+	/// Plug-in interface for an input device factory plug-in.
 	/// </summary>
-	public abstract class GorgonHIDPlugIn
+	public abstract class GorgonInputDeviceFactoryPlugIn
 		: GorgonPlugIn
 	{
 		#region Methods.
@@ -57,10 +57,10 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonHIDPlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputDeviceFactoryPlugIn"/> class.
 		/// </summary>
 		/// <param name="description">Optional description of the plug-in.</param>
-		protected GorgonHIDPlugIn(string description)
+		protected GorgonInputDeviceFactoryPlugIn(string description)
 			: base(description)
 		{
 		}

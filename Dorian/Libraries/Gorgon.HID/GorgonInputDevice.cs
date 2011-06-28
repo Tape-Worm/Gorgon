@@ -33,7 +33,7 @@ namespace GorgonLibrary.HID
 	/// <summary>
 	/// Abstract class for input devices.
 	/// </summary>
-	public abstract class GorgonHIDDevice
+	public abstract class GorgonInputDevice
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
@@ -288,14 +288,14 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonHIDDevice"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputDevice"/> class.
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
-		protected internal GorgonHIDDevice(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
+		protected internal GorgonInputDevice(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(deviceName)
 		{
 			if (owner == null)

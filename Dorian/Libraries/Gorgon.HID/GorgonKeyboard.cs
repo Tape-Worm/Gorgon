@@ -49,7 +49,7 @@ namespace GorgonLibrary.HID
 	/// Object that will represent keyboard data.
 	/// </summary>
 	public abstract class GorgonKeyboard
-		: GorgonHIDDevice
+		: GorgonInputDevice
 	{
 		#region Value types.
 		/// <summary>
