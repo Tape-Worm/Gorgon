@@ -89,26 +89,6 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Function to remove a input device factory from the collection by name.
-		/// </summary>
-		/// <param name="name">Name of the input device factory to remove.</param>
-		internal void Remove(string name)
-		{
-			GorgonUtility.AssertParamString(name, "name");
-
-			RemoveItem(name);
-		}
-
-		/// <summary>
-		/// Function to remove a input device factory from the collection by index.
-		/// </summary>
-		/// <param name="index">Index of the input device factory to remove.</param>
-		internal void Remove(int index)
-		{
-			RemoveItem(index);
-		}
-
-		/// <summary>
 		/// Function to remove all HID factories from the collection.
 		/// </summary>
 		internal void Clear()
