@@ -18,7 +18,7 @@ namespace Tester
 {
 	public partial class Form1 : Form
 	{
-		GorgonInput input = null;
+		GorgonInputDeviceFactory input = null;
 		GorgonPointingDevice mouse = null;
 		GorgonFileSystem fileSystem = null;
 
@@ -35,9 +35,9 @@ namespace Tester
 			try
 			{
 				Gorgon.Initialize(this);				
-				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.RawInput\bin\Debug\Gorgon.RawInput.dll");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.HID.RawInput\bin\Debug\Gorgon.HID.RawInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.FileSystem.Zip\bin\Debug\Gorgon.FileSystem.zip.dll");
-				input = GorgonInput.CreateFactory("GorgonLibrary.Input.GorgonRawInput");
+				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawInput");
 				mouse = input.CreatePointingDevice();
 
 				fileSystem = new GorgonFileSystem();
@@ -52,7 +52,7 @@ namespace Tester
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));				
 			}
 		}
 
