@@ -36,6 +36,15 @@ namespace GorgonLibrary.HID
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the internal ID for the factory.
+		/// </summary>
+		internal Guid UUID
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return the handle to the device (if applicable).
 		/// </summary>
 		public IntPtr Handle
@@ -106,6 +115,7 @@ namespace GorgonLibrary.HID
 			this.ClassName = className;
 			this.HIDPath = hidPath;
 			this.GUID = guid;
+			this.UUID = Guid.NewGuid();
 			this.ID = id;
 		}
 		#endregion
