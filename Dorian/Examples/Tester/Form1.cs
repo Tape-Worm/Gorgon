@@ -60,7 +60,7 @@ namespace Tester
 		{
 			base.OnFormClosing(e);
 
-			mouse.Dispose();
+			input.Dispose();
 			Gorgon.Terminate();
 		}
 

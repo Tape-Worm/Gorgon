@@ -288,9 +288,9 @@ namespace GorgonLibrary.HID
 		public GorgonPointingDevice CreatePointingDevice(string pointingDeviceName, Forms.Control window)
 		{
 			if (string.IsNullOrEmpty(pointingDeviceName))
-				return CreatePointingDeviceImpl((GorgonInputDeviceName)null, window);
+				return CreatePointingDevice((GorgonInputDeviceName)null, window);
 			else
-				return CreatePointingDeviceImpl(PointingDevices[pointingDeviceName], window);
+				return CreatePointingDevice(PointingDevices[pointingDeviceName], window);
 		}
 
 		/// <summary>
@@ -341,7 +341,7 @@ namespace GorgonLibrary.HID
 			if (string.IsNullOrEmpty(joystickName))
 				throw new ArgumentException("joystickName");		
 
-			return CreateJoystickImpl(JoystickDevices[joystickName], window);
+			return CreateJoystick(JoystickDevices[joystickName], window);
 		}
 
 		/// <summary>
@@ -408,6 +408,10 @@ namespace GorgonLibrary.HID
 				{
 					// Destroy any outstanding device instances.
 					DestroyDevices();
+
+					// Remove this factory from the HID interface list.
+					if (GorgonHIDFactory.HIDDeviceFactories.Contains(this))
+						GorgonHIDFactory.HIDDeviceFactories.Remove(this);
 				}
 			}
 			_disposed = true;
@@ -416,7 +420,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		void IDisposable.Dispose()
+		public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);

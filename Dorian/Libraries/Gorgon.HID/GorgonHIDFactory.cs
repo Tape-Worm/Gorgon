@@ -92,56 +92,14 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Function to destroy an input device factory.
+		/// Function to destroy all the input device factories and any associated devices.
 		/// </summary>
-		/// <param name="hidDeviceFactory">input device factory to destroy.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidDeviceFactory"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the input device factory was not found.</para>
-		/// </exception>
-		public static void DestroyInputDeviceFactory(GorgonInputDeviceFactory hidDeviceFactory)
+		/// <remarks>This function will invalidate any existing device references, use with care.</remarks>
+		public static void Dispose()
 		{
-			if (hidDeviceFactory == null)
-				throw new ArgumentNullException("hidFactory");
+			while (HIDDeviceFactories.Count > 0)
+				HIDDeviceFactories[0].Dispose();
 
-			if (!HIDDeviceFactories.Contains(hidDeviceFactory))
-				throw new ArgumentException("The input device factory '" + hidDeviceFactory.Name + "' was not found.", "hidFactory");
-
-			HIDDeviceFactories.Remove(hidDeviceFactory);
-		}
-
-		/// <summary>
-		/// Function to destroy an input device factory by its name.
-		/// </summary>
-		/// <param name="name">Name of the input device factory to destroy.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty or NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the input device factory was not found.</para>
-		/// </exception>
-		public static void DestroyInputDeviceFactory(string name)
-		{
-			GorgonUtility.AssertParamString(name, "plugInType");
-
-			if (!HIDDeviceFactories.Contains(name))
-				throw new ArgumentException("The input device factory '" + name + "' was not found.", "hidFactory");
-
-			HIDDeviceFactories.Remove(name);
-		}
-
-		/// <summary>
-		/// Function to destroy an input device factory by its index.
-		/// </summary>
-		/// <param name="index">Index of the input device factory to destroy.</param>
-		public static void DestroyInputDeviceFactory(int index)
-		{
-			HIDDeviceFactories.Remove(index);
-		}
-
-		/// <summary>
-		/// Function to destroy all the input device factories.
-		/// </summary>
-		public static void DestroyAll()
-		{
 			HIDDeviceFactories.Clear();
 		}
 		#endregion
