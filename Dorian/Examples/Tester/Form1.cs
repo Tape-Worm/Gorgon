@@ -42,11 +42,11 @@ namespace Tester
 
 				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
-				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\FS\", "/FS");
+				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\ParilTest.zip", "/Zip");
 
 				System.IO.Stream stream = fileSystem.GetFile("/Zip/Grid.png").OpenStream(false);
-				byte[] file = fileSystem.GetFile("/FS/IFRSImport.exe").Read();
+				byte[] file = fileSystem.GetFile("/FS/ParilTest.zip").Read();
 				
 				Gorgon.Go(Idle);
 			}
