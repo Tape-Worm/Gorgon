@@ -29,7 +29,7 @@ using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Win32;
 using GorgonLibrary.Math;
-using GorgonLibrary.Input;
+using GorgonLibrary.HID;
 
 namespace GorgonLibrary.RawInput
 {

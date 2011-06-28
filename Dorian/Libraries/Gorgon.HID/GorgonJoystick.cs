@@ -27,7 +27,7 @@
 using System.Windows.Forms;
 using GorgonLibrary.Math;
 
-namespace GorgonLibrary.Input
+namespace GorgonLibrary.HID
 {
 	/// <summary>
 	/// Object that will represent joystick data.
@@ -67,7 +67,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return a value for an axis.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the axis range will be returned (center position of the axis).</remarks>
 		public float[] Axes
@@ -86,9 +86,9 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the direction that an axis is pointed towards.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  If the axis position is within the dead-zone range only the 
-		/// <see cref="GorgonLibrary.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+		/// <see cref="GorgonLibrary.HID.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
 		public JoystickDirections[] AxisDirection
 		{
 			get;
@@ -132,7 +132,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the x coordinate for the joystick.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the X axis range will be returned (center position of the axis).</remarks>
 		public abstract float X
@@ -143,7 +143,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the y coordinate for the joystick.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the Y axis range will be returned (center position of the axis).</remarks>
 		public abstract float Y
@@ -154,7 +154,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the z coordinate for the joystick.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the Z axis range will be returned (center position of the axis).</remarks>
 		public abstract float Z
@@ -165,7 +165,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the rudder coordinate for the joystick.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the rudder range will be returned (center position of the axis).</remarks>
 		public abstract float Rudder

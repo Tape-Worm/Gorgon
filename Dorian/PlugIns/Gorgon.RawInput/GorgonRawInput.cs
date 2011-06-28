@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.Input
+namespace GorgonLibrary.HID
 {
 	/// <summary>
 	/// The entry point for the raw input plug-in.

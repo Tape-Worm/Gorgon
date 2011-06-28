@@ -32,7 +32,7 @@ using Microsoft.Win32;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Win32;
-using GorgonLibrary.Input;
+using GorgonLibrary.HID;
 using Forms = System.Windows.Forms;
 
 namespace GorgonLibrary.RawInput
@@ -274,7 +274,7 @@ namespace GorgonLibrary.RawInput
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>

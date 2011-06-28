@@ -29,7 +29,7 @@ using Forms = System.Windows.Forms;
 using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.Input
+namespace GorgonLibrary.HID
 {
 	/// <summary>
 	/// Base for the Input object.
@@ -126,7 +126,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to create a keyboard interface.
 		/// </summary>
-		/// <param name="keyboardName">A <see cref="GorgonLibrary.Input.GorgonDeviceName">GorgonDeviceName</see> object containing the keyboard information.</param>
+		/// <param name="keyboardName">A <see cref="GorgonLibrary.HID.GorgonDeviceName">GorgonDeviceName</see> object containing the keyboard information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing an empty string for <paramref name="keyboardName"/> will use the system keyboard.
@@ -174,7 +174,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to create a pointing device interface.
 		/// </summary>
-		/// <param name="pointingDeviceName">A <see cref="GorgonLibrary.Input.GorgonDeviceName">GorgonDeviceName</see> object containing the pointing device information.</param>
+		/// <param name="pointingDeviceName">A <see cref="GorgonLibrary.HID.GorgonDeviceName">GorgonDeviceName</see> object containing the pointing device information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new pointing device interface.</returns>
 		/// <remarks>Passing an empty string for <paramref name="pointingDeviceName"/> will use the system pointing device.
@@ -242,7 +242,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>

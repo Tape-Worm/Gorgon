@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Input
+namespace GorgonLibrary.HID
 {
     /// <summary>
     /// Enumeration containing key state.
