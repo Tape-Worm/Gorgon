@@ -49,7 +49,7 @@
     <Compile Include="GorgonInputDeviceName.cs" />
     <Compile Include="GorgonInputEnums.cs" />
     <Compile Include="GorgonInputEvents.cs" />
-    <Compile Include="GorgonInputFactory.cs" />
+    <Compile Include="GorgonInput.cs" />
     <Compile Include="GorgonInputPlugIn.cs" />
     <Compile Include="GorgonJoystick.cs" />
     <Compile Include="GorgonKeyboard.cs" />

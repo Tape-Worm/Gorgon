@@ -10,13 +10,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework", "Tools\Go
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Examples\Tester\Tester.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.RawInput", "PlugIns\Gorgon.RawInput\Gorgon.RawInput.csproj", "{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem", "Libraries\Gorgon.FileSystem\Gorgon.FileSystem.csproj", "{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.Zip", "PlugIns\Gorgon.FileSystem.Zip\Gorgon.FileSystem.Zip.csproj", "{B61F6907-0DDB-4293-AA8C-E8620DAEE795}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.HID", "Libraries\Gorgon.HID\Gorgon.HID.csproj", "{780B5B61-77BB-4456-AF77-E6681E7E48BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.HID.RawInput", "PlugIns\Gorgon.HID.RawInput\Gorgon.HID.RawInput.csproj", "{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,16 +72,6 @@ Global
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|Mixed Platforms.Build.0 = Release|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|x86.ActiveCfg = Release|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|x86.Build.0 = Release|x86
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|x86.ActiveCfg = Release|Any CPU
 		{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -112,6 +102,16 @@ Global
 		{780B5B61-77BB-4456-AF77-E6681E7E48BF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{780B5B61-77BB-4456-AF77-E6681E7E48BF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{780B5B61-77BB-4456-AF77-E6681E7E48BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
