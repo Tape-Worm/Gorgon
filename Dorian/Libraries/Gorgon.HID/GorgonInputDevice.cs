@@ -48,7 +48,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to return the input interface owner for this device.
 		/// </summary>
-		protected GorgonInput InputInterface
+		protected GorgonHIDDeviceFactory InputInterface
 		{
 			get;
 			private set;
@@ -295,7 +295,7 @@ namespace GorgonLibrary.HID
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
-		protected internal GorgonInputDevice(GorgonInput owner, string deviceName, Control boundWindow)
+		protected internal GorgonInputDevice(GorgonHIDDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(deviceName)
 		{
 			if (owner == null)
