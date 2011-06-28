@@ -11,7 +11,7 @@ using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Input;
+using GorgonLibrary.HID;
 using GorgonLibrary.FileSystem;
 
 namespace Tester

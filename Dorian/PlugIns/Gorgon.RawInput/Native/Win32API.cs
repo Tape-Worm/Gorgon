@@ -27,7 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using GorgonLibrary.Input;
+using GorgonLibrary.HID;
 
 namespace GorgonLibrary.Win32
 {

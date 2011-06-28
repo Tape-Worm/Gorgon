@@ -28,7 +28,7 @@ using System;
 using System.Drawing;
 using Forms = System.Windows.Forms;
 
-namespace GorgonLibrary.Input
+namespace GorgonLibrary.HID
 {
 	/// <summary>
 	/// A pointing device interface.
