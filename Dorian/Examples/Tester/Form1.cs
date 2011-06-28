@@ -37,7 +37,7 @@ namespace Tester
 				Gorgon.Initialize(this);				
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.HID.RawInput\bin\Debug\Gorgon.HID.RawInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.FileSystem.Zip\bin\Debug\Gorgon.FileSystem.zip.dll");
-				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawInput");
+				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
 				mouse = input.CreatePointingDevice();
 
 				fileSystem = new GorgonFileSystem();

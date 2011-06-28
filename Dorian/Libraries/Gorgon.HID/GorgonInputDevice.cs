@@ -44,14 +44,23 @@ namespace GorgonLibrary.HID
 		private bool _disposed = false;			// Flag to indicate whether the object is disposed or not.
 		#endregion
 
-		#region Properties.
+		#region Properties.		
 		/// <summary>
 		/// Property to return the input interface owner for this device.
 		/// </summary>
-		protected GorgonInputDeviceFactory InputInterface
+		protected GorgonInputDeviceFactory DeviceFactory
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the factory UUID for this device.
+		/// </summary>
+		internal Guid UUID
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -191,7 +200,7 @@ namespace GorgonLibrary.HID
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		protected virtual void Owner_GotFocus(object sender, EventArgs e)
 		{
-			if (InputInterface.AutoReacquireDevices)
+			if (DeviceFactory.AutoReacquireDevices)
 			{
 				if (Exclusive)
 					Acquired = true;
@@ -300,8 +309,8 @@ namespace GorgonLibrary.HID
 		{
 			if (owner == null)
 				throw new ArgumentNullException("owner");
-			InputInterface = owner;
 
+			DeviceFactory = owner;
 			BindWindow(boundWindow);
 		}
 		#endregion
@@ -323,6 +332,9 @@ namespace GorgonLibrary.HID
 						UnbindDevice();
 					_acquired = false;
 					_bound = false;
+
+					if (DeviceFactory.Devices.ContainsKey(UUID))
+						DeviceFactory.Devices.Remove(UUID);
 				}
 				_disposed = true;
 			}

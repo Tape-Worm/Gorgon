@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
@@ -39,9 +41,22 @@ namespace GorgonLibrary.HID
 	/// If the user has more than one of these devices attached, they will be enumerated here and will be available as distinct object instances.</para>
 	/// </remarks>
 	public abstract class GorgonInputDeviceFactory
-		: GorgonNamedObject
-    {
+		: GorgonNamedObject, IDisposable
+	{
+		#region Variables.
+		private bool _disposed = false;								// Flag to indicate that the object was disposed.
+		#endregion
+
 		#region Properties.
+		/// <summary>
+		/// Property to return the list of created input devices.
+		/// </summary>
+		internal IDictionary<Guid, GorgonInputDevice> Devices
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the names of the pointing devices attached to the system.
 		/// </summary>
@@ -81,6 +96,55 @@ namespace GorgonLibrary.HID
 
 		#region Methods.
 		/// <summary>
+		/// Function to retrieve the factory UUID for the device.
+		/// </summary>
+		/// <param name="name">Name of the device.</param>
+		/// <returns>The UUID for the device.</returns>
+		private Guid GetDeviceUUID(GorgonInputDeviceName name)
+		{
+			Guid result = Guid.Empty;
+
+			if (name != null)
+				result = name.UUID;
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to destroy any outstanding device instance.
+		/// </summary>
+		private void DestroyDevices()
+		{
+			// Destroy any existing device references.
+			var devices = Devices.ToArray<KeyValuePair<Guid, GorgonInputDevice>>();
+			foreach (KeyValuePair<Guid, GorgonInputDevice> device in devices)
+				device.Value.Dispose();
+			Devices.Clear();
+		}
+
+		/// <summary>
+		/// Function to retrieve an existing input device.
+		/// </summary>
+		/// <typeparam name="T">Type name of the device.</typeparam>
+		/// <param name="name">Name of the device.</param>
+		/// <returns>The input device if it was previously created, NULL (Nothing in VB.Net) if not.</returns>
+		private T GetInputDevice<T>(GorgonInputDeviceName name) where T : GorgonInputDevice
+		{
+			Guid UUID = GetDeviceUUID(name);
+			T device = null;
+
+			if (Devices.ContainsKey(UUID))
+			{
+				device = Devices[UUID] as T;
+
+				if (device == null)
+					throw new ArgumentException("The device requested already exists and is not of the type '" + typeof(T).FullName + "'.", "name");
+			}
+
+			return device;
+		}
+
+		/// <summary>
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>
@@ -106,7 +170,51 @@ namespace GorgonLibrary.HID
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing NULL for <paramref name="keyboardName"/> will use the system keyboard.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para></remarks>		
-		public abstract GorgonKeyboard CreateKeyboard(GorgonInputDeviceName keyboardName, Forms.Control window);
+		protected abstract GorgonKeyboard CreateKeyboardImpl(GorgonInputDeviceName keyboardName, Forms.Control window);
+
+		/// <summary>
+		/// Function to create a pointing device interface.
+		/// </summary>
+		/// <param name="pointingDeviceName">Name of the pointing device device to create.</param>
+		/// <param name="window">Window to bind with.</param>
+		/// <returns>A new pointing device interface.</returns>
+		/// <remarks>Passing NULL for <paramref name="pointingDeviceName"/> will use the system pointing device.
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para>
+		/// </remarks>
+		protected abstract GorgonPointingDevice CreatePointingDeviceImpl(GorgonInputDeviceName pointingDeviceName, Forms.Control window);
+
+		/// <summary>
+		/// Function to create a joystick interface.
+		/// </summary>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="window">Window to bind with.</param>
+		/// <returns>A new joystick interface.</returns>
+		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
+		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickName"/> is NULL.</exception>
+		protected abstract GorgonJoystick CreateJoystickImpl(GorgonInputDeviceName joystickName, Forms.Control window);
+
+		/// <summary>
+		/// Function to create a keyboard interface.
+		/// </summary>
+		/// <param name="keyboardName">Name of the keyboard device to create.</param>
+		/// <param name="window">Window to bind with.</param>
+		/// <returns>A new keyboard interface.</returns>
+		/// <remarks>Passing NULL for <paramref name="keyboardName"/> will use the system keyboard.
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para></remarks>		
+		/// <exception cref="System.ArgumentException">Thrown when the device requested was already created but was not of the correct type.</exception>
+		public GorgonKeyboard CreateKeyboard(GorgonInputDeviceName keyboardName, Forms.Control window)
+		{
+			GorgonKeyboard keyboard = GetInputDevice<GorgonKeyboard>(keyboardName);
+
+			if (keyboard == null)
+			{
+				keyboard = CreateKeyboardImpl(keyboardName, window);				
+				keyboard.UUID = GetDeviceUUID(keyboardName);
+				Devices.Add(keyboard.UUID, keyboard);
+			}
+
+			return keyboard;
+		}
 
 		/// <summary>
 		/// Function to create a keyboard interface.
@@ -154,7 +262,19 @@ namespace GorgonLibrary.HID
 		/// <remarks>Passing NULL for <paramref name="pointingDeviceName"/> will use the system pointing device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para>
 		/// </remarks>
-		public abstract GorgonPointingDevice CreatePointingDevice(GorgonInputDeviceName pointingDeviceName, Forms.Control window);
+		public GorgonPointingDevice CreatePointingDevice(GorgonInputDeviceName pointingDeviceName, Forms.Control window)
+		{
+			GorgonPointingDevice pointingDevice = GetInputDevice<GorgonPointingDevice>(pointingDeviceName);
+
+			if (pointingDevice == null)
+			{
+				pointingDevice = CreatePointingDeviceImpl(pointingDeviceName, window);
+				pointingDevice.UUID = GetDeviceUUID(pointingDeviceName);
+				Devices.Add(pointingDevice.UUID, pointingDevice);
+			}
+
+			return pointingDevice;
+		}
 
 		/// <summary>
 		/// Function to create a pointing device interface.
@@ -168,9 +288,9 @@ namespace GorgonLibrary.HID
 		public GorgonPointingDevice CreatePointingDevice(string pointingDeviceName, Forms.Control window)
 		{
 			if (string.IsNullOrEmpty(pointingDeviceName))
-				return CreatePointingDevice((GorgonInputDeviceName)null, window);
+				return CreatePointingDeviceImpl((GorgonInputDeviceName)null, window);
 			else
-				return CreatePointingDevice(PointingDevices[pointingDeviceName], window);
+				return CreatePointingDeviceImpl(PointingDevices[pointingDeviceName], window);
 		}
 
 		/// <summary>
@@ -221,7 +341,7 @@ namespace GorgonLibrary.HID
 			if (string.IsNullOrEmpty(joystickName))
 				throw new ArgumentException("joystickName");		
 
-			return CreateJoystick(JoystickDevices[joystickName], window);
+			return CreateJoystickImpl(JoystickDevices[joystickName], window);
 		}
 
 		/// <summary>
@@ -232,13 +352,27 @@ namespace GorgonLibrary.HID
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickName"/> is NULL.</exception>
-		public abstract GorgonJoystick CreateJoystick(GorgonInputDeviceName joystickName, Forms.Control window);
+		public GorgonJoystick CreateJoystick(GorgonInputDeviceName joystickName, Forms.Control window)
+		{
+			GorgonJoystick joystickDevice = GetInputDevice<GorgonJoystick>(joystickName);
+
+			if (joystickDevice == null)
+			{
+				joystickDevice = CreateJoystickImpl(joystickName, window);
+				joystickDevice.UUID = GetDeviceUUID(joystickName);
+				Devices.Add(joystickDevice.UUID, joystickDevice);
+			}
+
+			return joystickDevice;
+		}
 
 		/// <summary>
 		/// Function to enumerate devices attached to the system.
 		/// </summary>
+		/// <remarks>Calling this function will invalidate any existing device objects created by this factory, use with care.</remarks>
 		public void EnumerateDevices()
 		{
+			DestroyDevices();
 			PointingDevices = EnumeratePointingDevices();
 			KeyboardDevices = EnumerateKeyboardDevices();
 			JoystickDevices = EnumerateJoysticksDevices();
@@ -255,8 +389,37 @@ namespace GorgonLibrary.HID
 		protected GorgonInputDeviceFactory(string name)
 			: base(name)
 		{
+			Devices = new Dictionary<Guid, GorgonInputDevice>();
 			EnumerateDevices();
 			AutoReacquireDevices = true;
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					// Destroy any outstanding device instances.
+					DestroyDevices();
+				}
+			}
+			_disposed = true;
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		void IDisposable.Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}
