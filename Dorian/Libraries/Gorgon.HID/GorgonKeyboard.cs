@@ -49,7 +49,7 @@ namespace GorgonLibrary.HID
 	/// Object that will represent keyboard data.
 	/// </summary>
 	public abstract class GorgonKeyboard
-		: GorgonInputDevice
+		: GorgonHIDDevice
 	{
 		#region Value types.
 		/// <summary>
@@ -260,12 +260,12 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Key down event.
 		/// </summary>
-		public event EventHandler<KeyboardInputEventArgs> KeyDown;
+		public event EventHandler<KeyboardHIDEventArgs> KeyDown;
 
 		/// <summary>
 		/// Key up event.
 		/// </summary>
-		public event EventHandler<KeyboardInputEventArgs> KeyUp;
+		public event EventHandler<KeyboardHIDEventArgs> KeyUp;
 		#endregion
 
 		#region Properties.
@@ -340,7 +340,7 @@ namespace GorgonLibrary.HID
 				else
 					character = default(KeyCharMap);
 				
-				KeyboardInputEventArgs e = new KeyboardInputEventArgs(key, modifiers, character, scan, left, right);
+				KeyboardHIDEventArgs e = new KeyboardHIDEventArgs(key, modifiers, character, scan, left, right);
 				KeyDown(this, e);
 			}
 		}
@@ -364,7 +364,7 @@ namespace GorgonLibrary.HID
 				else
 					character = default(KeyCharMap);
 
-				KeyboardInputEventArgs e = new KeyboardInputEventArgs(key, modifiers, character, scan, left, right);
+				KeyboardHIDEventArgs e = new KeyboardHIDEventArgs(key, modifiers, character, scan, left, right);
 				KeyUp(this, e);
 			}
 		}
@@ -454,7 +454,7 @@ namespace GorgonLibrary.HID
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
-		protected internal GorgonKeyboard(GorgonHIDDeviceFactory owner, string deviceName, Control boundWindow)
+		protected internal GorgonKeyboard(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
             _keyMap = new KeyMapCollection();

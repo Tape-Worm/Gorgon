@@ -43,13 +43,13 @@ namespace GorgonLibrary.HID
 		/// Function to perform the actual creation of the input factory object.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		protected abstract GorgonHIDDeviceFactory GetFactory();
+		protected abstract GorgonInputDeviceFactory GetFactory();
 
 		/// <summary>
 		/// Function to create the input factory.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		internal GorgonHIDDeviceFactory CreateFactory()
+		internal GorgonInputDeviceFactory CreateFactory()
 		{
 			return GetFactory();
 		}

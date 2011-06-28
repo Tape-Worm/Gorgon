@@ -38,14 +38,14 @@ namespace GorgonLibrary.HID
 	public static class GorgonHIDFactory
 	{
 		#region Variables.
-		private static GorgonInputCollection _hidFactories = null;			// HID device factory collection.
+		private static GorgonHIDDeviceFactoryCollection _hidFactories = null;			// HID device factory collection.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the list of HID device factories loaded.
 		/// </summary>
-		public static GorgonInputCollection HIDDeviceFactories
+		public static GorgonHIDDeviceFactoryCollection HIDDeviceFactories
 		{
 			get
 			{
@@ -66,10 +66,10 @@ namespace GorgonLibrary.HID
 		/// <para>-or-</para>
 		/// <para>Thrown when the HID device factory plug-in requested is not an HID device factory.</para>
 		/// </exception>
-		public static GorgonHIDDeviceFactory CreateHIDDeviceFactory(string plugInType)
+		public static GorgonInputDeviceFactory CreateHIDDeviceFactory(string plugInType)
 		{
 			GorgonHIDPlugIn plugIn = null;
-			GorgonHIDDeviceFactory factory = null;
+			GorgonInputDeviceFactory factory = null;
 
 			GorgonUtility.AssertParamString(plugInType, "plugInType");
 
@@ -99,7 +99,7 @@ namespace GorgonLibrary.HID
 		/// <para>-or-</para>
 		/// <para>Thrown when the HID device factory was not found.</para>
 		/// </exception>
-		public static void DestroyHIDDeviceFactory(GorgonHIDDeviceFactory hidDeviceFactory)
+		public static void DestroyHIDDeviceFactory(GorgonInputDeviceFactory hidDeviceFactory)
 		{
 			if (hidDeviceFactory == null)
 				throw new ArgumentNullException("hidFactory");
@@ -152,7 +152,7 @@ namespace GorgonLibrary.HID
 		/// </summary>
 		static GorgonHIDFactory()
 		{
-			_hidFactories = new GorgonInputCollection();
+			_hidFactories = new GorgonHIDDeviceFactoryCollection();
 		}
 		#endregion
 	}

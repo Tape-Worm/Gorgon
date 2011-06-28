@@ -35,7 +35,7 @@ namespace GorgonLibrary.HID
 	/// </summary>
 	/// <remarks>A pointing device can be any type of device.  For instance a trackball may be considered a pointing device.</remarks>
 	public abstract class GorgonPointingDevice
-		: GorgonInputDevice
+		: GorgonHIDDevice
 	{
 		#region Variables.
 		private bool _disposed = false;												// Flag to indicate that the object was disposed.
@@ -52,22 +52,22 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Pointing device moved event.
 		/// </summary>
-		public event EventHandler<PointingDeviceInputEventArgs> MouseMove;
+		public event EventHandler<PointingDeviceHIDEventArgs> MouseMove;
 
 		/// <summary>
 		/// Pointing device button down event.
 		/// </summary>
-		public event EventHandler<PointingDeviceInputEventArgs> MouseDown;
+		public event EventHandler<PointingDeviceHIDEventArgs> MouseDown;
 
 		/// <summary>
 		/// Pointing device button up event.
 		/// </summary>
-		public event EventHandler<PointingDeviceInputEventArgs> MouseUp;
+		public event EventHandler<PointingDeviceHIDEventArgs> MouseUp;
 
 		/// <summary>
 		/// Pointing device wheel move event.
 		/// </summary>
-		public event EventHandler<PointingDeviceInputEventArgs> MouseWheelMove;
+		public event EventHandler<PointingDeviceHIDEventArgs> MouseWheelMove;
 		#endregion
 
 		#region Properties.
@@ -282,7 +282,7 @@ namespace GorgonLibrary.HID
 			if (MouseWheelMove != null)
 			{
 				ConstrainData();
-				PointingDeviceInputEventArgs e = new PointingDeviceInputEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
+				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				MouseWheelMove(this, e);
 			}
 		}
@@ -295,7 +295,7 @@ namespace GorgonLibrary.HID
 			if (MouseMove != null)
 			{
 				ConstrainData();
-				PointingDeviceInputEventArgs e = new PointingDeviceInputEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
+				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				MouseMove(this, e);
 			}
 		}
@@ -309,7 +309,7 @@ namespace GorgonLibrary.HID
 			if (MouseDown != null)
 			{
 				ConstrainData();
-				PointingDeviceInputEventArgs e = new PointingDeviceInputEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
+				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
 				MouseDown(this, e);
 			}
 		}
@@ -324,7 +324,7 @@ namespace GorgonLibrary.HID
 			if (MouseUp != null)
 			{
 				ConstrainData();
-				PointingDeviceInputEventArgs e = new PointingDeviceInputEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
+				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
 				MouseUp(this, e);
 			}
 		}
@@ -487,7 +487,7 @@ namespace GorgonLibrary.HID
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
-		protected internal GorgonPointingDevice(GorgonHIDDeviceFactory owner, string deviceName, Forms.Control boundWindow)
+		protected internal GorgonPointingDevice(GorgonInputDeviceFactory owner, string deviceName, Forms.Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
 			DoubleClickDelay = 600;
