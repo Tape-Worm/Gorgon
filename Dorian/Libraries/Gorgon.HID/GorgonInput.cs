@@ -32,9 +32,10 @@ using GorgonLibrary.PlugIns;
 namespace GorgonLibrary.HID
 {
 	/// <summary>
-	/// Base for the Input object.
+	/// Base for the HID device factory object.
 	/// </summary>
-	public abstract class GorgonInput
+	public abstract class GorgonHIDDeviceFactory
+		: GorgonNamedObject
     {
 		#region Properties.
 		/// <summary>
@@ -92,26 +93,6 @@ namespace GorgonLibrary.HID
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
 		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> EnumerateJoysticksDevices();
-
-		/// <summary>
-		/// Function to create a new input factory object.
-		/// </summary>
-		/// <param name="plugInType">The fully qualified type name of the plug-in.</param>
-		/// <returns>A new input factory plug-in interface.</returns>
-		public static GorgonInput CreateFactory(string plugInType)
-		{
-			GorgonInputPlugIn plugIn = null;
-
-			if (!GorgonPlugInFactory.PlugIns.Contains(plugInType))
-				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");
-
-			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonInputPlugIn;
-
-			if (plugIn == null)
-				throw new ArgumentException("The plug-in '" + plugInType + "' is not an input plug-in.", "plugInType");
-
-			return plugIn.CreateFactory();
-		}
 
 		/// <summary>
 		/// Function to create a keyboard interface.
@@ -262,9 +243,13 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInput"/> class.
+		/// Initializes a new instance of the <see cref="GorgonHIDDeviceFactory"/> class.
 		/// </summary>
-		protected GorgonInput()
+		/// <param name="name">The name of the device manager.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (or Nothing) in VB.NET.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
+		protected GorgonHIDDeviceFactory(string name)
+			: base(name)
 		{
 			EnumerateDevices();
 			AutoReacquireDevices = true;

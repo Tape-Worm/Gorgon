@@ -35,7 +35,7 @@ namespace GorgonLibrary.HID
 	/// <summary>
 	/// Plug-in interface for an input plug-in.
 	/// </summary>
-	public abstract class GorgonInputPlugIn
+	public abstract class GorgonHIDPlugIn
 		: GorgonPlugIn
 	{
 		#region Methods.
@@ -43,13 +43,13 @@ namespace GorgonLibrary.HID
 		/// Function to perform the actual creation of the input factory object.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		protected abstract GorgonInput GetFactory();
+		protected abstract GorgonHIDDeviceFactory GetFactory();
 
 		/// <summary>
 		/// Function to create the input factory.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		internal GorgonInput CreateFactory()
+		internal GorgonHIDDeviceFactory CreateFactory()
 		{
 			return GetFactory();
 		}
@@ -57,10 +57,10 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputPlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonHIDPlugIn"/> class.
 		/// </summary>
 		/// <param name="description">Optional description of the plug-in.</param>
-		protected GorgonInputPlugIn(string description)
+		protected GorgonHIDPlugIn(string description)
 			: base(description)
 		{
 		}
