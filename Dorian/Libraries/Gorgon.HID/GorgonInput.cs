@@ -34,7 +34,7 @@ namespace GorgonLibrary.HID
 	/// <summary>
 	/// Base for the Input object.
 	/// </summary>
-	public abstract class GorgonInputFactory
+	public abstract class GorgonInput
     {
 		#region Properties.
 		/// <summary>
@@ -98,7 +98,7 @@ namespace GorgonLibrary.HID
 		/// </summary>
 		/// <param name="plugInType">The fully qualified type name of the plug-in.</param>
 		/// <returns>A new input factory plug-in interface.</returns>
-		public static GorgonInputFactory CreateFactory(string plugInType)
+		public static GorgonInput CreateFactory(string plugInType)
 		{
 			GorgonInputPlugIn plugIn = null;
 
@@ -262,9 +262,9 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInput"/> class.
 		/// </summary>
-		protected GorgonInputFactory()
+		protected GorgonInput()
 		{
 			EnumerateDevices();
 			AutoReacquireDevices = true;
