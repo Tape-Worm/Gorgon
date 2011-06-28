@@ -36,7 +36,7 @@ namespace GorgonLibrary.HID
 	/// The entry point for the raw input plug-in.
 	/// </summary>
 	public class GorgonRawInput
-		: GorgonInputPlugIn
+		: GorgonInputDeviceFactoryPlugIn
 	{
 		#region Methods.
 		/// <summary>
@@ -45,7 +45,7 @@ namespace GorgonLibrary.HID
 		/// <returns>
 		/// The interface for the input factory.
 		/// </returns>
-		protected override GorgonInput GetFactory()
+		protected override GorgonInputDeviceFactory GetFactory()
 		{
 			return new RawInput.GorgonRawInputFactory();
 		}

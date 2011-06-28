@@ -41,7 +41,7 @@ namespace GorgonLibrary.RawInput
 	/// Object representing the main interface to the input library.
 	/// </summary>
 	internal class GorgonRawInputFactory
-		: GorgonInput
+		: GorgonInputDeviceFactory
 	{
 		#region Methods.
 		/// <summary>
@@ -104,9 +104,9 @@ namespace GorgonLibrary.RawInput
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>
-		protected override GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> EnumeratePointingDevices()
+		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumeratePointingDevices()
 		{
-			SortedList<string, GorgonDeviceName> result = null;
+			SortedList<string, GorgonInputDeviceName> result = null;
 			RAWINPUTDEVICELIST[] devices = null;
 			int deviceCount = 0;
 
@@ -116,11 +116,11 @@ namespace GorgonLibrary.RawInput
 								  where deviceList.DeviceType == RawInputType.Mouse
 								  select deviceList;
 
-			result = new SortedList<string, GorgonDeviceName>();
+			result = new SortedList<string, GorgonInputDeviceName>();
 
 			foreach (var pointingDevice in pointingDevices)
 			{
-				GorgonDeviceName name = null;
+				GorgonInputDeviceName name = null;
 				name = Win32API.GetDeviceName(pointingDevice.Device);
 
 				if (name != null)
@@ -129,23 +129,23 @@ namespace GorgonLibrary.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, name.GUID, name.ID);
+						name = new GorgonInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, name.GUID, name.ID);
 					}
 					
 					result.Add(name.Name, name);
 				}
 			}
 
-			return new GorgonNamedObjectReadOnlyCollection<GorgonDeviceName>(false, result.Values);
+			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, result.Values);
 		}
 
 		/// <summary>
 		/// Function to enumerate the keyboard devices on the system.
 		/// </summary>
 		/// <returns>A list of keyboard device names.</returns>
-		protected override GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> EnumerateKeyboardDevices()
+		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateKeyboardDevices()
 		{
-			SortedList<string, GorgonDeviceName> result = null;
+			SortedList<string, GorgonInputDeviceName> result = null;
 			RAWINPUTDEVICELIST[] devices = null;
 			int deviceCount = 0;
 
@@ -155,11 +155,11 @@ namespace GorgonLibrary.RawInput
 								  where deviceList.DeviceType == RawInputType.Keyboard
 								  select deviceList;
 
-			result = new SortedList<string, GorgonDeviceName>();
+			result = new SortedList<string, GorgonInputDeviceName>();
 
 			foreach (var pointingDevice in pointingDevices)
 			{
-				GorgonDeviceName name = null;
+				GorgonInputDeviceName name = null;
 				name = Win32API.GetDeviceName(pointingDevice.Device);
 
 				if (name != null)
@@ -168,30 +168,30 @@ namespace GorgonLibrary.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, name.GUID, name.ID);
+						name = new GorgonInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, name.GUID, name.ID);
 					}
 
 					result.Add(name.Name, name);
 				}
 			}
 
-			return new GorgonNamedObjectReadOnlyCollection<GorgonDeviceName>(false, result.Values);
+			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, result.Values);
 		}
 
 		/// <summary>
 		/// Function to enumerate the joystick devices attached to the system.
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
-		protected override GorgonNamedObjectReadOnlyCollection<GorgonDeviceName> EnumerateJoysticksDevices()
+		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateJoysticksDevices()
 		{
-			SortedList<string, GorgonDeviceName> result = null;
+			SortedList<string, GorgonInputDeviceName> result = null;
 			JOYCAPS capabilities = new JOYCAPS();	// Joystick capabilities.
 			string name = string.Empty;				// Name of the joystick.
 			int error = 0;							// Error code.
 			int deviceCount = 0;					// Number of devices.
 			int nameCount = 0;						// Name counter.
 
-			result = new SortedList<string, GorgonDeviceName>();
+			result = new SortedList<string, GorgonInputDeviceName>();
 			deviceCount = Win32API.joyGetNumDevs();
 
 			Gorgon.Log.Print("Enumerating joysticks...", GorgonLoggingLevel.Intermediate);
@@ -219,13 +219,13 @@ namespace GorgonLibrary.RawInput
 							keyName = name + " " + nameCount.ToString();
 						}
 
-						result.Add(keyName, new GorgonDeviceName(keyName, "Game device", "N/A", IntPtr.Zero, Guid.Empty, i));
+						result.Add(keyName, new GorgonInputDeviceName(keyName, "Game device", "N/A", IntPtr.Zero, Guid.Empty, i));
 					}
 				}
 			}
 			Gorgon.Log.Print("{0} joysticks found.", GorgonLoggingLevel.Intermediate, result.Count);
 
-			return new GorgonNamedObjectReadOnlyCollection<GorgonDeviceName>(false, result.Values);
+			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, result.Values);
 		}
 
 		/// <summary>
@@ -236,7 +236,7 @@ namespace GorgonLibrary.RawInput
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing NULL for <paramref name="keyboardName"/> will use the system keyboard.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para></remarks>
-		public override GorgonKeyboard CreateKeyboard(GorgonDeviceName keyboardName, Forms.Control window)
+		public override GorgonKeyboard CreateKeyboard(GorgonInputDeviceName keyboardName, Forms.Control window)
 		{
 			RawKeyboard keyboard = null;
 
@@ -258,7 +258,7 @@ namespace GorgonLibrary.RawInput
 		/// <remarks>Passing NULL for <paramref name="pointingDeviceName"/> will use the system pointing device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para>
 		/// </remarks>
-		public override GorgonPointingDevice CreatePointingDevice(GorgonDeviceName pointingDeviceName, Forms.Control window)
+		public override GorgonPointingDevice CreatePointingDevice(GorgonInputDeviceName pointingDeviceName, Forms.Control window)
 		{
 			RawPointingDevice mouse = null;
 
@@ -274,12 +274,12 @@ namespace GorgonLibrary.RawInput
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickName"/> is NULL.</exception>
-		public override GorgonJoystick CreateJoystick(GorgonDeviceName joystickName, Forms.Control window)
+		public override GorgonJoystick CreateJoystick(GorgonInputDeviceName joystickName, Forms.Control window)
 		{
 			WMMJoystick joystick = null;
 
@@ -298,7 +298,7 @@ namespace GorgonLibrary.RawInput
 		/// Initializes a new instance of the <see cref="GorgonRawInputFactory"/> class.
 		/// </summary>
 		public GorgonRawInputFactory()
-			: base()
+			: base("Gorgon.RawInput")
 		{
 		}
 		#endregion
