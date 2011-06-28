@@ -33,19 +33,19 @@ using GorgonLibrary.PlugIns;
 namespace GorgonLibrary.HID
 {
 	/// <summary>
-	/// A factory for loading various HID device factory interface plug-ins.
+	/// A factory for loading various input device factory interface plug-ins.
 	/// </summary>
 	public static class GorgonHIDFactory
 	{
 		#region Variables.
-		private static GorgonHIDDeviceFactoryCollection _hidFactories = null;			// HID device factory collection.
+		private static GorgonInputDeviceFactoryCollection _hidFactories = null;			// input device factory collection.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the list of HID device factories loaded.
+		/// Property to return the list of input device factories loaded.
 		/// </summary>
-		public static GorgonHIDDeviceFactoryCollection HIDDeviceFactories
+		public static GorgonInputDeviceFactoryCollection HIDDeviceFactories
 		{
 			get
 			{
@@ -56,19 +56,19 @@ namespace GorgonLibrary.HID
 
 		#region Methods.
 		/// <summary>
-		/// Function to return a new HID device factory object.
+		/// Function to return a new input device factory object.
 		/// </summary>
-		/// <param name="plugInType">Type name of the HID device factory.</param>
-		/// <returns>The HID device factory object.</returns>
+		/// <param name="plugInType">Type name of the input device factory.</param>
+		/// <returns>The input device factory object.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty or NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the HID device factory plug-in type was not found.</para>
+		/// <para>Thrown when the input device factory plug-in type was not found.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the HID device factory plug-in requested is not an HID device factory.</para>
+		/// <para>Thrown when the input device factory plug-in requested is not an input device factory.</para>
 		/// </exception>
-		public static GorgonInputDeviceFactory CreateHIDDeviceFactory(string plugInType)
+		public static GorgonInputDeviceFactory CreateInputDeviceFactory(string plugInType)
 		{
-			GorgonHIDPlugIn plugIn = null;
+			GorgonInputDeviceFactoryPlugIn plugIn = null;
 			GorgonInputDeviceFactory factory = null;
 
 			GorgonUtility.AssertParamString(plugInType, "plugInType");
@@ -76,7 +76,7 @@ namespace GorgonLibrary.HID
 			if (!GorgonPlugInFactory.PlugIns.Contains(plugInType))
 				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");
 
-			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonHIDPlugIn;
+			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonInputDeviceFactoryPlugIn;
 
 			if (plugIn == null)
 				throw new ArgumentException("The plug-in '" + plugInType + "' is not an input plug-in.", "plugInType");
@@ -92,53 +92,53 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Function to destroy an HID device factory.
+		/// Function to destroy an input device factory.
 		/// </summary>
-		/// <param name="hidDeviceFactory">HID device factory to destroy.</param>
+		/// <param name="hidDeviceFactory">input device factory to destroy.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidDeviceFactory"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the HID device factory was not found.</para>
+		/// <para>Thrown when the input device factory was not found.</para>
 		/// </exception>
-		public static void DestroyHIDDeviceFactory(GorgonInputDeviceFactory hidDeviceFactory)
+		public static void DestroyInputDeviceFactory(GorgonInputDeviceFactory hidDeviceFactory)
 		{
 			if (hidDeviceFactory == null)
 				throw new ArgumentNullException("hidFactory");
 
 			if (!HIDDeviceFactories.Contains(hidDeviceFactory))
-				throw new ArgumentException("The HID device factory '" + hidDeviceFactory.Name + "' was not found.", "hidFactory");
+				throw new ArgumentException("The input device factory '" + hidDeviceFactory.Name + "' was not found.", "hidFactory");
 
 			HIDDeviceFactories.Remove(hidDeviceFactory);
 		}
 
 		/// <summary>
-		/// Function to destroy an HID device factory by its name.
+		/// Function to destroy an input device factory by its name.
 		/// </summary>
-		/// <param name="name">Name of the HID device factory to destroy.</param>
+		/// <param name="name">Name of the input device factory to destroy.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty or NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the HID device factory was not found.</para>
+		/// <para>Thrown when the input device factory was not found.</para>
 		/// </exception>
-		public static void DestroyHIDDeviceFactory(string name)
+		public static void DestroyInputDeviceFactory(string name)
 		{
 			GorgonUtility.AssertParamString(name, "plugInType");
 
 			if (!HIDDeviceFactories.Contains(name))
-				throw new ArgumentException("The HID device factory '" + name + "' was not found.", "hidFactory");
+				throw new ArgumentException("The input device factory '" + name + "' was not found.", "hidFactory");
 
 			HIDDeviceFactories.Remove(name);
 		}
 
 		/// <summary>
-		/// Function to destroy an HID device factory by its index.
+		/// Function to destroy an input device factory by its index.
 		/// </summary>
-		/// <param name="index">Index of the HID device factory to destroy.</param>
-		public static void DestroyHIDDeviceFactory(int index)
+		/// <param name="index">Index of the input device factory to destroy.</param>
+		public static void DestroyInputDeviceFactory(int index)
 		{
 			HIDDeviceFactories.Remove(index);
 		}
 
 		/// <summary>
-		/// Function to destroy all the HID device factories.
+		/// Function to destroy all the input device factories.
 		/// </summary>
 		public static void DestroyAll()
 		{
@@ -152,7 +152,7 @@ namespace GorgonLibrary.HID
 		/// </summary>
 		static GorgonHIDFactory()
 		{
-			_hidFactories = new GorgonHIDDeviceFactoryCollection();
+			_hidFactories = new GorgonInputDeviceFactoryCollection();
 		}
 		#endregion
 	}

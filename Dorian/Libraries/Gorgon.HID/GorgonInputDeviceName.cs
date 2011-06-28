@@ -31,7 +31,7 @@ namespace GorgonLibrary.HID
 	/// <summary>
 	/// Name of an input device object.
 	/// </summary>
-	public class GorgonHIDDeviceName
+	public class GorgonInputDeviceName
 		: GorgonNamedObject
 	{
 		#region Properties.
@@ -83,7 +83,7 @@ namespace GorgonLibrary.HID
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonHIDDeviceName"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonInputDeviceName"/> struct.
 		/// </summary>
 		/// <param name="name">The device name.</param>
 		/// <param name="className">Class name of the device.</param>
@@ -93,7 +93,7 @@ namespace GorgonLibrary.HID
 		/// <param name="id">Numeric ID for the device (if applicable).</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonHIDDeviceName(string name, string className, string hidPath, IntPtr handle, Guid guid, int id)
+		public GorgonInputDeviceName(string name, string className, string hidPath, IntPtr handle, Guid guid, int id)
 			: base(name)
 		{
 			if (string.IsNullOrEmpty(className))

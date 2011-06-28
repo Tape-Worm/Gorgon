@@ -33,7 +33,7 @@ namespace GorgonLibrary.HID
 	/// Object that will represent joystick data.
 	/// </summary>
 	public abstract class GorgonJoystick
-		: GorgonHIDDevice 
+		: GorgonInputDevice 
 	{
 		#region Variables.
 		private float[] _axisValues = null;			// Axis values.
