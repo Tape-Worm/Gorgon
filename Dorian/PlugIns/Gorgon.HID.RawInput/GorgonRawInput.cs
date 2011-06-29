@@ -47,7 +47,7 @@ namespace GorgonLibrary.HID
 		/// </returns>
 		protected override GorgonInputDeviceFactory GetFactory()
 		{
-			return new RawInput.GorgonRawInputFactory();
+			return new RawInput.GorgonRawInputDeviceFactory();
 		}
 		#endregion
 

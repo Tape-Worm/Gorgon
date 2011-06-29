@@ -79,30 +79,20 @@ namespace GorgonLibrary.HID
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Property to return the numeric ID of the device (if applicable).
-		/// </summary>
-		public int ID
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputDeviceName"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonInputDeviceName"/> class.
 		/// </summary>
 		/// <param name="name">The device name.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
 		/// <param name="handle">The device handle (if applicable).</param>
 		/// <param name="guid">GUID for the device (if applicable).</param>
-		/// <param name="id">Numeric ID for the device (if applicable).</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonInputDeviceName(string name, string className, string hidPath, IntPtr handle, Guid guid, int id)
+		public GorgonInputDeviceName(string name, string className, string hidPath, IntPtr handle, Guid guid)
 			: base(name)
 		{
 			if (string.IsNullOrEmpty(className))
@@ -116,7 +106,6 @@ namespace GorgonLibrary.HID
 			this.HIDPath = hidPath;
 			this.GUID = guid;
 			this.UUID = Guid.NewGuid();
-			this.ID = id;
 		}
 		#endregion
 	}
