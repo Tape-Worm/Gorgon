@@ -40,7 +40,7 @@ namespace GorgonLibrary.RawInput
 	/// <summary>
 	/// Object representing the main interface to the input library.
 	/// </summary>
-	internal class GorgonRawInputFactory
+	internal class GorgonRawInputDeviceFactory
 		: GorgonInputDeviceFactory
 	{
 		#region Methods.
@@ -129,7 +129,7 @@ namespace GorgonLibrary.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, name.GUID, name.ID);
+						name = new GorgonInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, name.GUID);
 					}
 					
 					result.Add(name.Name, name);
@@ -168,7 +168,7 @@ namespace GorgonLibrary.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, name.GUID, name.ID);
+						name = new GorgonInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, name.GUID);
 					}
 
 					result.Add(name.Name, name);
@@ -219,7 +219,7 @@ namespace GorgonLibrary.RawInput
 							keyName = name + " " + nameCount.ToString();
 						}
 
-						result.Add(keyName, new GorgonInputDeviceName(keyName, "Game device", "N/A", IntPtr.Zero, Guid.Empty, i));
+						result.Add(keyName, new GorgonInputDeviceName(keyName, "Game device", "N/A", new IntPtr(i), Guid.Empty));
 					}
 				}
 			}
@@ -286,7 +286,7 @@ namespace GorgonLibrary.RawInput
 			if (joystickName == null)
 				throw new ArgumentNullException("joystickName");
 
-			joystick = new WMMJoystick(this, joystickName.ID, joystickName.Name, window);
+			joystick = new WMMJoystick(this, joystickName.Handle.ToInt32(), joystickName.Name, window);
 			joystick.Enabled = true;
 
 			return joystick;
@@ -295,9 +295,9 @@ namespace GorgonLibrary.RawInput
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInputFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRawInputDeviceFactory"/> class.
 		/// </summary>
-		public GorgonRawInputFactory()
+		public GorgonRawInputDeviceFactory()
 			: base("Gorgon.RawInput")
 		{
 		}

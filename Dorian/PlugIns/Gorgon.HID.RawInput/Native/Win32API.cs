@@ -214,7 +214,7 @@ namespace GorgonLibrary.Win32
 							regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
 							className = deviceKey.GetValue("Class").ToString();
 							name = regValue[regValue.Length - 1];
-							result = new GorgonInputDeviceName(name, className, regPath, deviceHandle, Guid.Empty, 0);
+							result = new GorgonInputDeviceName(name, className, regPath, deviceHandle, Guid.Empty);
 						}
 
 						return result;
