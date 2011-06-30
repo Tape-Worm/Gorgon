@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2011 Michael Winsor
@@ -20,57 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, June 24, 2011 10:04:41 AM
+// Created: Thursday, June 30, 2011 6:35:52 AM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace GorgonLibrary.HID.RawInput
 {
 	/// <summary>
-	/// Object representing event arguments for the raw input events.
+	/// The Raw Input implementation of a device name.
 	/// </summary>
-	internal class RawInputEventArgs
-		: EventArgs
+	internal class GorgonRawInputDeviceName
+		: GorgonInputDeviceName
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the handle to the device that is receiving the event notification.
+		/// Property to return the handle to the device.
 		/// </summary>
 		public IntPtr Handle
 		{
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Property to return the raw input data.
-		/// </summary>
-		public RawInputData Data
-		{
-			get;
-			private set;
-		}
 		#endregion
 
-		#region Constructor.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Constructor.
+		/// Initializes a new instance of the <see cref="GorgonRawInputDeviceName"/> class.
 		/// </summary>
-		/// <param name="data">Raw input data to pass.</param>
-		public RawInputEventArgs(RawInputData data)
+		/// <param name="name">The device name.</param>
+		/// <param name="className">Class name of the device.</param>
+		/// <param name="hidPath">Human interface device path.</param>
+		/// <param name="handle">Handle to the device.</param>
+		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
+		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
+		public GorgonRawInputDeviceName(string name, string className, string hidPath, IntPtr handle)
+			: base(name, className, hidPath)
 		{
-			Handle = data.Header.Device;
-			Data = data;
+			Handle = handle;
 		}
 		#endregion
 	}
-
-	/// <summary>
-	/// Delegate for a raw input event.
-	/// </summary>
-	/// <param name="sender">Object that sent the event.</param>
-	/// <param name="e">Event arguments.</param>
-	internal delegate void RawInputEventHandler(object sender, RawInputEventArgs e);
 }

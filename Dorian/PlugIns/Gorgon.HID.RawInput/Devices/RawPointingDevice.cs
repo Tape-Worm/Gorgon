@@ -31,7 +31,7 @@ using GorgonLibrary.Win32;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.HID;
 
-namespace GorgonLibrary.RawInput
+namespace GorgonLibrary.HID.RawInput
 {
 	/// <summary>
 	/// Mouse interface.

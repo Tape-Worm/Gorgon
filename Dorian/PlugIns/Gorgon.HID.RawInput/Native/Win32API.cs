@@ -28,6 +28,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using GorgonLibrary.HID;
+using GorgonLibrary.HID.RawInput;
 
 namespace GorgonLibrary.Win32
 {
@@ -187,7 +188,7 @@ namespace GorgonLibrary.Win32
 		/// </summary>
 		/// <param name="deviceHandle">Handle to the device.</param>
 		/// <returns>A device name structure.</returns>
-		public static GorgonInputDeviceName GetDeviceName(IntPtr deviceHandle)
+		public static GorgonRawInputDeviceName GetDeviceName(IntPtr deviceHandle)
 		{
 			int dataSize = 0;
 
@@ -199,7 +200,7 @@ namespace GorgonLibrary.Win32
 				{					
 					if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceName, data, ref dataSize) >= 0)
 					{
-						GorgonInputDeviceName result = null;
+						GorgonRawInputDeviceName result = null;
 						string regPath = Marshal.PtrToStringAnsi(data);
 						string[] regValue = regPath.Split('#');
 						RegistryKey deviceKey = null;
@@ -214,7 +215,7 @@ namespace GorgonLibrary.Win32
 							regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
 							className = deviceKey.GetValue("Class").ToString();
 							name = regValue[regValue.Length - 1];
-							result = new GorgonInputDeviceName(name, className, regPath, deviceHandle, Guid.Empty);
+							result = new GorgonRawInputDeviceName(name, className, regPath, deviceHandle);
 						}
 
 						return result;
