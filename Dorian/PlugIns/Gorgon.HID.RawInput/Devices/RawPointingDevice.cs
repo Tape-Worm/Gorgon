@@ -114,7 +114,7 @@ namespace GorgonLibrary.HID.RawInput
 			System.Windows.Forms.Application.AddMessageFilter(_messageFilter);
 
 			_device.UsagePage = HIDUsagePage.Generic;
-			_device.Usage = HIDUsage.Mouse;
+			_device.Usage = (ushort)HIDUsage.Mouse;
 			_device.Flags = RawInputDeviceFlags.None;
 
 			// Enable background access.
@@ -144,7 +144,7 @@ namespace GorgonLibrary.HID.RawInput
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
-			_device.Usage = HIDUsage.Mouse;
+			_device.Usage = (ushort)HIDUsage.Mouse;
 			_device.Flags = RawInputDeviceFlags.None;
 			_device.WindowHandle = IntPtr.Zero;
 

@@ -21,10 +21,15 @@ namespace Tester
 		GorgonInputDeviceFactory input = null;
 		GorgonPointingDevice mouse = null;
 		GorgonFileSystem fileSystem = null;
+		GorgonGenericHID joystick = null;
 
 		private bool Idle(GorgonFrameRate timing)
 		{
 			labelMouse.Text = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString();
+
+			if (joystick != null)
+				labelMouse.Text += "\r\n" + joystick.Data[0];
+
 			return true;
 		}
 
@@ -47,6 +52,8 @@ namespace Tester
 
 				System.IO.Stream stream = fileSystem.GetFile("/Zip/Grid.png").OpenStream(false);
 				byte[] file = fileSystem.GetFile("/FS/ParilTest.zip").Read();
+
+				joystick = input.CreateGenericHID(input.GenericHIDs[5].Name);
 				
 				Gorgon.Go(Idle);
 			}

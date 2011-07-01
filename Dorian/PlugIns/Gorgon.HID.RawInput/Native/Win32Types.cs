@@ -30,7 +30,124 @@ using System.Runtime.InteropServices;
 namespace GorgonLibrary.Win32
 {
     #region Value types.
-    /// <summary>
+	/// <summary>
+	/// HID device info.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct RID_DEVICE_INFO_HID
+	{
+		/// <summary>
+		/// Vendor
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwVendorId;
+		/// <summary>
+		/// Product
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwProductId;
+		/// <summary>
+		/// Version
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwVersionNumber;
+		/// <summary>
+		/// Usage page.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U2)]
+		public ushort usUsagePage;
+		/// <summary>
+		/// Usage flag.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U2)]
+		public ushort usUsage;
+	}
+
+	/// <summary>
+	/// Keyboard device information.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct RID_DEVICE_INFO_KEYBOARD
+	{
+		/// <summary>
+		/// Type.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwType;
+		/// <summary>
+		/// Subtype.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwSubType;
+		/// <summary>
+		/// Keyboard mode.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]		
+		public int dwKeyboardMode;
+		/// <summary>
+		/// Number of function keys.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwNumberOfFunctionKeys;
+		/// <summary>
+		/// Number of indicators.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwNumberOfIndicators;
+		/// <summary>
+		/// Number of total keys.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwNumberOfKeysTotal;
+	}
+
+	/// <summary>
+	/// Mouse device info.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct RID_DEVICE_INFO_MOUSE
+	{
+		/// <summary>
+		/// Mouse ID.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwId;
+		/// <summary>
+		/// Number of buttons.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwNumberOfButtons;
+		/// <summary>
+		/// Sample rate.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int dwSampleRate;
+		/// <summary>
+		/// Flag to indicate a horizontal wheel.
+		/// </summary>
+		[MarshalAs(UnmanagedType.U4)]
+		public int fHasHorizontalWheel;
+	}
+
+	/// <summary>
+	/// Device information.
+	/// </summary>
+	[StructLayout(LayoutKind.Explicit)]
+	internal struct RID_DEVICE_INFO
+	{
+		[FieldOffset(0)]
+		public int cbSize;
+		[FieldOffset(4)]
+		public int dwType;
+		[FieldOffset(8)]
+		public RID_DEVICE_INFO_MOUSE mouse;
+		[FieldOffset(8)]
+		public RID_DEVICE_INFO_KEYBOARD keyboard;
+		[FieldOffset(8)]
+		public RID_DEVICE_INFO_HID hid;
+	}
+	
+	/// <summary>
     /// Value type containing joystick position information.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
@@ -242,8 +359,8 @@ namespace GorgonLibrary.Win32
         public int Size;
         /// <summary>Number of HID in Data.</summary>
         public int Count;
-        /// <summary>Data for the HID.</summary>
-        public IntPtr Data;
+		/// <summary>HID data.</summary>
+		public IntPtr Data;
     }
 
     /// <summary>

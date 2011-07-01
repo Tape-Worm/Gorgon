@@ -184,7 +184,7 @@ namespace GorgonLibrary.HID.RawInput
 			System.Windows.Forms.Application.AddMessageFilter(_messageFilter);
 
 			_device.UsagePage = HIDUsagePage.Generic;
-			_device.Usage = HIDUsage.Keyboard;
+			_device.Usage = (ushort)HIDUsage.Keyboard;
 			_device.Flags = RawInputDeviceFlags.None;
 
 			// Enable background access.
@@ -214,7 +214,7 @@ namespace GorgonLibrary.HID.RawInput
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
-			_device.Usage = HIDUsage.Keyboard;
+			_device.Usage = (ushort)HIDUsage.Keyboard;
 			_device.Flags = RawInputDeviceFlags.None;
 			_device.WindowHandle = IntPtr.Zero;
 

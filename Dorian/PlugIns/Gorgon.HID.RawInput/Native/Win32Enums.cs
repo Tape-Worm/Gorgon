@@ -256,306 +256,307 @@ namespace GorgonLibrary.Win32
     /// <summary>
     /// Constants for HID usage flags.
     /// </summary>
-    public static class HIDUsage
+    internal enum HIDUsage
+		: ushort
     {
         /// <summary></summary>
-        internal const ushort Pointer = 0x01;
+        Pointer = 0x01,
         /// <summary></summary>
-        internal const ushort Mouse = 0x02;
+        Mouse = 0x02,
         /// <summary></summary>
-        internal const ushort Joystick = 0x04;
+         Joystick = 0x04,
         /// <summary></summary>
-        internal const ushort Gamepad = 0x05;
+         Gamepad = 0x05,
         /// <summary></summary>
-        internal const ushort Keyboard = 0x06;
+         Keyboard = 0x06,
         /// <summary></summary>
-        internal const ushort Keypad = 0x07;
+         Keypad = 0x07,
         /// <summary></summary>
-        internal const ushort SystemControl = 0x80;
+         SystemControl = 0x80,
         /// <summary></summary>
-        internal const ushort X = 0x30;
+         X = 0x30,
         /// <summary></summary>
-        internal const ushort Y = 0x31;
+         Y = 0x31,
         /// <summary></summary>
-        internal const ushort Z = 0x32;
+         Z = 0x32,
         /// <summary></summary>
-        internal const ushort RelativeX = 0x33;
+         RelativeX = 0x33,
         /// <summary></summary>		
-        internal const ushort RelativeY = 0x34;
+         RelativeY = 0x34,
         /// <summary></summary>
-        internal const ushort RelativeZ = 0x35;
+         RelativeZ = 0x35,
         /// <summary></summary>
-        internal const ushort Slider = 0x36;
+         Slider = 0x36,
         /// <summary></summary>
-        internal const ushort Dial = 0x37;
+         Dial = 0x37,
         /// <summary></summary>
-        internal const ushort Wheel = 0x38;
+         Wheel = 0x38,
         /// <summary></summary>
-        internal const ushort HatSwitch = 0x39;
+         HatSwitch = 0x39,
         /// <summary></summary>
-        internal const ushort CountedBuffer = 0x3A;
+         CountedBuffer = 0x3A,
         /// <summary></summary>
-        internal const ushort ByteCount = 0x3B;
+         ByteCount = 0x3B,
         /// <summary></summary>
-        internal const ushort MotionWakeup = 0x3C;
+         MotionWakeup = 0x3C,
         /// <summary></summary>
-        internal const ushort VX = 0x40;
+         VX = 0x40,
         /// <summary></summary>
-        internal const ushort VY = 0x41;
+         VY = 0x41,
         /// <summary></summary>
-        internal const ushort VZ = 0x42;
+         VZ = 0x42,
         /// <summary></summary>
-        internal const ushort VBRX = 0x43;
+         VBRX = 0x43,
         /// <summary></summary>
-        internal const ushort VBRY = 0x44;
+         VBRY = 0x44,
         /// <summary></summary>
-        internal const ushort VBRZ = 0x45;
+         VBRZ = 0x45,
         /// <summary></summary>
-        internal const ushort VNO = 0x46;
+         VNO = 0x46,
         /// <summary></summary>
-        internal const ushort SystemControlPower = 0x81;
+         SystemControlPower = 0x81,
         /// <summary></summary>
-        internal const ushort SystemControlSleep = 0x82;
+         SystemControlSleep = 0x82,
         /// <summary></summary>
-        internal const ushort SystemControlWake = 0x83;
+         SystemControlWake = 0x83,
         /// <summary></summary>
-        internal const ushort SystemControlContextMenu = 0x84;
+         SystemControlContextMenu = 0x84,
         /// <summary></summary>
-        internal const ushort SystemControlMainMenu = 0x85;
+         SystemControlMainMenu = 0x85,
         /// <summary></summary>
-        internal const ushort SystemControlApplicationMenu = 0x86;
+         SystemControlApplicationMenu = 0x86,
         /// <summary></summary>
-        internal const ushort SystemControlHelpMenu = 0x87;
+         SystemControlHelpMenu = 0x87,
         /// <summary></summary>
-        internal const ushort SystemControlMenuExit = 0x88;
+         SystemControlMenuExit = 0x88,
         /// <summary></summary>
-        internal const ushort SystemControlMenuSelect = 0x89;
+         SystemControlMenuSelect = 0x89,
         /// <summary></summary>
-        internal const ushort SystemControlMenuRight = 0x8A;
+         SystemControlMenuRight = 0x8A,
         /// <summary></summary>
-        internal const ushort SystemControlMenuLeft = 0x8B;
+         SystemControlMenuLeft = 0x8B,
         /// <summary></summary>
-        internal const ushort SystemControlMenuUp = 0x8C;
+         SystemControlMenuUp = 0x8C,
         /// <summary></summary>
-        internal const ushort SystemControlMenuDown = 0x8D;
+         SystemControlMenuDown = 0x8D,
         /// <summary></summary>
-        internal const ushort KeyboardNoEvent = 0x00;
+         KeyboardNoEvent = 0x00,
         /// <summary></summary>
-        internal const ushort KeyboardRollover = 0x01;
+         KeyboardRollover = 0x01,
         /// <summary></summary>
-        internal const ushort KeyboardPostFail = 0x02;
+         KeyboardPostFail = 0x02,
         /// <summary></summary>
-        internal const ushort KeyboardUndefined = 0x03;
+         KeyboardUndefined = 0x03,
         /// <summary></summary>
-        internal const ushort KeyboardaA = 0x04;
+         KeyboardaA = 0x04,
         /// <summary></summary>
-        internal const ushort KeyboardzZ = 0x1D;
+         KeyboardzZ = 0x1D,
         /// <summary></summary>
-        internal const ushort Keyboard1 = 0x1E;
+         Keyboard1 = 0x1E,
         /// <summary></summary>
-        internal const ushort Keyboard0 = 0x27;
+         Keyboard0 = 0x27,
         /// <summary></summary>
-        internal const ushort KeyboardLeftControl = 0xE0;
+         KeyboardLeftControl = 0xE0,
         /// <summary></summary>
-        internal const ushort KeyboardLeftShift = 0xE1;
+         KeyboardLeftShift = 0xE1,
         /// <summary></summary>
-        internal const ushort KeyboardLeftALT = 0xE2;
+         KeyboardLeftALT = 0xE2,
         /// <summary></summary>
-        internal const ushort KeyboardLeftGUI = 0xE3;
+         KeyboardLeftGUI = 0xE3,
         /// <summary></summary>
-        internal const ushort KeyboardRightControl = 0xE4;
+         KeyboardRightControl = 0xE4,
         /// <summary></summary>
-        internal const ushort KeyboardRightShift = 0xE5;
+         KeyboardRightShift = 0xE5,
         /// <summary></summary>
-        internal const ushort KeyboardRightALT = 0xE6;
+         KeyboardRightALT = 0xE6,
         /// <summary></summary>
-        internal const ushort KeyboardRightGUI = 0xE7;
+         KeyboardRightGUI = 0xE7,
         /// <summary></summary>
-        internal const ushort KeyboardScrollLock = 0x47;
+         KeyboardScrollLock = 0x47,
         /// <summary></summary>
-        internal const ushort KeyboardNumLock = 0x53;
+         KeyboardNumLock = 0x53,
         /// <summary></summary>
-        internal const ushort KeyboardCapsLock = 0x39;
+         KeyboardCapsLock = 0x39,
         /// <summary></summary>
-        internal const ushort KeyboardF1 = 0x3A;
+         KeyboardF1 = 0x3A,
         /// <summary></summary>
-        internal const ushort KeyboardF12 = 0x45;
+         KeyboardF12 = 0x45,
         /// <summary></summary>
-        internal const ushort KeyboardReturn = 0x28;
+         KeyboardReturn = 0x28,
         /// <summary></summary>
-        internal const ushort KeyboardEscape = 0x29;
+         KeyboardEscape = 0x29,
         /// <summary></summary>
-        internal const ushort KeyboardDelete = 0x2A;
+         KeyboardDelete = 0x2A,
         /// <summary></summary>
-        internal const ushort KeyboardPrintScreen = 0x46;
+         KeyboardPrintScreen = 0x46,
         /// <summary></summary>
-        internal const ushort LEDNumLock = 0x01;
+         LEDNumLock = 0x01,
         /// <summary></summary>
-        internal const ushort LEDCapsLock = 0x02;
+         LEDCapsLock = 0x02,
         /// <summary></summary>
-        internal const ushort LEDScrollLock = 0x03;
+         LEDScrollLock = 0x03,
         /// <summary></summary>
-        internal const ushort LEDCompose = 0x04;
+         LEDCompose = 0x04,
         /// <summary></summary>
-        internal const ushort LEDKana = 0x05;
+         LEDKana = 0x05,
         /// <summary></summary>
-        internal const ushort LEDPower = 0x06;
+         LEDPower = 0x06,
         /// <summary></summary>
-        internal const ushort LEDShift = 0x07;
+         LEDShift = 0x07,
         /// <summary></summary>
-        internal const ushort LEDDoNotDisturb = 0x08;
+         LEDDoNotDisturb = 0x08,
         /// <summary></summary>
-        internal const ushort LEDMute = 0x09;
+         LEDMute = 0x09,
         /// <summary></summary>
-        internal const ushort LEDToneEnable = 0x0A;
+         LEDToneEnable = 0x0A,
         /// <summary></summary>
-        internal const ushort LEDHighCutFilter = 0x0B;
+         LEDHighCutFilter = 0x0B,
         /// <summary></summary>
-        internal const ushort LEDLowCutFilter = 0x0C;
+         LEDLowCutFilter = 0x0C,
         /// <summary></summary>
-        internal const ushort LEDEqualizerEnable = 0x0D;
+         LEDEqualizerEnable = 0x0D,
         /// <summary></summary>
-        internal const ushort LEDSoundFieldOn = 0x0E;
+         LEDSoundFieldOn = 0x0E,
         /// <summary></summary>
-        internal const ushort LEDSurroundFieldOn = 0x0F;
+         LEDSurroundFieldOn = 0x0F,
         /// <summary></summary>
-        internal const ushort LEDRepeat = 0x10;
+         LEDRepeat = 0x10,
         /// <summary></summary>
-        internal const ushort LEDStereo = 0x11;
+         LEDStereo = 0x11,
         /// <summary></summary>
-        internal const ushort LEDSamplingRateDirect = 0x12;
+         LEDSamplingRateDirect = 0x12,
         /// <summary></summary>
-        internal const ushort LEDSpinning = 0x13;
+         LEDSpinning = 0x13,
         /// <summary></summary>
-        internal const ushort LEDCAV = 0x14;
+         LEDCAV = 0x14,
         /// <summary></summary>
-        internal const ushort LEDCLV = 0x15;
+         LEDCLV = 0x15,
         /// <summary></summary>
-        internal const ushort LEDRecordingFormatDet = 0x16;
+         LEDRecordingFormatDet = 0x16,
         /// <summary></summary>
-        internal const ushort LEDOffHook = 0x17;
+         LEDOffHook = 0x17,
         /// <summary></summary>
-        internal const ushort LEDRing = 0x18;
+         LEDRing = 0x18,
         /// <summary></summary>
-        internal const ushort LEDMessageWaiting = 0x19;
+         LEDMessageWaiting = 0x19,
         /// <summary></summary>
-        internal const ushort LEDDataMode = 0x1A;
+         LEDDataMode = 0x1A,
         /// <summary></summary>
-        internal const ushort LEDBatteryOperation = 0x1B;
+         LEDBatteryOperation = 0x1B,
         /// <summary></summary>
-        internal const ushort LEDBatteryOK = 0x1C;
+         LEDBatteryOK = 0x1C,
         /// <summary></summary>
-        internal const ushort LEDBatteryLow = 0x1D;
+         LEDBatteryLow = 0x1D,
         /// <summary></summary>
-        internal const ushort LEDSpeaker = 0x1E;
+         LEDSpeaker = 0x1E,
         /// <summary></summary>
-        internal const ushort LEDHeadset = 0x1F;
+         LEDHeadset = 0x1F,
         /// <summary></summary>
-        internal const ushort LEDHold = 0x20;
+         LEDHold = 0x20,
         /// <summary></summary>
-        internal const ushort LEDMicrophone = 0x21;
+         LEDMicrophone = 0x21,
         /// <summary></summary>
-        internal const ushort LEDCoverage = 0x22;
+         LEDCoverage = 0x22,
         /// <summary></summary>
-        internal const ushort LEDNightMode = 0x23;
+         LEDNightMode = 0x23,
         /// <summary></summary>
-        internal const ushort LEDSendCalls = 0x24;
+         LEDSendCalls = 0x24,
         /// <summary></summary>
-        internal const ushort LEDCallPickup = 0x25;
+         LEDCallPickup = 0x25,
         /// <summary></summary>
-        internal const ushort LEDConference = 0x26;
+         LEDConference = 0x26,
         /// <summary></summary>
-        internal const ushort LEDStandBy = 0x27;
+         LEDStandBy = 0x27,
         /// <summary></summary>
-        internal const ushort LEDCameraOn = 0x28;
+         LEDCameraOn = 0x28,
         /// <summary></summary>
-        internal const ushort LEDCameraOff = 0x29;
+         LEDCameraOff = 0x29,
         /// <summary></summary>		
-        internal const ushort LEDOnLine = 0x2A;
+         LEDOnLine = 0x2A,
         /// <summary></summary>
-        internal const ushort LEDOffLine = 0x2B;
+         LEDOffLine = 0x2B,
         /// <summary></summary>
-        internal const ushort LEDBusy = 0x2C;
+         LEDBusy = 0x2C,
         /// <summary></summary>
-        internal const ushort LEDReady = 0x2D;
+         LEDReady = 0x2D,
         /// <summary></summary>
-        internal const ushort LEDPaperOut = 0x2E;
+         LEDPaperOut = 0x2E,
         /// <summary></summary>
-        internal const ushort LEDPaperJam = 0x2F;
+         LEDPaperJam = 0x2F,
         /// <summary></summary>
-        internal const ushort LEDRemote = 0x30;
+         LEDRemote = 0x30,
         /// <summary></summary>
-        internal const ushort LEDForward = 0x31;
+         LEDForward = 0x31,
         /// <summary></summary>
-        internal const ushort LEDReverse = 0x32;
+         LEDReverse = 0x32,
         /// <summary></summary>
-        internal const ushort LEDStop = 0x33;
+         LEDStop = 0x33,
         /// <summary></summary>
-        internal const ushort LEDRewind = 0x34;
+         LEDRewind = 0x34,
         /// <summary></summary>
-        internal const ushort LEDFastForward = 0x35;
+         LEDFastForward = 0x35,
         /// <summary></summary>
-        internal const ushort LEDPlay = 0x36;
+         LEDPlay = 0x36,
         /// <summary></summary>
-        internal const ushort LEDPause = 0x37;
+         LEDPause = 0x37,
         /// <summary></summary>
-        internal const ushort LEDRecord = 0x38;
+         LEDRecord = 0x38,
         /// <summary></summary>
-        internal const ushort LEDError = 0x39;
+         LEDError = 0x39,
         /// <summary></summary>
-        internal const ushort LEDSelectedIndicator = 0x3A;
+         LEDSelectedIndicator = 0x3A,
         /// <summary></summary>
-        internal const ushort LEDInUseIndicator = 0x3B;
+         LEDInUseIndicator = 0x3B,
         /// <summary></summary>
-        internal const ushort LEDMultiModeIndicator = 0x3C;
+         LEDMultiModeIndicator = 0x3C,
         /// <summary></summary>
-        internal const ushort LEDIndicatorOn = 0x3D;
+         LEDIndicatorOn = 0x3D,
         /// <summary></summary>
-        internal const ushort LEDIndicatorFlash = 0x3E;
+         LEDIndicatorFlash = 0x3E,
         /// <summary></summary>
-        internal const ushort LEDIndicatorSlowBlink = 0x3F;
+         LEDIndicatorSlowBlink = 0x3F,
         /// <summary></summary>
-        internal const ushort LEDIndicatorFastBlink = 0x40;
+         LEDIndicatorFastBlink = 0x40,
         /// <summary></summary>
-        internal const ushort LEDIndicatorOff = 0x41;
+         LEDIndicatorOff = 0x41,
         /// <summary></summary>
-        internal const ushort LEDFlashOnTime = 0x42;
+         LEDFlashOnTime = 0x42,
         /// <summary></summary>
-        internal const ushort LEDSlowBlinkOnTime = 0x43;
+         LEDSlowBlinkOnTime = 0x43,
         /// <summary></summary>
-        internal const ushort LEDSlowBlinkOffTime = 0x44;
+         LEDSlowBlinkOffTime = 0x44,
         /// <summary></summary>
-        internal const ushort LEDFastBlinkOnTime = 0x45;
+         LEDFastBlinkOnTime = 0x45,
         /// <summary></summary>
-        internal const ushort LEDFastBlinkOffTime = 0x46;
+         LEDFastBlinkOffTime = 0x46,
         /// <summary></summary>
-        internal const ushort LEDIndicatorColor = 0x47;
+         LEDIndicatorColor = 0x47,
         /// <summary></summary>
-        internal const ushort LEDRed = 0x48;
+         LEDRed = 0x48,
         /// <summary></summary>
-        internal const ushort LEDGreen = 0x49;
+         LEDGreen = 0x49,
         /// <summary></summary>
-        internal const ushort LEDAmber = 0x4A;
+         LEDAmber = 0x4A,
         /// <summary></summary>
-        internal const ushort LEDGenericIndicator = 0x3B;
+         LEDGenericIndicator = 0x3B,
         /// <summary></summary>
-        internal const ushort TelephonyPhone = 0x01;
+         TelephonyPhone = 0x01,
         /// <summary></summary>
-        internal const ushort TelephonyAnsweringMachine = 0x02;
+         TelephonyAnsweringMachine = 0x02,
         /// <summary></summary>
-        internal const ushort TelephonyMessageControls = 0x03;
+         TelephonyMessageControls = 0x03,
         /// <summary></summary>
-        internal const ushort TelephonyHandset = 0x04;
+         TelephonyHandset = 0x04,
         /// <summary></summary>
-        internal const ushort TelephonyHeadset = 0x05;
+         TelephonyHeadset = 0x05,
         /// <summary></summary>
-        internal const ushort TelephonyKeypad = 0x06;
+         TelephonyKeypad = 0x06,
         /// <summary></summary>
-        internal const ushort TelephonyProgrammableButton = 0x07;
+         TelephonyProgrammableButton = 0x07,
         /// <summary></summary>
-        internal const ushort SimulationRudder = 0xBA;
+         SimulationRudder = 0xBA,
         /// <summary></summary>
-        internal const ushort SimulationThrottle = 0xBB;
+         SimulationThrottle = 0xBB
     }
 
     /// <summary>

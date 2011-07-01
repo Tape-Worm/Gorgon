@@ -129,7 +129,7 @@ namespace GorgonLibrary.HID.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle);
+						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, true);
 					}
 					
 					result.Add(name.Name, name);
@@ -168,7 +168,7 @@ namespace GorgonLibrary.HID.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle);
+						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, true);
 					}
 
 					result.Add(name.Name, name);
@@ -219,13 +219,76 @@ namespace GorgonLibrary.HID.RawInput
 							keyName = name + " " + nameCount.ToString();
 						}
 
-						result.Add(keyName, new GorgonRawInputDeviceName(keyName, "Game device", "N/A", new IntPtr(i)));
+						result.Add(keyName, new GorgonRawInputDeviceName(keyName, "Game device", "N/A", new IntPtr(i), false));
 					}
 				}
 			}
 			Gorgon.Log.Print("{0} joysticks found.", GorgonLoggingLevel.Intermediate, result.Count);
 
 			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, result.Values);
+		}
+
+		/// <summary>
+		/// Function to enumerate device types for which there is no class wrapper and will return data in a generic property collection.
+		/// </summary>
+		/// <returns>
+		/// A list of generic HID types.
+		/// </returns>
+		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateGenericHIDs()
+		{
+			SortedList<string, GorgonRawInputDeviceName> result = null;
+			RAWINPUTDEVICELIST[] devices = null;
+			int deviceCount = 0;
+
+			devices = Win32API.EnumerateInputDevices();
+
+			var deviceList = from device in devices
+								  where ((device.DeviceType != RawInputType.Keyboard) && (device.DeviceType != RawInputType.Mouse))
+								  select device;
+
+			result = new SortedList<string, GorgonRawInputDeviceName>();
+
+			foreach (var hidDevice in deviceList)
+			{
+				GorgonRawInputDeviceName name = null;
+				name = Win32API.GetDeviceName(hidDevice.Device);
+
+				if (name != null)
+				{
+					// On some systems, there may be multiple devices with the same name.
+					while (result.ContainsKey(name.Name))
+					{
+						deviceCount++;
+						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, true);
+					}
+
+					result.Add(name.Name, name);
+				}
+			}
+
+			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, result.Values);
+		}
+
+		/// <summary>
+		/// Function to create a generic HID interface.
+		/// </summary>
+		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="window">Window to bind with.</param>
+		/// <returns>
+		/// A new generic HID interface.
+		/// </returns>
+		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidName"/> is NULL.</exception>
+		protected override GorgonGenericHID CreateGenericHIDImpl(GorgonInputDeviceName hidName, Forms.Control window)
+		{
+			RawHIDDevice hidDevice = null;
+
+			if (hidName == null)
+				throw new ArgumentNullException("hidName");
+
+			hidDevice = new RawHIDDevice(this, ((GorgonRawInputDeviceName)hidName), window);
+			hidDevice.Enabled = true;
+
+			return hidDevice;
 		}
 
 		/// <summary>

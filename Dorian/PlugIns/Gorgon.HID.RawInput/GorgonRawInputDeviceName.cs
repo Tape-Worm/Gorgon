@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Win32;
 
 namespace GorgonLibrary.HID.RawInput
 {
@@ -46,6 +47,24 @@ namespace GorgonLibrary.HID.RawInput
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the HID usage.
+		/// </summary>
+		public Win32.HIDUsage Usage
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the HID usage page.
+		/// </summary>
+		public Win32.HIDUsagePage UsagePage
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -56,12 +75,27 @@ namespace GorgonLibrary.HID.RawInput
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
 		/// <param name="handle">Handle to the device.</param>
+		/// <param name="getHIDUsage">TRUE to retrieve HID usage flags, FALSE to exclude.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonRawInputDeviceName(string name, string className, string hidPath, IntPtr handle)
+		public GorgonRawInputDeviceName(string name, string className, string hidPath, IntPtr handle, bool getHIDUsage)
 			: base(name, className, hidPath)
 		{
 			Handle = handle;
+
+			// Get the usage information for the device.			
+			if (getHIDUsage)
+			{
+				RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
+				Usage = (HIDUsage)deviceInfo.hid.usUsage;
+				UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
+			}
+			else
+			{
+				// This only happens we enumerate joysticks.
+				Usage = HIDUsage.Joystick;
+				UsagePage = HIDUsagePage.Generic;
+			}
 		}
 		#endregion
 	}

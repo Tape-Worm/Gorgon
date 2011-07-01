@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Linq;
 using Microsoft.Win32;
 using GorgonLibrary.HID;
 using GorgonLibrary.HID.RawInput;
@@ -184,6 +185,40 @@ namespace GorgonLibrary.Win32
 		}
 
 		/// <summary>
+		/// Function to retrieve device information.
+		/// </summary>
+		/// <param name="deviceHandle">Device handle.</param>
+		/// <returns>The device information structure.</returns>
+		public static RID_DEVICE_INFO GetDeviceInfo(IntPtr deviceHandle)
+		{
+			int dataSize = 0;
+
+			if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceInfo, IntPtr.Zero, ref dataSize) >= 0)
+			{
+				IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
+
+				try
+				{
+					if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceInfo, data, ref dataSize) >= 0)
+					{
+						RID_DEVICE_INFO result = default(RID_DEVICE_INFO);
+						result = (RID_DEVICE_INFO)(Marshal.PtrToStructure(data, typeof(RID_DEVICE_INFO)));
+						return result;
+					}
+					else
+						throw new System.ComponentModel.Win32Exception();
+				}
+				finally
+				{
+					if (data != IntPtr.Zero)
+						Marshal.FreeHGlobal(data);
+				}
+			}
+			else
+				throw new System.ComponentModel.Win32Exception();
+		}
+
+		/// <summary>
 		/// Function to retrieve the device name.
 		/// </summary>
 		/// <param name="deviceHandle">Handle to the device.</param>
@@ -215,7 +250,7 @@ namespace GorgonLibrary.Win32
 							regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
 							className = deviceKey.GetValue("Class").ToString();
 							name = regValue[regValue.Length - 1];
-							result = new GorgonRawInputDeviceName(name, className, regPath, deviceHandle);
+							result = new GorgonRawInputDeviceName(name, className, regPath, deviceHandle, true);
 						}
 
 						return result;
