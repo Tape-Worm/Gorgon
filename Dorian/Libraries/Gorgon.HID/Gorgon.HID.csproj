@@ -56,6 +56,7 @@
     <Compile Include="GorgonJoystick.cs" />
     <Compile Include="GorgonKeyboard.cs" />
     <Compile Include="GorgonPointingDevice.cs" />
+    <Compile Include="GorgonGenericHID.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
