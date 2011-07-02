@@ -35,9 +35,9 @@
 			// labelMouse
 			// 
 			this.labelMouse.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.labelMouse.Location = new System.Drawing.Point(0, 488);
+			this.labelMouse.Location = new System.Drawing.Point(0, 446);
 			this.labelMouse.Name = "labelMouse";
-			this.labelMouse.Size = new System.Drawing.Size(665, 23);
+			this.labelMouse.Size = new System.Drawing.Size(665, 65);
 			this.labelMouse.TabIndex = 0;
 			// 
 			// Form1

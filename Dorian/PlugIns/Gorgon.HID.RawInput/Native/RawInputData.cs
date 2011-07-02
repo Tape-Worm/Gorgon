@@ -36,14 +36,12 @@ namespace GorgonLibrary.HID.RawInput
 	internal class RawInputData
 	{
 		#region Variables.
-		private int _dataSize = 0;				// Size of the input data in bytes.
-		private RAWINPUTx86 _x86Data;			// x86 specific data.
-		private RAWINPUTx64 _x64Data;			// x64 specific data.
+		private long _headerSize = 0;				// Size of the input data in bytes.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Header for the data.
+		/// Property to return the raw input header.
 		/// </summary>
 		public RAWINPUTHEADER Header
 		{
@@ -52,16 +50,7 @@ namespace GorgonLibrary.HID.RawInput
 		}
 
 		/// <summary>
-		/// Mouse specific data.
-		/// </summary>
-		public RAWINPUTMOUSE Mouse
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Keyboard specific data.
+		/// Property to return the keyboard raw input data.
 		/// </summary>
 		public RAWINPUTKEYBOARD Keyboard
 		{
@@ -70,9 +59,27 @@ namespace GorgonLibrary.HID.RawInput
 		}
 
 		/// <summary>
-		/// Human input device data.
+		/// Property to return the mouse raw input data.
+		/// </summary>
+		public RAWINPUTMOUSE Mouse
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the HID raw input data.
 		/// </summary>
 		public RAWINPUTHID HID
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the data bound to the HID device.
+		/// </summary>
+		public byte[] HIDData
 		{
 			get;
 			private set;
@@ -81,58 +88,90 @@ namespace GorgonLibrary.HID.RawInput
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the raw input data.
+		/// Function to marshal the raw input data back to the .NET world (x64).
 		/// </summary>
-		/// <param name="inputHandle">Handle to raw input data.</param>
-		public void GetRawInputData(IntPtr inputHandle)
+		/// <param name="handle">Handle to the device we're getting data for.</param>
+		/// <returns>A structure used to return the RAW input data.</returns>
+		public void GetRawInputData(IntPtr handle)
 		{
-			int result = -1;				// Result code.
-			int dataSize = 0;				// Size of the input data.
-
-			result = Win32API.GetRawInputData(inputHandle, RawInputCommand.Input, null, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+			int result = 0;
+			int dataSize = 0;
+			IntPtr data = IntPtr.Zero;
+			RAWINPUTx64 rawInputx64 = default(RAWINPUTx64);
+			RAWINPUTx86 rawInputx86 = default(RAWINPUTx86);
+						
+			result = Win32API.GetRawInputData(handle, RawInputCommand.Input, IntPtr.Zero, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
 			if (result == -1)
 				throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
 
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x86)
+			try
 			{
-				result = Win32API.GetRawInputData(inputHandle, RawInputCommand.Input, out _x86Data, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-				if ((result == -1) || (result != dataSize))
-					throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
-
-				Header = _x86Data.Header;
-				switch(Header.Type)
+				if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
 				{
-					case RawInputType.Mouse:
-						Mouse = _x86Data.Mouse;
-						break;
-					case RawInputType.Keyboard:
-						Keyboard = _x86Data.Keyboard;
-						break;
-					case RawInputType.HID:
-						HID = _x86Data.HID;
-						break;
-				}				
-			}
-			else
-			{
-				result = Win32API.GetRawInputData(inputHandle, RawInputCommand.Input, out _x64Data, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-				if ((result == -1) || (result != dataSize))
-					throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
+					// Allocate room for the data.
+					data = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUTx64)));
 
-				Header = _x64Data.Header;
-				switch (Header.Type)
+					result = Win32API.GetRawInputData(handle, RawInputCommand.Input, data, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+					if ((result == -1) || (result != dataSize))
+						throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
+
+					rawInputx64 = new RAWINPUTx64();
+					// Get header info.
+					rawInputx64 = (RAWINPUTx64)Marshal.PtrToStructure(data, typeof(RAWINPUTx64));
+					Header = rawInputx64.Header;
+
+					switch (Header.Type)
+					{
+						case RawInputType.HID:
+							HIDData = new byte[rawInputx64.HID.Size * rawInputx64.HID.Count];
+							HID = rawInputx64.HID;
+							Marshal.Copy(new IntPtr(data.ToInt32() + _headerSize + 8), HIDData, 0, HIDData.Length);
+							break;
+						case RawInputType.Keyboard:
+							Keyboard = rawInputx64.Keyboard;
+							break;
+						case RawInputType.Mouse:
+							Mouse = rawInputx64.Mouse;
+							break;
+					}
+				}
+				else
 				{
-					case RawInputType.Mouse:
-						Mouse = _x64Data.Mouse;
-						break;
-					case RawInputType.Keyboard:
-						Keyboard = _x64Data.Keyboard;
-						break;
-					case RawInputType.HID:
-						HID = _x64Data.HID;
-						break;
+					// Allocate room for the data.
+					data = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUTx86)));
+
+					result = Win32API.GetRawInputData(handle, RawInputCommand.Input, data, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+					if ((result == -1) || (result != dataSize))
+						throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
+
+					rawInputx86 = new RAWINPUTx86();
+					// Get header info.
+					rawInputx86 = (RAWINPUTx86)Marshal.PtrToStructure(data, typeof(RAWINPUTx86));
+					Header = rawInputx86.Header;
+
+					switch(Header.Type)
+					{
+						case RawInputType.HID:
+							HIDData = new byte[rawInputx86.HID.Size * rawInputx86.HID.Count];
+							HID = rawInputx86.HID;
+							Marshal.Copy(new IntPtr(data.ToInt32() + _headerSize + 8), HIDData, 0, HIDData.Length);
+							break;
+						case RawInputType.Keyboard:
+							Keyboard = rawInputx86.Keyboard;
+							break;
+						case RawInputType.Mouse:
+							Mouse = rawInputx86.Mouse;
+							break;
+					}					
 				}
 			}
+			finally
+			{
+				if (data != IntPtr.Zero)
+					Marshal.FreeHGlobal(data);
+				data = IntPtr.Zero;
+			}					
+
 		}
 		#endregion
 
@@ -142,16 +181,12 @@ namespace GorgonLibrary.HID.RawInput
 		/// </summary>
 		public RawInputData()
 		{
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x86)
-			{
-				_dataSize = Marshal.SizeOf(typeof(RAWINPUTx86));
-				_x86Data = new RAWINPUTx86();
-			}
-			else
-			{
-				_dataSize = Marshal.SizeOf(typeof(RAWINPUTx64));
-				_x64Data = new RAWINPUTx64();
-			}			
+			HIDData = new byte[0];
+			Mouse = new RAWINPUTMOUSE();
+			Keyboard = new RAWINPUTKEYBOARD();
+			HID = new RAWINPUTHID();
+
+			_headerSize = Marshal.SizeOf(typeof(RAWINPUTHEADER));
 		}
 		#endregion
 	}

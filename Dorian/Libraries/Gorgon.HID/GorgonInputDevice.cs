@@ -57,7 +57,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to set or return the factory UUID for this device.
 		/// </summary>
-		internal Guid UUID
+		internal string UUID
 		{
 			get;
 			set;
@@ -312,6 +312,7 @@ namespace GorgonLibrary.HID
 
 			DeviceFactory = owner;
 			BindWindow(boundWindow);
+			UUID = Guid.Empty.ToString();
 		}
 		#endregion
 

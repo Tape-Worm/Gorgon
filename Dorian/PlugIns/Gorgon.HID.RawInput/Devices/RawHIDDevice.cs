@@ -39,7 +39,7 @@ namespace GorgonLibrary.HID.RawInput
 	/// A raw input generic HID device object.
 	/// </summary>
 	internal class RawHIDDevice
-		: GorgonGenericHID
+		: GorgonCustomHID
 	{
 		#region Variables.
 		private GorgonRawInputDeviceName _deviceData = null;		// Device data.
@@ -55,8 +55,6 @@ namespace GorgonLibrary.HID.RawInput
 		/// <param name="e">Event argments.</param>
 		private void GetRawData(object sender, RawInputEventArgs e)
 		{
-			byte[] rawData = null;
-
 			if ((BoundWindow == null) || (BoundWindow.Disposing))
 				return;
 
@@ -72,9 +70,7 @@ namespace GorgonLibrary.HID.RawInput
 					return;
 			}
 
-			rawData = new byte[e.Data.HID.Count * e.Data.HID.Size];
-			Marshal.Copy(e.Data.HID.Data, rawData, 0, rawData.Length);
-			Data = rawData;
+			SetData("BinaryData", e.Data.HIDData);
 		}
 
 		/// <summary>
@@ -105,10 +101,6 @@ namespace GorgonLibrary.HID.RawInput
 				_device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
 
 			_device.WindowHandle = BoundWindow.Handle;
-
-			// Reset the data buffer.
-			Data = new byte[1];
-			Data[0] = 0;
 
 			// Attempt to register the device.
 			if (!Win32API.RegisterRawInputDevices(_device))
@@ -150,8 +142,7 @@ namespace GorgonLibrary.HID.RawInput
 		{
 			Gorgon.Log.Print("Raw input HID interface created for handle 0x{0}.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(deviceData.Handle));
 			_deviceData = deviceData;
-			Data = new byte[1];
-			Data[0] = 0;
+			SetData("BinaryData", new byte[0]);
 		}
 		#endregion
 	}

@@ -26,6 +26,8 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace GorgonLibrary.Win32
 {
@@ -352,7 +354,7 @@ namespace GorgonLibrary.Win32
     /// <summary>
     /// Value type for raw input from a HID.
     /// </summary>	
-    [StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential)]
     internal struct RAWINPUTHID
     {
         /// <summary>Size of the HID data in bytes.</summary>
@@ -360,10 +362,10 @@ namespace GorgonLibrary.Win32
         /// <summary>Number of HID in Data.</summary>
         public int Count;
 		/// <summary>HID data.</summary>
-		public IntPtr Data;
+		IntPtr Data;
     }
 
-    /// <summary>
+	/// <summary>
     /// Value type for raw input.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]

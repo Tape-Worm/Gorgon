@@ -37,31 +37,60 @@ namespace GorgonLibrary.HID
 	/// An unknown input device.
 	/// </summary>
 	/// <remarks>Unknown devices don't have a class wrapper for them, but instead use specific functions to set/return the values for the device.</remarks>
-	public abstract class GorgonGenericHID
+	public abstract class GorgonCustomHID
 		: GorgonInputDevice
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the data returned by the device.
+		/// Property to return the user organized data for the device.
 		/// </summary>
-		public IList<byte> Data
+		public GorgonCustomHIDPropertyCollection Data
 		{
 			get;
-			protected set;
+			private set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to clear the properties and their values.
+		/// </summary>
+		protected void ClearData()
+		{
+			Data.Clear();
+		}
+
+
+		/// <summary>
+		/// Function to set a value for a property.
+		/// </summary>
+		/// <param name="propertyName">Name of the property.</param>
+		/// <param name="value">Value to assign to the property.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the propertyName parameter is an empty string.</exception>
+		protected void SetData(string propertyName, object value)
+		{
+			GorgonUtility.AssertParamString(propertyName, "propertyName");
+
+			if (Data.Contains(propertyName))
+				Data[propertyName].SetValue(value);
+			else
+				Data.Add(new GorgonCustomHIDProperty(propertyName, value));
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGenericHID"/> class.
+		/// Initializes a new instance of the <see cref="GorgonCustomHID"/> class.
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		protected GorgonGenericHID(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
+		protected GorgonCustomHID(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
+			Data = new GorgonCustomHIDPropertyCollection();
 		}
 		#endregion
 	}
