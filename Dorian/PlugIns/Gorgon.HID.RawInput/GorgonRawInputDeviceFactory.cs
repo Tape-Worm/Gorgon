@@ -229,12 +229,12 @@ namespace GorgonLibrary.HID.RawInput
 		}
 
 		/// <summary>
-		/// Function to enumerate device types for which there is no class wrapper and will return data in a generic property collection.
+		/// Function to enumerate device types for which there is no class wrapper and will return data in a custom property collection.
 		/// </summary>
 		/// <returns>
-		/// A list of generic HID types.
+		/// A list of custom HID types.
 		/// </returns>
-		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateGenericHIDs()
+		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateCustomHIDs()
 		{
 			SortedList<string, GorgonRawInputDeviceName> result = null;
 			RAWINPUTDEVICELIST[] devices = null;
@@ -270,15 +270,15 @@ namespace GorgonLibrary.HID.RawInput
 		}
 
 		/// <summary>
-		/// Function to create a generic HID interface.
+		/// Function to create a custom HID interface.
 		/// </summary>
 		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>
-		/// A new generic HID interface.
+		/// A new custom HID interface.
 		/// </returns>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidName"/> is NULL.</exception>
-		protected override GorgonGenericHID CreateGenericHIDImpl(GorgonInputDeviceName hidName, Forms.Control window)
+		protected override GorgonCustomHID CreateCustomHIDImpl(GorgonInputDeviceName hidName, Forms.Control window)
 		{
 			RawHIDDevice hidDevice = null;
 

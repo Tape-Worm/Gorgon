@@ -20,15 +20,25 @@ namespace Tester
 	{
 		GorgonInputDeviceFactory input = null;
 		GorgonPointingDevice mouse = null;
+		GorgonKeyboard keyboard = null;
 		GorgonFileSystem fileSystem = null;
-		GorgonGenericHID joystick = null;
+		GorgonCustomHID joystick = null;
 
 		private bool Idle(GorgonFrameRate timing)
 		{
 			labelMouse.Text = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString();
 
-			if (joystick != null)
-				labelMouse.Text += "\r\n" + joystick.Data[0];
+			if ((joystick != null) && (joystick.Data.Count > 0))
+			{
+				byte[] data = joystick.Data[0].GetValue<byte[]>();
+				
+				labelMouse.Text += "\r\n| ";
+				for (int i = 0; i < data.Length; i++)
+					labelMouse.Text += data[i].ToString() + " | ";
+			}
+
+			if (keyboard.KeyStates[KeyboardKeys.A] == KeyState.Down)
+				labelMouse.Text += "\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAA!!";
 
 			return true;
 		}
@@ -44,6 +54,7 @@ namespace Tester
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.FileSystem.Zip\bin\Debug\Gorgon.FileSystem.zip.dll");
 				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
 				mouse = input.CreatePointingDevice();
+				keyboard = input.CreateKeyboard();
 
 				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
@@ -53,7 +64,7 @@ namespace Tester
 				System.IO.Stream stream = fileSystem.GetFile("/Zip/Grid.png").OpenStream(false);
 				byte[] file = fileSystem.GetFile("/FS/ParilTest.zip").Read();
 
-				joystick = input.CreateGenericHID(input.GenericHIDs[5].Name);
+				joystick = input.CreateCustomHID(input.CustomHIDs[5].Name);
 				
 				Gorgon.Go(Idle);
 			}

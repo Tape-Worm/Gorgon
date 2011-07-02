@@ -51,7 +51,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to return the list of created input devices.
 		/// </summary>
-		internal IDictionary<Guid, GorgonInputDevice> Devices
+		internal IDictionary<string, GorgonInputDevice> Devices
 		{
 			get;
 			private set;
@@ -85,9 +85,9 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Property to return the names of generic HIDs.
+		/// Property to return the names of custom HIDs.
 		/// </summary>
-		public GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> GenericHIDs
+		public GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> CustomHIDs
 		{
 			get;
 			private set;
@@ -108,15 +108,18 @@ namespace GorgonLibrary.HID
 		/// Function to retrieve the factory UUID for the device.
 		/// </summary>
 		/// <param name="name">Name of the device.</param>
+		/// <param name="deviceType">Type of input device.</param>
 		/// <returns>The UUID for the device.</returns>
-		private Guid GetDeviceUUID(GorgonInputDeviceName name)
+		private string GetDeviceUUID(GorgonInputDeviceName name, Type deviceType)
 		{
-			Guid result = Guid.Empty;
+			string result = Guid.Empty.ToString();
 
 			if (name != null)
-				result = name.UUID;
+				result = name.UUID.ToString();
 
-			return result;
+			result += "_" + deviceType.FullName;
+
+			return result.ToString();
 		}
 
 		/// <summary>
@@ -125,8 +128,8 @@ namespace GorgonLibrary.HID
 		private void DestroyDevices()
 		{
 			// Destroy any existing device references.
-			var devices = Devices.ToArray<KeyValuePair<Guid, GorgonInputDevice>>();
-			foreach (KeyValuePair<Guid, GorgonInputDevice> device in devices)
+			var devices = Devices.ToArray<KeyValuePair<string, GorgonInputDevice>>();
+			foreach (var device in devices)
 				device.Value.Dispose();
 			Devices.Clear();
 		}
@@ -139,7 +142,7 @@ namespace GorgonLibrary.HID
 		/// <returns>The input device if it was previously created, NULL (Nothing in VB.Net) if not.</returns>
 		private T GetInputDevice<T>(GorgonInputDeviceName name) where T : GorgonInputDevice
 		{
-			Guid UUID = GetDeviceUUID(name);
+			string UUID = GetDeviceUUID(name, typeof(T));
 			T device = null;
 
 			if (Devices.ContainsKey(UUID))
@@ -172,10 +175,12 @@ namespace GorgonLibrary.HID
 		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateJoysticksDevices();
 
 		/// <summary>
-		/// Function to enumerate device types for which there is no class wrapper and will return data in a generic property collection.
-		/// </summary>
-		/// <returns>A list of generic HID types.</returns>
-		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateGenericHIDs();
+		/// Function to enumerate device types for which there is no class wrapper and will return data in a custom property collection.
+		/// </summary>		
+		/// <returns>A list of custom HID types.</returns>
+		/// <remarks>Custom devices are devices that are unknown to Gorgon.  The user can provide a subclass that will take the data returned from the
+		/// device and parse it out and provide properties depending on the device.</remarks>
+		protected abstract GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateCustomHIDs();
 
 		/// <summary>
 		/// Function to create a keyboard interface.
@@ -209,32 +214,34 @@ namespace GorgonLibrary.HID
 		protected abstract GorgonJoystick CreateJoystickImpl(GorgonInputDeviceName joystickName, Forms.Control window);
 
 		/// <summary>
-		/// Function to create a generic HID interface.
+		/// Function to create a custom HID interface.
 		/// </summary>
 		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
-		/// <returns>A new generic HID interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
+		/// <returns>A new custom HID interface.</returns>
+		/// <remarks>Implementors must implement this function if they wish to return data from a undefined (custom) device.
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidName"/> is NULL.</exception>
-		protected abstract GorgonGenericHID CreateGenericHIDImpl(GorgonInputDeviceName hidName, Forms.Control window);
+		protected abstract GorgonCustomHID CreateCustomHIDImpl(GorgonInputDeviceName hidName, Forms.Control window);
 
 		/// <summary>
-		/// Function to create a generic HID interface.
+		/// Function to create a custom HID interface.
 		/// </summary>
 		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
-		/// <returns>A new generic HID interface.</returns>
-		/// <remarks>Data from a generic HID will be returned and passed via the <see cref="M:GorgonLibrary.HID.GorgonGenericHID.GetValue">GorgonGenericHID.GetValue</see> or the <see cref="M:GorgonLibrary.HID.GorgonGenericHID.SetValue">GorgonGenericHID.SetValue</see> functions.
+		/// <returns>A new custom HID interface.</returns>
+		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.HID.GorgonCustomHID.Data">Data</see> property.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para></remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidName"/> is NULL.</exception>
-		public GorgonGenericHID CreateGenericHID(GorgonInputDeviceName hidName, Forms.Control window)
+		public GorgonCustomHID CreateCustomHID(GorgonInputDeviceName hidName, Forms.Control window)
 		{
-			GorgonGenericHID hidDevice = GetInputDevice<GorgonGenericHID>(hidName);
+			GorgonCustomHID hidDevice = GetInputDevice<GorgonCustomHID>(hidName);
 
 			if (hidDevice == null)
 			{
-				hidDevice = CreateGenericHIDImpl(hidName, window);
-				hidDevice.UUID = GetDeviceUUID(hidName);
+				hidDevice = CreateCustomHIDImpl(hidName, window);
+				hidDevice.UUID = GetDeviceUUID(hidName, hidDevice.GetType());
 				Devices.Add(hidDevice.UUID, hidDevice);
 			}
 
@@ -242,36 +249,36 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Function to create a generic HID interface.
+		/// Function to create a custom HID interface.
 		/// </summary>
 		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
-		/// <returns>A new generic HID interface.</returns>
-		/// <remarks>Data from a generic HID will be returned and passed via the <see cref="M:GorgonLibrary.HID.GorgonGenericHID.GetValue">GorgonGenericHID.GetValue</see> or the <see cref="M:GorgonLibrary.HID.GorgonGenericHID.SetValue">GorgonGenericHID.SetValue</see> functions.
+		/// <returns>A new custom HID interface.</returns>
+		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.HID.GorgonCustomHID.Data">Data</see> property.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para>
 		/// </remarks>		
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="hidName"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidName"/> is empty.</exception>
-		public GorgonGenericHID CreateGenericHID(string hidName, Forms.Control window)
+		public GorgonCustomHID CreateCustomHID(string hidName, Forms.Control window)
 		{
 			GorgonUtility.AssertParamString(hidName, "hidName");
 
-			return CreateGenericHID(GenericHIDs[hidName], window);
+			return CreateCustomHID(CustomHIDs[hidName], window);
 		}
 
 		/// <summary>
-		/// Function to create a generic HID interface.
+		/// Function to create a custom HID interface.
 		/// </summary>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new keyboard interface.</returns>
-		/// <remarks>Data from a generic HID will be returned and passed via the <see cref="M:GorgonLibrary.HID.GorgonGenericHID.GetValue">GorgonGenericHID.GetValue</see> or the <see cref="M:GorgonLibrary.HID.GorgonGenericHID.SetValue">GorgonGenericHID.SetValue</see> functions.
+		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.HID.GorgonCustomHID.Data">Data</see> property.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="hidName"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidName"/> is empty.</exception>
-		public GorgonGenericHID CreateGenericHID(string hidName)
+		public GorgonCustomHID CreateCustomHID(string hidName)
 		{
-			return CreateGenericHID(hidName, null);
+			return CreateCustomHID(hidName, null);
 		}
 
 		/// <summary>
@@ -290,7 +297,7 @@ namespace GorgonLibrary.HID
 			if (keyboard == null)
 			{
 				keyboard = CreateKeyboardImpl(keyboardName, window);				
-				keyboard.UUID = GetDeviceUUID(keyboardName);
+				keyboard.UUID = GetDeviceUUID(keyboardName, keyboard.GetType());
 				Devices.Add(keyboard.UUID, keyboard);
 			}
 
@@ -350,7 +357,7 @@ namespace GorgonLibrary.HID
 			if (pointingDevice == null)
 			{
 				pointingDevice = CreatePointingDeviceImpl(pointingDeviceName, window);
-				pointingDevice.UUID = GetDeviceUUID(pointingDeviceName);
+				pointingDevice.UUID = GetDeviceUUID(pointingDeviceName, pointingDevice.GetType());
 				Devices.Add(pointingDevice.UUID, pointingDevice);
 			}
 
@@ -440,7 +447,7 @@ namespace GorgonLibrary.HID
 			if (joystickDevice == null)
 			{
 				joystickDevice = CreateJoystickImpl(joystickName, window);
-				joystickDevice.UUID = GetDeviceUUID(joystickName);
+				joystickDevice.UUID = GetDeviceUUID(joystickName, joystickDevice.GetType());
 				Devices.Add(joystickDevice.UUID, joystickDevice);
 			}
 
@@ -457,7 +464,7 @@ namespace GorgonLibrary.HID
 			PointingDevices = EnumeratePointingDevices();
 			KeyboardDevices = EnumerateKeyboardDevices();
 			JoystickDevices = EnumerateJoysticksDevices();
-			GenericHIDs = EnumerateGenericHIDs();
+			CustomHIDs = EnumerateCustomHIDs();
 		}
 		#endregion
 
@@ -471,7 +478,7 @@ namespace GorgonLibrary.HID
 		protected GorgonInputDeviceFactory(string name)
 			: base(name)
 		{
-			Devices = new Dictionary<Guid, GorgonInputDevice>();
+			Devices = new Dictionary<string, GorgonInputDevice>();
 			EnumerateDevices();
 			AutoReacquireDevices = true;
 		}

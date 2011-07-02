@@ -138,7 +138,7 @@ namespace GorgonLibrary.Win32
 		/// <param name="cbSizeHeader">Size of the header.</param>
 		/// <returns>0 if successful if pData is null, otherwise number of bytes if pData is not null.</returns>
 		[DllImport("user32.dll")]
-		public static extern int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, byte[] pData, ref int pcbSize, int cbSizeHeader);
+		public static extern int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, IntPtr pData, ref int pcbSize, int cbSizeHeader);
 
 		/// <summary>
 		/// Function to enumerate raw input devices.
@@ -314,8 +314,8 @@ namespace GorgonLibrary.Win32
 			else
 				throw new System.ComponentModel.Win32Exception();
 		}
-		#endregion
 
+		#endregion
 		#region Constructor.
 		/// <summary>
 		/// Initializes the <see cref="Win32API"/> class.
