@@ -34,12 +34,69 @@ using GorgonLibrary.Collections;
 namespace GorgonLibrary.HID
 {
 	/// <summary>
+	/// Event parameters for the <see cref="E:GorgonLibrary.HID.GorgonCustomHID.DataChanged">DataChanged</see> event.
+	/// </summary>
+	public class GorgonCustomHIDDataChangedEventArgs
+		: EventArgs
+	{
+		#region Variables.
+		private GorgonCustomHIDProperty _property = null;			// Property with the changed data.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the name of the changed property.
+		/// </summary>
+		public string PropertyName
+		{
+			get
+			{
+				return _property.Name;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to return the data in the property.
+		/// </summary>
+		/// <typeparam name="T">Type to convert the data into.</typeparam>
+		/// <returns>The data in the property.</returns>
+		public T GetData<T>()
+		{
+			return _property.GetValue<T>();
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonCustomHIDDataChangedEventArgs"/> class.
+		/// </summary>
+		/// <param name="property">The property that has changed.</param>
+		internal GorgonCustomHIDDataChangedEventArgs(GorgonCustomHIDProperty property)
+		{
+			if (property == null)
+				throw new ArgumentNullException("property");
+
+			_property = property;
+		}
+		#endregion
+	}
+
+	/// <summary>
 	/// An unknown input device.
 	/// </summary>
-	/// <remarks>Unknown devices don't have a class wrapper for them, but instead use specific functions to set/return the values for the device.</remarks>
+	/// <remarks>Unknown devices won't have a class wrapper for them, but instead use specific functions to set/return the values for the device.</remarks>
 	public abstract class GorgonCustomHID
 		: GorgonInputDevice
 	{
+		#region Events.
+		/// <summary>
+		/// Event fired when the data for the device changes.
+		/// </summary>
+		public event EventHandler<GorgonCustomHIDDataChangedEventArgs> DataChanged;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the user organized data for the device.
@@ -59,8 +116,7 @@ namespace GorgonLibrary.HID
 		{
 			Data.Clear();
 		}
-
-
+		
 		/// <summary>
 		/// Function to set a value for a property.
 		/// </summary>
@@ -76,6 +132,9 @@ namespace GorgonLibrary.HID
 				Data[propertyName].SetValue(value);
 			else
 				Data.Add(new GorgonCustomHIDProperty(propertyName, value));
+
+			if (DataChanged != null)
+				DataChanged(this, new GorgonCustomHIDDataChangedEventArgs(Data[propertyName]));
 		}
 		#endregion
 

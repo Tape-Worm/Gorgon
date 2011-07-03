@@ -221,6 +221,76 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to format a byte value into a hexadecimal string.
+		/// </summary>
+		/// <param name="value">Byte value to format.</param>
+		/// <returns>The formatted byte value.</returns>
+		public static string FormatHex(byte value)
+		{
+			return value.ToString("x").PadLeft(2, '0');
+		}
+
+		/// <summary>
+		/// Function to format a short value into a hexadecimal string.
+		/// </summary>
+		/// <param name="value">Short value to format.</param>
+		/// <returns>The formatted short value.</returns>
+		public static string FormatHex(short value)
+		{
+			return value.ToString("x").PadLeft(4, '0');
+		}
+
+		/// <summary>
+		/// Function to format an unsigned short value into a hexadecimal string.
+		/// </summary>
+		/// <param name="value">Unsigned short value to format.</param>
+		/// <returns>The formatted unsigned short value.</returns>
+		public static string FormatHex(ushort value)
+		{
+			return value.ToString("x").PadLeft(4, '0');
+		}
+
+		/// <summary>
+		/// Function to format an integer value into a hexadecimal string.
+		/// </summary>
+		/// <param name="value">Integer value to format.</param>
+		/// <returns>The formatted integer value.</returns>
+		public static string FormatHex(int value)
+		{
+			return value.ToString("x").PadLeft(8, '0');
+		}
+
+		/// <summary>
+		/// Function to format an unsigned integer value into a hexadecimal string.
+		/// </summary>
+		/// <param name="value">Unsigned integer value to format.</param>
+		/// <returns>The formatted unsigned integer value.</returns>
+		public static string FormatHex(uint value)
+		{
+			return value.ToString("x").PadLeft(8, '0');
+		}
+
+		/// <summary>
+		/// Function to format a long value into a hexadecimal string.
+		/// </summary>
+		/// <param name="value">Long value to format.</param>
+		/// <returns>The formatted long value.</returns>
+		public static string FormatHex(long value)
+		{
+			return value.ToString("x").PadLeft(16, '0');
+		}
+
+		/// <summary>
+		/// Function to format an unsigned long value into a hexadecimal string.
+		/// </summary>
+		/// <param name="value">Unsigned long value to format.</param>
+		/// <returns>The formatted unsigned long value.</returns>
+		public static string FormatHex(ulong value)
+		{
+			return value.ToString("x").PadLeft(16, '0');
+		}
+	
+		/// <summary>
 		/// Function to format a pointer (IntPtr) value into a hexadecimal string.
 		/// </summary>
 		/// <param name="pointer">Pointer to format.</param>
@@ -228,7 +298,7 @@ namespace GorgonLibrary
 		/// <remarks>This function will take into account whether the application is x64 or x86 and will format accordingly.</remarks>
 		public static string FormatHex(IntPtr pointer)
 		{
-			if (Gorgon_OLDE_MUST_BE_REMOVED_FOR_THE_GOOD_OF_MANKIND.PlatformArchitecture == PlatformArchitecture.x64)
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
 				return pointer.ToInt64().ToString("x").PadLeft(16, '0');
 			else
 				return pointer.ToInt32().ToString("x").PadLeft(8, '0');

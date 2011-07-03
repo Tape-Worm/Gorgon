@@ -28,20 +28,13 @@ namespace Tester
 		{
 			labelMouse.Text = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString();
 
-			if ((joystick != null) && (joystick.Data.Count > 0))
-			{
-				byte[] data = joystick.Data[0].GetValue<byte[]>();
-				
-				labelMouse.Text += "\r\n| ";
-				for (int i = 0; i < data.Length; i++)
-					labelMouse.Text += data[i].ToString() + " | ";
-			}
-
 			if (keyboard.KeyStates[KeyboardKeys.A] == KeyState.Down)
 				labelMouse.Text += "\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAA!!";
 
 			return true;
 		}
+
+
 
 		protected override void OnLoad(EventArgs e)
 		{
@@ -52,19 +45,25 @@ namespace Tester
 				Gorgon.Initialize(this);				
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.HID.RawInput\bin\Debug\Gorgon.HID.RawInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.FileSystem.Zip\bin\Debug\Gorgon.FileSystem.zip.dll");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.FileSystem.BZ2Packfile\bin\Debug\Gorgon.FileSystem.BZ2Packfile.dll");
 				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
 				mouse = input.CreatePointingDevice();
 				keyboard = input.CreateKeyboard();
 
 				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
+				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonBZ2FileSystemProvider");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\ParilTest.zip", "/Zip");
+				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\BZipFileSystem.gorPack", "/BZ2");
 
-				System.IO.Stream stream = fileSystem.GetFile("/Zip/Grid.png").OpenStream(false);
-				byte[] file = fileSystem.GetFile("/FS/ParilTest.zip").Read();
+				System.IO.Stream stream = fileSystem.GetFile("/BZ2/Shaders/Blur.fx").OpenStream(false);
+				byte[] streamFile = new byte[stream.Length];
+				stream.Read(streamFile, 0, (int)stream.Length);
+				byte[] file = fileSystem.GetFile("/BZ2/Shaders/Cloak.fx").Read();
 
 				joystick = input.CreateCustomHID(input.CustomHIDs[5].Name);
+				joystick.DataChanged += new EventHandler<GorgonCustomHIDDataChangedEventArgs>(joystick_DataChanged);
 				
 				Gorgon.Go(Idle);
 			}
@@ -72,6 +71,20 @@ namespace Tester
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));				
 			}
+		}
+
+		/// <summary>
+		/// Joystick_s the data changed.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The e.</param>
+		void joystick_DataChanged(object sender, GorgonCustomHIDDataChangedEventArgs e)
+		{
+			byte[] data = e.GetData<byte[]>();
+
+			labelMouse.Text += "\r\n| ";
+			for (int i = 0; i < data.Length; i++)
+				labelMouse.Text += "0x" + GorgonUtility.FormatHex(data[i]) + " | ";
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
