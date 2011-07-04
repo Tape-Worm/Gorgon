@@ -28,6 +28,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace GorgonLibrary
 {
@@ -36,6 +38,46 @@ namespace GorgonLibrary
 	/// </summary>
 	public static class GorgonUtility
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the directory for the currently running application.
+		/// </summary>
+		public static string ApplicationDirectory
+		{
+			get
+			{
+				Assembly runningAssembly = Assembly.GetEntryAssembly();
+
+				if (runningAssembly == null)
+					runningAssembly = Assembly.GetCallingAssembly();
+
+				if (runningAssembly == null)
+					return string.Empty;
+
+				return FormatDirectory(Path.GetDirectoryName(runningAssembly.Location), Path.DirectorySeparatorChar);
+			}
+		}
+
+		/// <summary>
+		/// Property to return the path for the currently running application.
+		/// </summary>
+		public static string ApplicationPath
+		{
+			get
+			{
+				Assembly runningAssembly = Assembly.GetEntryAssembly();
+
+				if (runningAssembly == null)
+					runningAssembly = Assembly.GetCallingAssembly();
+
+				if (runningAssembly == null)
+					return string.Empty;
+
+				return FormatDirectory(Path.GetDirectoryName(runningAssembly.Location), Path.DirectorySeparatorChar) + Path.GetFileName(runningAssembly.Location);
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to throw an exception if a string is null or empty.
@@ -83,6 +125,7 @@ namespace GorgonLibrary
 		public static string FormatDirectory(string path, char directorySeparator)
 		{
 			char[] illegalChars = Path.GetInvalidPathChars();
+			string doubleSeparator = directorySeparator.ToString() + directorySeparator.ToString();
 
 			if (string.IsNullOrEmpty(path))
 				return string.Empty;
@@ -100,6 +143,12 @@ namespace GorgonLibrary
 				output = output.Replace(Path.DirectorySeparatorChar, directorySeparator);
 			if (output[output.Length - 1] != directorySeparator)
 				output.Append(directorySeparator);
+
+			// Remove doubled up separators.
+			while (output.ToString().LastIndexOf(doubleSeparator) > -1)
+			{
+				output = output.Replace(doubleSeparator, directorySeparator.ToString());
+			}
 
 			return output.ToString();
 		}
