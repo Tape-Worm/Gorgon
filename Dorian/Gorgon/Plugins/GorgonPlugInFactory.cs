@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -41,7 +42,8 @@ namespace GorgonLibrary.PlugIns
 		: GorgonBaseNamedObjectCollection<GorgonPlugIn>
 	{
 		#region Variables.
-		private static GorgonPlugInFactory _factory = null;		// Factory instance.
+		private static GorgonPlugInFactory _factory = null;			// Factory instance.
+		private static GorgonPlugInPathCollection _paths = null;	// Search paths for the plug-in assemblies.
 		#endregion
 
 		#region Properties.
@@ -56,6 +58,30 @@ namespace GorgonLibrary.PlugIns
 					_factory = new GorgonPlugInFactory();
 
 				return _factory;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the list of search paths to use.
+		/// </summary>
+		/// <remarks>The plug-in factory uses these paths to search for the plug-in when the plug-in cannot be found.
+		/// <para>By default, the plug-in factory checks (in order):
+		/// <list type="number">
+		/// <item><description>The directory of the executable.</description></item>
+		/// <item><description>The working directory of the executable.</description></item>
+		/// <item><description>The system directory.</description></item>
+		/// <item><description>The directories listed in the PATH environment variable.</description></item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		public static GorgonPlugInPathCollection SearchPaths
+		{
+			get
+			{
+				if (_paths == null)
+					_paths = new GorgonPlugInPathCollection();
+
+				return _paths;
 			}
 		}
 
@@ -207,6 +233,7 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="assemblyPath">Path to the assembly.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
 		public static AssemblyName LoadPlugInAssembly(string assemblyPath)
 		{
@@ -221,9 +248,11 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="publicKeyCompare">Public key to compare.</param>
 		/// <remarks>When passing a public key token, <paramref name="mustBeSigned"/> should be set to TRUE.  Otherwise, the <paramref name="publicKeyCompare"/> parameter will be ignored.
 		/// <para>To just check if the assembly is signed, pass NULL (Nothing in VB.NET) to publicKeyToken.</para>
+		/// <para>If the assembly file cannot be found, then the paths in the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">SearchPaths</see> collection are used to find the assembly.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
 		/// or the assembly key does not match <paramref name="publicKeyCompare"/>.</exception>
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
@@ -232,6 +261,24 @@ namespace GorgonLibrary.PlugIns
 			AssemblyName plugInAssemblyName = null;
 
 			GorgonUtility.AssertParamString(assemblyPath, "assemblyPath");
+
+			assemblyPath = Path.GetFullPath(assemblyPath);
+
+			if (!File.Exists(assemblyPath))
+			{
+				assemblyPath = Path.GetFileName(assemblyPath);
+				foreach (var path in SearchPaths)
+				{
+					if (File.Exists(path + assemblyPath))
+					{
+						assemblyPath = path + assemblyPath;
+						break;
+					}
+				}
+
+				if (!File.Exists(assemblyPath))
+					throw new FileNotFoundException("Could not find the plug-in '" + Path.GetFileName(assemblyPath) + "' on any of the search paths.", assemblyPath);
+			}
 
 			plugInAssemblyName = AssemblyName.GetAssemblyName(assemblyPath);
 
@@ -349,6 +396,7 @@ namespace GorgonLibrary.PlugIns
 		static GorgonPlugInFactory()
 		{
 			_factory = new GorgonPlugInFactory();
+			_paths = new GorgonPlugInPathCollection();
 		}
 		#endregion
 	}

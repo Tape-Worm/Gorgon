@@ -42,10 +42,11 @@ namespace Tester
 
 			try
 			{
-				Gorgon.Initialize(this);				
-				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.HID.RawInput\bin\Debug\Gorgon.HID.RawInput.dll");
-				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.FileSystem.Zip\bin\Debug\Gorgon.FileSystem.zip.dll");
-				GorgonPlugInFactory.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Gorgon.FileSystem.BZ2Packfile\bin\Debug\Gorgon.FileSystem.BZ2Packfile.dll");
+				Gorgon.Initialize(this);
+				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.RawInput.dll");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
 				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
 				mouse = input.CreatePointingDevice();
 				keyboard = input.CreateKeyboard();
@@ -55,21 +56,22 @@ namespace Tester
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonBZ2FileSystemProvider");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\ParilTest.zip", "/Zip");
-				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\BZipFileSystem.gorPack", "/BZ2");
+				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\BZipFileSystem.gorPack");
 
-				System.IO.Stream stream = fileSystem.GetFile("/BZ2/Shaders/Blur.fx").OpenStream(false);
+				System.IO.Stream stream = fileSystem.GetFile("/Shaders/Blur.fx").OpenStream(false);
 				byte[] streamFile = new byte[stream.Length];
 				stream.Read(streamFile, 0, (int)stream.Length);
-				byte[] file = fileSystem.GetFile("/BZ2/Shaders/Cloak.fx").Read();
+				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();
 
-				joystick = input.CreateCustomHID(input.CustomHIDs[5].Name);
-				joystick.DataChanged += new EventHandler<GorgonCustomHIDDataChangedEventArgs>(joystick_DataChanged);
+				//joystick = input.CreateCustomHID(input.CustomHIDs[5].Name);
+				//joystick.DataChanged += new EventHandler<GorgonCustomHIDDataChangedEventArgs>(joystick_DataChanged);
 				
 				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));				
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				Close();
 			}
 		}
 
@@ -91,7 +93,8 @@ namespace Tester
 		{
 			base.OnFormClosing(e);
 
-			input.Dispose();
+			if (input != null)
+				input.Dispose();
 			Gorgon.Terminate();
 		}
 
