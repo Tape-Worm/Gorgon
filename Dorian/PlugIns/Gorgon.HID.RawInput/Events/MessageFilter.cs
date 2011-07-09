@@ -33,7 +33,7 @@ namespace GorgonLibrary.HID.RawInput
 	/// Object representing a message loop filter.
 	/// </summary>
 	internal class MessageFilter
-		: System.Windows.Forms.IMessageFilter
+		: System.Windows.Forms.IMessageFilter, IDisposable
 	{
 		#region Events.
 		/// <summary>
@@ -43,6 +43,7 @@ namespace GorgonLibrary.HID.RawInput
 		#endregion
 
 		#region Variables.
+		private bool _isDisposed = false;					// Flag to indicate that the object has been disposed.
 		private RawInputData _data = null;					// Raw input data.
 		#endregion
 
@@ -68,6 +69,31 @@ namespace GorgonLibrary.HID.RawInput
 			}
 
 			return false;
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing)
+		{
+			if (!_isDisposed)
+			{
+				if (disposing)
+					_data.Dispose();
+				_data = null;
+			}
+			_isDisposed = true;
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			
 		}
 		#endregion
 	}
