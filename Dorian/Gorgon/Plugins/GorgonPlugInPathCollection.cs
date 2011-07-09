@@ -129,6 +129,7 @@ namespace GorgonLibrary.PlugIns
 			GetDefaultPaths();
 		}
 		#endregion
+
 		#region IList<string> Members
 		#region Properties.
 		/// <summary>

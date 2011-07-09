@@ -22,7 +22,6 @@ namespace Tester
 		GorgonPointingDevice mouse = null;
 		GorgonKeyboard keyboard = null;
 		GorgonFileSystem fileSystem = null;
-		GorgonCustomHID joystick = null;
 
 		private bool Idle(GorgonFrameRate timing)
 		{
@@ -33,9 +32,7 @@ namespace Tester
 
 			return true;
 		}
-
-
-
+		
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
@@ -62,9 +59,6 @@ namespace Tester
 				byte[] streamFile = new byte[stream.Length];
 				stream.Read(streamFile, 0, (int)stream.Length);
 				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();
-
-				//joystick = input.CreateCustomHID(input.CustomHIDs[5].Name);
-				//joystick.DataChanged += new EventHandler<GorgonCustomHIDDataChangedEventArgs>(joystick_DataChanged);
 				
 				Gorgon.Go(Idle);
 			}
@@ -73,20 +67,6 @@ namespace Tester
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
 				Close();
 			}
-		}
-
-		/// <summary>
-		/// Joystick_s the data changed.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="e">The e.</param>
-		void joystick_DataChanged(object sender, GorgonCustomHIDDataChangedEventArgs e)
-		{
-			byte[] data = e.GetData<byte[]>();
-
-			labelMouse.Text += "\r\n| ";
-			for (int i = 0; i < data.Length; i++)
-				labelMouse.Text += "0x" + GorgonUtility.FormatHex(data[i]) + " | ";
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
