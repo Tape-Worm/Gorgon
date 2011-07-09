@@ -39,8 +39,11 @@ namespace Tester
 
 			try
 			{
+				byte[] keyCheck = {   0,  36,   0,   0,   4, 128,   0,   0, 148,   0,   0,   0,   6,   2,   0,   0,   0,  36,   0,   0,  82,  83,  65,  49,   0,   4,   0,   0,   1,   0,   1,   0,  73,  50,   7, 196, 181, 135,  85, 211,  46, 233, 245,   4, 114, 109, 101, 139,  19, 173,  93,  13, 179, 101, 174, 156, 139, 185, 147, 140,  15, 101,  39, 154,  97, 204,  34, 106, 104,  31, 122,  91,  81,  60,  12, 192, 116, 183, 165,  24, 168,  79, 200, 249,  72,  65,  21,  30,  45, 194,  28, 118, 148,  50, 196, 194, 195, 161,  44,  55,  47,  40, 161, 218, 138, 207,  25,  47,  39, 211,  75, 218, 201, 202, 210, 101, 138,  20,  23, 176, 217, 155, 138, 123,  75, 213,  47, 222,  99, 226, 139, 169, 248, 193, 116,   7, 219, 229,  61,  23,  40, 108,  68, 152, 179, 127,  82, 246, 177, 143,   1, 130,  76, 144, 168, 198, 219, 228, 128, 165};
 				Gorgon.Initialize(this);
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
+				GorgonDialogs.InfoBox(GorgonPlugInFactory.IsPlugInSigned(@"Gorgon.HID.RawInput.dll", keyCheck).ToString());
+					
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.RawInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");

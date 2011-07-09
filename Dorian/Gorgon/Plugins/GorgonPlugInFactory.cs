@@ -30,10 +30,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Security.Policy;
+using System.Security.Permissions;
 using GorgonLibrary.Collections;
 
 namespace GorgonLibrary.PlugIns
 {
+	/// <summary>
+	/// The return values for the <see cref="M:GorgonLibrary.PlugIns.GorgonPlugInFactory.IsPlugInSigned">IsPlugInSigned</see> function.
+	/// </summary>
+	[Flags]
+	public enum PlugInSigningResult
+	{
+		/// <summary>
+		/// Assembly is not signed.  This flag is mutally exclusive.
+		/// </summary>
+		NotSigned = 1,
+		/// <summary>
+		/// Assembly is signed, and if it was requested, the key matches.
+		/// </summary>
+		Signed = 2,
+		/// <summary>
+		/// This flag is combined with the Signed flag to indicate that it was signed, but the keys did not match.
+		/// </summary>
+		KeyMismatch = 4
+	}
+
 	/// <summary>
 	/// A collection to add, remove and keep track of plug-in interfaces.
 	/// </summary>
@@ -229,35 +251,55 @@ namespace GorgonLibrary.PlugIns
 		}
 
 		/// <summary>
-		/// Function to load a plug-in assembly.
+		/// Function to determine if a plug-in is signed, and optionally, signed with the correct public key.
 		/// </summary>
-		/// <param name="assemblyPath">Path to the assembly.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
-		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
-		public static AssemblyName LoadPlugInAssembly(string assemblyPath)
+		/// <param name="assemblyName">Name of the assembly to check.</param>
+		/// <param name="publicKey">Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
+		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public static PlugInSigningResult IsPlugInSigned(AssemblyName assemblyName, byte[] publicKey)
 		{
-			return LoadPlugInAssembly(assemblyPath, false, null);
+			byte[] plugInPublicKey = null;
+			PlugInSigningResult result = PlugInSigningResult.Signed;
+
+			if (assemblyName == null)
+				throw new ArgumentNullException("assemblyName");
+			
+			plugInPublicKey = assemblyName.GetPublicKey();
+
+			if ((plugInPublicKey == null) || (plugInPublicKey.Length < 1))
+				return PlugInSigningResult.NotSigned;
+
+			if (publicKey != null) 
+			{
+				if (publicKey.Length != plugInPublicKey.Length)
+					result |= PlugInSigningResult.KeyMismatch;
+				else
+				{
+					for (int i = 0; i < publicKey.Length - 1; i++)
+					{
+						if (publicKey[i] != plugInPublicKey[i])
+						{
+							result |= PlugInSigningResult.KeyMismatch;
+							break;
+						}
+					}
+				}
+			}
+
+			return result;
 		}
 
 		/// <summary>
-		/// Function to load a plug-in assembly.
+		/// Function to determine if a plug-in is signed, and optionally, signed with the correct public key.
 		/// </summary>
-		/// <param name="assemblyPath">Path to the assembly.</param>
-		/// <param name="mustBeSigned">TRUE if the plug-in assembly requires that it be signed, FALSE to ignore.</param>
-		/// <param name="publicKeyCompare">Public key to compare.</param>
-		/// <remarks>When passing a public key token, <paramref name="mustBeSigned"/> should be set to TRUE.  Otherwise, the <paramref name="publicKeyCompare"/> parameter will be ignored.
-		/// <para>To just check if the assembly is signed, pass NULL (Nothing in VB.NET) to publicKeyToken.</para>
-		/// <para>If the assembly file cannot be found, then the paths in the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">SearchPaths</see> collection are used to find the assembly.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
+		/// <param name="assemblyPath">Path to the assembly to check.</param>
+		/// <param name="publicKey">Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
+		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
-		/// or the assembly key does not match <paramref name="publicKeyCompare"/>.</exception>
-		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
-		public static AssemblyName LoadPlugInAssembly(string assemblyPath, bool mustBeSigned, byte[] publicKeyCompare)
+		public static PlugInSigningResult IsPlugInSigned(string assemblyPath, byte[] publicKey)
 		{
 			AssemblyName plugInAssemblyName = null;
 
@@ -283,7 +325,46 @@ namespace GorgonLibrary.PlugIns
 
 			plugInAssemblyName = AssemblyName.GetAssemblyName(assemblyPath);
 
-			LoadPlugInAssembly(plugInAssemblyName, mustBeSigned, publicKeyCompare);
+			return IsPlugInSigned(plugInAssemblyName, publicKey);
+		}
+
+		/// <summary>
+		/// Function to load a plug-in assembly.
+		/// </summary>
+		/// <param name="assemblyPath">Path to the assembly.</param>
+		/// <remarks>If the assembly file cannot be found, then the paths in the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">SearchPaths</see> collection are used to find the assembly.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
+		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
+		public static AssemblyName LoadPlugInAssembly(string assemblyPath)
+		{
+			AssemblyName plugInAssemblyName = null;
+
+			GorgonUtility.AssertParamString(assemblyPath, "assemblyPath");
+
+			assemblyPath = Path.GetFullPath(assemblyPath);
+
+			if (!File.Exists(assemblyPath))
+			{
+				assemblyPath = Path.GetFileName(assemblyPath);
+				foreach (var path in SearchPaths)
+				{
+					if (File.Exists(path + assemblyPath))
+					{
+						assemblyPath = path + assemblyPath;
+						break;
+					}
+				}
+
+				if (!File.Exists(assemblyPath))
+					throw new FileNotFoundException("Could not find the plug-in '" + Path.GetFileName(assemblyPath) + "' on any of the search paths.", assemblyPath);
+			}
+
+			plugInAssemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+
+			LoadPlugInAssembly(plugInAssemblyName);
 
 			return plugInAssemblyName;
 		}
@@ -293,52 +374,15 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
 		public static void LoadPlugInAssembly(AssemblyName assemblyName)
 		{
-			LoadPlugInAssembly(assemblyName);
-		}
-
-		/// <summary>
-		/// Function to load a plug-in assembly.
-		/// </summary>
-		/// <param name="assemblyName">Name of the assembly to load.</param>
-		/// <param name="mustBeSigned">TRUE if the plug-in assembly requires that it be signed, FALSE to ignore.</param>
-		/// <param name="publicKeyCompare">Public key to compare.</param>
-		/// <remarks>When passing a public key token, <paramref name="mustBeSigned"/> should be set to TRUE.  Otherwise, the <paramref name="publicKeyCompare"/> parameter will be ignored.
-		/// <para>To just check if the assembly is signed, pass NULL (Nothing in VB.NET) to publicKeyToken.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly or the <paramref name="mustBeSigned"/> parameter is set to TRUE and there is no key in the assembly
-		/// or the assembly key does not match <paramref name="publicKeyCompare"/> or there are no plug-ins in the assembly.</exception>
-		public static void LoadPlugInAssembly(AssemblyName assemblyName, bool mustBeSigned, byte[] publicKeyCompare)
-		{
 			Assembly plugInAssembly = null;
-			byte[] publicKey = null;
 
 			if (assemblyName == null)
 				throw new ArgumentNullException("assemblyName");
 
 			plugInAssembly = AssemblyCache.LoadAssembly(assemblyName);
-
-			if (mustBeSigned)
-			{
-				publicKey = plugInAssembly.GetName().GetPublicKey();
-
-				if ((publicKey == null) || (publicKey.Length < 1))
-					throw new GorgonException(GorgonResult.AccessDenied, "The assembly '" + plugInAssembly.FullName + "' must be signed.");
-
-				if (publicKeyCompare != null)
-				{
-					if (publicKeyCompare.Length != publicKey.Length)
-						throw new GorgonException(GorgonResult.AccessDenied, "The assembly '" + plugInAssembly.FullName + "' does not have the correct public key.");
-
-					for(int i = 0; i < publicKeyCompare.Length; i++)
-					{
-						if (publicKeyCompare[i] != publicKey[i])
-							throw new GorgonException(GorgonResult.AccessDenied, "The assembly '" + plugInAssembly.FullName + "' does not have the correct public key.");
-					}
-				}
-			}
 
 			try
 			{

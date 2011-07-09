@@ -33,6 +33,12 @@
   <PropertyGroup>
     <ApplicationIcon>GorIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>FakeKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,6 +75,9 @@
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FakeKey.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
