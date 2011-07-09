@@ -532,9 +532,6 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Imports.
-		[DllImport("mscoree.dll", CharSet=CharSet.Unicode)]
-		private static extern bool StrongNameSignatureVerificationEx(string wszFilePath, bool fForceVerification, ref bool  pfWasVer
-
 		/// <summary/>
 		[DllImport("kernel32.dll")] 
 		private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx stat);

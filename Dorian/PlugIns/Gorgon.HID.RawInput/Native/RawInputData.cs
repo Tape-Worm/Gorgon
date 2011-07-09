@@ -34,9 +34,12 @@ namespace GorgonLibrary.HID.RawInput
 	/// Object for raw input data (platform agnostic).
 	/// </summary>
 	internal class RawInputData
+		: IDisposable
 	{
 		#region Variables.
 		private long _headerSize = 0;				// Size of the input data in bytes.
+		private bool _isDisposed = false;			// Flag to indicate that the object has been disposed of.
+		private IntPtr _rawData = IntPtr.Zero;		// Pointer to the raw input data.
 		#endregion
 
 		#region Properties.
@@ -96,7 +99,6 @@ namespace GorgonLibrary.HID.RawInput
 		{
 			int result = 0;
 			int dataSize = 0;
-			IntPtr data = IntPtr.Zero;
 			RAWINPUTx64 rawInputx64 = default(RAWINPUTx64);
 			RAWINPUTx86 rawInputx86 = default(RAWINPUTx86);
 						
@@ -104,74 +106,58 @@ namespace GorgonLibrary.HID.RawInput
 			if (result == -1)
 				throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
 
-			try
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
 			{
-				if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+				result = Win32API.GetRawInputData(handle, RawInputCommand.Input, _rawData, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+				if ((result == -1) || (result != dataSize))
+					throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
+
+				rawInputx64 = new RAWINPUTx64();
+				// Get header info.
+				rawInputx64 = (RAWINPUTx64)Marshal.PtrToStructure(_rawData, typeof(RAWINPUTx64));
+				Header = rawInputx64.Header;
+
+				switch (Header.Type)
 				{
-					// Allocate room for the data.
-					data = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUTx64)));
-
-					result = Win32API.GetRawInputData(handle, RawInputCommand.Input, data, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-					if ((result == -1) || (result != dataSize))
-						throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
-
-					rawInputx64 = new RAWINPUTx64();
-					// Get header info.
-					rawInputx64 = (RAWINPUTx64)Marshal.PtrToStructure(data, typeof(RAWINPUTx64));
-					Header = rawInputx64.Header;
-
-					switch (Header.Type)
-					{
-						case RawInputType.HID:
-							HIDData = new byte[rawInputx64.HID.Size * rawInputx64.HID.Count];
-							HID = rawInputx64.HID;
-							Marshal.Copy(new IntPtr(data.ToInt32() + _headerSize + 8), HIDData, 0, HIDData.Length);
-							break;
-						case RawInputType.Keyboard:
-							Keyboard = rawInputx64.Keyboard;
-							break;
-						case RawInputType.Mouse:
-							Mouse = rawInputx64.Mouse;
-							break;
-					}
-				}
-				else
-				{
-					// Allocate room for the data.
-					data = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUTx86)));
-
-					result = Win32API.GetRawInputData(handle, RawInputCommand.Input, data, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-					if ((result == -1) || (result != dataSize))
-						throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
-
-					rawInputx86 = new RAWINPUTx86();
-					// Get header info.
-					rawInputx86 = (RAWINPUTx86)Marshal.PtrToStructure(data, typeof(RAWINPUTx86));
-					Header = rawInputx86.Header;
-
-					switch(Header.Type)
-					{
-						case RawInputType.HID:
-							HIDData = new byte[rawInputx86.HID.Size * rawInputx86.HID.Count];
-							HID = rawInputx86.HID;
-							Marshal.Copy(new IntPtr(data.ToInt32() + _headerSize + 8), HIDData, 0, HIDData.Length);
-							break;
-						case RawInputType.Keyboard:
-							Keyboard = rawInputx86.Keyboard;
-							break;
-						case RawInputType.Mouse:
-							Mouse = rawInputx86.Mouse;
-							break;
-					}					
+					case RawInputType.HID:
+						HIDData = new byte[rawInputx64.HID.Size * rawInputx64.HID.Count];
+						HID = rawInputx64.HID;
+						Marshal.Copy(new IntPtr(_rawData.ToInt32() + _headerSize + 8), HIDData, 0, HIDData.Length);
+						break;
+					case RawInputType.Keyboard:
+						Keyboard = rawInputx64.Keyboard;
+						break;
+					case RawInputType.Mouse:
+						Mouse = rawInputx64.Mouse;
+						break;
 				}
 			}
-			finally
+			else
 			{
-				if (data != IntPtr.Zero)
-					Marshal.FreeHGlobal(data);
-				data = IntPtr.Zero;
-			}					
+				result = Win32API.GetRawInputData(handle, RawInputCommand.Input, _rawData, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+				if ((result == -1) || (result != dataSize))
+					throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
 
+				rawInputx86 = new RAWINPUTx86();
+				// Get header info.
+				rawInputx86 = (RAWINPUTx86)Marshal.PtrToStructure(_rawData, typeof(RAWINPUTx86));
+				Header = rawInputx86.Header;
+
+				switch(Header.Type)
+				{
+					case RawInputType.HID:
+						HIDData = new byte[rawInputx86.HID.Size * rawInputx86.HID.Count];
+						HID = rawInputx86.HID;
+						Marshal.Copy(new IntPtr(_rawData.ToInt32() + _headerSize + 8), HIDData, 0, HIDData.Length);
+						break;
+					case RawInputType.Keyboard:
+						Keyboard = rawInputx86.Keyboard;
+						break;
+					case RawInputType.Mouse:
+						Mouse = rawInputx86.Mouse;
+						break;
+				}					
+			}
 		}
 		#endregion
 
@@ -187,6 +173,40 @@ namespace GorgonLibrary.HID.RawInput
 			HID = new RAWINPUTHID();
 
 			_headerSize = Marshal.SizeOf(typeof(RAWINPUTHEADER));
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+				_rawData = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUTx64)));
+			else
+				_rawData = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUTx86)));
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing)
+		{
+			if (!_isDisposed)
+			{
+				if (disposing)
+				{
+					if (_rawData != IntPtr.Zero)
+					{
+						Marshal.FreeHGlobal(_rawData);
+						_rawData = IntPtr.Zero;
+					}
+				}
+			}
+			_isDisposed = true;
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			throw new NotImplementedException();
 		}
 		#endregion
 	}

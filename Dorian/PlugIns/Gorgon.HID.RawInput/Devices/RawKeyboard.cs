@@ -177,6 +177,7 @@ namespace GorgonLibrary.HID.RawInput
 			{
 				_messageFilter.RawInputData -= new EventHandler<RawInputEventArgs>(GetRawData);
 				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
+				_messageFilter.Dispose();
 			}
 
 			_messageFilter = new MessageFilter();
@@ -211,6 +212,7 @@ namespace GorgonLibrary.HID.RawInput
 			{
 				_messageFilter.RawInputData -= new EventHandler<RawInputEventArgs>(GetRawData);
 				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
+				_messageFilter.Dispose();
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;

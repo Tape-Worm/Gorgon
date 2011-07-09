@@ -187,6 +187,12 @@ namespace GorgonLibrary.PlugIns
 
 		#region ICollection<string> Members
 		#region Properties.
+		/// <summary>
+		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// </summary>
+		/// <returns>
+		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		///   </returns>
 		public int Count
 		{
 			get 
