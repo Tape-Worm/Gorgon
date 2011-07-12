@@ -455,6 +455,17 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
+		/// Function to create a joystick interface.
+		/// </summary>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <returns>A new joystick interface.</returns>
+		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickName"/> is NULL.</exception>
+		public GorgonJoystick CreateJoystick(GorgonInputDeviceName joystickName)
+		{
+			return CreateJoystick(joystickName, null);
+		}
+
+		/// <summary>
 		/// Function to enumerate devices attached to the system.
 		/// </summary>
 		/// <remarks>Calling this function will invalidate any existing device objects created by this factory, use with care.</remarks>

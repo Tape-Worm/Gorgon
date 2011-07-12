@@ -123,6 +123,35 @@ namespace GorgonLibrary.HID.RawInput
 		}
 
 		/// <summary>
+		/// Property to return the secondary X axis for the joystick (if applicable).
+		/// </summary>
+		public override float SecondaryX
+		{
+			get
+			{
+				if (AxisCount > 3)
+					return Axes[4];
+				else
+					return float.NaN;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the secondary Y axis for the joystick (if applicable).
+		/// </summary>
+		public override float SecondaryY
+		{
+			get
+			{
+				if (AxisCount > 4)
+					return Axes[5];
+				else
+					return float.NaN;
+			}
+		}
+
+
+		/// <summary>
 		/// Property to return the z coordinate for the joystick.
 		/// </summary>
 		/// <value></value>
@@ -210,6 +239,84 @@ namespace GorgonLibrary.HID.RawInput
 				SetAxisData(axis, midrange);
 				AxisDirection[axis] = JoystickDirections.Center;
 			}
+		}
+
+		/// <summary>
+		/// Function to initalize the data for the joystick.
+		/// </summary>
+		protected override void InitializeData()
+		{
+			JOYCAPS caps = default(JOYCAPS);		// Joystick capabilities.
+			int threshold = 0;
+			int error = 0;
+
+			error = Win32API.joyGetDevCaps(_joystickID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
+
+			if (error != 0)
+				throw new GorgonException(GorgonResult.DriverError, "Cannot create the joystick interface.");
+
+			error = Win32API.joyGetThreshold(_joystickID, out threshold);
+
+			if (error != 0)
+				throw new GorgonException(GorgonResult.DriverError, "Cannot create the joystick interface.");
+
+			// Get joystick info.
+			AxisCount = (int)caps.AxisCount;
+			AxisRanges = new GorgonMinMax[AxisCount];
+
+			// Initialize the ranges.
+			for (int i = 0; i < AxisCount; i++)
+				AxisRanges[i] = GorgonMinMax.Empty;
+
+			// X axis range.
+			AxisRanges[0] = new GorgonMinMax((int)caps.MinimumX, (int)caps.MaximumX);
+			// Y axis range.
+			AxisRanges[1] = new GorgonMinMax((int)caps.MinimumY, (int)caps.MaximumY);
+			// Buttons.
+			ButtonCount = (int)caps.ButtonCount;
+
+			// Manufacturuer/product.
+			ManufacturerID = caps.ManufacturerID;
+			ProductID = caps.ProductID;
+
+			// Determine capabilities.
+			if ((caps.Capabilities & JoystickCapabilities.HasRudder) != 0)
+			{
+				AxisRanges[3] = new GorgonMinMax((int)caps.MinimumRudder, (int)caps.MaximumRudder);
+				HasRudder = true;
+			}
+			if ((caps.Capabilities & JoystickCapabilities.HasPOV) != 0)
+			{
+				HasPOV = true;
+				if ((caps.Capabilities & JoystickCapabilities.POVContinuousDegreeBearings) != 0)
+					UnrestrictedPOV = true;
+				if ((caps.Capabilities & JoystickCapabilities.POV4Directions) != 0)
+					POVHas4Directions = true;
+			}
+			if ((caps.Capabilities & JoystickCapabilities.HasZ) != 0)
+			{
+				HasZAxis = true;
+				AxisRanges[2] = new GorgonMinMax((int)caps.MinimumZ, (int)caps.MaximumZ);
+			}
+			if ((caps.Capabilities & JoystickCapabilities.HasU) != 0)
+				AxisRanges[4] = new GorgonMinMax((int)caps.Axis5Minimum, (int)caps.Axis5Maximum);
+			if ((caps.Capabilities & JoystickCapabilities.HasV) != 0)
+				AxisRanges[5] = new GorgonMinMax((int)caps.Axis6Minimum, (int)caps.Axis6Maximum);
+
+			// Create value arrays.
+			Axes = new float[AxisCount];
+			AxisDirection = new JoystickDirections[AxisCount];
+			DeadZone = new GorgonMinMax[AxisCount];
+			for (int i = 0; i < AxisCount; i++)
+			{
+				AxisDirection[i] = JoystickDirections.Center;
+				DeadZone[i] = GorgonMinMax.Empty;
+			}
+			POVDirection = new JoystickDirections[1];
+			POVCount = 1;
+			POV = new int[1];
+			POVDirection[0] = JoystickDirections.Center;
+			Button = new bool[ButtonCount];			
 		}
 
 		/// <summary>
@@ -330,79 +437,8 @@ namespace GorgonLibrary.HID.RawInput
 		internal WMMJoystick(GorgonRawInputDeviceFactory owner, int ID, string name, Control boundWindow)
 			: base(owner, name, boundWindow)
 		{
-			JOYCAPS caps = default(JOYCAPS);		// Joystick capabilities.
-			int threshold = 0;
-			int error = 0;
-
-			error = Win32API.joyGetDevCaps(ID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
-
-			if (error != 0)
-				throw new GorgonException(GorgonResult.DriverError, "Cannot create the joystick interface.");
-
-			error = Win32API.joyGetThreshold(ID, out threshold);
-
-			if (error != 0)
-				throw new GorgonException(GorgonResult.DriverError, "Cannot create the joystick interface.");
-			
-			// Get joystick info.
 			_joystickID = ID;
-			AxisCount = (int)caps.AxisCount;
-			AxisRanges = new GorgonMinMax[AxisCount];
-
-			// Initialize the ranges.
-			for (int i = 0; i < AxisCount; i++)
-				AxisRanges[i] = GorgonMinMax.Empty;
-
-			// X axis range.
-			AxisRanges[0] = new GorgonMinMax((int)caps.MinimumX, (int)caps.MaximumX);
-			// Y axis range.
-			AxisRanges[1] = new GorgonMinMax((int)caps.MinimumY, (int)caps.MaximumY);
-			// Buttons.
-			ButtonCount = (int)caps.ButtonCount;
-
-			// Manufacturuer/product.
-			ManufacturerID = caps.ManufacturerID;
-			ProductID = caps.ProductID;
-
-			// Determine capabilities.
-			if ((caps.Capabilities & JoystickCapabilities.HasRudder) != 0)
-			{
-				AxisRanges[3] = new GorgonMinMax((int)caps.MinimumRudder, (int)caps.MaximumRudder);
-				HasRudder = true;
-			}
-			if ((caps.Capabilities & JoystickCapabilities.HasPOV) != 0)
-			{
-				HasPOV = true;
-				if ((caps.Capabilities & JoystickCapabilities.POVContinuousDegreeBearings) != 0)
-					UnrestrictedPOV = true;
-				if ((caps.Capabilities & JoystickCapabilities.POV4Directions) != 0)
-					POVHas4Directions = true;
-			}
-			if ((caps.Capabilities & JoystickCapabilities.HasZ) != 0)
-			{
-				HasZAxis = true;
-				AxisRanges[2] = new GorgonMinMax((int)caps.MinimumZ, (int)caps.MaximumZ);
-			}
-			if ((caps.Capabilities & JoystickCapabilities.HasU) != 0)
-				AxisRanges[4] = new GorgonMinMax((int)caps.Axis5Minimum, (int)caps.Axis5Maximum);
-			if ((caps.Capabilities & JoystickCapabilities.HasV) != 0)
-				AxisRanges[5] = new GorgonMinMax((int)caps.Axis6Minimum, (int)caps.Axis6Maximum);
-
-			// Create value arrays.
-			Axes = new float[AxisCount];
-			AxisDirection = new JoystickDirections[AxisCount];
-			DeadZone = new GorgonMinMax[AxisCount];
-			for (int i = 0; i < AxisCount; i++)
-			{
-				AxisDirection[i] = JoystickDirections.Center;
-				DeadZone[i] = GorgonMinMax.Empty;
-			}
-			POVDirection = new JoystickDirections[1];
-			POVCount = 1;
-			POV = new int[1];
-			POVDirection[0] = JoystickDirections.Center;			
-			Button = new bool[ButtonCount];
-
+			InitializeData();
 			Gorgon.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", GorgonLoggingLevel.Verbose, ID.ToString("x").PadLeft(8, '0'));
 		}
 		#endregion
