@@ -19,16 +19,24 @@ namespace Tester
 	public partial class Form1 : Form
 	{
 		GorgonInputDeviceFactory input = null;
+		GorgonInputDeviceFactory xinput = null;
 		GorgonPointingDevice mouse = null;
 		GorgonKeyboard keyboard = null;
 		GorgonFileSystem fileSystem = null;
+		GorgonJoystick joystick = null;
 
 		private bool Idle(GorgonFrameRate timing)
 		{
 			labelMouse.Text = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString();
 
-			if (keyboard.KeyStates[KeyboardKeys.A] == KeyState.Down)
-				labelMouse.Text += "\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAA!!";
+			if (joystick != null)
+			{
+				labelMouse.Text = string.Format("Left Stick: {0}x{1} ({8})  Right stick:{2}x{3} ({9})  Rudder:{4}  Throttle:{5}\nPOV: {6} POV Direction: {7}\nButtons: ", 
+						joystick.X, joystick.Y, joystick.SecondaryX, joystick.SecondaryY, joystick.Rudder, joystick.Z, joystick.POV[0], joystick.POVDirection[0], joystick.AxisDirection[0]|joystick.AxisDirection[1], joystick.AxisDirection[3]|joystick.AxisDirection[4]);
+
+				for (int i = 0; i < joystick.ButtonCount; i++)
+					labelMouse.Text += joystick.Button[i].ToString() + "  ";
+			}
 
 			return true;
 		}
@@ -37,19 +45,24 @@ namespace Tester
 		{
 			base.OnLoad(e);
 
-			try
+			try 
 			{
-				byte[] keyCheck = {   0,  36,   0,   0,   4, 128,   0,   0, 148,   0,   0,   0,   6,   2,   0,   0,   0,  36,   0,   0,  82,  83,  65,  49,   0,   4,   0,   0,   1,   0,   1,   0,  73,  50,   7, 196, 181, 135,  85, 211,  46, 233, 245,   4, 114, 109, 101, 139,  19, 173,  93,  13, 179, 101, 174, 156, 139, 185, 147, 140,  15, 101,  39, 154,  97, 204,  34, 106, 104,  31, 122,  91,  81,  60,  12, 192, 116, 183, 165,  24, 168,  79, 200, 249,  72,  65,  21,  30,  45, 194,  28, 118, 148,  50, 196, 194, 195, 161,  44,  55,  47,  40, 161, 218, 138, 207,  25,  47,  39, 211,  75, 218, 201, 202, 210, 101, 138,  20,  23, 176, 217, 155, 138, 123,  75, 213,  47, 222,  99, 226, 139, 169, 248, 193, 116,   7, 219, 229,  61,  23,  40, 108,  68, 152, 179, 127,  82, 246, 177, 143,   1, 130,  76, 144, 168, 198, 219, 228, 128, 165};
 				Gorgon.Initialize(this);
-				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
-				GorgonDialogs.InfoBox(GorgonPlugInFactory.IsPlugInSigned(@"Gorgon.HID.RawInput.dll", keyCheck).ToString());
-					
+				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");				
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.RawInput.dll");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.XInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
 				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
+				xinput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonXInput");
+
 				mouse = input.CreatePointingDevice();
 				keyboard = input.CreateKeyboard();
+				joystick = xinput.CreateJoystick(xinput.JoystickDevices[0]);
+				joystick.DeadZone[0] = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone[1] = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone[3] = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone[4] = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
 
 				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");

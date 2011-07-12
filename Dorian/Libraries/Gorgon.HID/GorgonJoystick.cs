@@ -163,6 +163,35 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
+		/// Property to return the secondary X axis for the joystick (if applicable).
+		/// </summary>
+		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
+		/// of the Z axis range will be returned (center position of the axis).</remarks>
+		public virtual float SecondaryX
+		{
+			get
+			{
+				return float.NaN;
+			}
+		}
+
+
+		/// <summary>
+		/// Property to return the secondary Y axis for the joystick (if applicable).
+		/// </summary>
+		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
+		/// of the Z axis range will be returned (center position of the axis).</remarks>
+		public virtual float SecondaryY
+		{
+			get
+			{
+				return float.NaN;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the rudder coordinate for the joystick.
 		/// </summary>
 		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
@@ -300,15 +329,26 @@ namespace GorgonLibrary.HID
 		protected abstract void PollJoystick();
 
 		/// <summary>
-		/// Function to set or return the dead zone range.
+		/// Function to reset the data for the device.
 		/// </summary>
-		/// <param name="axis">Axis to set.</param>
-		/// <param name="deadzoneRange">Range to set for the joystick dead zone.</param>
-		public void SetDeadzone(int axis, int deadzoneRange)
+		protected void ResetData()
 		{
-			int range = AxisRanges[axis].Range / 2;		// Axis range.
-			DeadZone[axis] = new GorgonMinMax(range - deadzoneRange, range + deadzoneRange);
+			AxisCount = 0;
+			POVCount = 0;
+			ButtonCount = 0;
+			AxisRanges = new GorgonMinMax[0];
+			Axes = new float[0];
+			AxisDirection = new JoystickDirections[0];
+			DeadZone = new GorgonMinMax[0];
+			POVDirection = new JoystickDirections[0];
+			POV = new int[0];
+			Button = new bool[0];
 		}
+
+		/// <summary>
+		/// Function to initalize the data for the joystick.
+		/// </summary>
+		protected abstract void InitializeData();
 		#endregion
 
 		#region Constructor/Destructor.
@@ -323,6 +363,7 @@ namespace GorgonLibrary.HID
 		protected GorgonJoystick(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
+			ResetData();
 		}
 		#endregion
 	}
