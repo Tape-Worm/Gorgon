@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas", "Tools\Atlas\Atlas.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework", "Tools\GorgonFramework\GorgonFramework.csproj", "{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_InputAndFS", "Examples\Tester\Tester_InputAndFS.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem", "Libraries\Gorgon.FileSystem\Gorgon.FileSystem.csproj", "{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.Zip", "PlugIns\Gorgon.FileSystem.Zip\Gorgon.FileSystem.Zip.csproj", "{B61F6907-0DDB-4293-AA8C-E8620DAEE795}"
@@ -66,17 +64,6 @@ Global
 		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}.Release|x86.ActiveCfg = Release|Any CPU
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|Any CPU.Build.0 = Debug|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|x86.ActiveCfg = Debug|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|x86.Build.0 = Debug|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|Any CPU.ActiveCfg = Release|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|Mixed Platforms.Build.0 = Release|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|x86.ActiveCfg = Release|x86
-		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|x86.Build.0 = Release|x86
 		{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
