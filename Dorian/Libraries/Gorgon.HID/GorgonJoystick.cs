@@ -42,43 +42,43 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Axis is centered.
 		/// </summary>
-		Center = 0,
+		Center = 1,
 		/// <summary>
 		/// Axis is up.
 		/// </summary>
-		Up = 1,
+		Up = 2,
 		/// <summary>
 		/// Axis is down.
 		/// </summary>
-		Down = 2,
+		Down = 4,
 		/// <summary>
 		/// Axis is left.
 		/// </summary>
-		Left = 4,
+		Left = 8,
 		/// <summary>
 		/// Axis is right.
 		/// </summary>
-		Right = 8,
+		Right = 16,
 		/// <summary>
 		/// Axis is less than center position.
 		/// </summary>
-		LessThanCenter = 16,
+		LessThanCenter = 32,
 		/// <summary>
 		/// Axis is greater than center position.
 		/// </summary>
-		MoreThanCenter = 32,
+		MoreThanCenter = 64,
 		/// <summary>
 		/// Axis is a horizontal axis.
 		/// </summary>
-		Horizontal = 64,
+		Horizontal = 128,
 		/// <summary>
 		/// Axis is a vertical axis.
 		/// </summary>
-		Vertical = 128,
+		Vertical = 256,
 		/// <summary>
 		/// Axis is a vector.
 		/// </summary>
-		Vector = 256
+		Vector = 512
 	}
 
 	/// <summary>
@@ -118,8 +118,12 @@ namespace GorgonLibrary.HID
 	}
 
 	/// <summary>
-	/// Object that will represent joystick data.
+	/// A joystick/gamepad interface.
 	/// </summary>
+	/// <remarks>This is not like the other input interfaces in that the data in this object is a snapshot of its state and not polled automatically.  
+	/// The user must call the <see cref="M:GorgonLibrary.HID.GorgonJoystick.Poll">Poll</see> method in order to update the state of the device.
+	/// <para>Note that while this object supports 6 axis devices, it will be limited to the number of axes present on the physical device, thus some values will always return 0.</para>
+	/// </remarks>
 	public abstract class GorgonJoystick
 		: GorgonInputDevice
 	{
@@ -127,8 +131,18 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Contains the capabilities of the joystick.
 		/// </summary>
-		public class JoystickCapabilities
+		/// <remarks>Implementors must implement this to fill in the capabilities of the device.</remarks>
+		public abstract class JoystickCapabilities
 		{
+			#region Variables.
+			private GorgonMinMax _xAxisRange = GorgonMinMax.Empty;			// X axis range.
+			private GorgonMinMax _yAxisRange = GorgonMinMax.Empty;			// Y axis range.
+			private GorgonMinMax _x2AxisRange = GorgonMinMax.Empty;			// Secondary X axis range.
+			private GorgonMinMax _y2AxisRange = GorgonMinMax.Empty;			// Secondary Y axis range.
+			private GorgonMinMax _throttleAxisRange = GorgonMinMax.Empty;	// Throttle axis range.
+			private GorgonMinMax _rudderAxisRange = GorgonMinMax.Empty;		// Rudder axis range.
+			#endregion
+
 			#region Properties.
 			/// <summary>
 			/// Property to set or return the X axis mid range.
@@ -136,7 +150,7 @@ namespace GorgonLibrary.HID
 			internal int XAxisMidRange
 			{
 				get;
-				set;
+				private set;
 			}
 
 			/// <summary>
@@ -145,7 +159,7 @@ namespace GorgonLibrary.HID
 			internal int YAxisMidRange
 			{
 				get;
-				set;
+				private set;
 			}
 
 			/// <summary>
@@ -154,7 +168,7 @@ namespace GorgonLibrary.HID
 			internal int ThrottleAxisMidRange
 			{
 				get;
-				set;
+				private set;
 			}
 
 			/// <summary>
@@ -163,7 +177,7 @@ namespace GorgonLibrary.HID
 			internal int RudderAxisMidRange
 			{
 				get;
-				set;
+				private set;
 			}
 
 			/// <summary>
@@ -172,7 +186,7 @@ namespace GorgonLibrary.HID
 			internal int SecondaryXAxisMidRange
 			{
 				get;
-				set;
+				private set;
 			}
 
 			/// <summary>
@@ -181,7 +195,7 @@ namespace GorgonLibrary.HID
 			internal int SecondaryYAxisMidRange
 			{
 				get;
-				set;
+				private set;
 			}
 
 			/// <summary>
@@ -190,7 +204,7 @@ namespace GorgonLibrary.HID
 			public JoystickCapabilityFlags ExtraCapabilities
 			{
 				get;
-				internal set;
+				protected set;
 			}
 
 			/// <summary>
@@ -199,7 +213,7 @@ namespace GorgonLibrary.HID
 			public int ButtonCount
 			{
 				get;
-				internal set;
+				protected set;
 			}
 
 			/// <summary>
@@ -208,7 +222,7 @@ namespace GorgonLibrary.HID
 			public int AxisCount
 			{
 				get;
-				internal set;
+				protected set;
 			}
 
 			/// <summary>
@@ -216,8 +230,15 @@ namespace GorgonLibrary.HID
 			/// </summary>
 			public GorgonMinMax XAxisRange
 			{
-				get;
-				internal set;
+				get
+				{
+					return _xAxisRange;
+				}
+				protected set
+				{
+					_xAxisRange = value;
+					XAxisMidRange = CalculateMidRange(value);
+				}
 			}
 
 			/// <summary>
@@ -225,8 +246,15 @@ namespace GorgonLibrary.HID
 			/// </summary>
 			public GorgonMinMax YAxisRange
 			{
-				get;
-				internal set;
+				get
+				{
+					return _yAxisRange;
+				}
+				protected set
+				{
+					_yAxisRange = value;
+					YAxisMidRange = CalculateMidRange(value);
+				}
 			}
 
 			/// <summary>
@@ -234,8 +262,15 @@ namespace GorgonLibrary.HID
 			/// </summary>
 			public GorgonMinMax SecondaryYAxisRange
 			{
-				get;
-				internal set;
+				get
+				{
+					return _y2AxisRange;
+				}
+				protected set
+				{
+					_y2AxisRange = value;
+					SecondaryXAxisMidRange = CalculateMidRange(value);
+				}
 			}
 
 			/// <summary>
@@ -243,8 +278,15 @@ namespace GorgonLibrary.HID
 			/// </summary>
 			public GorgonMinMax SecondaryXAxisRange
 			{
-				get;
-				internal set;
+				get
+				{
+					return _x2AxisRange;
+				}
+				protected set
+				{
+					_x2AxisRange = value;
+					SecondaryXAxisMidRange = CalculateMidRange(value);
+				}
 			}
 
 			/// <summary>
@@ -252,8 +294,15 @@ namespace GorgonLibrary.HID
 			/// </summary>
 			public GorgonMinMax ThrottleAxisRange
 			{
-				get;
-				internal set;
+				get
+				{
+					return _throttleAxisRange;
+				}
+				protected set
+				{
+					_throttleAxisRange = value;
+					ThrottleAxisMidRange = CalculateMidRange(value);
+				}
 			}
 
 			/// <summary>
@@ -261,8 +310,15 @@ namespace GorgonLibrary.HID
 			/// </summary>
 			public GorgonMinMax RudderAxisRange
 			{
-				get;
-				internal set;
+				get
+				{
+					return _rudderAxisRange;
+				}
+				protected set
+				{
+					_rudderAxisRange = value;
+					RudderAxisMidRange = CalculateMidRange(value);
+				}
 			}
 
 			/// <summary>
@@ -282,7 +338,7 @@ namespace GorgonLibrary.HID
 			public IList<GorgonMinMax> VibrationMotorRanges
 			{
 				get;
-				internal set;
+				protected set;
 			}
 
 			/// <summary>
@@ -291,7 +347,7 @@ namespace GorgonLibrary.HID
 			public int ManufacturerID
 			{
 				get;
-				internal set;
+				protected set;
 			}
 
 			/// <summary>
@@ -300,7 +356,22 @@ namespace GorgonLibrary.HID
 			public int ProductID
 			{
 				get;
-				internal set;
+				protected set;
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to calculate the mid point for a range value.
+			/// </summary>
+			/// <param name="range">Range to calculate.</param>
+			/// <returns>The mid point of the range.</returns>
+			private int CalculateMidRange(GorgonMinMax range)
+			{
+				if (range == GorgonMinMax.Empty)
+					return 0;
+
+				return range.Minimum + (range.Range / 2);
 			}
 			#endregion
 
@@ -308,7 +379,7 @@ namespace GorgonLibrary.HID
 			/// <summary>
 			/// Initializes a new instance of the <see cref="JoystickCapabilities"/> class.
 			/// </summary>
-			internal JoystickCapabilities()
+			protected JoystickCapabilities()
 			{
 				VibrationMotorRanges = new GorgonMinMax[0];
 				AxisCount = 0;
@@ -322,29 +393,336 @@ namespace GorgonLibrary.HID
 				ManufacturerID = 0;
 				ProductID = 0;
 
-				// Reset internal values.
-				XAxisMidRange = 0;
-				YAxisMidRange = 0;
-				SecondaryYAxisMidRange = 0;
-				SecondaryXAxisMidRange = 0;
-				ThrottleAxisMidRange = 0;
-				RudderAxisMidRange = 0;
-
 				ExtraCapabilities = JoystickCapabilityFlags.None;
+			}
+			#endregion
+		}
+
+		/// <summary>
+		/// Defines the dead zone for a given axis.
+		/// </summary>
+		public class JoystickDeadZoneAxes
+		{
+			#region Properties.
+			/// <summary>
+			/// Property to set or return the deadzone for the X axis.
+			/// </summary>
+			public GorgonMinMax X
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the deadzone for the Y axis.
+			/// </summary>
+			public GorgonMinMax Y
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the deadzone for the secondary X axis.
+			/// </summary>
+			public GorgonMinMax SecondaryX
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the deadzone for the secondary Y axis.
+			/// </summary>
+			public GorgonMinMax SecondaryY
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the deadzone for the throttle axis.
+			/// </summary>
+			public GorgonMinMax Throttle
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the deadzone for the rudder axis.
+			/// </summary>
+			public GorgonMinMax Rudder
+			{
+				get;
+				set;
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="JoystickDeadZoneAxes"/> class.
+			/// </summary>
+			internal JoystickDeadZoneAxes()
+			{
+				X = GorgonMinMax.Empty;
+				Y = GorgonMinMax.Empty;
+				SecondaryX = GorgonMinMax.Empty;
+				SecondaryY = GorgonMinMax.Empty;
+				Throttle = GorgonMinMax.Empty;
+				Rudder = GorgonMinMax.Empty;
+			}
+			#endregion
+		}
+
+		/// <summary>
+		/// Defines which direction each axis is pointing at.
+		/// </summary>
+		public class JoystickAxisDirections
+		{
+			#region Properties.
+			/// <summary>
+			/// Property to return the direction that the X axis is pointed towards.
+			/// </summary>
+			/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// property.  If the axis position is within the dead-zone range only the 
+			/// <see cref="GorgonLibrary.HID.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			public JoystickDirections X
+			{
+				get;
+				internal set;
+			}
+
+			/// <summary>
+			/// Property to return the direction that the Y axis is pointed towards.
+			/// </summary>
+			/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// property.  If the axis position is within the dead-zone range only the 
+			/// <see cref="GorgonLibrary.HID.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			public JoystickDirections Y
+			{
+				get;
+				internal set;
+			}
+
+			/// <summary>
+			/// Property to return the direction that the secondary X axis is pointed towards.
+			/// </summary>
+			/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// property.  If the axis position is within the dead-zone range only the 
+			/// <see cref="GorgonLibrary.HID.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			public JoystickDirections SecondaryX
+			{
+				get;
+				internal set;
+			}
+
+			/// <summary>
+			/// Property to return the direction that the secondary Y axis is pointed towards.
+			/// </summary>
+			/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// property.  If the axis position is within the dead-zone range only the 
+			/// <see cref="GorgonLibrary.HID.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			public JoystickDirections SecondaryY
+			{
+				get;
+				internal set;
+			}
+
+			/// <summary>
+			/// Property to return the direction that the throttle axis is pointed towards.
+			/// </summary>
+			/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// property.  If the axis position is within the dead-zone range only the 
+			/// <see cref="GorgonLibrary.HID.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			public JoystickDirections Throttle
+			{
+				get;
+				internal set;
+			}
+
+			/// <summary>
+			/// Property to return the direction that the rudder axis is pointed towards.
+			/// </summary>
+			/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// property.  If the axis position is within the dead-zone range only the 
+			/// <see cref="GorgonLibrary.HID.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			public JoystickDirections Rudder
+			{
+				get;
+				internal set;
+			}
+
+			/// <summary>
+			/// Property to return the direction that the POV is pointed towards.
+			/// </summary>
+			public JoystickDirections POV
+			{
+				get;
+				internal set;
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to reset the directions.
+			/// </summary>
+			internal void Reset()
+			{
+				X = JoystickDirections.Center;
+				Y = JoystickDirections.Center;
+				SecondaryX = JoystickDirections.Center;
+				SecondaryY = JoystickDirections.Center;
+				Throttle = JoystickDirections.Center;
+				Rudder = JoystickDirections.Center;
+				POV = JoystickDirections.Center;
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="JoystickAxisDirections"/> class.
+			/// </summary>
+			internal JoystickAxisDirections()
+			{
+				Reset();
+			}
+			#endregion
+		}
+
+		/// <summary>
+		/// Defines the state of the buttons for the device.
+		/// </summary>
+		public abstract class JoystickButtons
+			: IEnumerable<KeyState>
+		{
+			#region Variables.
+			private SortedList<string, KeyState> _buttonList = null;		// List of buttons.
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return the number of buttons in the collection.
+			/// </summary>
+			public int Count
+			{
+				get
+				{
+					return _buttonList.Count;
+				}
+			}
+
+			/// <summary>
+			/// Property to return a button state by its index.
+			/// </summary>
+			public KeyState this[int index]
+			{
+				get
+				{
+					return _buttonList[_buttonList.Keys[index]];
+				}
+				protected set
+				{
+					_buttonList[_buttonList.Keys[index]] = value;
+				}
+			}
+
+			/// <summary>
+			/// Property to return a button state by the button name.
+			/// </summary>
+			public KeyState this[string name]
+			{
+				get
+				{
+					return _buttonList[name];
+				}
+				protected set
+				{
+					_buttonList[name] = value;
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to define a new button for the device.
+			/// </summary>
+			/// <param name="name">Name of the button to define.</param>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.
+			/// <para>-or-</para>
+			/// <para>Thrown when the name already exists in the list.</para>
+			/// </exception>
+			protected void DefineButton(string name)
+			{
+				GorgonUtility.AssertParamString(name, "name");
+
+				if (_buttonList.ContainsKey(name))
+					throw new ArgumentException("name", "The button '" + name + "' already exists.");
+
+				_buttonList.Add(name, KeyState.Up);
+			}
+
+			/// <summary>
+			/// Function to reset the button states.
+			/// </summary>
+			internal void Reset()
+			{
+				for (int i = 0; i < Count; i++)
+					this[i] = KeyState.Up;
+			}
+
+			/// <summary>
+			/// Function to return whether the list contains a button name.
+			/// </summary>
+			/// <param name="name">The button name to look for.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			public bool Contains(string name)
+			{
+				return _buttonList.ContainsKey(name);
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="JoystickButtons"/> class.
+			/// </summary>
+			protected JoystickButtons()
+			{
+				_buttonList = new SortedList<string, KeyState>();
+			}
+			#endregion
+
+			#region IEnumerable<KeyState> Members
+			/// <summary>
+			/// Gets the enumerator.
+			/// </summary>
+			/// <returns></returns>
+			public IEnumerator<KeyState> GetEnumerator()
+			{
+				foreach (KeyValuePair<string, KeyState> state in _buttonList)
+					yield return state.Value;
+			}
+			#endregion
+
+			#region IEnumerable Members
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+			/// </returns>
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
 			}
 			#endregion
 		}
 		#endregion
 
 		#region Variables.
-		private IList<KeyState> _buttons = null;			// Button values.
-		private bool _deviceLost = false;					// Flag to indicate that the device was in a lost state.
-		private int _xAxis = 0;								// X axis value.
-		private int _yAxis = 0;								// Y axis value.
-		private int _throttleAxis = 0;						// Throttle axis value.
-		private int _rudderAxis = 0;						// Rudder axis value.
-		private int _xAxis2 = 0;							// Secondary X axis value.
-		private int _yAxis2 = 0;							// Secondary Y axis value.
+		private bool _deviceLost = false;												// Flag to indicate that the device was in a lost state.
+		private JoystickAxisDirections _directions = null;								// Axis directions.
 		#endregion
 
 		#region Properties.
@@ -370,6 +748,30 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
+		/// Property to return the direction each axis (and POV) are pointed at.
+		/// </summary>
+		public JoystickAxisDirections Direction
+		{
+			get
+			{
+				return _directions;
+			}
+			private set
+			{
+				_directions = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the dead zones for the axes of the joystick.
+		/// </summary>
+		public JoystickDeadZoneAxes DeadZone
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return the joystick capabilities.
 		/// </summary>
 		public JoystickCapabilities Capabilities
@@ -379,63 +781,22 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Property to return the dead zone range.
-		/// </summary>
-		/// <remarks>The dead zone should be within the range of the same axis.  That is, if the axis range is 
-		/// between 0..32767, then the dead zone range should be within 0..32767.  Likewise if the axis has a 
-		/// range of -32767..32767 then the dead zone value should correspond to the range of -32767..32767.  
-		/// <para>Please note that by setting the dead zone to the exact size of the axis range the joystick 
-		/// will not register any movement because the entire range is considered 'dead'.</para></remarks>
-		public IList<GorgonMinMax> DeadZone
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the direction that an axis is pointed towards.
-		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
-		/// property.  If the axis position is within the dead-zone range only the 
-		/// <see cref="GorgonLibrary.HID.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
-		public IList<JoystickDirections> AxisDirection
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the point of view value for continuous bearing.
 		/// </summary>
+		/// <remarks>This will return an integer value of -1 for center, or 0 to 35999.  The user must divide by 100 to get the angle in degrees for a continuous bearing POV.</remarks>
 		public int POV
 		{
 			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the POV direction for discreet POV values.
-		/// </summary>
-		public JoystickDirections POVDirection
-		{
-			get;
-			private set;
+			protected set;
 		}
 
 		/// <summary>
 		/// Property to return a button state.
 		/// </summary>
-		public IList<KeyState> Button
+		public JoystickButtons Button
 		{
-			get
-			{
-				PollJoystick();
-				return _buttons;
-			}
-			private set
-			{
-				_buttons = value;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -446,17 +807,8 @@ namespace GorgonLibrary.HID
 		/// of the X axis range will be returned (center position of the axis).</remarks>
 		public int X
 		{
-			get
-			{
-				GetJoystickState();
-				return _xAxis;
-			}
-			protected set
-			{
-				if (Capabilities == null)
-					return;
-				_xAxis = DeadZoneValue(value, Capabilities.XAxisRange);
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -467,17 +819,8 @@ namespace GorgonLibrary.HID
 		/// of the Y axis range will be returned (center position of the axis).</remarks>
 		public int Y
 		{
-			get
-			{
-				GetJoystickState();
-				return _yAxis;
-			}
-			protected set
-			{
-				if (Capabilities == null)
-					return;
-				_yAxis = DeadZoneValue(value, Capabilities.YAxisRange);
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -488,17 +831,8 @@ namespace GorgonLibrary.HID
 		/// of the throttle axis range will be returned (center position of the axis).</remarks>
 		public int Throttle
 		{
-			get
-			{
-				GetJoystickState();
-				return _throttleAxis;
-			}
-			protected set
-			{
-				if (Capabilities == null)
-					return;
-				_throttleAxis = DeadZoneValue(value, Capabilities.ThrottleAxisRange);
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -507,19 +841,10 @@ namespace GorgonLibrary.HID
 		/// <remarks>This is affected by the <see cref="GorgonLibrary.HID.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the Z axis range will be returned (center position of the axis).</remarks>
-		public abstract int SecondaryX
+		public int SecondaryX
 		{
-			get
-			{
-				GetJoystickState();
-				return _xAxis2;
-			}
-			protected set
-			{
-				if (Capabilities == null)
-					return;
-				_xAxis2 = DeadZoneValue(value, Capabilities.SecondaryXAxisRange);
-			}
+			get;
+			protected set;
 		}
 
 
@@ -531,17 +856,8 @@ namespace GorgonLibrary.HID
 		/// of the Z axis range will be returned (center position of the axis).</remarks>
 		public int SecondaryY
 		{
-			get
-			{
-				GetJoystickState();
-				return _xAxis2;
-			}
-			protected set
-			{
-				if (Capabilities == null)
-					return;
-				_xAxis2 = DeadZoneValue(value, Capabilities.SecondaryXAxisRange);
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -552,17 +868,8 @@ namespace GorgonLibrary.HID
 		/// of the rudder range will be returned (center position of the axis).</remarks>
 		public int Rudder
 		{
-			get
-			{
-				GetJoystickState();
-				return _rudderAxis;
-			}
-			protected set
-			{
-				if (Capabilities == null)
-					return;
-				_rudderAxis = DeadZoneValue(value, Capabilities.RudderAxisRange);
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -577,15 +884,162 @@ namespace GorgonLibrary.HID
 
 		#region Methods.
 		/// <summary>
-		/// Function to read the joystick state.
+		/// Function to apply a deadzone to a value.
 		/// </summary>
-		private void GetJoystickState()
+		/// <param name="value">Value to dead zone.</param>
+		/// <param name="deadZone">Dead zone range.</param>
+		/// <param name="midRange">Mid point for the range.</param>
+		/// <returns>The actual axis data if it falls outside of the dead zone, or the center position value.</returns>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
+		private int DeadZoneValue(int value, GorgonMinMax deadZone, int midRange)
 		{
 			if (Capabilities == null)
+				throw new GorgonException(GorgonResult.NotInitialized, "The joystick is not initialized.");
+
+			// The dead zone range needs to be within the range of the axis.
+			if (!deadZone.Contains(value))
+				return value;
+
+			return midRange;
+		}
+
+		/// <summary>
+		/// Function to get an orientation for a value.
+		/// </summary>
+		/// <param name="value">Value to dead zone.</param>
+		/// <param name="orientation">Orientation of the axis.</param>
+		/// <param name="midRange">Mid point for the range.</param>
+		/// <returns>The direction that the axis is pointed at.</returns>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
+		private JoystickDirections GetDirection(int value, JoystickDirections orientation, int midRange)
+		{
+			JoystickDirections result = JoystickDirections.Center;
+
+			if (Capabilities == null)
+				throw new GorgonException(GorgonResult.NotInitialized, "The joystick is not initialized.");
+
+			switch (orientation)
 			{
-				ResetData();
-				return;
+				case JoystickDirections.Horizontal:
+					if (value > midRange)
+						result = JoystickDirections.Right;
+					else
+						result = JoystickDirections.Left;
+					break;
+				case JoystickDirections.Vertical:
+					if (value > midRange)
+						result = JoystickDirections.Down;
+					else
+						result = JoystickDirections.Up;
+					break;
+				default:
+					if (orientation != JoystickDirections.Vector)
+						orientation = JoystickDirections.Vector;
+					if (value > midRange)
+						result = JoystickDirections.MoreThanCenter;
+					else
+						result = JoystickDirections.LessThanCenter;
+					break;
 			}
+
+			result |= orientation;
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to reset the various joystick axes and buttons and POV settings to default values.
+		/// </summary>
+		private void SetDefaults()
+		{
+			Direction.Reset();
+			X = 0;
+			Y = 0;
+			SecondaryX = 0;
+			SecondaryY = 0;
+			Throttle = 0;
+			Rudder = 0;
+			POV = 0;
+			Button.Reset();
+		}
+
+		/// <summary>
+		/// Function to poll the joystick for data.
+		/// </summary>
+		/// <remarks>Implementors must override this to return data from the joystick.</remarks>
+		protected abstract void PollJoystick();
+
+		/// <summary>
+		/// Function to retrieve the capabilities of the joystick/gamepad.
+		/// </summary>
+		/// <returns>The capabilities data for the joystick/gamepad.</returns>
+		/// <remarks>Implementors must implement this function so the object can determine constraints about the device.</remarks>
+		protected abstract JoystickCapabilities GetCapabilities();
+
+		/// <summary>
+		/// Function to retrieve the buttons for the joystick/gamepad.
+		/// </summary>
+		/// <returns>The list of buttons for the joystick/gamepad.</returns>
+		/// <remarks>Implementors must implement this function so the object can get the list of buttons for the device.</remarks>
+		protected abstract JoystickButtons GetButtons();
+
+		/// <summary>
+		/// Function to initalize the data for the joystick.
+		/// </summary>
+		/// <remarks>Implementors must call this function after the object has been created or during the construction of the object.</remarks>
+		protected void Initialize()
+		{
+			DeadZone = new JoystickDeadZoneAxes();
+			Button = GetButtons();
+			Capabilities = GetCapabilities();
+			if (Capabilities == null)
+				throw new GorgonException(GorgonResult.NotInitialized, "The device was not initialized successfully.");
+			SetDefaults();
+		}
+
+		/// <summary>
+		/// Function to perform device vibration.
+		/// </summary>
+		/// <param name="motorIndex">Index of the motor to start.</param>
+		/// <param name="value">Value to set.</param>
+		/// <remarks>Implementors should implement this function if the device supports vibration.</remarks>
+		protected virtual void VibrateDevice(int motorIndex, int value)
+		{
+		}
+
+		/// <summary>
+		/// Function to set the device to vibrate.
+		/// </summary>
+		/// <param name="motorIndex">Index of the motor to start.</param>
+		/// <param name="value">Value to set.</param>
+		/// <remarks>This will activate the vibration motor(s) in the joystick/gamepad.  The <paramref name="motorIndex"/> should be within the 
+		/// <see cref="P:GorgonLibrary.HID.GorgonJoystick.JoystickCapabilities.VibrationMotorCount">VibrationMotorCount</see>, or else an exception will be thrown.  Check the
+		/// <see cref="P:GorgonLibrary.HID.GorgonJoystick.JoystickCapabilities.ExtraCapabilities">ExtraCapabilities</see> property to see if vibration is supported by the device.
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the device has not been initialized.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the motorIndex parameter is less than 0 or greater than or equal to the VibrationMotorCount range.</exception>
+		public void Vibrate(int motorIndex, int value)
+		{
+			if (Capabilities == null)
+				throw new GorgonException(GorgonResult.NotInitialized, "The joystick device has not been initialized.");
+
+			if (((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) != JoystickCapabilityFlags.SupportsVibration) || (motorIndex < 0) || (motorIndex >= Capabilities.VibrationMotorCount))
+				throw new ArgumentException("motorIndex", "There is no motor at index " + motorIndex.ToString());
+
+			if (Capabilities.VibrationMotorRanges[motorIndex].Contains(value))
+				VibrateDevice(motorIndex, value);
+		}
+
+		/// <summary>
+		/// Function to read the joystick state.
+		/// </summary>
+		/// <remarks>Users must call this in order to retrieve the state of the joystick/gamepad at any given time.</remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the device has not been initialized.</exception>
+		public void Poll()
+		{
+			if (Capabilities == null)
+				throw new GorgonException(GorgonResult.NotInitialized, "The joystick device has not been initialized.");
+
 			if ((DeviceLost) && (!BoundWindow.Focused))
 				return;
 			else
@@ -594,120 +1048,56 @@ namespace GorgonLibrary.HID
 			if ((!Enabled) || (!Acquired))
 				return;
 
+			// Set the values back to their defaults.
+			SetDefaults();
+			
+			// Get the data.
 			PollJoystick();
+
+			// Apply dead zones and get directions.
+			X = DeadZoneValue(X, DeadZone.X, Capabilities.XAxisMidRange);
+			Direction.X = GetDirection(X, JoystickDirections.Horizontal, Capabilities.XAxisMidRange);
+
+			Y = DeadZoneValue(Y, DeadZone.Y, Capabilities.YAxisMidRange);
+			Direction.Y = GetDirection(Y, JoystickDirections.Vertical, Capabilities.YAxisMidRange);
+
+			SecondaryX = DeadZoneValue(SecondaryX, DeadZone.SecondaryX, Capabilities.SecondaryXAxisMidRange);
+			Direction.SecondaryX = GetDirection(SecondaryX, JoystickDirections.Horizontal, Capabilities.SecondaryXAxisMidRange);
+
+			SecondaryY = DeadZoneValue(SecondaryY, DeadZone.SecondaryX, Capabilities.SecondaryXAxisMidRange);
+			Direction.SecondaryY = GetDirection(SecondaryY, JoystickDirections.Vertical, Capabilities.SecondaryYAxisMidRange);
+
+			Throttle = DeadZoneValue(Throttle, DeadZone.Throttle, Capabilities.ThrottleAxisMidRange);
+			Direction.Throttle = GetDirection(Throttle, JoystickDirections.Vector, Capabilities.ThrottleAxisMidRange);
+
+			Rudder = DeadZoneValue(Rudder, DeadZone.Rudder, Capabilities.RudderAxisMidRange);
+			Direction.X = GetDirection(Rudder, JoystickDirections.Vector, Capabilities.RudderAxisMidRange);
+
+			// Get POV direction.
+			if (POV == -1)
+				Direction.POV = JoystickDirections.Center;
+			else
+			{
+				// Determine direction.
+				if ((POV < 18000) && (POV > 9000))
+					Direction.POV = JoystickDirections.Down | JoystickDirections.Right;
+				if ((POV > 18000) && (POV < 27000))
+					Direction.POV = JoystickDirections.Down | JoystickDirections.Left;
+				if ((POV > 27000) && (POV < 36000))
+					Direction.POV = JoystickDirections.Up | JoystickDirections.Left;
+				if ((POV > 0) && (POV < 9000))
+					Direction.POV = JoystickDirections.Up | JoystickDirections.Right;
+
+				if (POV == 18000)
+					Direction.POV = JoystickDirections.Down;
+				if (POV == 0)
+					Direction.POV = JoystickDirections.Up;
+				if (POV == 9000)
+					Direction.POV = JoystickDirections.Right;
+				if (POV == 27000)
+					Direction.POV = JoystickDirections.Left;
+			}
 		}
-
-		/// <summary>
-		/// Function to apply a deadzone to a value.
-		/// </summary>
-		/// <param name="value">Value to dead zone.</param>
-		/// <param name="deadZone">Dead zone range.</param>
-		/// <returns>The actual axis data if it falls outside of the dead zone, or the center position value.</returns>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
-		private int DeadZoneValue(int value, GorgonMinMax deadZone)
-		{
-			if (Capabilities == null)
-				throw new GorgonException(GorgonResult.NotInitialized, "The joystick is not initialized.");
-
-			int midrange = range.Minimum + (range.Range / 2);		// Mid range value.
-
-			// The dead zone range needs to be within the range of the axis.
-			if (!deadZone.Contains(value))
-				return value;
-
-			return midrange;
-		}
-
-		/// <summary>
-		/// Function to get an orientation for a value.
-		/// </summary>
-		/// <param name="value">Value to dead zone.</param>
-		/// <param name="orientation">Orientation of the axis.</param>
-		/// <returns>The actual axis data if it falls outside of the dead zone, or the center position value.</returns>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
-		private int GetDirection(int value, JoystickDirections orientation)
-		{
-			if (Capabilities == null)
-				throw new GorgonException(GorgonResult.NotInitialized, "The joystick is not initialized.");
-
-			int midrange = deadZone.Minimum + (deadZone.Range / 2);		// Mid range value.
-
-			// The dead zone range needs to be within the range of the axis.
-			if (!deadZone.Contains(value))
-				return value;
-
-			return midrange;
-		}
-
-		/// <summary>
-		/// Function to set the pressed value for a specific button.
-		/// </summary>
-		/// <param name="index">Index of the button to set.</param>
-		/// <param name="value">Value to set.</param>
-		protected void SetButtonValue(int index, KeyState value)
-		{
-			_buttons[index] = value;
-		}
-
-		/// <summary>
-		/// Function to poll the joystick for data.
-		/// </summary>
-		protected abstract void PollJoystick();
-
-		/// <summary>
-		/// Function to reset the data for the device.
-		/// </summary>
-		protected void ResetData()
-		{
-			Capabilities = new JoystickCapabilities();
-
-			Button = new KeyState[0];
-			SetDefaults();
-		}
-
-		/// <summary>
-		/// Function to reset the various joystick axes and buttons and POV settings to default values.
-		/// </summary>
-		protected void SetDefaults()
-		{
-			_xAxis = 0;
-			_yAxis = 0;
-			_xAxis2 = 0;
-			_yAxis2 = 0;
-			_throttleAxis = 0;
-			_rudderAxis = 0;
-			POV = 0;
-			POVDirection = JoystickDirections.Center;
-		}
-
-		/// <summary>
-		/// Function to set the joystick capabilities.
-		/// </summary>
-		/// <param name="buttonCount">Number of buttons.</param>
-		/// <param name="povCount">Point of view hat count.</param>
-		/// <param name="axisRanges">List of ranges for each axis.</param>
-		/// <param name="vibrationMotorRanges">List of ranges for each vibration motor.</param>
-		/// <param name="manufacturerID">Manufacturer ID.</param>
-		/// <param name="productID">Product ID.</param>
-		/// <param name="extraCapabilities">Extra capabilities of the device.</param>
-		protected void SetJoystickCapabilities(int buttonCount, int povCount, IList<GorgonMinMax> axisRanges, IList<GorgonMinMax> vibrationMotorRanges, int manufacturerID, int productID, JoystickCapabilityFlags extraCapabilities)
-		{
-			_axisValues = new int[axisRanges.Count];
-			AxisDirection = new JoystickDirections[axisRanges.Count];
-			DeadZone = new GorgonMinMax[axisRanges.Count];
-			Button = new KeyState[buttonCount];
-			POV = new int[povCount];
-			POVDirection = new JoystickDirections[povCount];
-
-			Capabilities = new JoystickCapabilities(buttonCount, povCount, axisRanges, vibrationMotorRanges, manufacturerID, productID, extraCapabilities);
-
-			SetDefaults();
-		}
-
-		/// <summary>
-		/// Function to initalize the data for the joystick.
-		/// </summary>
-		protected abstract void InitializeData();
 		#endregion
 
 		#region Constructor/Destructor.
@@ -722,7 +1112,7 @@ namespace GorgonLibrary.HID
 		protected GorgonJoystick(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
-			ResetData();
+			Direction = new JoystickAxisDirections();
 		}
 		#endregion
 	}

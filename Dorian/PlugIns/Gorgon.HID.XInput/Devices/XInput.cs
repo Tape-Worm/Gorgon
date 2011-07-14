@@ -41,38 +41,106 @@ namespace GorgonLibrary.HID.XInput
 	internal class XInputController
 		: GorgonJoystick
 	{
+		#region Classes.
+		/// <summary>
+		/// Defines the buttons for the controller.
+		/// </summary>
+		public class XInputButtons
+			: XInputController.JoystickButtons
+		{
+			#region Methods.
+			/// <summary>
+			/// Function to set the state for a button.
+			/// </summary>
+			/// <param name="name">Name of the button.</param>
+			/// <param name="state">State of the button.</param>
+			public void SetButtonState(XI.GamepadButtonFlags name, KeyState state)
+			{
+				string enumName = name.ToString();
+
+				if (Contains(enumName))
+					this[enumName] = state;
+			}
+			#endregion
+
+			#region Constructor/Destructor.			
+			/// <summary>
+			/// Initializes a new instance of the <see cref="XInputButtons"/> class.
+			/// </summary>
+			public XInputButtons()
+				: base()
+			{
+				XI.GamepadButtonFlags[] buttons = (XI.GamepadButtonFlags[])Enum.GetValues(typeof(XI.GamepadButtonFlags));
+
+				foreach (XI.GamepadButtonFlags button in buttons)
+				{
+					if (button != XI.GamepadButtonFlags.None)
+						DefineButton(button.ToString());
+				}
+			}
+			#endregion
+		}
+
+		/// <summary>
+		/// Defines the capabilities of the XInput device.
+		/// </summary>
+		public class XInputCapabilties
+			: XInputController.JoystickCapabilities
+		{
+			#region Methods.
+			/// <summary>
+			/// Function to retrieve the capabilities of the controller device.
+			/// </summary>
+			/// <param name="controller">Controller to enumerate.</param>
+			/// <param name="buttonCount">Button count.</param>
+			private void GetCaps(XI.Controller controller, int buttonCount)
+			{
+				XI.Capabilities caps = controller.GetCapabilities(XI.DeviceQueryType.Any);
+
+				// Default to the standard XBOX 360 controller.
+				// If we have other types, then we may have to alter this.
+				AxisCount = 6;
+				ButtonCount = buttonCount;
+
+				// Get ranges.
+				SecondaryYAxisRange = SecondaryXAxisRange = YAxisRange = XAxisRange = new GorgonMinMax(-32768, 32767);
+				ThrottleAxisRange = RudderAxisRange = new GorgonMinMax(0, 255);
+
+				VibrationMotorRanges = new GorgonMinMax[2];
+				VibrationMotorRanges[0] = new GorgonMinMax(0, caps.Vibration.LeftMotorSpeed);
+				VibrationMotorRanges[1] = new GorgonMinMax(0, caps.Vibration.RightMotorSpeed);
+
+				ExtraCapabilities = JoystickCapabilityFlags.SupportsDiscreetPOV | JoystickCapabilityFlags.SupportsPOV | JoystickCapabilityFlags.SupportsRudder | JoystickCapabilityFlags.SupportsThrottle | JoystickCapabilityFlags.SupportsVibration;
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="XInputCapabilties"/> class.
+			/// </summary>
+			/// <param name="controller">The controller to enumerate.</param>
+			/// <param name="buttonCount">The button count.</param>
+			public XInputCapabilties(XI.Controller controller, int buttonCount)
+				: base()
+			{
+				if (!controller.IsConnected)
+					return;
+
+				GetCaps(controller, buttonCount);
+			}
+			#endregion			
+		}
+		#endregion
+
 		#region Variables.
 		private int _controllerID = 0;								// Controller ID.
 		private XI.Controller _controller = null;					// Controller instance.
-		private XI.Capabilities _caps = default(XI.Capabilities);	// Device capabilities.
 		private XI.GamepadButtonFlags[] _button = null;				// Button flags.
-		private bool _deviceLost = false;							// Flag to indicate that the device is lost.
-		private bool _connected = false;							// Flag to indicate that the device is connected.
 		private uint _lastPacket = int.MaxValue;					// Last packet number.
+		private XInputButtons _buttonList = null;					// List of buttons for the controller.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return flag to indicate that the device is in a lost state.
-		/// </summary>
-		internal bool DeviceLost
-		{
-			get
-			{
-				if (!AllowBackground)
-					return _deviceLost;
-				else
-					return false;
-			}
-			set
-			{
-				if (AllowBackground)
-					_deviceLost = false;					
-				else
-					_deviceLost = value;
-			}
-		}
-
 		/// <summary>
 		/// Property to return whether the device is acquired or not.
 		/// </summary>		
@@ -87,7 +155,7 @@ namespace GorgonLibrary.HID.XInput
 				base.Acquired = value;
 
 				if (value)
-					_deviceLost = false;
+					DeviceLost = false;
 			}
 		}
 
@@ -104,143 +172,9 @@ namespace GorgonLibrary.HID.XInput
 			{				
 			}
 		}
-
-		/// <summary>
-		/// Property to return the x coordinate for the joystick.
-		/// </summary>
-		/// <value></value>
-		public override float X
-		{
-			get 
-			{
-				return Axes[0];
-			}
-		}
-
-		/// <summary>
-		/// Property to return the y coordinate for the joystick.
-		/// </summary>
-		/// <value></value>
-		public override float Y
-		{
-			get 
-			{
-				return Axes[1];
-			}
-		}
-
-		/// <summary>
-		/// Property to return the secondary X axis for the joystick (if applicable).
-		/// </summary>
-		public override float SecondaryX
-		{
-			get
-			{
-				return Axes[3];
-			}
-		}
-
-		/// <summary>
-		/// Property to return the secondary Y axis for the joystick (if applicable).
-		/// </summary>
-		public override float SecondaryY
-		{
-			get
-			{
-				return Axes[4];
-			}
-		}
-
-		/// <summary>
-		/// Property to return the z coordinate for the joystick.
-		/// </summary>
-		/// <value></value>
-		public override float Z
-		{
-			get 
-			{
-				if (HasZAxis)
-					return Axes[2];
-				else
-					return float.NaN;
-			}
-		}
-				
-		/// <summary>
-		/// Property to return the rudder coordinate for the joystick.
-		/// </summary>
-		/// <value></value>
-		public override float Rudder
-		{
-			get 
-			{
-				if (HasRudder)
-					return Axes[5];
-				else
-					return float.NaN;
-			}
-		}
-
-		/// <summary>
-		/// Property to return whether the joystick is connected.
-		/// </summary>
-		public override bool IsConnected
-		{
-			get
-			{
-				return _connected;
-			}
-		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to set dead zone limited axis data.
-		/// </summary>
-		/// <param name="axis">Axis to work with.</param>
-		/// <param name="joyData">Joystick data for the axis.</param>
-		private void DeadZoneAxis(int axis, int joyData)
-		{
-			float midrange = AxisRanges[axis].Minimum + (AxisRanges[axis].Range / 2);		// Mid range value.
-
-			// The dead zone range needs to be within the range of the axis.
-			if (!DeadZone[axis].Contains(joyData))
-			{
-				SetAxisData(axis, joyData);
-				AxisDirection[axis] = JoystickDirections.Center;
-
-				// Get direction.
-				switch (axis)
-				{
-					case 0:
-					case 3:
-						if (joyData < midrange)
-							AxisDirection[axis] |= JoystickDirections.Left;
-						else
-							AxisDirection[axis] |= JoystickDirections.Right;
-						break;
-					case 1:
-					case 4:
-						if (joyData > midrange)
-							AxisDirection[axis] |= JoystickDirections.Up;
-						else
-							AxisDirection[axis] |= JoystickDirections.Down;
-						break;
-					default:
-						if (joyData < midrange)
-							AxisDirection[axis] |= JoystickDirections.LessThanCenter;
-						else
-							AxisDirection[axis] |= JoystickDirections.MoreThanCenter;
-						break;
-				}
-			}
-			else
-			{
-				SetAxisData(axis, midrange);
-				AxisDirection[axis] = JoystickDirections.Center;
-			}
-		}
-
 		/// <summary>
 		/// Function to retrieve the POV data.
 		/// </summary>
@@ -248,130 +182,72 @@ namespace GorgonLibrary.HID.XInput
 		private void GetPOVData(XI.GamepadButtonFlags buttonState)
 		{
 			// Get POV, which is on the D-Pad and default to a center value.
-			POV[0] = -1;
-			POVDirection[0] = JoystickDirections.Center;
+			POV = -1;
 
 			// Determine direction and set POV value which is -1 (for center) or 0..35900.  Divide by 100 to retrieve angle.
 			if (((buttonState & XI.GamepadButtonFlags.DPadDown) == XI.GamepadButtonFlags.DPadDown) && ((buttonState & XI.GamepadButtonFlags.DPadRight) == XI.GamepadButtonFlags.DPadRight))
-			{
-				POV[0] = 13500;
-				POVDirection[0] = JoystickDirections.Down | JoystickDirections.Right;
-			}
+				POV = 13500;
 			if (((buttonState & XI.GamepadButtonFlags.DPadDown) == XI.GamepadButtonFlags.DPadDown) && ((buttonState & XI.GamepadButtonFlags.DPadLeft) == XI.GamepadButtonFlags.DPadLeft))
-			{
-				POV[0] = 22500;
-				POVDirection[0] = JoystickDirections.Down | JoystickDirections.Left;
-			}
+				POV = 22500;
 			if (((buttonState & XI.GamepadButtonFlags.DPadUp) == XI.GamepadButtonFlags.DPadUp) && ((buttonState & XI.GamepadButtonFlags.DPadLeft) == XI.GamepadButtonFlags.DPadLeft))
-			{
-				POV[0] = 31500;
-				POVDirection[0] = JoystickDirections.Up | JoystickDirections.Left;
-			}
+				POV = 31500;
 			if (((buttonState & XI.GamepadButtonFlags.DPadUp) == XI.GamepadButtonFlags.DPadUp) && ((buttonState & XI.GamepadButtonFlags.DPadRight) == XI.GamepadButtonFlags.DPadRight))
-			{
-				POV[0] = 4500;
-				POVDirection[0] = JoystickDirections.Up | JoystickDirections.Right;
-			}
-
+				POV = 4500;
 			if (buttonState == XI.GamepadButtonFlags.DPadDown)
-			{
-				POV[0] = 18000;
-				POVDirection[0] = JoystickDirections.Down;
-			}
-
+				POV = 18000;
 			if (buttonState == XI.GamepadButtonFlags.DPadUp)
-			{
-				POV[0] = 0;
-				POVDirection[0] = JoystickDirections.Up;
-			}
-
+				POV = 0;
 			if (buttonState == XI.GamepadButtonFlags.DPadRight)
-			{
-				POV[0] = 9000;
-				POVDirection[0] = JoystickDirections.Right;
-			}
-
+				POV = 9000;
 			if (buttonState == XI.GamepadButtonFlags.DPadLeft)
-			{
-				POV[0] = 27000;
-				POVDirection[0] = JoystickDirections.Left;
-			}
+				POV = 27000;
 		}
 
 		/// <summary>
-		/// Function to initalize the data for the joystick.
+		/// Function to perform device vibration.
 		/// </summary>
-		protected override void InitializeData()
+		/// <param name="motorIndex">Index of the motor to start.</param>
+		/// <param name="value">Value to set.</param>
+		/// <remarks>Implementors should implement this function if the device supports vibration.</remarks>
+		protected override void VibrateDevice(int motorIndex, int value)
 		{
-			// Don't try this on a disconnected controller.
+			XI.Vibration vibeData = new XI.Vibration();
+
 			if (!_controller.IsConnected)
-			{
-				Gorgon.Log.Print("XInput Controller {0} disconnected.", GorgonLoggingLevel.Verbose, _controllerID);
-				_connected = false;
-				ResetData();
 				return;
-			}
 
-			_caps = _controller.GetCapabilities(XI.DeviceQueryType.Any);
-			_connected = true;
+			if (motorIndex == 0)
+				vibeData.LeftMotorSpeed = (ushort)value;
+			if (motorIndex == 1)
+				vibeData.RightMotorSpeed = (ushort)value;
+			_controller.SetVibration(vibeData);
+		}
 
-			// Default to the standard XBOX 360 controller.
-			// If we have other types, then we may have to alter this.
-			AxisCount = 6;
-			ButtonCount = Enum.GetValues(typeof(XI.GamepadButtonFlags)).Length - 1;
-			POVCount = 1;
-			Axes = new float[AxisCount];
-			AxisRanges = new GorgonMinMax[AxisCount];
-			AxisDirection = new JoystickDirections[AxisCount];
-			DeadZone = new GorgonMinMax[AxisCount];
-			POVDirection = new JoystickDirections[POVCount];
-			POV = new int[POVCount];
-			Button = new bool[ButtonCount];
-
-			for (int i = 0; i < AxisCount; i++)
-			{
-				Axes[i] = 0.0f;
-				// The ranges are always between -32768 and 32767				
-				AxisRanges[i] = new GorgonMinMax(-32768, 32767);
-				AxisDirection[i] = JoystickDirections.Center;
-				switch (i)
-				{
-					case 0:
-					case 1:
-						DeadZone[i] = new GorgonMinMax(-XI.Gamepad.GamepadLeftThumbDeadZone, XI.Gamepad.GamepadLeftThumbDeadZone);
-						break;
-					case 3:
-					case 4:
-						DeadZone[i] = new GorgonMinMax(-XI.Gamepad.GamepadRightThumbDeadZone, XI.Gamepad.GamepadRightThumbDeadZone);
-						break;
-					case 5:
-						DeadZone[i] = new GorgonMinMax(0, XI.Gamepad.GamepadTriggerThreshold);
-						break;
-				}
-				DeadZone[i] = GorgonMinMax.Empty;
-			}
-
-			// Set the triggers to range between 0 and 255.
-			AxisRanges[2] = new GorgonMinMax(0, 255);
-			AxisRanges[5] = new GorgonMinMax(0, 255);
-
-			for (int i = 0; i < POVCount; i++)
-			{
-				POV[0] = -1;
-				POVDirection[i] = JoystickDirections.Center;
-			}
-
-			for (int i = 0; i < ButtonCount; i++)
-				Button[i] = false;
-
+		/// <summary>
+		/// Function to retrieve the capabilities of the joystick/gamepad.
+		/// </summary>
+		/// <returns>
+		/// The capabilities data for the joystick/gamepad.
+		/// </returns>
+		/// <remarks>Implementors must implement this function so the object can determine constraints about the device.</remarks>
+		protected override GorgonJoystick.JoystickCapabilities GetCapabilities()
+		{
 			// Get the individual values for the buttons.
-			_button = ((XI.GamepadButtonFlags[])Enum.GetValues(typeof(XI.GamepadButtonFlags))).Where((item) => item != XI.GamepadButtonFlags.None).OrderBy((item) => item.ToString()).ToArray();
+			_button = (XI.GamepadButtonFlags[])Enum.GetValues(typeof(XI.GamepadButtonFlags));
+			return new XInputController.XInputCapabilties(_controller, _button.Length - 1);
+		}
 
-			UnrestrictedPOV = false;
-			POVHas4Directions = true;
-			HasZAxis = true;
-			HasRudder = true;
-			HasPOV = true;
+		/// <summary>
+		/// Function to retrieve the buttons for the joystick/gamepad.
+		/// </summary>
+		/// <returns>
+		/// The list of buttons for the joystick/gamepad.
+		/// </returns>
+		/// <remarks>Implementors must implement this function so the object can get the list of buttons for the device.</remarks>
+		protected override GorgonJoystick.JoystickButtons GetButtons()
+		{
+ 			_buttonList = new XInputButtons();
+			return _buttonList;
 		}
 
 		/// <summary>
@@ -380,33 +256,26 @@ namespace GorgonLibrary.HID.XInput
 		protected override void PollJoystick()
 		{
 			XI.State state = default(XI.State);
-
-			if ((DeviceLost) && (!BoundWindow.Focused))
-				return;
-			else
-				_deviceLost = false;
-
-			if ((!Enabled) || (!Acquired))
-				return;
 			if (!_controller.IsConnected)
 			{
 				Gorgon.Log.Print("XInput Controller {0} disconnected.", GorgonLoggingLevel.Verbose, _controllerID);
-				_connected = false;
-				ResetData();
+				IsConnected = false;				
 				return;
 			}
 			else
 			{
 				// If we weren't connected before, then get the caps for the device.
-				if (!_connected)
-				{
-					_caps = _controller.GetCapabilities(XI.DeviceQueryType.Any);
-					InitializeData();
-					Gorgon.Log.Print("XInput Controller {0} (ID:{1}) re-connected.", GorgonLoggingLevel.Verbose, _caps.Subtype.ToString(), _controllerID);
+				if (!IsConnected)
+				{					
+					Initialize();					
+					IsConnected = true;
+#if DEBUG
+					XI.Capabilities caps = _controller.GetCapabilities(XI.DeviceQueryType.Any);
+					Gorgon.Log.Print("XInput Controller {0} (ID:{1}) re-connected.", GorgonLoggingLevel.Verbose, caps.Subtype.ToString(), _controllerID);
+#endif
 				}
 			}
 
-			_connected = true;
 			state = _controller.GetState();
 
 			// Do nothing if the data has not changed since the last poll.
@@ -414,22 +283,26 @@ namespace GorgonLibrary.HID.XInput
 				return;
 
 			// Get axis data.
-			DeadZoneAxis(0, state.Gamepad.LeftThumbX);
-			DeadZoneAxis(1, state.Gamepad.LeftThumbY);
-			DeadZoneAxis(2, state.Gamepad.LeftTrigger);
-			DeadZoneAxis(3, state.Gamepad.RightThumbX);
-			DeadZoneAxis(4, state.Gamepad.RightThumbY);
-			DeadZoneAxis(5, state.Gamepad.RightTrigger);
+			X = state.Gamepad.LeftThumbX;
+			Y = state.Gamepad.LeftThumbY;
+			SecondaryX = state.Gamepad.RightThumbX;
+			SecondaryY = state.Gamepad.RightThumbY;
+			Throttle = state.Gamepad.LeftTrigger;
+			Rudder = state.Gamepad.RightTrigger;
 
 			// Get button info.
-			for (int i = 0; i < ButtonCount; i++)
+			if (state.Gamepad.Buttons != XI.GamepadButtonFlags.None)
 			{
-				if ((_button[i] != XI.GamepadButtonFlags.None) && (state.Gamepad.Buttons != XI.GamepadButtonFlags.None))
-					SetButtonValue(i, ((state.Gamepad.Buttons & _button[i]) != 0));
-				else
-					SetButtonValue(i, false);
+				for (int i = 0; i < _button.Length; i++)
+				{
+					if (_button[i] != XI.GamepadButtonFlags.None)
+						_buttonList.SetButtonState(_button[i], KeyState.Down);
+					else
+						_buttonList.SetButtonState(_button[i], KeyState.Up);
+				}
 			}
 
+			// Get POV values.
 			GetPOVData(state.Gamepad.Buttons);
 		}
 
@@ -469,14 +342,20 @@ namespace GorgonLibrary.HID.XInput
 			_controllerID = ID;
 			if (controller.IsConnected)
 			{
-				InitializeData();
-				Gorgon.Log.Print("XInput XBOX 360 controller device {0} interface created (ID:{1}).", GorgonLoggingLevel.Simple, _caps.Subtype.ToString(), ID);
+				IsConnected = true;
+				
+#if DEBUG
+				XI.Capabilities caps = controller.GetCapabilities(XI.DeviceQueryType.Any);
+				Gorgon.Log.Print("XInput XBOX 360 controller device {0} interface created (ID:{1}).", GorgonLoggingLevel.Simple, caps.Subtype.ToString(), ID);
+#endif
 			}
 			else
 			{
 				Gorgon.Log.Print("Disconnected XInput XBOX 360 controller device #{0} interface created.", GorgonLoggingLevel.Simple, ID);
-				_connected = false;				
+				IsConnected = false;				
 			}
+
+			Initialize();
 		}
 		#endregion
 	}

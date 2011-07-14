@@ -90,7 +90,7 @@ namespace GorgonLibrary.Win32
     /// <summary>
     /// Enumeration for joystick buttons.
     /// </summary>
-    internal enum JoystickButtons
+    internal enum JoystickButton
         : uint
     {
         /// <summary></summary>
