@@ -70,6 +70,14 @@ namespace GorgonLibrary.Win32
 		public static extern int joyGetThreshold(int uJoyID, out int puThreshold);
 
 		/// <summary>
+		/// Function to signal that the joystick configuration has changed.
+		/// </summary>
+		/// <param name="doNotUse">Do not use.</param>
+		/// <returns>0 if successful, non-zero if not.</returns>
+		[DllImport("WinMM.dll")]
+		public static extern int joyConfigChanged(int doNotUse);
+
+		/// <summary>
 		/// Function to return the number of joystick devices supported by the current driver.
 		/// </summary>
 		/// <returns>Number of joysticks supported, 0 if no driver is installed.</returns>
@@ -250,7 +258,7 @@ namespace GorgonLibrary.Win32
 							regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
 							className = deviceKey.GetValue("Class").ToString();
 							name = regValue[regValue.Length - 1];
-							result = new GorgonRawInputDeviceName(name, className, regPath, deviceHandle, true);
+							result = new GorgonRawInputDeviceName(name, className, regPath, deviceHandle);
 						}
 
 						return result;

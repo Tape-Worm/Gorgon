@@ -34,10 +34,10 @@
 			// 
 			// labelMouse
 			// 
-			this.labelMouse.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.labelMouse.Location = new System.Drawing.Point(0, 446);
+			this.labelMouse.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelMouse.Location = new System.Drawing.Point(0, 0);
 			this.labelMouse.Name = "labelMouse";
-			this.labelMouse.Size = new System.Drawing.Size(665, 65);
+			this.labelMouse.Size = new System.Drawing.Size(665, 511);
 			this.labelMouse.TabIndex = 0;
 			// 
 			// Form1

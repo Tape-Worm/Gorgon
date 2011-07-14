@@ -54,16 +54,16 @@ namespace GorgonLibrary.HID.XInput
 			/// </summary>
 			/// <param name="name">Name of the button.</param>
 			/// <param name="state">State of the button.</param>
-			public void SetButtonState(XI.GamepadButtonFlags name, KeyState state)
+			public void SetButtonState(XI.GamepadButtonFlags name, bool state)
 			{
 				string enumName = name.ToString();
 
 				if (Contains(enumName))
-					this[enumName] = state;
+					this[enumName] = new JoystickButtonState(enumName, state);
 			}
 			#endregion
 
-			#region Constructor/Destructor.			
+			#region Constructor/Destructor.
 			/// <summary>
 			/// Initializes a new instance of the <see cref="XInputButtons"/> class.
 			/// </summary>
@@ -110,7 +110,7 @@ namespace GorgonLibrary.HID.XInput
 				VibrationMotorRanges[0] = new GorgonMinMax(0, caps.Vibration.LeftMotorSpeed);
 				VibrationMotorRanges[1] = new GorgonMinMax(0, caps.Vibration.RightMotorSpeed);
 
-				ExtraCapabilities = JoystickCapabilityFlags.SupportsDiscreetPOV | JoystickCapabilityFlags.SupportsPOV | JoystickCapabilityFlags.SupportsRudder | JoystickCapabilityFlags.SupportsThrottle | JoystickCapabilityFlags.SupportsVibration;
+				ExtraCapabilities = JoystickCapabilityFlags.SupportsDiscreetPOV | JoystickCapabilityFlags.SupportsPOV | JoystickCapabilityFlags.SupportsRudder | JoystickCapabilityFlags.SupportsThrottle | JoystickCapabilityFlags.SupportsVibration | JoystickCapabilityFlags.SupportsSecondaryXAxis | JoystickCapabilityFlags.SupportsSecondaryYAxis;
 			}
 			#endregion
 
@@ -295,10 +295,10 @@ namespace GorgonLibrary.HID.XInput
 			{
 				for (int i = 0; i < _button.Length; i++)
 				{
-					if (_button[i] != XI.GamepadButtonFlags.None)
-						_buttonList.SetButtonState(_button[i], KeyState.Down);
+					if ((_button[i] != XI.GamepadButtonFlags.None) && ((state.Gamepad.Buttons & _button[i]) == _button[i]))
+						_buttonList.SetButtonState(_button[i], true);
 					else
-						_buttonList.SetButtonState(_button[i], KeyState.Up);
+						_buttonList.SetButtonState(_button[i], false);
 				}
 			}
 

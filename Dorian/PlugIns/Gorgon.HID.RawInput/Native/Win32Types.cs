@@ -140,7 +140,7 @@ namespace GorgonLibrary.Win32
 		[FieldOffset(0)]
 		public int cbSize;
 		[FieldOffset(4)]
-		public int dwType;
+		public RawInputType dwType;
 		[FieldOffset(8)]
 		public RID_DEVICE_INFO_MOUSE mouse;
 		[FieldOffset(8)]
@@ -176,23 +176,23 @@ namespace GorgonLibrary.Win32
         /// <summary>Flags to indicate what information is valid for the device.</summary>
         public JoystickInfoFlags Flags;
         /// <summary>X axis.</summary>
-        public int X;
+        public uint X;
         /// <summary>Y axis.</summary>
-        public int Y;
+        public uint Y;
         /// <summary>Z axis.</summary>
-        public int Z;
+        public uint Z;
         /// <summary>Rudder position.</summary>
-        public int Rudder;
+        public uint Rudder;
         /// <summary>5th axis position.</summary>
-        public int Axis5;
+        public uint Axis5;
         /// <summary>6th axis position.</summary>
-        public int Axis6;
+        public uint Axis6;
         /// <summary>State of buttons.</summary>
         public JoystickButton Buttons;
         /// <summary>Currently pressed button.</summary>
-        public int ButtonNumber;
+        public uint ButtonNumber;
         /// <summary>Angle of the POV hat, in degrees (0 - 35900, divide by 100 to get 0 - 359 degrees.</summary>
-        public int POV;
+        public uint POV;
         /// <summary>Reserved.</summary>
         int Reserved1;
         /// <summary>Reserved.</summary>

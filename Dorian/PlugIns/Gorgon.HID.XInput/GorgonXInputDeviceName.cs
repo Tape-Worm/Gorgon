@@ -69,10 +69,11 @@ namespace GorgonLibrary.HID.XInput
 		/// <param name="index">Index of the controller.</param>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
 		public GorgonXInputDeviceName(string name, string className, string hidPath, XI.Controller controller, int index)
-			: base(name, className, hidPath)
+			: base(name, className, hidPath, false)
 		{
 			Controller = controller;
-			Index = index;
+			Index = index;			
+			IsConnected = controller.IsConnected;
 		}
 		#endregion
 	}

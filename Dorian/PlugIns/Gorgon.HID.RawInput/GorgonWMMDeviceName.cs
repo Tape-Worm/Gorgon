@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, June 30, 2011 6:35:52 AM
+// Created: Thursday, July 14, 2011 2:16:33 PM
 // 
 #endregion
 
@@ -33,37 +33,38 @@ using GorgonLibrary.Win32;
 namespace GorgonLibrary.HID.RawInput
 {
 	/// <summary>
-	/// The Raw Input implementation of a device name.
+	/// The WMM joystick implementation of a device name.
 	/// </summary>
-	internal class GorgonRawInputDeviceName
+	internal class GorgonWMMDeviceName
 		: GorgonInputDeviceName
 	{
+		#region Variables.
+		private int _joyCapsSize = 0;			// Structure size of the JOYCAPS value type.
+		#endregion
+
 		#region Properties.
 		/// <summary>
-		/// Property to return the handle to the device.
+		/// Property to return the ID of the device.
 		/// </summary>
-		public IntPtr Handle
+		public int JoystickID
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return the HID usage.
+		/// Property to return whether the device is connected or not.
 		/// </summary>
-		public Win32.HIDUsage Usage
+		public override bool IsConnected
 		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the HID usage page.
-		/// </summary>
-		public Win32.HIDUsagePage UsagePage
-		{
-			get;
-			private set;
+			get
+			{				
+				JOYCAPS caps = new JOYCAPS();
+				return Win32API.joyGetDevCaps(JoystickID, ref caps, _joyCapsSize) == 0;
+			}
+			protected set
+			{				
+			}
 		}
 		#endregion
 
@@ -74,19 +75,14 @@ namespace GorgonLibrary.HID.RawInput
 		/// <param name="name">The device name.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
-		/// <param name="handle">Handle to the device.</param>
+		/// <param name="joystickID">The joystick ID.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonRawInputDeviceName(string name, string className, string hidPath, IntPtr handle)
+		public GorgonWMMDeviceName(string name, string className, string hidPath, int joystickID)
 			: base(name, className, hidPath, false)
 		{
-			Handle = handle;
-
-			// Get the usage information for the device.			
-			RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
-			Usage = (HIDUsage)deviceInfo.hid.usUsage;
-			UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
-			IsConnected = true;
+			JoystickID = joystickID;
+			_joyCapsSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(JOYCAPS));
 		}
 		#endregion
 	}
