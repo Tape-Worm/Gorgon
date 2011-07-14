@@ -66,6 +66,15 @@ namespace GorgonLibrary.HID
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return whether the device is connected or not.
+		/// </summary>
+		public virtual bool IsConnected
+		{
+			get;
+			protected set;
+		}
 		#endregion
 
 		#region Constructor.
@@ -75,9 +84,10 @@ namespace GorgonLibrary.HID
 		/// <param name="name">The device name.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
+		/// <param name="connected">TRUE if the device is presently connected and operating, FALSE if it is not.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		protected GorgonInputDeviceName(string name, string className, string hidPath)
+		protected GorgonInputDeviceName(string name, string className, string hidPath, bool connected)
 			: base(name)
 		{
 			if (string.IsNullOrEmpty(className))
@@ -89,6 +99,7 @@ namespace GorgonLibrary.HID
 			this.ClassName = className;
 			this.HIDPath = hidPath;
 			this.UUID = Guid.NewGuid();
+			this.IsConnected = connected;
 		}
 		#endregion
 	}

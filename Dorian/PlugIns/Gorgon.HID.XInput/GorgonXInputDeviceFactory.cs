@@ -87,8 +87,6 @@ namespace GorgonLibrary.HID.XInput
 						caps = controllers[i].GetCapabilities(XI.DeviceQueryType.Any);
 						devices.Add(new GorgonXInputDeviceName(string.Format("{0}", i + 1) + ": XInput " + caps.Subtype.ToString() + " Controller", caps.Subtype.ToString(), "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
 					}
-					else
-						devices.Add(new GorgonXInputDeviceName("Any XInput device", caps.Type.ToString(), "XInput_Any", controllers[i], i));
 				}
 				else
 					devices.Add(new GorgonXInputDeviceName(string.Format("{0}", i + 1) + ": XInput Disconnected Controller ", "Disconnected Controller", "XInput_" + controllerIndex[i].ToString(), controllers[i], i));

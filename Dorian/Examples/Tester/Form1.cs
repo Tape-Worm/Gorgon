@@ -27,15 +27,17 @@ namespace Tester
 
 		private bool Idle(GorgonFrameRate timing)
 		{
-			labelMouse.Text = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString();
+			labelMouse.Text = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString() + "\n\n";
 
 			if (joystick != null)
 			{
-				labelMouse.Text = string.Format("Left Stick: {0}x{1} ({8})  Right stick:{2}x{3} ({9})  Rudder:{4}  Throttle:{5}\nPOV: {6} POV Direction: {7}\nButtons: ", 
+				joystick.Poll();
+
+				labelMouse.Text = string.Format("Left Stick: {0}x{1} ({8})  Right stick:{2}x{3} ({9})  Rudder:{4}  Throttle:{5}\nPOV: {6} POV Direction: {7}\n", 
 						joystick.X, joystick.Y, joystick.SecondaryX, joystick.SecondaryY, joystick.Rudder, joystick.Throttle, joystick.POV, joystick.Direction.POV, joystick.Direction.X|joystick.Direction.Y, joystick.Direction.SecondaryX|joystick.Direction.SecondaryY);
 
 				for (int i = 0; i < joystick.Capabilities.ButtonCount; i++)
-					labelMouse.Text += joystick.Button[i].ToString() + "  ";
+					labelMouse.Text += "Button :" + joystick.Button[i].Name + " " + joystick.Button[i].IsPressed.ToString() + "\n";
 			}
 
 			return true;
@@ -58,11 +60,35 @@ namespace Tester
 
 				mouse = input.CreatePointingDevice();
 				keyboard = input.CreateKeyboard();
-				joystick = xinput.CreateJoystick(xinput.JoystickDevices[0]);
-				joystick.DeadZone.X = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-				joystick.DeadZone.Y = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-				joystick.DeadZone.SecondaryX = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-				joystick.DeadZone.SecondaryY = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+
+				foreach (GorgonInputDeviceName name in xinput.JoystickDevices)
+				{
+					if (name.IsConnected)
+					{
+						joystick = xinput.CreateJoystick(name);
+						break;
+					}
+				}
+
+				if (joystick == null) 
+				{
+					foreach (GorgonInputDeviceName name in input.JoystickDevices)
+					{
+						if (name.IsConnected)
+						{
+							joystick = input.CreateJoystick(name);
+							break;
+						}
+					}
+				}
+
+				if (joystick != null)
+				{
+					joystick.DeadZone.X = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+					joystick.DeadZone.Y = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+					joystick.DeadZone.SecondaryX = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+					joystick.DeadZone.SecondaryY = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				}
 
 				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");

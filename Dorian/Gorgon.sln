@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas", "Tools\Atlas\Atlas.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework", "Tools\GorgonFramework\GorgonFramework.csproj", "{EE89FBF2-3B81-4371-8096-8DEB0F2B00A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Examples\Tester\Tester.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_InputAndFS", "Examples\Tester\Tester_InputAndFS.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem", "Libraries\Gorgon.FileSystem\Gorgon.FileSystem.csproj", "{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}"
 EndProject

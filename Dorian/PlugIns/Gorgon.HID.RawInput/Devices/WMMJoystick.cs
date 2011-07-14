@@ -52,9 +52,9 @@ namespace GorgonLibrary.HID.RawInput
 			/// </summary>
 			/// <param name="index">Index of the button.</param>
 			/// <param name="state">State to set.</param>
-			public void SetButtonState(int index, KeyState state)
+			public void SetButtonState(int index, bool state)
 			{
-				this[index] = state;
+				this[index] = new JoystickButtonState(this[index].Name, state);
 			}
 			#endregion
 
@@ -90,8 +90,13 @@ namespace GorgonLibrary.HID.RawInput
 
 				error = Win32API.joyGetDevCaps(joystickID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
 
-				if (error != 0)
-					throw new GorgonException(GorgonResult.DriverError, "Cannot create the joystick interface.");
+				// If the joystick is disconnected then leave.
+				if (error == 0xA7)
+					return;
+
+				// If it's any other error, then throw an exception.
+				if (error > 0)
+					throw new GorgonException(GorgonResult.CannotRead, "Cannot read capabilities from joystick ID (" + joystickID.ToString() + ").\nError code:" + error.ToString());
 
 				// Gather device info.
 				if ((caps.Capabilities & JoystickCaps.HasZ) == JoystickCaps.HasZ)
@@ -113,19 +118,27 @@ namespace GorgonLibrary.HID.RawInput
 						capsFlags |= JoystickCapabilityFlags.SupportsContinuousPOV;
 				}
 
+				if ((caps.Capabilities & JoystickCaps.HasU) == JoystickCaps.HasU)
+				{
+					capsFlags |= JoystickCapabilityFlags.SupportsSecondaryXAxis;
+					SecondaryXAxisRange = new GorgonMinMax((int)caps.Axis5Minimum, (int)caps.Axis5Maximum);
+				}
+
+				if ((caps.Capabilities & JoystickCaps.HasV) == JoystickCaps.HasV)
+				{
+					capsFlags |= JoystickCapabilityFlags.SupportsSecondaryYAxis;
+					SecondaryYAxisRange = new GorgonMinMax((int)caps.Axis6Minimum, (int)caps.Axis6Maximum);
+				}
+
 				ExtraCapabilities = capsFlags;
-				AxisCount = (int)caps.MaximumAxes;
+				AxisCount = (int)caps.AxisCount;
 				ButtonCount = (int)caps.ButtonCount;
 				ManufacturerID = caps.ManufacturerID;
 				ProductID = caps.ProductID;
 
-				// Get ranges.
-				XAxisRange = new GorgonMinMax((int)caps.MinimumX, (int)caps.MaximumX); 
-				YAxisRange = new GorgonMinMax((int)caps.MinimumY, (int)caps.MaximumY);
-				if (AxisCount > 4)
-					SecondaryXAxisRange = new GorgonMinMax((int)caps.Axis5Minimum, (int)caps.Axis5Maximum);
-				if (AxisCount > 5)
-					SecondaryYAxisRange = new GorgonMinMax((int)caps.Axis6Minimum, (int)caps.Axis6Maximum);				
+				// Get primary axis ranges.  Force the range to split into halfs going from negative to positive so that 0 is our center.
+				XAxisRange = new GorgonMinMax(-((int)caps.MaximumX / 2) - 1, ((int)caps.MaximumX / 2)); 
+				YAxisRange = new GorgonMinMax(-((int)caps.MaximumY / 2) - 1, ((int)caps.MaximumY / 2));
 			}
 			#endregion
 
@@ -187,6 +200,17 @@ namespace GorgonLibrary.HID.RawInput
 
 		#region Methods.
 		/// <summary>
+		/// Function to shift the value to fall within the axis range.
+		/// </summary>
+		/// <param name="currentValue">Value to shift.</param>
+		/// <param name="axisRange">Range to evaluate.</param>
+		/// <returns>The shifted value.</returns>
+		private int CenterValue(int currentValue, GorgonMinMax axisRange)
+		{
+			return currentValue - (axisRange.Range / 2);
+		}
+
+		/// <summary>
 		/// Function to retrieve the state of the joystick.
 		/// </summary>
 		/// <returns></returns>
@@ -202,12 +226,12 @@ namespace GorgonLibrary.HID.RawInput
 			// Determine which data we want to return.
 			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) == JoystickCapabilityFlags.SupportsThrottle)
 				joyInfo.Flags |= JoystickInfoFlags.ReturnZ;
-			if (Capabilities.AxisCount > 4)
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryXAxis) == JoystickCapabilityFlags.SupportsSecondaryXAxis)
 				joyInfo.Flags |= JoystickInfoFlags.ReturnAxis5;
-			if (Capabilities.AxisCount > 5)
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryYAxis) == JoystickCapabilityFlags.SupportsSecondaryYAxis)
 				joyInfo.Flags |= JoystickInfoFlags.ReturnAxis6;
 			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) == JoystickCapabilityFlags.SupportsRudder)
-				joyInfo.Flags |= JoystickInfoFlags.ReturnRudder;
+			    joyInfo.Flags |= JoystickInfoFlags.ReturnRudder;
 			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsPOV) == JoystickCapabilityFlags.SupportsPOV)
 			{
 				joyInfo.Flags |= JoystickInfoFlags.ReturnPOV;
@@ -216,11 +240,17 @@ namespace GorgonLibrary.HID.RawInput
 			}
 
 			error = Win32API.joyGetPosEx(_joystickID, ref joyInfo);
-			if (error > 0)
+			
+			// If the joystick is disconnected then leave.
+			if (error == 0xA7)
 			{
 				IsConnected = false;
 				return default(JOYINFOEX);
 			}
+			
+			// If it's any other error, then throw an exception.
+			if (error > 0)
+				throw new GorgonException(GorgonResult.CannotRead, "Cannot read data from joystick ID (" + _joystickID.ToString() + ").\nError code:" + error.ToString());
 
 			IsConnected = true;
 
@@ -261,33 +291,33 @@ namespace GorgonLibrary.HID.RawInput
 			if (!IsConnected)
 				return;
 
-			// Get primary axis data.
-			X = joyInfo.X;
-			Y = joyInfo.Y;
+			// Get primary axis data.  Center between the range.
+			X = CenterValue((int)joyInfo.X, Capabilities.XAxisRange);
+			Y = -CenterValue((int)joyInfo.Y, Capabilities.YAxisRange);
 
 			// Get secondary axis data.
-			if (Capabilities.AxisCount > 4)
-				SecondaryX = joyInfo.Axis5;
-			if (Capabilities.AxisCount > 5)
-				SecondaryY = joyInfo.Axis6;
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryXAxis) == JoystickCapabilityFlags.SupportsSecondaryXAxis)
+				SecondaryX = CenterValue((int)joyInfo.Axis5, Capabilities.SecondaryXAxisRange);
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryYAxis) == JoystickCapabilityFlags.SupportsSecondaryYAxis)
+				SecondaryY = -CenterValue((int)joyInfo.Axis6, Capabilities.SecondaryYAxisRange);
 
 			// Get throttle/rudder info.
 			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) == JoystickCapabilityFlags.SupportsThrottle)
-				Throttle = joyInfo.Z;
+				Throttle = CenterValue((int)joyInfo.Z, Capabilities.ThrottleAxisRange);
 			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) == JoystickCapabilityFlags.SupportsRudder)
-				Rudder = joyInfo.Rudder;
+				Rudder = CenterValue((int)joyInfo.Rudder, Capabilities.RudderAxisRange);
 						
 			// Get POV data.
 			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsPOV) == JoystickCapabilityFlags.SupportsPOV)
-				POV = joyInfo.POV;
+				POV = (int)joyInfo.POV;
 
 			// Update buttons.
 			for (int i = 0; i < _buttonStates.Count; i++)
 			{
 				if ((joyInfo.Buttons & (JoystickButton)(1 << i)) != 0)
-					_buttonStates.SetButtonState(i, KeyState.Down);
+					_buttonStates.SetButtonState(i, true);
 				else
-					_buttonStates.SetButtonState(i, KeyState.Up);
+					_buttonStates.SetButtonState(i, false);
 			}
 		}
 

@@ -114,7 +114,15 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Supports vibration.
 		/// </summary>
-		SupportsVibration = 32
+		SupportsVibration = 32,
+		/// <summary>
+		/// Supports a secondary X axis.
+		/// </summary>
+		SupportsSecondaryXAxis = 64,
+		/// <summary>
+		/// Supports a secondary Y axis.
+		/// </summary>
+		SupportsSecondaryYAxis = 128
 	}
 
 	/// <summary>
@@ -127,6 +135,60 @@ namespace GorgonLibrary.HID
 	public abstract class GorgonJoystick
 		: GorgonInputDevice
 	{
+		#region Value Types.
+		/// <summary>
+		/// Button state data.
+		/// </summary>
+		public struct JoystickButtonState
+			: INamedObject
+		{
+			#region Variables.
+			private string _name;
+			private bool _state;
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return whether the button is pressed or not.
+			/// </summary>
+			public bool IsPressed
+			{
+				get
+				{
+					return _state;
+				}
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="JoystickButtonState"/> struct.
+			/// </summary>
+			/// <param name="name">The name of the button.</param>
+			/// <param name="state">State of the button, TRUE for pressed, FALSE if not.</param>
+			public JoystickButtonState(string name, bool state)
+			{
+				GorgonUtility.AssertParamString(name, "name");
+				_name = name;
+				_state = state;
+			}
+			#endregion
+
+			#region INamedObject Members
+			/// <summary>
+			/// Property to return the name of the button.
+			/// </summary>
+			public string Name
+			{
+				get 
+				{
+					return _name;
+				}
+			}
+			#endregion
+		}
+		#endregion
+
 		#region Classes.
 		/// <summary>
 		/// Contains the capabilities of the joystick.
@@ -269,7 +331,7 @@ namespace GorgonLibrary.HID
 				protected set
 				{
 					_y2AxisRange = value;
-					SecondaryXAxisMidRange = CalculateMidRange(value);
+					SecondaryYAxisMidRange = CalculateMidRange(value);
 				}
 			}
 
@@ -588,57 +650,42 @@ namespace GorgonLibrary.HID
 				Reset();
 			}
 			#endregion
-		}
+		}		
 
 		/// <summary>
 		/// Defines the state of the buttons for the device.
 		/// </summary>
 		public abstract class JoystickButtons
-			: IEnumerable<KeyState>
+			: GorgonBaseNamedObjectCollection<JoystickButtonState>
 		{
-			#region Variables.
-			private SortedList<string, KeyState> _buttonList = null;		// List of buttons.
-			#endregion
-
 			#region Properties.
-			/// <summary>
-			/// Property to return the number of buttons in the collection.
-			/// </summary>
-			public int Count
-			{
-				get
-				{
-					return _buttonList.Count;
-				}
-			}
-
 			/// <summary>
 			/// Property to return a button state by its index.
 			/// </summary>
-			public KeyState this[int index]
+			public JoystickButtonState this[int index]
 			{
 				get
 				{
-					return _buttonList[_buttonList.Keys[index]];
+					return GetItem(index);
 				}
 				protected set
 				{
-					_buttonList[_buttonList.Keys[index]] = value;
+					SetItem(value.Name, value);
 				}
 			}
 
 			/// <summary>
 			/// Property to return a button state by the button name.
 			/// </summary>
-			public KeyState this[string name]
+			public JoystickButtonState this[string name]
 			{
 				get
 				{
-					return _buttonList[name];
+					return GetItem(name);
 				}
 				protected set
 				{
-					_buttonList[name] = value;
+					SetItem(name, value);
 				}
 			}
 			#endregion
@@ -657,10 +704,7 @@ namespace GorgonLibrary.HID
 			{
 				GorgonUtility.AssertParamString(name, "name");
 
-				if (_buttonList.ContainsKey(name))
-					throw new ArgumentException("name", "The button '" + name + "' already exists.");
-
-				_buttonList.Add(name, KeyState.Up);
+				AddItem(new JoystickButtonState(name, false));
 			}
 
 			/// <summary>
@@ -669,17 +713,7 @@ namespace GorgonLibrary.HID
 			internal void Reset()
 			{
 				for (int i = 0; i < Count; i++)
-					this[i] = KeyState.Up;
-			}
-
-			/// <summary>
-			/// Function to return whether the list contains a button name.
-			/// </summary>
-			/// <param name="name">The button name to look for.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
-			public bool Contains(string name)
-			{
-				return _buttonList.ContainsKey(name);
+					this[i] = new JoystickButtonState(this[i].Name, false);
 			}
 			#endregion
 
@@ -688,33 +722,8 @@ namespace GorgonLibrary.HID
 			/// Initializes a new instance of the <see cref="JoystickButtons"/> class.
 			/// </summary>
 			protected JoystickButtons()
-			{
-				_buttonList = new SortedList<string, KeyState>();
-			}
-			#endregion
-
-			#region IEnumerable<KeyState> Members
-			/// <summary>
-			/// Gets the enumerator.
-			/// </summary>
-			/// <returns></returns>
-			public IEnumerator<KeyState> GetEnumerator()
-			{
-				foreach (KeyValuePair<string, KeyState> state in _buttonList)
-					yield return state.Value;
-			}
-			#endregion
-
-			#region IEnumerable Members
-			/// <summary>
-			/// Returns an enumerator that iterates through a collection.
-			/// </summary>
-			/// <returns>
-			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-			/// </returns>
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-			{
-				return GetEnumerator();
+				: base(false)
+			{				
 			}
 			#endregion
 		}
@@ -725,7 +734,7 @@ namespace GorgonLibrary.HID
 		private JoystickAxisDirections _directions = null;								// Axis directions.
 		#endregion
 
-		#region Properties.
+		#region Properties.		
 		/// <summary>
 		/// Property to set or return flag to indicate that the device is in a lost state.
 		/// </summary>
@@ -897,7 +906,7 @@ namespace GorgonLibrary.HID
 				throw new GorgonException(GorgonResult.NotInitialized, "The joystick is not initialized.");
 
 			// The dead zone range needs to be within the range of the axis.
-			if (!deadZone.Contains(value))
+			if ((!deadZone.Contains(value)) || (deadZone == GorgonMinMax.Empty))
 				return value;
 
 			return midRange;
@@ -906,43 +915,47 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to get an orientation for a value.
 		/// </summary>
-		/// <param name="value">Value to dead zone.</param>
+		/// <param name="value">Value to evaluate.</param>
+		/// <param name="deadZone">The dead zone.</param>
 		/// <param name="orientation">Orientation of the axis.</param>
 		/// <param name="midRange">Mid point for the range.</param>
 		/// <returns>The direction that the axis is pointed at.</returns>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
-		private JoystickDirections GetDirection(int value, JoystickDirections orientation, int midRange)
+		private JoystickDirections GetDirection(int value, GorgonMinMax deadZone, JoystickDirections orientation, int midRange)
 		{
 			JoystickDirections result = JoystickDirections.Center;
 
 			if (Capabilities == null)
 				throw new GorgonException(GorgonResult.NotInitialized, "The joystick is not initialized.");
 
-			switch (orientation)
+			if ((deadZone == GorgonMinMax.Empty) || (!deadZone.Contains(value)))
 			{
-				case JoystickDirections.Horizontal:
-					if (value > midRange)
-						result = JoystickDirections.Right;
-					else
-						result = JoystickDirections.Left;
-					break;
-				case JoystickDirections.Vertical:
-					if (value > midRange)
-						result = JoystickDirections.Down;
-					else
-						result = JoystickDirections.Up;
-					break;
-				default:
-					if (orientation != JoystickDirections.Vector)
-						orientation = JoystickDirections.Vector;
-					if (value > midRange)
-						result = JoystickDirections.MoreThanCenter;
-					else
-						result = JoystickDirections.LessThanCenter;
-					break;
+				switch (orientation)
+				{
+					case JoystickDirections.Horizontal:
+						if (value > midRange)
+							result = JoystickDirections.Right;
+						if (value < midRange)
+							result = JoystickDirections.Left;
+						break;
+					case JoystickDirections.Vertical:
+						if (value < midRange)
+							result = JoystickDirections.Down;
+						if (value > midRange)
+							result = JoystickDirections.Up;
+						break;
+					default:
+						if (orientation != JoystickDirections.Vector)
+							orientation = JoystickDirections.Vector;
+						if (value > midRange)
+							result = JoystickDirections.MoreThanCenter;
+						if (value < midRange)
+							result = JoystickDirections.LessThanCenter;
+						break;
+				}
 			}
 
-			result |= orientation;
+			//result |= orientation;
 
 			return result;
 		}
@@ -990,8 +1003,8 @@ namespace GorgonLibrary.HID
 		protected void Initialize()
 		{
 			DeadZone = new JoystickDeadZoneAxes();
-			Button = GetButtons();
 			Capabilities = GetCapabilities();
+			Button = GetButtons();
 			if (Capabilities == null)
 				throw new GorgonException(GorgonResult.NotInitialized, "The device was not initialized successfully.");
 			SetDefaults();
@@ -1056,22 +1069,58 @@ namespace GorgonLibrary.HID
 
 			// Apply dead zones and get directions.
 			X = DeadZoneValue(X, DeadZone.X, Capabilities.XAxisMidRange);
-			Direction.X = GetDirection(X, JoystickDirections.Horizontal, Capabilities.XAxisMidRange);
+			Direction.X = GetDirection(X, DeadZone.X, JoystickDirections.Horizontal, Capabilities.XAxisMidRange);
 
 			Y = DeadZoneValue(Y, DeadZone.Y, Capabilities.YAxisMidRange);
-			Direction.Y = GetDirection(Y, JoystickDirections.Vertical, Capabilities.YAxisMidRange);
+			Direction.Y = GetDirection(Y, DeadZone.Y, JoystickDirections.Vertical, Capabilities.YAxisMidRange);
 
-			SecondaryX = DeadZoneValue(SecondaryX, DeadZone.SecondaryX, Capabilities.SecondaryXAxisMidRange);
-			Direction.SecondaryX = GetDirection(SecondaryX, JoystickDirections.Horizontal, Capabilities.SecondaryXAxisMidRange);
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryXAxis) == JoystickCapabilityFlags.SupportsSecondaryXAxis)
+			{
+				SecondaryX = DeadZoneValue(SecondaryX, DeadZone.SecondaryX, Capabilities.SecondaryXAxisMidRange);
+				Direction.SecondaryX = GetDirection(SecondaryX, DeadZone.SecondaryX, JoystickDirections.Horizontal, Capabilities.SecondaryXAxisMidRange);
+			}
+			else
+			{
+				SecondaryX = 0;
+				Direction.SecondaryX = JoystickDirections.Center;
+			}
 
-			SecondaryY = DeadZoneValue(SecondaryY, DeadZone.SecondaryX, Capabilities.SecondaryXAxisMidRange);
-			Direction.SecondaryY = GetDirection(SecondaryY, JoystickDirections.Vertical, Capabilities.SecondaryYAxisMidRange);
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryYAxis) == JoystickCapabilityFlags.SupportsSecondaryYAxis)
+			{
+				SecondaryY = DeadZoneValue(SecondaryY, DeadZone.SecondaryY, Capabilities.SecondaryXAxisMidRange);
+				Direction.SecondaryY = GetDirection(SecondaryY, DeadZone.SecondaryY, JoystickDirections.Vertical, Capabilities.SecondaryYAxisMidRange);
+			}
+			else
+			{
+				SecondaryY = 0;
+				Direction.SecondaryY = JoystickDirections.Center;
+			}
 
-			Throttle = DeadZoneValue(Throttle, DeadZone.Throttle, Capabilities.ThrottleAxisMidRange);
-			Direction.Throttle = GetDirection(Throttle, JoystickDirections.Vector, Capabilities.ThrottleAxisMidRange);
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) == JoystickCapabilityFlags.SupportsThrottle)
+			{
+				Throttle = DeadZoneValue(Throttle, DeadZone.Throttle, Capabilities.ThrottleAxisMidRange);
+				Direction.Throttle = GetDirection(Throttle, DeadZone.Throttle, JoystickDirections.Vector, Capabilities.ThrottleAxisMidRange);
+			}
+			else
+			{
+				Throttle = 0;
+				Direction.Throttle = JoystickDirections.Center;
+			}
 
-			Rudder = DeadZoneValue(Rudder, DeadZone.Rudder, Capabilities.RudderAxisMidRange);
-			Direction.X = GetDirection(Rudder, JoystickDirections.Vector, Capabilities.RudderAxisMidRange);
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) == JoystickCapabilityFlags.SupportsRudder)
+			{
+				Rudder = DeadZoneValue(Rudder, DeadZone.Rudder, Capabilities.RudderAxisMidRange);
+				Direction.Rudder = GetDirection(Rudder, DeadZone.Rudder, JoystickDirections.Vector, Capabilities.RudderAxisMidRange);
+			}
+			else
+			{
+				Rudder = 0;
+				Direction.Rudder = JoystickDirections.Center;
+			}
+
+			// Wrap POV if it's higher than 359.99 degrees.
+			if (POV > 35999)
+				POV = -1;
 
 			// Get POV direction.
 			if (POV == -1)

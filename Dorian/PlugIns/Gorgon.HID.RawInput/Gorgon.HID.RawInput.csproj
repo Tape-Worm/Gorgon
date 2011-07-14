@@ -59,6 +59,7 @@
     <Compile Include="Devices\RawHIDDevice.cs" />
     <Compile Include="GorgonRawInput.cs" />
     <Compile Include="GorgonRawInputDeviceName.cs" />
+    <Compile Include="GorgonWMMDeviceName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Devices\RawKeyboard.cs" />
     <Compile Include="Devices\RawPointingDevice.cs" />

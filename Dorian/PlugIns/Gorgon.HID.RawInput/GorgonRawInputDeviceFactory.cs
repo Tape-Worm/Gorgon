@@ -129,7 +129,7 @@ namespace GorgonLibrary.HID.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, true);
+						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle);
 					}
 					
 					result.Add(name.Name, name);
@@ -168,7 +168,7 @@ namespace GorgonLibrary.HID.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, true);
+						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle);
 					}
 
 					result.Add(name.Name, name);
@@ -184,14 +184,14 @@ namespace GorgonLibrary.HID.RawInput
 		/// <returns>A list of joystick device names.</returns>
 		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateJoysticksDevices()
 		{
-			SortedList<string, GorgonRawInputDeviceName> result = null;
+			SortedList<string, GorgonWMMDeviceName> result = null;
 			JOYCAPS capabilities = new JOYCAPS();	// Joystick capabilities.
 			string name = string.Empty;				// Name of the joystick.
 			int error = 0;							// Error code.
 			int deviceCount = 0;					// Number of devices.
 			int nameCount = 0;						// Name counter.
 
-			result = new SortedList<string, GorgonRawInputDeviceName>();
+			result = new SortedList<string, GorgonWMMDeviceName>();
 			deviceCount = Win32API.joyGetNumDevs();
 
 			Gorgon.Log.Print("Enumerating joysticks...", GorgonLoggingLevel.Intermediate);
@@ -219,7 +219,7 @@ namespace GorgonLibrary.HID.RawInput
 							keyName = name + " " + nameCount.ToString();
 						}
 
-						result.Add(keyName, new GorgonRawInputDeviceName(keyName, "Game device", "N/A", new IntPtr(i), false));
+						result.Add(keyName, new GorgonWMMDeviceName(keyName, "Game device", "N/A", i));
 					}
 				}
 			}
@@ -259,7 +259,7 @@ namespace GorgonLibrary.HID.RawInput
 					while (result.ContainsKey(name.Name))
 					{
 						deviceCount++;
-						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle, true);
+						name = new GorgonRawInputDeviceName(name.Name + " " + deviceCount.ToString(), name.ClassName, name.HIDPath, name.Handle);
 					}
 
 					result.Add(name.Name, name);
@@ -349,7 +349,7 @@ namespace GorgonLibrary.HID.RawInput
 			if (joystickName == null)
 				throw new ArgumentNullException("joystickName");
 
-			joystick = new WMMJoystick(this, ((GorgonRawInputDeviceName)joystickName).Handle.ToInt32(), joystickName.Name, window);
+			joystick = new WMMJoystick(this, ((GorgonWMMDeviceName)joystickName).JoystickID, joystickName.Name, window);
 			joystick.Enabled = true;
 
 			return joystick;
