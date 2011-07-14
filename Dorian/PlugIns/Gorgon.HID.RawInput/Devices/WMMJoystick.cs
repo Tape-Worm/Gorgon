@@ -41,31 +41,9 @@ namespace GorgonLibrary.HID.RawInput
 	{
 		#region Variables.
 		private int _joystickID = 0;			// ID of the joystick.
-		private bool _deviceLost = false;		// Flag to indicate that the device is lost.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return flag to indicate that the device is in a lost state.
-		/// </summary>
-		internal bool DeviceLost
-		{
-			get
-			{
-				if (!AllowBackground)
-					return _deviceLost;
-				else
-					return false;
-			}
-			set
-			{
-				if (AllowBackground)
-					_deviceLost = false;					
-				else
-					_deviceLost = value;
-			}
-		}
-
 		/// <summary>
 		/// Property to return whether the device is acquired or not.
 		/// </summary>		
@@ -80,7 +58,7 @@ namespace GorgonLibrary.HID.RawInput
 				base.Acquired = value;
 
 				if (value)
-					_deviceLost = false;
+					DeviceLost = false;
 			}
 		}
 
@@ -102,7 +80,7 @@ namespace GorgonLibrary.HID.RawInput
 		/// Property to return the x coordinate for the joystick.
 		/// </summary>
 		/// <value></value>
-		public override float X
+		public override int X
 		{
 			get 
 			{
@@ -114,7 +92,7 @@ namespace GorgonLibrary.HID.RawInput
 		/// Property to return the y coordinate for the joystick.
 		/// </summary>
 		/// <value></value>
-		public override float Y
+		public override int Y
 		{
 			get 
 			{
@@ -125,28 +103,28 @@ namespace GorgonLibrary.HID.RawInput
 		/// <summary>
 		/// Property to return the secondary X axis for the joystick (if applicable).
 		/// </summary>
-		public override float SecondaryX
+		public override int SecondaryX
 		{
 			get
 			{
-				if (AxisCount > 3)
+				if (Capabilities.AxisCount > 3)
 					return Axes[4];
 				else
-					return float.NaN;
+					return 0;
 			}
 		}
 
 		/// <summary>
 		/// Property to return the secondary Y axis for the joystick (if applicable).
 		/// </summary>
-		public override float SecondaryY
+		public override int SecondaryY
 		{
 			get
 			{
-				if (AxisCount > 4)
+				if (Capabilities.AxisCount > 4)
 					return Axes[5];
 				else
-					return float.NaN;
+					return 0;
 			}
 		}
 
@@ -155,14 +133,14 @@ namespace GorgonLibrary.HID.RawInput
 		/// Property to return the z coordinate for the joystick.
 		/// </summary>
 		/// <value></value>
-		public override float Z
+		public override int ThrottleZ
 		{
 			get 
 			{
-				if (HasZAxis)
+				if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) == JoystickCapabilityFlags.SupportsThrottle)
 					return Axes[2];
 				else
-					return float.NaN;
+					return 0;
 			}
 		}
 
@@ -174,10 +152,10 @@ namespace GorgonLibrary.HID.RawInput
 		{
 			get 
 			{
-				if (HasRudder)
+				if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) == JoystickCapabilityFlags.SupportsRudder)
 					return Axes[3];
 				else
-					return float.NaN;
+					return 0;
 			}
 		}
 
@@ -196,49 +174,68 @@ namespace GorgonLibrary.HID.RawInput
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to set dead zone limited axis data.
-		/// </summary>
-		/// <param name="axis">Axis to work with.</param>
-		/// <param name="joyData">Joystick data for the axis.</param>
-		private void DeadZoneAxis(int axis, int joyData)
+		private JOYINFOEX GetWin32JoystickData()
 		{
-			float midrange = AxisRanges[axis].Minimum + (AxisRanges[axis].Range / 2);		// Mid range value.
+			JOYINFOEX joyInfo = new JOYINFOEX();		// Joystick information.
+			int error = 0;								// Error code.
+			
+			// Set up joystick info.
+			joyInfo.Size = Marshal.SizeOf(typeof(JOYINFOEX));
+			joyInfo.Flags = JoystickInfoFlags.ReturnButtons | JoystickInfoFlags.ReturnX | JoystickInfoFlags.ReturnY;
 
-			// The dead zone range needs to be within the range of the axis.
-			if (!DeadZone[axis].Contains(joyData))
+			// Determine which data we want to return.
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) == JoystickCapabilityFlags.SupportsThrottle)
+				joyInfo.Flags |= JoystickInfoFlags.ReturnZ;
+			if (Capabilities.AxisCount > 4)
+				joyInfo.Flags |= JoystickInfoFlags.ReturnAxis5;
+			if (Capabilities.AxisCount > 5)
+				joyInfo.Flags |= JoystickInfoFlags.ReturnAxis6;
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) == JoystickCapabilityFlags.SupportsRudder)
+				joyInfo.Flags |= JoystickInfoFlags.ReturnRudder;
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsPOV) == JoystickCapabilityFlags.SupportsPOV)
 			{
-				SetAxisData(axis, joyData);
-				AxisDirection[axis] = JoystickDirections.Center;
+				joyInfo.Flags |= JoystickInfoFlags.ReturnPOV;
+				if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsContinuousPOV) == JoystickCapabilityFlags.SupportsContinuousPOV)
+					joyInfo.Flags |= JoystickInfoFlags.ReturnPOVContinuousDegreeBearings;
+			}
 
-				// Get direction.
-				switch (axis)
-				{
-					case 0:
-						if (joyData < midrange)
-							AxisDirection[axis] |= JoystickDirections.Left;
-						else
-							AxisDirection[axis] |= JoystickDirections.Right;
-						break;
-					case 1:
-						if (joyData < midrange)
-							AxisDirection[axis] |= JoystickDirections.Up;
-						else
-							AxisDirection[axis] |= JoystickDirections.Down;
-						break;
-					default:
-						if (joyData < midrange)
-							AxisDirection[axis] |= JoystickDirections.LessThanCenter;
-						else
-							AxisDirection[axis] |= JoystickDirections.MoreThanCenter;
-						break;
-				}
-			}
-			else
-			{
-				SetAxisData(axis, midrange);
-				AxisDirection[axis] = JoystickDirections.Center;
-			}
+			error = Win32API.joyGetPosEx(_joystickID, ref joyInfo);
+			if (error > 0)
+				return default(JOYINFOEX);
+
+			return joyInfo;
+		}
+
+		/// <summary>
+		/// Function to parse the POV data.
+		/// </summary>
+		/// <param name="POVdata">POV data to parse.</param>
+		private void GetPOVData(int POVdata)
+		{
+			// Get POV data.
+			POV[0] = POVdata;
+
+			if (POVdata == -1)
+				POVDirection[0] = JoystickDirections.Center;
+
+			// Determine direction.
+			if ((POVdata < 18000) && (POVdata > 9000))
+				POVDirection[0] = JoystickDirections.Down | JoystickDirections.Right;
+			if ((POVdata > 18000) && (POVdata < 27000))
+				POVDirection[0] = JoystickDirections.Down | JoystickDirections.Left;
+			if ((POVdata > 27000) && (POVdata < 36000))
+				POVDirection[0] = JoystickDirections.Up | JoystickDirections.Left;
+			if ((POVdata > 0) && (POVdata < 9000))
+				POVDirection[0] = JoystickDirections.Up | JoystickDirections.Right;
+
+			if (POVdata == 18000)
+				POVDirection[0] = JoystickDirections.Down;
+			if (POVdata == 0)
+				POVDirection[0] = JoystickDirections.Up;
+			if (POVdata == 9000)
+				POVDirection[0] = JoystickDirections.Right;
+			if (POVdata == 27000)
+				POVDirection[0] = JoystickDirections.Left;
 		}
 
 		/// <summary>
@@ -246,77 +243,64 @@ namespace GorgonLibrary.HID.RawInput
 		/// </summary>
 		protected override void InitializeData()
 		{
-			JOYCAPS caps = default(JOYCAPS);		// Joystick capabilities.
-			int threshold = 0;
+			JOYCAPS caps = default(JOYCAPS);									// Joystick capabilities.
 			int error = 0;
+			GorgonMinMax[] axisRanges = null;									// Axis ranges.
+			int axisCount = 0;													// Axis count.
+			JoystickCapabilityFlags capsFlags = JoystickCapabilityFlags.None;	// Extra capability flags.
 
 			error = Win32API.joyGetDevCaps(_joystickID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
 
 			if (error != 0)
 				throw new GorgonException(GorgonResult.DriverError, "Cannot create the joystick interface.");
 
-			error = Win32API.joyGetThreshold(_joystickID, out threshold);
+			axisCount = 2;
 
-			if (error != 0)
-				throw new GorgonException(GorgonResult.DriverError, "Cannot create the joystick interface.");
+			// Gather device info.
+			if ((caps.Capabilities & JoystickCaps.HasZ) == JoystickCaps.HasZ)
+			{
+				capsFlags |= JoystickCapabilityFlags.SupportsThrottle;
+				axisCount++;
+			}
+			if ((caps.Capabilities & JoystickCaps.HasRudder) == JoystickCaps.HasRudder)
+			{
+				capsFlags |= JoystickCapabilityFlags.SupportsRudder;
+				axisCount++;
+			}
+			if ((caps.Capabilities & JoystickCaps.HasU) == JoystickCaps.HasU)
+				axisCount++;
+			if ((caps.Capabilities & JoystickCaps.HasV) == JoystickCaps.HasV)
+				axisCount++;
 
-			// Get joystick info.
-			AxisCount = (int)caps.AxisCount;
-			AxisRanges = new GorgonMinMax[AxisCount];
+			if ((caps.Capabilities & JoystickCaps.HasPOV))
+			{
+				capsFlags |= JoystickCapabilityFlags.SupportsPOV;
+				if ((caps.Capabilities & JoystickCaps.POV4Directions) == JoystickCaps.POV4Directions)
+					capsFlags |= JoystickCapabilityFlags.SupportsDiscreetPOV;
+				if ((caps.Capabilities & JoystickCaps.POVContinuousDegreeBearings) == JoystickCaps.POVContinuousDegreeBearings)
+					capsFlags |= JoystickCapabilityFlags.SupportsContinuousPOV;
+			}				
 
-			// Initialize the ranges.
-			for (int i = 0; i < AxisCount; i++)
-				AxisRanges[i] = GorgonMinMax.Empty;
-
+			axisRanges = new GorgonMinMax[caps.MaximumAxes];
 			// X axis range.
-			AxisRanges[0] = new GorgonMinMax((int)caps.MinimumX, (int)caps.MaximumX);
+			axisRanges[0] = new GorgonMinMax((int)caps.MinimumX, (int)caps.MaximumX);
 			// Y axis range.
-			AxisRanges[1] = new GorgonMinMax((int)caps.MinimumY, (int)caps.MaximumY);
-			// Buttons.
-			ButtonCount = (int)caps.ButtonCount;
+			axisRanges[1] = new GorgonMinMax((int)caps.MinimumY, (int)caps.MaximumY);
+			// Throttle (Z) axis range.
+			if (axisCount > 2)
+				axisRanges[2] = new GorgonMinMax((int)caps.MinimumZ, (int)caps.MaximumZ);
+			// Rudder range.
+			if (axisCount > 3)
+				axisRanges[3] = new GorgonMinMax((int)caps.MinimumRudder, (int)caps.MaximumRudder);
+			// U axis range.
+			if (axisCount > 4)
+				axisRanges[4] = new GorgonMinMax((int)caps.Axis5Minimum, (int)caps.Axis5Maximum);
+			// V axis range.
+			if (axisCount > 5)
+				axisRanges[5] = new GorgonMinMax((int)caps.Axis6Minimum, (int)caps.Axis6Maximum);
 
-			// Manufacturuer/product.
-			ManufacturerID = caps.ManufacturerID;
-			ProductID = caps.ProductID;
-
-			// Determine capabilities.
-			if ((caps.Capabilities & JoystickCapabilities.HasRudder) != 0)
-			{
-				AxisRanges[3] = new GorgonMinMax((int)caps.MinimumRudder, (int)caps.MaximumRudder);
-				HasRudder = true;
-			}
-			if ((caps.Capabilities & JoystickCapabilities.HasPOV) != 0)
-			{
-				HasPOV = true;
-				if ((caps.Capabilities & JoystickCapabilities.POVContinuousDegreeBearings) != 0)
-					UnrestrictedPOV = true;
-				if ((caps.Capabilities & JoystickCapabilities.POV4Directions) != 0)
-					POVHas4Directions = true;
-			}
-			if ((caps.Capabilities & JoystickCapabilities.HasZ) != 0)
-			{
-				HasZAxis = true;
-				AxisRanges[2] = new GorgonMinMax((int)caps.MinimumZ, (int)caps.MaximumZ);
-			}
-			if ((caps.Capabilities & JoystickCapabilities.HasU) != 0)
-				AxisRanges[4] = new GorgonMinMax((int)caps.Axis5Minimum, (int)caps.Axis5Maximum);
-			if ((caps.Capabilities & JoystickCapabilities.HasV) != 0)
-				AxisRanges[5] = new GorgonMinMax((int)caps.Axis6Minimum, (int)caps.Axis6Maximum);
-
-			// Create value arrays.
-			Axes = new float[AxisCount];
-			AxisDirection = new JoystickDirections[AxisCount];
-			DeadZone = new GorgonMinMax[AxisCount];
-			for (int i = 0; i < AxisCount; i++)
-			{
-				AxisDirection[i] = JoystickDirections.Center;
-				DeadZone[i] = GorgonMinMax.Empty;
-			}
-			POVDirection = new JoystickDirections[1];
-			POVCount = 1;
-			POV = new int[1];
-			POVDirection[0] = JoystickDirections.Center;
-			Button = new bool[ButtonCount];			
+			// Define joystick capabilities.
+			this.SetJoystickCapabilities((int)caps.ButtonCount, 1, axisRanges, new GorgonMinMax[0], caps.ManufacturerID, caps.ProductID, capsFlags);
 		}
 
 		/// <summary>
@@ -325,87 +309,36 @@ namespace GorgonLibrary.HID.RawInput
 		protected override void PollJoystick()
 		{
 			JOYINFOEX joyInfo = new JOYINFOEX();		// Joystick information.
-			int error = 0;								// Error code.
 
-			if ((DeviceLost) && (!BoundWindow.Focused))
-				return;
-			else
-				_deviceLost = false;
+			// Reset the data.
+			SetDefaults();
 
-			if ((!Enabled) || (!Acquired))
-				return;
+			joyInfo = GetWin32JoystickData();
 
-			// Set up joystick info.
-			joyInfo.Size = Marshal.SizeOf(typeof(JOYINFOEX));
-			joyInfo.Flags = JoystickInfoFlags.ReturnButtons | JoystickInfoFlags.ReturnX | JoystickInfoFlags.ReturnY;
+			// Get axis data.
+			SetAxisData(0, joyInfo.X, JoystickDirections.Horizontal);
+			SetAxisData(1, joyInfo.Y, JoystickDirections.Vertical);
 
-			if (HasZAxis)
-				joyInfo.Flags |= JoystickInfoFlags.ReturnZ;
-			if (AxisCount >= 4)
-				joyInfo.Flags |= JoystickInfoFlags.ReturnAxis5;
-			if (AxisCount >= 5)
-				joyInfo.Flags |= JoystickInfoFlags.ReturnAxis6;
-			if (HasRudder)
-				joyInfo.Flags |= JoystickInfoFlags.ReturnRudder;
-			if (HasPOV)
-			{
-				joyInfo.Flags |= JoystickInfoFlags.ReturnPOV;
-				if (UnrestrictedPOV)
-					joyInfo.Flags |= JoystickInfoFlags.ReturnPOVContinuousDegreeBearings;
-			}
-			error = Win32API.joyGetPosEx(_joystickID, ref joyInfo);
-			if (error > 0)
-				return;
-
-			// Get X & Y values.
-			DeadZoneAxis(0, joyInfo.X);
-			DeadZoneAxis(1, joyInfo.Y);
-
-			// Get additional axes.
-			if (HasZAxis)
-				DeadZoneAxis(2, joyInfo.Z);
-			if (HasRudder)
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) == JoystickCapabilityFlags.SupportsThrottle)
+				SetAxisData(2, joyInfo.Z, JoystickDirections.Vector);
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) == JoystickCapabilityFlags.SupportsRudder)
 				DeadZoneAxis(3, joyInfo.Rudder);
-			if (AxisCount > 4)
+			if (Capabilities.AxisCount > 4)
 				DeadZoneAxis(4, joyInfo.Axis5);
-			if (AxisCount > 5)
+			if (Capabilities.AxisCount > 5)
 				DeadZoneAxis(5, joyInfo.Axis6);
-
-			if (HasPOV)
-			{
-				// Get POV data.
-				POV[0] = joyInfo.POV;
-
-				if (joyInfo.POV == -1)
-					POVDirection[0] = JoystickDirections.Center;
-
-				// Determine direction.
-				if ((joyInfo.POV < 18000) && (joyInfo.POV > 9000))
-					POVDirection[0] = JoystickDirections.Down | JoystickDirections.Right;
-				if ((joyInfo.POV > 18000) && (joyInfo.POV < 27000))
-					POVDirection[0] = JoystickDirections.Down | JoystickDirections.Left;
-				if ((joyInfo.POV > 27000) && (joyInfo.POV < 36000))
-					POVDirection[0] = JoystickDirections.Up | JoystickDirections.Left;
-				if ((joyInfo.POV > 0) && (joyInfo.POV < 9000))
-					POVDirection[0] = JoystickDirections.Up | JoystickDirections.Right;
-
-				if (joyInfo.POV == 18000)
-					POVDirection[0] = JoystickDirections.Down;
-				if (joyInfo.POV == 0)
-					POVDirection[0] = JoystickDirections.Up;
-				if (joyInfo.POV == 9000)
-					POVDirection[0] = JoystickDirections.Right;
-				if (joyInfo.POV == 27000)
-					POVDirection[0] = JoystickDirections.Left;
-			}
+						
+			// Get POV data.
+			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsPOV) == JoystickCapabilityFlags.SupportsPOV)
+				GetPOVData(joyInfo.POV);
 
 			// Update buttons.
-			for (int i = 0; i < ButtonCount; i++)
+			for (int i = 0; i < Capabilities.ButtonCount; i++)
 			{
 				if ((joyInfo.Buttons & (JoystickButtons)(1 << i)) != 0)
-					SetButtonValue(i, true);
+					SetButtonValue(i, KeyState.Down);
 				else
-					SetButtonValue(i, false);
+					SetButtonValue(i, KeyState.Down);
 			}
 		}
 

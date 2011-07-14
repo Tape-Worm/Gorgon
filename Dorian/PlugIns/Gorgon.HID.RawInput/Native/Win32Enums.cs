@@ -171,7 +171,7 @@ namespace GorgonLibrary.Win32
     /// Enumeration for joystick capabilities.
     /// </summary>
     [Flags()]
-    internal enum JoystickCapabilities
+    internal enum JoystickCaps
     {
         /// <summary>Has a Z axis.</summary>
         HasZ = 0x0001,

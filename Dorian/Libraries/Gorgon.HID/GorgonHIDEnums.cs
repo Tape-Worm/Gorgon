@@ -467,40 +467,4 @@ namespace GorgonLibrary.HID
 		/// <summary>Key: Modifiers</summary>
 		Modifiers = 0xFFFF0000
 	}
-
-	/// <summary>
-	/// Enumeration for joystick axis directions.
-	/// </summary>
-	[Flags()]
-	public enum JoystickDirections
-	{
-		/// <summary>
-		/// Axis is centered.
-		/// </summary>
-		Center = 0,
-		/// <summary>
-		/// Axis is up.
-		/// </summary>
-		Up = 1,
-		/// <summary>
-		/// Axis is down.
-		/// </summary>
-		Down = 2,
-		/// <summary>
-		/// Axis is left.
-		/// </summary>
-		Left = 4,
-		/// <summary>
-		/// Axis is right.
-		/// </summary>
-		Right = 8,
-		/// <summary>
-		/// Axis is less than center position.
-		/// </summary>
-		LessThanCenter = 16,
-		/// <summary>
-		/// Axis is greater than center position.
-		/// </summary>
-		MoreThanCenter = 32
-	}
 }
