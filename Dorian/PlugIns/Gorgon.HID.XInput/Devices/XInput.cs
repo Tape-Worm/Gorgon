@@ -366,7 +366,9 @@ namespace GorgonLibrary.HID.XInput
 
 			// Get the individual values for the buttons.
 			_button = ((XI.GamepadButtonFlags[])Enum.GetValues(typeof(XI.GamepadButtonFlags))).Where((item) => item != XI.GamepadButtonFlags.None).OrderBy((item) => item.ToString()).ToArray();
-			
+
+			UnrestrictedPOV = false;
+			POVHas4Directions = true;
 			HasZAxis = true;
 			HasRudder = true;
 			HasPOV = true;
