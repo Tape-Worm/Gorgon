@@ -162,7 +162,7 @@ namespace GorgonLibrary.Win32
         /// <summary>Z axis.</summary>
         public int Z;
         /// <summary>State of buttons.</summary>
-        public JoystickButtons Buttons;
+        public JoystickButton Buttons;
     }
 
     /// <summary>
@@ -188,7 +188,7 @@ namespace GorgonLibrary.Win32
         /// <summary>6th axis position.</summary>
         public int Axis6;
         /// <summary>State of buttons.</summary>
-        public JoystickButtons Buttons;
+        public JoystickButton Buttons;
         /// <summary>Currently pressed button.</summary>
         public int ButtonNumber;
         /// <summary>Angle of the POV hat, in degrees (0 - 35900, divide by 100 to get 0 - 359 degrees.</summary>
@@ -243,7 +243,7 @@ namespace GorgonLibrary.Win32
         /// <summary>Maximum 6th axis value.</summary>
         public uint Axis6Maximum;
         /// <summary>Joystick capabilities.</summary>
-        public JoystickCapabilities Capabilities;
+        public JoystickCaps Capabilities;
         /// <summary>Maxmimum number of axes for the joystick.</summary>
         public uint MaximumAxes;
         /// <summary>Number of axes on the joystick.</summary>

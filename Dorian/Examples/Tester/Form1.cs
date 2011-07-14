@@ -32,7 +32,7 @@ namespace Tester
 			if (joystick != null)
 			{
 				labelMouse.Text = string.Format("Left Stick: {0}x{1} ({8})  Right stick:{2}x{3} ({9})  Rudder:{4}  Throttle:{5}\nPOV: {6} POV Direction: {7}\nButtons: ", 
-						joystick.X, joystick.Y, joystick.SecondaryX, joystick.SecondaryY, joystick.Rudder, joystick.ThrottleZ, joystick.POV[0], joystick.POVDirection[0], joystick.AxisDirection[0]|joystick.AxisDirection[1], joystick.AxisDirection[3]|joystick.AxisDirection[4]);
+						joystick.X, joystick.Y, joystick.SecondaryX, joystick.SecondaryY, joystick.Rudder, joystick.Throttle, joystick.POV, joystick.Direction.POV, joystick.Direction.X|joystick.Direction.Y, joystick.Direction.SecondaryX|joystick.Direction.SecondaryY);
 
 				for (int i = 0; i < joystick.Capabilities.ButtonCount; i++)
 					labelMouse.Text += joystick.Button[i].ToString() + "  ";
@@ -59,10 +59,10 @@ namespace Tester
 				mouse = input.CreatePointingDevice();
 				keyboard = input.CreateKeyboard();
 				joystick = xinput.CreateJoystick(xinput.JoystickDevices[0]);
-				joystick.DeadZone[0] = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-				joystick.DeadZone[1] = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-				joystick.DeadZone[3] = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-				joystick.DeadZone[4] = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.X = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.Y = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.SecondaryX = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.SecondaryY = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
 
 				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
