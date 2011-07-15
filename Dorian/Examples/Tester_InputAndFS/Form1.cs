@@ -24,6 +24,9 @@ namespace Tester
 		GorgonKeyboard keyboard = null;
 		GorgonFileSystem fileSystem = null;
 		GorgonJoystick joystick = null;
+		GorgonTimer pulseTimer = null;
+		bool pulse = false;
+		Random rnd = new Random();
 
 		private bool Idle(GorgonFrameRate timing)
 		{
@@ -38,6 +41,63 @@ namespace Tester
 
 				for (int i = 0; i < joystick.Capabilities.ButtonCount; i++)
 					labelMouse.Text += "Button :" + joystick.Button[i].Name + " " + joystick.Button[i].IsPressed.ToString() + "\n";
+
+				if (((joystick.Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) == JoystickCapabilityFlags.SupportsVibration) && (joystick.Button["A"].IsPressed))
+				{
+					pulseTimer = new GorgonTimer();
+				}
+
+				if (((joystick.Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) == JoystickCapabilityFlags.SupportsVibration) && (pulseTimer == null))
+				{
+					float normalize1 = (float)joystick.Rudder;
+					float normalize2 = (float)joystick.Throttle;
+
+					normalize1 = (float)Math.Pow(normalize1 + 1.0f, 2);
+					normalize2 = (float)Math.Pow(normalize2 + 1.0f, 2);
+
+					if (normalize1 > 65535.0f)
+						normalize1 = 65535.0f;
+					if (normalize2 > 65535.0f)
+						normalize2 = 65535.0f;
+
+					if (joystick.Rudder > 0)
+						joystick.Vibrate(0, (int)normalize1);
+					else
+						joystick.Vibrate(0, 0);
+
+					if (joystick.Throttle > 0)
+						joystick.Vibrate(1, (int)normalize2);
+					else
+						joystick.Vibrate(1, 0);
+				}
+
+				if (((joystick.Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) == JoystickCapabilityFlags.SupportsVibration) && (joystick.Button["B"].IsPressed))
+				{
+					joystick.Vibrate(0, 0);
+					joystick.Vibrate(1, 0);
+					pulseTimer = null;
+				}
+
+				if (pulseTimer != null)
+				{
+					if (pulseTimer.Milliseconds > 1000)
+					{
+						pulse = !pulse;
+						pulseTimer.Reset();
+					}
+
+					if (pulse)
+					{
+						joystick.Vibrate(0, rnd.Next(joystick.Capabilities.VibrationMotorRanges[0].Minimum, joystick.Capabilities.VibrationMotorRanges[0].Maximum));
+						joystick.Vibrate(1, 0);
+					}
+					else
+					{
+						joystick.Vibrate(0, 0);
+						joystick.Vibrate(1, rnd.Next(joystick.Capabilities.VibrationMotorRanges[0].Minimum, joystick.Capabilities.VibrationMotorRanges[0].Maximum));
+					}
+				}
+
 			}
 
 			return true;

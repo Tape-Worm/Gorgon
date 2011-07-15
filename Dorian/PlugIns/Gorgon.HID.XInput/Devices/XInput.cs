@@ -107,8 +107,12 @@ namespace GorgonLibrary.HID.XInput
 				ThrottleAxisRange = RudderAxisRange = new GorgonMinMax(0, 255);
 
 				VibrationMotorRanges = new GorgonMinMax[2];
-				VibrationMotorRanges[0] = new GorgonMinMax(0, caps.Vibration.LeftMotorSpeed);
-				VibrationMotorRanges[1] = new GorgonMinMax(0, caps.Vibration.RightMotorSpeed);
+				// BUG: As of this writing, there's a bug in XInputGetCapabilities in DirectX that's returning 255 even though
+				// they've documented the ranges (and I've tested these) to be 0..65535.
+				//VibrationMotorRanges[0] = new GorgonMinMax(0, caps.Vibration.LeftMotorSpeed);
+				//VibrationMotorRanges[1] = new GorgonMinMax(0, caps.Vibration.RightMotorSpeed);
+				VibrationMotorRanges[0] = new GorgonMinMax(0, 65535);
+				VibrationMotorRanges[1] = new GorgonMinMax(0, 65535);
 
 				ExtraCapabilities = JoystickCapabilityFlags.SupportsDiscreetPOV | JoystickCapabilityFlags.SupportsPOV | JoystickCapabilityFlags.SupportsRudder | JoystickCapabilityFlags.SupportsThrottle | JoystickCapabilityFlags.SupportsVibration | JoystickCapabilityFlags.SupportsSecondaryXAxis | JoystickCapabilityFlags.SupportsSecondaryYAxis;
 			}
@@ -287,8 +291,8 @@ namespace GorgonLibrary.HID.XInput
 			Y = state.Gamepad.LeftThumbY;
 			SecondaryX = state.Gamepad.RightThumbX;
 			SecondaryY = state.Gamepad.RightThumbY;
-			Throttle = state.Gamepad.LeftTrigger;
-			Rudder = state.Gamepad.RightTrigger;
+			Throttle = state.Gamepad.RightTrigger;
+			Rudder = state.Gamepad.LeftTrigger;
 
 			// Get button info.
 			if (state.Gamepad.Buttons != XI.GamepadButtonFlags.None)
