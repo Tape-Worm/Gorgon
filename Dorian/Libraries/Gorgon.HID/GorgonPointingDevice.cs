@@ -187,7 +187,7 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Property to return the relative horizontal amount moved.
+		/// Property to return the relative amount moved.
 		/// </summary>
 		public PointF RelativePosition
 		{
