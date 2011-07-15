@@ -326,7 +326,7 @@ namespace GorgonLibrary.HID
 					character = KeyMappings[key];
 				else
 					character = default(KeyCharMap);
-				
+
 				KeyboardHIDEventArgs e = new KeyboardHIDEventArgs(key, modifiers, character, scan, left, right);
 				KeyDown(this, e);
 			}

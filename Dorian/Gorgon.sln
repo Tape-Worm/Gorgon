@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.HID.XInput", "PlugIn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_InputAndFS", "Examples\Tester_InputAndFS\Tester_InputAndFS.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.HID.WinFormsInput", "PlugIns\Gorgon.HID.WinForms\Gorgon.HID.WinFormsInput.csproj", "{BE449FB9-9001-4954-B856-B466F90D55E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +129,7 @@ Global
 		{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}.Release|x86.ActiveCfg = Release|Any CPU
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|Any CPU.Build.0 = Debug|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Debug|x86.ActiveCfg = Debug|x86
@@ -136,6 +139,16 @@ Global
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|Mixed Platforms.Build.0 = Release|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|x86.ActiveCfg = Release|x86
 		{59A56133-5795-468A-9867-9DFCE72D8715}.Release|x86.Build.0 = Release|x86
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BE449FB9-9001-4954-B856-B466F90D55E3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
