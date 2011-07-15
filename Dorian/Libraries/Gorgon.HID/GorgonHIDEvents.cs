@@ -215,7 +215,7 @@ namespace GorgonLibrary.HID
 		{
 			get
 			{
-				return (_modifierKey & KeyboardKeys.Alt) != 0;
+				return (_modifierKey & KeyboardKeys.Alt) != KeyboardKeys.Alt;
 			}
 		}
 
@@ -226,7 +226,7 @@ namespace GorgonLibrary.HID
 		{
 			get
 			{
-				return (_modifierKey & KeyboardKeys.Control) != 0;
+				return (_modifierKey & KeyboardKeys.Control) == KeyboardKeys.Control;
 			}
 		}
 
@@ -237,7 +237,7 @@ namespace GorgonLibrary.HID
 		{
 			get
 			{
-				return (_modifierKey & KeyboardKeys.Shift) != 0;
+				return (_modifierKey & KeyboardKeys.Shift) == KeyboardKeys.Shift;
 			}
 		}
 

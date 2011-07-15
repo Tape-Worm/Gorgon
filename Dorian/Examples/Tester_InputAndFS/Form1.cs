@@ -19,6 +19,7 @@ namespace Tester
 	public partial class Form1 : Form
 	{
 		GorgonInputDeviceFactory input = null;
+		GorgonInputDeviceFactory winput = null;
 		GorgonInputDeviceFactory xinput = null;
 		GorgonPointingDevice mouse = null;
 		GorgonKeyboard keyboard = null;
@@ -113,13 +114,17 @@ namespace Tester
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");				
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.RawInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.XInput.dll");
+				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.WinFormsInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
 				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
+				winput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonWinFormsInput");
 				xinput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonXInput");
 
 				mouse = input.CreatePointingDevice();
-				keyboard = input.CreateKeyboard();
+				//keyboard = input.CreateKeyboard();
+				keyboard = winput.CreateKeyboard();
+				keyboard.KeyDown += new EventHandler<KeyboardHIDEventArgs>(keyboard_KeyDown);
 
 				foreach (GorgonInputDeviceName name in xinput.JoystickDevices)
 				{
@@ -169,6 +174,11 @@ namespace Tester
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
 				Close();
 			}
+		}
+
+		void keyboard_KeyDown(object sender, KeyboardHIDEventArgs e)
+		{
+			GorgonDialogs.InfoBox(this, e.Key.ToString());
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)

@@ -31,11 +31,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Gorgon Raw Input")]
-[assembly: AssemblyDescription("Raw Input device plug-in for Gorgon.")]
+[assembly: AssemblyTitle("Gorgon Win Forms Input")]
+[assembly: AssemblyDescription("Windows Forms Input device plug-in for Gorgon.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon.RawInput")]
+[assembly: AssemblyProduct("Gorgon.WinFormsInput")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
