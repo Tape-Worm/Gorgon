@@ -34,10 +34,10 @@
 			// 
 			// labelMouse
 			// 
-			this.labelMouse.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelMouse.AutoSize = true;
 			this.labelMouse.Location = new System.Drawing.Point(0, 0);
 			this.labelMouse.Name = "labelMouse";
-			this.labelMouse.Size = new System.Drawing.Size(665, 511);
+			this.labelMouse.Size = new System.Drawing.Size(0, 13);
 			this.labelMouse.TabIndex = 0;
 			// 
 			// Form1
@@ -50,6 +50,7 @@
 			this.Name = "Form1";
 			this.Text = "Form1";
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 

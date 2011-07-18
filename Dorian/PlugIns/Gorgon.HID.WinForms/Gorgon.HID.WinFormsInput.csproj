@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Devices\KeyMapper.cs" />
     <Compile Include="Devices\WinFormsKeyboard.cs" />
+    <Compile Include="Devices\WinFormsPointingDevice.cs" />
     <Compile Include="GorgonWinFormsInput.cs" />
     <Compile Include="GorgonWinFormsInputDeviceName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
