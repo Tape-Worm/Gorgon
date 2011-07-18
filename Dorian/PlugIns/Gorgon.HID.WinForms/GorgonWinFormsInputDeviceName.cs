@@ -44,7 +44,6 @@ namespace GorgonLibrary.HID.WinFormsInput
 		/// <param name="name">The device name.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
-		/// <param name="handle">Handle to the device.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
 		public GorgonWinFormsInputDeviceName(string name, string className, string hidPath)

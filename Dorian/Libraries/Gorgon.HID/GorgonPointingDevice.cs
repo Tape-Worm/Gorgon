@@ -31,6 +31,50 @@ using Forms = System.Windows.Forms;
 namespace GorgonLibrary.HID
 {
 	/// <summary>
+	/// Enumeration for pointing device buttons.
+	/// </summary>
+	[Flags()]
+	public enum PointingDeviceButtons
+	{
+		/// <summary>
+		/// No mouse button pressed.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Left mouse button pressed.
+		/// </summary>
+		Left = 1,
+		/// <summary>
+		/// Right mouse button pressed.
+		/// </summary>
+		Right = 2,
+		/// <summary>
+		/// Middle mouse button pressed.
+		/// </summary>
+		Middle = 4,
+		/// <summary>
+		/// Left mouse button pressed (same as MouseButton.Left).
+		/// </summary>
+		Button1 = 1,
+		/// <summary>
+		/// Right mouse button pressed (same as MouseButton.Right).
+		/// </summary>
+		Button2 = 2,
+		/// <summary>
+		/// Middle mouse button pressed (same as MouseButton.Middle).
+		/// </summary>
+		Button3 = 4,
+		/// <summary>
+		/// Fourth mouse button pressed.
+		/// </summary>
+		Button4 = 8,
+		/// <summary>
+		/// Fifth mouse button pressed.
+		/// </summary>
+		Button5 = 16
+	}
+
+	/// <summary>
 	/// A pointing device interface.
 	/// </summary>
 	/// <remarks>A pointing device can be any type of device.  For instance a trackball may be considered a pointing device.</remarks>
@@ -46,6 +90,7 @@ namespace GorgonLibrary.HID
 		private PointF _relativePosition = PointF.Empty;							// Mouse relative position.
 		private RectangleF _positionConstraint;										// Constraints for the mouse position.
 		private Point _wheelConstraint;												// Constraints for the mouse wheel.
+		private int _doubleClickDelay = 0;											// Double click delay in milliseconds.
 		#endregion
 
 		#region Events.
@@ -96,8 +141,7 @@ namespace GorgonLibrary.HID
 			}
 			set
 			{
-				_doubleClickRange.X = System.Math.Abs(value.X);
-				_doubleClickRange.Y = System.Math.Abs(value.Y);
+				SetDoubleClickRange(System.Math.Abs(value.X), System.Math.Abs(value.Y));
 			}
 		}
 
@@ -106,8 +150,14 @@ namespace GorgonLibrary.HID
 		/// </summary>
 		public int DoubleClickDelay
 		{
-			get;
-			set;
+			get
+			{
+				return _doubleClickDelay;
+			}
+			set
+			{
+				_doubleClickDelay = value;
+			}
 		}
 
 		/// <summary>
@@ -490,8 +540,6 @@ namespace GorgonLibrary.HID
 		protected GorgonPointingDevice(GorgonInputDeviceFactory owner, string deviceName, Forms.Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
-			DoubleClickDelay = 600;
-
 			_position = new PointF(BoundWindow.ClientSize.Width / 2, BoundWindow.ClientSize.Height / 2);
 			Button = PointingDeviceButtons.None;
 			_positionConstraint = RectangleF.Empty;
@@ -500,7 +548,10 @@ namespace GorgonLibrary.HID
 			ResetCursor();
 			ShowCursor();
 
-			Forms.Cursor.Position = Point.Truncate(_position);			
+			Forms.Cursor.Position = Point.Truncate(_position);
+
+			DoubleClickDelay = Forms.SystemInformation.DoubleClickTime;
+			DoubleClickRange = new PointF(Forms.SystemInformation.DoubleClickSize.Width, Forms.SystemInformation.DoubleClickSize.Height);
 		}
 		#endregion
 	}

@@ -43,7 +43,7 @@ namespace GorgonLibrary.HID.RawInput
 		private MessageFilter _messageFilter = null;			// Window message filter.
 		private RAWINPUTDEVICE _device;							// Input device.
 		private bool _outside = false;							// Outside of window?
-		private GorgonTimer _doubleClicker;					// Double click timer.
+		private GorgonTimer _doubleClicker;						// Double click timer.
 		private int _clickCount = 0;							// Click counter.		
 		private PointF _doubleClickPosition;					// Double click position.
 		private PointingDeviceButtons _doubleClickButton;		// Button that was double clicked.

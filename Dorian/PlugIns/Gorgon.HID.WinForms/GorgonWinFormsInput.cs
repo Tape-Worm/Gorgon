@@ -53,7 +53,7 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInput"/> class.
+		/// Initializes a new instance of the <see cref="GorgonWinFormsInput"/> class.
 		/// </summary>
 		public GorgonWinFormsInput()
 			: base("Gorgon windows forms input plug-in.")

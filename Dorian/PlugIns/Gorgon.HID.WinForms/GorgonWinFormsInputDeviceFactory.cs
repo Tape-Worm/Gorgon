@@ -123,7 +123,9 @@ namespace GorgonLibrary.HID.WinFormsInput
 		/// </remarks>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(GorgonInputDeviceName pointingDeviceName, Forms.Control window)
 		{
-			return null;
+			WinFormsPointingDevice mouse = new WinFormsPointingDevice(this, window);
+			mouse.Enabled = true;
+			return mouse;
 		}
 
 		/// <summary>
@@ -142,7 +144,7 @@ namespace GorgonLibrary.HID.WinFormsInput
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInputDeviceFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonWinFormsInputDeviceFactory"/> class.
 		/// </summary>
 		public GorgonWinFormsInputDeviceFactory()
 			: base("Gorgon.WinForms")
