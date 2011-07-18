@@ -117,13 +117,13 @@ namespace Tester
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.WinFormsInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
-				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
+				//input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
 				winput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonWinFormsInput");
 				xinput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonXInput");
 
-				mouse = input.CreatePointingDevice();
+				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
-				//mouse = winput.CreatePointingDevice();
+				mouse = winput.CreatePointingDevice();
 				mouse.MouseMove += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseMove);
 				mouse.MouseDown += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseDown);
 				mouse.MouseUp += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseUp);
