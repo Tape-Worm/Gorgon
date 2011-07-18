@@ -136,13 +136,13 @@
     <Compile Include="OLDE\Types\TrackImage.cs" />
     <Compile Include="OLDE\Types\TrackInt32.cs" />
     <Compile Include="OLDE\Types\TrackVector2D.cs" />
-    <Compile Include="Buffers\Buffer.cs">
+    <Compile Include="OLDE\Buffer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Buffers\IndexBuffer.cs">
+    <Compile Include="OLDE\IndexBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Buffers\VertexBuffer.cs">
+    <Compile Include="OLDE\VertexBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Math\GorgonRange.cs" />
@@ -159,14 +159,14 @@
     <Compile Include="Diagnostics\GorgonFrameRate.cs" />
     <Compile Include="Diagnostics\GorgonTimer.cs" />
     <Compile Include="Direct3DUtility.cs" />
-    <Compile Include="Enums\AnimationEnums.cs" />
-    <Compile Include="Enums\Enums.cs" />
-    <Compile Include="Enums\FontEnums.cs" />
-    <Compile Include="Enums\GraphicsEnums.cs" />
-    <Compile Include="Enums\InternalEnums.cs" />
-    <Compile Include="Events\AnimationEvents.cs" />
-    <Compile Include="Enums\InputEnums.cs" />
-    <Compile Include="Enums\ShaderEnums.cs" />
+    <Compile Include="OLDE\AnimationEnums.cs" />
+    <Compile Include="OLDE\Enums.cs" />
+    <Compile Include="OLDE\FontEnums.cs" />
+    <Compile Include="OLDE\GraphicsEnums.cs" />
+    <Compile Include="OLDE\InternalEnums.cs" />
+    <Compile Include="OLDE\AnimationEvents.cs" />
+    <Compile Include="OLDE\InputEnums.cs" />
+    <Compile Include="OLDE\ShaderEnums.cs" />
     <Compile Include="OLDE\FileSystemEvents.cs" />
     <Compile Include="OLDE\FrameEvents.cs" />
     <Compile Include="OLDE\InputEvents.cs" />
@@ -193,13 +193,13 @@
     </Compile>
     <Compile Include="OLDE\FolderFileSystem\FolderFileSystem.cs" />
     <Compile Include="OLDE\IAuthData.cs" />
-    <Compile Include="Fonts\Font.cs" />
-    <Compile Include="Fonts\Glyph.cs" />
-    <Compile Include="Fonts\GlyphTree.cs" />
-    <Compile Include="Fonts\FontCache.cs" />
-    <Compile Include="Fonts\FontList.cs" />
-    <Compile Include="Imaging\ImageCache.cs" />
-    <Compile Include="Imaging\ImageList.cs" />
+    <Compile Include="OLDE\Font.cs" />
+    <Compile Include="OLDE\Glyph.cs" />
+    <Compile Include="OLDE\GlyphTree.cs" />
+    <Compile Include="OLDE\FontCache.cs" />
+    <Compile Include="OLDE\FontList.cs" />
+    <Compile Include="OLDE\ImageCache.cs" />
+    <Compile Include="OLDE\ImageList.cs" />
     <Compile Include="INamedObject.cs" />
     <Compile Include="OLDE\Input.cs" />
     <Compile Include="OLDE\InputPlugIn.cs" />
@@ -216,9 +216,9 @@
     <Compile Include="OLDE\Vector2D.cs" />
     <Compile Include="OLDE\Vector3D.cs" />
     <Compile Include="OLDE\Vector4D.cs" />
-    <Compile Include="Native\Win32.cs" />
-    <Compile Include="Native\Win32API.cs" />
-    <Compile Include="Native\Win32Enums.cs" />
+    <Compile Include="OLDE\Win32.cs" />
+    <Compile Include="OLDE\Win32API.cs" />
+    <Compile Include="OLDE\Win32Enums.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
     <Compile Include="Plugins\GorgonAssemblyCache.cs" />
@@ -279,8 +279,8 @@
     <Compile Include="Shaders\ShaderTechnique.cs" />
     <Compile Include="Shaders\ShaderTechniqueList.cs" />
     <Compile Include="Sprites\SpriteStateCache.cs" />
-    <Compile Include="Imaging\Image.cs" />
-    <Compile Include="Imaging\ImageLayerState.cs" />
+    <Compile Include="OLDE\Image.cs" />
+    <Compile Include="OLDE\ImageLayerState.cs" />
     <Compile Include="Sprites\Sprite.cs" />
     <Compile Include="Targets\RenderImage.cs" />
     <Compile Include="Targets\RenderTargetCache.cs" />
@@ -319,31 +319,31 @@
     <Compile Include="Viewports\Viewport.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Buffers\IDataCache.cs" />
+    <Compile Include="OLDE\IDataCache.cs" />
     <Compile Include="Converter.cs" />
-    <Compile Include="Enums\PlugInTypeEnums.cs" />
+    <Compile Include="OLDE\PlugInTypeEnums.cs" />
     <Compile Include="OLDE\PlugInAttribute.cs" />
     <Compile Include="OLDE\PlugInList.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="OLDE\PlugInModuleList.cs" />
     <Compile Include="Rendering\RenderStates.cs" />
-    <Compile Include="Events\DriverChangeEvent.cs">
+    <Compile Include="OLDE\DriverChangeEvent.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GorgonException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Device\DeviceStateList.cs">
+    <Compile Include="OLDE\DeviceStateList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Device\Driver.cs">
+    <Compile Include="OLDE\Driver.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Device\DriverList.cs">
+    <Compile Include="OLDE\DriverList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Device\IDeviceStateObject.cs">
+    <Compile Include="OLDE\IDeviceStateObject.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Targets\RenderTarget.cs">
@@ -352,10 +352,10 @@
     <Compile Include="Targets\RenderTargetList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Device\VideoMode.cs">
+    <Compile Include="OLDE\VideoMode.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Device\VideoModeList.cs">
+    <Compile Include="OLDE\VideoModeList.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Timing\Timer.cs" />
@@ -416,7 +416,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Native\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
