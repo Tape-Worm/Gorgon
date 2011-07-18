@@ -114,28 +114,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation\AnimatedAttribute.cs" />
-    <Compile Include="Animation\Animation.cs" />
-    <Compile Include="Animation\AnimationList.cs" />
-    <Compile Include="Animation\EditorCanDragAttribute.cs" />
-    <Compile Include="Animation\EditorRoundValuesAttribute.cs" />
-    <Compile Include="Animation\EditorMinMaxAttribute.cs" />
-    <Compile Include="Animation\IAnimated.cs" />
-    <Compile Include="Animation\KeyFrame.cs" />
-    <Compile Include="Animation\TrackCollection.cs" />
-    <Compile Include="Animation\Types\KeyByte.cs" />
-    <Compile Include="Animation\Types\KeyColor.cs" />
-    <Compile Include="Animation\Types\KeyFloat.cs" />
-    <Compile Include="Animation\Types\KeyImage.cs" />
-    <Compile Include="Animation\Types\KeyInt32.cs" />
-    <Compile Include="Animation\Types\KeyVector2D.cs" />
-    <Compile Include="Animation\Track.cs" />
-    <Compile Include="Animation\Types\TrackByte.cs" />
-    <Compile Include="Animation\Types\TrackColor.cs" />
-    <Compile Include="Animation\Types\TrackFloat.cs" />
-    <Compile Include="Animation\Types\TrackImage.cs" />
-    <Compile Include="Animation\Types\TrackInt32.cs" />
-    <Compile Include="Animation\Types\TrackVector2D.cs" />
+    <Compile Include="OLDE\AnimatedAttribute.cs" />
+    <Compile Include="OLDE\Animation.cs" />
+    <Compile Include="OLDE\AnimationList.cs" />
+    <Compile Include="OLDE\EditorCanDragAttribute.cs" />
+    <Compile Include="OLDE\EditorRoundValuesAttribute.cs" />
+    <Compile Include="OLDE\EditorMinMaxAttribute.cs" />
+    <Compile Include="OLDE\IAnimated.cs" />
+    <Compile Include="OLDE\KeyFrame.cs" />
+    <Compile Include="OLDE\TrackCollection.cs" />
+    <Compile Include="OLDE\Types\KeyByte.cs" />
+    <Compile Include="OLDE\Types\KeyColor.cs" />
+    <Compile Include="OLDE\Types\KeyFloat.cs" />
+    <Compile Include="OLDE\Types\KeyImage.cs" />
+    <Compile Include="OLDE\Types\KeyInt32.cs" />
+    <Compile Include="OLDE\Types\KeyVector2D.cs" />
+    <Compile Include="OLDE\Track.cs" />
+    <Compile Include="OLDE\Types\TrackByte.cs" />
+    <Compile Include="OLDE\Types\TrackColor.cs" />
+    <Compile Include="OLDE\Types\TrackFloat.cs" />
+    <Compile Include="OLDE\Types\TrackImage.cs" />
+    <Compile Include="OLDE\Types\TrackInt32.cs" />
+    <Compile Include="OLDE\Types\TrackVector2D.cs" />
     <Compile Include="Buffers\Buffer.cs">
       <SubType>Code</SubType>
     </Compile>
