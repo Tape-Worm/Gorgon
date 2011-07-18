@@ -35,11 +35,8 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Threading;
 using Microsoft.Win32;
-using D3D9 = SlimDX.Direct3D9;
-using DX = SlimDX;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Internal;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary
@@ -112,27 +109,6 @@ namespace GorgonLibrary
 					return false;
 	
 				return true;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the Direct 3D interface.
-		/// </summary>
-		internal static D3D9.Direct3D Direct3D
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the renderer interface.
-		/// </summary>
-		internal static Renderer Renderer
-		{
-			get
-			{
-				// TODO: We will be removing this.
-				return null;
 			}
 		}
 
@@ -350,19 +326,6 @@ namespace GorgonLibrary
 
 			IsInitialized = true;			
 
-			// Initialize.
-#if DEBUG
-			DX.Configuration.EnableObjectTracking = true;
-#else
-            DX.Configuration.EnableObjectTracking = false;
-#endif
-			// We don't need exceptions with these errors.
-			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceLost, SlimDX.ResultWatchFlags.AlwaysIgnore);
-			DX.Configuration.AddResultWatch(D3D9.ResultCode.DeviceNotReset, SlimDX.ResultWatchFlags.AlwaysIgnore);
-
-			Direct3D = new D3D9.Direct3D();
-			Direct3D.CheckWhql = false;
-
 			try
 			{
 				// Open log object.
@@ -465,26 +428,6 @@ namespace GorgonLibrary
 
 			// Stop the engine.
 			Stop();
-
-			// Unload fonts.
-			FontCache.DestroyAll();
-
-			// Unload all plug-ins.
-			PlugInFactory.DestroyAll();
-
-			// Remove all shaders.
-			ShaderCache.DestroyAll();
-
-			// Remove all render targets.
-			RenderTargetCache.DestroyAll();
-
-			// Remove all the images.
-			ImageCache.DestroyAll();
-
-			// Terminate Direct 3D.
-			if (Direct3D != null)
-				Direct3D.Dispose();
-			Direct3D = null;
 
 			Log.Print("Shutting down.", GorgonLoggingLevel.Simple);
 

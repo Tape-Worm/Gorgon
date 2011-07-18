@@ -31,6 +31,7 @@ using System.Text;
 using System.Drawing;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.HID.WinFormsInput
 {

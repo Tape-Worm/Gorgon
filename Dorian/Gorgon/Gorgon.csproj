@@ -94,7 +94,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SlimDX, Version=4.0.11.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -114,41 +113,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OLDE\AnimatedAttribute.cs" />
-    <Compile Include="OLDE\Animation.cs" />
-    <Compile Include="OLDE\AnimationList.cs" />
-    <Compile Include="OLDE\EditorCanDragAttribute.cs" />
-    <Compile Include="OLDE\EditorRoundValuesAttribute.cs" />
-    <Compile Include="OLDE\EditorMinMaxAttribute.cs" />
-    <Compile Include="OLDE\IAnimated.cs" />
-    <Compile Include="OLDE\KeyFrame.cs" />
-    <Compile Include="OLDE\TrackCollection.cs" />
-    <Compile Include="OLDE\Types\KeyByte.cs" />
-    <Compile Include="OLDE\Types\KeyColor.cs" />
-    <Compile Include="OLDE\Types\KeyFloat.cs" />
-    <Compile Include="OLDE\Types\KeyImage.cs" />
-    <Compile Include="OLDE\Types\KeyInt32.cs" />
-    <Compile Include="OLDE\Types\KeyVector2D.cs" />
-    <Compile Include="OLDE\Track.cs" />
-    <Compile Include="OLDE\Types\TrackByte.cs" />
-    <Compile Include="OLDE\Types\TrackColor.cs" />
-    <Compile Include="OLDE\Types\TrackFloat.cs" />
-    <Compile Include="OLDE\Types\TrackImage.cs" />
-    <Compile Include="OLDE\Types\TrackInt32.cs" />
-    <Compile Include="OLDE\Types\TrackVector2D.cs" />
-    <Compile Include="OLDE\Buffer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\IndexBuffer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\VertexBuffer.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Math\GorgonRange.cs" />
-    <Compile Include="OLDE\Collection.cs" />
-    <Compile Include="OLDE\Dictionary.cs" />
-    <Compile Include="OLDE\DynamicArray.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
@@ -158,74 +123,31 @@
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
     <Compile Include="Diagnostics\GorgonFrameRate.cs" />
     <Compile Include="Diagnostics\GorgonTimer.cs" />
-    <Compile Include="OLDE\Direct3DUtility.cs" />
-    <Compile Include="OLDE\AnimationEnums.cs" />
-    <Compile Include="OLDE\Enums.cs" />
-    <Compile Include="OLDE\FontEnums.cs" />
-    <Compile Include="OLDE\GraphicsEnums.cs" />
-    <Compile Include="OLDE\InternalEnums.cs" />
-    <Compile Include="OLDE\AnimationEvents.cs" />
-    <Compile Include="OLDE\InputEnums.cs" />
-    <Compile Include="OLDE\ShaderEnums.cs" />
-    <Compile Include="OLDE\FileSystemEvents.cs" />
-    <Compile Include="OLDE\FrameEvents.cs" />
-    <Compile Include="OLDE\InputEvents.cs" />
-    <Compile Include="OLDE\Design\formAuthentication.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OLDE\Design\formAuthentication.Designer.cs">
-      <DependentUpon>formAuthentication.cs</DependentUpon>
-    </Compile>
-    <Compile Include="OLDE\FileList.cs" />
-    <Compile Include="OLDE\FileSystemCache.cs" />
-    <Compile Include="OLDE\FileSystemEditorInfoAttribute.cs" />
-    <Compile Include="OLDE\FileSystemFile.cs" />
-    <Compile Include="OLDE\FileSystemFileList.cs" />
-    <Compile Include="OLDE\FileSystemPath.cs" />
-    <Compile Include="OLDE\FileSystemPathList.cs" />
-    <Compile Include="OLDE\FileSystemPlugIn.cs" />
-    <Compile Include="OLDE\FileSystemList.cs" />
-    <Compile Include="OLDE\FileSystem.cs" />
-    <Compile Include="OLDE\FileSystemProvider.cs" />
-    <Compile Include="OLDE\FileSystemProviderCache.cs" />
-    <Compile Include="OLDE\FileSystemProviderList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\FolderFileSystem\FolderFileSystem.cs" />
-    <Compile Include="OLDE\IAuthData.cs" />
-    <Compile Include="OLDE\Font.cs" />
-    <Compile Include="OLDE\Glyph.cs" />
-    <Compile Include="OLDE\GlyphTree.cs" />
-    <Compile Include="OLDE\FontCache.cs" />
-    <Compile Include="OLDE\FontList.cs" />
-    <Compile Include="OLDE\ImageCache.cs" />
-    <Compile Include="OLDE\ImageList.cs" />
     <Compile Include="INamedObject.cs" />
-    <Compile Include="OLDE\Input.cs" />
-    <Compile Include="OLDE\InputPlugIn.cs" />
-    <Compile Include="OLDE\Joystick.cs" />
-    <Compile Include="OLDE\JoystickList.cs" />
-    <Compile Include="OLDE\Keyboard.cs" />
-    <Compile Include="OLDE\InputDevice.cs" />
-    <Compile Include="OLDE\Mouse.cs" />
-    <Compile Include="OLDE\Main.cs" />
-    <Compile Include="OLDE\BoundingCircle.cs" />
     <Compile Include="Math\GorgonMathUtility.cs" />
-    <Compile Include="OLDE\Matrix.cs" />
-    <Compile Include="OLDE\Spline.cs" />
-    <Compile Include="OLDE\Vector2D.cs" />
-    <Compile Include="OLDE\Vector3D.cs" />
-    <Compile Include="OLDE\Vector4D.cs" />
-    <Compile Include="OLDE\Win32.cs" />
-    <Compile Include="OLDE\Win32API.cs" />
-    <Compile Include="OLDE\Win32Enums.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
+    <Compile Include="Native\Win32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Native\Win32API.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Native\Win32Enums.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Math\Vector2D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Math\Vector3D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Math\Vector4D.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Plugins\GorgonAssemblyCache.cs" />
     <Compile Include="Plugins\GorgonPlugIn.cs" />
-    <Compile Include="OLDE\PlugInEntryPoint.cs" />
     <Compile Include="Plugins\GorgonPlugInFactory.cs" />
-    <Compile Include="OLDE\__PlugInFactory.cs" />
     <Compile Include="Plugins\GorgonPlugInPathCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -233,59 +155,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="OLDE\IRenderableStates.cs" />
-    <Compile Include="OLDE\RenderableChildren.cs" />
-    <Compile Include="OLDE\Renderable.cs" />
-    <Compile Include="OLDE\Renderer.cs" />
-    <Compile Include="OLDE\BinaryReaderEx.cs" />
-    <Compile Include="OLDE\BinaryWriterEx.cs" />
-    <Compile Include="OLDE\FXShaderSerializer.cs" />
-    <Compile Include="OLDE\ShaderSerializer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\StreamReaderEx.cs" />
-    <Compile Include="OLDE\StreamWriterEx.cs" />
-    <Compile Include="OLDE\BaseShader.cs" />
-    <Compile Include="OLDE\ConstantShaderParameter.cs" />
-    <Compile Include="OLDE\DefaultPixelShader.cs" />
-    <Compile Include="OLDE\DefaultVertexShader.cs" />
-    <Compile Include="OLDE\DualShader.cs" />
-    <Compile Include="OLDE\FXShader.cs" />
-    <Compile Include="OLDE\FXShaderParameter.cs" />
-    <Compile Include="OLDE\IShaderOutput.cs" />
-    <Compile Include="OLDE\IShaderParameter.cs" />
-    <Compile Include="OLDE\PixelShader.cs" />
-    <Compile Include="OLDE\Shader.cs" />
-    <Compile Include="OLDE\ShaderCache.cs" />
-    <Compile Include="OLDE\ShaderFunction.cs" />
-    <Compile Include="OLDE\ShaderParameterList.cs" />
-    <Compile Include="OLDE\ImageShader.cs" />
-    <Compile Include="OLDE\VertexShader.cs" />
-    <Compile Include="OLDE\Batch.cs" />
-    <Compile Include="OLDE\Geometry.cs" />
-    <Compile Include="OLDE\PolygonSprite.cs" />
-    <Compile Include="OLDE\StateFence.cs" />
-    <Compile Include="OLDE\StaticTextSprite.cs" />
-    <Compile Include="OLDE\TextSprite.cs" />
-    <Compile Include="OLDE\PrimaryRenderWindow.cs" />
-    <Compile Include="OLDE\BinarySerializer.cs" />
-    <Compile Include="OLDE\ImageSerializer.cs" />
-    <Compile Include="OLDE\ISerializable.cs" />
-    <Compile Include="OLDE\Serializer.cs" />
-    <Compile Include="OLDE\XMLSerializer.cs" />
-    <Compile Include="OLDE\ShaderList.cs" />
-    <Compile Include="OLDE\ShaderPass.cs" />
-    <Compile Include="OLDE\ShaderPassList.cs" />
-    <Compile Include="OLDE\ShaderTechnique.cs" />
-    <Compile Include="OLDE\ShaderTechniqueList.cs" />
-    <Compile Include="OLDE\SpriteStateCache.cs" />
-    <Compile Include="OLDE\Image.cs" />
-    <Compile Include="OLDE\ImageLayerState.cs" />
-    <Compile Include="OLDE\Sprite.cs" />
-    <Compile Include="OLDE\RenderImage.cs" />
-    <Compile Include="OLDE\RenderTargetCache.cs" />
-    <Compile Include="OLDE\RenderWindow.cs" />
-    <Compile Include="OLDE\MinMaxRange.cs" />
     <Compile Include="UI\BaseDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -311,64 +180,12 @@
       <DependentUpon>ErrorDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\GorgonDialogs.cs" />
-    <Compile Include="OLDE\ICloneable.cs" />
-    <Compile Include="OLDE\NamedObject.cs" />
-    <Compile Include="OLDE\Range.cs" />
     <Compile Include="GorgonUtility.cs" />
-    <Compile Include="OLDE\VertexTypeList.cs" />
-    <Compile Include="OLDE\Viewport.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\IDataCache.cs" />
-    <Compile Include="OLDE\Converter.cs" />
-    <Compile Include="OLDE\PlugInTypeEnums.cs" />
-    <Compile Include="OLDE\PlugInAttribute.cs" />
-    <Compile Include="OLDE\PlugInList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\PlugInModuleList.cs" />
-    <Compile Include="OLDE\RenderStates.cs" />
-    <Compile Include="OLDE\DriverChangeEvent.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="GorgonException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="OLDE\DeviceStateList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\Driver.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\DriverList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\IDeviceStateObject.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\RenderTarget.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\RenderTargetList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\VideoMode.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\VideoModeList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OLDE\Timer.cs" />
-    <Compile Include="OLDE\IndexCache.cs" />
-    <Compile Include="OLDE\VertexCache.cs" />
-    <Compile Include="OLDE\VertexField.cs" />
-    <Compile Include="OLDE\VertexType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="OLDE\Design\formAuthentication.resx">
-      <DependentUpon>formAuthentication.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
@@ -417,7 +234,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Native\" />
+    <Folder Include="OLDE\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
