@@ -121,10 +121,10 @@ namespace Tester
 				winput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonWinFormsInput");
 				xinput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonXInput");
 
-				mouse = input.CreatePointingDevice();
+				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
 				
-				//mouse = winput.CreatePointingDevice();
+				mouse = winput.CreatePointingDevice();
 				mouse.PointingDeviceMove += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseMove);
 				mouse.PointingDeviceDown += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseDown);
 				mouse.PointingDeviceUp += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseUp);
