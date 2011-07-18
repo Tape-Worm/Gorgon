@@ -30,7 +30,7 @@ using System.Windows.Forms;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace GorgonLibrary.Internal.Native
+namespace GorgonLibrary.Native
 {
     #region Value types.
     /// <summary>
@@ -80,14 +80,6 @@ namespace GorgonLibrary.Internal.Native
     {
         #region Methods.
         /// <summary>
-        /// Function to set the visibility of the mouse cursor.
-        /// </summary>
-        /// <param name="bShow">TRUE to show, FALSE to hide.</param>
-        /// <returns>-1 if no mouse is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
-        [DllImport("User32.dll")]		
-        public static extern int ShowCursor(bool bShow);
-
-        /// <summary>
         /// Function to process window messages.
         /// </summary>
         /// <remarks>See the MSDN documentation for a detailed description.</remarks>
@@ -123,7 +115,7 @@ namespace GorgonLibrary.Internal.Native
         /// <param name="PerformanceFrequency">Frequency of timer.</param>
         /// <returns>TRUE if system supports high precision timing, FALSE if not.</returns>
         [DllImport("kernel32", CharSet=CharSet.Auto)]
-        public static extern bool QueryPerformanceFrequency(ref long PerformanceFrequency);
+        public static extern bool QueryPerformanceFrequency(out long PerformanceFrequency);
 
         /// <summary>
         /// Function to return the time from a high resolution timer.
@@ -132,7 +124,7 @@ namespace GorgonLibrary.Internal.Native
         /// <param name="PerformanceCount">Time from the timer.</param>
         /// <returns>TRUE if system supports high precision timing, FALSE if not.</returns>
         [DllImport("kernel32",CharSet=CharSet.Auto)]
-        public static extern bool QueryPerformanceCounter(ref long PerformanceCount);
+        public static extern bool QueryPerformanceCounter(out long PerformanceCount);
 
         /// <summary>
         /// Function to return time from a medium precision timer.
@@ -164,6 +156,16 @@ namespace GorgonLibrary.Internal.Native
         [DllImport("winmm.dll", CharSet = CharSet.Auto)]
         public static extern int timeEndPeriod(uint uPeriod);
         #endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes the <see cref="Win32API"/> class.
+		/// </summary>
+		static Win32API()
+		{
+			Marshal.PrelinkAll(typeof(Win32API));
+		}
+		#endregion
 	}
 }
 

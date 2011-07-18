@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Win32
+namespace GorgonLibrary.Native
 {
     #region Enumerations
     /// <summary>

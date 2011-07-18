@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Win32;
+using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.HID.RawInput

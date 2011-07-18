@@ -36,7 +36,7 @@ using System.Diagnostics;
 using System.Threading;
 using Microsoft.Win32;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Internal;
+using GorgonLibrary.Native;
 using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary
@@ -92,9 +92,9 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				Win32.MSG message = new Win32.MSG();		// Message to retrieve.
+				MSG message = new MSG();		// Message to retrieve.
 
-				return !Win32.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove);
+				return !Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove);
 			}
 		}
 
@@ -295,13 +295,13 @@ namespace GorgonLibrary
 		/// <remarks>This function should be used when control over the message loop is necessary.</remarks>
 		public static void ProcessMessages()
 		{
-			Win32.MSG message = new Win32.MSG();		// Message to retrieve.
+			MSG message = new MSG();		// Message to retrieve.
 
 			// Forward the messages.
-			while (Win32.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.Remove))
+			while (Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.Remove))
 			{
-				Win32.TranslateMessage(ref message);
-				Win32.DispatchMessage(ref message);
+				Win32API.TranslateMessage(ref message);
+				Win32API.DispatchMessage(ref message);
 			}
 
 			// Continue on.

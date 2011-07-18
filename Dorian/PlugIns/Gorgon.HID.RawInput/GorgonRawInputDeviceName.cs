@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.Win32;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.HID.RawInput
 {
@@ -51,7 +51,7 @@ namespace GorgonLibrary.HID.RawInput
 		/// <summary>
 		/// Property to return the HID usage.
 		/// </summary>
-		public Win32.HIDUsage Usage
+		public Native.HIDUsage Usage
 		{
 			get;
 			private set;
@@ -60,7 +60,7 @@ namespace GorgonLibrary.HID.RawInput
 		/// <summary>
 		/// Property to return the HID usage page.
 		/// </summary>
-		public Win32.HIDUsagePage UsagePage
+		public Native.HIDUsagePage UsagePage
 		{
 			get;
 			private set;

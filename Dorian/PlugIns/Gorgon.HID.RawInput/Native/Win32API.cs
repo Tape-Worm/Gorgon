@@ -31,7 +31,7 @@ using Microsoft.Win32;
 using GorgonLibrary.HID;
 using GorgonLibrary.HID.RawInput;
 
-namespace GorgonLibrary.Win32
+namespace GorgonLibrary.Native
 {
 	/// <summary>
 	/// Static class for Native Win32 methods and corresponding structures.

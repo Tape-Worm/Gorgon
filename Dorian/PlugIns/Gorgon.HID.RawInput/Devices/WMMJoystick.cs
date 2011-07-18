@@ -27,7 +27,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Win32;
+using GorgonLibrary.Native;
 using GorgonLibrary.Math;
 using GorgonLibrary.HID;
 

@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace GorgonLibrary.Win32
+namespace GorgonLibrary.Native
 {
     #region Value types.
 	/// <summary>
