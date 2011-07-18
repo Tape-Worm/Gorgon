@@ -10,7 +10,6 @@ using GorgonLibrary;
 using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.HID;
 using GorgonLibrary.FileSystem;
 

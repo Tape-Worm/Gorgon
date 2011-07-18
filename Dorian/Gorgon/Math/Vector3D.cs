@@ -20,32 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, April 19, 2008 11:45:03 AM
+// Created: Saturday, April 19, 2008 11:44:59 AM
 // 
 #endregion
 
 using System;
-using GorgonLibrary.Math;
 
-namespace GorgonLibrary
+namespace GorgonLibrary.Math
 {
 	/// <summary>
-	/// Value type to represent a 4 dimensional vector.
+	/// Value type to represent a 3 dimensional vector.
 	/// </summary>
 	/// <remarks>
 	/// Vector mathematics are commonly used in graphical 3D applications.  And other
 	/// spatial related computations.
 	/// This valuetype provides us a convienient way to use vectors and their operations.
 	/// </remarks>
-	public struct Vector4D
+	public struct Vector3D
 	{
 		#region Variables.
 		// Static vector declarations to minimize object creation.
-		private readonly static Vector4D _zero = new Vector4D(0,0,0,1.0f);
-		private readonly static Vector4D _unit = new Vector4D(1.0f,1.0f,1.0f,1.0f);
-		private readonly static Vector4D _unitX = new Vector4D(1.0f,0,0,1.0f);
-		private readonly static Vector4D _unitY = new Vector4D(0,1.0f,0,1.0f);
-		private readonly static Vector4D _unitZ = new Vector4D(0,0,1.0f,1.0f);
+		private readonly static Vector3D _zero = new Vector3D(0,0,0);
+		private readonly static Vector3D _unit = new Vector3D(1.0f,1.0f,1.0f);
+		private readonly static Vector3D _unitX = new Vector3D(1.0f,0,0);
+		private readonly static Vector3D _unitY = new Vector3D(0,1.0f,0);
+		private readonly static Vector3D _unitZ = new Vector3D(0,0,1.0f);
 
 		/// <summary>
 		/// Horizontal position of the vector.
@@ -58,11 +57,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Depth position of the vector.
 		/// </summary>
-		public float Z;
-		/// <summary>
-		/// Homogeneous unit.
-		/// </summary>
-		public float W;
+		public float Z; 
 		#endregion
 
 		#region Properties.	
@@ -73,7 +68,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return GorgonMathUtility.Sqrt(X * X + Y * Y + Z * Z + W * W);
+				return GorgonMathUtility.Sqrt(X * X + Y * Y + Z * Z);
 			}
 		}
 
@@ -84,7 +79,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return X * X + Y * Y + Z * Z + W * W;
+				return X * X + Y * Y + Z * Z;
 			}
 		}
 
@@ -108,7 +103,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return a zeroed vector.
 		/// </summary>
-		public static Vector4D Zero
+		public static Vector3D Zero
 		{
 			get
 			{
@@ -117,9 +112,9 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to return a unit vector (1,1,1,1).
+		/// Property to return a unit vector (1,1,1).
 		/// </summary>
-		public static Vector4D Unit
+		public static Vector3D Unit
 		{
 			get
 			{
@@ -128,9 +123,9 @@ namespace GorgonLibrary
 		}
 		
 		/// <summary>
-		/// Property to return a unit vector for the X axis (1,0,0,1).
+		/// Property to return a unit vector for the X axis (1,0,0).
 		/// </summary>
-		public static Vector4D UnitX
+		public static Vector3D UnitX
 		{
 			get
 			{
@@ -139,9 +134,9 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to return a unit vector for the Y axis (0,1,0,1).
+		/// Property to return a unit vector for the Y axis (0,1,0).
 		/// </summary>
-		public static Vector4D UnitY
+		public static Vector3D UnitY
 		{
 			get
 			{
@@ -150,9 +145,9 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to return a unit vector for the X axis (0,0,1,1).
+		/// Property to return a unit vector for the X axis (0,0,1).
 		/// </summary>
-		public static Vector4D UnitZ
+		public static Vector3D UnitZ
 		{
 			get
 			{
@@ -167,14 +162,13 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="vector">Vector to get the dot product against.</param>
 		/// <returns>The dot product.</returns>
-		public float DotProduct(Vector4D vector)
+		public float DotProduct(Vector3D vector)
 		{
 			double result = 0.0;		// Resultant.
 
 			result += X * vector.X;
 			result += Y * vector.Y;
 			result += Z * vector.Z;
-			result += W * vector.W;
 
 			return (float)result; 
 		}
@@ -184,14 +178,13 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="vector">Vector to perform the cross product against.</param>
 		/// <returns>Vector containin the cross product.</returns>
-		public Vector4D CrossProduct(Vector4D vector)
+		public Vector3D CrossProduct(Vector3D vector)
 		{
-			Vector4D cross = new Vector4D();
+			Vector3D cross = new Vector3D();
 
-			cross.X = ((X * vector.Y) - (Y * vector.X)) + ((X * vector.Z) - (Z * vector.X)) + ((Y * vector.Z) - (Z * vector.Y));
-			cross.Y = ((Z * vector.Y) - (Y * vector.Z)) + ((Y * vector.W) - (W * vector.Y)) + ((Z * vector.W) - (W * vector.Z));
-			cross.Z = ((X * vector.Z) - (Z * vector.X)) + ((W * vector.X) - (X * vector.W)) + ((Z * vector.W) - (W * vector.Z));
-			cross.W = ((Y * vector.X) - (X * vector.Y)) + ((W * vector.X) - (X * vector.W)) + ((W * vector.Y) - (Y * vector.W));
+			cross.X = (Y * vector.Z) - (Z * vector.Y);
+			cross.Y = (Z * vector.X) - (X * vector.Z);
+			cross.Z = (X * vector.Y) - (Y * vector.X);
 
 			return cross;
 		}
@@ -201,15 +194,42 @@ namespace GorgonLibrary
 		/// </summary>
 		public void Normalize()
 		{
-			if (Length > float.Epsilon)
+			if (Length > float.MinValue)
 			{
 				float invLen = InverseLength;
-
+				
 				X *= invLen;
 				Y *= invLen;
 				Z *= invLen;
-				W *= invLen;
 			}
+		}
+
+		/// <summary>
+		/// Function to set this vector to the lowest values of the vector passed, if the values are lower.
+		/// </summary>
+		/// <param name="compare">Vector to compare.</param>
+		public void Floor(Vector3D compare)
+		{
+			if (compare.X < X)
+				X = compare.X;
+			if (compare.Y < Y)
+				Y = compare.Y;
+			if (compare.Z < Z)
+				Z = compare.Z;
+		}
+
+		/// <summary>
+		/// Function to set this vector to the highest values of the vector passed, if the values are higher.
+		/// </summary>
+		/// <param name="compare">Vector to compare.</param>
+		public void Ceiling(Vector3D compare)
+		{
+			if (compare.X > X)
+				X = compare.X;
+			if (compare.Y > Y)
+				Y = compare.Y;
+			if (compare.Z > Z)
+				Z = compare.Z;
 		}
 
 		/// <summary>
@@ -219,8 +239,8 @@ namespace GorgonLibrary
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is Vector4D)
-				return (this == (Vector4D)obj);
+			if (obj is Vector3D)
+				return (this == (Vector3D)obj);
 			else
 				return false;
 		}
@@ -231,7 +251,7 @@ namespace GorgonLibrary
 		/// <returns>The hash code for this object.</returns>
 		public override int GetHashCode()
 		{
-			return X.GetHashCode() ^ (Y.GetHashCode() ^ (Z.GetHashCode() ^ W.GetHashCode()));
+			return X.GetHashCode() ^ (Y.GetHashCode() ^ Z.GetHashCode());
 		}
 
 		/// <summary>
@@ -240,20 +260,20 @@ namespace GorgonLibrary
 		/// <returns>A string containing the type and values of the object.</returns>
 		public override string ToString()
 		{
-			return string.Format("4D Vector:\n\tX:{0}, Y:{1}, Z:{2}, W:{3}",X,Y,Z,W);
+			return string.Format("3D Vector:\n\tX:{0}, Y:{1}, Z:{2}",X,Y,Z);
 		}
 		#endregion
 
-		#region Operators
+		#region Operators.
 		/// <summary>
 		/// Function to perform addition upon two vectors.
 		/// </summary>
 		/// <param name="left">Vector to add to.</param>
 		/// <param name="right">Vector to add with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D Add(Vector4D left,Vector4D right)
+		public static Vector3D Add(Vector3D left,Vector3D right)
 		{
-			return new Vector4D(left.X + right.X,left.Y + right.Y,left.Z + right.Z,left.W + right.W);
+			return new Vector3D(left.X + right.X,left.Y + right.Y,left.Z + right.Z);
 		}
 
 		/// <summary>
@@ -262,9 +282,9 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to subtract.</param>
 		/// <param name="right">Vector to subtract with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D Subtract(Vector4D left,Vector4D right)
+		public static Vector3D Subtract(Vector3D left,Vector3D right)
 		{
-			return new Vector4D(left.X - right.X,left.Y - right.Y,left.Z - right.Z,left.W - right.W);
+			return new Vector3D(left.X - right.X,left.Y - right.Y,left.Z - right.Z);
 		}
 
 		/// <summary>
@@ -272,9 +292,9 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="left">Vector to negate.</param>
 		/// <returns>A negated vector.</returns>
-		public static Vector4D Negate(Vector4D left)
+		public static Vector3D Negate(Vector3D left)
 		{
-			return new Vector4D(-left.X,-left.Y,-left.Z,-left.W);
+			return new Vector3D(-left.X,-left.Y,-left.Z);
 		}
 
 		/// <summary>
@@ -283,7 +303,7 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to divide.</param>
 		/// <param name="scalar">Scalar value to divide by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D Divide(Vector4D left,float scalar)
+		public static Vector3D Divide(Vector3D left,float scalar)
 		{
 			if (scalar == 0.0)
 				throw new DivideByZeroException();				
@@ -291,7 +311,7 @@ namespace GorgonLibrary
 			// Do this so we don't have to do multiple divides.
 			float inverse = 1.0f / scalar;
 
-			return new Vector4D(left.X * inverse,left.Y * inverse,left.Z * inverse,left.W * inverse);
+			return new Vector3D(left.X * inverse,left.Y * inverse,left.Z * inverse);
 		}
 
 		/// <summary>
@@ -300,12 +320,12 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to divide.</param>
 		/// <param name="right">Vector to divide by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D Divide(Vector4D left,Vector4D right)
+		public static Vector3D Divide(Vector3D left,Vector3D right)
 		{
-			if ((right.X == 0.0) || (right.Y == 0.0) || (right.Z == 0.0) || (right.W == 0.0))
-				throw new DivideByZeroException();				
+			if ((right.X == 0.0) || (right.Y == 0.0) || (right.Z == 0.0))
+				throw new DivideByZeroException();
 
-			return new Vector4D(left.X / right.X,left.Y / right.Y,left.Z / right.Z,left.W / right.W);				
+			return new Vector3D(left.X / right.X,left.Y / right.Y,left.Z / right.Z);				
 		}
 		
 		/// <summary>
@@ -314,9 +334,9 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to multiply.</param>
 		/// <param name="right">Vector to multiply by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D Multiply(Vector4D left,Vector4D right)
+		public static Vector3D Multiply(Vector3D left,Vector3D right)
 		{
-			return new Vector4D(left.X * right.X,left.Y * right.Y,left.Z * right.Z,left.W * right.W);
+			return new Vector3D(left.X * right.X,left.Y * right.Y,left.Z * right.Z);
 		}
 
 		/// <summary>
@@ -325,9 +345,9 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to multiply with.</param>
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D Multiply(Vector4D left,float scalar)
+		public static Vector3D Multiply(Vector3D left,float scalar)
 		{
-			return new Vector4D(left.X * scalar,left.Y * scalar,left.Z * scalar,left.W * scalar);
+			return new Vector3D(left.X * scalar,left.Y * scalar,left.Z * scalar);
 		}
 
 		/// <summary>
@@ -336,9 +356,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <param name="right">Vector to multiply with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D Multiply(float scalar,Vector4D right)
+		public static Vector3D Multiply(float scalar,Vector3D right)
 		{
-			return new Vector4D(right.X * scalar,right.Y * scalar,right.Z * scalar,right.W * scalar);
+			return new Vector3D(right.X * scalar,right.Y * scalar,right.Z * scalar);
 		}
 
 		/// <summary>
@@ -347,9 +367,9 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to compare.</param>
 		/// <param name="right">Vector to compare with.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool operator ==(Vector4D left,Vector4D right)
+		public static bool operator ==(Vector3D left,Vector3D right)
 		{
-			return ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z) && (left.W == right.W));
+			return ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z));
 		}
 
 		/// <summary>
@@ -358,7 +378,7 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to compare.</param>
 		/// <param name="right">Vector to compare with.</param>
 		/// <returns>TRUE if not equal, FALSE if they are.</returns>
-		public static bool operator !=(Vector4D left,Vector4D right)
+		public static bool operator !=(Vector3D left,Vector3D right)
 		{
 			return !(left == right);
 		}
@@ -369,9 +389,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left vector to compare.</param>
 		/// <param name="right">Right vector to compare.</param>
 		/// <returns>TRUE if left is less than right, FALSE if not.</returns>
-		public static bool operator <(Vector4D left,Vector4D right)
+		public static bool operator <(Vector3D left,Vector3D right)
 		{
-			return ((left.X < right.X) && (left.Y < right.Y) && (left.Z < right.Z) && (left.W < right.W));
+			return ((left.X < right.X) && (left.Y < right.Y) && (left.Z < right.Z));
 		}
 
 		/// <summary>
@@ -380,9 +400,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left vector to compare.</param>
 		/// <param name="right">Right vector to compare.</param>
 		/// <returns>TRUE if left is greater than right, FALSE if not.</returns>
-		public static bool operator >(Vector4D left,Vector4D right)
+		public static bool operator >(Vector3D left,Vector3D right)
 		{
-			return ((left.X > right.X) && (left.Y > right.Y) && (left.Z > right.Z) && (left.W > right.W));
+			return ((left.X > right.X) && (left.Y > right.Y) && (left.Z > right.Z));
 		}
 
 		/// <summary>
@@ -391,9 +411,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left vector to compare.</param>
 		/// <param name="right">Right vector to compare.</param>
 		/// <returns>TRUE if left is less than right, FALSE if not.</returns>
-		public static bool operator <=(Vector4D left,Vector4D right)
+		public static bool operator <=(Vector3D left,Vector3D right)
 		{
-			return ((left.X <= right.X) && (left.Y <= right.Y) && (left.Z <= right.Z) && (left.W <= right.W));
+			return ((left.X <= right.X) && (left.Y <= right.Y) && (left.Z <= right.Z));
 		}
 
 		/// <summary>
@@ -402,9 +422,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left vector to compare.</param>
 		/// <param name="right">Right vector to compare.</param>
 		/// <returns>TRUE if left is greater than right, FALSE if not.</returns>
-		public static bool operator >=(Vector4D left,Vector4D right)
+		public static bool operator >=(Vector3D left,Vector3D right)
 		{
-			return ((left.X >= right.X) && (left.Y >= right.Y) && (left.Z >= right.Z) && (left.W >= right.W));
+			return ((left.X >= right.X) && (left.Y >= right.Y) && (left.Z >= right.Z));
 		}
 
 		/// <summary>
@@ -413,7 +433,7 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to add to.</param>
 		/// <param name="right">Vector to add with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator +(Vector4D left,Vector4D right)
+		public static Vector3D operator +(Vector3D left,Vector3D right)
 		{
 			return Add(left,right);
 		}
@@ -424,7 +444,7 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to subtract.</param>
 		/// <param name="right">Vector to subtract with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator -(Vector4D left,Vector4D right)
+		public static Vector3D operator -(Vector3D left,Vector3D right)
 		{
 			return Subtract(left,right);
 		}
@@ -434,7 +454,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="left">Vector to negate.</param>
 		/// <returns>A negated vector.</returns>
-		public static Vector4D operator -(Vector4D left)
+		public static Vector3D operator -(Vector3D left)
 		{
 			return Negate(left);
 		}
@@ -445,7 +465,7 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to multiply.</param>
 		/// <param name="right">Vector to multiply by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator *(Vector4D left,Vector4D right)
+		public static Vector3D operator *(Vector3D left,Vector3D right)
 		{
 			return Multiply(left,right);
 		}
@@ -456,7 +476,7 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to multiply with.</param>
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator *(Vector4D left,float scalar)
+		public static Vector3D operator *(Vector3D left,float scalar)
 		{
 			return Multiply(left,scalar);
 		}
@@ -467,7 +487,7 @@ namespace GorgonLibrary
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <param name="right">Vector to multiply with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator *(float scalar,Vector4D right)
+		public static Vector3D operator *(float scalar,Vector3D right)
 		{
 			return Multiply(scalar,right);
 		}
@@ -478,7 +498,7 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to divide.</param>
 		/// <param name="scalar">Scalar value to divide by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator /(Vector4D left,float scalar)
+		public static Vector3D operator /(Vector3D left,float scalar)
 		{
 			return Divide(left,scalar);
 		}		
@@ -489,48 +509,27 @@ namespace GorgonLibrary
 		/// <param name="left">Vector to divide.</param>
 		/// <param name="right">Vector to divide by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator /(Vector4D left,Vector4D right)
+		public static Vector3D operator /(Vector3D left,Vector3D right)
 		{
 			return Divide(left,right);
 		}
 
 		/// <summary>
-		/// Operator to convert a 2D vector into a 4D vector.
+		/// Operator to convert a 2D vector into a 3D vector.
 		/// </summary>
 		/// <param name="vector">2D vector.</param>
-		/// <returns>4D vector.</returns>
-		public static implicit operator Vector4D(Vector2D vector)
+		/// <returns>3D vector.</returns>
+		public static implicit operator Vector3D(Vector2D vector)
 		{
-			return new Vector4D(vector.X,vector.Y,0,1.0f);
-		}
-
-
-		/// <summary>
-		/// Operator to convert a 3D vector into a 4D vector.
-		/// </summary>
-		/// <param name="vector">3D vector</param>
-		/// <returns>4D vector.</returns>
-		public static implicit operator Vector4D(Vector3D vector)
-		{
-			return new Vector4D(vector.X,vector.Y,vector.Z,1.0f);
+			return new Vector3D(vector.X,vector.Y,0);
 		}
 
         /// <summary>
-        /// Operator to convert a 4D vector into a 3D vector.
+        /// Operator to convert a 3D vector into a 2D vector.
         /// </summary>
-        /// <param name="vector">4D vector to convert.</param>
-        /// <returns>3D vector.</returns>
-        public static explicit operator Vector3D(Vector4D vector)
-        {
-            return new Vector3D(vector.X, vector.Y, vector.Z);
-        }
-
-        /// <summary>
-        /// Operator to convert a 4D vector into a 2D vector.
-        /// </summary>
-        /// <param name="vector">4D vector to convert.</param>
+        /// <param name="vector">3D vector to convert.</param>
         /// <returns>2D vector.</returns>
-        public static explicit operator Vector2D(Vector4D vector)
+        public static explicit operator Vector2D(Vector3D vector)
         {
             return new Vector2D(vector.X, vector.Y);
         }
@@ -543,13 +542,11 @@ namespace GorgonLibrary
 		/// <param name="x">Horizontal position of the vector.</param>
 		/// <param name="y">Vertical posiition of the vector.</param>
 		/// <param name="z">Depth position of the vector.</param>
-		/// <param name="w">W component of the vector.</param>
-		public Vector4D(float x,float y,float z,float w)
+		public Vector3D(float x,float y,float z)
 		{
 			X = x;
 			Y = y;
 			Z = z;
-			W = w;
 		}
 		#endregion
 	}

@@ -26,9 +26,8 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Math;
 
-namespace GorgonLibrary
+namespace GorgonLibrary.Math
 {
 	/// <summary>
 	/// Value type to represent a 2 dimensional vector.
