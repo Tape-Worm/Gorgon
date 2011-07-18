@@ -28,6 +28,7 @@ using System;
 using System.Drawing;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
+using GorgonLibrary.Math;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.HID;
 
@@ -52,6 +53,23 @@ namespace GorgonLibrary.HID.RawInput
 
 		#region Methods.
 		/// <summary>
+		/// Function to update the cursor on the screen if applicable.
+		/// </summary>
+		/// <remarks>This function is optional depending on whether you wish to update the actual cursor on the screen.  Plug-ins wishing to skip this behaviour should override this function and put in an empty stub.</remarks>
+		private void UpdateCursorPosition()
+		{
+			// If the window is disposed, then do nothing.
+			if (BoundWindow != null)
+			{
+				// Move the windows cursor to match if not exclusive.
+				if (!Exclusive)
+					Forms.Cursor.Position = BoundWindow.PointToScreen(Point.Truncate(Position));
+				else
+					Forms.Cursor.Position = BoundWindow.PointToScreen(new Point(0, 0));
+			}
+		}
+		
+		/// <summary>
 		/// Function to begin a double click.
 		/// </summary>
 		/// <param name="button">Button used for double click.</param>
@@ -65,6 +83,23 @@ namespace GorgonLibrary.HID.RawInput
 			}
 		}
 
+		/// <summary>
+		/// Function to return whether a pointing device click is a double click or not.
+		/// </summary>
+		/// <param name="button">Button used for double click.</param>
+		/// <returns>TRUE if it is a double click, FALSE if not.</returns>
+		private bool IsDoubleClick(PointingDeviceButtons button)
+		{
+			if (button != _doubleClickButton)
+				return false;
+			if (_doubleClicker.Milliseconds > DoubleClickDelay)
+				return false;
+			if ((System.Math.Abs(Position.X - _doubleClickPosition.X) > DoubleClickRange.X) || (System.Math.Abs(Position.Y - _doubleClickPosition.Y) > DoubleClickRange.Y))
+				return false;
+
+			return true;
+		}
+		
 		/// <summary>
 		/// Function that will hide the cursor and rewind the cursor visibility stack.
 		/// </summary>
@@ -80,23 +115,6 @@ namespace GorgonLibrary.HID.RawInput
 
 			Win32API.ShowCursor(true);			
 		}
-
-		/// <summary>
-		/// Function to return whether a pointing device click is a double click or not.
-		/// </summary>
-		/// <param name="button">Button used for double click.</param>
-		/// <returns>TRUE if it is a double click, FALSE if not.</returns>
-		protected override bool IsDoubleClick(PointingDeviceButtons button)
-		{
-			if (button != _doubleClickButton)
-				return false;
-			if (_doubleClicker.Milliseconds > DoubleClickDelay)
-				return false;
-			if ((System.Math.Abs(Position.X - _doubleClickPosition.X) > DoubleClickRange.X) || (System.Math.Abs(Position.Y - _doubleClickPosition.Y) > DoubleClickRange.Y))
-				return false;
-
-			return true;
-		}		
 
 		/// <summary>
 		/// Function to bind the input device.
@@ -196,18 +214,9 @@ namespace GorgonLibrary.HID.RawInput
 				}
 			}
 
-			RelativePosition = new PointF(e.Data.Mouse.LastX, e.Data.Mouse.LastY);
-
-			// Get position.
-			Position = PointF.Add(Position, new SizeF(e.Data.Mouse.LastX, e.Data.Mouse.LastY));
-
 			// Get wheel data.
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.MouseWheel) != 0)
-			{
-				WheelDelta = (int)((short)e.Data.Mouse.ButtonData);
-				Wheel += (short)e.Data.Mouse.ButtonData;				
-				OnPointingDeviceWheelMove();
-			}
+				OnPointingDeviceWheelMove((int)((short)e.Data.Mouse.ButtonData));
 
 			// If we're outside of the delay, then restart double click cycle.
 			if (_doubleClicker.Milliseconds > DoubleClickDelay)
@@ -221,31 +230,26 @@ namespace GorgonLibrary.HID.RawInput
 			{
 				BeginDoubleClick(PointingDeviceButtons.Left);
 				OnPointingDeviceDown(PointingDeviceButtons.Left);
-				Button |= PointingDeviceButtons.Left;				
 			}
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.RightDown) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Right);
 				OnPointingDeviceDown(PointingDeviceButtons.Right);
-				Button |= PointingDeviceButtons.Right;				
 			}
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.MiddleDown) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Middle);
 				OnPointingDeviceDown(PointingDeviceButtons.Middle);
-				Button |= PointingDeviceButtons.Middle;				
 			}
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.Button4Down) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Button4);
 				OnPointingDeviceDown(PointingDeviceButtons.Button4);
-				Button |= PointingDeviceButtons.Button4;				
 			}
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.Button5Down) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Button5);
 				OnPointingDeviceDown(PointingDeviceButtons.Button5);
-				Button |= PointingDeviceButtons.Button5;				
 			}
 
 			// If we have an 'up' event on the buttons, remove the flag.
@@ -259,7 +263,6 @@ namespace GorgonLibrary.HID.RawInput
 					_clickCount = 0;
 				}
 
-				Button &= ~PointingDeviceButtons.Left;
 				OnPointingDeviceUp(PointingDeviceButtons.Left, _clickCount);
 			}
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.RightUp) != 0)
@@ -272,7 +275,6 @@ namespace GorgonLibrary.HID.RawInput
 					_clickCount = 0;
 				}
 
-				Button &= ~PointingDeviceButtons.Right;
 				OnPointingDeviceUp(PointingDeviceButtons.Right, _clickCount);
 			}
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.MiddleUp) != 0)
@@ -285,7 +287,6 @@ namespace GorgonLibrary.HID.RawInput
 					_clickCount = 0;
 				}
 
-				Button &= ~PointingDeviceButtons.Middle;
 				OnPointingDeviceUp(PointingDeviceButtons.Middle, _clickCount);
 			}
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.Button4Up) != 0)
@@ -298,7 +299,6 @@ namespace GorgonLibrary.HID.RawInput
 					_clickCount = 0;
 				}
 
-				Button &= ~PointingDeviceButtons.Button4;
 				OnPointingDeviceUp(PointingDeviceButtons.Button4, _clickCount);
 			}
 			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.Button5Up) != 0)
@@ -311,23 +311,13 @@ namespace GorgonLibrary.HID.RawInput
 					_clickCount = 0;
 				}
 
-				Button &= ~PointingDeviceButtons.Button5;
 				OnPointingDeviceUp(PointingDeviceButtons.Button5, _clickCount);
 			}
 
 			// Fire events.
-			if ((e.Data.Mouse.LastX != 0) || (e.Data.Mouse.LastY != 0))
-				OnPointingDeviceMove();
-
-			// If the window is disposed, then do nothing.
-			if (BoundWindow != null) 
-			{
-				// Move the windows cursor to match if not exclusive.
-				if (!Exclusive)
-					Forms.Cursor.Position = BoundWindow.PointToScreen(Point.Truncate(Position));
-				else
-					Forms.Cursor.Position = BoundWindow.PointToScreen(new Point(0, 0));
-			}
+			RelativePosition = new PointF(e.Data.Mouse.LastX, e.Data.Mouse.LastY);
+			OnPointingDeviceMove(Vector2D.Add(Position, new Vector2D(e.Data.Mouse.LastX, e.Data.Mouse.LastY)), false);
+			UpdateCursorPosition();
 		}
 		#endregion
 
