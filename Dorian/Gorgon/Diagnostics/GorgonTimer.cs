@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Diagnostics
 {
@@ -160,7 +161,7 @@ namespace GorgonLibrary.Diagnostics
 		{
 			long currentTime = 0;
 
-			Win32.QueryPerformanceCounter(out currentTime);
+			Win32API.QueryPerformanceCounter(out currentTime);
 			_currentTicks =  currentTime - _startTime;
 			_microSeconds = (_currentTicks * 1000000.0) / _frequency;
 		}
@@ -170,7 +171,7 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		private void GetWin32Time()
 		{
-			long currentTime = Win32.timeGetTime();
+			long currentTime = Win32API.timeGetTime();
 			long ticks = Environment.TickCount;
 
 			// Handle wrap around every ~50 days.
@@ -212,7 +213,7 @@ namespace GorgonLibrary.Diagnostics
 			if (_usingLowRes)
 			{
 				_usingLowRes = false;
-				Win32.timeEndPeriod(1);
+				Win32API.timeEndPeriod(1);
 			}
 		}
 
@@ -223,8 +224,8 @@ namespace GorgonLibrary.Diagnostics
 		{
 			if (_isQPFtimer)
 			{
-				if (Win32.QueryPerformanceFrequency(out _frequency))
-					Win32.QueryPerformanceCounter(out _startTime);
+				if (Win32API.QueryPerformanceFrequency(out _frequency))
+					Win32API.QueryPerformanceCounter(out _startTime);
 				else
 					_isQPFtimer = false;
 			}
@@ -233,12 +234,12 @@ namespace GorgonLibrary.Diagnostics
 			{
 				if (_usingLowRes)
 				{
-					Win32.timeBeginPeriod(1);
+					Win32API.timeBeginPeriod(1);
 					_usingLowRes = true;
 				}
 
 				_startTick = Environment.TickCount;
-				_startTime = Win32.timeGetTime();
+				_startTime = Win32API.timeGetTime();
 			}
 		}
 
@@ -279,7 +280,7 @@ namespace GorgonLibrary.Diagnostics
 		{
 			if (useHighResolution)
 			{
-				if (Win32.QueryPerformanceFrequency(out _frequency))
+				if (Win32API.QueryPerformanceFrequency(out _frequency))
 					_isQPFtimer = true;
 			}
 			else
@@ -287,7 +288,7 @@ namespace GorgonLibrary.Diagnostics
 				if (!_usingLowRes)
 				{
 					_usingLowRes = true;
-					Win32.timeBeginPeriod(1);
+					Win32API.timeBeginPeriod(1);
 				}
 			}
 

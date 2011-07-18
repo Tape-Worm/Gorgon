@@ -27,7 +27,7 @@
 using System;
 using System.Drawing;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Win32;
+using GorgonLibrary.Native;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.HID;
 

@@ -31,7 +31,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Win32;
+using GorgonLibrary.Native;
 using GorgonLibrary.HID;
 using Forms = System.Windows.Forms;
 

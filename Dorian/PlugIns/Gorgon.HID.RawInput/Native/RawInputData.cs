@@ -26,7 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Win32;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.HID.RawInput
 {

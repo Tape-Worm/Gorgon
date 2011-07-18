@@ -127,9 +127,6 @@
     <Compile Include="Math\GorgonMathUtility.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
-    <Compile Include="Native\Win32.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Native\Win32API.cs">
       <SubType>Code</SubType>
     </Compile>

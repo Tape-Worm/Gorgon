@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using GorgonLibrary.Win32;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.HID.RawInput
 {
