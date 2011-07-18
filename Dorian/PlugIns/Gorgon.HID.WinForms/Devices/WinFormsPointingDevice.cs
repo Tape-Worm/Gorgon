@@ -36,21 +36,38 @@ using GorgonLibrary.Math;
 namespace GorgonLibrary.HID.WinFormsInput
 {
 	/// <summary>
-	/// Winforms mouse interface.
+	/// Winforms pointing device interface.
 	/// </summary>
 	public class WinFormsPointingDevice
 		: GorgonPointingDevice
 	{
-		#region Properties.
-
+		#region Enumerations.
+		/// <summary>
+		/// Enumerate for pointing device state.
+		/// </summary>
+		private enum ButtonState
+		{
+			/// <summary>
+			/// No button press event.
+			/// </summary>
+			None = 0,
+			/// <summary>
+			/// Down button press event.
+			/// </summary>
+			Down = 1,
+			/// <summary>
+			/// Up button press event.
+			/// </summary>
+			Up = 2
+		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
-		/// Function to set the visibility of the mouse cursor.
+		/// Function to set the visibility of the pointing device cursor.
 		/// </summary>
 		/// <param name="bShow">TRUE to show, FALSE to hide.</param>
-		/// <returns>-1 if no mouse is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
+		/// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
 		[System.Runtime.InteropServices.DllImport("User32.dll"), System.Security.SuppressUnmanagedCodeSecurity()]
 		private static extern int ShowCursor(bool bShow);
 
@@ -61,7 +78,7 @@ namespace GorgonLibrary.HID.WinFormsInput
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void BoundWindow_MouseDoubleClick(object sender, Forms.MouseEventArgs e)
 		{
-			GetMouseData(e, true, false);
+			GetMouseData(e, true, ButtonState.None);
 		}
 
 		/// <summary>
@@ -71,7 +88,7 @@ namespace GorgonLibrary.HID.WinFormsInput
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void BoundWindow_MouseUp(object sender, Forms.MouseEventArgs e)
 		{
-			GetMouseData(e, false, false);
+			GetMouseData(e, false, ButtonState.Up);
 		}
 
 		/// <summary>
@@ -81,7 +98,7 @@ namespace GorgonLibrary.HID.WinFormsInput
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void BoundWindow_MouseDown(object sender, Forms.MouseEventArgs e)
 		{
-			GetMouseData(e, false, true);
+			GetMouseData(e, false, ButtonState.Down);
 		}
 
 		/// <summary>
@@ -91,7 +108,7 @@ namespace GorgonLibrary.HID.WinFormsInput
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void BoundWindow_MouseMove(object sender, Forms.MouseEventArgs e)
 		{
-			GetMouseData(e, false, false);
+			GetMouseData(e, false, (e.Button != Forms.MouseButtons.None ? ButtonState.Down : ButtonState.None));
 		}
 
 		/// <summary>
@@ -101,71 +118,62 @@ namespace GorgonLibrary.HID.WinFormsInput
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
 		private void BoundWindow_MouseWheel(object sender, Forms.MouseEventArgs e)
 		{
-			GetMouseData(e, false, false);
+			GetMouseData(e, false, ButtonState.None);
 		}
 
 		/// <summary>
-		/// Function to retrieve the mouse data.
+		/// Function to retrieve the pointing device data.
 		/// </summary>
 		/// <param name="e">Event arguments.</param>
 		/// <param name="doubleClick">TRUE if the event is from a double click, FALSE if not.</param>
-		/// <param name="down">TRUE if the mouse button is down, FALSE if not.</param>
-		private void GetMouseData(Forms.MouseEventArgs e, bool doubleClick, bool down)
+		/// <param name="state">The state for the button event.</param>
+		private void GetMouseData(Forms.MouseEventArgs e, bool doubleClick, ButtonState state)
 		{			 
-			if ((BoundWindow == null) || (BoundWindow.Disposing))
+			if ((BoundWindow == null) || (BoundWindow.Disposing)) 
 				return;
+						
+			OnPointingDeviceWheelMove(e.Delta);
 
-			Button = PointingDeviceButtons.None;
-			RelativePosition = Vector2D.Subtract(e.Location, Position);
-			WheelDelta = 0;
-
-			if (Position != e.Location)
-			{
-				Position = e.Location;
-				OnPointingDeviceMove();
-			}
-
-			if (e.Delta != 0)
-			{
-				Wheel += e.Delta;
-				WheelDelta = e.Delta;
-				OnPointingDeviceWheelMove();
-			}
-
+			// Get button data.
 			if ((e.Button & Forms.MouseButtons.Left) == Forms.MouseButtons.Left)
-				Button |= PointingDeviceButtons.Button1 | PointingDeviceButtons.Left;
-			if ((e.Button & Forms.MouseButtons.Right) == Forms.MouseButtons.Right)
-				Button |= PointingDeviceButtons.Button2 | PointingDeviceButtons.Right;
-			if ((e.Button & Forms.MouseButtons.Middle) == Forms.MouseButtons.Middle)
-				Button |= PointingDeviceButtons.Button3 | PointingDeviceButtons.Middle;
-			if ((e.Button & Forms.MouseButtons.XButton1) == Forms.MouseButtons.XButton1)
-				Button |= PointingDeviceButtons.Button4;
-			if ((e.Button & Forms.MouseButtons.XButton2) == Forms.MouseButtons.XButton2)
-				Button |= PointingDeviceButtons.Button5;
-
-			if ((e.Button != Forms.MouseButtons.None) && (!doubleClick))
 			{
-				if (down)
-					OnPointingDeviceDown(Button);
-				else
-					OnPointingDeviceUp(Button, e.Clicks);
+				if (state == ButtonState.Down)
+					OnPointingDeviceDown(PointingDeviceButtons.Left);
+				if ((state == ButtonState.Up) || (doubleClick))
+					OnPointingDeviceUp(PointingDeviceButtons.Left, e.Clicks);
 			}
 
-			if (doubleClick)
-				OnPointingDeviceUp(Button, 2);
-		}
+			if ((e.Button & Forms.MouseButtons.Right) == Forms.MouseButtons.Right)
+			{
+				if (state == ButtonState.Down)
+					OnPointingDeviceDown(PointingDeviceButtons.Right);
+				if ((state == ButtonState.Up) || (doubleClick))
+					OnPointingDeviceUp(PointingDeviceButtons.Right, e.Clicks);
+			}
 
-		/// <summary>
-		/// Function to return whether a pointing device click is a double click or not.
-		/// </summary>
-		/// <param name="button">Button used for double click.</param>
-		/// <returns>
-		/// TRUE if it is a double click, FALSE if not.
-		/// </returns>
-		protected override bool IsDoubleClick(PointingDeviceButtons button)
-		{
-			// No need in winforms.
-			return false;
+			if ((e.Button & Forms.MouseButtons.Middle) == Forms.MouseButtons.Middle)
+			{
+				if (state == ButtonState.Down)
+					OnPointingDeviceDown(PointingDeviceButtons.Middle);
+				if ((state == ButtonState.Up) || (doubleClick))
+					OnPointingDeviceUp(PointingDeviceButtons.Middle, e.Clicks);
+			}
+			if ((e.Button & Forms.MouseButtons.XButton1) == Forms.MouseButtons.XButton1)
+			{
+				if (state == ButtonState.Down)
+					OnPointingDeviceDown(PointingDeviceButtons.Button4);
+				if ((state == ButtonState.Up) || (doubleClick))
+					OnPointingDeviceUp(PointingDeviceButtons.Button4, e.Clicks);
+			}
+			if ((e.Button & Forms.MouseButtons.XButton2) == Forms.MouseButtons.XButton2)
+			{
+				if (state == ButtonState.Down)
+					OnPointingDeviceDown(PointingDeviceButtons.Button5);
+				if ((state == ButtonState.Up) || (doubleClick))
+					OnPointingDeviceUp(PointingDeviceButtons.Button5, e.Clicks);
+			}
+
+			OnPointingDeviceMove(e.Location, true);
 		}
 
 		/// <summary>
@@ -194,7 +202,8 @@ namespace GorgonLibrary.HID.WinFormsInput
 			BoundWindow.MouseDown += new Forms.MouseEventHandler(BoundWindow_MouseDown);
 			BoundWindow.MouseUp += new Forms.MouseEventHandler(BoundWindow_MouseUp);
 			BoundWindow.MouseDoubleClick += new Forms.MouseEventHandler(BoundWindow_MouseDoubleClick);
-			BoundWindow.MouseWheel += new Forms.MouseEventHandler(BoundWindow_MouseWheel);
+			// Bind this to the form because some controls won't have focus and won't be able to fire the event.
+			BoundForm.MouseWheel += new Forms.MouseEventHandler(BoundWindow_MouseWheel);
 		}
 
 		/// <summary>
@@ -206,7 +215,7 @@ namespace GorgonLibrary.HID.WinFormsInput
 			BoundWindow.MouseDown -= new Forms.MouseEventHandler(BoundWindow_MouseDown);
 			BoundWindow.MouseUp -= new Forms.MouseEventHandler(BoundWindow_MouseUp);
 			BoundWindow.MouseDoubleClick -= new Forms.MouseEventHandler(BoundWindow_MouseDoubleClick);
-			BoundWindow.MouseWheel -= new Forms.MouseEventHandler(BoundWindow_MouseWheel);
+			BoundForm.MouseWheel -= new Forms.MouseEventHandler(BoundWindow_MouseWheel);
 		}
 		#endregion
 

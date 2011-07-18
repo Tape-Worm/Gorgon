@@ -37,7 +37,7 @@ namespace Tester
 			{
 				joystick.Poll();
 
-				labelMouse.Text = string.Format("Left Stick: {0}x{1} ({8})  Right stick:{2}x{3} ({9})  Rudder:{4}  Throttle:{5}\nPOV: {6} POV Direction: {7}\n", 
+				labelMouse.Text += string.Format("Left Stick: {0}x{1} ({8})\nRight stick:{2}x{3} ({9})\nRudder:{4}\nThrottle:{5}\nPOV: {6}\nPOV Direction: {7}\n", 
 						joystick.X, joystick.Y, joystick.SecondaryX, joystick.SecondaryY, joystick.Rudder, joystick.Throttle, joystick.POV, joystick.Direction.POV, joystick.Direction.X|joystick.Direction.Y, joystick.Direction.SecondaryX|joystick.Direction.SecondaryY);
 
 				for (int i = 0; i < joystick.Capabilities.ButtonCount; i++)
@@ -110,24 +110,28 @@ namespace Tester
 
 			try 
 			{
-				Gorgon.Initialize(this);
+				Gorgon.Initialize(this.panel1);
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");				
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.RawInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.XInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.WinFormsInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
-				//input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
+				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
 				winput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonWinFormsInput");
 				xinput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonXInput");
 
-				//mouse = input.CreatePointingDevice();
+				mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
-				mouse = winput.CreatePointingDevice();
-				mouse.MouseMove += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseMove);
-				mouse.MouseDown += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseDown);
-				mouse.MouseUp += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseUp);
-				mouse.MouseWheelMove += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseWheelMove);
+				
+				//mouse = winput.CreatePointingDevice();
+				mouse.PointingDeviceMove += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseMove);
+				mouse.PointingDeviceDown += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseDown);
+				mouse.PointingDeviceUp += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseUp);
+				mouse.PointingDeviceWheelMove += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseWheelMove);
+				//panel1.MouseDown += new MouseEventHandler(Form1_MouseDown);
+				//panel1.MouseUp += new MouseEventHandler(Form1_MouseUp);
+				//panel1.MouseMove += new MouseEventHandler(Form1_MouseMove);
 				keyboard = winput.CreateKeyboard();
 				keyboard.KeyDown += new EventHandler<KeyboardHIDEventArgs>(keyboard_KeyDown);
 
@@ -184,20 +188,23 @@ namespace Tester
 				Close();
 			}
 		}
-
+		
 		void mouse_MouseWheelMove(object sender, PointingDeviceHIDEventArgs e)
 		{
-			mouseInfo = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString() + "\nWheel: " + mouse.Wheel.ToString() + "\nButton:" + mouse.Button.ToString() + "\n\n";
+			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + "\n\n";
 		}
 
 		void mouse_MouseUp(object sender, PointingDeviceHIDEventArgs e)
 		{
+			if ((e.Buttons == PointingDeviceButtons.Left) && (e.ShiftButtons == PointingDeviceButtons.Right))			
+				mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + " - UP\n\n";
 			if (e.DoubleClick)
 				GorgonDialogs.InfoBox(this, e.Buttons.ToString());
 		}
 
 		void mouse_MouseDown(object sender, PointingDeviceHIDEventArgs e)
 		{
+			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + " - DOWN\n\n";
 		}
 
 		/// <summary>
@@ -207,7 +214,7 @@ namespace Tester
 		/// <param name="e">The <see cref="GorgonLibrary.HID.PointingDeviceHIDEventArgs"/> instance containing the event data.</param>
 		void mouse_MouseMove(object sender, PointingDeviceHIDEventArgs e)
 		{
-			mouseInfo = mouse.Position.X.ToString() + "x" + mouse.Position.Y.ToString() + "\nWheel: " + mouse.Wheel.ToString() + "\nButton:" + mouse.Button.ToString() + "\n\n";
+			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + "\n\n";
 		}	
 
 		void keyboard_KeyDown(object sender, KeyboardHIDEventArgs e)

@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using Forms = System.Windows.Forms;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.HID
 {
@@ -37,39 +38,39 @@ namespace GorgonLibrary.HID
 	public enum PointingDeviceButtons
 	{
 		/// <summary>
-		/// No mouse button pressed.
+		/// No pointing device button pressed.
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// Left mouse button pressed.
+		/// Left pointing device button pressed.
 		/// </summary>
 		Left = 1,
 		/// <summary>
-		/// Right mouse button pressed.
+		/// Right pointing device button pressed.
 		/// </summary>
 		Right = 2,
 		/// <summary>
-		/// Middle mouse button pressed.
+		/// Middle pointing device button pressed.
 		/// </summary>
 		Middle = 4,
 		/// <summary>
-		/// Left mouse button pressed (same as MouseButton.Left).
+		/// Left pointing device button pressed (same as PointingDeviceButtons.Left).
 		/// </summary>
 		Button1 = 1,
 		/// <summary>
-		/// Right mouse button pressed (same as MouseButton.Right).
+		/// Right pointing device button pressed (same as PointingDeviceButtons.Right).
 		/// </summary>
 		Button2 = 2,
 		/// <summary>
-		/// Middle mouse button pressed (same as MouseButton.Middle).
+		/// Middle pointing device button pressed (same as PointingDeviceButtons.Middle).
 		/// </summary>
 		Button3 = 4,
 		/// <summary>
-		/// Fourth mouse button pressed.
+		/// Fourth pointing device button pressed.
 		/// </summary>
 		Button4 = 8,
 		/// <summary>
-		/// Fifth mouse button pressed.
+		/// Fifth pointing device button pressed.
 		/// </summary>
 		Button5 = 16
 	}
@@ -83,13 +84,13 @@ namespace GorgonLibrary.HID
 	{
 		#region Variables.
 		private bool _disposed = false;												// Flag to indicate that the object was disposed.
-		private bool _cursorHidden = false;											// Is the mouse cursor visible?
-		private PointF _doubleClickRange = new PointF(2.0f, 2.0f);					// Range that a double click is valid within.
-		private PointF _position;													// Mouse horizontal and vertical position.
+		private bool _cursorHidden = false;											// Is the pointing device cursor visible?
+		private Vector2D _doubleClickRange = new Vector2D(2.0f, 2.0f);				// Range that a double click is valid within.
+		private Vector2D _position;													// Mouse horizontal and vertical position.
 		private int _wheel;															// Mouse wheel position.
-		private PointF _relativePosition = PointF.Empty;							// Mouse relative position.
-		private RectangleF _positionConstraint;										// Constraints for the mouse position.
-		private Point _wheelConstraint;												// Constraints for the mouse wheel.
+		private Vector2D _relativePosition = Vector2D.Zero;							// Mouse relative position.
+		private RectangleF _positionConstraint;										// Constraints for the pointing device position.
+		private Point _wheelConstraint;												// Constraints for the pointing device wheel.
 		private int _doubleClickDelay = 0;											// Double click delay in milliseconds.
 		#endregion
 
@@ -97,22 +98,22 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Pointing device moved event.
 		/// </summary>
-		public event EventHandler<PointingDeviceHIDEventArgs> MouseMove;
+		public event EventHandler<PointingDeviceHIDEventArgs> PointingDeviceMove;
 
 		/// <summary>
 		/// Pointing device button down event.
 		/// </summary>
-		public event EventHandler<PointingDeviceHIDEventArgs> MouseDown;
+		public event EventHandler<PointingDeviceHIDEventArgs> PointingDeviceDown;
 
 		/// <summary>
 		/// Pointing device button up event.
 		/// </summary>
-		public event EventHandler<PointingDeviceHIDEventArgs> MouseUp;
+		public event EventHandler<PointingDeviceHIDEventArgs> PointingDeviceUp;
 
 		/// <summary>
 		/// Pointing device wheel move event.
 		/// </summary>
-		public event EventHandler<PointingDeviceHIDEventArgs> MouseWheelMove;
+		public event EventHandler<PointingDeviceHIDEventArgs> PointingDeviceWheelMove;
 		#endregion
 
 		#region Properties.
@@ -133,7 +134,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to set or return the range in which a double click is valid (pixels).
 		/// </summary>
-		public PointF DoubleClickRange
+		public Vector2D DoubleClickRange
 		{
 			get
 			{
@@ -239,7 +240,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to return the relative amount moved.
 		/// </summary>
-		public PointF RelativePosition
+		public Vector2D RelativePosition
 		{
 			get
 			{
@@ -255,7 +256,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Property to set or return the position of the pointing device.
 		/// </summary>
-		public PointF Position
+		public Vector2D Position
 		{
 			get
 			{
@@ -327,26 +328,55 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to fire the pointing device wheel move event.
 		/// </summary>
-		protected void OnPointingDeviceWheelMove()
+		protected void OnPointingDeviceWheelMove(int newDelta)
 		{
-			if (MouseWheelMove != null)
+			if (newDelta != WheelDelta)
+			{
+				WheelDelta = newDelta;
+				Wheel += newDelta;
+			}
+			else
+			{
+				WheelDelta = 0;
+				return;
+			}
+
+			if (PointingDeviceWheelMove != null)
 			{
 				ConstrainData();
 				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
-				MouseWheelMove(this, e);
+				PointingDeviceWheelMove(this, e);
 			}
 		}
 
 		/// <summary>
 		/// Function to fire the pointing device move event.
 		/// </summary>
-		protected void OnPointingDeviceMove()
+		/// <param name="newPosition">New position for the pointing device.</param>
+		/// <param name="setRelative">TRUE to calculate the relative motion of the device, FALSE to have the plug-in set it.</param>
+		/// <remarks>Some plug-ins provide their own relative position data, which is likely to be more accurate, so we can tell the library to not calculate in that instance.</remarks>
+		protected void OnPointingDeviceMove(Vector2D newPosition, bool setRelative)
 		{
-			if (MouseMove != null)
+			RelativePosition = Vector2D.Zero;
+
+			if (newPosition != _position)
+			{
+				if (setRelative)
+					RelativePosition = Vector2D.Subtract(newPosition, _position);
+				_position = newPosition;
+			}
+			else
+			{
+				if (setRelative)
+					RelativePosition = Vector2D.Zero;
+				return;
+			}
+
+			if (PointingDeviceMove != null)
 			{
 				ConstrainData();
 				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
-				MouseMove(this, e);
+				PointingDeviceMove(this, e);
 			}
 		}
 
@@ -356,11 +386,12 @@ namespace GorgonLibrary.HID
 		/// <param name="button">Button that's being pressed.</param>
 		protected void OnPointingDeviceDown(PointingDeviceButtons button)
 		{
-			if (MouseDown != null)
+			if (PointingDeviceDown != null)
 			{
 				ConstrainData();
 				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
-				MouseDown(this, e);
+				Button |= button;
+				PointingDeviceDown(this, e);			
 			}
 		}
 
@@ -371,11 +402,12 @@ namespace GorgonLibrary.HID
 		/// <param name="clickCount">Number of full clicks in a timed period.</param>
 		protected void OnPointingDeviceUp(PointingDeviceButtons button, int clickCount)
 		{
-			if (MouseUp != null)
+			if (PointingDeviceUp != null)
 			{
 				ConstrainData();
+				Button &= ~button;
 				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
-				MouseUp(this, e);
+				PointingDeviceUp(this, e);
 			}
 		}
 
@@ -405,13 +437,6 @@ namespace GorgonLibrary.HID
 			}
 			base.Dispose(disposing);
 		}
-
-		/// <summary>
-		/// Function to return whether a pointing device click is a double click or not.
-		/// </summary>
-		/// <param name="button">Button used for double click.</param>
-		/// <returns>TRUE if it is a double click, FALSE if not.</returns>
-		protected abstract bool IsDoubleClick(PointingDeviceButtons button);
 
 		/// <summary>
 		/// Function to constrain the pointing device data to the supplied ranges.
