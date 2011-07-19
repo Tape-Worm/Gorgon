@@ -35,7 +35,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// The entry point for the D3D9 renderer plug-in.
 	/// </summary>
-	public class GorgonRendererD3D9
+	public class GorgonD3D9
 		: GorgonRendererPlugIn
 	{
 		#region Methods.
@@ -52,9 +52,9 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRendererD3D9"/> class.
+		/// Initializes a new instance of the <see cref="GorgonD3D9"/> class.
 		/// </summary>
-		public GorgonRendererD3D9()
+		public GorgonD3D9()
 			: base("Gorgon Direct 3D9 renderer.")
 		{
 		}
