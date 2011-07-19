@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, July 15, 2011 6:22:27 AM
+// Created: Tuesday, July 19, 2011 8:42:01 AM
 // 
 #endregion
 
@@ -28,35 +28,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary;
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// The entry point for the win forms input plug-in.
+	/// The plug-in interface for a renderer object.
 	/// </summary>
-	public class GorgonWinFormsInput
-		: GorgonInputDeviceFactoryPlugIn
+	public abstract class GorgonRendererPlugIn
+		: GorgonPlugIn
 	{
+
 		#region Methods.
 		/// <summary>
-		/// Function to perform the actual creation of the input factory object.
+		/// Function to perform the actual creation of the renderer object.
 		/// </summary>
-		/// <returns>
-		/// The interface for the input factory.
-		/// </returns>
-		protected override GorgonInputDeviceFactory CreateFactory()
+		/// <returns>A new renderer object.</returns>
+		/// <remarks>Implementors must use this to create the renderer object from the plug-in.</remarks>
+		protected abstract IRenderer CreateRenderer();
+
+		/// <summary>
+		/// Function to create a new renderer object.
+		/// </summary>
+		/// <returns>A new renderer object.</returns>
+		internal IRenderer GetRenderer()
 		{
-			return new WinFormsInput.GorgonWinFormsInputDeviceFactory();
+			return CreateRenderer();
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonWinFormsInput"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRendererPlugIn"/> class.
 		/// </summary>
-		public GorgonWinFormsInput()
-			: base("Gorgon windows forms input plug-in.")
+		/// <param name="description">Optional description of the plug-in.</param>
+		/// <remarks>Objects that implement this base class should pass in a hard coded description on the base constructor.</remarks>
+		protected GorgonRendererPlugIn(string description)
+			: base(description)
 		{
 		}
 		#endregion

@@ -31,11 +31,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Gorgon X Input")]
-[assembly: AssemblyDescription("A XBOX 360 controller plug-in for Gorgon.")]
+[assembly: AssemblyTitle("Gorgon Direct 3D 9 Renderer")]
+[assembly: AssemblyDescription("A Direct 3D 9 Renderer for Gorgon.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon.HID.XInput")]
+[assembly: AssemblyProduct("Gorgon.Renderer.D3D9")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

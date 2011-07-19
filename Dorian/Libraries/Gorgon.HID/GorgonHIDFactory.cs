@@ -81,7 +81,7 @@ namespace GorgonLibrary.HID
 			if (plugIn == null)
 				throw new ArgumentException("The plug-in '" + plugInType + "' is not an input plug-in.", "plugInType");
 
-			factory = plugIn.CreateFactory();
+			factory = plugIn.GetFactory();
 
 			if (HIDDeviceFactories.Contains(factory.Name))
 				return HIDDeviceFactories[factory.Name];
