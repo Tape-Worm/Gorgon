@@ -34,8 +34,50 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// The renderer interface.
 	/// </summary>
-	public interface IRenderer
-		: INamedObject, IDisposable
+	public class GorgonRenderer
+		: GorgonNamedObject, IDisposable
 	{
+		#region Variables.
+		
+		#endregion
+
+		#region Properties.
+
+		#endregion
+
+		#region Methods.
+
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderer"/> class.
+		/// </summary>
+		/// <param name="description">The description of the renderer.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="description"/> parameter is NULL (or Nothing) in VB.NET.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="description"/> parameter is an empty string.</exception>
+		protected GorgonRenderer(string description)
+			: base(description)
+		{
+
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected abstract void Dispose(bool disposing);
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		#endregion
 	}
 }
