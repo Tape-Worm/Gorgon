@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, July 15, 2011 6:22:27 AM
+// Created: Tuesday, July 19, 2011 8:41:23 AM
 // 
 #endregion
 
@@ -28,37 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// The entry point for the win forms input plug-in.
+	/// The renderer interface.
 	/// </summary>
-	public class GorgonWinFormsInput
-		: GorgonInputDeviceFactoryPlugIn
+	public interface IRenderer
+		: INamedObject, IDisposable
 	{
-		#region Methods.
-		/// <summary>
-		/// Function to perform the actual creation of the input factory object.
-		/// </summary>
-		/// <returns>
-		/// The interface for the input factory.
-		/// </returns>
-		protected override GorgonInputDeviceFactory CreateFactory()
-		{
-			return new WinFormsInput.GorgonWinFormsInputDeviceFactory();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonWinFormsInput"/> class.
-		/// </summary>
-		public GorgonWinFormsInput()
-			: base("Gorgon windows forms input plug-in.")
-		{
-		}
-		#endregion
 	}
 }

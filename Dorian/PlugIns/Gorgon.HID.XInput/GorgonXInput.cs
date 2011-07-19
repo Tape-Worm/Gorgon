@@ -33,7 +33,7 @@ using GorgonLibrary.PlugIns;
 namespace GorgonLibrary.HID
 {
 	/// <summary>
-	/// The entry point for the raw input plug-in.
+	/// The entry point for the Xinput plug-in.
 	/// </summary>
 	public class GorgonXInput
 		: GorgonInputDeviceFactoryPlugIn
@@ -45,7 +45,7 @@ namespace GorgonLibrary.HID
 		/// <returns>
 		/// The interface for the input factory.
 		/// </returns>
-		protected override GorgonInputDeviceFactory GetFactory()
+		protected override GorgonInputDeviceFactory CreateFactory()
 		{
 			return new XInput.GorgonXInputDeviceFactory();
 		}

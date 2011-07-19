@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, July 15, 2011 6:22:27 AM
+// Created: Tuesday, July 19, 2011 8:55:18 AM
 // 
 #endregion
 
@@ -30,33 +30,32 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// The entry point for the win forms input plug-in.
+	/// The entry point for the D3D9 renderer plug-in.
 	/// </summary>
-	public class GorgonWinFormsInput
-		: GorgonInputDeviceFactoryPlugIn
+	public class GorgonRendererD3D9
+		: GorgonRendererPlugIn
 	{
 		#region Methods.
 		/// <summary>
-		/// Function to perform the actual creation of the input factory object.
+		/// Function to perform the actual creation of the renderer object.
 		/// </summary>
-		/// <returns>
-		/// The interface for the input factory.
-		/// </returns>
-		protected override GorgonInputDeviceFactory CreateFactory()
+		/// <returns>A new renderer object.</returns>
+		/// <remarks>Implementors must use this to create the renderer object from the plug-in.</remarks>
+		protected override IRenderer CreateRenderer()
 		{
-			return new WinFormsInput.GorgonWinFormsInputDeviceFactory();
+			return null;
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonWinFormsInput"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRendererD3D9"/> class.
 		/// </summary>
-		public GorgonWinFormsInput()
-			: base("Gorgon windows forms input plug-in.")
+		public GorgonRendererD3D9()
+			: base("Gorgon Direct 3D9 renderer.")
 		{
 		}
 		#endregion
