@@ -44,9 +44,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <returns>A new renderer object.</returns>
 		/// <remarks>Implementors must use this to create the renderer object from the plug-in.</remarks>
-		protected override IRenderer CreateRenderer()
+		protected override GorgonRenderer CreateRenderer()
 		{
-			return null;
+			return new D3D9.GorgonD3D9Renderer();
 		}
 		#endregion
 
@@ -55,7 +55,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonD3D9"/> class.
 		/// </summary>
 		public GorgonD3D9()
-			: base("Gorgon Direct 3D9 renderer.")
+			: base("Gorgon Direct3D 9 renderer.")
 		{
 		}
 		#endregion

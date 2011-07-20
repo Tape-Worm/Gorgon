@@ -36,15 +36,17 @@ namespace GorgonLibrary.Graphics
 	/// The primary object for the graphics sub system.
 	/// </summary>
 	public class GorgonGraphics
+		: IDisposable
 	{
 		#region Variables.
+		private bool _disposed = false;				// Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the current renderer interface.
 		/// </summary>
-		public IRenderer Renderer
+		public GorgonRenderer Renderer
 		{
 			get;
 			private set;
@@ -56,7 +58,6 @@ namespace GorgonLibrary.Graphics
 		/// Function to return a renderer object for use with the graphics subsystem.
 		/// </summary>
 		/// <param name="plugInType">Fully qualified type name of the renderer plug-in</param>
-		/// <returns>The renderer interface.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the plugInType parameter is an empty string.
 		/// <para>-or-</para>
@@ -64,7 +65,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the plug-in type was not a renderer plug-in.</para>
 		/// </exception>		
-		public IRenderer BindRenderer(string plugInType)
+		private void BindRenderer(string plugInType)
 		{
 			GorgonRendererPlugIn plugIn = null;
 
@@ -80,9 +81,13 @@ namespace GorgonLibrary.Graphics
 
 			if (Renderer != null)
 				Renderer.Dispose();
+
 			Renderer = plugIn.GetRenderer();
-			Gorgon.Log.Print("Graphics renderer interface '{0}' created.", Diagnostics.GorgonLoggingLevel.Simple, Renderer.Name);
-			return Renderer;
+			if (Renderer == null)
+				throw new ArgumentException("The plug-in '" + plugInType + "' is not a renderer plug-in.", "plugInType");
+
+			Renderer.Initialize();
+			Gorgon.Log.Print("Graphics renderer interface '{0}' bound as current renderer.", Diagnostics.GorgonLoggingLevel.Simple, Renderer.Name);
 		}
 		#endregion
 
@@ -90,9 +95,53 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
 		/// </summary>
-		public GorgonGraphics()
+		/// <param name="plugInType">Fully qualified type name of the renderer plug-in</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter is NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the plugInType parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the plug-in type was not found in any of the loaded plug-in assemblies.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the plug-in type was not a renderer plug-in.</para>
+		/// </exception>		
+		public GorgonGraphics(string plugInType)
 		{
+			BindRenderer(plugInType);
+
 			Gorgon.Log.Print("Graphics interface created.", Diagnostics.GorgonLoggingLevel.Simple);
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (this.Renderer != null)
+					{
+						Gorgon.Log.Print("Removing current renderer '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, Renderer.Name);
+						this.Renderer.Dispose();
+					}
+
+					Renderer = null;
+				}
+
+				_disposed = true;
+			}
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

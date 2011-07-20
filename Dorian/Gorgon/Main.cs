@@ -113,6 +113,24 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Property to return the total physical RAM available in bytes.
+		/// </summary>
+		public static long TotalPhysicalRAM
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the available physical RAM in bytes.
+		/// </summary>
+		public static long AvailablePhysicalRAM
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to set or return the application idle loop.
 		/// </summary>
 		/// <remarks>This is used to call the users code when the application is in an idle state.
@@ -353,8 +371,13 @@ namespace GorgonLibrary
 #endif
 				}
 
+				TotalPhysicalRAM = Win32API.TotalPhysicalRAM;
+				AvailablePhysicalRAM = Win32API.AvailablePhysicalRAM;
+
 				Log.Print("Initializing...", GorgonLoggingLevel.Simple);
 				Log.Print("Architecture: {0}", GorgonLoggingLevel.Verbose, PlatformArchitecture.ToString());
+				Log.Print("Installed Memory: {0}", GorgonLoggingLevel.Verbose, GorgonUtility.FormatMemoryAmount(TotalPhysicalRAM));
+				Log.Print("Available Memory: {0}", GorgonLoggingLevel.Verbose, GorgonUtility.FormatMemoryAmount(AvailablePhysicalRAM));
 
 				// Default to using 10 milliseconds of sleep time when the application is not focused.
 				UnfocusedSleepTime = 10;

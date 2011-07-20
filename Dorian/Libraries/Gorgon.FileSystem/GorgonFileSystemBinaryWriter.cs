@@ -77,7 +77,7 @@ namespace GorgonLibrary.FileSystem
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBinaryWriterEx"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFileSystemBinaryWriter"/> class.
 		/// </summary>
 		/// <param name="output">Output stream.</param>
 		/// <param name="encoder">Encoding for the binary writer.</param>
@@ -89,7 +89,7 @@ namespace GorgonLibrary.FileSystem
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBinaryWriterEx"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFileSystemBinaryWriter"/> class.
 		/// </summary>
 		/// <param name="output">Output stream.</param>
 		/// <param name="keepStreamOpen">TRUE to keep the underlying stream open when the writer is closed, FALSE to close when done.</param>

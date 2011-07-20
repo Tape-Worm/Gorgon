@@ -28,25 +28,75 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Collections;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// The renderer interface.
 	/// </summary>
-	public class GorgonRenderer
+	public abstract class GorgonRenderer
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		
+		private bool _initialized = false;			// Flag to indicate that the renderer was initialized.
+		private bool _disposed = false;				// Flag to indicate that the renderer was disposed.
 		#endregion
 
 		#region Properties.
-
+		/// <summary>
+		/// Property to return a list of custom settings for the renderer.
+		/// </summary>
+		public GorgonCustomValueCollection<string> CustomSettings
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to return a list of driver capabilities for a given driver.
+		/// </summary>
+		/// <param name="index">Index of the driver to evaluate.</param>
+		/// <returns>An enumerable list of driver capabilities.</returns>
+		protected abstract IEnumerable<KeyValuePair<string, string>> GetDriverCapabilities(int index);
 
+		/// <summary>
+		/// Function to perform the actual initialization for the renderer from a plug-in.
+		/// </summary>
+		/// <remarks>Implementors must implement this method and perform any one-time set up for the renderer.</remarks>
+		protected abstract void InitializeRenderer();
+
+		/// <summary>
+		/// Function to perform the actual shut down for the renderer from a plug-in.
+		/// </summary>
+		/// <remarks>Implementors must implement this method and perform any one-time tear down for the renderer.</remarks>
+		protected abstract void ShutdownRenderer();
+
+		/// <summary>
+		/// Function to perform shutdown for the renderer.
+		/// </summary>
+		internal void Shutdown()
+		{
+			if (!_initialized)
+				return;
+
+			ShutdownRenderer();
+			_initialized = false;
+		}
+
+		/// <summary>
+		/// Function to perform initialization for the renderer.
+		/// </summary>
+		internal void Initialize()
+		{
+			if (_initialized)
+				Shutdown();
+
+			InitializeRenderer();
+			_initialized = true;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -59,7 +109,7 @@ namespace GorgonLibrary.Graphics
 		protected GorgonRenderer(string description)
 			: base(description)
 		{
-
+			CustomSettings = new GorgonCustomValueCollection<string>();
 		}
 		#endregion
 
@@ -68,7 +118,18 @@ namespace GorgonLibrary.Graphics
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected abstract void Dispose(bool disposing);
+		private void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					Shutdown();
+				}
+
+				_disposed = true;
+			}
+		}
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

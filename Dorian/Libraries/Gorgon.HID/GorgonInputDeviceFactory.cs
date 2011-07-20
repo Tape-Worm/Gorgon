@@ -269,11 +269,9 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
-		/// <param name="window">Window to bind with.</param>
+		/// <param name="hidName">Name of the HID device.</param>
 		/// <returns>A new keyboard interface.</returns>
-		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.HID.GorgonCustomHID.Data">Data</see> property.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</para>
-		/// </remarks>
+		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.HID.GorgonCustomHID.Data">Data</see> property.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="hidName"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidName"/> is empty.</exception>
 		public GorgonCustomHID CreateCustomHID(string hidName)
