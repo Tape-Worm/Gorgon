@@ -208,6 +208,7 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="provider">Provider to use.</param>
 		/// <param name="path">Path to the file entry.</param>
 		/// <param name="mountPoint">The mount point that holds the file.</param>
+		/// <param name="physicalLocation">The location of the file entry on the physical file system.</param>
 		/// <param name="size">Size of the file in bytes.</param>
 		/// <param name="offset">Offset of the file within a packed file.</param>
 		/// <param name="createDate">Date the file was created.</param>

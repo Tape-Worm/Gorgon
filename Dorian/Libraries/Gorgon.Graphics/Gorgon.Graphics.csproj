@@ -44,9 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\GorgonCustomValueCollection.cs" />
+    <Compile Include="Collections\GorgonrCapabilitiesCollection.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonRendererPlugIn.cs" />
-    <Compile Include="IRenderer.cs" />
+    <Compile Include="GorgonRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

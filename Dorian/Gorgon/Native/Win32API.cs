@@ -33,7 +33,33 @@ using System.Runtime.InteropServices;
 namespace GorgonLibrary.Native
 {
     #region Value types.
-    /// <summary>
+	/// <summary>
+	/// Used with GlobalMemoryStatusEx.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct MemoryStatusEx
+	{
+		/// <summary/>
+		public uint dwLength;
+		/// <summary/>
+		public uint dwMemoryLoad;
+		/// <summary/>
+		public long ullTotalPhysical;
+		/// <summary/>
+		public long ullAvailablePhysical;
+		/// <summary/>
+		public long ullTotalPageFile;
+		/// <summary/>
+		public long ullAvailablePageFile;
+		/// <summary/>
+		public long ullTotalVirtual;
+		/// <summary/>
+		public long ullAvailableVirtual;
+		/// <summary/>
+		public long ullAvailableExtendedVirtual;
+	}
+	
+	/// <summary>
     /// Value type representing a Window message.
     /// </summary>
     /// <remarks>
@@ -77,9 +103,49 @@ namespace GorgonLibrary.Native
 	/// </remarks>
     [System.Security.SuppressUnmanagedCodeSecurity]
 	internal static class Win32API
-    {
-        #region Methods.
-        /// <summary>
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the number of bytes of installed physical RAM.
+		/// </summary>
+		public static long TotalPhysicalRAM
+		{
+			get
+			{
+				MemoryStatusEx memory = new MemoryStatusEx();
+
+				memory.dwLength = (uint)Marshal.SizeOf(typeof(MemoryStatusEx));
+				if (GlobalMemoryStatusEx(ref memory))
+					return memory.ullTotalPhysical;
+
+				return -1;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the number of bytes of free available RAM.
+		/// </summary>
+		public static long AvailablePhysicalRAM
+		{
+			get
+			{
+				MemoryStatusEx memory = new MemoryStatusEx();
+
+				memory.dwLength = (uint)Marshal.SizeOf(typeof(MemoryStatusEx));
+				if (GlobalMemoryStatusEx(ref memory))
+					return memory.ullAvailablePhysical;
+
+				return -1;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary/>
+		[DllImport("kernel32.dll")]
+		private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx stat);
+		
+		/// <summary>
         /// Function to process window messages.
         /// </summary>
         /// <remarks>See the MSDN documentation for a detailed description.</remarks>

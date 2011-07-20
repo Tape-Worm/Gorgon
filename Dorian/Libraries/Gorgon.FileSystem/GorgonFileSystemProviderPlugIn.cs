@@ -49,7 +49,6 @@ namespace GorgonLibrary.FileSystem
 		/// Initializes a new instance of the <see cref="GorgonFileSystemProviderPlugIn"/> class.
 		/// </summary>
 		/// <param name="description">Optional description of the plug-in.</param>
-		/// <param name="path">Path to the plug-in.</param>
 		/// <remarks>Objects that implement this base class should pass in a hard coded description on the base constructor.</remarks>
 		protected GorgonFileSystemProviderPlugIn(string description)
 			: base(description)

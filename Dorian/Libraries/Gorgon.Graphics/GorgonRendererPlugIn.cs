@@ -46,13 +46,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <returns>A new renderer object.</returns>
 		/// <remarks>Implementors must use this to create the renderer object from the plug-in.</remarks>
-		protected abstract IRenderer CreateRenderer();
+		protected abstract GorgonRenderer CreateRenderer();
 
 		/// <summary>
 		/// Function to create a new renderer object.
 		/// </summary>
 		/// <returns>A new renderer object.</returns>
-		internal IRenderer GetRenderer()
+		internal GorgonRenderer GetRenderer()
 		{
 			return CreateRenderer();
 		}

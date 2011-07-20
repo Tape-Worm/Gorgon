@@ -244,7 +244,7 @@ namespace GorgonLibrary.HID
 
 			/// <summary>
 			/// Property to set or return the secondary X axis mid range.
-			/// </summary
+			/// </summary>
 			internal int SecondaryXAxisMidRange
 			{
 				get;
