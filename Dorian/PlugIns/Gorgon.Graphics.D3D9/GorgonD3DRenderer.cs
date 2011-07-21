@@ -107,19 +107,16 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
-		/// Function to return a list of driver capabilities for a given driver.
+		/// Function to return a list of all video devices installed on the system.
 		/// </summary>
-		/// <param name="index">Index of the driver to evaluate.</param>
 		/// <returns>
-		/// An enumerable list of driver capabilities.
+		/// An enumerable list of video devices.
 		/// </returns>
-		protected override IEnumerable<KeyValuePair<string, string>> GetDriverCapabilities(int index)
+		protected override IEnumerable<GorgonVideoDevice> GetVideoDevices()
 		{
-			Dictionary<string, string> driverCaps = new Dictionary<string, string>();
+			List<GorgonVideoDevice> devices = new List<GorgonVideoDevice>();
 
-
-
-			return driverCaps;
+			return devices;
 		}
 
 		/// <summary>
