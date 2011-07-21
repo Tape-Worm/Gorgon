@@ -45,6 +45,15 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the graphics interface that is bound to this renderer.
+		/// </summary>
+		protected GorgonGraphics Graphics
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return a list of custom settings for the renderer.
 		/// </summary>
 		public GorgonCustomValueCollection<string> CustomSettings
@@ -56,11 +65,23 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to return a list of driver capabilities for a given driver.
+		/// Function to perform shutdown for the renderer.
 		/// </summary>
-		/// <param name="index">Index of the driver to evaluate.</param>
-		/// <returns>An enumerable list of driver capabilities.</returns>
-		protected abstract IEnumerable<KeyValuePair<string, string>> GetDriverCapabilities(int index);
+		private void Shutdown()
+		{
+			if (!_initialized)
+				return;
+
+			ShutdownRenderer();
+			Graphics = null; 
+			_initialized = false;
+		}
+
+		/// <summary>
+		/// Function to return a list of all video devices installed on the system.
+		/// </summary>
+		/// <returns>An enumerable list of video devices.</returns>
+		protected abstract IEnumerable<GorgonVideoDevice> GetVideoDevices();
 
 		/// <summary>
 		/// Function to perform the actual initialization for the renderer from a plug-in.
@@ -75,26 +96,21 @@ namespace GorgonLibrary.Graphics
 		protected abstract void ShutdownRenderer();
 
 		/// <summary>
-		/// Function to perform shutdown for the renderer.
-		/// </summary>
-		internal void Shutdown()
-		{
-			if (!_initialized)
-				return;
-
-			ShutdownRenderer();
-			_initialized = false;
-		}
-
-		/// <summary>
 		/// Function to perform initialization for the renderer.
 		/// </summary>
-		internal void Initialize()
+		/// <param name="owner">The graphics interface that owns this object.</param>
+		internal void Initialize(GorgonGraphics owner)
 		{
 			if (_initialized)
 				Shutdown();
 
+			Graphics = owner;
+
 			InitializeRenderer();
+			
+			// Add the list of video devices.
+			Graphics.VideoDevices.AddRange(GetVideoDevices());
+
 			_initialized = true;
 		}
 		#endregion
@@ -124,7 +140,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					Shutdown();
+					Shutdown();						
 				}
 
 				_disposed = true;

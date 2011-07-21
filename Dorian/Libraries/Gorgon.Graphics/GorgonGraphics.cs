@@ -51,9 +51,26 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return a list of video devices installed on the system.
+		/// </summary>
+		public GorgonVideoDeviceCollection VideoDevices
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to perform any clean up when a renderer is updated.
+		/// </summary>
+		private void CleanUp()
+		{
+			VideoDevices.Clear();
+		}
+
 		/// <summary>
 		/// Function to return a renderer object for use with the graphics subsystem.
 		/// </summary>
@@ -86,7 +103,7 @@ namespace GorgonLibrary.Graphics
 			if (Renderer == null)
 				throw new ArgumentException("The plug-in '" + plugInType + "' is not a renderer plug-in.", "plugInType");
 
-			Renderer.Initialize();
+			Renderer.Initialize(this);
 			Gorgon.Log.Print("Graphics renderer interface '{0}' bound as current renderer.", Diagnostics.GorgonLoggingLevel.Simple, Renderer.Name);
 		}
 		#endregion
@@ -108,6 +125,8 @@ namespace GorgonLibrary.Graphics
 			BindRenderer(plugInType);
 
 			Gorgon.Log.Print("Graphics interface created.", Diagnostics.GorgonLoggingLevel.Simple);
+
+			VideoDevices = new GorgonVideoDeviceCollection();
 		}
 		#endregion
 
@@ -122,6 +141,8 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
+					CleanUp();
+
 					if (this.Renderer != null)
 					{
 						Gorgon.Log.Print("Removing current renderer '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, Renderer.Name);

@@ -45,7 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\GorgonCustomValueCollection.cs" />
-    <Compile Include="Collections\GorgonrCapabilitiesCollection.cs" />
+    <Compile Include="Collections\GorgonCapabilityCollection.cs" />
+    <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
+    <Compile Include="DeviceInfo\GorgonVideoDeviceCollection.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonRendererPlugIn.cs" />
     <Compile Include="GorgonRenderer.cs" />
@@ -60,9 +62,7 @@
   <ItemGroup>
     <Content Include="GorIcon.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DeviceInfo\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
