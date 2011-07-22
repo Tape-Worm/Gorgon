@@ -49,13 +49,27 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Variables.
 		/// <summary>
+		/// Property to return whether we're using the reference rasterizer.
+		/// </summary>
+		public DeviceType DeviceType
+		{
+			get
+			{
+				if (string.Compare(CustomSettings[RefRastKey], "0", true) != 0)
+					return DeviceType.Reference;
+				else
+					return DeviceType.Hardware;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the primary Direct 3D interface.
 		/// </summary>
 		public Direct3D D3D
 		{
 			get;
 			private set;
-		}
+		}	
 		#endregion
 
 		#region Properties.
@@ -116,6 +130,19 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			List<GorgonVideoDevice> devices = new List<GorgonVideoDevice>();
 
+			devices = new List<GorgonVideoDevice>();
+
+			if (CustomSettings[RefRastKey] != "0")
+				Gorgon.Log.Print("[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", Diagnostics.GorgonLoggingLevel.All);
+
+			for (int i = 0; i < D3D.Adapters.Count; i++)
+			{
+				D3D9VideoDevice device = new D3D9VideoDevice(D3D.Adapters[i], D3D.GetDeviceCaps(i, DeviceType), i);
+
+				if (device.HWAccelerated)
+					devices.Add(device);
+			}
+
 			return devices;
 		}
 
@@ -159,10 +186,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		internal GorgonD3D9Renderer()
 			: base("Gorgon Direct 3D® 9 Renderer")
 		{
-			CustomSettings[RefRastKey] = "0";
-			// TODO: Move this to where it belongs, like in device creation or some such.
-/*			if (CustomSettings[RefRastKey] != "0")
-				Gorgon.Log.Print("[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", Diagnostics.GorgonLoggingLevel.All);*/
+			CustomSettings[RefRastKey] = "0";			
 		}
 		#endregion
 	}

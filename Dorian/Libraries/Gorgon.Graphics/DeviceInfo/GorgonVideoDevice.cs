@@ -49,20 +49,30 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return a description of the device.
-		/// </summary>
-		public abstract string Description
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to set or return the device capabilities.
+		/// Property to return the device capabilities.
 		/// </summary>
 		public GorgonCapabilityCollection Capabilities
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to return the pixel shader version.
+		/// </summary>
+		public Version PixelShaderVersion
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the vertex shader version.
+		/// </summary>
+		public Version VertexShaderVersion
+		{
+			get;
+			protected set;
 		}
 		#endregion
 

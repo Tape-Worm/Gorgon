@@ -101,6 +101,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="owner">The graphics interface that owns this object.</param>
 		internal void Initialize(GorgonGraphics owner)
 		{
+			Version minSMVersion = new Version(3, 0);		// Minimum shader model version.
+			
 			if (_initialized)
 				Shutdown();
 
@@ -109,8 +111,22 @@ namespace GorgonLibrary.Graphics
 			InitializeRenderer();
 			
 			// Add the list of video devices.
-			Graphics.VideoDevices.AddRange(GetVideoDevices());
+			var devices = GetVideoDevices();
 
+			// Get device information.
+			foreach (GorgonVideoDevice device in devices)
+				device.GetDeviceData();
+
+			// Filter those that aren't supported by Gorgon (SM 3.0)
+			devices = from device in devices
+					  where (device.PixelShaderVersion >= minSMVersion) && (device.VertexShaderVersion >= minSMVersion)
+					  select device;
+
+			if (devices.Count() == 0)
+				throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot enumerate devices.  Could not find any applicable video device installed on the system.  Please ensure there is at least one video device that supports hardware acceleration and is capable of Shader Model 3.0 or better.");
+
+			Graphics.VideoDevices.AddRange(devices);
+			
 			_initialized = true;
 		}
 		#endregion

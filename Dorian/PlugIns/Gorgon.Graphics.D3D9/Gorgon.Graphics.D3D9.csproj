@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="D3DConvert.cs" />
     <Compile Include="DeviceInfo\D3D9VideoDevice.cs" />
     <Compile Include="GorgonD3DRenderer.cs" />
     <Compile Include="GorgonD3D9.cs" />
