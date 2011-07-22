@@ -48,6 +48,7 @@
     <Compile Include="Collections\GorgonCapabilityCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceCollection.cs" />
+    <Compile Include="Enums\GorgonCompareFlags.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonRendererPlugIn.cs" />
     <Compile Include="GorgonRenderer.cs" />
