@@ -47,8 +47,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override string Description
 		{
-			get;
-			private set;
+			get
+			{
+				return "Fill me in.";
+			}
 		}
 		#endregion
 
