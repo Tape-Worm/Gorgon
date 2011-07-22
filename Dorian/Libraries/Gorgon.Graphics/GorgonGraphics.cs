@@ -122,11 +122,10 @@ namespace GorgonLibrary.Graphics
 		/// </exception>		
 		public GorgonGraphics(string plugInType)
 		{
+			VideoDevices = new GorgonVideoDeviceCollection();
 			BindRenderer(plugInType);
 
 			Gorgon.Log.Print("Graphics interface created.", Diagnostics.GorgonLoggingLevel.Simple);
-
-			VideoDevices = new GorgonVideoDeviceCollection();
 		}
 		#endregion
 
