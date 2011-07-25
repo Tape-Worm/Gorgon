@@ -137,10 +137,15 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			for (int i = 0; i < D3D.Adapters.Count; i++)
 			{
-				D3D9VideoDevice device = new D3D9VideoDevice(D3D.Adapters[i], D3D.GetDeviceCaps(i, DeviceType), i);
+				Capabilities caps = D3D.GetDeviceCaps(i, DeviceType);
 
-				if (device.HWAccelerated)
-					devices.Add(device);
+				if (caps.NumberOfAdaptersInGroup > 0)
+				{
+					D3D9VideoDevice device = new D3D9VideoDevice(D3D.Adapters[i], caps, i);
+
+					if (device.HWAccelerated)
+						devices.Add(device);
+				}
 			}
 
 			return devices;

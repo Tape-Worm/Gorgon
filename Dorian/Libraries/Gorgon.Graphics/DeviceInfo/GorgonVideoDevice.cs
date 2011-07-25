@@ -49,6 +49,16 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the outputs on this device.
+		/// </summary>
+		/// <remarks>The outputs are typically monitors attached to the device.</remarks>
+		public GorgonVideoOutputCollection Outputs
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
 		/// Property to return the device capabilities.
 		/// </summary>
 		public GorgonCapabilityCollection Capabilities
@@ -84,12 +94,20 @@ namespace GorgonLibrary.Graphics
 		protected abstract IEnumerable<KeyValuePair<string, string>> GetDeviceCapabilities();
 
 		/// <summary>
+		/// Function to retrieve the outputs attached to the device.
+		/// </summary>
+		/// <returns>An enumerable list of video outputs.</returns>
+		protected abstract IEnumerable<GorgonVideoOutput> GetOutputs();
+
+		/// <summary>
 		/// Function to retrieve the device capability information.
 		/// </summary>
 		internal void GetDeviceData()
 		{
 			Capabilities = new GorgonCapabilityCollection();
 			Capabilities.AddCapabilities(GetDeviceCapabilities());
+			Outputs = new GorgonVideoOutputCollection();
+			Outputs.AddOutputs(GetOutputs());
 		}
 		#endregion
 

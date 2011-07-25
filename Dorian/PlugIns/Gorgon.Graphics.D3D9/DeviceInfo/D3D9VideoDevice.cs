@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using SlimDX.Direct3D9;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics.D3D9
 {
@@ -136,6 +137,25 @@ namespace GorgonLibrary.Graphics.D3D9
 			foreach (var item in capInfo)
 				Gorgon.Log.Print("\t{0}: {1}", Diagnostics.GorgonLoggingLevel.Verbose, item.Key, item.Value);
 			return deviceCaps;			
+		}
+
+		/// <summary>
+		/// Function to retrieve the outputs attached to the device.
+		/// </summary>
+		/// <returns>
+		/// An enumerable list of video outputs.
+		/// </returns>
+		protected override IEnumerable<GorgonVideoOutput> GetOutputs()
+		{
+			List<D3D9VideoOutput> outputs = new List<D3D9VideoOutput>();
+			MONITORINFOEX monitorInfo = new MONITORINFOEX(0);
+
+			/*if (Win32API.GetMonitorInfo(_adapter.Monitor, ref monitorInfo))
+			{
+
+			}*/
+
+			return outputs;
 		}
 		#endregion
 
