@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,6 +49,8 @@
     <Compile Include="Collections\GorgonCapabilityCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceCollection.cs" />
+    <Compile Include="DeviceInfo\GorgonVideoOutput.cs" />
+    <Compile Include="DeviceInfo\GorgonVideoOutputCollection.cs" />
     <Compile Include="Enums\GorgonCompareFlags.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonRendererPlugIn.cs" />
