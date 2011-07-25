@@ -41,8 +41,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		: GorgonVideoDevice
 	{
 		#region Variables.
-		private AdapterInformation _adapter = null;		// Adapter information.
-		private Capabilities _caps = null;				// Adapter capabilities.
+		private AdapterInformation _adapter = null;				// Adapter information.
+		private Capabilities _caps = null;						// Adapter capabilities.
+		private Direct3D _d3d = null;							// Direct 3D interface.
+		private DeviceType _deviceType = DeviceType.Hardware;	// Device type.
 		#endregion
 
 		#region Properties.
@@ -147,13 +149,35 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </returns>
 		protected override IEnumerable<GorgonVideoOutput> GetOutputs()
 		{
+			Capabilities headCaps = null;
 			List<D3D9VideoOutput> outputs = new List<D3D9VideoOutput>();
-			MONITORINFOEX monitorInfo = new MONITORINFOEX(0);
+			MONITORINFOEX? monitorInfo = new MONITORINFOEX();
 
-			/*if (Win32API.GetMonitorInfo(_adapter.Monitor, ref monitorInfo))
+			// Get the primary output.
+			monitorInfo = Win32API.GetMonitorInfo(_adapter.Monitor);
+			if (monitorInfo != null)
+				outputs.Add(new D3D9VideoOutput(_adapter.Monitor, monitorInfo.Value));
+
+			// Get subordinate heads.
+			if (_caps.NumberOfAdaptersInGroup > 0)
 			{
+				foreach (var adapter in _d3d.Adapters)
+				{
+					// Skip the master.
+					if (adapter.Adapter != _adapter.Adapter)
+					{
+						headCaps = adapter.GetCaps(_deviceType);
 
-			}*/
+						// Ensure this head is on the correct device.
+						if (headCaps.MasterAdapterOrdinal != AdapterIndex)
+							continue;
+
+						monitorInfo = Win32API.GetMonitorInfo(adapter.Monitor);
+						if (monitorInfo != null)
+							outputs.Add(new D3D9VideoOutput(adapter.Monitor, monitorInfo.Value));
+					}
+				}
+			}
 
 			return outputs;
 		}
@@ -163,22 +187,26 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <summary>
 		/// Initializes a new instance of the <see cref="D3D9VideoDevice"/> class.
 		/// </summary>
+		/// <param name="d3d">Direct 3D interface.</param>
+		/// <param name="deviceType">Device type to use.</param>
 		/// <param name="adapter">D3D9 adapter.</param>
 		/// <param name="capabilities">Adapter capabilities.</param>
 		/// <param name="index">Index of the driver in the collection.</param>
-		internal D3D9VideoDevice(AdapterInformation adapter, Capabilities capabilities, int index)
+		internal D3D9VideoDevice(Direct3D d3d, DeviceType deviceType, AdapterInformation adapter, Capabilities capabilities, int index)
 			: base(index)
 		{
+			if (d3d == null)
+				throw new ArgumentNullException("d3d");
 			if (adapter == null)
 				throw new ArgumentNullException("adapter");
 			if (capabilities == null)
 				throw new ArgumentNullException("capabilities");
 
+			_d3d = d3d;
 			_adapter = adapter;
 			_caps = capabilities;
-			Name = _adapter.Details.Description;			
-
-			Gorgon.Log.Print("Video Device #{0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, index, adapter.Details.Description);
+			_deviceType = deviceType;
+			Name = _adapter.Details.Description.Trim();			
 		}
 		#endregion
 	}

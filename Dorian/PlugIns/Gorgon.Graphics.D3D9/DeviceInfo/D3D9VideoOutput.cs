@@ -28,13 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics.D3D9
 {
 	/// <summary>
 	/// A direct 3D9 video output.
 	/// </summary>
-	public class D3D9VideoOutput
+	internal class D3D9VideoOutput
 		: GorgonVideoOutput
 	{
 		#region Properties.
@@ -43,14 +44,8 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override string Name
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			protected set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -58,14 +53,8 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override System.Drawing.Rectangle DesktopDimensions
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			protected set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -73,14 +62,8 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override bool IsAttachedToDesktop
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			protected set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -88,14 +71,17 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override int Rotation
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			protected set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the handle for the monitor attached to this output.
+		/// </summary>
+		public IntPtr Handle
+		{
+			get;
+			private set;
 		}
 		#endregion
 
@@ -103,9 +89,15 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <summary>
 		/// Initializes a new instance of the <see cref="D3D9VideoOutput"/> class.
 		/// </summary>
-		public D3D9VideoOutput()
+		/// <param name="handle">Handle to the device.</param>
+		/// <param name="monitorInfo">Monitor information.</param>
+		public D3D9VideoOutput(IntPtr handle, MONITORINFOEX monitorInfo)
 		{
-			
+			Handle = handle;
+			Rotation = 0;
+			IsAttachedToDesktop = ((monitorInfo.Flags & 1) == 1);
+			DesktopDimensions = System.Drawing.Rectangle.FromLTRB(monitorInfo.WorkArea.Left, monitorInfo.WorkArea.Top, monitorInfo.WorkArea.Right, monitorInfo.WorkArea.Bottom);
+			Name = monitorInfo.DeviceName;	
 		}
 		#endregion
 	}

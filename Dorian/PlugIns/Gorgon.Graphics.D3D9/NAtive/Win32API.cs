@@ -44,7 +44,23 @@ namespace GorgonLibrary.Native
 		/// <param name="hMonitor"></param>
 		/// <param name="lpmi"></param>
 		/// <returns></returns>
-		[DllImport("user32.dll")]
-		public static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFOEX lpmi);
+		[DllImport("user32.dll", CharSet=CharSet.Auto)]
+		private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFOEX lpmi);
+
+		/// <summary>
+		/// Function to retrieve monitor information.
+		/// </summary>
+		/// <param name="hMonitor">Handle to the monitor.</param>
+		/// <returns>The monitor information, or NULL (Nothing in VB.Net) if an error occured.</returns>
+		public static MONITORINFOEX? GetMonitorInfo(IntPtr hMonitor)
+		{
+			MONITORINFOEX result = new MONITORINFOEX();
+			result.Size = Marshal.SizeOf(typeof(MONITORINFOEX));
+						
+			if (GetMonitorInfo(hMonitor, ref result))
+				return result;
+			else
+				return null;
+		}
 	}
 }
