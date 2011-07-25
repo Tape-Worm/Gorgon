@@ -39,7 +39,7 @@ namespace GorgonLibrary.Graphics
 		: IList<GorgonVideoOutput>
 	{
 		#region Variables.
-		private IList<GorgonVideoOutput> _outputs = null;
+		private List<GorgonVideoOutput> _outputs = null;
 		#endregion
 
 		#region Methods.
@@ -49,6 +49,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="outputs"></param>
 		internal void AddOutputs(IEnumerable<GorgonVideoOutput> outputs)
 		{
+			_outputs.AddRange(outputs);
 		}
 		#endregion
 

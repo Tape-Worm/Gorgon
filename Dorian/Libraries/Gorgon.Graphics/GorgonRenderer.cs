@@ -118,6 +118,7 @@ namespace GorgonLibrary.Graphics
 			{
 				Gorgon.Log.Print("Video Device #{0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, device.Index, device.Name);
 				device.GetDeviceData();
+				Gorgon.Log.Print("Head count for {0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, device.Name, device.Outputs.Count);
 			}
 
 			// Filter those that aren't supported by Gorgon (SM 3.0)
