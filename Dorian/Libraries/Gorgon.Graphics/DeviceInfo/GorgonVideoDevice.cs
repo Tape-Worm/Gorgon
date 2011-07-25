@@ -129,7 +129,7 @@ namespace GorgonLibrary.Graphics
 		public string Name
 		{
 			get;
-			protected set;
+			protected internal set;
 		}
 		#endregion
 

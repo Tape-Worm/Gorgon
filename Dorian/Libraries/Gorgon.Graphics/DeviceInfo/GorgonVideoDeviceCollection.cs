@@ -83,13 +83,27 @@ namespace GorgonLibrary.Graphics
 		/// <param name="devices">Devices to add to the collection.</param>
 		internal void AddRange(IEnumerable<GorgonVideoDevice> devices)
 		{
+			string deviceName = string.Empty;
+	
 			if (devices == null)
 				throw new ArgumentNullException("device");
 
 			if (devices.Count() == 0)
 				throw new ArgumentException("Must have at least one device.", "devices");
+			
+			deviceName = devices.ElementAt(0).Name;
+			foreach (var device in devices)
+			{
+				int deviceCount = 1;
 
-			AddItems(devices);
+				while (this.Contains(deviceName))
+				{
+					deviceName = device.Name + " #" + deviceCount.ToString();
+					device.Name = deviceName;
+					deviceCount++;
+				}
+				AddItem(device);
+			}
 		}
 
 		/// <summary>

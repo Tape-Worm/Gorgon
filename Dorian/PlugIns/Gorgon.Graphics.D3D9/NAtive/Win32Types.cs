@@ -62,11 +62,9 @@ namespace GorgonLibrary.Native
     /// The MONITORINFOEX structure is a superset of the MONITORINFO structure. The MONITORINFOEX structure adds a string member to contain a name 
     /// for the display monitor.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 4)]
     struct MONITORINFOEX
     {
-		// size of a device name string
-		private const int CCHDEVICENAME = 32;
 		/// <summary>
 		/// The size, in bytes, of the structure. Set this member to sizeof(MONITORINFOEX) (72) before calling the GetMonitorInfo function. 
 		/// Doing so lets the function determine the type of structure you are passing to it.
@@ -90,24 +88,12 @@ namespace GorgonLibrary.Native
 		/// This member can be the following value:
 		///   1 : MONITORINFOF_PRIMARY
 		/// </summary>
-		public uint Flags;
+		public int Flags;
 		/// <summary>
 		/// A string that specifies the device name of the monitor being used. Most applications have no use for a display monitor name, 
 		/// and so can save some bytes by using a MONITORINFO structure.
 		/// </summary>
-		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHDEVICENAME )]
+		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
 		public string DeviceName;
-
-		/// <summary>
-		/// Inits this instance.
-		/// </summary>
-		public MONITORINFOEX(uint flags)
-		{
-			this.Size = Marshal.SizeOf(typeof(MONITORINFOEX));
-			this.DeviceName = string.Empty;
-			MonitorDimensions = new RECT();
-			WorkArea = new RECT();
-			Flags = flags;
-		}
     }
 }

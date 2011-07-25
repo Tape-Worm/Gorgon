@@ -115,7 +115,10 @@ namespace GorgonLibrary.Graphics
 
 			// Get device information.
 			foreach (GorgonVideoDevice device in devices)
+			{
+				Gorgon.Log.Print("Video Device #{0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, device.Index, device.Name);
 				device.GetDeviceData();
+			}
 
 			// Filter those that aren't supported by Gorgon (SM 3.0)
 			devices = from device in devices

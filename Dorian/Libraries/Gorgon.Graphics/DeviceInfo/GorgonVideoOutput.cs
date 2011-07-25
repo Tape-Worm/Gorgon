@@ -76,10 +76,6 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.
-
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoOutput"/> class.
