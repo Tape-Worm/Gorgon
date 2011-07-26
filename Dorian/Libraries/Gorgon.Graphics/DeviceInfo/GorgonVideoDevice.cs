@@ -49,6 +49,78 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the device ID.
+		/// </summary>
+		public int DeviceID
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the name of the driver for the device.
+		/// </summary>
+		public string DriverName
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the device name for the device.
+		/// </summary>
+		public string DeviceName
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the driver version for the device.
+		/// </summary>
+		public Version DriverVersion
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the revision for the device.
+		/// </summary>
+		public int Revision
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the sub system ID for the device.
+		/// </summary>
+		public int SubSystemID
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the vendor ID for the device.
+		/// </summary>
+		public int VendorID
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the GUID for the device.
+		/// </summary>
+		public Guid DeviceGUID
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
 		/// Property to return the outputs on this device.
 		/// </summary>
 		/// <remarks>The outputs are typically monitors attached to the device.</remarks>
@@ -61,37 +133,36 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the device capabilities.
 		/// </summary>
-		public GorgonCapabilityCollection Capabilities
+		public GorgonVideoDeviceCapabilities Capabilities
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to return the pixel shader version.
-		/// </summary>
-		public Version PixelShaderVersion
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to return the vertex shader version.
-		/// </summary>
-		public Version VertexShaderVersion
-		{
-			get;
-			protected set;
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the device capabilities.
+		/// Function to retrieve and build the device capability information.
 		/// </summary>
-		/// <returns>An enumerable list of driver capabilities.</returns>
-		protected abstract IEnumerable<KeyValuePair<string, object>> GetDeviceCapabilities();
+		/// <returns>The device capabilities.</returns>
+		private GorgonVideoDeviceCapabilities GetCaps()
+		{
+			GorgonVideoDeviceCapabilities result = CreateDeviceCapabilities();
+			result.EnumerateCapabilities();
+			return result;
+		}
+
+		/// <summary>
+		/// Function to retrieve device specific information.
+		/// </summary>
+		/// <remarks>Implementors should use this method to fill in properties like <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.DriverVersion">DriverVersion</see>.</remarks>
+		protected abstract void GetDeviceInfo();
+
+		/// <summary>
+		/// Function to create a renderer specific device capabilities object.
+		/// </summary>
+		/// <returns>A video device capabilities object.</returns>
+		protected abstract GorgonVideoDeviceCapabilities CreateDeviceCapabilities();
 
 		/// <summary>
 		/// Function to retrieve the outputs attached to the device.
@@ -103,23 +174,25 @@ namespace GorgonLibrary.Graphics
 		/// Function to retrieve the device capability information.
 		/// </summary>
 		internal void GetDeviceData()
-		{
-			Capabilities = new GorgonCapabilityCollection(GetDeviceCapabilities());
+		{	
+			GetDeviceInfo();
+			Capabilities = GetCaps();
 			Outputs = new GorgonVideoOutputCollection(GetOutputs());
 
 			for (int head = 0; head < Outputs.Count; head++)
-			{
 				Outputs[head].GetOutputModes();
 
-				Gorgon.Log.Print("Video Mode (For head: {0}):", Diagnostics.GorgonLoggingLevel.Simple, head);
+			Gorgon.Log.Print("Info for Video Device {0}:", Diagnostics.GorgonLoggingLevel.Simple,Name);
+			Gorgon.Log.Print("\tDevice Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, DeviceName);
+			Gorgon.Log.Print("\tDriver Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, DriverName);
+			Gorgon.Log.Print("\tDriver Version: {0}", Diagnostics.GorgonLoggingLevel.Simple, DriverVersion.ToString());
+			Gorgon.Log.Print("\tRevision: {0}", Diagnostics.GorgonLoggingLevel.Simple, Revision);
 #if DEBUG
-				for (int i = 0; i < Outputs[head].VideoModes.Count; i++)
-				{
-					GorgonVideoMode mode = Outputs[head].VideoModes[i];
-					Gorgon.Log.Print("\tVideo Mode #{0} - {1}x{2} Format: {3} Refresh: {4}/{5}", Diagnostics.GorgonLoggingLevel.Simple, i, mode.Width, mode.Height, mode.Format, mode.RefreshRateNumerator, mode.RefreshRateDenominator);
-				}
+			Gorgon.Log.Print("\tDevice ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(DeviceID));
+			Gorgon.Log.Print("\tSub System ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(SubSystemID));
+			Gorgon.Log.Print("\tVendor ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(VendorID));
+			Gorgon.Log.Print("\tDevice GUID: {0}", Diagnostics.GorgonLoggingLevel.Verbose, DeviceGUID);
 #endif
-			}
 		}
 		#endregion
 

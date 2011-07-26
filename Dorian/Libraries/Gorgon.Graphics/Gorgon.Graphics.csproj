@@ -48,6 +48,7 @@
     <Compile Include="Collections\GorgonCustomValueCollection.cs" />
     <Compile Include="Collections\GorgonCapabilityCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
+    <Compile Include="DeviceInfo\GorgonVideoDeviceCapabilities.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoMode.cs" />
     <Compile Include="DeviceInfo\GorgonVideoModeList.cs" />

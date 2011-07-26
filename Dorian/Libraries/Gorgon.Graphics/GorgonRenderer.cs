@@ -119,6 +119,7 @@ namespace GorgonLibrary.Graphics
 			var devices = GetVideoDevices();
 
 			// Get device information.
+			Gorgon.Log.Print("{0} video devices installed.", Diagnostics.GorgonLoggingLevel.Simple, devices.Count());
 			foreach (GorgonVideoDevice device in devices)
 			{
 				Gorgon.Log.Print("Video Device #{0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, device.Index, device.Name);
@@ -128,7 +129,7 @@ namespace GorgonLibrary.Graphics
 
 			// Filter those that aren't supported by Gorgon (SM 3.0)
 			devices = from device in devices
-					  where (device.PixelShaderVersion >= minSMVersion) && (device.VertexShaderVersion >= minSMVersion)
+					  where (device.Capabilities.PixelShaderVersion >= minSMVersion) && (device.Capabilities.VertexShaderVersion >= minSMVersion)
 					  select device;
 
 			if (devices.Count() == 0)
