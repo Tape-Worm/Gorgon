@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SlimDX.Direct3D9;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics.D3D9
@@ -38,6 +39,10 @@ namespace GorgonLibrary.Graphics.D3D9
 	internal class D3D9VideoOutput
 		: GorgonVideoOutput
 	{
+		#region Variables.
+		private AdapterInformation _info = null;		// Adapter information.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the device name of the output.
@@ -85,15 +90,43 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 		#endregion
 
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the video modes for this output.
+		/// </summary>
+		/// <returns>
+		/// An enumerable list of video modes.
+		/// </returns>
+		protected override IEnumerable<GorgonVideoMode> GetVideoModes()
+		{			
+			Format[] displayModeFormats = {Format.A2R10G10B10, Format.A8R8G8B8, Format.X8R8G8B8};
+			List<GorgonVideoMode> modes = new List<GorgonVideoMode>();
+
+			foreach (var d3dformat in displayModeFormats)
+			{
+				DisplayModeCollection d3dModes = _info.GetDisplayModes(d3dformat);
+
+				foreach (var d3dMode in d3dModes)
+					modes.Add(D3DConvert.Convert(d3dMode));
+			}
+
+			return modes;
+		}
+		#endregion
+
 		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="D3D9VideoOutput"/> class.
 		/// </summary>
-		/// <param name="handle">Handle to the device.</param>
+		/// <param name="adapter">Adapter information.</param>
 		/// <param name="monitorInfo">Monitor information.</param>
-		public D3D9VideoOutput(IntPtr handle, MONITORINFOEX monitorInfo)
+		public D3D9VideoOutput(AdapterInformation adapter, MONITORINFOEX monitorInfo)
 		{
-			Handle = handle;
+			if (adapter == null)
+				throw new ArgumentNullException("adapter");
+
+			_info = adapter;
+			Handle = adapter.Monitor;
 			Rotation = 0;
 			IsAttachedToDesktop = ((monitorInfo.Flags & 1) == 1);
 			DesktopDimensions = System.Drawing.Rectangle.FromLTRB(monitorInfo.WorkArea.Left, monitorInfo.WorkArea.Top, monitorInfo.WorkArea.Right, monitorInfo.WorkArea.Bottom);

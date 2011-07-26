@@ -397,12 +397,12 @@ namespace GorgonLibrary
 				}
 
 				if (ParentWindow == null)
-					throw new GorgonException(GorgonResult.CannotEnumerate, "The window at '" + GorgonUtility.FormatHex(ApplicationWindow.Handle) + "' has no parent form.");
+					throw new GorgonException(GorgonResult.CannotEnumerate, "The window '" + ApplicationWindow.Name + "' at '" + GorgonUtility.FormatHex(ApplicationWindow.Handle) + "' has no parent form.");
 				else
 				{
-					Log.Print("Using window at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ApplicationWindow.Handle));
+					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ApplicationWindow.Handle), ApplicationWindow.Name, ApplicationWindow.Text);
 					if (ParentWindow != ApplicationWindow)
-						Log.Print("Using parent window of application window at '0x{0}'.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ParentWindow.Handle));
+						Log.Print("Using '{3} ({4})' at '0x{0}' as parent window for application window '{1} ({2})'.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ParentWindow.Handle), ApplicationWindow.Name, ApplicationWindow.Text, ParentWindow.Name, ParentWindow.Text);
 				}
 
 				IsRunning = false;

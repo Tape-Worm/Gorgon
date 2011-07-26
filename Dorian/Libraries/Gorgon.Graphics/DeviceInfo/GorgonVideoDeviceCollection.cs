@@ -76,21 +76,22 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Function to add a list of devices to the collection.
+		/// Initializes a new instance of the <see cref="GorgonVideoDeviceCollection"/> class.
 		/// </summary>
-		/// <param name="devices">Devices to add to the collection.</param>
-		internal void AddRange(IEnumerable<GorgonVideoDevice> devices)
+		/// <param name="devices">Video devices to add.</param>
+		internal GorgonVideoDeviceCollection(IEnumerable<GorgonVideoDevice> devices)
+			: base(false)
 		{
 			string deviceName = string.Empty;
-	
+
 			if (devices == null)
 				throw new ArgumentNullException("device");
 
 			if (devices.Count() == 0)
 				throw new ArgumentException("Must have at least one device.", "devices");
-			
+
 			deviceName = devices.ElementAt(0).Name;
 			foreach (var device in devices)
 			{
@@ -104,27 +105,6 @@ namespace GorgonLibrary.Graphics
 				}
 				AddItem(device);
 			}
-		}
-
-		/// <summary>
-		/// Function to clear the collection.
-		/// </summary>
-		internal void Clear()
-		{
-			foreach (GorgonVideoDevice device in this)
-				device.Dispose();
-
-			ClearItems();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVideoDeviceCollection"/> class.
-		/// </summary>
-		internal GorgonVideoDeviceCollection()
-			: base(false)
-		{
 		}
 		#endregion
 	}

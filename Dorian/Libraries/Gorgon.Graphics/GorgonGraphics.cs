@@ -58,7 +58,7 @@ namespace GorgonLibrary.Graphics
 		public GorgonVideoDeviceCollection VideoDevices
 		{
 			get;
-			private set;
+			internal set;
 		}
 		#endregion
 
@@ -68,7 +68,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CleanUp()
 		{
-			VideoDevices.Clear();
+			VideoDevices = null;
 		}
 
 		/// <summary>
@@ -122,7 +122,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>		
 		public GorgonGraphics(string plugInType)
 		{
-			VideoDevices = new GorgonVideoDeviceCollection();
+			VideoDevices = null;
 			BindRenderer(plugInType);
 
 			Gorgon.Log.Print("Graphics interface created.", Diagnostics.GorgonLoggingLevel.Simple);

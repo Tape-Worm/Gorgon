@@ -91,7 +91,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to retrieve the device capabilities.
 		/// </summary>
 		/// <returns>An enumerable list of driver capabilities.</returns>
-		protected abstract IEnumerable<KeyValuePair<string, string>> GetDeviceCapabilities();
+		protected abstract IEnumerable<KeyValuePair<string, object>> GetDeviceCapabilities();
 
 		/// <summary>
 		/// Function to retrieve the outputs attached to the device.
@@ -104,10 +104,22 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void GetDeviceData()
 		{
-			Capabilities = new GorgonCapabilityCollection();
-			Capabilities.AddCapabilities(GetDeviceCapabilities());
-			Outputs = new GorgonVideoOutputCollection();
-			Outputs.AddOutputs(GetOutputs());
+			Capabilities = new GorgonCapabilityCollection(GetDeviceCapabilities());
+			Outputs = new GorgonVideoOutputCollection(GetOutputs());
+
+			for (int head = 0; head < Outputs.Count; head++)
+			{
+				Outputs[head].GetOutputModes();
+
+				Gorgon.Log.Print("Video Mode (For head: {0}):", Diagnostics.GorgonLoggingLevel.Simple, head);
+#if DEBUG
+				for (int i = 0; i < Outputs[head].VideoModes.Count; i++)
+				{
+					GorgonVideoMode mode = Outputs[head].VideoModes[i];
+					Gorgon.Log.Print("\tVideo Mode #{0} - {1}x{2} Format: {3} Refresh: {4}/{5}", Diagnostics.GorgonLoggingLevel.Simple, i, mode.Width, mode.Height, mode.Format, mode.RefreshRateNumerator, mode.RefreshRateDenominator);
+				}
+#endif
+			}
 		}
 		#endregion
 

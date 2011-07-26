@@ -74,6 +74,31 @@ namespace GorgonLibrary.Graphics
 			get;
 			protected set;
 		}
+
+		/// <summary>
+		/// Property to return the video modes for this output.
+		/// </summary>
+		public GorgonVideoModeList VideoModes
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the video modes for this output.
+		/// </summary>
+		/// <returns>An enumerable list of video modes.</returns>
+		protected abstract IEnumerable<GorgonVideoMode> GetVideoModes();
+
+		/// <summary>
+		/// Function to retrieve the video modes for the output.
+		/// </summary>
+		internal void GetOutputModes()
+		{
+			VideoModes = new GorgonVideoModeList(GetVideoModes());
+		}
 		#endregion
 
 		#region Constructor/Destructor.

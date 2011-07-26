@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, July 24, 2011 9:41:28 PM
+// Created: Monday, July 25, 2011 8:16:00 PM
 // 
 #endregion
 
@@ -28,38 +28,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.Collections;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A collection of video outputs for a video device.
+	/// A list of video modes.
 	/// </summary>
-	public class GorgonVideoOutputCollection
-		: IList<GorgonVideoOutput>
+	public class GorgonVideoModeList
+		: IList<GorgonVideoMode>
 	{
 		#region Variables.
-		private List<GorgonVideoOutput> _outputs = null;
+		private List<GorgonVideoMode> _modes = null;				// List of video modes.
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVideoOutputCollection"/> class.
+		/// Initializes a new instance of the <see cref="GorgonVideoModeList"/> class.
 		/// </summary>
-		/// <param name="outputs">List of outputs to add to the collection.</param>
-		internal GorgonVideoOutputCollection(IEnumerable<GorgonVideoOutput> outputs)
+		/// <param name="videoModes">Enumerable list of video modes to add.</param>
+		internal GorgonVideoModeList(IEnumerable<GorgonVideoMode> videoModes)
 		{
-			if (outputs == null)
-				throw new ArgumentNullException("outputs");
-			if (outputs.Count() == 0)
-				throw new ArgumentException("No video outputs found.", "outputs");
-
-			_outputs = new List<GorgonVideoOutput>();
-			_outputs.AddRange(outputs);
+			_modes = new List<GorgonVideoMode>();
+			_modes.AddRange(videoModes);
 		}
 		#endregion
 
-		#region IList<GorgonVideoOutput> Members
+		#region IList<GorgonVideoMode> Members
 		#region Properties.
 		/// <summary>
 		/// Gets or sets the element at the specified index.
@@ -74,11 +68,11 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The property is set and the <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		public GorgonVideoOutput this[int index]
+		public GorgonVideoMode this[int index]
 		{
 			get
 			{
-				return _outputs[index];
+				return _modes[index];
 			}
 			set
 			{
@@ -95,9 +89,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
 		/// </returns>
-		public int IndexOf(GorgonVideoOutput item)
+		public int IndexOf(GorgonVideoMode item)
 		{
-			return _outputs.IndexOf(item);
+			return _modes.IndexOf(item);
 		}
 
 		/// <summary>
@@ -111,7 +105,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		void IList<GorgonVideoOutput>.Insert(int index, GorgonVideoOutput item)
+		void IList<GorgonVideoMode>.Insert(int index, GorgonVideoMode item)
 		{
 			throw new NotImplementedException();
 		}
@@ -126,14 +120,14 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		void IList<GorgonVideoOutput>.RemoveAt(int index)
+		void IList<GorgonVideoMode>.RemoveAt(int index)
 		{
 			throw new NotImplementedException();
 		}
 		#endregion
 		#endregion
 
-		#region ICollection<GorgonVideoOutput> Members
+		#region ICollection<GorgonVideoMode> Members
 		#region Properties.
 		/// <summary>
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
@@ -145,7 +139,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				return _outputs.Count;
+				return _modes.Count;
 			}
 		}
 
@@ -171,7 +165,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		///   </exception>
-		void ICollection<GorgonVideoOutput>.Add(GorgonVideoOutput item)
+		void ICollection<GorgonVideoMode>.Add(GorgonVideoMode item)
 		{
 			throw new NotImplementedException();
 		}
@@ -182,7 +176,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		///   </exception>
-		void ICollection<GorgonVideoOutput>.Clear()
+		void ICollection<GorgonVideoMode>.Clear()
 		{
 			throw new NotImplementedException();
 		}
@@ -194,9 +188,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
 		/// </returns>
-		public bool Contains(GorgonVideoOutput item)
+		public bool Contains(GorgonVideoMode item)
 		{
-			return _outputs.Contains(item);
+			return _modes.Contains(item);
 		}
 
 		/// <summary>
@@ -204,9 +198,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="array">The array.</param>
 		/// <param name="arrayIndex">Index of the array.</param>
-		public void CopyTo(GorgonVideoOutput[] array, int arrayIndex)
+		public void CopyTo(GorgonVideoMode[] array, int arrayIndex)
 		{
-			_outputs.CopyTo(array, arrayIndex);
+			_modes.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>
@@ -219,24 +213,24 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		///   </exception>
-		bool ICollection<GorgonVideoOutput>.Remove(GorgonVideoOutput item)
+		bool ICollection<GorgonVideoMode>.Remove(GorgonVideoMode item)
 		{
 			throw new NotImplementedException();
 		}
 		#endregion
 		#endregion
 
-		#region IEnumerable<GorgonVideoOutput> Members
+		#region IEnumerable<GorgonVideoMode> Members
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>
 		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
 		/// </returns>
-		public IEnumerator<GorgonVideoOutput> GetEnumerator()
+		public IEnumerator<GorgonVideoMode> GetEnumerator()
 		{
-			foreach (var item in _outputs)
-				yield return item;
+			foreach (var mode in _modes)
+				yield return mode;
 		}
 
 		#endregion
@@ -250,7 +244,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator();
+			return _modes.GetEnumerator();
 		}
 		#endregion
 	}

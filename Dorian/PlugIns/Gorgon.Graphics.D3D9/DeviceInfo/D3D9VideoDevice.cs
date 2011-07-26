@@ -89,25 +89,25 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <returns>
 		/// An enumerable list of driver capabilities.
 		/// </returns>
-		protected override IEnumerable<KeyValuePair<string, string>> GetDeviceCapabilities()
+		protected override IEnumerable<KeyValuePair<string, object>> GetDeviceCapabilities()
 		{
-			IDictionary<string, string> deviceCaps = null;
+			IDictionary<string, object> deviceCaps = null;
 
-			deviceCaps = new SortedList<string, string>();
+			deviceCaps = new SortedList<string, object>();
 
 			VertexShaderVersion = _caps.VertexShaderVersion;
 			PixelShaderVersion = _caps.PixelShaderVersion;
 						
-			deviceCaps.Add("D3D_AdapterIndex", _caps.AdapterOrdinal.ToString());
-			deviceCaps.Add("D3D_HeadIndex", _caps.AdapterOrdinalInGroup.ToString());
-			deviceCaps.Add("D3D_DeviceID", "0x" + GorgonUtility.FormatHex(_adapter.Details.DeviceId));
-			deviceCaps.Add("D3D_DeviceName", _adapter.Details.DeviceName.ToString());
-			deviceCaps.Add("D3D_DriverName", _adapter.Details.DriverName.ToString());
-			deviceCaps.Add("D3D_DriverVersion", _adapter.Details.DriverVersion.ToString());
-			deviceCaps.Add("D3D_Revision", _adapter.Details.Revision.ToString());
-			deviceCaps.Add("D3D_SubSystemID", "0x" + GorgonUtility.FormatHex(_adapter.Details.SubsystemId));
-			deviceCaps.Add("D3D_VendorID", "0x" + GorgonUtility.FormatHex(_adapter.Details.VendorId));
-			deviceCaps.Add("D3D_GUID", _adapter.Details.DeviceIdentifier.ToString());
+			deviceCaps.Add("D3D_AdapterIndex", _caps.AdapterOrdinal);
+			deviceCaps.Add("D3D_HeadIndex", _caps.AdapterOrdinalInGroup);
+			deviceCaps.Add("D3D_DeviceID", _adapter.Details.DeviceId);
+			deviceCaps.Add("D3D_DeviceName", _adapter.Details.DeviceName);
+			deviceCaps.Add("D3D_DriverName", _adapter.Details.DriverName);
+			deviceCaps.Add("D3D_DriverVersion", _adapter.Details.DriverVersion);
+			deviceCaps.Add("D3D_Revision", _adapter.Details.Revision);
+			deviceCaps.Add("D3D_SubSystemID", _adapter.Details.SubsystemId);
+			deviceCaps.Add("D3D_VendorID", _adapter.Details.VendorId);
+			deviceCaps.Add("D3D_GUID", _adapter.Details.DeviceIdentifier);
 
 			var caps = _caps.GetType().GetProperties().Where(item => !item.Name.StartsWith("AdapterOrdinal"));
 
@@ -115,7 +115,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			foreach (var cap in caps)
 			{
 				if ((cap.PropertyType.IsEnum) || (cap.PropertyType == typeof(string)) || (cap.PropertyType.IsPrimitive) || (cap.PropertyType == typeof(Version)))
-					deviceCaps.Add("D3D9Cap_" + cap.Name, cap.GetValue(_caps, null).ToString());
+					deviceCaps.Add("D3D9Cap_" + cap.Name, cap.GetValue(_caps, null));
 				else
 				{
 					if (cap.PropertyType.IsValueType)
@@ -124,7 +124,7 @@ namespace GorgonLibrary.Graphics.D3D9
 						var subCap = value.GetType().GetProperties();
 
 						foreach (var sub in subCap)
-							deviceCaps.Add("D3D9Cap_" + cap.Name + "." + sub.Name, sub.GetValue(value, null).ToString());
+							deviceCaps.Add("D3D9Cap_" + cap.Name + "." + sub.Name, sub.GetValue(value, null));
 					}
 				}
 			}
@@ -156,7 +156,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			// Get the primary output.
 			monitorInfo = Win32API.GetMonitorInfo(_adapter.Monitor);
 			if (monitorInfo != null)
-				outputs.Add(new D3D9VideoOutput(_adapter.Monitor, monitorInfo.Value));
+				outputs.Add(new D3D9VideoOutput(_adapter, monitorInfo.Value));
 
 			// Get subordinate heads.
 			if (_caps.NumberOfAdaptersInGroup > 0)
@@ -174,7 +174,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 						monitorInfo = Win32API.GetMonitorInfo(adapter.Monitor);
 						if (monitorInfo != null)
-							outputs.Add(new D3D9VideoOutput(adapter.Monitor, monitorInfo.Value));
+							outputs.Add(new D3D9VideoOutput(adapter, monitorInfo.Value));
 					}
 				}
 			}
@@ -205,7 +205,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			_d3d = d3d;
 			_adapter = adapter;
 			_caps = capabilities;
-			_deviceType = deviceType;
+			_deviceType = deviceType;			
 			Name = _adapter.Details.Description.Trim();			
 		}
 		#endregion

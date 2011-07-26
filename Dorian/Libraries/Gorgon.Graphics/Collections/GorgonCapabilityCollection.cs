@@ -39,14 +39,14 @@ namespace GorgonLibrary.Collections
 	{
 		#region Variables.
 		private string _name;			// Name of the capability.
-		private string _value;			// Name of the value.
+		private object _value;			// Name of the value.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the value for the capability.
 		/// </summary>
-		public string Value
+		public object Value
 		{
 			get
 			{
@@ -61,7 +61,7 @@ namespace GorgonLibrary.Collections
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="value">The value.</param>
-		internal GorgonCapability(string name, string value)
+		internal GorgonCapability(string name, object value)
 		{
 			GorgonUtility.AssertParamString(name, "name");
 			_name = name;
@@ -126,36 +126,39 @@ namespace GorgonLibrary.Collections
 				return GetItem(index);
 			}
 		}
+
+		/// <summary>
+		/// Gets a value indicating whether this instance is read only.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
+		/// </value>
+		public override bool IsReadOnly
+		{
+			get
+			{
+				return true;
+			}
+		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to add a list of capabilities to this list.
-		/// </summary>
-		/// <param name="capabilities">List of capabilities to add.</param>
-		internal void AddCapabilities(IEnumerable<KeyValuePair<string, string>> capabilities)
-		{
-			foreach (var item in capabilities)
-				AddItem(new GorgonCapability(item.Key, item.Value));
-		}
-
-		/// <summary>
-		/// Function to clear the collection.
-		/// </summary>
-		internal void Clear()
-		{
-			ClearItems();
-		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCapabilityCollection"/> class.
 		/// </summary>
-		internal GorgonCapabilityCollection()
+		internal GorgonCapabilityCollection(IEnumerable<KeyValuePair<string, object>> capabilities)
 			: base(false)
 		{
 			_capNames = new List<string>();
+
+			foreach (var item in capabilities)
+			{
+				AddItem(new GorgonCapability(item.Key, item.Value));
+				_capNames.Add(item.Key);
+			}
 		}
 		#endregion
 	}
