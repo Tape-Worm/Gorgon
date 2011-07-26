@@ -215,7 +215,16 @@ namespace GorgonLibrary.FileSystem
 			if (mountDirectory == null)
 				mountDirectory = AddDirectoryEntry(mountPoint);
 
+			Gorgon.Log.Print("'{2}' is mounting physical file system path '{0}' to virtual file system path '{1}'.", Diagnostics.GorgonLoggingLevel.Verbose, physicalPath, mountPoint, this.Name);
+			
 			Enumerate(physicalPath, mountDirectory);
+
+#if DEBUG
+			var fileCount = FileSystem.FindFiles("*", true).Count();
+			var dirCount = FileSystem.FindDirectories("*", true).Count();
+
+			Gorgon.Log.Print("{0} directories parsed, and {1} files processed.", Diagnostics.GorgonLoggingLevel.Verbose, dirCount, fileCount);
+#endif
 		}
 
 		/// <summary>

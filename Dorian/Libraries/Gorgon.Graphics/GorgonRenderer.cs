@@ -72,9 +72,13 @@ namespace GorgonLibrary.Graphics
 			if (!_initialized)
 				return;
 
+			Gorgon.Log.Print("{0} shutting down...", Diagnostics.GorgonLoggingLevel.Simple, Name);
+
 			ShutdownRenderer();
 			Graphics = null; 
 			_initialized = false;
+
+			Gorgon.Log.Print("{0} shut down successfully", Diagnostics.GorgonLoggingLevel.Simple, Name);
 		}
 
 		/// <summary>
@@ -108,6 +112,7 @@ namespace GorgonLibrary.Graphics
 
 			Graphics = owner;
 
+			Gorgon.Log.Print("{0} initializing...", Diagnostics.GorgonLoggingLevel.Simple, Name);
 			InitializeRenderer();
 			
 			// Add the list of video devices.
@@ -117,7 +122,7 @@ namespace GorgonLibrary.Graphics
 			foreach (GorgonVideoDevice device in devices)
 			{
 				Gorgon.Log.Print("Video Device #{0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, device.Index, device.Name);
-				device.GetDeviceData();
+				device.GetDeviceData();				
 				Gorgon.Log.Print("Head count for {0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, device.Name, device.Outputs.Count);
 			}
 
@@ -129,9 +134,10 @@ namespace GorgonLibrary.Graphics
 			if (devices.Count() == 0)
 				throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot enumerate devices.  Could not find any applicable video device installed on the system.  Please ensure there is at least one video device that supports hardware acceleration and is capable of Shader Model 3.0 or better.");
 
-			Graphics.VideoDevices.AddRange(devices);
+			Graphics.VideoDevices = new GorgonVideoDeviceCollection(devices);
 			
 			_initialized = true;
+			Gorgon.Log.Print("{0} initialized successfully.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 		}
 		#endregion
 

@@ -764,7 +764,7 @@ namespace GorgonLibrary.FileSystem
 			foreach (GorgonFileSystemProvider fileSystemProvider in Providers)
 			{
 				if (fileSystemProvider.CanReadFile(directory + fileName))
-				{
+				{					
 					fileSystemProvider.Mount(physicalPath, mountPath);
 					return;
 				}

@@ -56,7 +56,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonD3D9()
 			: base("Gorgon Direct3D 9 renderer.")
-		{
+		{			
 		}
 		#endregion
 	}
