@@ -84,61 +84,30 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Methods.
 		/// <summary>
+		/// Function to retrieve device specific information.
+		/// </summary>
+		protected override void GetDeviceInfo()
+		{
+			Name = _adapter.Details.Description;
+			DeviceID = _adapter.Details.DeviceId;
+			DeviceName = _adapter.Details.DeviceName;
+			DriverName = _adapter.Details.DriverName;
+			DriverVersion = _adapter.Details.DriverVersion;
+			Revision = _adapter.Details.Revision;
+			SubSystemID = _adapter.Details.SubsystemId;
+			VendorID = _adapter.Details.VendorId;
+			DeviceGUID = _adapter.Details.DeviceIdentifier;
+		}
+
+		/// <summary>
 		/// Function to retrieve the device capabilities.
 		/// </summary>
 		/// <returns>
-		/// An enumerable list of driver capabilities.
+		/// A video device capabilities object.
 		/// </returns>
-		protected override IEnumerable<KeyValuePair<string, object>> GetDeviceCapabilities()
+		protected override GorgonVideoDeviceCapabilities CreateDeviceCapabilities()
 		{
-			IDictionary<string, object> deviceCaps = null;
-
-			deviceCaps = new SortedList<string, object>();
-
-			VertexShaderVersion = _caps.VertexShaderVersion;
-			PixelShaderVersion = _caps.PixelShaderVersion;
-						
-			deviceCaps.Add("D3D_AdapterIndex", _caps.AdapterOrdinal);
-			deviceCaps.Add("D3D_HeadIndex", _caps.AdapterOrdinalInGroup);
-			deviceCaps.Add("D3D_DeviceID", _adapter.Details.DeviceId);
-			deviceCaps.Add("D3D_DeviceName", _adapter.Details.DeviceName);
-			deviceCaps.Add("D3D_DriverName", _adapter.Details.DriverName);
-			deviceCaps.Add("D3D_DriverVersion", _adapter.Details.DriverVersion);
-			deviceCaps.Add("D3D_Revision", _adapter.Details.Revision);
-			deviceCaps.Add("D3D_SubSystemID", _adapter.Details.SubsystemId);
-			deviceCaps.Add("D3D_VendorID", _adapter.Details.VendorId);
-			deviceCaps.Add("D3D_GUID", _adapter.Details.DeviceIdentifier);
-
-			var caps = _caps.GetType().GetProperties().Where(item => !item.Name.StartsWith("AdapterOrdinal"));
-
-			// Extract device capabilities.
-			foreach (var cap in caps)
-			{
-				if ((cap.PropertyType.IsEnum) || (cap.PropertyType == typeof(string)) || (cap.PropertyType.IsPrimitive) || (cap.PropertyType == typeof(Version)))
-					deviceCaps.Add("D3D9Cap_" + cap.Name, cap.GetValue(_caps, null));
-				else
-				{
-					if (cap.PropertyType.IsValueType)
-					{
-						object value = cap.GetValue(_caps, null);
-						var subCap = value.GetType().GetProperties();
-
-						foreach (var sub in subCap)
-							deviceCaps.Add("D3D9Cap_" + cap.Name + "." + sub.Name, sub.GetValue(value, null));
-					}
-				}
-			}
-
-			var capInfo = deviceCaps.Where(item => item.Key.StartsWith("D3D_"));
-			Gorgon.Log.Print("Device Info:", Diagnostics.GorgonLoggingLevel.Intermediate);
-			foreach (var item in capInfo)
-				Gorgon.Log.Print("\t{0}: {1}", Diagnostics.GorgonLoggingLevel.Intermediate, item.Key, item.Value);
-
-			capInfo = deviceCaps.Where(item => item.Key.StartsWith("D3D9Cap_"));
-			Gorgon.Log.Print("Device Capabilities:", Diagnostics.GorgonLoggingLevel.Verbose);
-			foreach (var item in capInfo)
-				Gorgon.Log.Print("\t{0}: {1}", Diagnostics.GorgonLoggingLevel.Verbose, item.Key, item.Value);
-			return deviceCaps;			
+			return new D3D9VideoDeviceCapabilities(_adapter, _caps);
 		}
 
 		/// <summary>

@@ -202,6 +202,42 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to convert D3D comparison caps to Gorgon comparison flags.
+		/// </summary>
+		/// <param name="compareFlags">D3D Comparison caps.</param>
+		/// <returns>Gorgon Comparison flags.</returns>
+		public static GorgonCompareFlags Convert(CompareCaps compareFlags)
+		{
+			GorgonCompareFlags result = GorgonCompareFlags.Always;
+			
+			if ((compareFlags & CompareCaps.Always) == CompareCaps.Always)
+				result |= GorgonCompareFlags.Always;
+
+			if ((compareFlags & CompareCaps.Equal) == CompareCaps.Equal)
+				result |= GorgonCompareFlags.Equal;
+
+			if ((compareFlags & CompareCaps.Greater) == CompareCaps.Greater)
+				result |= GorgonCompareFlags.Greater;
+
+			if ((compareFlags & CompareCaps.GreaterEqual) == CompareCaps.GreaterEqual)
+				result |= GorgonCompareFlags.GreaterEqual;
+
+			if ((compareFlags & CompareCaps.Less) == CompareCaps.Less)
+				result |= GorgonCompareFlags.Less;
+
+			if ((compareFlags & CompareCaps.LessEqual) == CompareCaps.LessEqual)
+				result |= GorgonCompareFlags.LessEqual;
+
+			if ((compareFlags & CompareCaps.Never) == CompareCaps.Never)
+				result |= GorgonCompareFlags.LessEqual;
+
+			if ((compareFlags & CompareCaps.NotEqual) == CompareCaps.NotEqual)
+				result |= GorgonCompareFlags.NotEqual;
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to convert Gorgon comparison flags to the D3D compare value.
 		/// </summary>
 		/// <param name="compareFlags">Comparison flags to convert.</param>
@@ -226,6 +262,34 @@ namespace GorgonLibrary.Graphics.D3D9
 					return Compare.NotEqual;
 				default:
 					return Compare.Always;
+			}
+		}
+
+		/// <summary>
+		/// Function to convert D3D comparison values to a Gorgon comparison flag.
+		/// </summary>
+		/// <param name="compareFlags">D3D Comparison value.</param>
+		/// <returns>The Gorgon comparison flag.</returns>
+		public static GorgonCompareFlags Convert(Compare compareFlags)
+		{
+			switch (compareFlags)
+			{
+				case Compare.Equal:
+					return GorgonCompareFlags.Equal;
+				case Compare.Greater:
+					return GorgonCompareFlags.Greater;
+				case Compare.GreaterEqual:
+					return GorgonCompareFlags.GreaterEqual;
+				case Compare.Less:
+					return GorgonCompareFlags.Less;
+				case Compare.LessEqual:
+					return GorgonCompareFlags.LessEqual;
+				case Compare.Never:
+					return GorgonCompareFlags.Never;
+				case Compare.NotEqual:
+					return GorgonCompareFlags.NotEqual;
+				default:
+					return GorgonCompareFlags.Always;
 			}
 		}
 		#endregion

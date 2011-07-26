@@ -31,6 +31,9 @@ using System.Text;
 
 namespace GorgonLibrary.Graphics
 {
+	/// <summary>
+	/// A video mode information record.
+	/// </summary>
 	public struct GorgonVideoMode
 	{
 		#region Variables.
