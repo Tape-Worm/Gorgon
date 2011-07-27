@@ -39,29 +39,19 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 //
 #if DEBUG
-#if BETA
-[assembly: AssemblyTitle("Gorgon - BETA - DEVELOPMENT VERSION")]
-[assembly: AssemblyDescription("DirectX based 2D graphics library. - DEVELOPMENT VERSION - BETA")]
+[assembly: AssemblyTitle("Gorgon [DEBUG VERSION]")]
+[assembly: AssemblyDescription("The root object for the Gorgon libraries. [DEBUG VERSION]")]
+[assembly: AssemblyConfiguration("DEBUG")]
 #else
 [assembly: AssemblyTitle("Gorgon")]
 [assembly: AssemblyDescription("The root object for the Gorgon libraries.")]
-#endif
-[assembly: AssemblyConfiguration("DEBUG")]
-#else
-#if BETA
-[assembly: AssemblyTitle("Gorgon - BETA VERSION")]
-[assembly: AssemblyDescription("DirectX based 2D graphics library. - BETA VERSION")]
-#else
-[assembly: AssemblyTitle("Gorgon")]
-[assembly: AssemblyDescription("DirectX based 2D graphics library.")]
-#endif
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
 #if DEBUG
-[assembly: AssemblyProduct("Gorgon Graphics Library.")]
+[assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
-[assembly: AssemblyProduct("Gorgon Graphics Library.")]
+[assembly: AssemblyProduct("Gorgon")]
 #endif
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]

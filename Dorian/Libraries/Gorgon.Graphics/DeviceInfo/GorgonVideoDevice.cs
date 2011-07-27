@@ -179,8 +179,8 @@ namespace GorgonLibrary.Graphics
 			Capabilities = GetCaps();
 			Outputs = new GorgonVideoOutputCollection(GetOutputs());
 
-			for (int head = 0; head < Outputs.Count; head++)
-				Outputs[head].GetOutputModes();
+			foreach(var head in Outputs)
+				head.GetOutputModes();
 
 			Gorgon.Log.Print("Info for Video Device {0}:", Diagnostics.GorgonLoggingLevel.Simple,Name);
 			Gorgon.Log.Print("\tDevice Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, DeviceName);
