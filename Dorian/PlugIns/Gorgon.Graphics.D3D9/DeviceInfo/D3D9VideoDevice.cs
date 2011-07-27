@@ -88,10 +88,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		protected override void GetDeviceInfo()
 		{
-			Name = _adapter.Details.Description;
+			Name = _adapter.Details.Description.Trim();
 			DeviceID = _adapter.Details.DeviceId;
-			DeviceName = _adapter.Details.DeviceName;
-			DriverName = _adapter.Details.DriverName;
+			DeviceName = _adapter.Details.DeviceName.Trim();
+			DriverName = _adapter.Details.DriverName.Trim();
 			DriverVersion = _adapter.Details.DriverVersion;
 			Revision = _adapter.Details.Revision;
 			SubSystemID = _adapter.Details.SubsystemId;

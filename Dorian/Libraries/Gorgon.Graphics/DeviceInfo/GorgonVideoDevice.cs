@@ -181,18 +181,6 @@ namespace GorgonLibrary.Graphics
 
 			foreach(var head in Outputs)
 				head.GetOutputModes();
-
-			Gorgon.Log.Print("Info for Video Device {0}:", Diagnostics.GorgonLoggingLevel.Simple,Name);
-			Gorgon.Log.Print("\tDevice Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, DeviceName);
-			Gorgon.Log.Print("\tDriver Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, DriverName);
-			Gorgon.Log.Print("\tDriver Version: {0}", Diagnostics.GorgonLoggingLevel.Simple, DriverVersion.ToString());
-			Gorgon.Log.Print("\tRevision: {0}", Diagnostics.GorgonLoggingLevel.Simple, Revision);
-#if DEBUG
-			Gorgon.Log.Print("\tDevice ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(DeviceID));
-			Gorgon.Log.Print("\tSub System ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(SubSystemID));
-			Gorgon.Log.Print("\tVendor ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(VendorID));
-			Gorgon.Log.Print("\tDevice GUID: {0}", Diagnostics.GorgonLoggingLevel.Verbose, DeviceGUID);
-#endif
 		}
 		#endregion
 
