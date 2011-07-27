@@ -114,18 +114,20 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("{0} initializing...", Diagnostics.GorgonLoggingLevel.Simple, Name);
 			InitializeRenderer();
-			
-			// Add the list of video devices.
+
+			// TODO: Make GorgonGraphics abstract and then put device enumeration stuff in there.  
+			//		 We shouldn't need to be doing all of this inside of the renderer, the renderer
+			//		 should be for rendering and that's it.  Device enumeration sounds like a job
+			//		 for the top level object.
+
+			// Get a list of video devices.
+			// TODO: Is there some way that we can defer the device enumeration to a method and use this to create just the interface needed to gather devices?
+			//		 Required: Do not inherit and extend the collection.
+			//       i.e.  devices = CreateDeviceList(); devices.Enumerate();
 			var devices = GetVideoDevices();
 
-			// Get device information.
-			Gorgon.Log.Print("{0} video devices installed.", Diagnostics.GorgonLoggingLevel.Simple, devices.Count());
-			foreach (GorgonVideoDevice device in devices)
-			{
-				Gorgon.Log.Print("Video Device #{0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, device.Index, device.Name);
-				device.GetDeviceData();				
-				Gorgon.Log.Print("Head count for {0}: {1}", Diagnostics.GorgonLoggingLevel.Simple, device.Name, device.Outputs.Count);
-			}
+			foreach (var device in devices)
+				device.GetDeviceData();
 
 			// Filter those that aren't supported by Gorgon (SM 3.0)
 			devices = from device in devices
@@ -136,8 +138,27 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot enumerate devices.  Could not find any applicable video device installed on the system.  Please ensure there is at least one video device that supports hardware acceleration and is capable of Shader Model 3.0 or better.");
 
 			Graphics.VideoDevices = new GorgonVideoDeviceCollection(devices);
-			
+
 			_initialized = true;
+
+			// Log device information.
+			Gorgon.Log.Print("{0} video devices installed.", Diagnostics.GorgonLoggingLevel.Simple, devices.Count());
+			foreach (GorgonVideoDevice device in devices)
+			{
+				Gorgon.Log.Print("Info for Video Device #{0} - {1}:", Diagnostics.GorgonLoggingLevel.Simple, device.Index, device.Name);
+				Gorgon.Log.Print("\tHead count: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.Outputs.Count);
+				Gorgon.Log.Print("\tDevice Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.DeviceName);
+				Gorgon.Log.Print("\tDriver Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.DriverName);
+				Gorgon.Log.Print("\tDriver Version: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.DriverVersion.ToString());
+				Gorgon.Log.Print("\tRevision: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.Revision);
+				Gorgon.Log.Print("\tDevice ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.DeviceID));
+				Gorgon.Log.Print("\tSub System ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.SubSystemID));
+				Gorgon.Log.Print("\tVendor ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.VendorID));
+				Gorgon.Log.Print("\tDevice GUID: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.DeviceGUID);
+				// TODO: Log device capabilities.
+				// TODO: Log video modes.
+			}
+
 			Gorgon.Log.Print("{0} initialized successfully.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 		}
 		#endregion

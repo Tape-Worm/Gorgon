@@ -92,17 +92,23 @@ namespace GorgonLibrary.Graphics
 			if (devices.Count() == 0)
 				throw new ArgumentException("Must have at least one device.", "devices");
 
+			// TODO: Change from IEnumerable<GorgonVideoDevice> to IEnumerable<KeyValuePair<string, GorgonVideoDevice>> and 
+			//       do the name check in the plug-in.  Also, change GorgonVideoDevice.Name set method to protected instead of protected internal.
 			deviceName = devices.ElementAt(0).Name;
 			foreach (var device in devices)
 			{
 				int deviceCount = 1;
 
+				deviceName = device.Name;
 				while (this.Contains(deviceName))
 				{
-					deviceName = device.Name + " #" + deviceCount.ToString();
-					device.Name = deviceName;
+					if (deviceCount == 1)
+						deviceName = device.Name + " [" + device.DeviceName + "]";
+					else
+						deviceName = device.Name + " #" + deviceCount.ToString() + "[" + device.DeviceName + "]";
 					deviceCount++;
 				}
+				device.Name = deviceName;
 				AddItem(device);
 			}
 		}

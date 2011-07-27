@@ -128,7 +128,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </returns>
 		protected override IEnumerable<GorgonVideoDevice> GetVideoDevices()
 		{
-			List<GorgonVideoDevice> devices = new List<GorgonVideoDevice>();
+			List<GorgonVideoDevice> devices = null;
 
 			devices = new List<GorgonVideoDevice>();
 
