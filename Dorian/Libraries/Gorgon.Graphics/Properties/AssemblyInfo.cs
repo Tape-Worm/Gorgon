@@ -5,11 +5,19 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+
+#if DEBUG
+[assembly: AssemblyTitle("Gorgon Graphics [DEBUG VERSION]")]
+[assembly: AssemblyDescription("The graphics subsystem for the Gorgon library.  [DEBUG VERSION]")]
+[assembly: AssemblyProduct("Gorgon.Graphics [DEBUG VERSION]")]
+[assembly: AssemblyConfiguration("DEBUG")]
+#else
 [assembly: AssemblyTitle("Gorgon Graphics")]
 [assembly: AssemblyDescription("The graphics subsystem for the Gorgon library.")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyProduct("Gorgon.Graphics")]
+[assembly: AssemblyConfiguration("RELEASE")]
+#endif
+[assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
