@@ -36,7 +36,7 @@ namespace GorgonLibrary.Graphics
 	/// The entry point for the D3D9 renderer plug-in.
 	/// </summary>
 	public class GorgonD3D9
-		: GorgonRendererPlugIn
+		: GorgonGraphicsPlugIn
 	{
 		#region Methods.
 		/// <summary>
@@ -44,9 +44,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <returns>A new renderer object.</returns>
 		/// <remarks>Implementors must use this to create the renderer object from the plug-in.</remarks>
-		protected override GorgonRenderer CreateRenderer()
+		protected override GorgonGraphics CreateGraphics()
 		{
-			return new D3D9.GorgonD3D9Renderer();
+			return new D3D9.GorgonD3D9Graphics();
 		}
 		#endregion
 

@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.Graphics
@@ -35,8 +36,8 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// The primary object for the graphics sub system.
 	/// </summary>
-	public class GorgonGraphics
-		: IDisposable
+	public abstract class GorgonGraphics
+		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
 		private bool _disposed = false;				// Flag to indicate that the object was disposed.
@@ -60,51 +61,164 @@ namespace GorgonLibrary.Graphics
 			get;
 			internal set;
 		}
+
+		/// <summary>
+		/// Property to return a list of custom settings for the renderer.
+		/// </summary>
+		public GorgonCustomValueCollection<string> CustomSettings
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
+		/// Function to initialize the graphics interface.
+		/// </summary>
+		protected abstract void InitializeGraphics();
+
+		/// <summary>
+		/// Function to perform clean up in the plug-in.
+		/// </summary>
+		protected abstract void CleanUpGraphics();
+
+		/// <summary>
+		/// Function to create the renderer interface.
+		/// </summary>
+		/// <returns>The renderer interface.</returns>
+		protected abstract GorgonRenderer CreateRenderer();
+
+		/// <summary>
 		/// Function to perform any clean up when a renderer is updated.
 		/// </summary>
-		private void CleanUp()
+		protected void CleanUp()
 		{
+			Gorgon.Log.Print("{0} shutting down...", Diagnostics.GorgonLoggingLevel.Simple, Name);
+
+			Renderer = null;
 			VideoDevices = null;
+
+			CleanUpGraphics();
+			Gorgon.Log.Print("{0} shut down successfully", Diagnostics.GorgonLoggingLevel.Simple, Name);
+		}	
+
+		/// <summary>
+		/// Function to enumerate the available video devices on the system.
+		/// </summary>
+		private void EnumerateVideoDevices()
+		{
+			VideoDevices = new GorgonVideoDeviceCollection(GetVideoDevices());
+			VideoDevices.GetCapabilities();
+
+			// Log device information.
+			Gorgon.Log.Print("{0} video devices installed.", Diagnostics.GorgonLoggingLevel.Simple, VideoDevices.Count);
+			foreach (var device in VideoDevices)
+			{
+				Gorgon.Log.Print("Info for Video Device #{0} - {1}:", Diagnostics.GorgonLoggingLevel.Simple, device.Index, device.Name);
+				Gorgon.Log.Print("\tHead count: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.Outputs.Count);
+				Gorgon.Log.Print("\tDevice Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.DeviceName);
+				Gorgon.Log.Print("\tDriver Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.DriverName);
+				Gorgon.Log.Print("\tDriver Version: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.DriverVersion.ToString());
+				Gorgon.Log.Print("\tRevision: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.Revision);
+				Gorgon.Log.Print("\tDevice ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.DeviceID));
+				Gorgon.Log.Print("\tSub System ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.SubSystemID));
+				Gorgon.Log.Print("\tVendor ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.VendorID));
+				Gorgon.Log.Print("\tDevice GUID: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.DeviceGUID);
+
+				Gorgon.Log.Print("#{0} - {1} device capabilities:", Diagnostics.GorgonLoggingLevel.Verbose, device.Index, device.Name);
+				Gorgon.Log.Print("\tPixel Shader Version: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.Capabilities.PixelShaderVersion);
+				Gorgon.Log.Print("\tVertex Shader Version: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.Capabilities.VertexShaderVersion);
+				Gorgon.Log.Print("\tAlpha Comparison Flags: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.Capabilities.AlphaComparisonFlags);
+				Gorgon.Log.Print("\tDepth Comparison Flags: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.Capabilities.DepthComparisonFlags);
+				Gorgon.Log.Print(string.Empty, Diagnostics.GorgonLoggingLevel.Verbose, Name);
+				Gorgon.Log.Print("\t{1} {0} Specific Custom Capabilities:", Diagnostics.GorgonLoggingLevel.Verbose, Name, device.Name);
+
+				foreach (var capability in device.Capabilities.CustomCapabilities)
+					Gorgon.Log.Print("\t\t{0}: {1}", Diagnostics.GorgonLoggingLevel.Verbose, capability.Name, capability.Value);
+
+				Gorgon.Log.Print(string.Empty, Diagnostics.GorgonLoggingLevel.Verbose, Name);
+
+				// List the video modes for each head.
+				for (int i = 0; i < device.Outputs.Count; i++)
+				{
+					var output = device.Outputs[i];
+					Gorgon.Log.Print("#{0} - {1} Head #{2} ({3}) Video Modes:", Diagnostics.GorgonLoggingLevel.Verbose, device.Index, device.Name, i, output.Name);
+
+					foreach (var mode in output.VideoModes)
+						Gorgon.Log.Print("\t{0}x{1} Refresh Rate: {2}/{3} Format: {4}", Diagnostics.GorgonLoggingLevel.Verbose, mode.Width, mode.Height, mode.RefreshRateNumerator, mode.RefreshRateDenominator, mode.Format);
+				}
+			}
 		}
 
 		/// <summary>
-		/// Function to return a renderer object for use with the graphics subsystem.
+		/// Function to return a list of all video devices installed on the system.
 		/// </summary>
-		/// <param name="plugInType">Fully qualified type name of the renderer plug-in</param>
+		/// <returns>An enumerable list of video devices.</returns>
+		protected abstract IEnumerable<KeyValuePair<string, GorgonVideoDevice>> GetVideoDevices();
+
+		/// <summary>
+		/// Function to return a graphics system.
+		/// </summary>
+		/// <param name="plugInType">Fully qualified type name of the graphics plug-in</param>
+		/// <param name="customSettings">A named list of custom settings to pass to the renderer.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the plugInType parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the plug-in type was not found in any of the loaded plug-in assemblies.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the plug-in type was not a renderer plug-in.</para>
+		/// <para>Thrown when the plug-in type was not a graphics plug-in.</para>
 		/// </exception>		
-		private void BindRenderer(string plugInType)
+		public static GorgonGraphics CreateGraphics(string plugInType, IList<GorgonNamedValue<string>> customSettings)
 		{
-			GorgonRendererPlugIn plugIn = null;
+			GorgonGraphicsPlugIn plugIn = null;
+			GorgonGraphics graphics = null;
 
 			GorgonUtility.AssertParamString(plugInType, "plugInType");
 
 			if (!GorgonPlugInFactory.PlugIns.Contains(plugInType))
 				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");
 
-			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonRendererPlugIn;
+			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonGraphicsPlugIn;
 
 			if (plugIn == null)
-				throw new ArgumentException("The plug-in '" + plugInType + "' is not a renderer plug-in.", "plugInType");
+				throw new ArgumentException("The plug-in '" + plugInType + "' is not a graphics plug-in.", "plugInType");
 
-			if (Renderer != null)
-				Renderer.Dispose();
+			graphics = plugIn.GetGraphics();
+			if (graphics == null)
+				throw new ArgumentException("The plug-in '" + plugInType + "' is not a graphics plug-in.", "plugInType");
 
-			Renderer = plugIn.GetRenderer();
-			if (Renderer == null)
-				throw new ArgumentException("The plug-in '" + plugInType + "' is not a renderer plug-in.", "plugInType");
+			Gorgon.Log.Print("Graphics interface '{0}' initializing...", Diagnostics.GorgonLoggingLevel.Simple, graphics.Name);
+			if (customSettings != null)
+			{
+				foreach (var namedValue in customSettings)
+				{
+					if (graphics.CustomSettings.Contains(namedValue.Name))
+						graphics.CustomSettings[namedValue.Name] = namedValue.Value;
+				}
+			}
+			graphics.InitializeGraphics();
+			graphics.EnumerateVideoDevices();
+			graphics.CreateRenderer();
+			Gorgon.Log.Print("Graphics interface '{0}' initialized successfully.", Diagnostics.GorgonLoggingLevel.Simple, graphics.Name);
 
-			Renderer.Initialize(this);
-			Gorgon.Log.Print("Graphics renderer interface '{0}' bound as current renderer.", Diagnostics.GorgonLoggingLevel.Simple, Renderer.Name);
+			return graphics;
+		}
+
+		/// <summary>
+		/// Function to return a graphics system.
+		/// </summary>
+		/// <param name="plugInType">Fully qualified type name of the graphics plug-in</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter is NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the plugInType parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the plug-in type was not found in any of the loaded plug-in assemblies.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the plug-in type was not a graphics plug-in.</para>
+		/// </exception>		
+		public static GorgonGraphics CreateGraphics(string plugInType)
+		{
+			return CreateGraphics(plugInType, null);
 		}
 		#endregion
 
@@ -112,20 +226,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
 		/// </summary>
-		/// <param name="plugInType">Fully qualified type name of the renderer plug-in</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter is NULL (Nothing in VB.Net)</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the plugInType parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the plug-in type was not found in any of the loaded plug-in assemblies.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the plug-in type was not a renderer plug-in.</para>
-		/// </exception>		
-		public GorgonGraphics(string plugInType)
+		/// <param name="name">The name.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (or Nothing) in VB.NET.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
+		protected GorgonGraphics(string name)
+			: base(name)
 		{
+			CustomSettings = new GorgonCustomValueCollection<string>();
 			VideoDevices = null;
-			BindRenderer(plugInType);
-
-			Gorgon.Log.Print("Graphics interface created.", Diagnostics.GorgonLoggingLevel.Simple);
 		}
 		#endregion
 
@@ -141,14 +249,6 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					CleanUp();
-
-					if (this.Renderer != null)
-					{
-						Gorgon.Log.Print("Removing current renderer '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, Renderer.Name);
-						this.Renderer.Dispose();
-					}
-
-					Renderer = null;
 				}
 
 				_disposed = true;

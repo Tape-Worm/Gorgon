@@ -10,6 +10,7 @@ using GorgonLibrary;
 using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.Collections;
 using GorgonLibrary.Graphics;
 
 namespace Tester_Graphics
@@ -33,7 +34,7 @@ namespace Tester_Graphics
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
 				GorgonPlugInFactory.LoadPlugInAssembly("Gorgon.Graphics.D3D9.dll");
 
-				_gfx = new GorgonGraphics("GorgonLibrary.Graphics.GorgonD3D9");
+				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9", new GorgonNamedValue<string>[] {new GorgonNamedValue<string>("UseReferenceRasterizer", "1")});
 
 				Gorgon.Go(Idle);
 			}

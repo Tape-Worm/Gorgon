@@ -76,12 +76,23 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the capabilities of each device in the collection.
+		/// </summary>
+		internal void GetCapabilities()
+		{
+			foreach (var device in this)
+				device.GetDeviceCapabilities();
+		}
+		#endregion
+
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoDeviceCollection"/> class.
 		/// </summary>
 		/// <param name="devices">Video devices to add.</param>
-		internal GorgonVideoDeviceCollection(IEnumerable<GorgonVideoDevice> devices)
+		internal GorgonVideoDeviceCollection(IEnumerable<KeyValuePair<string, GorgonVideoDevice>> devices)
 			: base(false)
 		{
 			string deviceName = string.Empty;
@@ -92,25 +103,10 @@ namespace GorgonLibrary.Graphics
 			if (devices.Count() == 0)
 				throw new ArgumentException("Must have at least one device.", "devices");
 
-			// TODO: Change from IEnumerable<GorgonVideoDevice> to IEnumerable<KeyValuePair<string, GorgonVideoDevice>> and 
-			//       do the name check in the plug-in.  Also, change GorgonVideoDevice.Name set method to protected instead of protected internal.
-			deviceName = devices.ElementAt(0).Name;
-			foreach (var device in devices)
-			{
-				int deviceCount = 1;
+			var deviceList = from device in devices
+							 select device.Value;
 
-				deviceName = device.Name;
-				while (this.Contains(deviceName))
-				{
-					if (deviceCount == 1)
-						deviceName = device.Name + " [" + device.DeviceName + "]";
-					else
-						deviceName = device.Name + " #" + deviceCount.ToString() + "[" + device.DeviceName + "]";
-					deviceCount++;
-				}
-				device.Name = deviceName;
-				AddItem(device);
-			}
+			AddItems(deviceList);
 		}
 		#endregion
 	}

@@ -57,7 +57,7 @@
     <Compile Include="Enums\GorgonBufferFormats.cs" />
     <Compile Include="Enums\GorgonCompareFlags.cs" />
     <Compile Include="GorgonGraphics.cs" />
-    <Compile Include="GorgonRendererPlugIn.cs" />
+    <Compile Include="GorgonGraphicsPlugIn.cs" />
     <Compile Include="GorgonRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

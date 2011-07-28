@@ -36,7 +36,7 @@ namespace GorgonLibrary.Graphics
 	/// Contains information about a video device.
 	/// </summary>
 	public abstract class GorgonVideoDevice
-		: INamedObject, IDisposable
+		: GorgonNamedObject, IDisposable
 	{
 		#region Properties.
 		/// <summary>
@@ -142,23 +142,6 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve and build the device capability information.
-		/// </summary>
-		/// <returns>The device capabilities.</returns>
-		private GorgonVideoDeviceCapabilities GetCaps()
-		{
-			GorgonVideoDeviceCapabilities result = CreateDeviceCapabilities();
-			result.EnumerateCapabilities();
-			return result;
-		}
-
-		/// <summary>
-		/// Function to retrieve device specific information.
-		/// </summary>
-		/// <remarks>Implementors should use this method to fill in properties like <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.DriverVersion">DriverVersion</see>.</remarks>
-		protected abstract void GetDeviceInfo();
-
-		/// <summary>
 		/// Function to create a renderer specific device capabilities object.
 		/// </summary>
 		/// <returns>A video device capabilities object.</returns>
@@ -173,10 +156,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to retrieve the device capability information.
 		/// </summary>
-		internal void GetDeviceData()
-		{	
-			GetDeviceInfo();
-			Capabilities = GetCaps();
+		internal void GetDeviceCapabilities()
+		{
+			Capabilities = CreateDeviceCapabilities();
+			Capabilities.EnumerateCapabilities();
+
 			Outputs = new GorgonVideoOutputCollection(GetOutputs());
 
 			foreach(var head in Outputs)
@@ -188,21 +172,16 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoDevice"/> class.
 		/// </summary>
+		/// <param name="name">Name of the device.</param>
 		/// <param name="index">Index of the driver in the collection.</param>
-		protected GorgonVideoDevice(int index)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		protected GorgonVideoDevice(string name, int index)
+			: base(name)
 		{
-			Index = index;
-		}
-		#endregion
+			GorgonUtility.AssertParamString(name, "name");
 
-		#region INamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		public string Name
-		{
-			get;
-			protected internal set;
+			Index = index;
 		}
 		#endregion
 
