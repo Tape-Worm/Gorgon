@@ -62,7 +62,7 @@
     <Compile Include="DeviceInfo\D3D9VideoDevice.cs" />
     <Compile Include="DeviceInfo\D3D9VideoDeviceCapabilities.cs" />
     <Compile Include="DeviceInfo\D3D9VideoOutput.cs" />
-    <Compile Include="GorgonD3DRenderer.cs" />
+    <Compile Include="GorgonD3D9Renderer.cs" />
     <Compile Include="GorgonD3D9.cs" />
     <Compile Include="GorgonD3D9Graphics.cs" />
     <Compile Include="Native\Win32API.cs" />
