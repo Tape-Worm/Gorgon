@@ -34,7 +34,7 @@ using GorgonLibrary.PlugIns;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// The plug-in interface for a renderer object.
+	/// The plug-in interface for a graphics object.
 	/// </summary>
 	public abstract class GorgonGraphicsPlugIn
 		: GorgonPlugIn
@@ -42,19 +42,19 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to perform the actual creation of the renderer object.
+		/// Function to perform the actual creation of the graphics object.
 		/// </summary>
 		/// <returns>A new renderer object.</returns>
-		/// <remarks>Implementors must use this to create the renderer object from the plug-in.</remarks>
-		protected abstract GorgonRenderer CreateRenderer();
+		/// <remarks>Implementors must use this to create the graphics object from the plug-in.</remarks>
+		protected abstract GorgonGraphics CreateGraphics();
 
 		/// <summary>
-		/// Function to create a new renderer object.
+		/// Function to create a new graphics object.
 		/// </summary>
-		/// <returns>A new renderer object.</returns>
-		internal GorgonRenderer GetRenderer()
+		/// <returns>A new graphics object.</returns>
+		internal GorgonGraphics GetGraphics()
 		{
-			return CreateRenderer();
+			return CreateGraphics();
 		}
 		#endregion
 

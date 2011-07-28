@@ -33,67 +33,57 @@ using System.Text;
 namespace GorgonLibrary.Collections
 {
 	/// <summary>
-	/// A collection of named values that can only be assigned to.
+	/// The named value type to be stored in the collection.
 	/// </summary>
-	public class GorgonCustomValueCollection<T>
-		: GorgonBaseNamedObjectDictionary<GorgonCustomValueCollection<T>.GorgonNamedValue<T>>
+	public struct GorgonNamedValue<T>
+		: INamedObject
 	{
-		#region Value Types.
+		#region Variables.
+		private string _name;		// Name for the value.
+
 		/// <summary>
-		/// The named value type to be stored in the collection.
+		/// Value to bind with the name.
 		/// </summary>
-		public struct GorgonNamedValue<U> 
-			: INamedObject
-			where U : T
+		public T Value;		
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonCustomValueCollection&lt;T&gt;.GorgonNamedValue&lt;U&gt;"/> struct.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <param name="value">The value.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref cref="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonNamedValue(string name, T value)
 		{
-			#region Variables.
-			private T _value;		// Value to bind with the name.
-			private string _name;		// Name for the value.
-			#endregion
+			GorgonUtility.AssertParamString(name, "name");
 
-			#region Properties.
-			/// <summary>
-			/// Property to return the value.
-			/// </summary>
-			internal T Value
-			{
-				get
-				{
-					return _value;
-				}
-			}
-			#endregion
-
-			#region Constructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="GorgonCustomValueCollection&lt;T&gt;.GorgonNamedValue&lt;U&gt;"/> struct.
-			/// </summary>
-			/// <param name="name">The name.</param>
-			/// <param name="value">The value.</param>
-			internal GorgonNamedValue(string name, T value)
-			{
-				GorgonUtility.AssertParamString(name, "name");
-
-				_name = name;
-				_value = value;
-			}
-			#endregion
-
-			#region INamedObject Members
-			/// <summary>
-			/// Gets the name.
-			/// </summary>
-			string INamedObject.Name
-			{
-				get
-				{
-					return _name;
-				}
-			}
-			#endregion
+			_name = name;
+			Value = value;
 		}
 		#endregion
 
+		#region INamedObject Members
+		/// <summary>
+		/// Property to return the name of the value.
+		/// </summary>
+		public string Name
+		{
+			get
+			{
+				return _name;
+			}
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// A collection of named values that can only be assigned to.
+	/// </summary>
+	public class GorgonCustomValueCollection<T>
+		: GorgonBaseNamedObjectDictionary<GorgonNamedValue<T>>
+	{
 		#region Variables.
 		private List<string> _names = null;		// List of names.
 		#endregion

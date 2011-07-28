@@ -84,22 +84,6 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve device specific information.
-		/// </summary>
-		protected override void GetDeviceInfo()
-		{
-			Name = _adapter.Details.Description.Trim();
-			DeviceID = _adapter.Details.DeviceId;
-			DeviceName = _adapter.Details.DeviceName.Trim();
-			DriverName = _adapter.Details.DriverName.Trim();
-			DriverVersion = _adapter.Details.DriverVersion;
-			Revision = _adapter.Details.Revision;
-			SubSystemID = _adapter.Details.SubsystemId;
-			VendorID = _adapter.Details.VendorId;
-			DeviceGUID = _adapter.Details.DeviceIdentifier;
-		}
-
-		/// <summary>
 		/// Function to retrieve the device capabilities.
 		/// </summary>
 		/// <returns>
@@ -156,13 +140,14 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <summary>
 		/// Initializes a new instance of the <see cref="D3D9VideoDevice"/> class.
 		/// </summary>
+		/// <param name="name">Name of the device.</param>
+		/// <param name="index">Index of the driver in the collection.</param>
 		/// <param name="d3d">Direct 3D interface.</param>
 		/// <param name="deviceType">Device type to use.</param>
 		/// <param name="adapter">D3D9 adapter.</param>
 		/// <param name="capabilities">Adapter capabilities.</param>
-		/// <param name="index">Index of the driver in the collection.</param>
-		internal D3D9VideoDevice(Direct3D d3d, DeviceType deviceType, AdapterInformation adapter, Capabilities capabilities, int index)
-			: base(index)
+		internal D3D9VideoDevice(string name, int index, Direct3D d3d, DeviceType deviceType, AdapterInformation adapter, Capabilities capabilities)
+			: base(name, index)
 		{
 			if (d3d == null)
 				throw new ArgumentNullException("d3d");
@@ -174,8 +159,16 @@ namespace GorgonLibrary.Graphics.D3D9
 			_d3d = d3d;
 			_adapter = adapter;
 			_caps = capabilities;
-			_deviceType = deviceType;			
-			Name = _adapter.Details.Description.Trim();			
+			_deviceType = deviceType;
+
+			DeviceID = _adapter.Details.DeviceId;
+			DeviceName = _adapter.Details.DeviceName.Trim();
+			DriverName = _adapter.Details.DriverName.Trim();
+			DriverVersion = _adapter.Details.DriverVersion;
+			Revision = _adapter.Details.Revision;
+			SubSystemID = _adapter.Details.SubsystemId;
+			VendorID = _adapter.Details.VendorId;
+			DeviceGUID = _adapter.Details.DeviceIdentifier;
 		}
 		#endregion
 	}

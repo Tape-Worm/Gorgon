@@ -41,154 +41,32 @@ namespace GorgonLibrary.Graphics.D3D9
 		: GorgonRenderer
 	{
 		#region Constants.
-		/// <summary>
-		/// Key for the reference rasterizer setting.
-		/// </summary>
-		public const string RefRastKey = "UseReferenceRasterizer";
 		#endregion
 
 		#region Variables.
-		/// <summary>
-		/// Property to return whether we're using the reference rasterizer.
-		/// </summary>
-		public DeviceType DeviceType
-		{
-			get
-			{
-				if (string.Compare(CustomSettings[RefRastKey], "0", true) != 0)
-					return DeviceType.Reference;
-				else
-					return DeviceType.Hardware;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the primary Direct 3D interface.
-		/// </summary>
-		public Direct3D D3D
-		{
-			get;
-			private set;
-		}	
 		#endregion
 
 		#region Properties.
-
+		/// <summary>
+		/// Property to return the graphics interface.
+		/// </summary>
+		public new GorgonD3D9Graphics Graphics
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Property to return whether the D3D runtime is in debug mode or not.
-		/// </summary>
-		/// <returns>TRUE if in debug, FALSE if in retail.</returns>
-		private bool IsD3DDebug()
-		{
-			RegistryKey regKey = null;		// Registry key.
-			int keyValue = 0;				// Registry key value.
-
-			try
-			{
-				// Get the registry setting.
-				regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Direct3D");
-
-				if (regKey == null)
-					return false;
-
-				// Get value.
-				keyValue = Convert.ToInt32(regKey.GetValue("LoadDebugRuntime", (int)0));
-				if (keyValue != 0)
-					return true;
-			}
-#if DEBUG
-			catch (Exception ex)
-#else
-			catch
-#endif
-			{
-#if DEBUG
-				Gorgon.Log.Print("Exception retrieving registry settings for D3D debug mode:", Diagnostics.GorgonLoggingLevel.Intermediate);
-				Gorgon.Log.Print("{0}", Diagnostics.GorgonLoggingLevel.Intermediate, ex.Message);
-#endif
-			}
-			finally
-			{
-				if (regKey != null)
-					regKey.Close();
-				regKey = null;
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Function to return a list of all video devices installed on the system.
-		/// </summary>
-		/// <returns>
-		/// An enumerable list of video devices.
-		/// </returns>
-		protected override IEnumerable<GorgonVideoDevice> GetVideoDevices()
-		{
-			List<GorgonVideoDevice> devices = null;
-
-			devices = new List<GorgonVideoDevice>();
-
-			if (CustomSettings[RefRastKey] != "0")
-				Gorgon.Log.Print("[*WARNING*] The D3D device will be a REFERENCE device.  Performance will be greatly hindered. [*WARNING*]", Diagnostics.GorgonLoggingLevel.All);
-
-			for (int i = 0; i < D3D.Adapters.Count; i++)
-			{
-				Capabilities caps = D3D.GetDeviceCaps(i, DeviceType);
-				if (((caps.DeviceCaps & DeviceCaps.HWRasterization) == DeviceCaps.HWRasterization) && ((caps.DeviceCaps & DeviceCaps.HWTransformAndLight) == DeviceCaps.HWTransformAndLight))
-				{
-					D3D9VideoDevice device = new D3D9VideoDevice(D3D, DeviceType, D3D.Adapters[i], caps, i);	
-					devices.Add(device);
-				}
-			}
-
-			return devices;
-		}
-
-		/// <summary>
-		/// Function to perform the actual initialization for the renderer from a plug-in.
-		/// </summary>
-		protected override void InitializeRenderer()
-		{
-#if DEBUG
-			Configuration.EnableObjectTracking = true;
-#else
-            Configuration.EnableObjectTracking = false;
-#endif
-			// We don't need exceptions with these errors.
-			Configuration.AddResultWatch(ResultCode.DeviceLost, SlimDX.ResultWatchFlags.AlwaysIgnore);
-			Configuration.AddResultWatch(ResultCode.DeviceNotReset, SlimDX.ResultWatchFlags.AlwaysIgnore);
-
-			D3D = new Direct3D();
-			D3D.CheckWhql = false;
-
-			// Log any performance warnings.
-			if (IsD3DDebug())
-				Gorgon.Log.Print("[*WARNING*] The Direct 3D runtime is currently set to DEBUG mode.  Performance will be hindered. [*WARNING*]", Diagnostics.GorgonLoggingLevel.Intermediate);
-		}
-
-		/// <summary>
-		/// Function to perform the actual shut down for the renderer from a plug-in.
-		/// </summary>
-		protected override void ShutdownRenderer()
-		{
-			if (D3D != null)
-				D3D.Dispose();
-			D3D = null;
-		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonD3D9Renderer"/> class.
 		/// </summary>
-		internal GorgonD3D9Renderer()
-			: base("Gorgon Direct 3D® 9 Renderer")
-		{
-			CustomSettings[RefRastKey] = "0";			
+		internal GorgonD3D9Renderer(GorgonGraphics graphics)
+			: base(graphics)
+		{			
 		}
 		#endregion
 	}
