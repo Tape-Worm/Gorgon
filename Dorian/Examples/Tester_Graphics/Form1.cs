@@ -50,7 +50,6 @@ namespace Tester_Graphics
 		{
 			base.OnFormClosing(e);
 
-			Gorgon.Stop();
 
 			if (_gfx != null)
 				_gfx.Dispose();
