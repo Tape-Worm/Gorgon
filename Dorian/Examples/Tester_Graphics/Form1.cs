@@ -34,7 +34,7 @@ namespace Tester_Graphics
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
 				GorgonPlugInFactory.LoadPlugInAssembly("Gorgon.Graphics.D3D9.dll");
 
-				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9", new GorgonNamedValue<string>[] {new GorgonNamedValue<string>("UseReferenceRasterizer", "1")});
+				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
 
 				Gorgon.Go(Idle);
 			}
