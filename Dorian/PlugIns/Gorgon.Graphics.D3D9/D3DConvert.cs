@@ -39,13 +39,33 @@ namespace GorgonLibrary.Graphics.D3D9
 	{
 		#region Methods.
 		/// <summary>
+		/// Function to retrieve a proper D3D display format
+		/// </summary>
+		/// <param name="format">Gorgon format to translate.</param>
+		/// <param name="fullScreen">TRUE if using fullscreen, FALSE if not.</param>
+		/// <returns>The D3D format.</returns>
+		public static Format GetDisplayFormat(GorgonBufferFormat format, bool fullScreen)
+		{
+			switch (format)
+			{
+				case GorgonBufferFormat.R10G10B10A2_UIntNorm:
+					return Format.A2R10G10B10;
+				default:
+					if (fullScreen)
+						return Format.X8R8G8B8;
+					else
+						return Format.A8R8G8B8;				
+			}
+		}
+
+		/// <summary>
 		/// Function to convert a Gorgon video mode into a D3D display mode.
 		/// </summary>
 		/// <param name="mode">D3D Mode to convert.</param>
 		/// <returns>The Gorgon video mode.</returns>
 		public static GorgonVideoMode Convert(DisplayMode mode)
 		{
-			return new GorgonVideoMode(mode.Width, mode.Height, mode.RefreshRate, 1, Convert(mode.Format));
+			return new GorgonVideoMode(mode.Width, mode.Height, Convert(mode.Format), mode.RefreshRate, 1);
 		}
 
 		/// <summary>

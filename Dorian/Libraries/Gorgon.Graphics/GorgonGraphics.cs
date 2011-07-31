@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
 
@@ -73,36 +74,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to initialize the graphics interface.
-		/// </summary>
-		protected abstract void InitializeGraphics();
-
-		/// <summary>
-		/// Function to perform clean up in the plug-in.
-		/// </summary>
-		protected abstract void CleanUpGraphics();
-
-		/// <summary>
-		/// Function to create the renderer interface.
-		/// </summary>
-		/// <returns>The renderer interface.</returns>
-		protected abstract GorgonRenderer CreateRenderer();
-
-		/// <summary>
-		/// Function to perform any clean up when a renderer is updated.
-		/// </summary>
-		protected void CleanUp()
-		{
-			Gorgon.Log.Print("{0} shutting down...", Diagnostics.GorgonLoggingLevel.Simple, Name);
-
-			Renderer = null;
-			VideoDevices = null;
-
-			CleanUpGraphics();
-			Gorgon.Log.Print("{0} shut down successfully", Diagnostics.GorgonLoggingLevel.Simple, Name);
-		}	
-
 		/// <summary>
 		/// Function to enumerate the available video devices on the system.
 		/// </summary>
@@ -152,10 +123,107 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to initialize the graphics interface.
+		/// </summary>
+		protected abstract void InitializeGraphics();
+
+		/// <summary>
+		/// Function to perform clean up in the plug-in.
+		/// </summary>
+		protected abstract void CleanUpGraphics();
+
+		/// <summary>
+		/// Function to create the renderer interface.
+		/// </summary>
+		/// <returns>The renderer interface.</returns>
+		protected abstract GorgonRenderer CreateRenderer();
+
+		/// <summary>
+		/// Function to perform any clean up when a renderer is updated.
+		/// </summary>
+		protected void CleanUp()
+		{
+			Gorgon.Log.Print("{0} shutting down...", Diagnostics.GorgonLoggingLevel.Simple, Name);
+
+			Renderer = null;
+			VideoDevices = null;
+
+			CleanUpGraphics();
+			Gorgon.Log.Print("{0} shut down successfully", Diagnostics.GorgonLoggingLevel.Simple, Name);
+		}	
+
+		/// <summary>
 		/// Function to return a list of all video devices installed on the system.
 		/// </summary>
 		/// <returns>An enumerable list of video devices.</returns>
 		protected abstract IEnumerable<KeyValuePair<string, GorgonVideoDevice>> GetVideoDevices();
+
+		/// <summary>
+		/// Function to create a device window in back end API.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="window">Window to bind to the device window.</param>
+		/// <param name="mode">Video mode to set.</param>
+		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
+		/// <param name="fullScreen">TRUE to use fullscreen mode, FALSE to use windowed.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// </exception>
+		protected abstract GorgonDeviceWindow CreateDeviceWindowImpl(string name, Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen);
+
+		/// <summary>
+		/// Function to create a device window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="window">Window to bind to the device window.</param>
+		/// <param name="mode">Video mode to set.</param>
+		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
+		/// <param name="fullScreen">TRUE to use fullscreen mode, FALSE to use windowed.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// </exception>
+		public GorgonDeviceWindow CreateDeviceWindow(string name, Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
+		{
+			GorgonDeviceWindow target = null;
+
+			if (window == null)
+				throw new ArgumentNullException("window");
+
+			target = CreateDeviceWindowImpl(name, window, mode, depthStencilFormat, fullScreen);
+			target.Initialize();
+
+			return target;
+		}
+
+		/// <summary>
+		/// Function to create a device window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="mode">Video mode to set.</param>
+		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
+		/// <param name="fullScreen">TRUE to use fullscreen mode, FALSE to use windowed.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// </exception>
+		public GorgonDeviceWindow CreateDeviceWindow(string name, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
+		{
+			return CreateDeviceWindow(name, Gorgon.ApplicationWindow, mode, depthStencilFormat, fullScreen);
+		}
 
 		/// <summary>
 		/// Function to return a graphics system.
@@ -227,7 +295,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
 		/// </summary>
 		/// <param name="name">The name.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (or Nothing) in VB.NET.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonGraphics(string name)
 			: base(name)

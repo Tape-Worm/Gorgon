@@ -73,6 +73,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Targets\D3D9DeviceWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
@@ -93,6 +94,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"</PostBuildEvent>
