@@ -45,45 +45,18 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the device name of the output.
-		/// </summary>
-		public override string Name
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to return the display dimensions of the desktop.
-		/// </summary>
-		public override System.Drawing.Rectangle DesktopDimensions
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to return whether the output device is attached to the desktop.
-		/// </summary>
-		public override bool IsAttachedToDesktop
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to return the rotation in degrees for the monitor.
-		/// </summary>
-		public override int Rotation
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
 		/// Property to return the handle for the monitor attached to this output.
 		/// </summary>
 		public IntPtr Handle
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the adapter group index for this output.
+		/// </summary>
+		public int HeadIndex
 		{
 			get;
 			private set;
@@ -119,8 +92,9 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// Initializes a new instance of the <see cref="D3D9VideoOutput"/> class.
 		/// </summary>
 		/// <param name="adapter">Adapter information.</param>
+		/// <param name="headIndex">Index of the adapter head.</param>
 		/// <param name="monitorInfo">Monitor information.</param>
-		public D3D9VideoOutput(AdapterInformation adapter, MONITORINFOEX monitorInfo)
+		public D3D9VideoOutput(AdapterInformation adapter, int headIndex, MONITORINFOEX monitorInfo)
 		{
 			if (adapter == null)
 				throw new ArgumentNullException("adapter");
@@ -130,7 +104,8 @@ namespace GorgonLibrary.Graphics.D3D9
 			Rotation = 0;
 			IsAttachedToDesktop = ((monitorInfo.Flags & 1) == 1);
 			DesktopDimensions = System.Drawing.Rectangle.FromLTRB(monitorInfo.WorkArea.Left, monitorInfo.WorkArea.Top, monitorInfo.WorkArea.Right, monitorInfo.WorkArea.Bottom);
-			Name = monitorInfo.DeviceName;	
+			Name = monitorInfo.DeviceName;
+			HeadIndex = headIndex;
 		}
 		#endregion
 	}

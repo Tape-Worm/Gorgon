@@ -33,6 +33,25 @@ using System.Runtime.InteropServices;
 namespace GorgonLibrary.Native
 {
 	/// <summary>
+	/// Get monitor from window flags.
+	/// </summary>
+	enum MonitorFlags
+	{
+		/// <summary>
+		/// Return NULL.
+		/// </summary>
+		MONITOR_DEFAULTTONULL = 0,
+		/// <summary>
+		/// Return the primary monitor.
+		/// </summary>
+		MONITOR_DEFAULTTOPRIMARY = 1,
+		/// <summary>
+		/// Return the monitor nearest to the window.
+		/// </summary>
+		MONITOR_DEFAULTTONEAREST = 2
+	}
+
+	/// <summary>
 	/// A win 32 rectangle.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]

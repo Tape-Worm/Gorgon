@@ -482,7 +482,7 @@ namespace GorgonLibrary.HID
 		/// Initializes a new instance of the <see cref="GorgonInputDeviceFactory"/> class.
 		/// </summary>
 		/// <param name="name">The name of the device manager.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (or Nothing) in VB.NET.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonInputDeviceFactory(string name)
 			: base(name)

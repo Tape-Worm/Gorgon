@@ -42,7 +42,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the device name of the output.
 		/// </summary>
-		public abstract string Name
+		public string Name
 		{
 			get;
 			protected set;
@@ -51,7 +51,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the display dimensions of the desktop.
 		/// </summary>
-		public abstract Rectangle DesktopDimensions
+		public Rectangle DesktopDimensions
 		{
 			get;
 			protected set;
@@ -60,7 +60,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return whether the output device is attached to the desktop.
 		/// </summary>
-		public abstract bool IsAttachedToDesktop
+		public bool IsAttachedToDesktop
 		{
 			get;
 			protected set;
@@ -69,7 +69,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the rotation in degrees for the monitor.
 		/// </summary>
-		public abstract int Rotation
+		public int Rotation
 		{
 			get;
 			protected set;
@@ -106,7 +106,10 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonVideoOutput"/> class.
 		/// </summary>
 		protected GorgonVideoOutput()
-		{			
+		{
+			IsAttachedToDesktop = false;
+			Name = "NULL Display";
+			DesktopDimensions = new Rectangle(0, 0, 1, 1);
 		}
 		#endregion
 	}

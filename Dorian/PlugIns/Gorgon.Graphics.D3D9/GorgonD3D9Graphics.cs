@@ -28,9 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using Microsoft.Win32;
 using SlimDX;
 using SlimDX.Direct3D9;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics.D3D9
 {
@@ -120,6 +122,57 @@ namespace GorgonLibrary.Graphics.D3D9
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to retrieve the video device and output that we're currently using.
+		/// </summary>
+		/// <param name="window">Window to use.</param>
+		/// <param name="fullScreen">TRUE if we're going full screen, FALSE if not.</param>
+		/// <returns>The video device and output that we're using.</returns>
+		private Tuple<GorgonVideoDevice, GorgonVideoOutput> GetDevice(Control window, bool fullScreen)
+		{
+			IntPtr monitor = Win32API.GetMonitor(window);
+
+			// If fullscreen, then search through multi-head devices.
+			if (fullScreen)
+			{
+				return (from device in VideoDevices
+						from output in device.Outputs
+						where ((D3D9VideoOutput)output).Handle == monitor
+						select new Tuple<GorgonVideoDevice, GorgonVideoOutput>(device, output)).First();
+			}
+			else
+			{
+				return (from device in VideoDevices						
+						where ((D3D9VideoOutput)device.Outputs[0]).Handle == monitor
+						select new Tuple<GorgonVideoDevice, GorgonVideoOutput>(device, device.Outputs[0])).First();
+			}
+		}
+
+		/// <summary>
+		/// Function to create a device window in back end API.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="window">Window to bind to the device window.</param>
+		/// <param name="mode">Video mode to set.</param>
+		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
+		/// <param name="fullScreen">TRUE to use fullscreen mode, FALSE to use windowed.</param>
+		/// <returns>
+		/// A device window.
+		/// </returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		///   <para>-or-</para>
+		///   <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
+		///   </exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		///   <para>-or-</para>
+		///   <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		///   </exception>
+		protected override GorgonDeviceWindow CreateDeviceWindowImpl(string name, System.Windows.Forms.Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
+		{
+			Tuple<GorgonVideoDevice, GorgonVideoOutput> deviceOutput = GetDevice(window, fullScreen);
+			return new D3D9DeviceWindow(this, name, deviceOutput.Item1, deviceOutput.Item2, window, mode, depthStencilFormat, fullScreen);
+		}
+
 		/// <summary>
 		/// Function to initialize the graphics interface.
 		/// </summary>

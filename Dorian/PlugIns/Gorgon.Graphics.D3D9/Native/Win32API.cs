@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.Native
@@ -46,6 +47,26 @@ namespace GorgonLibrary.Native
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet=CharSet.Auto)]
 		private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFOEX lpmi);
+
+
+		/// <summary>
+		/// Function to retrieve the nearest monitor to the window.
+		/// </summary>
+		/// <param name="hwnd">Handle to the window.</param>
+		/// <param name="flags">Flags to pass in.</param>
+		/// <returns></returns>
+		[DllImport("user32.dll", CharSet=CharSet.Auto)]
+		private static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlags flags);
+
+		/// <summary>
+		/// Function to retrieve the monitor with the largest portion of the window inside of it.
+		/// </summary>
+		/// <param name="window">Window to locate.</param>
+		/// <returns>The handle to the monitor.</returns>
+		public static IntPtr GetMonitor(Control window)
+		{
+			return MonitorFromWindow(window.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
+		}
 
 		/// <summary>
 		/// Function to retrieve monitor information.

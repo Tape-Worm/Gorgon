@@ -172,16 +172,27 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="width">The width of the video mode.</param>
 		/// <param name="height">The height of the video mode.</param>
+		/// <param name="format">The format for the video mode.</param>
 		/// <param name="refreshNumerator">The refresh rate numerator.</param>
 		/// <param name="refreshDenominator">The refresh rate denominator.</param>
-		/// <param name="format">The format for the video mode.</param>
-		public GorgonVideoMode(int width, int height, int refreshNumerator, int refreshDenominator, GorgonBufferFormat format)
+		public GorgonVideoMode(int width, int height, GorgonBufferFormat format, int refreshNumerator, int refreshDenominator)
 		{
 			_width = width;
 			_height = height;
 			_refreshNumerator = refreshNumerator;
 			_refreshDenominator = refreshDenominator;
 			_format = format;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVideoMode"/> struct.
+		/// </summary>
+		/// <param name="width">The width of the video mode.</param>
+		/// <param name="height">The height of the video mode.</param>
+		/// <param name="format">The format for the video mode.</param>
+		public GorgonVideoMode(int width, int height, GorgonBufferFormat format)
+			: this(width, height, format, 0, 0)
+		{
 		}
 		#endregion
 	}
