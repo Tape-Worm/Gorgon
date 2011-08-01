@@ -37,68 +37,26 @@ namespace GorgonLibrary.Graphics
 	public struct GorgonVideoMode
 	{
 		#region Variables.
-		private int _width;									// Width of the mode in pixels.
-		private int _height;								// Height of the mode in pixels.
-		private GorgonBufferFormat _format;					// Format of the video mode.
-		private int _refreshNumerator;						// Refresh rate numerator.
-		private int _refreshDenominator;					// Refresh rate denominator.
-		#endregion
-
-		#region Properties.
 		/// <summary>
-		/// Property to return the width of the video mode in pixels.
+		/// Width of the mode in pixels.
 		/// </summary>
-		public int Width
-		{
-			get
-			{
-				return _width;
-			}
-		}
-
+		public int Width;
 		/// <summary>
-		/// Property to return the height of the video mode in pixels.
+		/// Height of the mode in pixels.
 		/// </summary>
-		public int Height
-		{
-			get
-			{
-				return _height;
-			}
-		}
-
+		public int Height;								
 		/// <summary>
-		/// Property to return the format of the video mode.
+		/// Format of the video mode.
 		/// </summary>
-		public GorgonBufferFormat Format
-		{
-			get
-			{
-				return _format;
-			}
-		}
-
+		public GorgonBufferFormat Format;					
 		/// <summary>
-		/// Property to return the numerator of the refresh rate.
+		/// Refresh rate numerator.
 		/// </summary>
-		public int RefreshRateNumerator
-		{
-			get
-			{
-				return _refreshNumerator;
-			}
-		}
-
+		public int RefreshRateNumerator;						
 		/// <summary>
-		/// Property to return the denominator of the refresh rate.
+		/// Refresh rate denominator.
 		/// </summary>
-		public int RefreshRateDenominator
-		{
-			get
-			{
-				return _refreshDenominator;
-			}
-		}
+		public int RefreshRateDenominator;					
 		#endregion
 
 		#region Methods.
@@ -110,7 +68,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(GorgonVideoMode mode1, GorgonVideoMode mode2)
 		{
-			return mode1.Equals(mode2);
+			return ((mode1.Width == mode2.Width) && (mode1.Height == mode2.Height) && (mode1.RefreshRateNumerator == mode2.RefreshRateNumerator) && (mode1.RefreshRateDenominator == mode2.RefreshRateDenominator) && (mode1.Format == mode2.Format));
 		}
 
 		/// <summary>
@@ -177,11 +135,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="refreshDenominator">The refresh rate denominator.</param>
 		public GorgonVideoMode(int width, int height, GorgonBufferFormat format, int refreshNumerator, int refreshDenominator)
 		{
-			_width = width;
-			_height = height;
-			_refreshNumerator = refreshNumerator;
-			_refreshDenominator = refreshDenominator;
-			_format = format;
+			Width = width;
+			Height = height;
+			RefreshRateNumerator = refreshNumerator;
+			RefreshRateDenominator = refreshDenominator;
+			Format = format;
 		}
 
 		/// <summary>

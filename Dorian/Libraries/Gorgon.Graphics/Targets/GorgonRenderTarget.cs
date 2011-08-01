@@ -39,32 +39,23 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the width of the render target in pixels.
+		/// Property to return the graphics interface that created this render target.
 		/// </summary>
-		public int Width
+		protected GorgonGraphics Graphics
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return the height of the render target in pixels.
+		/// Property to return information about the render target.
 		/// </summary>
-		public int Height
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the pixel format of the render target.
-		/// </summary>
-		public GorgonBufferFormat Format
+		/// <remarks>Use this to return the width, height and format of the target.</remarks>
+		public GorgonVideoMode TargetInformation
 		{
 			get;
 			private set;
@@ -89,9 +80,25 @@ namespace GorgonLibrary.Graphics
 		protected abstract void CreateRenderTarget();
 
 		/// <summary>
+		/// Function to update the information about the target.
+		/// </summary>
+		/// <param name="mode">The dimensions and format of the target.</param>
+		/// <param name="depthStencilFormat">The depth buffer format.</param>
+		protected void UpdateTargetInformation(GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat)
+		{
+			TargetInformation = mode;
+			DepthStencilFormat = depthStencilFormat;
+		}
+
+		/// <summary>
+		/// Function to perform an update on the render target.
+		/// </summary>
+		protected abstract void UpdateRenderTarget();
+
+		/// <summary>
 		/// Function to initialize the render target.
 		/// </summary>
-		internal void Initialize()
+		internal virtual void Initialize()
 		{
 			CreateRenderTarget();
 		}
@@ -101,18 +108,21 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRenderTarget"/> class.
 		/// </summary>
+		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="mode">A video mode structure defining the width, height and format of the render target.</param>
 		/// <param name="depthStencilFormat">The depth buffer format (if required) for the target.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonRenderTarget(string name, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat)
+		protected GorgonRenderTarget(GorgonGraphics graphics, string name, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat)
 			: base(name)
 		{
-			Width = mode.Width;
-			Height = mode.Height;
-			Format = mode.Format;
+			if (graphics == null)
+				throw new ArgumentNullException("graphics");
+
+			Graphics = graphics;
+			TargetInformation = mode;
 			DepthStencilFormat = depthStencilFormat;
 		}
 		#endregion

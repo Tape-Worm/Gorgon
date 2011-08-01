@@ -41,10 +41,19 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;				// Flag to indicate that the object was disposed.
+		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the list of instanced device windows.
+		/// </summary>
+		internal IList<GorgonDeviceWindow> DeviceWindows
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the current renderer interface.
 		/// </summary>
@@ -74,6 +83,21 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to clean up any outstanding tracked objects.
+		/// </summary>
+		private void CleanUpTrackedObjects()
+		{
+			List<IDisposable> trackedObjects = new List<IDisposable>();
+
+			trackedObjects.AddRange(DeviceWindows);
+
+			foreach (var trackedObject in trackedObjects)
+				trackedObject.Dispose();
+
+			DeviceWindows.Clear();	
+		}
+
 		/// <summary>
 		/// Function to enumerate the available video devices on the system.
 		/// </summary>
@@ -145,6 +169,8 @@ namespace GorgonLibrary.Graphics
 		{
 			Gorgon.Log.Print("{0} shutting down...", Diagnostics.GorgonLoggingLevel.Simple, Name);
 
+			CleanUpTrackedObjects();
+
 			Renderer = null;
 			VideoDevices = null;
 
@@ -193,7 +219,12 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown if the window parameter is already a device window.</para>
 		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
+		/// <remarks>Device windows bound to child controls cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.
+		/// </remarks>
 		public GorgonDeviceWindow CreateDeviceWindow(string name, Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
 		{
 			GorgonDeviceWindow target = null;
@@ -201,14 +232,20 @@ namespace GorgonLibrary.Graphics
 			if (window == null)
 				throw new ArgumentNullException("window");
 
+			var inUse = DeviceWindows.Count(item => item.BoundWindow == window) > 0;
+			if (inUse)
+				throw new ArgumentException("The specified window is already a device window.", "window");
+
 			target = CreateDeviceWindowImpl(name, window, mode, depthStencilFormat, fullScreen);
 			target.Initialize();
+
+			DeviceWindows.Add(target);
 
 			return target;
 		}
 
 		/// <summary>
-		/// Function to create a device window.
+		/// Function to create a device window using the Gorgon application window.
 		/// </summary>
 		/// <param name="name">Name of the window.</param>
 		/// <param name="mode">Video mode to set.</param>
@@ -220,6 +257,10 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
 		/// </exception>
+		/// <remarks>This overloaded method will use the Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">application window</see>.
+		/// <para>Device windows bound to child controls cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.
+		/// </para>
+		/// </remarks>
 		public GorgonDeviceWindow CreateDeviceWindow(string name, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
 		{
 			return CreateDeviceWindow(name, Gorgon.ApplicationWindow, mode, depthStencilFormat, fullScreen);
@@ -302,6 +343,7 @@ namespace GorgonLibrary.Graphics
 		{
 			CustomSettings = new GorgonCustomValueCollection<string>();
 			VideoDevices = null;
+			DeviceWindows = new List<GorgonDeviceWindow>();
 		}
 		#endregion
 

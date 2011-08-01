@@ -100,47 +100,50 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <returns>
 		/// An enumerable list of video outputs.
 		/// </returns>
-		/// <remarks>Direct 3D9 has the capability for multi-head display, however, two windows are needed and they must be present when creating
+		/// <remarks>Direct 3D9 has the capability for multi-head display, however, two windows are required and they must be present when creating
 		/// the IDirect3D9Device interface.  The problem is that we want to keep the devices separate, and having one device for both heads is not going
 		/// to work for our model, so we have to fall back on the old method of using each head as a dedicated device.  This means that device data is not
 		/// shared between the two heads and will require some effort on the users behalf to get things on both devices.</remarks>
 		protected override IEnumerable<GorgonVideoOutput> GetOutputs()
 		{
-			Capabilities headCaps = null;
-			List<D3D9VideoOutput> outputs = new List<D3D9VideoOutput>();
 			MONITORINFOEX? monitorInfo = new MONITORINFOEX();
 
 			// Get the primary output.
 			monitorInfo = Win32API.GetMonitorInfo(_adapter.Monitor);
 			if (monitorInfo != null)
-				outputs.Add(new D3D9VideoOutput(_adapter, _caps.AdapterOrdinalInGroup, monitorInfo.Value));
-			else
-				throw new GorgonException(GorgonResult.CannotEnumerate, "Could not enumerate the video outputs.  There was an error retrieving the monitor information.");
+				return new D3D9VideoOutput[] {new D3D9VideoOutput(_adapter, _caps.AdapterOrdinalInGroup, monitorInfo.Value)};
+			
+			throw new GorgonException(GorgonResult.CannotEnumerate, "Could not enumerate the video outputs.  There was an error retrieving the monitor information.");
 
-			// Get subordinate heads.
-			if (_caps.NumberOfAdaptersInGroup > 0)
-			{
-				foreach (var adapter in _d3d.Adapters)
-				{
-					// Skip the master.
-					if (adapter.Adapter != _adapter.Adapter)
-					{
-						headCaps = adapter.GetCaps(_deviceType);
+			// Sadly, the D3D9 multi-head stuff is stupidly tricky to get working properly.  Maybe in the future
+			// or if someone is a lot smarter than I am.
 
-						// Ensure this head is on the correct device.
-						if (headCaps.MasterAdapterOrdinal != AdapterIndex)
-							continue;
+			//Capabilities headCaps = null;
+			//List<D3D9VideoOutput> outputs = new List<D3D9VideoOutput>();
+			//// Get subordinate heads.
+			//if (_caps.NumberOfAdaptersInGroup > 0)
+			//{
+			//    foreach (var adapter in _d3d.Adapters)
+			//    {
+			//        // Skip the master.
+			//        if (adapter.Adapter != _adapter.Adapter)
+			//        {
+			//            headCaps = adapter.GetCaps(_deviceType);
 
-						monitorInfo = Win32API.GetMonitorInfo(adapter.Monitor);
-						if (monitorInfo != null)
-							outputs.Add(new D3D9VideoOutput(adapter, headCaps.AdapterOrdinalInGroup, monitorInfo.Value));
-						else
-							throw new GorgonException(GorgonResult.CannotEnumerate, "Could not enumerate the video outputs.  There was an error retrieving the monitor information.");
-					}
-				}
-			}
+			//            // Ensure this head is on the correct device.
+			//            if (headCaps.MasterAdapterOrdinal != AdapterIndex)
+			//                continue;
 
-			return outputs;
+			//            monitorInfo = Win32API.GetMonitorInfo(adapter.Monitor);
+			//            if (monitorInfo != null)
+			//                outputs.Add(new D3D9VideoOutput(adapter, headCaps.AdapterOrdinalInGroup, monitorInfo.Value));
+			//            else
+			//                throw new GorgonException(GorgonResult.CannotEnumerate, "Could not enumerate the video outputs.  There was an error retrieving the monitor information.");
+			//        }
+			//    }
+			//}
+
+			//return outputs;
 		}
 		#endregion
 
