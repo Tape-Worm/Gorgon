@@ -132,20 +132,9 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			IntPtr monitor = Win32API.GetMonitor(window);
 
-			// If fullscreen, then search through multi-head devices.
-			if (fullScreen)
-			{
-				return (from device in VideoDevices
-						from output in device.Outputs
-						where ((D3D9VideoOutput)output).Handle == monitor
-						select new Tuple<GorgonVideoDevice, GorgonVideoOutput>(device, output)).First();
-			}
-			else
-			{
-				return (from device in VideoDevices						
-						where ((D3D9VideoOutput)device.Outputs[0]).Handle == monitor
-						select new Tuple<GorgonVideoDevice, GorgonVideoOutput>(device, device.Outputs[0])).First();
-			}
+			return (from device in VideoDevices						
+					where ((D3D9VideoOutput)device.Outputs[0]).Handle == monitor
+					select new Tuple<GorgonVideoDevice, GorgonVideoOutput>(device, device.Outputs[0])).Single();
 		}
 
 		/// <summary>

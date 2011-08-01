@@ -83,6 +83,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the default video mode for this output.
+		/// </summary>
+		public GorgonVideoMode DefaultVideoMode
+		{
+			get;
+			protected set;
+		}
 		#endregion
 
 		#region Methods.

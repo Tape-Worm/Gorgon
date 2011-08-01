@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			if (adapter == null)
 				throw new ArgumentNullException("adapter");
-
+			
 			_info = adapter;
 			Handle = adapter.Monitor;
 			Rotation = 0;
@@ -106,6 +106,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			DesktopDimensions = System.Drawing.Rectangle.FromLTRB(monitorInfo.WorkArea.Left, monitorInfo.WorkArea.Top, monitorInfo.WorkArea.Right, monitorInfo.WorkArea.Bottom);
 			Name = monitorInfo.DeviceName;
 			HeadIndex = headIndex;
+			DefaultVideoMode = D3DConvert.Convert(adapter.CurrentDisplayMode);
 		}
 		#endregion
 	}

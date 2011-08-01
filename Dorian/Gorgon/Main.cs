@@ -105,6 +105,9 @@ namespace GorgonLibrary
 		{
 			get
 			{
+				if (AllowBackground)
+					return true;
+
 				if ((ParentWindow.WindowState == Forms.FormWindowState.Minimized) || (!ParentWindow.ContainsFocus))
 					return false;
 	
@@ -227,6 +230,18 @@ namespace GorgonLibrary
 		/// </para>
 		/// </remarks>
 		public static int UnfocusedSleepTime
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to allow the idle loop to continue running while the window is not focused or minimized.
+		/// </summary>
+		/// <remarks>This is set to TRUE by default, and this means that the code in the idle loop will continue to execute when the window is not focused or minimized.  When it is FALSE, the application will suspend until it regains focus.
+		/// <para>There may be a delay when the code is executing in the background if the <see cref="P:GorgonLibrary.Gorgon.UnfocusedSleepTime">UnfocusedSleepTime</see> property is set greater than 0.</para>
+		/// </remarks>
+		public static bool AllowBackground
 		{
 			get;
 			set;
