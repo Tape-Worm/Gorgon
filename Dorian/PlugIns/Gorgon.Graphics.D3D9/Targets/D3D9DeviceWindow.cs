@@ -141,7 +141,18 @@ namespace GorgonLibrary.Graphics.D3D9
 			// If we are not windowed, don't allow an unknown video mode.
 			if (!IsWindowed)
 			{
-				var count = VideoOutput.VideoModes.Count(item => item == TargetInformation);
+				int count = 0;
+
+				// If we've not specified a refresh rate, then find the lowest refresh on the output.
+				if ((TargetInformation.RefreshRateDenominator == 0) || (TargetInformation.RefreshRateNumerator == 0))
+				{
+					var refresh = (from mode in VideoOutput.VideoModes
+								  where ((mode.Width == TargetInformation.Width) && (mode.Height == TargetInformation.Height) && (mode.Format == TargetInformation.Format))
+								  select mode.RefreshRateNumerator).Min();
+					UpdateTargetInformation(new GorgonVideoMode(TargetInformation.Width, TargetInformation.Height, TargetInformation.Format, refresh, 1), DepthStencilFormat);
+				}					
+
+				count = VideoOutput.VideoModes.Count(item => item == TargetInformation);
 
 				if (count == 0)
 					throw new GorgonException(GorgonResult.CannotBind, "Unable to set the video mode.  The mode '" + TargetInformation.Width.ToString() + "x" +

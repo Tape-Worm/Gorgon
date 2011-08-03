@@ -194,6 +194,7 @@ namespace GorgonLibrary.Graphics.D3D9
 						return Format.D16Lockable;
 				case GorgonBufferFormat.D32_Float:
 					return Format.D32SingleLockable;
+				case GorgonBufferFormat.D32_Float_S8X24_UInt:
 				case GorgonBufferFormat.D24_UIntNorm_S8_UInt:
 					return Format.D24S8;
 				case GorgonBufferFormat.R16_UIntNorm:
