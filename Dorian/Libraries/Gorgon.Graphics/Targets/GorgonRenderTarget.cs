@@ -70,6 +70,14 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return whether the target is ready to receive rendering data.
+		/// </summary>
+		public abstract bool IsReady
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.

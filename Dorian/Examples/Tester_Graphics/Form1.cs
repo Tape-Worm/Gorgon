@@ -54,7 +54,7 @@ namespace Tester_Graphics
 
 			try 
 			{
-				Gorgon.Initialize(this);
+				Gorgon.Initialize(this.panelDX);
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
 				GorgonPlugInFactory.LoadPlugInAssembly("Gorgon.Graphics.D3D9.dll");
 
@@ -64,7 +64,7 @@ namespace Tester_Graphics
 				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
 				_dev = _gfx.CreateDeviceWindow("Test", new GorgonVideoMode(640, 480, GorgonBufferFormat.R8G8B8A8_UIntNorm, 60, 1), GorgonBufferFormat.D24_UIntNorm_S8_UInt, false);
 				_dev.SetupTest();
-
+				
 				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
