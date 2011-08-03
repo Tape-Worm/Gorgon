@@ -57,7 +57,21 @@ namespace GorgonLibrary.Graphics.D3D9
 				_device.SetTransform(TransformState.View, Matrix.LookAtLH(new Vector3(0, 0, _pos), new Vector3(0, 0, 1.0f), Vector3.UnitY));
 
 				_device.BeginScene();
-				_device.Clear(ClearFlags.All, new Color4(0, 0, 0, 0), 1.0f, 0);
+				switch (_window.DepthStencilFormat)
+				{
+					case GorgonBufferFormat.D32_Float:
+					case GorgonBufferFormat.D16_UIntNorm:
+						_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(0, 0, 0, 0), 1.0f, 0);
+						break;
+					case GorgonBufferFormat.D32_Float_S8X24_UInt:
+					case GorgonBufferFormat.D24_UIntNorm_S8_UInt:
+						_device.Clear(ClearFlags.All, new Color4(0, 0, 0, 0), 1.0f, 0);
+						break;
+					default:
+						_device.Clear(ClearFlags.Target, new Color4(0, 0, 0, 0), 1.0f, 0);
+						break;
+				}
+					
 				_device.SetStreamSource(0, _vb, 0, 16);
 				_device.VertexDeclaration = _vdecl;
 				_device.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);

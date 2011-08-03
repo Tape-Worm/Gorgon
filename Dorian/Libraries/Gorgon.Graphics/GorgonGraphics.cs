@@ -267,6 +267,118 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create a device window using the Gorgon application window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
+		/// <param name="fullScreen">TRUE to use fullscreen mode, FALSE to use windowed.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// </exception>
+		/// <remarks>This overloaded method will use the Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">application window</see>.
+		/// <para>This overload will also use the client size of the control, therefore, you must be careful to choose a valid video mode size when setting the <paramref name="fullScreen"/> parameter to TRUE.</para>
+		/// <para>Device windows bound to child controls cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.
+		/// </para>
+		/// </remarks>
+		public GorgonDeviceWindow CreateDeviceWindow(string name, GorgonBufferFormat depthStencilFormat, bool fullScreen)
+		{			
+			return CreateDeviceWindow(name, Gorgon.ApplicationWindow, new GorgonVideoMode(Gorgon.ApplicationWindow.ClientSize.Width, Gorgon.ApplicationWindow.ClientSize.Height, GorgonBufferFormat.R8G8B8A8_UIntNorm), depthStencilFormat, fullScreen);
+		}
+
+		/// <summary>
+		/// Function to create a device window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="window">Window to bind to the device window.</param>
+		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
+		/// <param name="fullScreen">TRUE to use fullscreen mode, FALSE to use windowed.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// </exception>
+		/// <remarks>This overload will also use the client size of the control, therefore, you must be careful to choose a valid video mode size when setting the <paramref name="fullScreen"/> parameter to TRUE.
+		/// <para>Device windows bound to child controls cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.
+		/// </para>
+		/// </remarks>
+		public GorgonDeviceWindow CreateDeviceWindow(string name, Control window, GorgonBufferFormat depthStencilFormat, bool fullScreen)
+		{
+			return CreateDeviceWindow(name, Gorgon.ApplicationWindow, new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, GorgonBufferFormat.R8G8B8A8_UIntNorm), depthStencilFormat, fullScreen);
+		}
+
+		/// <summary>
+		/// Function to create a device window using the Gorgon application window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// </exception>
+		/// <remarks>This overloaded method will use the Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">application window</see>.
+		/// <para>This overload will also force windowed mode for the application.</para>
+		/// </remarks>
+		public GorgonDeviceWindow CreateDeviceWindow(string name, GorgonBufferFormat depthStencilFormat)
+		{
+			return CreateDeviceWindow(name, Gorgon.ApplicationWindow, new GorgonVideoMode(Gorgon.ApplicationWindow.ClientSize.Width, Gorgon.ApplicationWindow.ClientSize.Height, GorgonBufferFormat.R8G8B8A8_UIntNorm), depthStencilFormat, false);
+		}
+
+		/// <summary>
+		/// Function to create a device window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="window">Window to bind to the device window.</param>
+		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// </exception>
+		/// <remarks>This overload will also force windowed mode for the application.
+		/// </remarks>
+		public GorgonDeviceWindow CreateDeviceWindow(string name, Control window, GorgonBufferFormat depthStencilFormat)
+		{
+			return CreateDeviceWindow(name, Gorgon.ApplicationWindow, new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, GorgonBufferFormat.R8G8B8A8_UIntNorm), depthStencilFormat, false);
+		}
+
+		/// <summary>
+		/// Function to create a device window using the Gorgon application window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// </exception>
+		/// <remarks>This overloaded method will use the Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">application window</see>.
+		/// <para>This overload will also force windowed mode for the application and turn off the depth/stencil buffer.</para>
+		/// </remarks>
+		public GorgonDeviceWindow CreateDeviceWindow(string name)
+		{
+			return CreateDeviceWindow(name, Gorgon.ApplicationWindow, new GorgonVideoMode(Gorgon.ApplicationWindow.ClientSize.Width, Gorgon.ApplicationWindow.ClientSize.Height, GorgonBufferFormat.R8G8B8A8_UIntNorm), GorgonBufferFormat.Unknown, false);
+		}
+
+		/// <summary>
+		/// Function to create a device window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="window">Window to bind to the device window.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// </exception>
+		/// <remarks>This overload will also force windowed mode for the application and turn off the depth/stencil buffer
+		/// </remarks>
+		public GorgonDeviceWindow CreateDeviceWindow(string name, Control window)
+		{
+			return CreateDeviceWindow(name, Gorgon.ApplicationWindow, new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, GorgonBufferFormat.R8G8B8A8_UIntNorm), GorgonBufferFormat.Unknown, false);
+		}
+
+		/// <summary>
 		/// Function to return a graphics system.
 		/// </summary>
 		/// <param name="plugInType">Fully qualified type name of the graphics plug-in</param>

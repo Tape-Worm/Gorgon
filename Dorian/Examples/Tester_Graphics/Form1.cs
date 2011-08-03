@@ -19,10 +19,13 @@ namespace Tester_Graphics
 	{
 		GorgonGraphics _gfx = null;
 		GorgonDeviceWindow _dev = null;
+		GorgonDeviceWindow _dev2 = null;
+		Form2 form2 = null;
 
 		private bool Idle(GorgonFrameRate timing)
 		{
 			_dev.RunTest();
+			//_dev2.RunTest();
 			return true;
 		}
 
@@ -54,16 +57,26 @@ namespace Tester_Graphics
 
 			try 
 			{
-				Gorgon.Initialize(this.panelDX);
+				this.panelDX.Visible = false;
+				Gorgon.Initialize(this);
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
 				GorgonPlugInFactory.LoadPlugInAssembly("Gorgon.Graphics.D3D9.dll");
-
-				//this.Location = new Point(Screen.AllScreens[1].Bounds.Width / 2 + Screen.AllScreens[1].Bounds.Left, Screen.AllScreens[1].Bounds.Height / 2 + Screen.AllScreens[1].Bounds.Top);
+								
 				Gorgon.UnfocusedSleepTime = 10;
 				Gorgon.AllowBackground = true;
+				ClientSize = new System.Drawing.Size(640, 480);
 				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
-				_dev = _gfx.CreateDeviceWindow("Test", new GorgonVideoMode(640, 480, GorgonBufferFormat.R8G8B8A8_UIntNorm, 60, 1), GorgonBufferFormat.D24_UIntNorm_S8_UInt, false);
+				//_dev = _gfx.CreateDeviceWindow("Test", new GorgonVideoMode(640, 480, GorgonBufferFormat.R8G8B8A8_UIntNorm, 60, 1), GorgonBufferFormat.D24_UIntNorm_S8_UInt, false);
+				//_dev = _gfx.CreateDeviceWindow("Test", GorgonBufferFormat.D24_UIntNorm_S8_UInt, true);
+				_dev = _gfx.CreateDeviceWindow("Test", GorgonBufferFormat.D24_UIntNorm_S8_UInt,true);
 				_dev.SetupTest();
+
+				//form2 = new Form2();				
+				//form2.Show();
+				//form2.Location = new Point(Screen.AllScreens[1].Bounds.Width / 2 + Screen.AllScreens[1].Bounds.Left, Screen.AllScreens[1].Bounds.Height / 2 + Screen.AllScreens[1].Bounds.Top);
+
+				//_dev2 = _gfx.CreateDeviceWindow("Test2", form2, new GorgonVideoMode(640, 480, GorgonBufferFormat.R8G8B8A8_UIntNorm, 60, 1), GorgonBufferFormat.D24_UIntNorm_S8_UInt, true);
+				//_dev2.SetupTest();
 				
 				Gorgon.Go(Idle);
 			}
