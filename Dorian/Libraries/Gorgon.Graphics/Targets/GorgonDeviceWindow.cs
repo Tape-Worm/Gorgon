@@ -101,6 +101,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private bool _disposed = false;								// Flag to indicate that the object was already disposed.
 		private FormStateRecord _originalWindowState = null;		// Original window state.
+		private bool _wasMaximized = false;							// Flag to indicate that the window was maximized.
 		#endregion
 
 		#region Properties.
@@ -169,7 +170,19 @@ namespace GorgonLibrary.Graphics
 
 			base.Dispose(disposing);
 		}
-		
+
+		/// <summary>
+		/// Function called when the window is resized.
+		/// </summary>
+		/// <param name="newWidth">New width of the window.</param>
+		/// <param name="newHeight">New height of the window.</param>
+		protected override void OnWindowResized(int newWidth, int newHeight)
+		{
+			// We should not care about window resizing when in full screen mode.
+			if (IsWindowed)
+				base.OnWindowResized(newWidth, newHeight);
+		}
+
 		/// <summary>
 		/// Function to update the device window.
 		/// </summary>
@@ -183,11 +196,30 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public void Update(GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
 		{
+			Form window = BoundWindow as Form;
+			
 			// Child controls cannot go full screen.
-			if (!(BoundWindow is Form))
+			if (window == null)
+			{
 				fullScreen = false;
+				window = ParentWindow;
+			}
 
 			RemoveEventHandlers();
+						
+			// Ideally, we want the window to use the desktop resolution when we switch to full screen and the window is maximized.
+			// When we switch back, we should keep the window maximized.  This wouldn't be a big deal except there's some sort of
+			// weird bug in windows forms/d3d9 where upon switching to full screen mode with a window maximized, the mouse cursor
+			// tends to just pass through the window to the underlying window (if any), causing all kinds of weirdness.  So
+			// our solution is to restore the window to a normal state, and apply the changes.
+
+			// If we're switching back to windowed mode and the window was previously maximized, then re-maximize it.
+			if ((!fullScreen) && (!IsWindowed) && (_wasMaximized))
+				window.WindowState = FormWindowState.Maximized;
+
+			// Store whether the window was previously maximized.
+			_wasMaximized = ((fullScreen != !IsWindowed) && (window.WindowState == FormWindowState.Maximized));
+						
 			UpdateTargetInformation(mode, depthStencilFormat);
 			IsWindowed = !fullScreen;
 			UpdateRenderTarget();

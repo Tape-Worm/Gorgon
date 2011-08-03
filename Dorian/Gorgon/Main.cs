@@ -422,27 +422,6 @@ namespace GorgonLibrary
 
 				IsRunning = false;
 
-				//// Enumerate drivers and video modes.
-				//_drivers = new DriverList();
-				//_drivers.Refresh();
-
-				//// Create timing data.
-				//_timer = new PreciseTimer();
-
-				//// Assign the initial driver, this will also create the renderer..
-				//CurrentDriver = _drivers[0];
-
-				//// Create timing statistics.
-				//FrameStats = new TimingData(_timer);
-
-				//// Create event arguments for idle event.
-				//_frameEventArgs = new FrameEventArgs(FrameStats);
-
-				//// Set default clear parameters.
-				//_clearTargets = ClearTargets.BackBuffer | ClearTargets.DepthBuffer | ClearTargets.StencilBuffer;
-
-				//FrameStatsTextColor = Color.White;
-
 				Log.Print("Initialized Successfully.", GorgonLoggingLevel.Simple);
 			}
 			catch (Exception ex)

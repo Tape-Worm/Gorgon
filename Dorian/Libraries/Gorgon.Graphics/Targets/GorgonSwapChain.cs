@@ -42,6 +42,17 @@ namespace GorgonLibrary.Graphics
 		private bool _disposed = false;			// Flag to indicate that the object was disposed.
 		#endregion
 
+		#region Events.
+		/// <summary>
+		/// Event fired before the device is reset, so resources can be freed.
+		/// </summary>
+		public event EventHandler BeforeDeviceReset;
+		/// <summary>
+		/// Event fired after the device is reset, so resources can be restored.
+		/// </summary>
+		public event EventHandler AfterDeviceReset;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the window that contains the <see cref="GorgonLibrary.Graphics.GorgonSwapChain.BoundWindow">BoundWindow</see>.
@@ -72,9 +83,7 @@ namespace GorgonLibrary.Graphics
 		private void BoundWindow_SizeChanged(object sender, EventArgs e)
 		{
 			RemoveEventHandlers();
-			UpdateTargetInformation(new GorgonVideoMode(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, TargetInformation.Format, TargetInformation.RefreshRateNumerator, TargetInformation.RefreshRateDenominator), DepthStencilFormat);
-			if (ParentWindow.WindowState != FormWindowState.Minimized)
-				UpdateRenderTarget();
+			OnWindowResized(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height);
 			AddEventHandlers();
 		}
 
@@ -107,10 +116,18 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to determine if the active device is ready to render.
+		/// Function called when the window is resized.
 		/// </summary>
-		/// <returns>TRUE if the device is ready for rendering, FALSE if not.</returns>
-		protected abstract bool CanRender();
+		/// <param name="newWidth">New width of the window.</param>
+		/// <param name="newHeight">New height of the window.</param>
+		protected virtual void OnWindowResized(int newWidth, int newHeight)
+		{
+			if ((ParentWindow.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
+			{
+				UpdateTargetInformation(new GorgonVideoMode(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, TargetInformation.Format, TargetInformation.RefreshRateNumerator, TargetInformation.RefreshRateDenominator), DepthStencilFormat);
+				UpdateRenderTarget();
+			}
+		}
 
 		/// <summary>
 		/// Function to remove any event handlers assigned to the bound window.
@@ -143,6 +160,24 @@ namespace GorgonLibrary.Graphics
 
 				_disposed = true;
 			}
+		}
+
+		/// <summary>
+		/// Function called when the device is about to be reset.
+		/// </summary>
+		protected virtual void OnBeforeDeviceReset()
+		{
+			if (BeforeDeviceReset != null)
+				BeforeDeviceReset(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Function called when the device has been reset.
+		/// </summary>
+		protected virtual void OnAfterDeviceReset()
+		{
+			if (AfterDeviceReset != null)
+				AfterDeviceReset(this, EventArgs.Empty);
 		}
 
 		/// <summary>

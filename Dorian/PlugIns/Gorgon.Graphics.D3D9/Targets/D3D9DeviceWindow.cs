@@ -40,7 +40,7 @@ namespace GorgonLibrary.Graphics.D3D9
 	/// </summary>
 	internal class D3D9DeviceWindow
 		: GorgonDeviceWindow
-	{
+	{		
 		#region Variables.
 		private GorgonD3D9Graphics _graphics = null;			// Direct 3D9 specific instance of the graphics object.
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
@@ -57,6 +57,25 @@ namespace GorgonLibrary.Graphics.D3D9
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return whether the target is ready to receive rendering data.
+		/// </summary>
+		public override bool IsReady
+		{
+			get 
+			{
+				Form window = BoundWindow as Form;
+
+				if (D3DDevice == null)
+					return false;
+
+				if (window == null)
+					window = ParentWindow;
+
+				return ((!_deviceIsLost) && (window.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Height > 0));
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -65,16 +84,19 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		private void ResetDevice()
 		{
+			Form window = BoundWindow as Form;
 			bool inWindowedMode = _presentParams[0].Windowed;
+
+			_deviceIsLost = true;
+
+			OnBeforeDeviceReset();			
 			
 			// HACK: For some reason when the window is maximized and then eventually
 			// set to full screen, the mouse cursor screws up and we can click right through
 			// our window into whatever is behind it.  Setting it to normal size prior to
 			// resetting it seems to work.
-			if (BoundWindow is Form)
+			if (window != null)
 			{
-				Form window = BoundWindow as Form;
-
 				if ((window.WindowState != FormWindowState.Normal) && (!IsWindowed))
 				{
 					if (window.WindowState == FormWindowState.Minimized)
@@ -94,15 +116,15 @@ namespace GorgonLibrary.Graphics.D3D9
 					window.Location = VideoOutput.DesktopDimensions.Location;
 					window.Size = VideoOutput.DesktopDimensions.Size;
 					UpdateTargetInformation(new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, TargetInformation.Format, TargetInformation.RefreshRateNumerator, TargetInformation.RefreshRateDenominator), DepthStencilFormat);
-				}
-			}
-	
-			_deviceIsLost = true;
+				} 
+			}	
+			
 			SetPresentationParameters();
 			D3DDevice.Reset(_presentParams[0]);
 			AdjustWindow(inWindowedMode);
-			_deviceIsLost = false;		
+			_deviceIsLost = false;
 
+			OnAfterDeviceReset();
 		}
 
 		/// <summary>
@@ -114,8 +136,8 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			// If we're maximized, then use the desktop resolution.
 			if ((window != null) && (window.WindowState == FormWindowState.Maximized))
-			    UpdateTargetInformation(VideoOutput.DefaultVideoMode, DepthStencilFormat);
-
+				UpdateTargetInformation(VideoOutput.DefaultVideoMode, DepthStencilFormat);
+	
 			// If we are not windowed, don't allow an unknown video mode.
 			if (!IsWindowed)
 			{
@@ -131,7 +153,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			// If the window is just a child control, then use the size of the client control instead.
 			if (!(BoundWindow is Form))
 				UpdateTargetInformation(new GorgonVideoMode(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, TargetInformation.Format, TargetInformation.RefreshRateNumerator, TargetInformation.RefreshRateDenominator), DepthStencilFormat);
-
+			
 			_presentParams = new PresentParameters[] {
 				new PresentParameters() {
 					AutoDepthStencilFormat = SlimDX.Direct3D9.Format.Unknown,
@@ -203,25 +225,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				window.FormBorderStyle = FormBorderStyle.None;
 				window.TopMost = true;
 			}
-		}
-
-		/// <summary>
-		/// Function to determine if the active device is ready to render.
-		/// </summary>
-		/// <returns>
-		/// TRUE if the device is ready for rendering, FALSE if not.
-		/// </returns>
-		protected override bool CanRender()
-		{
-			Form window = BoundWindow as Form;
-
-			if (D3DDevice == null)
-				return false;
-
-			if (window == null)
-				window = ParentWindow;
-
-			return ((!_deviceIsLost) && (window.WindowState != FormWindowState.Minimized));
 		}
 
 		/// <summary>
@@ -297,10 +300,12 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			Result result = default(Result);
 
+			Configuration.ThrowOnError = false;
 			if (_deviceIsLost)
 				result = ResultCode.DeviceLost;
 			else
 				result = D3DDevice.Present();
+			Configuration.ThrowOnError = true;
 
 			if (result == ResultCode.DeviceLost)
 			{
@@ -311,88 +316,43 @@ namespace GorgonLibrary.Graphics.D3D9
 
 				if (result == ResultCode.DeviceNotReset)
 				{
+					RemoveEventHandlers();
 					ResetDevice();
+					AddEventHandlers();
 				}
 				else
 				{
 					if (result == ResultCode.DriverInternalError)
 						throw new GorgonException(GorgonResult.DriverError, "There was an internal driver error.  Cannot reset the device.");
 
-					_deviceIsLost = false;
+					if (result.IsSuccess)
+						_deviceIsLost = false;
 				}
 			}
 		}
 
 		#region Remove this shit.
-		private struct Vertex
-		{
-			public Vector3 Position;
-			public int Color;
-		}
-		private VertexBuffer _vb = null;
-		private VertexDeclaration _vdecl = null;
-		private Vertex[] triangle = new Vertex[3];
-		private float _pos = -0.2f;
-		private Diagnostics.GorgonTimer _timer = null;
+		private Test _test = null;
 
 		/// <summary>
 		/// </summary>
 		public override void SetupTest()
 		{
-			_vdecl = new VertexDeclaration(D3DDevice, new VertexElement[] {new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-																		new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0)});
-
-			_vb = new VertexBuffer(D3DDevice, 3 * 16, Usage.WriteOnly, VertexFormat.None, Pool.Managed);
-			_vb.Lock(0, 0, LockFlags.None).WriteRange(new [] {
-		                new Vertex() { Color = Color.Red.ToArgb(), Position = new Vector3(0.0f, 0.5f, 0.0f) },
-                new Vertex() { Color = Color.Blue.ToArgb(), Position = new Vector3(0.5f, -0.5f, 0.0f) },
-                new Vertex() { Color = Color.Green.ToArgb(), Position = new Vector3(-0.5f, -0.5f, 0.0f) }
-            });
-
-			_vb.Unlock();
-
-			D3DDevice.SetRenderState(RenderState.Lighting, false);
-			_timer = new Diagnostics.GorgonTimer();
+			_test = new Test(this, D3DDevice);
 		}
 
 		/// <summary>
 		/// </summary>
 		public override void RunTest()
 		{
-			if (_timer.Milliseconds > 50)
-			{
-				//_pos += 0.01f;
-				_timer.Reset();
-			}
-			if (CanRender())
-			{
-				D3DDevice.SetRenderState(RenderState.Lighting, false);
-				Viewport view = new Viewport(0, 0, this.TargetInformation.Width, this.TargetInformation.Height, 0.0f, 1.0f);
-				
-				D3DDevice.Viewport = view;
-				D3DDevice.SetTransform(TransformState.Projection, Matrix.PerspectiveLH(1.0f, 1.0f, 0.1f, 10.0f));
-				D3DDevice.SetTransform(TransformState.World, Matrix.Identity);
-				D3DDevice.SetTransform(TransformState.View, Matrix.LookAtLH(new Vector3(0, 0, _pos), new Vector3(0, 0, 1.0f), Vector3.UnitY));
-
-				D3DDevice.BeginScene();
-				D3DDevice.Clear(ClearFlags.All, new Color4(0, 0, 0, 0), 1.0f, 0);
-				D3DDevice.SetStreamSource(0, _vb, 0, 16);
-				D3DDevice.VertexDeclaration = _vdecl;
-				D3DDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
-				D3DDevice.EndScene();
-			}
-
-			Display();
+			_test.Run();
 		}
 
 		/// <summary>
 		/// </summary>
 		public override void CleanUpTest()
 		{
-			if (_vdecl != null)
-				_vdecl.Dispose();
-			if (_vb != null)
-				_vb.Dispose();
+			_test.ShutDown();
 		}
 		#endregion
 		#endregion
