@@ -38,22 +38,14 @@ namespace GorgonLibrary.Graphics
 	/// The primary object for the graphics sub system.
 	/// </summary>
 	public abstract class GorgonGraphics
-		: GorgonNamedObject, IDisposable
+		: GorgonNamedObject, IDisposable, IObjectTracker
 	{
 		#region Variables.
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
+		private IList<IDisposable> _trackedObjects = null;		// List of tracked objects.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the list of instanced device windows.
-		/// </summary>
-		internal IList<GorgonDeviceWindow> DeviceWindows
-		{
-			get;
-			private set;
-		}
-
 		/// <summary>
 		/// Property to return the current renderer interface.
 		/// </summary>
@@ -83,21 +75,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to clean up any outstanding tracked objects.
-		/// </summary>
-		private void CleanUpTrackedObjects()
-		{
-			List<IDisposable> trackedObjects = new List<IDisposable>();
-
-			trackedObjects.AddRange(DeviceWindows);
-
-			foreach (var trackedObject in trackedObjects)
-				trackedObject.Dispose();
-
-			DeviceWindows.Clear();	
-		}
-
 		/// <summary>
 		/// Function to enumerate the available video devices on the system.
 		/// </summary>
@@ -200,6 +177,8 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown is the <paramref name="fullScreen"/> parameter is TRUE and the <paramref name="window"/> parameter is a child control.</para>
 		/// </exception>
 		protected abstract GorgonDeviceWindow CreateDeviceWindowImpl(string name, Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen);
 
@@ -221,6 +200,8 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if the window parameter is already a device window.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown is the <paramref name="fullScreen"/> parameter is TRUE and the <paramref name="window"/> parameter is a child control.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
 		/// <remarks>Device windows bound to child controls cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.
@@ -232,14 +213,19 @@ namespace GorgonLibrary.Graphics
 			if (window == null)
 				throw new ArgumentNullException("window");
 
-			var inUse = DeviceWindows.Count(item => item.BoundWindow == window) > 0;
+			var inUse = _trackedObjects.Count(item => 
+				{
+					GorgonDeviceWindow devWindow = item as GorgonDeviceWindow;
+					return ((devWindow != null) && (devWindow.BoundWindow == window));
+				}) > 0;
+
 			if (inUse)
 				throw new ArgumentException("The specified window is already a device window.", "window");
 
 			target = CreateDeviceWindowImpl(name, window, mode, depthStencilFormat, fullScreen);
 			target.Initialize();
 
-			DeviceWindows.Add(target);
+			_trackedObjects.Add(target);
 
 			return target;
 		}
@@ -256,6 +242,8 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown is the <paramref name="fullScreen"/> parameter is TRUE and the Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">application window</see> is a child control.</para>
 		/// </exception>
 		/// <remarks>This overloaded method will use the Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">application window</see>.
 		/// <para>Device windows bound to child controls cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.
@@ -277,6 +265,8 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown is the <paramref name="fullScreen"/> parameter is TRUE and the Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">application window</see> is a child control.</para>
 		/// </exception>
 		/// <remarks>This overloaded method will use the Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">application window</see>.
 		/// <para>This overload will also use the client size of the control, therefore, you must be careful to choose a valid video mode size when setting the <paramref name="fullScreen"/> parameter to TRUE.</para>
@@ -300,6 +290,8 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown is the <paramref name="fullScreen"/> parameter is TRUE and the <paramref name="window"/> parameter is a child control.</para>
 		/// </exception>
 		/// <remarks>This overload will also use the client size of the control, therefore, you must be careful to choose a valid video mode size when setting the <paramref name="fullScreen"/> parameter to TRUE.
 		/// <para>Device windows bound to child controls cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.
@@ -455,7 +447,7 @@ namespace GorgonLibrary.Graphics
 		{
 			CustomSettings = new GorgonCustomValueCollection<string>();
 			VideoDevices = null;
-			DeviceWindows = new List<GorgonDeviceWindow>();
+			_trackedObjects = new List<IDisposable>();
 		}
 		#endregion
 
@@ -485,6 +477,46 @@ namespace GorgonLibrary.Graphics
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
+		#endregion
+
+		#region IObjectTracker Members
+		#region Properties.
+		/// <summary>
+		/// Property to return an enumerable list of tracked objects.
+		/// </summary>
+		internal IEnumerable<IDisposable> TrackedObjects
+		{
+			get
+			{
+				return _trackedObjects;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to remove a tracked object from the list.
+		/// </summary>
+		/// <param name="trackedObject">The tracked object to remove.</param>
+		internal void RemoveTrackedObject(IDisposable trackedObject)
+		{
+			if (_trackedObjects.Contains(trackedObject))
+				_trackedObjects.Remove(trackedObject);
+		}
+
+		/// <summary>
+		/// Function to clean up any objects being tracked.
+		/// </summary>
+		internal void CleanUpTrackedObjects()
+		{
+			var trackedObjects = _trackedObjects.ToArray();
+
+			foreach (var trackedObject in trackedObjects)
+				trackedObject.Dispose();
+			
+			_trackedObjects.Clear();
+		}
+		#endregion
 		#endregion
 	}
 }

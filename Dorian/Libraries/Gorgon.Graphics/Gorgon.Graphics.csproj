@@ -60,9 +60,11 @@
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonGraphicsPlugIn.cs" />
     <Compile Include="GorgonRenderer.cs" />
+    <Compile Include="IObjectTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Targets\GorgonDeviceWindow.cs" />
     <Compile Include="Targets\GorgonRenderTarget.cs" />
+    <Compile Include="Targets\GorgonSwapChainBase.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
   </ItemGroup>
   <ItemGroup>
