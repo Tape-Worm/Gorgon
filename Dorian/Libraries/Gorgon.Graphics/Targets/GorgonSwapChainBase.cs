@@ -33,9 +33,9 @@ using System.Windows.Forms;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A swap chain render target that can be attached to a window.
+	/// The base object used for device objects with a swap chain, and extraneous swap chains.
 	/// </summary>
-	public abstract class GorgonSwapChain
+	public abstract class GorgonSwapChainBase
 		: GorgonRenderTarget
 	{
 		#region Variables.
@@ -55,7 +55,7 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the window that contains the <see cref="GorgonLibrary.Graphics.GorgonSwapChain.BoundWindow">BoundWindow</see>.
+		/// Property to return the window that contains the <see cref="GorgonLibrary.Graphics.GorgonSwapChainBase.BoundWindow">BoundWindow</see>.
 		/// </summary>
 		/// <remarks>If the BoundWindow is a windows form, then this property will be the same as the BoundWindow property.</remarks>
 		public Form ParentWindow
@@ -71,15 +71,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to return the device window that created this swap chain.
-		/// </summary>
-		public GorgonDeviceWindow DeviceWindow
-		{
-			get;
-			protected set;
 		}
 		#endregion
 
@@ -207,17 +198,20 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChain"/> class.
+		/// Initializes a new instance of the <see cref="GorgonSwapChainBase"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="window">Window to bind the swap chain to.</param>
 		/// <param name="mode">A video mode structure defining the width, height and format of the render target.</param>
 		/// <param name="depthStencilFormat">The depth buffer format (if required) for the target.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonSwapChain(GorgonGraphics graphics, string name, Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat)
+		protected GorgonSwapChainBase(GorgonGraphics graphics, string name, Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat)
 			: base(graphics, name, mode, depthStencilFormat)	
 		{
 			if (window == null)
