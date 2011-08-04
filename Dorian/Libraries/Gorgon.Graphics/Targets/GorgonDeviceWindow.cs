@@ -14,7 +14,7 @@ namespace GorgonLibrary.Graphics
 	/// These objects are used to as the primary render target for a window.
 	/// </remarks>
 	public abstract class GorgonDeviceWindow
-		: GorgonSwapChainBase
+		: GorgonSwapChainBase, IObjectTracker
 	{
 		#region Classes.
 		/// <summary>
@@ -102,6 +102,7 @@ namespace GorgonLibrary.Graphics
 		private bool _disposed = false;								// Flag to indicate that the object was already disposed.
 		private FormStateRecord _originalWindowState = null;		// Original window state.
 		private bool _wasMaximized = false;							// Flag to indicate that the window was maximized.
+		private IList<IDisposable> _trackedObjects = null;			// List of tracked objects.
 		#endregion
 
 		#region Properties.		
@@ -109,15 +110,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the object holding the current window state.
 		/// </summary>
 		protected FormStateRecord WindowState
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the list of swap chains created by this device window.
-		/// </summary>
-		internal IList<GorgonSwapChain> SwapChains
 		{
 			get;
 			private set;
@@ -153,21 +145,6 @@ namespace GorgonLibrary.Graphics
 		
 		#region Methods.
 		/// <summary>
-		/// Function to clean up any outstanding tracked objects.
-		/// </summary>
-		private void CleanUpTrackedObjects()
-		{
-			List<IDisposable> trackedObjects = new List<IDisposable>();
-
-			trackedObjects.AddRange(SwapChains);
-
-			foreach (var trackedObject in trackedObjects)
-				trackedObject.Dispose();
-
-			SwapChains.Clear();
-		}
-
-		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -183,9 +160,8 @@ namespace GorgonLibrary.Graphics
 
 					CleanUpTrackedObjects();
 
-					// Remove us from the tracking.
-					if (Graphics.DeviceWindows.Contains(this))
-						Graphics.DeviceWindows.Remove(this);
+					// Remove us from anything tracking us.
+					Graphics.RemoveTrackedObject(this);
 
 					if (BoundWindow is Form)
 						_originalWindowState.Restore(false, false);
@@ -219,6 +195,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns></returns>
 		public GorgonSwapChain CreateSwapChain(string name, Control window, GorgonBufferFormat format, GorgonBufferFormat depthStencilFormat)
 		{
+			return null;
 		}
 
 		/// <summary>
@@ -243,7 +220,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (window == null)
 					throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
-				if (SwapChains.Count > 0)
+				if (_trackedObjects.Count(item => item is GorgonSwapChain) > 0)
 					throw new ArgumentException("This device window has extra swap chains, cannot switch to full screen.", "fullScreen");
 			}
 
@@ -319,7 +296,7 @@ namespace GorgonLibrary.Graphics
 			if ((!(window is Form)) && (fullScreen))
 				throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
 
-			SwapChains = new List<GorgonSwapChain>();
+			_trackedObjects = new List<IDisposable>();
 						
 			VideoDevice = device;
 			VideoOutput = output;
@@ -331,6 +308,47 @@ namespace GorgonLibrary.Graphics
 				WindowState = new FormStateRecord(window as Form);
 			}
 		}
+		#endregion
+
+		#region IObjectTracker Members
+		#region Properties.
+		/// <summary>
+		/// Property to return an enumerable list of tracked objects.
+		/// </summary>
+		/// <value></value>
+		internal IEnumerable<IDisposable> TrackedObjects
+		{
+			get 
+			{
+				return _trackedObjects;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to remove a tracked object from the list.
+		/// </summary>
+		/// <param name="trackedObject">The tracked object to remove.</param>
+		internal void RemoveTrackedObject(IDisposable trackedObject)
+		{
+			if (_trackedObjects.Contains(trackedObject))
+				_trackedObjects.Remove(trackedObject);
+		}
+
+		/// <summary>
+		/// Function to clean up any objects being tracked.
+		/// </summary>
+		internal void CleanUpTrackedObjects()
+		{
+			var trackedObjects = _trackedObjects.ToArray();
+
+			foreach (var trackedObject in trackedObjects)
+				trackedObject.Dispose();
+
+			_trackedObjects.Clear();
+		}
+		#endregion
 		#endregion
 	}
 }
