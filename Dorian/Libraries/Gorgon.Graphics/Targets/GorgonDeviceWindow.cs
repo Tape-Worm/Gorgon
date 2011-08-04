@@ -14,7 +14,7 @@ namespace GorgonLibrary.Graphics
 	/// These objects are used to as the primary render target for a window.
 	/// </remarks>
 	public abstract class GorgonDeviceWindow
-		: GorgonSwapChain
+		: GorgonSwapChainBase
 	{
 		#region Classes.
 		/// <summary>
@@ -104,11 +104,20 @@ namespace GorgonLibrary.Graphics
 		private bool _wasMaximized = false;							// Flag to indicate that the window was maximized.
 		#endregion
 
-		#region Properties.
+		#region Properties.		
 		/// <summary>
 		/// Property to return the object holding the current window state.
 		/// </summary>
 		protected FormStateRecord WindowState
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the list of swap chains created by this device window.
+		/// </summary>
+		internal IList<GorgonSwapChain> SwapChains
 		{
 			get;
 			private set;
@@ -144,6 +153,21 @@ namespace GorgonLibrary.Graphics
 		
 		#region Methods.
 		/// <summary>
+		/// Function to clean up any outstanding tracked objects.
+		/// </summary>
+		private void CleanUpTrackedObjects()
+		{
+			List<IDisposable> trackedObjects = new List<IDisposable>();
+
+			trackedObjects.AddRange(SwapChains);
+
+			foreach (var trackedObject in trackedObjects)
+				trackedObject.Dispose();
+
+			SwapChains.Clear();
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -156,6 +180,8 @@ namespace GorgonLibrary.Graphics
 					RemoveEventHandlers();
 
 					CleanUpTest();
+
+					CleanUpTrackedObjects();
 
 					// Remove us from the tracking.
 					if (Graphics.DeviceWindows.Contains(this))
@@ -184,6 +210,18 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="window"></param>
+		/// <param name="format"></param>
+		/// <param name="depthStencilFormat"></param>
+		/// <returns></returns>
+		public GorgonSwapChain CreateSwapChain(string name, Control window, GorgonBufferFormat format, GorgonBufferFormat depthStencilFormat)
+		{
+		}
+
+		/// <summary>
 		/// Function to update the device window.
 		/// </summary>
 		/// <param name="mode">Video mode dimensions to use.</param>
@@ -192,17 +230,21 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>Use this function to change the dimensions, format, fullscreen/windowed state and depth information for the device window.
 		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when <param name="fullScreen"/> is set to FALSE.</para>
-		/// <para>Device windows bound to child controls cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.</para>
+		/// <para>Device windows bound to child controls or device windows with extra <see cref="GorgonLibrary.Graphics.GorgonSwapChainBase">swap chains</see> attached to them cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.</para>
 		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and <paramref name="fullScreen"/> is TRUE.
+		/// </exception>
 		public void Update(GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
 		{
 			Form window = BoundWindow as Form;
 			
-			// Child controls cannot go full screen.
-			if (window == null)
+			// Child controls and device windows with swap chains cannot go full screen.
+			if (fullScreen)
 			{
-				fullScreen = false;
-				window = ParentWindow;
+				if (window == null)
+					throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
+				if (SwapChains.Count > 0)
+					throw new ArgumentException("This device window has extra swap chains, cannot switch to full screen.", "fullScreen");
 			}
 
 			RemoveEventHandlers();
@@ -272,10 +314,12 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("device");
 			if (output == null)
 				throw new ArgumentNullException("output");
-
+			
 			// For child controls, do not go to full screen.
-			if (!(window is Form))
-				fullScreen = false;
+			if ((!(window is Form)) && (fullScreen))
+				throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
+
+			SwapChains = new List<GorgonSwapChain>();
 						
 			VideoDevice = device;
 			VideoOutput = output;
