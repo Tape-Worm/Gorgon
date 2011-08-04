@@ -72,6 +72,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the device window that created this swap chain.
+		/// </summary>
+		public GorgonDeviceWindow DeviceWindow
+		{
+			get;
+			protected set;
+		}
 		#endregion
 
 		#region Methods.
