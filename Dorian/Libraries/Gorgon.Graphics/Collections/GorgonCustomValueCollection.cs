@@ -49,11 +49,11 @@ namespace GorgonLibrary.Collections
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCustomValueCollection&lt;T&gt;.GorgonNamedValue&lt;U&gt;"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonNamedValue&lt;T&gt;"/> struct.
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="value">The value.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref cref="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonNamedValue(string name, T value)
 		{

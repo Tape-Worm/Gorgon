@@ -132,7 +132,16 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		private void SetPresentationParameters()
 		{
-			Form window = BoundWindow as Form;
+			Form window = BoundWindow as Form;			
+
+			if (TargetInformation.Format == GorgonBufferFormat.Unknown)
+			{
+				UpdateTargetInformation(new GorgonVideoMode(TargetInformation.Width, 
+						TargetInformation.Height, 
+						VideoOutput.DefaultVideoMode.Format, 
+						VideoOutput.DefaultVideoMode.RefreshRateNumerator, 
+						VideoOutput.DefaultVideoMode.RefreshRateDenominator), DepthStencilFormat);
+			}
 
 			// If we're maximized, then use the desktop resolution.
 			if ((window != null) && (window.WindowState == FormWindowState.Maximized))
@@ -146,10 +155,13 @@ namespace GorgonLibrary.Graphics.D3D9
 				// If we've not specified a refresh rate, then find the lowest refresh on the output.
 				if ((TargetInformation.RefreshRateDenominator == 0) || (TargetInformation.RefreshRateNumerator == 0))
 				{
-					var refresh = (from mode in VideoOutput.VideoModes
-								  where ((mode.Width == TargetInformation.Width) && (mode.Height == TargetInformation.Height) && (mode.Format == TargetInformation.Format))
-								  select mode.RefreshRateNumerator).Min();
-					UpdateTargetInformation(new GorgonVideoMode(TargetInformation.Width, TargetInformation.Height, TargetInformation.Format, refresh, 1), DepthStencilFormat);
+					if (VideoOutput.VideoModes.Count(item => item.Width == TargetInformation.Width && item.Height == TargetInformation.Height && item.Format == TargetInformation.Format) > 0)
+					{					
+						var refresh = (from mode in VideoOutput.VideoModes
+									  where ((mode.Width == TargetInformation.Width) && (mode.Height == TargetInformation.Height) && (mode.Format == TargetInformation.Format))
+									  select mode.RefreshRateNumerator).Min();
+						UpdateTargetInformation(new GorgonVideoMode(TargetInformation.Width, TargetInformation.Height, TargetInformation.Format, refresh, 1), DepthStencilFormat);
+					}
 				}					
 
 				count = VideoOutput.VideoModes.Count(item => item == TargetInformation);
@@ -183,6 +195,20 @@ namespace GorgonLibrary.Graphics.D3D9
 					SwapEffect = SwapEffect.Discard
 			}};
 
+			if (!VideoOutput.SupportsBackBufferFormat(TargetInformation.Format, IsWindowed))
+				throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified format '" + TargetInformation.Format.ToString() + "' with the display format '" + VideoOutput.DefaultVideoMode.Format.ToString() + "'.");
+
+			if (!VideoOutput.SupportsDepthFormat(TargetInformation.Format, DepthStencilFormat, IsWindowed))
+				throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified depth/stencil format '" + DepthStencilFormat.ToString() + "'.");
+
+			GorgonMSAAQualityLevel? msaaQualityLevel = VideoDevice.SupportsMultiSampleQualityLevel(GorgonMSAALevel.NonMasked, TargetInformation.Format, IsWindowed);
+
+			if (msaaQualityLevel != null)
+			{
+				_presentParams[0].Multisample = D3DConvert.Convert(msaaQualityLevel.Value.Level);
+				_presentParams[0].MultisampleQuality = msaaQualityLevel.Value.Quality - 1;
+			}
+
 			// Set up the depth buffer if necessary.
 			if (DepthStencilFormat != GorgonBufferFormat.Unknown)
 			{				
@@ -196,6 +222,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				_presentParams[0].PresentationInterval = PresentInterval.Immediate;
 				_presentParams[0].FullScreenRefreshRateInHertz = 0;
 			}
+
 		}
 
 		/// <summary>
@@ -370,25 +397,21 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="D3D9DeviceWindow"/> class.
+		/// Initializes a new instance of the <see cref="GorgonDeviceWindow"/> class.
 		/// </summary>
 		/// <param name="name">The name.</param>
+		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="device">Video device to use.</param>
 		/// <param name="output">Video output on the device to use.</param>
-		/// <param name="mode">A video mode structure defining the width, height and format of the render target.</param>
-		/// <param name="depthStencilFormat">The depth buffer format (if required) for the target.</param>
-		/// <param name="fullScreen">TRUE to go full screen, FALSE to stay windowed.</param>
+		/// <param name="settings">Device window settings.</param>
+		/// <param name="advanced">Advanceed settings.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the <param name="device"/>, <param name="output"/> or <param name="window"> parameters are NULL (Nothing in VB.Net).</para>
+		/// <para>Thrown when the <paramref name="device"/> and <paramref name="output"/> parameters are NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		/// <remarks>When passing TRUE to <paramref name="fullScreen"/>, then the <paramref name="window"/> parameter must be a Windows Form object.
-		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
-		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when <param name="fullScreen"/> is set to FALSE.</para>
-		/// </remarks>
-		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonVideoDevice device, GorgonVideoOutput output, Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
-			: base(graphics, name, device, output, window, mode, depthStencilFormat, fullScreen)
+		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonVideoDevice device, GorgonVideoOutput output, GorgonDeviceWindowSettings settings, GorgonDeviceWindowAdvancedSettings advanced)
+			: base(graphics, name, device, output, settings, advanced)
 		{
 			_graphics = graphics as GorgonD3D9Graphics;
 		}

@@ -11,6 +11,9 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public abstract class GorgonVideoDeviceCapabilities
 	{
+		#region Value Types.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the pixel shader version.
@@ -43,6 +46,15 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the available comparison flags for a depth buffer.
 		/// </summary>
 		public GorgonCompareFlags DepthComparisonFlags
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the available VSync intervals.
+		/// </summary>
+		public GorgonVSyncInterval VSyncIntervals
 		{
 			get;
 			protected set;

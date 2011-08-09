@@ -40,7 +40,9 @@ namespace GorgonLibrary.Graphics.D3D9
 		: GorgonVideoOutput
 	{
 		#region Variables.
-		private AdapterInformation _info = null;		// Adapter information.
+		private AdapterInformation _info = null;				// Adapter information.
+		private Direct3D _d3d = null;							// Direct 3D interface.
+		private DeviceType _deviceType = DeviceType.Hardware;	// Device type.
 		#endregion
 
 		#region Properties.
@@ -85,20 +87,77 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			return modes;
 		}
+
+		/// <summary>
+		/// Function to determine if a specified display format is supported by the hardware or not.
+		/// </summary>
+		/// <param name="format">Backbuffer format to check.</param>
+		/// <param name="isWindowed">TRUE if in windowed mode, FALSE if not.</param>
+		/// <returns>TRUE if supported, FALSE if not.</returns>
+		public override bool SupportsBackBufferFormat(GorgonBufferFormat format, bool isWindowed)
+		{
+			if (isWindowed)
+				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.GetDisplayFormat(DefaultVideoMode.Format, true), D3DConvert.GetDisplayFormat(format, !isWindowed), isWindowed);
+			else
+				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.GetDisplayFormat(format, true), D3DConvert.GetDisplayFormat(format, true), isWindowed);
+		}
+
+		/// <summary>
+		/// Function to determine if a depth/stencil format can be used with a specific display format.
+		/// </summary>
+		/// <param name="displayFormat">Display format to use.</param>
+		/// <param name="depthStencilFormat">Depth/stencil format to check.</param>
+		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
+		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
+		public override bool SupportsDepthFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat depthStencilFormat, bool isWindowed)
+		{
+			Format adapterFormat = (isWindowed ? D3DConvert.GetDisplayFormat(DefaultVideoMode.Format, true) : D3DConvert.GetDisplayFormat(displayFormat, true));
+
+			if (_d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, Usage.DepthStencil, ResourceType.Surface, D3DConvert.Convert(depthStencilFormat, false)))			
+			{
+				if (_d3d.CheckDepthStencilMatch(_info.Adapter, _deviceType, adapterFormat, D3DConvert.Convert(displayFormat, false), D3DConvert.Convert(depthStencilFormat, false)))
+					return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Function to determine if a texture format can be used with a specific display format.
+		/// </summary>
+		/// <param name="displayFormat">Display format to use.</param>
+		/// <param name="depthStencilFormat">Texture format to check.</param>
+		/// <param name="dynamic">TRUE if using a dynamic texture, FALSE for static textures.</param>
+		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
+		/// <returns>TRUE if the texture format is supported, FALSE if not.</returns>
+		public bool SupportsTextureFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat textureFormat, bool dynamic, bool isWindowed)
+		{
+			// TODO:  Replace dynamic with a flag enumeration for Dynamic, Static or RenderTarget.
+			Format adapterFormat = (isWindowed ? D3DConvert.GetDisplayFormat(DefaultVideoMode.Format, true) : D3DConvert.GetDisplayFormat(displayFormat, true));
+			Usage usage = Usage.None;
+
+			if (dynamic)
+				usage = Usage.Dynamic;
+
+			return _d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, usage, ResourceType.Texture, D3DConvert.Convert(textureFormat, true));
+		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="D3D9VideoOutput"/> class.
 		/// </summary>
+		/// <param name="d3d">Direct 3D interface.</param>
+		/// <param name="deviceType">Device type.</param>
 		/// <param name="adapter">Adapter information.</param>
 		/// <param name="headIndex">Index of the adapter head.</param>
 		/// <param name="monitorInfo">Monitor information.</param>
-		public D3D9VideoOutput(AdapterInformation adapter, int headIndex, MONITORINFOEX monitorInfo)
+		public D3D9VideoOutput(Direct3D d3d, DeviceType deviceType, AdapterInformation adapter, int headIndex, MONITORINFOEX monitorInfo)
 		{
 			if (adapter == null)
 				throw new ArgumentNullException("adapter");
-			
+
+			_d3d = d3d;
 			_info = adapter;
 			Handle = adapter.Monitor;
 			Rotation = 0;

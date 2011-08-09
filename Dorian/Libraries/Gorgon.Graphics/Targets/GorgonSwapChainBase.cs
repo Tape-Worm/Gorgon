@@ -71,7 +71,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
-		}
+		}		
 		#endregion
 
 		#region Methods.

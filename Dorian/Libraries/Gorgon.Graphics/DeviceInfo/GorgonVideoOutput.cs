@@ -108,6 +108,34 @@ namespace GorgonLibrary.Graphics
 		{
 			VideoModes = new GorgonVideoModeList(GetVideoModes());
 		}
+
+		/// <summary>
+		/// Function to determine if a specified display format is supported by the hardware or not.
+		/// </summary>
+		/// <param name="format">Backbuffer format to check.</param>
+		/// <param name="isWindowed">TRUE if in windowed mode, FALSE if not.</param>
+		/// <returns>TRUE if supported, FALSE if not.</returns>
+		/// <remarks>Some devices can handle having a
+		/// display mode with one format type, and a backbuffer of another format type.  This method will determine if the specific output is capable of this.
+		/// <para>Implementors may choose to override this to determine if a specific device format is supported in hardware.  But it is not required.</para>
+		/// </remarks>
+		public virtual bool SupportsBackBufferFormat(GorgonBufferFormat format, bool isWindowed)
+		{
+			return true;
+		}
+
+		/// <summary>
+		/// Function to determine if a depth/stencil format can be used with a specific display format.
+		/// </summary>
+		/// <param name="displayFormat">Display format to use.</param>
+		/// <param name="depthStencilFormat">Depth/stencil format to check.</param>
+		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
+		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
+		/// <remarks>Implementors may choose to override this to determine if a specific device format is supported in hardware.  But it is not required.</remarks>
+		public virtual bool SupportsDepthFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat depthStencilFormat, bool isWindowed)
+		{
+			return true;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
