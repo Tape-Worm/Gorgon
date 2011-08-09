@@ -71,7 +71,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonSwapChain(GorgonGraphics graphics, GorgonDeviceWindow device, string name, Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat)
+		protected GorgonSwapChain(GorgonGraphics graphics, GorgonDeviceWindow device, string name, Control window, GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
 			: base(graphics, name, window, mode, depthStencilFormat)
 		{
 			if (device == null)

@@ -211,7 +211,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and <paramref name="fullScreen"/> is TRUE.
 		/// </exception>
-		public void Update(GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
+		public void Update(GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat, bool fullScreen)
 		{
 			Form window = BoundWindow as Form;
 			

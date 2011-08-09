@@ -91,7 +91,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the format of the attached depth/stencil buffer.
 		/// </summary>
 		/// <remarks>This will return the format of the depth/stencil buffer if these are created when the target is created.  If neither are created, then this property will return <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see>.</remarks>
-		public GorgonBufferFormat DepthStencilFormat
+		public GorgonDepthBufferFormat DepthStencilFormat
 		{
 			get;
 			private set;
@@ -118,7 +118,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="mode">The dimensions and format of the target.</param>
 		/// <param name="depthStencilFormat">The depth buffer format.</param>
-		protected void UpdateTargetInformation(GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat)
+		protected void UpdateTargetInformation(GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
 		{
 			TargetInformation = mode;
 			DepthStencilFormat = depthStencilFormat;
@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonRenderTarget(GorgonGraphics graphics, string name, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat)
+		protected GorgonRenderTarget(GorgonGraphics graphics, string name, GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
 			: base(name)
 		{
 			if (graphics == null)
