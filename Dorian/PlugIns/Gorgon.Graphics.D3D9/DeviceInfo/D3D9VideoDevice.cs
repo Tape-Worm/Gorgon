@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using SlimDX;
 using SlimDX.Direct3D9;
 using GorgonLibrary.Native;
 
@@ -91,7 +92,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </returns>
 		protected override GorgonVideoDeviceCapabilities CreateDeviceCapabilities()
 		{
-			return new D3D9VideoDeviceCapabilities(_adapter, _caps);
+			return new D3D9VideoDeviceCapabilities(_d3d, _deviceType, _adapter, _caps);
 		}
 
 		/// <summary>
@@ -111,7 +112,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			// Get the primary output.
 			monitorInfo = Win32API.GetMonitorInfo(_adapter.Monitor);
 			if (monitorInfo != null)
-				return new D3D9VideoOutput[] {new D3D9VideoOutput(_adapter, _caps.AdapterOrdinalInGroup, monitorInfo.Value)};
+				return new D3D9VideoOutput[] {new D3D9VideoOutput(_d3d, _deviceType, _adapter, _caps.AdapterOrdinalInGroup, monitorInfo.Value)};
 			
 			throw new GorgonException(GorgonResult.CannotEnumerate, "Could not enumerate the video outputs.  There was an error retrieving the monitor information.");
 
@@ -144,6 +145,23 @@ namespace GorgonLibrary.Graphics.D3D9
 			//}
 
 			//return outputs;
+		}
+
+		/// <summary>
+		/// Function to return whether the specified format can support the requested multi sample level.
+		/// </summary>
+		/// <param name="level">The multi sample level to test.</param>
+		/// <param name="format">Format to test for multi sampling capabilities.</param>
+		/// <param name="windowed">TRUE if testing for windowed mode, FALSE if not.</param>
+		/// <returns>The multi sample maximum quality and level supported, or NULL (Nothing in VB.Net) if not supported.</returns>
+		public override GorgonMSAAQualityLevel? SupportsMultiSampleQualityLevel(GorgonMSAALevel level, GorgonBufferFormat format, bool windowed)
+		{
+			int quality = 0;
+
+			if (_d3d.CheckDeviceMultisampleType(AdapterIndex, _deviceType, D3DConvert.Convert(format, false), windowed, D3DConvert.Convert(level), out quality))
+				return new GorgonMSAAQualityLevel(level, quality);
+
+			return null;
 		}
 		#endregion
 

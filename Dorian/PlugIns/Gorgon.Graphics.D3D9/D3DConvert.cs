@@ -39,6 +39,178 @@ namespace GorgonLibrary.Graphics.D3D9
 	{
 		#region Methods.
 		/// <summary>
+		/// Function to convert a D3D swap effect to a Gorgon display function.
+		/// </summary>
+		/// <param name="displayFunction">D3D swap effect to convert.</param>
+		/// <returns>The Gorgon display function.</returns>
+		public static GorgonDisplayFunction Convert(SwapEffect displayFunction)
+		{
+			switch (displayFunction)
+			{
+				case SwapEffect.Copy:
+					return GorgonDisplayFunction.Copy;
+				case SwapEffect.Flip:
+					return GorgonDisplayFunction.Flip;
+				default:
+					return GorgonDisplayFunction.Discard;
+			}
+		}
+
+		/// <summary>
+		/// Function to convert a Gorgon display function to a D3D swap effect.
+		/// </summary>
+		/// <param name="displayFunction">Gorgon display function to convert.</param>
+		/// <returns>The D3D swap effect.</returns>
+		public static SwapEffect Convert(GorgonDisplayFunction displayFunction)
+		{
+			switch (displayFunction)
+			{
+				case GorgonDisplayFunction.Copy:
+					return SwapEffect.Copy;
+				case GorgonDisplayFunction.Flip:
+					return SwapEffect.Flip;
+				default:
+					return SwapEffect.Discard;
+			}
+		}
+
+		/// <summary>
+		/// Function to convert a D3D presentation interval to a Gorgon vsync interval.
+		/// </summary>
+		/// <param name="interval">D3D interval to convert.</param>
+		/// <returns>The Gorgon vsync interval.</returns>
+		public static GorgonVSyncInterval Convert(PresentInterval interval)
+		{
+			switch (interval)
+			{
+				case PresentInterval.One:
+					return GorgonVSyncInterval.One;
+				case PresentInterval.Two:
+					return GorgonVSyncInterval.Two;
+				case PresentInterval.Three:
+					return GorgonVSyncInterval.Three;
+				case PresentInterval.Four:
+					return GorgonVSyncInterval.Four;
+				default:
+					return GorgonVSyncInterval.None;
+			}			
+		}
+
+		/// <summary>
+		/// Function to convert a Gorgon vsync interval to a D3D present interval.
+		/// </summary>
+		/// <param name="interval">Gorgon vsync interval to convert.</param>
+		/// <returns>The D3D present interval.</returns>
+		public static PresentInterval Convert(GorgonVSyncInterval interval)
+		{
+			switch (interval)
+			{
+				case GorgonVSyncInterval.One:
+					return PresentInterval.One;
+				case GorgonVSyncInterval.Two:
+					return PresentInterval.Two;
+				case GorgonVSyncInterval.Three:
+					return PresentInterval.Three;
+				case GorgonVSyncInterval.Four:
+					return PresentInterval.Four;
+				default:
+					return PresentInterval.Immediate;
+			}
+		}
+
+		/// <summary>
+		/// Function to convert a D3D multi sample type to a Gorgon multi sample level.
+		/// </summary>
+		/// <param name="sampleLevel">D3D multi sample type to convert.</param>
+		/// <returns>Gorgon multi sample level.</returns>
+		public static GorgonMSAALevel Convert(MultisampleType sampleLevel)
+		{
+			switch (sampleLevel)
+			{
+				case MultisampleType.NonMaskable:
+					return GorgonMSAALevel.NonMasked;
+				case MultisampleType.TwoSamples:
+					return GorgonMSAALevel.Level2;
+				case MultisampleType.ThreeSamples:
+					return GorgonMSAALevel.Level3;
+				case MultisampleType.FourSamples:
+					return GorgonMSAALevel.Level4;
+				case MultisampleType.FiveSamples:
+					return GorgonMSAALevel.Level5;
+				case MultisampleType.SixSamples:
+					return GorgonMSAALevel.Level6;
+				case MultisampleType.SevenSamples:
+					return GorgonMSAALevel.Level7;
+				case MultisampleType.EightSamples:
+					return GorgonMSAALevel.Level8;
+				case MultisampleType.NineSamples:
+					return GorgonMSAALevel.Level9;
+				case MultisampleType.TenSamples:
+					return GorgonMSAALevel.Level10;
+				case MultisampleType.ElevenSamples:
+					return GorgonMSAALevel.Level11;
+				case MultisampleType.TwelveSamples:
+					return GorgonMSAALevel.Level12;
+				case MultisampleType.ThirteenSamples:
+					return GorgonMSAALevel.Level13;
+				case MultisampleType.FourteenSamples:
+					return GorgonMSAALevel.Level14;
+				case MultisampleType.FifteenSamples:
+					return GorgonMSAALevel.Level15;
+				case MultisampleType.SixteenSamples:
+					return GorgonMSAALevel.Level16;
+				default:
+					return GorgonMSAALevel.None;
+			}
+		}
+
+		/// <summary>
+		/// Function to convert a Gorgon multi sample level to a D3D multi-sample type.
+		/// </summary>
+		/// <param name="sampleLevel">Gorgon multi sample level to convert.</param>
+		/// <returns>D3D multi sample type.</returns>
+		public static MultisampleType Convert(GorgonMSAALevel sampleLevel)
+		{
+			switch (sampleLevel)
+			{
+				case GorgonMSAALevel.NonMasked:
+					return MultisampleType.NonMaskable;
+				case GorgonMSAALevel.Level2:
+					return MultisampleType.TwoSamples;
+				case GorgonMSAALevel.Level3:
+					return MultisampleType.ThreeSamples;
+				case GorgonMSAALevel.Level4:
+					return MultisampleType.FourSamples;
+				case GorgonMSAALevel.Level5:
+					return MultisampleType.FiveSamples;
+				case GorgonMSAALevel.Level6:
+					return MultisampleType.SixSamples;
+				case GorgonMSAALevel.Level7:
+					return MultisampleType.SevenSamples;
+				case GorgonMSAALevel.Level8:
+					return MultisampleType.EightSamples;
+				case GorgonMSAALevel.Level9:
+					return MultisampleType.NineSamples;
+				case GorgonMSAALevel.Level10:
+					return MultisampleType.TenSamples;
+				case GorgonMSAALevel.Level11:
+					return MultisampleType.ElevenSamples;
+				case GorgonMSAALevel.Level12:
+					return MultisampleType.TwelveSamples;
+				case GorgonMSAALevel.Level13:
+					return MultisampleType.ThirteenSamples;
+				case GorgonMSAALevel.Level14:
+					return MultisampleType.FourteenSamples;
+				case GorgonMSAALevel.Level15:
+					return MultisampleType.FifteenSamples;
+				case GorgonMSAALevel.Level16:
+					return MultisampleType.SixteenSamples;
+				default:
+					return MultisampleType.None;
+			}
+		}
+
+		/// <summary>
 		/// Function to retrieve a proper D3D display format
 		/// </summary>
 		/// <param name="format">Gorgon format to translate.</param>
@@ -84,6 +256,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				case Format.A8:
 					return GorgonBufferFormat.A8_UIntNorm;
 				case Format.A2R10G10B10:
+					return GorgonBufferFormat.R10G10B10A2_UIntNorm;
 				case Format.A2B10G10R10:
 					return GorgonBufferFormat.R10G10B10A2_Typeless;
 				case Format.G16R16:
@@ -157,6 +330,9 @@ namespace GorgonLibrary.Graphics.D3D9
 					return Format.A8R8G8B8;
 				case GorgonBufferFormat.A8_UIntNorm:
 					return Format.A8;
+				case GorgonBufferFormat.R10G10B10A2_UInt:
+				case GorgonBufferFormat.R10G10B10A2_UIntNorm:
+					return Format.A2R10G10B10;
 				case GorgonBufferFormat.R10G10B10A2_Typeless:
 					return Format.A2B10G10R10;
 				case GorgonBufferFormat.B8G8R8A8_UIntNorm:

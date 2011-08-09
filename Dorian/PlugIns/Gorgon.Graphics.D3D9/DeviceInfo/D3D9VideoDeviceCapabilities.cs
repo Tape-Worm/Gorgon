@@ -39,8 +39,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		: GorgonVideoDeviceCapabilities
 	{
 		#region Variables.
-		private AdapterInformation _info = null;		// Adapter information.
-		private Capabilities _caps = null;				// Capabilities.
+		private AdapterInformation _info = null;				// Adapter information.
+		private Capabilities _caps = null;						// Capabilities.
+		private Direct3D _d3d = null;							// Direct 3D interface.
+		private DeviceType _deviceType = DeviceType.Hardware;	// Device type.
 		#endregion
 
 		#region Methods.
@@ -84,12 +86,29 @@ namespace GorgonLibrary.Graphics.D3D9
 		protected override IEnumerable<KeyValuePair<string, object>> GetCaps()
 		{
 			IEnumerable<KeyValuePair<string, object>> result = EnumerateCaps();
+			IList<GorgonMSAAQualityLevel> multiSampleLevels = new List<GorgonMSAAQualityLevel>();
 
 			VertexShaderVersion = _caps.VertexShaderVersion;
 			PixelShaderVersion = _caps.PixelShaderVersion;
 			AlphaComparisonFlags = D3DConvert.Convert(_caps.AlphaCompareCaps);
 			DepthComparisonFlags = D3DConvert.Convert(_caps.DepthCompareCaps);
 
+			if ((_caps.PresentationIntervals & PresentInterval.Immediate) == PresentInterval.Immediate)
+				VSyncIntervals |= GorgonVSyncInterval.None;
+
+			if ((_caps.PresentationIntervals & PresentInterval.One) == PresentInterval.One)
+				VSyncIntervals |= GorgonVSyncInterval.One;
+
+			if ((_caps.PresentationIntervals & PresentInterval.Two) == PresentInterval.Two)
+				VSyncIntervals |= GorgonVSyncInterval.Two;
+
+			if ((_caps.PresentationIntervals & PresentInterval.Three) == PresentInterval.Three)
+				VSyncIntervals |= GorgonVSyncInterval.Three;
+
+			if ((_caps.PresentationIntervals & PresentInterval.Four) == PresentInterval.Four)
+				VSyncIntervals |= GorgonVSyncInterval.Four;
+			
+			
 			return result;
 		}
 		#endregion
@@ -98,15 +117,20 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <summary>
 		/// Initializes a new instance of the <see cref="D3D9VideoDeviceCapabilities"/> class.
 		/// </summary>
+		/// <param name="d3d">Direct 3D instance.</param>
 		/// <param name="info">The adapter information.</param>
 		/// <param name="caps">The caps.</param>
-		internal D3D9VideoDeviceCapabilities(AdapterInformation info, Capabilities caps)
+		internal D3D9VideoDeviceCapabilities(Direct3D d3d, DeviceType deviceType, AdapterInformation info, Capabilities caps)
 		{
+			if (d3d == null)
+				throw new ArgumentNullException("d3d");
 			if (info == null)
 				throw new ArgumentNullException("info");
 			if (caps == null)
 				throw new ArgumentNullException("caps");
 
+			_deviceType = deviceType;
+			_d3d = d3d;
 			_info = info;
 			_caps = caps;
 		}

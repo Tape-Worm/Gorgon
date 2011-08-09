@@ -35,7 +35,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	///  A swap chain render target that can be attached to a window.
 	/// </summary>
-	public class GorgonSwapChain
+	public abstract class GorgonSwapChain
 		: GorgonSwapChainBase
 	{
 		#region Properties.

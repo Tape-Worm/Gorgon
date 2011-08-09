@@ -19,8 +19,7 @@ namespace Tester_Graphics
 	{
 		GorgonGraphics _gfx = null;
 		GorgonDeviceWindow _dev = null;
-		GorgonDeviceWindow _dev2 = null;
-		Form2 form2 = null;
+		GorgonDeviceWindow _dev2 = null;		
 
 		private bool Idle(GorgonFrameRate timing)
 		{
@@ -48,6 +47,7 @@ namespace Tester_Graphics
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				Close();
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace Tester_Graphics
 				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
 				//_dev = _gfx.CreateDeviceWindow("Test", new GorgonVideoMode(640, 480, GorgonBufferFormat.R8G8B8A8_UIntNorm, 60, 1), GorgonBufferFormat.D24_UIntNorm_S8_UInt, false);
 				//_dev = _gfx.CreateDeviceWindow("Test", GorgonBufferFormat.D24_UIntNorm_S8_UInt, true);
-				_dev = _gfx.CreateDeviceWindow("Test", GorgonBufferFormat.D24_UIntNorm_S8_UInt, false);
+				_dev = _gfx.CreateDeviceWindow("Test", new GorgonDeviceWindowSettings() { Windowed = true, DepthStencilFormat = GorgonBufferFormat.D16_UIntNorm});
 				_dev.SetupTest();
 
 				//form2 = new Form2();				
@@ -83,6 +83,7 @@ namespace Tester_Graphics
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				Application.Exit();				
 			}
 
 		}

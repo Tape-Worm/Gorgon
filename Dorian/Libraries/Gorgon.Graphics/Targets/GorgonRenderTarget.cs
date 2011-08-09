@@ -32,6 +32,32 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// This is used to pass multi sample information around for creating multi sample/anti-aliased graphics.
+	/// </summary>
+	public struct GorgonMSAAQualityLevel
+	{
+		/// <summary>
+		/// Multi sample level to assign.
+		/// </summary>
+		public GorgonMSAALevel Level;
+		/// <summary>
+		/// Quality of the multi sample level.
+		/// </summary>
+		public int Quality;
+				
+		/// <summary>
+		/// Gorgons the multi sample level.
+		/// </summary>
+		/// <param name="level">The level.</param>
+		/// <param name="quality">The quality.</param>
+		public GorgonMSAAQualityLevel(GorgonMSAALevel level, int quality)
+		{
+			Level = level;
+			Quality = quality;
+		}
+	}
+
+	/// <summary>
 	/// A render target.
 	/// </summary>
 	/// <remarks>The render target will receive the graphical data for display.</remarks>

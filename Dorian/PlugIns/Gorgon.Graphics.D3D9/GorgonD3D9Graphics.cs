@@ -126,9 +126,8 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// Function to retrieve the video device and output that we're currently using.
 		/// </summary>
 		/// <param name="window">Window to use.</param>
-		/// <param name="fullScreen">TRUE if we're going full screen, FALSE if not.</param>
 		/// <returns>The video device and output that we're using.</returns>
-		private Tuple<GorgonVideoDevice, GorgonVideoOutput> GetDevice(Control window, bool fullScreen)
+		private Tuple<GorgonVideoDevice, GorgonVideoOutput> GetDevice(Control window)
 		{
 			IntPtr monitor = Win32API.GetMonitor(window);
 
@@ -141,25 +140,30 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// Function to create a device window in back end API.
 		/// </summary>
 		/// <param name="name">Name of the window.</param>
-		/// <param name="window">Window to bind to the device window.</param>
-		/// <param name="mode">Video mode to set.</param>
-		/// <param name="depthStencilFormat">Format for the depth/stencil buffer.</param>
-		/// <param name="fullScreen">TRUE to use fullscreen mode, FALSE to use windowed.</param>
+		/// <param name="settings">Device window settings.</param>
+		/// <param name="advanced">Advanced device window settings.</param>
 		/// <returns>
 		/// A device window.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-		///   <para>-or-</para>
-		///   <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
-		///   </exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		///   
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		///   <para>-or-</para>
-		///   <para>Thrown if the <paramref name="mode"/> is a video mode that cannot be used.</para>
+		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.DisplayMode">DisplayMode</see> property of the <paramref name="settings"/> parameter is a video mode that cannot be used.</para>
+		///   <para>-or-</para>
+		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the settings parameter is already a device window.</para>
+		///   <para>-or-</para>
+		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property of the settings parameter is FALSE and the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the settings parameter is a child control.</para>
+		///   <para>-or-</para>
+		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowAdvancedSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the <paramref name="advanced"/> parameter has a value that cannot be supported by the device.
+		/// You may check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.SupportsMultiSampleQualityLevel">SupportsMultiSampleQualityLevel</see> method on the video device object.</para>
 		///   </exception>
-		protected override GorgonDeviceWindow CreateDeviceWindowImpl(string name, System.Windows.Forms.Control window, GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, bool fullScreen)
+		///   
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
+		protected override GorgonDeviceWindow CreateDeviceWindowImpl(string name, GorgonDeviceWindowSettings settings, GorgonDeviceWindowAdvancedSettings advanced)
 		{
-			Tuple<GorgonVideoDevice, GorgonVideoOutput> deviceOutput = GetDevice(window, fullScreen);
-			return new D3D9DeviceWindow(this, name, deviceOutput.Item1, deviceOutput.Item2, window, mode, depthStencilFormat, fullScreen);
+			Tuple<GorgonVideoDevice, GorgonVideoOutput> deviceOutput = GetDevice(settings.BoundWindow);
+			return new D3D9DeviceWindow(this, name, deviceOutput.Item1, deviceOutput.Item2, settings, advanced);
 		}
 
 		/// <summary>
