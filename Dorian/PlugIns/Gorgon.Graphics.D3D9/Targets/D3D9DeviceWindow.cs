@@ -134,7 +134,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			Form window = BoundWindow as Form;			
 
-			if (TargetInformation.Format == GorgonBufferFormat.Unknown)
+			if (TargetInformation.Format == GorgonDisplayFormat.Unknown)
 			{
 				UpdateTargetInformation(new GorgonVideoMode(TargetInformation.Width, 
 						TargetInformation.Height, 
@@ -181,7 +181,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				new PresentParameters() {
 					AutoDepthStencilFormat = SlimDX.Direct3D9.Format.Unknown,
 					BackBufferCount = 3,
-					BackBufferFormat = D3DConvert.GetDisplayFormat(TargetInformation.Format, !IsWindowed),
+					BackBufferFormat = D3DConvert.ConvertDisplayFormat(TargetInformation.Format),
 					BackBufferHeight = TargetInformation.Height,
 					BackBufferWidth = TargetInformation.Width,
 					DeviceWindowHandle = BoundWindow.Handle,
@@ -210,9 +210,9 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			// Set up the depth buffer if necessary.
-			if (DepthStencilFormat != GorgonBufferFormat.Unknown)
+			if (DepthStencilFormat != GorgonDepthBufferFormat.Unknown)
 			{				
-				_presentParams[0].AutoDepthStencilFormat = D3DConvert.Convert(DepthStencilFormat, false);
+				_presentParams[0].AutoDepthStencilFormat = D3DConvert.ConvertDepthFormat(DepthStencilFormat);
 				_presentParams[0].EnableAutoDepthStencil = true;
 			}
 			

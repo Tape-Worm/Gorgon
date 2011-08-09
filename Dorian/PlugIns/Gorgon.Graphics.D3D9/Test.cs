@@ -59,12 +59,16 @@ namespace GorgonLibrary.Graphics.D3D9
 				_device.BeginScene();
 				switch (_window.DepthStencilFormat)
 				{
-					case GorgonBufferFormat.D32_Float:
-					case GorgonBufferFormat.D16_UIntNorm:
+					case GorgonDepthBufferFormat.D32_Float_Lockable:
+					case GorgonDepthBufferFormat.D32:
+					case GorgonDepthBufferFormat.D24X8:
+					case GorgonDepthBufferFormat.D16_Lockable:
+					case GorgonDepthBufferFormat.D16:
 						_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(0, 0, 0, 0), 1.0f, 0);
 						break;
-					case GorgonBufferFormat.D32_Float_S8X24_UInt:
-					case GorgonBufferFormat.D24_UIntNorm_S8_UInt:
+					case GorgonDepthBufferFormat.D24_Float_S8:
+					case GorgonDepthBufferFormat.D24S8:
+					case GorgonDepthBufferFormat.D15S1:
 						_device.Clear(ClearFlags.All, new Color4(0, 0, 0, 0), 1.0f, 0);
 						break;
 					default:

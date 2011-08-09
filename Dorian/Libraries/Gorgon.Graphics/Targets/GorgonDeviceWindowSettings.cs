@@ -79,7 +79,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// The format of the depth/stencil buffer.  Use the Unknown format to skip the creation of the depth/stencil buffer.
 		/// </summary>
-		public GorgonBufferFormat DepthStencilFormat;
+		public GorgonDepthBufferFormat DepthStencilFormat;
 		/// <summary>
 		/// TRUE to use windowed mode, FALSE to use full screen mode.
 		/// </summary>

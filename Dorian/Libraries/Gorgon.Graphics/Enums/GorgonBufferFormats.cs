@@ -32,6 +32,80 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// A listing of backbuffer formats for swap chains and device windows.
+	/// </summary>
+	public enum GorgonDisplayFormat
+	{
+		/// <summary>
+		/// A display format for 10 bit R, G, and B and 2 bit Alpha.
+		/// </summary>
+		A2R10G10B10 = 0,
+		/// <summary>
+		/// A display format for 8 bit R, G, and B and 8 bit Alpha.
+		/// </summary>
+		A8R8G8B8 = 1,
+		/// <summary>
+		/// A display format for 8 bit R, G, and B.
+		/// </summary>
+		X8R8G8B8 = 2,
+		/// <summary>
+		/// Unknown format.
+		/// </summary>
+		Unknown = 3
+	}
+
+	/// <summary>
+	/// A listing of depth buffer formats.
+	/// </summary>
+	public enum GorgonDepthBufferFormat
+	{
+		/// <summary>
+		/// A 15 bit depth buffer and 1 bit stencil format.
+		/// </summary>
+		D15S1 = 0,
+		/// <summary>
+		/// A 16 bit depth buffer format (lockable).
+		/// </summary>
+		D16_Lockable = 1,
+		/// <summary>
+		/// A 16 bit depth buffer format.
+		/// </summary>
+		D16 = 2,
+		/// <summary>
+		/// A 24 bit depth buffer format.
+		/// </summary>
+		D24X8 = 3,
+		/// <summary>
+		/// A 24 bit depth and 4 bit stencil buffer format.
+		/// </summary>
+		D24X4S4 = 4,
+		/// <summary>
+		/// A 24 bit depth and 8 bit stencil buffer format.
+		/// </summary>
+		D24S8 = 5,
+		/// <summary>
+		/// A 24 bit floating point depth and 8 bit stencil buffer format.
+		/// </summary>
+		D24_Float_S8 = 6,
+		/// <summary>
+		/// A 32 bit floating point depth buffer format (lockable).
+		/// </summary>
+		D32_Float_Lockable = 7,
+		/// <summary>
+		/// A 32 bit depth buffer format.
+		/// </summary>
+		D32 = 8,
+		/// <summary>
+		/// An 8 bit stencil format.
+		/// </summary>
+		X24S8 = 9,
+		/// <summary>
+		/// Unknown depth buffer format.
+		/// </summary>
+		Unknown = 10
+	}
+
+	/// <summary>
 	/// A listing of buffer formats.
 	/// </summary>
 	public enum GorgonBufferFormat
@@ -437,6 +511,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A normalized unsigned integer block compression format for sRGB data.
 		/// </summary>
-		BC7_UIntNorm_sRGB = 99
+		BC7_UIntNorm_sRGB = 99,
+		/// <summary>
+		/// 4 component 32 bit unsigned integer format.
+		/// </summary>
+		R8G8B8X8_UInt = 100
 	}
 }
