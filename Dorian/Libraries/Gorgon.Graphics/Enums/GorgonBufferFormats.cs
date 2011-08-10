@@ -32,489 +32,552 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A listing of backbuffer formats for swap chains and device windows.
+	/// A list of various buffer formats supported by back end graphics APIs
 	/// </summary>
-	public enum GorgonDisplayFormat
-	{
-		/// <summary>
-		/// A display format for 10 bit R, G, and B and 2 bit Alpha.
-		/// </summary>
-		A2R10G10B10 = 0,
-		/// <summary>
-		/// A display format for 8 bit R, G, and B and 8 bit Alpha.
-		/// </summary>
-		A8R8G8B8 = 1,
-		/// <summary>
-		/// A display format for 8 bit R, G, and B.
-		/// </summary>
-		X8R8G8B8 = 2,
-		/// <summary>
-		/// Unknown format.
-		/// </summary>
-		Unknown = 3
-	}
-
-	/// <summary>
-	/// A listing of depth buffer formats.
-	/// </summary>
-	public enum GorgonDepthBufferFormat
-	{
-		/// <summary>
-		/// A 15 bit depth buffer and 1 bit stencil format.
-		/// </summary>
-		D15S1 = 0,
-		/// <summary>
-		/// A 16 bit depth buffer format (lockable).
-		/// </summary>
-		D16_Lockable = 1,
-		/// <summary>
-		/// A 16 bit depth buffer format.
-		/// </summary>
-		D16 = 2,
-		/// <summary>
-		/// A 24 bit depth buffer format.
-		/// </summary>
-		D24X8 = 3,
-		/// <summary>
-		/// A 24 bit depth and 4 bit stencil buffer format.
-		/// </summary>
-		D24X4S4 = 4,
-		/// <summary>
-		/// A 24 bit depth and 8 bit stencil buffer format.
-		/// </summary>
-		D24S8 = 5,
-		/// <summary>
-		/// A 24 bit floating point depth and 8 bit stencil buffer format.
-		/// </summary>
-		D24_Float_S8 = 6,
-		/// <summary>
-		/// A 32 bit floating point depth buffer format (lockable).
-		/// </summary>
-		D32_Float_Lockable = 7,
-		/// <summary>
-		/// A 32 bit depth buffer format.
-		/// </summary>
-		D32 = 8,
-		/// <summary>
-		/// An 8 bit stencil format.
-		/// </summary>
-		X24S8 = 9,
-		/// <summary>
-		/// Unknown depth buffer format.
-		/// </summary>
-		Unknown = 10
-	}
-
-	/// <summary>
-	/// A listing of buffer formats.
-	/// </summary>
+	/// <remarks>Some APIs will need to map to equivalent buffer formats (internally within their own plug-ins) where applicable.  However, some APIs won't support some formats, and calls using these formats may not work if an equivalent format is not found.</remarks>
 	public enum GorgonBufferFormat
 	{
 		/// <summary>
-		/// Unknown format.
+		/// The Unknown buffer format.
 		/// </summary>
 		Unknown = 0,
 		/// <summary>
-		/// 4 component 128 bit typeless format.
+		/// The R32G32B32A32 buffer format.
 		/// </summary>
-		R32G32B32A32_NoType = 1,
+		R32G32B32A32 = 1,
 		/// <summary>
-		/// 4 component 128 bit floating point format.
+		/// The R32G32B32A32_Float buffer format.
 		/// </summary>
 		R32G32B32A32_Float = 2,
 		/// <summary>
-		/// 4 component 128 bit unsigned integer format.
+		/// The R32G32B32A32_UInt buffer format.
 		/// </summary>
 		R32G32B32A32_UInt = 3,
 		/// <summary>
-		/// 4 component 128 bit signed integer format.
+		/// The R32G32B32A32_Int buffer format.
 		/// </summary>
 		R32G32B32A32_Int = 4,
 		/// <summary>
-		/// 3 component 96 bit typeless format.
+		/// The R32G32B32 buffer format.
 		/// </summary>
-		R32G32B32_Typeless = 5,
+		R32G32B32 = 5,
 		/// <summary>
-		/// 3 component 96 bit floating point format.
+		/// The R32G32B32_Float buffer format.
 		/// </summary>
 		R32G32B32_Float = 6,
 		/// <summary>
-		/// 3 component 96 bit unsigned integer format.
+		/// The R32G32B32_UInt buffer format.
 		/// </summary>
 		R32G32B32_UInt = 7,
 		/// <summary>
-		/// 3 component 96 bit signed integer format.
+		/// The R32G32B32_Int buffer format.
 		/// </summary>
 		R32G32B32_Int = 8,
 		/// <summary>
-		/// 4 component 64 bit typeless format.
+		/// The R16G16B16A16 buffer format.
 		/// </summary>
-		R16G16B16A16_Typeless = 9,
+		R16G16B16A16 = 9,
 		/// <summary>
-		/// 4 component 64 bit floating point format.
+		/// The R16G16B16A16_Float buffer format.
 		/// </summary>
 		R16G16B16A16_Float = 10,
 		/// <summary>
-		/// 4 component 64 bit unsigned integer format.
+		/// The R16G16B16A16_UIntNormal buffer format.
 		/// </summary>
-		R16G16B16A16_UIntNorm = 11,
+		R16G16B16A16_UIntNormal = 11,
 		/// <summary>
-		/// 4 component 64 bit unsigned integer format.
+		/// The R16G16B16A16_UInt buffer format.
 		/// </summary>
 		R16G16B16A16_UInt = 12,
 		/// <summary>
-		/// 4 component 64 bit signed integer format.
+		/// The R16G16B16A16_IntNormal buffer format.
 		/// </summary>
-		R16G16B16A16_IntNorm = 13,
+		R16G16B16A16_IntNormal = 13,
 		/// <summary>
-		/// 4 component 64 bit signed integer format.
+		/// The R16G16B16A16_Int buffer format.
 		/// </summary>
 		R16G16B16A16_Int = 14,
 		/// <summary>
-		/// 2 component 64 bit typeless format.
+		/// The R32G32 buffer format.
 		/// </summary>
-		R32G32_Typeless = 15,
+		R32G32 = 15,
 		/// <summary>
-		/// 2 component 64 bit floating point format.
+		/// The R32G32_Float buffer format.
 		/// </summary>
 		R32G32_Float = 16,
 		/// <summary>
-		/// 2 component 64 bit unsigned integer format.
+		/// The R32G32_UInt buffer format.
 		/// </summary>
 		R32G32_UInt = 17,
 		/// <summary>
-		/// 2 component 64 bit signed integer format.
+		/// The R32G32_Int buffer format.
 		/// </summary>
 		R32G32_Int = 18,
 		/// <summary>
-		/// 3 component 64 bit typeless format.
+		/// The R32G8X24 buffer format.
 		/// </summary>
-		R32G8X24_Typeless = 19,
+		R32G8X24 = 19,
 		/// <summary>
-		/// 1 32 bit floating point component, 2 unsigned integer components (32 bits total).
+		/// The D32_Float_S8X24_UInt buffer format.
 		/// </summary>
 		D32_Float_S8X24_UInt = 20,
 		/// <summary>
-		/// 1 32 bit floating point component, 2 typeless components (32 bits total).
+		/// The R32_Float_X8X24 buffer format.
 		/// </summary>
-		R32_Float_X8X24_Typeless = 21,
+		R32_Float_X8X24 = 21,
 		/// <summary>
-		/// 1 32 bit typeless component, 2 unsigned integer components (32 bits total).
+		/// The X32_G8X24_UInt buffer format.
 		/// </summary>
-		X32_Typeless_G8X24_UInt = 22,
+		X32_G8X24_UInt = 22,
 		/// <summary>
-		/// 4 component 32 bit typeless format.
+		/// The R10G10B10A2 buffer format.
 		/// </summary>
-		R10G10B10A2_Typeless = 23,
+		R10G10B10A2 = 23,
 		/// <summary>
-		/// 4 component 32 bit unsigned integer format.
+		/// The R10G10B10A2_UIntNormal buffer format.
 		/// </summary>
-		R10G10B10A2_UIntNorm = 24,
+		R10G10B10A2_UIntNormal = 24,
 		/// <summary>
-		/// 4 component 32 bit unsigned integer format.
+		/// The R10G10B10A2_UInt buffer format.
 		/// </summary>
 		R10G10B10A2_UInt = 25,
 		/// <summary>
-		/// 3 component 32 bit floating point format.
-		/// </summary>		
-		/// <remarks>Three partial-precision floating-point numbers encodeded into a single 32-bit value (a variant of s10e5). There are no sign bits, and there is a 5-bit biased (15) exponent for each channel, 6-bit mantissa for R and G, and a 5-bit mantissa for B.</remarks>
+		/// The R11G11B10_Float buffer format.
+		/// </summary>
 		R11G11B10_Float = 26,
 		/// <summary>
-		/// 4 component 32 bit typeless format.
+		/// The R8G8B8A8 buffer format.
 		/// </summary>
-		R8G8B8A8_Typeless = 27,
+		R8G8B8A8 = 27,
 		/// <summary>
-		/// 4 component 32 bit unsigned integer format.
+		/// The R8G8B8A8_UIntNormal buffer format.
 		/// </summary>
-		R8G8B8A8_UIntNorm = 28,
+		R8G8B8A8_UIntNormal = 28,
 		/// <summary>
-		/// 4 component 32 bit unsigned normalized integer sRGB format 
+		/// The R8G8B8A8_UIntNormal_SRGB buffer format.
 		/// </summary>
-		R8G8B8A8_UIntNorm_sRGB = 29,
+		R8G8B8A8_UIntNormal_SRGB = 29,
 		/// <summary>
-		/// 4 component 32 bit unsigned integer format.
+		/// The R8G8B8A8_UInt buffer format.
 		/// </summary>
 		R8G8B8A8_UInt = 30,
 		/// <summary>
-		/// 4 component 32 bit signed normalized integer format.
+		/// The R8G8B8A8_IntNormal buffer format.
 		/// </summary>
-		R8G8B8A8_IntNorm = 31,
+		R8G8B8A8_IntNormal = 31,
 		/// <summary>
-		/// 4 component 32 bit signed integer format.
+		/// The R8G8B8A8_Int buffer format.
 		/// </summary>
 		R8G8B8A8_Int = 32,
 		/// <summary>
-		/// 2 component 32 bit typeless format.
+		/// The R16G16 buffer format.
 		/// </summary>
-		R16G16_Typeless = 33,
+		R16G16 = 33,
 		/// <summary>
-		/// 2 component 32 bit floating point format.
+		/// The R16G16_Float buffer format.
 		/// </summary>
 		R16G16_Float = 34,
 		/// <summary>
-		/// 2 component 32 bit unsigned normalized integer format.
+		/// The R16G16_UIntNormal buffer format.
 		/// </summary>
-		R16G16_UIntNorm = 35,
+		R16G16_UIntNormal = 35,
 		/// <summary>
-		/// 2 component 32 bit unsigned integer format.
+		/// The R16G16_UInt buffer format.
 		/// </summary>
 		R16G16_UInt = 36,
 		/// <summary>
-		/// 2 component 32 bit signed normalized integer format.
+		/// The R16G16_IntNormal buffer format.
 		/// </summary>
-		R16G16_IntNorm = 37,
+		R16G16_IntNormal = 37,
 		/// <summary>
-		/// 2 component 32 bit signed integer format.
+		/// The R16G16_Int buffer format.
 		/// </summary>
 		R16G16_Int = 38,
 		/// <summary>
-		/// 1 component 32 bit typeless format.
+		/// The R32 buffer format.
 		/// </summary>
-		R32_Typeless = 39,
+		R32 = 39,
 		/// <summary>
-		/// 1 component 32 bit floating point format.
+		/// The D32_Float buffer format.
 		/// </summary>
 		D32_Float = 40,
 		/// <summary>
-		/// 1 component 32 bit floating point format.
+		/// The R32_Float buffer format.
 		/// </summary>
 		R32_Float = 41,
 		/// <summary>
-		/// 1 component 32 bit unsigned integer format.
+		/// The R32_UInt buffer format.
 		/// </summary>
 		R32_UInt = 42,
 		/// <summary>
-		/// 1 component 32 bit signed integer format.
+		/// The R32_Int buffer format.
 		/// </summary>
 		R32_Int = 43,
 		/// <summary>
-		/// 2 component 32 bit typeless format.
+		/// The R24G8 buffer format.
 		/// </summary>
-		R24G8_Typeless = 44,
+		R24G8 = 44,
 		/// <summary>
-		/// 32 bit z-buffer format with 24 bits of normalized unsigned integer and 8 bit unsigned integer for the stencil buffer.
+		/// The D24_UIntNormal_S8_UInt buffer format.
 		/// </summary>
-		D24_UIntNorm_S8_UInt = 45,
+		D24_UIntNormal_S8_UInt = 45,
 		/// <summary>
-		/// 32 bit format with 24 bits of normalized unsigned integer and 8 bit typeless data.
+		/// The R24_UIntNormal_X8 buffer format.
 		/// </summary>
-		R24_UIntNorm_X8_Typeless = 46,
+		R24_UIntNormal_X8 = 46,
 		/// <summary>
-		/// 32 bit format with 24 bits of typeless data and 8 bits of unsigned integer data.
+		/// The X24_G8_UInt buffer format.
 		/// </summary>
-		X24_Typeless_G8_UInt = 47,
+		X24_G8_UInt = 47,
 		/// <summary>
-		/// 2 component 16 bit typeless format.
+		/// The R8G8 buffer format.
 		/// </summary>
-		R8G8_Typeless = 48,
+		R8G8 = 48,
 		/// <summary>
-		/// 2 component 16 bit normalized unsigned integer format.
+		/// The R8G8_UIntNormal buffer format.
 		/// </summary>
-		R8G8_UIntNorm = 49,
+		R8G8_UIntNormal = 49,
 		/// <summary>
-		/// 2 component 16 bit unsigned integer format.
+		/// The R8G8_UInt buffer format.
 		/// </summary>
 		R8G8_UInt = 50,
 		/// <summary>
-		/// 2 component 16 bit normalized signed integer format.
+		/// The R8G8_IntNormal buffer format.
 		/// </summary>
-		R8G8_IntNorm = 51,
+		R8G8_IntNormal = 51,
 		/// <summary>
-		/// 2 component 16 bit signed integer format.
+		/// The R8G8_Int buffer format.
 		/// </summary>
 		R8G8_Int = 52,
 		/// <summary>
-		/// 1 component 16 bit typeless format.
+		/// The R16 buffer format.
 		/// </summary>
-		R16_Typeless = 53,
+		R16 = 53,
 		/// <summary>
-		/// 1 component 16 bit floating point format.
+		/// The R16_Float buffer format.
 		/// </summary>
 		R16_Float = 54,
 		/// <summary>
-		/// 1 component 16 bit normalized unsigned integer format.
+		/// The D16_UIntNormal buffer format.
 		/// </summary>
-		D16_UIntNorm = 55,
+		D16_UIntNormal = 55,
 		/// <summary>
-		/// 1 component 16 bit normalized unsigned integer format.
+		/// The R16_UIntNormal buffer format.
 		/// </summary>
-		R16_UIntNorm = 56,
+		R16_UIntNormal = 56,
 		/// <summary>
-		/// 1 component 16 bit unsigned integer format.
+		/// The R16_UInt buffer format.
 		/// </summary>
 		R16_UInt = 57,
 		/// <summary>
-		/// 1 component 16 bit normalized signed integer format.
+		/// The R16_IntNormal buffer format.
 		/// </summary>
-		R16_IntNorm = 58,
+		R16_IntNormal = 58,
 		/// <summary>
-		/// 1 component 16 bit signed integer format.
+		/// The R16_Int buffer format.
 		/// </summary>
 		R16_Int = 59,
 		/// <summary>
-		/// 1 component 8 bit typeless format.
+		/// The R8 buffer format.
 		/// </summary>
-		R8_Typeless = 60,
+		R8 = 60,
 		/// <summary>
-		/// 1 component 8 bit normalized unsigned integer format.
+		/// The R8_UIntNormal buffer format.
 		/// </summary>
-		R8_UIntNorm = 61,
+		R8_UIntNormal = 61,
 		/// <summary>
-		/// 1 component 8 bit unsigned integer format.
+		/// The R8_UInt buffer format.
 		/// </summary>
 		R8_UInt = 62,
 		/// <summary>
-		/// 1 component 8 bit normalized signed integer format.
+		/// The R8_IntNormal buffer format.
 		/// </summary>
-		R8_IntNorm = 63,
+		R8_IntNormal = 63,
 		/// <summary>
-		/// 1 component 8 bit signed integer format.
+		/// The R8_Int buffer format.
 		/// </summary>
 		R8_Int = 64,
 		/// <summary>
-		/// 1 component 8 bit normalized unsigned integer format.
+		/// The A8_UIntNormal buffer format.
 		/// </summary>
-		A8_UIntNorm = 65,
+		A8_UIntNormal = 65,
 		/// <summary>
-		/// 1 component 1 bit normalized unsigned integer format.
+		/// The R1_UIntNormal buffer format.
 		/// </summary>
-		R1_UIntNorm = 66,
+		R1_UIntNormal = 66,
 		/// <summary>
-		/// 4 component floating point format.
+		/// The R9G9B9E5_SharedExp buffer format.
 		/// </summary>
-		/// <remarks>Three partial-precision floating-point numbers encoded into a single 32-bit value all sharing the same 5-bit exponent (variant of s10e5). There is no sign bit, and there is a shared 5-bit biased (15) exponent and a 9-bit mantissa for each channel.</remarks>
-		R9G9B9E5_SharedExponent = 67,
+		R9G9B9E5_SharedExp = 67,
 		/// <summary>
-		/// 4 component 32 bit normalized unsigned integer format.
+		/// The R8G8_B8G8_UIntNormal buffer format.
 		/// </summary>
-		R8G8_B8G8_UIntNorm = 68,
+		R8G8_B8G8_UIntNormal = 68,
 		/// <summary>
-		/// 4 component 32 bit normalized unsigned integer format.
+		/// The G8R8_G8B8_UIntNormal buffer format.
 		/// </summary>
-		G8R8_G8B8_UIntNorm = 69,
+		G8R8_G8B8_UIntNormal = 69,
 		/// <summary>
-		/// 4 component typeless block compression format.
+		/// The BC1 buffer format.
 		/// </summary>
-		BC1_Typeless = 70,
+		BC1 = 70,
 		/// <summary>
-		/// 4 component normalized unsigned integer block compression format.
+		/// The BC1_UIntNormal buffer format.
 		/// </summary>
-		BC1_UIntNorm = 71,
+		BC1_UIntNormal = 71,
 		/// <summary>
-		/// 4 component normalized unsigned integer block compression format for sRGB data.
+		/// The BC1_UIntNormal_SRGB buffer format.
 		/// </summary>
-		BC1_UIntNorm_sRGB = 72,
+		BC1_UIntNormal_SRGB = 72,
 		/// <summary>
-		/// 4 component typeless block compression format.
+		/// The BC2 buffer format.
 		/// </summary>
-		BC2_Typeless = 73,
+		BC2 = 73,
 		/// <summary>
-		/// 4 component normalized unsigned integer block compression format.
+		/// The BC2_UIntNormal buffer format.
 		/// </summary>
-		BC2_UIntNorm = 74,
+		BC2_UIntNormal = 74,
 		/// <summary>
-		/// 4 component normalized unsigned integer block compression format for sRGB data.
+		/// The BC2_UIntNormal_SRGB buffer format.
 		/// </summary>
-		BC2_UIntNorm_sRGB = 75,
+		BC2_UIntNormal_SRGB = 75,
 		/// <summary>
-		/// 4 component typeless block compression format.
+		/// The BC3 buffer format.
 		/// </summary>
-		BC3_Typeless = 76,
+		BC3 = 76,
 		/// <summary>
-		/// 4 component normalized unsigned integer block compression format.
+		/// The BC3_UIntNormal buffer format.
 		/// </summary>
-		BC3_UIntNorm = 77,
+		BC3_UIntNormal = 77,
 		/// <summary>
-		/// 4 component normalized unsigned integer block compression format for sRGB data.
+		/// The BC3_UIntNormal_SRGB buffer format.
 		/// </summary>
-		BC3_UIntNorm_sRGB = 78,
+		BC3_UIntNormal_SRGB = 78,
 		/// <summary>
-		/// 4 component typeless block compression format.
+		/// The BC4 buffer format.
 		/// </summary>
-		BC4_Typeless = 79,
+		BC4 = 79,
 		/// <summary>
-		/// 4 component normalized unsigned integer block compression format.
+		/// The BC4_UIntNormal buffer format.
 		/// </summary>
-		BC4_UIntNorm = 80,
+		BC4_UIntNormal = 80,
 		/// <summary>
-		/// 4 component normalized signed integer block compression format.
+		/// The BC4_IntNormal buffer format.
 		/// </summary>
-		BC4_IntNorm = 81,
+		BC4_IntNormal = 81,
 		/// <summary>
-		/// 4 component typeless block compression format.
+		/// The BC5 buffer format.
 		/// </summary>
-		BC5_Typeless = 82,
+		BC5 = 82,
 		/// <summary>
-		/// 4 component normalized unsigned integer block compression format.
+		/// The BC5_UIntNormal buffer format.
 		/// </summary>
-		BC5_UIntNorm = 83,
+		BC5_UIntNormal = 83,
 		/// <summary>
-		/// 4 component normalized signed integer block compression format.
+		/// The BC5_IntNormal buffer format.
 		/// </summary>
-		BC5_IntNorm = 84,
+		BC5_IntNormal = 84,
 		/// <summary>
-		/// 3 component 16 bit normalized unsigned integer format.
+		/// The B5G6R5_UIntNormal buffer format.
 		/// </summary>
-		B5G6R5_UIntNorm = 85,
+		B5G6R5_UIntNormal = 85,
 		/// <summary>
-		/// 4 component 16 bit normalized unsigned integer format.
+		/// The B5G5R5A1_UIntNormal buffer format.
 		/// </summary>
-		B5G5R5A1_UIntNorm = 86,
+		B5G5R5A1_UIntNormal = 86,
 		/// <summary>
-		/// 4 component 32 bit normalized unsigned integer format.
+		/// The B8G8R8A8_UIntNormal buffer format.
 		/// </summary>
-		B8G8R8A8_UIntNorm = 87,
+		B8G8R8A8_UIntNormal = 87,
 		/// <summary>
-		/// 4 component 32 bit normalized unsigned integer format.
+		/// The B8G8R8X8_UIntNormal buffer format.
 		/// </summary>
-		B8G8R8X8_UIntNorm = 88,
+		B8G8R8X8_UIntNormal = 88,
 		/// <summary>
-		/// 4 component 32 bit typeless format that supports 2 bit alpha.
+		/// The R10G10B10_XR_Bias_A2_UIntNormal buffer format.
 		/// </summary>
-		R10G10B10_XR_Bias_A2_UIntNorm = 89,
+		R10G10B10_XR_Bias_A2_UIntNormal = 89,
 		/// <summary>
-		/// 4 component 32 bit typess format.
+		/// The B8G8R8A8 buffer format.
 		/// </summary>
-		B8G8R8A8_Typeless = 90,
+		B8G8R8A8 = 90,
 		/// <summary>
-		/// 4 component 32 bit normalized unsigned integer format for sRGB data.
+		/// The B8G8R8A8_UIntNormal_SRGB buffer format.
 		/// </summary>
-		B8G8R8A8_UIntNorm_sRGB = 91,
+		B8G8R8A8_UIntNormal_SRGB = 91,
 		/// <summary>
-		/// 4 component 32 bit typeless format.
+		/// The B8G8R8X8 buffer format.
 		/// </summary>
-		B8G8R8X8_Typeless = 92,
+		B8G8R8X8 = 92,
 		/// <summary>
-		/// 4 component 32 bit normalized unsigned integer format for sRGB data.
+		/// The B8G8R8X8_UIntNormal_SRGB buffer format.
 		/// </summary>
-		B8G8R8X8_UIntNorm_sRGB = 93,
+		B8G8R8X8_UIntNormal_SRGB = 93,
 		/// <summary>
-		/// A typeless block compression format.
+		/// The BC6 buffer format.
 		/// </summary>
-		BC6H_Typeless = 94,
+		BC6 = 94,
 		/// <summary>
-		/// A block compression format.
+		/// The BC6_UFloat16 buffer format.
 		/// </summary>
-		BC6H_UF16 = 95,
+		BC6_UFloat16 = 95,
 		/// <summary>
-		/// A block compression format.
+		/// The BC6_SFloat16 buffer format.
 		/// </summary>
-		BC6H_SF16 = 96,
+		BC6_SFloat16 = 96,
 		/// <summary>
-		/// A typeless block compression format.
+		/// The BC7 buffer format.
 		/// </summary>
-		BC7_Typeless = 97,
+		BC7 = 97,
 		/// <summary>
-		/// A normalized unsigned integer block compression format.
+		/// The BC7_UIntNormal buffer format.
 		/// </summary>
-		BC7_UIntNorm = 98,
+		BC7_UIntNormal = 98,
 		/// <summary>
-		/// A normalized unsigned integer block compression format for sRGB data.
+		/// The BC7_UIntNormal_SRGB buffer format.
 		/// </summary>
-		BC7_UIntNorm_sRGB = 99,
+		BC7_UIntNormal_SRGB = 99,
+		// These values are custom to Gorgon and are used to help older APIs handle the formats.
 		/// <summary>
-		/// 4 component 32 bit unsigned integer format.
+		/// 32 bit back buffer format with 2 bit alpha.
 		/// </summary>
-		R8G8B8X8_UInt = 100
+		BackBuffer_A2R10G10B10 = 100,
+		/// <summary>
+		/// 32 bit back buffer format.
+		/// </summary>
+		BackBuffer_A8R8G8B8 = 101,
+		/// <summary>
+		/// 32 bit back buffer format with no alpha.
+		/// </summary>
+		BackBuffer_X8R8G8B8 = 102,
+		/// <summary>
+		/// 24 bit depth buffer.
+		/// </summary>
+		Depth_D24_X8 = 103,
+		/// <summary>
+		/// 24 bit depth buffer, 4 bit stencil.
+		/// </summary>
+		Depth_D24_X4S4 = 104,
+		/// <summary>
+		/// 24 bit depth buffer, 8 bit stencil.
+		/// </summary>
+		Depth_D24_S8 = 105,
+		/// <summary>
+		/// 32 bit depth buffer.
+		/// </summary>
+		Depth_D32 = 106,
+		/// <summary>
+		/// 32 bit floating point depth buffer format.
+		/// </summary>
+		Depth_D32Float_Lockable = 107,
+		/// <summary>
+		/// 16 bit index buffer.
+		/// </summary>
+		Index_16 = 108,
+		/// <summary>
+		/// 32 bit index buffer.
+		/// </summary>
+		Index_32 = 109,
+		/// <summary>
+		/// Vertex buffer data.
+		/// </summary>
+		Vertex = 110,
+		/// <summary>
+		/// DXT1 Compressed format.
+		/// </summary>
+		DXT1 = 111,
+		/// <summary>
+		/// DXT2 Compressed format.
+		/// </summary>
+		DXT2 = 112,
+		/// <summary>
+		/// DXT3 Compressed format.
+		/// </summary>
+		DXT3 = 113,
+		/// <summary>
+		/// DXT4 Compressed format.
+		/// </summary>
+		DXT4 = 114,
+		/// <summary>
+		/// DXT5 Compressed format.
+		/// </summary>
+		DXT5 = 115,
+		/// <summary>
+		/// 16 bit floating point red channel.
+		/// </summary>
+		Float_R16 = 116,
+		/// <summary>
+		/// 32 bit floating point with 16 bits for the red and green channel.
+		/// </summary>
+		Float_G16R16 = 117,
+		/// <summary>
+		/// 64 bit floating point with 16 bits for red, green, blue and alpha.
+		/// </summary>
+		Float_A16B16G16R16 = 118,
+		/// <summary>
+		/// FourCC multi element texture (uncompressed).
+		/// </summary>
+		FourCC_Multi2_ARGB8 = 119,
+		/// <summary>
+		/// FourCC 16 bit packed format.
+		/// </summary>
+		FourCC_G8R8_G8B8 = 120,
+		/// <summary>
+		/// FourCC 16 bit packed format.
+		/// </summary>
+		FourCC_R8G8_B8G8 = 121,
+		/// <summary>
+		/// FourCC UYVY format.
+		/// </summary>
+		FourCC_UYVY = 122,
+		/// <summary>
+		/// FourCC YUV2 format.
+		/// </summary>
+		FourCC_YUV2 = 123,
+		/// <summary>
+		/// 32 bit floating point in red channel.
+		/// </summary>
+		Float_R32 = 124,
+		/// <summary>
+		/// 64 bit floating point with 32 bit green and red channels.
+		/// </summary>
+		Float_G32R32 = 125,
+		/// <summary>
+		/// 128 bit floating point with 32 bit red, green, blue and alpha channels.
+		/// </summary>
+		Float_A32B32G32R32 = 126,
+		/// <summary>
+		/// 16 bit bump map with luminance.
+		/// </summary>
+		Bump_L6V5U5 = 127,
+		/// <summary>
+		/// 32 bit bump map with luminance.
+		/// </summary>
+		Bump_X8L8V8U8 = 128,
+		/// <summary>
+		/// 32 bit bump map with 2 bit alpha.
+		/// </summary>
+		Bump_A2W10V10U10 = 129,
+		/// <summary>
+		/// 16 bit bump map.
+		/// </summary>
+		Bump_V8U8 = 130,
+		/// <summary>
+		/// 32 bit bump map.
+		/// </summary>
+		Bump_Q8W8V8Y8 = 131,
+		/// <summary>
+		/// 32 bit bump map with 16 bit components.
+		/// </summary>
+		Bump_V16U16 = 132,
+		/// <summary>
+		/// 64 bit bump map.
+		/// </summary>
+		Bump_Q16W16V16U16 = 133,
+		/// <summary>
+		/// 16 bit normal compression.
+		/// </summary>
+		Normal_CxV8U8 = 134,
+
 	}
 }

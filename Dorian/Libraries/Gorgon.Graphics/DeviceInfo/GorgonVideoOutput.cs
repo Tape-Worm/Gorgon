@@ -142,7 +142,6 @@ namespace GorgonLibrary.Graphics
 		/// Function to determine if a depth/stencil format can be used with a specific display format.
 		/// </summary>
 		/// <param name="displayFormat">Display format to use.</param>
-		/// <param name="targetFormat">Format of the render target.</param>
 		/// <param name="depthStencilFormat">Depth/stencil format to check.</param>
 		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
 		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
