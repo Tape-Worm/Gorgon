@@ -225,7 +225,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">Format to convert.</param>
 		/// <returns>The converted format.</returns>
-		public static GorgonDisplayFormat ConvertDisplayFormat(Format format)
+		public static GorgonBufferFormat ConvertDisplayFormat(Format format)
 		{
 			switch (format)
 			{
@@ -329,65 +329,52 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">D3D buffer format to convert.</param>
 		/// <returns>A Gorgon buffer format.</returns>
-		public static GorgonBufferFormat ConvertTextureFormat(Format format)
+		public static GorgonBufferFormat Convert(Format format)
 		{
 			switch (format)
 			{
-				case Format.X8R8G8B8:
-					return GorgonBufferFormat.R8G8B8X8_UInt;
-				case Format.A8B8G8R8:
-				case Format.A8R8G8B8:
-					return GorgonBufferFormat.R8G8B8A8_UIntNorm;
-				case Format.A8:
-					return GorgonBufferFormat.A8_UIntNorm;
-				case Format.A2R10G10B10:
-					return GorgonBufferFormat.R10G10B10A2_UIntNorm;
-				case Format.A2B10G10R10:
-					return GorgonBufferFormat.R10G10B10A2_Typeless;
-				case Format.G16R16:
-					return GorgonBufferFormat.R16G16_UIntNorm;
-				case Format.A16B16G16R16:
-					return GorgonBufferFormat.R16G16B16A16_UIntNorm;
-				case Format.L8:
-					return GorgonBufferFormat.R8_UIntNorm;
-				case Format.V8U8:
-					return GorgonBufferFormat.R8G8_IntNorm;
-				case Format.Q8W8V8U8:
-					return GorgonBufferFormat.R8G8B8A8_IntNorm;
-				case Format.V16U16:
-					return GorgonBufferFormat.R16G16_IntNorm;
-				case Format.R8G8_B8G8:
-					return GorgonBufferFormat.G8R8_G8B8_UIntNorm;
-				case Format.G8R8_G8B8:
-					return GorgonBufferFormat.R8G8_B8G8_UIntNorm;
-				case Format.Dxt1:
-				case Format.Dxt2:
-					return GorgonBufferFormat.BC1_UIntNorm;
-				case Format.Dxt3:
-					return GorgonBufferFormat.BC2_UIntNorm;
-				case Format.Dxt4:
-				case Format.Dxt5:
-					return GorgonBufferFormat.BC3_UIntNorm;
-				case Format.L16:
-					return GorgonBufferFormat.R16_UIntNorm;
-				case Format.Index16:
-					return GorgonBufferFormat.R16_UInt;
-				case Format.Index32:
-					return GorgonBufferFormat.R32_UInt;
-				case Format.Q16W16V16U16:
-					return GorgonBufferFormat.R16G16B16A16_Int;
-				case Format.R16F:
-					return GorgonBufferFormat.R16_Float;
-				case Format.G16R16F:
-					return GorgonBufferFormat.R16G16_Float;
-				case Format.A16B16G16R16F:
-					return GorgonBufferFormat.R16G16B16A16_Float;
-				case Format.R32F:
-					return GorgonBufferFormat.R32_Float;
-				case Format.G32R32F:
-					return GorgonBufferFormat.R32G32_Float;
 				case Format.A32B32G32R32F:
 					return GorgonBufferFormat.R32G32B32A32_Float;
+				case Format.A16B16G16R16F:
+					return GorgonBufferFormat.R16G16B16A16_Float;
+				case Format.A16B16G16R16:
+					return GorgonBufferFormat.R16G16B16A16_UIntNormal;
+				case Format.Q16W16V16U16:
+					return GorgonBufferFormat.R16G16B16A16_IntNormal;
+				case Format.G32R32F:
+					return GorgonBufferFormat.R32G32_Float;
+				case Format.A8B8G8R8:
+					return GorgonBufferFormat.R8G8B8A8_UIntNormal;
+				case Format.Q8W8V8U8:
+					return GorgonBufferFormat.R8G8B8A8_IntNormal;
+				case Format.G16R16F:
+					return GorgonBufferFormat.R16G16_Float;
+				case Format.G16R16:
+					return GorgonBufferFormat.R16G16_UIntNormal;
+				case Format.V16U16:
+					return GorgonBufferFormat.R16G16_IntNormal;
+				case Format.R32F:
+					return GorgonBufferFormat.R32_Float;
+				case Format.D24S8:
+					return GorgonBufferFormat.D24_UIntNormal_S8_UInt;
+				case Format.L16:
+					return GorgonBufferFormat.R16_UIntNormal;
+				case Format.D16:
+					return GorgonBufferFormat.D16_UIntNormal;
+				case Format.V8U8:
+					return GorgonBufferFormat.R8G8_IntNormal;
+				case Format.L8:
+					return GorgonBufferFormat.R8_UIntNormal;
+				case Format.Dxt1:
+					return GorgonBufferFormat.BC1_UIntNormal;
+				case Format.Dxt3:
+					return GorgonBufferFormat.BC2_UIntNormal;
+				case Format.Dxt5:
+					return GorgonBufferFormat.BC3_UIntNormal;
+				case Format.A8R8G8B8:
+					return GorgonBufferFormat.B8G8R8A8_UIntNormal;
+				case Format.A8:
+					return GorgonBufferFormat.A8_UIntNormal;				
 				default:
 					return GorgonBufferFormat.Unknown;
 			}
@@ -398,70 +385,56 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">Gorgon buffer format to convert.</param>
 		/// <returns>The D3D format.</returns>
-		public static Format ConvertTextureFormat(GorgonBufferFormat format)
+		public static Format Convert(GorgonBufferFormat format)
 		{
 			switch (format)
 			{
-				case GorgonBufferFormat.R8G8B8X8_UInt:
-					return Format.X8R8G8B8;
-				case GorgonBufferFormat.R8G8B8A8_UIntNorm:
-				case GorgonBufferFormat.R8G8B8A8_UIntNorm_sRGB:
-					return Format.A8R8G8B8;
-				case GorgonBufferFormat.A8_UIntNorm:
-					return Format.A8;
-				case GorgonBufferFormat.R10G10B10A2_UInt:
-				case GorgonBufferFormat.R10G10B10A2_UIntNorm:
-					return Format.A2R10G10B10;
-				case GorgonBufferFormat.R10G10B10A2_Typeless:
-					return Format.A2B10G10R10;
-				case GorgonBufferFormat.B8G8R8A8_UIntNorm:
-				case GorgonBufferFormat.B8G8R8A8_UIntNorm_sRGB:
-					return Format.A8B8G8R8;
-				case GorgonBufferFormat.R16G16_UIntNorm:
-					return Format.G16R16;
-				case GorgonBufferFormat.R16G16B16A16_UIntNorm:
-					return Format.A16B16G16R16;
-				case GorgonBufferFormat.R8_UIntNorm:
-					return Format.L8;
-				case GorgonBufferFormat.R8G8_IntNorm:
-					return Format.V8U8;
-				case GorgonBufferFormat.R8G8B8A8_IntNorm:
-					return Format.Q8W8V8U8;
-				case GorgonBufferFormat.R16G16_IntNorm:
-					return Format.V16U16;
-				case GorgonBufferFormat.G8R8_G8B8_UIntNorm:
-					return Format.R8G8_B8G8;
-				case GorgonBufferFormat.R8G8_B8G8_UIntNorm:
-					return Format.G8R8_G8B8;
-				case GorgonBufferFormat.BC1_UIntNorm:
-				case GorgonBufferFormat.BC1_UIntNorm_sRGB:
-					return Format.Dxt1;
-				case GorgonBufferFormat.BC2_UIntNorm:
-				case GorgonBufferFormat.BC2_UIntNorm_sRGB:
-					return Format.Dxt3;
-				case GorgonBufferFormat.BC3_UIntNorm:
-				case GorgonBufferFormat.BC3_UIntNorm_sRGB:
-					return Format.Dxt5;
-				case GorgonBufferFormat.R16_UIntNorm:
-					return Format.L16;
-				case GorgonBufferFormat.R16_UInt:
-					return Format.Index16;
-				case GorgonBufferFormat.R32_UInt:
-					return Format.Index32;
-				case GorgonBufferFormat.R16G16B16A16_IntNorm:
-					return Format.Q16W16V16U16;
-				case GorgonBufferFormat.R16_Float:
-					return Format.R16F;
-				case GorgonBufferFormat.R16G16_Float:
-					return Format.G16R16F;
-				case GorgonBufferFormat.R16G16B16A16_Float:
-					return Format.A16B16G16R16F;
-				case GorgonBufferFormat.R32_Float:
-					return Format.R32F;
-				case GorgonBufferFormat.R32G32_Float:
-					return Format.G32R32F;
 				case GorgonBufferFormat.R32G32B32A32_Float:
 					return Format.A32B32G32R32F;
+				case GorgonBufferFormat.R16G16B16A16_Float:
+					return Format.A16B16G16R16F;
+				case GorgonBufferFormat.R16G16B16A16_UIntNormal:
+					return Format.A16B16G16R16;
+				case GorgonBufferFormat.R16G16B16A16_IntNormal:
+					return Format.Q16W16V16U16;
+				case GorgonBufferFormat.R32G32_Float:
+					return Format.G32R32F;
+				case GorgonBufferFormat.R8G8B8A8_UIntNormal_SRGB:
+				case GorgonBufferFormat.R8G8B8A8_UIntNormal:
+					return Format.A8B8G8R8;
+				case GorgonBufferFormat.R8G8B8A8_IntNormal:
+					return Format.Q8W8V8U8;
+				case GorgonBufferFormat.R16G16_Float:
+					return Format.G16R16F;
+				case GorgonBufferFormat.R16G16_UIntNormal:
+					return Format.G16R16;
+				case GorgonBufferFormat.R16G16_IntNormal:
+					return Format.V16U16;
+				case GorgonBufferFormat.R32_Float:
+					return Format.R32F;
+				case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
+					return Format.D24S8;
+				case GorgonBufferFormat.R16_UIntNormal:
+					return Format.L16;
+				case GorgonBufferFormat.D16_UIntNormal:
+					return Format.D16;
+				case GorgonBufferFormat.R8G8_IntNormal:
+					return Format.V8U8;
+				case GorgonBufferFormat.R8_UIntNormal:
+					return Format.L8;
+				case GorgonBufferFormat.BC1_UIntNormal:
+				case GorgonBufferFormat.BC1_UIntNormal_SRGB:
+					return Format.Dxt1;
+				case GorgonBufferFormat.BC2_UIntNormal:
+				case GorgonBufferFormat.BC2_UIntNormal_SRGB:
+					return Format.Dxt3;
+				case GorgonBufferFormat.BC3_UIntNormal:
+				case GorgonBufferFormat.BC3_UIntNormal_SRGB:
+					return Format.Dxt5;
+				case GorgonBufferFormat.B8G8R8A8_UIntNormal:
+					return Format.A8R8G8B8;
+				case GorgonBufferFormat.A8_UIntNormal:
+					return Format.A8;
 				default:
 					return Format.Unknown;
 			}
