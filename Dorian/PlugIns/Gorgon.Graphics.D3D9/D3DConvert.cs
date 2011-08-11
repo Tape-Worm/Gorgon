@@ -217,43 +217,44 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <returns>The Gorgon video mode.</returns>
 		public static GorgonVideoMode Convert(DisplayMode mode)
 		{
-			return new GorgonVideoMode(mode.Width, mode.Height, ConvertDisplayFormat(mode.Format), mode.RefreshRate, 1);
+			return new GorgonVideoMode(mode.Width, mode.Height, ConvertBackBufferFormat(mode.Format), mode.RefreshRate, 1);
 		}
 
 		/// <summary>
-		/// Function to convert a D3D display format into a Gorgon format.
+		/// Function to convert a D3D display format into a Gorgon backbuffer format.
 		/// </summary>
 		/// <param name="format">Format to convert.</param>
 		/// <returns>The converted format.</returns>
-		public static GorgonBufferFormat ConvertDisplayFormat(Format format)
+		public static GorgonBackBufferFormat ConvertBackBufferFormat(Format format)
 		{
 			switch (format)
 			{
 				case Format.A2R10G10B10:
-					return GorgonDisplayFormat.A2R10G10B10;
+					return GorgonBackBufferFormat.A2R10G10B10_UIntNormal;
 				case Format.X8R8G8B8:
-					return GorgonDisplayFormat.X8R8G8B8;
+					return GorgonBackBufferFormat.X8_R8G8B8_UIntNormal;
 				case Format.A8R8G8B8:
-					return GorgonDisplayFormat.A8R8G8B8;
+					return GorgonBackBufferFormat.A8R8G8B8_UIntNormal;
 				default:
-					return GorgonDisplayFormat.Unknown;
+					return GorgonBackBufferFormat.Unknown;
 			}
 		}
 
 		/// <summary>
-		/// Function to convert a Gorgon display format into a direct 3D format.
+		/// Function to convert a Gorgon back buffer format into a direct 3D format.
 		/// </summary>
 		/// <param name="format">Format to convert.</param>
 		/// <returns>The converted format.</returns>
-		public static Format ConvertDisplayFormat(GorgonDisplayFormat format)
+		public static Format ConvertBackBufferFormat(GorgonBackBufferFormat format)
 		{
 			switch (format)
 			{
-				case GorgonDisplayFormat.X8R8G8B8:
+				case GorgonBackBufferFormat.X8_R8G8B8_UIntNormal:
 					return Format.X8R8G8B8;
-				case GorgonDisplayFormat.A8R8G8B8:
+				case GorgonBackBufferFormat.A8R8G8B8_UIntNormal:
+				case GorgonBackBufferFormat.A8R8G8B8_UIntNormal_sRGB:
 					return Format.A8R8G8B8;
-				case GorgonDisplayFormat.A2R10G10B10:
+				case GorgonBackBufferFormat.A2R10G10B10_UIntNormal:
 					return Format.A2R10G10B10;
 				default:
 					return Format.Unknown;
@@ -265,26 +266,26 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">Format to convert.</param>
 		/// <returns>The converted format.</returns>
-		public static GorgonDepthBufferFormat ConvertDepthFormat(Format format)
+		public static GorgonDepthBufferFormat ConvertDepthBufferFormat(Format format)
 		{
 			switch (format)
 			{
 				case Format.D15S1:
-					return GorgonDepthBufferFormat.D15S1;
+					return GorgonDepthBufferFormat.D15_UIntNormal_S1_UInt;
 				case Format.D16:
-					return GorgonDepthBufferFormat.D16;
+					return GorgonDepthBufferFormat.D16_UIntNormal;
 				case Format.D16Lockable:
-					return GorgonDepthBufferFormat.D16_Lockable;
+					return GorgonDepthBufferFormat.D16_UIntNormal_Lockable;
 				case Format.D24X8:
-					return GorgonDepthBufferFormat.D24X8;
+					return GorgonDepthBufferFormat.D24_UIntNormal_X8;
 				case Format.D24X4S4:
-					return GorgonDepthBufferFormat.D24X4S4;
+					return GorgonDepthBufferFormat.D24_UIntNormal_X4S4_UInt;
 				case Format.D24S8:
-					return GorgonDepthBufferFormat.D24S8;
+					return GorgonDepthBufferFormat.D24_Float_S8_UInt;
 				case Format.D24SingleS8:
-					return GorgonDepthBufferFormat.D24_Float_S8;
+					return GorgonDepthBufferFormat.D24_Float_S8_UInt;
 				case Format.D32:
-					return GorgonDepthBufferFormat.D32;
+					return GorgonDepthBufferFormat.D32_UIntNormal;
 				case Format.D32SingleLockable:
 					return GorgonDepthBufferFormat.D32_Float_Lockable;
 				default:
@@ -297,25 +298,25 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">Format to convert.</param>
 		/// <returns>The converted format.</returns>
-		public static Format ConvertDepthFormat(GorgonDepthBufferFormat format)
+		public static Format ConvertDepthBufferFormat(GorgonDepthBufferFormat format)
 		{
 			switch (format)
 			{
-				case GorgonDepthBufferFormat.D15S1:
+				case GorgonDepthBufferFormat.D15_UIntNormal_S1_UInt:
 					return Format.D15S1;
-				case GorgonDepthBufferFormat.D16:
+				case GorgonDepthBufferFormat.D16_UIntNormal:
 					return Format.D16;
-				case GorgonDepthBufferFormat.D16_Lockable:
+				case GorgonDepthBufferFormat.D16_UIntNormal_Lockable:
 					return Format.D16Lockable;
-				case GorgonDepthBufferFormat.D24X8:
+				case GorgonDepthBufferFormat.D24_UIntNormal_X8:
 					return Format.D24X8;
-				case GorgonDepthBufferFormat.D24X4S4:
+				case GorgonDepthBufferFormat.D24_UIntNormal_X4S4_UInt:
 					return Format.D24X4S4;
-				case GorgonDepthBufferFormat.D24S8:
+				case GorgonDepthBufferFormat.D24_UIntNormal_S8_UInt:
 					return Format.D24S8;
-				case GorgonDepthBufferFormat.D24_Float_S8:
+				case GorgonDepthBufferFormat.D24_Float_S8_UInt:
 					return Format.D24SingleS8;
-				case GorgonDepthBufferFormat.D32:
+				case GorgonDepthBufferFormat.D32_UIntNormal:
 					return Format.D32;
 				case GorgonDepthBufferFormat.D32_Float_Lockable:
 					return Format.D32SingleLockable;
@@ -329,7 +330,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">D3D buffer format to convert.</param>
 		/// <returns>A Gorgon buffer format.</returns>
-		public static GorgonBufferFormat Convert(Format format)
+		public static GorgonBufferFormat ConvertFormat(Format format)
 		{
 			switch (format)
 			{
@@ -385,7 +386,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">Gorgon buffer format to convert.</param>
 		/// <returns>The D3D format.</returns>
-		public static Format Convert(GorgonBufferFormat format)
+		public static Format ConvertFormat(GorgonBufferFormat format)
 		{
 			switch (format)
 			{
@@ -399,7 +400,7 @@ namespace GorgonLibrary.Graphics.D3D9
 					return Format.Q16W16V16U16;
 				case GorgonBufferFormat.R32G32_Float:
 					return Format.G32R32F;
-				case GorgonBufferFormat.R8G8B8A8_UIntNormal_SRGB:
+				case GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB:
 				case GorgonBufferFormat.R8G8B8A8_UIntNormal:
 					return Format.A8B8G8R8;
 				case GorgonBufferFormat.R8G8B8A8_IntNormal:
@@ -423,13 +424,13 @@ namespace GorgonLibrary.Graphics.D3D9
 				case GorgonBufferFormat.R8_UIntNormal:
 					return Format.L8;
 				case GorgonBufferFormat.BC1_UIntNormal:
-				case GorgonBufferFormat.BC1_UIntNormal_SRGB:
+				case GorgonBufferFormat.BC1_UIntNormal_sRGB:
 					return Format.Dxt1;
 				case GorgonBufferFormat.BC2_UIntNormal:
-				case GorgonBufferFormat.BC2_UIntNormal_SRGB:
+				case GorgonBufferFormat.BC2_UIntNormal_sRGB:
 					return Format.Dxt3;
 				case GorgonBufferFormat.BC3_UIntNormal:
-				case GorgonBufferFormat.BC3_UIntNormal_SRGB:
+				case GorgonBufferFormat.BC3_UIntNormal_sRGB:
 					return Format.Dxt5;
 				case GorgonBufferFormat.B8G8R8A8_UIntNormal:
 					return Format.A8R8G8B8;

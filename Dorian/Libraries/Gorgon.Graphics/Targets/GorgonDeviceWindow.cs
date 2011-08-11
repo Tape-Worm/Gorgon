@@ -134,13 +134,40 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return whether this device window is full screen or windowed.
+		/// Property to return whether this device window is full screen or windowed.
 		/// </summary>
 		public bool IsWindowed
 		{
 			get;
 			private set;
-		}		
+		}
+
+		/// <summary>
+		/// Property to return the refresh rate numerator.
+		/// </summary>
+		public int RefreshRateNumerator
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the refresh rate denominator.
+		/// </summary>
+		public int RefreshRateDenominator
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the video mode for this device window.
+		/// </summary>
+		public GorgonVideoMode Mode
+		{
+			get;
+			private set;
+		}
 		#endregion
 		
 		#region Methods.
@@ -183,6 +210,19 @@ namespace GorgonLibrary.Graphics
 			// We should not care about window resizing when in full screen mode.
 			if (IsWindowed)
 				base.OnWindowResized(newWidth, newHeight);
+		}
+
+		/// <summary>
+		/// Function to update the information about the swap chain.
+		/// </summary>
+		/// <param name="mode">Video mode to use when updating.</param>
+		/// <param name="depthStencilFormat">Format of the depth/stencil buffer.</param>
+		protected void UpdateTargetInformation(GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
+		{
+			UpdateTargetInformation(mode.Width, mode.Height, mode.Format, depthStencilFormat);
+			RefreshRateNumerator = mode.RefreshRateNumerator;
+			RefreshRateDenominator = mode.RefreshRateDenominator;
+			Mode = mode;
 		}
 
 		/// <summary>
@@ -284,7 +324,7 @@ namespace GorgonLibrary.Graphics
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// </remarks>
 		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonVideoDevice device, GorgonVideoOutput output, GorgonDeviceWindowSettings settings, GorgonDeviceWindowAdvancedSettings advanced)
-			: base(graphics, name, settings.BoundWindow, settings.DisplayMode.Value, settings.DepthStencilFormat)
+			: base(graphics, name, settings.BoundWindow, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DepthStencilFormat)
 		{
 			Form window = settings.BoundWindow as Form;
 
@@ -294,7 +334,10 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("output");
 			
 			_trackedObjects = new List<IDisposable>();
-						
+
+			Mode = settings.DisplayMode.Value;
+			RefreshRateNumerator = settings.DisplayMode.Value.RefreshRateNumerator;
+			RefreshRateDenominator = settings.DisplayMode.Value.RefreshRateDenominator;
 			VideoDevice = device;
 			VideoOutput = output;
 			IsWindowed = settings.Windowed;

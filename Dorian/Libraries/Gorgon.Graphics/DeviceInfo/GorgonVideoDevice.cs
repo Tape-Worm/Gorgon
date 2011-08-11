@@ -183,7 +183,28 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">Format to test for multi sampling capabilities.</param>
 		/// <param name="windowed">TRUE if testing for windowed mode, FALSE if not.</param>
 		/// <returns>The multi sample maximum quality and level supported, or NULL (Nothing in VB.Net) if not supported.</returns>
-		public abstract GorgonMSAAQualityLevel? SupportsMultiSampleQualityLevel(GorgonMSAALevel level, GorgonDisplayFormat format, bool windowed);
+		public GorgonMSAAQualityLevel? SupportsMultiSampleQualityLevel(GorgonMSAALevel level, GorgonBackBufferFormat format, bool windowed)
+		{
+			GorgonBufferFormat bufferFormat = GorgonBufferFormat.Unknown;
+
+			switch (format)
+			{
+				case GorgonBackBufferFormat.A8R8G8B8_UIntNormal_sRGB:
+					bufferFormat = GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB;
+					break;
+				case GorgonBackBufferFormat.A8R8G8B8_UIntNormal:
+					bufferFormat = GorgonBufferFormat.R8G8B8A8_UIntNormal;
+					break;
+				case GorgonBackBufferFormat.X8_R8G8B8_UIntNormal:
+					bufferFormat = GorgonBufferFormat.X8_R8G8B8_UIntNormal;
+					break;
+				case GorgonBackBufferFormat.A2R10G10B10_UIntNormal:
+					bufferFormat = GorgonBufferFormat.R10G10B10A2_UIntNormal;
+					break;
+			}
+
+			return SupportsMultiSampleQualityLevel(level, bufferFormat, windowed);
+		}
 		#endregion
 
 		#region Constructor/Destructor.

@@ -287,7 +287,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("The specified window is already a device window.", "window");
 
 			if (settings.DisplayMode == null)
-				settings.DisplayMode = new GorgonVideoMode(settings.BoundWindow.ClientSize.Width, settings.BoundWindow.ClientSize.Height, GorgonDisplayFormat.Unknown);
+				settings.DisplayMode = new GorgonVideoMode(settings.BoundWindow.ClientSize.Width, settings.BoundWindow.ClientSize.Height, GorgonBackBufferFormat.Unknown);
 
 			if (!(settings.BoundWindow is Form))
 				settings.DisplayMode = new GorgonVideoMode(settings.BoundWindow.ClientSize.Width, settings.BoundWindow.ClientSize.Height, settings.DisplayMode.Value.Format);

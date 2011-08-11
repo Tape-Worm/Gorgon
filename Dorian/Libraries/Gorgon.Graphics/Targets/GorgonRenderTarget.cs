@@ -78,10 +78,18 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return information about the render target.
+		/// Property to return the width of the render target.
 		/// </summary>
-		/// <remarks>Use this to return the width, height and format of the target.</remarks>
-		public GorgonVideoMode TargetInformation
+		public int Width
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the height of the render target.
+		/// </summary>
+		public int Height
 		{
 			get;
 			private set;
@@ -116,11 +124,13 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to update the information about the target.
 		/// </summary>
-		/// <param name="mode">The dimensions and format of the target.</param>
+		/// <param name="width">Width of the render target in pixels.</param>
+		/// <param name="height">Height of the render target in pixels.</param>
 		/// <param name="depthStencilFormat">The depth buffer format.</param>
-		protected void UpdateTargetInformation(GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
+		protected void UpdateTargetInformation(int width, int height, GorgonDepthBufferFormat depthStencilFormat)
 		{
-			TargetInformation = mode;
+			Width = width;
+			Height = height;
 			DepthStencilFormat = depthStencilFormat;
 		}
 
@@ -144,19 +154,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="name">The name.</param>
-		/// <param name="mode">A video mode structure defining the width, height and format of the render target.</param>
+		/// <param name="width">Width of the render target.</param>
+		/// <param name="height">Height of the render target.</param>
 		/// <param name="depthStencilFormat">The depth buffer format (if required) for the target.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonRenderTarget(GorgonGraphics graphics, string name, GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
+		protected GorgonRenderTarget(GorgonGraphics graphics, string name, int width, int height, GorgonDepthBufferFormat depthStencilFormat)
 			: base(name)
 		{
 			if (graphics == null)
 				throw new ArgumentNullException("graphics");
 
 			Graphics = graphics;
-			TargetInformation = mode;
+			Width = width;
+			Height = height;
 			DepthStencilFormat = depthStencilFormat;
 		}
 		#endregion

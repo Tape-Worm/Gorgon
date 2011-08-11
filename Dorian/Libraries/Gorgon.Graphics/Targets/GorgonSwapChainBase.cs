@@ -71,7 +71,16 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
-		}		
+		}
+
+		/// <summary>
+		/// Property to return the format of the back buffer for this swap chain.
+		/// </summary>
+		public GorgonBackBufferFormat Format
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -124,7 +133,7 @@ namespace GorgonLibrary.Graphics
 		{
 			if ((ParentWindow.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
 			{
-				UpdateTargetInformation(new GorgonVideoMode(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, TargetInformation.Format, TargetInformation.RefreshRateNumerator, TargetInformation.RefreshRateDenominator), DepthStencilFormat);
+				UpdateTargetInformation(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, DepthStencilFormat);
 				UpdateRenderTarget();
 			}
 		}
@@ -181,6 +190,19 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to update the information about the swap chain.
+		/// </summary>
+		/// <param name="width">Width of the swap chain.</param>
+		/// <param name="height">Height of the swap chain.</param>
+		/// <param name="format">Format of the swap chain.</param>
+		/// <param name="depthStencilFormat">Depth/Stencil buffer format.</param>
+		protected void UpdateTargetInformation(int width, int height, GorgonBackBufferFormat format, GorgonDepthBufferFormat depthStencilFormat)
+		{
+			UpdateTargetInformation(width, height, depthStencilFormat);
+			Format = format;
+		}
+
+		/// <summary>
 		/// Function to display the contents of the swap chain.
 		/// </summary>
 		public abstract void Display();
@@ -200,23 +222,26 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSwapChainBase"/> class.
 		/// </summary>
-		/// <param name="graphics">The graphics instance that owns this render target.</param>
+		/// <param name="graphics">The graphics instance that owns this swap chain.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="window">Window to bind the swap chain to.</param>
-		/// <param name="mode">A video mode structure defining the width, height and format of the render target.</param>
-		/// <param name="depthStencilFormat">The depth buffer format (if required) for the target.</param>
+		/// <param name="width">Width of the swap chain.</param>
+		/// <param name="height">Height of the swap chain.</param>
+		/// <param name="format">Format for the swap chain.</param>
+		/// <param name="depthStencilFormat">The depth buffer format (if required) for the swap chain.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonSwapChainBase(GorgonGraphics graphics, string name, Control window, GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
-			: base(graphics, name, mode, depthStencilFormat)	
+		protected GorgonSwapChainBase(GorgonGraphics graphics, string name, Control window, int width, int height, GorgonBackBufferFormat format, GorgonDepthBufferFormat depthStencilFormat)
+			: base(graphics, name, width, height, depthStencilFormat)	
 		{
 			if (window == null)
 				throw new ArgumentNullException("window");
 
+			Format = format;
 			BoundWindow = window;
 			if (BoundWindow != Gorgon.ApplicationWindow)
 				GetParentWindow();

@@ -102,7 +102,7 @@ namespace GorgonLibrary.Graphics.D3D9
 					if (window.WindowState == FormWindowState.Minimized)
 					{
 						window.WindowState = FormWindowState.Normal;
-						UpdateTargetInformation(new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, TargetInformation.Format, TargetInformation.RefreshRateNumerator, TargetInformation.RefreshRateDenominator), DepthStencilFormat);
+						UpdateTargetInformation(new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator), DepthStencilFormat);
 					}
 					else
 					{
@@ -115,7 +115,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				{
 					window.Location = VideoOutput.DesktopDimensions.Location;
 					window.Size = VideoOutput.DesktopDimensions.Size;
-					UpdateTargetInformation(new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, TargetInformation.Format, TargetInformation.RefreshRateNumerator, TargetInformation.RefreshRateDenominator), DepthStencilFormat);
+					UpdateTargetInformation(new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator), DepthStencilFormat);
 				} 
 			}	
 			
@@ -134,10 +134,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			Form window = BoundWindow as Form;			
 
-			if (TargetInformation.Format == GorgonDisplayFormat.Unknown)
+			if (Mode.Format == GorgonBackBufferFormat.Unknown)
 			{
-				UpdateTargetInformation(new GorgonVideoMode(TargetInformation.Width, 
-						TargetInformation.Height, 
+				UpdateTargetInformation(new GorgonVideoMode(Mode.Width, 
+						Mode.Height, 
 						VideoOutput.DefaultVideoMode.Format, 
 						VideoOutput.DefaultVideoMode.RefreshRateNumerator, 
 						VideoOutput.DefaultVideoMode.RefreshRateDenominator), DepthStencilFormat);
@@ -153,41 +153,41 @@ namespace GorgonLibrary.Graphics.D3D9
 				int count = 0;
 
 				// If we've not specified a refresh rate, then find the lowest refresh on the output.
-				if ((TargetInformation.RefreshRateDenominator == 0) || (TargetInformation.RefreshRateNumerator == 0))
+				if ((Mode.RefreshRateDenominator == 0) || (Mode.RefreshRateNumerator == 0))
 				{
-					if (VideoOutput.VideoModes.Count(item => item.Width == TargetInformation.Width && item.Height == TargetInformation.Height && item.Format == TargetInformation.Format) > 0)
+					if (VideoOutput.VideoModes.Count(item => item.Width == Mode.Width && item.Height == Mode.Height && item.Format == Mode.Format) > 0)
 					{					
 						var refresh = (from mode in VideoOutput.VideoModes
-									  where ((mode.Width == TargetInformation.Width) && (mode.Height == TargetInformation.Height) && (mode.Format == TargetInformation.Format))
+									  where ((mode.Width == Mode.Width) && (mode.Height == Mode.Height) && (mode.Format == Mode.Format))
 									  select mode.RefreshRateNumerator).Min();
-						UpdateTargetInformation(new GorgonVideoMode(TargetInformation.Width, TargetInformation.Height, TargetInformation.Format, refresh, 1), DepthStencilFormat);
+						UpdateTargetInformation(new GorgonVideoMode(Mode.Width, Mode.Height, Mode.Format, refresh, 1), DepthStencilFormat);
 					}
 				}					
 
-				count = VideoOutput.VideoModes.Count(item => item == TargetInformation);
+				count = VideoOutput.VideoModes.Count(item => item == Mode);
 
 				if (count == 0)
-					throw new GorgonException(GorgonResult.CannotBind, "Unable to set the video mode.  The mode '" + TargetInformation.Width.ToString() + "x" +
-						TargetInformation.Height.ToString() + " Format: " + TargetInformation.Format.ToString() + " Refresh Rate: " +
-						TargetInformation.RefreshRateNumerator.ToString() + "/" + TargetInformation.RefreshRateDenominator.ToString() +
+					throw new GorgonException(GorgonResult.CannotBind, "Unable to set the video mode.  The mode '" + Mode.Width.ToString() + "x" +
+						Mode.Height.ToString() + " Format: " + Mode.Format.ToString() + " Refresh Rate: " +
+						Mode.RefreshRateNumerator.ToString() + "/" + Mode.RefreshRateDenominator.ToString() +
 						"' is not a valid full screen video mode for this video output.");
 			}
 
 			// If the window is just a child control, then use the size of the client control instead.
 			if (!(BoundWindow is Form))
-				UpdateTargetInformation(new GorgonVideoMode(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, TargetInformation.Format, TargetInformation.RefreshRateNumerator, TargetInformation.RefreshRateDenominator), DepthStencilFormat);
+				UpdateTargetInformation(new GorgonVideoMode(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator), DepthStencilFormat);
 			
 			_presentParams = new PresentParameters[] {
 				new PresentParameters() {
 					AutoDepthStencilFormat = SlimDX.Direct3D9.Format.Unknown,
 					BackBufferCount = 3,
-					BackBufferFormat = D3DConvert.ConvertDisplayFormat(TargetInformation.Format),
-					BackBufferHeight = TargetInformation.Height,
-					BackBufferWidth = TargetInformation.Width,
+					BackBufferFormat = D3DConvert.ConvertBackBufferFormat(Mode.Format),
+					BackBufferHeight = Mode.Height,
+					BackBufferWidth = Mode.Width,
 					DeviceWindowHandle = BoundWindow.Handle,
 					EnableAutoDepthStencil = false,
 					Windowed = IsWindowed,
-					FullScreenRefreshRateInHertz = TargetInformation.RefreshRateNumerator,
+					FullScreenRefreshRateInHertz = Mode.RefreshRateNumerator,
 					Multisample = MultisampleType.None,
 					MultisampleQuality = 0,
 					PresentationInterval = PresentInterval.Immediate,
@@ -195,13 +195,13 @@ namespace GorgonLibrary.Graphics.D3D9
 					SwapEffect = SwapEffect.Discard
 			}};
 
-			if (!VideoOutput.SupportsBackBufferFormat(TargetInformation.Format, IsWindowed))
-				throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified format '" + TargetInformation.Format.ToString() + "' with the display format '" + VideoOutput.DefaultVideoMode.Format.ToString() + "'.");
+			if (!VideoOutput.SupportsBackBufferFormat(Mode.Format, IsWindowed))
+				throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified format '" + Mode.Format.ToString() + "' with the display format '" + VideoOutput.DefaultVideoMode.Format.ToString() + "'.");
 
-			if (!VideoOutput.SupportsDepthFormat(TargetInformation.Format, DepthStencilFormat, IsWindowed))
+			if (!VideoOutput.SupportsDepthFormat(Mode.Format, DepthStencilFormat, IsWindowed))
 				throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified depth/stencil format '" + DepthStencilFormat.ToString() + "'.");
 
-			GorgonMSAAQualityLevel? msaaQualityLevel = VideoDevice.SupportsMultiSampleQualityLevel(GorgonMSAALevel.NonMasked, TargetInformation.Format, IsWindowed);
+			GorgonMSAAQualityLevel? msaaQualityLevel = VideoDevice.SupportsMultiSampleQualityLevel(GorgonMSAALevel.NonMasked, Mode.Format, IsWindowed);
 
 			if (msaaQualityLevel != null)
 			{
@@ -212,7 +212,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			// Set up the depth buffer if necessary.
 			if (DepthStencilFormat != GorgonDepthBufferFormat.Unknown)
 			{				
-				_presentParams[0].AutoDepthStencilFormat = D3DConvert.ConvertDepthFormat(DepthStencilFormat);
+				_presentParams[0].AutoDepthStencilFormat = D3DConvert.ConvertDepthBufferFormat(DepthStencilFormat);
 				_presentParams[0].EnableAutoDepthStencil = true;
 			}
 			
@@ -254,8 +254,8 @@ namespace GorgonLibrary.Graphics.D3D9
 			window.Visible = true;
 			window.Enabled = true;
 
-			if ((window.ClientSize.Width != TargetInformation.Width) || (window.ClientSize.Height != TargetInformation.Height))
-				window.ClientSize = new System.Drawing.Size(TargetInformation.Width, TargetInformation.Height);
+			if ((window.ClientSize.Width != Mode.Width) || (window.ClientSize.Height != Mode.Height))
+				window.ClientSize = new System.Drawing.Size(Mode.Width, Mode.Height);
 
 			if (!IsWindowed)
 			{

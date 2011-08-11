@@ -49,7 +49,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			if (_window.IsReady)
 			{
-				Viewport view = new Viewport(0, 0, _window.TargetInformation.Width, _window.TargetInformation.Height, 0.0f, 1.0f);
+				Viewport view = new Viewport(0, 0, _window.Mode.Width, _window.Mode.Height, 0.0f, 1.0f);
 
 				_device.Viewport = view;
 				_device.SetTransform(TransformState.Projection, Matrix.PerspectiveLH(1.0f, 1.0f, 0.1f, 10.0f));
@@ -59,16 +59,16 @@ namespace GorgonLibrary.Graphics.D3D9
 				_device.BeginScene();
 				switch (_window.DepthStencilFormat)
 				{
+					case GorgonDepthBufferFormat.D32_UIntNormal:
 					case GorgonDepthBufferFormat.D32_Float_Lockable:
-					case GorgonDepthBufferFormat.D32:
-					case GorgonDepthBufferFormat.D24X8:
-					case GorgonDepthBufferFormat.D16_Lockable:
-					case GorgonDepthBufferFormat.D16:
+					case GorgonDepthBufferFormat.D24_UIntNormal_X8:
+					case GorgonDepthBufferFormat.D16_UIntNormal_Lockable:
+					case GorgonDepthBufferFormat.D16_UIntNormal:					
 						_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(0, 0, 0, 0), 1.0f, 0);
 						break;
-					case GorgonDepthBufferFormat.D24_Float_S8:
-					case GorgonDepthBufferFormat.D24S8:
-					case GorgonDepthBufferFormat.D15S1:
+					case GorgonDepthBufferFormat.D24_Float_S8_UInt:
+					case GorgonDepthBufferFormat.D24_UIntNormal_X4S4_UInt:
+					case GorgonDepthBufferFormat.D15_UIntNormal_S1_UInt:
 						_device.Clear(ClearFlags.All, new Color4(0, 0, 0, 0), 1.0f, 0);
 						break;
 					default:

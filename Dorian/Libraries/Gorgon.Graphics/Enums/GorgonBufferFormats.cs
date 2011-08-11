@@ -32,6 +32,84 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// Depth buffer formats.
+	/// </summary>
+	public enum GorgonDepthBufferFormat
+	{
+		/// <summary>
+		/// Unknown format.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
+		/// 16 bit depth buffer with 15 bit depth component and 1 bit stencil component.
+		/// </summary>
+		D15_UIntNormal_S1_UInt = 1,
+		/// <summary>
+		/// 16 bit depth buffer.
+		/// </summary>
+		D16_UIntNormal = 2,
+		/// <summary>
+		/// 16 bit depth buffer, lockable.
+		/// </summary>
+		D16_UIntNormal_Lockable = 3,
+		/// <summary>
+		/// 32 bit depth buffer, 24 bit depth component.
+		/// </summary>
+		D24_UIntNormal_X8 = 4,
+		/// <summary>
+		/// 32 bit depth buffer, 24 bit depth component and 4 bit stencil component.
+		/// </summary>
+		D24_UIntNormal_X4S4_UInt = 5,
+		/// <summary>
+		/// 32 bit depth buffer, 24 bit depth component and 8 bit stencil component.
+		/// </summary>
+		D24_UIntNormal_S8_UInt = 6,
+		/// <summary>
+		/// 32 bit depth buffer, 24 bit floating point component, and 8 bit stencil component.
+		/// </summary>
+		D24_Float_S8_UInt = 7,
+		/// <summary>
+		/// 32 bit depth buffer.
+		/// </summary>
+		D32_UIntNormal = 8,
+		/// <summary>
+		/// 32 bit floating point depth buffer, lockable.
+		/// </summary>
+		D32_Float_Lockable = 9,
+		/// <summary>
+		/// 32 bit floating point depth buffer, 8 bit stencil component.
+		/// </summary>
+		S8_Float_X24 = 10
+	}
+
+	/// <summary>
+	/// Back buffer formats.
+	/// </summary>
+	public enum GorgonBackBufferFormat
+	{
+		/// <summary>
+		/// Unknown back buffer format.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
+		/// 32 bit unsigned integer with 10 bit R, G, B components and a 2 bit alpha component.
+		/// </summary>
+		A2R10G10B10_UIntNormal = 1,
+		/// <summary>
+		/// 32 bit unsigned integer with 8 bit R, G, B components and an 8 bit alpha component.
+		/// </summary>
+		A8R8G8B8_UIntNormal = 2,
+		/// <summary>
+		/// 32 bit unsigned integer with 8 bit R, G and B components.
+		/// </summary>
+		X8_R8G8B8_UIntNormal = 3,
+		/// <summary>
+		/// 32 bit unsigned integer with 8 bit R, G, B and an 8 bit alpha component in sRGB.
+		/// </summary>
+		A8R8G8B8_UIntNormal_sRGB = 4
+	}
+
+	/// <summary>
 	/// A list of various buffer formats supported by back end graphics APIs
 	/// </summary>
 	/// <remarks>Some APIs will need to map to equivalent buffer formats (internally within their own plug-ins) where applicable.  However, some APIs won't support some formats, and calls using these formats may not work if an equivalent format is not found.</remarks>
@@ -154,9 +232,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		R8G8B8A8_UIntNormal = 28,
 		/// <summary>
-		/// The R8G8B8A8_UIntNormal_SRGB buffer format.
+		/// The R8G8B8A8_UIntNormal_sRGB buffer format.
 		/// </summary>
-		R8G8B8A8_UIntNormal_SRGB = 29,
+		R8G8B8A8_UIntNormal_sRGB = 29,
 		/// <summary>
 		/// The R8G8B8A8_UInt buffer format.
 		/// </summary>
@@ -326,9 +404,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		BC1_UIntNormal = 71,
 		/// <summary>
-		/// The BC1_UIntNormal_SRGB buffer format.
+		/// The BC1_UIntNormal_sRGB buffer format.
 		/// </summary>
-		BC1_UIntNormal_SRGB = 72,
+		BC1_UIntNormal_sRGB = 72,
 		/// <summary>
 		/// The BC2 buffer format.
 		/// </summary>
@@ -338,9 +416,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		BC2_UIntNormal = 74,
 		/// <summary>
-		/// The BC2_UIntNormal_SRGB buffer format.
+		/// The BC2_UIntNormal_sRGB buffer format.
 		/// </summary>
-		BC2_UIntNormal_SRGB = 75,
+		BC2_UIntNormal_sRGB = 75,
 		/// <summary>
 		/// The BC3 buffer format.
 		/// </summary>
@@ -350,9 +428,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		BC3_UIntNormal = 77,
 		/// <summary>
-		/// The BC3_UIntNormal_SRGB buffer format.
+		/// The BC3_UIntNormal_sRGB buffer format.
 		/// </summary>
-		BC3_UIntNormal_SRGB = 78,
+		BC3_UIntNormal_sRGB = 78,
 		/// <summary>
 		/// The BC4 buffer format.
 		/// </summary>
@@ -402,17 +480,17 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		B8G8R8A8 = 90,
 		/// <summary>
-		/// The B8G8R8A8_UIntNormal_SRGB buffer format.
+		/// The B8G8R8A8_UIntNormal_sRGB buffer format.
 		/// </summary>
-		B8G8R8A8_UIntNormal_SRGB = 91,
+		B8G8R8A8_UIntNormal_sRGB = 91,
 		/// <summary>
 		/// The B8G8R8X8 buffer format.
 		/// </summary>
 		B8G8R8X8 = 92,
 		/// <summary>
-		/// The B8G8R8X8_UIntNormal_SRGB buffer format.
+		/// The B8G8R8X8_UIntNormal_sRGB buffer format.
 		/// </summary>
-		B8G8R8X8_UIntNormal_SRGB = 93,
+		B8G8R8X8_UIntNormal_sRGB = 93,
 		/// <summary>
 		/// The BC6 buffer format.
 		/// </summary>
@@ -434,150 +512,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		BC7_UIntNormal = 98,
 		/// <summary>
-		/// The BC7_UIntNormal_SRGB buffer format.
+		/// The BC7_UIntNormal_sRGB buffer format.
 		/// </summary>
-		BC7_UIntNormal_SRGB = 99,
-		// These values are custom to Gorgon and are used to help older APIs handle the formats.
+		BC7_UIntNormal_sRGB = 99,
+		// This mode may not be supported by all APIs
 		/// <summary>
-		/// 32 bit back buffer format with 2 bit alpha.
+		/// The X8_R8G8B8_UIntNormal buffer format.
 		/// </summary>
-		BackBuffer_A2R10G10B10 = 100,
-		/// <summary>
-		/// 32 bit back buffer format.
-		/// </summary>
-		BackBuffer_A8R8G8B8 = 101,
-		/// <summary>
-		/// 32 bit back buffer format with no alpha.
-		/// </summary>
-		BackBuffer_X8R8G8B8 = 102,
-		/// <summary>
-		/// 24 bit depth buffer.
-		/// </summary>
-		Depth_D24_X8 = 103,
-		/// <summary>
-		/// 24 bit depth buffer, 4 bit stencil.
-		/// </summary>
-		Depth_D24_X4S4 = 104,
-		/// <summary>
-		/// 24 bit depth buffer, 8 bit stencil.
-		/// </summary>
-		Depth_D24_S8 = 105,
-		/// <summary>
-		/// 32 bit depth buffer.
-		/// </summary>
-		Depth_D32 = 106,
-		/// <summary>
-		/// 32 bit floating point depth buffer format.
-		/// </summary>
-		Depth_D32Float_Lockable = 107,
-		/// <summary>
-		/// 16 bit index buffer.
-		/// </summary>
-		Index_16 = 108,
-		/// <summary>
-		/// 32 bit index buffer.
-		/// </summary>
-		Index_32 = 109,
-		/// <summary>
-		/// Vertex buffer data.
-		/// </summary>
-		Vertex = 110,
-		/// <summary>
-		/// DXT1 Compressed format.
-		/// </summary>
-		DXT1 = 111,
-		/// <summary>
-		/// DXT2 Compressed format.
-		/// </summary>
-		DXT2 = 112,
-		/// <summary>
-		/// DXT3 Compressed format.
-		/// </summary>
-		DXT3 = 113,
-		/// <summary>
-		/// DXT4 Compressed format.
-		/// </summary>
-		DXT4 = 114,
-		/// <summary>
-		/// DXT5 Compressed format.
-		/// </summary>
-		DXT5 = 115,
-		/// <summary>
-		/// 16 bit floating point red channel.
-		/// </summary>
-		Float_R16 = 116,
-		/// <summary>
-		/// 32 bit floating point with 16 bits for the red and green channel.
-		/// </summary>
-		Float_G16R16 = 117,
-		/// <summary>
-		/// 64 bit floating point with 16 bits for red, green, blue and alpha.
-		/// </summary>
-		Float_A16B16G16R16 = 118,
-		/// <summary>
-		/// FourCC multi element texture (uncompressed).
-		/// </summary>
-		FourCC_Multi2_ARGB8 = 119,
-		/// <summary>
-		/// FourCC 16 bit packed format.
-		/// </summary>
-		FourCC_G8R8_G8B8 = 120,
-		/// <summary>
-		/// FourCC 16 bit packed format.
-		/// </summary>
-		FourCC_R8G8_B8G8 = 121,
-		/// <summary>
-		/// FourCC UYVY format.
-		/// </summary>
-		FourCC_UYVY = 122,
-		/// <summary>
-		/// FourCC YUV2 format.
-		/// </summary>
-		FourCC_YUV2 = 123,
-		/// <summary>
-		/// 32 bit floating point in red channel.
-		/// </summary>
-		Float_R32 = 124,
-		/// <summary>
-		/// 64 bit floating point with 32 bit green and red channels.
-		/// </summary>
-		Float_G32R32 = 125,
-		/// <summary>
-		/// 128 bit floating point with 32 bit red, green, blue and alpha channels.
-		/// </summary>
-		Float_A32B32G32R32 = 126,
-		/// <summary>
-		/// 16 bit bump map with luminance.
-		/// </summary>
-		Bump_L6V5U5 = 127,
-		/// <summary>
-		/// 32 bit bump map with luminance.
-		/// </summary>
-		Bump_X8L8V8U8 = 128,
-		/// <summary>
-		/// 32 bit bump map with 2 bit alpha.
-		/// </summary>
-		Bump_A2W10V10U10 = 129,
-		/// <summary>
-		/// 16 bit bump map.
-		/// </summary>
-		Bump_V8U8 = 130,
-		/// <summary>
-		/// 32 bit bump map.
-		/// </summary>
-		Bump_Q8W8V8Y8 = 131,
-		/// <summary>
-		/// 32 bit bump map with 16 bit components.
-		/// </summary>
-		Bump_V16U16 = 132,
-		/// <summary>
-		/// 64 bit bump map.
-		/// </summary>
-		Bump_Q16W16V16U16 = 133,
-		/// <summary>
-		/// 16 bit normal compression.
-		/// </summary>
-		Normal_CxV8U8 = 134,
-
+		X8_R8G8B8_UIntNormal = 100
 	}
 }
