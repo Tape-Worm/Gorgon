@@ -94,12 +94,12 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="format">Backbuffer format to check.</param>
 		/// <param name="isWindowed">TRUE if in windowed mode, FALSE if not.</param>
 		/// <returns>TRUE if supported, FALSE if not.</returns>
-		public override bool SupportsBackBufferFormat(GorgonDisplayFormat format, bool isWindowed)
+		public override bool SupportsBackBufferFormat(GorgonBackBufferFormat format, bool isWindowed)
 		{
 			if (isWindowed)
-				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.ConvertDisplayFormat(DefaultVideoMode.Format), D3DConvert.ConvertDisplayFormat(format), isWindowed);
+				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.ConvertBackBufferFormat(DefaultVideoMode.Format), D3DConvert.ConvertBackBufferFormat(format), isWindowed);
 			else
-				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.ConvertDisplayFormat(format), D3DConvert.ConvertDisplayFormat(format), isWindowed);
+				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.ConvertBackBufferFormat(format), D3DConvert.ConvertBackBufferFormat(format), isWindowed);
 		}
 
 		/// <summary>
@@ -110,13 +110,13 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="depthStencilFormat">Depth/stencil format to check.</param>
 		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
 		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
-		public override bool SupportsDepthFormat(GorgonDisplayFormat displayFormat, GorgonBufferFormat targetFormat, GorgonDepthBufferFormat depthStencilFormat, bool isWindowed)
+		public override bool SupportsDepthFormat(GorgonBackBufferFormat displayFormat, GorgonBufferFormat targetFormat, GorgonDepthBufferFormat depthStencilFormat, bool isWindowed)
 		{
-			Format adapterFormat = (isWindowed ? D3DConvert.ConvertDisplayFormat(DefaultVideoMode.Format) : D3DConvert.ConvertDisplayFormat(displayFormat));
+			Format adapterFormat = (isWindowed ? D3DConvert.ConvertBackBufferFormat(DefaultVideoMode.Format) : D3DConvert.ConvertBackBufferFormat(displayFormat));
 
-			if (_d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, Usage.DepthStencil, ResourceType.Surface, D3DConvert.ConvertDepthFormat(depthStencilFormat)))			
+			if (_d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, Usage.DepthStencil, ResourceType.Surface, D3DConvert.ConvertDepthBufferFormat(depthStencilFormat)))			
 			{
-				if (_d3d.CheckDepthStencilMatch(_info.Adapter, _deviceType, adapterFormat, D3DConvert.ConvertTextureFormat(targetFormat), D3DConvert.ConvertDepthFormat(depthStencilFormat)))
+				if (_d3d.CheckDepthStencilMatch(_info.Adapter, _deviceType, adapterFormat, D3DConvert.ConvertFormat(targetFormat), D3DConvert.ConvertDepthBufferFormat(depthStencilFormat)))
 					return true;
 			}
 
@@ -131,16 +131,16 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="dynamic">TRUE if using a dynamic texture, FALSE for static textures.</param>
 		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
 		/// <returns>TRUE if the texture format is supported, FALSE if not.</returns>
-		public bool SupportsTextureFormat(GorgonDisplayFormat displayFormat, GorgonBufferFormat textureFormat, bool dynamic, bool isWindowed)
+		public bool SupportsTextureFormat(GorgonBackBufferFormat displayFormat, GorgonBufferFormat textureFormat, bool dynamic, bool isWindowed)
 		{
 			// TODO:  Replace dynamic with a flag enumeration for Dynamic, Static or RenderTarget.
-			Format adapterFormat = (isWindowed ? D3DConvert.ConvertDisplayFormat(DefaultVideoMode.Format) : D3DConvert.ConvertDisplayFormat(displayFormat));
+			Format adapterFormat = (isWindowed ? D3DConvert.ConvertBackBufferFormat(DefaultVideoMode.Format) : D3DConvert.ConvertBackBufferFormat(displayFormat));
 			Usage usage = Usage.None;
 
 			if (dynamic)
 				usage = Usage.Dynamic;
 
-			return _d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, usage, ResourceType.Texture, D3DConvert.ConvertTextureFormat(textureFormat));
+			return _d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, usage, ResourceType.Texture, D3DConvert.ConvertFormat(textureFormat));
 		}
 		#endregion
 

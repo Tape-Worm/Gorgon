@@ -35,7 +35,7 @@ namespace Tester_Graphics
 			{
 				if (e.KeyCode == Keys.F1)
 				{
-					_dev.Update(_dev.TargetInformation, _dev.DepthStencilFormat, _dev.IsWindowed);
+					_dev.Update(_dev.Mode, _dev.DepthStencilFormat, _dev.IsWindowed);
 				}
 
 				if (e.KeyCode == Keys.Back)
@@ -68,7 +68,7 @@ namespace Tester_Graphics
 				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
 				//_dev = _gfx.CreateDeviceWindow("Test", new GorgonVideoMode(640, 480, GorgonBufferFormat.R8G8B8A8_UIntNorm, 60, 1), GorgonBufferFormat.D24_UIntNorm_S8_UInt, false);
 				//_dev = _gfx.CreateDeviceWindow("Test", GorgonBufferFormat.D24_UIntNorm_S8_UInt, true);
-				_dev = _gfx.CreateDeviceWindow("Test", new GorgonDeviceWindowSettings() { DisplayMode = new GorgonVideoMode(640, 480, GorgonDisplayFormat.A8R8G8B8), Windowed = true, DepthStencilFormat = GorgonDepthBufferFormat.D16});
+				_dev = _gfx.CreateDeviceWindow("Test", new GorgonDeviceWindowSettings() { DisplayMode = new GorgonVideoMode(640, 480, GorgonBackBufferFormat.A8R8G8B8_UIntNormal), Windowed = true, DepthStencilFormat = GorgonDepthBufferFormat.D16_UIntNormal});
 				_dev.SetupTest();
 
 				//form2 = new Form2();				

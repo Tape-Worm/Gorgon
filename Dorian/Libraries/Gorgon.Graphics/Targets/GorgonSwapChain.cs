@@ -57,12 +57,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSwapChainBase"/> class.
 		/// </summary>
-		/// <param name="graphics">The graphics instance that owns this render target.</param>
+		/// <param name="graphics">The graphics instance that owns this swap chain.</param>
 		/// <param name="device">The device window that created this swap chain.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="window">Window to bind the swap chain to.</param>
-		/// <param name="mode">A video mode structure defining the width, height and format of the render target.</param>
-		/// <param name="depthStencilFormat">The depth buffer format (if required) for the target.</param>
+		/// <param name="width">Width of the swap chain.</param>
+		/// <param name="height">Height of the swap chain.</param>
+		/// <param name="format">Format for the swap chain.</param>
+		/// <param name="depthStencilFormat">The depth buffer format (if required) for the swap chain.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
@@ -71,8 +73,8 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonSwapChain(GorgonGraphics graphics, GorgonDeviceWindow device, string name, Control window, GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
-			: base(graphics, name, window, mode, depthStencilFormat)
+		protected GorgonSwapChain(GorgonGraphics graphics, GorgonDeviceWindow device, string name, Control window, int width, int height, GorgonBackBufferFormat format, GorgonDepthBufferFormat depthStencilFormat)
+			: base(graphics, name, window, width, height, format, depthStencilFormat)
 		{
 			if (device == null)
 				throw new ArgumentNullException("device");
