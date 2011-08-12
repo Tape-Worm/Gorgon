@@ -209,7 +209,13 @@ namespace GorgonLibrary.Graphics
 		{
 			// We should not care about window resizing when in full screen mode.
 			if (IsWindowed)
-				base.OnWindowResized(newWidth, newHeight);
+			{
+				if ((ParentWindow.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
+				{
+					UpdateTargetInformation(new GorgonVideoMode(newWidth, newHeight, Format, Mode.RefreshRateNumerator, RefreshRateDenominator), DepthStencilFormat);
+					base.OnWindowResized(newWidth, newHeight);
+				}
+			}
 		}
 
 		/// <summary>

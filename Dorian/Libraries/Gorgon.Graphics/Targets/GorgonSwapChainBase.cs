@@ -133,7 +133,6 @@ namespace GorgonLibrary.Graphics
 		{
 			if ((ParentWindow.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
 			{
-				UpdateTargetInformation(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, DepthStencilFormat);
 				UpdateRenderTarget();
 			}
 		}
@@ -199,7 +198,7 @@ namespace GorgonLibrary.Graphics
 		protected void UpdateTargetInformation(int width, int height, GorgonBackBufferFormat format, GorgonDepthBufferFormat depthStencilFormat)
 		{
 			UpdateTargetInformation(width, height, depthStencilFormat);
-			Format = format;
+			Format = format;			
 		}
 
 		/// <summary>
