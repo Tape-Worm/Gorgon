@@ -373,7 +373,9 @@ namespace GorgonLibrary.Graphics.D3D9
 				case Format.Dxt5:
 					return GorgonBufferFormat.BC3_UIntNormal;
 				case Format.A8R8G8B8:
-					return GorgonBufferFormat.B8G8R8A8_UIntNormal;
+					return GorgonBufferFormat.R8G8B8A8_UIntNormal;
+				case Format.X8R8G8B8:
+					return GorgonBufferFormat.X8_R8G8B8_UIntNormal;
 				case Format.A8:
 					return GorgonBufferFormat.A8_UIntNormal;				
 				default:
@@ -400,9 +402,11 @@ namespace GorgonLibrary.Graphics.D3D9
 					return Format.Q16W16V16U16;
 				case GorgonBufferFormat.R32G32_Float:
 					return Format.G32R32F;
+				case GorgonBufferFormat.X8_R8G8B8_UIntNormal:
+					return Format.X8R8G8B8;
 				case GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB:
 				case GorgonBufferFormat.R8G8B8A8_UIntNormal:
-					return Format.A8B8G8R8;
+					return Format.A8R8G8B8;
 				case GorgonBufferFormat.R8G8B8A8_IntNormal:
 					return Format.Q8W8V8U8;
 				case GorgonBufferFormat.R16G16_Float:
