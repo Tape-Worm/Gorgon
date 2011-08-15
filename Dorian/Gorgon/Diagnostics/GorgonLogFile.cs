@@ -35,8 +35,8 @@ namespace GorgonLibrary.Diagnostics
 	/// </summary>
 	public enum GorgonLoggingLevel
 	{
-		/// <summary>None, this will disable the log.</summary>
-		None = 0,
+		/// <summary>This will disable the log file.</summary>
+		NoLogging = 0,
 		/// <summary>This will only pass messages marked as simple.</summary>
 		Simple = 1,
 		/// <summary>This will only pass messages marked as intermediate.</summary>
@@ -54,7 +54,8 @@ namespace GorgonLibrary.Diagnostics
 		: IDisposable
 	{
 		#region Variables.
-		private StreamWriter _stream = null;					// File stream object.
+		private StreamWriter _stream = null;								// File stream object.
+		private GorgonLoggingLevel _filterLevel = GorgonLoggingLevel.All;	// Logging filter.
 		#endregion
 
 		#region Properties.
@@ -63,8 +64,21 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public GorgonLoggingLevel LogFilterLevel
 		{
-			get;
-			set;
+			get
+			{
+				return _filterLevel;
+			}
+			set
+			{
+				if ((_filterLevel != value) && (value != GorgonLoggingLevel.NoLogging))
+				{
+					Print(string.Empty, GorgonLoggingLevel.All);
+					Print("**** Log Filter Level: {0}", GorgonLoggingLevel.All, value);
+					Print(string.Empty, GorgonLoggingLevel.All);
+				}
+
+				_filterLevel = value;
+			}
 		}
 
 		/// <summary>
@@ -104,11 +118,13 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="arguments">List of optional arguments.</param>
 		public void Print(string formatSpecifier, GorgonLoggingLevel level, params object[] arguments)
 		{
-#if DEBUG
+			if (((LogFilterLevel == GorgonLoggingLevel.NoLogging) || (IsClosed)) && (level != GorgonLoggingLevel.All))
+				return;
+
 			StringBuilder outputLine = new StringBuilder(512);			// Output string 
 			string[] lines = null;										// List of lines.
 
-			if (((level <= LogFilterLevel) || (level == GorgonLoggingLevel.All)) && (LogFilterLevel != GorgonLoggingLevel.None) && (!IsClosed))
+			if ((level <= LogFilterLevel) || (level == GorgonLoggingLevel.All))
 			{
 				if (string.IsNullOrEmpty(formatSpecifier) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
 				{
@@ -133,7 +149,6 @@ namespace GorgonLibrary.Diagnostics
 				_stream.Write(outputLine.ToString());
 				_stream.Flush();
 			}
-#endif
 		}
 
 		/// <summary>
@@ -141,19 +156,21 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public void Close()
 		{
-#if DEBUG
-			if ((LogFilterLevel != GorgonLoggingLevel.None) && (!IsClosed))
+			if (!IsClosed)
 			{
 				// Clean up.
-				Print("**** {0} (Version {1}) Logging ends. ****", GorgonLoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
+				Print(string.Empty, GorgonLoggingLevel.All);
+				Print("**** {0} (Version {1}) logging ends. ****", GorgonLoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
 
 				if (_stream != null)
 				{
 					_stream.Close();
 					_stream = null;
 				}
+
+				IsClosed = true;
 			}			
-#endif
+
 			GC.SuppressFinalize(this);
 		}
 
@@ -162,8 +179,7 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public void Open()
 		{
-#if DEBUG
-			if ((LogFilterLevel != GorgonLoggingLevel.None) && (IsClosed))
+			if (IsClosed)
 			{
 				// Create the directory if it doesn't exist.
 				if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
@@ -174,9 +190,11 @@ namespace GorgonLibrary.Diagnostics
 				_stream.Flush();
 
 				IsClosed = false;
-				Print("**** {0} (Version {1}) logging begins ****", GorgonLoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());				
+				Print("**** {0} (Version {1}) logging begins ****", GorgonLoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
+				if (LogFilterLevel != GorgonLoggingLevel.NoLogging)
+					Print("**** Log Filter Level: {0}", GorgonLoggingLevel.All, LogFilterLevel);
+				Print(string.Empty, GorgonLoggingLevel.All);
 			}
-#endif
 		}
 		#endregion
 
@@ -193,15 +211,12 @@ namespace GorgonLibrary.Diagnostics
 
 			IsClosed = true;
 
-#if DEBUG
-			LogFilterLevel = GorgonLoggingLevel.Intermediate;
 			LogApplication = appname;
 
 			LogPath = GorgonUtility.GetUserApplicationPath(appname) + Path.ChangeExtension(GorgonUtility.FormatFileName(GetType().Assembly.GetName().Name), ".log");
 
 			if (string.IsNullOrEmpty(LogPath))
 				throw new IOException("The assembly name is not valid for a file name.");
-#endif
 		}
 		#endregion
 

@@ -31,7 +31,6 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Values to specify the level of multi-sampling to perform.
 	/// </summary>
-	[Flags()]
 	public enum GorgonMSAALevel
 	{
 		/// <summary>
@@ -49,58 +48,58 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Level 3 sampling.
 		/// </summary>
-		Level3 = 4,
+		Level3 = 3,
 		/// <summary>
 		/// Level 4 sampling.
 		/// </summary>
-		Level4 = 8,
+		Level4 = 4,
 		/// <summary>
 		/// Level 5 sampling.
 		/// </summary>
-		Level5 = 16,
+		Level5 = 5,
 		/// <summary>
 		/// Level 6 sampling.
 		/// </summary>
-		Level6 = 32,
+		Level6 = 6,
 		/// <summary>
 		/// Level 7 sampling.
 		/// </summary>
-		Level7 = 64,
+		Level7 = 7,
 		/// <summary>
 		/// Level 8 sampling.
 		/// </summary>
-		Level8 = 128,
+		Level8 = 8,
 		/// <summary>
 		/// Level 9 sampling.
 		/// </summary>
-		Level9 = 256,
+		Level9 = 9,
 		/// <summary>
 		/// Level 10 sampling.
 		/// </summary>
-		Level10 = 512,
+		Level10 = 10,
 		/// <summary>
 		/// Level 11 sampling.
 		/// </summary>
-		Level11 = 1024,
+		Level11 = 11,
 		/// <summary>
 		/// Level 12 sampling.
 		/// </summary>
-		Level12 = 2048,
+		Level12 = 12,
 		/// <summary>
 		/// Level 13 sampling.
 		/// </summary>
-		Level13 = 4096,
+		Level13 = 13,
 		/// <summary>
 		/// Level 14 sampling.
 		/// </summary>
-		Level14 = 8192,
+		Level14 = 14,
 		/// <summary>
 		/// Level 15 sampling.
 		/// </summary>
-		Level15 = 16384,
+		Level15 = 15,
 		/// <summary>
 		/// Level 16 sampling.
 		/// </summary>
-		Level16 = 32768
+		Level16 = 16
 	}
 }

@@ -154,12 +154,12 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="format">Format to test for multi sampling capabilities.</param>
 		/// <param name="windowed">TRUE if testing for windowed mode, FALSE if not.</param>
 		/// <returns>The multi sample maximum quality and level supported, or NULL (Nothing in VB.Net) if not supported.</returns>
-		public override GorgonMSAAQualityLevel? SupportsMultiSampleQualityLevel(GorgonMSAALevel level, GorgonBufferFormat format, bool windowed)
+		public override int? SupportsMultiSampleQualityLevel(GorgonMSAALevel level, GorgonBufferFormat format, bool windowed)
 		{
 			int quality = 0;
 
 			if (_d3d.CheckDeviceMultisampleType(AdapterIndex, _deviceType, D3DConvert.ConvertFormat(format), windowed, D3DConvert.Convert(level), out quality))
-				return new GorgonMSAAQualityLevel(level, quality);
+				return quality;
 
 			return null;
 		}

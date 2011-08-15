@@ -137,11 +137,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
-		/// Function to create a device window in back end API.
+		/// Function to create a device window.
 		/// </summary>
 		/// <param name="name">Name of the window.</param>
 		/// <param name="settings">Device window settings.</param>
-		/// <param name="advanced">Advanced device window settings.</param>
 		/// <returns>
 		/// A device window.
 		/// </returns>
@@ -155,15 +154,15 @@ namespace GorgonLibrary.Graphics.D3D9
 		///   <para>-or-</para>
 		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property of the settings parameter is FALSE and the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the settings parameter is a child control.</para>
 		///   <para>-or-</para>
-		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowAdvancedSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the <paramref name="advanced"/> parameter has a value that cannot be supported by the device.
-		/// You may check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.SupportsMultiSampleQualityLevel">SupportsMultiSampleQualityLevel</see> method on the video device object.</para>
+		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.GorgonDeviceWindowAdvancedSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.AdvancedSettings">advanced settings</see> has a value that cannot be supported by the device.
+		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.SupportsMultiSampleQualityLevel">SupportsMultiSampleQualityLevel</see> method on the video device object.</para>
 		///   </exception>
 		///   
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
-		protected override GorgonDeviceWindow CreateDeviceWindowImpl(string name, GorgonDeviceWindowSettings settings, GorgonDeviceWindowAdvancedSettings advanced)
+		protected override GorgonDeviceWindow CreateDeviceWindowImpl(string name, GorgonDeviceWindowSettings settings)
 		{
 			Tuple<GorgonVideoDevice, GorgonVideoOutput> deviceOutput = GetDevice(settings.BoundWindow);
-			return new D3D9DeviceWindow(this, name, deviceOutput.Item1, deviceOutput.Item2, settings, advanced);
+			return new D3D9DeviceWindow(this, name, deviceOutput.Item1, deviceOutput.Item2, settings);
 		}
 
 		/// <summary>

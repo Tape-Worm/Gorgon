@@ -37,8 +37,12 @@ namespace GorgonLibrary.Graphics
 	/// The plug-in interface for a graphics object.
 	/// </summary>
 	public abstract class GorgonGraphicsPlugIn
-		: GorgonPlugIn
+		: GorgonPlugIn, IDisposable
 	{
+		#region Variables.
+		private bool _disposed = false;			// Flag to indicate that the object was disposed.
+		private IDisposable _graphics = null;	// Graphics interface.
+		#endregion
 
 		#region Methods.
 		/// <summary>
@@ -54,7 +58,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new graphics object.</returns>
 		internal GorgonGraphics GetGraphics()
 		{
-			return CreateGraphics();
+			GorgonGraphics graphics = CreateGraphics();
+			_graphics = graphics as IDisposable;
+			return graphics;
 		}
 		#endregion
 
@@ -67,6 +73,36 @@ namespace GorgonLibrary.Graphics
 		protected GorgonGraphicsPlugIn(string description)
 			: base(description)
 		{
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (_graphics != null)
+						_graphics.Dispose();
+				}
+
+				_disposed = true;
+				_graphics = null;
+			}
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

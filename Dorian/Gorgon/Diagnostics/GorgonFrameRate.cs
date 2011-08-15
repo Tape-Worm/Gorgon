@@ -152,9 +152,7 @@ namespace GorgonLibrary.Diagnostics
 			timerValue = _timer.Milliseconds;
 			delta = (timerValue - _lastTimerValue);
 
-			FrameDelta = (float)delta;
-			if ((!UseHighResolutionTimer) && (FrameDelta < 0.001f))
-				FrameDelta = 1.0f;
+			FrameDelta = (float)delta / 1000.0f;
 
 			_lastTimerValue = timerValue;
 
@@ -235,6 +233,15 @@ namespace GorgonLibrary.Diagnostics
 		internal GorgonFrameRate()
 		{
 			Reset();
+		}
+
+		/// <summary>
+		/// Initializes the <see cref="GorgonFrameRate"/> class.
+		/// </summary>
+		static GorgonFrameRate()
+		{
+			// Default to high resolution timer.
+			//UseHighResolutionTimer = true;
 		}
 		#endregion
 	}

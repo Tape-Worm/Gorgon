@@ -119,7 +119,7 @@ namespace GorgonLibrary.Graphics
 		/// display mode with one format type, and a backbuffer of another format type.  This method will determine if the specific output is capable of this.
 		/// <para>Implementors may choose to override this to determine if a specific device format is supported in hardware.  But it is not required.</para>
 		/// </remarks>
-		public virtual bool SupportsBackBufferFormat(GorgonBackBufferFormat format, bool isWindowed)
+		public virtual bool SupportsBackBufferFormat(GorgonBufferFormat format, bool isWindowed)
 		{
 			return true;
 		}
@@ -133,7 +133,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
 		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
 		/// <remarks>Implementors may choose to override this to determine if a specific device format is supported in hardware.  But it is not required.</remarks>
-		public virtual bool SupportsDepthFormat(GorgonBackBufferFormat displayFormat, GorgonBufferFormat targetFormat, GorgonDepthBufferFormat depthStencilFormat, bool isWindowed)
+		public virtual bool SupportsDepthFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat targetFormat, GorgonBufferFormat depthStencilFormat, bool isWindowed)
 		{
 			return true;
 		}
@@ -145,27 +145,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="depthStencilFormat">Depth/stencil format to check.</param>
 		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
 		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
-		public bool SupportsDepthFormat(GorgonBackBufferFormat displayFormat, GorgonDepthBufferFormat depthStencilFormat, bool isWindowed)
+		public bool SupportsDepthFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat depthStencilFormat, bool isWindowed)
 		{
-			GorgonBufferFormat bufferFormat = GorgonBufferFormat.Unknown;
-
-			switch (displayFormat)
-			{
-				case GorgonBackBufferFormat.A8R8G8B8_UIntNormal_sRGB:
-					bufferFormat = GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB;
-					break;
-				case GorgonBackBufferFormat.A8R8G8B8_UIntNormal:
-					bufferFormat = GorgonBufferFormat.R8G8B8A8_UIntNormal;
-					break;
-				case GorgonBackBufferFormat.X8_R8G8B8_UIntNormal:
-					bufferFormat = GorgonBufferFormat.X8_R8G8B8_UIntNormal;
-					break;
-				case GorgonBackBufferFormat.A2R10G10B10_UIntNormal:
-					bufferFormat = GorgonBufferFormat.R10G10B10A2_UIntNormal;
-					break;
-			}
-
-			return SupportsDepthFormat(displayFormat, bufferFormat, depthStencilFormat, isWindowed);
+			return SupportsDepthFormat(displayFormat, displayFormat, depthStencilFormat, isWindowed);
 		}
 		#endregion
 

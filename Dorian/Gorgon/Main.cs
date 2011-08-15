@@ -357,39 +357,21 @@ namespace GorgonLibrary
 			if (IsInitialized)
 				Terminate();
 
+			if (Log == null)
+				Log = new GorgonLogFile("GorgonLibrary");
+
+			// Re-open the log.
+			if (Log.IsClosed)
+				Log.Open();
+
 			IsInitialized = true;			
 
 			try
 			{
-				// Open log object.
-				Log = new GorgonLogFile("GorgonLibrary");
-
-				// Set this to intermediate, simple or none to have a smaller log file.
-#if DEBUG
-				Log.LogFilterLevel = GorgonLoggingLevel.Verbose;
-#else
-				Log.LogFilterLevel = GorgonLoggingLevel.None;
-#endif
-
-				try
-				{
-					Log.Open();
-					GorgonException.Log = Log;
-				}
-				catch(Exception ex)
-				{
-#if DEBUG
-					// By rights, we should never see this error.  Better safe than sorry.
-					System.Windows.Forms.MessageBox.Show("Could not create a log file.\n" + ex.Message, "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-#else
-					Debug.WriteLine("Error opening log.\n" + gEx.Message);
-#endif
-				}
-
 				TotalPhysicalRAM = Win32API.TotalPhysicalRAM;
 				AvailablePhysicalRAM = Win32API.AvailablePhysicalRAM;
 
-				Log.Print("Initializing...", GorgonLoggingLevel.Simple);
+				Log.Print("Initializing...", GorgonLoggingLevel.All);
 				Log.Print("Architecture: {0}", GorgonLoggingLevel.Verbose, PlatformArchitecture.ToString());
 				Log.Print("Installed Memory: {0}", GorgonLoggingLevel.Verbose, GorgonUtility.FormatMemoryAmount(TotalPhysicalRAM));
 				Log.Print("Available Memory: {0}", GorgonLoggingLevel.Verbose, GorgonUtility.FormatMemoryAmount(AvailablePhysicalRAM));
@@ -422,7 +404,7 @@ namespace GorgonLibrary
 
 				IsRunning = false;
 
-				Log.Print("Initialized Successfully.", GorgonLoggingLevel.Simple);
+				Log.Print("Initialized Successfully.", GorgonLoggingLevel.All);
 			}
 			catch (Exception ex)
 			{
@@ -446,15 +428,47 @@ namespace GorgonLibrary
 			// Stop the engine.
 			Stop();
 
-			Log.Print("Shutting down.", GorgonLoggingLevel.Simple);
+			GorgonPlugInFactory.UnloadAll();
+
+			Log.Print("Shutting down.", GorgonLoggingLevel.All);
 
 			// Destroy log.
-			if (Log != null)
+			if (!Log.IsClosed)
 				Log.Close();
 
-			Log = null;
 			IsInitialized = false;
 		}
 		#endregion
-    }
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes the <see cref="Gorgon"/> class.
+		/// </summary>
+		static Gorgon()
+		{
+			// Open log object.
+			Log = new GorgonLogFile("GorgonLibrary");
+
+			try
+			{
+				// Set this to intermediate, simple or none to have a smaller log file.
+#if !DEBUG
+				Log.LogFilterLevel = GorgonLoggingLevel.NoLogging;
+#endif
+
+				Log.Open();
+				GorgonException.Log = Log;
+			}
+			catch (Exception ex)
+			{
+#if DEBUG
+					// By rights, we should never see this error.  Better safe than sorry.
+					System.Windows.Forms.MessageBox.Show("Could not create a log file.\n" + ex.Message, "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+#else
+				Debug.Print("Error opening log: {0}", ex.Message);
+#endif
+			}
+		}
+		#endregion
+	}
 }

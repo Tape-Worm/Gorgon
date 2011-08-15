@@ -32,84 +32,6 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Depth buffer formats.
-	/// </summary>
-	public enum GorgonDepthBufferFormat
-	{
-		/// <summary>
-		/// Unknown format.
-		/// </summary>
-		Unknown = 0,
-		/// <summary>
-		/// 16 bit depth buffer with 15 bit depth component and 1 bit stencil component.
-		/// </summary>
-		D15_UIntNormal_S1_UInt = 1,
-		/// <summary>
-		/// 16 bit depth buffer.
-		/// </summary>
-		D16_UIntNormal = 2,
-		/// <summary>
-		/// 16 bit depth buffer, lockable.
-		/// </summary>
-		D16_UIntNormal_Lockable = 3,
-		/// <summary>
-		/// 32 bit depth buffer, 24 bit depth component.
-		/// </summary>
-		D24_UIntNormal_X8 = 4,
-		/// <summary>
-		/// 32 bit depth buffer, 24 bit depth component and 4 bit stencil component.
-		/// </summary>
-		D24_UIntNormal_X4S4_UInt = 5,
-		/// <summary>
-		/// 32 bit depth buffer, 24 bit depth component and 8 bit stencil component.
-		/// </summary>
-		D24_UIntNormal_S8_UInt = 6,
-		/// <summary>
-		/// 32 bit depth buffer, 24 bit floating point component, and 8 bit stencil component.
-		/// </summary>
-		D24_Float_S8_UInt = 7,
-		/// <summary>
-		/// 32 bit depth buffer.
-		/// </summary>
-		D32_UIntNormal = 8,
-		/// <summary>
-		/// 32 bit floating point depth buffer, lockable.
-		/// </summary>
-		D32_Float_Lockable = 9,
-		/// <summary>
-		/// 32 bit floating point depth buffer, 8 bit stencil component.
-		/// </summary>
-		S8_Float_X24 = 10
-	}
-
-	/// <summary>
-	/// Back buffer formats.
-	/// </summary>
-	public enum GorgonBackBufferFormat
-	{
-		/// <summary>
-		/// Unknown back buffer format.
-		/// </summary>
-		Unknown = 0,
-		/// <summary>
-		/// 32 bit unsigned integer with 10 bit R, G, B components and a 2 bit alpha component.
-		/// </summary>
-		A2R10G10B10_UIntNormal = 1,
-		/// <summary>
-		/// 32 bit unsigned integer with 8 bit R, G, B components and an 8 bit alpha component.
-		/// </summary>
-		A8R8G8B8_UIntNormal = 2,
-		/// <summary>
-		/// 32 bit unsigned integer with 8 bit R, G and B components.
-		/// </summary>
-		X8_R8G8B8_UIntNormal = 3,
-		/// <summary>
-		/// 32 bit unsigned integer with 8 bit R, G, B and an 8 bit alpha component in sRGB.
-		/// </summary>
-		A8R8G8B8_UIntNormal_sRGB = 4
-	}
-
-	/// <summary>
 	/// A list of various buffer formats supported by back end graphics APIs
 	/// </summary>
 	/// <remarks>Some APIs will need to map to equivalent buffer formats (internally within their own plug-ins) where applicable.  However, some APIs won't support some formats, and calls using these formats may not work if an equivalent format is not found.</remarks>
@@ -515,10 +437,37 @@ namespace GorgonLibrary.Graphics
 		/// The BC7_UIntNormal_sRGB buffer format.
 		/// </summary>
 		BC7_UIntNormal_sRGB = 99,
-		// This mode may not be supported by all APIs
 		/// <summary>
 		/// The X8_R8G8B8_UIntNormal buffer format.
 		/// </summary>
-		X8_R8G8B8_UIntNormal = 100
+		X8_R8G8B8_UIntNormal = 100,
+		/// <summary>
+		/// 16 bit depth buffer with 15 bit depth component and 1 bit stencil component.
+		/// </summary>
+		D15_UIntNormal_S1_UInt = 101,
+		/// <summary>
+		/// 16 bit depth buffer, lockable.
+		/// </summary>
+		D16_UIntNormal_Lockable = 102,
+		/// <summary>
+		/// 32 bit depth buffer, 24 bit depth component.
+		/// </summary>
+		D24_UIntNormal_X8 = 103,
+		/// <summary>
+		/// 32 bit depth buffer, 24 bit depth component and 4 bit stencil component.
+		/// </summary>
+		D24_UIntNormal_X4S4_UInt = 104,
+		/// <summary>
+		/// 32 bit depth buffer, 24 bit floating point component, and 8 bit stencil component.
+		/// </summary>
+		D24_Float_S8_UInt = 105,
+		/// <summary>
+		/// 32 bit depth buffer.
+		/// </summary>
+		D32_UIntNormal = 106,
+		/// <summary>
+		/// 32 bit floating point depth buffer, lockable.
+		/// </summary>
+		D32_Float_Lockable = 107,
 	}
 }

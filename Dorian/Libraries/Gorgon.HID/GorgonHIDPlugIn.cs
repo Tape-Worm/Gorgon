@@ -36,8 +36,13 @@ namespace GorgonLibrary.HID
 	/// Plug-in interface for an input device factory plug-in.
 	/// </summary>
 	public abstract class GorgonInputDeviceFactoryPlugIn
-		: GorgonPlugIn
+		: GorgonPlugIn, IDisposable
 	{
+		#region Variables.
+		private bool _disposed = false;				// Flag to indicate that the object was disposed.
+		private IDisposable _deviceFactory = null;	// Disposable device factory.
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to perform the actual creation of the input factory object.
@@ -51,7 +56,11 @@ namespace GorgonLibrary.HID
 		/// <returns>The interface for the input factory.</returns>
 		internal GorgonInputDeviceFactory GetFactory()
 		{
-			return CreateFactory();
+			GorgonInputDeviceFactory factory = CreateFactory();
+
+			_deviceFactory = factory as IDisposable;
+
+			return factory;
 		}
 		#endregion
 
@@ -63,6 +72,36 @@ namespace GorgonLibrary.HID
 		protected GorgonInputDeviceFactoryPlugIn(string description)
 			: base(description)
 		{
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (_deviceFactory != null)
+						_deviceFactory.Dispose();
+				}
+
+				_deviceFactory = null;
+				_disposed = true;
+			}
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}
