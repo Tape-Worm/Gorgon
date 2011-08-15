@@ -103,6 +103,16 @@ namespace Tester
 
 			return true;
 		}
+
+
+
+		protected override void OnMouseDoubleClick(MouseEventArgs e)
+		{
+			base.OnMouseDoubleClick(e);
+
+			if (!Gorgon.IsInitialized)
+				Gorgon.Initialize(this.panel1);
+		}
 		
 		protected override void OnLoad(EventArgs e)
 		{
@@ -199,7 +209,7 @@ namespace Tester
 			if ((e.Buttons == PointingDeviceButtons.Left) && (e.ShiftButtons == PointingDeviceButtons.Right))			
 				mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + " - UP\n\n";
 			if (e.DoubleClick)
-				GorgonDialogs.InfoBox(this, e.Buttons.ToString());
+				Gorgon.Terminate();
 		}
 
 		void mouse_MouseDown(object sender, PointingDeviceHIDEventArgs e)
@@ -226,18 +236,28 @@ namespace Tester
 		{
 			base.OnFormClosing(e);
 
-			if (input != null)
+/*			if (input != null)
 				input.Dispose();
 			if (winput != null)
 				winput.Dispose();
 			if (xinput != null)
-				xinput.Dispose();
+				xinput.Dispose();*/
 			Gorgon.Terminate();
 		}
 
 		public Form1()
 		{
 			InitializeComponent();
+		}
+
+		/// <summary>
+		/// Handles the DoubleClick event of the panel1 control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void panel1_DoubleClick(object sender, EventArgs e)
+		{
+			Gorgon.Initialize(this.panel1);
 		}
 	}
 }

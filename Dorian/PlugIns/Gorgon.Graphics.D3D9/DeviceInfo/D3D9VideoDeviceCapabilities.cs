@@ -118,6 +118,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// Initializes a new instance of the <see cref="D3D9VideoDeviceCapabilities"/> class.
 		/// </summary>
 		/// <param name="d3d">Direct 3D instance.</param>
+		/// <param name="deviceType">Type of device to use.</param>
 		/// <param name="info">The adapter information.</param>
 		/// <param name="caps">The caps.</param>
 		internal D3D9VideoDeviceCapabilities(Direct3D d3d, DeviceType deviceType, AdapterInformation info, Capabilities caps)

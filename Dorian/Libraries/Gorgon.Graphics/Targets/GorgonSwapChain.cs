@@ -65,6 +65,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="height">Height of the swap chain.</param>
 		/// <param name="format">Format for the swap chain.</param>
 		/// <param name="depthStencilFormat">The depth buffer format (if required) for the swap chain.</param>
+		/// <param name="msaaLevel">Multi-sampling anti-aliasing quality level.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
@@ -73,8 +74,8 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonSwapChain(GorgonGraphics graphics, GorgonDeviceWindow device, string name, Control window, int width, int height, GorgonBackBufferFormat format, GorgonDepthBufferFormat depthStencilFormat)
-			: base(graphics, name, window, width, height, format, depthStencilFormat)
+		protected GorgonSwapChain(GorgonGraphics graphics, GorgonDeviceWindow device, string name, Control window, int width, int height, GorgonBufferFormat format, GorgonBufferFormat depthStencilFormat, GorgonMSAAQualityLevel? msaaLevel)
+			: base(graphics, name, window, width, height, format, depthStencilFormat, msaaLevel)
 		{
 			if (device == null)
 				throw new ArgumentNullException("device");

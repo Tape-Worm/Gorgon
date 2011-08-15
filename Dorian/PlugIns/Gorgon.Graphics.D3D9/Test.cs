@@ -8,6 +8,9 @@ using SlimDX.Direct3D9;
 
 namespace GorgonLibrary.Graphics.D3D9
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class Test
 	{
 		private struct Vertex
@@ -19,11 +22,19 @@ namespace GorgonLibrary.Graphics.D3D9
 		private VertexBuffer _vb = null;
 		private VertexDeclaration _vdecl = null;
 		private Vertex[] triangle = new Vertex[3];
-		private float _pos = -0.2f;
+		private float _pos = -0.75f;
 		private Device _device = null;
 		private GorgonDeviceWindow _window = null;
+		private Matrix _Yrot = Matrix.Identity;
+		private float _angle = 0.0f;
+		//private int _currentTime = 0;
 
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="window"></param>
+		/// <param name="device"></param>
 		public Test(GorgonDeviceWindow window, Device device)
 		{
 			window.AfterDeviceReset += new EventHandler(window_AfterDeviceReset);
@@ -36,39 +47,58 @@ namespace GorgonLibrary.Graphics.D3D9
 			_vb = new VertexBuffer(device, 3 * 16, Usage.WriteOnly, VertexFormat.None, Pool.Managed);
 			_vb.Lock(0, 0, LockFlags.None).WriteRange(new[] {
 		                new Vertex() { Color = Color.Red.ToArgb(), Position = new Vector3(0.0f, 0.5f, 0.0f) },
-                new Vertex() { Color = Color.Blue.ToArgb(), Position = new Vector3(0.5f, -0.5f, 0.0f) },
+                new Vertex() { Color = Color.Blue.ToArgb(), Position = new Vector3(0.5f, -0.5f, 0.025f) },
                 new Vertex() { Color = Color.Green.ToArgb(), Position = new Vector3(-0.5f, -0.5f, 0.0f) }
             });
 
 			_vb.Unlock();
 
 			device.SetRenderState(RenderState.Lighting, false);
+			device.SetRenderState(RenderState.CullMode, Cull.None);
 		}
 
-		public void Run()
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dt"></param>
+		public void Run(float dt)
 		{
 			if (_window.IsReady)
 			{
 				Viewport view = new Viewport(0, 0, _window.Mode.Width, _window.Mode.Height, 0.0f, 1.0f);
 
+				_Yrot = Matrix.RotationY(GorgonLibrary.Math.GorgonMathUtility.Radians(_angle));
+				
+				_angle += (5.000f * dt);
+				if (_angle > 360.0f)
+					_angle = 0.0f;
+
+				//if (_currentTime == 0)
+				//    _currentTime= Environment.TickCount;
+
+				//float time = (float)(Environment.TickCount - _currentTime) / 1000.0f;
+
+				//Gorgon.ApplicationWindow.Text = "Angle: " + _angle.ToString("0.0") + " Time: " + time.ToString("0.0");
 				_device.Viewport = view;
-				_device.SetTransform(TransformState.Projection, Matrix.PerspectiveLH(1.0f, 1.0f, 0.1f, 10.0f));
-				_device.SetTransform(TransformState.World, Matrix.Identity);
+				_device.SetTransform(TransformState.Projection, Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_window.Mode.Width/(float)_window.Mode.Height, 0.1f, 1000.0f));
+				_device.SetTransform(TransformState.World, _Yrot);
 				_device.SetTransform(TransformState.View, Matrix.LookAtLH(new Vector3(0, 0, _pos), new Vector3(0, 0, 1.0f), Vector3.UnitY));
 
 				_device.BeginScene();
 				switch (_window.DepthStencilFormat)
 				{
-					case GorgonDepthBufferFormat.D32_UIntNormal:
-					case GorgonDepthBufferFormat.D32_Float_Lockable:
-					case GorgonDepthBufferFormat.D24_UIntNormal_X8:
-					case GorgonDepthBufferFormat.D16_UIntNormal_Lockable:
-					case GorgonDepthBufferFormat.D16_UIntNormal:					
-						_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(0, 0, 0, 0), 1.0f, 0);
+					case GorgonBufferFormat.D32_Float:
+					case GorgonBufferFormat.D32_UIntNormal:
+					case GorgonBufferFormat.D32_Float_Lockable:
+					case GorgonBufferFormat.D24_UIntNormal_X8:
+					case GorgonBufferFormat.D16_UIntNormal_Lockable:
+					case GorgonBufferFormat.D16_UIntNormal:					
+						 _device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(0, 0, 0, 0), 1.0f, 0);
 						break;
-					case GorgonDepthBufferFormat.D24_Float_S8_UInt:
-					case GorgonDepthBufferFormat.D24_UIntNormal_X4S4_UInt:
-					case GorgonDepthBufferFormat.D15_UIntNormal_S1_UInt:
+					case GorgonBufferFormat.D24_Float_S8_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
+					case GorgonBufferFormat.D15_UIntNormal_S1_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
 						_device.Clear(ClearFlags.All, new Color4(0, 0, 0, 0), 1.0f, 0);
 						break;
 					default:
@@ -85,6 +115,9 @@ namespace GorgonLibrary.Graphics.D3D9
 			_window.Display();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public void ShutDown()
 		{
 			if (_vdecl != null)
@@ -101,6 +134,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		void window_AfterDeviceReset(object sender, EventArgs e)
 		{
 			_device.SetRenderState(RenderState.Lighting, false);
+			_device.SetRenderState(RenderState.CullMode, Cull.None);
 		}
 	}
 }

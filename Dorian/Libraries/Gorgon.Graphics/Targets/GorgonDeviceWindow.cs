@@ -107,6 +107,15 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return the device window settings.
+		/// </summary>
+		protected GorgonDeviceWindowSettings Settings
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return the object holding the current window state.
 		/// </summary>
 		protected FormStateRecord WindowState
@@ -143,24 +152,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the refresh rate numerator.
-		/// </summary>
-		public int RefreshRateNumerator
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the refresh rate denominator.
-		/// </summary>
-		public int RefreshRateDenominator
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the video mode for this device window.
 		/// </summary>
 		public GorgonVideoMode Mode
@@ -172,6 +163,21 @@ namespace GorgonLibrary.Graphics
 		
 		#region Methods.
 		/// <summary>
+		/// Function to clear out any outstanding resources when the object is disposed.
+		/// </summary>
+		/// <remarks>Implementors must call this function to clean up outstanding resources in the Dispose method.</remarks>
+		protected override void CleanUpResources()
+		{
+			base.CleanUpResources();
+
+			CleanUpTest();
+			((IObjectTracker)this).CleanUpTrackedObjects();
+
+			// Remove us from anything tracking us.
+			((IObjectTracker)Graphics).RemoveTrackedObject(this);
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -181,17 +187,10 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					RemoveEventHandlers();
-
-					CleanUpTest();
-
-					((IObjectTracker)this).CleanUpTrackedObjects();
-
-					// Remove us from anything tracking us.
-					((IObjectTracker)Graphics).RemoveTrackedObject(this);
-
 					if (BoundWindow is Form)
 						_originalWindowState.Restore(false, false);
+
+					Gorgon.Log.Print("Device window '{0}' destroyed.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 				}
 
 				_disposed = true;
@@ -212,7 +211,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if ((ParentWindow.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
 				{
-					UpdateTargetInformation(new GorgonVideoMode(newWidth, newHeight, Format, Mode.RefreshRateNumerator, RefreshRateDenominator), DepthStencilFormat);
+					UpdateTargetInformation(new GorgonVideoMode(newWidth, newHeight, Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator), DepthStencilFormat, MultiSampleAALevel);
 					base.OnWindowResized(newWidth, newHeight);
 				}
 			}
@@ -223,11 +222,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="mode">Video mode to use when updating.</param>
 		/// <param name="depthStencilFormat">Format of the depth/stencil buffer.</param>
-		protected void UpdateTargetInformation(GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat)
+		/// <param name="msaaLevel">Multi-sampling anti-aliasing quality level.</param>
+		protected void UpdateTargetInformation(GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, GorgonMSAAQualityLevel? msaaLevel)
 		{
-			UpdateTargetInformation(mode.Width, mode.Height, mode.Format, depthStencilFormat);
-			RefreshRateNumerator = mode.RefreshRateNumerator;
-			RefreshRateDenominator = mode.RefreshRateDenominator;
+			UpdateTargetInformation(mode.Width, mode.Height, mode.Format, depthStencilFormat, msaaLevel);
 			Mode = mode;
 		}
 
@@ -247,22 +245,38 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to update the device window.
 		/// </summary>
-		/// <param name="mode">Video mode dimensions to use.</param>
-		/// <param name="depthStencilFormat">Format of the depth buffer.</param>
-		/// <param name="fullScreen">TRUE to use full screen, or FALSE to use windowed mode.</param>
+		/// <param name="windowed">TRUE to go into windowed mode, FALSE to go into full screen mode.</param>
+		/// <remarks>Use this overload to change the dimensions, format, fullscreen/windowed state and depth information for the device window.
+		/// Device windows bound to child controls or device windows with extra <see cref="GorgonLibrary.Graphics.GorgonSwapChainBase">swap chains</see> attached to them cannot go full screen, setting the <see cref="P:GorgonDeviceWindowSettings.Windowed"/> setting to TRUE will throw an exception.
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and setting the GorgonDeviceWindowSettings.Windowed setting is TRUE.
+		/// </exception>
+		public void Update(bool windowed)
+		{
+			if (IsWindowed == windowed)
+				return;
+
+			Settings.Windowed = windowed;
+			Update(Settings);
+		}
+
+		/// <summary>
+		/// Function to update the device window.
+		/// </summary>
+		/// <param name="settings">Settings for the device window.</param>
 		/// <remarks>Use this function to change the dimensions, format, fullscreen/windowed state and depth information for the device window.
 		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
-		/// <para>Device windows bound to child controls or device windows with extra <see cref="GorgonLibrary.Graphics.GorgonSwapChainBase">swap chains</see> attached to them cannot go full screen, setting the <paramref name="fullScreen"/> parameter to TRUE will have no effect.</para>
+		/// <para>Device windows bound to child controls or device windows with extra <see cref="GorgonLibrary.Graphics.GorgonSwapChain">swap chains</see> attached to them cannot go full screen, setting the <see cref="P:GorgonDeviceWindowSettings.Windowed"/> setting to TRUE will throw an exception.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and <paramref name="fullScreen"/> is TRUE.
+		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and setting the GorgonDeviceWindowSettings.Windowed setting is TRUE.
 		/// </exception>
-		public void Update(GorgonVideoMode mode, GorgonDepthBufferFormat depthStencilFormat, bool fullScreen)
+		public void Update(GorgonDeviceWindowSettings settings)
 		{
 			Form window = BoundWindow as Form;
 			
 			// Child controls and device windows with swap chains cannot go full screen.
-			if (fullScreen)
+			if (!settings.Windowed)
 			{
 				if (window == null)
 					throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
@@ -279,16 +293,35 @@ namespace GorgonLibrary.Graphics
 			// our solution is to restore the window to a normal state, and apply the changes.
 
 			// If we're switching back to windowed mode and the window was previously maximized, then re-maximize it.
-			if ((!fullScreen) && (!IsWindowed) && (_wasMaximized))
+			if ((settings.Windowed) && (!IsWindowed) && (_wasMaximized))
 				window.WindowState = FormWindowState.Maximized;
 
 			// Store whether the window was previously maximized.
-			_wasMaximized = ((fullScreen != !IsWindowed) && (window.WindowState == FormWindowState.Maximized));
+			_wasMaximized = ((settings.Windowed == !IsWindowed) && (window.WindowState == FormWindowState.Maximized));
 
-			UpdateTargetInformation(mode, depthStencilFormat);
-			IsWindowed = !fullScreen;
-			UpdateRenderTarget();
+			// If we didn't pass in the display settings, then use the current settings.
+			if (settings.DisplayMode == null)
+				settings.DisplayMode = new GorgonVideoMode(Mode.Width, Mode.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator);
+			
+			UpdateTargetInformation(settings.DisplayMode.Value, settings.DepthStencilFormat, settings.AdvancedSettings.MSAAQualityLevel);
+			IsWindowed = settings.Windowed;
+			UpdateResources();
 			AddEventHandlers();
+
+			Gorgon.Log.Print("Updating device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, Name, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DisplayMode.Value.RefreshRateNumerator, settings.DisplayMode.Value.RefreshRateDenominator);
+			Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, Name);
+			Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DisplayMode.Value.RefreshRateNumerator, settings.DisplayMode.Value.RefreshRateDenominator);
+			Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, settings.DepthStencilFormat != GorgonBufferFormat.Unknown, settings.DepthStencilFormat);
+			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.Windowed);
+			Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel != null);
+			if (settings.AdvancedSettings.MSAAQualityLevel != null)
+				Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel.Value.Quality, settings.AdvancedSettings.MSAAQualityLevel.Value.Level);
+			Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.BackBufferCount);
+			Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.DisplayFunction);
+			Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.VSyncInterval);
+			Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.WillUseVideo);
+
+			Gorgon.Log.Print("Device window '{0}' updated.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 		}
 
 		#region Remove this shit.
@@ -300,7 +333,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// 
 		/// </summary>
-		public abstract void RunTest();
+		public abstract void RunTest(float dt);
 
 		/// <summary>
 		/// 
@@ -319,7 +352,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="device">Video device to use.</param>
 		/// <param name="output">Video output on the device to use.</param>
 		/// <param name="settings">Device window settings.</param>
-		/// <param name="advanced">Advanceed settings.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="device"/> and <paramref name="output"/> parameters are NULL (Nothing in VB.Net).</para>
@@ -329,8 +361,8 @@ namespace GorgonLibrary.Graphics
 		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// </remarks>
-		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonVideoDevice device, GorgonVideoOutput output, GorgonDeviceWindowSettings settings, GorgonDeviceWindowAdvancedSettings advanced)
-			: base(graphics, name, settings.BoundWindow, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DepthStencilFormat)
+		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonVideoDevice device, GorgonVideoOutput output, GorgonDeviceWindowSettings settings)
+			: base(graphics, name, settings.BoundWindow, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DepthStencilFormat, settings.AdvancedSettings.MSAAQualityLevel)
 		{
 			Form window = settings.BoundWindow as Form;
 
@@ -341,9 +373,8 @@ namespace GorgonLibrary.Graphics
 			
 			_trackedObjects = new List<IDisposable>();
 
+			Settings = settings;
 			Mode = settings.DisplayMode.Value;
-			RefreshRateNumerator = settings.DisplayMode.Value.RefreshRateNumerator;
-			RefreshRateDenominator = settings.DisplayMode.Value.RefreshRateDenominator;
 			VideoDevice = device;
 			VideoOutput = output;
 			IsWindowed = settings.Windowed;
@@ -389,8 +420,13 @@ namespace GorgonLibrary.Graphics
 		{
 			var trackedObjects = _trackedObjects.ToArray();
 
-			foreach (var trackedObject in trackedObjects)
-				trackedObject.Dispose();
+			if (trackedObjects.Count() > 0)
+			{
+				Gorgon.Log.Print("Destroying child {0} objects:", Diagnostics.GorgonLoggingLevel.Verbose, trackedObjects.Count());
+
+				foreach (var trackedObject in trackedObjects)
+					trackedObject.Dispose();
+			}
 
 			_trackedObjects.Clear();
 		}

@@ -32,58 +32,171 @@ using System.Windows.Forms;
 
 namespace GorgonLibrary.Graphics
 {
-	/// <summary>
-	/// Values for advanced settings.
-	/// </summary>
-	public struct GorgonDeviceWindowAdvancedSettings
-	{
-		#region Variables.
-		/// <summary>
-		/// Number of back buffers in the swap chain.
-		/// </summary>
-		public int BackBufferCount;
-		/// <summary>
-		/// Vertical sync interval.
-		/// </summary>
-		public GorgonVSyncInterval VSyncInterval;
-		/// <summary>
-		/// Flag to indicate that we will be using this device window for video.
-		/// </summary>
-		public bool WillUseVideo;
-		/// <summary>
-		/// Multi sampling/Anti alias quality level.
-		/// </summary>
-		public GorgonMSAAQualityLevel MSAAQualityLevel;
-		/// <summary>
-		/// The display function used when displaying the contents of the swap chain.
-		/// </summary>
-		public GorgonDisplayFunction DisplayFunction;
-		#endregion
-	}
-
 
 	/// <summary>
 	/// Values for setting up a <see cref="GorgonLibrary.Graphics.GorgonDeviceWindow">Gorgon Device Window</see>.
 	/// </summary>
-	public struct GorgonDeviceWindowSettings
+	public class GorgonDeviceWindowSettings
 	{
-		#region Variables.
+		#region Classes.
 		/// <summary>
-		/// Control to bind to the device window.
+		/// Values for advanced settings.
 		/// </summary>
-		public Control BoundWindow;
+		public class GorgonDeviceWindowAdvancedSettings
+		{
+			#region Variables.
+			private int _backBufferCount = 1;		// Back buffer count.
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to set or return the number of back buffers in the swap chain.
+			/// </summary>
+			public int BackBufferCount
+			{
+				get
+				{
+					return _backBufferCount;
+				}
+				set
+				{
+					if (value < 1)
+						value = 1;
+
+					_backBufferCount = value;
+				}
+			}
+
+			/// <summary>
+			/// Property to set or return the vertical sync interval.
+			/// </summary>
+			/// <remarks>This value will GorgonVSyncInterval.None in windowed mode regardless of what's been set here.</remarks>
+			public GorgonVSyncInterval VSyncInterval
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the flag to indicate that we will be using this device window for video.
+			/// </summary>
+			public bool WillUseVideo
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the multi sampling/Anti alias quality level.
+			/// </summary>
+			public GorgonMSAAQualityLevel? MSAAQualityLevel
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the display function used when displaying the contents of the swap chain.
+			/// </summary>
+			public GorgonDisplayFunction DisplayFunction
+			{
+				get;
+				set;
+			}
+			#endregion
+
+			#region Constructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="GorgonDeviceWindowAdvancedSettings"/> class.
+			/// </summary>
+			internal GorgonDeviceWindowAdvancedSettings()
+			{
+				BackBufferCount = 2;
+				WillUseVideo = false;
+				VSyncInterval = GorgonVSyncInterval.None;
+				MSAAQualityLevel = null;
+				DisplayFunction = GorgonDisplayFunction.Discard;
+			}
+			#endregion
+		}
+		#endregion
+
+		#region Properties.
 		/// <summary>
-		/// The width, height, format and refresh rate of the device window.
+		/// Property to set or return the window to bind to the device window.
 		/// </summary>
-		public GorgonVideoMode? DisplayMode;
+		public Control BoundWindow
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
-		/// The format of the depth/stencil buffer.  Use the Unknown format to skip the creation of the depth/stencil buffer.
+		/// Property to set or return the width, height, format and refresh rate of the device window.
 		/// </summary>
-		public GorgonDepthBufferFormat DepthStencilFormat;
+		public GorgonVideoMode? DisplayMode
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
-		/// TRUE to use windowed mode, FALSE to use full screen mode.
+		/// Property to set or return the format of the depth/stencil buffer for the device window.
 		/// </summary>
-		public bool Windowed;
+		/// <remarks>Set this to GorgonBufferFormat.Unknown if a depth/stencil buffer is not required.</remarks>
+		public GorgonBufferFormat DepthStencilFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the device window should go to full screen or windowed mode.
+		/// </summary>
+		public bool Windowed
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the advanced settings for the device window.
+		/// </summary>
+		public GorgonDeviceWindowAdvancedSettings AdvancedSettings
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDeviceWindowSettings"/> class.
+		/// </summary>
+		/// <param name="boundWindow">The window to bind to the device window.</param>
+		/// <remarks>Pass NULL to the <paramref name="boundWindow"/> parameter to use the default Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">ApplicationWindow</see>.</remarks>
+		public GorgonDeviceWindowSettings(Control boundWindow)
+		{
+			if (boundWindow == null)
+				BoundWindow = Gorgon.ApplicationWindow;
+
+#if DEBUG
+			Windowed = true;
+#else
+			Windowed = false;
+#endif
+			DepthStencilFormat = GorgonBufferFormat.Unknown;
+			DisplayMode = null;
+			AdvancedSettings = new GorgonDeviceWindowAdvancedSettings();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDeviceWindowSettings"/> class.
+		/// </summary>
+		public GorgonDeviceWindowSettings()
+			: this(null)
+		{			
+		}
 		#endregion
 	}
 }
