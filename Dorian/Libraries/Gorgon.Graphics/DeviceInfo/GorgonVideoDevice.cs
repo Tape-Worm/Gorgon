@@ -168,13 +168,14 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to return whether the specified target can support the requested multi sample level.
+		/// Function to return the highest multi sample/AA quality for a given MSAA level.
 		/// </summary>
 		/// <param name="level">The multi sample level to test.</param>
 		/// <param name="format">Format to test for multi sampling capabilities.</param>
 		/// <param name="windowed">TRUE if testing for windowed mode, FALSE if not.</param>
-		/// <returns>The multi sample maximum quality and level supported, or NULL (Nothing in VB.Net) if not supported.</returns>
-		public abstract int? SupportsMultiSampleQualityLevel(GorgonMSAALevel level, GorgonBufferFormat format, bool windowed);
+		/// <returns>The highest quality for the given level or NULL (Nothing in VB.Net) if the level is not supported.</returns>
+		/// <remarks>This method should be used to determine the maximum anti aliasing quality when setting up a <see cref="GorgonLibrary.Graphics.GorgonDeviceWindow">Device Window</see>.</remarks>
+		public abstract int? GetMultiSampleQuality(GorgonMSAALevel level, GorgonBufferFormat format, bool windowed);
 		#endregion
 
 		#region Constructor/Destructor.

@@ -78,9 +78,6 @@ namespace Tester_Graphics
 				Gorgon.UnfocusedSleepTime = 10;
 				Gorgon.AllowBackground = true;
 
-
-				//settings.AdvancedSettings.MSAAQualityLevel = new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, 24);
-
 				ClientSize = new System.Drawing.Size(640, 480);
 				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
 
@@ -91,7 +88,7 @@ namespace Tester_Graphics
 				    DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal					
 				};
 
-				//settings.AdvancedSettings.MSAAQualityLevel = new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, _gfx.VideoDevices[0].SupportsMultiSampleQualityLevel(GorgonMSAALevel.NonMasked, GorgonBufferFormat.X8_R8G8B8_UIntNormal, settings.Windowed).Value);
+				settings.AdvancedSettings.MSAAQualityLevel = new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, _gfx.VideoDevices[0].GetMultiSampleQuality(GorgonMSAALevel.NonMasked, GorgonBufferFormat.X8_R8G8B8_UIntNormal, settings.Windowed).Value);
 
 				_dev = _gfx.CreateDeviceWindow("Test", settings);
 				_dev.SetupTest();

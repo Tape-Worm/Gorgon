@@ -216,7 +216,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			if ((MultiSampleAALevel != null) && (_presentParams[0].SwapEffect == SwapEffect.Discard) && 
 				(_presentParams[0].AutoDepthStencilFormat != SlimDX.Direct3D9.Format.D32SingleLockable) && (_presentParams[0].AutoDepthStencilFormat != SlimDX.Direct3D9.Format.D16Lockable))
 			{
-				int? qualityLevel = VideoDevice.SupportsMultiSampleQualityLevel(MultiSampleAALevel.Value.Level, Mode.Format, IsWindowed);
+				int? qualityLevel = VideoDevice.GetMultiSampleQuality(MultiSampleAALevel.Value.Level, Mode.Format, IsWindowed);
 
 				if ((qualityLevel != null) && (qualityLevel >= MultiSampleAALevel.Value.Quality))
 				{
