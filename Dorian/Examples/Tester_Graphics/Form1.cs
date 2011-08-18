@@ -88,7 +88,18 @@ namespace Tester_Graphics
 				    DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal					
 				};
 
-				settings.AdvancedSettings.MSAAQualityLevel = new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, _gfx.VideoDevices[0].GetMultiSampleQuality(GorgonMSAALevel.NonMasked, GorgonBufferFormat.X8_R8G8B8_UIntNormal, settings.Windowed).Value);
+				GorgonMSAALevel[] antiAliasLevels = (GorgonMSAALevel[])(Enum.GetValues(typeof(GorgonMSAALevel)));
+
+				for (int i = antiAliasLevels.Length - 1; i >= 0; i--)
+				{
+					int? quality = _gfx.VideoDevices[0].GetMultiSampleQuality(antiAliasLevels[i], GorgonBufferFormat.X8_R8G8B8_UIntNormal, true);
+
+					if (quality != null)
+					{
+						settings.AdvancedSettings.MSAAQualityLevel = new GorgonMSAAQualityLevel(antiAliasLevels[i], quality.Value);
+						break;
+					}
+				}				
 
 				_dev = _gfx.CreateDeviceWindow("Test", settings);
 				_dev.SetupTest();
