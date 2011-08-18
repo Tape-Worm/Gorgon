@@ -17,9 +17,11 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			public Vector3 Position;
 			public int Color;
+			public Vector2 UV;
 		}
 		
 		private VertexBuffer _vb = null;
+		private IndexBuffer _ib = null;
 		private VertexDeclaration _vdecl = null;
 		private Vertex[] triangle = new Vertex[3];
 		private float _pos = -0.75f;
@@ -31,6 +33,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		private float _dps = 0.0f;
 		private float _currentTime = 0;
 		private bool _timeSwitch = false;
+		private Texture _image = null;
 
 
 		/// <summary>
@@ -45,16 +48,33 @@ namespace GorgonLibrary.Graphics.D3D9
 			_device = device;
 
 			_vdecl = new VertexDeclaration(device, new VertexElement[] {new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-																		new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0)});
+																		new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
+																		new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0)});
 
-			_vb = new VertexBuffer(device, 3 * 16, Usage.WriteOnly, VertexFormat.None, Pool.Managed);
-			_vb.Lock(0, 0, LockFlags.None).WriteRange(new[] {
-		                new Vertex() { Color = Color.Red.ToArgb(), Position = new Vector3(0.0f, 0.5f, 0.0f) },
-                new Vertex() { Color = Color.Blue.ToArgb(), Position = new Vector3(0.5f, -0.5f, 0.025f) },
-                new Vertex() { Color = Color.Green.ToArgb(), Position = new Vector3(-0.5f, -0.5f, 0.0f) }
+			_vb = new VertexBuffer(device, 4 * 24, Usage.WriteOnly, VertexFormat.None, Pool.Managed);
+			_ib = new IndexBuffer(device, 12, Usage.WriteOnly, Pool.Managed, true);
+			_vb.Lock(0, 0, LockFlags.None).WriteRange(
+				new[] {
+		                new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(-0.5f, 0.5f, 0.0f), UV = new Vector2(0, 0.0f)},
+						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(0.5f, -0.5f, 0.025f), UV = new Vector2(1.0f, 1.0f) },
+						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(-0.5f, -0.5f, 0.0f), UV = new Vector2(0.0f, 1.0f) },
+						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(0.5f, 0.5f, 0.0f), UV = new Vector2(1.0f, 0.0f) }				
             });
 
 			_vb.Unlock();
+
+			_ib.Lock(0, 0, LockFlags.None).WriteRange(
+				new short[] 
+				{
+					1,
+					2,
+					0,
+					0,
+					3,
+					1
+				}
+			);
+			_ib.Unlock();
 
 			device.SetRenderState(RenderState.Lighting, false);
 			device.SetRenderState(RenderState.CullMode, Cull.None);
@@ -63,6 +83,8 @@ namespace GorgonLibrary.Graphics.D3D9
 				device.SetRenderState(RenderState.MultisampleAntialias, true);
 				device.SetRenderState(RenderState.MultisampleMask, 0xFF);
 			}
+
+			_image = Texture.FromFile(_device, @"..\..\..\..\Resources\Images\VBback.jpg");
 			maxPasses = 0;
 		}
 
@@ -105,8 +127,11 @@ namespace GorgonLibrary.Graphics.D3D9
 				_device.SetTransform(TransformState.Projection, Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_window.Mode.Width / (float)_window.Mode.Height, 0.1f, 1000.0f));
 				_device.SetTransform(TransformState.View, Matrix.LookAtLH(new Vector3(0, 0, _pos), new Vector3(0, 0, 1.0f), Vector3.UnitY));
 
-				_device.SetStreamSource(0, _vb, 0, 16);
+				_device.SetStreamSource(0, _vb, 0, 24);
+				_device.Indices = _ib;
 				_device.VertexDeclaration = _vdecl;
+
+				_device.SetTexture(0, _image);
 
 				for (int i = 0; i <= maxPasses; i++)
 				{
@@ -117,8 +142,9 @@ namespace GorgonLibrary.Graphics.D3D9
 					else
 						passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (maxPasses - (i * (_dps / GorgonLibrary.Math.GorgonMathUtility.Pow(maxPasses, 2)))));
 					
-					_Yrot = Matrix.RotationY(passAngle);
-					_Yrot = _Yrot * Matrix.RotationX(passAngle);
+					//_Yrot = Matrix.RotationY(passAngle);
+					_Yrot = Matrix.Identity;
+					_Yrot = _Yrot * Matrix.RotationZ(passAngle);
 
 					//if (_currentTime == 0)
 					//    _currentTime= Environment.TickCount;
@@ -130,7 +156,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 					if ((_window.MultiSampleAALevel.HasValue) && (_window.MultiSampleAALevel.Value.Level != GorgonMSAALevel.None))
 						_device.SetRenderState(RenderState.MultisampleMask, ((int)GorgonLibrary.Math.GorgonMathUtility.Pow(2, (8 - (maxPasses - i))) - 1) & 0xFF);
-					_device.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
+					_device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
 				}
 				_device.EndScene();
 
@@ -168,6 +194,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public void ShutDown()
 		{
+			if (_image != null)
+				_image.Dispose();
+			if (_ib != null)
+				_ib.Dispose();
 			if (_vdecl != null)
 				_vdecl.Dispose();
 			if (_vb != null)
