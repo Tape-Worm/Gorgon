@@ -148,13 +148,15 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
-		/// Function to return whether the specified format can support the requested multi sample level.
+		/// Function to return the highest multi sample/AA quality for a given MSAA level.
 		/// </summary>
 		/// <param name="level">The multi sample level to test.</param>
 		/// <param name="format">Format to test for multi sampling capabilities.</param>
 		/// <param name="windowed">TRUE if testing for windowed mode, FALSE if not.</param>
-		/// <returns>The multi sample maximum quality and level supported, or NULL (Nothing in VB.Net) if not supported.</returns>
-		public override int? SupportsMultiSampleQualityLevel(GorgonMSAALevel level, GorgonBufferFormat format, bool windowed)
+		/// <returns>
+		/// The multi sample maximum quality and level supported, or NULL (Nothing in VB.Net) if not supported.
+		/// </returns>
+		public override int? GetMultiSampleQuality(GorgonMSAALevel level, GorgonBufferFormat format, bool windowed)
 		{
 			int quality = 0;
 
