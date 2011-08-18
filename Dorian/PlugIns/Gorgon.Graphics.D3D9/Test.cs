@@ -140,10 +140,11 @@ namespace GorgonLibrary.Graphics.D3D9
 					if (maxPasses == 0)
 						passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (maxPasses - (i * (_dps))));
 					else
-						passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (maxPasses - (i * (_dps / GorgonLibrary.Math.GorgonMathUtility.Pow(maxPasses, 2)))));
+						passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (maxPasses - (i * (_dps / GorgonLibrary.Math.GorgonMathUtility.Pow(maxPasses, 2.25f)))));
 					
 					//_Yrot = Matrix.RotationY(passAngle);
-					_Yrot = Matrix.Identity;
+					_Yrot = Matrix.RotationY(passAngle);
+					_Yrot = _Yrot * Matrix.RotationX(passAngle);
 					_Yrot = _Yrot * Matrix.RotationZ(passAngle);
 
 					//if (_currentTime == 0)
