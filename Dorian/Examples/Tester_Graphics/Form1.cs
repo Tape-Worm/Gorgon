@@ -22,12 +22,21 @@ namespace Tester_Graphics
 		GorgonDeviceWindow _dev = null;
 		GorgonDeviceWindow _dev2 = null;
 		private bool _running = true;
+		GorgonTimer _timer = new GorgonTimer(true);
 
 		private bool Idle(GorgonFrameRate timing)
-		{
+		{			
+			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
+
+			while (_timer.Milliseconds < GorgonTimer.FpsToMilliseconds(30.0f))
+			{
+			}
+
+			_timer.Reset();
+
 			if ((_dev != null) && (_running))
 				_dev.RunTest(timing.FrameDelta);
-			//_dev2.RunTest();
+
 			return true;
 		}
 
@@ -74,9 +83,11 @@ namespace Tester_Graphics
 				
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
 				GorgonPlugInFactory.LoadPlugInAssembly("Gorgon.Graphics.D3D9.dll");
-								
+
+				GorgonFrameRate.UseHighResolutionTimer = false;
+
 				Gorgon.UnfocusedSleepTime = 10;
-				Gorgon.AllowBackground = true;
+				Gorgon.AllowBackground = true;				
 
 				ClientSize = new System.Drawing.Size(640, 480);
 				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
@@ -88,7 +99,7 @@ namespace Tester_Graphics
 				    DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal					
 				};
 
-				GorgonMSAALevel[] antiAliasLevels = (GorgonMSAALevel[])(Enum.GetValues(typeof(GorgonMSAALevel)));
+				GorgonMSAALevel[] antiAliasLevels = new[] { GorgonMSAALevel.NonMasked };//(GorgonMSAALevel[])(Enum.GetValues(typeof(GorgonMSAALevel)));
 
 				for (int i = antiAliasLevels.Length - 1; i >= 0; i--)
 				{

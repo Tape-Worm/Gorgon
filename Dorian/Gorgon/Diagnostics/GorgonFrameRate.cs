@@ -160,11 +160,11 @@ namespace GorgonLibrary.Diagnostics
 			_frameCounter++;
 			delta = _lastTimerValue - _lastTime;
 
+			FPS = (float)(_frameCounter / delta) * 1000.0f;
+
 			// Wait until we get one second of information.
 			if (delta >= 1000.0)
-			{
-				FPS = (float)(_frameCounter / delta) * 1000.0f;
-
+			{				
 				_lastTime = _lastTimerValue;
 				_frameCounter = 0;
 
@@ -241,7 +241,7 @@ namespace GorgonLibrary.Diagnostics
 		static GorgonFrameRate()
 		{
 			// Default to high resolution timer.
-			//UseHighResolutionTimer = true;
+			UseHighResolutionTimer = true;
 		}
 		#endregion
 	}
