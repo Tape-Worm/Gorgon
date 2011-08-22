@@ -215,7 +215,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			// We can only enable multi-sampling when we have a discard swap effect and have non-lockable depth buffers.
-			if ((MultiSampleAALevel != null) && (_presentParams[0].SwapEffect == SwapEffect.Discard) && 
+			if ((MultiSampleAALevel != null) && (_presentParams[0].SwapEffect == SwapEffect.Discard) &&
 				(_presentParams[0].AutoDepthStencilFormat != SlimDX.Direct3D9.Format.D32SingleLockable) && (_presentParams[0].AutoDepthStencilFormat != SlimDX.Direct3D9.Format.D16Lockable))
 			{
 				int? qualityLevel = VideoDevice.GetMultiSampleQuality(MultiSampleAALevel.Value.Level, Mode.Format, IsWindowed);
@@ -227,6 +227,11 @@ namespace GorgonLibrary.Graphics.D3D9
 				}
 				else
 					throw new ArgumentException("The device cannot support the quality level '" + MultiSampleAALevel.Value.Level.ToString() + "' at a quality of '" + MultiSampleAALevel.Value.Quality.ToString() + "'");
+			}
+			else
+			{
+				if (MultiSampleAALevel != null)
+					throw new ArgumentException("Cannot use multi sampling with device windows that don't have a Discard display function and/or use lockable depth/stencil buffers.");
 			}
 		
 			if (IsWindowed)
