@@ -97,9 +97,9 @@ namespace GorgonLibrary.Graphics.D3D9
 		public override bool SupportsBackBufferFormat(GorgonBufferFormat format, bool isWindowed)
 		{
 			if (isWindowed)
-				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.ConvertFormat(DefaultVideoMode.Format), D3DConvert.ConvertFormat(format), isWindowed);
+				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.Convert(DefaultVideoMode.Format), D3DConvert.Convert(format), isWindowed);
 			else
-				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.ConvertFormat(format), D3DConvert.ConvertFormat(format), isWindowed);
+				return _d3d.CheckDeviceType(_info.Adapter, _deviceType, D3DConvert.Convert(format), D3DConvert.Convert(format), isWindowed);
 		}
 
 		/// <summary>
@@ -112,11 +112,11 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
 		public override bool SupportsDepthFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat targetFormat, GorgonBufferFormat depthStencilFormat, bool isWindowed)
 		{
-			Format adapterFormat = (isWindowed ? D3DConvert.ConvertFormat(DefaultVideoMode.Format) : D3DConvert.ConvertFormat(displayFormat));
+			Format adapterFormat = (isWindowed ? D3DConvert.Convert(DefaultVideoMode.Format) : D3DConvert.Convert(displayFormat));
 
-			if (_d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, Usage.DepthStencil, ResourceType.Surface, D3DConvert.ConvertFormat(depthStencilFormat)))			
+			if (_d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, Usage.DepthStencil, ResourceType.Surface, D3DConvert.Convert(depthStencilFormat)))			
 			{
-				if (_d3d.CheckDepthStencilMatch(_info.Adapter, _deviceType, adapterFormat, D3DConvert.ConvertFormat(targetFormat), D3DConvert.ConvertFormat(depthStencilFormat)))
+				if (_d3d.CheckDepthStencilMatch(_info.Adapter, _deviceType, adapterFormat, D3DConvert.Convert(targetFormat), D3DConvert.Convert(depthStencilFormat)))
 					return true;
 			}
 
@@ -134,13 +134,13 @@ namespace GorgonLibrary.Graphics.D3D9
 		public bool SupportsTextureFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat textureFormat, bool dynamic, bool isWindowed)
 		{
 			// TODO:  Replace dynamic with a flag enumeration for Dynamic, Static or RenderTarget.
-			Format adapterFormat = (isWindowed ? D3DConvert.ConvertFormat(DefaultVideoMode.Format) : D3DConvert.ConvertFormat(displayFormat));
+			Format adapterFormat = (isWindowed ? D3DConvert.Convert(DefaultVideoMode.Format) : D3DConvert.Convert(displayFormat));
 			Usage usage = Usage.None;
 
 			if (dynamic)
 				usage = Usage.Dynamic;
 
-			return _d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, usage, ResourceType.Texture, D3DConvert.ConvertFormat(textureFormat));
+			return _d3d.CheckDeviceFormat(_info.Adapter, _deviceType, adapterFormat, usage, ResourceType.Texture, D3DConvert.Convert(textureFormat));
 		}
 		#endregion
 

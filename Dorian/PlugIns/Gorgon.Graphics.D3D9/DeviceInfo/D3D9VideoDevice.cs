@@ -160,7 +160,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			int quality = 0;
 
-			if (_d3d.CheckDeviceMultisampleType(AdapterIndex, _deviceType, D3DConvert.ConvertFormat(format), windowed, D3DConvert.Convert(level), out quality))
+			if (_d3d.CheckDeviceMultisampleType(AdapterIndex, _deviceType, D3DConvert.Convert(format), windowed, D3DConvert.Convert(level), out quality))
 				return quality;
 
 			return null;

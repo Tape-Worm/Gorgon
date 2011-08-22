@@ -217,7 +217,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <returns>The Gorgon video mode.</returns>
 		public static GorgonVideoMode Convert(DisplayMode mode)
 		{
-			return new GorgonVideoMode(mode.Width, mode.Height, ConvertFormat(mode.Format), mode.RefreshRate, 1);
+			return new GorgonVideoMode(mode.Width, mode.Height, Convert(mode.Format), mode.RefreshRate, 1);
 		}
 
 		/// <summary>
@@ -225,7 +225,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">D3D buffer format to convert.</param>
 		/// <returns>A Gorgon buffer format.</returns>
-		public static GorgonBufferFormat ConvertFormat(Format format)
+		public static GorgonBufferFormat Convert(Format format)
 		{
 			switch (format)
 			{
@@ -301,7 +301,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">Gorgon buffer format to convert.</param>
 		/// <returns>The D3D format.</returns>
-		public static Format ConvertFormat(GorgonBufferFormat format)
+		public static Format Convert(GorgonBufferFormat format)
 		{
 			switch (format)
 			{
