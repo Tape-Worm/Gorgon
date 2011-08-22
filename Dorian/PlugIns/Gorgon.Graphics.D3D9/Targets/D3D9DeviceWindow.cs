@@ -124,6 +124,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			D3DDevice.Reset(_presentParams[0]);
 			AdjustWindow(inWindowedMode);
 			_deviceIsLost = false;
+			Settings.DisplayMode = new GorgonVideoMode(_presentParams[0].BackBufferWidth, _presentParams[0].BackBufferHeight, D3DConvert.Convert(_presentParams[0].BackBufferFormat), _presentParams[0].FullScreenRefreshRateInHertz, 1);
 			OnAfterDeviceReset();
 			Gorgon.Log.Print("IDirect3DDevice9 interface has been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
 		}
@@ -140,9 +141,10 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			if (Mode.Format == GorgonBufferFormat.Unknown)
 			{
+				// If we didn't specify the back buffer format, then set the default.
 				UpdateTargetInformation(new GorgonVideoMode(Mode.Width, 
 						Mode.Height, 
-						VideoOutput.DefaultVideoMode.Format, 
+						GorgonBufferFormat.X8_R8G8B8_UIntNormal, 
 						VideoOutput.DefaultVideoMode.RefreshRateNumerator, 
 						VideoOutput.DefaultVideoMode.RefreshRateDenominator), DepthStencilFormat, MultiSampleAALevel);
 			}
@@ -185,7 +187,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				new PresentParameters() {
 					AutoDepthStencilFormat = SlimDX.Direct3D9.Format.Unknown,
 					BackBufferCount = Settings.AdvancedSettings.BackBufferCount,
-					BackBufferFormat = D3DConvert.ConvertFormat(Mode.Format),
+					BackBufferFormat = D3DConvert.Convert(Mode.Format),
 					BackBufferHeight = Mode.Height,
 					BackBufferWidth = Mode.Width,
 					DeviceWindowHandle = BoundWindow.Handle,
@@ -208,7 +210,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				if (!VideoOutput.SupportsDepthFormat(Mode.Format, DepthStencilFormat, IsWindowed))
 					throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified depth/stencil format '" + DepthStencilFormat.ToString() + "'.");
 
-				_presentParams[0].AutoDepthStencilFormat = D3DConvert.ConvertFormat(DepthStencilFormat);
+				_presentParams[0].AutoDepthStencilFormat = D3DConvert.Convert(DepthStencilFormat);
 				_presentParams[0].EnableAutoDepthStencil = true;
 			}
 
@@ -330,6 +332,8 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			_deviceIsLost = false;
+
+			Settings.DisplayMode = new GorgonVideoMode(_presentParams[0].BackBufferWidth, _presentParams[0].BackBufferHeight, D3DConvert.Convert(_presentParams[0].BackBufferFormat), _presentParams[0].FullScreenRefreshRateInHertz, 1);
 		}
 
 		/// <summary>

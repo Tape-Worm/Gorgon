@@ -28,9 +28,9 @@ namespace Tester_Graphics
 		{			
 			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
 
-			while (_timer.Milliseconds < GorgonTimer.FpsToMilliseconds(30.0f))
+/*			while (_timer.Milliseconds < GorgonTimer.FpsToMilliseconds(30.0f))
 			{
-			}
+			}*/
 
 			_timer.Reset();
 
