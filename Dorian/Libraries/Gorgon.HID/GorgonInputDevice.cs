@@ -252,10 +252,13 @@ namespace GorgonLibrary.HID
 		/// Function to bind the device to a window.
 		/// </summary>
 		/// <param name="boundWindow">Window to bind with.</param>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to <paramref name="boundWindow"/> will use the <see cref="GorgonLibrary.Gorgon.ApplicationForm">main Gorgon Application Form</see>.  If there is no Form bound with the application, then an exception will be thrown.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the boundWindow parameter and the Gorgon.ApplicationForm property are both NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the top level form cannot be determined.</para>
+		/// </exception>
 		public void BindWindow(Control boundWindow)
 		{
-			Control parentWindow = null;
-
 			if (BoundWindow != null)
 			{
 				UnbindWindow();
@@ -265,23 +268,16 @@ namespace GorgonLibrary.HID
 
 			if (boundWindow == null)
 			{
-				if (Gorgon.ApplicationWindow == null)
+				if (Gorgon.ApplicationForm == null)
 					throw new ArgumentException("There is no application window to bind with.", "boundWindow");
 
-				boundWindow = Gorgon.ApplicationWindow;
+				boundWindow = Gorgon.ApplicationForm;
 			}
 
 			Gorgon.Log.Print("Binding input device object {1} to window 0x{0}.", GorgonLoggingLevel.Intermediate, GorgonUtility.FormatHex(boundWindow.Handle), GetType().Name);
 
-			BoundWindow = boundWindow;			
-			parentWindow = boundWindow;
-			BoundForm = boundWindow as Form;
-
-			while ((BoundForm == null) && (parentWindow != null))
-			{
-				parentWindow = parentWindow.Parent;
-				BoundForm = parentWindow as Form;
-			}
+			BoundWindow = boundWindow;
+			BoundForm = GorgonUtility.GetTopLevelForm(BoundWindow);
 
 			if (BoundForm == null)
 				throw new ArgumentException("Cannot bind to the window, no parent form was found.", "boundWindow");
@@ -303,7 +299,7 @@ namespace GorgonLibrary.HID
 		/// <param name="deviceName">Name of the input device.</param>
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
+		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
 		protected internal GorgonInputDevice(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(deviceName)
 		{

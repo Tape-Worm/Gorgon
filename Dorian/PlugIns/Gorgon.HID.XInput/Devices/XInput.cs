@@ -335,7 +335,7 @@ namespace GorgonLibrary.HID.XInput
 		/// <param name="boundWindow">The window to bind the joystick with.</param>
 		/// <param name="controller">Controller instance to bind to this joystick.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
+		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
 		internal XInputController(GorgonXInputDeviceFactory owner, int ID, string name, Control boundWindow, XI.Controller controller)
 			: base(owner, name, boundWindow)
 		{

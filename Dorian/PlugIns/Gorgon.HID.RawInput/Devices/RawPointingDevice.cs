@@ -329,7 +329,7 @@ namespace GorgonLibrary.HID.RawInput
 		/// <param name="handle">The handle to the device.</param>
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
+		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
 		internal RawPointingDevice(GorgonRawInputDeviceFactory owner, IntPtr handle, Forms.Control boundWindow)
 			: base(owner, "Raw Input Mouse", boundWindow)
 		{			

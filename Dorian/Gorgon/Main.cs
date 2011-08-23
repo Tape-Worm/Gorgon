@@ -105,10 +105,10 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (AllowBackground)
+				if ((AllowBackground) || (ApplicationForm == null))
 					return true;
 
-				if ((ParentWindow.WindowState == Forms.FormWindowState.Minimized) || (!ParentWindow.ContainsFocus))
+				if ((ApplicationForm.WindowState == Forms.FormWindowState.Minimized) || (!ApplicationForm.ContainsFocus))
 					return false;
 	
 				return true;
@@ -158,19 +158,9 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to return the parent window interface for the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">ApplicationWindow</see> window bound to 
+		/// Property to return the primary window for the application.
 		/// </summary>
-		/// <remarks>This is often the same object pointed to by <seealso cref="P:GorgonLibrary.Gorgon.ApplicationWindow">ApplicationWindow</seealso>.  When the application window is set to a control, then this will be set to the parent form of the control.</remarks>
-		public static Forms.Form ParentWindow
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the application window bound to 
-		/// </summary>
-		public static Forms.Control ApplicationWindow
+		public static Forms.Form ApplicationForm
 		{
 			get;
 			private set;
@@ -270,7 +260,7 @@ namespace GorgonLibrary
 				}
 
 				// Give up CPU time if we're not focused.
-				if ((!ParentWindow.ContainsFocus) && (UnfocusedSleepTime > 0))
+				if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
 					System.Threading.Thread.Sleep(UnfocusedSleepTime);
 			}
 		}
@@ -292,9 +282,6 @@ namespace GorgonLibrary
 			ApplicationIdleLoop = idleLoop;
 
 			Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
-
-			if (!ApplicationWindow.Visible)
-				ApplicationWindow.Visible = true;
 
 			Forms.Application.Idle += new EventHandler(Application_Idle);
 			IsRunning = true;
@@ -339,20 +326,25 @@ namespace GorgonLibrary
 
 			// Continue on.
 			if (IsRunning)
-				Application_Idle(ParentWindow, EventArgs.Empty);
+				Application_Idle(ApplicationForm, EventArgs.Empty);
 		}
 
 		/// <summary>
-		/// Function to initialize 
+		/// Function to initialize Gorgon.
 		/// </summary>
-		/// <param name="applicationWindow">Windows form control that will be used for the application.</param>
 		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="applicationWindow"/> parameter is NULL (Nothing in VB.NET).</exception>
-		public static void Initialize(Forms.Control applicationWindow)
+		public static void Initialize()
 		{
-			if (applicationWindow == null)
-				throw new ArgumentNullException("applicationWindow", "Gorgon requires a windows form or control to run.");
+			Initialize(null);
+		}
 
+		/// <summary>
+		/// Function to initialize Gorgon.
+		/// </summary>
+		/// <param name="applicationForm">Windows form that will be used for the application.</param>
+		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
+		public static void Initialize(Forms.Form applicationForm)
+		{
 			// Terminate if already initialized.
 			if (IsInitialized)
 				Terminate();
@@ -378,29 +370,12 @@ namespace GorgonLibrary
 
 				// Default to using 10 milliseconds of sleep time when the application is not focused.
 				UnfocusedSleepTime = 10;
+								
+				// Get the primary application window.
+				ApplicationForm = applicationForm;
 
-				ApplicationWindow = applicationWindow;
-
-				// If the application window is a form, then assign it as its own parent.
-				ParentWindow = ApplicationWindow as Forms.Form;
-
-				// Find the parent of the control.
-				Forms.Control parentControl = ApplicationWindow.Parent;
-
-				while ((parentControl != null) && (ParentWindow == null))
-				{
-					ParentWindow = parentControl as Forms.Form;
-					parentControl = parentControl.Parent;
-				}
-
-				if (ParentWindow == null)
-					throw new GorgonException(GorgonResult.CannotEnumerate, "The window '" + ApplicationWindow.Name + "' at '" + GorgonUtility.FormatHex(ApplicationWindow.Handle) + "' has no parent form.");
-				else
-				{
-					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ApplicationWindow.Handle), ApplicationWindow.Name, ApplicationWindow.Text);
-					if (ParentWindow != ApplicationWindow)
-						Log.Print("Using '{3} ({4})' at '0x{0}' as parent window for application window '{1} ({2})'.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ParentWindow.Handle), ApplicationWindow.Name, ApplicationWindow.Text, ParentWindow.Name, ParentWindow.Text);
-				}
+				if (ApplicationForm != null)
+					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ApplicationForm.Handle), ApplicationForm.Name, ApplicationForm.Text);
 
 				IsRunning = false;
 

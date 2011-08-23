@@ -80,6 +80,39 @@ namespace GorgonLibrary
 
 		#region Methods.
 		/// <summary>
+		/// Function to return the top level form that contains the child control.
+		/// </summary>
+		/// <param name="childControl">The child control that's nested within a base windows form.</param>
+		/// <returns>The windows form that contains the control, or NULL (Nothing in VB.Net) if the control is not embedded on a form at some level.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public static Form GetTopLevelForm(Control childControl)
+		{
+			Form result = null;
+			Control parent = null;
+
+			if (childControl == null)
+				throw new ArgumentNullException("childControl");
+
+			result = childControl as Form;
+			
+			if (result != null)
+				return result;
+
+			parent = childControl.Parent;
+
+			while (parent != null)
+			{
+				result = parent as Form;
+				if (result != null)
+					break;
+
+				parent = parent.Parent;				
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to throw an exception if a string is null or empty.
 		/// </summary>
 		/// <param name="value">The value being passed.</param>
