@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, June 26, 2011 2:08:47 PM
+// Created: Friday, July 15, 2011 6:22:48 AM
 // 
 #endregion
 
@@ -33,9 +33,9 @@ using GorgonLibrary.PlugIns;
 namespace GorgonLibrary.Input
 {
 	/// <summary>
-	/// The entry point for the raw input plug-in.
+	/// The entry point for the Xinput plug-in.
 	/// </summary>
-	public class RawPlugIn
+	public class GorgonXInputPlugIn
 		: GorgonInputDeviceFactoryPlugIn
 	{
 		#region Methods.
@@ -47,16 +47,16 @@ namespace GorgonLibrary.Input
 		/// </returns>
 		protected override GorgonInputDeviceFactory CreateFactory()
 		{
-			return new Raw.GorgonRawInputDeviceFactory();
+			return new XInput.GorgonXInputDeviceFactory();
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RawPlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonXInputPlugIn"/> class.
 		/// </summary>
-		public RawPlugIn()
-			: base("Gorgon raw input plug-in.")
+		public GorgonXInputPlugIn()
+			: base("Gorgon XBOX 360 controller input plug-in.")
 		{
 		}
 		#endregion

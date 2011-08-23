@@ -127,9 +127,9 @@ namespace Tester
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.Input.WinForms.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
-				input = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.RawPlugIn");
-				winput = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.WinFormsPlugIn");
-				xinput = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.XInputPlugIn");
+				input = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+				winput = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
+				xinput = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
 
 				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();

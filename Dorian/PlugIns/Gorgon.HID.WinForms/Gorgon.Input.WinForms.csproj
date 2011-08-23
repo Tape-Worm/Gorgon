@@ -59,7 +59,7 @@
     <Compile Include="Devices\KeyMapper.cs" />
     <Compile Include="Devices\WinFormsKeyboard.cs" />
     <Compile Include="Devices\WinFormsPointingDevice.cs" />
-    <Compile Include="WinFormsPlugIn.cs" />
+    <Compile Include="GorgonWinFormsPlugIn.cs" />
     <Compile Include="GorgonWinFormsInputDeviceName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GorgonWinFormsInputDeviceFactory.cs" />
