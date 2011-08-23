@@ -47,7 +47,7 @@ namespace GorgonLibrary.Input
 		/// </returns>
 		protected override GorgonInputDeviceFactory CreateFactory()
 		{
-			return new WinFormsInput.GorgonWinFormsInputDeviceFactory();
+			return new WinForms.GorgonWinFormsInputDeviceFactory();
 		}
 		#endregion
 

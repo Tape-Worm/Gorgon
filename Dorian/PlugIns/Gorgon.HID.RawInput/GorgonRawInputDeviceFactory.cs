@@ -35,7 +35,7 @@ using GorgonLibrary.Native;
 using GorgonLibrary.Input;
 using Forms = System.Windows.Forms;
 
-namespace GorgonLibrary.Input.RawInput
+namespace GorgonLibrary.Input.Raw
 {
 	/// <summary>
 	/// Object representing the main interface to the input library.

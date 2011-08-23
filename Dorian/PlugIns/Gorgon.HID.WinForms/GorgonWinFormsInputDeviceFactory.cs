@@ -34,7 +34,7 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input;
 using Forms = System.Windows.Forms;
 
-namespace GorgonLibrary.Input.WinFormsInput
+namespace GorgonLibrary.Input.WinForms
 {
 	/// <summary>
 	/// Object representing the main interface to the input library.

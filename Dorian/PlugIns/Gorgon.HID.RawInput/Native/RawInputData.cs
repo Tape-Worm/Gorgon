@@ -28,7 +28,7 @@ using System;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Native;
 
-namespace GorgonLibrary.Input.RawInput
+namespace GorgonLibrary.Input.Raw
 {
 	/// <summary>
 	/// Object for raw input data (platform agnostic).

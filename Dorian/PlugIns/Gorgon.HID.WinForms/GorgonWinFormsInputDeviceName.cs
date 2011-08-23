@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GorgonLibrary.Input.WinFormsInput
+namespace GorgonLibrary.Input.WinForms
 {
 	/// <summary>
 	/// The Raw Input implementation of a device name.
