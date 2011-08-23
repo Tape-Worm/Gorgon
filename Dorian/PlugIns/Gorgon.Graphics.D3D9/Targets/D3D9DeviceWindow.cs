@@ -71,7 +71,7 @@ namespace GorgonLibrary.Graphics.D3D9
 					return false;
 
 				if (window == null)
-					window = ParentWindow;
+					window = BoundForm;
 
 				return ((!_deviceIsLost) && (window.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Height > 0));
 			}
@@ -327,12 +327,12 @@ namespace GorgonLibrary.Graphics.D3D9
 			// Attempt to create a pure device, if that fails, then create a hardware vertex device, anything else will fail.
 			try
 			{
-				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)VideoDevice).AdapterIndex, _graphics.DeviceType, ParentWindow.Handle, flags | CreateFlags.PureDevice, _presentParams);
+				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)VideoDevice).AdapterIndex, _graphics.DeviceType, BoundForm.Handle, flags | CreateFlags.PureDevice, _presentParams);
 				Gorgon.Log.Print("IDirect3D9 Pure Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 			catch(SlimDXException)
 			{
-				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)VideoDevice).AdapterIndex, _graphics.DeviceType, ParentWindow.Handle, flags, _presentParams);
+				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)VideoDevice).AdapterIndex, _graphics.DeviceType, BoundForm.Handle, flags, _presentParams);
 				Gorgon.Log.Print("IDirect3D9 Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 

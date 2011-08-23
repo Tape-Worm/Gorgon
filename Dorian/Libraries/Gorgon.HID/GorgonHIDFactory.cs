@@ -35,7 +35,7 @@ namespace GorgonLibrary.HID
 	/// <summary>
 	/// A factory for loading various input device factory interface plug-ins.
 	/// </summary>
-	public static class GorgonHIDFactory
+	public static class GorgonHID
 	{
 		#region Variables.
 		private static GorgonInputDeviceFactoryCollection _hidFactories = null;			// input device factory collection.
@@ -106,9 +106,9 @@ namespace GorgonLibrary.HID
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes the <see cref="GorgonHIDFactory"/> class.
+		/// Initializes the <see cref="GorgonHID"/> class.
 		/// </summary>
-		static GorgonHIDFactory()
+		static GorgonHID()
 		{
 			_hidFactories = new GorgonInputDeviceFactoryCollection();
 		}

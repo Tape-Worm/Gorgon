@@ -174,11 +174,11 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonDeviceWindowSettings"/> class.
 		/// </summary>
 		/// <param name="boundWindow">The window to bind to the device window.</param>
-		/// <remarks>Pass NULL to the <paramref name="boundWindow"/> parameter to use the default Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">ApplicationWindow</see>.</remarks>
+		/// <remarks>Pass NULL to the <paramref name="boundWindow"/> parameter to use the default Gorgon <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">ApplicationWindow</see>.</remarks>
 		public GorgonDeviceWindowSettings(Control boundWindow)
 		{
 			if (boundWindow == null)
-				BoundWindow = Gorgon.ApplicationWindow;
+				BoundWindow = Gorgon.ApplicationForm;
 
 #if DEBUG
 			Windowed = true;

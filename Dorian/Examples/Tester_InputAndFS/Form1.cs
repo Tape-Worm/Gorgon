@@ -111,7 +111,7 @@ namespace Tester
 			base.OnMouseDoubleClick(e);
 
 			if (!Gorgon.IsInitialized)
-				Gorgon.Initialize(this.panel1);
+				Gorgon.Initialize(this);
 		}
 		
 		protected override void OnLoad(EventArgs e)
@@ -120,21 +120,21 @@ namespace Tester
 
 			try 
 			{
-				Gorgon.Initialize(this.panel1);
+				Gorgon.Initialize();
 				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");				
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.RawInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.XInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.HID.WinFormsInput.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
-				input = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
-				winput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonWinFormsInput");
-				xinput = GorgonHIDFactory.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonXInput");
+				input = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonRawInput");
+				winput = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonWinFormsInput");
+				xinput = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.HID.GorgonXInput");
 
 				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
 				
-				mouse = winput.CreatePointingDevice();
+				mouse = winput.CreatePointingDevice(this.panel1);
 				mouse.PointingDeviceMove += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseMove);
 				mouse.PointingDeviceDown += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseDown);
 				mouse.PointingDeviceUp += new EventHandler<PointingDeviceHIDEventArgs>(mouse_MouseUp);
@@ -142,14 +142,14 @@ namespace Tester
 				//panel1.MouseDown += new MouseEventHandler(Form1_MouseDown);
 				//panel1.MouseUp += new MouseEventHandler(Form1_MouseUp);
 				//panel1.MouseMove += new MouseEventHandler(Form1_MouseMove);
-				keyboard = winput.CreateKeyboard();
+				keyboard = winput.CreateKeyboard(this);
 				keyboard.KeyDown += new EventHandler<KeyboardHIDEventArgs>(keyboard_KeyDown);
 
 				foreach (GorgonInputDeviceName name in xinput.JoystickDevices)
 				{
 					if (name.IsConnected)
 					{
-						joystick = xinput.CreateJoystick(name);
+						joystick = xinput.CreateJoystick(name, this.panel1);
 						break;
 					}
 				}
@@ -162,7 +162,7 @@ namespace Tester
 						{
 							if (name.IsConnected)
 							{
-								joystick = input.CreateJoystick(name);
+								joystick = input.CreateJoystick(name, this.panel1);
 								break;
 							}
 						}
@@ -178,7 +178,7 @@ namespace Tester
 					joystick.DeadZone.SecondaryY = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
 				}
 
-				fileSystem = new GorgonFileSystem();
+/*				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonBZ2FileSystemProvider");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
@@ -188,7 +188,7 @@ namespace Tester
 				System.IO.Stream stream = fileSystem.GetFile("/Shaders/Blur.fx").OpenStream(false);
 				byte[] streamFile = new byte[stream.Length];
 				stream.Read(streamFile, 0, (int)stream.Length);
-				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();
+				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();*/
 				
 				Gorgon.Go(Idle);
 			}
@@ -257,7 +257,7 @@ namespace Tester
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void panel1_DoubleClick(object sender, EventArgs e)
 		{
-			Gorgon.Initialize(this.panel1);
+			Gorgon.Initialize(this);
 		}
 	}
 }

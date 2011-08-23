@@ -55,10 +55,10 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the window that contains the <see cref="GorgonLibrary.Graphics.GorgonSwapChainBase.BoundWindow">BoundWindow</see>.
+		/// Property to return the top level form that the swap chain is bound with.
 		/// </summary>
-		/// <remarks>If the BoundWindow is a windows form, then this property will be the same as the BoundWindow property.</remarks>
-		public Form ParentWindow
+		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainBase.BoundWindow">BoundWindow</see> is a windows form, then this property will be the same as the BoundWindow property.</remarks>
+		public Form BoundForm
 		{
 			get;
 			private set;
@@ -83,7 +83,7 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Handles the SizeChanged event of the BoundWindow control.
 		/// </summary>
@@ -103,24 +103,15 @@ namespace GorgonLibrary.Graphics
 		{
 			Control parent = null;
 
-			if (BoundWindow is Form)
+			parent = BoundWindow.Parent;
+
+			while ((BoundForm == null) && (parent != null)) 
 			{
-				ParentWindow = (Form)BoundWindow;
-				return;
-			}
-
-			parent = BoundWindow.Parent;			
-
-			while (parent != null)
-			{
-				ParentWindow = parent as Form;
-				if (ParentWindow != null)
-					break;
-
+				BoundForm = parent as Form;
 				parent = parent.Parent;
 			}
 
-			if (ParentWindow == null)
+			if (BoundForm == null)
 				throw new GorgonException(GorgonResult.CannotCreate, "Could not find the owner window for the bound window.");
 		}
 
@@ -141,7 +132,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="newHeight">New height of the window.</param>
 		protected virtual void OnWindowResized(int newWidth, int newHeight)
 		{
-			if ((ParentWindow.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
+			if ((BoundForm.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
 			{
 				UpdateResources();
 			}
@@ -256,10 +247,10 @@ namespace GorgonLibrary.Graphics
 
 			Format = format;
 			BoundWindow = window;
-			if (BoundWindow != Gorgon.ApplicationWindow)
+			BoundForm = window as Form;
+
+			if (BoundForm == null)
 				GetParentWindow();
-			else
-				ParentWindow = Gorgon.ParentWindow;
 		}
 		#endregion
 	}

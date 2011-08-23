@@ -155,14 +155,14 @@ namespace GorgonLibrary.HID.RawInput
 				case WindowMessages.KeyDown:
 					KeyStates[(KeyboardKeys)keyCode] = KeyState.Down;
 					if (secCode > -1)
-                        KeyStates[(KeyboardKeys)secCode] = KeyState.Down;
+						KeyStates[(KeyboardKeys)secCode] = KeyState.Down;
 					OnKeyDown((KeyboardKeys)keyCode, modifiers, e.Data.Keyboard.MakeCode, left, right);
 					break;
 				case WindowMessages.SysKeyUp:
 				case WindowMessages.KeyUp:
-                    KeyStates[(KeyboardKeys)keyCode] = KeyState.Up;
+					KeyStates[(KeyboardKeys)keyCode] = KeyState.Up;
 					if (secCode > -1)
-                        KeyStates[(KeyboardKeys)secCode] = KeyState.Up;
+						KeyStates[(KeyboardKeys)secCode] = KeyState.Up;
 					OnKeyUp((KeyboardKeys)keyCode, modifiers, e.Data.Keyboard.MakeCode, left, right);
 					break;
 			}
@@ -234,7 +234,7 @@ namespace GorgonLibrary.HID.RawInput
 		/// <param name="handle">The handle to the device.</param>
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationWindow">Gorgon application window</see>.</remarks>
+		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
 		internal RawKeyboard(GorgonRawInputDeviceFactory owner, IntPtr handle, Forms.Control boundWindow)
 			: base(owner, "Raw Input Keyboard", boundWindow)
 		{
