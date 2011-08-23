@@ -59,9 +59,9 @@
     <Compile Include="GorgonInputDeviceFactoryCollection.cs" />
     <Compile Include="GorgonInputDevice.cs" />
     <Compile Include="GorgonInputDeviceName.cs" />
-    <Compile Include="GorgonHIDEvents.cs" />
+    <Compile Include="GorgonInputEvents.cs" />
     <Compile Include="GorgonInputDeviceFactory.cs" />
-    <Compile Include="GorgonHIDPlugIn.cs" />
+    <Compile Include="GorgonInputPlugIn.cs" />
     <Compile Include="GorgonJoystick.cs" />
     <Compile Include="GorgonKeyboard.cs" />
     <Compile Include="GorgonPointingDevice.cs" />
