@@ -33,7 +33,7 @@ using Forms = System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
 
-namespace GorgonLibrary.Input.WinFormsInput
+namespace GorgonLibrary.Input.WinForms
 {
 	/// <summary>
 	/// Winforms pointing device interface.

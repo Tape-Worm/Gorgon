@@ -31,7 +31,7 @@ using GorgonLibrary.Native;
 using GorgonLibrary.Math;
 using GorgonLibrary.Input;
 
-namespace GorgonLibrary.Input.RawInput
+namespace GorgonLibrary.Input.Raw
 {
 	/// <summary>
 	/// Windows Multimedia based joystick interface.

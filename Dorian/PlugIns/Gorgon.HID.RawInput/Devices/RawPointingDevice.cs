@@ -32,7 +32,7 @@ using GorgonLibrary.Math;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.Input;
 
-namespace GorgonLibrary.Input.RawInput
+namespace GorgonLibrary.Input.Raw
 {
 	/// <summary>
 	/// Mouse interface.

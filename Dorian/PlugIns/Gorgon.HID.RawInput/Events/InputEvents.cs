@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Input.RawInput
+namespace GorgonLibrary.Input.Raw
 {
 	/// <summary>
 	/// Object representing event arguments for the raw input events.

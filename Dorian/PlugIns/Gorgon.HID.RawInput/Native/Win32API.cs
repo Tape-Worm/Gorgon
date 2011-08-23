@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using Microsoft.Win32;
 using GorgonLibrary.Input;
-using GorgonLibrary.Input.RawInput;
+using GorgonLibrary.Input.Raw;
 
 namespace GorgonLibrary.Native
 {

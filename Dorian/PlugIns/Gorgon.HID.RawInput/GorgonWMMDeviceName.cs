@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.Native;
 
-namespace GorgonLibrary.Input.RawInput
+namespace GorgonLibrary.Input.Raw
 {
 	/// <summary>
 	/// The WMM joystick implementation of a device name.

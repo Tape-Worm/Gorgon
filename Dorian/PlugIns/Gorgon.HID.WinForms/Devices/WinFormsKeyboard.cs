@@ -30,7 +30,7 @@ using GorgonLibrary.Diagnostics;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.Input;
 
-namespace GorgonLibrary.Input.WinFormsInput
+namespace GorgonLibrary.Input.WinForms
 {
 	/// <summary>
 	/// Object representing keyboard data.
