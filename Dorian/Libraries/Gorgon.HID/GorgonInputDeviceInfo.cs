@@ -36,7 +36,7 @@ namespace GorgonLibrary.Input
 	/// <para>Implementors of input plug-ins must implement this in the plug-in and return a handle of whatever type is required by the back end input library.  For example, DirectInput uses GUIDs to ID the devices, so the implementor must 
 	/// use a <see cref="System.Guid"/> type as a handle.  See the GoronRawInputDeviceName.cs file for an example of how to do this.</para>
 	/// </remarks>
-	public abstract class GorgonInputDeviceName
+	public abstract class GorgonInputDeviceInfo
 		: GorgonNamedObject
 	{
 		#region Properties.
@@ -79,7 +79,7 @@ namespace GorgonLibrary.Input
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputDeviceName"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputDeviceInfo"/> class.
 		/// </summary>
 		/// <param name="name">The device name.</param>
 		/// <param name="className">Class name of the device.</param>
@@ -87,7 +87,7 @@ namespace GorgonLibrary.Input
 		/// <param name="connected">TRUE if the device is presently connected and operating, FALSE if it is not.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		protected GorgonInputDeviceName(string name, string className, string hidPath, bool connected)
+		protected GorgonInputDeviceInfo(string name, string className, string hidPath, bool connected)
 			: base(name)
 		{
 			if (string.IsNullOrEmpty(className))
