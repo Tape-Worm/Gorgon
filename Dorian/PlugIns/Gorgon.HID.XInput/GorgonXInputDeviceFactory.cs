@@ -31,11 +31,11 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.HID;
+using GorgonLibrary.Input;
 using XI = SlimDX.XInput;
 using Forms = System.Windows.Forms;
 
-namespace GorgonLibrary.HID.XInput
+namespace GorgonLibrary.Input.XInput
 {
 	/// <summary>
 	/// Object representing the main interface to the input library.
@@ -109,7 +109,7 @@ namespace GorgonLibrary.HID.XInput
 		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
-		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>
 		/// A new custom HID interface.
@@ -150,7 +150,7 @@ namespace GorgonLibrary.HID.XInput
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>

@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.HID.RawInput
+namespace GorgonLibrary.Input.RawInput
 {
 	/// <summary>
 	/// Object representing event arguments for the raw input events.

@@ -31,7 +31,7 @@ using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// Event parameters for the <see cref="E:GorgonLibrary.HID.GorgonCustomHID.DataChanged">DataChanged</see> event.

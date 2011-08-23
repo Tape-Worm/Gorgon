@@ -10,7 +10,7 @@ using GorgonLibrary;
 using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
-using GorgonLibrary.HID;
+using GorgonLibrary.Input;
 using GorgonLibrary.FileSystem;
 
 namespace Tester
@@ -221,7 +221,7 @@ namespace Tester
 		/// Handles the MouseMove event of the mouse control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonLibrary.HID.PointingDeviceHIDEventArgs"/> instance containing the event data.</param>
+		/// <param name="e">The <see cref="GorgonLibrary.Input.PointingDeviceHIDEventArgs"/> instance containing the event data.</param>
 		void mouse_MouseMove(object sender, PointingDeviceHIDEventArgs e)
 		{
 			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + "\n\n";

@@ -28,8 +28,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Microsoft.Win32;
-using GorgonLibrary.HID;
-using GorgonLibrary.HID.RawInput;
+using GorgonLibrary.Input;
+using GorgonLibrary.Input.RawInput;
 
 namespace GorgonLibrary.Native
 {

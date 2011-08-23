@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	#region Keyboard Keys.
 	/// <summary>

@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// A collection of custom HID properties.
@@ -40,7 +40,7 @@ namespace GorgonLibrary.HID
 	{
 		#region Properties.
 		/// <summary>
-		/// Function to return the <see cref="GorgonLibrary.HID.GorgonCustomHIDProperty"/> at the specified index.
+		/// Function to return the <see cref="GorgonLibrary.Input.GorgonCustomHIDProperty"/> at the specified index.
 		/// </summary>
 		public GorgonCustomHIDProperty this[int index]
 		{
@@ -51,7 +51,7 @@ namespace GorgonLibrary.HID
 		}
 
 		/// <summary>
-		/// Function to return the <see cref="GorgonLibrary.HID.GorgonCustomHIDProperty"/> with the specified name.
+		/// Function to return the <see cref="GorgonLibrary.Input.GorgonCustomHIDProperty"/> with the specified name.
 		/// </summary>
 		public GorgonCustomHIDProperty this[string name]
 		{

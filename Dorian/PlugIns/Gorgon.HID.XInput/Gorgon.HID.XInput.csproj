@@ -8,8 +8,8 @@
     <ProjectGuid>{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.HID.XInput</RootNamespace>
-    <AssemblyName>Gorgon.HID.XInput</AssemblyName>
+    <RootNamespace>GorgonLibrary.Input.XInput</RootNamespace>
+    <AssemblyName>Gorgon.Input.XInput</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,7 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Gorgon.HID.XInput.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Gorgon.Input.XInput.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup>

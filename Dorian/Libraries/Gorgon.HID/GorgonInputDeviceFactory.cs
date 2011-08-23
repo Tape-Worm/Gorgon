@@ -31,7 +31,7 @@ using Forms = System.Windows.Forms;
 using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// Base for the input device factory object.
@@ -206,7 +206,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
@@ -216,7 +216,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
-		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new custom HID interface.</returns>
 		/// <remarks>Implementors must implement this function if they wish to return data from a undefined (custom) device.
@@ -228,7 +228,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
-		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new custom HID interface.</returns>
 		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.HID.GorgonCustomHID.Data">Data</see> property.
@@ -251,7 +251,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
-		/// <param name="hidName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new custom HID interface.</returns>
 		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.HID.GorgonCustomHID.Data">Data</see> property.
@@ -305,7 +305,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a keyboard interface.
 		/// </summary>
-		/// <param name="keyboardName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the keyboard information.</param>
+		/// <param name="keyboardName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the keyboard information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing an empty string for <paramref name="keyboardName"/> will use the system keyboard.
@@ -365,7 +365,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a pointing device interface.
 		/// </summary>
-		/// <param name="pointingDeviceName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the pointing device information.</param>
+		/// <param name="pointingDeviceName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the pointing device information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new pointing device interface.</returns>
 		/// <remarks>Passing an empty string for <paramref name="pointingDeviceName"/> will use the system pointing device.
@@ -433,7 +433,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
@@ -455,7 +455,7 @@ namespace GorgonLibrary.HID
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.HID.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickName"/> is NULL.</exception>
 		public GorgonJoystick CreateJoystick(GorgonInputDeviceName joystickName)

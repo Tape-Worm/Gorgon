@@ -28,7 +28,7 @@ using System;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// Abstract class for input devices.

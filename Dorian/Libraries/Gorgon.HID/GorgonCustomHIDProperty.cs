@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// A specific property for the HID.

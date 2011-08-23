@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.HID.WinFormsInput
+namespace GorgonLibrary.Input.WinFormsInput
 {
 	/// <summary>
 	/// Used to map win forms keys to gorgon keyboard keys.

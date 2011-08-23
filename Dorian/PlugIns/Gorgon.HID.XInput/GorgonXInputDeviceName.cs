@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using XI = SlimDX.XInput;
 
-namespace GorgonLibrary.HID.XInput
+namespace GorgonLibrary.Input.XInput
 {
 	/// <summary>
 	/// The XInput implementation of a device name.

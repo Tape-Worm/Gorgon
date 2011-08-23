@@ -8,8 +8,8 @@
     <ProjectGuid>{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.HID.RawInput</RootNamespace>
-    <AssemblyName>Gorgon.HID.RawInput</AssemblyName>
+    <RootNamespace>GorgonLibrary.Input.RawInput</RootNamespace>
+    <AssemblyName>Gorgon.Input.RawInput</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon.HID.RawInput.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Gorgon.Input.RawInput.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Gorgon.HID.RawInput.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Gorgon.Input.RawInput.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup>
