@@ -27,7 +27,7 @@
 using System;
 using GorgonLibrary.Native;
 
-namespace GorgonLibrary.HID.RawInput
+namespace GorgonLibrary.Input.RawInput
 {
 	/// <summary>
 	/// Object representing a message loop filter.

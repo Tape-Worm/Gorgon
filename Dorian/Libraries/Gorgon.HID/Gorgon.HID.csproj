@@ -8,8 +8,8 @@
     <ProjectGuid>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.HID</RootNamespace>
-    <AssemblyName>Gorgon.HID</AssemblyName>
+    <RootNamespace>GorgonLibrary.Input</RootNamespace>
+    <AssemblyName>Gorgon.Input</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon.HID.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Gorgon.Input.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>

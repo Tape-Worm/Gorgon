@@ -27,7 +27,7 @@
 using System;
 using System.Drawing;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// Pointing device event arguments.

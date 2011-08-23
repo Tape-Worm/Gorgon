@@ -8,8 +8,8 @@
     <ProjectGuid>{BE449FB9-9001-4954-B856-B466F90D55E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.HID.WinForms</RootNamespace>
-    <AssemblyName>Gorgon.HID.WinFormsInput</AssemblyName>
+    <RootNamespace>GorgonLibrary.Input.WinForms</RootNamespace>
+    <AssemblyName>Gorgon.Input.WinFormsInput</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon.HID.WinFormsInput.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Gorgon.Input.WinFormsInput.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Gorgon.HID.WinFormsInput.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Gorgon.Input.WinFormsInput.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup>

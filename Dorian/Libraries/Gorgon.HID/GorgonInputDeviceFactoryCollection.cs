@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// A collection of HID factories.

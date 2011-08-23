@@ -29,7 +29,7 @@ using System.Drawing;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.Math;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// Enumeration for pointing device buttons.

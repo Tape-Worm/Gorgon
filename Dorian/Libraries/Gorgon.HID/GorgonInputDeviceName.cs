@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// Name of an input device object.

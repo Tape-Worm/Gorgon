@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.Native;
 
-namespace GorgonLibrary.HID.RawInput
+namespace GorgonLibrary.Input.RawInput
 {
 	/// <summary>
 	/// The Raw Input implementation of a device name.

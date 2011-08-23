@@ -30,10 +30,10 @@ using System.Windows.Forms;
 using System.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
-using GorgonLibrary.HID;
+using GorgonLibrary.Input;
 using XI = SlimDX.XInput;
 
-namespace GorgonLibrary.HID.XInput
+namespace GorgonLibrary.Input.XInput
 {
 	/// <summary>
 	/// XInput XBOX 360 controller device.

@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.HID
+namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// A factory for loading various input device factory interface plug-ins.

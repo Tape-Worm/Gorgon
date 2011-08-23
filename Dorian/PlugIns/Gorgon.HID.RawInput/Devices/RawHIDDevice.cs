@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.HID.RawInput
+namespace GorgonLibrary.Input.RawInput
 {
 	/// <summary>
 	/// A raw input generic HID device object.

@@ -28,9 +28,9 @@ using System;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
 using Forms = System.Windows.Forms;
-using GorgonLibrary.HID;
+using GorgonLibrary.Input;
 
-namespace GorgonLibrary.HID.RawInput
+namespace GorgonLibrary.Input.RawInput
 {
 	/// <summary>
 	/// Object representing keyboard data.
