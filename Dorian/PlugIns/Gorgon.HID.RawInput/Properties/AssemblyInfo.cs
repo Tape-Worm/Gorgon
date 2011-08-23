@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Raw Input device plug-in for Gorgon.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon.RawInput")]
+[assembly: AssemblyProduct("Gorgon.Input.Raw")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

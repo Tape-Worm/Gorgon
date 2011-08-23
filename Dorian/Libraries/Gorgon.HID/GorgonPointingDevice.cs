@@ -98,22 +98,22 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Pointing device moved event.
 		/// </summary>
-		public event EventHandler<PointingDeviceHIDEventArgs> PointingDeviceMove;
+		public event EventHandler<PointingDeviceEventArgs> PointingDeviceMove;
 
 		/// <summary>
 		/// Pointing device button down event.
 		/// </summary>
-		public event EventHandler<PointingDeviceHIDEventArgs> PointingDeviceDown;
+		public event EventHandler<PointingDeviceEventArgs> PointingDeviceDown;
 
 		/// <summary>
 		/// Pointing device button up event.
 		/// </summary>
-		public event EventHandler<PointingDeviceHIDEventArgs> PointingDeviceUp;
+		public event EventHandler<PointingDeviceEventArgs> PointingDeviceUp;
 
 		/// <summary>
 		/// Pointing device wheel move event.
 		/// </summary>
-		public event EventHandler<PointingDeviceHIDEventArgs> PointingDeviceWheelMove;
+		public event EventHandler<PointingDeviceEventArgs> PointingDeviceWheelMove;
 		#endregion
 
 		#region Properties.
@@ -344,7 +344,7 @@ namespace GorgonLibrary.Input
 			if (PointingDeviceWheelMove != null)
 			{
 				ConstrainData();
-				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
+				PointingDeviceEventArgs e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				PointingDeviceWheelMove(this, e);
 			}
 		}
@@ -375,7 +375,7 @@ namespace GorgonLibrary.Input
 			if (PointingDeviceMove != null)
 			{
 				ConstrainData();
-				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
+				PointingDeviceEventArgs e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				PointingDeviceMove(this, e);
 			}
 		}
@@ -389,7 +389,7 @@ namespace GorgonLibrary.Input
 			if (PointingDeviceDown != null)
 			{
 				ConstrainData();
-				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
+				PointingDeviceEventArgs e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
 				Button |= button;
 				PointingDeviceDown(this, e);			
 			}
@@ -406,7 +406,7 @@ namespace GorgonLibrary.Input
 			{
 				ConstrainData();
 				Button &= ~button;
-				PointingDeviceHIDEventArgs e = new PointingDeviceHIDEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
+				PointingDeviceEventArgs e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
 				PointingDeviceUp(this, e);
 			}
 		}

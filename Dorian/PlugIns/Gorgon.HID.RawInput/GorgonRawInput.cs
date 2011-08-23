@@ -35,7 +35,7 @@ namespace GorgonLibrary.Input
 	/// <summary>
 	/// The entry point for the raw input plug-in.
 	/// </summary>
-	public class GorgonRawInput
+	public class RawPlugIn
 		: GorgonInputDeviceFactoryPlugIn
 	{
 		#region Methods.
@@ -53,9 +53,9 @@ namespace GorgonLibrary.Input
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInput"/> class.
+		/// Initializes a new instance of the <see cref="RawPlugIn"/> class.
 		/// </summary>
-		public GorgonRawInput()
+		public RawPlugIn()
 			: base("Gorgon raw input plug-in.")
 		{
 		}

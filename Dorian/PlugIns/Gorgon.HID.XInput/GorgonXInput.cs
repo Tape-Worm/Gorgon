@@ -35,7 +35,7 @@ namespace GorgonLibrary.Input
 	/// <summary>
 	/// The entry point for the Xinput plug-in.
 	/// </summary>
-	public class GorgonXInput
+	public class XInputPlugIn
 		: GorgonInputDeviceFactoryPlugIn
 	{
 		#region Methods.
@@ -53,9 +53,9 @@ namespace GorgonLibrary.Input
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonXInput"/> class.
+		/// Initializes a new instance of the <see cref="XInputPlugIn"/> class.
 		/// </summary>
-		public GorgonXInput()
+		public XInputPlugIn()
 			: base("Gorgon XBOX 360 controller input plug-in.")
 		{
 		}

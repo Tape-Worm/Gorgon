@@ -33,7 +33,7 @@ using GorgonLibrary.Collections;
 namespace GorgonLibrary.Input
 {
 	/// <summary>
-	/// A collection of HID factories.
+	/// A collection of input factories.
 	/// </summary>
 	/// <remarks>This collection is not case sensitive.</remarks>
 	public class GorgonInputDeviceFactoryCollection
@@ -89,7 +89,7 @@ namespace GorgonLibrary.Input
 		}
 
 		/// <summary>
-		/// Function to remove all HID factories from the collection.
+		/// Function to remove all input factories from the collection.
 		/// </summary>
 		internal void Clear()
 		{
