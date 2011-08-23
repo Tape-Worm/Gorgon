@@ -6,14 +6,14 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Human Interface Device [DEBUG VERSION]")]
-[assembly: AssemblyDescription("A library to manage HID interfaces for Gorgon. [DEBUG VERSION]")]
-[assembly: AssemblyProduct("Gorgon.HID [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Gorgon Input [DEBUG VERSION]")]
+[assembly: AssemblyDescription("A library to manage input interfaces for Gorgon. [DEBUG VERSION]")]
+[assembly: AssemblyProduct("Gorgon.Input [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
-[assembly: AssemblyTitle("Gorgon Human Interface Device")]
-[assembly: AssemblyDescription("A library to manage HID interfaces for Gorgon.")]
-[assembly: AssemblyProduct("Gorgon.HID")]
+[assembly: AssemblyTitle("Gorgon Input")]
+[assembly: AssemblyDescription("A library to manage input interfaces for Gorgon.")]
+[assembly: AssemblyProduct("Gorgon.Input")]
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]

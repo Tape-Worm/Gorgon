@@ -35,7 +35,7 @@ namespace GorgonLibrary.Input
 	/// <summary>
 	/// The entry point for the win forms input plug-in.
 	/// </summary>
-	public class GorgonWinFormsInput
+	public class WinFormsPlugIn
 		: GorgonInputDeviceFactoryPlugIn
 	{
 		#region Methods.
@@ -53,9 +53,9 @@ namespace GorgonLibrary.Input
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonWinFormsInput"/> class.
+		/// Initializes a new instance of the <see cref="WinFormsPlugIn"/> class.
 		/// </summary>
-		public GorgonWinFormsInput()
+		public WinFormsPlugIn()
 			: base("Gorgon windows forms input plug-in.")
 		{
 		}

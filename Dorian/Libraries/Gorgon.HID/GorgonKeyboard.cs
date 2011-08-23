@@ -658,12 +658,12 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Key down event.
 		/// </summary>
-		public event EventHandler<KeyboardHIDEventArgs> KeyDown;
+		public event EventHandler<KeyboardEventArgs> KeyDown;
 
 		/// <summary>
 		/// Key up event.
 		/// </summary>
-		public event EventHandler<KeyboardHIDEventArgs> KeyUp;
+		public event EventHandler<KeyboardEventArgs> KeyUp;
 		#endregion
 
 		#region Properties.
@@ -725,7 +725,7 @@ namespace GorgonLibrary.Input
 				else
 					character = default(KeyCharMap);
 
-				KeyboardHIDEventArgs e = new KeyboardHIDEventArgs(key, modifiers, character, scan, left, right);
+				KeyboardEventArgs e = new KeyboardEventArgs(key, modifiers, character, scan, left, right);
 				KeyDown(this, e);
 			}
 		}
@@ -749,7 +749,7 @@ namespace GorgonLibrary.Input
 				else
 					character = default(KeyCharMap);
 
-				KeyboardHIDEventArgs e = new KeyboardHIDEventArgs(key, modifiers, character, scan, left, right);
+				KeyboardEventArgs e = new KeyboardEventArgs(key, modifiers, character, scan, left, right);
 				KeyUp(this, e);
 			}
 		}

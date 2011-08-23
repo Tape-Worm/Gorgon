@@ -34,7 +34,7 @@ using GorgonLibrary.Collections;
 namespace GorgonLibrary.Input
 {
 	/// <summary>
-	/// Event parameters for the <see cref="E:GorgonLibrary.HID.GorgonCustomHID.DataChanged">DataChanged</see> event.
+	/// Event parameters for the <see cref="E:GorgonLibrary.Input.GorgonCustomHID.DataChanged">DataChanged</see> event.
 	/// </summary>
 	public class GorgonCustomHIDDataChangedEventArgs
 		: EventArgs

@@ -30,35 +30,35 @@ using System.Windows.Forms;
 
 namespace GorgonLibrary.UI
 {
-    /// <summary>
-    /// Enumeration for confirmation results.
-    /// </summary>
-    [Flags]
-    public enum ConfirmationResult
-    {
-        /// <summary>
-        /// No confirmation.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Yes clicked.
-        /// </summary>
-        Yes = 1,
-        /// <summary>
-        /// No clicked.
-        /// </summary>
-        No = 2,
-        /// <summary>
-        /// Cancel clicked.
-        /// </summary>
-        Cancel = 4,
-        /// <summary>
-        /// To all checked.
-        /// </summary>
-        ToAll = 8
-    }
+	/// <summary>
+	/// Enumeration for confirmation results.
+	/// </summary>
+	[Flags]
+	public enum ConfirmationResult
+	{
+		/// <summary>
+		/// No confirmation.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Yes clicked.
+		/// </summary>
+		Yes = 1,
+		/// <summary>
+		/// No clicked.
+		/// </summary>
+		No = 2,
+		/// <summary>
+		/// Cancel clicked.
+		/// </summary>
+		Cancel = 4,
+		/// <summary>
+		/// To all checked.
+		/// </summary>
+		ToAll = 8
+	}
 
-    /// <summary>
+	/// <summary>
 	/// Static class representing various User Interface utilities.
 	/// </summary>
 	public static class GorgonDialogs

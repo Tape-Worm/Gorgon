@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A XBOX 360 controller plug-in for Gorgon.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon.HID.XInput")]
+[assembly: AssemblyProduct("Gorgon.Input.XInput")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
