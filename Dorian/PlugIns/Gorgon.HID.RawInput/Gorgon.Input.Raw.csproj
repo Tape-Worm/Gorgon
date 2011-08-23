@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Devices\RawHIDDevice.cs" />
-    <Compile Include="GorgonRawInput.cs" />
+    <Compile Include="RawInputPlugIn.cs" />
     <Compile Include="GorgonRawInputDeviceName.cs" />
     <Compile Include="GorgonWMMDeviceName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

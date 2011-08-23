@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GorgonXInput.cs" />
+    <Compile Include="XInputPlugIn.cs" />
     <Compile Include="GorgonXInputDeviceFactory.cs" />
     <Compile Include="GorgonXInputDeviceName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
