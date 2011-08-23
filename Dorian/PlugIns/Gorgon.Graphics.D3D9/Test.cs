@@ -55,11 +55,11 @@ namespace GorgonLibrary.Graphics.D3D9
 			_ib = new IndexBuffer(device, 12, Usage.WriteOnly, Pool.Managed, true);
 			_vb.Lock(0, 0, LockFlags.None).WriteRange(
 				new[] {
-		                new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(-0.5f, 0.5f, 0.0f), UV = new Vector2(0, 0.0f)},
+						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(-0.5f, 0.5f, 0.0f), UV = new Vector2(0, 0.0f)},
 						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(0.5f, -0.5f, 0.025f), UV = new Vector2(1.0f, 1.0f) },
 						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(-0.5f, -0.5f, 0.0f), UV = new Vector2(0.0f, 1.0f) },
 						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(0.5f, 0.5f, 0.0f), UV = new Vector2(1.0f, 0.0f) }				
-            });
+			});
 
 			_vb.Unlock();
 
