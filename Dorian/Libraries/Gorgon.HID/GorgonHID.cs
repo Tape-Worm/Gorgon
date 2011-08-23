@@ -68,7 +68,7 @@ namespace GorgonLibrary.Input
 		/// </exception>
 		public static GorgonInputDeviceFactory CreateInputDeviceFactory(string plugInType)
 		{
-			GorgonInputDeviceFactoryPlugIn plugIn = null;
+			GorgonInputPlugIn plugIn = null;
 			GorgonInputDeviceFactory factory = null;
 
 			GorgonUtility.AssertParamString(plugInType, "plugInType");
@@ -76,7 +76,7 @@ namespace GorgonLibrary.Input
 			if (!GorgonPlugInFactory.PlugIns.Contains(plugInType))
 				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");
 
-			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonInputDeviceFactoryPlugIn;
+			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonInputPlugIn;
 
 			if (plugIn == null)
 				throw new ArgumentException("The plug-in '" + plugInType + "' is not an input plug-in.", "plugInType");
