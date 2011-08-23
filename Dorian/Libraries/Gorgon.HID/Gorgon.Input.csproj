@@ -55,10 +55,9 @@
   <ItemGroup>
     <Compile Include="GorgonCustomHIDProperty.cs" />
     <Compile Include="GorgonCustomHIDPropertyCollection.cs" />
-    <Compile Include="GorgonHID.cs" />
     <Compile Include="GorgonInputDeviceFactoryCollection.cs" />
     <Compile Include="GorgonInputDevice.cs" />
-    <Compile Include="GorgonInputDeviceName.cs" />
+    <Compile Include="GorgonInputDeviceInfo.cs" />
     <Compile Include="GorgonInputEvents.cs" />
     <Compile Include="GorgonInputDeviceFactory.cs" />
     <Compile Include="GorgonInputPlugIn.cs" />

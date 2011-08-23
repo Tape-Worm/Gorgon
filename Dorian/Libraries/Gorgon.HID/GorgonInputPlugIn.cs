@@ -35,12 +35,22 @@ namespace GorgonLibrary.Input
 	/// <summary>
 	/// Plug-in interface for an input device factory plug-in.
 	/// </summary>
-	public abstract class GorgonInputDeviceFactoryPlugIn
+	public abstract class GorgonInputPlugIn
 		: GorgonPlugIn, IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;				// Flag to indicate that the object was disposed.
-		private IDisposable _deviceFactory = null;	// Disposable device factory.
+		private bool _disposed = false;							// Flag to indicate that the object was disposed.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the single device factory instance created by this plug-in.
+		/// </summary>
+		internal GorgonInputDeviceFactory DeviceFactoryInstance
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -56,9 +66,13 @@ namespace GorgonLibrary.Input
 		/// <returns>The interface for the input factory.</returns>
 		internal GorgonInputDeviceFactory GetFactory()
 		{
-			GorgonInputDeviceFactory factory = CreateFactory();
+			GorgonInputDeviceFactory factory = DeviceFactoryInstance;
 
-			_deviceFactory = factory as IDisposable;
+			if (factory == null)
+			{
+				factory = CreateFactory();
+				DeviceFactoryInstance = factory;
+			}
 
 			return factory;
 		}
@@ -66,12 +80,13 @@ namespace GorgonLibrary.Input
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputDeviceFactoryPlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputPlugIn"/> class.
 		/// </summary>
 		/// <param name="description">Optional description of the plug-in.</param>
-		protected GorgonInputDeviceFactoryPlugIn(string description)
+		protected GorgonInputPlugIn(string description)
 			: base(description)
 		{
+			DeviceFactoryInstance = null;
 		}
 		#endregion
 
@@ -86,11 +101,9 @@ namespace GorgonLibrary.Input
 			{
 				if (disposing)
 				{
-					if (_deviceFactory != null)
-						_deviceFactory.Dispose();
+					if (DeviceFactoryInstance != null)
+						DeviceFactoryInstance.Dispose();
 				}
-
-				_deviceFactory = null;
 				_disposed = true;
 			}
 		}
