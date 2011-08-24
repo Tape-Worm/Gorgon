@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, July 15, 2011 6:23:00 AM
+// Created: Tuesday, August 23, 2011 6:39:34 PM
 // 
 #endregion
 
@@ -28,52 +28,67 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using XI = SlimDX.XInput;
+using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.Input.XInput
+namespace GorgonLibrary.Input
 {
 	/// <summary>
-	/// The XInput implementation of a device name.
+	/// A collection containing device information for each input device.
 	/// </summary>
-	internal class GorgonXInputDeviceInfo
-		: GorgonInputDeviceInfo
+	/// <remarks>This collection is not case sensitive.</remarks>
+	public class GorgonInputDeviceInfoCollection
+		: GorgonBaseNamedObjectCollection<GorgonInputDeviceInfo>
 	{
+		#region Variables.
+
+		#endregion
+
 		#region Properties.
 		/// <summary>
-		/// Property to return the handle to the device.
+		/// Gets a value indicating whether this instance is read only.
 		/// </summary>
-		public XI.Controller Controller
+		/// <value>
+		/// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
+		/// </value>
+		public override bool IsReadOnly
 		{
-			get;
-			private set;
+			get
+			{
+				return true;
+			}
 		}
 
 		/// <summary>
-		/// Property to return the index of the device.
+		/// Property to return the device info by index.
 		/// </summary>
-		public int Index
+		public GorgonInputDeviceInfo this[int index]
 		{
-			get;
-			private set;
+			get
+			{
+				return GetItem(index);
+			}
+		}
+
+		/// <summary>
+		/// Property to return the device info by device name.
+		/// </summary>
+		public GorgonInputDeviceInfo this[string name]
+		{
+			get
+			{
+				return GetItem(name);
+			}
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonXInputDeviceInfo"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputDeviceInfoCollection"/> class.
 		/// </summary>
-		/// <param name="name">The device name.</param>
-		/// <param name="className">Class name of the device.</param>
-		/// <param name="hidPath">Human interface device path.</param>
-		/// <param name="controller">Controller interface.</param>
-		/// <param name="index">Index of the controller.</param>
-		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonXInputDeviceInfo(string name, string className, string hidPath, XI.Controller controller, int index)
-			: base(name, InputDeviceType.Joystick, className, hidPath, false)
+		internal GorgonInputDeviceInfoCollection(IEnumerable<GorgonInputDeviceInfo> deviceInfo)
+			: base(false)
 		{
-			Controller = controller;
-			Index = index;			
-			IsConnected = controller.IsConnected;
+			this.AddItems(deviceInfo);			
 		}
 		#endregion
 	}

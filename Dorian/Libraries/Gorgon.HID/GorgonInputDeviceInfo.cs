@@ -29,6 +29,29 @@ using System;
 namespace GorgonLibrary.Input
 {
 	/// <summary>
+	/// Input device type.
+	/// </summary>
+	public enum InputDeviceType
+	{
+		/// <summary>
+		/// Keyboard input device.
+		/// </summary>
+		Keyboard = 0,
+		/// <summary>
+		/// Pointing input device.
+		/// </summary>
+		PointingDevice = 1,
+		/// <summary>
+		/// Joystick/gamepad input device.
+		/// </summary>
+		Joystick = 2,
+		/// <summary>
+		/// Generic HID input device.
+		/// </summary>
+		HID = 3
+	}
+
+	/// <summary>
 	/// Name of an input device object.
 	/// </summary>
 	/// <remarks>Devices are often associated by strings, handles, GUIDs, or even integer IDs by the operating system and whatever back end library (Raw Input, DirectInput, WinForms, etc...) is being used, Gorgon uses this object to wrap up the handle and provide 
@@ -75,6 +98,28 @@ namespace GorgonLibrary.Input
 			get;
 			protected set;
 		}
+
+		/// <summary>
+		/// Property to return the type of input device.
+		/// </summary>
+		public InputDeviceType InputDeviceType
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
+		public override string ToString()
+		{
+			return this.Name;
+		}
 		#endregion
 
 		#region Constructor.
@@ -82,12 +127,13 @@ namespace GorgonLibrary.Input
 		/// Initializes a new instance of the <see cref="GorgonInputDeviceInfo"/> class.
 		/// </summary>
 		/// <param name="name">The device name.</param>
+		/// <param name="deviceType">The type of device.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
 		/// <param name="connected">TRUE if the device is presently connected and operating, FALSE if it is not.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		protected GorgonInputDeviceInfo(string name, string className, string hidPath, bool connected)
+		protected GorgonInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath, bool connected)
 			: base(name)
 		{
 			if (string.IsNullOrEmpty(className))
@@ -96,6 +142,7 @@ namespace GorgonLibrary.Input
 				throw new ArgumentNullException("hidPath");
 
 			this.Name = name;
+			this.InputDeviceType = deviceType;
 			this.ClassName = className;
 			this.HIDPath = hidPath;
 			this.UUID = Guid.NewGuid();

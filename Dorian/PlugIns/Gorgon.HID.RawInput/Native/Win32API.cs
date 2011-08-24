@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Microsoft.Win32;
@@ -167,7 +168,7 @@ namespace GorgonLibrary.Native
 		/// <param name="pcbSize">Size of the data to return.</param>
 		/// <returns>0 if successful, otherwise an error code.</returns>
 		[DllImport("user32.dll")]
-		private static extern int GetRawInputDeviceInfo(IntPtr hDevice, int uiCommand, IntPtr pData, ref int pcbSize);
+		public static extern int GetRawInputDeviceInfo(IntPtr hDevice, int uiCommand, IntPtr pData, ref int pcbSize);
 
 		/// <summary>
 		/// Function to register a raw input device.
@@ -211,56 +212,6 @@ namespace GorgonLibrary.Native
 					{
 						RID_DEVICE_INFO result = default(RID_DEVICE_INFO);
 						result = (RID_DEVICE_INFO)(Marshal.PtrToStructure(data, typeof(RID_DEVICE_INFO)));
-						return result;
-					}
-					else
-						throw new System.ComponentModel.Win32Exception();
-				}
-				finally
-				{
-					if (data != IntPtr.Zero)
-						Marshal.FreeHGlobal(data);
-				}
-			}
-			else
-				throw new System.ComponentModel.Win32Exception();
-		}
-
-		/// <summary>
-		/// Function to retrieve the device name.
-		/// </summary>
-		/// <param name="deviceHandle">Handle to the device.</param>
-		/// <returns>A device name structure.</returns>
-		public static GorgonRawInputDeviceName GetDeviceName(IntPtr deviceHandle)
-		{
-			int dataSize = 0;
-
-			if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceName, IntPtr.Zero, ref dataSize) >= 0)
-			{
-				IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
-
-				try
-				{					
-					if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceName, data, ref dataSize) >= 0)
-					{
-						GorgonRawInputDeviceName result = null;
-						string regPath = Marshal.PtrToStringAnsi(data);
-						string[] regValue = regPath.Split('#');
-						RegistryKey deviceKey = null;
-						string name = string.Empty;
-						string className = string.Empty;
-
-						regValue[0] = regValue[0].Substring(4);
-						deviceKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Enum\{0}\{1}\{2}", regValue[0], regValue[1], regValue[2]), false);
-						
-						if (deviceKey != null)
-						{
-							regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
-							className = deviceKey.GetValue("Class").ToString();
-							name = regValue[regValue.Length - 1];
-							result = new GorgonRawInputDeviceName(name, className, regPath, deviceHandle);
-						}
-
 						return result;
 					}
 					else

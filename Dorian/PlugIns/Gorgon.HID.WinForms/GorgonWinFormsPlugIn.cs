@@ -36,7 +36,7 @@ namespace GorgonLibrary.Input
 	/// The entry point for the win forms input plug-in.
 	/// </summary>
 	public class GorgonWinFormsPlugIn
-		: GorgonInputDeviceFactoryPlugIn
+		: GorgonInputPlugIn
 	{
 		#region Methods.
 		/// <summary>

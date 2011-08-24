@@ -34,20 +34,21 @@ namespace GorgonLibrary.Input.WinForms
 	/// <summary>
 	/// The Raw Input implementation of a device name.
 	/// </summary>
-	internal class GorgonWinFormsInputDeviceName
-		: GorgonInputDeviceName
+	internal class GorgonWinFormsInputDeviceInfo
+		: GorgonInputDeviceInfo
 	{
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonWinFormsInputDeviceName"/> class.
+		/// Initializes a new instance of the <see cref="GorgonWinFormsInputDeviceInfo"/> class.
 		/// </summary>
 		/// <param name="name">The device name.</param>
+		/// <param name="deviceType">Type of device.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonWinFormsInputDeviceName(string name, string className, string hidPath)
-			: base(name, className, hidPath, true)
+		public GorgonWinFormsInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath)
+			: base(name, deviceType, className, hidPath, true)
 		{
 		}
 		#endregion

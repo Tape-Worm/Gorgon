@@ -36,7 +36,7 @@ namespace GorgonLibrary.Input
 	/// The entry point for the raw input plug-in.
 	/// </summary>
 	public class GorgonRawPlugIn
-		: GorgonInputDeviceFactoryPlugIn
+		: GorgonInputPlugIn
 	{
 		#region Methods.
 		/// <summary>

@@ -36,7 +36,7 @@ namespace GorgonLibrary.Input
 	/// The entry point for the Xinput plug-in.
 	/// </summary>
 	public class GorgonXInputPlugIn
-		: GorgonInputDeviceFactoryPlugIn
+		: GorgonInputPlugIn
 	{
 		#region Methods.
 		/// <summary>
