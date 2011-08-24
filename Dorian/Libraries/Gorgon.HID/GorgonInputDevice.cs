@@ -44,7 +44,7 @@ namespace GorgonLibrary.Input
 		private bool _disposed = false;			// Flag to indicate whether the object is disposed or not.
 		#endregion
 
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return the input interface owner for this device.
 		/// </summary>
