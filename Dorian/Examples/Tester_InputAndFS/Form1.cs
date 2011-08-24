@@ -28,10 +28,11 @@ namespace Tester
 		bool pulse = false;
 		Random rnd = new Random();
 		string mouseInfo = string.Empty;
+		string keyValue = string.Empty;
 
 		private bool Idle(GorgonFrameRate timing)
 		{
-			labelMouse.Text = mouseInfo;
+			labelMouse.Text = mouseInfo + "\n\nKey: " + keyValue.Replace("\t", "    ") + "\n\n";
 
 			if (joystick != null)
 			{
@@ -108,11 +109,11 @@ namespace Tester
 		{
 			xinput = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
 
-			foreach (GorgonInputDeviceInfo name in xinput.JoystickDevices)
+			foreach (GorgonInputDeviceInfo device in xinput.JoystickDevices)
 			{
-				if (name.IsConnected)
+				if (device.IsConnected)
 				{
-					joystick = xinput.CreateJoystick(name, this.panel1);
+					joystick = xinput.CreateJoystick(device.Name, this.panel1);
 					break;
 				}
 			}
@@ -121,11 +122,11 @@ namespace Tester
 			{
 				if (joystick == null)
 				{
-					foreach (GorgonInputDeviceInfo name in input.JoystickDevices)
+					foreach (GorgonInputDeviceInfo device in input.JoystickDevices)
 					{
-						if (name.IsConnected)
+						if (device.IsConnected)
 						{
-							joystick = input.CreateJoystick(name, this.panel1);
+							joystick = input.CreateJoystick(device.Name, this.panel1);
 							break;
 						}
 					}
@@ -171,6 +172,7 @@ namespace Tester
 				//panel1.MouseMove += new MouseEventHandler(Form1_MouseMove);
 				keyboard = winput.CreateKeyboard(this);
 				keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(keyboard_KeyDown);
+				keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(keyboard_KeyUp);
 
 /*				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
@@ -194,7 +196,7 @@ namespace Tester
 				Close();
 			}
 		}
-		
+
 		void mouse_MouseWheelMove(object sender, PointingDeviceEventArgs e)
 		{
 			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + "\n\n";
@@ -219,6 +221,11 @@ namespace Tester
 			}
 		}
 
+		void keyboard_KeyUp(object sender, KeyboardEventArgs e)
+		{
+			//keyValue = string.Empty;
+		}
+		
 		void mouse_MouseDown(object sender, PointingDeviceEventArgs e)
 		{
 			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + " - DOWN\n\n";
@@ -236,7 +243,38 @@ namespace Tester
 
 		void keyboard_KeyDown(object sender, KeyboardEventArgs e)
 		{
-			GorgonDialogs.InfoBox(this, e.Key.ToString());
+			if (e.Key == KeyboardKeys.Back)
+			{
+				if (keyValue.Length > 0)
+					keyValue = keyValue.Substring(0, keyValue.Length - 1);
+				return;
+			}
+
+			if (e.CharacterMapping.Character == '\0')
+				return;
+
+			if (e.Shift)
+			{
+				if (e.Key == KeyboardKeys.Tab)
+				{
+					int lastTab = keyValue.LastIndexOf('\t');
+
+					if (lastTab > -1)
+					{
+						string start = keyValue.Substring(0, lastTab);
+						string end = string.Empty;
+
+						if (lastTab < keyValue.Length - 1)
+							end = keyValue.Substring(lastTab + 1);
+						keyValue = start + end;
+					}
+
+					return;
+				}
+				keyValue += e.CharacterMapping.Shifted;
+			}
+			else
+				keyValue += e.CharacterMapping.Character;
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)

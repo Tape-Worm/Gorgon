@@ -66,6 +66,8 @@ namespace GorgonLibrary.Input.Raw
 				_data.GetRawInputData(m.LParam);
 				if (RawInputData != null)
 					RawInputData(this, new RawInputEventArgs(_data));
+
+				return true;
 			}
 
 			return false;
