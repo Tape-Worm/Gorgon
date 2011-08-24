@@ -170,7 +170,7 @@ namespace Tester
 				//panel1.MouseDown += new MouseEventHandler(Form1_MouseDown);
 				//panel1.MouseUp += new MouseEventHandler(Form1_MouseUp);
 				//panel1.MouseMove += new MouseEventHandler(Form1_MouseMove);
-				keyboard = winput.CreateKeyboard(this);
+				keyboard = input.CreateKeyboard(this);
 				keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(keyboard_KeyDown);
 				keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(keyboard_KeyUp);
 

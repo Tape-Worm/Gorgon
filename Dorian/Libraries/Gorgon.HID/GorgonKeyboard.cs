@@ -652,6 +652,25 @@ namespace GorgonLibrary.Input
 				foreach (var key in keys)
 					this[key] = KeyState.Up;
 			}
+
+			/// <summary>
+			/// Function to reset any modifier keys.
+			/// </summary>
+			public void ResetModifiers()
+			{
+				this[KeyboardKeys.Menu] = KeyState.Up;
+				this[KeyboardKeys.RMenu] = KeyState.Up;
+				this[KeyboardKeys.LMenu] = KeyState.Up;
+				this[KeyboardKeys.ShiftKey] = KeyState.Up;
+				this[KeyboardKeys.LShiftKey] = KeyState.Up;
+				this[KeyboardKeys.RShiftKey] = KeyState.Up;
+				this[KeyboardKeys.ControlKey] = KeyState.Up;
+				this[KeyboardKeys.RControlKey] = KeyState.Up;
+				this[KeyboardKeys.LControlKey] = KeyState.Up;
+				this[KeyboardKeys.Alt] = KeyState.Up;
+				this[KeyboardKeys.Control] = KeyState.Up;
+				this[KeyboardKeys.Shift] = KeyState.Up;
+			}
 			#endregion
 
 			#region Constructor/Destructor.
@@ -797,6 +816,19 @@ namespace GorgonLibrary.Input
 				KeyboardEventArgs e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
 				KeyUp(this, e);
 			}
+		}
+
+		/// <summary>
+		/// Handles the LostFocus event of the owner control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		protected override void Owner_LostFocus(object sender, EventArgs e)
+		{
+			base.Owner_LostFocus(sender, e);
+
+			// If we lose focus, then remove any modifiers.
+			KeyStates.ResetModifiers();
 		}
 
 		/// <summary>
