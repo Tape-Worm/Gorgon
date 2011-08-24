@@ -149,7 +149,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// Initializes a new instance of the <see cref="GorgonWinFormsInputDeviceFactory"/> class.
 		/// </summary>
 		public GorgonWinFormsInputDeviceFactory()
-			: base("Gorgon.WinForms")
+			: base("Gorgon.Input.WinForms")
 		{
 		}
 		#endregion

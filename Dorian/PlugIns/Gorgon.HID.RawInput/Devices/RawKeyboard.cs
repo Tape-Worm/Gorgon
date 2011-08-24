@@ -75,48 +75,48 @@ namespace GorgonLibrary.Input.Raw
 
 			// Get the key code.
 			modifiers = KeyboardKeys.None;
-			keyCode = (int)e.Data.Keyboard.VirtualKey;			
+			keyCode = (int)e.Data.Keyboard.VirtualKey;
+
+			// Check for left/right versions.
+			right = ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0);
+			left = ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE1) == RawKeyboardFlags.KeyE1);
 
 			// Determine right or left, and unifier key.
 			switch ((KeyboardKeys)e.Data.Keyboard.VirtualKey)
 			{
 				case KeyboardKeys.ControlKey:	// CTRL.
 					secCode = (int)KeyboardKeys.ControlKey;
-					if ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) != 0)
-					{
-						right = true;
+					if (right)
 						keyCode = (int)KeyboardKeys.RControlKey;
-					}
 					else
 					{
-						left = true;
 						keyCode = (int)KeyboardKeys.LControlKey;
+						left = true;
 					}
 					break;
 				case KeyboardKeys.Menu:			// ALT.
 					secCode = (int)KeyboardKeys.Menu;
-					if ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) != 0)
-					{
-						right = true;
+					if (right)
 						keyCode = (int)KeyboardKeys.RMenu;
-					}
 					else
 					{
+						keyCode = (int)KeyboardKeys.LMenu;
 						left = true;
-						keyCode = (int)KeyboardKeys.LMenu;						
 					}
 					break;
 				case KeyboardKeys.ShiftKey:		// Shift.
+					// The flags don't work for Shift (at least on Win 7), use the scan code.					
 					secCode = (int)KeyboardKeys.ShiftKey;
-					if ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) != 0)
+
+					if (e.Data.Keyboard.MakeCode == 0x36)
 					{
-						right = true;
 						keyCode = (int)KeyboardKeys.RShiftKey;
+						right = true;
 					}
 					else
 					{
-						left = true;
 						keyCode = (int)KeyboardKeys.LShiftKey;
+						left = true;
 					}
 					break;
 			}
