@@ -70,6 +70,11 @@ namespace GorgonLibrary.Input.Raw
 						string className = string.Empty;
 
 						regValue[0] = regValue[0].Substring(4);
+
+						// Don't add RDP devices.
+						if ((regValue.Length > 0) && (regValue[1].StartsWith("RDP_", StringComparison.CurrentCultureIgnoreCase)))
+							return;
+
 						deviceKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Enum\{0}\{1}\{2}", regValue[0], regValue[1], regValue[2]), false);
 						
 						if (deviceKey != null)
@@ -357,7 +362,7 @@ namespace GorgonLibrary.Input.Raw
 		/// Initializes a new instance of the <see cref="GorgonRawInputDeviceFactory"/> class.
 		/// </summary>
 		public GorgonRawInputDeviceFactory()
-			: base("Gorgon.RawInput")
+			: base("Gorgon.Input.Raw")
 		{
 		}
 		#endregion

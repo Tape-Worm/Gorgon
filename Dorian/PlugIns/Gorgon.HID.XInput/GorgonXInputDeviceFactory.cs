@@ -175,7 +175,7 @@ namespace GorgonLibrary.Input.XInput
 		/// Initializes a new instance of the <see cref="GorgonXInputDeviceFactory"/> class.
 		/// </summary>
 		public GorgonXInputDeviceFactory()
-			: base("Gorgon.XInput")
+			: base("Gorgon.Input.XInput")
 		{
 		}
 		#endregion
