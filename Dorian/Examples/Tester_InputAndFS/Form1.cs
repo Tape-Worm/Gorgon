@@ -118,7 +118,7 @@ namespace Tester
 			{
 				if (device.IsConnected)
 				{
-					joystick = xinput.CreateJoystick(device.Name, this.panel1);
+					joystick = xinput.CreateJoystick(this.panel1, device.Name);
 					break;
 				}
 			}
@@ -131,7 +131,7 @@ namespace Tester
 					{
 						if (device.IsConnected)
 						{
-							joystick = input.CreateJoystick(device.Name, this.panel1);
+							joystick = input.CreateJoystick(this.panel1, device.Name);
 							break;
 						}
 					}
@@ -176,6 +176,7 @@ namespace Tester
 				//panel1.MouseUp += new MouseEventHandler(Form1_MouseUp);
 				//panel1.MouseMove += new MouseEventHandler(Form1_MouseMove);
 				keyboard = input.CreateKeyboard(this);
+				keyboard.Exclusive = true;
 				keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(keyboard_KeyDown);
 				keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(keyboard_KeyUp);
 
@@ -248,10 +249,20 @@ namespace Tester
 
 		void keyboard_KeyDown(object sender, KeyboardEventArgs e)
 		{
-			//keyboard.Acquired = false;
-			//GorgonDialogs.InfoBox(this, e.Key.ToString());
-			//keyboard.Acquired = true;
-			//return;
+			if ((e.Alt) && (e.Key == KeyboardKeys.F4))
+			{
+				Close();
+				return;
+			}
+
+			if (e.Key == KeyboardKeys.Enter)
+			{
+				//keyboard.Acquired = false;
+				GorgonDialogs.InfoBox(this, e.Key.ToString());
+				//keyboard.Acquired = true;
+				return;
+			}
+
 			if (e.Key == KeyboardKeys.Back)
 			{
 				if (keyValue.Length > 0)
