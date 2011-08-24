@@ -55,7 +55,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="e">Event argments.</param>
 		private void GetRawData(object sender, RawInputEventArgs e)
 		{
-			if ((BoundWindow == null) || (BoundWindow.Disposing))
+			if ((BoundControl == null) || (BoundControl.Disposing))
 				return;
 
 			if ((e.Data.Header.Type != RawInputType.HID) || (_deviceData.Handle != e.Handle))
@@ -64,7 +64,7 @@ namespace GorgonLibrary.Input.Raw
 			if ((Exclusive) && (!Acquired))
 			{
 				// Attempt to recapture.
-				if (BoundWindow.Focused)
+				if (BoundControl.Focused)
 					Acquired = true;
 				else
 					return;
@@ -100,7 +100,7 @@ namespace GorgonLibrary.Input.Raw
 			if (Exclusive)
 				_device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
 
-			_device.WindowHandle = BoundWindow.Handle;
+			_device.WindowHandle = BoundControl.Handle;
 
 			// Attempt to register the device.
 			if (!Win32API.RegisterRawInputDevices(_device))

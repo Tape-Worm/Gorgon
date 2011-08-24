@@ -32,6 +32,11 @@ namespace Tester
 
 		private bool Idle(GorgonFrameRate timing)
 		{
+			if ((keyboard.KeyStates[KeyboardKeys.A] == KeyState.Down) && (keyboard.KeyStates[KeyboardKeys.D] == KeyState.Down))
+				this.BackColor = Color.Blue;
+			else
+				this.BackColor = Color.FromKnownColor(KnownColor.Control);
+
 			labelMouse.Text = mouseInfo + "\n\nKey: " + keyValue.Replace("\t", "    ") + "\n\n";
 
 			if (joystick != null)
@@ -161,7 +166,7 @@ namespace Tester
 				
 				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
-				
+
 				mouse = winput.CreatePointingDevice(this.panel1);
 				mouse.PointingDeviceMove += new EventHandler<PointingDeviceEventArgs>(mouse_MouseMove);
 				mouse.PointingDeviceDown += new EventHandler<PointingDeviceEventArgs>(mouse_MouseDown);
@@ -187,7 +192,7 @@ namespace Tester
 				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();*/
 
 				CreateJoysticks();
-				
+
 				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
@@ -243,6 +248,10 @@ namespace Tester
 
 		void keyboard_KeyDown(object sender, KeyboardEventArgs e)
 		{
+			//keyboard.Acquired = false;
+			//GorgonDialogs.InfoBox(this, e.Key.ToString());
+			//keyboard.Acquired = true;
+			//return;
 			if (e.Key == KeyboardKeys.Back)
 			{
 				if (keyValue.Length > 0)

@@ -59,13 +59,13 @@ namespace GorgonLibrary.Input.Raw
 		private void UpdateCursorPosition()
 		{
 			// If the window is disposed, then do nothing.
-			if (BoundWindow != null)
+			if (BoundControl != null)
 			{
 				// Move the windows cursor to match if not exclusive.
 				if (!Exclusive)
-					Forms.Cursor.Position = BoundWindow.PointToScreen(Point.Truncate(Position));
+					Forms.Cursor.Position = BoundControl.PointToScreen(Point.Truncate(Position));
 				else
-					Forms.Cursor.Position = BoundWindow.PointToScreen(new Point(0, 0));
+					Forms.Cursor.Position = BoundControl.PointToScreen(new Point(0, 0));
 			}
 		}
 		
@@ -144,7 +144,7 @@ namespace GorgonLibrary.Input.Raw
 			if (Exclusive)
 				_device.Flags |= RawInputDeviceFlags.CaptureMouse | RawInputDeviceFlags.NoLegacy;
 
-			_device.WindowHandle = BoundWindow.Handle;
+			_device.WindowHandle = BoundControl.Handle;
 						
 			// Attempt to register the device.
 			if (!Win32API.RegisterRawInputDevices(_device))
@@ -180,7 +180,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="e">Event data to examine.</param>
 		private void GetRawData(object sender, RawInputEventArgs e)
 		{
-			if ((BoundWindow == null) || (BoundWindow.Disposing))
+			if ((BoundControl == null) || (BoundControl.Disposing))
 				return;
 			
 			if ((e.Data.Header.Type != RawInputType.Mouse) || ((_deviceHandle != IntPtr.Zero) && (_deviceHandle != e.Handle)))
@@ -189,7 +189,7 @@ namespace GorgonLibrary.Input.Raw
 			if ((Exclusive) && (!Acquired))
 			{
 			    // Attempt to recapture.
-			    if (BoundWindow.Focused)
+			    if (BoundControl.Focused)
 			        Acquired = true;
 			    else
 			        return;
@@ -198,7 +198,7 @@ namespace GorgonLibrary.Input.Raw
 			// Do nothing if we're outside and we have exclusive mode turned off.
 			if (!Exclusive)
 			{
-				if (!WindowRectangle.Contains(BoundWindow.PointToClient(Forms.Cursor.Position))) 
+				if (!WindowRectangle.Contains(BoundControl.PointToClient(Forms.Cursor.Position))) 
 				{
 					_outside = true;
 					return;
@@ -209,7 +209,7 @@ namespace GorgonLibrary.Input.Raw
 					{
 						// If we're back inside place position at the entry point.
 						_outside = false;
-						Position = BoundWindow.PointToClient(Forms.Cursor.Position);
+						Position = BoundControl.PointToClient(Forms.Cursor.Position);
 					}
 				}
 			}

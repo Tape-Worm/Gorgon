@@ -129,7 +129,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <param name="state">The state for the button event.</param>
 		private void GetMouseData(Forms.MouseEventArgs e, bool doubleClick, ButtonState state)
 		{			 
-			if ((BoundWindow == null) || (BoundWindow.Disposing)) 
+			if ((BoundControl == null) || (BoundControl.Disposing)) 
 				return;
 						
 			OnPointingDeviceWheelMove(e.Delta);
@@ -198,12 +198,12 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		protected override void BindDevice()
 		{
-			BoundWindow.MouseMove += new Forms.MouseEventHandler(BoundWindow_MouseMove);
-			BoundWindow.MouseDown += new Forms.MouseEventHandler(BoundWindow_MouseDown);
-			BoundWindow.MouseUp += new Forms.MouseEventHandler(BoundWindow_MouseUp);
-			BoundWindow.MouseDoubleClick += new Forms.MouseEventHandler(BoundWindow_MouseDoubleClick);
+			BoundControl.MouseMove += new Forms.MouseEventHandler(BoundWindow_MouseMove);
+			BoundControl.MouseDown += new Forms.MouseEventHandler(BoundWindow_MouseDown);
+			BoundControl.MouseUp += new Forms.MouseEventHandler(BoundWindow_MouseUp);
+			BoundControl.MouseDoubleClick += new Forms.MouseEventHandler(BoundWindow_MouseDoubleClick);
 			// Bind this to the form because some controls won't have focus and won't be able to fire the event.
-			BoundForm.MouseWheel += new Forms.MouseEventHandler(BoundWindow_MouseWheel);
+			BoundTopLevelForm.MouseWheel += new Forms.MouseEventHandler(BoundWindow_MouseWheel);
 		}
 
 		/// <summary>
@@ -211,11 +211,11 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		protected override void UnbindDevice()
 		{
-			BoundWindow.MouseMove -= new Forms.MouseEventHandler(BoundWindow_MouseMove);
-			BoundWindow.MouseDown -= new Forms.MouseEventHandler(BoundWindow_MouseDown);
-			BoundWindow.MouseUp -= new Forms.MouseEventHandler(BoundWindow_MouseUp);
-			BoundWindow.MouseDoubleClick -= new Forms.MouseEventHandler(BoundWindow_MouseDoubleClick);
-			BoundForm.MouseWheel -= new Forms.MouseEventHandler(BoundWindow_MouseWheel);
+			BoundControl.MouseMove -= new Forms.MouseEventHandler(BoundWindow_MouseMove);
+			BoundControl.MouseDown -= new Forms.MouseEventHandler(BoundWindow_MouseDown);
+			BoundControl.MouseUp -= new Forms.MouseEventHandler(BoundWindow_MouseUp);
+			BoundControl.MouseDoubleClick -= new Forms.MouseEventHandler(BoundWindow_MouseDoubleClick);
+			BoundTopLevelForm.MouseWheel -= new Forms.MouseEventHandler(BoundWindow_MouseWheel);
 		}
 		#endregion
 
@@ -233,7 +233,7 @@ namespace GorgonLibrary.Input.WinForms
 			Gorgon.Log.Print("Raw input pointing device interface created.", GorgonLoggingLevel.Verbose);
 
 			// Default the position to the current screen position.
-			Position = BoundWindow.PointToClient(Forms.Cursor.Position);
+			Position = BoundControl.PointToClient(Forms.Cursor.Position);
 		}
 		#endregion
 	}

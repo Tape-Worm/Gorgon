@@ -1053,7 +1053,7 @@ namespace GorgonLibrary.Input
 			if (Capabilities == null)
 				throw new GorgonException(GorgonResult.NotInitialized, "The joystick device has not been initialized.");
 
-			if ((DeviceLost) && (!BoundWindow.Focused))
+			if ((DeviceLost) && (!BoundControl.Focused))
 				return;
 			else
 				_deviceLost = false;

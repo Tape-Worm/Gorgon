@@ -37,7 +37,7 @@ namespace GorgonLibrary.Input
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _bound;					// Flag to indicate whether the device was bound.
+		private bool _enabled;					// Flag to indicate whether the device is enabled.
 		private bool _acquired;					// Flag to indicate whether the device is in an acquired state.
 		private bool _exclusive;				// Flag to indicate whether the device has exclusive access to the device.
 		private bool _background;				// Flag to indicate whether the device will poll in the background.
@@ -66,7 +66,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the window that the device is bound with.
 		/// </summary>
-		public Control BoundWindow
+		public Control BoundControl
 		{
 			get;
 			protected set;
@@ -75,7 +75,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the top level form that the device is bound with.
 		/// </summary>
-		public Form BoundForm
+		public Form BoundTopLevelForm
 		{
 			get;
 			protected set;
@@ -94,13 +94,13 @@ namespace GorgonLibrary.Input
 			{
 				_acquired = value;
 
-				if (_bound)
+				if (_enabled)
 				{
 					if (value)
 						BindDevice();
 					else
-						UnbindDevice();					
-				}				
+						UnbindDevice();
+				}
 			}
 		}
 
@@ -116,7 +116,7 @@ namespace GorgonLibrary.Input
 			set
 			{
 				_exclusive = value;
-				if (_bound)
+				if (_enabled)
 					BindDevice();
 			}
 		}
@@ -133,19 +133,19 @@ namespace GorgonLibrary.Input
 			set
 			{
 				_background = value;
-				if (_bound)
+				if (_enabled)
 					BindDevice();
 			}
 		}
 
 		/// <summary>
-		/// Property to return whether the device is bound or not.
+		/// Property to set or return whether the device is enabled or not.
 		/// </summary>
 		public bool Enabled
 		{
 			get
 			{
-				return _bound;
+				return _enabled;
 			}
 			set
 			{
@@ -155,56 +155,85 @@ namespace GorgonLibrary.Input
 					BindDevice();
 				else
 					UnbindDevice();
-				
-				_bound = value;
+
+				_enabled = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Handles the Activated event of the _parentForm control.
+		/// Handles the Activated event of the BoundForm.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected virtual void ParentForm_Activated(object sender, EventArgs e)
+		private void BoundForm_Activated(object sender, EventArgs e)
 		{
-			Owner_GotFocus(this, e);
+			OnBoundFormActivated();
 		}
 
 		/// <summary>
-		/// Handles the Deactivate event of the _parentForm control.
+		/// Handles the Deactivate event of the BoundForm.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected virtual void ParentForm_Deactivate(object sender, EventArgs e)
+		private void BoundForm_Deactivate(object sender, EventArgs e)
 		{
-			Owner_LostFocus(this, e);
+			OnBoundFormDeactivated();
 		}
 
 		/// <summary>
-		/// Handles the LostFocus event of the owner control.
+		/// Handles the LostFocus event of the BoundWindow.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected virtual void Owner_LostFocus(object sender, EventArgs e)
+		private void BoundWindow_LostFocus(object sender, EventArgs e)
+		{
+			OnBoundWindowUnfocused();
+		}
+
+		/// <summary>
+		/// Handles the GotFocus event of the BoundWindow.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void BoundWindow_GotFocus(object sender, EventArgs e)
+		{
+			OnBoundWindowFocused();
+		}
+
+		/// <summary>
+		/// Function called if the bound window gets focus.
+		/// </summary>
+		protected virtual void OnBoundWindowFocused()
+		{
+			if ((DeviceFactory.AutoReacquireDevices) && (Exclusive))
+				Acquired = true;
+		}
+
+		/// <summary>
+		/// Function called if the bound window loses focus.
+		/// </summary>
+		protected virtual void OnBoundWindowUnfocused()
 		{
 			if (Exclusive)
 				Acquired = false;
 		}
 
 		/// <summary>
-		/// Handles the GotFocus event of the Owner control.
+		/// Function called when the bound form is activated.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected virtual void Owner_GotFocus(object sender, EventArgs e)
+		protected virtual void OnBoundFormActivated()
 		{
-			if (DeviceFactory.AutoReacquireDevices)
-			{
-				if (Exclusive)
-					Acquired = true;
-			}
+			OnBoundWindowFocused();
+		}
+
+		/// <summary>
+		/// Function called when the bound form is deactivated.
+		/// </summary>
+		protected virtual void OnBoundFormDeactivated()
+		{
+			OnBoundWindowUnfocused();
 		}
 
 		/// <summary>
@@ -222,20 +251,20 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		protected virtual void UnbindWindow()
 		{
-			if ((!BoundWindow.IsDisposed) && (!BoundWindow.Disposing))
-				Gorgon.Log.Print("Unbinding input device object {1} from window 0x{0}.", GorgonLoggingLevel.Intermediate, GorgonUtility.FormatHex(BoundWindow.Handle), GetType().Name);
+			if ((!BoundControl.IsDisposed) && (!BoundControl.Disposing))
+				Gorgon.Log.Print("Unbinding input device object {1} from window 0x{0}.", GorgonLoggingLevel.Intermediate, GorgonUtility.FormatHex(BoundControl.Handle), GetType().Name);
 			else
 				Gorgon.Log.Print("Owner window was disposed.", GorgonLoggingLevel.Intermediate);
 
-			if ((BoundForm != null) && (!BoundForm.IsDisposed) && (!BoundForm.Disposing))
+			if ((BoundTopLevelForm != null) && (!BoundTopLevelForm.IsDisposed) && (!BoundTopLevelForm.Disposing))
 			{
-				BoundForm.Activated -= new EventHandler(ParentForm_Activated);
-				BoundForm.Deactivate -= new EventHandler(ParentForm_Deactivate);
+				BoundTopLevelForm.Activated -= new EventHandler(BoundForm_Activated);
+				BoundTopLevelForm.Deactivate -= new EventHandler(BoundForm_Deactivate);
 			}
-			if ((BoundWindow != null) && (!BoundWindow.IsDisposed) && (!BoundWindow.Disposing))
-			{				
-				BoundWindow.LostFocus -= new EventHandler(Owner_LostFocus);
-				BoundWindow.GotFocus -= new EventHandler(Owner_GotFocus);
+			if ((BoundControl != null) && (!BoundControl.IsDisposed) && (!BoundControl.Disposing))
+			{
+				BoundControl.LostFocus -= new EventHandler(BoundWindow_LostFocus);
+				BoundControl.GotFocus -= new EventHandler(BoundWindow_GotFocus);
 			}
 		}
 
@@ -243,7 +272,7 @@ namespace GorgonLibrary.Input
 		/// Function called when the device is bound to a window.
 		/// </summary>
 		/// <param name="window">Window that was bound.</param>
-		/// <remarks>Implementors will override this function to assign events to the window in their child objects.</remarks>
+		/// <remarks>Implementors will override this function to handle specific events that may affect the input device.</remarks>
 		protected virtual void OnWindowBound(Control window)
 		{
 		}
@@ -257,13 +286,13 @@ namespace GorgonLibrary.Input
 		/// <para>-or-</para>
 		/// <para>Thrown when the top level form cannot be determined.</para>
 		/// </exception>
-		public void BindWindow(Control boundWindow)
+		public void Bind(Control boundWindow)
 		{
-			if (BoundWindow != null)
+			if (BoundControl != null)
 			{
 				UnbindWindow();
-				BoundWindow = null;
-				BoundForm = null;
+				BoundControl = null;
+				BoundTopLevelForm = null;
 			}
 
 			if (boundWindow == null)
@@ -276,16 +305,16 @@ namespace GorgonLibrary.Input
 
 			Gorgon.Log.Print("Binding input device object {1} to window 0x{0}.", GorgonLoggingLevel.Intermediate, GorgonUtility.FormatHex(boundWindow.Handle), GetType().Name);
 
-			BoundWindow = boundWindow;
-			BoundForm = GorgonUtility.GetTopLevelForm(BoundWindow);
+			BoundControl = boundWindow;
+			BoundTopLevelForm = GorgonUtility.GetTopLevelForm(BoundControl);
 
-			if (BoundForm == null)
+			if (BoundTopLevelForm == null)
 				throw new ArgumentException("Cannot bind to the window, no parent form was found.", "boundWindow");
 
-			BoundForm.Activated += new EventHandler(ParentForm_Activated);
-			BoundForm.Deactivate += new EventHandler(ParentForm_Deactivate);
-			BoundWindow.LostFocus += new EventHandler(Owner_LostFocus);
-			BoundWindow.GotFocus += new EventHandler(Owner_GotFocus);
+			BoundTopLevelForm.Activated += new EventHandler(BoundForm_Activated);
+			BoundTopLevelForm.Deactivate += new EventHandler(BoundForm_Deactivate);
+			BoundControl.LostFocus += new EventHandler(BoundWindow_LostFocus);
+			BoundControl.GotFocus += new EventHandler(BoundWindow_GotFocus);
 
 			OnWindowBound(boundWindow);
 		}
@@ -307,7 +336,7 @@ namespace GorgonLibrary.Input
 				throw new ArgumentNullException("owner");
 
 			DeviceFactory = owner;
-			BindWindow(boundWindow);
+			Bind(boundWindow);
 			UUID = Guid.Empty.ToString();
 		}
 		#endregion
@@ -325,10 +354,10 @@ namespace GorgonLibrary.Input
 				{
 					UnbindWindow();
 
-					if (_bound)
+					if (_enabled)
 						UnbindDevice();
 					_acquired = false;
-					_bound = false;
+					_enabled = false;
 
 					if (DeviceFactory.Devices.ContainsKey(UUID))
 						DeviceFactory.Devices.Remove(UUID);
