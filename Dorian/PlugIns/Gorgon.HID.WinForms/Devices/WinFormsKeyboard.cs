@@ -52,31 +52,25 @@ namespace GorgonLibrary.Input.WinForms
 		private static extern short GetKeyState(Forms.Keys nVirtKey);
 
 		/// <summary>
+		/// Function to retrieve the scan code for a virtual key.
+		/// </summary>
+		/// <param name="uCode">Virtual key code</param>
+		/// <param name="uMapType">Mapping type.</param>
+		/// <returns>The scan code.</returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto), System.Security.SuppressUnmanagedCodeSecurity()]
+		private static extern int MapVirtualKey(KeyboardKeys uCode, int uMapType);
+
+		/// <summary>
 		/// Function to process the keyboard state.
 		/// </summary>
 		/// <param name="keyEventArgs">Event parameters from the keyboard events.</param>
 		/// <param name="state">State of the key, up or down.</param>
 		private void ProcessKeys(Forms.KeyEventArgs keyEventArgs, KeyState state)
 		{
-			KeyboardKeys modifiers;	// Keyboard modifiers.
 			KeyboardKeys keyCode;	// Code for the keyboard.
-			bool left = false;
-			bool right = false;
 
 			if ((BoundWindow == null) || (BoundWindow.Disposing))
 				return;
-
-			KeyStates[KeyboardKeys.LMenu] = KeyState.Up;
-			KeyStates[KeyboardKeys.RMenu] = KeyState.Up;
-			KeyStates[KeyboardKeys.Menu] = KeyState.Up;
-			KeyStates[KeyboardKeys.LControlKey] = KeyState.Up;
-			KeyStates[KeyboardKeys.RControlKey] = KeyState.Up;
-			KeyStates[KeyboardKeys.Control] = KeyState.Up;
-			KeyStates[KeyboardKeys.LShiftKey] = KeyState.Up;
-			KeyStates[KeyboardKeys.RShiftKey] = KeyState.Up;
-			KeyStates[KeyboardKeys.Shift] = KeyState.Up;
-
-			modifiers = KeyboardKeys.None;
 
 			if (_mapper.KeyMapping.ContainsKey(keyEventArgs.KeyCode))
 				keyCode = _mapper.KeyMapping[keyEventArgs.KeyCode];
@@ -84,83 +78,37 @@ namespace GorgonLibrary.Input.WinForms
 				return;
 
 			// Check for modifiers.
-			if ((GetKeyState(Forms.Keys.ControlKey) & 0x80) == 0x80)
+			switch(keyCode)
 			{
-				if ((GetKeyState(Forms.Keys.LControlKey) & 0x80) == 0x80)
-				{
-					keyCode = KeyboardKeys.LControlKey;
-					left = true;
-				}
-				if ((GetKeyState(Forms.Keys.RControlKey) & 0x80) == 0x80)
-				{
-					keyCode = KeyboardKeys.RControlKey;
-					right = true;
-				}
-				KeyStates[KeyboardKeys.Control] = state;
-				KeyStates[KeyboardKeys.ControlKey] = state;				
-			}
-			if ((GetKeyState(Forms.Keys.Menu) & 0x80) == 0x80)
-			{
-				if ((GetKeyState(Forms.Keys.LMenu) & 0x80) == 0x80)
-				{
-					keyCode = KeyboardKeys.LMenu;
-					left = true;
-				}
-				if ((GetKeyState(Forms.Keys.RMenu) & 0x80) == 0x80)
-				{
-					keyCode = KeyboardKeys.RMenu;
-					right = true;
-				}
-				KeyStates[KeyboardKeys.Menu] = state;
-				KeyStates[KeyboardKeys.Alt] = state;
-			}
-			if ((GetKeyState(Forms.Keys.ShiftKey) & 0x80) == 0x80)
-			{
-				if ((GetKeyState(Forms.Keys.LShiftKey) & 0x80) == 0x80)
-				{
-					keyCode = KeyboardKeys.LShiftKey;
-					left = true;
-				}
-				if ((GetKeyState(Forms.Keys.RShiftKey) & 0x80) == 0x80)
-				{
-					keyCode = KeyboardKeys.RShiftKey;
-					right = true;
-				}
-				KeyStates[KeyboardKeys.Shift] = state;
-				KeyStates[KeyboardKeys.ShiftKey] = state;				
-			}
-
-			if (KeyStates[KeyboardKeys.ControlKey] == KeyState.Down)
-			{
-				if (KeyStates[KeyboardKeys.LControlKey] == KeyState.Down)
-					left = true;
-				if (KeyStates[KeyboardKeys.RControlKey] == KeyState.Down)
-					right = true;
-				modifiers |= KeyboardKeys.Control;
-			}
-			if (KeyStates[KeyboardKeys.Menu] == KeyState.Down)
-			{
-				if (KeyStates[KeyboardKeys.LMenu] == KeyState.Down)
-					left = true;
-				if (KeyStates[KeyboardKeys.RMenu] == KeyState.Down)
-					right = true;
-				modifiers |= KeyboardKeys.Alt;
-			}
-			if (KeyStates[KeyboardKeys.ShiftKey] == KeyState.Down)
-			{
-				if (KeyStates[KeyboardKeys.LShiftKey] == KeyState.Down)
-					left = true;
-				if (KeyStates[KeyboardKeys.RShiftKey] == KeyState.Down)
-					right = true;
-				modifiers |= KeyboardKeys.Shift;
+				case KeyboardKeys.ControlKey:
+					if ((GetKeyState(Forms.Keys.LControlKey) & 0x80) == 0x80)
+						keyCode = KeyboardKeys.LControlKey;
+					if ((GetKeyState(Forms.Keys.RControlKey) & 0x80) == 0x80)
+						keyCode = KeyboardKeys.RControlKey;
+					KeyStates[KeyboardKeys.ControlKey] = state;
+					break;
+				case KeyboardKeys.Menu:
+					if ((GetKeyState(Forms.Keys.LMenu) & 0x80) == 0x80)
+						keyCode = KeyboardKeys.LMenu;
+					if ((GetKeyState(Forms.Keys.RMenu) & 0x80) == 0x80)
+						keyCode = KeyboardKeys.RMenu;
+					KeyStates[KeyboardKeys.Menu] = state;
+					break;
+				case KeyboardKeys.ShiftKey:
+					if ((GetKeyState(Forms.Keys.LShiftKey) & 0x80) == 0x80)
+						keyCode = KeyboardKeys.LShiftKey;
+					if ((GetKeyState(Forms.Keys.RShiftKey) & 0x80) == 0x80)
+						keyCode = KeyboardKeys.RShiftKey;
+					KeyStates[KeyboardKeys.ShiftKey] = state;
+					break;
 			}
 
 			KeyStates[keyCode] = state;
 
 			if (state == KeyState.Down)
-				OnKeyDown(keyCode, modifiers, keyEventArgs.KeyValue, left, right);
+				OnKeyDown(keyCode, MapVirtualKey(keyCode, 0));
 			else
-				OnKeyUp(keyCode, modifiers, keyEventArgs.KeyValue, left, right);
+				OnKeyUp(keyCode, MapVirtualKey(keyCode, 0));
 		}
 
 		/// <summary>

@@ -215,7 +215,7 @@ namespace GorgonLibrary.Input
 		{
 			get
 			{
-				return (_modifierKey & KeyboardKeys.Alt) != KeyboardKeys.Alt;
+				return (_modifierKey & KeyboardKeys.Alt) == KeyboardKeys.Alt;
 			}
 		}
 
@@ -251,28 +251,6 @@ namespace GorgonLibrary.Input
 				return _scan;
 			}
 		}
-
-		/// <summary>
-		/// Property to return whether a modifier key is on the left or not.
-		/// </summary>
-		public bool Left
-		{
-			get
-			{
-				return _left;
-			}
-		}
-
-		/// <summary>
-		/// Property to return whether a modifier key is on the right or not.
-		/// </summary>
-		public bool Right
-		{
-			get
-			{
-				return _right;
-			}
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -283,16 +261,12 @@ namespace GorgonLibrary.Input
 		/// <param name="modifierKey">Keys that are held down during the event.</param>
 		/// <param name="character">Character that the key represents.</param>
 		/// <param name="scanData">Scan code data.</param>
-		/// <param name="left">TRUE if the modifier is left, FALSE if not.</param>
-		/// <param name="right">TRUE if the modifier is right, FALSE if not.</param>
-		public KeyboardEventArgs(KeyboardKeys key, KeyboardKeys modifierKey, GorgonKeyboard.KeyCharMap character, int scanData, bool left, bool right)
+		public KeyboardEventArgs(KeyboardKeys key, KeyboardKeys modifierKey, GorgonKeyboard.KeyCharMap character, int scanData)
 		{
 			_key = key;
 			_modifierKey = modifierKey;
 			_character = character;
 			_scan = scanData;
-			_left = left;
-			_right = right;
 		}
 		#endregion
 	}

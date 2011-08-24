@@ -52,11 +52,9 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="e">Event argments.</param>
 		private void GetRawData(object sender, RawInputEventArgs e)
 		{
-			int keyCode = 0;		// Virtual key code.
-			int secCode = -1;		// Secondary code.
-			bool left = false;		// Left modifier.
-			bool right = false;		// Right modifier.
-			KeyboardKeys modifiers;	// Keyboard modifiers.
+			KeyboardKeys keyCode = 0;					// Virtual key code.
+			KeyboardKeys version = KeyboardKeys.None;	// Version.
+			KeyState state = KeyState.Down;				// Key state.
 
 			if ((BoundWindow == null) || (BoundWindow.Disposing))
 				return;
@@ -74,98 +72,47 @@ namespace GorgonLibrary.Input.Raw
 			}
 
 			// Get the key code.
-			modifiers = KeyboardKeys.None;
-			keyCode = (int)e.Data.Keyboard.VirtualKey;
+			keyCode = (KeyboardKeys)e.Data.Keyboard.VirtualKey;
 
 			// Check for left/right versions.
-			right = ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0);
-			left = ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE1) == RawKeyboardFlags.KeyE1);
+			version = ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0) ? KeyboardKeys.RightVersion : KeyboardKeys.LeftVersion;
+
+			if ((e.Data.Keyboard.Message == WindowMessages.KeyUp) || (e.Data.Keyboard.Message == WindowMessages.SysKeyUp) || (e.Data.Keyboard.Message == WindowMessages.IMEKeyUp))
+				state = KeyState.Up;				
 
 			// Determine right or left, and unifier key.
-			switch ((KeyboardKeys)e.Data.Keyboard.VirtualKey)
+			switch (keyCode)
 			{
 				case KeyboardKeys.ControlKey:	// CTRL.
-					secCode = (int)KeyboardKeys.ControlKey;
-					if (right)
-						keyCode = (int)KeyboardKeys.RControlKey;
+					if ((version & KeyboardKeys.RightVersion) == KeyboardKeys.RightVersion)
+						keyCode = KeyboardKeys.RControlKey;
 					else
-					{
-						keyCode = (int)KeyboardKeys.LControlKey;
-						left = true;
-					}
+						keyCode = KeyboardKeys.LControlKey;
+					KeyStates[KeyboardKeys.ControlKey] = state;
 					break;
 				case KeyboardKeys.Menu:			// ALT.
-					secCode = (int)KeyboardKeys.Menu;
-					if (right)
-						keyCode = (int)KeyboardKeys.RMenu;
+					if ((version & KeyboardKeys.RightVersion) == KeyboardKeys.RightVersion)
+						keyCode = KeyboardKeys.RMenu;
 					else
-					{
-						keyCode = (int)KeyboardKeys.LMenu;
-						left = true;
-					}
+						keyCode = KeyboardKeys.LMenu;
+					KeyStates[KeyboardKeys.Menu] = state;
 					break;
 				case KeyboardKeys.ShiftKey:		// Shift.
-					// The flags don't work for Shift (at least on Win 7), use the scan code.					
-					secCode = (int)KeyboardKeys.ShiftKey;
-
 					if (e.Data.Keyboard.MakeCode == 0x36)
-					{
-						keyCode = (int)KeyboardKeys.RShiftKey;
-						right = true;
-					}
+						keyCode = KeyboardKeys.RShiftKey;
 					else
-					{
-						keyCode = (int)KeyboardKeys.LShiftKey;
-						left = true;
-					}
+						keyCode = KeyboardKeys.LShiftKey;
+					KeyStates[KeyboardKeys.ShiftKey] = state;
 					break;
-			}
-
-			// Check for modifiers.
-			modifiers = KeyboardKeys.None;
-			if (KeyStates[KeyboardKeys.ControlKey] == KeyState.Down)
-			{
-				if (KeyStates[KeyboardKeys.LControlKey] == KeyState.Down)
-					left = true;
-				if (KeyStates[KeyboardKeys.RControlKey] == KeyState.Down)
-					right = true;
-				modifiers |= KeyboardKeys.Control;
-			}
-			if (KeyStates[KeyboardKeys.Menu] == KeyState.Down)
-			{
-				if (KeyStates[KeyboardKeys.LMenu] == KeyState.Down)
-					left = true;
-				if (KeyStates[KeyboardKeys.RMenu] == KeyState.Down)
-					right = true;
-				modifiers |= KeyboardKeys.Alt;
-			}
-			if (KeyStates[KeyboardKeys.ShiftKey] == KeyState.Down)
-			{
-				if (KeyStates[KeyboardKeys.LShiftKey] == KeyState.Down)
-					left = true;
-				if (KeyStates[KeyboardKeys.RShiftKey] == KeyState.Down)
-					right = true;
-				modifiers |= KeyboardKeys.Shift;
 			}
 
 			// Dispatch the key.
-			switch (e.Data.Keyboard.Message)
-			{
-				case WindowMessages.SysKeyDown:
-				case WindowMessages.KeyDown:
-					KeyStates[(KeyboardKeys)keyCode] = KeyState.Down;
-					if (secCode > -1)
-						KeyStates[(KeyboardKeys)secCode] = KeyState.Down;
-					OnKeyDown((KeyboardKeys)keyCode, modifiers, e.Data.Keyboard.MakeCode, left, right);
-					break;
-				case WindowMessages.SysKeyUp:
-				case WindowMessages.KeyUp:
-					KeyStates[(KeyboardKeys)keyCode] = KeyState.Up;
-					if (secCode > -1)
-						KeyStates[(KeyboardKeys)secCode] = KeyState.Up;
-					OnKeyUp((KeyboardKeys)keyCode, modifiers, e.Data.Keyboard.MakeCode, left, right);
-					break;
-			}
+			KeyStates[keyCode] = state;
+			
+			if (state == KeyState.Down)
+				OnKeyDown(keyCode, e.Data.Keyboard.MakeCode);
+			else
+				OnKeyUp(keyCode, e.Data.Keyboard.MakeCode);
 		}
 
 		/// <summary>

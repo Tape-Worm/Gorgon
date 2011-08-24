@@ -423,27 +423,31 @@ namespace GorgonLibrary.Input
 		Control = 0x00020000,
 		/// <summary>Key: Alt</summary>
 		Alt = 0x00040000,
+		/// <summary>Key: Left version of key.</summary>
+		LeftVersion = 0x0080000,
+		/// <summary>Key:  Right version of key.</summary>
+		RightVersion = 0x0100000,
 		/// <summary>Key: Modifiers</summary>
 		Modifiers = 0xFFFF0000
 	}
 	#endregion
 
 	/// <summary>
-    /// Enumeration containing key state.
-    /// </summary>
-    public enum KeyState
-    {
-        /// <summary>
-        /// Key is not pressed.
-        /// </summary>
-        Up = 0,
-        /// <summary>
-        /// Key is pressed.
-        /// </summary>
-        Down = 1
-    }
-    
-    /// <summary>
+	/// Enumeration containing key state.
+	/// </summary>
+	public enum KeyState
+	{
+		/// <summary>
+		/// Key is not pressed.
+		/// </summary>
+		Up = 0,
+		/// <summary>
+		/// Key is pressed.
+		/// </summary>
+		Down = 1
+	}
+	
+	/// <summary>
 	/// Object that will represent keyboard data.
 	/// </summary>
 	public abstract class GorgonKeyboard
@@ -481,177 +485,190 @@ namespace GorgonLibrary.Input
 		}
 		#endregion
 
-        #region Classes.
-        /// <summary>
-        /// Object representing the keyboard mappings.
-        /// </summary>
-        public class KeyMapCollection
-            : IEnumerable<KeyCharMap>
-        {
-            #region Variables.
-            private SortedDictionary<KeyboardKeys, KeyCharMap> _keys = null;    // Keyboard mappings.
-            #endregion
+		#region Classes.
+		/// <summary>
+		/// Object representing the keyboard mappings.
+		/// </summary>
+		public class KeyMapCollection
+			: IEnumerable<KeyCharMap>
+		{
+			#region Variables.
+			private SortedDictionary<KeyboardKeys, KeyCharMap> _keys = null;    // Keyboard mappings.
+			#endregion
 
-            #region Properties.
-            /// <summary>
-            /// Property to return the key mapping assigned to the key.
-            /// </summary>
-            /// <param name="key">Key to retrieve mapping for.</param>
-            /// <returns>Character mapping for the key.</returns>
-            public KeyCharMap this[KeyboardKeys key]
-            {
-                get
-                {
-                    if (!_keys.ContainsKey(key))
-                        throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
+			#region Properties.
+			/// <summary>
+			/// Property to return the key mapping assigned to the key.
+			/// </summary>
+			/// <param name="key">Key to retrieve mapping for.</param>
+			/// <returns>Character mapping for the key.</returns>
+			public KeyCharMap this[KeyboardKeys key]
+			{
+				get
+				{
+					if (!_keys.ContainsKey(key))
+						throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
 
-                    return _keys[key];
-                }
-                set
-                {
-                    if (!_keys.ContainsKey(key))
-                        throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
+					return _keys[key];
+				}
+				set
+				{
+					if (!_keys.ContainsKey(key))
+						throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
 
-                    _keys[key] = value;
-                }
-            }
-            #endregion
+					_keys[key] = value;
+				}
+			}
+			#endregion
 
-            #region Methods.
-            /// <summary>
-            /// Function to add a key mapping to the collection.
-            /// </summary>
-            /// <param name="key">Key to map.</param>
-            /// <param name="value">Value to map to the key.</param>
-            /// <param name="shiftedValue">Value to map if the shift key is held down.</param>
-            public void Add(KeyboardKeys key, string value, string shiftedValue)
-            {
-                if (_keys.ContainsKey(key))
-                    _keys[key] = new KeyCharMap(key, value, shiftedValue);
-                else
-                    _keys.Add(key, new KeyCharMap(key, value, shiftedValue));
-            }
+			#region Methods.
+			/// <summary>
+			/// Function to add a key mapping to the collection.
+			/// </summary>
+			/// <param name="key">Key to map.</param>
+			/// <param name="value">Value to map to the key.</param>
+			/// <param name="shiftedValue">Value to map if the shift key is held down.</param>
+			public void Add(KeyboardKeys key, string value, string shiftedValue)
+			{
+				if (_keys.ContainsKey(key))
+					_keys[key] = new KeyCharMap(key, value, shiftedValue);
+				else
+					_keys.Add(key, new KeyCharMap(key, value, shiftedValue));
+			}
 
-            /// <summary>
-            /// Function to return whether a key exists in this collection or not.
-            /// </summary>
-            /// <param name="key">Key to check for.</param>
-            /// <returns>TRUE if found, FALSE if not.</returns>
-            public bool Contains(KeyboardKeys key)
-            {
-                return _keys.ContainsKey(key);
-            }
+			/// <summary>
+			/// Function to return whether a key exists in this collection or not.
+			/// </summary>
+			/// <param name="key">Key to check for.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			public bool Contains(KeyboardKeys key)
+			{
+				return _keys.ContainsKey(key);
+			}
 
-            /// <summary>
-            /// Function to remove the specified key from the mappings list.
-            /// </summary>
-            /// <param name="key">Key to remove.</param>
-            public void Remove(KeyboardKeys key)
-            {
-                if (!_keys.ContainsKey(key))
-                    throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
+			/// <summary>
+			/// Function to remove the specified key from the mappings list.
+			/// </summary>
+			/// <param name="key">Key to remove.</param>
+			public void Remove(KeyboardKeys key)
+			{
+				if (!_keys.ContainsKey(key))
+					throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
 
-                _keys.Remove(key);
-            }
+				_keys.Remove(key);
+			}
 
-            /// <summary>
-            /// Function to clear the key mappings.
-            /// </summary>
-            public void Clear()
-            {
-                _keys.Clear();
-            }
-            #endregion
+			/// <summary>
+			/// Function to clear the key mappings.
+			/// </summary>
+			public void Clear()
+			{
+				_keys.Clear();
+			}
+			#endregion
 
-            #region Constructor.
-            /// <summary>
-            /// Initializes a new instance of the <see cref="KeyMapCollection"/> class.
-            /// </summary>
-            internal KeyMapCollection()
-            {
-                _keys = new SortedDictionary<KeyboardKeys, KeyCharMap>();
-            }
-            #endregion
+			#region Constructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="KeyMapCollection"/> class.
+			/// </summary>
+			internal KeyMapCollection()
+			{
+				_keys = new SortedDictionary<KeyboardKeys, KeyCharMap>();
+			}
+			#endregion
 
-            #region IEnumerable<KeyCharMap> Members
+			#region IEnumerable<KeyCharMap> Members
 
-            /// <summary>
-            /// Returns an enumerator that iterates through the collection.
-            /// </summary>
-            /// <returns>
-            /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-            /// </returns>
-            public IEnumerator<KeyCharMap> GetEnumerator()
-            {
-                foreach (KeyValuePair<KeyboardKeys, KeyCharMap> value in _keys)
-                    yield return value.Value;
-            }
-            #endregion
+			/// <summary>
+			/// Returns an enumerator that iterates through the collection.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+			/// </returns>
+			public IEnumerator<KeyCharMap> GetEnumerator()
+			{
+				foreach (KeyValuePair<KeyboardKeys, KeyCharMap> value in _keys)
+					yield return value.Value;
+			}
+			#endregion
 
-            #region IEnumerable Members
+			#region IEnumerable Members
 
-            /// <summary>
-            /// Returns an enumerator that iterates through a collection.
-            /// </summary>
-            /// <returns>
-            /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-            /// </returns>
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return this.GetEnumerator();
-            }
-            #endregion
-        }
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+			/// </returns>
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return this.GetEnumerator();
+			}
+			#endregion
+		}
 
-        /// <summary>
-        /// Object representing the keyboard state.
-        /// </summary>
-        public class KeyStateCollection
-        {
-            #region Variables.
-            private SortedDictionary<KeyboardKeys, KeyState> _keys = null;      // Keyboard key state.
-            #endregion
+		/// <summary>
+		/// Object representing the keyboard state.
+		/// </summary>
+		public class KeyStateCollection
+		{
+			#region Variables.
+			private SortedDictionary<KeyboardKeys, KeyState> _keys = null;      // Keyboard key state.
+			#endregion
 
-            #region Properties.
-            /// <summary>
-            /// Property to return the state of a given key.
-            /// </summary>
-            /// <param name="key">Key to check.</param>
-            /// <returns>The state of the key.</returns>
-            public KeyState this[KeyboardKeys key]
-            {
-                get
-                {
-                    if (!_keys.ContainsKey(key))
-                        _keys.Add(key, KeyState.Up);
+			#region Properties.
+			/// <summary>
+			/// Property to return the state of a given key.
+			/// </summary>
+			/// <param name="key">Key to check.</param>
+			/// <returns>The state of the key.</returns>
+			public KeyState this[KeyboardKeys key]
+			{
+				get
+				{
+					if (!_keys.ContainsKey(key))
+						_keys.Add(key, KeyState.Up);
 
-                    return _keys[key];
-                }
-                set
-                {
-                    if (!_keys.ContainsKey(key))
-                        _keys.Add(key, value);
-                    else
-                        _keys[key] = value;
-                }
-            }
-            #endregion
+					return _keys[key];
+				}
+				set
+				{
+					if (!_keys.ContainsKey(key))
+						_keys.Add(key, value);
+					else
+						_keys[key] = value;
+				}
+			}
+			#endregion
 
-            #region Constructor/Destructor.
-            /// <summary>
-            /// Initializes a new instance of the <see cref="KeyStateCollection"/> class.
-            /// </summary>
-            public KeyStateCollection()
-            {
-                _keys = new SortedDictionary<KeyboardKeys, KeyState>();
-            }
-            #endregion
-        }
-        #endregion
-        
-        #region Variables.
+			#region Methods.
+			/// <summary>
+			/// Function to reset the key states.
+			/// </summary>
+			public void Reset()
+			{
+				var keys = (KeyboardKeys[])Enum.GetValues(typeof(KeyboardKeys));
+
+				foreach (var key in keys)
+					this[key] = KeyState.Up;
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="KeyStateCollection"/> class.
+			/// </summary>
+			public KeyStateCollection()
+			{
+				_keys = new SortedDictionary<KeyboardKeys, KeyState>();
+			}
+			#endregion
+		}
+		#endregion
+		
+		#region Variables.
 		private KeyMapCollection _keyMap = null;		                    // Key->character mapping.
-        private KeyStateCollection _keyStates = null;                       // Key states.
+		private KeyStateCollection _keyStates = null;                       // Key states.
 		#endregion
 
 		#region Events.
@@ -693,28 +710,59 @@ namespace GorgonLibrary.Input
 			}
 		}
 
-        /// <summary>
-        /// Property to return the key states.
-        /// </summary>
-        public KeyStateCollection KeyStates
-        {
-            get
-            {
-                return _keyStates;
-            }
-        }
+		/// <summary>
+		/// Property to return the key states.
+		/// </summary>
+		public KeyStateCollection KeyStates
+		{
+			get
+			{
+				return _keyStates;
+			}
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
+		/// Function to retrieve the modifier keys.
+		/// </summary>
+		/// <returns>The modifier keys.</returns>
+		private KeyboardKeys GetModifiers()
+		{
+			KeyboardKeys result = KeyboardKeys.None;
+
+			if (KeyStates[KeyboardKeys.ControlKey] == KeyState.Down)
+			{
+				if (KeyStates[KeyboardKeys.LControlKey] == KeyState.Down)
+					result |= KeyboardKeys.Control | KeyboardKeys.LeftVersion;
+				if (KeyStates[KeyboardKeys.RControlKey] == KeyState.Down)
+					result |= KeyboardKeys.Control | KeyboardKeys.RightVersion;
+			}
+			if (KeyStates[KeyboardKeys.Menu] == KeyState.Down)
+			{
+				if (KeyStates[KeyboardKeys.LMenu] == KeyState.Down)
+					result |= KeyboardKeys.Alt | KeyboardKeys.LeftVersion;	
+				if (KeyStates[KeyboardKeys.RMenu] == KeyState.Down)
+					result |= KeyboardKeys.Alt | KeyboardKeys.RightVersion;
+				
+			}
+			if (KeyStates[KeyboardKeys.ShiftKey] == KeyState.Down)
+			{
+				if (KeyStates[KeyboardKeys.LShiftKey] == KeyState.Down)
+					result |= KeyboardKeys.Shift | KeyboardKeys.LeftVersion;
+				if (KeyStates[KeyboardKeys.RShiftKey] == KeyState.Down)
+					result |= KeyboardKeys.Shift | KeyboardKeys.RightVersion;				
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to fire the key down event.
 		/// </summary>
 		/// <param name="key">Key that's pressed.</param>
-		/// <param name="modifiers">Modifier keys.</param>
 		/// <param name="scan">Scan code data.</param>
-		/// <param name="left">TRUE if the modifier is left, FALSE if not.</param>
-		/// <param name="right">TRUE if the modifier is right, FALSE if not.</param>
-		protected void OnKeyDown(KeyboardKeys key, KeyboardKeys modifiers, int scan, bool left, bool right)
+		protected void OnKeyDown(KeyboardKeys key, int scan)
 		{
 			if (KeyDown != null)
 			{
@@ -725,7 +773,7 @@ namespace GorgonLibrary.Input
 				else
 					character = default(KeyCharMap);
 
-				KeyboardEventArgs e = new KeyboardEventArgs(key, modifiers, character, scan, left, right);
+				KeyboardEventArgs e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
 				KeyDown(this, e);
 			}
 		}
@@ -734,11 +782,8 @@ namespace GorgonLibrary.Input
 		/// Function to fire the key up event.
 		/// </summary>
 		/// <param name="key">Key that's pressed.</param>
-		/// <param name="modifiers">Modifier keys.</param>
 		/// <param name="scan">Scan code data.</param>
-		/// <param name="left">TRUE if the modifier is left, FALSE if not.</param>
-		/// <param name="right">TRUE if the modifier is right, FALSE if not.</param>
-		protected void OnKeyUp(KeyboardKeys key, KeyboardKeys modifiers, int scan, bool left, bool right)
+		protected void OnKeyUp(KeyboardKeys key, int scan)
 		{
 			if (KeyUp != null)
 			{
@@ -749,7 +794,7 @@ namespace GorgonLibrary.Input
 				else
 					character = default(KeyCharMap);
 
-				KeyboardEventArgs e = new KeyboardEventArgs(key, modifiers, character, scan, left, right);
+				KeyboardEventArgs e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
 				KeyUp(this, e);
 			}
 		}
@@ -814,9 +859,9 @@ namespace GorgonLibrary.Input
 			_keyMap.Add(KeyboardKeys.Add, "+", "+");
 			_keyMap.Add(KeyboardKeys.Subtract, "-", "-");
 			_keyMap.Add(KeyboardKeys.Divide, "/", "/");
-            _keyMap.Add(KeyboardKeys.OemPipe, @"\", "|");
+			_keyMap.Add(KeyboardKeys.OemPipe, @"\", "|");
 			_keyMap.Add(KeyboardKeys.Oem1, ";", ":");
-            _keyMap.Add(KeyboardKeys.OemSemicolon, ";", ":");
+			_keyMap.Add(KeyboardKeys.OemSemicolon, ";", ":");
 			_keyMap.Add(KeyboardKeys.Oemplus, "=", "+");
 			_keyMap.Add(KeyboardKeys.Oemcomma, ",", "<");
 			_keyMap.Add(KeyboardKeys.OemMinus, "-", "_");
@@ -842,8 +887,8 @@ namespace GorgonLibrary.Input
 		protected GorgonKeyboard(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
-            _keyMap = new KeyMapCollection();
-            _keyStates = new KeyStateCollection();
+			_keyMap = new KeyMapCollection();
+			_keyStates = new KeyStateCollection();
 			GetDefaultKeyMapping();
 		}
 		#endregion
