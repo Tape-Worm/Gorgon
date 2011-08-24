@@ -446,6 +446,25 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		Down = 1
 	}
+
+	/// <summary>
+	/// Enumeration containing the key state reset modes for the keyboard device.
+	/// </summary>
+	public enum KeyStateResetMode
+	{
+		/// <summary>
+		/// Don't reset after losing focus.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Reset only the modifier (Ctrl, Alt and Shift) keys after losing focus.
+		/// </summary>
+		ResetModifiers = 1,
+		/// <summary>
+		/// Reset all keys after losing focus.
+		/// </summary>
+		ResetAll = 2
+	}
 	
 	/// <summary>
 	/// Object that will represent keyboard data.
@@ -704,6 +723,37 @@ namespace GorgonLibrary.Input
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return if the key states should be reset when focus is lost.
+		/// </summary>
+		/// <remarks>
+		/// When the <see cref="P:GorgonLibrary.Input.GorgonInputDevice.BoundControl">BoundControl</see> loses focus, the <see cref="P:GorgonLibrary.Input.GorgonKeyboard.KeyStates">key state buffer</see> may keep the previous key state, leading to undesirable results.  
+		/// This setting will allow the user to control how the key states are preserved after a loss of focus.  
+		/// <para>The user may also manually reset the key states by setting the individual key state to Up, or use the <see cref="M:GorgonLibrary.Input.GorgonKeyboard.GorgonKeyStateCollection.Reset">KeyStates.Reset</see> (or the <see cref="M:GorgonLibrary.Input.GorgonKeyboard.GorgonKeyStateCollection.ResetModifiers">KeyStates.ResetModifiers</see>) method.</para>
+		/// <para>The key reset settings are as follows:
+		/// <list type="bullet">
+		/// <listheader><term>KeyStateResetSetting</term><description>Description</description></listheader>
+		/// <item>
+		///		<term>None</term>
+		///		<description>Preserve all previous key states.</description>
+		/// </item>
+		/// <item>
+		///		<term>ResetModifiers</term>
+		///		<description>Reset only the modifier keys (Ctrl, Alt, and Shift) to the Up key state.</description>
+		/// </item>
+		/// <item>
+		///		<term>ResetAll (Default)</term>
+		///		<description>Reset all keys to the Up key state.</description>
+		/// </item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		public KeyStateResetMode KeyStateResetMode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return the keyboard to character mappings.
 		/// </summary>
 		public KeyMapCollection KeyMappings
@@ -819,18 +869,24 @@ namespace GorgonLibrary.Input
 		}
 
 		/// <summary>
-		/// Handles the LostFocus event of the owner control.
+		/// Function called if the bound window loses focus.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected override void Owner_LostFocus(object sender, EventArgs e)
+		protected override void OnBoundWindowUnfocused()
 		{
-			base.Owner_LostFocus(sender, e);
+			base.OnBoundWindowUnfocused();
 
 			// If we lose focus, then remove any modifiers.
-			KeyStates.ResetModifiers();
+			switch(KeyStateResetMode)
+			{
+				case Input.KeyStateResetMode.ResetAll:
+					KeyStates.Reset();
+					break;
+				case Input.KeyStateResetMode.ResetModifiers:
+					KeyStates.ResetModifiers();
+					break;
+			}
 		}
-
+	
 		/// <summary>
 		/// Function to retrieve character mappings for keys.
 		/// </summary>
@@ -921,6 +977,7 @@ namespace GorgonLibrary.Input
 		{
 			_keyMap = new KeyMapCollection();
 			_keyStates = new KeyStateCollection();
+			KeyStateResetMode = Input.KeyStateResetMode.ResetAll;
 			GetDefaultKeyMapping();
 		}
 		#endregion

@@ -69,7 +69,7 @@ namespace GorgonLibrary.Input.WinForms
 		{
 			KeyboardKeys keyCode;	// Code for the keyboard.
 
-			if ((BoundWindow == null) || (BoundWindow.Disposing))
+			if ((BoundControl == null) || (BoundControl.Disposing))
 				return;
 
 			if (_mapper.KeyMapping.ContainsKey(keyEventArgs.KeyCode))
@@ -136,8 +136,8 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		protected override void BindDevice()
 		{
-			this.BoundWindow.KeyUp += new Forms.KeyEventHandler(BoundWindow_KeyUp);
-			this.BoundWindow.KeyDown += new Forms.KeyEventHandler(BoundWindow_KeyDown);
+			this.BoundControl.KeyUp += new Forms.KeyEventHandler(BoundWindow_KeyUp);
+			this.BoundControl.KeyDown += new Forms.KeyEventHandler(BoundWindow_KeyDown);
 		}
 
 		/// <summary>
@@ -145,8 +145,8 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		protected override void UnbindDevice()
 		{
-			this.BoundWindow.KeyUp -= new Forms.KeyEventHandler(BoundWindow_KeyUp);
-			this.BoundWindow.KeyDown -= new Forms.KeyEventHandler(BoundWindow_KeyDown);
+			this.BoundControl.KeyUp -= new Forms.KeyEventHandler(BoundWindow_KeyUp);
+			this.BoundControl.KeyDown -= new Forms.KeyEventHandler(BoundWindow_KeyDown);
 		}
 		#endregion
 

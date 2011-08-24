@@ -124,10 +124,10 @@ namespace GorgonLibrary.Input
 		{
 			get
 			{
-				if (BoundWindow == null)
+				if (BoundControl == null)
 					return Rectangle.Empty;
 
-				return new Rectangle(Point.Empty, BoundWindow.ClientSize);
+				return new Rectangle(Point.Empty, BoundControl.ClientSize);
 			}
 		}
 
@@ -417,8 +417,8 @@ namespace GorgonLibrary.Input
 		protected override void UnbindWindow()
 		{
 			base.UnbindWindow();
-			if ((BoundWindow != null) && (!BoundWindow.Disposing) && (!BoundWindow.IsDisposed))
-				BoundWindow.MouseLeave -= new EventHandler(Owner_MouseLeave);
+			if ((BoundControl != null) && (!BoundControl.Disposing) && (!BoundControl.IsDisposed))
+				BoundControl.MouseLeave -= new EventHandler(Owner_MouseLeave);
 		}
 
 		/// <summary>
@@ -565,7 +565,7 @@ namespace GorgonLibrary.Input
 		protected GorgonPointingDevice(GorgonInputDeviceFactory owner, string deviceName, Forms.Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
-			_position = new PointF(BoundWindow.ClientSize.Width / 2, BoundWindow.ClientSize.Height / 2);
+			_position = new PointF(BoundControl.ClientSize.Width / 2, BoundControl.ClientSize.Height / 2);
 			Button = PointingDeviceButtons.None;
 			_positionConstraint = RectangleF.Empty;
 			_wheelConstraint = Point.Empty;

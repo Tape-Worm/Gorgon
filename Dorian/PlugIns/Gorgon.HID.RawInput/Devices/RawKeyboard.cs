@@ -56,7 +56,7 @@ namespace GorgonLibrary.Input.Raw
 			KeyboardKeys version = KeyboardKeys.None;	// Version.
 			KeyState state = KeyState.Down;				// Key state.
 
-			if ((BoundWindow == null) || (BoundWindow.Disposing))
+			if ((BoundControl == null) || (BoundControl.Disposing))
 				return;
 
 			if ((e.Data.Header.Type != RawInputType.Keyboard) || ((_deviceHandle != IntPtr.Zero) && (_deviceHandle != e.Handle)))
@@ -65,7 +65,7 @@ namespace GorgonLibrary.Input.Raw
 			if ((Exclusive) && (!Acquired))
 			{
 				// Attempt to recapture.
-				if (BoundWindow.Focused)
+				if (BoundControl.Focused)
 					Acquired = true;
 				else
 					return;
@@ -143,7 +143,7 @@ namespace GorgonLibrary.Input.Raw
 			if (Exclusive)
 				_device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
 
-			_device.WindowHandle = BoundWindow.Handle;
+			_device.WindowHandle = BoundControl.Handle;
 
 			// Attempt to register the device.
 			if (!Win32API.RegisterRawInputDevices(_device))
