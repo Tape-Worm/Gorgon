@@ -201,14 +201,14 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A list of joystick device names.</returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
 		{
-			List<GorgonWMMDeviceName> result = null;
+			List<GorgonWMMDeviceInfo> result = null;
 			JOYCAPS capabilities = new JOYCAPS();	// Joystick capabilities.
 			string name = string.Empty;				// Name of the joystick.
 			int error = 0;							// Error code.
 			int deviceCount = 0;					// Number of devices.
 			int nameCount = 0;						// Name counter.
 
-			result = new List<GorgonWMMDeviceName>();
+			result = new List<GorgonWMMDeviceInfo>();
 			deviceCount = Win32API.joyGetNumDevs();
 
 			Gorgon.Log.Print("Enumerating joysticks...", GorgonLoggingLevel.Intermediate);
@@ -236,7 +236,7 @@ namespace GorgonLibrary.Input.Raw
 							keyName = name + " " + nameCount.ToString();
 						}
 
-						result.Add(new GorgonWMMDeviceName(keyName, "Game device", "N/A", i));
+						result.Add(new GorgonWMMDeviceInfo(keyName, "Game device", "N/A", i));
 					}
 				}
 			}
@@ -345,7 +345,7 @@ namespace GorgonLibrary.Input.Raw
 			if (joystickName == null)
 				throw new ArgumentNullException("joystickName");
 
-			joystick = new WMMJoystick(this, ((GorgonWMMDeviceName)joystickName).JoystickID, joystickName.Name, window);
+			joystick = new WMMJoystick(this, ((GorgonWMMDeviceInfo)joystickName).JoystickID, joystickName.Name, window);
 			joystick.Enabled = true;
 
 			return joystick;
