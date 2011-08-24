@@ -273,20 +273,20 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
-		/// <param name="hidName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>
 		/// A new custom HID interface.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidName"/> is NULL.</exception>
-		protected override GorgonCustomHID CreateCustomHIDImpl(GorgonInputDeviceInfo hidName, Forms.Control window)
+		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
+		protected override GorgonCustomHID CreateCustomHIDImpl(Forms.Control window, GorgonInputDeviceInfo hidInfo)
 		{
 			RawHIDDevice hidDevice = null;
 
-			if (hidName == null)
-				throw new ArgumentNullException("hidName");
+			if (hidInfo == null)
+				throw new ArgumentNullException("hidInfo");
 
-			hidDevice = new RawHIDDevice(this, ((GorgonRawInputDeviceInfo)hidName), window);
+			hidDevice = new RawHIDDevice(this, ((GorgonRawInputDeviceInfo)hidInfo), window);
 			hidDevice.Enabled = true;
 
 			return hidDevice;
@@ -295,19 +295,19 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Function to create a keyboard interface.
 		/// </summary>
-		/// <param name="keyboardName">Name of the keyboard device to create.</param>
+		/// <param name="keyboardInfo">Name of the keyboard device to create.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new keyboard interface.</returns>
-		/// <remarks>Passing NULL for <paramref name="keyboardName"/> will use the system keyboard.
+		/// <remarks>Passing NULL for <paramref name="keyboardInfo"/> will use the system keyboard.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
-		protected override GorgonKeyboard CreateKeyboardImpl(GorgonInputDeviceInfo keyboardName, Forms.Control window)
+		protected override GorgonKeyboard CreateKeyboardImpl(Forms.Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
 			RawKeyboard keyboard = null;
 
-			if (keyboardName == null)
+			if (keyboardInfo == null)
 				keyboard = new RawKeyboard(this, IntPtr.Zero, window);
 			else
-				keyboard = new RawKeyboard(this, ((GorgonRawInputDeviceInfo)keyboardName).Handle, window);
+				keyboard = new RawKeyboard(this, ((GorgonRawInputDeviceInfo)keyboardInfo).Handle, window);
 			keyboard.Enabled = true;
 
 			return keyboard;
@@ -316,20 +316,20 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Function to create a pointing device interface.
 		/// </summary>
-		/// <param name="pointingDeviceName">Name of the pointing device device to create.</param>
+		/// <param name="pointingDeviceInfo">Name of the pointing device device to create.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new pointing device interface.</returns>
-		/// <remarks>Passing NULL for <paramref name="pointingDeviceName"/> will use the system pointing device.
+		/// <remarks>Passing NULL for <paramref name="pointingDeviceInfo"/> will use the system pointing device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para>
 		/// </remarks>
-		protected override GorgonPointingDevice CreatePointingDeviceImpl(GorgonInputDeviceInfo pointingDeviceName, Forms.Control window)
+		protected override GorgonPointingDevice CreatePointingDeviceImpl(Forms.Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
 			RawPointingDevice mouse = null;
 
-			if (pointingDeviceName == null)
+			if (pointingDeviceInfo == null)
 				mouse = new RawPointingDevice(this, IntPtr.Zero, window);
 			else
-				mouse = new RawPointingDevice(this, ((GorgonRawInputDeviceInfo)pointingDeviceName).Handle, window);
+				mouse = new RawPointingDevice(this, ((GorgonRawInputDeviceInfo)pointingDeviceInfo).Handle, window);
 			mouse.Enabled = true;
 
 			return mouse;
@@ -338,19 +338,19 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickName"/> is NULL.</exception>
-		protected override GorgonJoystick CreateJoystickImpl(GorgonInputDeviceInfo joystickName, Forms.Control window)
+		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
+		protected override GorgonJoystick CreateJoystickImpl(Forms.Control window, GorgonInputDeviceInfo joystickInfo)
 		{
 			WMMJoystick joystick = null;
 
-			if (joystickName == null)
-				throw new ArgumentNullException("joystickName");
+			if (joystickInfo == null)
+				throw new ArgumentNullException("joystickInfo");
 
-			joystick = new WMMJoystick(this, ((GorgonWMMDeviceInfo)joystickName).JoystickID, joystickName.Name, window);
+			joystick = new WMMJoystick(this, ((GorgonWMMDeviceInfo)joystickInfo).JoystickID, joystickInfo.Name, window);
 			joystick.Enabled = true;
 
 			return joystick;
