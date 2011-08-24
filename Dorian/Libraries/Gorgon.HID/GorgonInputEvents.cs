@@ -169,9 +169,7 @@ namespace GorgonLibrary.Input
 		private KeyboardKeys _key;						// Key that is pressed.
 		private KeyboardKeys _modifierKey;				// Other keys being held down.
 		private int _scan = 0;							// Scan code information.
-		private GorgonKeyboard.KeyCharMap _character;			// Character that the key represents.
-		private bool _left = false;						// Indicates whether the key is the left key or not.
-		private bool _right = false;					// Indicates whether the key is the right key or not.
+		private GorgonKeyboard.KeyCharMap _character;	// Character that the key represents.
 		#endregion
 
 		#region Properties.
