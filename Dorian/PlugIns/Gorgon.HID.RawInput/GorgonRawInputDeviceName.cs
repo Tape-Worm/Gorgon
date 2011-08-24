@@ -35,8 +35,8 @@ namespace GorgonLibrary.Input.Raw
 	/// <summary>
 	/// The Raw Input implementation of a device name.
 	/// </summary>
-	internal class GorgonRawInputDeviceName
-		: GorgonInputDeviceName
+	internal class GorgonRawInputDeviceInfo
+		: GorgonInputDeviceInfo
 	{
 		#region Properties.
 		/// <summary>
@@ -69,16 +69,17 @@ namespace GorgonLibrary.Input.Raw
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInputDeviceName"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRawInputDeviceInfo"/> class.
 		/// </summary>
 		/// <param name="name">The device name.</param>
+		/// <param name="deviceType">The type of device.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
 		/// <param name="handle">Handle to the device.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonRawInputDeviceName(string name, string className, string hidPath, IntPtr handle)
-			: base(name, className, hidPath, false)
+		public GorgonRawInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath, IntPtr handle)
+			: base(name, deviceType, className, hidPath, false)
 		{
 			Handle = handle;
 

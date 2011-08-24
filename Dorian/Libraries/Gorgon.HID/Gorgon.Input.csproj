@@ -58,6 +58,7 @@
     <Compile Include="GorgonInputDeviceFactoryCollection.cs" />
     <Compile Include="GorgonInputDevice.cs" />
     <Compile Include="GorgonInputDeviceInfo.cs" />
+    <Compile Include="GorgonInputDeviceInfoCollection.cs" />
     <Compile Include="GorgonInputEvents.cs" />
     <Compile Include="GorgonInputDeviceFactory.cs" />
     <Compile Include="GorgonInputPlugIn.cs" />

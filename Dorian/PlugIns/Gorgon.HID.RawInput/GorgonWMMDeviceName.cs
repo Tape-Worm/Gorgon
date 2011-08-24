@@ -36,7 +36,7 @@ namespace GorgonLibrary.Input.Raw
 	/// The WMM joystick implementation of a device name.
 	/// </summary>
 	internal class GorgonWMMDeviceName
-		: GorgonInputDeviceName
+		: GorgonInputDeviceInfo
 	{
 		#region Variables.
 		private int _joyCapsSize = 0;			// Structure size of the JOYCAPS value type.
@@ -70,7 +70,7 @@ namespace GorgonLibrary.Input.Raw
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInputDeviceName"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRawInputDeviceInfo"/> class.
 		/// </summary>
 		/// <param name="name">The device name.</param>
 		/// <param name="className">Class name of the device.</param>
@@ -79,7 +79,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
 		public GorgonWMMDeviceName(string name, string className, string hidPath, int joystickID)
-			: base(name, className, hidPath, false)
+			: base(name, InputDeviceType.Joystick, className, hidPath, false)
 		{
 			JoystickID = joystickID;
 			_joyCapsSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(JOYCAPS));

@@ -48,31 +48,31 @@ namespace GorgonLibrary.Input.XInput
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>
-		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumeratePointingDevices()
+		protected override IEnumerable<GorgonInputDeviceInfo> EnumeratePointingDevices()
 		{
-			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, new GorgonXInputDeviceName[] { });
+			return new GorgonInputDeviceInfo[] {};
 		}
 
 		/// <summary>
 		/// Function to enumerate the keyboard devices on the system.
 		/// </summary>
 		/// <returns>A list of keyboard device names.</returns>
-		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateKeyboardDevices()
+		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
 		{
-			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, new GorgonXInputDeviceName[] { });
+			return new GorgonInputDeviceInfo[] {};
 		}
 
 		/// <summary>
 		/// Function to enumerate the joystick devices attached to the system.
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
-		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateJoysticksDevices()
+		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
 		{
 			XI.UserIndex[] controllerIndex = ((XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))).OrderBy((item) => item).ToArray();
 			XI.Controller[] controllers = new XI.Controller[controllerIndex.Length];
-			IList<GorgonXInputDeviceName> devices = null;
+			IList<GorgonXInputDeviceInfo> devices = null;
 
-			devices = new List<GorgonXInputDeviceName>();
+			devices = new List<GorgonXInputDeviceInfo>();
 
 			// Enumerate all controllers.
 			for (int i = 0; i < controllerIndex.Length; i++)
@@ -85,14 +85,14 @@ namespace GorgonLibrary.Input.XInput
 					if (controllerIndex[i] != XI.UserIndex.Any)
 					{
 						caps = controllers[i].GetCapabilities(XI.DeviceQueryType.Any);
-						devices.Add(new GorgonXInputDeviceName(string.Format("{0}", i + 1) + ": XInput " + caps.Subtype.ToString() + " Controller", caps.Subtype.ToString(), "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
+						devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput " + caps.Subtype.ToString() + " Controller", caps.Subtype.ToString(), "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
 					}
 				}
 				else
-					devices.Add(new GorgonXInputDeviceName(string.Format("{0}", i + 1) + ": XInput Disconnected Controller ", "Disconnected Controller", "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
-			}			
-				
-			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, devices.OrderBy((item) => item.Name));
+					devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput Disconnected Controller ", "Disconnected Controller", "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
+			}
+
+			return devices.OrderBy((item) => item.Name);
 		}
 
 		/// <summary>
@@ -101,21 +101,21 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns>
 		/// A list of custom HID types.
 		/// </returns>
-		protected override GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName> EnumerateCustomHIDs()
+		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs()
 		{
-			return new GorgonNamedObjectReadOnlyCollection<GorgonInputDeviceName>(false, new GorgonXInputDeviceName[] { });
+			return new GorgonInputDeviceInfo[] {};
 		}
 
 		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
-		/// <param name="hidName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>
 		/// A new custom HID interface.
 		/// </returns>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidName"/> is NULL.</exception>
-		protected override GorgonCustomHID CreateCustomHIDImpl(GorgonInputDeviceName hidName, Forms.Control window)
+		protected override GorgonCustomHID CreateCustomHIDImpl(GorgonInputDeviceInfo hidName, Forms.Control window)
 		{
 			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
 		}
@@ -128,7 +128,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing NULL for <paramref name="keyboardName"/> will use the system keyboard.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
-		protected override GorgonKeyboard CreateKeyboardImpl(GorgonInputDeviceName keyboardName, Forms.Control window)
+		protected override GorgonKeyboard CreateKeyboardImpl(GorgonInputDeviceInfo keyboardName, Forms.Control window)
 		{
 			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
 		}
@@ -142,7 +142,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <remarks>Passing NULL for <paramref name="pointingDeviceName"/> will use the system pointing device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para>
 		/// </remarks>
-		protected override GorgonPointingDevice CreatePointingDeviceImpl(GorgonInputDeviceName pointingDeviceName, Forms.Control window)
+		protected override GorgonPointingDevice CreatePointingDeviceImpl(GorgonInputDeviceInfo pointingDeviceName, Forms.Control window)
 		{
 			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
 		}
@@ -150,15 +150,15 @@ namespace GorgonLibrary.Input.XInput
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceName">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickName"/> is NULL.</exception>
-		protected override GorgonJoystick CreateJoystickImpl(GorgonInputDeviceName joystickName, Forms.Control window)
+		protected override GorgonJoystick CreateJoystickImpl(GorgonInputDeviceInfo joystickName, Forms.Control window)
 		{
 			GorgonJoystick joystick = null;
-			GorgonXInputDeviceName deviceName = joystickName as GorgonXInputDeviceName;
+			GorgonXInputDeviceInfo deviceName = joystickName as GorgonXInputDeviceInfo;
 
 			if (deviceName == null)
 				throw new ArgumentNullException("joystickName");

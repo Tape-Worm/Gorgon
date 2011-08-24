@@ -104,14 +104,42 @@ namespace Tester
 			return true;
 		}
 
-
-
-		protected override void OnMouseDoubleClick(MouseEventArgs e)
+		private void CreateJoysticks()
 		{
-			base.OnMouseDoubleClick(e);
+			xinput = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
 
-			if (!Gorgon.IsInitialized)
-				Gorgon.Initialize(this);
+			foreach (GorgonInputDeviceInfo name in xinput.JoystickDevices)
+			{
+				if (name.IsConnected)
+				{
+					joystick = xinput.CreateJoystick(name, this.panel1);
+					break;
+				}
+			}
+
+			if (input != null)
+			{
+				if (joystick == null)
+				{
+					foreach (GorgonInputDeviceInfo name in input.JoystickDevices)
+					{
+						if (name.IsConnected)
+						{
+							joystick = input.CreateJoystick(name, this.panel1);
+							break;
+						}
+					}
+				}
+			}
+
+
+			if (joystick != null)
+			{
+				joystick.DeadZone.X = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.Y = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.SecondaryX = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.SecondaryY = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+			}
 		}
 		
 		protected override void OnLoad(EventArgs e)
@@ -127,10 +155,9 @@ namespace Tester
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.Input.WinForms.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
-				input = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
-				winput = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
-				xinput = GorgonHID.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
-
+				input = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+				winput = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
+				
 				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
 				
@@ -145,39 +172,6 @@ namespace Tester
 				keyboard = winput.CreateKeyboard(this);
 				keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(keyboard_KeyDown);
 
-				foreach (GorgonInputDeviceName name in xinput.JoystickDevices)
-				{
-					if (name.IsConnected)
-					{
-						joystick = xinput.CreateJoystick(name, this.panel1);
-						break;
-					}
-				}
-
-				if (input != null)
-				{
-					if (joystick == null)
-					{
-						foreach (GorgonInputDeviceName name in input.JoystickDevices)
-						{
-							if (name.IsConnected)
-							{
-								joystick = input.CreateJoystick(name, this.panel1);
-								break;
-							}
-						}
-					}
-				}
-
-
-				if (joystick != null)
-				{
-					joystick.DeadZone.X = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-					joystick.DeadZone.Y = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-					joystick.DeadZone.SecondaryX = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-					joystick.DeadZone.SecondaryY = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
-				}
-
 /*				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonBZ2FileSystemProvider");
@@ -189,6 +183,8 @@ namespace Tester
 				byte[] streamFile = new byte[stream.Length];
 				stream.Read(streamFile, 0, (int)stream.Length);
 				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();*/
+
+				CreateJoysticks();
 				
 				Gorgon.Go(Idle);
 			}
@@ -209,7 +205,18 @@ namespace Tester
 			if ((e.Buttons == PointingDeviceButtons.Left) && (e.ShiftButtons == PointingDeviceButtons.Right))			
 				mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + " - UP\n\n";
 			if (e.DoubleClick)
-				Gorgon.Terminate();
+			{
+				if (xinput != null)
+				{
+					xinput.Dispose();
+					xinput = null;
+					joystick = null;
+				}
+				else
+				{
+					CreateJoysticks();
+				}
+			}
 		}
 
 		void mouse_MouseDown(object sender, PointingDeviceEventArgs e)
@@ -248,16 +255,6 @@ namespace Tester
 		public Form1()
 		{
 			InitializeComponent();
-		}
-
-		/// <summary>
-		/// Handles the DoubleClick event of the panel1 control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void panel1_DoubleClick(object sender, EventArgs e)
-		{
-			Gorgon.Initialize(this);
 		}
 	}
 }
