@@ -59,7 +59,7 @@
   <ItemGroup>
     <Compile Include="GorgonBZ2FileStream.cs" />
     <Compile Include="GorgonBZ2Provider.cs" />
-    <Compile Include="GorgonBZ2ProviderPlugIn.cs" />
+    <Compile Include="GorgonBZ2PlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
