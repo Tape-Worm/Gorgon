@@ -122,13 +122,14 @@
       </ComponentConfig>
     </ComponentConfigurations>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Tools\DialogHelper\bin\Release\DialogHelper.dll" />
-      <DocumentationSource sourceFile="..\Tools\DialogHelper\bin\Release\DialogHelper.xml" />
-      <DocumentationSource sourceFile="..\Gorgon\bin\Release\Gorgon.dll" />
-      <DocumentationSource sourceFile="..\Gorgon\bin\Release\Gorgon.xml" />
-      <DocumentationSource sourceFile="..\Tools\GorgonFramework\bin\Release\GorgonFramework.dll" />
-      <DocumentationSource sourceFile="..\Tools\GorgonFramework\bin\Release\GorgonFramework.xml" />
-    </DocumentationSources>
+      <DocumentationSource sourceFile="..\Gorgon\bin\Debug\Gorgon.dll" />
+<DocumentationSource sourceFile="..\Libraries\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
+<DocumentationSource sourceFile="..\Libraries\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
+<DocumentationSource sourceFile="..\Libraries\Gorgon.Graphics\bin\Debug\Gorgon.Graphics.dll" />
+<DocumentationSource sourceFile="..\Libraries\Gorgon.Graphics\bin\Debug\Gorgon.Graphics.xml" />
+<DocumentationSource sourceFile="..\Libraries\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
+<DocumentationSource sourceFile="..\Libraries\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
+<DocumentationSource sourceFile="..\Gorgon\bin\Debug\Gorgon.xml" /></DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
       <NamespaceSummaryItem name="Dialogs" isDocumented="True" xmlns="">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
