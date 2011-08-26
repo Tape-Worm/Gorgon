@@ -498,7 +498,7 @@ namespace GorgonLibrary
 				PlugIns = new GorgonPlugInFactory();
 
 				if (ApplicationForm != null)
-					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonHexFormatter.Format(ApplicationForm.Handle), ApplicationForm.Name, ApplicationForm.Text);
+					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, ApplicationForm.Handle.FormatHex(), ApplicationForm.Name, ApplicationForm.Text);
 
 				IsRunning = false;
 
