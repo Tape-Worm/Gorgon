@@ -415,7 +415,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <param name="file">The file.</param>
 		/// <param name="stream">The stream.</param>
 		/// <param name="compressionInfo">Compression information for the file.</param>
-		internal GorgonGorPackFileStream(GorgonFileSystemFileEntry file, FileStream stream, GorgonGorPackFileSystemProvider.CompressedFileEntry? compressionInfo)
+		internal GorgonGorPackFileStream(GorgonFileSystemFileEntry file, FileStream stream, GorgonGorPackProvider.CompressedFileEntry? compressionInfo)
 			: base(file, stream)
 		{
 			stream.Position = file.Offset;		// Set the offset here.

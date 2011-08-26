@@ -40,7 +40,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 	/// A file system provider for Gorgon BZip2 compressed packed files.
 	/// </summary>
 	/// <remarks>The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files.</remarks>
-	public class GorgonGorPackFileSystemProvider
+	public class GorgonGorPackProvider
 		: GorgonFileSystemProvider
 	{
 		#region Value Types.
@@ -274,11 +274,11 @@ namespace GorgonLibrary.FileSystem.GorPack
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGorPackFileSystemProvider"/> class.
+		/// Initializes a new instance of the <see cref="GorgonGorPackProvider"/> class.
 		/// </summary>
 		/// <param name="fileSystem">File system that owns this provider.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal GorgonGorPackFileSystemProvider(GorgonFileSystem fileSystem)
+		internal GorgonGorPackProvider(GorgonFileSystem fileSystem)
 			: base(fileSystem)
 		{
 		}
