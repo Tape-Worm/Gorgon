@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input", "Libraries\G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.Raw", "PlugIns\Gorgon.HID.RawInput\Gorgon.Input.Raw.csproj", "{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.BZ2Packfile", "PlugIns\Gorgon.FileSystem.BZ2Packfile\Gorgon.FileSystem.BZ2Packfile.csproj", "{EDDBDEE0-8DA3-4A98-9E73-AD08830E6CC2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.GorPack", "PlugIns\Gorgon.FileSystem.BZ2Packfile\Gorgon.FileSystem.GorPack.csproj", "{EDDBDEE0-8DA3-4A98-9E73-AD08830E6CC2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.XInput", "PlugIns\Gorgon.HID.XInput\Gorgon.Input.XInput.csproj", "{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}"
 EndProject
