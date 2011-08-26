@@ -165,7 +165,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to clear out any outstanding resources when the object is disposed.
 		/// </summary>
-		/// <remarks>Implementors must call this function to clean up outstanding resources in the Dispose method.</remarks>
+		/// <remarks>Implementors must call this method to clean up outstanding resources in the Dispose method.</remarks>
 		protected override void CleanUpResources()
 		{
 			base.CleanUpResources();
@@ -264,7 +264,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to update the device window.
 		/// </summary>
 		/// <param name="settings">Settings for the device window.</param>
-		/// <remarks>Use this function to change the dimensions, format, fullscreen/windowed state and depth information for the device window.
+		/// <remarks>Use this method to change the dimensions, format, fullscreen/windowed state and depth information for the device window.
 		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// <para>Device windows bound to child controls or device windows with extra <see cref="GorgonLibrary.Graphics.GorgonSwapChain">swap chains</see> attached to them cannot go full screen, setting the <see cref="P:GorgonDeviceWindowSettings.Windowed"/> setting to TRUE will throw an exception.</para>

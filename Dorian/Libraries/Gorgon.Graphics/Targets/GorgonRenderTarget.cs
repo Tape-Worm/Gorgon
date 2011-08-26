@@ -129,7 +129,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to clear out any outstanding resources when the object is disposed.
 		/// </summary>
-		/// <remarks>Implementors must call this function to clean up outstanding resources in the Dispose method.</remarks>
+		/// <remarks>Implementors must call this method to clean up outstanding resources in the Dispose method.</remarks>
 		protected virtual void CleanUpResources()
 		{
 			_cleaned = true;
@@ -138,7 +138,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create any resources required by the render target.
 		/// </summary>
-		/// <remarks>Implementors must use this function to build the internal render target based on the rendering back end.</remarks>
+		/// <remarks>Implementors must use this method to build the internal render target based on the rendering back end.</remarks>
 		protected abstract void CreateResources();
 
 		/// <summary>

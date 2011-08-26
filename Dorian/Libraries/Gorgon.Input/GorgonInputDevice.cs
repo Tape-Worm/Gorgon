@@ -272,7 +272,7 @@ namespace GorgonLibrary.Input
 		/// Function called when the device is bound to a window.
 		/// </summary>
 		/// <param name="window">Window that was bound.</param>
-		/// <remarks>Implementors will override this function to handle specific events that may affect the input device.</remarks>
+		/// <remarks>Implementors will override this method to handle specific events that may affect the input device.</remarks>
 		protected virtual void OnWindowBound(Control window)
 		{
 		}

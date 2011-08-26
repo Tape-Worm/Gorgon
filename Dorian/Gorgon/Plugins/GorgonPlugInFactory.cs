@@ -38,7 +38,7 @@ using GorgonLibrary.Diagnostics;
 namespace GorgonLibrary.PlugIns
 {
 	/// <summary>
-	/// The return values for the <see cref="M:GorgonLibrary.PlugIns.GorgonPlugInFactory.IsPlugInSigned">IsPlugInSigned</see> function.
+	/// The return values for the <see cref="M:GorgonLibrary.PlugIns.GorgonPlugInFactory.IsPlugInSigned">IsPlugInSigned</see> method.
 	/// </summary>
 	[Flags]
 	public enum PlugInSigningResult

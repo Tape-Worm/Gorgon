@@ -302,7 +302,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="pointer">Pointer to format.</param>
 		/// <returns>The formatted address of the pointer.</returns>
-		/// <remarks>This function will take into account whether the application is x64 or x86 and will format accordingly.</remarks>
+		/// <remarks>This method will take into account whether the application is x64 or x86 and will format accordingly.</remarks>
 		public static string FormatHex(this IntPtr pointer)
 		{
 			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)

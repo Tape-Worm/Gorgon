@@ -116,7 +116,7 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="file">File to read.</param>
 		/// <returns>The file data stored in a byte array or NULL if the file could not be read.</returns>
-		/// <remarks>Implementors must implement this function to read the file from the physical file system.</remarks>
+		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
 		protected abstract byte[] OnReadFile(GorgonFileSystemFileEntry file);
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="file">File to read.</param>
 		/// <param name="data">Data to write to the file.</param>
-		/// <remarks>Implementors must implement this function to read the file from the physical file system.</remarks>
+		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
 		protected abstract void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data);
 
 		/// <summary>
@@ -260,8 +260,8 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="physicalPath">Path to the file containing the file system.</param>
 		/// <returns>TRUE if the provider can read the packed file, FALSE if not.</returns>
-		/// <remarks>This function is applicable to packed files only.
-		/// <para>Implementors must use this function to determine if a packed file can be read by reading the header of the file.</para>
+		/// <remarks>This method is applicable to packed files only.
+		/// <para>Implementors must use this method to determine if a packed file can be read by reading the header of the file.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>

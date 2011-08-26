@@ -455,7 +455,7 @@ namespace GorgonLibrary.Native
     }
 
     /// <summary>
-    /// Flags for PeekMessage function.
+    /// Flags for PeekMessage method.
     /// </summary>
     /// <remarks>See the MSDN documentation for more detail.</remarks>
     internal enum PeekMessageFlags

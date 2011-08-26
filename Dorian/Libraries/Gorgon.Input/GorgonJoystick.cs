@@ -987,20 +987,20 @@ namespace GorgonLibrary.Input
 		/// Function to retrieve the capabilities of the joystick/gamepad.
 		/// </summary>
 		/// <returns>The capabilities data for the joystick/gamepad.</returns>
-		/// <remarks>Implementors must implement this function so the object can determine constraints about the device.</remarks>
+		/// <remarks>Implementors must implement this method so the object can determine constraints about the device.</remarks>
 		protected abstract JoystickCapabilities GetCapabilities();
 
 		/// <summary>
 		/// Function to retrieve the buttons for the joystick/gamepad.
 		/// </summary>
 		/// <returns>The list of buttons for the joystick/gamepad.</returns>
-		/// <remarks>Implementors must implement this function so the object can get the list of buttons for the device.</remarks>
+		/// <remarks>Implementors must implement this method so the object can get the list of buttons for the device.</remarks>
 		protected abstract JoystickButtons GetButtons();
 
 		/// <summary>
 		/// Function to initalize the data for the joystick.
 		/// </summary>
-		/// <remarks>Implementors must call this function after the object has been created or during the construction of the object.</remarks>
+		/// <remarks>Implementors must call this method after the object has been created or during the construction of the object.</remarks>
 		protected void Initialize()
 		{
 			DeadZone = new JoystickDeadZoneAxes();
@@ -1016,7 +1016,7 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <param name="motorIndex">Index of the motor to start.</param>
 		/// <param name="value">Value to set.</param>
-		/// <remarks>Implementors should implement this function if the device supports vibration.</remarks>
+		/// <remarks>Implementors should implement this method if the device supports vibration.</remarks>
 		protected virtual void VibrateDevice(int motorIndex, int value)
 		{
 		}
