@@ -29,9 +29,9 @@ using GorgonLibrary.PlugIns;
 namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
-	/// Plug-in entry point for the zip file file system provider plug-in.
+	/// Plug-in entry point for the Gorgon packed file file system provider plug-in.
 	/// </summary>
-	public class GorgonBZ2PlugIn
+	public class GorgonGorPackPlugIn
 		: GorgonFileSystemProviderPlugIn 
 	{
 		/// <summary>
@@ -42,13 +42,13 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public override GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem)
 		{
-			return new BZ2Provider.GorgonBZ2FileSystemProvider(fileSystem);
+			return new GorPack.GorgonGorPackFileSystemProvider(fileSystem);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBZ2PlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonGorPackPlugIn"/> class.
 		/// </summary>
-		public GorgonBZ2PlugIn()
+		public GorgonGorPackPlugIn()
 			: base("A provider to read the older Gorgon BZip2 packfile.")
 		{
 		}

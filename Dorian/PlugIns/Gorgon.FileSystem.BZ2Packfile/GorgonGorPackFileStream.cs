@@ -28,12 +28,12 @@ using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.BZip2;
 
-namespace GorgonLibrary.FileSystem.BZ2Provider
+namespace GorgonLibrary.FileSystem.GorPack
 {
 	/// <summary>
 	/// A stream used to read Gorgon bzip2 pack files.
 	/// </summary>
-	public class GorgonBZ2FileStream
+	public class GorgonGorPackFileStream
 		: GorgonFileSystemStream 
 	{
 		#region Variables.
@@ -410,12 +410,12 @@ namespace GorgonLibrary.FileSystem.BZ2Provider
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBZ2FileStream"/> class.
+		/// Initializes a new instance of the <see cref="GorgonGorPackFileStream"/> class.
 		/// </summary>
 		/// <param name="file">The file.</param>
 		/// <param name="stream">The stream.</param>
 		/// <param name="compressionInfo">Compression information for the file.</param>
-		internal GorgonBZ2FileStream(GorgonFileSystemFileEntry file, FileStream stream, GorgonBZ2FileSystemProvider.CompressedFileEntry? compressionInfo)
+		internal GorgonGorPackFileStream(GorgonFileSystemFileEntry file, FileStream stream, GorgonGorPackFileSystemProvider.CompressedFileEntry? compressionInfo)
 			: base(file, stream)
 		{
 			stream.Position = file.Offset;		// Set the offset here.

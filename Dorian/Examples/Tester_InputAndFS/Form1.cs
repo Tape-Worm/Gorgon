@@ -160,7 +160,7 @@ namespace Tester
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.XInput.dll");
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.WinForms.dll");
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
-				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.GorPack.dll");
 				input = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
 				winput = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
 				
@@ -181,8 +181,8 @@ namespace Tester
 				keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(keyboard_KeyUp);
 
 				fileSystem = new GorgonFileSystem();
-				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
-				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonBZ2FileSystemProvider");
+				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipPlugIn");
+				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonGorPackPlugIn");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\ParilTest.zip", "/Zip");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\BZipFileSystem.gorPack");
