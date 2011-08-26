@@ -39,7 +39,7 @@ namespace GorgonLibrary.Input.WinForms
 	/// <summary>
 	/// Object representing the main interface to the input library.
 	/// </summary>
-	internal class GorgonWinFormsDeviceFactory
+	internal class GorgonWinFormsInputFactory
 		: GorgonInputFactory
 	{
 		#region Methods.
@@ -146,9 +146,9 @@ namespace GorgonLibrary.Input.WinForms
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonWinFormsDeviceFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonWinFormsInputFactory"/> class.
 		/// </summary>
-		public GorgonWinFormsDeviceFactory()
+		public GorgonWinFormsInputFactory()
 			: base("Gorgon.Input.WinForms")
 		{
 		}
