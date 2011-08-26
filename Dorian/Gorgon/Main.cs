@@ -390,11 +390,10 @@ namespace GorgonLibrary
 		}
 	
 		/// <summary>
-		/// Function to stop the engine from rendering.
+		/// Function to stop the application message process.
 		/// </summary>
 		/// <remarks>
-		/// This will merely stop the rendering process, it can be restarted with the <see cref="M:GorgonLibrary.Gorgon.Go">Go</see> method.
-		/// <para>Note that this method does -not- affect the video mode.</para>
+		/// This will merely stop the message process, it can be restarted with the <see cref="M:GorgonLibrary.Gorgon.Go">Go</see> method.
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> has not been called.</exception>
 		public static void Stop()
