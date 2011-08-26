@@ -155,12 +155,12 @@ namespace Tester
 			try 
 			{
 				Gorgon.Initialize();
-				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");				
-				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.Input.Raw.dll");
-				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.Input.XInput.dll");
-				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.Input.WinForms.dll");
-				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
-				GorgonPlugInFactory.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
+				Gorgon.PlugIns.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.Raw.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.XInput.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.WinForms.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
 				input = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
 				winput = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
 				

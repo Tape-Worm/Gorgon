@@ -297,7 +297,7 @@ namespace GorgonLibrary.FileSystem
 		/// <remarks>This is a convenience function to allow mass loading of file system providers.</remarks>
 		public void AddAllProviders()
 		{
-			var plugIns = from plugInList in GorgonPlugInFactory.PlugIns
+			var plugIns = from plugInList in Gorgon.PlugIns
 							 where plugInList is GorgonFileSystemProviderPlugIn
 							 select plugInList;
 

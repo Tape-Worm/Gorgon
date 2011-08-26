@@ -425,10 +425,10 @@ namespace GorgonLibrary.Input
 
 			GorgonUtility.AssertParamString(plugInType, "plugInType");
 
-			if (!GorgonPlugInFactory.PlugIns.Contains(plugInType))
+			if (!Gorgon.PlugIns.Contains(plugInType))
 				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");
 
-			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonInputPlugIn;
+			plugIn = Gorgon.PlugIns[plugInType] as GorgonInputPlugIn;
 
 			if (plugIn == null)
 				throw new ArgumentException("The plug-in '" + plugInType + "' is not an input plug-in.", "plugInType");

@@ -65,25 +65,10 @@ namespace GorgonLibrary.PlugIns
 		: GorgonBaseNamedObjectCollection<GorgonPlugIn>
 	{
 		#region Variables.
-		private static GorgonPlugInFactory _factory = null;			// Factory instance.
-		private static GorgonPlugInPathCollection _paths = null;	// Search paths for the plug-in assemblies.
+		private GorgonPlugInPathCollection _paths = null;	// Search paths for the plug-in assemblies.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the list of plug-in types available for use.
-		/// </summary>
-		public static GorgonPlugInFactory PlugIns
-		{
-			get
-			{
-				if (_factory == null)
-					_factory = new GorgonPlugInFactory();
-
-				return _factory;
-			}
-		}
-
 		/// <summary>
 		/// Property to return the list of search paths to use.
 		/// </summary>
@@ -97,7 +82,7 @@ namespace GorgonLibrary.PlugIns
 		/// </list>
 		/// </para>
 		/// </remarks>
-		public static GorgonPlugInPathCollection SearchPaths
+		public GorgonPlugInPathCollection SearchPaths
 		{
 			get
 			{
@@ -192,11 +177,11 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to filter.</param>
 		/// <returns>A read-only list of plug-ins.</returns>
-		public static GorgonNamedObjectReadOnlyCollection<GorgonPlugIn> GetPlugInsFrom(AssemblyName assemblyName)
+		public GorgonNamedObjectReadOnlyCollection<GorgonPlugIn> EnumeratePlugIns(AssemblyName assemblyName)
 		{
 			List<GorgonPlugIn> plugIns = new List<GorgonPlugIn>();
 
-			foreach (GorgonPlugIn plugIn in PlugIns)
+			foreach (GorgonPlugIn plugIn in this)
 			{
 				Type plugInType = plugIn.GetType();
 
@@ -210,9 +195,9 @@ namespace GorgonLibrary.PlugIns
 		/// <summary>
 		/// Function to unload all the plug-ins.
 		/// </summary>
-		public static void UnloadAll()
+		public void UnloadAll()
 		{
-			PlugIns.ClearItems();
+			this.ClearItems();
 		}
 
 		/// <summary>
@@ -221,10 +206,10 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="name">Name of the plug-in to remove.</param>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="name"/> was NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">The name was an empty string..</exception>
-		public static void Unload(string name)
+		public void Unload(string name)
 		{
 			GorgonUtility.AssertParamString(name, "name");
-			PlugIns.RemoveItem(name);
+			this.RemoveItem(name);
 		}
 
 		/// <summary>
@@ -232,9 +217,9 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="index">Index of the plug-in to remove.</param>
 		/// <exception cref="System.IndexOutOfRangeException">The <paramRef name="index"/> parameter was less than 0 or greater than or equal to <see cref="P:Engine.PlugIns.EnginePlugInList.Count">Count</see>.</exception>
-		public static void Unload(int index)
+		public void Unload(int index)
 		{
-			PlugIns.RemoveItem(index);
+			this.RemoveItem(index);
 		}
 
 		/// <summary>
@@ -242,12 +227,12 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="plugIn">Plug-in to remove.</param>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="plugIn"/> parameter was NULL (Nothing in VB.Net).</exception>
-		public static void Unload(GorgonPlugIn plugIn)
+		public void Unload(GorgonPlugIn plugIn)
 		{
 			if (plugIn == null)
 				throw new ArgumentNullException("plugIn");
 
-			PlugIns.RemoveItem(plugIn);
+			this.RemoveItem(plugIn);
 		}
 
 		/// <summary>
@@ -257,7 +242,7 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="publicKey">Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
 		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public static PlugInSigningResult IsPlugInSigned(AssemblyName assemblyName, byte[] publicKey)
+		public PlugInSigningResult IsPlugInSigned(AssemblyName assemblyName, byte[] publicKey)
 		{
 			byte[] plugInPublicKey = null;
 			PlugInSigningResult result = PlugInSigningResult.Signed;
@@ -296,7 +281,7 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="assemblyName">Name of the assembly to check.</param>
 		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public static PlugInSigningResult IsPlugInSigned(AssemblyName assemblyName)
+		public PlugInSigningResult IsPlugInSigned(AssemblyName assemblyName)
 		{
 			return IsPlugInSigned(assemblyName, null);
 		}
@@ -310,7 +295,7 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
-		public static PlugInSigningResult IsPlugInSigned(string assemblyPath, byte[] publicKey)
+		public PlugInSigningResult IsPlugInSigned(string assemblyPath, byte[] publicKey)
 		{
 			AssemblyName plugInAssemblyName = null;
 
@@ -347,7 +332,7 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
-		public static PlugInSigningResult IsPlugInSigned(string assemblyPath)		
+		public PlugInSigningResult IsPlugInSigned(string assemblyPath)		
 		{
 			return IsPlugInSigned(assemblyPath, null);
 		}
@@ -362,7 +347,7 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
-		public static AssemblyName LoadPlugInAssembly(string assemblyPath)
+		public AssemblyName LoadPlugInAssembly(string assemblyPath)
 		{
 			AssemblyName plugInAssemblyName = null;
 
@@ -399,7 +384,7 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="assemblyName">Name of the assembly to load.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
-		public static void LoadPlugInAssembly(AssemblyName assemblyName)
+		public void LoadPlugInAssembly(AssemblyName assemblyName)
 		{
 			Assembly plugInAssembly = null;
 
@@ -422,17 +407,17 @@ namespace GorgonLibrary.PlugIns
 					GorgonPlugIn plugIn = plugInType.Assembly.CreateInstance(plugInType.FullName, false, BindingFlags.CreateInstance, null, null, null, null) as GorgonPlugIn;
 					if (plugIn == null)
 						throw new GorgonException(GorgonResult.CannotCreate, "Could not create the plug-in type '" + plugInType.FullName + "' in assembly '" + plugInType.Assembly.FullName + "'.  It was not of type EnginePlugIn.");
-					if (!PlugIns.Contains(plugIn.Name))
+					if (!this.Contains(plugIn.Name))
 					{
 						Gorgon.Log.Print("Plug-in '{0}' created.", Diagnostics.GorgonLoggingLevel.Simple, plugIn.Name);
-						PlugIns.AddItem(plugIn);
+						this.AddItem(plugIn);
 					}
 					else
 					{
-						if (plugIn.GetType() != PlugIns[plugIn.Name].GetType())
+						if (plugIn.GetType() != this[plugIn.Name].GetType())
 						{
 							throw new GorgonException(GorgonResult.CannotCreate, "The plug-in '" + plugIn.Name + "' in assembly '" + plugInType.Assembly.FullName +
-									"' already exists in another plug-in assembly '" + PlugIns[plugIn.Name].GetType().Assembly.FullName + "' and is not the same type.");
+									"' already exists in another plug-in assembly '" + this[plugIn.Name].GetType().Assembly.FullName + "' and is not the same type.");
 						}
 						else
 							Gorgon.Log.Print("Plug-in '{0}' already created.  Using this instance.", Diagnostics.GorgonLoggingLevel.Simple, plugIn.Name);
@@ -459,17 +444,9 @@ namespace GorgonLibrary.PlugIns
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonPlugInFactory"/> class.
 		/// </summary>
-		private GorgonPlugInFactory()
+		public GorgonPlugInFactory()
 			: base(false)
 		{
-		}
-
-		/// <summary>
-		/// Initializes the <see cref="GorgonPlugInFactory"/> class.
-		/// </summary>
-		static GorgonPlugInFactory()
-		{
-			_factory = new GorgonPlugInFactory();
 			_paths = new GorgonPlugInPathCollection();
 		}
 		#endregion

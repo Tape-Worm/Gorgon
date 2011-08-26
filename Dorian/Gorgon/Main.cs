@@ -236,6 +236,15 @@ namespace GorgonLibrary
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to return the plug-in factory interface.
+		/// </summary>
+		public static GorgonPlugInFactory PlugIns
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -327,7 +336,7 @@ namespace GorgonLibrary
 			// Continue on.
 			if (IsRunning)
 				Application_Idle(ApplicationForm, EventArgs.Empty);
-		}
+		}	
 
 		/// <summary>
 		/// Function to initialize Gorgon.
@@ -374,6 +383,8 @@ namespace GorgonLibrary
 				// Get the primary application window.
 				ApplicationForm = applicationForm;
 
+				PlugIns = new GorgonPlugInFactory();
+
 				if (ApplicationForm != null)
 					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ApplicationForm.Handle), ApplicationForm.Name, ApplicationForm.Text);
 
@@ -403,7 +414,7 @@ namespace GorgonLibrary
 			// Stop the engine.
 			Stop();
 
-			GorgonPlugInFactory.UnloadAll();
+			PlugIns.UnloadAll();
 
 			Log.Print("Shutting down.", GorgonLoggingLevel.All);
 

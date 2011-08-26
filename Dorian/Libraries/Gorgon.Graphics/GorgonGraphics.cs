@@ -317,10 +317,10 @@ namespace GorgonLibrary.Graphics
 
 			GorgonUtility.AssertParamString(plugInType, "plugInType");
 
-			if (!GorgonPlugInFactory.PlugIns.Contains(plugInType))
+			if (!Gorgon.PlugIns.Contains(plugInType))
 				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");
 
-			plugIn = GorgonPlugInFactory.PlugIns[plugInType] as GorgonGraphicsPlugIn;
+			plugIn = Gorgon.PlugIns[plugInType] as GorgonGraphicsPlugIn;
 
 			if (plugIn == null)
 				throw new ArgumentException("The plug-in '" + plugInType + "' is not a graphics plug-in.", "plugInType");

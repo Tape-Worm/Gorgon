@@ -80,9 +80,9 @@ namespace Tester_Graphics
 			{
 				this.panelDX.Visible = false;
 				Gorgon.Initialize(this);
-				
-				GorgonPlugInFactory.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
-				GorgonPlugInFactory.LoadPlugInAssembly("Gorgon.Graphics.D3D9.dll");
+
+				Gorgon.PlugIns.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
+				Gorgon.PlugIns.LoadPlugInAssembly("Gorgon.Graphics.D3D9.dll");
 
 				GorgonFrameRate.UseHighResolutionTimer = false;
 
