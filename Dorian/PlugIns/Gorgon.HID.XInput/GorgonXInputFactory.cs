@@ -40,7 +40,7 @@ namespace GorgonLibrary.Input.XInput
 	/// <summary>
 	/// Object representing the main interface to the input library.
 	/// </summary>
-	internal class GorgonXInputDeviceFactory
+	internal class GorgonXInputFactory
 		: GorgonInputFactory
 	{
 		#region Methods.
@@ -172,9 +172,9 @@ namespace GorgonLibrary.Input.XInput
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonXInputDeviceFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonXInputFactory"/> class.
 		/// </summary>
-		public GorgonXInputDeviceFactory()
+		public GorgonXInputFactory()
 			: base("Gorgon.Input.XInput")
 		{
 		}
