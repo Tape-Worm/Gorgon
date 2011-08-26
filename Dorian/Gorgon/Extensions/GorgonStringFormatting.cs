@@ -122,7 +122,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to remove any illegal filename characters from a path.
+		/// Function to remove any illegal file name characters from a path.
 		/// </summary>
 		/// <param name="path">Path to fix.</param>
 		/// <returns>The corrected file name.</returns>

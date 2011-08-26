@@ -180,7 +180,7 @@ namespace Tester
 				keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(keyboard_KeyDown);
 				keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(keyboard_KeyUp);
 
-				/*fileSystem = new GorgonFileSystem();
+				fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipPlugIn");
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonGorPackPlugIn");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
@@ -190,7 +190,7 @@ namespace Tester
 				System.IO.Stream stream = fileSystem.GetFile("/Shaders/Blur.fx").OpenStream(false);
 				byte[] streamFile = new byte[stream.Length];
 				stream.Read(streamFile, 0, (int)stream.Length);
-				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();*/
+				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();
 
 				CreateJoysticks();
 
