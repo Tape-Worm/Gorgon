@@ -182,7 +182,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal RawKeyboard(GorgonRawInputDeviceFactory owner, IntPtr handle, Forms.Control boundWindow)
+		internal RawKeyboard(GorgonRawInputFactory owner, IntPtr handle, Forms.Control boundWindow)
 			: base(owner, "Raw Input Keyboard", boundWindow)
 		{
 			Gorgon.Log.Print("Raw input keyboard interface created for handle 0x{0}.", GorgonLoggingLevel.Verbose, GorgonHexFormatter.Format(handle));

@@ -31,7 +31,7 @@ namespace GorgonLibrary.FileSystem
 	/// <summary>
 	/// Plug-in entry point for the zip file file system provider plug-in.
 	/// </summary>
-	public class GorgonBZ2FileSystemProvider
+	public class GorgonBZ2PlugIn
 		: GorgonFileSystemProviderPlugIn 
 	{
 		/// <summary>
@@ -42,13 +42,13 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public override GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem)
 		{
-			return new BZ2FileSystem.GorgonBZ2FileSystemProvider(fileSystem);
+			return new BZ2Provider.GorgonBZ2FileSystemProvider(fileSystem);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBZ2FileSystemProvider"/> class.
+		/// Initializes a new instance of the <see cref="GorgonBZ2PlugIn"/> class.
 		/// </summary>
-		public GorgonBZ2FileSystemProvider()
+		public GorgonBZ2PlugIn()
 			: base("A provider to read the older Gorgon BZip2 packfile.")
 		{
 		}
