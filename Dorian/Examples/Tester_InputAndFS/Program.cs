@@ -20,6 +20,10 @@ namespace Tester
 				Application.SetCompatibleTextRenderingDefault(false);
 				Application.Run(new Form1());
 			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonLibrary.UI.GorgonDialogs.ErrorBox(null, ex));
+			}
 			finally
 			{
 				Gorgon.Terminate();
