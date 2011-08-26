@@ -38,7 +38,7 @@ namespace GorgonLibrary.FileSystem.Zip
 	/// <summary>
 	/// A file system provider for zip files.
 	/// </summary>
-	public class GorgonZipFileSystemProvider
+	public class GorgonZipProvider
 		: GorgonFileSystemProvider
 	{
 		#region Methods.
@@ -195,11 +195,11 @@ namespace GorgonLibrary.FileSystem.Zip
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonZipFileSystemProvider"/> class.
+		/// Initializes a new instance of the <see cref="GorgonZipProvider"/> class.
 		/// </summary>
 		/// <param name="fileSystem">File system that owns this provider.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal GorgonZipFileSystemProvider(GorgonFileSystem fileSystem)			
+		internal GorgonZipProvider(GorgonFileSystem fileSystem)			
 			: base(fileSystem)
 		{
 			PreferredExtensions = new List<string>() { "Zip files (*.zip)|*.zip" };
