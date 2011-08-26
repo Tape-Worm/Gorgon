@@ -15,15 +15,6 @@ using GorgonLibrary.FileSystem;
 
 namespace Tester
 {
-	public static class StringExt
-	{
-		public static string Test(this int value)
-		{
-			return value.ToString();
-		}
-
-	}
-
 	public partial class Form1 : Form
 	{
 		GorgonInputFactory input = null;
