@@ -8,8 +8,8 @@
     <ProjectGuid>{EDDBDEE0-8DA3-4A98-9E73-AD08830E6CC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.FileSystem.BZ2Provider</RootNamespace>
-    <AssemblyName>Gorgon.FileSystem.BZ2Provider</AssemblyName>
+    <RootNamespace>GorgonLibrary.FileSystem.BZ2</RootNamespace>
+    <AssemblyName>Gorgon.FileSystem.BZ2</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
