@@ -562,7 +562,7 @@ namespace GorgonLibrary.Input
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		protected GorgonPointingDevice(GorgonInputDeviceFactory owner, string deviceName, Forms.Control boundWindow)
+		protected GorgonPointingDevice(GorgonInputFactory owner, string deviceName, Forms.Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
 			_position = new PointF(BoundControl.ClientSize.Width / 2, BoundControl.ClientSize.Height / 2);

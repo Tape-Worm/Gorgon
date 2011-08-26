@@ -17,9 +17,9 @@ namespace Tester
 {
 	public partial class Form1 : Form
 	{
-		GorgonInputDeviceFactory input = null;
-		GorgonInputDeviceFactory winput = null;
-		GorgonInputDeviceFactory xinput = null;
+		GorgonInputFactory input = null;
+		GorgonInputFactory winput = null;
+		GorgonInputFactory xinput = null;
 		GorgonPointingDevice mouse = null;
 		GorgonKeyboard keyboard = null;
 		GorgonFileSystem fileSystem = null;
@@ -112,7 +112,7 @@ namespace Tester
 
 		private void CreateJoysticks()
 		{
-			xinput = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
+			xinput = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
 
 			foreach (GorgonInputDeviceInfo device in xinput.JoystickDevices)
 			{
@@ -161,8 +161,8 @@ namespace Tester
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.WinForms.dll");
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.BZ2Packfile.dll");
-				input = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
-				winput = GorgonInputDeviceFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
+				input = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+				winput = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
 				
 				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();

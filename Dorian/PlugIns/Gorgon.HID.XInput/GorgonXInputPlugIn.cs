@@ -45,7 +45,7 @@ namespace GorgonLibrary.Input
 		/// <returns>
 		/// The interface for the input factory.
 		/// </returns>
-		protected override GorgonInputDeviceFactory CreateFactory()
+		protected override GorgonInputFactory CreateFactory()
 		{
 			return new XInput.GorgonXInputDeviceFactory();
 		}

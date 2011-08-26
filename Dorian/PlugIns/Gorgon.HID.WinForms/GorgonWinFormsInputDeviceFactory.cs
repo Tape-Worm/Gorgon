@@ -40,7 +40,7 @@ namespace GorgonLibrary.Input.WinForms
 	/// Object representing the main interface to the input library.
 	/// </summary>
 	internal class GorgonWinFormsInputDeviceFactory
-		: GorgonInputDeviceFactory
+		: GorgonInputFactory
 	{
 		#region Methods.
 		/// <summary>

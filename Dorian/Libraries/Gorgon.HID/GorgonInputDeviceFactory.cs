@@ -41,7 +41,7 @@ namespace GorgonLibrary.Input
 	/// <para>This object is capable of creating multiple interfaces for each keyboard and pointing device attached to the system.  
 	/// If the user has more than one of these devices attached, they will be enumerated here and will be available as distinct object instances.</para>
 	/// </remarks>
-	public abstract class GorgonInputDeviceFactory
+	public abstract class GorgonInputFactory
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
@@ -419,10 +419,10 @@ namespace GorgonLibrary.Input
 		/// <para>-or-</para>
 		/// <para>Thrown when the input device factory plug-in requested is not an input device factory.</para>
 		/// </exception>
-		public static GorgonInputDeviceFactory CreateInputDeviceFactory(string plugInType)
+		public static GorgonInputFactory CreateInputDeviceFactory(string plugInType)
 		{
 			GorgonInputPlugIn plugIn = null;
-			GorgonInputDeviceFactory factory = null;
+			GorgonInputFactory factory = null;
 
 			GorgonDebug.AssertParamString(plugInType, "plugInType");
 
@@ -442,12 +442,12 @@ namespace GorgonLibrary.Input
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputDeviceFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputFactory"/> class.
 		/// </summary>
 		/// <param name="name">The name of the device manager.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		protected GorgonInputDeviceFactory(string name)
+		protected GorgonInputFactory(string name)
 			: base(name)
 		{
 			Devices = new Dictionary<string, GorgonInputDevice>();

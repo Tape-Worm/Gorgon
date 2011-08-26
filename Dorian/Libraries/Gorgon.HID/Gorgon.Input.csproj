@@ -55,7 +55,6 @@
   <ItemGroup>
     <Compile Include="GorgonCustomHIDProperty.cs" />
     <Compile Include="GorgonCustomHIDPropertyCollection.cs" />
-    <Compile Include="GorgonInputDeviceFactoryCollection.cs" />
     <Compile Include="GorgonInputDevice.cs" />
     <Compile Include="GorgonInputDeviceInfo.cs" />
     <Compile Include="GorgonInputDeviceInfoCollection.cs" />

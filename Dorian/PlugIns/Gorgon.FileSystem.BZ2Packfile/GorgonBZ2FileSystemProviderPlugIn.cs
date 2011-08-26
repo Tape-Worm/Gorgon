@@ -42,7 +42,7 @@ namespace GorgonLibrary.IO
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public override GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem)
 		{
-			return new BZ2.GorgonBZ2FileSystemProvider(fileSystem);
+			return new BZ2FileSystem.GorgonBZ2FileSystemProvider(fileSystem);
 		}
 
 		/// <summary>

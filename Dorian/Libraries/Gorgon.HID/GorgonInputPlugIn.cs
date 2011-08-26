@@ -46,7 +46,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to set or return the single device factory instance created by this plug-in.
 		/// </summary>
-		internal GorgonInputDeviceFactory DeviceFactoryInstance
+		internal GorgonInputFactory DeviceFactoryInstance
 		{
 			get;
 			set;
@@ -58,15 +58,15 @@ namespace GorgonLibrary.Input
 		/// Function to perform the actual creation of the input factory object.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		protected abstract GorgonInputDeviceFactory CreateFactory();
+		protected abstract GorgonInputFactory CreateFactory();
 
 		/// <summary>
 		/// Function to return the input factory.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		internal GorgonInputDeviceFactory GetFactory()
+		internal GorgonInputFactory GetFactory()
 		{
-			GorgonInputDeviceFactory factory = DeviceFactoryInstance;
+			GorgonInputFactory factory = DeviceFactoryInstance;
 
 			if (factory == null)
 			{
