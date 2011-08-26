@@ -73,7 +73,7 @@
   <ItemGroup>
     <Compile Include="GorgonZipFileStream.cs" />
     <Compile Include="GorgonZipProvider.cs" />
-    <Compile Include="GorgonZipProviderPlugIn.cs" />
+    <Compile Include="GorgonZipPlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
