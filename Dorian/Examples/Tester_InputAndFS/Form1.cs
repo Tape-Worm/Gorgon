@@ -112,8 +112,6 @@ namespace Tester
 
 		private void CreateJoysticks()
 		{
-			xinput = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
-
 			foreach (GorgonInputDeviceInfo device in xinput.JoystickDevices)
 			{
 				if (device.IsConnected)
@@ -163,6 +161,7 @@ namespace Tester
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.GorPack.dll");
 				input = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
 				winput = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
+				xinput = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
 				
 				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
@@ -180,7 +179,7 @@ namespace Tester
 				keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(keyboard_KeyDown);
 				keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(keyboard_KeyUp);
 
-				fileSystem = new GorgonFileSystem();
+				/*fileSystem = new GorgonFileSystem();
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipPlugIn");
 				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonGorPackPlugIn");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
@@ -190,7 +189,7 @@ namespace Tester
 				System.IO.Stream stream = fileSystem.GetFile("/Shaders/Blur.fx").OpenStream(false);
 				byte[] streamFile = new byte[stream.Length];
 				stream.Read(streamFile, 0, (int)stream.Length);
-				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();
+				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();*/
 
 				CreateJoysticks();
 
