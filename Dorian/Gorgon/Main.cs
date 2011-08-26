@@ -313,47 +313,6 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory.</returns>
-		private static string FormatMemoryAmount(long amount)
-		{
-			double scale = amount;
-			string result = string.Empty;
-
-			if (amount < 0)
-				return "Unknown.";
-
-			scale = amount / 1125899906842624.0;
-
-			if (scale > 1.0)
-				return scale.ToString("0.0") + " PB";
-
-			scale = amount / 1099511627776.0;
-
-			if (scale > 1.0)
-				return scale.ToString("0.0") + " TB";
-
-			scale = amount / 1073741824.0;
-
-			if (scale > 1.0)
-				return scale.ToString("0.0") + " GB";
-
-			scale = amount / 1048576.0;
-
-			if (scale > 1.0)
-				return scale.ToString("0.0") + " MB";
-
-			scale = amount / 1024.0;
-
-			if (scale > 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
-		}
-
-		/// <summary>
 		/// Function to return the top level form that contains the child control.
 		/// </summary>
 		/// <param name="childControl">The child control that's nested within a base windows form.</param>

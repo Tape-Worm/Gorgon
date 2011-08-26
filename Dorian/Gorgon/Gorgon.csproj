@@ -114,7 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Diagnostics\GorgonDebug.cs" />
-    <Compile Include="GorgonHexFormatter.cs" />
+    <Compile Include="GorgonFormatting.cs" />
     <Compile Include="GorgonPath.cs" />
     <Compile Include="Math\GorgonRange.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
