@@ -27,7 +27,7 @@
 using GorgonLibrary;
 using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
 	/// A collection of file system virtual directories.

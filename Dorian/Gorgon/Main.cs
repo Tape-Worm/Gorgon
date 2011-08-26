@@ -38,7 +38,6 @@ using Microsoft.Win32;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
 using GorgonLibrary.PlugIns;
-using GorgonLibrary.IO;
 
 namespace GorgonLibrary
 {

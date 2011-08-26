@@ -11,7 +11,7 @@ using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Input;
-using GorgonLibrary.IO;
+using GorgonLibrary.FileSystem;
 
 namespace Tester
 {
@@ -181,8 +181,8 @@ namespace Tester
 				keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(keyboard_KeyUp);
 
 				fileSystem = new GorgonFileSystem();
-				fileSystem.AddProvider("GorgonLibrary.IO.GorgonZipFileSystemProvider");
-				fileSystem.AddProvider("GorgonLibrary.IO.GorgonBZ2FileSystemProvider");
+				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipFileSystemProvider");
+				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonBZ2FileSystemProvider");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\ParilTest.zip", "/Zip");
 				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\BZipFileSystem.gorPack");

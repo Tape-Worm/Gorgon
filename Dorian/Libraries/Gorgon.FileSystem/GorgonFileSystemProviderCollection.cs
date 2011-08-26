@@ -30,7 +30,7 @@ using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
 	/// A collection of file system providers.

@@ -32,7 +32,7 @@ using System.Text.RegularExpressions;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
 	/// The File System interface.
@@ -312,7 +312,7 @@ namespace GorgonLibrary.IO
 		/// <param name="path">Path to the directory to start searching in.</param>
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all child directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> or the path parameter is a zero length string.</exception>
 		/// <remarks>This function will accept file name masks like directory*, directory??1 and directory*a* when searching.
@@ -342,7 +342,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all child directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> parameter is a zero length string.</exception>
 		/// <remarks>This function will accept file name masks like directory*, directory??1 and directory*a* when searching.
@@ -359,7 +359,7 @@ namespace GorgonLibrary.IO
 		/// <param name="path">Path to start searching in.</param>
 		/// <param name="fileMask">The file name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> is a zero length string.
 		/// <para>-or-</para><para>Thrown when path specified in the <paramref name="path"/> parameter was not found.</para>
@@ -391,7 +391,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="fileMask">The file name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> is a zero length string.</exception>
 		/// <remarks>This function will accept file name masks like file*, file??1 and file*a* when searching.
@@ -537,7 +537,7 @@ namespace GorgonLibrary.IO
 		/// <para>-or-</para><para>Thrown when the <paramref name="writeable"/> parameter is TRUE and the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</para>
 		/// </exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found and <paramref name="writeable"/> is FALSE.</exception>
-		/// <returns>The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(string path, bool writeable)
 		{
 			GorgonFileSystemFileEntry file = null;

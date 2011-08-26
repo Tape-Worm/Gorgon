@@ -34,7 +34,7 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.BZip2;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.IO.BZ2FileSystem
+namespace GorgonLibrary.FileSystem.BZ2FileSystem
 {
 	/// <summary>
 	/// A file system provider for Gorgon BZip2 compressed packed files.

@@ -31,7 +31,6 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
 
 namespace GorgonLibrary.PlugIns
 {
