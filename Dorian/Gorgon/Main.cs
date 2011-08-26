@@ -445,8 +445,8 @@ namespace GorgonLibrary
 
 				Log.Print("Initializing...", GorgonLoggingLevel.All);
 				Log.Print("Architecture: {0}", GorgonLoggingLevel.Verbose, PlatformArchitecture.ToString());
-				Log.Print("Installed Memory: {0}", GorgonLoggingLevel.Verbose, FormatMemoryAmount(TotalPhysicalRAM));
-				Log.Print("Available Memory: {0}", GorgonLoggingLevel.Verbose, FormatMemoryAmount(AvailablePhysicalRAM));
+				Log.Print("Installed Memory: {0}", GorgonLoggingLevel.Verbose, TotalPhysicalRAM.FormatMemory());
+				Log.Print("Available Memory: {0}", GorgonLoggingLevel.Verbose, AvailablePhysicalRAM.FormatMemory());
 
 				// Default to using 10 milliseconds of sleep time when the application is not focused.
 				UnfocusedSleepTime = 10;

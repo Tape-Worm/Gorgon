@@ -32,11 +32,201 @@ using System.Text;
 namespace GorgonLibrary
 {
 	/// <summary>
-	/// Utility for formatting numeric values into hexadecimal strings.
+	/// Utility for formatting numeric values into various types of strings.
 	/// </summary>
-	public static class GorgonHexFormatterExtension
+	public static class GorgonFormattingExtension
 	{
 		#region Methods.
+		/// <summary>
+		/// Function to return a formatted string containing the memory amount.
+		/// </summary>
+		/// <param name="amount">Amount of memory in bytes to format.</param>
+		/// <returns>A string containing the formatted amount of memory.</returns>
+		public static string FormatMemory(this byte amount)
+		{
+			return amount.ToString() + " bytes";
+		}
+
+		/// <summary>
+		/// Function to return a formatted string containing the memory amount.
+		/// </summary>
+		/// <param name="amount">Amount of memory in bytes to format.</param>
+		/// <returns>A string containing the formatted amount of memory.</returns>
+		public static string FormatMemory(this short amount)
+		{
+			double scale = amount;
+			string result = string.Empty;
+
+			scale = amount / 1024.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " KB";
+
+			return amount.ToString() + " bytes";
+		}
+
+		/// <summary>
+		/// Function to return a formatted string containing the memory amount.
+		/// </summary>
+		/// <param name="amount">Amount of memory in bytes to format.</param>
+		/// <returns>A string containing the formatted amount of memory.</returns>
+		public static string FormatMemory(this ushort amount)
+		{
+			double scale = amount;
+			string result = string.Empty;
+
+			scale = amount / 1024.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " KB";
+
+			return amount.ToString() + " bytes";
+		}
+
+		/// <summary>
+		/// Function to return a formatted string containing the memory amount.
+		/// </summary>
+		/// <param name="amount">Amount of memory in bytes to format.</param>
+		/// <returns>A string containing the formatted amount of memory.</returns>
+		public static string FormatMemory(this int amount)
+		{
+			double scale = amount;
+			string result = string.Empty;
+
+			if (amount < 0)
+				return "Unknown.";
+
+			scale = amount / 1073741824.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " GB";
+
+			scale = amount / 1048576.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " MB";
+
+			scale = amount / 1024.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " KB";
+
+			return amount.ToString() + " bytes";
+		}
+
+		/// <summary>
+		/// Function to return a formatted string containing the memory amount.
+		/// </summary>
+		/// <param name="amount">Amount of memory in bytes to format.</param>
+		/// <returns>A string containing the formatted amount of memory.</returns>
+		public static string FormatMemory(this uint amount)
+		{
+			double scale = amount;
+			string result = string.Empty;
+
+			if (amount < 0)
+				return "Unknown.";
+
+			scale = amount / 1073741824.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " GB";
+
+			scale = amount / 1048576.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " MB";
+
+			scale = amount / 1024.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " KB";
+
+			return amount.ToString() + " bytes";
+		}
+
+		/// <summary>
+		/// Function to return a formatted string containing the memory amount.
+		/// </summary>
+		/// <param name="amount">Amount of memory in bytes to format.</param>
+		/// <returns>A string containing the formatted amount of memory.</returns>
+		public static string FormatMemory(this long amount)
+		{
+			double scale = amount;
+			string result = string.Empty;
+
+			if (amount < 0)
+				return "Unknown.";
+
+			scale = amount / 1125899906842624.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " PB";
+
+			scale = amount / 1099511627776.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " TB";
+
+			scale = amount / 1073741824.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " GB";
+
+			scale = amount / 1048576.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " MB";
+
+			scale = amount / 1024.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " KB";
+
+			return amount.ToString() + " bytes";
+		}
+
+		/// <summary>
+		/// Function to return a formatted string containing the memory amount.
+		/// </summary>
+		/// <param name="amount">Amount of memory in bytes to format.</param>
+		/// <returns>A string containing the formatted amount of memory.</returns>
+		public static string FormatMemory(this ulong amount)
+		{
+			double scale = amount;
+			string result = string.Empty;
+
+			if (amount < 0)
+				return "Unknown.";
+
+			scale = amount / 1125899906842624.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " PB";
+
+			scale = amount / 1099511627776.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " TB";
+
+			scale = amount / 1073741824.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " GB";
+
+			scale = amount / 1048576.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " MB";
+
+			scale = amount / 1024.0;
+
+			if (scale >= 1.0)
+				return scale.ToString("0.0") + " KB";
+
+			return amount.ToString() + " bytes";
+		}
+
 		/// <summary>
 		/// Function to format a byte value into a hexadecimal string.
 		/// </summary>
