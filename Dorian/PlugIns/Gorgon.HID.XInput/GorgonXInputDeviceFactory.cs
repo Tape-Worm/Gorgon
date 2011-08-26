@@ -41,7 +41,7 @@ namespace GorgonLibrary.Input.XInput
 	/// Object representing the main interface to the input library.
 	/// </summary>
 	internal class GorgonXInputDeviceFactory
-		: GorgonInputDeviceFactory
+		: GorgonInputFactory
 	{
 		#region Methods.
 		/// <summary>

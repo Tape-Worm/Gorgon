@@ -147,7 +147,7 @@ namespace GorgonLibrary.Input
 		/// <param name="deviceName">Name of the input device.</param>
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		protected GorgonCustomHID(GorgonInputDeviceFactory owner, string deviceName, Control boundWindow)
+		protected GorgonCustomHID(GorgonInputFactory owner, string deviceName, Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
 			Data = new GorgonCustomHIDPropertyCollection();

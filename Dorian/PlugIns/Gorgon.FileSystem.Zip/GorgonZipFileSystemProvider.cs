@@ -33,7 +33,7 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.IO.Zip
+namespace GorgonLibrary.IO.ZipFileSystem
 {
 	/// <summary>
 	/// A file system provider for zip files.
