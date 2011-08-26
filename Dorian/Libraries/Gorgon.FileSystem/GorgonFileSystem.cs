@@ -269,7 +269,7 @@ namespace GorgonLibrary.FileSystem
 			if ((string.IsNullOrEmpty(path)) || (path == "/") || (string.IsNullOrEmpty(WriteLocation)))
 				return WriteLocation;
 
-			// The filename just gets tacked on, we don't use it for processing.
+			// The file name just gets tacked on, we don't use it for processing.
 			fileName = Path.GetFileName(path).FormatFileName();
 
 			directory = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
@@ -737,7 +737,7 @@ namespace GorgonLibrary.FileSystem
 			fileName = Path.GetFileName(physicalPath);
 			directory = Path.GetDirectoryName(physicalPath);
 
-			// If we have no filename, assume we're mounting a folder from the OS filesystem.
+			// If we have no file name, assume we're mounting a folder from the OS filesystem.
 			if (string.IsNullOrEmpty(fileName))
 			{
 				if (string.IsNullOrEmpty(directory))

@@ -96,9 +96,9 @@ namespace GorgonLibrary.FileSystem
 		}
 
 		/// <summary>
-		/// Property to return the filename without the extension.
+		/// Property to return the file name without the extension.
 		/// </summary>
-		public string BaseFilename
+		public string BaseFileName
 		{
 			get;
 			private set;
@@ -189,7 +189,7 @@ namespace GorgonLibrary.FileSystem
 			Provider = provider;
 			Directory = directory;
 			Extension = Path.GetExtension(Name);
-			BaseFilename = Path.GetFileNameWithoutExtension(Name);
+			//BaseFilename = Path.GetFileNameWithoutExtension(Name);
 			if (string.IsNullOrEmpty(physicalPath))
 			{
 				PhysicalFileSystemPath = Name;
@@ -201,8 +201,8 @@ namespace GorgonLibrary.FileSystem
 				PhysicalFileSystemPath = physicalPath;
 			}
 
-			if (string.IsNullOrEmpty(BaseFilename)) 
-				throw new IOException("There was no file name.");
+			if ((string.IsNullOrEmpty(Extension)) && (string.IsNullOrEmpty(BaseFileName)))
+				throw new IOException("No file name was given for the file entry.");
 
 			Offset = offset;
 			Size = fileSize;
