@@ -34,13 +34,13 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.BZip2;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.FileSystem.BZ2Provider
+namespace GorgonLibrary.FileSystem.GorPack
 {
 	/// <summary>
 	/// A file system provider for Gorgon BZip2 compressed packed files.
 	/// </summary>
 	/// <remarks>The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files.</remarks>
-	public class GorgonBZ2FileSystemProvider
+	public class GorgonGorPackFileSystemProvider
 		: GorgonFileSystemProvider
 	{
 		#region Value Types.
@@ -204,7 +204,7 @@ namespace GorgonLibrary.FileSystem.BZ2Provider
 			try
 			{
 				stream = File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read);
-				return new GorgonBZ2FileStream(file, stream, (_compressedFiles.ContainsKey(file.FullPath) ? new Nullable<CompressedFileEntry>(_compressedFiles[file.FullPath]) : null));
+				return new GorgonGorPackFileStream(file, stream, (_compressedFiles.ContainsKey(file.FullPath) ? new Nullable<CompressedFileEntry>(_compressedFiles[file.FullPath]) : null));
 			}
 			catch
 			{
@@ -274,11 +274,11 @@ namespace GorgonLibrary.FileSystem.BZ2Provider
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBZ2FileSystemProvider"/> class.
+		/// Initializes a new instance of the <see cref="GorgonGorPackFileSystemProvider"/> class.
 		/// </summary>
 		/// <param name="fileSystem">File system that owns this provider.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal GorgonBZ2FileSystemProvider(GorgonFileSystem fileSystem)
+		internal GorgonGorPackFileSystemProvider(GorgonFileSystem fileSystem)
 			: base(fileSystem)
 		{
 		}
