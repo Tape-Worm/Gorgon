@@ -36,6 +36,7 @@ namespace GorgonLibrary.Collections
 	/// <summary>
 	/// The named value type to be stored in the collection.
 	/// </summary>
+	/// <typeparam name="T">Type of data for the value.</typeparam>
 	public struct GorgonNamedValue<T>
 		: INamedObject
 	{
@@ -82,6 +83,7 @@ namespace GorgonLibrary.Collections
 	/// <summary>
 	/// A collection of named values that can only be assigned to.
 	/// </summary>
+	/// <typeparam name="T">Type of data for the value.</typeparam>
 	public class GorgonCustomValueCollection<T>
 		: GorgonBaseNamedObjectDictionary<GorgonNamedValue<T>>
 	{

@@ -55,7 +55,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Function to update the cursor on the screen if applicable.
 		/// </summary>
-		/// <remarks>This function is optional depending on whether you wish to update the actual cursor on the screen.  Plug-ins wishing to skip this behaviour should override this function and put in an empty stub.</remarks>
+		/// <remarks>This method is optional depending on whether you wish to update the actual cursor on the screen.  Plug-ins wishing to skip this behaviour should override this method and put in an empty stub.</remarks>
 		private void UpdateCursorPosition()
 		{
 			// If the window is disposed, then do nothing.

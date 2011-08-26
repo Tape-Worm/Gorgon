@@ -87,7 +87,7 @@ namespace GorgonLibrary.Input
 	/// <summary>
 	/// An unknown input device.
 	/// </summary>
-	/// <remarks>Unknown devices won't have a class wrapper for them, but instead use specific functions to set/return the values for the device.</remarks>
+	/// <remarks>Unknown devices won't have a class wrapper for them, but instead use specific methods to set/return the values for the device.</remarks>
 	public abstract class GorgonCustomHID
 		: GorgonInputDevice
 	{

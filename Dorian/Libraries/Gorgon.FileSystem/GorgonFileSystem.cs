@@ -284,7 +284,7 @@ namespace GorgonLibrary.FileSystem
 		/// Function to add a file system provider.
 		/// </summary>
 		/// <param name="providerTypeName">Fully qualified type name of the file system provider.</param>
-		/// <remarks>Use this function to arbitrarily add custom file system provider add-ins to the file system.  If a file system provider is not added and an attempt to mount the target target file system, then the Gorgon file system will not know how to load the data within the external file system.</remarks>
+		/// <remarks>Use this method to arbitrarily add custom file system provider add-ins to the file system.  If a file system provider is not added and an attempt to mount the target target file system, then the Gorgon file system will not know how to load the data within the external file system.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerTypeName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerTypeName"/> parameter is an empty string.</exception>
 		public void AddProvider(string providerTypeName)
@@ -295,7 +295,7 @@ namespace GorgonLibrary.FileSystem
 		/// <summary>
 		/// Function to search through the plug-in list and add any providers that haven't already been loaded.
 		/// </summary>
-		/// <remarks>This is a convenience function to allow mass loading of file system providers.</remarks>
+		/// <remarks>This is a convenience method to allow mass loading of file system providers.</remarks>
 		public void AddAllProviders()
 		{
 			var plugIns = from plugInList in Gorgon.PlugIns
@@ -315,7 +315,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> or the path parameter is a zero length string.</exception>
-		/// <remarks>This function will accept file name masks like directory*, directory??1 and directory*a* when searching.
+		/// <remarks>This method will accept file name masks like directory*, directory??1 and directory*a* when searching.
 		/// <para>Please note that the <paramref name="directoryMask"/> is not a path.  It is the name (or mask of the name) of the directory we wish to find.  Specifying something like /MyDir/ThisDir/C*w/ will fail.</para>
 		/// </remarks>
 		public IEnumerable<GorgonFileSystemDirectory> FindDirectories(string path, string directoryMask, bool recursive)
@@ -345,7 +345,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> parameter is a zero length string.</exception>
-		/// <remarks>This function will accept file name masks like directory*, directory??1 and directory*a* when searching.
+		/// <remarks>This method will accept file name masks like directory*, directory??1 and directory*a* when searching.
 		/// <para>Please note that the <paramref name="directoryMask"/> is not a path.  It is the name (or mask of the name) of the directory we wish to find.  Specifying something like /MyDir/ThisDir/C*w/ will fail.</para>
 		/// </remarks>
 		public IEnumerable<GorgonFileSystemDirectory> FindDirectories(string directoryMask, bool recursive)
@@ -364,7 +364,7 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> is a zero length string.
 		/// <para>-or-</para><para>Thrown when path specified in the <paramref name="path"/> parameter was not found.</para>
 		/// </exception>
-		/// <remarks>This function will accept file name masks like file*, file??1 and file*a* when searching.
+		/// <remarks>This method will accept file name masks like file*, file??1 and file*a* when searching.
 		/// <para>Please note that the <paramref name="fileMask"/> is not a path.  It is the name (or mask of the name) of the file we wish to find.  Specifying something like /MyDir/ThisDir/C*w.ext will fail.</para>
 		/// </remarks>
 		public IEnumerable<GorgonFileSystemFileEntry> FindFiles(string path, string fileMask, bool recursive)
@@ -394,7 +394,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> is a zero length string.</exception>
-		/// <remarks>This function will accept file name masks like file*, file??1 and file*a* when searching.
+		/// <remarks>This method will accept file name masks like file*, file??1 and file*a* when searching.
 		/// <para>Please note that the <paramref name="fileMask"/> is not a path.  It is the name (or mask of the name) of the file we wish to find.  Specifying something like /MyDir/ThisDir/C*w.ext will fail.</para>
 		/// </remarks>
 		public IEnumerable<GorgonFileSystemFileEntry> FindFiles(string fileMask, bool recursive)
@@ -565,7 +565,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>The new directory.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
-		/// <remarks>This function will create a directory in the virtual file system and in the writable area of the physical file system.
+		/// <remarks>This method will create a directory in the virtual file system and in the writable area of the physical file system.
 		/// <para>The writeable area is specified by the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
 		/// </remarks>
 		public GorgonFileSystemDirectory CreateDirectory(string path)
@@ -599,7 +599,7 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.
 		/// <para>-or-</para><para>Thrown when the file was not found.</para>
 		/// </exception>
-		/// <remarks>This function will remove a file in the virtual file system and in the writable area of the physical file system.
+		/// <remarks>This method will remove a file in the virtual file system and in the writable area of the physical file system.
 		/// <para>The writeable area is specified by the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
 		/// </remarks>
 		public void DeleteFile(string path)
@@ -630,7 +630,7 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.
 		/// <para>-or-</para><para>Thrown when the directory was not found.</para>
 		/// </exception>
-		/// <remarks>This function will remove a directory in the virtual file system and in the writable area of the physical file system.
+		/// <remarks>This method will remove a directory in the virtual file system and in the writable area of the physical file system.
 		/// <para>The writeable area is specified by the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
 		/// </remarks>
 		public void DeleteDirectory(string path)
@@ -778,7 +778,7 @@ namespace GorgonLibrary.FileSystem
 		/// Function to remove a file system provider from the Gorgon file system.
 		/// </summary>
 		/// <param name="providerTypeName">Fully qualified type name of the file system provider to unload.</param>
-		/// <remarks>This will remove all the file entries that belong to the provider as well.  To remove an individual file, use the <see cref="M:GorgonLibrary.FileSystem.GorgonFileSystem.DeleteFile"/> method.</remarks>
+		/// <remarks>This will remove all the file entries that belong to the provider as well.  To remove an individual file, use the <see cref="M:GorgonLibrary.FileSystem.GorgonFileSystem.DeleteFile">DeleteFile</see> method.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerTypeName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerTypeName"/> parameter is an empty string.</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the provider specified by <paramref name="providerTypeName"/> parameter could not be found.</exception>

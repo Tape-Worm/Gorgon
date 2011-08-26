@@ -221,7 +221,7 @@ namespace GorgonLibrary.Input
 		/// <param name="window">Window to bind with.</param>
 		/// <param name="hidInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <returns>A new custom HID interface.</returns>
-		/// <remarks>Implementors must implement this function if they wish to return data from a undefined (custom) device.
+		/// <remarks>Implementors must implement this method if they wish to return data from a undefined (custom) device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
@@ -398,7 +398,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to enumerate devices attached to the system.
 		/// </summary>
-		/// <remarks>Calling this function will invalidate any existing device objects created by this factory, use with care.</remarks>
+		/// <remarks>Calling this method will invalidate any existing device objects created by this factory, use with care.</remarks>
 		public void EnumerateDevices()
 		{
 			DestroyDevices();

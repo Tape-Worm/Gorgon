@@ -73,8 +73,8 @@ namespace GorgonLibrary
 	/// <summary>
 	/// The primary interface into gorgon.
 	/// </summary>
-	/// <remarks>This interface handles the initialization of Gorgon from internal data structures to the video mode to be used.  Users should call <see cref="M:GorgonLibrary.Initialize">Initialize</see> before doing anything
-	/// and call <see cref="M:GorgonLibrary.Terminate">Terminate</see> when finished.<para>This static class is used to change the global states of objects such as a global rendering setting to which render target is current.
+	/// <remarks>This interface handles the initialization of Gorgon from internal data structures to the video mode to be used.  Users should call <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> before doing anything
+	/// and call <see cref="M:GorgonLibrary.Gorgon.Terminate">Terminate</see> when finished.<para>This static class is used to change the global states of objects such as a global rendering setting to which render target is current.
 	/// It will also control the execution and rendering flow for the application.
 	/// </para></remarks>
 	public static class Gorgon
@@ -176,8 +176,8 @@ namespace GorgonLibrary
 		/// Property to set or return the application idle loop.
 		/// </summary>
 		/// <remarks>This is used to call the users code when the application is in an idle state.
-		/// <para>Users should call the <see cref="M:GorgonLibrary.Stop">Stop()</see> method before attempting to change the application idle funtion.</para></remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the application is in a <see cref="P:GorgonLibrary.IsInitialized">running state</see>.</exception>		
+		/// <para>Users should call the <see cref="M:GorgonLibrary.Gorgon.Stop">Stop</see> method before attempting to change the application idle funtion.</para></remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the application is in a <see cref="P:GorgonLibrary.Gorgon.IsInitialized">running state</see>.</exception>		
 		public static ApplicationLoop ApplicationIdleLoop
 		{
 			get
@@ -187,7 +187,7 @@ namespace GorgonLibrary
 			set
 			{
 				if (IsRunning)
-					throw new GorgonException(GorgonResult.AccessDenied, "Cannot assign a new idle function while the application is in a running state.");
+					throw new GorgonException(GorgonResult.AccessDenied, "Cannot assign a new idle method while the application is in a running state.");
 
 				if (value == null)
 					_loop = new ApplicationLoop(_defaultApp.ApplicationIdle);
@@ -223,7 +223,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return whether the library has been initialized or not.
 		/// </summary>
-		/// <value>TRUE if <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has been called, FALSE if not.</value>
+		/// <value>TRUE if <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> has been called, FALSE if not.</value>
 		public static bool IsInitialized
 		{
 			get;
@@ -242,7 +242,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return if the app is in a running state or not.
 		/// </summary>
-		/// <remarks>This flag is set to TRUE when the <see cref="M:GorgonLibrary.Gorgon.Go">Go()</see> function is called and FALSE when the <see cref="M:GorgonLibrary.Gorgon.Stop">Stop()</see> function is called.</remarks>
+		/// <remarks>This flag is set to TRUE when the <see cref="M:GorgonLibrary.Gorgon.Go">Go</see> method is called and FALSE when the <see cref="M:GorgonLibrary.Gorgon.Stop">Stop</see> method is called.</remarks>
 		/// <value>TRUE if the application is running, and FALSE if not.</value>
 		public static bool IsRunning
 		{
@@ -318,7 +318,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="applicationName">Name of the application.</param>
 		/// <returns>The per-user roaming data directory.</returns>
-		/// <remarks>The function will trim leading and trailing spaces.  If the parameter only contains whitespace, it will be treated as an empty string.</remarks>
+		/// <remarks>The method will trim leading and trailing spaces.  If the parameter only contains whitespace, it will be treated as an empty string.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the parameter is an empty string.</exception>
 		public static string GetUserApplicationPath(string applicationName)
@@ -371,12 +371,13 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Function to start the application message processing.
 		/// </summary>
-		/// <remarks>The application does not begin running right away when this function is called, it merely tells the library that the application is ready to begin.</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.</exception>
+		/// <param name="idleLoop">Delegate function to use when the machine is in an idle state.</param>
+		/// <remarks>The application does not begin running right away when this method is called, it merely tells the library that the application is ready to begin.</remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> has not been called.</exception>
 		public static void Go(ApplicationLoop idleLoop)
 		{
 			if (!IsInitialized)
-				throw new GorgonException(GorgonResult.NotInitialized, "Please call Initialize() before calling this function.");
+				throw new GorgonException(GorgonResult.NotInitialized, "Please call Initialize() before calling this method.");
 
 			if (IsRunning)
 				return;
@@ -394,10 +395,10 @@ namespace GorgonLibrary
 		/// Function to stop the engine from rendering.
 		/// </summary>
 		/// <remarks>
-		/// This will merely stop the rendering process, it can be restarted with the <see cref="M:GorgonLibrary.Gorgon.Go">Go()</see> function.
-		/// <para>Note that this function does -not- affect the video mode.</para>
+		/// This will merely stop the rendering process, it can be restarted with the <see cref="M:GorgonLibrary.Gorgon.Go">Go</see> method.
+		/// <para>Note that this method does -not- affect the video mode.</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Initialize">Initialize()</see> has not been called.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> has not been called.</exception>
 		public static void Stop()
 		{
 			if (!IsInitialized)
@@ -415,7 +416,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Function to force the application to process any pending messages.
 		/// </summary>
-		/// <remarks>This function should be used when control over the message loop is necessary.</remarks>
+		/// <remarks>This method should be used when control over the message loop is necessary.</remarks>
 		public static void ProcessMessages()
 		{
 			MSG message = new MSG();		// Message to retrieve.
@@ -435,7 +436,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Function to initialize Gorgon.
 		/// </summary>
-		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
+		/// <remarks>This method must be called before any other method.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
 		public static void Initialize()
 		{
 			Initialize(null);
@@ -445,7 +446,7 @@ namespace GorgonLibrary
 		/// Function to initialize Gorgon.
 		/// </summary>
 		/// <param name="applicationForm">Windows form that will be used for the application.</param>
-		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
+		/// <remarks>This method must be called before any other method.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
 		public static void Initialize(Forms.Form applicationForm)
 		{			
 			// Terminate if already initialized.
@@ -494,7 +495,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to terminate 
+		/// Function to terminate the application.
 		/// </summary>
 		/// <remarks>
 		/// You must call this when finished with Gorgon, failure to do so can result in memory leaks.

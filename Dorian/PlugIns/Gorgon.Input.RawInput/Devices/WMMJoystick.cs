@@ -271,7 +271,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>
 		/// The list of buttons for the joystick/gamepad.
 		/// </returns>
-		/// <remarks>Implementors must implement this function so the object can get the list of buttons for the device.</remarks>
+		/// <remarks>Implementors must implement this method so the object can get the list of buttons for the device.</remarks>
 		protected override GorgonJoystick.JoystickButtons GetButtons()
 		{
 			_buttonStates = new WMMJoystickButtons(Capabilities.ButtonCount);

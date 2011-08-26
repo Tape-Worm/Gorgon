@@ -212,7 +212,7 @@ namespace GorgonLibrary.Input.XInput
 		/// </summary>
 		/// <param name="motorIndex">Index of the motor to start.</param>
 		/// <param name="value">Value to set.</param>
-		/// <remarks>Implementors should implement this function if the device supports vibration.</remarks>
+		/// <remarks>Implementors should implement this method if the device supports vibration.</remarks>
 		protected override void VibrateDevice(int motorIndex, int value)
 		{
 			XI.Vibration vibeData = new XI.Vibration();
@@ -233,7 +233,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns>
 		/// The capabilities data for the joystick/gamepad.
 		/// </returns>
-		/// <remarks>Implementors must implement this function so the object can determine constraints about the device.</remarks>
+		/// <remarks>Implementors must implement this method so the object can determine constraints about the device.</remarks>
 		protected override GorgonJoystick.JoystickCapabilities GetCapabilities()
 		{
 			// Get the individual values for the buttons.
@@ -247,7 +247,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns>
 		/// The list of buttons for the joystick/gamepad.
 		/// </returns>
-		/// <remarks>Implementors must implement this function so the object can get the list of buttons for the device.</remarks>
+		/// <remarks>Implementors must implement this method so the object can get the list of buttons for the device.</remarks>
 		protected override GorgonJoystick.JoystickButtons GetButtons()
 		{
  			_buttonList = new XInputButtons();

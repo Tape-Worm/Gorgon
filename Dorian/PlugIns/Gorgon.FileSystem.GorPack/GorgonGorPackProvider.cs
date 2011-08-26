@@ -179,7 +179,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// </summary>
 		/// <param name="file">File to read.</param>
 		/// <param name="data">Data to write to the file.</param>
-		/// <remarks>Implementors must implement this function to read the file from the physical file system.</remarks>
+		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
 		protected override void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data)
 		{
 			throw new NotImplementedException("The " + GetType().FullName + " provider is read-only.");
@@ -191,7 +191,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <param name="file">File to open.</param>
 		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
 		/// <returns>
-		/// The open <see cref="GorgonFramework.FileSystem.GorgonFileSystemStream"/> file stream object.
+		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
 		/// </returns>
 		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)
@@ -219,7 +219,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// </summary>
 		/// <param name="file">File to read.</param>
 		/// <returns></returns>
-		/// <remarks>Implementors must implement this function to read the file from the physical file system.</remarks>
+		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
 		protected override byte[] OnReadFile(GorgonFileSystemFileEntry file)
 		{
 			byte[] data = new byte[0];
@@ -247,8 +247,8 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <returns>
 		/// TRUE if the provider can read the packed file, FALSE if not.
 		/// </returns>
-		/// <remarks>This function is applicable to packed files only.
-		/// <para>Implementors must use this function to determine if a packed file can be read by reading the header of the file.</para>
+		/// <remarks>This method is applicable to packed files only.
+		/// <para>Implementors must use this method to determine if a packed file can be read by reading the header of the file.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
