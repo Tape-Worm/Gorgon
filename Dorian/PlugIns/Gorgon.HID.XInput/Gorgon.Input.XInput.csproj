@@ -72,10 +72,6 @@
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Gorgon.HID\Gorgon.Input.csproj">
-      <Project>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</Project>
-      <Name>Gorgon.Input</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
