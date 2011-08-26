@@ -30,6 +30,7 @@ using System.Linq;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Input
 {
@@ -242,7 +243,7 @@ namespace GorgonLibrary.Input
 		/// </exception>
 		public GorgonCustomHID CreateCustomHID(Forms.Control window, string hidName)
 		{
-			GorgonUtility.AssertParamString(hidName, "hidInfo");
+			GorgonDebug.AssertParamString(hidName, "hidInfo");
 
 			GorgonInputDeviceInfo deviceInfo = null;
 			GorgonCustomHID customHID = null;
@@ -370,7 +371,7 @@ namespace GorgonLibrary.Input
 		/// </exception>
 		public GorgonJoystick CreateJoystick(Forms.Control window, string joystickName)
 		{
-			GorgonUtility.AssertParamString(joystickName, "joystickInfo");
+			GorgonDebug.AssertParamString(joystickName, "joystickInfo");
 
 			GorgonInputDeviceInfo deviceInfo = null;
 			GorgonJoystick joystickDevice = null;
@@ -423,7 +424,7 @@ namespace GorgonLibrary.Input
 			GorgonInputPlugIn plugIn = null;
 			GorgonInputDeviceFactory factory = null;
 
-			GorgonUtility.AssertParamString(plugInType, "plugInType");
+			GorgonDebug.AssertParamString(plugInType, "plugInType");
 
 			if (!Gorgon.PlugIns.Contains(plugInType))
 				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");

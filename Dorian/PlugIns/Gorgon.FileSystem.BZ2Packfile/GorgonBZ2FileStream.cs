@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.BZip2;
 
-namespace GorgonLibrary.FileSystem.BZ2
+namespace GorgonLibrary.IO.BZ2
 {
 	/// <summary>
 	/// A stream used to read Gorgon bzip2 pack files.

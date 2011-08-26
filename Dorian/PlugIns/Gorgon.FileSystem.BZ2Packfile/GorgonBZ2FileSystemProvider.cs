@@ -32,9 +32,9 @@ using System.Xml.Linq;
 using System.IO;
 using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.BZip2;
-using GorgonLibrary;
+using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.FileSystem.BZ2
+namespace GorgonLibrary.IO.BZ2
 {
 	/// <summary>
 	/// A file system provider for Gorgon BZip2 compressed packed files.
@@ -116,7 +116,7 @@ namespace GorgonLibrary.FileSystem.BZ2
 			foreach (var directoryNode in directories)
 			{
 				GorgonFileSystemDirectory directory = null;
-				string path = GorgonUtility.FormatDirectory(directoryNode.Attribute("FullPath").Value, '/') ;
+				string path = GorgonPath.FormatDirectory(directoryNode.Attribute("FullPath").Value, '/') ;
 				var files = directoryNode.Elements("File");
 				
 				directory = this.FileSystem.GetDirectory(mountPoint.FullPath + path);				
@@ -256,7 +256,7 @@ namespace GorgonLibrary.FileSystem.BZ2
 		{
 			string header = string.Empty;
 
-			GorgonUtility.AssertParamString(physicalPath, "physicalPath");
+			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
 
 			byte[] headerBytes = new byte[4];
 

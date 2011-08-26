@@ -38,6 +38,7 @@ using Microsoft.Win32;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary
 {
@@ -112,6 +113,44 @@ namespace GorgonLibrary
 					return false;
 	
 				return true;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the directory for the currently running application.
+		/// </summary>
+		public static string ApplicationDirectory
+		{
+			get
+			{
+				Assembly runningAssembly = Assembly.GetEntryAssembly();
+
+				if (runningAssembly == null)
+					runningAssembly = Assembly.GetCallingAssembly();
+
+				if (runningAssembly == null)
+					return string.Empty;
+
+				return GorgonPath.FormatDirectory(Path.GetDirectoryName(runningAssembly.Location), Path.DirectorySeparatorChar);
+			}
+		}
+
+		/// <summary>
+		/// Property to return the path for the currently running application.
+		/// </summary>
+		public static string ApplicationPath
+		{
+			get
+			{
+				Assembly runningAssembly = Assembly.GetEntryAssembly();
+
+				if (runningAssembly == null)
+					runningAssembly = Assembly.GetCallingAssembly();
+
+				if (runningAssembly == null)
+					return string.Empty;
+
+				return GorgonPath.FormatDirectory(Path.GetDirectoryName(runningAssembly.Location), Path.DirectorySeparatorChar) + Path.GetFileName(runningAssembly.Location);
 			}
 		}
 
@@ -275,6 +314,80 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to return a formatted string containing the memory amount.
+		/// </summary>
+		/// <param name="amount">Amount of memory in bytes to format.</param>
+		/// <returns>A string containing the formatted amount of memory.</returns>
+		private static string FormatMemoryAmount(long amount)
+		{
+			double scale = amount;
+			string result = string.Empty;
+
+			if (amount < 0)
+				return "Unknown.";
+
+			scale = amount / 1125899906842624.0;
+
+			if (scale > 1.0)
+				return scale.ToString("0.0") + " PB";
+
+			scale = amount / 1099511627776.0;
+
+			if (scale > 1.0)
+				return scale.ToString("0.0") + " TB";
+
+			scale = amount / 1073741824.0;
+
+			if (scale > 1.0)
+				return scale.ToString("0.0") + " GB";
+
+			scale = amount / 1048576.0;
+
+			if (scale > 1.0)
+				return scale.ToString("0.0") + " MB";
+
+			scale = amount / 1024.0;
+
+			if (scale > 1.0)
+				return scale.ToString("0.0") + " KB";
+
+			return amount.ToString() + " bytes";
+		}
+
+		/// <summary>
+		/// Function to return the top level form that contains the child control.
+		/// </summary>
+		/// <param name="childControl">The child control that's nested within a base windows form.</param>
+		/// <returns>The windows form that contains the control, or NULL (Nothing in VB.Net) if the control is not embedded on a form at some level.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public static Forms.Form GetTopLevelForm(Forms.Control childControl)
+		{
+			Forms.Form result = null;
+			Forms.Control parent = null;
+
+			if (childControl == null)
+				throw new ArgumentNullException("childControl");
+
+			result = childControl as Forms.Form;
+
+			if (result != null)
+				return result;
+
+			parent = childControl.Parent;
+
+			while (parent != null)
+			{
+				result = parent as Forms.Form;
+				if (result != null)
+					break;
+
+				parent = parent.Parent;
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to start the application message processing.
 		/// </summary>
 		/// <remarks>The application does not begin running right away when this function is called, it merely tells the library that the application is ready to begin.</remarks>
@@ -353,7 +466,7 @@ namespace GorgonLibrary
 		/// <param name="applicationForm">Windows form that will be used for the application.</param>
 		/// <remarks>This function must be called before any other function.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
 		public static void Initialize(Forms.Form applicationForm)
-		{
+		{			
 			// Terminate if already initialized.
 			if (IsInitialized)
 				Terminate();
@@ -374,8 +487,8 @@ namespace GorgonLibrary
 
 				Log.Print("Initializing...", GorgonLoggingLevel.All);
 				Log.Print("Architecture: {0}", GorgonLoggingLevel.Verbose, PlatformArchitecture.ToString());
-				Log.Print("Installed Memory: {0}", GorgonLoggingLevel.Verbose, GorgonUtility.FormatMemoryAmount(TotalPhysicalRAM));
-				Log.Print("Available Memory: {0}", GorgonLoggingLevel.Verbose, GorgonUtility.FormatMemoryAmount(AvailablePhysicalRAM));
+				Log.Print("Installed Memory: {0}", GorgonLoggingLevel.Verbose, FormatMemoryAmount(TotalPhysicalRAM));
+				Log.Print("Available Memory: {0}", GorgonLoggingLevel.Verbose, FormatMemoryAmount(AvailablePhysicalRAM));
 
 				// Default to using 10 milliseconds of sleep time when the application is not focused.
 				UnfocusedSleepTime = 10;
@@ -386,7 +499,7 @@ namespace GorgonLibrary
 				PlugIns = new GorgonPlugInFactory();
 
 				if (ApplicationForm != null)
-					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(ApplicationForm.Handle), ApplicationForm.Name, ApplicationForm.Text);
+					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, GorgonHexFormatter.Format(ApplicationForm.Handle), ApplicationForm.Name, ApplicationForm.Text);
 
 				IsRunning = false;
 

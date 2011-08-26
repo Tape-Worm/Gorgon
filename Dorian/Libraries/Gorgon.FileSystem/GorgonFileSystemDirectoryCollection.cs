@@ -27,7 +27,7 @@
 using GorgonLibrary;
 using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A collection of file system virtual directories.
@@ -54,7 +54,7 @@ namespace GorgonLibrary.FileSystem
 		{
 			get
 			{
-				return GetItem(GorgonUtility.RemoveIllegalPathChars(name));
+				return GetItem(GorgonPath.RemoveIllegalPathChars(name));
 			}
 		}
 		#endregion
@@ -67,7 +67,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public override bool Contains(string name)
 		{
-			return base.Contains(GorgonUtility.RemoveIllegalPathChars(name));
+			return base.Contains(GorgonPath.RemoveIllegalPathChars(name));
 		}
 
 		/// <summary>

@@ -28,8 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// Interface for an Gorgon file system provider.
@@ -131,7 +132,7 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="file">File to open.</param>
 		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
-		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
 		protected abstract GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable);
 
@@ -180,7 +181,7 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="writeable">TRUE to write to the file, FALSE to make read-only.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="writeable"/> parameter is TRUE and the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> property has not been set.</exception>
-		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		internal GorgonFileSystemStream OpenStream(GorgonFileSystemFileEntry file, bool writeable)
 		{
 			if (file == null)
@@ -201,14 +202,14 @@ namespace GorgonLibrary.FileSystem
 			GorgonFileSystemDirectory mountDirectory = null;
 			string fileName = string.Empty;
 
-			GorgonUtility.AssertParamString(physicalPath, "physicalPath");
-			GorgonUtility.AssertParamString(mountPoint, "mountPoint");
+			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
+			GorgonDebug.AssertParamString(mountPoint, "mountPoint");
 
 			physicalPath = Path.GetFullPath(physicalPath);
 			fileName = Path.GetFileName(physicalPath);
-			physicalPath = GorgonUtility.FormatDirectory(Path.GetDirectoryName(physicalPath), Path.DirectorySeparatorChar);
+			physicalPath = GorgonPath.FormatDirectory(Path.GetDirectoryName(physicalPath), Path.DirectorySeparatorChar);
 			if (!string.IsNullOrEmpty(fileName))
-				physicalPath += GorgonUtility.FormatFileName(fileName);
+				physicalPath += GorgonPath.FormatFileName(fileName);
 
 			mountDirectory = FileSystem.GetDirectory(mountPoint);
 

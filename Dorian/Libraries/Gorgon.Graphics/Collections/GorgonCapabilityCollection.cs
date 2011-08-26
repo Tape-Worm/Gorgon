@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Collections
 {
@@ -63,7 +64,7 @@ namespace GorgonLibrary.Collections
 		/// <param name="value">The value.</param>
 		internal GorgonCapability(string name, object value)
 		{
-			GorgonUtility.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(name, "name");
 			_name = name;
 			_value = value;
 		}

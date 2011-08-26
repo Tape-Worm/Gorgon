@@ -26,8 +26,9 @@
 
 using System;
 using System.IO;
+using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A file entry corresponding to a file on the physical file system.
@@ -155,7 +156,7 @@ namespace GorgonLibrary.FileSystem
 		/// Function to open a stream to the file on the physical file system.
 		/// </summary>
 		/// <param name="writeable">TRUE to write to the file, FALSE to make read-only.</param>
-		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(bool writeable)
 		{
 			return Provider.OpenStream(this, writeable);
@@ -176,9 +177,9 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="createDate">Create date for the file.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="directory"/> or <paramref name="provider"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		internal GorgonFileSystemFileEntry(GorgonFileSystemProvider provider, GorgonFileSystemDirectory directory, string fileName, string mountPoint, string physicalPath, long fileSize, long offset, DateTime createDate)
-			: base(GorgonUtility.RemoveIllegalFilenameChars(fileName))
+			: base(GorgonPath.RemoveIllegalFilenameChars(fileName))
 		{
-			GorgonUtility.AssertParamString(mountPoint, "mountPoint");
+			GorgonDebug.AssertParamString(mountPoint, "mountPoint");
 
 			if (provider == null)
 				throw new ArgumentNullException("provider");

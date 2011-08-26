@@ -30,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Forms;
 using GorgonLibrary.Math;
 using GorgonLibrary.Collections;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Input
 {
@@ -168,7 +169,7 @@ namespace GorgonLibrary.Input
 			/// <param name="state">State of the button, TRUE for pressed, FALSE if not.</param>
 			public JoystickButtonState(string name, bool state)
 			{
-				GorgonUtility.AssertParamString(name, "name");
+				GorgonDebug.AssertParamString(name, "name");
 				_name = name;
 				_state = state;
 			}
@@ -702,7 +703,7 @@ namespace GorgonLibrary.Input
 			/// </exception>
 			protected void DefineButton(string name)
 			{
-				GorgonUtility.AssertParamString(name, "name");
+				GorgonDebug.AssertParamString(name, "name");
 
 				AddItem(new JoystickButtonState(name, false));
 			}

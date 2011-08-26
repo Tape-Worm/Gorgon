@@ -28,7 +28,7 @@ using System;
 using GorgonLibrary;
 using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A collection of files available from the file system.
@@ -51,7 +51,7 @@ namespace GorgonLibrary.FileSystem
 		{
 			get
 			{
-				return GetItem(GorgonUtility.RemoveIllegalFilenameChars(fileName));
+				return GetItem(GorgonPath.RemoveIllegalFilenameChars(fileName));
 			}
 		}
 
@@ -114,7 +114,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public override bool Contains(string name)
 		{
-			return base.Contains(GorgonUtility.RemoveIllegalFilenameChars(name));
+			return base.Contains(GorgonPath.RemoveIllegalFilenameChars(name));
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>The index of the directory or -1 if it could not be found.</returns>
 		public int IndexOf(string fileName)
 		{
-			fileName = GorgonUtility.RemoveIllegalFilenameChars(fileName);
+			fileName = GorgonPath.RemoveIllegalFilenameChars(fileName);
 			return IndexOf(this[fileName]);
 		}
 		#endregion

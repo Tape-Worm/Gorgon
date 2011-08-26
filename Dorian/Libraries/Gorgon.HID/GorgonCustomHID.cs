@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Collections;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Input
 {
@@ -126,7 +127,7 @@ namespace GorgonLibrary.Input
 		/// <exception cref="System.ArgumentException">Thrown when the propertyName parameter is an empty string.</exception>
 		protected void SetData(string propertyName, object value)
 		{
-			GorgonUtility.AssertParamString(propertyName, "propertyName");
+			GorgonDebug.AssertParamString(propertyName, "propertyName");
 
 			if (Data.Contains(propertyName))
 				Data[propertyName].SetValue(value);

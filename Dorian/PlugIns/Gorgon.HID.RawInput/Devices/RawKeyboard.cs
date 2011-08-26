@@ -185,7 +185,7 @@ namespace GorgonLibrary.Input.Raw
 		internal RawKeyboard(GorgonRawInputDeviceFactory owner, IntPtr handle, Forms.Control boundWindow)
 			: base(owner, "Raw Input Keyboard", boundWindow)
 		{
-			Gorgon.Log.Print("Raw input keyboard interface created for handle 0x{0}.", GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(handle));
+			Gorgon.Log.Print("Raw input keyboard interface created for handle 0x{0}.", GorgonLoggingLevel.Verbose, GorgonHexFormatter.Format(handle));
 			_deviceHandle = handle;
 		}
 		#endregion

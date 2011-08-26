@@ -20,37 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, June 27, 2011 9:36:13 AM
+// Created: Thursday, August 25, 2011 8:17:09 PM
 // 
 #endregion
 
-using GorgonLibrary.PlugIns;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.Diagnostics
 {
 	/// <summary>
-	/// Plug-in entry point for the zip file file system provider plug-in.
+	/// Debugging utility methods.
 	/// </summary>
-	public class GorgonZipFileSystemProvider
-		: GorgonFileSystemProviderPlugIn 
+	public static class GorgonDebug
 	{
+		#region Methods.
 		/// <summary>
-		/// Function to create a new file system provider plug-in instance.
+		/// Function to throw an exception if a string is null or empty.
 		/// </summary>
-		/// <param name="fileSystem">File system that owns this provider.</param>
-		/// <returns>The file system provider plug-in.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public override GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem)
+		/// <param name="value">The value being passed.</param>
+		/// <param name="paramName">The name of the parameter.</param>
+		/// <remarks>This will only throw exceptions when we're in DEBUG mode.  Release mode will do nothing.</remarks>
+		public static void AssertParamString(string value, string paramName)
 		{
-			return new Zip.GorgonZipFileSystemProvider(fileSystem);
+#if DEBUG
+			if (value == null)
+				throw new ArgumentNullException(paramName);
+			if (value == string.Empty)
+				throw new ArgumentException("The parameter must not be a zero-length string.", paramName);
+#endif
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="EngineZipFileSystemProviderPlugIn"/> class.
-		/// </summary>
-		public GorgonZipFileSystemProvider()
-			: base("A zip file provider for the Gorgon virtual file system interface.")
-		{
-		}
+		#endregion
 	}
 }
