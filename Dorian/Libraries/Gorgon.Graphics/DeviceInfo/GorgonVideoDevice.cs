@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GorgonLibrary.Collections;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
@@ -189,7 +190,7 @@ namespace GorgonLibrary.Graphics
 		protected GorgonVideoDevice(string name, int index)
 			: base(name)
 		{
-			GorgonUtility.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(name, "name");
 
 			Index = index;
 		}

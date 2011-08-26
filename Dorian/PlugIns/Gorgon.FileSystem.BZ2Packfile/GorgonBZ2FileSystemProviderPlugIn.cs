@@ -26,7 +26,7 @@
 
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// Plug-in entry point for the zip file file system provider plug-in.

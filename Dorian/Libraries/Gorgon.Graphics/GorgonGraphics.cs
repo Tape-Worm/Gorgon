@@ -31,6 +31,7 @@ using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
@@ -93,9 +94,9 @@ namespace GorgonLibrary.Graphics
 				Gorgon.Log.Print("\tDriver Name: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.DriverName);
 				Gorgon.Log.Print("\tDriver Version: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.DriverVersion.ToString());
 				Gorgon.Log.Print("\tRevision: {0}", Diagnostics.GorgonLoggingLevel.Simple, device.Revision);
-				Gorgon.Log.Print("\tDevice ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.DeviceID));
-				Gorgon.Log.Print("\tSub System ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.SubSystemID));
-				Gorgon.Log.Print("\tVendor ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonUtility.FormatHex(device.VendorID));
+				Gorgon.Log.Print("\tDevice ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonHexFormatter.Format(device.DeviceID));
+				Gorgon.Log.Print("\tSub System ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonHexFormatter.Format(device.SubSystemID));
+				Gorgon.Log.Print("\tVendor ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, GorgonHexFormatter.Format(device.VendorID));
 				Gorgon.Log.Print("\tDevice GUID: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.DeviceGUID);
 
 				Gorgon.Log.Print("#{0} - {1} device capabilities:", Diagnostics.GorgonLoggingLevel.Verbose, device.Index, device.Name);
@@ -315,7 +316,7 @@ namespace GorgonLibrary.Graphics
 			GorgonGraphicsPlugIn plugIn = null;
 			GorgonGraphics graphics = null;
 
-			GorgonUtility.AssertParamString(plugInType, "plugInType");
+			GorgonDebug.AssertParamString(plugInType, "plugInType");
 
 			if (!Gorgon.PlugIns.Contains(plugInType))
 				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");

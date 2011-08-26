@@ -26,7 +26,7 @@
 
 using System.Text;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// An extended binary writer class.

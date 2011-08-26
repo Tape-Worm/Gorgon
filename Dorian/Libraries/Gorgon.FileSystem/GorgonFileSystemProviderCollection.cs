@@ -28,8 +28,9 @@ using System;
 using GorgonLibrary;
 using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A collection of file system providers.
@@ -76,7 +77,7 @@ namespace GorgonLibrary.FileSystem
 			GorgonFileSystemProviderPlugIn plugIn = null;
 			GorgonFileSystemProvider provider = null;
 
-			GorgonUtility.AssertParamString(providerTypeName, "providerTypeName");
+			GorgonDebug.AssertParamString(providerTypeName, "providerTypeName");
 
 			// Check to see if we've already loaded this type.
 			if (Contains(providerTypeName))
@@ -105,7 +106,7 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerTypeName"/> parameter is an empty string.</exception>
 		internal void Remove(string providerTypeName)
 		{
-			GorgonUtility.AssertParamString(providerTypeName, "providerTypeName");
+			GorgonDebug.AssertParamString(providerTypeName, "providerTypeName");
 
 			this[providerTypeName].OnUnload();
 

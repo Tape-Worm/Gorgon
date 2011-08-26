@@ -26,10 +26,10 @@
 
 using GorgonLibrary;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
-	/// A virtual directory in the <see cref="GorgonLibrary.FileSystem.GorgonFileSystem"/>.
+	/// A virtual directory in the <see cref="GorgonLibrary.IO.GorgonFileSystem"/>.
 	/// </summary>
 	public class GorgonFileSystemDirectory
 		: GorgonNamedObject
@@ -84,7 +84,7 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="name">The name of the directory.</param>
 		/// <param name="parent">Parent directory.</param>
 		internal GorgonFileSystemDirectory(string name, GorgonFileSystemDirectory parent)
-			: base(GorgonUtility.RemoveIllegalPathChars(name))
+			: base(GorgonPath.RemoveIllegalPathChars(name))
 		{
 			Directories = new GorgonFileSystemDirectoryCollection();
 			Files = new GorgonFileSystemFileEntryCollection(this);

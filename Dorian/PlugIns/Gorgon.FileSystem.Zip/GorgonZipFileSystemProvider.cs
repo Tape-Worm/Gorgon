@@ -31,8 +31,9 @@ using System.Text;
 using System.IO;
 using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip;
+using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.FileSystem.Zip
+namespace GorgonLibrary.IO.Zip
 {
 	/// <summary>
 	/// A file system provider for zip files.
@@ -64,8 +65,8 @@ namespace GorgonLibrary.FileSystem.Zip
 						else
 						{
 							GorgonFileSystemDirectory directory = null;
-							string directoryName = GorgonUtility.FormatDirectory(Path.GetDirectoryName(entry.Name), '/');
-							string fileName = GorgonUtility.FormatFileName(Path.GetFileName(entry.Name));
+							string directoryName = GorgonPath.FormatDirectory(Path.GetDirectoryName(entry.Name), '/');
+							string fileName = GorgonPath.FormatFileName(Path.GetFileName(entry.Name));
 
 							directoryName = mountPoint.FullPath + directoryName;
 							if (string.IsNullOrEmpty(directoryName))
@@ -99,7 +100,7 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// <param name="file">File to open.</param>
 		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
 		/// <returns>
-		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
+		/// The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.
 		/// </returns>
 		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)
@@ -179,7 +180,7 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		public override bool CanReadFile(string physicalPath)
 		{
-			GorgonUtility.AssertParamString(physicalPath, "physicalPath");
+			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
 
 			byte[] headerBytes = new byte[4];
 

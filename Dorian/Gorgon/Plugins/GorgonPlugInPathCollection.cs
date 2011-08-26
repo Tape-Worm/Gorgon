@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.PlugIns
 {
@@ -63,14 +65,14 @@ namespace GorgonLibrary.PlugIns
 		/// <returns>The validated path.</returns>
 		private string ValidatePath(string path)
 		{
-			GorgonUtility.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(path, "path");
 
 			path = Path.GetFullPath(path);
 
 			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
 				path += Path.DirectorySeparatorChar.ToString();
 
-			return GorgonUtility.FormatDirectory(path, Path.DirectorySeparatorChar);
+			return GorgonPath.FormatDirectory(path, Path.DirectorySeparatorChar);
 		}
 
 		/// <summary>
@@ -79,7 +81,7 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="item">Item to remove</param>
 		public void Remove(string item)
 		{
-			GorgonUtility.AssertParamString(item, "item");
+			GorgonDebug.AssertParamString(item, "item");
 
 			_paths.Remove(item);
 		}
@@ -100,7 +102,7 @@ namespace GorgonLibrary.PlugIns
 		{
 			// Add default paths:
 			// 1. Local directory.
-			Add(GorgonUtility.ApplicationDirectory);
+			Add(Gorgon.ApplicationDirectory);
 			// 2. Working directory.
 			Add(Environment.CurrentDirectory);
 			// 3. System directory.
@@ -167,7 +169,7 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="item">The item.</param>
 		public void Insert(int index, string item)
 		{
-			GorgonUtility.AssertParamString(item, "item");
+			GorgonDebug.AssertParamString(item, "item");
 
 			if (Contains(ValidatePath(item)))
 				return;

@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace GorgonLibrary.FileSystem.Zip
+namespace GorgonLibrary.IO.Zip
 {
 	/// <summary>
 	/// A stream used to read zip files.

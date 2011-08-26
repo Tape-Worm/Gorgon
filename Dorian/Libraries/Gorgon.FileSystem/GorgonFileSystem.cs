@@ -29,9 +29,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// The File System interface.
@@ -75,7 +76,7 @@ namespace GorgonLibrary.FileSystem
 				if (string.IsNullOrEmpty(_writeLocation))
 					return;
 
-				_writeLocation = GorgonUtility.FormatDirectory(_writeLocation, Path.DirectorySeparatorChar);
+				_writeLocation = GorgonPath.FormatDirectory(_writeLocation, Path.DirectorySeparatorChar);
 
 				if (!Directory.Exists(_writeLocation))
 					Directory.CreateDirectory(_writeLocation);
@@ -171,9 +172,9 @@ namespace GorgonLibrary.FileSystem
 			GorgonFileSystemDirectory directory = null;
 			string[] directories = null;
 
-			GorgonUtility.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(path, "path");
 
-			path = GorgonUtility.FormatDirectory(path, '/');
+			path = GorgonPath.FormatDirectory(path, '/');
 
 			if (!path.StartsWith("/"))
 				path = "/" + path;
@@ -226,16 +227,16 @@ namespace GorgonLibrary.FileSystem
 			GorgonFileSystemDirectory directory = null;		// Directory to create the file in.
 			GorgonFileSystemFileEntry result = null;			// The new file.
 
-			GorgonUtility.AssertParamString(path, "path");
-			GorgonUtility.AssertParamString(mountPoint, "mountPoint");
-			GorgonUtility.AssertParamString(physicalLocation, "physicalLocation");
+			GorgonDebug.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(mountPoint, "mountPoint");
+			GorgonDebug.AssertParamString(physicalLocation, "physicalLocation");
 
-			directoryName = GorgonUtility.FormatDirectory(Path.GetDirectoryName(path), '/');
+			directoryName = GorgonPath.FormatDirectory(Path.GetDirectoryName(path), '/');
 
 			if (!directoryName.StartsWith("/"))
 				directoryName += "/";
 
-			fileName = GorgonUtility.FormatFileName(Path.GetFileName(path));
+			fileName = GorgonPath.FormatFileName(Path.GetFileName(path));
 			if (string.IsNullOrEmpty(fileName))
 				throw new ArgumentException("The path '" + path + "' does not contain a file name.", "path");
 
@@ -269,14 +270,14 @@ namespace GorgonLibrary.FileSystem
 				return WriteLocation;
 
 			// The filename just gets tacked on, we don't use it for processing.
-			fileName = GorgonUtility.FormatFileName(Path.GetFileName(path));
+			fileName = GorgonPath.FormatFileName(Path.GetFileName(path));
 
-			directory = GorgonUtility.FormatDirectory(Path.GetDirectoryName(path), Path.DirectorySeparatorChar);
+			directory = GorgonPath.FormatDirectory(Path.GetDirectoryName(path), Path.DirectorySeparatorChar);
 
 			if (directory.StartsWith(Path.DirectorySeparatorChar.ToString()))
 				directory = directory.Substring(1);
 
-			return GorgonUtility.FormatDirectory(WriteLocation + directory, Path.DirectorySeparatorChar) + fileName;
+			return GorgonPath.FormatDirectory(WriteLocation + directory, Path.DirectorySeparatorChar) + fileName;
 		}
 
 		/// <summary>
@@ -311,7 +312,7 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="path">Path to the directory to start searching in.</param>
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all child directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> or the path parameter is a zero length string.</exception>
 		/// <remarks>This function will accept file name masks like directory*, directory??1 and directory*a* when searching.
@@ -323,8 +324,8 @@ namespace GorgonLibrary.FileSystem
 			string directoryName = string.Empty;				// Directory for the path.
 			GorgonFileSystemDirectory startDirectory = null;			// Starting directory.
 
-			GorgonUtility.AssertParamString(path, "path");
-			GorgonUtility.AssertParamString(directoryMask, "directoryMask");
+			GorgonDebug.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(directoryMask, "directoryMask");
 
 			startDirectory = GetDirectory(path);
 			if (startDirectory == null)
@@ -341,7 +342,7 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all child directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> parameter is a zero length string.</exception>
 		/// <remarks>This function will accept file name masks like directory*, directory??1 and directory*a* when searching.
@@ -358,7 +359,7 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="path">Path to start searching in.</param>
 		/// <param name="fileMask">The file name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> is a zero length string.
 		/// <para>-or-</para><para>Thrown when path specified in the <paramref name="path"/> parameter was not found.</para>
@@ -371,8 +372,8 @@ namespace GorgonLibrary.FileSystem
 			List<GorgonFileSystemFileEntry> entries = null;		// List of file system entries.
 			GorgonFileSystemDirectory start = null;				// Directory to start searching in.
 
-			GorgonUtility.AssertParamString(path, "path");
-			GorgonUtility.AssertParamString(fileMask, "fileMask");
+			GorgonDebug.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(fileMask, "fileMask");
 
 			start = GetDirectory(path);
 
@@ -390,7 +391,7 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="fileMask">The file name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.FileSystem.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> is a zero length string.</exception>
 		/// <remarks>This function will accept file name masks like file*, file??1 and file*a* when searching.
@@ -417,13 +418,13 @@ namespace GorgonLibrary.FileSystem
 			string filename = string.Empty;
 			GorgonFileSystemDirectory search = Directories["/"];
 
-			GorgonUtility.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(path, "path");
 
 			if (!path.StartsWith("/"))
 				path = "/" + path;
 
-			directory = GorgonUtility.FormatDirectory(Path.GetDirectoryName(path), '/');
-			filename = GorgonUtility.FormatFileName(Path.GetFileName(path));
+			directory = GorgonPath.FormatDirectory(Path.GetDirectoryName(path), '/');
+			filename = GorgonPath.FormatFileName(Path.GetFileName(path));
 
 			if (string.IsNullOrEmpty(filename))
 				throw new ArgumentException("There was no file name in the path '" + path + "'", "path");
@@ -451,9 +452,9 @@ namespace GorgonLibrary.FileSystem
 			string[] directories = null;
 			GorgonFileSystemDirectory directory = null;
 
-			GorgonUtility.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(path, "path");
 
-			path = GorgonUtility.FormatDirectory(path, '/');
+			path = GorgonPath.FormatDirectory(path, '/');
 
 			if (!path.StartsWith("/"))
 				path = "/" + path;
@@ -536,7 +537,7 @@ namespace GorgonLibrary.FileSystem
 		/// <para>-or-</para><para>Thrown when the <paramref name="writeable"/> parameter is TRUE and the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</para>
 		/// </exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found and <paramref name="writeable"/> is FALSE.</exception>
-		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(string path, bool writeable)
 		{
 			GorgonFileSystemFileEntry file = null;
@@ -572,7 +573,7 @@ namespace GorgonLibrary.FileSystem
 			GorgonFileSystemDirectory directory = null;
 			string newPath = path;
 
-			GorgonUtility.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(path, "path");
 
 			directory = GetDirectory(path);
 
@@ -606,7 +607,7 @@ namespace GorgonLibrary.FileSystem
 			GorgonFileSystemFileEntry file = null;
 			string newPath = path;
 
-			GorgonUtility.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(path, "path");
 
 			file = GetFile(path);
 
@@ -637,7 +638,7 @@ namespace GorgonLibrary.FileSystem
 			GorgonFileSystemDirectory directory = null;
 			string newPath = path;
 
-			GorgonUtility.AssertParamString(path, "path");
+			GorgonDebug.AssertParamString(path, "path");
 
 			directory = GetDirectory(path);
 
@@ -729,8 +730,8 @@ namespace GorgonLibrary.FileSystem
 			string directory = string.Empty;
 			GorgonFileSystemProvider provider = null;
 
-			GorgonUtility.AssertParamString(physicalPath, "physicalPath");
-			GorgonUtility.AssertParamString(mountPath, "mountPath");
+			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
+			GorgonDebug.AssertParamString(mountPath, "mountPath");
 
 			physicalPath = Path.GetFullPath(physicalPath);
 			fileName = Path.GetFileName(physicalPath);
@@ -742,7 +743,7 @@ namespace GorgonLibrary.FileSystem
 				if (string.IsNullOrEmpty(directory))
 					throw new ArgumentException("The path in '" + physicalPath + "' is not a valid path.", "path");
 
-				directory = GorgonUtility.FormatDirectory(directory, Path.DirectorySeparatorChar);
+				directory = GorgonPath.FormatDirectory(directory, Path.DirectorySeparatorChar);
 
 				// Use the default folder provider.
 				provider = Providers[typeof(GorgonFolderFileSystemProvider).FullName];
@@ -753,9 +754,9 @@ namespace GorgonLibrary.FileSystem
 				return;
 			}
 
-			fileName = GorgonUtility.FormatFileName(fileName);
+			fileName = GorgonPath.FormatFileName(fileName);
 			if (!string.IsNullOrEmpty(directory))
-				directory = GorgonUtility.FormatDirectory(directory, Path.DirectorySeparatorChar);
+				directory = GorgonPath.FormatDirectory(directory, Path.DirectorySeparatorChar);
 
 			if (!File.Exists(directory + fileName))
 				throw new ArgumentException("The path '" + directory + "' does not exist.", "physicalPath");

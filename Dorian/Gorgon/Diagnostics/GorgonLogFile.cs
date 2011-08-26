@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Text;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Diagnostics
 {
@@ -207,13 +208,13 @@ namespace GorgonLibrary.Diagnostics
 		/// <exception cref="System.ArgumentException">Thrown whent he parameter is empty.</exception>
 		public GorgonLogFile(string appname)
 		{
-			GorgonUtility.AssertParamString(appname, "appname");
+			GorgonDebug.AssertParamString(appname, "appname");
 
 			IsClosed = true;
 
 			LogApplication = appname;
 
-			LogPath = GorgonUtility.GetUserApplicationPath(appname) + Path.ChangeExtension(GorgonUtility.FormatFileName(GetType().Assembly.GetName().Name), ".log");
+			LogPath = GorgonPath.GetUserApplicationPath(appname) + Path.ChangeExtension(GorgonPath.FormatFileName(GetType().Assembly.GetName().Name), ".log");
 
 			if (string.IsNullOrEmpty(LogPath))
 				throw new IOException("The assembly name is not valid for a file name.");

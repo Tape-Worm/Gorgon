@@ -10,14 +10,6 @@ namespace GorgonLibrary.Diagnostics
 	/// </summary>
 	internal class GorgonDefaultAppLoop
 	{
-		#region Variables.
-
-		#endregion
-
-		#region Properties.
-
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Function used to process idle time.

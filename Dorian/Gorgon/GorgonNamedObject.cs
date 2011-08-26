@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary
 {
@@ -87,7 +88,7 @@ namespace GorgonLibrary
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonNamedObject(string name)
 		{
-			GorgonUtility.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(name, "name");
 
 			Name = name;
 		}

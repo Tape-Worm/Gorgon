@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Collections
 {
@@ -57,7 +58,7 @@ namespace GorgonLibrary.Collections
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonNamedValue(string name, T value)
 		{
-			GorgonUtility.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(name, "name");
 
 			_name = name;
 			Value = value;
@@ -129,7 +130,7 @@ namespace GorgonLibrary.Collections
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		private void Add(string name, T value)
 		{
-			GorgonUtility.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(name, "name");
 
 			AddItem(new GorgonNamedValue<T>(name, value));
 			_names.Add(name);

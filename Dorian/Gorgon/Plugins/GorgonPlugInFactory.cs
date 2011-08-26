@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Security.Policy;
 using System.Security.Permissions;
 using GorgonLibrary.Collections;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.PlugIns
 {
@@ -208,7 +209,7 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentException">The name was an empty string..</exception>
 		public void Unload(string name)
 		{
-			GorgonUtility.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(name, "name");
 			this.RemoveItem(name);
 		}
 
@@ -299,7 +300,7 @@ namespace GorgonLibrary.PlugIns
 		{
 			AssemblyName plugInAssemblyName = null;
 
-			GorgonUtility.AssertParamString(assemblyPath, "assemblyPath");
+			GorgonDebug.AssertParamString(assemblyPath, "assemblyPath");
 
 			assemblyPath = Path.GetFullPath(assemblyPath);
 
@@ -351,7 +352,7 @@ namespace GorgonLibrary.PlugIns
 		{
 			AssemblyName plugInAssemblyName = null;
 
-			GorgonUtility.AssertParamString(assemblyPath, "assemblyPath");
+			GorgonDebug.AssertParamString(assemblyPath, "assemblyPath");
 
 			assemblyPath = Path.GetFullPath(assemblyPath);
 

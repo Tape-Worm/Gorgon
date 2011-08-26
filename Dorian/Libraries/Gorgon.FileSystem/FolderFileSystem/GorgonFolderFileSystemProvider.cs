@@ -27,7 +27,7 @@
 using System;
 using System.IO;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A file system provider interface to access files on the native OS file system.
@@ -50,11 +50,11 @@ namespace GorgonLibrary.FileSystem
 				physicalPath = Path.GetFullPath(physicalPath);
 
 			if (physicalPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
-				physicalPath = mountPoint + GorgonUtility.FormatDirectory(physicalPath.Replace(physicalRoot, string.Empty), '/');
+				physicalPath = mountPoint + GorgonPath.FormatDirectory(physicalPath.Replace(physicalRoot, string.Empty), '/');
 			else
 			{
 				physicalPath = physicalPath.Replace(physicalRoot, string.Empty);
-				physicalPath = mountPoint + GorgonUtility.FormatDirectory(Path.GetDirectoryName(physicalPath), '/') + GorgonUtility.FormatFileName(Path.GetFileName(physicalPath));
+				physicalPath = mountPoint + GorgonPath.FormatDirectory(Path.GetDirectoryName(physicalPath), '/') + GorgonPath.FormatFileName(Path.GetFileName(physicalPath));
 			}
 
 			return physicalPath;
@@ -76,7 +76,7 @@ namespace GorgonLibrary.FileSystem
 			{
 				if (((directory.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden) && ((directory.Attributes & FileAttributes.System) != FileAttributes.System))
 				{
-					string newPath = MapToVirtualPath(GorgonUtility.FormatDirectory(directory.FullName, Path.DirectorySeparatorChar), physicalMountPoint, mountPoint.FullPath);
+					string newPath = MapToVirtualPath(GorgonPath.FormatDirectory(directory.FullName, Path.DirectorySeparatorChar), physicalMountPoint, mountPoint.FullPath);
 
 					if (FileSystem.GetDirectory(newPath) == null)
 						AddDirectoryEntry(newPath);
@@ -87,7 +87,7 @@ namespace GorgonLibrary.FileSystem
 			{
 				if (((file.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden) && ((file.Attributes & FileAttributes.System) != FileAttributes.System))
 				{
-					string newPath = MapToVirtualPath(GorgonUtility.FormatDirectory(file.DirectoryName, Path.DirectorySeparatorChar) + file.Name, physicalMountPoint, mountPoint.FullPath);
+					string newPath = MapToVirtualPath(GorgonPath.FormatDirectory(file.DirectoryName, Path.DirectorySeparatorChar) + file.Name, physicalMountPoint, mountPoint.FullPath);
 
 					// Do not add duplicate files.
 					if (FileSystem.GetFile(newPath) == null)
@@ -156,7 +156,7 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="file">File to open.</param>
 		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
 		/// <returns>
-		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
+		/// The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.
 		/// </returns>
 		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)
