@@ -34,7 +34,7 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Utility for formatting numeric values into hexadecimal strings.
 	/// </summary>
-	public static class GorgonHexFormatter
+	public static class GorgonHexFormatterExtension
 	{
 		#region Methods.
 		/// <summary>
@@ -42,7 +42,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="value">Byte value to format.</param>
 		/// <returns>The formatted byte value.</returns>
-		public static string Format(byte value)
+		public static string FormatHex(this byte value)
 		{
 			return value.ToString("x").PadLeft(2, '0');
 		}
@@ -52,7 +52,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="value">Short value to format.</param>
 		/// <returns>The formatted short value.</returns>
-		public static string Format(short value)
+		public static string FormatHex(this short value)
 		{
 			return value.ToString("x").PadLeft(4, '0');
 		}
@@ -62,7 +62,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="value">Unsigned short value to format.</param>
 		/// <returns>The formatted unsigned short value.</returns>
-		public static string Format(ushort value)
+		public static string FormatHex(this ushort value)
 		{
 			return value.ToString("x").PadLeft(4, '0');
 		}
@@ -72,7 +72,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="value">Integer value to format.</param>
 		/// <returns>The formatted integer value.</returns>
-		public static string Format(int value)
+		public static string FormatHex(this int value)
 		{
 			return value.ToString("x").PadLeft(8, '0');
 		}
@@ -82,7 +82,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="value">Unsigned integer value to format.</param>
 		/// <returns>The formatted unsigned integer value.</returns>
-		public static string Format(uint value)
+		public static string FormatHex(this uint value)
 		{
 			return value.ToString("x").PadLeft(8, '0');
 		}
@@ -92,7 +92,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="value">Long value to format.</param>
 		/// <returns>The formatted long value.</returns>
-		public static string Format(long value)
+		public static string FormatHex(this long value)
 		{
 			return value.ToString("x").PadLeft(16, '0');
 		}
@@ -102,7 +102,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="value">Unsigned long value to format.</param>
 		/// <returns>The formatted unsigned long value.</returns>
-		public static string Format(ulong value)
+		public static string FormatHex(this ulong value)
 		{
 			return value.ToString("x").PadLeft(16, '0');
 		}
@@ -113,7 +113,7 @@ namespace GorgonLibrary
 		/// <param name="pointer">Pointer to format.</param>
 		/// <returns>The formatted address of the pointer.</returns>
 		/// <remarks>This function will take into account whether the application is x64 or x86 and will format accordingly.</remarks>
-		public static string Format(IntPtr pointer)
+		public static string FormatHex(this IntPtr pointer)
 		{
 			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
 				return pointer.ToInt64().ToString("x").PadLeft(16, '0');

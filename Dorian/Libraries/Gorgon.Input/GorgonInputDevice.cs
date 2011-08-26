@@ -252,7 +252,7 @@ namespace GorgonLibrary.Input
 		protected virtual void UnbindWindow()
 		{
 			if ((!BoundControl.IsDisposed) && (!BoundControl.Disposing))
-				Gorgon.Log.Print("Unbinding input device object {1} from window 0x{0}.", GorgonLoggingLevel.Intermediate, GorgonHexFormatter.Format(BoundControl.Handle), GetType().Name);
+				Gorgon.Log.Print("Unbinding input device object {1} from window 0x{0}.", GorgonLoggingLevel.Intermediate, BoundControl.Handle.FormatHex(), GetType().Name);
 			else
 				Gorgon.Log.Print("Owner window was disposed.", GorgonLoggingLevel.Intermediate);
 
@@ -303,7 +303,7 @@ namespace GorgonLibrary.Input
 				boundWindow = Gorgon.ApplicationForm;
 			}
 
-			Gorgon.Log.Print("Binding input device object {1} to window 0x{0}.", GorgonLoggingLevel.Intermediate, GorgonHexFormatter.Format(boundWindow.Handle), GetType().Name);
+			Gorgon.Log.Print("Binding input device object {1} to window 0x{0}.", GorgonLoggingLevel.Intermediate, boundWindow.Handle.FormatHex(), GetType().Name);
 
 			BoundControl = boundWindow;
 			BoundTopLevelForm = Gorgon.GetTopLevelForm(BoundControl);

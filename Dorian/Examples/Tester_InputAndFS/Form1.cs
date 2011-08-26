@@ -15,6 +15,15 @@ using GorgonLibrary.FileSystem;
 
 namespace Tester
 {
+	public static class StringExt
+	{
+		public static string Test(this int value)
+		{
+			return value.ToString();
+		}
+
+	}
+
 	public partial class Form1 : Form
 	{
 		GorgonInputFactory input = null;
@@ -29,9 +38,10 @@ namespace Tester
 		Random rnd = new Random();
 		string mouseInfo = string.Empty;
 		string keyValue = string.Empty;
+		string testStr = string.Empty;
 
 		private bool Idle(GorgonFrameRate timing)
-		{
+		{			
 			if ((keyboard.KeyStates[KeyboardKeys.A] == KeyState.Down) && (keyboard.KeyStates[KeyboardKeys.D] == KeyState.Down))
 				this.BackColor = Color.Blue;
 			else
