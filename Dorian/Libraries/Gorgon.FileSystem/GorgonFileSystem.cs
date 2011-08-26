@@ -76,7 +76,7 @@ namespace GorgonLibrary.FileSystem
 				if (string.IsNullOrEmpty(_writeLocation))
 					return;
 
-				_writeLocation = GorgonPath.FormatDirectory(_writeLocation, Path.DirectorySeparatorChar);
+				_writeLocation = _writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
 
 				if (!Directory.Exists(_writeLocation))
 					Directory.CreateDirectory(_writeLocation);
@@ -174,7 +174,7 @@ namespace GorgonLibrary.FileSystem
 
 			GorgonDebug.AssertParamString(path, "path");
 
-			path = GorgonPath.FormatDirectory(path, '/');
+			path = path.FormatDirectory('/');
 
 			if (!path.StartsWith("/"))
 				path = "/" + path;
@@ -231,12 +231,12 @@ namespace GorgonLibrary.FileSystem
 			GorgonDebug.AssertParamString(mountPoint, "mountPoint");
 			GorgonDebug.AssertParamString(physicalLocation, "physicalLocation");
 
-			directoryName = GorgonPath.FormatDirectory(Path.GetDirectoryName(path), '/');
+			directoryName = Path.GetDirectoryName(path).FormatDirectory('/');
 
 			if (!directoryName.StartsWith("/"))
 				directoryName += "/";
 
-			fileName = GorgonPath.FormatFileName(Path.GetFileName(path));
+			fileName = Path.GetFileName(path).FormatFileName();
 			if (string.IsNullOrEmpty(fileName))
 				throw new ArgumentException("The path '" + path + "' does not contain a file name.", "path");
 
@@ -270,14 +270,14 @@ namespace GorgonLibrary.FileSystem
 				return WriteLocation;
 
 			// The filename just gets tacked on, we don't use it for processing.
-			fileName = GorgonPath.FormatFileName(Path.GetFileName(path));
+			fileName = Path.GetFileName(path).FormatFileName();
 
-			directory = GorgonPath.FormatDirectory(Path.GetDirectoryName(path), Path.DirectorySeparatorChar);
+			directory = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
 
 			if (directory.StartsWith(Path.DirectorySeparatorChar.ToString()))
 				directory = directory.Substring(1);
 
-			return GorgonPath.FormatDirectory(WriteLocation + directory, Path.DirectorySeparatorChar) + fileName;
+			return (WriteLocation + directory).FormatDirectory(Path.DirectorySeparatorChar) + fileName;
 		}
 
 		/// <summary>
@@ -423,8 +423,8 @@ namespace GorgonLibrary.FileSystem
 			if (!path.StartsWith("/"))
 				path = "/" + path;
 
-			directory = GorgonPath.FormatDirectory(Path.GetDirectoryName(path), '/');
-			filename = GorgonPath.FormatFileName(Path.GetFileName(path));
+			directory = Path.GetDirectoryName(path).FormatDirectory('/');
+			filename = Path.GetFileName(path).FormatFileName();
 
 			if (string.IsNullOrEmpty(filename))
 				throw new ArgumentException("There was no file name in the path '" + path + "'", "path");
@@ -454,7 +454,7 @@ namespace GorgonLibrary.FileSystem
 
 			GorgonDebug.AssertParamString(path, "path");
 
-			path = GorgonPath.FormatDirectory(path, '/');
+			path = path.FormatDirectory('/');
 
 			if (!path.StartsWith("/"))
 				path = "/" + path;
@@ -743,7 +743,7 @@ namespace GorgonLibrary.FileSystem
 				if (string.IsNullOrEmpty(directory))
 					throw new ArgumentException("The path in '" + physicalPath + "' is not a valid path.", "path");
 
-				directory = GorgonPath.FormatDirectory(directory, Path.DirectorySeparatorChar);
+				directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
 
 				// Use the default folder provider.
 				provider = Providers[typeof(GorgonFolderFileSystemProvider).FullName];
@@ -754,9 +754,9 @@ namespace GorgonLibrary.FileSystem
 				return;
 			}
 
-			fileName = GorgonPath.FormatFileName(fileName);
+			fileName = fileName.FormatFileName();
 			if (!string.IsNullOrEmpty(directory))
-				directory = GorgonPath.FormatDirectory(directory, Path.DirectorySeparatorChar);
+				directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
 
 			if (!File.Exists(directory + fileName))
 				throw new ArgumentException("The path '" + directory + "' does not exist.", "physicalPath");

@@ -51,7 +51,7 @@ namespace GorgonLibrary.FileSystem
 		{
 			get
 			{
-				return GetItem(GorgonPath.RemoveIllegalFilenameChars(fileName));
+				return GetItem(fileName.RemoveIllegalFilenameChars());
 			}
 		}
 
@@ -114,7 +114,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public override bool Contains(string name)
 		{
-			return base.Contains(GorgonPath.RemoveIllegalFilenameChars(name));
+			return base.Contains(name.RemoveIllegalFilenameChars());
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>The index of the directory or -1 if it could not be found.</returns>
 		public int IndexOf(string fileName)
 		{
-			fileName = GorgonPath.RemoveIllegalFilenameChars(fileName);
+			fileName = fileName.RemoveIllegalFilenameChars();
 			return IndexOf(this[fileName]);
 		}
 		#endregion

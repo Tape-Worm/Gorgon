@@ -116,7 +116,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 			foreach (var directoryNode in directories)
 			{
 				GorgonFileSystemDirectory directory = null;
-				string path = GorgonPath.FormatDirectory(directoryNode.Attribute("FullPath").Value, '/') ;
+				string path = directoryNode.Attribute("FullPath").Value.FormatDirectory('/') ;
 				var files = directoryNode.Elements("File");
 				
 				directory = this.FileSystem.GetDirectory(mountPoint.FullPath + path);				

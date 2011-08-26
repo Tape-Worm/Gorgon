@@ -177,7 +177,7 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="createDate">Create date for the file.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="directory"/> or <paramref name="provider"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		internal GorgonFileSystemFileEntry(GorgonFileSystemProvider provider, GorgonFileSystemDirectory directory, string fileName, string mountPoint, string physicalPath, long fileSize, long offset, DateTime createDate)
-			: base(GorgonPath.RemoveIllegalFilenameChars(fileName))
+			: base(fileName.RemoveIllegalFilenameChars())
 		{
 			GorgonDebug.AssertParamString(mountPoint, "mountPoint");
 

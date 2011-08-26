@@ -34,6 +34,7 @@ using System.IO;
 using System.Reflection;
 using System.Diagnostics;
 using System.Threading;
+using System.Text;
 using Microsoft.Win32;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
@@ -130,7 +131,7 @@ namespace GorgonLibrary
 				if (runningAssembly == null)
 					return string.Empty;
 
-				return GorgonPath.FormatDirectory(Path.GetDirectoryName(runningAssembly.Location), Path.DirectorySeparatorChar);
+				return Path.GetDirectoryName(runningAssembly.Location).FormatDirectory(Path.DirectorySeparatorChar);
 			}
 		}
 
@@ -149,7 +150,7 @@ namespace GorgonLibrary
 				if (runningAssembly == null)
 					return string.Empty;
 
-				return GorgonPath.FormatDirectory(Path.GetDirectoryName(runningAssembly.Location), Path.DirectorySeparatorChar) + Path.GetFileName(runningAssembly.Location);
+				return Path.GetDirectoryName(runningAssembly.Location).FormatDirectory(Path.DirectorySeparatorChar) + Path.GetFileName(runningAssembly.Location).FormatFileName();
 			}
 		}
 
@@ -310,6 +311,28 @@ namespace GorgonLibrary
 				if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
 					System.Threading.Thread.Sleep(UnfocusedSleepTime);
 			}
+		}
+
+		/// <summary>
+		/// Function to return the path to the per-user roaming directory for a given application.
+		/// </summary>
+		/// <param name="applicationName">Name of the application.</param>
+		/// <returns>The per-user roaming data directory.</returns>
+		/// <remarks>The function will trim leading and trailing spaces.  If the parameter only contains whitespace, it will be treated as an empty string.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the parameter is NULL (or Nothing in VB.NET).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the parameter is an empty string.</exception>
+		public static string GetUserApplicationPath(string applicationName)
+		{
+			StringBuilder outputDir = new StringBuilder(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
+			GorgonDebug.AssertParamString(applicationName, "applicationName");
+
+			if (outputDir[outputDir.Length - 1] != Path.DirectorySeparatorChar)
+				outputDir.Append(Path.DirectorySeparatorChar);
+
+			outputDir.Append(applicationName);
+
+			return outputDir.ToString().FormatDirectory(Path.DirectorySeparatorChar);
 		}
 
 		/// <summary>

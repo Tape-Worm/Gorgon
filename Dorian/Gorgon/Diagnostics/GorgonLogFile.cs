@@ -213,7 +213,7 @@ namespace GorgonLibrary.Diagnostics
 
 			LogApplication = appname;
 
-			LogPath = GorgonPath.GetUserApplicationPath(appname) + Path.ChangeExtension(GorgonPath.FormatFileName(GetType().Assembly.GetName().Name), ".log");
+			LogPath = Gorgon.GetUserApplicationPath(appname) + Path.ChangeExtension(GetType().Assembly.GetName().Name.FormatFileName(), ".log");
 
 			if (string.IsNullOrEmpty(LogPath))
 				throw new IOException("The assembly name is not valid for a file name.");

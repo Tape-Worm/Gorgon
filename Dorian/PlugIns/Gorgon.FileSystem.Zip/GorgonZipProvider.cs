@@ -65,8 +65,8 @@ namespace GorgonLibrary.FileSystem.Zip
 						else
 						{
 							GorgonFileSystemDirectory directory = null;
-							string directoryName = GorgonPath.FormatDirectory(Path.GetDirectoryName(entry.Name), '/');
-							string fileName = GorgonPath.FormatFileName(Path.GetFileName(entry.Name));
+							string directoryName = Path.GetDirectoryName(entry.Name).FormatDirectory('/');
+							string fileName = Path.GetFileName(entry.Name).FormatFileName();
 
 							directoryName = mountPoint.FullPath + directoryName;
 							if (string.IsNullOrEmpty(directoryName))
