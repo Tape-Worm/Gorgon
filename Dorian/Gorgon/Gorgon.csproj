@@ -114,8 +114,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Diagnostics\GorgonDebug.cs" />
-    <Compile Include="Extensions\GorgonFormatting.cs" />
-    <Compile Include="Extensions\GorgonPath.cs" />
+    <Compile Include="Extensions\GorgonNumericFormatting.cs" />
+    <Compile Include="Extensions\GorgonStringFormatting.cs" />
     <Compile Include="Math\GorgonRange.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />

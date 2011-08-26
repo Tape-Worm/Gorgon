@@ -34,7 +34,7 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Utility for formatting numeric values into various types of strings.
 	/// </summary>
-	public static class GorgonFormattingExtension
+	public static class GorgonNumericFormattingExtension
 	{
 		#region Methods.
 		/// <summary>

@@ -71,7 +71,7 @@ namespace GorgonLibrary.PlugIns
 			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
 				path += Path.DirectorySeparatorChar.ToString();
 
-			return GorgonPath.FormatDirectory(path, Path.DirectorySeparatorChar);
+			return path.FormatDirectory(Path.DirectorySeparatorChar);
 		}
 
 		/// <summary>

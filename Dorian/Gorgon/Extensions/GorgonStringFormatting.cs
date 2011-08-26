@@ -36,14 +36,14 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Various path formatting methods.
 	/// </summary>
-	public static class GorgonPath
+	public static class GorgonStringFormatting
 	{
 		/// <summary>
 		/// Function to return a properly formatted path name including a file name.
 		/// </summary>
 		/// <param name="path">Path to the file.</param>
 		/// <returns>The formatted path to the file.</returns>
-		public static string FormatFileName(string path)
+		public static string FormatFileName(this string path)
 		{
 			string directory = string.Empty;
 			string filename = string.Empty;
@@ -65,7 +65,7 @@ namespace GorgonLibrary
 		/// <param name="directorySeparator">Directory separator character to use.</param>
 		/// <returns>The formatted path.</returns>
 		/// <remarks>When the <paramref name="directorySeparator"/> character is whitespace or illegal, then the system will use the <see cref="F:System.IO.Path.DirectorySeparatorChar"/> character.</remarks>
-		public static string FormatDirectory(string path, char directorySeparator)
+		public static string FormatDirectory(this string path, char directorySeparator)
 		{
 			char[] illegalChars = Path.GetInvalidPathChars();
 			string doubleSeparator = directorySeparator.ToString() + directorySeparator.ToString();
@@ -103,7 +103,7 @@ namespace GorgonLibrary
 		/// <returns>The corrected path.</returns>
 		/// <remarks>This will replace any illegal characters with the '_' symbol.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is NULL (or Nothing in VB.NET).</exception>
-		public static string RemoveIllegalPathChars(string path)
+		public static string RemoveIllegalPathChars(this string path)
 		{
 			char[] illegalChars = Path.GetInvalidPathChars();
 
@@ -128,7 +128,7 @@ namespace GorgonLibrary
 		/// <returns>The corrected file name.</returns>
 		/// <remarks>This will replace any illegal characters with the '_' symbol.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is NULL (or Nothing in VB.NET).</exception>
-		public static string RemoveIllegalFilenameChars(string path)
+		public static string RemoveIllegalFilenameChars(this string path)
 		{
 			char[] illegalChars = Path.GetInvalidFileNameChars();
 
@@ -147,28 +147,6 @@ namespace GorgonLibrary
 			filePath.Append(output);
 
 			return filePath.ToString();
-		}
-
-		/// <summary>
-		/// Function to return the path to the per-user roaming directory for a given application.
-		/// </summary>
-		/// <param name="applicationName">Name of the application.</param>
-		/// <returns>The per-user roaming data directory.</returns>
-		/// <remarks>The function will trim leading and trailing spaces.  If the parameter only contains whitespace, it will be treated as an empty string.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the parameter is an empty string.</exception>
-		public static string GetUserApplicationPath(string applicationName)
-		{
-			StringBuilder outputDir = new StringBuilder(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-
-			GorgonDebug.AssertParamString(applicationName, "applicationName");
-
-			if (outputDir[outputDir.Length - 1] != Path.DirectorySeparatorChar)
-				outputDir.Append(Path.DirectorySeparatorChar);
-
-			outputDir.Append(applicationName);
-
-			return FormatDirectory(outputDir.ToString(), Path.DirectorySeparatorChar);
 		}
 	}
 }

@@ -50,11 +50,11 @@ namespace GorgonLibrary.FileSystem
 				physicalPath = Path.GetFullPath(physicalPath);
 
 			if (physicalPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
-				physicalPath = mountPoint + GorgonPath.FormatDirectory(physicalPath.Replace(physicalRoot, string.Empty), '/');
+				physicalPath = mountPoint + physicalPath.Replace(physicalRoot, string.Empty).FormatDirectory('/');
 			else
 			{
 				physicalPath = physicalPath.Replace(physicalRoot, string.Empty);
-				physicalPath = mountPoint + GorgonPath.FormatDirectory(Path.GetDirectoryName(physicalPath), '/') + GorgonPath.FormatFileName(Path.GetFileName(physicalPath));
+				physicalPath = mountPoint + Path.GetDirectoryName(physicalPath).FormatDirectory('/') + Path.GetFileName(physicalPath).FormatFileName();
 			}
 
 			return physicalPath;
@@ -76,7 +76,7 @@ namespace GorgonLibrary.FileSystem
 			{
 				if (((directory.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden) && ((directory.Attributes & FileAttributes.System) != FileAttributes.System))
 				{
-					string newPath = MapToVirtualPath(GorgonPath.FormatDirectory(directory.FullName, Path.DirectorySeparatorChar), physicalMountPoint, mountPoint.FullPath);
+					string newPath = MapToVirtualPath(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), physicalMountPoint, mountPoint.FullPath);
 
 					if (FileSystem.GetDirectory(newPath) == null)
 						AddDirectoryEntry(newPath);
@@ -87,7 +87,7 @@ namespace GorgonLibrary.FileSystem
 			{
 				if (((file.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden) && ((file.Attributes & FileAttributes.System) != FileAttributes.System))
 				{
-					string newPath = MapToVirtualPath(GorgonPath.FormatDirectory(file.DirectoryName, Path.DirectorySeparatorChar) + file.Name, physicalMountPoint, mountPoint.FullPath);
+					string newPath = MapToVirtualPath(file.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar) + file.Name, physicalMountPoint, mountPoint.FullPath);
 
 					// Do not add duplicate files.
 					if (FileSystem.GetFile(newPath) == null)

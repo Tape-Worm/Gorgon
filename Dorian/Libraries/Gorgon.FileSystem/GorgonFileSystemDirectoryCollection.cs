@@ -54,7 +54,7 @@ namespace GorgonLibrary.FileSystem
 		{
 			get
 			{
-				return GetItem(GorgonPath.RemoveIllegalPathChars(name));
+				return GetItem(name.RemoveIllegalPathChars());
 			}
 		}
 		#endregion
@@ -67,7 +67,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public override bool Contains(string name)
 		{
-			return base.Contains(GorgonPath.RemoveIllegalPathChars(name));
+			return base.Contains(name.RemoveIllegalPathChars());
 		}
 
 		/// <summary>

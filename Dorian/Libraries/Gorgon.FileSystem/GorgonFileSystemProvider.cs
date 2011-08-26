@@ -207,9 +207,9 @@ namespace GorgonLibrary.FileSystem
 
 			physicalPath = Path.GetFullPath(physicalPath);
 			fileName = Path.GetFileName(physicalPath);
-			physicalPath = GorgonPath.FormatDirectory(Path.GetDirectoryName(physicalPath), Path.DirectorySeparatorChar);
+			physicalPath = Path.GetDirectoryName(physicalPath).FormatDirectory(Path.DirectorySeparatorChar);
 			if (!string.IsNullOrEmpty(fileName))
-				physicalPath += GorgonPath.FormatFileName(fileName);
+				physicalPath += fileName.FormatFileName();
 
 			mountDirectory = FileSystem.GetDirectory(mountPoint);
 
