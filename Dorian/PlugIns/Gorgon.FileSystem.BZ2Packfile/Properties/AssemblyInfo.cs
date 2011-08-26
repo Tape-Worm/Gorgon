@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Gorgon BZip2 file system provider.")]
+[assembly: AssemblyTitle("Gorgon BZip2 gorgon packed file system provider.")]
 [assembly: AssemblyDescription("Allows old Gorgon BZip2 packed files to be mounted with the File System object.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon.FileSystem.BZ2Packfile")]
+[assembly: AssemblyProduct("Gorgon.FileSystem.GorPack")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
