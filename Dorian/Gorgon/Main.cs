@@ -74,9 +74,7 @@ namespace GorgonLibrary
 	/// The primary interface into gorgon.
 	/// </summary>
 	/// <remarks>This interface handles the initialization of Gorgon from internal data structures to the video mode to be used.  Users should call <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> before doing anything
-	/// and call <see cref="M:GorgonLibrary.Gorgon.Terminate">Terminate</see> when finished.<para>This static class is used to change the global states of objects such as a global rendering setting to which render target is current.
-	/// It will also control the execution and rendering flow for the application.
-	/// </para></remarks>
+	/// and call <see cref="M:GorgonLibrary.Gorgon.Terminate">Terminate</see> when finished.</remarks>
 	public static class Gorgon
 	{
 		#region Variables.
