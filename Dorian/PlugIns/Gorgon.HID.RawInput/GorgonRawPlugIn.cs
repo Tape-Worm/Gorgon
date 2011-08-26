@@ -47,7 +47,7 @@ namespace GorgonLibrary.Input
 		/// </returns>
 		protected override GorgonInputFactory CreateFactory()
 		{
-			return new Raw.GorgonRawInputDeviceFactory();
+			return new Raw.GorgonRawInputFactory();
 		}
 		#endregion
 

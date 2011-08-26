@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Devices\RawHIDDevice.cs" />
-    <Compile Include="GorgonRawInputPlugIn.cs" />
+    <Compile Include="GorgonRawPlugIn.cs" />
     <Compile Include="GorgonRawInputDeviceInfo.cs" />
     <Compile Include="GorgonWMMDeviceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -70,7 +70,7 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="Native\Win32Types.cs" />
-    <Compile Include="GorgonRawInputDeviceFactory.cs" />
+    <Compile Include="GorgonRawInputFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
