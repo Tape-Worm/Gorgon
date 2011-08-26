@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using System.Text;
-using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Diagnostics
 {

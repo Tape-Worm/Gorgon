@@ -33,7 +33,7 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.IO.ZipFileSystem
+namespace GorgonLibrary.FileSystem.ZipFileSystem
 {
 	/// <summary>
 	/// A file system provider for zip files.
@@ -100,7 +100,7 @@ namespace GorgonLibrary.IO.ZipFileSystem
 		/// <param name="file">File to open.</param>
 		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
 		/// <returns>
-		/// The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.
+		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
 		/// </returns>
 		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)

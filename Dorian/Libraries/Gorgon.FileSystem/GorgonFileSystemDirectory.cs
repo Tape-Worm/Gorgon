@@ -26,10 +26,10 @@
 
 using GorgonLibrary;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
-	/// A virtual directory in the <see cref="GorgonLibrary.IO.GorgonFileSystem"/>.
+	/// A virtual directory in the <see cref="GorgonLibrary.FileSystem.GorgonFileSystem"/>.
 	/// </summary>
 	public class GorgonFileSystemDirectory
 		: GorgonNamedObject

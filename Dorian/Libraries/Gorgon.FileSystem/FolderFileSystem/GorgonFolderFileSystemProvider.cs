@@ -27,7 +27,7 @@
 using System;
 using System.IO;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
 	/// A file system provider interface to access files on the native OS file system.
@@ -156,7 +156,7 @@ namespace GorgonLibrary.IO
 		/// <param name="file">File to open.</param>
 		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
 		/// <returns>
-		/// The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.
+		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
 		/// </returns>
 		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)

@@ -26,7 +26,7 @@
 
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
 	/// The base entry point for an Gorgon file system provider plug-in.

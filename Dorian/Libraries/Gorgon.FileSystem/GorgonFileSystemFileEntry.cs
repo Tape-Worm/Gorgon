@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
 	/// A file entry corresponding to a file on the physical file system.
@@ -156,7 +156,7 @@ namespace GorgonLibrary.IO
 		/// Function to open a stream to the file on the physical file system.
 		/// </summary>
 		/// <param name="writeable">TRUE to write to the file, FALSE to make read-only.</param>
-		/// <returns>The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(bool writeable)
 		{
 			return Provider.OpenStream(this, writeable);

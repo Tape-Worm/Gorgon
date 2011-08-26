@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
 	/// A file stream for the Gorgon file system.

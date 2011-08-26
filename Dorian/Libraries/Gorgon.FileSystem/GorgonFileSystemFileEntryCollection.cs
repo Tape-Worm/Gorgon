@@ -28,7 +28,7 @@ using System;
 using GorgonLibrary;
 using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
 	/// A collection of files available from the file system.
