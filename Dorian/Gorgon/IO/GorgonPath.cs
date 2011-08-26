@@ -31,7 +31,7 @@ using System.Text;
 using System.IO;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.IO
+namespace GorgonLibrary
 {
 	/// <summary>
 	/// Various path formatting methods.
