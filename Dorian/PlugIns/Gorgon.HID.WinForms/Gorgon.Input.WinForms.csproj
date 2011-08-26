@@ -62,7 +62,7 @@
     <Compile Include="GorgonWinFormsPlugIn.cs" />
     <Compile Include="GorgonWinFormsInputDeviceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GorgonWinFormsDeviceFactory.cs" />
+    <Compile Include="GorgonWinFormsInputFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
