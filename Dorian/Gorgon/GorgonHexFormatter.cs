@@ -32,7 +32,7 @@ using System.Text;
 namespace GorgonLibrary
 {
 	/// <summary>
-	/// Utility for formatting values into hexadecimal strings.
+	/// Utility for formatting numeric values into hexadecimal strings.
 	/// </summary>
 	public static class GorgonHexFormatter
 	{
