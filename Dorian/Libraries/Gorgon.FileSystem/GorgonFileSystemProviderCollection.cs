@@ -82,10 +82,10 @@ namespace GorgonLibrary.FileSystem
 			if (Contains(providerTypeName))
 				return this[providerTypeName];
 
-			if (!GorgonPlugInFactory.PlugIns.Contains(providerTypeName))
+			if (!Gorgon.PlugIns.Contains(providerTypeName))
 				throw new GorgonException(GorgonResult.CannotCreate, "There was no plug-in named '" + providerTypeName + "'.");
 
-			plugIn = GorgonPlugInFactory.PlugIns[providerTypeName] as GorgonFileSystemProviderPlugIn;
+			plugIn = Gorgon.PlugIns[providerTypeName] as GorgonFileSystemProviderPlugIn;
 
 			if (plugIn == null)
 				throw new GorgonException(GorgonResult.CannotCreate, "The plug-in '" + providerTypeName + "' is not an Gorgon file system provider plug-in.");
