@@ -153,7 +153,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether the device window should go to full screen or windowed mode.
 		/// </summary>
-		public bool Windowed
+		public bool IsWindowed
 		{
 			get;
 			set;
@@ -181,7 +181,7 @@ namespace GorgonLibrary.Graphics
 				BoundWindow = Gorgon.ApplicationForm;
 
 #if DEBUG
-			Windowed = true;
+			IsWindowed = true;
 #else
 			Windowed = false;
 #endif

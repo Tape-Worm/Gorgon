@@ -728,10 +728,10 @@ namespace GorgonLibrary.Input
 		/// <remarks>
 		/// When the <see cref="P:GorgonLibrary.Input.GorgonInputDevice.BoundControl">BoundControl</see> loses focus, the <see cref="P:GorgonLibrary.Input.GorgonKeyboard.KeyStates">key state buffer</see> may keep the previous key state, leading to undesirable results.  
 		/// This setting will allow the user to control how the key states are preserved after a loss of focus.  
-		/// <para>The user may also manually reset the key states by setting the individual key state to Up, or use the <see cref="M:GorgonLibrary.Input.GorgonKeyboard.GorgonKeyStateCollection.Reset">KeyStates.Reset</see> (or the <see cref="M:GorgonLibrary.Input.GorgonKeyboard.GorgonKeyStateCollection.ResetModifiers">KeyStates.ResetModifiers</see>) method.</para>
+		/// <para>The user may also manually reset the key states by setting the individual key state to Up, or use the <see cref="M:GorgonLibrary.Input.GorgonKeyboard.KeyStateCollection.Reset">KeyStates.Reset</see> (or the <see cref="M:GorgonLibrary.Input.GorgonKeyboard.KeyStateCollection.ResetModifiers">KeyStates.ResetModifiers</see>) method.</para>
 		/// <para>The key reset settings are as follows:
-		/// <list type="bullet">
-		/// <listheader><term>KeyStateResetSetting</term><description>Description</description></listheader>
+		/// <list type="table">
+		/// <listheader><term>Mode</term><description>Description</description></listheader>
 		/// <item>
 		///		<term>None</term>
 		///		<description>Preserve all previous key states.</description>

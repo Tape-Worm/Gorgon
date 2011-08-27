@@ -256,7 +256,7 @@ namespace GorgonLibrary.Graphics
 			if (IsWindowed == windowed)
 				return;
 
-			Settings.Windowed = windowed;
+			Settings.IsWindowed = windowed;
 			Update(Settings);
 		}
 
@@ -276,7 +276,7 @@ namespace GorgonLibrary.Graphics
 			Form window = BoundWindow as Form;
 			
 			// Child controls and device windows with swap chains cannot go full screen.
-			if (!settings.Windowed)
+			if (!settings.IsWindowed)
 			{
 				if (window == null)
 					throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
@@ -293,18 +293,18 @@ namespace GorgonLibrary.Graphics
 			// our solution is to restore the window to a normal state, and apply the changes.
 
 			// If we're switching back to windowed mode and the window was previously maximized, then re-maximize it.
-			if ((settings.Windowed) && (!IsWindowed) && (_wasMaximized))
+			if ((settings.IsWindowed) && (!IsWindowed) && (_wasMaximized))
 				window.WindowState = FormWindowState.Maximized;
 
 			// Store whether the window was previously maximized.
-			_wasMaximized = ((settings.Windowed == !IsWindowed) && (window.WindowState == FormWindowState.Maximized));
+			_wasMaximized = ((settings.IsWindowed == !IsWindowed) && (window.WindowState == FormWindowState.Maximized));
 
 			// If we didn't pass in the display settings, then use the current settings.
 			if (settings.DisplayMode == null)
 				settings.DisplayMode = new GorgonVideoMode(Mode.Width, Mode.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator);
 			
 			UpdateTargetInformation(settings.DisplayMode.Value, settings.DepthStencilFormat, settings.AdvancedSettings.MSAAQualityLevel);
-			IsWindowed = settings.Windowed;
+			IsWindowed = settings.IsWindowed;
 			UpdateResources();
 			AddEventHandlers();
 
@@ -312,7 +312,7 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, Name);
 			Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DisplayMode.Value.RefreshRateNumerator, settings.DisplayMode.Value.RefreshRateDenominator);
 			Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, settings.DepthStencilFormat != GorgonBufferFormat.Unknown, settings.DepthStencilFormat);
-			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.Windowed);
+			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.IsWindowed);
 			Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel != null);
 			if (settings.AdvancedSettings.MSAAQualityLevel != null)
 				Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel.Value.Quality, settings.AdvancedSettings.MSAAQualityLevel.Value.Level);
@@ -377,7 +377,7 @@ namespace GorgonLibrary.Graphics
 			Mode = settings.DisplayMode.Value;
 			VideoDevice = device;
 			VideoOutput = output;
-			IsWindowed = settings.Windowed;
+			IsWindowed = settings.IsWindowed;
 
 			if (window != null)
 			{

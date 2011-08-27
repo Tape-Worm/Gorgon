@@ -160,9 +160,9 @@ namespace Tester
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.WinForms.dll");
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.GorPack.dll");
-				input = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonRawPlugIn");
-				winput = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
-				xinput = GorgonInputFactory.CreateInputDeviceFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
+				input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+				winput = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
+				xinput = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
 				
 				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
@@ -194,7 +194,7 @@ namespace Tester
 
 				CreateJoysticks();
 
-				Gorgon.Go(Idle);
+				Gorgon.Go(null);
 			}
 			catch (Exception ex)
 			{

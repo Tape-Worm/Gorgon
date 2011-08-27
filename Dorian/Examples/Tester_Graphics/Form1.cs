@@ -47,7 +47,7 @@ namespace Tester_Graphics
 			{
 				if (e.KeyCode == Keys.F1)
 				{
-					_dev.Update(!settings.Windowed);
+					_dev.Update(!settings.IsWindowed);
 				}
 
 				if (e.KeyCode == Keys.F)
@@ -95,7 +95,7 @@ namespace Tester_Graphics
 				settings = new GorgonDeviceWindowSettings()
 				{
 				    //DisplayMode = new GorgonVideoMode(640, 480, GorgonBufferFormat.X8_R8G8B8_UIntNormal),
-				    Windowed = true,
+				    IsWindowed = true,
 				    DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal					
 				};
 

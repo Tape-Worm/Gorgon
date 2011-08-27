@@ -66,15 +66,10 @@ namespace GorgonLibrary.Input
 		/// <returns>The interface for the input factory.</returns>
 		internal GorgonInputFactory GetFactory()
 		{
-			GorgonInputFactory factory = DeviceFactoryInstance;
+			if (DeviceFactoryInstance == null)
+				DeviceFactoryInstance = CreateFactory();
 
-			if (factory == null)
-			{
-				factory = CreateFactory();
-				DeviceFactoryInstance = factory;
-			}
-
-			return factory;
+			return DeviceFactoryInstance;
 		}
 		#endregion
 

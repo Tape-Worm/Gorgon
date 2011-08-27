@@ -41,7 +41,17 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private bool _disposed = false;			// Flag to indicate that the object was disposed.
-		private IDisposable _graphics = null;	// Graphics interface.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the single graphics instance for this plug-in.
+		/// </summary>
+		internal GorgonGraphics GraphicsInstance
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -58,9 +68,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new graphics object.</returns>
 		internal GorgonGraphics GetGraphics()
 		{
-			GorgonGraphics graphics = CreateGraphics();
-			_graphics = graphics as IDisposable;
-			return graphics;
+			if (GraphicsInstance == null)
+				GraphicsInstance = CreateGraphics();
+			return GraphicsInstance;
 		}
 		#endregion
 
@@ -87,12 +97,12 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					if (_graphics != null)
-						_graphics.Dispose();
+					if (GraphicsInstance != null)
+						GraphicsInstance.Dispose();
 				}
 
 				_disposed = true;
-				_graphics = null;
+				GraphicsInstance = null;
 			}
 		}
 
