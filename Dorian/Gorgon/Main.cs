@@ -79,7 +79,6 @@ namespace GorgonLibrary
 	{
 		#region Variables.
 		private static ApplicationLoop _loop = null;					// Application loop.
-		private static GorgonDefaultAppLoop _defaultApp = null;			// Default application loop.
 		private static GorgonFrameRate _timingData = null;				// Frame rate timing data.
 		#endregion
 
@@ -368,7 +367,7 @@ namespace GorgonLibrary
 
 		/// <summary>
 		/// Function to start the application message processing.
-		/// </summary>
+		/// </summary>		
 		/// <param name="idleLoop">Delegate function to use when the machine is in an idle state.</param>
 		/// <remarks>The application does not begin running right away when this method is called, it merely tells the library that the application is ready to begin.</remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> has not been called.</exception>
@@ -385,7 +384,8 @@ namespace GorgonLibrary
 
 			Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
 
-			Forms.Application.Idle += new EventHandler(Application_Idle);
+			if (ApplicationIdleLoop != null)
+				Forms.Application.Idle += new EventHandler(Application_Idle);
 			IsRunning = true;
 		}
 	
@@ -403,7 +403,8 @@ namespace GorgonLibrary
 
 			if (IsRunning)
 			{
-				Forms.Application.Idle -= new EventHandler(Application_Idle);
+				if (ApplicationIdleLoop != null)
+					Forms.Application.Idle -= new EventHandler(Application_Idle);
 				IsRunning = false;
 
 				Log.Print("Application loop stopped.", GorgonLoggingLevel.Verbose);
