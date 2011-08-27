@@ -419,7 +419,7 @@ namespace GorgonLibrary.Input
 		/// <para>-or-</para>
 		/// <para>Thrown when the input device factory plug-in requested is not an input device factory.</para>
 		/// </exception>
-		public static GorgonInputFactory CreateInputDeviceFactory(string plugInType)
+		public static GorgonInputFactory CreateInputFactory(string plugInType)
 		{
 			GorgonInputPlugIn plugIn = null;
 			GorgonInputFactory factory = null;

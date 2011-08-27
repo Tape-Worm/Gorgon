@@ -186,10 +186,7 @@ namespace GorgonLibrary
 				if (IsRunning)
 					throw new GorgonException(GorgonResult.AccessDenied, "Cannot assign a new idle method while the application is in a running state.");
 
-				if (value == null)
-					_loop = new ApplicationLoop(_defaultApp.ApplicationIdle);
-				else
-					_loop = value;
+				_loop = value;
 			}
 		}
 
@@ -369,7 +366,9 @@ namespace GorgonLibrary
 		/// Function to start the application message processing.
 		/// </summary>		
 		/// <param name="idleLoop">Delegate function to use when the machine is in an idle state.</param>
-		/// <remarks>The application does not begin running right away when this method is called, it merely tells the library that the application is ready to begin.</remarks>
+		/// <remarks>The application does not begin running right away when this method is called, it merely tells the library that the application is ready to begin.
+		/// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="idleLoop"/> parameter will forego using a custom application idle loop and instead will use the standard WinForms Application.Run message loop.</para>
+		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> has not been called.</exception>
 		public static void Go(ApplicationLoop idleLoop)
 		{
@@ -382,10 +381,12 @@ namespace GorgonLibrary
 			_timingData = new GorgonFrameRate();
 			ApplicationIdleLoop = idleLoop;
 
-			Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
-
 			if (ApplicationIdleLoop != null)
+			{
+				Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
 				Forms.Application.Idle += new EventHandler(Application_Idle);
+			}
+
 			IsRunning = true;
 		}
 	
@@ -404,10 +405,11 @@ namespace GorgonLibrary
 			if (IsRunning)
 			{
 				if (ApplicationIdleLoop != null)
+				{
 					Forms.Application.Idle -= new EventHandler(Application_Idle);
-				IsRunning = false;
-
-				Log.Print("Application loop stopped.", GorgonLoggingLevel.Verbose);
+					Log.Print("Application loop stopped.", GorgonLoggingLevel.Verbose);
+				}
+				IsRunning = false;				
 			}
 		}
 

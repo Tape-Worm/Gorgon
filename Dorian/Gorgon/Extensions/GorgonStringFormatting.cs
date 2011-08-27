@@ -36,7 +36,7 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Various path formatting methods.
 	/// </summary>
-	public static class GorgonStringFormatting
+	public static class GorgonStringFormattingExtension
 	{
 		/// <summary>
 		/// Function to return a properly formatted path name including a file name.

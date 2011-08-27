@@ -155,7 +155,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property of the settings parameter is FALSE and the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the settings parameter is a child control.</para>
 		///   <para>-or-</para>
 		///   <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.GorgonDeviceWindowAdvancedSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.AdvancedSettings">advanced settings</see> has a value that cannot be supported by the device.
-		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.SupportsMultiSampleQualityLevel">SupportsMultiSampleQualityLevel</see> method on the video device object.</para>
+		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GetMultiSampleQuality</see> method on the video device object.</para>
 		///   </exception>
 		///   
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
@@ -174,7 +174,7 @@ namespace GorgonLibrary.Graphics.D3D9
 #if DEBUG
 			Configuration.EnableObjectTracking = true;
 #else
-            Configuration.EnableObjectTracking = false;
+			Configuration.EnableObjectTracking = false;
 #endif
 			// We don't need exceptions with these errors.
 			Configuration.AddResultWatch(ResultCode.DeviceLost, SlimDX.ResultWatchFlags.AlwaysIgnore);

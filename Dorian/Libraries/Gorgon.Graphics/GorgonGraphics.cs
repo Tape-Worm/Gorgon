@@ -44,6 +44,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		private IList<IDisposable> _trackedObjects = null;		// List of tracked objects.
+		private GorgonGraphicsPlugIn _plugIn = null;			// Plug-in that created this object.
 		#endregion
 
 		#region Properties.
@@ -179,7 +180,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property of the settings parameter is FALSE and the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the settings parameter is a child control.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.GorgonDeviceWindowAdvancedSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.AdvancedSettings">advanced settings</see> has a value that cannot be supported by the device.  
-		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.SupportsMultiSampleQualityLevel">SupportsMultiSampleQualityLevel</see> method on the video device object.</para>
+		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GetMultiSampleQuality</see> method on the video device object.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
 		/// <remarks>
@@ -198,11 +199,11 @@ namespace GorgonLibrary.Graphics
 		///		<term>Property</term>
 		///		<description>Default Value</description>
 		/// </listheader>
-		///		<item>BackBufferCount</item><description>2</description>
-		///		<item>DisplayFunction</item><description>Discard</description>
-		///		<item>MSAAQualityLevel</item><description>NULL (Nothing in VB.Net), which indicates no MSAA.</description>
-		///		<item>VSyncInterval</item><description>None</description>
-		///		<item>WillUseVideo</item><description>FALSE</description>
+		///		<item><term>BackBufferCount</term><description>2</description></item>
+		///		<item><term>DisplayFunction</term><description>Discard</description></item>
+		///		<item><term>MSAAQualityLevel</term><description>NULL (Nothing in VB.Net), which indicates no MSAA.</description></item>
+		///		<item><term>VSyncInterval</term><description>None</description></item>
+		///		<item><term>WillUseVideo</term><description>FALSE</description></item>
 		/// </list>		
 		/// </para>
 		/// </remarks>
@@ -224,7 +225,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property of the settings parameter is FALSE and the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the settings parameter is a child control.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.GorgonDeviceWindowAdvancedSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.AdvancedSettings">advanced settings</see> has a value that cannot be supported by the device.  
-		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.SupportsMultiSampleQualityLevel">SupportsMultiSampleQualityLevel</see> method on the video device object.</para>
+		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GetMultiSampleQuality</see> method on the video device object.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
 		/// <remarks>
@@ -243,11 +244,11 @@ namespace GorgonLibrary.Graphics
 		///		<term>Property</term>
 		///		<description>Default Value</description>
 		/// </listheader>
-		///		<item>BackBufferCount</item><description>2</description>
-		///		<item>DisplayFunction</item><description>Discard</description>
-		///		<item>MSAAQualityLevel</item><description>NULL (Nothing in VB.Net), which indicates no MSAA.</description>
-		///		<item>VSyncInterval</item><description>None</description>
-		///		<item>WillUseVideo</item><description>FALSE</description>
+		///		<item><term>BackBufferCount</term><description>2</description></item>
+		///		<item><term>DisplayFunction</term><description>Discard</description></item>
+		///		<item><term>MSAAQualityLevel</term><description>NULL (Nothing in VB.Net), which indicates no MSAA.</description></item>
+		///		<item><term>VSyncInterval</term><description>None</description></item>
+		///		<item><term>WillUseVideo</term><description>FALSE</description></item>
 		/// </list>		
 		/// </para>
 		/// </remarks>
@@ -256,7 +257,7 @@ namespace GorgonLibrary.Graphics
 			GorgonDeviceWindow target = null;
 
 			// For child controls, do not go to full screen.
-			if ((!(settings.BoundWindow is Form)) && (!settings.Windowed))
+			if ((!(settings.BoundWindow is Form)) && (!settings.IsWindowed))
 				throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
 
 			// Ensure that we're not already using this window as a device window.
@@ -285,7 +286,7 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, name);
 			Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DisplayMode.Value.RefreshRateNumerator, settings.DisplayMode.Value.RefreshRateDenominator);
 			Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, settings.DepthStencilFormat != GorgonBufferFormat.Unknown, settings.DepthStencilFormat);
-			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.Windowed);
+			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.IsWindowed);
 			Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel != null);
 			if (settings.AdvancedSettings.MSAAQualityLevel != null)
 				Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel.Value.Quality, settings.AdvancedSettings.MSAAQualityLevel.Value.Level);
@@ -311,6 +312,8 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the plug-in type was not a graphics plug-in.</para>
 		/// </exception>		
+		/// <returns>A graphics interface.</returns>
+		/// <remarks>When the graphics interface is created, it is only created once.  This means that subsequent calls to CreateGraphics (with the same plug-in) will always return a single instance until the first instance of the graphics object is disposed.</remarks>
 		public static GorgonGraphics CreateGraphics(string plugInType, IList<GorgonNamedValue<string>> customSettings)
 		{
 			GorgonGraphicsPlugIn plugIn = null;
@@ -339,6 +342,7 @@ namespace GorgonLibrary.Graphics
 						graphics.CustomSettings[namedValue.Name] = namedValue.Value;
 				}
 			}
+			graphics._plugIn = plugIn;
 			graphics.InitializeGraphics();
 			graphics.EnumerateVideoDevices();
 			graphics.CreateRenderer();
@@ -357,7 +361,9 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the plug-in type was not found in any of the loaded plug-in assemblies.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the plug-in type was not a graphics plug-in.</para>
-		/// </exception>		
+		/// </exception>	
+		/// <returns>A graphics interface.</returns>
+		/// <remarks>When the graphics interface is created, it is only created once.  This means that subsequent calls to CreateGraphics (with the same plug-in) will always return a single instance until the first instance of the graphics object is disposed.</remarks>
 		public static GorgonGraphics CreateGraphics(string plugInType)
 		{
 			return CreateGraphics(plugInType, null);
@@ -391,6 +397,9 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
+					// Detach this instance from the plug-in that created it.
+					_plugIn.GraphicsInstance = null;
+
 					CleanUp();
 				}
 
