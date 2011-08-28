@@ -194,7 +194,7 @@ namespace Tester
 
 				CreateJoysticks();
 
-				Gorgon.Go(null);
+				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
 			{
