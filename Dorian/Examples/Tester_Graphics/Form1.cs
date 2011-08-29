@@ -36,11 +36,14 @@ namespace Tester_Graphics
 
 			_timer.Reset();
 
-			if ((_dev != null) && (_running))
-				_dev.RunTest(timing.FrameDelta);
-
 			if ((_dev2 != null) && (_running))
 				_dev2.RunTest(timing.FrameDelta);
+
+			if ((_dev != null) && (_running))
+			{
+				_dev.RunTest(timing.FrameDelta);
+				_dev.Display();
+			}
 
 			return true;
 		}
@@ -120,13 +123,13 @@ namespace Tester_Graphics
 						new GorgonDeviceWindowSettings(this)
 						{
 							IsWindowed = false,
-							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
+							//DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 							MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 						},
 						new GorgonDeviceWindowSettings(form2)
 						{
 							IsWindowed = true,
-							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
+							//DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 							MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 						}
 					});
