@@ -101,23 +101,12 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <returns>
 		/// An enumerable list of video outputs.
 		/// </returns>
-		/// <remarks>Direct 3D9 has the capability for multi-head display, however, two windows are required and they must be present when creating
-		/// the IDirect3D9Device interface.  The problem is that we want to keep the devices separate, and having one device for both heads is not going
-		/// to work for our model, so we have to fall back on the old method of using each head as a dedicated device.  This means that device data is not
-		/// shared between the two heads and will require some effort on the users behalf to get things on both devices.</remarks>
 		protected override IEnumerable<GorgonVideoOutput> GetOutputs()
 		{
 			MONITORINFOEX? monitorInfo = new MONITORINFOEX();
 
 			// Get the primary output.
 			monitorInfo = Win32API.GetMonitorInfo(_adapter.Monitor);
-			//if (monitorInfo != null)
-				//return new D3D9VideoOutput[] {new D3D9VideoOutput(_d3d, _deviceType, _adapter, _caps.AdapterOrdinalInGroup, monitorInfo.Value)};
-			
-			//throw new GorgonException(GorgonResult.CannotEnumerate, "Could not enumerate the video outputs.  There was an error retrieving the monitor information.");
-
-			// Sadly, the D3D9 multi-head stuff is stupidly tricky to get working properly.  Maybe in the future
-			// or if someone is a lot smarter than I am.
 
 			Capabilities headCaps = null;
 			List<D3D9VideoOutput> outputs = new List<D3D9VideoOutput>();

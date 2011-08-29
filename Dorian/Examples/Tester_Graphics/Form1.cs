@@ -37,7 +37,10 @@ namespace Tester_Graphics
 			_timer.Reset();
 
 			if ((_dev2 != null) && (_running))
+			{
 				_dev2.RunTest(timing.FrameDelta);
+				_dev2.Display();
+			}
 
 			if ((_dev != null) && (_running))
 			{
@@ -56,7 +59,9 @@ namespace Tester_Graphics
 				if (e.KeyCode == Keys.F1)
 				{
 					settings.IsWindowed = !_dev.Settings.IsWindowed;
+					_dev2.Settings.IsWindowed = settings.IsWindowed;
 					_dev.UpdateSettings();
+					_dev2.UpdateSettings();
 				}
 
 				if (e.KeyCode == Keys.F)
@@ -107,7 +112,7 @@ namespace Tester_Graphics
 				form2 = new Form2();				
 				form2.Show();
 				form2.ClientSize = new System.Drawing.Size(640, 480);
-				form2.Location = new Point(Screen.AllScreens[1].Bounds.Width / 2 + Screen.AllScreens[1].Bounds.Left, Screen.AllScreens[1].Bounds.Height / 2 + Screen.AllScreens[1].Bounds.Top);
+				form2.Location = new Point(Screen.AllScreens[1].Bounds.Width / 2 + Screen.AllScreens[1].Bounds.Left - 320, Screen.AllScreens[1].Bounds.Height / 2 + Screen.AllScreens[1].Bounds.Top - 240);
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 
 				GorgonMSAALevel[] antiAliasLevels = new[] { GorgonMSAALevel.NonMasked };//(GorgonMSAALevel[])(Enum.GetValues(typeof(GorgonMSAALevel)));
@@ -119,7 +124,7 @@ namespace Tester_Graphics
 				}
 
 				
-				multiHead = new GorgonMultiHeadSettings(_gfx.VideoDevices[0], new[] {
+				/*multiHead = new GorgonMultiHeadSettings(_gfx.VideoDevices[0], new[] {
 						new GorgonDeviceWindowSettings(this)
 						{
 							IsWindowed = false,
@@ -138,13 +143,14 @@ namespace Tester_Graphics
 				_dev = windows.ElementAt(0);
 				_dev.SetupTest();
 				_dev2 = windows.ElementAt(1);
-				_dev2.SetupTest();
+				_dev2.SetupTest();*/
 
-/*				settings = new GorgonDeviceWindowSettings()
+				settings = new GorgonDeviceWindowSettings()
 				{
 					//DisplayMode = new GorgonVideoMode(640, 480, GorgonBufferFormat.X8_R8G8B8_UIntNormal),
 					IsWindowed = true,
-					DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal					
+					DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
+					MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 				};
 
 				
@@ -155,9 +161,10 @@ namespace Tester_Graphics
 				_dev2 = _gfx.CreateDeviceWindow("Test2", new GorgonDeviceWindowSettings(form2)
 					{						
 						IsWindowed = true,
-						DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal
+						DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
+						MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 					});
-				_dev2.SetupTest();*/
+				_dev2.SetupTest();
 				
 				Gorgon.Go(Idle);
 			}

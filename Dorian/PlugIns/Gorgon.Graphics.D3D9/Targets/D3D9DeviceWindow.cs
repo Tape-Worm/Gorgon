@@ -117,9 +117,9 @@ namespace GorgonLibrary.Graphics.D3D9
 					}
 				}
 
-				if ((Settings.IsWindowed) && (!Settings.Output.DesktopDimensions.Contains(window.DisplayRectangle)))
+				if ((Settings.IsWindowed) && (!Settings.Output.DesktopDimensions.Contains(window.DesktopLocation)))
 				{
-					window.Location = Settings.Output.DesktopDimensions.Location;
+					window.DesktopLocation = Settings.Output.DesktopDimensions.Location;
 					window.Size = Settings.Output.DesktopDimensions.Size;
 					Settings.Dimensions = window.ClientSize;
 				} 
@@ -276,12 +276,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				else
 					WindowState.Restore(true, true);
 			}
-			else
-			{
-				// Only update if we're switching back from windowed mode.
-				if ((_presentParams == null) || (inWindowedMode))
-					WindowState.Update();
-			}
 
 			window.Visible = true;
 			window.Enabled = true;
@@ -291,7 +285,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			if (!Settings.IsWindowed)
 			{
-				window.Location = new Point(0, 0);
+				window.DesktopLocation = Settings.Output.DesktopDimensions.Location;
 				window.FormBorderStyle = FormBorderStyle.None;
 				window.TopMost = true;
 			}
@@ -319,19 +313,23 @@ namespace GorgonLibrary.Graphics.D3D9
 		protected override void CreateResources()
 		{
 			CreateFlags flags = CreateFlags.Multithreaded | CreateFlags.FpuPreserve | CreateFlags.HardwareVertexProcessing;
+			int index = ((D3D9VideoOutput)Settings.Output).AdapterIndex;
 
+			// When we first create, record the last set of window modifications, after that, all bets are off and we own this window and will do as we need.
+			WindowState.Update();
 			AdjustWindow(true);
+			_presentParams = new PresentParameters[1];
 			SetPresentationParameters();			
 
 			// Attempt to create a pure device, if that fails, then create a hardware vertex device, anything else will fail.
 			try
-			{
-				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)Settings.Device).AdapterIndex, _graphics.DeviceType, Settings.BoundForm.Handle, flags | CreateFlags.PureDevice, _presentParams);
+			{				
+				D3DDevice = new Device(_graphics.D3D, index, _graphics.DeviceType, _graphics.FocusWindow.Handle, flags | CreateFlags.PureDevice, _presentParams);
 				Gorgon.Log.Print("IDirect3D9 Pure Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 			catch(SlimDXException)
 			{
-				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)Settings.Device).AdapterIndex, _graphics.DeviceType, Settings.BoundForm.Handle, flags, _presentParams);
+				D3DDevice = new Device(_graphics.D3D, index, _graphics.DeviceType, _graphics.FocusWindow.Handle, flags, _presentParams);
 				Gorgon.Log.Print("IDirect3D9 Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 
@@ -349,8 +347,8 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			_masterDevice = true;
 			_settings = settings;
-			_presentParams = new PresentParameters[settings.Count()];
 			AdjustWindow(true);
+			_presentParams = new PresentParameters[settings.Count()];
 			SetPresentationParameters();
 
 			// Attempt to create a pure device, if that fails, then create a hardware vertex device, anything else will fail.
@@ -382,6 +380,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		protected override void CleanUpResources()
 		{
 			base.CleanUpResources();
+
+			// Remove link to the focus window if we're removing this device.
+			if (_graphics.FocusWindow == Settings.BoundForm)
+				_graphics.FocusWindow = null;
 
 			if (D3DDevice != null)
 				D3DDevice.Dispose();
@@ -487,17 +489,17 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="name">The name.</param>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="settings">Device window settings.</param>
+		/// <param name="focusWindow">The focus window.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="device"/> and <paramref name="output"/> parameters are NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonDeviceWindowSettings settings)
+		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonDeviceWindowSettings settings, Control focusWindow)
 			: base(graphics, name, settings.Device, settings.Output, settings)
 		{
 			_graphics = graphics as GorgonD3D9Graphics;
 			_settings = new[] { settings };
-			_presentParams = new PresentParameters[1];
 		}
 		#endregion
 	}

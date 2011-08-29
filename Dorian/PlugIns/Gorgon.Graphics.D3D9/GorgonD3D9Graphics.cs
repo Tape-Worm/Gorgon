@@ -49,10 +49,6 @@ namespace GorgonLibrary.Graphics.D3D9
 		public const string RefRastKey = "UseReferenceRasterizer";
 		#endregion
 
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return whether the D3D runtime is in debug mode or not.
@@ -95,6 +91,15 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			return false;
+		}
+
+		/// <summary>
+		/// Property to set or return the focus window.
+		/// </summary>
+		internal Control FocusWindow
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -147,7 +152,9 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
 		protected override GorgonDeviceWindow CreateDeviceWindowImpl(string name, GorgonDeviceWindowSettings settings)
 		{
-			return new D3D9DeviceWindow(this, name, settings);
+			if (FocusWindow == null)
+				FocusWindow = settings.BoundForm;
+			return new D3D9DeviceWindow(this, name, settings, FocusWindow);
 		}
 
 		/// <summary>
@@ -190,6 +197,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		protected override void CleanUpGraphics()
 		{
+			FocusWindow = null;
 			Gorgon.Log.Print("Destroying IDirect3D9 interface.", Diagnostics.GorgonLoggingLevel.Verbose);
 			if (D3D != null)
 				D3D.Dispose();
