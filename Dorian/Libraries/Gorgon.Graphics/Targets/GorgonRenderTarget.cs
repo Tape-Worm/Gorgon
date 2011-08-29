@@ -80,37 +80,9 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the width of the render target.
+		/// Property to return the settings for this render target.
 		/// </summary>
-		public int Width
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the height of the render target.
-		/// </summary>
-		public int Height
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the format of the attached depth/stencil buffer.
-		/// </summary>
-		/// <remarks>This will return the format of the depth/stencil buffer if these are created when the target is created.  If neither are created, then this property will return <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see>.</remarks>
-		public GorgonBufferFormat DepthStencilFormat
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the quality level for multisampling anti-aliasing.
-		/// </summary>
-		public GorgonMSAAQualityLevel? MultiSampleAALevel
+		public GorgonRenderTargetSettings Settings
 		{
 			get;
 			private set;
@@ -142,21 +114,6 @@ namespace GorgonLibrary.Graphics
 		protected abstract void CreateResources();
 
 		/// <summary>
-		/// Function to update the information about the target.
-		/// </summary>
-		/// <param name="width">Width of the render target in pixels.</param>
-		/// <param name="height">Height of the render target in pixels.</param>
-		/// <param name="depthStencilFormat">The depth buffer format.</param>
-		/// <param name="msaaLevel">Multi sampling anti-aliasing quality level.</param>
-		protected void UpdateTargetInformation(int width, int height, GorgonBufferFormat depthStencilFormat, GorgonMSAAQualityLevel? msaaLevel)
-		{
-			Width = width;
-			Height = height;
-			DepthStencilFormat = depthStencilFormat;
-			MultiSampleAALevel = msaaLevel;
-		}
-
-		/// <summary>
 		/// Function to perform an update on the resources required by the render target.
 		/// </summary>
 		protected abstract void UpdateResources();
@@ -176,21 +133,23 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="name">The name.</param>
-		/// <param name="width">Width of the render target.</param>
-		/// <param name="height">Height of the render target.</param>
-		/// <param name="depthStencilFormat">The depth buffer format (if required) for the target.</param>
-		/// <param name="msaaLevel">The quality level for multi-sampling anti-aliasing.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <param name="settings">The settings used to define the behaviour/display of the target.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonRenderTarget(GorgonGraphics graphics, string name, int width, int height, GorgonBufferFormat depthStencilFormat, GorgonMSAAQualityLevel? msaaLevel)
+		protected GorgonRenderTarget(GorgonGraphics graphics, string name, GorgonRenderTargetSettings settings)
 			: base(name)
 		{
 			if (graphics == null)
 				throw new ArgumentNullException("graphics");
 
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
 			Graphics = graphics;
-			UpdateTargetInformation(width, height, depthStencilFormat, msaaLevel);
+			Settings = settings;
 		}
 		#endregion
 	

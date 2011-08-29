@@ -55,32 +55,30 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainBase"/> class.
+		/// Initializes a new instance of the <see cref="GorgonSwapChain"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics instance that owns this swap chain.</param>
-		/// <param name="device">The device window that created this swap chain.</param>
+		/// <param name="deviceWindow">The device window that created this swap chain.</param>
 		/// <param name="name">The name.</param>
-		/// <param name="window">Window to bind the swap chain to.</param>
-		/// <param name="width">Width of the swap chain.</param>
-		/// <param name="height">Height of the swap chain.</param>
-		/// <param name="format">Format for the swap chain.</param>
-		/// <param name="depthStencilFormat">The depth buffer format (if required) for the swap chain.</param>
-		/// <param name="msaaLevel">Multi-sampling anti-aliasing quality level.</param>
+		/// <param name="settings">Swap chain settings.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="device"/> parameter is NULL (Nothing in VB.Net).</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonSwapChain(GorgonGraphics graphics, GorgonDeviceWindow device, string name, Control window, int width, int height, GorgonBufferFormat format, GorgonBufferFormat depthStencilFormat, GorgonMSAAQualityLevel? msaaLevel)
-			: base(graphics, name, window, width, height, format, depthStencilFormat, msaaLevel)
+		///   <para>-or-</para>
+		///   <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
+		///   <para>-or-</para>
+		///   <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.BoundWindow">settings.BoundWindow</see> parameter is NULL (Nothing in VB.Net).</para>
+		///   <para>-or-</para>
+		///   <para>Thrown when the <paramref name="deviceWindow"/> parameter is NULL (Nothing in VB.Net).</para>
+		///   </exception>
+		///   
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.
+		///   </exception>
+		protected GorgonSwapChain(GorgonGraphics graphics, GorgonDeviceWindow deviceWindow, string name, GorgonSwapChainSettings settings)
+			: base(graphics, name, settings)
 		{
-			if (device == null)
-				throw new ArgumentNullException("device");
+			if (deviceWindow == null)
+				throw new ArgumentNullException("deviceWindow");
 
-			DeviceWindow = device;
+			DeviceWindow = deviceWindow;
 		}
 		#endregion
 	}

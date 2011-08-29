@@ -42,10 +42,12 @@ namespace GorgonLibrary.Graphics.D3D9
 		: GorgonDeviceWindow
 	{		
 		#region Variables.
-		private GorgonD3D9Graphics _graphics = null;			// Direct 3D9 specific instance of the graphics object.
-		private bool _disposed = false;							// Flag to indicate that the object was disposed.
-		private PresentParameters[] _presentParams = null;		// Presentation parameters.
-		private bool _deviceIsLost = true;						// Flag to indicate that the device is in a lost state.
+		private GorgonD3D9Graphics _graphics = null;						// Direct 3D9 specific instance of the graphics object.
+		private bool _disposed = false;										// Flag to indicate that the object was disposed.
+		private PresentParameters[] _presentParams = null;					// Presentation parameters.
+		private bool _deviceIsLost = true;									// Flag to indicate that the device is in a lost state.
+		private IEnumerable<GorgonDeviceWindowSettings> _settings = null;	// Settings for the device window.
+		private bool _masterDevice = false;									// Flag to indicate this is the master of the multi-head group.
 		#endregion
 
 		#region Properties.
@@ -65,15 +67,15 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			get 
 			{
-				Form window = BoundWindow as Form;
+				Form window = Settings.BoundWindow as Form;
 
 				if (D3DDevice == null)
 					return false;
 
 				if (window == null)
-					window = BoundForm;
+					window = Settings.BoundForm;
 
-				return ((!_deviceIsLost) && (window.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Height > 0));
+				return ((!_deviceIsLost) && (window.WindowState != FormWindowState.Minimized) && (Settings.BoundWindow.ClientSize.Height > 0));
 			}
 		}
 		#endregion
@@ -84,7 +86,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		private void ResetDevice()
 		{
-			Form window = BoundWindow as Form;
+			Form window = Settings.BoundWindow as Form;
 			bool inWindowedMode = _presentParams[0].Windowed;
 
 			_deviceIsLost = true;
@@ -98,33 +100,37 @@ namespace GorgonLibrary.Graphics.D3D9
 			// resetting it seems to work.
 			if (window != null)
 			{
-				if ((window.WindowState != FormWindowState.Normal) && (!IsWindowed))
+				if ((window.WindowState != FormWindowState.Normal) && (!Settings.IsWindowed))
 				{
 					if (window.WindowState == FormWindowState.Minimized)
 					{
 						window.WindowState = FormWindowState.Normal;
-						UpdateTargetInformation(new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator), DepthStencilFormat, MultiSampleAALevel);
+						Settings.Dimensions = window.ClientSize;
 					}
 					else
 					{
-						UpdateTargetInformation(VideoOutput.DefaultVideoMode, DepthStencilFormat, MultiSampleAALevel);
+						Settings.Dimensions = new Size(Settings.Output.DefaultVideoMode.Width, Settings.Output.DefaultVideoMode.Height);
+						Settings.Format = Settings.Output.DefaultVideoMode.Format;
+						Settings.RefreshRateDenominator = 1;
+						Settings.RefreshRateNumerator = Settings.Output.DefaultVideoMode.RefreshRateNumerator;
 						window.WindowState = FormWindowState.Normal;
 					}
 				}
 
-				if ((IsWindowed) && (!VideoOutput.DesktopDimensions.Contains(window.DisplayRectangle)))
+				if ((Settings.IsWindowed) && (!Settings.Output.DesktopDimensions.Contains(window.DisplayRectangle)))
 				{
-					window.Location = VideoOutput.DesktopDimensions.Location;
-					window.Size = VideoOutput.DesktopDimensions.Size;
-					UpdateTargetInformation(new GorgonVideoMode(window.ClientSize.Width, window.ClientSize.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator), DepthStencilFormat, MultiSampleAALevel);
+					window.Location = Settings.Output.DesktopDimensions.Location;
+					window.Size = Settings.Output.DesktopDimensions.Size;
+					Settings.Dimensions = window.ClientSize;
 				} 
 			}	
 			
 			SetPresentationParameters();
+			// TODO: This is a bug in SlimDX, need to wait until they fix it for multi-head.			
 			D3DDevice.Reset(_presentParams[0]);
 			AdjustWindow(inWindowedMode);
-			_deviceIsLost = false;
-			Settings.DisplayMode = new GorgonVideoMode(_presentParams[0].BackBufferWidth, _presentParams[0].BackBufferHeight, D3DConvert.Convert(_presentParams[0].BackBufferFormat), _presentParams[0].FullScreenRefreshRateInHertz, 1);
+			// Ensure that the device is indeed restored, multiple monitor configurations will set the primary device into a lost state after a reset.
+			_deviceIsLost = ((D3DDevice.TestCooperativeLevel() == ResultCode.DeviceLost) || (D3DDevice.TestCooperativeLevel() == ResultCode.DeviceNotReset));
 			OnAfterDeviceReset();
 			Gorgon.Log.Print("IDirect3DDevice9 interface has been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
 		}
@@ -134,128 +140,121 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		private void SetPresentationParameters()
 		{
-			Form window = BoundWindow as Form;
-
-			if (Settings.AdvancedSettings.DisplayFunction == GorgonDisplayFunction.Copy)
-				Settings.AdvancedSettings.BackBufferCount = 1;
-
-			if (Mode.Format == GorgonBufferFormat.Unknown)
+			int counter = 0;
+			foreach (var setting in _settings)
 			{
+				Form window = setting.BoundWindow as Form;
+				Format _depthFormat = SlimDX.Direct3D9.Format.Unknown;
+
+				if (setting.DisplayFunction == GorgonDisplayFunction.Copy)
+					setting.BackBufferCount = 1;
+
 				// If we didn't specify the back buffer format, then set the default.
-				UpdateTargetInformation(new GorgonVideoMode(Mode.Width, 
-						Mode.Height, 
-						GorgonBufferFormat.X8_R8G8B8_UIntNormal, 
-						VideoOutput.DefaultVideoMode.RefreshRateNumerator, 
-						VideoOutput.DefaultVideoMode.RefreshRateDenominator), DepthStencilFormat, MultiSampleAALevel);
-			}
+				if (setting.DisplayMode.Format == GorgonBufferFormat.Unknown)
+					setting.Format = GorgonBufferFormat.X8_R8G8B8_UIntNormal;
 
-			// If we're maximized, then use the desktop resolution.
-			if ((window != null) && (window.WindowState == FormWindowState.Maximized))
-				UpdateTargetInformation(VideoOutput.DefaultVideoMode, DepthStencilFormat, MultiSampleAALevel);
-	
-			// If we are not windowed, don't allow an unknown video mode.
-			if (!IsWindowed)
-			{
-				int count = 0;
+				// If we're maximized, then use the desktop resolution.
+				if ((window != null) && (window.WindowState == FormWindowState.Maximized))
+					setting.Dimensions = new Size(setting.Output.DefaultVideoMode.Width, setting.Output.DefaultVideoMode.Height);
 
-				// If we've not specified a refresh rate, then find the lowest refresh on the output.
-				if ((Mode.RefreshRateDenominator == 0) || (Mode.RefreshRateNumerator == 0))
+				// If we are not windowed, don't allow an unknown video mode.
+				if (!setting.IsWindowed)
 				{
-					if (VideoOutput.VideoModes.Count(item => item.Width == Mode.Width && item.Height == Mode.Height && item.Format == Mode.Format) > 0)
-					{					
-						var refresh = (from mode in VideoOutput.VideoModes
-									  where ((mode.Width == Mode.Width) && (mode.Height == Mode.Height) && (mode.Format == Mode.Format))
-									  select mode.RefreshRateNumerator).Min();
-						UpdateTargetInformation(new GorgonVideoMode(Mode.Width, Mode.Height, Mode.Format, refresh, 1), DepthStencilFormat, MultiSampleAALevel);
-					}
-				}					
+					int count = 0;
 
-				count = VideoOutput.VideoModes.Count(item => item == Mode);
-
-				if (count == 0)
-					throw new GorgonException(GorgonResult.CannotBind, "Unable to set the video mode.  The mode '" + Mode.Width.ToString() + "x" +
-						Mode.Height.ToString() + " Format: " + Mode.Format.ToString() + " Refresh Rate: " +
-						Mode.RefreshRateNumerator.ToString() + "/" + Mode.RefreshRateDenominator.ToString() +
-						"' is not a valid full screen video mode for this video output.");
-			}
-
-			// If the window is just a child control, then use the size of the client control instead.
-			if (!(BoundWindow is Form))
-				UpdateTargetInformation(new GorgonVideoMode(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator), DepthStencilFormat, MultiSampleAALevel);
-			
-			_presentParams = new PresentParameters[] {
-				new PresentParameters() {
-					AutoDepthStencilFormat = SlimDX.Direct3D9.Format.Unknown,
-					BackBufferCount = Settings.AdvancedSettings.BackBufferCount,
-					BackBufferFormat = D3DConvert.Convert(Mode.Format),
-					BackBufferHeight = Mode.Height,
-					BackBufferWidth = Mode.Width,
-					DeviceWindowHandle = BoundWindow.Handle,
-					EnableAutoDepthStencil = false,
-					Windowed = IsWindowed,
-					FullScreenRefreshRateInHertz = Mode.RefreshRateNumerator,
-					Multisample = MultisampleType.None,
-					MultisampleQuality = 0,
-					PresentationInterval = D3DConvert.Convert(Settings.AdvancedSettings.VSyncInterval),
-					PresentFlags = (Settings.AdvancedSettings.WillUseVideo ? PresentFlags.Video : PresentFlags.None),
-					SwapEffect = D3DConvert.Convert(Settings.AdvancedSettings.DisplayFunction)
-			}};
-
-			if (!VideoOutput.SupportsBackBufferFormat(Mode.Format, IsWindowed))
-				throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified format '" + Mode.Format.ToString() + "' with the display format '" + VideoOutput.DefaultVideoMode.Format.ToString() + "'.");
-
-			// Set up the depth buffer if necessary.
-			if (DepthStencilFormat != GorgonBufferFormat.Unknown)
-			{
-				if (!VideoOutput.SupportsDepthFormat(Mode.Format, DepthStencilFormat, IsWindowed))
-					throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified depth/stencil format '" + DepthStencilFormat.ToString() + "'.");
-
-				_presentParams[0].AutoDepthStencilFormat = D3DConvert.Convert(DepthStencilFormat);
-				_presentParams[0].EnableAutoDepthStencil = true;
-			}
-
-			// We can only enable multi-sampling when we have a discard swap effect and have non-lockable depth buffers.
-			if (MultiSampleAALevel != null) 
-			{
-				if ((_presentParams[0].SwapEffect == SwapEffect.Discard) && (_presentParams[0].AutoDepthStencilFormat != SlimDX.Direct3D9.Format.D32SingleLockable) 
-					&& (_presentParams[0].AutoDepthStencilFormat != SlimDX.Direct3D9.Format.D16Lockable))
-				{
-					int? qualityLevel = VideoDevice.GetMultiSampleQuality(MultiSampleAALevel.Value.Level, Mode.Format, IsWindowed);
-
-					if ((qualityLevel != null) && (qualityLevel >= MultiSampleAALevel.Value.Quality))
+					// If we've not specified a refresh rate, then find the lowest refresh on the output.
+					if ((setting.DisplayMode.RefreshRateDenominator == 0) || (setting.DisplayMode.RefreshRateNumerator == 0))
 					{
-						_presentParams[0].Multisample = D3DConvert.Convert(MultiSampleAALevel.Value.Level);
-						_presentParams[0].MultisampleQuality = MultiSampleAALevel.Value.Quality - 1;
+						if (setting.Output.VideoModes.Count(item => item.Width == setting.Width &&
+															item.Height == setting.Height &&
+															item.Format == setting.Format) > 0)
+						{
+							var refresh = (from mode in setting.Output.VideoModes
+										   where ((mode.Width == setting.Width) && (mode.Height == setting.Height) && (mode.Format == setting.Format))
+										   select mode.RefreshRateNumerator).Min();
+							setting.RefreshRateNumerator = refresh;
+							setting.RefreshRateDenominator = 1;
+						}
+					}
+
+					count = setting.Output.VideoModes.Count(item => item == setting.DisplayMode);
+
+					if (count == 0)
+						throw new GorgonException(GorgonResult.CannotBind, "Unable to set the video mode.  The mode '" + setting.Width.ToString() + "x" +
+							setting.Height.ToString() + " Format: " + setting.Format.ToString() + " Refresh Rate: " +
+							setting.RefreshRateNumerator.ToString() + "/" + setting.RefreshRateDenominator.ToString() +
+							"' is not a valid full screen video mode for this video output.");
+				}
+
+				if (!setting.Output.SupportsBackBufferFormat(setting.Format, setting.IsWindowed))
+					throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified format '" + setting.Format.ToString() + "' with the display format '" + setting.Output.DefaultVideoMode.Format.ToString() + "'.");
+
+				// Set up the depth buffer if necessary.
+				if (setting.DepthStencilFormat != GorgonBufferFormat.Unknown)
+				{
+					if (!setting.Output.SupportsDepthFormat(setting.Format, setting.DepthStencilFormat, setting.IsWindowed))
+						throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified depth/stencil format '" + setting.DepthStencilFormat.ToString() + "'.");
+					_depthFormat = D3DConvert.Convert(setting.DepthStencilFormat);
+				}
+
+				// We can only enable multi-sampling when we have a discard swap effect and have non-lockable depth buffers.
+				if (setting.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+				{
+					if ((setting.DisplayFunction == GorgonDisplayFunction.Discard) && (_depthFormat != SlimDX.Direct3D9.Format.D32SingleLockable)
+						&& (_depthFormat != SlimDX.Direct3D9.Format.D16Lockable))
+					{
+						int? qualityLevel = setting.Device.GetMultiSampleQuality(setting.MSAAQualityLevel.Level, setting.Format, setting.IsWindowed);
+
+						if ((qualityLevel == null) || (qualityLevel < setting.MSAAQualityLevel.Quality))
+							throw new ArgumentException("The device cannot support the quality level '" + setting.MSAAQualityLevel.Level.ToString() + "' at a quality of '" + setting.MSAAQualityLevel.Quality.ToString() + "'");
 					}
 					else
-						throw new ArgumentException("The device cannot support the quality level '" + MultiSampleAALevel.Value.Level.ToString() + "' at a quality of '" + MultiSampleAALevel.Value.Quality.ToString() + "'");
+						throw new ArgumentException("Cannot use multi sampling with device windows that don't have a Discard display function and/or use lockable depth/stencil buffers.");
 				}
-				else
-					throw new ArgumentException("Cannot use multi sampling with device windows that don't have a Discard display function and/or use lockable depth/stencil buffers.");
-			}
-		
-			if (IsWindowed)
-			{
-				// These parameters are meaningless in windowed mode.
-				_presentParams[0].PresentationInterval = PresentInterval.Immediate;
-				_presentParams[0].FullScreenRefreshRateInHertz = 0;
-			}
 
-			Gorgon.Log.Print("Direct3D presentation parameters:", Diagnostics.GorgonLoggingLevel.Verbose);
-			Gorgon.Log.Print("\tAutoDepthStencilFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].AutoDepthStencilFormat);
-			Gorgon.Log.Print("\tBackBufferCount: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].BackBufferCount);
-			Gorgon.Log.Print("\tBackBufferFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].BackBufferFormat);
-			Gorgon.Log.Print("\tBackBufferWidth: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].BackBufferWidth);
-			Gorgon.Log.Print("\tBackBufferHeight: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].BackBufferHeight);
-			Gorgon.Log.Print("\tDeviceWindowHandle: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].DeviceWindowHandle.FormatHex());
-			Gorgon.Log.Print("\tEnableAutoDepthStencil: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].EnableAutoDepthStencil);
-			Gorgon.Log.Print("\tFullScreenRefreshRateInHertz: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].FullScreenRefreshRateInHertz);
-			Gorgon.Log.Print("\tMultisample: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].Multisample);
-			Gorgon.Log.Print("\tMultisampleQuality: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].MultisampleQuality);
-			Gorgon.Log.Print("\tPresentationInterval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].PresentationInterval);
-			Gorgon.Log.Print("\tPresentFlags: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].PresentFlags);
-			Gorgon.Log.Print("\tSwapEffect: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].SwapEffect);
-			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].Windowed);
+				// Turn off vsync and refresh rates when in windowed mode.
+				if (setting.IsWindowed)
+				{
+					if (setting.VSyncInterval != GorgonVSyncInterval.None)
+						setting.VSyncInterval = GorgonVSyncInterval.None;
+					if (setting.RefreshRateNumerator > 0)
+						setting.RefreshRateNumerator = 0;
+				}
+
+				_presentParams[counter] = new PresentParameters() {
+									AutoDepthStencilFormat = _depthFormat,
+									BackBufferCount = setting.BackBufferCount,
+									BackBufferFormat = D3DConvert.Convert(setting.Format),
+									BackBufferHeight = setting.Height,
+									BackBufferWidth = setting.Width,
+									DeviceWindowHandle = setting.BoundWindow.Handle,
+									EnableAutoDepthStencil = (_depthFormat != SlimDX.Direct3D9.Format.Unknown),					
+									Windowed = setting.IsWindowed,
+									FullScreenRefreshRateInHertz = setting.RefreshRateNumerator,
+									Multisample = D3DConvert.Convert(setting.MSAAQualityLevel.Level),
+									MultisampleQuality =  (setting.MSAAQualityLevel.Level != GorgonMSAALevel.None ? setting.MSAAQualityLevel.Quality - 1 : 0),
+									PresentationInterval = D3DConvert.Convert(setting.VSyncInterval),
+									PresentFlags = (setting.WillUseVideo ? PresentFlags.Video : PresentFlags.None),
+									SwapEffect = D3DConvert.Convert(setting.DisplayFunction)
+								};
+
+				Gorgon.Log.Print("Direct3D presentation parameters:", Diagnostics.GorgonLoggingLevel.Verbose);
+				Gorgon.Log.Print("\tAutoDepthStencilFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].AutoDepthStencilFormat);
+				Gorgon.Log.Print("\tBackBufferCount: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].BackBufferCount);
+				Gorgon.Log.Print("\tBackBufferFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].BackBufferFormat);
+				Gorgon.Log.Print("\tBackBufferWidth: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].BackBufferWidth);
+				Gorgon.Log.Print("\tBackBufferHeight: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].BackBufferHeight);
+				Gorgon.Log.Print("\tDeviceWindowHandle: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].DeviceWindowHandle.FormatHex());
+				Gorgon.Log.Print("\tEnableAutoDepthStencil: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].EnableAutoDepthStencil);
+				Gorgon.Log.Print("\tFullScreenRefreshRateInHertz: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].FullScreenRefreshRateInHertz);
+				Gorgon.Log.Print("\tMultisample: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].Multisample);
+				Gorgon.Log.Print("\tMultisampleQuality: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].MultisampleQuality);
+				Gorgon.Log.Print("\tPresentationInterval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].PresentationInterval);
+				Gorgon.Log.Print("\tPresentFlags: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].PresentFlags);
+				Gorgon.Log.Print("\tSwapEffect: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].SwapEffect);
+				Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[counter].Windowed);
+				counter++;
+			}
 		}
 
 		/// <summary>
@@ -264,13 +263,13 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="inWindowedMode">TRUE to indicate that we're already in windowed mode when switching to fullscreen.</param>
 		private void AdjustWindow(bool inWindowedMode)
 		{
-			Form window = BoundWindow as Form;
+			Form window = Settings.BoundWindow as Form;
 
 			if (window == null)
 				return;
 
 			// If switching to windowed mode, then restore the form.  Otherwise, record the current state.
-			if (IsWindowed)
+			if (Settings.IsWindowed)
 			{
 				if (!inWindowedMode)
 					WindowState.Restore(true, false);
@@ -287,10 +286,10 @@ namespace GorgonLibrary.Graphics.D3D9
 			window.Visible = true;
 			window.Enabled = true;
 
-			if ((window.ClientSize.Width != Mode.Width) || (window.ClientSize.Height != Mode.Height))
-				window.ClientSize = new System.Drawing.Size(Mode.Width, Mode.Height);
+			if ((window.ClientSize.Width != Settings.Width) || (window.ClientSize.Height != Settings.Height))
+				window.ClientSize = new System.Drawing.Size(Settings.Width, Settings.Height);
 
-			if (!IsWindowed)
+			if (!Settings.IsWindowed)
 			{
 				window.Location = new Point(0, 0);
 				window.FormBorderStyle = FormBorderStyle.None;
@@ -327,18 +326,52 @@ namespace GorgonLibrary.Graphics.D3D9
 			// Attempt to create a pure device, if that fails, then create a hardware vertex device, anything else will fail.
 			try
 			{
-				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)VideoDevice).AdapterIndex, _graphics.DeviceType, BoundForm.Handle, flags | CreateFlags.PureDevice, _presentParams);
+				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)Settings.Device).AdapterIndex, _graphics.DeviceType, Settings.BoundForm.Handle, flags | CreateFlags.PureDevice, _presentParams);
 				Gorgon.Log.Print("IDirect3D9 Pure Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 			catch(SlimDXException)
 			{
-				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)VideoDevice).AdapterIndex, _graphics.DeviceType, BoundForm.Handle, flags, _presentParams);
+				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)Settings.Device).AdapterIndex, _graphics.DeviceType, Settings.BoundForm.Handle, flags, _presentParams);
 				Gorgon.Log.Print("IDirect3D9 Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 
 			_deviceIsLost = false;
+		}
 
-			Settings.DisplayMode = new GorgonVideoMode(_presentParams[0].BackBufferWidth, _presentParams[0].BackBufferHeight, D3DConvert.Convert(_presentParams[0].BackBufferFormat), _presentParams[0].FullScreenRefreshRateInHertz, 1);
+		/// <summary>
+		/// Function to perform the creation of the multi-head window resource.
+		/// </summary>
+		/// <param name="settings">Settings for each multi-head window.</param>
+		/// <param name="deviceWindows"></param>
+		protected override void CreateMultiHeadResource(IEnumerable<GorgonDeviceWindowSettings> settings, IEnumerable<GorgonDeviceWindow> deviceWindows)
+		{
+			CreateFlags flags = CreateFlags.Multithreaded | CreateFlags.FpuPreserve | CreateFlags.HardwareVertexProcessing | CreateFlags.AdapterGroupDevice;
+
+			_masterDevice = true;
+			_settings = settings;
+			_presentParams = new PresentParameters[settings.Count()];
+			AdjustWindow(true);
+			SetPresentationParameters();
+
+			// Attempt to create a pure device, if that fails, then create a hardware vertex device, anything else will fail.
+			try
+			{
+				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)Settings.Device).AdapterIndex, _graphics.DeviceType, settings.ElementAt(0).BoundForm.Handle, flags | CreateFlags.PureDevice, _presentParams);
+				Gorgon.Log.Print("IDirect3D9 Pure Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
+			}
+			catch (SlimDXException)
+			{
+				D3DDevice = new Device(_graphics.D3D, ((D3D9VideoDevice)Settings.Device).AdapterIndex, _graphics.DeviceType, settings.ElementAt(0).BoundForm.Handle, flags, _presentParams);
+				Gorgon.Log.Print("IDirect3D9 Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
+			}
+
+			for (int i = 1; i < deviceWindows.Count(); i++)
+			{
+				D3D9DeviceWindow window = deviceWindows.ElementAt(i) as D3D9DeviceWindow;
+				window.D3DDevice = D3DDevice;
+			}
+
+			_deviceIsLost = false;
 		}
 
 		/// <summary>
@@ -451,18 +484,18 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
-		/// <param name="device">Video device to use.</param>
-		/// <param name="output">Video output on the device to use.</param>
 		/// <param name="settings">Device window settings.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="device"/> and <paramref name="output"/> parameters are NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonVideoDevice device, GorgonVideoOutput output, GorgonDeviceWindowSettings settings)
-			: base(graphics, name, device, output, settings)
+		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonDeviceWindowSettings settings)
+			: base(graphics, name, settings.Device, settings.Output, settings)
 		{
 			_graphics = graphics as GorgonD3D9Graphics;
+			_settings = new[] { settings };
+			_presentParams = new PresentParameters[1];
 		}
 		#endregion
 	}

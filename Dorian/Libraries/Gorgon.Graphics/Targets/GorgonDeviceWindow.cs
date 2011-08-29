@@ -103,18 +103,10 @@ namespace GorgonLibrary.Graphics
 		private FormStateRecord _originalWindowState = null;		// Original window state.
 		private bool _wasMaximized = false;							// Flag to indicate that the window was maximized.
 		private IList<IDisposable> _trackedObjects = null;			// List of tracked objects.
+		private bool _wasWindowed = true;							// Flag to indicate that the device was windowed.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the device window settings.
-		/// </summary>
-		protected GorgonDeviceWindowSettings Settings
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to return the object holding the current window state.
 		/// </summary>
@@ -125,36 +117,18 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the video device that this device window is bound with.
+		/// Property to set or return the device window settings.
 		/// </summary>
-		public GorgonVideoDevice VideoDevice
+		public new GorgonDeviceWindowSettings Settings
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return which output on the device is being used with this device window.
+		/// Property to return whether this is a multi-head device window or not.
 		/// </summary>
-		public GorgonVideoOutput VideoOutput
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether this device window is full screen or windowed.
-		/// </summary>
-		public bool IsWindowed
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the video mode for this device window.
-		/// </summary>
-		public GorgonVideoMode Mode
+		public bool IsMultiHead
 		{
 			get;
 			private set;
@@ -187,7 +161,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					if (BoundWindow is Form)
+					if (Settings.BoundWindow is Form)
 						_originalWindowState.Restore(false, false);
 
 					Gorgon.Log.Print("Device window '{0}' destroyed.", Diagnostics.GorgonLoggingLevel.Simple, Name);
@@ -207,26 +181,33 @@ namespace GorgonLibrary.Graphics
 		protected override void OnWindowResized(int newWidth, int newHeight)
 		{
 			// We should not care about window resizing when in full screen mode.
-			if (IsWindowed)
+			if (Settings.IsWindowed)
 			{
-				if ((BoundForm.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
+				if ((Settings.BoundForm.WindowState != FormWindowState.Minimized) && (Settings.BoundWindow.ClientSize.Width > 0) && (Settings.BoundWindow.ClientSize.Height > 0))
 				{
-					UpdateTargetInformation(new GorgonVideoMode(newWidth, newHeight, Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator), DepthStencilFormat, MultiSampleAALevel);
+					Settings.Width = newWidth;
+					Settings.Height = newHeight;
 					base.OnWindowResized(newWidth, newHeight);
 				}
 			}
 		}
 
 		/// <summary>
-		/// Function to update the information about the swap chain.
+		/// Function to perform the creation of the multi-head window resource.
 		/// </summary>
-		/// <param name="mode">Video mode to use when updating.</param>
-		/// <param name="depthStencilFormat">Format of the depth/stencil buffer.</param>
-		/// <param name="msaaLevel">Multi-sampling anti-aliasing quality level.</param>
-		protected void UpdateTargetInformation(GorgonVideoMode mode, GorgonBufferFormat depthStencilFormat, GorgonMSAAQualityLevel? msaaLevel)
+		/// <param name="settings">Settings for each multi-head window.</param>
+		/// <param name="deviceWindows">Subordinate device windows.</param>
+		protected abstract void CreateMultiHeadResource(IEnumerable<GorgonDeviceWindowSettings> settings, IEnumerable<GorgonDeviceWindow> deviceWindows);
+
+		/// <summary>
+		/// Function to initialize a multi-head device window.
+		/// </summary>
+		/// <param name="settings">Settings for each head.</param>
+		/// <param name="deviceWindows">Subordinate device windows.</param>
+		internal void InitializeMultiHeadDevice(IEnumerable<GorgonDeviceWindowSettings> settings, IEnumerable<GorgonDeviceWindow> deviceWindows)
 		{
-			UpdateTargetInformation(mode.Width, mode.Height, mode.Format, depthStencilFormat, msaaLevel);
-			Mode = mode;
+			IsMultiHead = true;
+			CreateMultiHeadResource(settings, deviceWindows);
 		}
 
 		/// <summary>
@@ -245,43 +226,24 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to update the device window.
 		/// </summary>
-		/// <param name="windowed">TRUE to go into windowed mode, FALSE to go into full screen mode.</param>
-		/// <remarks>Use this overload to change the dimensions, format, fullscreen/windowed state and depth information for the device window.
-		/// Device windows bound to child controls or device windows with extra <see cref="GorgonLibrary.Graphics.GorgonSwapChainBase">swap chains</see> attached to them cannot go full screen, setting the <see cref="P:GorgonDeviceWindowSettings.Windowed"/> setting to TRUE will throw an exception.
-		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and setting the GorgonDeviceWindowSettings.Windowed setting is TRUE.
-		/// </exception>
-		public void Update(bool windowed)
-		{
-			if (IsWindowed == windowed)
-				return;
-
-			Settings.IsWindowed = windowed;
-			Update(Settings);
-		}
-
-		/// <summary>
-		/// Function to update the device window.
-		/// </summary>
-		/// <param name="settings">Settings for the device window.</param>
-		/// <remarks>Use this method to change the dimensions, format, fullscreen/windowed state and depth information for the device window.
+		/// <remarks>Use this method to apply changes the <see cref="GorgonLibrary.Graphics.GorgonDeviceWindowSettings">dimensions, format, fullscreen/windowed state and depth information</see> for the device window.
 		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
-		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
+		/// of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindow.Settings">Settings</see> property are not relevant when in windowed mode.</para>
 		/// <para>Device windows bound to child controls or device windows with extra <see cref="GorgonLibrary.Graphics.GorgonSwapChain">swap chains</see> attached to them cannot go full screen, setting the <see cref="P:GorgonDeviceWindowSettings.Windowed"/> setting to TRUE will throw an exception.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and setting the GorgonDeviceWindowSettings.Windowed setting is TRUE.
+		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and setting the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">GorgonDeviceWindowSettings.IsWindowed</see> property to FALSE.
 		/// </exception>
-		public void Update(GorgonDeviceWindowSettings settings)
+		public void UpdateSettings()
 		{
-			Form window = BoundWindow as Form;
+			Form window = Settings.BoundWindow as Form;
 			
 			// Child controls and device windows with swap chains cannot go full screen.
-			if (!settings.IsWindowed)
+			if (!Settings.IsWindowed)
 			{
 				if (window == null)
 					throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
 				if (_trackedObjects.Count(item => item is GorgonSwapChain) > 0)
-					throw new ArgumentException("This device window has extra swap chains, cannot switch to full screen.", "fullScreen");
+					throw new ArgumentException("This device window has additional swap chains, could not switch to full screen.", "fullScreen");
 			}
 
 			RemoveEventHandlers();
@@ -293,33 +255,27 @@ namespace GorgonLibrary.Graphics
 			// our solution is to restore the window to a normal state, and apply the changes.
 
 			// If we're switching back to windowed mode and the window was previously maximized, then re-maximize it.
-			if ((settings.IsWindowed) && (!IsWindowed) && (_wasMaximized))
+			if ((Settings.IsWindowed) && (!_wasWindowed) && (_wasMaximized))
 				window.WindowState = FormWindowState.Maximized;
 
 			// Store whether the window was previously maximized.
-			_wasMaximized = ((settings.IsWindowed == !IsWindowed) && (window.WindowState == FormWindowState.Maximized));
-
-			// If we didn't pass in the display settings, then use the current settings.
-			if (settings.DisplayMode == null)
-				settings.DisplayMode = new GorgonVideoMode(Mode.Width, Mode.Height, Mode.Format, Mode.RefreshRateNumerator, Mode.RefreshRateDenominator);
-			
-			UpdateTargetInformation(settings.DisplayMode.Value, settings.DepthStencilFormat, settings.AdvancedSettings.MSAAQualityLevel);
-			IsWindowed = settings.IsWindowed;
+			_wasMaximized = ((Settings.IsWindowed != _wasWindowed) && (window.WindowState == FormWindowState.Maximized));
+			_wasWindowed = Settings.IsWindowed;
 			UpdateResources();
 			AddEventHandlers();
 
-			Gorgon.Log.Print("Updating device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, Name, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DisplayMode.Value.RefreshRateNumerator, settings.DisplayMode.Value.RefreshRateDenominator);
+			Gorgon.Log.Print("Updating device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, Name, Settings.DisplayMode.Width, Settings.DisplayMode.Height, Settings.DisplayMode.Format, Settings.DisplayMode.RefreshRateNumerator, Settings.DisplayMode.RefreshRateDenominator);
 			Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, Name);
-			Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DisplayMode.Value.RefreshRateNumerator, settings.DisplayMode.Value.RefreshRateDenominator);
-			Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, settings.DepthStencilFormat != GorgonBufferFormat.Unknown, settings.DepthStencilFormat);
-			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.IsWindowed);
-			Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel != null);
-			if (settings.AdvancedSettings.MSAAQualityLevel != null)
-				Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel.Value.Quality, settings.AdvancedSettings.MSAAQualityLevel.Value.Level);
-			Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.BackBufferCount);
-			Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.DisplayFunction);
-			Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.VSyncInterval);
-			Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.WillUseVideo);
+			Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.DisplayMode.Width, Settings.DisplayMode.Height, Settings.DisplayMode.Format, Settings.DisplayMode.RefreshRateNumerator, Settings.DisplayMode.RefreshRateDenominator);
+			Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, Settings.DepthStencilFormat != GorgonBufferFormat.Unknown, Settings.DepthStencilFormat);
+			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.IsWindowed);
+			Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.MSAAQualityLevel.Level != GorgonMSAALevel.None);
+			if (Settings.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+				Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.MSAAQualityLevel.Quality, Settings.MSAAQualityLevel.Level);
+			Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.BackBufferCount);
+			Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.DisplayFunction);
+			Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.VSyncInterval);
+			Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.WillUseVideo);
 
 			Gorgon.Log.Print("Device window '{0}' updated.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 		}
@@ -362,7 +318,7 @@ namespace GorgonLibrary.Graphics
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// </remarks>
 		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonVideoDevice device, GorgonVideoOutput output, GorgonDeviceWindowSettings settings)
-			: base(graphics, name, settings.BoundWindow, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DepthStencilFormat, settings.AdvancedSettings.MSAAQualityLevel)
+			: base(graphics, name, settings)
 		{
 			Form window = settings.BoundWindow as Form;
 
@@ -373,11 +329,9 @@ namespace GorgonLibrary.Graphics
 			
 			_trackedObjects = new List<IDisposable>();
 
+			// Assign settings because Settings is a hidden method and will not propagate through the inheritance chain.
 			Settings = settings;
-			Mode = settings.DisplayMode.Value;
-			VideoDevice = device;
-			VideoOutput = output;
-			IsWindowed = settings.IsWindowed;
+			_wasWindowed = Settings.IsWindowed;
 
 			if (window != null)
 			{

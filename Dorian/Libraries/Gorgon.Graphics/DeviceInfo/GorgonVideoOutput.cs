@@ -92,6 +92,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			protected set;
 		}
+
+		/// <summary>
+		/// Property to return the handle of the output device.
+		/// </summary>
+		public IntPtr Handle
+		{
+			get;
+			protected set;
+		}
 		#endregion
 
 		#region Methods.
