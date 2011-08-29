@@ -104,12 +104,12 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			if (_window.IsReady)
 			{
-				//Viewport view = new Viewport(0, 0, _window.Settings.Width, _window.Settings.Height, 0.0f, 1.0f);
-				_swapChain = _device.GetSwapChain(outputIndex);
-				_swapSurface = _swapChain.GetBackBuffer(0);
+				Viewport view = new Viewport(0, 0, _window.Settings.Width, _window.Settings.Height, 0.0f, 1.0f);
+				//_swapChain = _device.GetSwapChain(outputIndex);
+				//_swapSurface = _swapChain.GetBackBuffer(0);
 
-				_device.SetRenderTarget(0, _swapSurface);
-				//_device.Viewport = view;
+				//_device.SetRenderTarget(0, _swapSurface);
+				_device.Viewport = view;
 
 				_device.BeginScene();
 
@@ -241,14 +241,14 @@ namespace GorgonLibrary.Graphics.D3D9
 				_device.SetRenderState(RenderState.MultisampleMask, 0xFF);
 			}
 
-			if (_swapSurface != null)
+			/*if (_swapSurface != null)
 				_swapSurface.Dispose();
 			if (_swapChain != null)
-				_swapChain.Dispose();
+				_swapChain.Dispose();*/
 
-			outputIndex = _window.Settings.Device.Outputs.IndexOf(_window.Settings.Output);
+			/*outputIndex = _window.Settings.Device.Outputs.IndexOf(_window.Settings.Output);
 			_swapChain = _device.GetSwapChain(outputIndex);
-			_swapSurface = _swapChain.GetBackBuffer(0);
+			_swapSurface = _swapChain.GetBackBuffer(0);*/
 		}
 	}
 }

@@ -54,6 +54,15 @@ namespace GorgonLibrary.Graphics.D3D9
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the adapter index for this output.
+		/// </summary>
+		public int AdapterIndex
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -157,6 +166,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			DesktopDimensions = System.Drawing.Rectangle.FromLTRB(monitorInfo.WorkArea.Left, monitorInfo.WorkArea.Top, monitorInfo.WorkArea.Right, monitorInfo.WorkArea.Bottom);
 			Name = monitorInfo.DeviceName;
 			HeadIndex = headIndex;
+			AdapterIndex = adapter.Adapter;
 			DefaultVideoMode = D3DConvert.Convert(adapter.CurrentDisplayMode);
 		}
 		#endregion

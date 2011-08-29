@@ -47,7 +47,7 @@ namespace GorgonLibrary.Graphics
 					return;
 
 				if (!dontMove)
-					_window.Location = _location;
+					_window.DesktopLocation = _location;
 				if (!keepSize)
 					_window.Size = _size;
 				_window.FormBorderStyle = _border;
@@ -64,7 +64,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			public void Update()
 			{
-				_location = _window.Location;
+				_location = _window.DesktopLocation;
 				_size = _window.Size;
 				_border = _window.FormBorderStyle;
 				_topMost = _window.TopMost;
@@ -83,7 +83,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="window">The window.</param>
 			public FormStateRecord(Form window)
 			{
-				_location = window.Location;
+				_location = window.DesktopLocation;
 				_size = window.Size;
 				_border = window.FormBorderStyle;
 				_topMost = window.TopMost;
