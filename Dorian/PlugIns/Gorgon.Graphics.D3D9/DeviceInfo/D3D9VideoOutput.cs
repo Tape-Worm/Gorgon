@@ -47,15 +47,6 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the handle for the monitor attached to this output.
-		/// </summary>
-		public IntPtr Handle
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the adapter group index for this output.
 		/// </summary>
 		public int HeadIndex

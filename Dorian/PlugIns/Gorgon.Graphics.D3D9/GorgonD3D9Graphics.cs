@@ -123,20 +123,6 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the video device and output that we're currently using.
-		/// </summary>
-		/// <param name="window">Window to use.</param>
-		/// <returns>The video device and output that we're using.</returns>
-		private Tuple<GorgonVideoDevice, GorgonVideoOutput> GetDevice(Control window)
-		{
-			IntPtr monitor = Win32API.GetMonitor(window);
-
-			return (from device in VideoDevices						
-					where ((D3D9VideoOutput)device.Outputs[0]).Handle == monitor
-					select new Tuple<GorgonVideoDevice, GorgonVideoOutput>(device, device.Outputs[0])).Single();
-		}
-
-		/// <summary>
 		/// Function to create a device window.
 		/// </summary>
 		/// <param name="name">Name of the window.</param>
@@ -161,8 +147,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
 		protected override GorgonDeviceWindow CreateDeviceWindowImpl(string name, GorgonDeviceWindowSettings settings)
 		{
-			Tuple<GorgonVideoDevice, GorgonVideoOutput> deviceOutput = GetDevice(settings.BoundWindow);
-			return new D3D9DeviceWindow(this, name, deviceOutput.Item1, deviceOutput.Item2, settings);
+			return new D3D9DeviceWindow(this, name, settings);
 		}
 
 		/// <summary>
@@ -239,7 +224,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				else
 					isHardWare = (((caps.DeviceCaps & DeviceCaps.HWRasterization) == DeviceCaps.HWRasterization) && ((caps.DeviceCaps & DeviceCaps.HWTransformAndLight) == DeviceCaps.HWTransformAndLight));
 
-				if ((isHardWare) && (caps.PixelShaderVersion == minShaderModelVersion) && (caps.VertexShaderVersion == minShaderModelVersion))
+				if ((isHardWare) && (caps.PixelShaderVersion == minShaderModelVersion) && (caps.VertexShaderVersion == minShaderModelVersion) && (caps.NumberOfAdaptersInGroup > 0))
 				{
 					int deviceCount = 1;
 					deviceName = D3D.Adapters[i].Details.Description.Trim();

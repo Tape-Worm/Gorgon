@@ -17,12 +17,14 @@ namespace Tester_Graphics
 {
 	public partial class Form1 : Form
 	{
-		GorgonDeviceWindowSettings settings;
+		GorgonDeviceWindowSettings settings = null;
+		GorgonMultiHeadSettings multiHead;
 		GorgonGraphics _gfx = null;
 		GorgonDeviceWindow _dev = null;
 		GorgonDeviceWindow _dev2 = null;
 		private bool _running = true;
 		GorgonTimer _timer = new GorgonTimer(true);
+		Form2 form2 = null;
 
 		private bool Idle(GorgonFrameRate timing)
 		{			
@@ -37,6 +39,9 @@ namespace Tester_Graphics
 			if ((_dev != null) && (_running))
 				_dev.RunTest(timing.FrameDelta);
 
+			if ((_dev2 != null) && (_running))
+				_dev2.RunTest(timing.FrameDelta);
+
 			return true;
 		}
 
@@ -47,13 +52,15 @@ namespace Tester_Graphics
 			{
 				if (e.KeyCode == Keys.F1)
 				{
-					_dev.Update(!settings.IsWindowed);
+					settings.IsWindowed = !_dev.Settings.IsWindowed;
+					_dev.UpdateSettings();
 				}
 
 				if (e.KeyCode == Keys.F)
 				{
-					settings.DisplayMode = new GorgonVideoMode(1024, 768, GorgonBufferFormat.X8_R8G8B8_UIntNormal);					
-					_dev.Update(settings);
+					settings.Width = 1024;
+					settings.Height = 768;
+					_dev.UpdateSettings();
 				}
 
 				if (e.KeyCode == Keys.Space)
@@ -73,8 +80,10 @@ namespace Tester_Graphics
 		}
 
 		protected override void OnLoad(EventArgs e)
-		{
+		{			
 			base.OnLoad(e);
+
+			int? quality = null;
 
 			try 
 			{
@@ -92,35 +101,60 @@ namespace Tester_Graphics
 				ClientSize = new System.Drawing.Size(640, 480);
 				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
 
-				settings = new GorgonDeviceWindowSettings()
-				{
-				    //DisplayMode = new GorgonVideoMode(640, 480, GorgonBufferFormat.X8_R8G8B8_UIntNormal),
-				    IsWindowed = true,
-				    DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal					
-				};
+				form2 = new Form2();				
+				form2.Show();
+				form2.ClientSize = new System.Drawing.Size(640, 480);
+				form2.Location = new Point(Screen.AllScreens[1].Bounds.Width / 2 + Screen.AllScreens[1].Bounds.Left, Screen.AllScreens[1].Bounds.Height / 2 + Screen.AllScreens[1].Bounds.Top);
+				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 
 				GorgonMSAALevel[] antiAliasLevels = new[] { GorgonMSAALevel.NonMasked };//(GorgonMSAALevel[])(Enum.GetValues(typeof(GorgonMSAALevel)));
-
 				for (int i = antiAliasLevels.Length - 1; i >= 0; i--)
 				{
-					int? quality = _gfx.VideoDevices[0].GetMultiSampleQuality(antiAliasLevels[i], GorgonBufferFormat.X8_R8G8B8_UIntNormal, true);
-
+					quality = _gfx.VideoDevices[0].GetMultiSampleQuality(antiAliasLevels[i], GorgonBufferFormat.X8_R8G8B8_UIntNormal, true);
 					if (quality != null)
-					{
-						settings.AdvancedSettings.MSAAQualityLevel = new GorgonMSAAQualityLevel(antiAliasLevels[i], quality.Value);
 						break;
-					}
-				}				
+				}
+
+				
+				multiHead = new GorgonMultiHeadSettings(_gfx.VideoDevices[0], new[] {
+						new GorgonDeviceWindowSettings(this)
+						{
+							IsWindowed = false,
+							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
+							MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
+						},
+						new GorgonDeviceWindowSettings(form2)
+						{
+							IsWindowed = true,
+							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
+							MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
+						}
+					});
+
+				IEnumerable<GorgonDeviceWindow> windows = _gfx.CreateMultiHeadDeviceWindows("MultiHead", multiHead);
+				_dev = windows.ElementAt(0);
+				_dev.SetupTest();
+				_dev2 = windows.ElementAt(1);
+				_dev2.SetupTest();
+
+/*				settings = new GorgonDeviceWindowSettings()
+				{
+					//DisplayMode = new GorgonVideoMode(640, 480, GorgonBufferFormat.X8_R8G8B8_UIntNormal),
+					IsWindowed = true,
+					DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal					
+				};
+
+				
 
 				_dev = _gfx.CreateDeviceWindow("Test", settings);
 				_dev.SetupTest();
 
-				//form2 = new Form2();				
-				//form2.Show();
-				//form2.Location = new Point(Screen.AllScreens[1].Bounds.Width / 2 + Screen.AllScreens[1].Bounds.Left, Screen.AllScreens[1].Bounds.Height / 2 + Screen.AllScreens[1].Bounds.Top);
-
-				//_dev2 = _gfx.CreateDeviceWindow("Test2", form2, new GorgonVideoMode(640, 480, GorgonBufferFormat.R8G8B8A8_UIntNorm, 60, 1), GorgonBufferFormat.D24_UIntNorm_S8_UInt, true);
-				//_dev2.SetupTest();
+				_dev2 = _gfx.CreateDeviceWindow("Test2", new GorgonDeviceWindowSettings(form2)
+					{						
+						IsWindowed = true,
+						DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal
+					});
+				_dev2.SetupTest();*/
 				
 				Gorgon.Go(Idle);
 			}
@@ -130,6 +164,13 @@ namespace Tester_Graphics
 				Application.Exit();				
 			}
 
+		}
+
+		void form2_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			_dev2.Dispose();
+			_dev2 = null;
+			form2 = null;
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)

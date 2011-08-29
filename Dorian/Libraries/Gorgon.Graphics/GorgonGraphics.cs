@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using GorgonLibrary.Collections;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
@@ -156,7 +157,7 @@ namespace GorgonLibrary.Graphics
 
 			CleanUpGraphics();
 			Gorgon.Log.Print("{0} shut down successfully", Diagnostics.GorgonLoggingLevel.Simple, Name);
-		}	
+		}
 
 		/// <summary>
 		/// Function to return a list of all video devices installed on the system.
@@ -179,35 +180,107 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property of the settings parameter is FALSE and the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the settings parameter is a child control.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.GorgonDeviceWindowAdvancedSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.AdvancedSettings">advanced settings</see> has a value that cannot be supported by the device.  
+		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the settings parameter has a value that cannot be supported by the device.  
 		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GetMultiSampleQuality</see> method on the video device object.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
-		/// <remarks>
-		/// If the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.DisplayMode">settings.DisplayMode</see> is NULL (Nothing in VB.Net), then
-		/// the client width and height of the window will be used, and the default display format will be used.
-		/// <para>
-		/// If the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">settings.BoundWindow</see> property is set to NULL (Nothing in VB.Net), then it will use the <see cref="GorgonLibrary.Gorgon.ApplicationForm">default Gorgon application window</see>.
-		/// </para>
-		/// <para>
-		/// Device windows bound to child controls cannot go full screen, setting the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property to FALSE will have no effect.  Also, the width and height of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.DisplayMode">settings.DisplayMode</see> property will 
-		/// use the client width and height of the window.
-		/// </para>
-		/// <para>The device window will use default <see cref="GorgonLibrary.Graphics.GorgonDeviceWindowSettings.GorgonDeviceWindowAdvancedSettings">advanced settings</see> (unless the user specifies different values):
-		/// <list type="table">
-		/// <listheader>
-		///		<term>Property</term>
-		///		<description>Default Value</description>
-		/// </listheader>
-		///		<item><term>BackBufferCount</term><description>2</description></item>
-		///		<item><term>DisplayFunction</term><description>Discard</description></item>
-		///		<item><term>MSAAQualityLevel</term><description>NULL (Nothing in VB.Net), which indicates no MSAA.</description></item>
-		///		<item><term>VSyncInterval</term><description>None</description></item>
-		///		<item><term>WillUseVideo</term><description>FALSE</description></item>
-		/// </list>		
-		/// </para>
-		/// </remarks>
 		protected abstract GorgonDeviceWindow CreateDeviceWindowImpl(string name, GorgonDeviceWindowSettings settings);
+
+		/// <summary>
+		/// Function to create multiple device windows for multihead operation in full screen mode.
+		/// </summary>
+		/// <param name="baseName">Base name for the device windows.</param>
+		/// <param name="settings">Multi-head settings for the windows</param>
+		/// <returns>The multihead device windows.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="baseName"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown if the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown if the baseName parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when a window is already in bound to a device window.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when a window is a child control on a form, and the IsWindowed property of the settings parameter is FALSE.</para>
+		/// </exception>
+		public IEnumerable<GorgonDeviceWindow> CreateMultiHeadDeviceWindows(string baseName, GorgonMultiHeadSettings settings)
+		{
+			List<GorgonDeviceWindow> deviceWindows = new List<GorgonDeviceWindow>();
+			int counter = 0;
+			GorgonDeviceWindowSettings[] deviceSettings = null;
+
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			deviceSettings = settings.Settings.ToArray();
+
+			if ((deviceSettings.Count(item => item.IsWindowed) > 0) && (deviceSettings.Count(item => !item.IsWindowed) > 0))
+			{
+				// Force to the master device setting if we have a mix of windowed/fullscreen devices.
+				foreach (var deviceSetting in deviceSettings)
+					deviceSetting.IsWindowed = deviceSettings[0].IsWindowed;
+			}
+
+			// If we're in windowed mode, then just create as normal.
+			bool isWindowed = deviceSettings.Count(item => item.IsWindowed) > 0;
+			
+			// Force all settings to full screen and create windows.
+			foreach (var setting in deviceSettings)			
+			{
+				// For child controls, do not go to full screen.
+				if ((!(setting.BoundWindow is Form)) && (!setting.IsWindowed))
+					throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
+
+				// Ensure that we're not already using this window as a device window.
+				var inUse = _trackedObjects.Count(item =>
+				{
+					GorgonDeviceWindow devWindow = item as GorgonDeviceWindow;
+					return ((devWindow != null) && (devWindow.Settings.BoundWindow == setting.BoundWindow));
+				}) > 0;
+
+				if (inUse)
+					throw new ArgumentException("The specified window is already a device window.", "window");
+
+				// If we haven't specified a size, or we're using a child control, then assume the size of the bound window.
+				if ((setting.Dimensions == System.Drawing.Size.Empty) || (!(setting.BoundWindow is Form)))
+					setting.Dimensions = setting.BoundWindow.ClientSize;
+
+				Gorgon.Log.Print("Creating new device window '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, baseName + "_Head" + counter.ToString());
+
+				Gorgon.Log.Print("\tWindow 0x{0} is located on device: '{1}', using output: '{2}'.", GorgonLoggingLevel.Verbose, setting.BoundWindow.Handle.FormatHex(), settings.Device.Name, setting.Output.Name);
+				deviceWindows.Add(CreateDeviceWindowImpl(baseName + "_Head" + counter.ToString(), setting));
+				if (isWindowed)
+				{
+					Gorgon.Log.Print("Initializing new device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, baseName + "_Head" + counter.ToString(), setting.Width, setting.Height, setting.Format, setting.RefreshRateNumerator, setting.RefreshRateDenominator);
+					deviceWindows[counter].Initialize();
+				}
+				counter++;
+			}
+
+			// Tell the master (first window in the list) to initialize the multi-head devices.
+			if (!isWindowed)
+				deviceWindows[0].InitializeMultiHeadDevice(deviceSettings, deviceWindows);
+									
+			// Add to tracker
+			foreach (var deviceWindow in deviceWindows)
+			{
+				_trackedObjects.Add(deviceWindow);
+
+				Gorgon.Log.Print("Multi-head device window '{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Name);
+				Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.Width, deviceWindow.Settings.Height, deviceWindow.Settings.Format, deviceWindow.Settings.RefreshRateNumerator, deviceWindow.Settings.RefreshRateDenominator);
+				Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.DepthStencilFormat != GorgonBufferFormat.Unknown, deviceWindow.Settings.DepthStencilFormat);
+				Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.IsWindowed);
+				Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.MSAAQualityLevel.Level != GorgonMSAALevel.None);
+				if (deviceWindow.Settings.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+					Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.MSAAQualityLevel.Quality, deviceWindow.Settings.MSAAQualityLevel.Level);
+				Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.BackBufferCount);
+				Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.DisplayFunction);
+				Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.VSyncInterval);
+				Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, deviceWindow.Settings.WillUseVideo);
+				Gorgon.Log.Print("Multi-head device window '{0}' created succesfully.", Diagnostics.GorgonLoggingLevel.Simple, deviceWindow.Name);
+			}
+
+			return deviceWindows;
+		}
 
 		/// <summary>
 		/// Function to create a device window.
@@ -224,7 +297,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property of the settings parameter is FALSE and the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the settings parameter is a child control.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.GorgonDeviceWindowAdvancedSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.AdvancedSettings">advanced settings</see> has a value that cannot be supported by the device.  
+		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the settings parameter has a value that cannot be supported by the device.  
 		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GetMultiSampleQuality</see> method on the video device object.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
@@ -238,7 +311,7 @@ namespace GorgonLibrary.Graphics
 		/// Device windows bound to child controls cannot go full screen, setting the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">IsWindowed</see> property to FALSE will have no effect.  Also, the width and height of the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.DisplayMode">settings.DisplayMode</see> property will 
 		/// use the client width and height of the window.
 		/// </para>
-		/// <para>The device window will use default <see cref="GorgonLibrary.Graphics.GorgonDeviceWindowSettings.GorgonDeviceWindowAdvancedSettings">advanced settings</see> (unless the user specifies different values):
+		/// <para>The device window will use these default settings (unless specified by the user):
 		/// <list type="table">
 		/// <listheader>
 		///		<term>Property</term>
@@ -255,6 +328,7 @@ namespace GorgonLibrary.Graphics
 		public GorgonDeviceWindow CreateDeviceWindow(string name, GorgonDeviceWindowSettings settings)
 		{
 			GorgonDeviceWindow target = null;
+			IntPtr monitorHandle = IntPtr.Zero;
 
 			// For child controls, do not go to full screen.
 			if ((!(settings.BoundWindow is Form)) && (!settings.IsWindowed))
@@ -264,36 +338,63 @@ namespace GorgonLibrary.Graphics
 			var inUse = _trackedObjects.Count(item =>
 			{
 				GorgonDeviceWindow devWindow = item as GorgonDeviceWindow;
-				return ((devWindow != null) && (devWindow.BoundWindow == settings.BoundWindow));
+				return ((devWindow != null) && (devWindow.Settings.BoundWindow == settings.BoundWindow));
 			}) > 0;
 
 			if (inUse)
 				throw new ArgumentException("The specified window is already a device window.", "window");
 
-			if (settings.DisplayMode == null)
-				settings.DisplayMode = new GorgonVideoMode(settings.BoundWindow.ClientSize.Width, settings.BoundWindow.ClientSize.Height, GorgonBufferFormat.Unknown);
-
-			if (!(settings.BoundWindow is Form))
-				settings.DisplayMode = new GorgonVideoMode(settings.BoundWindow.ClientSize.Width, settings.BoundWindow.ClientSize.Height, settings.DisplayMode.Value.Format);
+			// If we haven't specified a size, or we're using a child control, then assume the size of the bound window.
+			if ((settings.Dimensions == System.Drawing.Size.Empty) || (!(settings.BoundWindow is Form)))
+				settings.Dimensions = settings.BoundWindow.ClientSize;
 
 			Gorgon.Log.Print("Creating new device window '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, name);
+
+			// Find out which device and output contain the window.
+			if (settings.Output == null)
+			{
+				monitorHandle = Win32API.GetMonitor(settings.BoundWindow);
+				if (monitorHandle == IntPtr.Zero)
+					throw new GorgonException(GorgonResult.CannotCreate, "Could not create the device window.  Could not locate the monitor on which the window is placed.");
+
+				// Find the correct video output.
+				var videoOutput = (from device in VideoDevices
+								   from output in device.Outputs
+								   where output.Handle == monitorHandle
+								   select output).Single();
+				
+				settings.Output = videoOutput;
+			}
+
+			if ((settings.Device == null) || (settings.Device.Outputs.Contains(settings.Output)))
+			{
+				var videoDevice = (from device in VideoDevices
+								   from output in device.Outputs
+								   where output == settings.Output
+								   select device).Single();
+
+				// Find the first device that contains the window.
+				settings.Device = videoDevice;
+			}
+			
+			Gorgon.Log.Print("\tWindow 0x{0} is located on device: '{1}', using output: '{2}'.", GorgonLoggingLevel.Verbose,settings.BoundWindow.Handle.FormatHex(), settings.Device.Name, settings.Output.Name);
 			target = CreateDeviceWindowImpl(name, settings);
-			Gorgon.Log.Print("Initializing new device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, name, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DisplayMode.Value.RefreshRateNumerator, settings.DisplayMode.Value.RefreshRateDenominator);
+			Gorgon.Log.Print("Initializing new device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, name, settings.DisplayMode.Width, settings.DisplayMode.Height, settings.DisplayMode.Format, settings.DisplayMode.RefreshRateNumerator, settings.DisplayMode.RefreshRateDenominator);
 			target.Initialize();
 
 			_trackedObjects.Add(target);
 
 			Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, name);
-			Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayMode.Value.Width, settings.DisplayMode.Value.Height, settings.DisplayMode.Value.Format, settings.DisplayMode.Value.RefreshRateNumerator, settings.DisplayMode.Value.RefreshRateDenominator);
+			Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayMode.Width, settings.DisplayMode.Height, settings.DisplayMode.Format, settings.DisplayMode.RefreshRateNumerator, settings.DisplayMode.RefreshRateDenominator);
 			Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, settings.DepthStencilFormat != GorgonBufferFormat.Unknown, settings.DepthStencilFormat);
 			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.IsWindowed);
-			Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel != null);
-			if (settings.AdvancedSettings.MSAAQualityLevel != null)
-				Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.MSAAQualityLevel.Value.Quality, settings.AdvancedSettings.MSAAQualityLevel.Value.Level);
-			Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.BackBufferCount);
-			Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.DisplayFunction);
-			Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.VSyncInterval);
-			Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.AdvancedSettings.WillUseVideo);
+			Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.MSAAQualityLevel.Level != GorgonMSAALevel.None);
+			if (settings.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+				Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, settings.MSAAQualityLevel.Quality, settings.MSAAQualityLevel.Level);
+			Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.BackBufferCount);
+			Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayFunction);
+			Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.VSyncInterval);
+			Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.WillUseVideo);
 
 			Gorgon.Log.Print("Device window '{0}' created succesfully.", Diagnostics.GorgonLoggingLevel.Simple, name);
 

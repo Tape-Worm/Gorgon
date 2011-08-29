@@ -55,28 +55,9 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the top level form that the swap chain is bound with.
+		/// Property to return the settings for this swap chain.
 		/// </summary>
-		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainBase.BoundWindow">BoundWindow</see> is a windows form, then this property will be the same as the BoundWindow property.</remarks>
-		public Form BoundForm
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the window that is bound to the swap chain.
-		/// </summary>
-		public Control BoundWindow
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the format of the back buffer for this swap chain.
-		/// </summary>
-		public GorgonBufferFormat Format
+		public new GorgonSwapChainSettings Settings
 		{
 			get;
 			private set;
@@ -92,27 +73,8 @@ namespace GorgonLibrary.Graphics
 		private void BoundWindow_SizeChanged(object sender, EventArgs e)
 		{
 			RemoveEventHandlers();
-			OnWindowResized(BoundWindow.ClientSize.Width, BoundWindow.ClientSize.Height);
+			OnWindowResized(Settings.BoundWindow.ClientSize.Width, Settings.BoundWindow.ClientSize.Height);
 			AddEventHandlers();
-		}
-
-		/// <summary>
-		/// Function to retrieve the parent window for the bound window.
-		/// </summary>
-		private void GetParentWindow()
-		{
-			Control parent = null;
-
-			parent = BoundWindow.Parent;
-
-			while ((BoundForm == null) && (parent != null)) 
-			{
-				BoundForm = parent as Form;
-				parent = parent.Parent;
-			}
-
-			if (BoundForm == null)
-				throw new GorgonException(GorgonResult.CannotCreate, "Could not find the owner window for the bound window.");
 		}
 
 		/// <summary>
@@ -132,10 +94,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="newHeight">New height of the window.</param>
 		protected virtual void OnWindowResized(int newWidth, int newHeight)
 		{
-			if ((BoundForm.WindowState != FormWindowState.Minimized) && (BoundWindow.ClientSize.Width > 0) && (BoundWindow.ClientSize.Height > 0))
-			{
+			if ((Settings.BoundForm.WindowState != FormWindowState.Minimized) && (Settings.BoundWindow.ClientSize.Width > 0) && (Settings.BoundWindow.ClientSize.Height > 0))
 				UpdateResources();
-			}
 		}
 
 		/// <summary>
@@ -143,8 +103,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected void RemoveEventHandlers()
 		{
-			if (BoundWindow != null)
-				BoundWindow.SizeChanged -= new EventHandler(BoundWindow_SizeChanged);
+			if (Settings.BoundWindow != null)
+				Settings.BoundWindow.SizeChanged -= new EventHandler(BoundWindow_SizeChanged);
 		}
 
 		/// <summary>
@@ -152,8 +112,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected void AddEventHandlers()
 		{
-			if (BoundWindow != null)
-				BoundWindow.SizeChanged += new EventHandler(BoundWindow_SizeChanged);
+			if (Settings.BoundWindow != null)
+				Settings.BoundWindow.SizeChanged += new EventHandler(BoundWindow_SizeChanged);
 		}
 
 		/// <summary>
@@ -192,20 +152,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to update the information about the swap chain.
-		/// </summary>
-		/// <param name="width">Width of the swap chain.</param>
-		/// <param name="height">Height of the swap chain.</param>
-		/// <param name="format">Format of the swap chain.</param>
-		/// <param name="depthStencilFormat">Depth/Stencil buffer format.</param>
-		/// <param name="msaaLevel">Multi sampling anti-aliasing quality level.</param>
-		protected void UpdateTargetInformation(int width, int height, GorgonBufferFormat format, GorgonBufferFormat depthStencilFormat, GorgonMSAAQualityLevel? msaaLevel)
-		{
-			UpdateTargetInformation(width, height, depthStencilFormat, msaaLevel);
-			Format = format;			
-		}
-
-		/// <summary>
 		/// Function to display the contents of the swap chain.
 		/// </summary>
 		public abstract void Display();
@@ -227,30 +173,23 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics instance that owns this swap chain.</param>
 		/// <param name="name">The name.</param>
-		/// <param name="window">Window to bind the swap chain to.</param>
-		/// <param name="width">Width of the swap chain.</param>
-		/// <param name="height">Height of the swap chain.</param>
-		/// <param name="format">Format for the swap chain.</param>
-		/// <param name="depthStencilFormat">The depth buffer format (if required) for the swap chain.</param>
-		/// <param name="msaaLevel">Multi-sampling anti-aliasing quality level.</param>
+		/// <param name="settings">Swap chain settings.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.BoundWindow">settings.BoundWindow</see> parameter is NULL (Nothing in VB.Net).</para>
 		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		/// <remarks>Passing <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat.Unknown">GorgonBufferFormat.Unknown</see> will skip the creation of the depth/stencil buffer.</remarks>
-		protected GorgonSwapChainBase(GorgonGraphics graphics, string name, Control window, int width, int height, GorgonBufferFormat format, GorgonBufferFormat depthStencilFormat, GorgonMSAAQualityLevel? msaaLevel)
-			: base(graphics, name, width, height, depthStencilFormat, msaaLevel)	
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.
+		/// </exception>
+		protected GorgonSwapChainBase(GorgonGraphics graphics, string name, GorgonSwapChainSettings settings)
+			: base(graphics, name, settings)	
 		{
-			if (window == null)
-				throw new ArgumentNullException("window");
+			if (settings == null)
+				throw new ArgumentNullException("settings");
 
-			Format = format;
-			BoundWindow = window;
-			BoundForm = window as Form;
-
-			if (BoundForm == null)
-				GetParentWindow();
+			// Assign the settings here because the method hiding does not propagate through inheritance.
+			Settings = settings;
 		}
 		#endregion
 	}
