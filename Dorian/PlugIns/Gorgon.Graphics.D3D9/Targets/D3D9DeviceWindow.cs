@@ -47,7 +47,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		private PresentParameters[] _presentParams = null;					// Presentation parameters.
 		private bool _deviceIsLost = true;									// Flag to indicate that the device is in a lost state.
 		private IEnumerable<GorgonDeviceWindowSettings> _settings = null;	// Settings for the device window.
-		private bool _masterDevice = false;									// Flag to indicate this is the master of the multi-head group.
+		private bool _masterDevice = true;									// Flag to indicate this is the master of the multi-head group.
 		#endregion
 
 		#region Properties.
@@ -369,6 +369,8 @@ namespace GorgonLibrary.Graphics.D3D9
 			{
 				D3D9DeviceWindow window = deviceWindows.ElementAt(i) as D3D9DeviceWindow;
 				window.D3DDevice = D3DDevice;
+				window._masterDevice = false;
+				window._deviceIsLost = false;
 			}
 
 			_deviceIsLost = false;
@@ -413,7 +415,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override void Display()
 		{
-			if (D3DDevice == null)
+			if ((D3DDevice == null) || (!_masterDevice))
 				return;
 
 			Result result = default(Result);

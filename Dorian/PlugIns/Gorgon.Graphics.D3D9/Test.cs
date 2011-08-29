@@ -34,6 +34,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		private float _currentTime = 0;
 		private bool _timeSwitch = false;
 		private Texture _image = null;
+		private static Surface _primarySurface = null;
+		private Surface _swapSurface = null;
+		private SwapChain _swapChain = null;
+		private int outputIndex = 0;
 
 
 		/// <summary>
@@ -86,6 +90,9 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			_image = Texture.FromFile(_device, @"..\..\..\..\Resources\Images\VBback.jpg");
 			maxPasses = 0;
+			outputIndex = _window.Settings.Device.Outputs.IndexOf(_window.Settings.Output);
+			if (outputIndex == 0)
+				_primarySurface = _swapSurface;
 		}
 
 
@@ -97,9 +104,12 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			if (_window.IsReady)
 			{
-				Viewport view = new Viewport(0, 0, _window.Settings.Width, _window.Settings.Height, 0.0f, 1.0f);
-				
-				_device.Viewport = view;
+				//Viewport view = new Viewport(0, 0, _window.Settings.Width, _window.Settings.Height, 0.0f, 1.0f);
+				_swapChain = _device.GetSwapChain(outputIndex);
+				_swapSurface = _swapChain.GetBackBuffer(0);
+
+				_device.SetRenderTarget(0, _swapSurface);
+				//_device.Viewport = view;
 
 				_device.BeginScene();
 
@@ -141,7 +151,7 @@ namespace GorgonLibrary.Graphics.D3D9
 						passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (maxPasses - (i * (_dps))));
 					else
 						passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (maxPasses - (i * (_dps / GorgonLibrary.Math.GorgonMathUtility.Pow(maxPasses, 2.25f)))));
-					
+
 					//_Yrot = Matrix.RotationY(passAngle);
 					_Yrot = Matrix.RotationY(passAngle);
 					_Yrot = _Yrot * Matrix.RotationX(passAngle);
@@ -162,7 +172,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				_device.EndScene();
 
 				_dps = GorgonLibrary.Math.GorgonMathUtility.Abs((GorgonLibrary.Math.GorgonMathUtility.Cos(GorgonLibrary.Math.GorgonMathUtility.Radians(_angle)) * _currentTime)) + 5.0f;
-				
+
 				_angle += (_dps * dt);
 				if (_angle > 360.0f)
 				{
@@ -185,9 +195,16 @@ namespace GorgonLibrary.Graphics.D3D9
 					if (maxPasses > 8)
 						maxPasses = 8;
 				}
-			}
 
-			_window.Display();
+				//_device.SetRenderTarget(0, _primarySurface);
+				if (_swapSurface != null)
+					_swapSurface.Dispose();
+				if (_swapChain != null)
+					_swapChain.Dispose();
+			}
+			
+			/*if (outputIndex > 0)
+				_swapChain.Present(Present.None);*/
 		}
 
 		/// <summary>
@@ -195,6 +212,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public void ShutDown()
 		{
+			if (_swapSurface != null)
+				_swapSurface.Dispose();
+			if (_swapChain != null)
+				_swapChain.Dispose();
 			if (_image != null)
 				_image.Dispose();
 			if (_ib != null)
@@ -219,6 +240,15 @@ namespace GorgonLibrary.Graphics.D3D9
 				_device.SetRenderState(RenderState.MultisampleAntialias, true);
 				_device.SetRenderState(RenderState.MultisampleMask, 0xFF);
 			}
+
+			if (_swapSurface != null)
+				_swapSurface.Dispose();
+			if (_swapChain != null)
+				_swapChain.Dispose();
+
+			outputIndex = _window.Settings.Device.Outputs.IndexOf(_window.Settings.Output);
+			_swapChain = _device.GetSwapChain(outputIndex);
+			_swapSurface = _swapChain.GetBackBuffer(0);
 		}
 	}
 }
