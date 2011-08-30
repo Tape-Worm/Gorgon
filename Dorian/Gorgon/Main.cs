@@ -365,6 +365,18 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Function to start the application message processing.
 		/// </summary>		
+		/// <remarks>The application does not begin running right away when this method is called, it merely tells the library that the application is ready to begin.
+		/// <para>This overload will use the <see cref="GorgonLibrary.Gorgon.ApplicationIdleLoop">ApplicationIdleLoop</see> property as the default idle handler.  If this property is NULL (Nothing in VB.Net) then Gorgon will forego using a custom application idle loop and instead will use the standard WinForms Application.Run message loop.</para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when <see cref="M:GorgonLibrary.Gorgon.Initialize">Initialize</see> has not been called.</exception>
+		public static void Go()
+		{
+			Go(ApplicationIdleLoop);
+		}
+
+		/// <summary>
+		/// Function to start the application message processing.
+		/// </summary>		
 		/// <param name="idleLoop">Delegate function to use when the machine is in an idle state.</param>
 		/// <remarks>The application does not begin running right away when this method is called, it merely tells the library that the application is ready to begin.
 		/// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="idleLoop"/> parameter will forego using a custom application idle loop and instead will use the standard WinForms Application.Run message loop.</para>
