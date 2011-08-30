@@ -82,6 +82,12 @@ namespace Tester_Graphics
 			}
 			catch (Exception ex)
 			{
+				Gorgon.Stop();
+				_dev.Dispose();
+				_dev2.Dispose();
+				_dev = null;
+				_dev2 = null;
+
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
 				Close();
 			}
@@ -165,7 +171,7 @@ namespace Tester_Graphics
 						MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 					});
 				_dev2.SetupTest();
-				
+
 				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)

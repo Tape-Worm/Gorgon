@@ -75,6 +75,18 @@ namespace GorgonLibrary.Graphics.D3D9
 				if (window == null)
 					window = Settings.BoundForm;
 
+				// If the device is in a lost state, then try to reset it.
+				if (_deviceIsLost)
+				{
+					Result result = this.D3DDevice.TestCooperativeLevel();
+					if (result == ResultCode.DeviceNotReset)
+					{
+						RemoveEventHandlers();
+						ResetDevice();
+						AddEventHandlers();
+					}
+				}
+
 				return ((!_deviceIsLost) && (window.WindowState != FormWindowState.Minimized) && (Settings.BoundWindow.ClientSize.Height > 0));
 			}
 		}
@@ -131,7 +143,12 @@ namespace GorgonLibrary.Graphics.D3D9
 			AdjustWindow(inWindowedMode);
 			// Ensure that the device is indeed restored, multiple monitor configurations will set the primary device into a lost state after a reset.
 			_deviceIsLost = ((D3DDevice.TestCooperativeLevel() == ResultCode.DeviceLost) || (D3DDevice.TestCooperativeLevel() == ResultCode.DeviceNotReset));
-			OnAfterDeviceReset();
+			if (!_deviceIsLost)
+			{
+				// Force focus back to the focus window.
+				_graphics.FocusWindow.Focus();
+				OnAfterDeviceReset();
+			}
 			Gorgon.Log.Print("IDirect3DDevice9 interface has been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
 		}
 
