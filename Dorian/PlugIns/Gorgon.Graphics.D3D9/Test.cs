@@ -91,6 +91,9 @@ namespace GorgonLibrary.Graphics.D3D9
 			_image = Texture.FromFile(_device, @"..\..\..\..\Resources\Images\VBback.jpg");
 			maxPasses = 0;
 			outputIndex = _window.Settings.Device.Outputs.IndexOf(_window.Settings.Output);
+
+			_swapChain = _device.GetSwapChain(outputIndex);
+			_swapSurface = _swapChain.GetBackBuffer(0);
 			if (outputIndex == 0)
 				_primarySurface = _swapSurface;
 		}
@@ -105,10 +108,8 @@ namespace GorgonLibrary.Graphics.D3D9
 			if (_window.IsReady)
 			{
 				Viewport view = new Viewport(0, 0, _window.Settings.Width, _window.Settings.Height, 0.0f, 1.0f);
-				//_swapChain = _device.GetSwapChain(outputIndex);
-				//_swapSurface = _swapChain.GetBackBuffer(0);
 
-				//_device.SetRenderTarget(0, _swapSurface);
+				_device.SetRenderTarget(0, _swapSurface);
 				_device.Viewport = view;
 
 				_device.BeginScene();
@@ -196,11 +197,7 @@ namespace GorgonLibrary.Graphics.D3D9
 						maxPasses = 8;
 				}
 
-				//_device.SetRenderTarget(0, _primarySurface);
-				if (_swapSurface != null)
-					_swapSurface.Dispose();
-				if (_swapChain != null)
-					_swapChain.Dispose();
+				_device.SetRenderTarget(0, _primarySurface);
 			}
 			
 			/*if (outputIndex > 0)
@@ -212,6 +209,8 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public void ShutDown()
 		{
+			if (_primarySurface != null)
+				_primarySurface.Dispose();
 			if (_swapSurface != null)
 				_swapSurface.Dispose();
 			if (_swapChain != null)

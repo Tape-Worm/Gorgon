@@ -130,7 +130,7 @@ namespace Tester_Graphics
 				}
 
 				
-				/*multiHead = new GorgonMultiHeadSettings(_gfx.VideoDevices[0], new[] {
+				multiHead = new GorgonMultiHeadSettings(_gfx.VideoDevices[0], new[] {
 						new GorgonDeviceWindowSettings(this)
 						{
 							IsWindowed = false,
@@ -149,9 +149,9 @@ namespace Tester_Graphics
 				_dev = windows.ElementAt(0);
 				_dev.SetupTest();
 				_dev2 = windows.ElementAt(1);
-				_dev2.SetupTest();*/
+				_dev2.SetupTest();
 
-				settings = new GorgonDeviceWindowSettings()
+				/*settings = new GorgonDeviceWindowSettings()
 				{
 					//DisplayMode = new GorgonVideoMode(640, 480, GorgonBufferFormat.X8_R8G8B8_UIntNormal),
 					IsWindowed = true,
@@ -170,7 +170,7 @@ namespace Tester_Graphics
 						DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 						MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 					});
-				_dev2.SetupTest();
+				_dev2.SetupTest();*/
 
 				Gorgon.Go(Idle);
 			}
