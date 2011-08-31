@@ -59,9 +59,12 @@ namespace Tester_Graphics
 				if (e.KeyCode == Keys.F1)
 				{
 					settings.IsWindowed = !_dev.Settings.IsWindowed;
-					_dev2.Settings.IsWindowed = settings.IsWindowed;
 					_dev.UpdateSettings();
-					_dev2.UpdateSettings();
+					if (_dev2 != null)
+					{
+						_dev2.Settings.IsWindowed = settings.IsWindowed;
+						_dev2.UpdateSettings();
+					}
 				}
 
 				if (e.KeyCode == Keys.F)
@@ -145,11 +148,8 @@ namespace Tester_Graphics
 						}
 					});
 
-				IEnumerable<GorgonDeviceWindow> windows = _gfx.CreateMultiHeadDeviceWindows("MultiHead", multiHead);
-				_dev = windows.ElementAt(0);
+				_dev = _gfx.CreateDeviceWindow("MultiHead", multiHead);
 				_dev.SetupTest();
-				_dev2 = windows.ElementAt(1);
-				_dev2.SetupTest();
 
 				/*settings = new GorgonDeviceWindowSettings()
 				{
@@ -184,8 +184,11 @@ namespace Tester_Graphics
 
 		void form2_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			_dev2.Dispose();
-			_dev2 = null;
+			if (_dev2 != null)
+			{
+				_dev2.Dispose();
+				_dev2 = null;
+			}
 			form2 = null;
 		}
 

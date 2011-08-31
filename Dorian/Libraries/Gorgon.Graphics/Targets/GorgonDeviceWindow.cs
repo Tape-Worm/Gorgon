@@ -124,15 +124,6 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Property to return whether this is a multi-head device window or not.
-		/// </summary>
-		public bool IsMultiHead
-		{
-			get;
-			private set;
-		}
 		#endregion
 		
 		#region Methods.
@@ -193,24 +184,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to perform the creation of the multi-head window resource.
-		/// </summary>
-		/// <param name="settings">Settings for each multi-head window.</param>
-		/// <param name="deviceWindows">Subordinate device windows.</param>
-		protected abstract void CreateMultiHeadResource(IEnumerable<GorgonDeviceWindowSettings> settings, IEnumerable<GorgonDeviceWindow> deviceWindows);
-
-		/// <summary>
-		/// Function to initialize a multi-head device window.
-		/// </summary>
-		/// <param name="settings">Settings for each head.</param>
-		/// <param name="deviceWindows">Subordinate device windows.</param>
-		internal void InitializeMultiHeadDevice(IEnumerable<GorgonDeviceWindowSettings> settings, IEnumerable<GorgonDeviceWindow> deviceWindows)
-		{
-			IsMultiHead = true;
-			CreateMultiHeadResource(settings, deviceWindows);
-		}
-
-		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="name"></param>
@@ -233,7 +206,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and setting the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">GorgonDeviceWindowSettings.IsWindowed</see> property to FALSE.
 		/// </exception>
-		public void UpdateSettings()
+		public virtual void UpdateSettings()
 		{
 			Form window = Settings.BoundWindow as Form;
 			
@@ -305,8 +278,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
-		/// <param name="device">Video device to use.</param>
-		/// <param name="output">Video output on the device to use.</param>
 		/// <param name="settings">Device window settings.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
@@ -317,16 +288,11 @@ namespace GorgonLibrary.Graphics
 		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// </remarks>
-		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonVideoDevice device, GorgonVideoOutput output, GorgonDeviceWindowSettings settings)
+		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonDeviceWindowSettings settings)
 			: base(graphics, name, settings)
 		{
 			Form window = settings.BoundWindow as Form;
 
-			if (device == null)
-				throw new ArgumentNullException("device");
-			if (output == null)
-				throw new ArgumentNullException("output");
-			
 			_trackedObjects = new List<IDisposable>();
 
 			// Assign settings because Settings is a hidden method and will not propagate through the inheritance chain.

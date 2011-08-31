@@ -154,7 +154,37 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			if (FocusWindow == null)
 				FocusWindow = settings.BoundForm;
-			return new D3D9DeviceWindow(this, name, settings, FocusWindow);
+			return new D3D9DeviceWindow(this, name, settings);
+		}
+
+		/// <summary>
+		/// Function to create a fullscreen multi-head device window.
+		/// </summary>
+		/// <param name="name">Name of the window.</param>
+		/// <param name="multiHeadSettings">Multi-head device window settings.</param>
+		/// <returns>A device window.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// 	<para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.DisplayMode">DisplayMode</see> property of the <paramref name="multiHeadSettings"/>.Settings parameter is a video mode that cannot be used.</para>
+		/// 	<para>-or-</para>
+		/// 	<para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the multiHeadSettings.Settings parameter is already a device window.</para>
+		/// 	<para>-or-</para>
+		/// 	<para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the multiHeadSettings.Settings parameter is a child control.</para>
+		/// 	<para>-or-</para>
+		/// 	<para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the multiHeadSettings.Settings parameter has a value that cannot be supported by the device.
+		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GetMultiSampleQuality</see> method on the video device object.</para>
+		/// 	<para>-or-</para>
+		/// 	<para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.BoundWindow">BoundWindow</see> property of the multiHeadSettings.Settings parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
+		protected override GorgonMultiHeadDeviceWindow CreateDeviceWindowImpl(string name, GorgonMultiHeadSettings multiHeadSettings)
+		{
+			if (multiHeadSettings.Device.Outputs.Count != multiHeadSettings.Settings.Count())
+				throw new GorgonException(GorgonResult.CannotCreate, "Could not create the multi-head device window.  Not all of the heads have been assigned settings.");
+
+			FocusWindow = multiHeadSettings.Settings.ElementAt(0).BoundForm;
+			return new D3D9MultiHeadDeviceWindow(this, name, multiHeadSettings);
 		}
 
 		/// <summary>
