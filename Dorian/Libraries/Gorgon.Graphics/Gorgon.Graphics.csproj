@@ -69,6 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Targets\GorgonDeviceWindow.cs" />
     <Compile Include="Targets\GorgonDeviceWindowSettings.cs" />
+    <Compile Include="Targets\GorgonMultiHeadDeviceWindow.cs" />
     <Compile Include="Targets\GorgonRenderTarget.cs" />
     <Compile Include="Targets\GorgonRenderTargetSettings.cs" />
     <Compile Include="Targets\GorgonSwapChainBase.cs" />

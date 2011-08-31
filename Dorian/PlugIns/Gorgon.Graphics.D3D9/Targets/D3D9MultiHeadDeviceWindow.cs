@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, July 30, 2011 1:27:24 PM
+// Created: Wednesday, August 31, 2011 10:03:47 AM
 // 
 #endregion
 
@@ -29,23 +29,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Drawing;
 using SlimDX;
 using SlimDX.Direct3D9;
 
 namespace GorgonLibrary.Graphics.D3D9
 {
-	/// <summary>
-	/// A D3D9 implementation of the device window.
-	/// </summary>
-	internal class D3D9DeviceWindow
-		: GorgonDeviceWindow
-	{		
+	class D3D9MultiHeadDeviceWindow
+		: GorgonMultiHeadDeviceWindow
+	{
 		#region Variables.
 		private GorgonD3D9Graphics _graphics = null;						// Direct 3D9 specific instance of the graphics object.
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private PresentParameters[] _presentParams = null;					// Presentation parameters.
 		private bool _deviceIsLost = true;									// Flag to indicate that the device is in a lost state.
+		private IEnumerable<GorgonDeviceWindowSettings> _settings = null;	// Settings for the device window.
+		private bool _masterDevice = true;									// Flag to indicate this is the master of the multi-head group.
 		#endregion
 
 		#region Properties.
@@ -65,27 +63,33 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			get 
 			{
-				Form window = Settings.BoundWindow as Form;
-
-				if (D3DDevice == null)
-					return false;
-
-				if (window == null)
-					window = Settings.BoundForm;
-
-				// If the device is in a lost state, then try to reset it.
-				if (_deviceIsLost)
+				foreach (var setting in Settings.Settings)
 				{
-					Result result = this.D3DDevice.TestCooperativeLevel();
-					if (result == ResultCode.DeviceNotReset)
+					Form window = setting.BoundWindow as Form;
+
+					if (D3DDevice == null)
+						return false;
+
+					if (window == null)
+						window = setting.BoundForm;
+
+					// If the device is in a lost state, then try to reset it.
+					if (_deviceIsLost)
 					{
-						RemoveEventHandlers();
-						ResetDevice();
-						AddEventHandlers();
+						Result result = this.D3DDevice.TestCooperativeLevel();
+						if (result == ResultCode.DeviceNotReset)
+						{
+							RemoveEventHandlers();
+							ResetDevice();
+							AddEventHandlers();
+						}
 					}
+
+					if ((_deviceIsLost) || (window.WindowState == FormWindowState.Minimized) || (setting.BoundWindow.ClientSize.Height < 1))
+						return false;
 				}
 
-				return ((!_deviceIsLost) && (window.WindowState != FormWindowState.Minimized) && (Settings.BoundWindow.ClientSize.Height > 0));
+				return true;				
 			}
 		}
 		#endregion
@@ -96,57 +100,58 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		private void ResetDevice()
 		{
-			Form window = Settings.BoundWindow as Form;
-			bool inWindowedMode = _presentParams[0].Windowed;
+			// TODO: Currently there is a bug in SlimDX where the Reset() method only takes one presentation parameter object, it's supposed to take multiple.
+			//Form window = Settings.BoundWindow as Form;
+			//bool inWindowedMode = _presentParams[0].Windowed;
 
-			_deviceIsLost = true;
-			Gorgon.Log.Print("Device has not been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
+			//_deviceIsLost = true;
+			//Gorgon.Log.Print("Device has not been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
 
-			OnBeforeDeviceReset();			
+			//OnBeforeDeviceReset();			
 			
-			// HACK: For some reason when the window is maximized and then eventually
-			// set to full screen, the mouse cursor screws up and we can click right through
-			// our window into whatever is behind it.  Setting it to normal size prior to
-			// resetting it seems to work.
-			if (window != null)
-			{
-				if ((window.WindowState != FormWindowState.Normal) && (!Settings.IsWindowed))
-				{
-					if (window.WindowState == FormWindowState.Minimized)
-					{
-						window.WindowState = FormWindowState.Normal;
-						Settings.Dimensions = window.ClientSize;
-					}
-					else
-					{
-						Settings.Dimensions = new Size(Settings.Output.DefaultVideoMode.Width, Settings.Output.DefaultVideoMode.Height);
-						Settings.Format = Settings.Output.DefaultVideoMode.Format;
-						Settings.RefreshRateDenominator = 1;
-						Settings.RefreshRateNumerator = Settings.Output.DefaultVideoMode.RefreshRateNumerator;
-						window.WindowState = FormWindowState.Normal;
-					}
-				}
+			//// HACK: For some reason when the window is maximized and then eventually
+			//// set to full screen, the mouse cursor screws up and we can click right through
+			//// our window into whatever is behind it.  Setting it to normal size prior to
+			//// resetting it seems to work.
+			//if (window != null)
+			//{
+			//    if ((window.WindowState != FormWindowState.Normal) && (!Settings.IsWindowed))
+			//    {
+			//        if (window.WindowState == FormWindowState.Minimized)
+			//        {
+			//            window.WindowState = FormWindowState.Normal;
+			//            Settings.Dimensions = window.ClientSize;
+			//        }
+			//        else
+			//        {
+			//            Settings.Dimensions = new Size(Settings.Output.DefaultVideoMode.Width, Settings.Output.DefaultVideoMode.Height);
+			//            Settings.Format = Settings.Output.DefaultVideoMode.Format;
+			//            Settings.RefreshRateDenominator = 1;
+			//            Settings.RefreshRateNumerator = Settings.Output.DefaultVideoMode.RefreshRateNumerator;
+			//            window.WindowState = FormWindowState.Normal;
+			//        }
+			//    }
 
-				if ((Settings.IsWindowed) && (!Settings.Output.DesktopDimensions.Contains(window.DesktopLocation)))
-				{
-					window.DesktopLocation = Settings.Output.DesktopDimensions.Location;
-					window.Size = Settings.Output.DesktopDimensions.Size;
-					Settings.Dimensions = window.ClientSize;
-				} 
-			}	
+			//    if ((Settings.IsWindowed) && (!Settings.Output.DesktopDimensions.Contains(window.DesktopLocation)))
+			//    {
+			//        window.DesktopLocation = Settings.Output.DesktopDimensions.Location;
+			//        window.Size = Settings.Output.DesktopDimensions.Size;
+			//        Settings.Dimensions = window.ClientSize;
+			//    } 
+			//}	
 			
-			SetPresentationParameters();
-			D3DDevice.Reset(_presentParams[0]);
-			AdjustWindow(inWindowedMode);
-			// Ensure that the device is indeed restored, multiple monitor configurations will set the primary device into a lost state after a reset.
-			_deviceIsLost = ((D3DDevice.TestCooperativeLevel() == ResultCode.DeviceLost) || (D3DDevice.TestCooperativeLevel() == ResultCode.DeviceNotReset));
-			if (!_deviceIsLost)
-			{
-				// Force focus back to the focus window.
-				_graphics.FocusWindow.Focus();
-				OnAfterDeviceReset();
-			}
-			Gorgon.Log.Print("IDirect3DDevice9 interface has been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
+			//SetPresentationParameters();
+			//D3DDevice.Reset(_presentParams[0]);
+			//AdjustWindow(inWindowedMode);
+			//// Ensure that the device is indeed restored, multiple monitor configurations will set the primary device into a lost state after a reset.
+			//_deviceIsLost = ((D3DDevice.TestCooperativeLevel() == ResultCode.DeviceLost) || (D3DDevice.TestCooperativeLevel() == ResultCode.DeviceNotReset));
+			//if (!_deviceIsLost)
+			//{
+			//    // Force focus back to the focus window.
+			//    _graphics.FocusWindow.Focus();
+			//    OnAfterDeviceReset();
+			//}
+			//Gorgon.Log.Print("IDirect3DDevice9 interface has been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
 		}		
 
 		/// <summary>
@@ -154,56 +159,49 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		private void SetPresentationParameters()
 		{
-			_presentParams[0] = D3DConvert.Convert(Settings);
+			foreach (var setting in Settings.Settings)
+			{
+				int index = ((D3D9VideoOutput)setting.Output).HeadIndex;
 
-			Gorgon.Log.Print("Direct3D presentation parameters:", Diagnostics.GorgonLoggingLevel.Verbose);
-			Gorgon.Log.Print("\tAutoDepthStencilFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].AutoDepthStencilFormat);
-			Gorgon.Log.Print("\tBackBufferCount: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].BackBufferCount);
-			Gorgon.Log.Print("\tBackBufferFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].BackBufferFormat);
-			Gorgon.Log.Print("\tBackBufferWidth: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].BackBufferWidth);
-			Gorgon.Log.Print("\tBackBufferHeight: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].BackBufferHeight);
-			Gorgon.Log.Print("\tDeviceWindowHandle: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].DeviceWindowHandle.FormatHex());
-			Gorgon.Log.Print("\tEnableAutoDepthStencil: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].EnableAutoDepthStencil);
-			Gorgon.Log.Print("\tFullScreenRefreshRateInHertz: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].FullScreenRefreshRateInHertz);
-			Gorgon.Log.Print("\tMultisample: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].Multisample);
-			Gorgon.Log.Print("\tMultisampleQuality: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].MultisampleQuality);
-			Gorgon.Log.Print("\tPresentationInterval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].PresentationInterval);
-			Gorgon.Log.Print("\tPresentFlags: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].PresentFlags);
-			Gorgon.Log.Print("\tSwapEffect: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].SwapEffect);
-			Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[0].Windowed);
+				_presentParams[index] = D3DConvert.Convert(setting);
+				// Turn of the auto depth buffer for the multi-head device.
+				_presentParams[index].EnableAutoDepthStencil = false;
+				_presentParams[index].AutoDepthStencilFormat = Format.Unknown;
+
+				Gorgon.Log.Print("Direct3D presentation parameters:", Diagnostics.GorgonLoggingLevel.Verbose);
+				Gorgon.Log.Print("\tAutoDepthStencilFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].AutoDepthStencilFormat);
+				Gorgon.Log.Print("\tBackBufferCount: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].BackBufferCount);
+				Gorgon.Log.Print("\tBackBufferFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].BackBufferFormat);
+				Gorgon.Log.Print("\tBackBufferWidth: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].BackBufferWidth);
+				Gorgon.Log.Print("\tBackBufferHeight: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].BackBufferHeight);
+				Gorgon.Log.Print("\tDeviceWindowHandle: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].DeviceWindowHandle.FormatHex());
+				Gorgon.Log.Print("\tEnableAutoDepthStencil: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].EnableAutoDepthStencil);
+				Gorgon.Log.Print("\tFullScreenRefreshRateInHertz: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].FullScreenRefreshRateInHertz);
+				Gorgon.Log.Print("\tMultisample: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].Multisample);
+				Gorgon.Log.Print("\tMultisampleQuality: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].MultisampleQuality);
+				Gorgon.Log.Print("\tPresentationInterval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].PresentationInterval);
+				Gorgon.Log.Print("\tPresentFlags: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].PresentFlags);
+				Gorgon.Log.Print("\tSwapEffect: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].SwapEffect);
+				Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].Windowed);
+			}
 		}
 
 		/// <summary>
 		/// Function to adjust the window for windowed/full screen.
 		/// </summary>
-		/// <param name="inWindowedMode">TRUE to indicate that we're already in windowed mode when switching to fullscreen.</param>
-		private void AdjustWindow(bool inWindowedMode)
+		private void AdjustWindow()
 		{
-			Form window = Settings.BoundWindow as Form;
-
-			if (window == null)
-				return;
-
-			// If switching to windowed mode, then restore the form.  Otherwise, record the current state.
-			if (Settings.IsWindowed)
+			foreach (var setting in Settings.Settings)
 			{
-				if (!inWindowedMode)
-					WindowState.Restore(true, false);
-				else
-					WindowState.Restore(true, true);
-			}
+				setting.BoundForm.Visible = true;
+				setting.BoundForm.Enabled = true;
 
-			window.Visible = true;
-			window.Enabled = true;
+				if ((setting.BoundForm.ClientSize.Width != setting.Width) || (setting.BoundForm.ClientSize.Height != setting.Height))
+					setting.BoundForm.ClientSize = new System.Drawing.Size(setting.Width, setting.Height);
 
-			if ((window.ClientSize.Width != Settings.Width) || (window.ClientSize.Height != Settings.Height))
-				window.ClientSize = new System.Drawing.Size(Settings.Width, Settings.Height);
-
-			if (!Settings.IsWindowed)
-			{
-				window.DesktopLocation = Settings.Output.DesktopDimensions.Location;
-				window.FormBorderStyle = FormBorderStyle.None;
-				window.TopMost = true;
+				setting.BoundForm.DesktopLocation = setting.Output.DesktopDimensions.Location;
+				setting.BoundForm.FormBorderStyle = FormBorderStyle.None;
+				setting.BoundForm.TopMost = true;
 			}
 		}
 
@@ -228,13 +226,13 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		protected override void CreateResources()
 		{
-			CreateFlags flags = CreateFlags.Multithreaded | CreateFlags.FpuPreserve | CreateFlags.HardwareVertexProcessing;
-			int index = ((D3D9VideoOutput)Settings.Output).AdapterIndex;
+			CreateFlags flags = CreateFlags.Multithreaded | CreateFlags.FpuPreserve | CreateFlags.HardwareVertexProcessing | CreateFlags.AdapterGroupDevice;
+			int index = ((D3D9VideoDevice)Settings.Device).AdapterIndex;
 
 			// When we first create, record the last set of window modifications, after that, all bets are off and we own this window and will do as we need.
 			WindowState.Update();
-			AdjustWindow(true);
-			_presentParams = new PresentParameters[1];
+			AdjustWindow();
+			_presentParams = new PresentParameters[Settings.Settings.Count()];
 			SetPresentationParameters();			
 
 			// Attempt to create a pure device, if that fails, then create a hardware vertex device, anything else will fail.
@@ -260,7 +258,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			base.CleanUpResources();
 
 			// Remove link to the focus window if we're removing this device.
-			if (_graphics.FocusWindow == Settings.BoundForm)
+			if (_graphics.FocusWindow == Settings.Settings.ElementAt(0).BoundForm)
 				_graphics.FocusWindow = null;
 
 			if (D3DDevice != null)
@@ -295,7 +293,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override void Display()
 		{
-			if (D3DDevice == null) 
+			if ((D3DDevice == null) || (!_masterDevice))
 				return;
 
 			Result result = default(Result);
@@ -362,7 +360,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDeviceWindow"/> class.
+		/// Initializes a new instance of the <see cref="D3D9MultiHeadDeviceWindow"/> class.
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
@@ -370,7 +368,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonDeviceWindowSettings settings)
+		public D3D9MultiHeadDeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonMultiHeadSettings settings)
 			: base(graphics, name, settings)
 		{
 			_graphics = graphics as GorgonD3D9Graphics;
