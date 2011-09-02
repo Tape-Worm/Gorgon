@@ -14,7 +14,7 @@ namespace GorgonLibrary.Graphics
 	/// These objects are used to as the primary render target for a window.
 	/// </remarks>
 	public abstract class GorgonDeviceWindow
-		: GorgonSwapChainBase, IObjectTracker
+		: GorgonWindowTarget<GorgonDeviceWindowSettings>, IObjectTracker
 	{
 		#region Classes.
 		/// <summary>
@@ -111,15 +111,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the object holding the current window state.
 		/// </summary>
 		protected FormStateRecord WindowState
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the device window settings.
-		/// </summary>
-		public new GorgonDeviceWindowSettings Settings
 		{
 			get;
 			private set;
@@ -281,7 +272,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Device window settings.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="device"/> and <paramref name="output"/> parameters are NULL (Nothing in VB.Net).</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameters is NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>A fullscreen video mode must have a a Windows Form object as the bound window.
@@ -295,8 +286,6 @@ namespace GorgonLibrary.Graphics
 
 			_trackedObjects = new List<IDisposable>();
 
-			// Assign settings because Settings is a hidden method and will not propagate through the inheritance chain.
-			Settings = settings;
 			_wasWindowed = Settings.IsWindowed;
 
 			if (window != null)

@@ -32,32 +32,6 @@ using System.Text;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// This is used to pass multi sample information around for creating multi sample/anti-aliased graphics.
-	/// </summary>
-	public struct GorgonMSAAQualityLevel
-	{
-		/// <summary>
-		/// Multi sample level to assign.
-		/// </summary>
-		public GorgonMSAALevel Level;
-		/// <summary>
-		/// Quality of the multi sample level.
-		/// </summary>
-		public int Quality;
-				
-		/// <summary>
-		/// Gorgons the multi sample level.
-		/// </summary>
-		/// <param name="level">The level.</param>
-		/// <param name="quality">The quality.</param>
-		public GorgonMSAAQualityLevel(GorgonMSAALevel level, int quality)
-		{
-			Level = level;
-			Quality = quality;
-		}
-	}
-
-	/// <summary>
 	/// A render target.
 	/// </summary>
 	/// <remarks>The render target will receive the graphical data for display.</remarks>
@@ -77,23 +51,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to return the settings for this render target.
-		/// </summary>
-		public GorgonRenderTargetSettings Settings
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether the target is ready to receive rendering data.
-		/// </summary>
-		public abstract bool IsReady
-		{
-			get;
 		}
 		#endregion
 
@@ -135,21 +92,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name.</param>
 		/// <param name="settings">The settings used to define the behaviour/display of the target.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		protected GorgonRenderTarget(GorgonGraphics graphics, string name, GorgonRenderTargetSettings settings)
+		protected GorgonRenderTarget(GorgonGraphics graphics, string name)
 			: base(name)
 		{
 			if (graphics == null)
 				throw new ArgumentNullException("graphics");
 
-			if (settings == null)
-				throw new ArgumentNullException("settings");
-
 			Graphics = graphics;
-			Settings = settings;
 		}
 		#endregion
 	
