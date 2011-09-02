@@ -60,6 +60,7 @@
     <Compile Include="Enums\GorgonDisplayFunctions.cs" />
     <Compile Include="Enums\GorgonMSAALevels.cs" />
     <Compile Include="Enums\GorgonVSyncIntervals.cs" />
+    <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonGraphicsPlugIn.cs" />
     <Compile Include="GorgonRenderer.cs" />

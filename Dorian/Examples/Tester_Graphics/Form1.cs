@@ -146,12 +146,14 @@ namespace Tester_Graphics
 				multiHead = new GorgonMultiHeadSettings(_gfx.VideoDevices[0], new[] {
 						new GorgonDeviceWindowSettings(this)
 						{
+							Width = 1680,
+							Height = 1050,
 							IsWindowed = false,
 							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 							MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 						},
 						new GorgonDeviceWindowSettings(form2)
-						{
+						{							
 							IsWindowed = true,
 							//DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 							MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))

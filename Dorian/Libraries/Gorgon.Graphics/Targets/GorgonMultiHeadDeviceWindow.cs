@@ -94,6 +94,15 @@ namespace GorgonLibrary.Graphics
 		protected abstract void SetCurrentHead(int headIndex);
 
 		/// <summary>
+		/// Initializes this instance.
+		/// </summary>
+		internal override void Initialize()
+		{
+			// Since we're fullscreen only, we don't need the window resizing code.
+			CreateResources();
+		}
+
+		/// <summary>
 		/// Function to update the device window.
 		/// </summary>
 		/// <remarks>Use this method to apply changes the <see cref="GorgonLibrary.Graphics.GorgonDeviceWindowSettings">dimensions, format, fullscreen/windowed state and depth information</see> for the device window.
