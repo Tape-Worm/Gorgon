@@ -251,24 +251,6 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("Device window '{0}' updated.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 		}
-
-		#region Remove this shit.
-		/// <summary>
-		/// 
-		/// </summary>
-		public abstract void SetupTest();
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public abstract void RunTest(float dt);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public abstract void CleanUpTest();
-
-		#endregion
 		#endregion
 
 		#region Constructor/Destructor.

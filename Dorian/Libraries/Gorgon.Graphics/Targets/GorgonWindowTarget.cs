@@ -161,11 +161,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to display the contents of the swap chain.
-		/// </summary>
-		public abstract void Display();
-
-		/// <summary>
 		/// Function to initialize the render target.
 		/// </summary>
 		internal override void Initialize()
@@ -174,6 +169,29 @@ namespace GorgonLibrary.Graphics
 			base.Initialize();
 			AddEventHandlers();
 		}
+
+		/// <summary>
+		/// Function to display the contents of the swap chain.
+		/// </summary>
+		public abstract void Display();
+
+		#region Remove this shit.
+		/// <summary>
+		/// 
+		/// </summary>
+		public abstract void SetupTest();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public abstract void RunTest(float dt);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public abstract void CleanUpTest();
+
+		#endregion
 		#endregion
 
 		#region Constructor/Destructor.

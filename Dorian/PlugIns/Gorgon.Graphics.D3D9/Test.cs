@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		private float _currentTime = 0;
 		private bool _timeSwitch = false;
 		private Texture _image = null;
-		private int imageNumber = 0;
+		//private int imageNumber = 0;
 
 
 		/// <summary>
@@ -194,11 +194,11 @@ namespace GorgonLibrary.Graphics.D3D9
 
 					deviceWindow.CurrentHead = 0;
 
-					Surface.ToFile(deviceWindow.SwapSurfaces[s], @"d:\unpak\Surface\" + s.ToString() + @"\image" + imageNumber + ".png", ImageFileFormat.Png);
+					//Surface.ToFile(deviceWindow.SwapSurfaces[s], @"d:\unpak\Surface\" + s.ToString() + @"\image" + imageNumber + ".png", ImageFileFormat.Png);
 				}				
 			}
 
-			imageNumber++;
+			//imageNumber++;
 			
 			/*if (outputIndex > 0)
 				_swapChain.Present(Present.None);*/
