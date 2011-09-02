@@ -606,6 +606,36 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			return result;
 		}
+
+		/// <summary>
+		/// Function to convert a gorgon color value to a D3D 4 part color value.
+		/// </summary>
+		/// <param name="color">Color to convert.</param>
+		/// <returns>The D3D color.</returns>
+		public static SlimDX.Color4 Convert(GorgonColor color)
+		{
+			return new SlimDX.Color4(color.Alpha, color.Red, color.Green, color.Blue);
+		}
+
+		/// <summary>
+		/// Function to convert a D3D color value to a color part color value.
+		/// </summary>
+		/// <param name="color">D3D color to convert.</param>
+		/// <returns>The Gorgon color.</returns>
+		public static GorgonColor Convert(SlimDX.Color4 color)
+		{
+			return new GorgonColor(color.Alpha, color.Red, color.Green, color.Blue);
+		}
+
+		/// <summary>
+		/// Function to convert a D3D color value to a color part color value.
+		/// </summary>
+		/// <param name="color">D3D color to convert.</param>
+		/// <returns>The Gorgon color.</returns>
+		public static GorgonColor Convert(SlimDX.Color3 color)
+		{
+			return new GorgonColor(1.0f, color.Red, color.Green, color.Blue);
+		}
 		#endregion
 	}
 }

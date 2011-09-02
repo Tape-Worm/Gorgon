@@ -115,6 +115,53 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return whether the target has a depth buffer attached to it.
+		/// </summary>
+		public override bool HasDepthBuffer
+		{
+			get 
+			{
+				switch (Settings.DepthStencilFormat)
+				{
+					case GorgonBufferFormat.D24_Float_S8_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
+					case GorgonBufferFormat.D15_UIntNormal_S1_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
+					case GorgonBufferFormat.D32_Float:
+					case GorgonBufferFormat.D32_UIntNormal:
+					case GorgonBufferFormat.D32_Float_Lockable:
+					case GorgonBufferFormat.D24_UIntNormal_X8:
+					case GorgonBufferFormat.D16_UIntNormal_Lockable:
+					case GorgonBufferFormat.D16_UIntNormal:
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the target has a stencil buffer attaached to it.
+		/// </summary>
+		public override bool HasStencilBuffer
+		{
+			get 
+			{
+				switch (Settings.DepthStencilFormat)
+				{
+					case GorgonBufferFormat.D32_Float_S8X24_UInt:
+					case GorgonBufferFormat.D24_Float_S8_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
+					case GorgonBufferFormat.D15_UIntNormal_S1_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
+						return true;
+				}
+
+				return false;
+			}
+		}
 		#endregion
 		
 		#region Methods.

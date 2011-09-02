@@ -98,6 +98,77 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to perform linear interpolation between two colors.
+		/// </summary>
+		/// <param name="start">Starting color.</param>
+		/// <param name="end">Ending color.</param>
+		/// <param name="amount">Amount between 0 and 1.0f to indicate weight.</param>
+		/// <param name="outColor">The resulting color.</param>
+		public static void Lerp(ref GorgonColor start, ref GorgonColor end, float weight, out GorgonColor outColor)
+		{
+			outColor.Alpha = start.Alpha + ((end.Alpha - start.Alpha) * weight);
+			outColor.Red = start.Red + ((end.Red - start.Red) * weight);
+			outColor.Green = start.Red + ((end.Red - start.Red) * weight);
+			outColor.Blue = start.Red + ((end.Red - start.Red) * weight);
+		}
+
+		/// <summary>
+		/// Function to add two colors together.
+		/// </summary>
+		/// <param name="left">Left color to add.</param>
+		/// <param name="right">Right color to add.</param>
+		/// <param name="outColor">Total of two colors.</param>
+		public static void Add(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
+		{
+			outColor.Alpha = left.Alpha + right.Alpha;
+			outColor.Red = left.Red + right.Red;
+			outColor.Green = left.Green + right.Green;
+			outColor.Blue = left.Blue + right.Blue;
+		}
+
+		/// <summary>
+		/// Function to subtract two colors.
+		/// </summary>
+		/// <param name="left">Left color to subtract.</param>
+		/// <param name="right">Right color to subtract.</param>
+		/// <param name="outColor">Difference between the two colors.</param>
+		public static void Subtract(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
+		{
+			outColor.Alpha = left.Alpha - right.Alpha;
+			outColor.Red = left.Red - right.Red;
+			outColor.Green = left.Green - right.Green;
+			outColor.Blue = left.Blue - right.Blue;
+		}
+
+		/// <summary>
+		/// Function to multiply two colors.
+		/// </summary>
+		/// <param name="left">Left color to multiply.</param>
+		/// <param name="right">Right color to multiply.</param>
+		/// <param name="outColor">Product of the two colors.</param>
+		public static void Multiply(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
+		{
+			outColor.Alpha = left.Alpha * right.Alpha;
+			outColor.Red = left.Red * right.Red;
+			outColor.Green = left.Green * right.Green;
+			outColor.Blue = left.Blue * right.Blue;
+		}
+
+		/// <summary>
+		/// Function to multiply a color by a value.
+		/// </summary>
+		/// <param name="color">Color to multiply.</param>
+		/// <param name="value">Value to multiply.</param>
+		/// <param name="outColor">Product of the color and the value.</param>
+		public static void Multiply(ref GorgonColor color, float value, out GorgonColor outColor)
+		{
+			outColor.Alpha = color.Alpha * value;
+			outColor.Red = color.Red * value;
+			outColor.Green = color.Green * value;
+			outColor.Blue = color.Blue * value;
+		}
+
+		/// <summary>
 		/// Function to return a packed color value.
 		/// </summary>
 		/// <returns>The packed color value.</returns>
@@ -134,7 +205,66 @@ namespace GorgonLibrary.Graphics
 		{
 			return new Vector4D(Red, Green, Blue, Alpha);
 		}
-		
+
+		/// <summary>
+		/// Implements the operator +.
+		/// </summary>
+		/// <param name="left">The left value.</param>
+		/// <param name="right">The right value.</param>
+		/// <returns>The result of the operator.</returns>
+		public static GorgonColor operator +(GorgonColor left, GorgonColor right)
+		{
+			GorgonColor result = new GorgonColor();
+
+			GorgonColor.Add(ref left, ref right, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Implements the operator -.
+		/// </summary>
+		/// <param name="left">The left value.</param>
+		/// <param name="right">The right value.</param>
+		/// <returns>The result of the operator.</returns>
+		public static GorgonColor operator -(GorgonColor left, GorgonColor right)
+		{
+			GorgonColor result = new GorgonColor();
+
+			GorgonColor.Subtract(ref left, ref right, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Implements the operator *.
+		/// </summary>
+		/// <param name="left">The left value.</param>
+		/// <param name="right">The right value.</param>
+		/// <returns>The result of the operator.</returns>
+		public static GorgonColor operator *(GorgonColor left, GorgonColor right)
+		{
+			GorgonColor result = new GorgonColor();
+
+			GorgonColor.Multiply(ref left, ref right, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Implements the operator *.
+		/// </summary>
+		/// <param name="color">The color to multiply.</param>
+		/// <param name="value">The value to multiply by.</param>
+		/// <returns>The result of the operator.</returns>
+		public static GorgonColor operator *(GorgonColor color, float value)
+		{
+			GorgonColor result = new GorgonColor();
+
+			GorgonColor.Multiply(ref color, value, out result);
+
+			return result;
+		}
 
 		/// <summary>
 		/// Implements the operator ==.

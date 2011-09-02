@@ -47,10 +47,40 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return whether the target has a depth buffer attached to it.
+		/// </summary>
+		/// <value></value>
+		public override bool HasDepthBuffer
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <summary>
+		/// Property to return whether the target has a stencil buffer attaached to it.
+		/// </summary>
+		/// <value></value>
+		public override bool HasStencilBuffer
+		{
+			get { throw new NotImplementedException(); }
+		}
 		#endregion
 
 		#region Methods.
-		
+		/// <summary>
+		/// Function to clear a target.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <param name="depthValue">Depth buffer value to clear with.</param>
+		/// <param name="stencilValue">Stencil value to clear with.</param>
+		/// <remarks>This will only clear a depth/stencil buffer if one has been attached to the target, otherwise it will do nothing.
+		/// <para>Pass NULL (Nothing in VB.Net) to <paramref name="color"/>, <paramref name="depthValue"/> or <paramref name="stencilValue"/> to exclude that buffer from being cleared.</para>
+		/// </remarks>
+		public override void Clear(GorgonColor? color, float? depthValue, int? stencilValue)
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
