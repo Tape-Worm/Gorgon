@@ -290,17 +290,34 @@ namespace GorgonLibrary.Graphics
 					setting.Dimensions = setting.BoundWindow.ClientSize;
 
 				// Ensure that the first setting is for the master video output.
-				if ((setting == multiHeadSettings.Settings.ElementAt(0)) && (setting.Output != setting.Device.Outputs[0]))
+				if ((setting == multiHeadSettings.Settings[0]) && (setting.Output != setting.Device.Outputs[0]))
 					throw new ArgumentException("The video output for the first setting is not the master video output.", "multiHeadSettings");
 			}
 
 			Gorgon.Log.Print("Creating new multi-head device window '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, name);
 			target = CreateDeviceWindowImpl(name, multiHeadSettings);
+	
+			for (int i = 0; i < multiHeadSettings.Settings.Count; i++)
+			{
+				var settings = multiHeadSettings.Settings[i];
+				Gorgon.Log.Print("Initializing head '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, i, settings.DisplayMode.Width, settings.DisplayMode.Height, settings.DisplayMode.Format, settings.DisplayMode.RefreshRateNumerator, settings.DisplayMode.RefreshRateDenominator);
+				Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayMode.Width, settings.DisplayMode.Height, settings.DisplayMode.Format, settings.DisplayMode.RefreshRateNumerator, settings.DisplayMode.RefreshRateDenominator);
+				Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, settings.DepthStencilFormat != GorgonBufferFormat.Unknown, settings.DepthStencilFormat);
+				Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.IsWindowed);
+				Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.MSAAQualityLevel.Level != GorgonMSAALevel.None);
+				if (settings.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+					Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, settings.MSAAQualityLevel.Quality, settings.MSAAQualityLevel.Level);
+				Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.BackBufferCount);
+				Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayFunction);
+				Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.VSyncInterval);
+				Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.WillUseVideo);
+			}
+
 			target.Initialize();
 
 			_trackedObjects.Add(target);
 
-			Gorgon.Log.Print("Device window '{0}' created succesfully.", Diagnostics.GorgonLoggingLevel.Simple, name);
+			Gorgon.Log.Print("Multi-head device window '{0}' created succesfully.", Diagnostics.GorgonLoggingLevel.Simple, name);
 
 			return target;
 		}

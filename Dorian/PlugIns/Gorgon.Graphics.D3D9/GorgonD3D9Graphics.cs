@@ -183,7 +183,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			if (multiHeadSettings.Device.Outputs.Count != multiHeadSettings.Settings.Count())
 				throw new GorgonException(GorgonResult.CannotCreate, "Could not create the multi-head device window.  Not all of the heads have been assigned settings.");
 
-			FocusWindow = multiHeadSettings.Settings.ElementAt(0).BoundForm;
+			FocusWindow = multiHeadSettings.Settings[0].BoundForm;
 			return new D3D9MultiHeadDeviceWindow(this, name, multiHeadSettings);
 		}
 

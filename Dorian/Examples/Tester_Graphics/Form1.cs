@@ -58,12 +58,21 @@ namespace Tester_Graphics
 			{
 				if (e.KeyCode == Keys.F1)
 				{
-					settings.IsWindowed = !_dev.Settings.IsWindowed;
-					_dev.UpdateSettings();
-					if (_dev2 != null)
+					if (_dev is GorgonMultiHeadDeviceWindow)
 					{
-						_dev2.Settings.IsWindowed = settings.IsWindowed;
-						_dev2.UpdateSettings();
+//						((GorgonMultiHeadDeviceWindow)_dev).Settings.Settings[0].Width = 1024;
+//						((GorgonMultiHeadDeviceWindow)_dev).Settings.Settings[0].Height = 768;
+						//_dev.UpdateSettings();
+					}
+					else
+					{
+						settings.IsWindowed = !_dev.Settings.IsWindowed;
+						_dev.UpdateSettings();
+						if (_dev2 != null)
+						{
+							_dev2.Settings.IsWindowed = settings.IsWindowed;
+							_dev2.UpdateSettings();
+						}
 					}
 				}
 
@@ -87,7 +96,8 @@ namespace Tester_Graphics
 			{
 				Gorgon.Stop();
 				_dev.Dispose();
-				_dev2.Dispose();
+				if (_dev2 != null)
+					_dev2.Dispose();
 				_dev = null;
 				_dev2 = null;
 
@@ -137,7 +147,7 @@ namespace Tester_Graphics
 						new GorgonDeviceWindowSettings(this)
 						{
 							IsWindowed = false,
-							//DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
+							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 							MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 						},
 						new GorgonDeviceWindowSettings(form2)
@@ -148,7 +158,7 @@ namespace Tester_Graphics
 						}
 					});
 
-				_dev = _gfx.CreateDeviceWindow("MultiHead", multiHead);
+				_dev = _gfx.CreateDeviceWindow("MultiHead", multiHead);				
 				_dev.SetupTest();
 
 				/*settings = new GorgonDeviceWindowSettings()

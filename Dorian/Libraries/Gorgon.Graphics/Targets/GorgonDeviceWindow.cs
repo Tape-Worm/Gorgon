@@ -119,6 +119,17 @@ namespace GorgonLibrary.Graphics
 		
 		#region Methods.
 		/// <summary>
+		/// Function to clean up the tracked objects and remove this object from any trackers.
+		/// </summary>
+		protected void CleanUpTrackedObjects()
+		{
+			((IObjectTracker)this).CleanUpTrackedObjects();
+
+			// Remove us from anything tracking us.
+			((IObjectTracker)Graphics).RemoveTrackedObject(this);
+		}
+
+		/// <summary>
 		/// Function to clear out any outstanding resources when the object is disposed.
 		/// </summary>
 		/// <remarks>Implementors must call this method to clean up outstanding resources in the Dispose method.</remarks>
@@ -127,10 +138,7 @@ namespace GorgonLibrary.Graphics
 			base.CleanUpResources();
 
 			CleanUpTest();
-			((IObjectTracker)this).CleanUpTrackedObjects();
-
-			// Remove us from anything tracking us.
-			((IObjectTracker)Graphics).RemoveTrackedObject(this);
+			CleanUpTrackedObjects();
 		}
 
 		/// <summary>
