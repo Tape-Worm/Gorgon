@@ -35,8 +35,9 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// The base object used for device objects with a swap chain, and extraneous swap chains.
 	/// </summary>
-	public abstract class GorgonSwapChainBase
-		: GorgonRenderTarget
+	/// <typeparam name="T">Type of settings to use for the window target.</typeparam>
+	public abstract class GorgonWindowTarget<T>
+		: GorgonRenderTarget where T : GorgonSwapChainSettings
 	{
 		#region Variables.
 		private bool _disposed = false;			// Flag to indicate that the object was disposed.
@@ -57,10 +58,18 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the settings for this swap chain.
 		/// </summary>
-		public new GorgonSwapChainSettings Settings
+		public T Settings
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to return whether the target is ready to receive rendering data.
+		/// </summary>
+		public abstract bool IsReady
+		{
+			get;
 		}
 		#endregion
 
@@ -169,7 +178,7 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainBase"/> class.
+		/// Initializes a new instance of the <see cref="GorgonWindowTarget"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics instance that owns this swap chain.</param>
 		/// <param name="name">The name.</param>
@@ -182,8 +191,8 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.
 		/// </exception>
-		protected GorgonSwapChainBase(GorgonGraphics graphics, string name, GorgonSwapChainSettings settings)
-			: base(graphics, name, settings)	
+		protected GorgonWindowTarget(GorgonGraphics graphics, string name, T settings)
+			: base(graphics, name)	
 		{
 			if (settings == null)
 				throw new ArgumentNullException("settings");
