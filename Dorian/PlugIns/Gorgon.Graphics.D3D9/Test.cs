@@ -108,27 +108,28 @@ namespace GorgonLibrary.Graphics.D3D9
 					_device.Viewport = view;
 
 					_device.BeginScene();
+					deviceWindow.Clear(new GorgonColor(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
 
-					switch (deviceWindow.Settings.Settings[s].DepthStencilFormat)
-					{
-						case GorgonBufferFormat.D32_Float:
-						case GorgonBufferFormat.D32_UIntNormal:
-						case GorgonBufferFormat.D32_Float_Lockable:
-						case GorgonBufferFormat.D24_UIntNormal_X8:
-						case GorgonBufferFormat.D16_UIntNormal_Lockable:
-						case GorgonBufferFormat.D16_UIntNormal:
-							_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
-							break;
-						case GorgonBufferFormat.D24_Float_S8_UInt:
-						case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
-						case GorgonBufferFormat.D15_UIntNormal_S1_UInt:
-						case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
-							_device.Clear(ClearFlags.All, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
-							break;
-						default:
-							_device.Clear(ClearFlags.Target, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
-							break;
-					}
+					//switch (deviceWindow.Settings.Settings[s].DepthStencilFormat)
+					//{
+					//    case GorgonBufferFormat.D32_Float:
+					//    case GorgonBufferFormat.D32_UIntNormal:
+					//    case GorgonBufferFormat.D32_Float_Lockable:
+					//    case GorgonBufferFormat.D24_UIntNormal_X8:
+					//    case GorgonBufferFormat.D16_UIntNormal_Lockable:
+					//    case GorgonBufferFormat.D16_UIntNormal:
+					//        _device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
+					//        break;
+					//    case GorgonBufferFormat.D24_Float_S8_UInt:
+					//    case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
+					//    case GorgonBufferFormat.D15_UIntNormal_S1_UInt:
+					//    case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
+					//        _device.Clear(ClearFlags.All, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
+					//        break;
+					//    default:
+					//        _device.Clear(ClearFlags.Target, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
+					//        break;
+					//}
 
 					_device.SetTransform(TransformState.Projection, Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)deviceWindow.Settings.Settings[s].Width / (float)deviceWindow.Settings.Settings[s].Height, 0.1f, 1000.0f));
 					_device.SetTransform(TransformState.View, Matrix.LookAtLH(new Vector3(0, 0, _pos), new Vector3(0, 0, 1.0f), Vector3.UnitY));

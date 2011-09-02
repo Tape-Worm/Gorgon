@@ -52,6 +52,32 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to set or return the default background color for the target.
+		/// </summary>
+		/// <remarks>The default color is white (1.0f, 1.0f, 1.0f, 1.0f).</remarks>
+		public GorgonColor DefaultBackgroundColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return whether the target has a depth buffer attached to it.
+		/// </summary>
+		public abstract bool HasDepthBuffer
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return whether the target has a stencil buffer attaached to it.
+		/// </summary>
+		public abstract bool HasStencilBuffer
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.
@@ -82,6 +108,48 @@ namespace GorgonLibrary.Graphics
 		{
 			CreateResources();
 		}
+
+		/// <summary>
+		/// Function to clear a target.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <param name="depthValue">Depth buffer value to clear with.</param>
+		/// <param name="stencilValue">Stencil value to clear with.</param>
+		/// <remarks>This will only clear a depth/stencil buffer if one has been attached to the target, otherwise it will do nothing.
+		/// <para>Pass NULL (Nothing in VB.Net) to <paramref name="color"/>, <paramref name="depthValue"/> or <paramref name="stencilValue"/> to exclude that buffer from being cleared.</para>
+		/// </remarks>
+		public abstract void Clear(GorgonColor? color, float? depthValue, int? stencilValue);
+
+		/// <summary>
+		/// Function to clear a target.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <param name="depthValue">Depth buffer value to clear with.</param>
+		/// <remarks>This will only clear a depth/stencil buffer if one has been attached to the target, otherwise it will do nothing.
+		/// <para>Pass NULL (Nothing in VB.Net) to <paramref name="color"/> or <paramref name="depthValue"/> to exclude that buffer from being cleared.</para>
+		/// </remarks>
+		public void Clear(GorgonColor? color, float? depthValue)
+		{
+			Clear(color, depthValue, 0);
+		}
+
+		/// <summary>
+		/// Function to clear a target.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		public void Clear(GorgonColor color)
+		{
+			Clear(color, 1.0f, 0);
+		}
+
+		/// <summary>
+		/// Function to clear a target.
+		/// </summary>
+		/// <remarks>This will clear the target with the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget.DefaultBackgroundColor">default background color</see> value.</remarks>
+		public void Clear()
+		{
+			Clear(DefaultBackgroundColor, 1.0f, 0);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -101,6 +169,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("graphics");
 
 			Graphics = graphics;
+			DefaultBackgroundColor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 		#endregion
 	

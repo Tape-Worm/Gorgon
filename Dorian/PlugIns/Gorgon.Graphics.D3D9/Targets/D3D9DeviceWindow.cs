@@ -292,6 +292,31 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to clear a target.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <param name="depthValue">Depth buffer value to clear with.</param>
+		/// <param name="stencilValue">Stencil value to clear with.</param>
+		/// <remarks>This will only clear a depth/stencil buffer if one has been attached to the target, otherwise it will do nothing.
+		/// <para>Pass NULL (Nothing in VB.Net) to <paramref name="color"/>, <paramref name="depthValue"/> or <paramref name="stencilValue"/> to exclude that buffer from being cleared.</para>
+		/// </remarks>
+		public override void Clear(GorgonColor? color, float? depthValue, int? stencilValue)
+		{
+			ClearFlags flags = ClearFlags.None;
+
+			if (color != null) 
+				flags |= ClearFlags.Target;
+			if ((depthValue != null) && (HasDepthBuffer))
+				flags |= ClearFlags.ZBuffer;
+			if ((stencilValue != null) && (HasStencilBuffer))
+				flags |= ClearFlags.Stencil;
+
+			// TODO: Remember current target and set this window as the current target and then restore the previous, but don't do this for a proxy window.
+
+			D3DDevice.Clear(flags, (color == null ? new Color4() : D3DConvert.Convert(color.Value)), (depthValue == null ? 1.0f : depthValue.Value), (stencilValue == null ? 0 : stencilValue.Value));
+		}
+
+		/// <summary>
 		/// Function to remove the proxy object.
 		/// </summary>
 		public void DisposeProxy()

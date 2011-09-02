@@ -48,7 +48,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		private D3D9DeviceWindow _deviceWindowProxy = null;					// The proxy for manipulating the device window.
 		#endregion
 
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return the swap back buffer surfaces for each head.
 		/// </summary>
@@ -226,35 +226,6 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
-		/// Function to set the currently active head for rendering.
-		/// </summary>
-		/// <param name="headIndex">Index of the head.</param>
-		protected override void SetCurrentHead(int headIndex)
-		{
-			D3DDevice.SetRenderTarget(0, SwapSurfaces[headIndex]);
-			if (Settings.Settings[headIndex].DepthStencilFormat != GorgonBufferFormat.Unknown)
-				D3DDevice.DepthStencilSurface = DepthStencilSurfaces[headIndex];
-			else
-				D3DDevice.DepthStencilSurface = null;
-		}
-
-		/// <summary>
-		/// Function to perform an update on the resources required by the render target.
-		/// </summary>
-		protected override void UpdateResources()
-		{
-			Result result = default(Result);
-
-			if (D3DDevice == null)
-				return;
-
-			result = D3DDevice.TestCooperativeLevel();
-
-			if ((result.IsSuccess) || (result == ResultCode.DeviceNotReset))
-				ResetDevice();
-		}
-
-		/// <summary>
 		/// Function to clean up the surfaces allocated by the device.
 		/// </summary>
 		private void DestroySurfaces()
@@ -297,7 +268,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 				SwapSurfaces = new Surface[HeadCount];
 				DepthStencilSurfaces = new Surface[HeadCount];
-								
+
 				for (int i = 0; i < HeadCount; i++)
 				{
 					Gorgon.Log.Print("Retrieving back buffer surfaces and creating depth/stencil surfaces for head {0}.", Diagnostics.GorgonLoggingLevel.Verbose, i);
@@ -308,7 +279,7 @@ namespace GorgonLibrary.Graphics.D3D9
 					SwapSurfaces[i] = swapChain.GetBackBuffer(0);
 
 					// Create a depth buffer for the swap chain.
-					if (setting.DepthStencilFormat != GorgonBufferFormat.Unknown)					
+					if (setting.DepthStencilFormat != GorgonBufferFormat.Unknown)
 						DepthStencilSurfaces[i] = Surface.CreateDepthStencil(D3DDevice, setting.Width, setting.Height, D3DConvert.Convert(setting.DepthStencilFormat), D3DConvert.Convert(setting.MSAAQualityLevel.Level), (setting.MSAAQualityLevel.Level != GorgonMSAALevel.None ? setting.MSAAQualityLevel.Quality - 1 : 0), false);
 
 					swapChain.Dispose();
@@ -321,6 +292,35 @@ namespace GorgonLibrary.Graphics.D3D9
 					swapChain.Dispose();
 				swapChain = null;
 			}
+		}
+
+		/// <summary>
+		/// Function to set the currently active head for rendering.
+		/// </summary>
+		/// <param name="headIndex">Index of the head.</param>
+		protected override void SetCurrentHead(int headIndex)
+		{
+			D3DDevice.SetRenderTarget(0, SwapSurfaces[headIndex]);
+			if (Settings.Settings[headIndex].DepthStencilFormat != GorgonBufferFormat.Unknown)
+				D3DDevice.DepthStencilSurface = DepthStencilSurfaces[headIndex];
+			else
+				D3DDevice.DepthStencilSurface = null;
+		}
+
+		/// <summary>
+		/// Function to perform an update on the resources required by the render target.
+		/// </summary>
+		protected override void UpdateResources()
+		{
+			Result result = default(Result);
+
+			if (D3DDevice == null)
+				return;
+
+			result = D3DDevice.TestCooperativeLevel();
+
+			if ((result.IsSuccess) || (result == ResultCode.DeviceNotReset))
+				ResetDevice();
 		}
 
 		/// <summary>
@@ -399,7 +399,22 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			base.Dispose(disposing);
-		}		
+		}
+
+		/// <summary>
+		/// Function to clear a target.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <param name="depthValue">Depth buffer value to clear with.</param>
+		/// <param name="stencilValue">Stencil value to clear with.</param>
+		/// <remarks>This will only clear a depth/stencil buffer if one has been attached to the target, otherwise it will do nothing.
+		/// <para>Pass NULL (Nothing in VB.Net) to <paramref name="color"/>, <paramref name="depthValue"/> or <paramref name="stencilValue"/> to exclude that buffer from being cleared.</para>
+		/// </remarks>
+		public override void Clear(GorgonColor? color, float? depthValue, int? stencilValue)
+		{
+			// TODO: Remember current target, set the current target for which ever head is current, then restore it.
+			_deviceWindowProxy.Clear(color, depthValue, stencilValue);
+		}
 
 		/// <summary>
 		/// Function to display the contents of the swap chain.
