@@ -34,9 +34,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		private float _currentTime = 0;
 		private bool _timeSwitch = false;
 		private Texture _image = null;
-		private static Surface _primarySurface = null;
-		private Surface[] _swapSurface = null;		
-		private int outputIndex = 0;
+		private int imageNumber = 0;
 
 
 		/// <summary>
@@ -46,8 +44,6 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="device"></param>
 		public Test(GorgonDeviceWindow window, Device device)
 		{
-			SwapChain swapChain = null;
-
 			window.AfterDeviceReset += new EventHandler(window_AfterDeviceReset);
 			_window = window;
 			_device = device;
@@ -91,17 +87,6 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			_image = Texture.FromFile(_device, @"..\..\..\..\Resources\Images\VBback.jpg");
 			maxPasses = 0;
-
-			_swapSurface = new Surface[((D3D9MultiHeadDeviceWindow)_window).HeadCount];
-
-			for (int i = 0; i < _swapSurface.Length; i++)
-			{
-				swapChain = _device.GetSwapChain(i);
-				_swapSurface[i] = swapChain.GetBackBuffer(0);
-				swapChain.Dispose();
-			}
-
-			_primarySurface = _swapSurface[0];
 		}
 
 
@@ -111,18 +96,20 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="dt"></param>
 		public void Run(float dt)
 		{
-			if (_window.IsReady)
+			D3D9MultiHeadDeviceWindow deviceWindow = _window as D3D9MultiHeadDeviceWindow;			
+
+			if (deviceWindow.IsReady)
 			{
-				for (int s = 0; s < _swapSurface.Length; s++)
+				for (int s = 0; s < deviceWindow.HeadCount; s++)
 				{
-					Viewport view = new Viewport(0, 0, _window.Settings.Width, _window.Settings.Height, 0.0f, 1.0f);
-					
-					_device.SetRenderTarget(0, _swapSurface[s]);
+					Viewport view = new Viewport(0, 0, deviceWindow.Settings.Settings[s].Width, deviceWindow.Settings.Settings[s].Height, 0.0f, 1.0f);
+
+					deviceWindow.CurrentHead = s;
 					_device.Viewport = view;
 
 					_device.BeginScene();
 
-					switch (_window.Settings.DepthStencilFormat)
+					switch (deviceWindow.Settings.Settings[s].DepthStencilFormat)
 					{
 						case GorgonBufferFormat.D32_Float:
 						case GorgonBufferFormat.D32_UIntNormal:
@@ -130,20 +117,20 @@ namespace GorgonLibrary.Graphics.D3D9
 						case GorgonBufferFormat.D24_UIntNormal_X8:
 						case GorgonBufferFormat.D16_UIntNormal_Lockable:
 						case GorgonBufferFormat.D16_UIntNormal:
-							_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(0, 0, 0, 0), 1.0f, 0);
+							_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
 							break;
 						case GorgonBufferFormat.D24_Float_S8_UInt:
 						case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
 						case GorgonBufferFormat.D15_UIntNormal_S1_UInt:
 						case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
-							_device.Clear(ClearFlags.All, new Color4(0, 0, 0, 0), 1.0f, 0);
+							_device.Clear(ClearFlags.All, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
 							break;
 						default:
-							_device.Clear(ClearFlags.Target, new Color4(0, 0, 0, 0), 1.0f, 0);
+							_device.Clear(ClearFlags.Target, new Color4(1.0f, s * 1.0f, 0, s * 1.0f), 1.0f, 0);
 							break;
 					}
 
-					_device.SetTransform(TransformState.Projection, Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_window.Settings.Width / (float)_window.Settings.Height, 0.1f, 1000.0f));
+					_device.SetTransform(TransformState.Projection, Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)deviceWindow.Settings.Settings[s].Width / (float)deviceWindow.Settings.Settings[s].Height, 0.1f, 1000.0f));
 					_device.SetTransform(TransformState.View, Matrix.LookAtLH(new Vector3(0, 0, _pos), new Vector3(0, 0, 1.0f), Vector3.UnitY));
 
 					_device.SetStreamSource(0, _vb, 0, 24);
@@ -174,7 +161,7 @@ namespace GorgonLibrary.Graphics.D3D9
 						//Gorgon.ApplicationWindow.Text = "Angle: " + _angle.ToString("0.0") + " Time: " + time.ToString("0.0");
 						_device.SetTransform(TransformState.World, _Yrot);
 
-						if (_window.Settings.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+						if (deviceWindow.Settings.Settings[s].MSAAQualityLevel.Level != GorgonMSAALevel.None)
 							_device.SetRenderState(RenderState.MultisampleMask, ((int)GorgonLibrary.Math.GorgonMathUtility.Pow(2, (8 - (maxPasses - i))) - 1) & 0xFF);
 						_device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
 					}
@@ -198,16 +185,20 @@ namespace GorgonLibrary.Graphics.D3D9
 					if (_dps > 360.0f)
 						_currentTime = 0.0f;
 
-					if ((_window.Settings.MSAAQualityLevel.Level != GorgonMSAALevel.None))
+					if ((deviceWindow.Settings.Settings[s].MSAAQualityLevel.Level != GorgonMSAALevel.None))
 					{
 						maxPasses += 1;
 						if (maxPasses > 8)
 							maxPasses = 8;
 					}
 
-					_device.SetRenderTarget(0, _primarySurface);
-				}
+					deviceWindow.CurrentHead = 0;
+
+					Surface.ToFile(deviceWindow.SwapSurfaces[s], @"d:\unpak\Surface\" + s.ToString() + @"\image" + imageNumber + ".png", ImageFileFormat.Png);
+				}				
 			}
+
+			imageNumber++;
 			
 			/*if (outputIndex > 0)
 				_swapChain.Present(Present.None);*/
@@ -218,11 +209,6 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public void ShutDown()
 		{
-			foreach (var surface in _swapSurface)
-			{
-				if (surface != null)
-					surface.Dispose();
-			}
 			if (_image != null)
 				_image.Dispose();
 			if (_ib != null)

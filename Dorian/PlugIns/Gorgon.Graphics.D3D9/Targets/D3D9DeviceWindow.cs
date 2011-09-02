@@ -46,6 +46,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private PresentParameters[] _presentParams = null;					// Presentation parameters.
 		private bool _deviceIsLost = true;									// Flag to indicate that the device is in a lost state.
+		private D3D9MultiHeadDeviceWindow _proxyOwner = null;				// Multi-head window that owns this proxy object.
 		#endregion
 
 		#region Properties.
@@ -288,7 +289,16 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			base.Dispose(disposing);
-		}		
+		}
+
+		/// <summary>
+		/// Function to remove the proxy object.
+		/// </summary>
+		public void DisposeProxy()
+		{
+			_proxyOwner = null;
+			CleanUpTrackedObjects();
+		}
 
 		/// <summary>
 		/// Function to display the contents of the swap chain.
@@ -374,6 +384,20 @@ namespace GorgonLibrary.Graphics.D3D9
 			: base(graphics, name, settings)
 		{
 			_graphics = graphics as GorgonD3D9Graphics;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="D3D9DeviceWindow"/> class.
+		/// </summary>
+		/// <param name="graphics">The graphics instance that owns this render target.</param>
+		/// <param name="multiHeadWindow">The multi-head window that is using this object as a proxy.</param>
+		/// <remarks>This is used to simplify various functions for a multi-head device window.  Rather than re-write all the object creation code for both the
+		/// device window and the multi-head device window, we can just use this proxy constructor to create the objects for us.</remarks>
+		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, D3D9MultiHeadDeviceWindow multiHeadWindow)
+			: base(graphics, multiHeadWindow.Name + "_Proxy", multiHeadWindow.Settings.Settings[0])
+		{
+			_proxyOwner = multiHeadWindow;
+			D3DDevice = multiHeadWindow.D3DDevice;
 		}
 		#endregion
 	}

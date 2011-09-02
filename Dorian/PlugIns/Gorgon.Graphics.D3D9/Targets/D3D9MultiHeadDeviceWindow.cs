@@ -34,6 +34,9 @@ using SlimDX.Direct3D9;
 
 namespace GorgonLibrary.Graphics.D3D9
 {
+	/// <summary>
+	/// Direct 3D 9 implementation of the multi-head device window.
+	/// </summary>
 	class D3D9MultiHeadDeviceWindow
 		: GorgonMultiHeadDeviceWindow
 	{
@@ -42,11 +45,28 @@ namespace GorgonLibrary.Graphics.D3D9
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private PresentParameters[] _presentParams = null;					// Presentation parameters.
 		private bool _deviceIsLost = true;									// Flag to indicate that the device is in a lost state.
-		private IEnumerable<GorgonDeviceWindowSettings> _settings = null;	// Settings for the device window.
-		private bool _masterDevice = true;									// Flag to indicate this is the master of the multi-head group.
+		private D3D9DeviceWindow _deviceWindowProxy = null;					// The proxy for manipulating the device window.
 		#endregion
 
-		#region Properties.
+		#region Properties.		
+		/// <summary>
+		/// Property to return the swap back buffer surfaces for each head.
+		/// </summary>
+		public Surface[] SwapSurfaces
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the depth/stencil surfaces for each head.
+		/// </summary>
+		public Surface[] DepthStencilSurfaces
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the Direct3D 9 device.
 		/// </summary>
@@ -168,7 +188,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				_presentParams[index].EnableAutoDepthStencil = false;
 				_presentParams[index].AutoDepthStencilFormat = Format.Unknown;
 
-				Gorgon.Log.Print("Direct3D presentation parameters:", Diagnostics.GorgonLoggingLevel.Verbose);
+				Gorgon.Log.Print("Direct3D presentation parameters for head {0}:", Diagnostics.GorgonLoggingLevel.Verbose, index);
 				Gorgon.Log.Print("\tAutoDepthStencilFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].AutoDepthStencilFormat);
 				Gorgon.Log.Print("\tBackBufferCount: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].BackBufferCount);
 				Gorgon.Log.Print("\tBackBufferFormat: {0}", Diagnostics.GorgonLoggingLevel.Verbose, _presentParams[index].BackBufferFormat);
@@ -206,6 +226,19 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to set the currently active head for rendering.
+		/// </summary>
+		/// <param name="headIndex">Index of the head.</param>
+		protected override void SetCurrentHead(int headIndex)
+		{
+			D3DDevice.SetRenderTarget(0, SwapSurfaces[headIndex]);
+			if (Settings.Settings[headIndex].DepthStencilFormat != GorgonBufferFormat.Unknown)
+				D3DDevice.DepthStencilSurface = DepthStencilSurfaces[headIndex];
+			else
+				D3DDevice.DepthStencilSurface = null;
+		}
+
+		/// <summary>
 		/// Function to perform an update on the resources required by the render target.
 		/// </summary>
 		protected override void UpdateResources()
@@ -222,10 +255,79 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to clean up the surfaces allocated by the device.
+		/// </summary>
+		private void DestroySurfaces()
+		{
+			if ((SwapSurfaces != null) && (SwapSurfaces.Length > 0))
+			{
+				Gorgon.Log.Print("Destroying swap chain back buffer surfaces.", Diagnostics.GorgonLoggingLevel.Verbose);
+				for (int i = 0; i < SwapSurfaces.Length; i++)
+				{
+					if (SwapSurfaces[i] != null)
+						SwapSurfaces[i].Dispose();
+				}
+			}
+
+			if ((DepthStencilSurfaces != null) && (DepthStencilSurfaces.Length > 0))
+			{
+				Gorgon.Log.Print("Destroying depth/stencil buffer surfaces.", Diagnostics.GorgonLoggingLevel.Verbose);
+				for (int i = 0; i < DepthStencilSurfaces.Length; i++)
+				{
+					if (DepthStencilSurfaces[i] != null)
+						DepthStencilSurfaces[i].Dispose();
+				}
+			}
+
+			DepthStencilSurfaces = null;
+			SwapSurfaces = null;
+		}
+
+		/// <summary>
+		/// Function to retrieve a copy of the multi-head swap chain back buffers and depth/stencil buffers.
+		/// </summary>
+		private void GetSurfaces()
+		{
+			SwapChain swapChain = null;
+			GorgonDeviceWindowSettings setting = null;
+
+			try
+			{
+				DestroySurfaces();
+
+				SwapSurfaces = new Surface[HeadCount];
+				DepthStencilSurfaces = new Surface[HeadCount];
+								
+				for (int i = 0; i < HeadCount; i++)
+				{
+					Gorgon.Log.Print("Retrieving back buffer surfaces and creating depth/stencil surfaces for head {0}.", Diagnostics.GorgonLoggingLevel.Verbose, i);
+
+					swapChain = D3DDevice.GetSwapChain(i);
+					setting = Settings.Settings[i];
+
+					SwapSurfaces[i] = swapChain.GetBackBuffer(0);
+
+					// Create a depth buffer for the swap chain.
+					if (setting.DepthStencilFormat != GorgonBufferFormat.Unknown)					
+						DepthStencilSurfaces[i] = Surface.CreateDepthStencil(D3DDevice, setting.Width, setting.Height, D3DConvert.Convert(setting.DepthStencilFormat), D3DConvert.Convert(setting.MSAAQualityLevel.Level), (setting.MSAAQualityLevel.Level != GorgonMSAALevel.None ? setting.MSAAQualityLevel.Quality - 1 : 0), false);
+
+					swapChain.Dispose();
+					swapChain = null;
+				}
+			}
+			finally
+			{
+				if (swapChain != null)
+					swapChain.Dispose();
+				swapChain = null;
+			}
+		}
+
+		/// <summary>
 		/// Function to create any resources required by the render target.
 		/// </summary>
 		protected override void CreateResources()
-		{
+		{		
 			CreateFlags flags = CreateFlags.Multithreaded | CreateFlags.FpuPreserve | CreateFlags.HardwareVertexProcessing | CreateFlags.AdapterGroupDevice;
 			int index = ((D3D9VideoDevice)Settings.Device).AdapterIndex;
 
@@ -233,7 +335,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			WindowState.Update();
 			AdjustWindow();
 			_presentParams = new PresentParameters[Settings.Settings.Count()];
-			SetPresentationParameters();			
+			SetPresentationParameters();
 
 			// Attempt to create a pure device, if that fails, then create a hardware vertex device, anything else will fail.
 			try
@@ -247,6 +349,11 @@ namespace GorgonLibrary.Graphics.D3D9
 				Gorgon.Log.Print("IDirect3D9 Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 
+			GetSurfaces();
+
+			// Create our proxy object to pass off responsibility for creating our child objects.
+			_deviceWindowProxy = new D3D9DeviceWindow(_graphics, this);
+
 			_deviceIsLost = false;
 		}
 
@@ -257,12 +364,18 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			base.CleanUpResources();
 
+			// Destroy our proxy window.
+			_deviceWindowProxy.DisposeProxy();
+
+			DestroySurfaces();
+
 			// Remove link to the focus window if we're removing this device.
-			if (_graphics.FocusWindow == Settings.Settings.ElementAt(0).BoundForm)
+			if (_graphics.FocusWindow == Settings.Settings[0].BoundForm)
 				_graphics.FocusWindow = null;
 
 			if (D3DDevice != null)
 				D3DDevice.Dispose();
+
 			D3DDevice = null;
 			Gorgon.Log.Print("IDirect3DDevice9 interface destroyed.", Diagnostics.GorgonLoggingLevel.Verbose);
 		}
@@ -293,7 +406,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override void Display()
 		{
-			if ((D3DDevice == null) || (!_masterDevice))
+			if (D3DDevice == null)
 				return;
 
 			Result result = default(Result);
@@ -371,7 +484,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		public D3D9MultiHeadDeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonMultiHeadSettings settings)
 			: base(graphics, name, settings)
 		{
-			_graphics = graphics as GorgonD3D9Graphics;
+			_graphics = graphics as GorgonD3D9Graphics;			
 		}
 		#endregion
 	}

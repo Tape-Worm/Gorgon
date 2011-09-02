@@ -69,10 +69,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Targets\GorgonDeviceWindow.cs" />
     <Compile Include="Targets\GorgonDeviceWindowSettings.cs" />
+    <Compile Include="Targets\GorgonMSAAQualityLevel.cs" />
     <Compile Include="Targets\GorgonMultiHeadDeviceWindow.cs" />
     <Compile Include="Targets\GorgonRenderTarget.cs" />
     <Compile Include="Targets\GorgonRenderTargetSettings.cs" />
-    <Compile Include="Targets\GorgonSwapChainBase.cs" />
+    <Compile Include="Targets\GorgonWindowTarget.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
   </ItemGroup>
