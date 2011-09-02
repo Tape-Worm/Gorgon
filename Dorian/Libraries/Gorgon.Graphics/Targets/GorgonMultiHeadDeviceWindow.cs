@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace GorgonLibrary.Graphics
 {
@@ -41,7 +42,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonDeviceWindow
 	{
 		#region Variables.
-
+		private int _currentHead = 0;										// Current head.
 		#endregion
 
 		#region Properties.
@@ -62,9 +63,36 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to set or return which head is active for rendering.
+		/// </summary>
+		public int CurrentHead
+		{
+			get
+			{
+				return _currentHead;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+				if (value >= HeadCount)
+					value = HeadCount - 1;
+
+				_currentHead = value;
+				SetCurrentHead(value);
+			}
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to set the currently active head for rendering.
+		/// </summary>
+		/// <param name="headIndex">Index of the head.</param>
+		protected abstract void SetCurrentHead(int headIndex);
+
 		/// <summary>
 		/// Function to update the device window.
 		/// </summary>
@@ -77,11 +105,32 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public override void UpdateSettings()
 		{
+			int headIndex = 0;
+
 			// Force to full screen.
 			foreach (var setting in Settings.Settings)
 				setting.IsWindowed = false;
+						
+			UpdateResources();
 
-			// What here?
+			foreach (var setting in Settings.Settings)
+			{
+				Gorgon.Log.Print("Updating multi-head device window '{0}' on head {6} with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, Name, setting.DisplayMode.Width, setting.DisplayMode.Height, setting.DisplayMode.Format, setting.DisplayMode.RefreshRateNumerator, setting.DisplayMode.RefreshRateDenominator, headIndex);
+				Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, Name);
+				Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, setting.DisplayMode.Width, setting.DisplayMode.Height, setting.DisplayMode.Format, setting.DisplayMode.RefreshRateNumerator, setting.DisplayMode.RefreshRateDenominator);
+				Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, setting.DepthStencilFormat != GorgonBufferFormat.Unknown, setting.DepthStencilFormat);
+				Gorgon.Log.Print("\tWindowed: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.IsWindowed);
+				Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.MSAAQualityLevel.Level != GorgonMSAALevel.None);
+				if (setting.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+					Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, setting.MSAAQualityLevel.Quality, setting.MSAAQualityLevel.Level);
+				Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.BackBufferCount);
+				Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.DisplayFunction);
+				Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.VSyncInterval);
+				Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.WillUseVideo);
+
+				headIndex++;
+			}
+			Gorgon.Log.Print("Device window '{0}' updated.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 		}
 		#endregion
 
@@ -91,10 +140,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="name">The name.</param>
-		/// <param name="settings">Device window settings.</param>
+		/// <param name="multiHeadSettings">Device window settings.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// 	<para>Thrown when the <paramref name="device"/> and <paramref name="output"/> parameters are NULL (Nothing in VB.Net).</para>
+		/// 	<para>Thrown when the <paramref name="multiHeadSettings"/> parameter is NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		/// <remarks>A fullscreen video mode must have a a Windows Form object as the bound window.
@@ -102,7 +151,7 @@ namespace GorgonLibrary.Graphics
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// </remarks>
 		protected GorgonMultiHeadDeviceWindow(GorgonGraphics graphics, string name, GorgonMultiHeadSettings multiHeadSettings)
-			: base(graphics, name, multiHeadSettings.Settings.ElementAt(0))
+			: base(graphics, name, multiHeadSettings.Settings[0])
 		{
 			HeadCount = multiHeadSettings.Settings.Count();
 			Settings = multiHeadSettings;			
