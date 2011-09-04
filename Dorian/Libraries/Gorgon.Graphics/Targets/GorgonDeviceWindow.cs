@@ -23,6 +23,7 @@ namespace GorgonLibrary.Graphics
 		private IList<IDisposable> _trackedObjects = null;			// List of tracked objects.
 		private bool _wasWindowed = true;							// Flag to indicate that the device was windowed.
 		private GorgonMultiHeadDeviceWindow _proxyOwner = null;		// Owner of this proxy window.
+		private GorgonRenderTarget _currentTarget = null;			// Current render target.
 		#endregion
 
 		#region Properties.
@@ -69,6 +70,28 @@ namespace GorgonLibrary.Graphics
 				}
 
 				return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the current render target.
+		/// </summary>
+		public GorgonRenderTarget CurrentTarget
+		{
+			get
+			{
+				return _currentTarget;
+			}
+			set
+			{
+				if (value == null)
+					value = this;
+
+				// Don't set the same target.
+				if (_currentTarget == value)
+					return;
+
+				SetRenderTargetImpl(value);
 			}
 		}
 
@@ -121,6 +144,12 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to set the current render target.
+		/// </summary>
+		/// <param name="target">Target to set.</param>
+		protected abstract void SetRenderTargetImpl(GorgonRenderTarget target);
+
+		/// <summary>
 		/// Function to clean up the tracked objects and remove this object from any trackers.
 		/// </summary>
 		protected void CleanUpTrackedObjects()
@@ -156,6 +185,8 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
+					_currentTarget = null;
+
 					// Remove the proxy link.
 					if (!IsProxy)
 					{
@@ -202,6 +233,15 @@ namespace GorgonLibrary.Graphics
 		protected abstract GorgonSwapChain CreateSwapChainImpl(string name, GorgonSwapChainSettings settings);
 
 		/// <summary>
+		/// Function to initialize the device window.
+		/// </summary>
+		internal override void Initialize()
+		{
+			base.Initialize();
+			_currentTarget = this;
+		}
+
+		/// <summary>
 		/// Function to create a swap chain.
 		/// </summary>
 		/// <param name="name">The name of the swap chain.</param>
@@ -230,7 +270,7 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("Swap chain '{0}' created successfully.", Diagnostics.GorgonLoggingLevel.Simple, name);
 
 			return swapChain;
-		}
+		}		
 
 		/// <summary>
 		/// Function to update the device window.
@@ -275,6 +315,8 @@ namespace GorgonLibrary.Graphics
 			_wasWindowed = Settings.IsWindowed;
 			UpdateResources();
 			AddEventHandlers();
+
+			_currentTarget = this;
 
 			Gorgon.Log.Print("Updating device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, Name, Settings.DisplayMode.Width, Settings.DisplayMode.Height, Settings.DisplayMode.Format, Settings.DisplayMode.RefreshRateNumerator, Settings.DisplayMode.RefreshRateDenominator);
 			Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, Name);

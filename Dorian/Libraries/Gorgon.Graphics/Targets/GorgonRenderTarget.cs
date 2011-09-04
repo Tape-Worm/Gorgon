@@ -39,8 +39,8 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;		// Flag to indicate that the object was disposed.
-		private bool _cleaned = false;		// Flag to indicate that the object was cleaned up.
+		private bool _disposed = false;				// Flag to indicate that the object was disposed.
+		private bool _cleaned = false;				// Flag to indicate that the object was cleaned up.
 		#endregion
 
 		#region Properties.
@@ -61,6 +61,24 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the surface object for this render target.
+		/// </summary>
+		public GorgonSurface Surface
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the depth/stencil buffer surface object for this render target.
+		/// </summary>
+		public GorgonSurface DepthStencilSurface
+		{
+			get;
+			protected set;
 		}
 
 		/// <summary>

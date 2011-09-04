@@ -47,8 +47,17 @@ namespace Tester_Graphics
 
 			if ((_dev != null) && (_running))
 			{
+				_dev.CurrentTarget = null;
+				_dev.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
 				_dev.RunTest(timing.FrameDelta);
 				_dev.Display();
+				if (_dev2 != null)
+				{		
+					_dev.CurrentTarget = _dev2;
+					_dev2.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
+					_dev.RunTest(timing.FrameDelta);
+					_dev2.Display();
+				}
 			}
 
 			return true;

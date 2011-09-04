@@ -91,7 +91,6 @@ namespace GorgonLibrary.Graphics.D3D9
 		private void Draw(float dt, GorgonSwapChainSettings settings)
 		{
 			_device.BeginScene();
-			_window.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
 
 			Viewport view = new Viewport(0, 0, settings.Width, settings.Height, 0.0f, 1.0f);
 			_device.Viewport = view;
