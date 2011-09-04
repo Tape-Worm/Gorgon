@@ -46,10 +46,18 @@ namespace GorgonLibrary.Graphics.D3D9
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private PresentParameters[] _presentParams = null;					// Presentation parameters.
 		private bool _deviceIsLost = true;									// Flag to indicate that the device is in a lost state.
-		private D3D9MultiHeadDeviceWindow _proxyOwner = null;				// Multi-head window that owns this proxy object.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return a list of unmanaged objects.
+		/// </summary>
+		public UnmanagedObjectsCollection UnmanagedObjects
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the Direct3D 9 device.
 		/// </summary>
@@ -209,6 +217,21 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function called when the device has been put into a lost state.
+		/// </summary>
+		protected override void OnBeforeDeviceReset()
+		{
+			base.OnBeforeDeviceReset();
+			UnmanagedObjects.DeviceLost();
+		}
+
+		protected override void OnAfterDeviceReset()
+		{
+			UnmanagedObjects.DeviceReset();
+			base.OnAfterDeviceReset();
+		}
+
+		/// <summary>
 		/// Function to perform an update on the resources required by the render target.
 		/// </summary>
 		protected override void UpdateResources()
@@ -260,14 +283,19 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			base.CleanUpResources();
 
-			// Remove link to the focus window if we're removing this device.
-			if (_graphics.FocusWindow == Settings.BoundForm)
-				_graphics.FocusWindow = null;
+			if (!IsProxy)
+			{
+				UnmanagedObjects.Clear();
 
-			if (D3DDevice != null)
-				D3DDevice.Dispose();
-			D3DDevice = null;
-			Gorgon.Log.Print("IDirect3DDevice9 interface destroyed.", Diagnostics.GorgonLoggingLevel.Verbose);
+				// Remove link to the focus window if we're removing this device.
+				if (_graphics.FocusWindow == Settings.BoundForm)
+					_graphics.FocusWindow = null;
+
+				if (D3DDevice != null)
+					D3DDevice.Dispose();
+				D3DDevice = null;
+				Gorgon.Log.Print("IDirect3DDevice9 interface destroyed.", Diagnostics.GorgonLoggingLevel.Verbose);
+			}
 		}
 
 		/// <summary>
@@ -289,6 +317,22 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Function to create a swap chain.
+		/// </summary>
+		/// <param name="name">Name of the swap chain.</param>
+		/// <param name="settings">Settings for the swap chain.</param>
+		/// <returns>
+		/// A new Gorgon swap chain.
+		/// </returns>
+		protected override GorgonSwapChain CreateSwapChainImpl(string name, GorgonSwapChainSettings settings)
+		{
+			if (!Settings.IsWindowed)
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a swap chain while in full screen mode.");
+
+			return new D3D9SwapChain(_graphics, this, name, settings);
 		}
 
 		/// <summary>
@@ -317,16 +361,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
-		/// Function to remove the proxy object.
-		/// </summary>
-		public void DisposeProxy()
-		{
-			_proxyOwner = null;
-			CleanUpTrackedObjects();
-		}
-
-		/// <summary>
-		/// Function to display the contents of the swap chain.
+		/// Function to display the contents of the device window swap chain.
 		/// </summary>
 		public override void Display()
 		{
@@ -370,27 +405,29 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		#region Remove this shit.
-		private Test _test = null;
+		public Test<D3D9DeviceWindow> _test = null;
 
 		/// <summary>
 		/// </summary>
 		public override void SetupTest()
 		{
-			_test = new Test(this, D3DDevice);
+			_test = new Test<D3D9DeviceWindow>(this, D3DDevice);
 		}
 
 		/// <summary>
 		/// </summary>
 		public override void RunTest(float dt)
 		{
-			_test.Run(dt);
+			if (_test != null)
+				_test.Run(dt, Settings);
 		}
 
 		/// <summary>
 		/// </summary>
 		public override void CleanUpTest()
 		{
-			_test.ShutDown();
+			if (_test != null)
+				_test.ShutDown();
 		}
 		#endregion
 		#endregion
@@ -406,9 +443,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, string name, GorgonDeviceWindowSettings settings)
-			: base(graphics, name, settings)
+			: base(graphics, name, settings, null)
 		{
 			_graphics = graphics as GorgonD3D9Graphics;
+			UnmanagedObjects = new UnmanagedObjectsCollection();
 		}
 
 		/// <summary>
@@ -419,10 +457,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <remarks>This is used to simplify various functions for a multi-head device window.  Rather than re-write all the object creation code for both the
 		/// device window and the multi-head device window, we can just use this proxy constructor to create the objects for us.</remarks>
 		public D3D9DeviceWindow(GorgonD3D9Graphics graphics, D3D9MultiHeadDeviceWindow multiHeadWindow)
-			: base(graphics, multiHeadWindow.Name + "_Proxy", multiHeadWindow.Settings.Settings[0])
+			: base(graphics, multiHeadWindow.Name + "_Proxy", multiHeadWindow.Settings.Settings[0], multiHeadWindow)
 		{
-			_proxyOwner = multiHeadWindow;
 			D3DDevice = multiHeadWindow.D3DDevice;
+			UnmanagedObjects = new UnmanagedObjectsCollection();
 		}
 		#endregion
 	}

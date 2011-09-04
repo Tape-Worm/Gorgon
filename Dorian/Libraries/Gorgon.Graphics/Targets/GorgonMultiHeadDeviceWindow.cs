@@ -39,13 +39,33 @@ namespace GorgonLibrary.Graphics
 	/// This is different from a <see cref="GorgonLibrary.Graphics.GorgonDeviceWindow">GorgonDeviceWindow</see> in that the device windows cannot share data automatically on multiple monitor systems.
 	/// </remarks>
 	public abstract  class GorgonMultiHeadDeviceWindow
-		: GorgonDeviceWindow
+		: GorgonRenderTarget, IObjectTracker, IRenderTargetWindow
 	{
 		#region Variables.
-		private int _currentHead = 0;										// Current head.
+		private int _currentHead = 0;												// Current head.
+		private IList<IDisposable> _trackedObjects = null;							// List of tracked objects.	
+		private bool _disposed = false;												// Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the proxy device window used by this multi-head device window.
+		/// </summary>
+		protected GorgonDeviceWindow ProxyWindow
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the object holding the current window state.
+		/// </summary>
+		protected FormStateRecord[] WindowState
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the number of heads being utilized.
 		/// </summary>
@@ -58,7 +78,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return a list of settings for each head.
 		/// </summary>
-		public new GorgonMultiHeadSettings Settings
+		public GorgonMultiHeadSettings Settings
 		{
 			get;
 			private set;
@@ -135,18 +155,73 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to determine if an object belongs to this device window, and throw an exception if it is not.
+		/// </summary>
+		/// <param name="childObject">Child object to check.</param>
+		private void CheckValidObject(IDeviceWindowChild childObject)
+		{
+			if (childObject == null)
+				return;
+
+			if (childObject.DeviceWindow != ProxyWindow)
+				throw new GorgonException(GorgonResult.AccessDenied, "The specificed object is was not created by this device window.");
+		}
+
+		/// <summary>
+		/// Function called when the device is about to be reset.
+		/// </summary>
+		protected virtual void OnBeforeDeviceReset()
+		{
+			if (BeforeDeviceReset != null)
+				BeforeDeviceReset(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Function called when the device has been reset.
+		/// </summary>
+		protected virtual void OnAfterDeviceReset()
+		{
+			if (AfterDeviceReset != null)
+				AfterDeviceReset(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Function to clean up the tracked objects and remove this object from any trackers.
+		/// </summary>
+		protected void CleanUpTrackedObjects()
+		{
+			((IObjectTracker)this).CleanUpTrackedObjects();
+
+			// Remove us from anything tracking us.
+			((IObjectTracker)Graphics).RemoveTrackedObject(this);
+		}
+
+		/// <summary>
 		/// Function to set the currently active head for rendering.
 		/// </summary>
 		/// <param name="headIndex">Index of the head.</param>
 		protected abstract void SetCurrentHead(int headIndex);
 
 		/// <summary>
-		/// Initializes this instance.
+		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		internal override void Initialize()
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected override void Dispose(bool disposing)
 		{
-			// Since we're fullscreen only, we don't need the window resizing code.
-			CreateResources();
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					foreach (var state in WindowState)
+						state.Restore(false, false);
+
+					Gorgon.Log.Print("Multi-head device window '{0}' destroyed.", Diagnostics.GorgonLoggingLevel.Simple, Name);
+				}
+
+				_disposed = true;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		/// <summary>
@@ -207,11 +282,90 @@ namespace GorgonLibrary.Graphics
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// </remarks>
 		protected GorgonMultiHeadDeviceWindow(GorgonGraphics graphics, string name, GorgonMultiHeadSettings multiHeadSettings)
-			: base(graphics, name, multiHeadSettings.Settings[0])
+			: base(graphics, name)
 		{
+			_trackedObjects = new List<IDisposable>();
 			HeadCount = multiHeadSettings.Settings.Count();
-			Settings = multiHeadSettings;			
+			Settings = multiHeadSettings;
+			WindowState = new FormStateRecord[HeadCount];
+			for (int i = 0; i < WindowState.Length; i++)
+				WindowState[i] = new FormStateRecord(multiHeadSettings.Settings[i].BoundForm);
 		}
+		#endregion
+
+		#region IObjectTracker Members
+		#region Properties.
+		/// <summary>
+		/// Property to return an enumerable list of tracked objects.
+		/// </summary>
+		IEnumerable<IDisposable> IObjectTracker.TrackedObjects
+		{
+			get 
+			{
+				return _trackedObjects;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to remove a tracked object from the list.
+		/// </summary>
+		/// <param name="trackedObject">The tracked object to remove.</param>
+		void IObjectTracker.RemoveTrackedObject(IDisposable trackedObject)
+		{
+			if (_trackedObjects.Contains(trackedObject))
+				_trackedObjects.Remove(trackedObject);			
+		}
+
+		/// <summary>
+		/// Function to clean up any objects being tracked.
+		/// </summary>
+		void IObjectTracker.CleanUpTrackedObjects()
+		{
+			var trackedObjects = _trackedObjects.ToArray();
+
+			if (trackedObjects.Count() > 0)
+			{
+				Gorgon.Log.Print("Destroying child {0} objects:", Diagnostics.GorgonLoggingLevel.Verbose, trackedObjects.Count());
+
+				foreach (var trackedObject in trackedObjects)
+					trackedObject.Dispose();
+			}
+
+			_trackedObjects.Clear();			
+		}
+		#endregion
+		#endregion
+
+		#region IRenderTargetWindow Implementation.
+		#region Events.
+		/// <summary>
+		/// Event fired before the device is reset, so resources can be freed.
+		/// </summary>
+		public event EventHandler BeforeDeviceReset;
+		/// <summary>
+		/// Event fired after the device is reset, so resources can be restored.
+		/// </summary>
+		public event EventHandler AfterDeviceReset;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return whether the target is ready to receive rendering data.
+		/// </summary>
+		public abstract bool IsReady
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to display the contents of the swap chain.
+		/// </summary>
+		public abstract void Display();
+		#endregion
 		#endregion
 	}
 }

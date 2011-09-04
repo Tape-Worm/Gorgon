@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
@@ -36,25 +37,38 @@ namespace GorgonLibrary.Graphics
 	///  A swap chain render target that can be attached to a window.
 	/// </summary>
 	public abstract class GorgonSwapChain
-		: GorgonWindowTarget<GorgonSwapChainSettings>
+		: GorgonWindowTarget<GorgonSwapChainSettings>, IDeviceWindowChild
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the device window that created this swap chain.
-		/// </summary>
-		public GorgonDeviceWindow DeviceWindow
-		{
-			get;
-			private set;
-		}
+		#region Variables.
+		private bool _disposed = false;			// Flag to indicate that the object is disposed.
+		#endregion
 
+		#region Properties.
 		/// <summary>
 		/// Property to return whether the target has a depth buffer attached to it.
 		/// </summary>
 		/// <value></value>
 		public override bool HasDepthBuffer
 		{
-			get { throw new NotImplementedException(); }
+			get 
+			{
+				switch (Settings.DepthStencilFormat)
+				{
+					case GorgonBufferFormat.D24_Float_S8_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
+					case GorgonBufferFormat.D15_UIntNormal_S1_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
+					case GorgonBufferFormat.D32_Float:
+					case GorgonBufferFormat.D32_UIntNormal:
+					case GorgonBufferFormat.D32_Float_Lockable:
+					case GorgonBufferFormat.D24_UIntNormal_X8:
+					case GorgonBufferFormat.D16_UIntNormal_Lockable:
+					case GorgonBufferFormat.D16_UIntNormal:
+						return true;
+				}
+
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -63,24 +77,59 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
 		public override bool HasStencilBuffer
 		{
-			get { throw new NotImplementedException(); }
+			get 
+			{
+				switch (Settings.DepthStencilFormat)
+				{
+					case GorgonBufferFormat.D32_Float_S8X24_UInt:
+					case GorgonBufferFormat.D24_Float_S8_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
+					case GorgonBufferFormat.D15_UIntNormal_S1_UInt:
+					case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the device window is ready for rendering.
+		/// </summary>
+		public override bool IsReady
+		{
+			get 
+			{
+				return DeviceWindow.IsReady;
+			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to clear a target.
+		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="color">Color to clear with.</param>
-		/// <param name="depthValue">Depth buffer value to clear with.</param>
-		/// <param name="stencilValue">Stencil value to clear with.</param>
-		/// <remarks>This will only clear a depth/stencil buffer if one has been attached to the target, otherwise it will do nothing.
-		/// <para>Pass NULL (Nothing in VB.Net) to <paramref name="color"/>, <paramref name="depthValue"/> or <paramref name="stencilValue"/> to exclude that buffer from being cleared.</para>
-		/// </remarks>
-		public override void Clear(GorgonColor? color, float? depthValue, int? stencilValue)
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected override void Dispose(bool disposing)
 		{
-			throw new NotImplementedException();
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					Gorgon.Log.Print("Swap chain {0} destroyed.", GorgonLoggingLevel.Simple, Name);
+				}
+			}
+
+			base.Dispose(disposing);
 		}
+
+		/// <summary>
+		/// Function to update the render target after changes have been made to its settings.
+		/// </summary>
+		public override void UpdateSettings()
+		{
+			UpdateResources();
+		}		
 		#endregion
 
 		#region Constructor/Destructor.
@@ -109,6 +158,17 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("deviceWindow");
 
 			DeviceWindow = deviceWindow;
+		}
+		#endregion
+
+		#region IDeviceWindowChild Members
+		/// <summary>
+		/// Property to return the device window that created this swap chain.
+		/// </summary>
+		public GorgonDeviceWindow DeviceWindow
+		{
+			get;
+			private set;
 		}
 		#endregion
 	}

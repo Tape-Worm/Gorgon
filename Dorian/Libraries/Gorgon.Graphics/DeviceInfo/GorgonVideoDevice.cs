@@ -164,8 +164,11 @@ namespace GorgonLibrary.Graphics
 
 			Outputs = new GorgonVideoOutputCollection(GetOutputs());
 
-			foreach(var head in Outputs)
+			foreach (var head in Outputs)
+			{
+				head.VideoDevice = this;
 				head.GetOutputModes();
+			}
 		}
 
 		/// <summary>

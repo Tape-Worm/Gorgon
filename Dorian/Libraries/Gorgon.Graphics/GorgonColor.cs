@@ -102,7 +102,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="start">Starting color.</param>
 		/// <param name="end">Ending color.</param>
-		/// <param name="amount">Amount between 0 and 1.0f to indicate weight.</param>
+		/// <param name="weight">Value between 0 and 1.0f to indicate weight.</param>
 		/// <param name="outColor">The resulting color.</param>
 		public static void Lerp(ref GorgonColor start, ref GorgonColor end, float weight, out GorgonColor outColor)
 		{
