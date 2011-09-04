@@ -101,6 +101,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			protected set;
 		}
+
+		/// <summary>
+		/// Property to return the video device for this output.
+		/// </summary>
+		public GorgonVideoDevice VideoDevice
+		{
+			get;
+			internal set;
+		}
 		#endregion
 
 		#region Methods.

@@ -255,44 +255,12 @@ namespace GorgonLibrary.Graphics
 		/// </list>		
 		/// </para>
 		/// </remarks>
-		public GorgonMultiHeadDeviceWindow CreateDeviceWindow(string name, GorgonMultiHeadSettings multiHeadSettings)
+		public GorgonMultiHeadDeviceWindow CreateMultiHeadDeviceWindow(string name, GorgonMultiHeadSettings multiHeadSettings)
 		{
 			GorgonMultiHeadDeviceWindow target = null;
 			IntPtr monitorHandle = IntPtr.Zero;
 
-			if (multiHeadSettings == null)
-				throw new ArgumentNullException("multiHeadSettings");
-
-			if (multiHeadSettings.Settings.Count() < 1)
-				throw new ArgumentException("There were no device settings in the multi-head settings.", "multiHeadSettings");
-
-			// Force all settings to use the same windowed/full screen state as the first (master head) in the list.
-			foreach (var setting in multiHeadSettings.Settings)
-			{
-				setting.IsWindowed = false;
-
-				// Don't allow full screen if the bound window is a child control.
-				if (!(setting.BoundWindow is Form))
-					throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
-
-				// Make sure none of the windows are in use already.
-				var inUse = _trackedObjects.Count(item =>
-				{
-					GorgonDeviceWindow devWindow = item as GorgonDeviceWindow;
-					return ((devWindow != null) && (devWindow.Settings.BoundWindow == setting.BoundWindow));
-				}) > 0;
-
-				if (inUse)					
-					throw new ArgumentException("The specified window is already a device window.", "window");
-
-				// If we haven't specified a size, or we're using a child control, then assume the size of the bound window.
-				if (setting.Dimensions == System.Drawing.Size.Empty)
-					setting.Dimensions = setting.BoundWindow.ClientSize;
-
-				// Ensure that the first setting is for the master video output.
-				if ((setting == multiHeadSettings.Settings[0]) && (setting.Output != setting.Device.Outputs[0]))
-					throw new ArgumentException("The video output for the first setting is not the master video output.", "multiHeadSettings");
-			}
+			GorgonMultiHeadDeviceWindow.ValidateDeviceWindowSettings(this, multiHeadSettings);
 
 			Gorgon.Log.Print("Creating new multi-head device window '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, name);
 			target = CreateDeviceWindowImpl(name, multiHeadSettings);
@@ -340,7 +308,10 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown if the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.MSAAQualityLevel">MSAAQualityLevel</see> property of the settings parameter has a value that cannot be supported by the device.  
 		/// The user can check to see if a MSAA value is supported by using <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GetMultiSampleQuality</see> method on the video device object.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the requested video mode is not available for full screen (this will depend on the back end API implementation).
+		/// <para>-or-</para>
+		/// <para>Thrown when the depth/stencil format cannot be used with the back buffer format, or when the backbuffer format cannot be used with the display format.</para>
+		/// </exception>
 		/// <remarks>
 		/// If the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.DisplayMode">DisplayMode</see> width or height are 0 (Nothing in VB.Net), then
 		/// the client width and height of the window will be used, and the default display format will be used.
@@ -368,54 +339,10 @@ namespace GorgonLibrary.Graphics
 		public GorgonDeviceWindow CreateDeviceWindow(string name, GorgonDeviceWindowSettings settings)
 		{
 			GorgonDeviceWindow target = null;
-			IntPtr monitorHandle = IntPtr.Zero;
 
-			// For child controls, do not go to full screen.
-			if ((!(settings.BoundWindow is Form)) && (!settings.IsWindowed))
-				throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
-
-			// Ensure that we're not already using this window as a device window.
-			var inUse = _trackedObjects.Count(item =>
-			{
-				GorgonDeviceWindow devWindow = item as GorgonDeviceWindow;
-				return ((devWindow != null) && (devWindow.Settings.BoundWindow == settings.BoundWindow));
-			}) > 0;
-
-			if (inUse)
-				throw new ArgumentException("The specified window is already a device window.", "window");
-
-			// If we haven't specified a size, or we're using a child control, then assume the size of the bound window.
-			if ((settings.Dimensions == System.Drawing.Size.Empty) || (!(settings.BoundWindow is Form)))
-				settings.Dimensions = settings.BoundWindow.ClientSize;
+			GorgonDeviceWindow.ValidateDeviceWindowSettings(this, settings);
 
 			Gorgon.Log.Print("Creating new device window '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, name);
-
-			// Find out which device and output contain the window.
-			if (settings.Output == null)
-			{
-				monitorHandle = Win32API.GetMonitor(settings.BoundWindow);
-				if (monitorHandle == IntPtr.Zero)
-					throw new GorgonException(GorgonResult.CannotCreate, "Could not create the device window.  Could not locate the monitor on which the window is placed.");
-
-				// Find the correct video output.
-				var videoOutput = (from device in VideoDevices
-								   from output in device.Outputs
-								   where output.Handle == monitorHandle
-								   select output).Single();
-				
-				settings.Output = videoOutput;
-			}
-
-			if ((settings.Device == null) || (settings.Device.Outputs.Contains(settings.Output)))
-			{
-				var videoDevice = (from device in VideoDevices
-								   from output in device.Outputs
-								   where output == settings.Output
-								   select device).Single();
-
-				// Find the first device that contains the window.
-				settings.Device = videoDevice;
-			}
 			
 			Gorgon.Log.Print("\tWindow 0x{0} is located on device: '{1}', using output: '{2}'.", GorgonLoggingLevel.Verbose,settings.BoundWindow.Handle.FormatHex(), settings.Device.Name, settings.Output.Name);
 			target = CreateDeviceWindowImpl(name, settings);

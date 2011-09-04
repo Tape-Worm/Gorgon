@@ -16,97 +16,27 @@ namespace GorgonLibrary.Graphics
 	public abstract class GorgonDeviceWindow
 		: GorgonWindowTarget<GorgonDeviceWindowSettings>, IObjectTracker
 	{
-		#region Classes.
-		/// <summary>
-		/// Records the form state.
-		/// </summary>
-		protected class FormStateRecord
-		{
-			#region Variables.
-			private Point _location;					// Window location.
-			private Size _size;							// Window size.
-			private FormBorderStyle _border;			// Window border.
-			private bool _topMost;						// Topmost flag.
-			private bool _sysMenu;						// System menu flag.
-			private bool _maximizeButton;				// Maxmimize button flag.
-			private bool _minimizeButton;				// Minimize button flag.
-			private bool _visible;						// Visible flag.
-			private bool _enabled;						// Enabled flag.
-			private Form _window;						// Window.
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Function to restore the original window state.
-			/// </summary>
-			/// <param name="keepSize">TRUE to keep the size of the window, FALSE to restore it.</param>
-			/// <param name="dontMove">TRUE to keep the window from moving, FALSE to restore the last location.</param>
-			public void Restore(bool keepSize, bool dontMove)
-			{
-				if (_window == null)
-					return;
-
-				if (!dontMove)
-					_window.DesktopLocation = _location;
-				if (!keepSize)
-					_window.Size = _size;
-				_window.FormBorderStyle = _border;
-				_window.TopMost = _topMost;
-				_window.ControlBox = _sysMenu;
-				_window.MaximizeBox = _maximizeButton;
-				_window.MinimizeBox = _minimizeButton;
-				_window.Enabled = _enabled;
-				_window.Visible = _visible;
-			}
-
-			/// <summary>
-			/// Function to update the form state.
-			/// </summary>
-			public void Update()
-			{
-				_location = _window.DesktopLocation;
-				_size = _window.Size;
-				_border = _window.FormBorderStyle;
-				_topMost = _window.TopMost;
-				_sysMenu = _window.ControlBox;
-				_maximizeButton = _window.MaximizeBox;
-				_minimizeButton = _window.MinimizeBox;
-				_enabled = _window.Enabled;
-				_visible = _window.Visible;
-			}
-			#endregion
-
-			#region Constructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="FormStateRecord"/> struct.
-			/// </summary>
-			/// <param name="window">The window.</param>
-			public FormStateRecord(Form window)
-			{
-				_location = window.DesktopLocation;
-				_size = window.Size;
-				_border = window.FormBorderStyle;
-				_topMost = window.TopMost;
-				_sysMenu = window.ControlBox;
-				_maximizeButton = window.MaximizeBox;
-				_minimizeButton = window.MinimizeBox;
-				_enabled = window.Enabled;
-				_visible = window.Visible;
-				_window = window;
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Variables.
 		private bool _disposed = false;								// Flag to indicate that the object was already disposed.
 		private FormStateRecord _originalWindowState = null;		// Original window state.
 		private bool _wasMaximized = false;							// Flag to indicate that the window was maximized.
 		private IList<IDisposable> _trackedObjects = null;			// List of tracked objects.
 		private bool _wasWindowed = true;							// Flag to indicate that the device was windowed.
+		private GorgonMultiHeadDeviceWindow _proxyOwner = null;		// Owner of this proxy window.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return whether this window is being used a proxy for a multi-head device window.
+		/// </summary>
+		protected bool IsProxy		
+		{
+			get
+			{
+				return _proxyOwner != null;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the object holding the current window state.
 		/// </summary>
@@ -166,10 +96,38 @@ namespace GorgonLibrary.Graphics
 		
 		#region Methods.
 		/// <summary>
+		/// Function to determine if an object belongs to this device window, and throw an exception if it is not.
+		/// </summary>
+		/// <param name="childObject">Child object to check.</param>
+		private void CheckValidObject(IDeviceWindowChild childObject)
+		{
+			if (childObject == null)
+				return;
+
+			if (childObject.DeviceWindow != this)
+				throw new GorgonException(GorgonResult.AccessDenied, "The specificed object is was not created by this device window.");
+		}
+
+		/// <summary>
+		/// Function to add an item to the object tracker collection.
+		/// </summary>
+		/// <param name="trackedObject">Object to track.</param>
+		private void AddToObjectTracker(IDisposable trackedObject)
+		{
+			if ((trackedObject == null) || (IsProxy))
+				return;
+
+			_trackedObjects.Add(trackedObject);
+		}
+
+		/// <summary>
 		/// Function to clean up the tracked objects and remove this object from any trackers.
 		/// </summary>
 		protected void CleanUpTrackedObjects()
 		{
+			if (IsProxy)
+				return;
+
 			((IObjectTracker)this).CleanUpTrackedObjects();
 
 			// Remove us from anything tracking us.
@@ -198,10 +156,16 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					if (Settings.BoundWindow is Form)
-						_originalWindowState.Restore(false, false);
+					// Remove the proxy link.
+					if (!IsProxy)
+					{
+						if (Settings.BoundWindow is Form)
+							_originalWindowState.Restore(false, false);
 
-					Gorgon.Log.Print("Device window '{0}' destroyed.", Diagnostics.GorgonLoggingLevel.Simple, Name);
+						Gorgon.Log.Print("Device window '{0}' destroyed.", Diagnostics.GorgonLoggingLevel.Simple, Name);
+					}
+					else
+						_proxyOwner = null;
 				}
 
 				_disposed = true;
@@ -230,16 +194,42 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// 
+		/// Function to create a swap chain.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="window"></param>
-		/// <param name="format"></param>
-		/// <param name="depthStencilFormat"></param>
-		/// <returns></returns>
-		public GorgonSwapChain CreateSwapChain(string name, Control window, GorgonBufferFormat format, GorgonBufferFormat depthStencilFormat)
+		/// <param name="name">Name of the swap chain.</param>
+		/// <param name="settings">Settings for the swap chain.</param>
+		/// <returns>A new Gorgon swap chain.</returns>
+		protected abstract GorgonSwapChain CreateSwapChainImpl(string name, GorgonSwapChainSettings settings);
+
+		/// <summary>
+		/// Function to create a swap chain.
+		/// </summary>
+		/// <param name="name">The name of the swap chain.</param>
+		/// <param name="settings">The settings for the swap chain.</param>
+		/// <returns>A new Gorgon swap chain.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.BoundWindow">BoundWindow</see> property of the settings parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the BoundWindow property of the settings parameter has already been used as a swap chain window.</para>
+		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the depth/stencil format is not support or when the backbuffer format cannot be used with the display format.</exception>
+		public GorgonSwapChain CreateSwapChain(string name, GorgonSwapChainSettings settings)
 		{
-			return null;
+			GorgonSwapChain swapChain = null;
+
+			GorgonSwapChain.ValidateSwapChainSettings(Graphics, this, settings);
+
+			Gorgon.Log.Print("Creating new swap chain '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, name);
+						
+			// Create and initialize swap chain.
+			swapChain = CreateSwapChainImpl(name, settings);
+			swapChain.Initialize();
+
+			AddToObjectTracker(swapChain);
+
+			Gorgon.Log.Print("Swap chain '{0}' created successfully.", Diagnostics.GorgonLoggingLevel.Simple, name);
+
+			return swapChain;
 		}
 
 		/// <summary>
@@ -252,15 +242,18 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the window is a child control, or when there are extra swap chains belonging to this device window and setting the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindowSettings.IsWindowed">GorgonDeviceWindowSettings.IsWindowed</see> property to FALSE.
 		/// </exception>
-		public virtual void UpdateSettings()
+		public override void UpdateSettings()
 		{
+			if (IsProxy)
+				return;
+
 			Form window = Settings.BoundWindow as Form;
+
+			GorgonDeviceWindow.ValidateDeviceWindowSettings(Graphics, Settings);
 			
 			// Child controls and device windows with swap chains cannot go full screen.
 			if (!Settings.IsWindowed)
 			{
-				if (window == null)
-					throw new ArgumentException("Cannot switch to full screen with a child control.", "fullScreen");
 				if (_trackedObjects.Count(item => item is GorgonSwapChain) > 0)
 					throw new ArgumentException("This device window has additional swap chains, could not switch to full screen.", "fullScreen");
 			}
@@ -307,6 +300,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name.</param>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="settings">Device window settings.</param>
+		/// <param name="proxyOwner">If this window is a proxy window, then this object will be the owner of the proxy window.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="settings"/> parameters is NULL (Nothing in VB.Net).</para>
@@ -316,19 +310,23 @@ namespace GorgonLibrary.Graphics
 		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// </remarks>
-		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonDeviceWindowSettings settings)
+		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonDeviceWindowSettings settings, GorgonMultiHeadDeviceWindow proxyOwner)
 			: base(graphics, name, settings)
 		{
 			Form window = settings.BoundWindow as Form;
 
 			_trackedObjects = new List<IDisposable>();
+			_proxyOwner = proxyOwner;
 
-			_wasWindowed = Settings.IsWindowed;
-
-			if (window != null)
+			if (proxyOwner == null)
 			{
-				_originalWindowState = new FormStateRecord(window);
-				WindowState = new FormStateRecord(window);
+				_wasWindowed = Settings.IsWindowed;
+
+				if (window != null)
+				{
+					_originalWindowState = new FormStateRecord(window);
+					WindowState = new FormStateRecord(window);
+				}
 			}
 		}		
 		#endregion

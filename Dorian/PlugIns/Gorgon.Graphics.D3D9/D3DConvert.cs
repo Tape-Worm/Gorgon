@@ -39,89 +39,6 @@ namespace GorgonLibrary.Graphics.D3D9
 	{
 		#region Methods.
 		/// <summary>
-		/// Function to validate the settings for the device window settings.
-		/// </summary>
-		/// <param name="settings">Settings to validate.</param>
-		private static void ValidateSettings(GorgonDeviceWindowSettings settings)
-		{
-			System.Windows.Forms.Form window = settings.BoundWindow as System.Windows.Forms.Form;
-
-			if (settings.DisplayFunction == GorgonDisplayFunction.Copy)
-				settings.BackBufferCount = 1;
-
-			// If we didn't specify the back buffer format, then set the default.
-			if (settings.DisplayMode.Format == GorgonBufferFormat.Unknown)
-				settings.Format = GorgonBufferFormat.X8_R8G8B8_UIntNormal;
-
-			// If we're maximized, then use the desktop resolution.
-			if ((window != null) && (window.WindowState == System.Windows.Forms.FormWindowState.Maximized))
-				settings.Dimensions = new System.Drawing.Size(settings.Output.DefaultVideoMode.Width, settings.Output.DefaultVideoMode.Height);
-
-			// If we are not windowed, don't allow an unknown video mode.
-			if (!settings.IsWindowed)
-			{
-				int count = 0;
-
-				// If we've not specified a refresh rate, then find the lowest refresh on the output.
-				if ((settings.DisplayMode.RefreshRateDenominator == 0) || (settings.DisplayMode.RefreshRateNumerator == 0))
-				{
-					if (settings.Output.VideoModes.Count(item => item.Width == settings.Width &&
-														item.Height == settings.Height &&
-														item.Format == settings.Format) > 0)
-					{
-						var refresh = (from mode in settings.Output.VideoModes
-									   where ((mode.Width == settings.Width) && (mode.Height == settings.Height) && (mode.Format == settings.Format))
-									   select mode.RefreshRateNumerator).Min();
-						settings.RefreshRateNumerator = refresh;
-						settings.RefreshRateDenominator = 1;
-					}
-				}
-
-				count = settings.Output.VideoModes.Count(item => item == settings.DisplayMode);
-
-				if (count == 0)
-					throw new GorgonException(GorgonResult.CannotBind, "Unable to set the video mode.  The mode '" + settings.Width.ToString() + "x" +
-						settings.Height.ToString() + " Format: " + settings.Format.ToString() + " Refresh Rate: " +
-						settings.RefreshRateNumerator.ToString() + "/" + settings.RefreshRateDenominator.ToString() +
-						"' is not a valid full screen video mode for this video output.");
-			}
-
-			if (!settings.Output.SupportsBackBufferFormat(settings.Format, settings.IsWindowed))
-				throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified format '" + settings.Format.ToString() + "' with the display format '" + settings.Output.DefaultVideoMode.Format.ToString() + "'.");
-
-			// Set up the depth buffer if necessary.
-			if (settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
-			{
-				if (!settings.Output.SupportsDepthFormat(settings.Format, settings.DepthStencilFormat, settings.IsWindowed))
-					throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot use the specified depth/stencil format '" + settings.DepthStencilFormat.ToString() + "'.");
-			}
-
-			// We can only enable multi-sampling when we have a discard swap effect and have non-lockable depth buffers.
-			if (settings.MSAAQualityLevel.Level != GorgonMSAALevel.None)
-			{
-				if ((settings.DisplayFunction == GorgonDisplayFunction.Discard) && (settings.DepthStencilFormat != GorgonBufferFormat.D16_UIntNormal_Lockable)
-					&& (settings.DepthStencilFormat != GorgonBufferFormat.D32_Float_Lockable))
-				{
-					int? qualityLevel = settings.Device.GetMultiSampleQuality(settings.MSAAQualityLevel.Level, settings.Format, settings.IsWindowed);
-
-					if ((qualityLevel == null) || (qualityLevel < settings.MSAAQualityLevel.Quality))
-						throw new ArgumentException("The device cannot support the quality level '" + settings.MSAAQualityLevel.Level.ToString() + "' at a quality of '" + settings.MSAAQualityLevel.Quality.ToString() + "'");
-				}
-				else
-					throw new ArgumentException("Cannot use multi sampling with device windows that don't have a Discard display function and/or use lockable depth/stencil buffers.");
-			}
-
-			// Turn off vsync and refresh rates when in windowed mode.
-			if (settings.IsWindowed)
-			{
-				if (settings.VSyncInterval != GorgonVSyncInterval.None)
-					settings.VSyncInterval = GorgonVSyncInterval.None;
-				if (settings.RefreshRateNumerator > 0)
-					settings.RefreshRateNumerator = 0;
-			}
-		}
-
-		/// <summary>
 		/// Function to convert a D3D swap effect to a Gorgon display function.
 		/// </summary>
 		/// <param name="displayFunction">D3D swap effect to convert.</param>
@@ -576,6 +493,37 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to convert Gorgon swap chain settings into D3D presentation parameters.
+		/// </summary>
+		/// <param name="settings">Settings to convert.</param>
+		/// <returns>The D3D presentation parameters.</returns>
+		public static PresentParameters Convert(GorgonSwapChainSettings settings)
+		{
+			if (settings.DisplayFunction == GorgonDisplayFunction.Copy)
+				settings.BackBufferCount = 1;
+
+			PresentParameters result = new PresentParameters()
+			{
+				AutoDepthStencilFormat = Format.Unknown,
+				BackBufferCount = settings.BackBufferCount,
+				BackBufferFormat = D3DConvert.Convert(settings.Format),
+				BackBufferHeight = settings.Height,
+				BackBufferWidth = settings.Width,
+				DeviceWindowHandle = settings.BoundWindow.Handle,
+				EnableAutoDepthStencil = false,
+				Windowed = false,
+				FullScreenRefreshRateInHertz = 0,
+				Multisample = D3DConvert.Convert(settings.MSAAQualityLevel.Level),
+				MultisampleQuality = (settings.MSAAQualityLevel.Level != GorgonMSAALevel.None ? settings.MSAAQualityLevel.Quality - 1 : 0),
+				PresentationInterval = PresentInterval.Immediate,
+				PresentFlags = (settings.WillUseVideo ? PresentFlags.Video : PresentFlags.None),
+				SwapEffect = D3DConvert.Convert(settings.DisplayFunction)
+			};
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to convert Gorgon device window settings into D3D presentation parameters.
 		/// </summary>
 		/// <param name="settings">Settings to convert.</param>
@@ -584,7 +532,17 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			Format depthFormat = Convert(settings.DepthStencilFormat);
 
-			ValidateSettings(settings);
+			if (settings.DisplayFunction == GorgonDisplayFunction.Copy)
+				settings.BackBufferCount = 1;
+
+			// Turn off vsync and refresh rates when in windowed mode.
+			if (settings.IsWindowed)
+			{
+				if (settings.VSyncInterval != GorgonVSyncInterval.None)
+					settings.VSyncInterval = GorgonVSyncInterval.None;
+				if (settings.RefreshRateNumerator > 0)
+					settings.RefreshRateNumerator = 0;
+			}
 
 			PresentParameters result = new PresentParameters()
 			{

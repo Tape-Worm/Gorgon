@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Native;
 using GorgonLibrary.Collections;
 
 namespace GorgonLibrary.Graphics
@@ -84,6 +85,29 @@ namespace GorgonLibrary.Graphics
 		{
 			foreach (var device in this)
 				device.GetDeviceCapabilities();
+		}
+
+		/// <summary>
+		/// Function to retrieve a specific video output from a device by the placement of a control.
+		/// </summary>
+		/// <param name="control">Control to find.</param>
+		internal GorgonVideoOutput GetOutputFromControl(System.Windows.Forms.Control control)
+		{
+			IntPtr monitorHandle = Win32API.GetMonitor(control);
+
+			if (monitorHandle == IntPtr.Zero)
+				throw new ArgumentException("Could not find the monitor that the control '0x" + control.Handle.FormatHex() + "' is located on.", "control");
+
+			// Find the correct video output.
+			var videoOutput = (from device in this
+							   from output in device.Outputs
+							   where output.Handle == monitorHandle
+							   select output).SingleOrDefault();
+
+			if (videoOutput == null)
+				throw new ArgumentException("Could not find the monitor that the control '0x" + control.Handle.FormatHex() + "' is located on.", "control");
+
+			return videoOutput;
 		}
 		#endregion
 

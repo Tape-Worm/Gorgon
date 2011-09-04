@@ -70,6 +70,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Targets\GorgonDeviceWindow.cs" />
     <Compile Include="Targets\GorgonDeviceWindowSettings.cs" />
+    <Compile Include="Targets\GorgonFormStateRecord.cs" />
     <Compile Include="Targets\GorgonMSAAQualityLevel.cs" />
     <Compile Include="Targets\GorgonMultiHeadDeviceWindow.cs" />
     <Compile Include="Targets\GorgonRenderTarget.cs" />
@@ -77,6 +78,8 @@
     <Compile Include="Targets\GorgonWindowTarget.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
+    <Compile Include="Targets\IDeviceWindowChild.cs" />
+    <Compile Include="Targets\IRenderTargetWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">

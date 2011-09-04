@@ -65,6 +65,7 @@
     <Compile Include="GorgonD3D9Renderer.cs" />
     <Compile Include="GorgonD3D9.cs" />
     <Compile Include="GorgonD3D9Graphics.cs" />
+    <Compile Include="IUnmanagedObject.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,6 +76,8 @@
     </Compile>
     <Compile Include="Targets\D3D9DeviceWindow.cs" />
     <Compile Include="Targets\D3D9MultiHeadDeviceWindow.cs" />
+    <Compile Include="Targets\D3D9SwapChain.cs" />
+    <Compile Include="Targets\UnmanagedObjectsCollection.cs" />
     <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>

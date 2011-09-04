@@ -37,24 +37,13 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <typeparam name="T">Type of settings to use for the window target.</typeparam>
 	public abstract class GorgonWindowTarget<T>
-		: GorgonRenderTarget where T : GorgonSwapChainSettings
+		: GorgonRenderTarget, IRenderTargetWindow where T : GorgonSwapChainSettings
 	{
 		#region Variables.
 		private bool _disposed = false;			// Flag to indicate that the object was disposed.
 		#endregion
 
-		#region Events.
-		/// <summary>
-		/// Event fired before the device is reset, so resources can be freed.
-		/// </summary>
-		public event EventHandler BeforeDeviceReset;
-		/// <summary>
-		/// Event fired after the device is reset, so resources can be restored.
-		/// </summary>
-		public event EventHandler AfterDeviceReset;
-		#endregion
-
-		#region Properties.
+		#region Properties.		
 		/// <summary>
 		/// Property to return the settings for this swap chain.
 		/// </summary>
@@ -62,14 +51,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether the target is ready to receive rendering data.
-		/// </summary>
-		public abstract bool IsReady
-		{
-			get;
 		}
 		#endregion
 
@@ -146,7 +127,7 @@ namespace GorgonLibrary.Graphics
 		/// Function called when the device is about to be reset.
 		/// </summary>
 		protected virtual void OnBeforeDeviceReset()
-		{
+		{			
 			if (BeforeDeviceReset != null)
 				BeforeDeviceReset(this, EventArgs.Empty);
 		}
@@ -169,34 +150,11 @@ namespace GorgonLibrary.Graphics
 			base.Initialize();
 			AddEventHandlers();
 		}
-
-		/// <summary>
-		/// Function to display the contents of the swap chain.
-		/// </summary>
-		public abstract void Display();
-
-		#region Remove this shit.
-		/// <summary>
-		/// 
-		/// </summary>
-		public abstract void SetupTest();
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public abstract void RunTest(float dt);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public abstract void CleanUpTest();
-
-		#endregion
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonWindowTarget"/> class.
+		/// Initializes a new instance of the <see cref="GorgonWindowTarget&lt;T&gt;"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics instance that owns this swap chain.</param>
 		/// <param name="name">The name.</param>
@@ -218,6 +176,36 @@ namespace GorgonLibrary.Graphics
 			// Assign the settings here because the method hiding does not propagate through inheritance.
 			Settings = settings;
 		}
+		#endregion
+
+		#region IRenderTargetWindow Members
+		#region Events.
+		/// <summary>
+		/// Event fired before the device is reset, so resources can be freed.
+		/// </summary>
+		public event EventHandler BeforeDeviceReset;
+		/// <summary>
+		/// Event fired after the device is reset, so resources can be restored.
+		/// </summary>
+		public event EventHandler AfterDeviceReset;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return whether the target is ready to receive rendering data.
+		/// </summary>
+		public abstract bool IsReady
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to display the contents of the swap chain.
+		/// </summary>
+		public abstract void Display();
+		#endregion
 		#endregion
 	}
 }

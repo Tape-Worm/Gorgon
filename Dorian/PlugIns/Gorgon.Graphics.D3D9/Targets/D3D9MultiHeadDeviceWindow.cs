@@ -45,7 +45,6 @@ namespace GorgonLibrary.Graphics.D3D9
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private PresentParameters[] _presentParams = null;					// Presentation parameters.
 		private bool _deviceIsLost = true;									// Flag to indicate that the device is in a lost state.
-		private D3D9DeviceWindow _deviceWindowProxy = null;					// The proxy for manipulating the device window.
 		#endregion
 
 		#region Properties.
@@ -98,11 +97,7 @@ namespace GorgonLibrary.Graphics.D3D9
 					{
 						Result result = this.D3DDevice.TestCooperativeLevel();
 						if (result == ResultCode.DeviceNotReset)
-						{
-							RemoveEventHandlers();
 							ResetDevice();
-							AddEventHandlers();
-						}
 					}
 
 					if ((_deviceIsLost) || (window.WindowState == FormWindowState.Minimized) || (setting.BoundWindow.ClientSize.Height < 1))
@@ -332,7 +327,8 @@ namespace GorgonLibrary.Graphics.D3D9
 			int index = ((D3D9VideoDevice)Settings.Device).AdapterIndex;
 
 			// When we first create, record the last set of window modifications, after that, all bets are off and we own this window and will do as we need.
-			WindowState.Update();
+			foreach (var state in WindowState)
+				state.Update();
 			AdjustWindow();
 			_presentParams = new PresentParameters[Settings.Settings.Count()];
 			SetPresentationParameters();
@@ -352,7 +348,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			GetSurfaces();
 
 			// Create our proxy object to pass off responsibility for creating our child objects.
-			_deviceWindowProxy = new D3D9DeviceWindow(_graphics, this);
+			ProxyWindow = new D3D9DeviceWindow(_graphics, this);
 
 			_deviceIsLost = false;
 		}
@@ -364,8 +360,12 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			base.CleanUpResources();
 
-			// Destroy our proxy window.
-			_deviceWindowProxy.DisposeProxy();
+			// Remove the proxy object.
+			if (ProxyWindow != null)
+			{
+				ProxyWindow.Dispose();
+				ProxyWindow = null;
+			}
 
 			DestroySurfaces();
 
@@ -412,8 +412,16 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </remarks>
 		public override void Clear(GorgonColor? color, float? depthValue, int? stencilValue)
 		{
-			// TODO: Remember current target, set the current target for which ever head is current, then restore it.
-			_deviceWindowProxy.Clear(color, depthValue, stencilValue);
+			ClearFlags flags = ClearFlags.None;
+
+			if (color != null)
+				flags |= ClearFlags.Target;
+			if ((depthValue != null) && (HasDepthBuffer))
+				flags |= ClearFlags.ZBuffer;
+			if ((stencilValue != null) && (HasStencilBuffer))
+				flags |= ClearFlags.Stencil;
+						
+			D3DDevice.Clear(flags, (color == null ? new Color4() : D3DConvert.Convert(color.Value)), (depthValue == null ? 1.0f : depthValue.Value), (stencilValue == null ? 0 : stencilValue.Value));
 		}
 
 		/// <summary>
@@ -445,9 +453,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 				if (result == ResultCode.DeviceNotReset)
 				{
-					RemoveEventHandlers();
 					ResetDevice();
-					AddEventHandlers();
 				}
 				else
 				{
@@ -461,20 +467,30 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		#region Remove this shit.
-		private Test _test = null;
+		private Test<D3D9MultiHeadDeviceWindow> _test = null;
 
 		/// <summary>
 		/// </summary>
 		public override void SetupTest()
 		{
-			_test = new Test(this, D3DDevice);
+			_test = new Test<D3D9MultiHeadDeviceWindow>(this, D3DDevice);
 		}
 
 		/// <summary>
 		/// </summary>
 		public override void RunTest(float dt)
 		{
-			_test.Run(dt);
+			if (IsReady)
+			{
+				for (int s = 0; s < HeadCount; s++)
+				{
+					CurrentHead = s;
+					_test.Run(dt, Settings.Settings[s]);
+					CurrentHead = 0;
+
+					//Surface.ToFile(deviceWindow.SwapSurfaces[s], @"d:\unpak\Surface\" + s.ToString() + @"\image" + imageNumber + ".png", ImageFileFormat.Png);
+				}
+			}
 		}
 
 		/// <summary>
