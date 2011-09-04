@@ -153,6 +153,12 @@ namespace GorgonLibrary.Graphics.D3D9
 			{
 				// Force focus back to the focus window.
 				_graphics.FocusWindow.Focus();
+				
+				// Get the surfaces.
+				Surface = new D3D9Surface(Name + "_BackBufferSurface", this, D3DDevice.GetRenderTarget(0));
+				if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+					DepthStencilSurface = new D3D9Surface(Name + "_DepthStencilSurface", this, D3DDevice.DepthStencilSurface);
+				
 				OnAfterDeviceReset();
 			}
 			Gorgon.Log.Print("IDirect3DDevice9 interface has been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
@@ -273,6 +279,13 @@ namespace GorgonLibrary.Graphics.D3D9
 				Gorgon.Log.Print("IDirect3D9 Device interface created.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 
+			// Get the surfaces.
+			Surface = new D3D9Surface(Name + "_BackBufferSurface", this, D3DDevice.GetRenderTarget(0));
+			if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+				DepthStencilSurface = new D3D9Surface(Name + "_DepthStencilSurface", this, D3DDevice.DepthStencilSurface);
+			else
+				DepthStencilSurface = null;
+
 			_deviceIsLost = false;
 		}
 
@@ -287,6 +300,11 @@ namespace GorgonLibrary.Graphics.D3D9
 			{
 				UnmanagedObjects.Clear();
 
+				if (Surface != null)
+					Surface.Dispose();
+				if (DepthStencilSurface != null)
+					DepthStencilSurface.Dispose();
+
 				// Remove link to the focus window if we're removing this device.
 				if (_graphics.FocusWindow == Settings.BoundForm)
 					_graphics.FocusWindow = null;
@@ -294,6 +312,8 @@ namespace GorgonLibrary.Graphics.D3D9
 				if (D3DDevice != null)
 					D3DDevice.Dispose();
 				D3DDevice = null;
+				Surface = null;
+				DepthStencilSurface = null;
 				Gorgon.Log.Print("IDirect3DDevice9 interface destroyed.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 		}
@@ -317,6 +337,23 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Function to set the current render target.
+		/// </summary>
+		/// <param name="target">Target to set.</param>
+		protected override void SetRenderTargetImpl(GorgonRenderTarget target)
+		{
+			D3D9Surface bufferSurface = target.Surface as D3D9Surface;
+			D3D9Surface depthSurface = target.DepthStencilSurface as D3D9Surface;			
+
+			if (target == null)
+				throw new ArgumentNullException("target");
+
+			D3DDevice.SetRenderTarget(0, bufferSurface.D3DSurface);
+			if (depthSurface != null)
+				D3DDevice.DepthStencilSurface = depthSurface.D3DSurface;
 		}
 
 		/// <summary>
@@ -344,11 +381,11 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <remarks>This will only clear a depth/stencil buffer if one has been attached to the target, otherwise it will do nothing.
 		/// <para>Pass NULL (Nothing in VB.Net) to <paramref name="color"/>, <paramref name="depthValue"/> or <paramref name="stencilValue"/> to exclude that buffer from being cleared.</para>
 		/// </remarks>
-		public override void Clear(GorgonColor? color, float? depthValue, int? stencilValue)
+		internal void ClearTarget(GorgonColor? color, float? depthValue, int? stencilValue)
 		{
 			ClearFlags flags = ClearFlags.None;
 
-			if (color != null) 
+			if (color != null)
 				flags |= ClearFlags.Target;
 			if ((depthValue != null) && (HasDepthBuffer))
 				flags |= ClearFlags.ZBuffer;
@@ -358,6 +395,20 @@ namespace GorgonLibrary.Graphics.D3D9
 			// TODO: Remember current target and set this window as the current target and then restore the previous, but don't do this for a proxy window.
 
 			D3DDevice.Clear(flags, (color == null ? new Color4() : D3DConvert.Convert(color.Value)), (depthValue == null ? 1.0f : depthValue.Value), (stencilValue == null ? 0 : stencilValue.Value));
+		}
+
+		/// <summary>
+		/// Function to clear a target.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <param name="depthValue">Depth buffer value to clear with.</param>
+		/// <param name="stencilValue">Stencil value to clear with.</param>
+		/// <remarks>This will only clear a depth/stencil buffer if one has been attached to the target, otherwise it will do nothing.
+		/// <para>Pass NULL (Nothing in VB.Net) to <paramref name="color"/>, <paramref name="depthValue"/> or <paramref name="stencilValue"/> to exclude that buffer from being cleared.</para>
+		/// </remarks>
+		public override void Clear(GorgonColor? color, float? depthValue, int? stencilValue)
+		{
+			ClearTarget(color, depthValue, stencilValue);
 		}
 
 		/// <summary>

@@ -275,7 +275,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 					// Create a depth buffer for the swap chain.
 					if (setting.DepthStencilFormat != GorgonBufferFormat.Unknown)
-						DepthStencilSurfaces[i] = Surface.CreateDepthStencil(D3DDevice, setting.Width, setting.Height, D3DConvert.Convert(setting.DepthStencilFormat), D3DConvert.Convert(setting.MSAAQualityLevel.Level), (setting.MSAAQualityLevel.Level != GorgonMSAALevel.None ? setting.MSAAQualityLevel.Quality - 1 : 0), false);
+						DepthStencilSurfaces[i] = SlimDX.Direct3D9.Surface.CreateDepthStencil(D3DDevice, setting.Width, setting.Height, D3DConvert.Convert(setting.DepthStencilFormat), D3DConvert.Convert(setting.MSAAQualityLevel.Level), (setting.MSAAQualityLevel.Level != GorgonMSAALevel.None ? setting.MSAAQualityLevel.Quality - 1 : 0), false);
 
 					swapChain.Dispose();
 					swapChain = null;

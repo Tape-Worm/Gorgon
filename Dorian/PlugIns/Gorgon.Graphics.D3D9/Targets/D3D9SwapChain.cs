@@ -45,10 +45,17 @@ namespace GorgonLibrary.Graphics.D3D9
 		private GorgonD3D9Graphics _graphics = null;		// Graphics interface.
 		private D3D9DeviceWindow _deviceWindow = null;		// Device window parent.
 		private PresentParameters _presentParams = null;	// Presentation parameters.
-		private SwapChain _swapChain = null;				// Swap chain.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the D3D swap chain.
+		/// </summary>
+		public SwapChain D3DSwapChain
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -57,10 +64,15 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		private void DestroySwapchainData()
 		{
-			if (_swapChain != null)
-				_swapChain.Dispose();
+			if (D3DSwapChain != null)
+				D3DSwapChain.Dispose();
 
-			_swapChain = null;
+			if (Surface != null)
+				Surface.Dispose();
+			if (DepthStencilSurface != null)
+				DepthStencilSurface.Dispose();
+
+			D3DSwapChain = null;
 		}
 
 		/// <summary>
@@ -131,7 +143,13 @@ namespace GorgonLibrary.Graphics.D3D9
 		protected override void CreateResources()
 		{
 			SetPresentationParameters();
-			_swapChain = new SwapChain(_deviceWindow.D3DDevice, _presentParams);
+			D3DSwapChain = new SwapChain(_deviceWindow.D3DDevice, _presentParams);
+			Surface = new D3D9Surface(Name + "_SwapBufferSurface", _deviceWindow, D3DSwapChain.GetBackBuffer(0));
+			if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+			{
+				Surface depthStencil = SlimDX.Direct3D9.Surface.CreateDepthStencil(_deviceWindow.D3DDevice, Settings.Width, Settings.Height, D3DConvert.Convert(Settings.DepthStencilFormat), D3DConvert.Convert(Settings.MSAAQualityLevel.Level), (Settings.MSAAQualityLevel.Quality > 0 ? Settings.MSAAQualityLevel.Quality - 1 : 0), false);
+				DepthStencilSurface = new D3D9Surface(Name + "_SwapDepthStencilSurface", _deviceWindow, depthStencil);
+			}
 		}
 
 		/// <summary>
@@ -142,7 +160,15 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="stencilValue">Stencil value to clear with.</param>
 		public override void Clear(GorgonColor? color, float? depthValue, int? stencilValue)
 		{
-			// TODO: Implement clear.
+			GorgonRenderTarget previousTarget = DeviceWindow.CurrentTarget;
+
+			if (previousTarget != this)
+				DeviceWindow.CurrentTarget = this;
+
+			_deviceWindow.ClearTarget(color, depthValue, stencilValue);
+
+			if (previousTarget != null)
+				DeviceWindow.CurrentTarget = previousTarget;
 		}
 
 		/// <summary>
@@ -150,8 +176,8 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		public override void Display()
 		{
-			if ((IsReady) && (_swapChain != null))
-				_swapChain.Present(Present.None);
+			if ((IsReady) && (D3DSwapChain != null))
+				D3DSwapChain.Present(Present.None);
 		}
 
 		#region Delete this shit.

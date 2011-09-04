@@ -64,6 +64,7 @@
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonGraphicsPlugIn.cs" />
     <Compile Include="GorgonRenderer.cs" />
+    <Compile Include="Images\GorgonSurface.cs" />
     <Compile Include="IObjectTracker.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
