@@ -101,6 +101,48 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		#region Methods.
 		/// <summary>
+		/// Function to retrieve the swap chain, and surfaces for the window.
+		/// </summary>
+		private void GetData()
+		{
+			if (SwapChain == null)
+				SwapChain = new D3D9SwapChain(_graphics, this, Name+"_SwapChain", Settings, D3DDevice.GetSwapChain(0));
+			if (Surface == null)
+				Surface = new D3D9Surface(Name + "_BackBufferSurface", this, D3DDevice.GetRenderTarget(0));
+			if (DepthStencilSurface == null) 
+			{
+				if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+					DepthStencilSurface = new D3D9Surface(Name + "_DepthStencilSurface", this, D3DDevice.DepthStencilSurface);
+				else
+					DepthStencilSurface = null;
+			}
+
+			((D3D9SwapChain)SwapChain).AssignSurfaces(Surface, DepthStencilSurface);
+		}
+
+		/// <summary>
+		/// Function to release any instances of objects gathered with GetData().
+		/// </summary>
+		private void FreeData()
+		{
+			if (SwapChain != null)
+			{
+				((D3D9SwapChain)SwapChain).AssignSurfaces(null, null);
+				SwapChain.Dispose();
+			}
+
+			if (Surface != null)
+				Surface.Dispose();
+
+			if (DepthStencilSurface != null)
+				DepthStencilSurface.Dispose();
+
+			SwapChain = null;
+			Surface = null;
+			DepthStencilSurface = null;
+		}
+
+		/// <summary>
 		/// Function to perform a device reset.
 		/// </summary>
 		private void ResetDevice()
@@ -111,6 +153,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			_deviceIsLost = true;
 			Gorgon.Log.Print("Device has not been reset.", Diagnostics.GorgonLoggingLevel.Verbose);
 
+			FreeData();
 			OnBeforeDeviceReset();			
 			
 			// HACK: For some reason when the window is maximized and then eventually
@@ -155,9 +198,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				_graphics.FocusWindow.Focus();
 				
 				// Get the surfaces.
-				Surface = new D3D9Surface(Name + "_BackBufferSurface", this, D3DDevice.GetRenderTarget(0));
-				if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
-					DepthStencilSurface = new D3D9Surface(Name + "_DepthStencilSurface", this, D3DDevice.DepthStencilSurface);
+				GetData();
 				
 				OnAfterDeviceReset();
 			}
@@ -231,6 +272,9 @@ namespace GorgonLibrary.Graphics.D3D9
 			UnmanagedObjects.DeviceLost();
 		}
 
+		/// <summary>
+		/// Function called after the device has been reset from a lost state.
+		/// </summary>
 		protected override void OnAfterDeviceReset()
 		{
 			UnmanagedObjects.DeviceReset();
@@ -280,11 +324,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			}
 
 			// Get the surfaces.
-			Surface = new D3D9Surface(Name + "_BackBufferSurface", this, D3DDevice.GetRenderTarget(0));
-			if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
-				DepthStencilSurface = new D3D9Surface(Name + "_DepthStencilSurface", this, D3DDevice.DepthStencilSurface);
-			else
-				DepthStencilSurface = null;
+			GetData();
 
 			_deviceIsLost = false;
 		}
@@ -300,10 +340,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			{
 				UnmanagedObjects.Clear();
 
-				if (Surface != null)
-					Surface.Dispose();
-				if (DepthStencilSurface != null)
-					DepthStencilSurface.Dispose();
+				FreeData();
 
 				// Remove link to the focus window if we're removing this device.
 				if (_graphics.FocusWindow == Settings.BoundForm)
@@ -312,8 +349,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				if (D3DDevice != null)
 					D3DDevice.Dispose();
 				D3DDevice = null;
-				Surface = null;
-				DepthStencilSurface = null;
 				Gorgon.Log.Print("IDirect3DDevice9 interface destroyed.", Diagnostics.GorgonLoggingLevel.Verbose);
 			}
 		}
@@ -391,8 +426,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				flags |= ClearFlags.ZBuffer;
 			if ((stencilValue != null) && (HasStencilBuffer))
 				flags |= ClearFlags.Stencil;
-
-			// TODO: Remember current target and set this window as the current target and then restore the previous, but don't do this for a proxy window.
 
 			D3DDevice.Clear(flags, (color == null ? new Color4() : D3DConvert.Convert(color.Value)), (depthValue == null ? 1.0f : depthValue.Value), (stencilValue == null ? 0 : stencilValue.Value));
 		}

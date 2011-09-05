@@ -85,7 +85,11 @@ namespace GorgonLibrary.Graphics
 		protected virtual void OnWindowResized(int newWidth, int newHeight)
 		{
 			if ((Settings.BoundForm.WindowState != FormWindowState.Minimized) && (Settings.BoundWindow.ClientSize.Width > 0) && (Settings.BoundWindow.ClientSize.Height > 0))
+			{
+				Settings.Width = newWidth;
+				Settings.Height = newHeight;
 				UpdateResources();
+			}
 		}
 
 		/// <summary>
@@ -173,7 +177,6 @@ namespace GorgonLibrary.Graphics
 			if (settings == null)
 				throw new ArgumentNullException("settings");
 
-			// Assign the settings here because the method hiding does not propagate through inheritance.
 			Settings = settings;
 		}
 		#endregion

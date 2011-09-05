@@ -92,6 +92,8 @@ namespace GorgonLibrary.Graphics
 					return;
 
 				SetRenderTargetImpl(value);
+
+				_currentTarget = value;
 			}
 		}
 
@@ -114,6 +116,15 @@ namespace GorgonLibrary.Graphics
 
 				return false;
 			}
+		}
+
+		/// <summary>
+		/// Property to return the internal swap chain associated with this device window.
+		/// </summary>
+		public GorgonSwapChain SwapChain
+		{
+			get;
+			protected set;
 		}
 		#endregion
 		
@@ -215,12 +226,7 @@ namespace GorgonLibrary.Graphics
 			// We should not care about window resizing when in full screen mode.
 			if (Settings.IsWindowed)
 			{
-				if ((Settings.BoundForm.WindowState != FormWindowState.Minimized) && (Settings.BoundWindow.ClientSize.Width > 0) && (Settings.BoundWindow.ClientSize.Height > 0))
-				{
-					Settings.Width = newWidth;
-					Settings.Height = newHeight;
-					base.OnWindowResized(newWidth, newHeight);
-				}
+				base.OnWindowResized(newWidth, newHeight);
 			}
 		}
 
