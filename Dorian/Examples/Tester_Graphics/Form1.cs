@@ -39,11 +39,11 @@ namespace Tester_Graphics
 
 			_timer.Reset();
 
-			if ((_dev2 != null) && (_running))
-			{
-				_dev2.RunTest(timing.FrameDelta);
-				_dev2.Display();
-			}
+			//if ((_dev2 != null) && (_running))
+			//{
+			//    _dev2.RunTest(timing.FrameDelta);
+			//    _dev2.Display();
+			//}
 
 			if ((_dev != null) && (_running))
 			{
@@ -55,7 +55,7 @@ namespace Tester_Graphics
 				{		
 					_dev.CurrentTarget = _dev2;
 					_dev2.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
-					_dev.RunTest(timing.FrameDelta);
+					_dev2.RunTest(timing.FrameDelta);
 					_dev2.Display();
 				}
 			}
@@ -179,9 +179,10 @@ namespace Tester_Graphics
 				_dev = _gfx.CreateDeviceWindow("Test", settings);
 				_dev.SetupTest();
 
-				_dev2 = _dev.CreateSwapChain("TestSwap", new GorgonSwapChainSettings(form2)
+				_dev2 = _dev.CreateSwapChain("TestSwap", new GorgonSwapChainSettings(this.panelDX)
 															{
-																DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal
+																DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
+																MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
 															});
 
 /*				_dev2 = _gfx.CreateDeviceWindow("Test2", new GorgonDeviceWindowSettings(form2)

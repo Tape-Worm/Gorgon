@@ -153,6 +153,17 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to assign surfaces to this object after the fact.
+		/// </summary>
+		/// <param name="target">Back buffer surface.</param>
+		/// <param name="depthStencil">Depth/stencil surface.</param>
+		public void AssignSurfaces(GorgonSurface target, GorgonSurface depthStencil)
+		{
+			Surface = target;
+			DepthStencilSurface = depthStencil;
+		}
+
+		/// <summary>
 		/// Function to clear a target.
 		/// </summary>
 		/// <param name="color">Color to clear with.</param>
@@ -167,7 +178,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			_deviceWindow.ClearTarget(color, depthValue, stencilValue);
 
-			if (previousTarget != null)
+			if (previousTarget != this)
 				DeviceWindow.CurrentTarget = previousTarget;
 		}
 
@@ -193,7 +204,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="dt"></param>
 		public override void RunTest(float dt)
 		{
-			
+			_deviceWindow._test.Run(dt, Settings);
 		}
 
 		/// <summary>
@@ -230,6 +241,33 @@ namespace GorgonLibrary.Graphics.D3D9
 			_graphics = graphics;
 			_deviceWindow = deviceWindow;
 			_deviceWindow.UnmanagedObjects.Add(this);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="D3D9SwapChain"/> class.
+		/// </summary>
+		/// <param name="graphics">The graphics instance that owns this swap chain.</param>
+		/// <param name="deviceWindow">The device window that created this swap chain.</param>
+		/// <param name="name">The name.</param>
+		/// <param name="settings">Swap chain settings.</param>
+		/// <param name="swapChain">Previous instanced swap chain to wrap.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		///   <para>-or-</para>
+		///   <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
+		///   <para>-or-</para>
+		///   <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.BoundWindow">settings.BoundWindow</see> parameter is NULL (Nothing in VB.Net).</para>
+		///   <para>-or-</para>
+		///   <para>Thrown when the <paramref name="deviceWindow"/> parameter is NULL (Nothing in VB.Net).</para>
+		///   </exception>
+		///   
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.
+		///   </exception>
+		public D3D9SwapChain(GorgonD3D9Graphics graphics, D3D9DeviceWindow deviceWindow, string name, GorgonSwapChainSettings settings, SwapChain swapChain)
+			: base(graphics, deviceWindow, name, settings)
+		{
+			_graphics = graphics;
+			_deviceWindow = deviceWindow;
+			D3DSwapChain = swapChain;
 		}
 		#endregion
 
