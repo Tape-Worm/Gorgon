@@ -414,7 +414,7 @@ namespace GorgonLibrary.Graphics
 
 			if (trackedObjects.Count() > 0)
 			{
-				Gorgon.Log.Print("Destroying child {0} objects:", Diagnostics.GorgonLoggingLevel.Verbose, trackedObjects.Count());
+				Gorgon.Log.Print("Destroying {0} child objects:", Diagnostics.GorgonLoggingLevel.Verbose, trackedObjects.Count());
 
 				foreach (var trackedObject in trackedObjects)
 					trackedObject.Dispose();
