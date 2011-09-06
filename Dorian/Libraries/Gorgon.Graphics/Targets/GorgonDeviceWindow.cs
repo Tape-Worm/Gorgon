@@ -48,6 +48,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return whether the device window is a multi-head device window or not.
+		/// </summary>
+		public bool IsMultiHead
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return whether the target has a depth buffer attached to it.
 		/// </summary>
 		public override bool HasDepthBuffer
