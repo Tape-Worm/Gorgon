@@ -18,7 +18,6 @@ namespace Tester_Graphics
 	public partial class Form1 : Form
 	{
 		GorgonDeviceWindowSettings settings = null;
-		GorgonMultiHeadSettings multiHead;
 		GorgonGraphics _gfx = null;
 		GorgonDeviceWindow _dev = null;
 		//GorgonMultiHeadDeviceWindow _dev = null;
@@ -39,11 +38,13 @@ namespace Tester_Graphics
 
 			_timer.Reset();
 
-			//if ((_dev2 != null) && (_running))
-			//{
-			//    _dev2.RunTest(timing.FrameDelta);
-			//    _dev2.Display();
-			//}
+			if ((_dev2 != null) && (_running))
+			{
+				_dev.CurrentTarget = _dev2;
+				_dev2.Clear(new GorgonColor(1.0f, 0, 0.25f, 1.0f), 1.0f, 0);
+			    _dev2.RunTest(timing.FrameDelta);
+			    _dev2.Display();
+			}
 
 			if ((_dev != null) && (_running))
 			{
@@ -51,13 +52,13 @@ namespace Tester_Graphics
 				_dev.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
 				_dev.RunTest(timing.FrameDelta);
 				_dev.Display();
-				if (_dev2 != null)
+/*				if (_dev2 != null)
 				{		
 					_dev.CurrentTarget = _dev2;
 					_dev2.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
 					_dev2.RunTest(timing.FrameDelta);
 					_dev2.Display();
-				}
+				}*/
 			}
 
 			return true;
