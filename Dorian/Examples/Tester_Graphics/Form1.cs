@@ -179,7 +179,7 @@ namespace Tester_Graphics
 				_dev = _gfx.CreateDeviceWindow("Test", settings);
 				_dev.SetupTest();
 
-				_dev2 = _dev.CreateSwapChain("TestSwap", new GorgonSwapChainSettings(this.panelDX)
+				_dev2 = _dev.CreateSwapChain("TestSwap", new GorgonSwapChainSettings(form2)
 															{
 																DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 																MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
