@@ -73,7 +73,6 @@
     <Compile Include="Targets\GorgonDeviceWindowSettings.cs" />
     <Compile Include="Targets\GorgonFormStateRecord.cs" />
     <Compile Include="Targets\GorgonMSAAQualityLevel.cs" />
-    <Compile Include="Targets\GorgonMultiHeadDeviceWindow.cs" />
     <Compile Include="Targets\GorgonRenderTarget.cs" />
     <Compile Include="Targets\GorgonRenderTargetSettings.cs" />
     <Compile Include="Targets\GorgonWindowTarget.cs" />

@@ -401,6 +401,9 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </returns>
 		protected override GorgonSwapChain CreateSwapChainImpl(string name, GorgonSwapChainSettings settings)
 		{
+			if (Settings.HeadSettings.Count > 0)
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create additional swap chains with full screen multi-head device windows.");
+
 			if (!Settings.IsWindowed)
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a swap chain while in full screen mode.");
 
