@@ -76,7 +76,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Targets\D3D9DeviceWindow.cs" />
-    <Compile Include="Targets\D3D9MultiHeadDeviceWindow.cs" />
     <Compile Include="Targets\D3D9SwapChain.cs" />
     <Compile Include="Targets\UnmanagedObjectsCollection.cs" />
     <Compile Include="Test.cs" />

@@ -128,6 +128,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public override void UpdateSettings()
 		{
+			DeviceWindow.ValidateSwapChainSettings(Settings);
 			UpdateResources();
 		}		
 		#endregion

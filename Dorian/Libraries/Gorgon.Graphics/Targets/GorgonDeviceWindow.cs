@@ -22,22 +22,10 @@ namespace GorgonLibrary.Graphics
 		private bool _wasMaximized = false;							// Flag to indicate that the window was maximized.
 		private IList<IDisposable> _trackedObjects = null;			// List of tracked objects.
 		private bool _wasWindowed = true;							// Flag to indicate that the device was windowed.
-		private GorgonMultiHeadDeviceWindow _proxyOwner = null;		// Owner of this proxy window.
 		private GorgonRenderTarget _currentTarget = null;			// Current render target.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return whether this window is being used a proxy for a multi-head device window.
-		/// </summary>
-		protected bool IsProxy		
-		{
-			get
-			{
-				return _proxyOwner != null;
-			}
-		}
-
 		/// <summary>
 		/// Property to return the object holding the current window state.
 		/// </summary>
@@ -52,8 +40,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public bool IsMultiHead
 		{
-			get;
-			private set;
+			get
+			{
+				return Settings.HeadSettings.Count != 0;
+			}
 		}
 
 		/// <summary>
@@ -157,7 +147,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="trackedObject">Object to track.</param>
 		private void AddToObjectTracker(IDisposable trackedObject)
 		{
-			if ((trackedObject == null) || (IsProxy))
+			if (trackedObject == null)
 				return;
 
 			_trackedObjects.Add(trackedObject);
@@ -174,9 +164,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected void CleanUpTrackedObjects()
 		{
-			if (IsProxy)
-				return;
-
 			((IObjectTracker)this).CleanUpTrackedObjects();
 
 			// Remove us from anything tracking us.
@@ -207,16 +194,10 @@ namespace GorgonLibrary.Graphics
 				{
 					_currentTarget = null;
 
-					// Remove the proxy link.
-					if (!IsProxy)
-					{
-						if (Settings.BoundWindow is Form)
-							_originalWindowState.Restore(false, false);
+					if (Settings.BoundWindow is Form)
+						_originalWindowState.Restore(false, false);
 
-						Gorgon.Log.Print("Device window '{0}' destroyed.", Diagnostics.GorgonLoggingLevel.Simple, Name);
-					}
-					else
-						_proxyOwner = null;
+					Gorgon.Log.Print("Device window '{0}' destroyed.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 				}
 
 				_disposed = true;
@@ -257,6 +238,36 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to validate the swap chain settings.
+		/// </summary>
+		/// <param name="settings">Settings to validate.</param>
+		internal void ValidateSwapChainSettings(GorgonSwapChainSettings settings)
+		{
+			IObjectTracker tracker = this as IObjectTracker;
+
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			// Ensure that we're not already using this window as a device window.
+			if (Graphics.CheckWindowBound(settings))
+				throw new ArgumentException("The specified window is already assigned to a device window or swap chain.", "settings");
+
+			// If we haven't specified a size, or we're using a child control, then assume the size of the bound window.
+			if (settings.Dimensions == System.Drawing.Size.Empty)
+				settings.Dimensions = settings.BoundWindow.ClientSize;
+
+			// Use the default desktop display format if we haven't picked a format.
+			if (settings.Format == GorgonBufferFormat.Unknown)
+				settings.Format = Settings.Output.DefaultVideoMode.Format;
+
+			// Check back buffer and depth formats.
+			Graphics.CheckFormats(settings, Settings.Output, true);
+
+			// We can only enable multi-sampling when we have a discard swap effect and have non-lockable depth buffers.
+			Graphics.CheckValidMSAA(settings, Settings.Device);
+		}
+
+		/// <summary>
 		/// Function to create a swap chain.
 		/// </summary>
 		/// <param name="name">The name of the swap chain.</param>
@@ -272,7 +283,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonSwapChain swapChain = null;
 
-			GorgonSwapChain.ValidateSwapChainSettings(Graphics, this, settings);
+			ValidateSwapChainSettings(settings);
 
 			Gorgon.Log.Print("Creating new swap chain '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, name);
 						
@@ -299,12 +310,13 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public override void UpdateSettings()
 		{
-			if (IsProxy)
-				return;
-
 			Form window = Settings.BoundWindow as Form;
 
-			GorgonDeviceWindow.ValidateDeviceWindowSettings(Graphics, Settings);
+			// Force to full screen when multi-head settings are present.
+			if (Settings.HeadSettings.Count > 0)
+				Settings.IsWindowed = false;
+
+			Graphics.ValidateDeviceWindowSettings(Settings);
 			
 			// Child controls and device windows with swap chains cannot go full screen.
 			if (!Settings.IsWindowed)
@@ -333,7 +345,7 @@ namespace GorgonLibrary.Graphics
 
 			_currentTarget = this;
 
-			Gorgon.Log.Print("Updating device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Verbose, Name, Settings.DisplayMode.Width, Settings.DisplayMode.Height, Settings.DisplayMode.Format, Settings.DisplayMode.RefreshRateNumerator, Settings.DisplayMode.RefreshRateDenominator);
+			Gorgon.Log.Print("Updating device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Intermediate, Name, Settings.DisplayMode.Width, Settings.DisplayMode.Height, Settings.DisplayMode.Format, Settings.DisplayMode.RefreshRateNumerator, Settings.DisplayMode.RefreshRateDenominator);
 			Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, Name);
 			Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.DisplayMode.Width, Settings.DisplayMode.Height, Settings.DisplayMode.Format, Settings.DisplayMode.RefreshRateNumerator, Settings.DisplayMode.RefreshRateDenominator);
 			Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, Settings.DepthStencilFormat != GorgonBufferFormat.Unknown, Settings.DepthStencilFormat);
@@ -346,6 +358,20 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.VSyncInterval);
 			Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, Settings.WillUseVideo);
 
+			foreach (var settings in Settings.HeadSettings)
+			{
+				Gorgon.Log.Print("Setting multi head settings for output '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Intermediate, settings.Output.Name, settings.DisplayMode.Width, settings.DisplayMode.Height, settings.DisplayMode.Format, settings.DisplayMode.RefreshRateNumerator, settings.DisplayMode.RefreshRateDenominator);
+				Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayMode.Width, settings.DisplayMode.Height, settings.DisplayMode.Format, settings.DisplayMode.RefreshRateNumerator, settings.DisplayMode.RefreshRateDenominator);
+				Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, settings.DepthStencilFormat != GorgonBufferFormat.Unknown, settings.DepthStencilFormat);
+				Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.MSAAQualityLevel.Level != GorgonMSAALevel.None);
+				if (settings.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+					Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, settings.MSAAQualityLevel.Quality, settings.MSAAQualityLevel.Level);
+				Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.BackBufferCount);
+				Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayFunction);
+				Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.VSyncInterval);
+				Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.WillUseVideo);
+			}
+
 			Gorgon.Log.Print("Device window '{0}' updated.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 		}
 		#endregion
@@ -357,7 +383,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name.</param>
 		/// <param name="graphics">The graphics instance that owns this render target.</param>
 		/// <param name="settings">Device window settings.</param>
-		/// <param name="proxyOwner">If this window is a proxy window, then this object will be the owner of the proxy window.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="settings"/> parameters is NULL (Nothing in VB.Net).</para>
@@ -367,23 +392,19 @@ namespace GorgonLibrary.Graphics
 		/// <para>The <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateNominator">RefreshRateNominator</see> and the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.RefreshRateDenominator">RefreshRateDenominator</see> 
 		/// of the <see cref="GorgonLibrary.Graphics.GorgonVideoMode">GorgonVideoMode</see> type are not relevant when fullScreen is set to FALSE.</para>
 		/// </remarks>
-		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonDeviceWindowSettings settings, GorgonMultiHeadDeviceWindow proxyOwner)
+		protected GorgonDeviceWindow(GorgonGraphics graphics, string name, GorgonDeviceWindowSettings settings)
 			: base(graphics, name, settings)
 		{
 			Form window = settings.BoundWindow as Form;
 
 			_trackedObjects = new List<IDisposable>();
-			_proxyOwner = proxyOwner;
 
-			if (proxyOwner == null)
+			_wasWindowed = Settings.IsWindowed;
+
+			if (window != null)
 			{
-				_wasWindowed = Settings.IsWindowed;
-
-				if (window != null)
-				{
-					_originalWindowState = new FormStateRecord(window);
-					WindowState = new FormStateRecord(window);
-				}
+				_originalWindowState = new FormStateRecord(window);
+				WindowState = new FormStateRecord(window);
 			}
 		}		
 		#endregion
