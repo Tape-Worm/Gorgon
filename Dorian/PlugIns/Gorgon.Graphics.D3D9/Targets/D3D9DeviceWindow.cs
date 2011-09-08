@@ -130,9 +130,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				SwapChains[i].Dispose();
 				SwapChains[i] = null;
 			}
-
-			Surface = null;
-			DepthStencilSurface = null;
 		}
 
 		/// <summary>
