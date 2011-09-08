@@ -116,8 +116,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				if (SwapChains[i] == null)
 					SwapChains[i] = new D3D9SwapChain(_graphics, this, Name + "_SwapChain", settings, D3DDevice.GetSwapChain(i));
 			}
-
-			//CurrentHead = 0;
 		}
 
 		/// <summary>
