@@ -24,7 +24,7 @@ namespace GorgonLibrary.Graphics
 		private bool _wasWindowed = true;									// Flag to indicate that the device was windowed.
 		private GorgonRenderTarget _currentTarget = null;					// Current render target.
 		private GorgonSwapChain[] _swapChains = null;						// Swap chains for a multi-head device window.
-		private int _currentHead = 0;										// Currently active head.
+		private int _currentHead = -1;										// Currently active head.
 		#endregion
 
 		#region Properties.
@@ -148,6 +148,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the number of active heads on the device window.
 		/// </summary>
+		/// <remarks>This includes the master device window in the count.</remarks>
 		public int HeadCount
 		{
 			get
@@ -167,12 +168,16 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+				if (value == _currentHead)
+					return;
+
 				if (value < 0)
 					value = 0;
 				if (value >= _swapChains.Length)
 					value = _swapChains.Length - 1;
 
 				_currentHead = value;
+				_currentTarget = this;
 
 				SetRenderTargetImpl(this);
 			}
@@ -248,6 +253,25 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function called when the device is about to be reset.
+		/// </summary>
+		protected override void OnBeforeDeviceReset()
+		{
+			_currentHead = -1;
+			_currentTarget = null;
+			base.OnBeforeDeviceReset();
+		}
+
+		/// <summary>
+		/// Function called when the device has been reset.
+		/// </summary>
+		protected override void OnAfterDeviceReset()
+		{
+			CurrentHead = 0;
+			base.OnAfterDeviceReset();
+		}
+
+		/// <summary>
 		/// Function to set the current render target.
 		/// </summary>
 		/// <param name="target">Target to set.</param>
@@ -274,6 +298,9 @@ namespace GorgonLibrary.Graphics
 
 			CleanUpTest();
 			CleanUpTrackedObjects();
+
+			_currentHead = 0;
+			_currentTarget = null;
 		}
 
 		/// <summary>
@@ -309,7 +336,7 @@ namespace GorgonLibrary.Graphics
 		{
 			// We should not care about window resizing when in full screen mode.
 			if (Settings.IsWindowed)
-			{
+			{				
 				base.OnWindowResized(newWidth, newHeight);
 			}
 		}
@@ -328,7 +355,7 @@ namespace GorgonLibrary.Graphics
 		internal override void Initialize()
 		{
 			base.Initialize();
-			_currentTarget = this;
+			CurrentHead = 0;
 		}
 
 		/// <summary>
@@ -420,7 +447,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			RemoveEventHandlers();
-						
+
 			// Ideally, we want the window to use the desktop resolution when we switch to full screen and the window is maximized.
 			// When we switch back, we should keep the window maximized.  This wouldn't be a big deal except there's some sort of
 			// weird bug in windows forms/d3d9 where upon switching to full screen mode with a window maximized, the mouse cursor
@@ -436,8 +463,6 @@ namespace GorgonLibrary.Graphics
 			_wasWindowed = Settings.IsWindowed;
 			UpdateResources();
 			AddEventHandlers();
-
-			_currentTarget = this;
 
 			Gorgon.Log.Print("Updating device window '{0}' with settings: {1}x{2} Format: {3} Refresh Rate: {4}/{5}.", Diagnostics.GorgonLoggingLevel.Intermediate, Name, Settings.DisplayMode.Width, Settings.DisplayMode.Height, Settings.DisplayMode.Format, Settings.DisplayMode.RefreshRateNumerator, Settings.DisplayMode.RefreshRateDenominator);
 			Gorgon.Log.Print("'{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, Name);

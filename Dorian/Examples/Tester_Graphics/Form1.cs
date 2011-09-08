@@ -49,17 +49,15 @@ namespace Tester_Graphics
 
 			if ((_dev != null) && (_running))
 			{
-				_dev.CurrentTarget = null;
+				//_dev.CurrentTarget = null;
 				_dev.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
 				_dev.RunTest(timing.FrameDelta);
-				_dev.Surface.Save(@"D:\unpak\surface\0\" + framecounter.ToString() + ".png");
-
-				if (_dev.HeadCount > 0)
+				//_dev.Surface.Save(@"d:\unpak\surface\0\" + framecounter.ToString() + ".png");
+				if (_dev.HeadCount > 1)
 				{
 					_dev.CurrentHead = 1;
 					_dev.Clear(new GorgonColor(1.0f, 1.0f, 0, 1.0f), 1.0f, 0);
 					_dev.RunTest(timing.FrameDelta);
-					_dev.Surface.Save(@"D:\unpak\surface\1\" + framecounter.ToString() + ".png");
 					_dev.CurrentHead = 0;
 				}
 
@@ -187,13 +185,13 @@ namespace Tester_Graphics
 					IsWindowed = true,
 					DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 					MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0)),
-					HeadSettings = new GorgonDeviceWindowHeadSettingsCollection
+					/*HeadSettings = new GorgonDeviceWindowHeadSettingsCollection
 					{
 						new GorgonDeviceWindowHeadSettings(form2, _gfx.VideoDevices[0].Outputs[1])
 						{
 							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal							
 						}
-					}
+					}*/
 				};
 								
 

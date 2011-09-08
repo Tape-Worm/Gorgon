@@ -117,8 +117,7 @@ namespace GorgonLibrary.Graphics.D3D9
 					SwapChains[i] = new D3D9SwapChain(_graphics, this, Name + "_SwapChain", settings, D3DDevice.GetSwapChain(i));
 			}
 
-			CurrentHead = 0;
-			CurrentTarget = this;
+			//CurrentHead = 0;
 		}
 
 		/// <summary>
@@ -306,6 +305,9 @@ namespace GorgonLibrary.Graphics.D3D9
 			if (D3DDevice == null)
 				return;
 
+			if ((Settings.HeadSettings.Count > 0) && (Settings.Device.Outputs.Count != Settings.HeadSettings.Count + 1))
+				throw new GorgonException(GorgonResult.CannotCreate, "Each subordinate head in a multi head device window must have settings.");
+
 			result = D3DDevice.TestCooperativeLevel();
 
 			if ((result.IsSuccess) || (result == ResultCode.DeviceNotReset))
@@ -396,16 +398,14 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="target">Target to set.</param>
 		protected override void SetRenderTargetImpl(GorgonRenderTarget target)
 		{
-			D3D9Surface bufferSurface = null; 
-			D3D9Surface depthSurface = null;
-
-			bufferSurface = target.Surface as D3D9Surface;
-			depthSurface = target.DepthStencilSurface as D3D9Surface;
-
 			if (target == null)
 				throw new ArgumentNullException("target");
 
+			D3D9Surface bufferSurface = target.Surface as D3D9Surface; 
+			D3D9Surface depthSurface = target.DepthStencilSurface as D3D9Surface;
+
 			D3DDevice.SetRenderTarget(0, bufferSurface.D3DSurface);
+
 			if (depthSurface != null)
 				D3DDevice.DepthStencilSurface = depthSurface.D3DSurface;
 		}

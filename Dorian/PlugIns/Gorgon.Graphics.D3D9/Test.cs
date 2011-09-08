@@ -108,7 +108,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			if (settings.MSAAQualityLevel.Level == GorgonMSAALevel.None)
 				devicePasses = 0;
 
-			for (int i = 0; i <= devicePasses; i++)
+			for (int i = 0; i <= (devicePasses - 1); i++)
 			{
 				float passAngle = 0.0f;
 
@@ -119,7 +119,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 				_Yrot = Matrix.RotationY(passAngle);
 				_Yrot = _Yrot * Matrix.RotationX(passAngle);
-				_Yrot = _Yrot * Matrix.RotationZ(passAngle);
+				//_Yrot = _Yrot * Matrix.RotationZ(passAngle);
 
 				_device.SetTransform(TransformState.World, _Yrot);
 
