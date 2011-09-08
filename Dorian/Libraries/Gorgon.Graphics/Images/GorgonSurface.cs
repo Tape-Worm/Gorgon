@@ -47,7 +47,11 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-
+		/// <summary>
+		/// Function to save the contents of this surface to a file.
+		/// </summary>
+		/// <param name="fileName">Path and filename of the file to save.</param>
+		public abstract void Save(string fileName);
 		#endregion
 
 		#region Constructor/Destructor.

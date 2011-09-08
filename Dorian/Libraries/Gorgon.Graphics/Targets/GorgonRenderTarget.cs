@@ -66,7 +66,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the surface object for this render target.
 		/// </summary>
-		public GorgonSurface Surface
+		public virtual GorgonSurface Surface
 		{
 			get;
 			protected set;
@@ -75,7 +75,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the depth/stencil buffer surface object for this render target.
 		/// </summary>
-		public GorgonSurface DepthStencilSurface
+		public virtual GorgonSurface DepthStencilSurface
 		{
 			get;
 			protected set;

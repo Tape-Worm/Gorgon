@@ -39,27 +39,24 @@ namespace GorgonLibrary
 	public static class GorgonStringFormattingExtension
 	{
 		/// <summary>
-		/// Function to return a properly formatted path name including a file name.
+		/// Function to return a properly file name.
 		/// </summary>
 		/// <param name="path">Path to the file.</param>
 		/// <returns>The formatted path to the file.</returns>
 		public static string FormatFileName(this string path)
 		{
-			string directory = string.Empty;
 			string filename = string.Empty;
 
 			if (string.IsNullOrEmpty(path))
 				return string.Empty;
 
-			directory = Path.GetDirectoryName(path);
-
-			filename = Path.GetFileName(path);
+			filename = RemoveIllegalFilenameChars(Path.GetFileName(path));
 
 			return filename;
 		}
 
 		/// <summary>
-		/// Function to return a properly formatted path name.
+		/// Function to return a properly formatted directory name.
 		/// </summary>
 		/// <param name="path">Path to repair.</param>
 		/// <param name="directorySeparator">Directory separator character to use.</param>
@@ -76,7 +73,7 @@ namespace GorgonLibrary
 			if ((char.IsWhiteSpace(directorySeparator)) || (illegalChars.Contains(directorySeparator)))
 				directorySeparator = Path.DirectorySeparatorChar;
 
-			RemoveIllegalPathChars(path);
+			path = RemoveIllegalPathChars(path);
 
 			StringBuilder output = new StringBuilder(path);
 

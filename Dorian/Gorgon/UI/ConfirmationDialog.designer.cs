@@ -54,6 +54,7 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfirmationDialog));
 			this.buttonNo = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.imageIcon)).BeginInit();
@@ -111,9 +112,10 @@ namespace GorgonLibrary.UI
 			// ConfirmationDialog
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.ClientSize = new System.Drawing.Size(294, 127);
+			this.ClientSize = new System.Drawing.Size(294, 130);
 			this.Controls.Add(this.buttonNo);
 			this.Controls.Add(this.buttonCancel);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MinimumSize = new System.Drawing.Size(300, 158);
 			this.Name = "ConfirmationDialog";
 			this.Controls.SetChildIndex(this.OKButton, 0);

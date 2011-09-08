@@ -226,7 +226,8 @@ namespace GorgonLibrary.Graphics
 				{
 					var refresh = (from refreshMode in output.VideoModes
 								   where ((refreshMode.Width == mode.Width) && (refreshMode.Height == mode.Height) && (refreshMode.Format == mode.Format))
-								   select new { mode.RefreshRateNumerator, mode.RefreshRateDenominator }).Min();
+								   orderby refreshMode.RefreshRateNumerator ascending
+								   select new { refreshMode.RefreshRateNumerator, refreshMode.RefreshRateDenominator }).First();
 
 					result = new Tuple<int, int>(refresh.RefreshRateNumerator, refresh.RefreshRateDenominator);
 				}
@@ -374,6 +375,10 @@ namespace GorgonLibrary.Graphics
 
 			// We can only enable multi-sampling when we have a discard swap effect and have non-lockable depth buffers.
 			CheckValidMSAA(settings, settings.Device);
+
+			// Ensure we don't have more settings than there are heads.
+			if (settings.HeadSettings.Count >= settings.Device.Outputs.Count)
+				throw new ArgumentException("Cannot have more head settings than there are video outputs.", "settings");
 
 			// Check multi-head settings.
 			foreach (var headSetting in settings.HeadSettings)

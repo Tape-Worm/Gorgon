@@ -33,6 +33,245 @@ using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
+	#region Classes.
+	/// <summary>
+	/// Device window settings collection.
+	/// </summary>
+	public class GorgonDeviceWindowHeadSettingsCollection
+		: IList<GorgonDeviceWindowHeadSettings>
+	{
+		#region Variables.
+		private List<GorgonDeviceWindowHeadSettings> _settings = null;		// Settings.
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to remove a setting by its index.
+		/// </summary>
+		/// <param name="index">Index of the setting to remove.</param>
+		public void Remove(int index)
+		{
+			_settings.RemoveAt(index);
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Prevents a default instance of the <see cref="GorgonDeviceWindowHeadSettingsCollection"/> class from being created.
+		/// </summary>
+		public GorgonDeviceWindowHeadSettingsCollection(IEnumerable<GorgonDeviceWindowHeadSettings> settings)
+		{
+			_settings = new List<GorgonDeviceWindowHeadSettings>();
+			if (settings != null)
+				_settings.AddRange(settings);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDeviceWindowHeadSettingsCollection"/> class.
+		/// </summary>
+		public GorgonDeviceWindowHeadSettingsCollection()
+			: this(null)
+		{
+		}
+		#endregion
+
+		#region IList<GorgonDeviceWindowHeadSettings> Members
+		#region Properties.
+		/// <summary>
+		/// Gets or sets the element at the specified index.
+		/// </summary>
+		/// <returns>
+		/// The element at the specified index.
+		///   </returns>
+		///   
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		///   </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">
+		/// The property is set and the <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
+		///   </exception>
+		public GorgonDeviceWindowHeadSettings this[int index]
+		{
+			get
+			{
+				return _settings[index];
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		/// </summary>
+		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+		/// <returns>
+		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
+		/// </returns>
+		public int IndexOf(GorgonDeviceWindowHeadSettings item)
+		{
+			return _settings.IndexOf(item);
+		}
+
+		/// <summary>
+		/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+		/// </summary>
+		/// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
+		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		///   </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">
+		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
+		///   </exception>
+		void IList<GorgonDeviceWindowHeadSettings>.Insert(int index, GorgonDeviceWindowHeadSettings item)
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+		/// </summary>
+		/// <param name="index">The zero-based index of the item to remove.</param>
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		///   </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">
+		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
+		///   </exception>
+		void IList<GorgonDeviceWindowHeadSettings>.RemoveAt(int index)
+		{
+			Remove(index);
+		}
+		#endregion
+		#endregion
+
+		#region ICollection<GorgonDeviceWindowHeadSettings> Members
+		#region Properties.
+		/// <summary>
+		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// </summary>
+		/// <returns>
+		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		///   </returns>
+		public int Count
+		{
+			get
+			{
+				return _settings.Count;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+		/// </summary>
+		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
+		///   </returns>
+		public bool IsReadOnly
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// </summary>
+		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+		/// <returns>
+		/// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">
+		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+		///   </exception>
+		public bool Remove(GorgonDeviceWindowHeadSettings item)
+		{
+			return _settings.Remove(item);
+		}
+
+		/// <summary>
+		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// </summary>
+		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+		/// <exception cref="T:System.NotSupportedException">
+		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+		///   </exception>
+		public void Add(GorgonDeviceWindowHeadSettings item)
+		{
+			_settings.Add(item);
+		}
+
+		/// <summary>
+		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// </summary>
+		/// <exception cref="T:System.NotSupportedException">
+		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+		///   </exception>
+		public void Clear()
+		{
+			_settings.Clear();
+		}
+
+		/// <summary>
+		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+		/// </summary>
+		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+		/// <returns>
+		/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+		/// </returns>
+		public bool Contains(GorgonDeviceWindowHeadSettings item)
+		{
+			return _settings.Contains(item);
+		}
+
+		/// <summary>
+		/// Copies to.
+		/// </summary>
+		/// <param name="array">The array.</param>
+		/// <param name="arrayIndex">Index of the array.</param>
+		public void CopyTo(GorgonDeviceWindowHeadSettings[] array, int arrayIndex)
+		{
+			_settings.CopyTo(array, arrayIndex);
+		}
+		#endregion
+		#endregion
+
+		#region IEnumerable<GorgonDeviceWindowHeadSettings> Members
+		/// <summary>
+		/// Returns an enumerator that iterates through the collection.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+		/// </returns>
+		public IEnumerator<GorgonDeviceWindowHeadSettings> GetEnumerator()
+		{
+			foreach (var item in _settings)
+				yield return item;
+		}
+		#endregion
+
+		#region IEnumerable Members
+		/// <summary>
+		/// Returns an enumerator that iterates through a collection.
+		/// </summary>
+		/// <returns>
+		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+		/// </returns>
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return this.GetEnumerator();
+		}
+		#endregion
+	}
+	#endregion
+
 	/// <summary>
 	/// Values for setting up a head on a multi-head display adatper.
 	/// </summary>
@@ -123,229 +362,10 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public class GorgonDeviceWindowSettings
 		: GorgonSwapChainSettings
-	{
-		#region Classes.
-		/// <summary>
-		/// Device window settings collection.
-		/// </summary>
-		public class GorgonDeviceWindowHeadSettingsCollection
-			: IList<GorgonDeviceWindowHeadSettings>
-		{
-			#region Variables.
-			private List<GorgonDeviceWindowHeadSettings> _settings = null;		// Settings.
-			#endregion
-
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Prevents a default instance of the <see cref="GorgonDeviceWindowHeadSettingsCollection"/> class from being created.
-			/// </summary>
-			internal GorgonDeviceWindowHeadSettingsCollection(IEnumerable<GorgonDeviceWindowHeadSettings> settings)
-			{
-				_settings = new List<GorgonDeviceWindowHeadSettings>();
-				if (settings != null)
-					_settings.AddRange(settings);
-			}
-			#endregion
-
-			#region IList<GorgonDeviceWindowHeadSettings> Members
-			#region Properties.
-			/// <summary>
-			/// Gets or sets the element at the specified index.
-			/// </summary>
-			/// <returns>
-			/// The element at the specified index.
-			///   </returns>
-			///   
-			/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-			///   </exception>
-			///   
-			/// <exception cref="T:System.NotSupportedException">
-			/// The property is set and the <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-			///   </exception>
-			public GorgonDeviceWindowHeadSettings this[int index]
-			{
-				get
-				{
-					return _settings[index];
-				}
-				set
-				{
-					throw new NotSupportedException();
-				}
-			}
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
-			/// </summary>
-			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-			/// <returns>
-			/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
-			/// </returns>
-			public int IndexOf(GorgonDeviceWindowHeadSettings item)
-			{
-				return _settings.IndexOf(item);
-			}
-
-			/// <summary>
-			/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
-			/// </summary>
-			/// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-			/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-			///   </exception>
-			///   
-			/// <exception cref="T:System.NotSupportedException">
-			/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-			///   </exception>
-			void IList<GorgonDeviceWindowHeadSettings>.Insert(int index, GorgonDeviceWindowHeadSettings item)
-			{
-				throw new NotSupportedException();
-			}
-
-			/// <summary>
-			/// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
-			/// </summary>
-			/// <param name="index">The zero-based index of the item to remove.</param>
-			/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-			///   </exception>
-			///   
-			/// <exception cref="T:System.NotSupportedException">
-			/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-			///   </exception>
-			void IList<GorgonDeviceWindowHeadSettings>.RemoveAt(int index)
-			{
-				throw new NotSupportedException();
-			}
-			#endregion
-			#endregion
-
-			#region ICollection<GorgonDeviceWindowHeadSettings> Members
-			#region Properties.
-			/// <summary>
-			/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-			/// </summary>
-			/// <returns>
-			/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-			///   </returns>
-			public int Count
-			{
-				get
-				{
-					return _settings.Count;
-				}
-			}
-
-			/// <summary>
-			/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-			/// </summary>
-			/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
-			///   </returns>
-			public bool IsReadOnly
-			{
-				get
-				{
-					return true;
-				}
-			}
-
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-			/// </summary>
-			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-			/// <returns>
-			/// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
-			/// </returns>
-			/// <exception cref="T:System.NotSupportedException">
-			/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-			///   </exception>
-			bool ICollection<GorgonDeviceWindowHeadSettings>.Remove(GorgonDeviceWindowHeadSettings item)
-			{
-				throw new NotSupportedException();
-			}
-
-			/// <summary>
-			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-			/// </summary>
-			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-			/// <exception cref="T:System.NotSupportedException">
-			/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-			///   </exception>
-			void ICollection<GorgonDeviceWindowHeadSettings>.Add(GorgonDeviceWindowHeadSettings item)
-			{
-				throw new NotSupportedException();
-			}
-
-			/// <summary>
-			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-			/// </summary>
-			/// <exception cref="T:System.NotSupportedException">
-			/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-			///   </exception>
-			void ICollection<GorgonDeviceWindowHeadSettings>.Clear()
-			{
-				throw new NotSupportedException();
-			}
-
-			/// <summary>
-			/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
-			/// </summary>
-			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-			/// <returns>
-			/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
-			/// </returns>
-			public bool Contains(GorgonDeviceWindowHeadSettings item)
-			{
-				return _settings.Contains(item);
-			}
-
-			/// <summary>
-			/// Copies to.
-			/// </summary>
-			/// <param name="array">The array.</param>
-			/// <param name="arrayIndex">Index of the array.</param>
-			public void CopyTo(GorgonDeviceWindowHeadSettings[] array, int arrayIndex)
-			{
-				_settings.CopyTo(array, arrayIndex);
-			}
-			#endregion
-			#endregion
-
-			#region IEnumerable<GorgonDeviceWindowHeadSettings> Members
-			/// <summary>
-			/// Returns an enumerator that iterates through the collection.
-			/// </summary>
-			/// <returns>
-			/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-			/// </returns>
-			public IEnumerator<GorgonDeviceWindowHeadSettings> GetEnumerator()
-			{
-				foreach (var item in _settings)
-					yield return item;
-			}
-			#endregion
-
-			#region IEnumerable Members
-			/// <summary>
-			/// Returns an enumerator that iterates through a collection.
-			/// </summary>
-			/// <returns>
-			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-			/// </returns>
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-			{
-				return this.GetEnumerator();
-			}
-			#endregion
-		}
-		#endregion
-		
+	{	
 		#region Variables.
-		private int _refreshDenominator = 1;	// Refresh rate denominator.
+		private int _refreshDenominator = 1;										// Refresh rate denominator.
+		private GorgonDeviceWindowHeadSettingsCollection _headSettings = null;		// Settings for each head on the video device.
 		#endregion
 
 		#region Properties.
@@ -414,12 +434,22 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the settings for each head.
+		/// Property to set or  return the settings for each head.
 		/// </summary>
+		/// <remarks>For some APIs (e.g. Direct 3D9) all heads must have settings associated for the multi-head device to initialize.  For example, if the video card has 2 outputs, then the first output is assigned to the master device and any remaining outputs are assigned to the HeadSettings property.</remarks>
 		public GorgonDeviceWindowHeadSettingsCollection HeadSettings
 		{
-			get;
-			private set;
+			get
+			{
+				return _headSettings;
+			}
+			set
+			{
+				_headSettings = value;
+
+				foreach (var setting in HeadSettings)
+					setting.MasterDeviceWindowSettings = this;
+			}
 		}
 		#endregion
 
@@ -441,9 +471,6 @@ namespace GorgonLibrary.Graphics
 			Device = device;
 			Output = output;
 			HeadSettings = new GorgonDeviceWindowHeadSettingsCollection(multiHeadSettings);
-
-			foreach (var setting in HeadSettings)
-				setting.MasterDeviceWindowSettings = this;
 		}
 
 		/// <summary>

@@ -82,7 +82,7 @@ namespace GorgonLibrary.UI
 			this.checkToAll.AutoSize = true;
 			this.checkToAll.Location = new System.Drawing.Point(12, 107);
 			this.checkToAll.Name = "checkToAll";
-			this.checkToAll.Size = new System.Drawing.Size(217, 21);
+			this.checkToAll.Size = new System.Drawing.Size(165, 17);
 			this.checkToAll.TabIndex = 12;
 			this.checkToAll.Text = "&Apply the answer to all items?";
 			this.checkToAll.UseVisualStyleBackColor = true;
@@ -90,7 +90,7 @@ namespace GorgonLibrary.UI
 			// ConfirmationDialogEx
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.ClientSize = new System.Drawing.Size(294, 129);
+			this.ClientSize = new System.Drawing.Size(294, 130);
 			this.Controls.Add(this.checkToAll);
 			this.Location = new System.Drawing.Point(0, 0);
 			this.MinimumSize = new System.Drawing.Size(188, 154);

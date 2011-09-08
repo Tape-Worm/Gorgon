@@ -26,10 +26,11 @@ namespace Tester_Graphics
 		private bool _running = true;
 		GorgonTimer _timer = new GorgonTimer(true);
 		Form2 form2 = null;
+		int framecounter = 0;
 
 		private bool Idle(GorgonFrameRate timing)
 		{			
-
+			
 			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
 
 /*			while (_timer.Milliseconds < GorgonTimer.FpsToMilliseconds(30.0f))
@@ -51,6 +52,17 @@ namespace Tester_Graphics
 				_dev.CurrentTarget = null;
 				_dev.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
 				_dev.RunTest(timing.FrameDelta);
+				_dev.Surface.Save(@"D:\unpak\surface\0\" + framecounter.ToString() + ".png");
+
+				if (_dev.HeadCount > 0)
+				{
+					_dev.CurrentHead = 1;
+					_dev.Clear(new GorgonColor(1.0f, 1.0f, 0, 1.0f), 1.0f, 0);
+					_dev.RunTest(timing.FrameDelta);
+					_dev.Surface.Save(@"D:\unpak\surface\1\" + framecounter.ToString() + ".png");
+					_dev.CurrentHead = 0;
+				}
+
 				_dev.Display();
 /*				if (_dev2 != null)
 				{		
@@ -59,6 +71,8 @@ namespace Tester_Graphics
 					_dev2.RunTest(timing.FrameDelta);
 					_dev2.Display();
 				}*/
+
+				framecounter++;
 			}
 
 			return true;
@@ -172,15 +186,21 @@ namespace Tester_Graphics
 					//DisplayMode = new GorgonVideoMode(640, 480, GorgonBufferFormat.X8_R8G8B8_UIntNormal),
 					IsWindowed = true,
 					DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
-					MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
+					MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0)),
+					HeadSettings = new GorgonDeviceWindowHeadSettingsCollection
+					{
+						new GorgonDeviceWindowHeadSettings(form2, _gfx.VideoDevices[0].Outputs[1])
+						{
+							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal							
+						}
+					}
 				};
-
-				
+								
 
 				_dev = _gfx.CreateDeviceWindow("Test", settings);
 				_dev.SetupTest();
 
-				_dev2 = _dev.CreateSwapChain("TestSwap", new GorgonSwapChainSettings(form2)
+/*				_dev2 = _dev.CreateSwapChain("TestSwap", new GorgonSwapChainSettings(form2)
 															{
 																DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
 																MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
