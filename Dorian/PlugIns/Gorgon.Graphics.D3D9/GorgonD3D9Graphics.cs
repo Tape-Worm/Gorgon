@@ -156,7 +156,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				FocusWindow = settings.BoundForm;
 
 			if ((settings.HeadSettings.Count > 0) && (settings.Device.Outputs.Count != settings.HeadSettings.Count + 1))
-				throw new GorgonException(GorgonResult.CannotCreate, "Each subordinate head in a multi head window must have settings.");
+				throw new GorgonException(GorgonResult.CannotCreate, "Each subordinate head in a multi head device window must have settings.");
 
 			return new D3D9DeviceWindow(this, name, settings);
 		}
