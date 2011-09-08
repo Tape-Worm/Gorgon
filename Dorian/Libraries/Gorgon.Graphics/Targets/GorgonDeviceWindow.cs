@@ -18,7 +18,6 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private bool _disposed = false;										// Flag to indicate that the object was already disposed.
-		private FormStateRecord _originalWindowState = null;				// Original window state.
 		private bool _wasMaximized = false;									// Flag to indicate that the window was maximized.
 		private IList<IDisposable> _trackedObjects = null;					// List of tracked objects.
 		private bool _wasWindowed = true;									// Flag to indicate that the device was windowed.
@@ -31,7 +30,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the object holding the current window state.
 		/// </summary>
-		protected FormStateRecord WindowState
+		protected FormStateRecord[] WindowState
 		{
 			get;
 			private set;
@@ -315,9 +314,12 @@ namespace GorgonLibrary.Graphics
 				{
 					_currentTarget = null;
 
-					if (Settings.BoundWindow is Form)
-						_originalWindowState.Restore(false, false);
-
+					foreach (var state in WindowState)
+					{
+						if (state != null)
+							state.Restore(false, false);
+					}
+					
 					Gorgon.Log.Print("Device window '{0}' destroyed.", Diagnostics.GorgonLoggingLevel.Simple, Name);
 				}
 
@@ -362,7 +364,8 @@ namespace GorgonLibrary.Graphics
 		/// Function to validate the swap chain settings.
 		/// </summary>
 		/// <param name="settings">Settings to validate.</param>
-		internal void ValidateSwapChainSettings(GorgonSwapChainSettings settings)
+		/// <param name="currentInstance">The current instance of the swap chain if we're resetting.</param>
+		internal void ValidateSwapChainSettings(GorgonSwapChainSettings settings, GorgonSwapChain currentInstance)
 		{
 			IObjectTracker tracker = this as IObjectTracker;
 
@@ -370,7 +373,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("settings");
 
 			// Ensure that we're not already using this window as a device window.
-			if (Graphics.CheckWindowBound(settings))
+			if (Graphics.CheckWindowBound(settings, currentInstance))
 				throw new ArgumentException("The specified window is already assigned to a device window or swap chain.", "settings");
 
 			// If we haven't specified a size, or we're using a child control, then assume the size of the bound window.
@@ -404,7 +407,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonSwapChain swapChain = null;
 
-			ValidateSwapChainSettings(settings);
+			ValidateSwapChainSettings(settings, null);
 
 			Gorgon.Log.Print("Creating new swap chain '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, name);
 						
@@ -437,7 +440,7 @@ namespace GorgonLibrary.Graphics
 			if (Settings.HeadSettings.Count > 0)
 				Settings.IsWindowed = false;
 
-			Graphics.ValidateDeviceWindowSettings(Settings);
+			Graphics.ValidateDeviceWindowSettings(Settings, this);
 			
 			// Child controls and device windows with swap chains cannot go full screen.
 			if (!Settings.IsWindowed)
@@ -516,17 +519,22 @@ namespace GorgonLibrary.Graphics
 		{
 			Form window = settings.BoundWindow as Form;
 
-			_swapChains = new GorgonSwapChain[settings.HeadSettings.Count + 1];
-
+			_swapChains = new GorgonSwapChain[settings.HeadSettings.Count + 1];			
+						
 			_trackedObjects = new List<IDisposable>();
 
 			_wasWindowed = Settings.IsWindowed;
 
 			if (window != null)
 			{
-				_originalWindowState = new FormStateRecord(window);
-				WindowState = new FormStateRecord(window);
+				WindowState = new FormStateRecord[settings.HeadSettings.Count + 1];
+				WindowState[0] = new FormStateRecord(window);
+
+				for (int i = 0; i < settings.HeadSettings.Count; i++)
+					WindowState[i + 1] = new FormStateRecord(settings.HeadSettings[i].BoundForm);
 			}
+			else
+				WindowState = new FormStateRecord[0];
 		}		
 		#endregion
 

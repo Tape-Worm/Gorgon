@@ -274,44 +274,51 @@ namespace GorgonLibrary.Graphics
 		/// Function to determine if a window is already bound to a swap chain or device window.
 		/// </summary>
 		/// <param name="settings">Settings to examine.</param>
+		/// <param name="currentInstance">The current device window instance if we're resetting.</param>
 		/// <returns>TRUE if bound, FALSE if not.</returns>
-		internal bool CheckWindowBound(GorgonSwapChainSettings settings)
+		internal bool CheckWindowBound(GorgonSwapChainSettings settings, GorgonRenderTarget currentInstance)
 		{
-			IObjectTracker tracker = this as IObjectTracker;
+			var deviceWindows = from trackedItem in ((IObjectTracker)this).TrackedObjects
+								let deviceItem = trackedItem as GorgonDeviceWindow
+								where deviceItem != null
+								select deviceItem;
 
-			// Ensure that we're not already using this window as a device window.
-			return tracker.TrackedObjects.Count(item =>
+			// Check each device window.
+			foreach(var deviceWindow in deviceWindows)
 			{
-				GorgonDeviceWindow deviceItem = item as GorgonDeviceWindow;
+				var deviceInstance = currentInstance as GorgonDeviceWindow;
 
-				// Check the head settings and swap chains.
-				if (deviceItem != null)
+				if ((settings.BoundWindow == deviceWindow.Settings.BoundWindow) && ((currentInstance == null) || (deviceInstance != deviceWindow)))
+					return true;
+
+				// Check multi-head settings.
+				if (deviceWindow.Settings.HeadSettings.Count(item => item.BoundWindow == settings.BoundWindow) > 0)
+					return true;
+
+				// Check swap chains.
+				var swapChains = from trackedItem in ((IObjectTracker)deviceWindow).TrackedObjects
+								 let swapItem = trackedItem as GorgonSwapChain
+								 where swapItem != null
+								 select swapItem;
+
+				foreach(var swapChain in swapChains)
 				{
-					if (deviceItem.IsMultiHead)
-					{
-						if (deviceItem.Settings.HeadSettings.Count(headItem => headItem.BoundWindow == settings.BoundWindow) > 0)
-							return true;
-					}
+					var swapInstance = currentInstance as GorgonSwapChain;
 
-					// Check swap chains.
-					if ((from trackedObject in ((IObjectTracker)deviceItem).TrackedObjects
-						 let swapChain = trackedObject as GorgonSwapChain
-						 where ((swapChain != null) && (swapChain.Settings.BoundWindow == settings.BoundWindow))
-						 select swapChain).Count() > 0)
-					{
+					if ((swapChain.Settings.BoundWindow == settings.BoundWindow) && ((swapInstance == null) || (swapInstance != swapChain)))
 						return true;
-					}
 				}
+			}
 
-				return ((deviceItem != null) && (deviceItem.Settings.BoundWindow == settings.BoundWindow));
-			}) > 0;
+			return false;
 		}
 
 		/// <summary>
 		/// Function to validate any settings for a device window.
 		/// </summary>
 		/// <param name="settings">Settings to validate.</param>
-		internal void ValidateDeviceWindowSettings(GorgonDeviceWindowSettings settings)
+		/// <param name="currentInstance">The current device window instance if we're resetting.</param>
+		internal void ValidateDeviceWindowSettings(GorgonDeviceWindowSettings settings, GorgonDeviceWindow currentInstance)
 		{
 			IObjectTracker tracker = this as IObjectTracker;
 			System.Windows.Forms.Form window = settings.BoundWindow as System.Windows.Forms.Form;
@@ -329,7 +336,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("Cannot switch to full screen with a child control.", "settings");
 
 			// Ensure that we're not already using this window as a device window.
-			if (CheckWindowBound(settings))
+			if (CheckWindowBound(settings, currentInstance))
 				throw new ArgumentException("The specified window is already assigned to a device window or swap chain.", "settings");
 
 			// If we haven't specified a size, or we're using a child control, then assume the size of the bound window.
@@ -337,11 +344,15 @@ namespace GorgonLibrary.Graphics
 				settings.Dimensions = settings.BoundWindow.ClientSize;
 
 			// Find out which device and output contain the window.
-			if (settings.Output == null) 
-				settings.Output = VideoDevices.GetOutputFromControl(settings.BoundWindow);			
+			if (settings.Output == null)
+				settings.Output = VideoDevices.GetOutputFromControl(settings.BoundWindow);
 
 			if ((settings.Device == null) || (!settings.Device.Outputs.Contains(settings.Output)))
 				settings.Device = settings.Output.VideoDevice;
+
+			// If we're multi-head, force this one to the master device output.
+			if ((settings.HeadSettings.Count > 0) && (settings.Output != settings.Device.MasterOutput))
+				settings.Output = settings.Device.MasterOutput;
 
 			// Use the default desktop display format if we haven't picked a format.
 			if (settings.Format == GorgonBufferFormat.Unknown)
@@ -384,7 +395,7 @@ namespace GorgonLibrary.Graphics
 			foreach (var headSetting in settings.HeadSettings)
 			{
 				// Ensure that we're not already using this window as a device window.
-				if (CheckWindowBound(settings))
+				if (CheckWindowBound(settings, currentInstance))
 					throw new ArgumentException("The specified window is already assigned to a device window or swap chain.", "settings");
 
 				if (headSetting.Format == GorgonBufferFormat.Unknown)
@@ -472,7 +483,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDeviceWindow target = null;
 
-			ValidateDeviceWindowSettings(settings);
+			ValidateDeviceWindowSettings(settings, null);
 
 			Gorgon.Log.Print("Creating new device window '{0}'.", Diagnostics.GorgonLoggingLevel.Simple, name);
 			
@@ -494,6 +505,20 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.DisplayFunction);
 			Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.VSyncInterval);
 			Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, settings.WillUseVideo);
+
+			foreach (var setting in settings.HeadSettings)
+			{
+				Gorgon.Log.Print("Sub ordinate head '{0}' information:", Diagnostics.GorgonLoggingLevel.Verbose, setting.Output.Name);
+				Gorgon.Log.Print("\tLayout: {0}x{1} Format: {2} Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, setting.DisplayMode.Width, setting.DisplayMode.Height, setting.DisplayMode.Format, setting.DisplayMode.RefreshRateNumerator, setting.DisplayMode.RefreshRateDenominator);
+				Gorgon.Log.Print("\tDepth/Stencil: {0} (Format: {1})", Diagnostics.GorgonLoggingLevel.Verbose, setting.DepthStencilFormat != GorgonBufferFormat.Unknown, setting.DepthStencilFormat);
+				Gorgon.Log.Print("\tMSAA: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.MSAAQualityLevel.Level != GorgonMSAALevel.None);
+				if (setting.MSAAQualityLevel.Level != GorgonMSAALevel.None)
+					Gorgon.Log.Print("\t\tMSAA Quality: {0}  Level: {1}", Diagnostics.GorgonLoggingLevel.Verbose, setting.MSAAQualityLevel.Quality, setting.MSAAQualityLevel.Level);
+				Gorgon.Log.Print("\tBackbuffer Count: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.BackBufferCount);
+				Gorgon.Log.Print("\tDisplay Function: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.DisplayFunction);
+				Gorgon.Log.Print("\tV-Sync interval: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.VSyncInterval);
+				Gorgon.Log.Print("\tVideo surface: {0}", Diagnostics.GorgonLoggingLevel.Verbose, setting.WillUseVideo);
+			}
 
 			Gorgon.Log.Print("Device window '{0}' created succesfully.", Diagnostics.GorgonLoggingLevel.Simple, name);
 
