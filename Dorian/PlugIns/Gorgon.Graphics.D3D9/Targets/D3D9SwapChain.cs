@@ -153,17 +153,6 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
-		/// Function to assign surfaces to this object after the fact.
-		/// </summary>
-		/// <param name="target">Back buffer surface.</param>
-		/// <param name="depthStencil">Depth/stencil surface.</param>
-		public void AssignSurfaces(GorgonSurface target, GorgonSurface depthStencil)
-		{
-			Surface = target;
-			DepthStencilSurface = depthStencil;
-		}
-
-		/// <summary>
 		/// Function to clear a target.
 		/// </summary>
 		/// <param name="color">Color to clear with.</param>
@@ -265,9 +254,29 @@ namespace GorgonLibrary.Graphics.D3D9
 		public D3D9SwapChain(GorgonD3D9Graphics graphics, D3D9DeviceWindow deviceWindow, string name, GorgonSwapChainSettings settings, SwapChain swapChain)
 			: base(graphics, deviceWindow, name, settings)
 		{
+			SlimDX.Direct3D9.Surface backBuffer = null;
+			SlimDX.Direct3D9.Surface depthBuffer = null;
+
+			// Get and create the back buffers.
+			backBuffer = swapChain.GetBackBuffer(0);
+			if (settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+			{
+				depthBuffer = SlimDX.Direct3D9.Surface.CreateDepthStencil(deviceWindow.D3DDevice,
+					settings.Width,
+					settings.Height,
+					D3DConvert.Convert(settings.DepthStencilFormat),
+					D3DConvert.Convert(settings.MSAAQualityLevel.Level),
+					(settings.MSAAQualityLevel.Level != GorgonMSAALevel.None ? settings.MSAAQualityLevel.Quality - 1 : 0),
+					false
+				);
+			}
+
 			_graphics = graphics;
 			_deviceWindow = deviceWindow;
 			D3DSwapChain = swapChain;
+			Surface = new D3D9Surface(name + "_BackBufferSurface", deviceWindow, backBuffer);
+			if (settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+				DepthStencilSurface = new D3D9Surface(name + "_DepthStencilSurface", deviceWindow, depthBuffer);
 		}
 		#endregion
 

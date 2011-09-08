@@ -118,7 +118,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="arguments">List of optional arguments.</param>
 		public void Print(string formatSpecifier, GorgonLoggingLevel level, params object[] arguments)
 		{
-			if (((LogFilterLevel == GorgonLoggingLevel.NoLogging) || (IsClosed)) && (level != GorgonLoggingLevel.All))
+			if (((LogFilterLevel == GorgonLoggingLevel.NoLogging) && (level != GorgonLoggingLevel.All)) || (IsClosed))
 				return;
 
 			StringBuilder outputLine = new StringBuilder(512);			// Output string 
@@ -206,14 +206,14 @@ namespace GorgonLibrary.Diagnostics
 		/// <exception cref="System.ArgumentNullException">Thrown when the parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="System.ArgumentException">Thrown whent he parameter is empty.</exception>
 		public GorgonLogFile(string appname)
-		{
+		{			
 			GorgonDebug.AssertParamString(appname, "appname");
 
 			IsClosed = true;
 
 			LogApplication = appname;
 
-			LogPath = Gorgon.GetUserApplicationPath(appname) + Path.ChangeExtension(GetType().Assembly.GetName().Name.FormatFileName(), ".log");
+			LogPath = Gorgon.GetUserApplicationPath(appname) + Path.ChangeExtension(appname.FormatFileName(), ".log");
 
 			if (string.IsNullOrEmpty(LogPath))
 				throw new IOException("The assembly name is not valid for a file name.");

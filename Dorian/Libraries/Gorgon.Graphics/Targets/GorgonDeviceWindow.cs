@@ -17,12 +17,14 @@ namespace GorgonLibrary.Graphics
 		: GorgonWindowTarget<GorgonDeviceWindowSettings>, IObjectTracker
 	{
 		#region Variables.
-		private bool _disposed = false;								// Flag to indicate that the object was already disposed.
-		private FormStateRecord _originalWindowState = null;		// Original window state.
-		private bool _wasMaximized = false;							// Flag to indicate that the window was maximized.
-		private IList<IDisposable> _trackedObjects = null;			// List of tracked objects.
-		private bool _wasWindowed = true;							// Flag to indicate that the device was windowed.
-		private GorgonRenderTarget _currentTarget = null;			// Current render target.
+		private bool _disposed = false;										// Flag to indicate that the object was already disposed.
+		private FormStateRecord _originalWindowState = null;				// Original window state.
+		private bool _wasMaximized = false;									// Flag to indicate that the window was maximized.
+		private IList<IDisposable> _trackedObjects = null;					// List of tracked objects.
+		private bool _wasWindowed = true;									// Flag to indicate that the device was windowed.
+		private GorgonRenderTarget _currentTarget = null;					// Current render target.
+		private GorgonSwapChain[] _swapChains = null;						// Swap chains for a multi-head device window.
+		private int _currentHead = 0;										// Currently active head.
 		#endregion
 
 		#region Properties.
@@ -33,6 +35,17 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to return the swap chains available for use by each head.
+		/// </summary>
+		protected GorgonSwapChain[] SwapChains
+		{
+			get
+			{
+				return _swapChains;
+			}
 		}
 
 		/// <summary>
@@ -53,7 +66,14 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				switch (Settings.DepthStencilFormat)
+				GorgonBufferFormat format = GorgonBufferFormat.Unknown;
+
+				if (CurrentHead == 0)
+					format = Settings.DepthStencilFormat;
+				else
+					format = Settings.HeadSettings[CurrentHead - 1].DepthStencilFormat;
+
+				switch (format)
 				{
 					case GorgonBufferFormat.D24_Float_S8_UInt:
 					case GorgonBufferFormat.D24_UIntNormal_X4S4_UInt:
@@ -89,7 +109,7 @@ namespace GorgonLibrary.Graphics
 				// Don't set the same target.
 				if (_currentTarget == value)
 					return;
-
+				
 				SetRenderTargetImpl(value);
 
 				_currentTarget = value;
@@ -99,11 +119,19 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return whether the target has a stencil buffer attaached to it.
 		/// </summary>
+		/// <remarks>This will return the whether a stencil exists for the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindow.CurrentHead">current head</see> in a multi-head device window.</remarks>
 		public override bool HasStencilBuffer
 		{
 			get 
 			{
-				switch (Settings.DepthStencilFormat)
+				GorgonBufferFormat format = GorgonBufferFormat.Unknown;
+
+				if (CurrentHead == 0)
+					format = Settings.DepthStencilFormat;
+				else
+					format = Settings.HeadSettings[CurrentHead - 1].DepthStencilFormat;
+
+				switch (format)
 				{
 					case GorgonBufferFormat.D32_Float_S8X24_UInt:
 					case GorgonBufferFormat.D24_Float_S8_UInt:
@@ -118,12 +146,78 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the number of active heads on the device window.
+		/// </summary>
+		public int HeadCount
+		{
+			get
+			{
+				return _swapChains.Length;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the currently active head in a multi-head device window.
+		/// </summary>
+		public int CurrentHead
+		{
+			get
+			{
+				return _currentHead;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+				if (value >= _swapChains.Length)
+					value = _swapChains.Length - 1;
+
+				_currentHead = value;
+
+				SetRenderTargetImpl(this);
+			}
+		}
+
+		/// <summary>
+		/// Property to return the depth/stencil buffer surface object a device window.
+		/// </summary>
+		/// <remarks>This will return the depth/stencil surface for the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindow.CurrentHead">current head</see> in a multi-head device window.</remarks>
+		public override GorgonSurface DepthStencilSurface
+		{
+			get
+			{
+				return _swapChains[CurrentHead].DepthStencilSurface;
+			}
+			protected set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Property to return the back buffer surface for a device window.
+		/// </summary>
+		/// <remarks>This will return the back buffer surface for the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindow.CurrentHead">current head</see> in a multi-head device window.</remarks>
+		public override GorgonSurface Surface
+		{
+			get
+			{
+				return _swapChains[CurrentHead].Surface;
+			}
+			protected set
+			{				
+			}
+		}
+
+		/// <summary>
 		/// Property to return the internal swap chain associated with this device window.
 		/// </summary>
+		/// <remarks>This will return the swap chain for the <see cref="P:GorgonLibrary.Graphics.GorgonDeviceWindow.CurrentHead">current head</see> in a multi-head device window.</remarks>
 		public GorgonSwapChain SwapChain
 		{
-			get;
-			protected set;
+			get
+			{
+				return _swapChains[CurrentHead - 1];
+			}
 		}
 		#endregion
 		
@@ -396,6 +490,8 @@ namespace GorgonLibrary.Graphics
 			: base(graphics, name, settings)
 		{
 			Form window = settings.BoundWindow as Form;
+
+			_swapChains = new GorgonSwapChain[settings.HeadSettings.Count + 1];
 
 			_trackedObjects = new List<IDisposable>();
 

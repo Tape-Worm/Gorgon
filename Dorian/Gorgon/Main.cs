@@ -77,6 +77,10 @@ namespace GorgonLibrary
 	/// and call <see cref="M:GorgonLibrary.Gorgon.Terminate">Terminate</see> when finished.</remarks>
 	public static class Gorgon
 	{
+		#region Constants.
+		private const string _logFile = "Tape_Worm/GorgonLibrary";			// Log file application name.
+		#endregion
+
 		#region Variables.
 		private static ApplicationLoop _loop = null;					// Application loop.
 		private static GorgonFrameRate _timingData = null;				// Frame rate timing data.
@@ -466,11 +470,23 @@ namespace GorgonLibrary
 				Terminate();
 
 			if (Log == null)
-				Log = new GorgonLogFile("GorgonLibrary");
+				Log = new GorgonLogFile(_logFile);
 
-			// Re-open the log.
+			// Re-open the log if it's closed.
 			if (Log.IsClosed)
-				Log.Open();
+			{
+				try
+				{
+					Log.Open();
+				}
+				catch (Exception ex)
+				{				
+#if DEBUG
+					// Only note this in DEBUG mode.
+					UI.GorgonDialogs.ErrorBox(applicationForm, ex);
+#endif
+				}
+			}
 
 			IsInitialized = true;			
 
@@ -539,28 +555,9 @@ namespace GorgonLibrary
 		/// </summary>
 		static Gorgon()
 		{
-			// Open log object.
-			Log = new GorgonLogFile("GorgonLibrary");
-
-			try
-			{
-				// Set this to intermediate, simple or none to have a smaller log file.
-#if !DEBUG
-				Log.LogFilterLevel = GorgonLoggingLevel.NoLogging;
-#endif
-
-				Log.Open();
-				GorgonException.Log = Log;
-			}
-			catch (Exception ex)
-			{
-#if DEBUG
-					// By rights, we should never see this error.  Better safe than sorry.
-					System.Windows.Forms.MessageBox.Show("Could not create a log file.\n" + ex.Message, "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-#else
-				Debug.Print("Error opening log: {0}", ex.Message);
-#endif
-			}
+			// Create the logging object and assign to our exception.
+			Log = new GorgonLogFile(_logFile);
+			GorgonException.Log = Log;
 		}
 		#endregion
 	}

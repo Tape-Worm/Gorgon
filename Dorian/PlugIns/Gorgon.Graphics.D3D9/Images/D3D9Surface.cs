@@ -76,6 +76,15 @@ namespace GorgonLibrary.Graphics.D3D9
 				_disposed = true;
 			}
 		}
+
+		/// <summary>
+		/// Function to save the contents of this surface to a file.
+		/// </summary>
+		/// <param name="fileName">Path and filename of the file to save.</param>
+		public override void Save(string fileName)
+		{
+			SlimDX.Direct3D9.Surface.ToFile(D3DSurface, fileName, ImageFileFormat.Png);
+		}
 		#endregion
 
 		#region Constructor/Destructor.

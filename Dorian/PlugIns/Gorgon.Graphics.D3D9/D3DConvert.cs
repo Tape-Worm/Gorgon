@@ -524,14 +524,45 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to convert Gorgon device multi-head window settings into D3D presentation parameters.
+		/// </summary>
+		/// <param name="settings">Settings to convert.</param>
+		/// <returns>The D3D presentation parameters.</returns>
+		public static PresentParameters Convert(GorgonDeviceWindowHeadSettings settings)
+		{
+			Format depthFormat = Convert(settings.DepthStencilFormat);
+
+			if (settings.DisplayFunction == GorgonDisplayFunction.Copy)
+				settings.BackBufferCount = 1;
+
+			PresentParameters result = new PresentParameters()
+			{
+				AutoDepthStencilFormat = Format.Unknown,
+				BackBufferCount = settings.BackBufferCount,
+				BackBufferFormat = D3DConvert.Convert(settings.Format),
+				BackBufferHeight = settings.Height,
+				BackBufferWidth = settings.Width,
+				DeviceWindowHandle = settings.BoundWindow.Handle,
+				EnableAutoDepthStencil = false,
+				Windowed = false,
+				FullScreenRefreshRateInHertz = settings.RefreshRateNumerator,
+				Multisample = D3DConvert.Convert(settings.MSAAQualityLevel.Level),
+				MultisampleQuality = (settings.MSAAQualityLevel.Level != GorgonMSAALevel.None ? settings.MSAAQualityLevel.Quality - 1 : 0),
+				PresentationInterval = D3DConvert.Convert(settings.VSyncInterval),
+				PresentFlags = (settings.WillUseVideo ? PresentFlags.Video : PresentFlags.None),
+				SwapEffect = D3DConvert.Convert(settings.DisplayFunction)
+			};
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to convert Gorgon device window settings into D3D presentation parameters.
 		/// </summary>
 		/// <param name="settings">Settings to convert.</param>
 		/// <returns>The D3D presentation parameters.</returns>
 		public static PresentParameters Convert(GorgonDeviceWindowSettings settings)
 		{
-			Format depthFormat = Convert(settings.DepthStencilFormat);
-
 			if (settings.DisplayFunction == GorgonDisplayFunction.Copy)
 				settings.BackBufferCount = 1;
 
@@ -546,13 +577,13 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			PresentParameters result = new PresentParameters()
 			{
-				AutoDepthStencilFormat = depthFormat,
+				AutoDepthStencilFormat = Format.Unknown,
 				BackBufferCount = settings.BackBufferCount,
 				BackBufferFormat = D3DConvert.Convert(settings.Format),
 				BackBufferHeight = settings.Height,
 				BackBufferWidth = settings.Width,
 				DeviceWindowHandle = settings.BoundWindow.Handle,
-				EnableAutoDepthStencil = (depthFormat != SlimDX.Direct3D9.Format.Unknown),
+				EnableAutoDepthStencil = false,
 				Windowed = settings.IsWindowed,
 				FullScreenRefreshRateInHertz = settings.RefreshRateNumerator,
 				Multisample = D3DConvert.Convert(settings.MSAAQualityLevel.Level),

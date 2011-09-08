@@ -90,6 +90,7 @@ namespace GorgonLibrary.Graphics.D3D9
 
 		private void Draw(float dt, GorgonSwapChainSettings settings)
 		{
+			int devicePasses = maxPasses;
 			_device.BeginScene();
 
 			Viewport view = new Viewport(0, 0, settings.Width, settings.Height, 0.0f, 1.0f);
@@ -104,14 +105,17 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			_device.SetTexture(0, _image);
 
-			for (int i = 0; i <= maxPasses; i++)
+			if (settings.MSAAQualityLevel.Level == GorgonMSAALevel.None)
+				devicePasses = 0;
+
+			for (int i = 0; i <= devicePasses; i++)
 			{
 				float passAngle = 0.0f;
 
-				if (maxPasses == 0)
-					passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (maxPasses - (i * (_dps))));
+				if (devicePasses == 0)
+					passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (devicePasses - (i * (_dps))));
 				else
-					passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (maxPasses - (i * (_dps / GorgonLibrary.Math.GorgonMathUtility.Pow(maxPasses, 2.25f)))));
+					passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_angle - (devicePasses - (i * (_dps / GorgonLibrary.Math.GorgonMathUtility.Pow(devicePasses, 2.25f)))));
 
 				_Yrot = Matrix.RotationY(passAngle);
 				_Yrot = _Yrot * Matrix.RotationX(passAngle);
@@ -120,7 +124,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				_device.SetTransform(TransformState.World, _Yrot);
 
 				if (settings.MSAAQualityLevel.Level != GorgonMSAALevel.None)
-					_device.SetRenderState(RenderState.MultisampleMask, ((int)GorgonLibrary.Math.GorgonMathUtility.Pow(2, (8 - (maxPasses - i))) - 1) & 0xFF);
+					_device.SetRenderState(RenderState.MultisampleMask, ((int)GorgonLibrary.Math.GorgonMathUtility.Pow(2, (8 - (devicePasses - i))) - 1) & 0xFF);
 				_device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
 			}
 			_device.EndScene();
@@ -149,7 +153,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				if (maxPasses > 8)
 					maxPasses = 8;
 			}
-
 		}
 
 		/// <summary>
@@ -159,6 +162,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		public void Run(float dt, GorgonSwapChainSettings settings)
 		{
 			Draw(dt, settings);
+
 		}
 
 		/// <summary>
