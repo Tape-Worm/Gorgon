@@ -132,6 +132,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the master output for this device.
+		/// </summary>
+		public GorgonVideoOutput MasterOutput
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
 		/// Property to return the device capabilities.
 		/// </summary>
 		public GorgonVideoDeviceCapabilities Capabilities

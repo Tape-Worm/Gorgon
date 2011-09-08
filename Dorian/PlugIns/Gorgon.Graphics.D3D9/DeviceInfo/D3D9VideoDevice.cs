@@ -111,8 +111,9 @@ namespace GorgonLibrary.Graphics.D3D9
 			Capabilities headCaps = null;
 			List<D3D9VideoOutput> outputs = new List<D3D9VideoOutput>();
 
-			outputs.Add(new D3D9VideoOutput(_d3d, _deviceType, _adapter, _caps.AdapterOrdinalInGroup, monitorInfo.Value));
-
+			MasterOutput = new D3D9VideoOutput(_d3d, _deviceType, _adapter, _caps.AdapterOrdinalInGroup, monitorInfo.Value);
+			outputs.Add(MasterOutput as D3D9VideoOutput);
+			
 			// Get subordinate heads.
 			if (_caps.NumberOfAdaptersInGroup > 0)
 			{

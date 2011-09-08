@@ -253,9 +253,9 @@ namespace GorgonLibrary.Graphics.D3D9
 			if (Settings.IsWindowed)
 			{
 				if (!inWindowedMode)
-					WindowState.Restore(true, false);
+					WindowState[0].Restore(true, false);
 				else
-					WindowState.Restore(true, true);
+					WindowState[0].Restore(true, true);
 			}
 
 			window.Visible = true;
@@ -269,6 +269,20 @@ namespace GorgonLibrary.Graphics.D3D9
 				window.DesktopLocation = Settings.Output.DesktopDimensions.Location;
 				window.FormBorderStyle = FormBorderStyle.None;
 				window.TopMost = true;
+			}
+
+			// Update any multi-head windows.
+			foreach (var setting in Settings.HeadSettings)
+			{
+				setting.BoundForm.Visible = true;
+				setting.BoundForm.Enabled = true;
+
+				if ((setting.BoundForm.ClientSize.Width != setting.Width) || (setting.BoundForm.ClientSize.Height != setting.Height))
+					setting.BoundForm.ClientSize = new System.Drawing.Size(setting.Width, setting.Height);
+
+				setting.BoundForm.DesktopLocation = setting.Output.DesktopDimensions.Location;
+				setting.BoundForm.FormBorderStyle = FormBorderStyle.None;
+				setting.BoundForm.TopMost = true;
 			}
 		}
 
@@ -322,7 +336,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				flags |= CreateFlags.AdapterGroupDevice;
 
 			// When we first create, record the last set of window modifications, after that, all bets are off and we own this window and will do as we need.
-			WindowState.Update();
 			AdjustWindow(true);
 			_presentParams = new PresentParameters[Settings.HeadSettings.Count + 1];
 			SetPresentationParameters();			
@@ -533,7 +546,10 @@ namespace GorgonLibrary.Graphics.D3D9
 			if (_test != null)
 			{
 				if (CurrentHead == 0)
+				{
 					_test.Run(dt, Settings);
+					_test.Transform(dt, Settings);
+				}
 				else
 					_test.Run(dt, Settings.HeadSettings[CurrentHead - 1]);
 			}
