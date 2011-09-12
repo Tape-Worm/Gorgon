@@ -31,8 +31,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.WinForms", "Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.XInput", "PlugIns\Gorgon.Input.XInput\Gorgon.Input.XInput.csproj", "{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBuffer", "Examples\TestBuffer\TestBuffer.csproj", "{BAC134D9-5560-422F-B518-8B997E151A6B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -213,18 +211,6 @@ Global
 		{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}.Release|x64.ActiveCfg = Release|Any CPU
 		{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}.Release|x86.ActiveCfg = Release|Any CPU
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Debug|x64.ActiveCfg = Debug|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Debug|x86.ActiveCfg = Debug|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Debug|x86.Build.0 = Debug|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Release|Any CPU.ActiveCfg = Release|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Release|Mixed Platforms.Build.0 = Release|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Release|x64.ActiveCfg = Release|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Release|x86.ActiveCfg = Release|x86
-		{BAC134D9-5560-422F-B518-8B997E151A6B}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
