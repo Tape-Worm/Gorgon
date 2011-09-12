@@ -113,6 +113,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\GorgonDataBuffer.cs" />
+    <Compile Include="Extensions\GorgonIntPtrExtensions.cs" />
     <Compile Include="Diagnostics\GorgonDebug.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
     <Compile Include="Extensions\GorgonStringFormatting.cs" />
