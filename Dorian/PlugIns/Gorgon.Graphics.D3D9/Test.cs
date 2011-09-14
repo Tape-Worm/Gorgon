@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using SlimDX;
 using SlimDX.Direct3D9;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics.D3D9
 {
@@ -16,9 +17,12 @@ namespace GorgonLibrary.Graphics.D3D9
 	{
 		private struct Vertex
 		{
-			public Vector3 Position;
+			[VertexElement(0)]
+			public Vector3D Position;
+			[VertexElement(1)]
 			public int Color;
-			public Vector2 UV;
+			[VertexElement(2)]
+			public Vector2D UV;
 		}
 		
 		private VertexBuffer _vb = null;
@@ -35,6 +39,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		private float _currentTime = 0;
 		private bool _timeSwitch = false;
 		private Texture _image = null;
+		private GorgonVertexElementList _vertexType = null;
 		//private int imageNumber = 0;
 
 
@@ -52,6 +57,8 @@ namespace GorgonLibrary.Graphics.D3D9
 			_window = window;
 			_device = device;
 
+			_vertexType = new GorgonVertexElementList(typeof(Vertex));
+
 			_vdecl = new VertexDeclaration(device, new VertexElement[] {new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
 																		new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
 																		new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0)});
@@ -60,10 +67,10 @@ namespace GorgonLibrary.Graphics.D3D9
 			_ib = new IndexBuffer(device, 12, Usage.WriteOnly, Pool.Managed, true);
 			_vb.Lock(0, 0, LockFlags.None).WriteRange(
 				new[] {
-						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(-0.5f, 0.5f, 0.0f), UV = new Vector2(0, 0.0f)},
-						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(0.5f, -0.5f, 0.025f), UV = new Vector2(1.0f, 1.0f) },
-						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(-0.5f, -0.5f, 0.0f), UV = new Vector2(0.0f, 1.0f) },
-						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3(0.5f, 0.5f, 0.0f), UV = new Vector2(1.0f, 0.0f) }				
+						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3D(-0.5f, 0.5f, 0.0f), UV = new Vector2D(0, 0.0f)},
+						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3D(0.5f, -0.5f, 0.025f), UV = new Vector2D(1.0f, 1.0f) },
+						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3D(-0.5f, -0.5f, 0.0f), UV = new Vector2D(0.0f, 1.0f) },
+						new Vertex() { Color = Color.White.ToArgb(), Position = new Vector3D(0.5f, 0.5f, 0.0f), UV = new Vector2D(1.0f, 0.0f) }				
 			});
 
 			_vb.Unlock();
