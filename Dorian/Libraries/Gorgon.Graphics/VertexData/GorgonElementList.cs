@@ -38,6 +38,9 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public enum VertexElementFormat
 	{
+		/// <summary>
+		/// Unknown format.
+		/// </summary>
 		Unknown = 0,
 		/// <summary>
 		/// Signed 8 bit byte.
@@ -102,178 +105,49 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// 4 floating point values.
 		/// </summary>
-		Float4 = 16
+		Float4 = 16,
+		/// <summary>
+		/// 4 byte color value.
+		/// </summary>
+		Color = 17,
+		/// <summary>
+		/// 4 invidual unsigned bytes.
+		/// </summary>
+		UByte4 = 18,
+		/// <summary>
+		/// 4 invidual normalized unsigned bytes.
+		/// </summary>
+		UByte4Normal = 19,
+		/// <summary>
+		/// Normalized signed 32 bit integer.
+		/// </summary>
+		Int32Normal = 20,
+		/// <summary>
+		/// Normalized unsigned 32 bit integer.
+		/// </summary>
+		UInt32Normal = 21,
+		/// <summary>
+		/// Normalized signed 64 bit integer.
+		/// </summary>
+		Int64Normal = 22,
+		/// <summary>
+		/// Normalized unsigned 64 bit integer.
+		/// </summary>
+		UInt64Normal = 23
 	}
 
 	/// <summary>
 	/// Used to describe the layout of a vertex.
 	/// </summary>
 	/// <remarks>This is a collection of vertex elements used to describe the layout of a vertex object.  The user can create this by hand using explicit element types, or 
-	/// by passing the type of the vertex object to the <see cref="GorgonLibrary.Graphics.GorgonVertexElementList.GetFromType">GetFromType</see> method.
+	/// by passing the type of the vertex object to the <see cref="GorgonLibrary.Graphics.GorgonVertexElementList.GetLayoutFromType">GetLayoutFromType</see> method.
 	/// <para>When using a type to determine the layout</para>
 	/// </remarks>
 	public class GorgonVertexElementList
-		: IList<GorgonVertexElementList.VertexElement>
+		: IList<GorgonVertexElement>
 	{
-		#region Classes.
-		/// <summary>
-		/// An element of a vertex.
-		/// </summary>
-		public class VertexElement
-		{
-			#region Properties.
-			/// <summary>
-			/// Property to return the context of the element.
-			/// </summary>
-			/// <remarks>This is a string value that corresponds to a shader input.  For example, to specify a position, the user would set this to "position".  
-			/// These contexts can be named whatever the user wishes.  However, some APIs (such as Direct3D 9) only have a set number of contexts and thus the
-			/// user should pass in one of the pre-defined constants for the context.
-			/// </remarks>
-			public string Context
-			{
-				get;
-				internal set;
-			}
-
-			/// <summary>
-			/// Property to return the index of the context.
-			/// </summary>
-			/// <remarks>This is used to denote the same context but at another index.  For example, to specify a second set of texture coordinates, set this 
-			/// to 1.</remarks>
-			public int Index
-			{
-				get;
-				internal set;
-			}
-
-			/// <summary>
-			/// Property to return the format of the data.
-			/// </summary>
-			/// <remarks>This is used to specify the format and type of the element.</remarks>
-			public VertexElementFormat Format
-			{
-				get;
-				internal set;
-			}
-
-			/// <summary>
-			/// Property to return the offset of this element compared to other elements.
-			/// </summary>
-			/// <remarks>The format of the data dictates the offset of the element.  This value is optional.</remarks>
-			public int Offset
-			{
-				get;
-				internal set;
-			}
-
-			/// <summary>
-			/// Property to return the vertex buffer slot this element will use.
-			/// </summary>
-			/// <remarks>Multiple vertex buffers can be used to identify parts of the same vertex.  This is used to minimize the amount of data being written to a 
-			/// vertex buffer and provide better performance.</remarks>
-			public int Slot
-			{
-				get;
-				internal set;
-			}
-
-			/// <summary>
-			/// Property to return whether this data is instanced or per vertex.
-			/// </summary>
-			/// <remarks>Indicates that the element should be included in instancing.</remarks>
-			public bool Instanced
-			{
-				get;
-				internal set;
-			}
-
-			/// <summary>
-			/// Property to return the number of instances to draw.
-			/// </summary>
-			/// <remarks>The number of times this element should be used before moving to the next element.</remarks>
-			public int InstanceCount
-			{
-				get;
-				internal set;
-			}
-
-			/// <summary>
-			/// Property to return the size in bytes of this element.
-			/// </summary>
-			public int Size
-			{
-				get;
-				internal set;
-			}
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Function to return the size, in bytes, of a format.
-			/// </summary>
-			/// <param name="format">Format to compare.</param>
-			/// <returns>The size in bytes of the format, or 0 if the format cannot be used or determined.</returns>
-			public static int SizeOf(VertexElementFormat format)
-			{
-				switch (format)
-				{
-					case VertexElementFormat.Byte:
-					case VertexElementFormat.UByte:
-						return sizeof(byte);
-					case VertexElementFormat.Int16:
-					case VertexElementFormat.UInt16:
-						return sizeof(Int16);
-					case VertexElementFormat.Int32:
-					case VertexElementFormat.UInt32:
-						return sizeof(Int32);
-					case VertexElementFormat.Int64:
-					case VertexElementFormat.UInt64:
-						return sizeof(Int64);
-					case VertexElementFormat.Int96:
-					case VertexElementFormat.UInt96:
-						return sizeof(Int64) + sizeof(Int32);
-					case VertexElementFormat.Int128:
-					case VertexElementFormat.UInt128:
-						return sizeof(Int64) * 2;
-					case VertexElementFormat.Float:
-						return sizeof(float);
-					case VertexElementFormat.Float2:
-						return sizeof(float) * 2;
-					case VertexElementFormat.Float3:
-						return sizeof(float) * 3;
-					case VertexElementFormat.Float4:
-						return sizeof(float) * 4;
-					default:
-						return 0;
-				}
-			}
-			#endregion
-
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="VertexElement"/> class.
-			/// </summary>
-			/// <param name="context">The context.</param>
-			/// <param name="format">The format.</param>
-			/// <param name="offset">The offset.</param>
-			/// <param name="index">The index.</param>
-			/// <param name="slot">The slot.</param>
-			/// <param name="instanced">if set to <c>true</c> [instanced].</param>
-			/// <param name="instanceCount">The instance count.</param>
-			internal VertexElement(string context, VertexElementFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
-			{
-				Context = context;
-				Index = index;
-				Format = format;
-				Offset = offset;
-				Size = SizeOf(format);
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Variables.
-		private List<VertexElement> _elements = null;		// List of elements.
+		private List<GorgonVertexElement> _elements = null;		// List of elements.
 		private bool _isUpdated = false;					// Flag to indicate that the vertex was updated.
 		private Type[] _allowedTypes = null;				// Types allowed when pulling information from an object.
 		#endregion
@@ -310,7 +184,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return an element by index.
 		/// </summary>
-		public GorgonVertexElementList.VertexElement this[int index]
+		public GorgonVertexElement this[int index]
 		{
 			get
 			{
@@ -394,21 +268,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="instanced">TRUE if this element is instanced, FALSE if not.</param>
 		/// <param name="instanceCount">If <paramref name="instanced"/> is TRUE, then the number of instances.  If FALSE, this parameter must be 0.</param>
 		/// <returns>A new vertex element.</returns>
-		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElementList.VertexElement">VertexElement</see> type for details on the various parameters.</remarks>
+		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElement">GorgonVertexElement</see> type for details on the various parameters.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown if the <paramref name="format"/> is not supported.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="offset"/> or <paramref name="context"/> is in use and the <paramref name="index"/> is the same.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown is the <paramref name="slot"/> parameter is less than 0 or greater than 15.</para>
 		/// </exception>
-		public GorgonVertexElementList.VertexElement Add(string context, VertexElementFormat format, int? offset, int index, int slot, bool instanced, int instanceCount)
+		public GorgonVertexElement Add(string context, VertexElementFormat format, int? offset, int index, int slot, bool instanced, int instanceCount)
 		{
-			if (VertexElement.SizeOf(format) == 0)
-				throw new ArgumentException("format", "'" + format.ToString() + "' is not a supported format.");
-
-			if ((slot < 0) || (slot > 15))
-				throw new ArgumentException("slot", "The value must be from 0 to 15.");
-
 			// Find the highest offset and increment by the last vertex element size.
 			if (offset == null) 
 			{
@@ -424,14 +292,10 @@ namespace GorgonLibrary.Graphics
 					offset = 0;		
 			}
 
-			if (_elements.Count(item => ((item.Offset == offset) || (string.Compare(item.Context, context, true) == 0)) && item.Index == index) > 0)
-				throw new ArgumentException("context, offset", "The offset '" + offset.Value + "' or context '" + context + "' is in use by another element with the same index.");
-
 			// Check for existing context at the same index.
+			GorgonVertexElement element = new GorgonVertexElement(context, format, offset.Value, index, slot, instanced, (instanced ? instanceCount : 0));
 
-			VertexElement element = new VertexElement(context, format, offset.Value, index, slot, instanced, (instanced ? instanceCount : 0));
-
-			_elements.Add(element);
+			Add(element);
 
 			IsUpdated = true;
 
@@ -447,14 +311,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="index">Index of the element.</param>
 		/// <param name="slot">Vertex buffer slot for the element.</param>
 		/// <returns>A new vertex element.</returns>
-		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElementList.VertexElement">VertexElement</see> type for details on the various parameters.</remarks>
+		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElement">GorgonVertexElement</see> type for details on the various parameters.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown if the <paramref name="format"/> is not supported.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="offset"/> is in use and the <paramref name="index"/> is the same.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown is the <paramref name="slot"/> parameter is less than 0 or greater than 15.</para>
 		/// </exception>
-		public GorgonVertexElementList.VertexElement Add(string context, VertexElementFormat format, int? offset, int index, int slot)
+		public GorgonVertexElement Add(string context, VertexElementFormat format, int? offset, int index, int slot)
 		{
 			return Add(context, format, offset, index, slot, false, 0);
 		}
@@ -467,12 +331,12 @@ namespace GorgonLibrary.Graphics
 		/// <param name="offset">Offset in bytes of the element.</param>
 		/// <param name="index">Index of the element.</param>
 		/// <returns>A new vertex element.</returns>
-		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElementList.VertexElement">VertexElement</see> type for details on the various parameters.</remarks>
+		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElement">GorgonVertexElement</see> type for details on the various parameters.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown if the <paramref name="format"/> is not supported.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="offset"/> is in use and the <paramref name="index"/> is the same.</para>
 		/// </exception>
-		public GorgonVertexElementList.VertexElement Add(string context, VertexElementFormat format, int? offset, int index)
+		public GorgonVertexElement Add(string context, VertexElementFormat format, int? offset, int index)
 		{
 			return Add(context, format, offset, index, 0, false, 0);
 		}
@@ -484,12 +348,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">Format of the element.</param>
 		/// <param name="offset">Offset in bytes of the element.</param>
 		/// <returns>A new vertex element.</returns>
-		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElementList.VertexElement">VertexElement</see> type for details on the various parameters.</remarks>
+		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElement">GorgonVertexElement</see> type for details on the various parameters.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown if the <paramref name="format"/> is not supported.
-		/// <para>-or-</para>
-		/// <para>Thrown if the <paramref name="offset"/> is in use and the <paramref name="index"/> is the same.</para>
 		/// </exception>
-		public GorgonVertexElementList.VertexElement Add(string context, VertexElementFormat format, int? offset)
+		public GorgonVertexElement Add(string context, VertexElementFormat format, int? offset)
 		{
 			return Add(context, format, offset, 0, 0, false, 0);
 		}
@@ -508,14 +370,14 @@ namespace GorgonLibrary.Graphics
 		/// Function to retrieve the vertex layout from a specific type.
 		/// </summary>
 		/// <param name="type">Type of retrieve layout info from.</param>
-		/// <remarks>Use this to create a vertex layout from a type.  Properties and fields in this type must be marked with the <see cref="GorgonLibrary.Graphics.VertexElementAttribute">VertexElementAttribute</see> in order for the element list to consider it and those fields or properties must be public.
+		/// <remarks>Use this to create a vertex layout from a type.  Properties and fields in this type must be marked with the <see cref="GorgonLibrary.Graphics.VertexElementAttribute">GorgonVertexElementAttribute</see> in order for the element list to consider it and those fields or properties must be public.
 		/// <para>Fields/properties marked with the attribute must be either a (u)byte, (u)short, (u)int, (u)long, float or one of the Vector2/3/4D types.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="type"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if a field/property type cannot be mapped to a <see cref="E:GorgonLibrary.Graphics.VertexElementFormat">VertexElementFormat</see>.</exception>
-		public void GetFromType(Type type)
+		public void GetLayoutFromType(Type type)
 		{
-			VertexElement element = null;
+			GorgonVertexElement element = null;
 			IList<MemberInfo> members = type.GetMembers();
 			int byteOffset = 0;
 
@@ -536,6 +398,9 @@ namespace GorgonLibrary.Graphics
 			{
 				VertexElementFormat format = item.Attribute.Format;
 				string contextName = item.Attribute.Context;
+
+				if (!_allowedTypes.Contains(item.ReturnType))
+					throw new GorgonException(GorgonResult.CannotCreate, "The type '" + item.ReturnType.FullName.ToString() + "' is not a valid type for a vertex element.");
 
 				// Try to determine the format from the type.
 				if (format == VertexElementFormat.Unknown)
@@ -576,7 +441,7 @@ namespace GorgonLibrary.Graphics
 									typeof(Vector4D)
 								};
 
-			_elements = new List<VertexElement>(16);
+			_elements = new List<GorgonVertexElement>(16);
 		}
 
 		/// <summary>
@@ -586,11 +451,11 @@ namespace GorgonLibrary.Graphics
 		public GorgonVertexElementList(Type type)
 			: this()
 		{
-			GetFromType(type);
+			GetLayoutFromType(type);
 		}
 		#endregion
 
-		#region IList<VertexElement> Members
+		#region IList<GorgonVertexElement> Members
 		#region Properties.
 		/// <summary>
 		/// Gets or sets the element at the specified index.
@@ -605,7 +470,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The property is set and the <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		GorgonVertexElementList.VertexElement IList<GorgonVertexElementList.VertexElement>.this[int index]
+		GorgonVertexElement IList<GorgonVertexElement>.this[int index]
 		{
 			get
 			{
@@ -626,7 +491,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
 		/// </returns>
-		public int IndexOf(GorgonVertexElementList.VertexElement item)
+		public int IndexOf(GorgonVertexElement item)
 		{
 			return _elements.IndexOf(item);
 		}
@@ -642,7 +507,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		void IList<GorgonVertexElementList.VertexElement>.Insert(int index, GorgonVertexElementList.VertexElement item)
+		void IList<GorgonVertexElement>.Insert(int index, GorgonVertexElement item)
 		{
 			throw new NotSupportedException();
 		}
@@ -657,14 +522,14 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		void IList<GorgonVertexElementList.VertexElement>.RemoveAt(int index)
+		void IList<GorgonVertexElement>.RemoveAt(int index)
 		{
 			Remove(index);
 		}
 		#endregion
 		#endregion
 
-		#region ICollection<VertexElement> Members
+		#region ICollection<GorgonVertexElement> Members
 		#region Properties.
 		/// <summary>
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
@@ -696,15 +561,52 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// Function to add a list of vertex elements to the list.
 		/// </summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-		///   </exception>
-		void ICollection<GorgonVertexElementList.VertexElement>.Add(GorgonVertexElementList.VertexElement item)
+		/// <param name="items">Items to add.</param>
+		/// <exception cref="System.ArgumentNullExecption">Thrown if the <paramref name="items"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the items parameter contains no items.
+		/// <para>-or-</para>
+		/// <para>Thrown if the element format is not supported.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown if the element offset or element context is in use and the element index is the same.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown is the element slot is less than 0 or greater than 15.</para>		/// </exception>
+		public void AddRange(IEnumerable<GorgonVertexElement> items)
 		{
-			throw new NotSupportedException();
+			foreach (var item in items)
+				Add(item);
+		}
+
+		/// <summary>
+		/// Function to add a vertex element to the list.
+		/// </summary>
+		/// <param name="item">Element to add.</param>
+		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonVertexElement">GorgonVertexElement</see> type for details on the various parameters.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="item"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown if the element format is not supported.
+		/// <para>-or-</para>
+		/// <para>Thrown if the element offset or element context is in use and the element index is the same.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown is the element slot is less than 0 or greater than 15.</para>
+		/// </exception>
+		public void Add(GorgonVertexElement item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+
+			if (GorgonVertexElement.SizeOf(item.Format) == 0)
+				throw new ArgumentException("format", "'" + item.Format.ToString() + "' is not a supported format.");
+
+			if ((item.Slot < 0) || (item.Slot > 15))
+				throw new ArgumentException("slot", "The value must be from 0 to 15.");
+
+			if (_elements.Count(element => ((element.Offset == item.Offset) || (string.Compare(element.Context, item.Context, true) == 0)) && element.Index == item.Index) > 0)
+				throw new ArgumentException("context, offset", "The offset '" + item.Offset + "' or context '" + item.Context + "' is in use by another item with the same index.");
+
+			_elements.Add(item);
+
+			IsUpdated = true;
 		}
 
 		/// <summary>
@@ -726,7 +628,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
 		/// </returns>
-		bool ICollection<GorgonVertexElementList.VertexElement>.Contains(GorgonVertexElementList.VertexElement item)
+		bool ICollection<GorgonVertexElement>.Contains(GorgonVertexElement item)
 		{
 			return _elements.Contains(item);
 		}
@@ -736,7 +638,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="array">The array.</param>
 		/// <param name="arrayIndex">Index of the array.</param>
-		void ICollection<GorgonVertexElementList.VertexElement>.CopyTo(GorgonVertexElementList.VertexElement[] array, int arrayIndex)
+		void ICollection<GorgonVertexElement>.CopyTo(GorgonVertexElement[] array, int arrayIndex)
 		{
 			throw new NotImplementedException();
 		}
@@ -751,7 +653,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		///   </exception>
-		public bool Remove(GorgonVertexElementList.VertexElement item)
+		public bool Remove(GorgonVertexElement item)
 		{
 			IsUpdated = true;
 			return _elements.Remove(item);			
@@ -759,14 +661,14 @@ namespace GorgonLibrary.Graphics
 		#endregion
 		#endregion
 
-		#region IEnumerable<VertexElement> Members
+		#region IEnumerable<GorgonVertexElement> Members
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>
 		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
 		/// </returns>
-		public IEnumerator<GorgonVertexElementList.VertexElement> GetEnumerator()
+		public IEnumerator<GorgonVertexElement> GetEnumerator()
 		{
 			foreach (var element in _elements)
 				yield return element;

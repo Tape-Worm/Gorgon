@@ -225,7 +225,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="fieldOrder">Explicit layout order of the field when being parsed from the type.</param>
 		/// <param name="context">The context of the element.</param>
-		/// <param name="format">The format/type of the element.</param>
 		public VertexElementAttribute(int fieldOrder, string context)
 			: this(context, VertexElementFormat.Unknown, 0, 0, 0, false, 0)
 		{
