@@ -57,7 +57,7 @@ namespace GorgonLibrary.Graphics.D3D9
 			_window = window;
 			_device = device;
 
-			_vertexType = new GorgonVertexElementList(typeof(Vertex));
+			_vertexType = new GorgonVertexElementList(typeof(Vertex));			
 
 			_vdecl = new VertexDeclaration(device, new VertexElement[] {new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
 																		new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),

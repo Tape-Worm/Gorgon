@@ -81,6 +81,7 @@
     <Compile Include="Targets\IDeviceWindowChild.cs" />
     <Compile Include="Targets\IRenderTargetWindow.cs" />
     <Compile Include="VertexData\GorgonElementList.cs" />
+    <Compile Include="VertexData\GorgonVertexElement.cs" />
     <Compile Include="VertexData\VertexElementAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
