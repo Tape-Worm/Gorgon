@@ -627,82 +627,106 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to retrieve the D3D declaration type.
+		/// </summary>
+		/// <param name="format">Format to parse.</param>
+		/// <returns>The vertex declaration type.</returns>
+		private static DeclarationType GetDeclarationType(VertexElementFormat format)
+		{
+			switch (format)
+			{
+				case VertexElementFormat.Color:
+					return DeclarationType.Color;
+				case VertexElementFormat.Float:
+					return DeclarationType.Float1;
+				case VertexElementFormat.Float2:
+					return DeclarationType.Float2;
+				case VertexElementFormat.Float3:
+					return DeclarationType.Float3;
+				case VertexElementFormat.Float4:
+					return DeclarationType.Float4;
+				case VertexElementFormat.Int32:
+					return DeclarationType.Short2;
+				case VertexElementFormat.Int32Normal:
+					return DeclarationType.Short2N;
+				case VertexElementFormat.Int64:
+					return DeclarationType.Short4;
+				case VertexElementFormat.Int64Normal:
+					return DeclarationType.Short4N;
+				case VertexElementFormat.UInt32Normal:
+					return DeclarationType.UShort2N;
+				case VertexElementFormat.UInt64Normal:
+					return DeclarationType.UShort4N;
+				case VertexElementFormat.UByte4:
+					return DeclarationType.Ubyte4;
+				case VertexElementFormat.UByte4Normal:
+					return DeclarationType.UByte4N;
+				default:
+					throw new ArgumentException("elements", "Direct 3D 9 does not support the format '" + format.ToString() + "'.");
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve the D3D declaration usage.
+		/// </summary>
+		/// <param name="context">Context to parse.</param>
+		/// <returns>The D3D declaration usage.</returns>
+		private static DeclarationUsage GetDeclarationUsage(string context)
+		{
+			switch (context.ToUpper())
+			{
+				case GorgonVertexElement.Position:
+					return DeclarationUsage.Position;
+				case GorgonVertexElement.BlendingWeight:
+					return DeclarationUsage.BlendWeight;
+				case GorgonVertexElement.BlendingIndex:
+					return  DeclarationUsage.BlendIndices;
+				case GorgonVertexElement.Normal:
+					return DeclarationUsage.Normal;
+				case GorgonVertexElement.Diffuse:
+				case GorgonVertexElement.Specular:
+					return DeclarationUsage.Color;
+				case GorgonVertexElement.TextureCoordinates:
+					return DeclarationUsage.TextureCoordinate;
+				case GorgonVertexElement.Binormal:
+					return DeclarationUsage.Binormal;
+				case GorgonVertexElement.Tangent:
+					return DeclarationUsage.Tangent;
+				default:
+					throw new ArgumentException("context", "'" + context + "' cannot be mapped to a valid Direct 3D 9 usage.");
+			}
+		}
+
+		/// <summary>
 		/// Function to convert a Gorgon vertex element list into a D3D vertex declaration.
 		/// </summary>
 		/// <param name="elements">List of vertex elements to convert.</param>
 		/// <returns>The D3D vertex declaration.</returns>
-		public static VertexDeclaration Convert(IEnumerable<GorgonVertexElement> elements)
+		public static VertexElement[] Convert(IEnumerable<GorgonVertexElement> elements)
 		{
 			VertexElement[] vertices = new VertexElement[elements.Count() + 1];
 			DeclarationType declType = DeclarationType.Unused;
 			DeclarationUsage usage = DeclarationUsage.Position;
+			int index = 0;
 
 			for(int i = 0; i < elements.Count(); i++)
 			{
 				var element = elements.ElementAt(i);
 
-				switch(element.Format)
-				{
-						//1
-					case VertexElementFormat.Color:
-						declType = DeclarationType.Color;
-						break;
-						//2
-					case VertexElementFormat.Float:
-						declType = DeclarationType.Float1;
-						break;
-						//3
-					case VertexElementFormat.Float2:
-						declType = DeclarationType.Float2;
-						break;
-						//4
-					case VertexElementFormat.Float3:
-						declType = DeclarationType.Float3;
-						break;
-						//5
-					case VertexElementFormat.Float4:
-						declType = DeclarationType.Float4;
-						break;
-						//6
-					case VertexElementFormat.Int32:
-						declType = DeclarationType.Short2;
-						break;
-						//7
-					case VertexElementFormat.Int32Normal:
-						declType = DeclarationType.Short2N;
-						break;
-						//8
-					case VertexElementFormat.Int64:
-						declType = DeclarationType.Short4;
-						break;
-						//9
-					case VertexElementFormat.Int64Normal:
-						declType = DeclarationType.Short4N;
-						break;
-						//10
-					case VertexElementFormat.UInt32Normal:
-						declType = DeclarationType.UShort2N;
-						break;
-						//11
-					case VertexElementFormat.UInt64Normal:
-						declType = DeclarationType.UShort4N;
-						break;
-						//12
-					case VertexElementFormat.UByte4:
-						declType = DeclarationType.Ubyte4;
-						break;
-						//13
-					case VertexElementFormat.UByte4Normal:
-						declType = DeclarationType.UByte4N;
-						break;
-					default:
-						throw new ArgumentException("elements", "Direct 3D 9 does not support the format '" + element.Format.ToString() + "'.");
-				}
+				index = element.Index;
+				declType = GetDeclarationType(element.Format);
+				usage = GetDeclarationUsage(element.Context);
 
-				//vertices[i] = new VertexElement(element.Slot, element.Offset, declType, DeclarationMethod.Default 
+				// Specular is just a color with an index of 1, so force it to an index of 1.
+				if (string.Compare(element.Context, GorgonVertexElement.Specular, true) == 0)
+					index = 1;
+
+				vertices[i] = new VertexElement((short)element.Slot, (short)element.Offset, declType, DeclarationMethod.Default, usage, (byte)index);
 			}
 
 			vertices[elements.Count()] = VertexElement.VertexDeclarationEnd;
+
+			return vertices;
 		}
 		#endregion
 	}
