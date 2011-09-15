@@ -564,7 +564,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to add a list of vertex elements to the list.
 		/// </summary>
 		/// <param name="items">Items to add.</param>
-		/// <exception cref="System.ArgumentNullExecption">Thrown if the <paramref name="items"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="items"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown if the items parameter contains no items.
 		/// <para>-or-</para>
 		/// <para>Thrown if the element format is not supported.</para>
@@ -574,6 +574,9 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown is the element slot is less than 0 or greater than 15.</para>		/// </exception>
 		public void AddRange(IEnumerable<GorgonVertexElement> items)
 		{
+			if (items == null)
+				throw new ArgumentNullException("items");
+
 			foreach (var item in items)
 				Add(item);
 		}

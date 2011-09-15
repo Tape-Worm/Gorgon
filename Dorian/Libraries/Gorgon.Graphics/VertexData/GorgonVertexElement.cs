@@ -36,6 +36,45 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public class GorgonVertexElement
 	{
+		#region Variables.
+		/// <summary>
+		/// Pre-defined position context.
+		/// </summary>
+		public const string Position = "POSITION";
+		/// <summary>
+		/// Pre-defined blending weights context.
+		/// </summary>
+		public const string BlendingWeight = "BLEND_WEIGHT";
+		/// <summary>
+		/// Pre-defined blending indices context.
+		/// </summary>
+		public const string BlendingIndex = "BLEND_INDICES";
+		/// <summary>
+		/// Pre-defined normal (3 floating point values) context.
+		/// </summary>
+		public const string Normal = "NORMAL";
+		/// <summary>
+		/// Pre-defined diffuse color context.
+		/// </summary>
+		public const string Diffuse = "DIFFUSE";
+		/// <summary>
+		/// Pre-defined specular color context.
+		/// </summary>
+		public const string Specular = "SPECULAR";
+		/// <summary>
+		/// Pre-defined texture coordinates context.
+		/// </summary>
+		public const string TextureCoordinates = "TEXTURE_COORDINATES";
+		/// <summary>
+		/// Pre-defined binormal context.
+		/// </summary>
+		public const string Binormal = "BINORMAL";
+		/// <summary>
+		/// Pre-defined tangent context.
+		/// </summary>
+		public const string Tangent = "TANGENT";
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the context of the element.
