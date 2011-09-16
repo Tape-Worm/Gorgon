@@ -212,21 +212,7 @@ namespace GorgonLibrary.Data
 			if (destinationIndex + size > destination.Length * Marshal.SizeOf(typeof(T)))
 				throw new ArgumentOutOfRangeException("destinationIndex", "Index and size cannot be larger than the array.");
 
-			unsafe
-			{
-				GCHandle destHandle = GCHandle.Alloc(destination, GCHandleType.Pinned);
-
-				try
-				{
-					byte* destPtr = (byte *)Marshal.UnsafeAddrOfPinnedArrayElement(destination, destinationIndex);
-					FastCopy((byte*)source, destPtr, size);
-				}
-				finally
-				{
-					if (destHandle.IsAllocated)
-						destHandle.Free();
-				}
-			}
+			Memory.GorgonMemory.Read<T>(source, destination, destinationIndex, size);
 		}
 
 		/// <summary>
@@ -396,21 +382,7 @@ namespace GorgonLibrary.Data
 			if (sourceIndex + size > source.Length * Marshal.SizeOf(typeof(T)))
 				throw new ArgumentOutOfRangeException("sourceIndex", "Index and size cannot be larger than the array.");
 
-			unsafe
-			{
-				GCHandle destHandle = GCHandle.Alloc(source, GCHandleType.Pinned);
-
-				try
-				{
-					byte* srcPtr = (byte *)Marshal.UnsafeAddrOfPinnedArrayElement(source, sourceIndex);
-					FastCopy(srcPtr, (byte *)destination, size);
-				}
-				finally
-				{
-					if (destHandle.IsAllocated)
-						destHandle.Free();
-				}
-			}
+			Memory.GorgonMemory.Write<T>(destination, source, sourceIndex, size);
 		}
 
 		/// <summary>
@@ -501,6 +473,40 @@ namespace GorgonLibrary.Data
 					thisPtr++;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Function to write a specific value type to the memory pointed at by the pointer.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write.</typeparam>
+		/// <param name="destination">The destination pointer.</param>
+		/// <param name="value">The value to write.</param>
+		/// <remarks>This method can only write value types composed of primitives, reference objects will not work.
+		/// <para>There is no way to determine the size of the data pointed at by the pointer, so the user must take care not to write outside the bounds of the memory.</para>
+		/// </remarks>
+		/// <returns>The number of bytes written.</returns>
+		public static void Write<T>(this IntPtr destination, T value)
+			where T : struct
+		{
+			Memory.GorgonMemory.Write<T>(destination, value);
+		}
+
+		/// <summary>
+		/// Function to read a specific value from the memory pointed at by the pointer.
+		/// </summary>
+		/// <typeparam name="T">Type of value to read.</typeparam>
+		/// <param name="source">The source pointer.</param>
+		/// <param name="value">The value read from the pointer.</param>
+		/// <returns>The number of bytes read.</returns>
+		/// <remarks>This method can only write value types composed of primitives, reference objects will not work.
+		/// <para>There is no way to determine the size of the data pointed at by the pointer, so the user must take care not to write outside the bounds of the memory.</para>
+		/// </remarks>
+		public static T Read<T>(this IntPtr source)
+			where T : struct
+		{
+			T result = default(T);
+			Memory.GorgonMemory.Read<T>(source, ref result);
+			return result;
 		}
 	}
 }

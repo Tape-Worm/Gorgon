@@ -67,7 +67,8 @@ namespace Test_DataStream
 			Console.WriteLine("Press a key to start.");
 			Console.ReadKey();
 
-			size = (Int32.MaxValue / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
+			//size = (Int32.MaxValue / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
+			size = 10000000;
 
 			Test[] crc = new Test[size];
 			Test[] items = new Test[size];
@@ -101,7 +102,7 @@ namespace Test_DataStream
 				_timer = Stopwatch.StartNew();
 				for (int i = 0; i < items.Length; i++)
 				{
-					newStream.Write<Test>(items[i]);
+					newStream.Write<Test>(items[i], 24);
 
 				}
 				_timer.Stop();
@@ -113,7 +114,7 @@ namespace Test_DataStream
 				_timer = Stopwatch.StartNew();
 				for (int i = 0; i < items.Length; i++)
 				{
-					items[i] = newStream.Read<Test>();
+					items[i] = newStream.Read<Test>(24);
 				}
 				_timer.Stop();
 				Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
@@ -127,7 +128,7 @@ namespace Test_DataStream
 
 				Console.Write("Writing {0} vertices at once...", size);
 				_timer = Stopwatch.StartNew();
-				newStream.Write<Test>(items);
+				newStream.WriteRange<Test>(items);
 				_timer.Stop();
 
 				Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
@@ -136,15 +137,15 @@ namespace Test_DataStream
 
 				Console.Write("Reading {0} vertices at once...", size);
 				_timer = Stopwatch.StartNew();
-				items = newStream.Read<Test>(size);
+				items = newStream.ReadRange<Test>(size);
 				_timer.Stop();
+
+				Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
 
 				if (!CheckCRC(items, crc))
 				{
 					Console.WriteLine("CRC does not match.");
 				}
-
-				Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
 
 				crc = null;
 				items = null;

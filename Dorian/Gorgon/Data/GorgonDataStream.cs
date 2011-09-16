@@ -492,7 +492,7 @@ namespace GorgonLibrary.Data
 		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		public virtual void Write<T>(T[] buffer, int offset, int count)
+		public virtual void WriteRange<T>(T[] buffer, int offset, int count)
 			where T : struct
 		{
 			int actualCount = count * Marshal.SizeOf(typeof(T));
@@ -530,7 +530,7 @@ namespace GorgonLibrary.Data
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="buffer"/> is null. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		public void Write<T>(T[] buffer)
+		public void WriteRange<T>(T[] buffer)
 			where T : struct
 		{
 			if (buffer == null)
@@ -539,7 +539,7 @@ namespace GorgonLibrary.Data
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
-			Write<T>(buffer, 0, buffer.Length);
+			WriteRange<T>(buffer, 0, buffer.Length);
 		}
 
 		/// <summary>
@@ -547,10 +547,12 @@ namespace GorgonLibrary.Data
 		/// </summary>
 		/// <typeparam name="T">Type of data to write.</typeparam>
 		/// <param name="item">Value to write.</param>
+		/// <param name="typeSize">Size of the type, in bytes.</param>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		public void Write<T>(T item)
+		/// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
+		public void Write<T>(T item, int typeSize)
 			where T : struct
 		{
 			if (!CanWrite)
@@ -559,9 +561,11 @@ namespace GorgonLibrary.Data
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
 
-			T[] items = new T[] { item };
+			if (typeSize + Position > _length)
+				throw new AccessViolationException("Cannot write beyond the end of the stream.");
 
-			Write<T>(items, 0, 1);
+			_pointerOffset.Write<T>(item);
+			Position += typeSize;
 		}
 
 		/// <summary>
@@ -587,7 +591,7 @@ namespace GorgonLibrary.Data
 		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		public virtual int Read<T>(T[] buffer, int offset, int count)
+		public virtual int ReadRange<T>(T[] buffer, int offset, int count)
 			where T : struct
 		{
 			int actualCount = count * Marshal.SizeOf(typeof(T));
@@ -624,10 +628,10 @@ namespace GorgonLibrary.Data
 		/// Function to read an array of value types from the stream.
 		/// </summary>
 		/// <typeparam name="T">Type of data to write.</typeparam>
-		/// <param name="buffer">Array to read from.</param>
+		/// <param name="count">Number of items to read.</param>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		public T[] Read<T>(int count)
+		public T[] ReadRange<T>(int count)
 			where T : struct
 		{
 			if (!CanRead)
@@ -635,7 +639,7 @@ namespace GorgonLibrary.Data
 
 			T[] result = new T[count];
 
-			Read<T>(result, 0, count);
+			ReadRange<T>(result, 0, count);
 
 			return result;
 		}
@@ -643,10 +647,12 @@ namespace GorgonLibrary.Data
 		/// <summary>
 		/// Function to read a value type from the 
 		/// </summary>
+		/// <param name="typeSize">The size, in bytes, of the type.</param>
 		/// <returns>The value type within the stream.</returns>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		public T Read<T>()
+		/// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
+		public T Read<T>(int typeSize)
 			where T : struct
 		{
 			if (!CanRead)
@@ -655,11 +661,14 @@ namespace GorgonLibrary.Data
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
 
-			T[] items = new T[] { default(T) };
+			if (typeSize + Position > _length)
+				throw new AccessViolationException("Cannot read beyond the end of the stream.");
 
-			Read<T>(items, 0, 1);
+			T result = default(T);
+			result = _pointerOffset.Read<T>();
+			Position += typeSize;
 
-			return items[0];
+			return result;
 		}
 		#endregion
 
@@ -755,7 +764,6 @@ namespace GorgonLibrary.Data
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
 		/// <param name="source">The source pointer.</param>
-		/// <param name="position">The position to start at (in bytes).</param>
 		/// <param name="size">The size of the buffer (in bytes).</param>
 		/// <param name="status">A flag indicating if the buffer is read only, write only or both.</param>
 		public GorgonDataStream(IntPtr source, int size, StreamStatus status)

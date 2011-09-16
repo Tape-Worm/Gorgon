@@ -94,6 +94,9 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GorgonMemory, Version=1.0.4276.12213, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\Dependencies\GorgonMemory\x64\GorgonMemory.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
