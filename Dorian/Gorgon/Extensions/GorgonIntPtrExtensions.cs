@@ -112,9 +112,9 @@ namespace GorgonLibrary.Data
 		/// <param name="size">Size of the data to copy, in bytes.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the destination pointer is NULL (Nothing in VB.Net).</exception>
-		public static void CopyTo(this IntPtr source, IntPtr destination, int size)
-		{
-			CopyTo(source, destination, size);
+		public unsafe static void CopyTo(this IntPtr source, IntPtr destination, int size)
+		{			
+			CopyTo(source, (void *)destination, size);
 		}
 
 		/// <summary>

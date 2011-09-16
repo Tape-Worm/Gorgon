@@ -122,13 +122,23 @@ namespace Tester_Graphics
 			}
 		}
 
+		private Random _rnd = new Random();
+
+		public struct Test
+		{
+			public float x;
+			public float y;
+			public int z;
+			public short w;
+		}
+
 		protected override void OnLoad(EventArgs e)
 		{			
 			base.OnLoad(e);
 
 			int? quality = null;
 
-			try 
+			try
 			{
 				this.panelDX.Visible = false;
 				Gorgon.Initialize(this);

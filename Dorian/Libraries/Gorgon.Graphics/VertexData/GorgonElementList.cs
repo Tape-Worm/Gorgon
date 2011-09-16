@@ -599,13 +599,13 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("item");
 
 			if (GorgonVertexElement.SizeOf(item.Format) == 0)
-				throw new ArgumentException("format", "'" + item.Format.ToString() + "' is not a supported format.");
+				throw new ArgumentException("'" + item.Format.ToString() + "' is not a supported format.", "format");
 
 			if ((item.Slot < 0) || (item.Slot > 15))
-				throw new ArgumentException("slot", "The value must be from 0 to 15.");
+				throw new ArgumentException("The value must be from 0 to 15.", "slot");
 
 			if (_elements.Count(element => ((element.Offset == item.Offset) || (string.Compare(element.Context, item.Context, true) == 0)) && element.Index == item.Index) > 0)
-				throw new ArgumentException("context, offset", "The offset '" + item.Offset + "' or context '" + item.Context + "' is in use by another item with the same index.");
+				throw new ArgumentException("The offset '" + item.Offset + "' or context '" + item.Context + "' is in use by another item with the same index.", "context, offset");
 
 			_elements.Add(item);
 
