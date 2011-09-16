@@ -20,8 +20,11 @@ namespace Test_DataStream
 			public int color;
 			public int u;
 			public int v;
-			public float f;
-			public float g;
+
+			public override int GetHashCode()
+			{
+				return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode() ^ color.GetHashCode() ^ u.GetHashCode() ^ v.GetHashCode();
+			}
 
 			public override bool Equals(object obj)
 			{
@@ -83,8 +86,6 @@ namespace Test_DataStream
 				testItem.color = _rnd.Next();
 				testItem.u = _rnd.Next();
 				testItem.v = _rnd.Next();
-				testItem.f = (float)_rnd.NextDouble();
-				testItem.g = (float)_rnd.NextDouble();
 
 				items[i] = testItem;
 				crc[i] = testItem;
