@@ -662,7 +662,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				case VertexElementFormat.UByte4Normal:
 					return DeclarationType.UByte4N;
 				default:
-					throw new ArgumentException("elements", "Direct 3D 9 does not support the format '" + format.ToString() + "'.");
+					throw new ArgumentException("Direct 3D 9 does not support the format '" + format.ToString() + "'.", "elements");
 			}
 		}
 
@@ -693,7 +693,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				case GorgonVertexElement.Tangent:
 					return DeclarationUsage.Tangent;
 				default:
-					throw new ArgumentException("context", "'" + context + "' cannot be mapped to a valid Direct 3D 9 usage.");
+					throw new ArgumentException("'" + context + "' cannot be mapped to a valid Direct 3D 9 usage.", "context");
 			}
 		}
 
