@@ -107,41 +107,33 @@ namespace GorgonLibrary.Input.XInput
 		}
 
 		/// <summary>
-		/// Function to create a custom HID interface.
+		/// Creates the custom HID impl.
 		/// </summary>
-		/// <param name="hidInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
-		/// <param name="window">Window to bind with.</param>
-		/// <returns>
-		/// A new custom HID interface.
-		/// </returns>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
+		/// <param name="window">The window.</param>
+		/// <param name="hidName">Name of the hid.</param>
+		/// <returns></returns>
 		protected override GorgonCustomHID CreateCustomHIDImpl(Forms.Control window, GorgonInputDeviceInfo hidName)
 		{
 			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
 		}
 
 		/// <summary>
-		/// Function to create a keyboard interface.
+		/// Creates the keyboard impl.
 		/// </summary>
-		/// <param name="keyboardInfo">Name of the keyboard device to create.</param>
-		/// <param name="window">Window to bind with.</param>
-		/// <returns>A new keyboard interface.</returns>
-		/// <remarks>Passing NULL for <paramref name="keyboardInfo"/> will use the system keyboard.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
+		/// <param name="window">The window.</param>
+		/// <param name="keyboardName">Name of the keyboard.</param>
+		/// <returns></returns>
 		protected override GorgonKeyboard CreateKeyboardImpl(Forms.Control window, GorgonInputDeviceInfo keyboardName)
 		{
 			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
 		}
 
 		/// <summary>
-		/// Function to create a pointing device interface.
+		/// Creates the pointing device impl.
 		/// </summary>
-		/// <param name="pointingDeviceInfo">Name of the pointing device device to create.</param>
-		/// <param name="window">Window to bind with.</param>
-		/// <returns>A new pointing device interface.</returns>
-		/// <remarks>Passing NULL for <paramref name="pointingDeviceInfo"/> will use the system pointing device.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para>
-		/// </remarks>
+		/// <param name="window">The window.</param>
+		/// <param name="pointingDeviceName">Name of the pointing device.</param>
+		/// <returns></returns>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(Forms.Control window, GorgonInputDeviceInfo pointingDeviceName)
 		{
 			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
@@ -150,10 +142,10 @@ namespace GorgonLibrary.Input.XInput
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
+		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonInputDeviceInfo</see> object containing the joystick information.</param>
 		/// <returns>A new joystick interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
+		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
 		protected override GorgonJoystick CreateJoystickImpl(Forms.Control window, GorgonInputDeviceInfo joystickName)
 		{

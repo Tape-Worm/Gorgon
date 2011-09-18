@@ -95,6 +95,11 @@ namespace GorgonLibrary.Graphics.D3D9
 			maxPasses = 0;
 		}
 
+		/// <summary>
+		/// Transforms the specified dt.
+		/// </summary>
+		/// <param name="dt">The dt.</param>
+		/// <param name="settings">The settings.</param>
 		public void Transform(float dt, GorgonSwapChainSettings settings)
 		{
 			_dps = GorgonLibrary.Math.GorgonMathUtility.Abs((GorgonLibrary.Math.GorgonMathUtility.Cos(GorgonLibrary.Math.GorgonMathUtility.Radians(_angle)) * _currentTime)) + 5.0f;
@@ -166,9 +171,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
-		/// 
+		/// Runs the specified dt.
 		/// </summary>
-		/// <param name="dt"></param>
+		/// <param name="dt">The dt.</param>
+		/// <param name="settings">The settings.</param>
 		public void Run(float dt, GorgonSwapChainSettings settings)
 		{
 			Draw(dt, settings);

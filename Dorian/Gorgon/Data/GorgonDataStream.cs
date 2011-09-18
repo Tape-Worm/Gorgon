@@ -495,7 +495,7 @@ namespace GorgonLibrary.Data
 		public virtual void WriteRange<T>(T[] buffer, int offset, int count)
 			where T : struct
 		{
-			int actualCount = count * Marshal.SizeOf(typeof(T));
+			int actualCount = count * DirectAccess.SizeOf<T>();
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
@@ -547,14 +547,15 @@ namespace GorgonLibrary.Data
 		/// </summary>
 		/// <typeparam name="T">Type of data to write.</typeparam>
 		/// <param name="item">Value to write.</param>
-		/// <param name="typeSize">Size of the type, in bytes.</param>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
 		/// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
-		public void Write<T>(T item, int typeSize)
+		public void Write<T>(T item)
 			where T : struct
 		{
+			int typeSize = DirectAccess.SizeOf<T>();
+
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
@@ -564,7 +565,7 @@ namespace GorgonLibrary.Data
 			if (typeSize + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
 
-			_pointerOffset.Write<T>(item);
+			_pointerOffset.Write<T>(item, typeSize);
 			Position += typeSize;
 		}
 
@@ -594,7 +595,7 @@ namespace GorgonLibrary.Data
 		public virtual int ReadRange<T>(T[] buffer, int offset, int count)
 			where T : struct
 		{
-			int actualCount = count * Marshal.SizeOf(typeof(T));
+			int actualCount = count * DirectAccess.SizeOf<T>();
 
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
@@ -647,14 +648,15 @@ namespace GorgonLibrary.Data
 		/// <summary>
 		/// Function to read a value type from the 
 		/// </summary>
-		/// <param name="typeSize">The size, in bytes, of the type.</param>
 		/// <returns>The value type within the stream.</returns>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
 		/// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
-		public T Read<T>(int typeSize)
+		public T Read<T>()
 			where T : struct
 		{
+			int typeSize = DirectAccess.SizeOf<T>();
+
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
@@ -665,10 +667,82 @@ namespace GorgonLibrary.Data
 				throw new AccessViolationException("Cannot read beyond the end of the stream.");
 
 			T result = default(T);
-			result = _pointerOffset.Read<T>();
+			result = _pointerOffset.Read<T>(typeSize);
 			Position += typeSize;
 
 			return result;
+		}
+
+		/// <summary>
+		/// Function to write data from the stream into a pointer.
+		/// </summary>
+		/// <param name="pointer">Pointer to read from.</param>
+		/// <param name="size">Size, in bytes, to read.</param>
+		/// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
+		public void Read(IntPtr pointer, int size)
+		{
+			if (size + Position > _length)
+				throw new AccessViolationException("Cannot read beyond the end of the stream.");
+
+			_pointerOffset.CopyTo(pointer, size);
+			Position += size;
+		}
+
+		/// <summary>
+		/// Function to read the data from a pointer into the stream.		
+		/// </summary>
+		/// <param name="pointer">Pointer to write into.</param>
+		/// <param name="size">Size, in bytes, to write.</param>
+		/// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
+		public void Write(IntPtr pointer, int size)
+		{
+			if (size + Position > _length)
+				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+
+			_pointerOffset.CopyFrom(pointer, size);
+			Position += size;
+		}
+
+		/// <summary>
+		/// Function to marshal a structure into the stream.
+		/// </summary>
+		/// <typeparam name="T">Type of data to marshal.</typeparam>
+		/// <param name="data">Data to marshal.</param>
+		/// <param name="deleteContents">TRUE to remove any pre-allocated, FALSE to leave alone.</param>
+		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
+		/// <para>Passing FALSE to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
+		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>
+		/// </remarks>
+		public void WriteMarshal<T>(T data, bool deleteContents)
+		{
+			int dataSize = Marshal.SizeOf(typeof(T));
+
+			if (dataSize + Position > _length)
+				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+
+			_pointerOffset.MarshalFrom(data, deleteContents);
+			Position += dataSize;
+		}
+
+		/// <summary>
+		/// Function to marshal a structure from the stream.
+		/// </summary>
+		/// <typeparam name="T">Type of data to marshal.</typeparam>
+		/// <returns>The data converted into a new value type or object.</returns>
+		/// <remarks>This method will marshal unmanaged data back into a new structure (object or value type).
+		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.PtrToStructure">Marshal.PtrToStructure</see> method.</para>
+		/// </remarks>
+		public T ReadMarshal<T>()
+		{
+			int dataSize = Marshal.SizeOf(typeof(T));
+
+			if (dataSize + Position > _length)
+				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+
+			T value = _pointerOffset.MarshalTo<T>();			
+			Position += dataSize;
+
+			return value;
 		}
 		#endregion
 

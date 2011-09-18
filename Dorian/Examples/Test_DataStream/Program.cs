@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using GorgonLibrary;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Data;
 
 namespace Test_DataStream
 {
 	class Program
 	{
-		private static Stopwatch _timer = null;
+		private static GorgonTimer _timer = null;
 		private static Random _rnd = new Random();
 
 		public struct Test
@@ -49,7 +51,7 @@ namespace Test_DataStream
 			}
 		}
 
-		private static int size = 89478460;
+		private static int size = 0;
 
 		static bool CheckCRC(Test[] source, Test[] crc)
 		{
@@ -66,18 +68,20 @@ namespace Test_DataStream
 		{
 			Console.WriteLine("Press a key to start.");
 			Console.ReadKey();
-
-			//size = (Int32.MaxValue / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
-			size = 10000000;
+			int byteSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+				size = (Int32.MaxValue / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
+			else
+				size = (402653184 / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
+			//size = 1;
 
 			Test[] crc = new Test[size];
 			Test[] items = new Test[size];
 
 			Console.WriteLine("Arrays allocated.");
-			Console.ReadKey();			
 
-			_timer = Stopwatch.StartNew();
-			Console.Write("Creating {0} vertices...", size);
+			Console.Write("Creating {0}...", (size * byteSize).FormatMemory());
+			_timer = new GorgonTimer();
 			for (int i = 0; i < items.Length; i++)
 			{
 				Test testItem = new Test();
@@ -90,34 +94,32 @@ namespace Test_DataStream
 
 				items[i] = testItem;
 				crc[i] = testItem;
-			}
-			Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
+			}			
+			Console.WriteLine(": {0:N3}ms", _timer.Milliseconds);
 
 			GorgonDataStream newStream = new GorgonDataStream(System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test)) * size);
 
 			try
-			{				
-				Console.Write("Writing {0} vertices individually...", size);
+			{
+				Console.Write("Writing {0:N0} structures of {1} bytes individually ({2})...", size, byteSize, (size * byteSize).FormatMemory());
 
-				_timer = Stopwatch.StartNew();
+				_timer.Reset();
 				for (int i = 0; i < items.Length; i++)
 				{
-					newStream.Write<Test>(items[i], 24);
+					newStream.Write<Test>(items[i]);
 
 				}
-				_timer.Stop();
-				Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
+				Console.WriteLine(": {0:N3}ms", _timer.Milliseconds);
 
 				newStream.Position = 0;
 
-				Console.Write("Reading {0} vertices individually...", size);
-				_timer = Stopwatch.StartNew();
+				Console.Write("Reading {0:N0} structures of {1} bytes individually ({2})...", size, byteSize, (size * byteSize).FormatMemory());
+				_timer.Reset();
 				for (int i = 0; i < items.Length; i++)
 				{
-					items[i] = newStream.Read<Test>(24);
+					items[i] = newStream.Read<Test>();
 				}
-				_timer.Stop();
-				Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
+				Console.WriteLine(": {0:N3}ms", _timer.Milliseconds);
 
 				if (!CheckCRC(items, crc))
 				{
@@ -126,26 +128,68 @@ namespace Test_DataStream
 
 				newStream.Position = 0;
 
-				Console.Write("Writing {0} vertices at once...", size);
-				_timer = Stopwatch.StartNew();
+				Console.Write("Writing {0} at once...", (size * byteSize).FormatMemory());
+				_timer.Reset();
 				newStream.WriteRange<Test>(items);
-				_timer.Stop();
 
-				Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
+				Console.WriteLine(": {0:N3}ms", _timer.Milliseconds);
 
 				newStream.Position = 0;
 
-				Console.Write("Reading {0} vertices at once...", size);
-				_timer = Stopwatch.StartNew();
+				Console.Write("Reading {0} at once...", (size * byteSize).FormatMemory());
+				_timer.Reset();
 				items = newStream.ReadRange<Test>(size);
-				_timer.Stop();
 
-				Console.WriteLine(": {0}ms", _timer.ElapsedMilliseconds);
+				Console.WriteLine(": {0:N3}ms", _timer.Milliseconds);
 
 				if (!CheckCRC(items, crc))
 				{
 					Console.WriteLine("CRC does not match.");
 				}
+
+				// Clear memory.
+				items = new Test[0];
+				crc = new Test[0];
+
+				newStream.Dispose();
+
+				size = 8;
+				int count = 10000;
+				byte[] buffer = new byte[size * 1048576];
+				newStream = new GorgonDataStream(size * 1048576);
+				_rnd.NextBytes(buffer);
+
+				double megabytesPerSecond = 0;
+
+				Console.WriteLine("Timing {0} iterations of a {1} buffer copy...", count, buffer.Length.FormatMemory());
+				_timer.Reset();
+				for (int i = 0; i < count; i++)
+				{
+					newStream.Write(buffer, 0, buffer.Length);
+					newStream.Position = 0;
+				}
+
+
+				double milliSeconds = _timer.Milliseconds;
+				TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)_timer.Milliseconds);
+				
+				megabytesPerSecond = milliSeconds / (double)count;
+				megabytesPerSecond = ((double)size * 1073741824.0) / megabytesPerSecond;
+				Console.WriteLine("{2} loops took {0} ({3:N3} ms per iteration)\n{1:N}/s", time.ToString(), megabytesPerSecond.FormatMemory(), count, milliSeconds / (double)count);
+
+				//newStream.Handle.ZeroMemory((int)newStream.Length);
+				newStream.Position = 0;
+				items = new Test[1];
+				items[0] = new Test();
+				items[0].color = 1;
+				items[0].u = 55;
+
+				//int position = (int)newStream.Position;
+				//newStream.WriteMarshal<Test>(items[0], false);
+				//newStream.Position = position;				
+
+				items[0] = new Test();
+				items[0] = newStream.ReadMarshal<Test>();
 
 				crc = null;
 				items = null;
