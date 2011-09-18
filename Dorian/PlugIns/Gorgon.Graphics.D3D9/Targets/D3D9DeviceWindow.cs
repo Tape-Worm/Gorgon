@@ -103,7 +103,6 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <summary>
 		/// Function to retrieve the swap chain, and surfaces for the window.
 		/// </summary>
-		/// <param name="settings">Settings for the device window/head.</param>
 		private void GetData()
 		{
 			GorgonSwapChainSettings settings = Settings;

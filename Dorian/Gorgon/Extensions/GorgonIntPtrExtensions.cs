@@ -38,73 +38,6 @@ namespace GorgonLibrary.Data
 	public static class GorgonIntPtrExtensions
 	{
 		/// <summary>
-		/// Function to perform a fast copy between two pointers.
-		/// </summary>
-		/// <param name="sourcePointer">Source pointer.</param>
-		/// <param name="destPointer">Destination pointer.</param>
-		/// <param name="size">Number of bytes to copy.</param>
-		private unsafe static void FastCopy(byte* sourcePointer, byte* destPointer, int size)
-		{
-			// Copy 8 bytes at a time if we're on x64.
-			if ((size >= 8) && (Gorgon.PlatformArchitecture == PlatformArchitecture.x64))
-			{
-				int copy8 = size / 8;
-
-				for (int i = 0; i < copy8; i++)
-				{
-					*((long*)destPointer) = *((long*)sourcePointer);
-					sourcePointer += 8;
-					destPointer += 8;
-					size -= 8;
-				}
-			}
-
-			if (size >= 4)
-			{
-				int copy4 = size / 4;
-
-				// Copy 4 bytes at a time.
-				for (int i = 0; i < copy4; i++)
-				{
-					*((int*)destPointer) = *((int*)sourcePointer);
-					sourcePointer += 4;
-					destPointer += 4;
-					size -= 4;
-				}
-			}
-
-			if (size > 0)
-			{
-				// Copy remaining bytes.
-				for (int i = 0; i < size; i++)
-				{
-					*destPointer = *sourcePointer;
-					sourcePointer++;
-					destPointer++;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Function to copy the memory contents from this pointer to another.
-		/// </summary>
-		/// <param name="destination">Destination buffer.</param>
-		/// <param name="source">Source buffer.</param>
-		/// <param name="size">Size of the data to copy, in bytes.</param>
-		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the destination pointer is NULL (Nothing in VB.Net).</exception>
-		public unsafe static void CopyTo(this IntPtr source, void* destination, int size)
-		{
-			if (source == IntPtr.Zero)
-				return;
-
-			if (destination == null)
-				throw new ArgumentNullException("destination");
-
-			FastCopy((byte*)source, (byte *)destination, size);
-		}
-
-		/// <summary>
 		/// Function to copy the memory contents from this pointer to another.
 		/// </summary>
 		/// <param name="destination">Destination buffer.</param>
@@ -113,8 +46,8 @@ namespace GorgonLibrary.Data
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the destination pointer is NULL (Nothing in VB.Net).</exception>
 		public unsafe static void CopyTo(this IntPtr source, IntPtr destination, int size)
-		{			
-			CopyTo(source, (void *)destination, size);
+		{
+			DirectAccess.Write(destination, source, size);
 		}
 
 		/// <summary>
@@ -209,10 +142,10 @@ namespace GorgonLibrary.Data
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException("destinationIndex", "Index cannot be less than zero.");
 
-			if (destinationIndex + size > destination.Length * Marshal.SizeOf(typeof(T)))
+			if (destinationIndex + size > destination.Length * DirectAccess.SizeOf<T>())
 				throw new ArgumentOutOfRangeException("destinationIndex", "Index and size cannot be larger than the array.");
 
-			Memory.GorgonMemory.Read<T>(source, destination, destinationIndex, size);
+			DirectAccess.Read<T>(source, destination, destinationIndex, size);
 		}
 
 		/// <summary>
@@ -233,7 +166,7 @@ namespace GorgonLibrary.Data
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			CopyTo<T>(source, destination, 0, destination.Length * Marshal.SizeOf(typeof(T)));
+			CopyTo<T>(source, destination, 0, destination.Length * DirectAccess.SizeOf<T>());
 		}
 
 		/// <summary>
@@ -263,28 +196,9 @@ namespace GorgonLibrary.Data
 		/// <param name="size">Number of bytes to copy.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the source pointer is NULL (Nothing in VB.Net).</exception>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		public unsafe static void CopyFrom(this IntPtr destination, void *source, int size)
-		{
-			if (destination == IntPtr.Zero)
-				return;
-
-			if (source == null)
-				throw new ArgumentNullException("destination");
-
-			FastCopy((byte*)source, (byte*)destination, size);
-		}
-
-		/// <summary>
-		/// Function to copy the contents of a byte array into the memory pointed at by the pointer.
-		/// </summary>
-		/// <param name="destination">Destination pointer.</param>
-		/// <param name="source">Source pointer to copy from.</param>
-		/// <param name="size">Number of bytes to copy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the source pointer is NULL (Nothing in VB.Net).</exception>
-		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
 		public static void CopyFrom(this IntPtr destination, IntPtr source, int size)
 		{
-			CopyFrom(source, destination, size);
+			DirectAccess.Write(destination, source, size);
 		}
 
 		/// <summary>
@@ -370,6 +284,8 @@ namespace GorgonLibrary.Data
 		public static void CopyFrom<T>(this IntPtr destination, T[] source, int sourceIndex, int size)
 			where T : struct
 		{
+			int typeSize = DirectAccess.SizeOf<T>();
+
 			if (destination == IntPtr.Zero)
 				return;
 
@@ -379,10 +295,10 @@ namespace GorgonLibrary.Data
 			if (sourceIndex < 0)
 				throw new ArgumentOutOfRangeException("sourceIndex", "Index cannot be less than zero.");
 
-			if (sourceIndex + size > source.Length * Marshal.SizeOf(typeof(T)))
+			if (sourceIndex + size > source.Length * typeSize)
 				throw new ArgumentOutOfRangeException("sourceIndex", "Index and size cannot be larger than the array.");
 
-			Memory.GorgonMemory.Write<T>(destination, source, sourceIndex, size);
+			DirectAccess.Write<T>(destination, source, sourceIndex, size);
 		}
 
 		/// <summary>
@@ -422,57 +338,65 @@ namespace GorgonLibrary.Data
 			if (source == null)
 				throw new ArgumentNullException("source");
 
-			CopyFrom(destination, source, 0, source.Length * Marshal.SizeOf(typeof(T)));
+			CopyFrom(destination, source, 0, source.Length * DirectAccess.SizeOf<T>());
 		}
 
 		/// <summary>
 		/// Function to zero out the memory pointed to by this pointer.
 		/// </summary>
-		/// <param name="source">Source pointer to zero out.</param>
+		/// <param name="destination">Destination pointer to zero out.</param>
 		/// <param name="size">Amount of memory to zero out.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		public unsafe static void ZeroMemory(this IntPtr source, int size)
+		public static void ZeroMemory(this IntPtr destination, int size)
 		{
-			if (source == IntPtr.Zero)
-				return;
+			DirectAccess.ZeroMemory(destination, size);
+		}
 
-			byte* thisPtr = (byte*)source;
+		/// <summary>
+		/// Function to marshal an object or value type into unmanaged memory.
+		/// </summary>
+		/// <param name="destination">Pointer to marhsal the data into.</param>
+		/// <param name="value">Object or value type to marshal.</param>
+		/// <param name="deleteContents">TRUE to remove any pre-allocated, FALSE to leave alone.</param>
+		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
+		/// <para>Passing FALSE to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
+		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>
+		/// </remarks>
+		public static void MarshalFrom(this IntPtr destination, object value, bool deleteContents)
+		{
+			Marshal.StructureToPtr(value, destination, deleteContents);
+		}
 
-			// Copy 8 bytes at a time if we're on x64.
-			if ((size >= 8) && (Gorgon.PlatformArchitecture == PlatformArchitecture.x64))
-			{
-				int copy8 = size / 8;
+		/// <summary>
+		/// Function to marshal unmanaged data back to an object or value type.
+		/// </summary>
+		/// <typeparam name="T">Type of value type or object.</typeparam>
+		/// <param name="source">Pointer to read from.</param>
+		/// <returns>The data converted into a new value type or object.</returns>
+		/// <remarks>This method will marshal unmanaged data back into a new structure (object or value type).
+		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.PtrToStructure">Marshal.PtrToStructure</see> method.</para>
+		/// </remarks>
+		public static T MarshalTo<T>(this IntPtr source)
+		{
+			return (T)Marshal.PtrToStructure(source, typeof(T));
+		}
 
-				for (int i = 0; i < copy8; i++)
-				{
-					*((long*)thisPtr) = 0;
-					thisPtr += 8;
-					size -= 8;
-				}
-			}
-
-			if (size >= 4)
-			{
-				int copy4 = size / 4;
-
-				// Copy 4 bytes at a time.
-				for (int i = 0; i < copy4; i++)
-				{
-					*((int*)thisPtr) = 0;
-					thisPtr += 4;
-					size -= 4;
-				}
-			}
-
-			if (size > 0)
-			{
-				// Copy remaining bytes.
-				for (int i = 0; i < size; i++)
-				{
-					*thisPtr = 0;
-					thisPtr++;
-				}
-			}
+		/// <summary>
+		/// Function to marshal unmanaged data back to an existing object or value type.
+		/// </summary>
+		/// <typeparam name="T">Type of value type or object.</typeparam>
+		/// <param name="source">Pointer to read from.</param>
+		/// <param name="value">Value to copy the data into.</param>
+		/// <returns>The data converted and copied into a value type or object.</returns>
+		/// <remarks>This method will marshal unmanaged data back into an existing structure (object or value type).
+		/// <para>The user must pre-allocate the object before calling this method.</para>
+		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.PtrToStructure">Marshal.PtrToStructure</see> method.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public static void MarshalTo<T>(this IntPtr source, T value)
+			where T : class
+		{
+			Marshal.PtrToStructure(source, value);
 		}
 
 		/// <summary>
@@ -481,14 +405,14 @@ namespace GorgonLibrary.Data
 		/// <typeparam name="T">Type of value to write.</typeparam>
 		/// <param name="destination">The destination pointer.</param>
 		/// <param name="value">The value to write.</param>
+		/// <param name="size">Size of the data, in bytes.</param>
 		/// <remarks>This method can only write value types composed of primitives, reference objects will not work.
 		/// <para>There is no way to determine the size of the data pointed at by the pointer, so the user must take care not to write outside the bounds of the memory.</para>
 		/// </remarks>
-		/// <returns>The number of bytes written.</returns>
-		public static void Write<T>(this IntPtr destination, T value)
+		public static void Write<T>(this IntPtr destination, T value, int size)
 			where T : struct
 		{
-			Memory.GorgonMemory.Write<T>(destination, value);
+			DirectAccess.Write<T>(destination, value, size);
 		}
 
 		/// <summary>
@@ -496,17 +420,15 @@ namespace GorgonLibrary.Data
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.</typeparam>
 		/// <param name="source">The source pointer.</param>
-		/// <param name="value">The value read from the pointer.</param>
-		/// <returns>The number of bytes read.</returns>
+		/// <param name="size">Size of the data, in bytes.</param>
+		/// <returns>The value at the pointer.</returns>
 		/// <remarks>This method can only write value types composed of primitives, reference objects will not work.
 		/// <para>There is no way to determine the size of the data pointed at by the pointer, so the user must take care not to write outside the bounds of the memory.</para>
 		/// </remarks>
-		public static T Read<T>(this IntPtr source)
+		public static T Read<T>(this IntPtr source, int size)
 			where T : struct
 		{
-			T result = default(T);
-			Memory.GorgonMemory.Read<T>(source, ref result);
-			return result;
+			return DirectAccess.Read<T>(source, size);
 		}
 	}
 }

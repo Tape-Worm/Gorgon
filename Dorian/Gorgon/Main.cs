@@ -479,11 +479,14 @@ namespace GorgonLibrary
 				{
 					Log.Open();
 				}
+#if DEBUG
 				catch (Exception ex)
 				{				
-#if DEBUG
 					// Only note this in DEBUG mode.
 					UI.GorgonDialogs.ErrorBox(applicationForm, ex);
+#else
+				catch
+				{
 #endif
 				}
 			}
