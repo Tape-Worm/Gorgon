@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace GorgonLibrary.Data
 {
@@ -37,6 +38,16 @@ namespace GorgonLibrary.Data
 	/// </summary>
 	public static class GorgonIntPtrExtensions
 	{
+		/// <summary>
+		/// External memcpy reference.
+		/// </summary>
+		/// <param name="dest">Destination pointer.</param>
+		/// <param name="src">Source pointer.</param>
+		/// <param name="count">Number of bytes.</param>
+		/// <returns>The number of bytes copied.</returns>
+		[DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false), SuppressUnmanagedCodeSecurity]
+		private static unsafe extern void* CopyMemory(void* dest, void* src, ulong count);
+
 		/// <summary>
 		/// Function to copy the memory contents from this pointer to another.
 		/// </summary>

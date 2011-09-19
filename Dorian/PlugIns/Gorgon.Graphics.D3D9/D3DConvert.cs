@@ -631,8 +631,11 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// </summary>
 		/// <param name="format">Format to parse.</param>
 		/// <returns>The vertex declaration type.</returns>
-		private static DeclarationType GetDeclarationType(VertexElementFormat format)
+		private static DeclarationType GetDeclarationType(VertexElementFormat format, string context)
 		{
+			if ((string.Compare(context, GorgonVertexElement.Diffuse, true) == 0) || (string.Compare(context, GorgonVertexElement.Specular, true) == 0))
+				return DeclarationType.Color;
+
 			switch (format)
 			{
 				case VertexElementFormat.Color:
@@ -714,7 +717,7 @@ namespace GorgonLibrary.Graphics.D3D9
 				var element = elements.ElementAt(i);
 
 				index = element.Index;
-				declType = GetDeclarationType(element.Format);
+				declType = GetDeclarationType(element.Format, element.Context);
 				usage = GetDeclarationUsage(element.Context);
 
 				// Specular is just a color with an index of 1, so force it to an index of 1.

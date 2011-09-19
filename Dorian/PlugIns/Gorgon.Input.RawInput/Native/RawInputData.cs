@@ -37,7 +37,7 @@ namespace GorgonLibrary.Input.Raw
 		: IDisposable
 	{
 		#region Variables.
-		private long _headerSize = 0;				// Size of the input data in bytes.
+		private int _headerSize = 0;				// Size of the input data in bytes.
 		private bool _isDisposed = false;			// Flag to indicate that the object has been disposed of.
 		private IntPtr _rawData = IntPtr.Zero;		// Pointer to the raw input data.
 		#endregion
@@ -99,64 +99,38 @@ namespace GorgonLibrary.Input.Raw
 		{
 			int result = 0;
 			int dataSize = 0;
-			RAWINPUTx64 rawInputx64 = default(RAWINPUTx64);
-			RAWINPUTx86 rawInputx86 = default(RAWINPUTx86);
-						
-			result = Win32API.GetRawInputData(handle, RawInputCommand.Input, IntPtr.Zero, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+
+			// Get data size.			
+			result = Win32API.GetRawInputData(handle, RawInputCommand.Input, IntPtr.Zero, ref dataSize, _headerSize);
 			if (result == -1)
 				throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
 
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+			// Get actual data.
+			result = Win32API.GetRawInputData(handle, RawInputCommand.Input, _rawData, ref dataSize, _headerSize);
+			if ((result == -1) || (result != dataSize))
+				throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
+
+			unsafe
 			{
-				result = Win32API.GetRawInputData(handle, RawInputCommand.Input, _rawData, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-				if ((result == -1) || (result != dataSize))
-					throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
-
-				rawInputx64 = new RAWINPUTx64();
 				// Get header info.
-				rawInputx64 = (RAWINPUTx64)Marshal.PtrToStructure(_rawData, typeof(RAWINPUTx64));
-				Header = rawInputx64.Header;
+				RAWINPUT* rawInputx64 = (RAWINPUT*)_rawData;
+				Header = rawInputx64->Header;
 
+				// Get device data.
 				switch (Header.Type)
 				{
 					case RawInputType.HID:
-						HIDData = new byte[rawInputx64.HID.Size * rawInputx64.HID.Count];
-						HID = rawInputx64.HID;
-						Marshal.Copy(new IntPtr(_rawData.ToInt32() + _headerSize + 8), HIDData, 0, HIDData.Length);
+						HIDData = new byte[rawInputx64->Union.HID.Size * rawInputx64->Union.HID.Count];
+						HID = rawInputx64->Union.HID;							
+						Marshal.Copy(_rawData + _headerSize + 8, HIDData, 0, HIDData.Length);
 						break;
 					case RawInputType.Keyboard:
-						Keyboard = rawInputx64.Keyboard;
+						Keyboard = rawInputx64->Union.Keyboard;
 						break;
 					case RawInputType.Mouse:
-						Mouse = rawInputx64.Mouse;
+						Mouse = rawInputx64->Union.Mouse;
 						break;
 				}
-			}
-			else
-			{
-				result = Win32API.GetRawInputData(handle, RawInputCommand.Input, _rawData, ref dataSize, Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-				if ((result == -1) || (result != dataSize))
-					throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
-
-				rawInputx86 = new RAWINPUTx86();
-				// Get header info.
-				rawInputx86 = (RAWINPUTx86)Marshal.PtrToStructure(_rawData, typeof(RAWINPUTx86));
-				Header = rawInputx86.Header;
-
-				switch(Header.Type)
-				{
-					case RawInputType.HID:
-						HIDData = new byte[rawInputx86.HID.Size * rawInputx86.HID.Count];
-						HID = rawInputx86.HID;
-						Marshal.Copy(new IntPtr(_rawData.ToInt32() + _headerSize + 8), HIDData, 0, HIDData.Length);
-						break;
-					case RawInputType.Keyboard:
-						Keyboard = rawInputx86.Keyboard;
-						break;
-					case RawInputType.Mouse:
-						Mouse = rawInputx86.Mouse;
-						break;
-				}					
 			}
 		}
 		#endregion
@@ -173,10 +147,16 @@ namespace GorgonLibrary.Input.Raw
 			HID = new RAWINPUTHID();
 
 			_headerSize = Marshal.SizeOf(typeof(RAWINPUTHEADER));
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
-				_rawData = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUTx64)));
-			else
-				_rawData = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUTx86)));
+			_rawData = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RAWINPUT)));
+		}
+
+		/// <summary>
+		/// Releases unmanaged resources and performs other cleanup operations before the
+		/// <see cref="RawInputData"/> is reclaimed by garbage collection.
+		/// </summary>
+		~RawInputData()
+		{
+			Dispose(false);
 		}
 		#endregion
 
@@ -189,13 +169,10 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (!_isDisposed)
 			{
-				if (disposing)
+				if (_rawData != IntPtr.Zero)
 				{
-					if (_rawData != IntPtr.Zero)
-					{
-						Marshal.FreeHGlobal(_rawData);
-						_rawData = IntPtr.Zero;
-					}
+					Marshal.FreeHGlobal(_rawData);
+					_rawData = IntPtr.Zero;
 				}
 			}
 			_isDisposed = true;
@@ -206,7 +183,8 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		public void Dispose()
 		{
-			throw new NotImplementedException();
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

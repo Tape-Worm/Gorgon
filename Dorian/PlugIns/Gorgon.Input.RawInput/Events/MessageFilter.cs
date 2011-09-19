@@ -65,10 +65,7 @@ namespace GorgonLibrary.Input.Raw
 
 				_data.GetRawInputData(m.LParam);
 				if (RawInputData != null)
-				{
-					RawInputData(this, new RawInputEventArgs(_data));
-					return true;
-				}
+					RawInputData(this, new RawInputEventArgs(_data));			
 			}
 
 			return false;
@@ -84,7 +81,7 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (!_isDisposed)
 			{
-				if (disposing)
+				if ((disposing) && (_data != null))
 					_data.Dispose();
 				_data = null;
 			}
@@ -96,7 +93,8 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		public void Dispose()
 		{
-			
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}
