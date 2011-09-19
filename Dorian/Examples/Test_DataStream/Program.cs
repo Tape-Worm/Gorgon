@@ -68,9 +68,11 @@ namespace Test_DataStream
 		{
 			Console.WriteLine("Press a key to start.");
 			Console.ReadKey();
-			int byteSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+			int byteSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test)); 
+			if ((Gorgon.PlatformArchitecture == PlatformArchitecture.x64) && (Gorgon.AvailablePhysicalRAM >= 8589934592))
+			{
 				size = (Int32.MaxValue / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - (System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test)) * 100);
+			}
 			else
 				size = (402653184 / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
 			//size = 80000000;
@@ -126,10 +128,10 @@ namespace Test_DataStream
 					Console.WriteLine("CRC does not match.");
 				}
 
-				newStream.Position = 0;
-				System.IO.FileStream fs = System.IO.File.Open(@"d:\unpak\bigfile.bin", System.IO.FileMode.Create);
-				newStream.CopyTo(fs);
-				fs.Close();
+				//newStream.Position = 0;
+				//System.IO.FileStream fs = System.IO.File.Open(@"d:\unpak\bigfile.bin", System.IO.FileMode.Create);
+				//newStream.CopyTo(fs);
+				//fs.Close();
 
 				newStream.Position = 0;
 
