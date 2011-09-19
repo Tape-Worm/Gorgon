@@ -365,23 +365,17 @@ namespace GorgonLibrary.Native
 		IntPtr Data;
 	}
 
-	/// <summary>
-	/// Value type for raw input.
-	/// </summary>
 	[StructLayout(LayoutKind.Explicit)]
-	internal struct RAWINPUTx86
+	internal struct RAWINPUT_UNION
 	{
-		/// <summary>Header for the data.</summary>
-		[FieldOffset(0)]
-		public RAWINPUTHEADER Header;
 		/// <summary>Mouse raw input data.</summary>
-		[FieldOffset(16)]
+		[FieldOffset(0)]
 		public RAWINPUTMOUSE Mouse;
 		/// <summary>Keyboard raw input data.</summary>
-		[FieldOffset(16)]
+		[FieldOffset(0)]
 		public RAWINPUTKEYBOARD Keyboard;
 		/// <summary>HID raw input data.</summary>
-		[FieldOffset(16)]
+		[FieldOffset(0)]
 		public RAWINPUTHID HID;
 	}
 
@@ -389,21 +383,13 @@ namespace GorgonLibrary.Native
 	/// Value type for raw input.
 	/// </summary>
 	/// <remarks>This is for use with x64 versions of windows.  Using the <c ref="RAWINPUT">32 bit RAWINPUT</c> will fail on the x64 version of windows.</remarks>
-	[StructLayout(LayoutKind.Explicit)]
-	internal struct RAWINPUTx64
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct RAWINPUT
 	{
 		/// <summary>Header for the data.</summary>
-		[FieldOffset(0)]
 		public RAWINPUTHEADER Header;
-		/// <summary>Mouse raw input data.</summary>
-		[FieldOffset(24)]
-		public RAWINPUTMOUSE Mouse;
-		/// <summary>Keyboard raw input data.</summary>
-		[FieldOffset(24)]
-		public RAWINPUTKEYBOARD Keyboard;
-		/// <summary>HID raw input data.</summary>
-		[FieldOffset(24)]
-		public RAWINPUTHID HID;
+		/// <summary>Union containing device data.</summary>
+		public RAWINPUT_UNION Union;
 	}		
 	#endregion
 }

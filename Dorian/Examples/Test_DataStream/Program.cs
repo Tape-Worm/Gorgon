@@ -70,10 +70,10 @@ namespace Test_DataStream
 			Console.ReadKey();
 			int byteSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
 			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
-				size = (Int32.MaxValue / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
+				size = (Int32.MaxValue / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - (System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test)) * 100);
 			else
 				size = (402653184 / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
-			//size = 1;
+			//size = 80000000;
 
 			Test[] crc = new Test[size];
 			Test[] items = new Test[size];
@@ -127,6 +127,11 @@ namespace Test_DataStream
 				}
 
 				newStream.Position = 0;
+				System.IO.FileStream fs = System.IO.File.Open(@"d:\unpak\bigfile.bin", System.IO.FileMode.Create);
+				newStream.CopyTo(fs);
+				fs.Close();
+
+				newStream.Position = 0;
 
 				Console.Write("Writing {0} at once...", (size * byteSize).FormatMemory());
 				_timer.Reset();
@@ -151,6 +156,12 @@ namespace Test_DataStream
 				items = new Test[0];
 				crc = new Test[0];
 
+				newStream.Position = 0;
+				newStream.WriteString("C#'s BinaryReader has a function that according to MSDN, reads an integer encoded as $seven bit integer$, and then reads a string with the length of this integer.Is there a clear documentation for the seven bit integer format (I have a rough understanding that the MSB or the LSB marks whether there are more bytes to read, and the rest bits are the data, but I'll be glad for something more exact). Even better, is there a C implementation for reading and writing numbers in this format?");
+				newStream.Position = 0;
+
+				string myString = newStream.ReadString();
+
 				newStream.Dispose();
 
 				size = 8;
@@ -169,7 +180,7 @@ namespace Test_DataStream
 					newStream.Position = 0;
 				}
 
-
+				
 				double milliSeconds = _timer.Milliseconds;
 				TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)_timer.Milliseconds);
 				

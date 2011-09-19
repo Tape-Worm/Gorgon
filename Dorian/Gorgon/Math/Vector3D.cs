@@ -524,15 +524,15 @@ namespace GorgonLibrary.Math
 			return new Vector3D(vector.X,vector.Y,0);
 		}
 
-        /// <summary>
-        /// Operator to convert a 3D vector into a 2D vector.
-        /// </summary>
-        /// <param name="vector">3D vector to convert.</param>
-        /// <returns>2D vector.</returns>
-        public static explicit operator Vector2D(Vector3D vector)
-        {
-            return new Vector2D(vector.X, vector.Y);
-        }
+		/// <summary>
+		/// Operator to convert a 3D vector into a 2D vector.
+		/// </summary>
+		/// <param name="vector">3D vector to convert.</param>
+		/// <returns>2D vector.</returns>
+		public static explicit operator Vector2D(Vector3D vector)
+		{
+			return new Vector2D(vector.X, vector.Y);
+		}
 		#endregion
 
 		#region Constructor.

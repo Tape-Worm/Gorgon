@@ -71,9 +71,18 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="stream">The stream to wrap.</param>
 		/// <param name="status">Status for the stream.</param>
-		public D3D9DataStream(DataStream stream, StreamStatus status)
-			: base(stream.DataPointer, (int)stream.Length, status)
+		public D3D9DataStream(DataStream stream)
+			: base(stream.DataPointer, (int)stream.Length)
 		{
+			if ((stream.CanWrite) && (!stream.CanRead))
+			{
+				StreamStatus = Data.StreamStatus.WriteOnly;
+			}
+			else if ((stream.CanRead) && (!stream.CanWrite))
+			{
+				StreamStatus = Data.StreamStatus.ReadOnly;
+			}			
+
 			_d3dstream = stream;
 		}
 		#endregion

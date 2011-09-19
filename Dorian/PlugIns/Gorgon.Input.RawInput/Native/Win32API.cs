@@ -123,30 +123,6 @@ namespace GorgonLibrary.Native
 		/// <param name="cbSizeHeader">Size of the header.</param>
 		/// <returns>0 if successful if pData is null, otherwise number of bytes if pData is not null.</returns>
 		[DllImport("user32.dll")]
-		public static extern int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, out RAWINPUTx86 pData, ref int pcbSize, int cbSizeHeader);
-
-		/// <summary>
-		/// Function to retrieve raw input data.
-		/// </summary>
-		/// <param name="hRawInput">Handle to the raw input.</param>
-		/// <param name="uiCommand">Command to issue when retrieving data.</param>
-		/// <param name="pData">Raw input data.</param>
-		/// <param name="pcbSize">Number of bytes in the array.</param>
-		/// <param name="cbSizeHeader">Size of the header.</param>
-		/// <returns>0 if successful if pData is null, otherwise number of bytes if pData is not null.</returns>
-		[DllImport("user32.dll")]
-		public static extern int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, out RAWINPUTx64 pData, ref int pcbSize, int cbSizeHeader);
-
-		/// <summary>
-		/// Function to retrieve raw input data.
-		/// </summary>
-		/// <param name="hRawInput">Handle to the raw input.</param>
-		/// <param name="uiCommand">Command to issue when retrieving data.</param>
-		/// <param name="pData">Raw input data.</param>
-		/// <param name="pcbSize">Number of bytes in the array.</param>
-		/// <param name="cbSizeHeader">Size of the header.</param>
-		/// <returns>0 if successful if pData is null, otherwise number of bytes if pData is not null.</returns>
-		[DllImport("user32.dll")]
 		public static extern int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, IntPtr pData, ref int pcbSize, int cbSizeHeader);
 
 		/// <summary>

@@ -167,7 +167,7 @@ namespace Tester
 				//mouse = input.CreatePointingDevice();
 				//keyboard = input.CreateKeyboard();
 
-				mouse = winput.CreatePointingDevice(this.panel1);
+				mouse = input.CreatePointingDevice(this.panel1);
 				mouse.PointingDeviceMove += new EventHandler<PointingDeviceEventArgs>(mouse_MouseMove);
 				mouse.PointingDeviceDown += new EventHandler<PointingDeviceEventArgs>(mouse_MouseDown);
 				mouse.PointingDeviceUp += new EventHandler<PointingDeviceEventArgs>(mouse_MouseUp);

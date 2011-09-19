@@ -65,7 +65,6 @@ namespace GorgonLibrary.Data
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		private IntPtr _data = IntPtr.Zero;						// Pointer to the data held by the stream.
 		private int _pointerPosition = 0;						// Position in the buffer.
-		private StreamStatus _status = StreamStatus.ReadWrite;	// Status of the stream.
 		private int _length = 0;								// Number of bytes in the buffer.
 		private IntPtr _pointerOffset = IntPtr.Zero;			// Pointer offset.
 		private GCHandle _handle = default(GCHandle);			// Handle to a pinned array.
@@ -74,6 +73,15 @@ namespace GorgonLibrary.Data
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return the status of the stream.
+		/// </summary>
+		protected StreamStatus StreamStatus
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
 		/// </summary>
 		/// <returns>true if the stream supports reading; otherwise, false.</returns>
@@ -81,7 +89,7 @@ namespace GorgonLibrary.Data
 		{
 			get 
 			{
-				return ((_status == StreamStatus.ReadOnly) || (_status == StreamStatus.ReadWrite));
+				return ((StreamStatus == StreamStatus.ReadOnly) || (StreamStatus == StreamStatus.ReadWrite));
 			}
 		}
 
@@ -105,7 +113,7 @@ namespace GorgonLibrary.Data
 		{
 			get 
 			{
-				return ((_status == StreamStatus.WriteOnly) || (_status == StreamStatus.ReadWrite));
+				return ((StreamStatus == StreamStatus.WriteOnly) || (StreamStatus == StreamStatus.ReadWrite));
 			}
 		}
 
@@ -210,6 +218,16 @@ namespace GorgonLibrary.Data
 			}
 
 			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Function to retrieve the size of type, in bytes.
+		/// </summary>
+		/// <typeparam name="T">Type of data to find the size for.</typeparam>
+		/// <returns>Number of bytes for the type.</returns>
+		public static int SizeOf<T>() where T : struct
+		{
+			return DirectAccess.SizeOf<T>();
 		}
 
 		/// <summary>
@@ -414,6 +432,238 @@ namespace GorgonLibrary.Data
 		}
 
 		/// <summary>
+		/// Writes a floating point value to the current position in the stream and advances the position within the stream by one byte.
+		/// </summary>
+		/// <param name="value">The floating point value to write to the stream.</param>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+		///   
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public void WriteFloat(float value)
+		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= _length)
+				return;
+
+			unsafe
+			{
+				float* pointer = (float*)_pointerOffset;
+				*pointer = value;
+
+				Position += 4;
+			}
+		}
+
+		/// <summary>
+		/// Writes a double to the current position in the stream and advances the position within the stream by one byte.
+		/// </summary>
+		/// <param name="value">The double to write to the stream.</param>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+		///   
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public void WriteDouble(double value)
+		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= _length)
+				return;
+
+			unsafe
+			{
+				double* pointer = (double*)_pointerOffset;
+				*pointer = value;
+
+				Position += sizeof(double);
+			}
+		}
+
+		/// <summary>
+		/// Writes an unsigned 16 bit integer to the current position in the stream and advances the position within the stream by one byte.
+		/// </summary>
+		/// <param name="value">The unsigned 16 bit integer to write to the stream.</param>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+		///   
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public void WriteUInt16(UInt16 value)
+		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= _length)
+				return;
+
+			unsafe
+			{
+				UInt16* pointer = (UInt16*)_pointerOffset;
+				*pointer = value;
+
+				Position += 2;
+			}
+		}
+
+		/// <summary>
+		/// Writes an unsigned 64 bit integer to the current position in the stream and advances the position within the stream by one byte.
+		/// </summary>
+		/// <param name="value">The unsigned 64 bit integer to write to the stream.</param>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+		///   
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public void WriteUInt64(UInt64 value)
+		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= _length)
+				return;
+
+			unsafe
+			{
+				UInt64* pointer = (UInt64*)_pointerOffset;
+				*pointer = value;
+
+				Position += 8;
+			}
+		}
+
+		/// <summary>
+		/// Writes an unsigned integer to the current position in the stream and advances the position within the stream by one byte.
+		/// </summary>
+		/// <param name="value">The unsigned integer to write to the stream.</param>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+		///   
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public void WriteUInt32(UInt32 value)
+		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= _length)
+				return;
+
+			unsafe
+			{
+				UInt32* pointer = (UInt32*)_pointerOffset;
+				*pointer = value;
+
+				Position += 4;
+			}
+		}
+
+		/// <summary>
+		/// Writes a 16 bit integer to the current position in the stream and advances the position within the stream by one byte.
+		/// </summary>
+		/// <param name="value">The 16 bit integer to write to the stream.</param>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+		///   
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public void WriteInt16(Int16 value)
+		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= _length)
+				return;
+
+			unsafe
+			{
+				Int16* pointer = (Int16*)_pointerOffset;
+				*pointer = value;
+
+				Position += 2;
+			}
+		}
+
+		/// <summary>
+		/// Writes a 64 bit integer to the current position in the stream and advances the position within the stream by one byte.
+		/// </summary>
+		/// <param name="value">The 64 bit integer to write to the stream.</param>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+		///   
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public void WriteInt64(Int64 value)
+		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= _length)
+				return;
+
+			unsafe
+			{
+				Int64* pointer = (Int64*)_pointerOffset;
+				*pointer = value;
+
+				Position += 8;
+			}
+		}
+
+		/// <summary>
+		/// Writes an integer to the current position in the stream and advances the position within the stream by one byte.
+		/// </summary>
+		/// <param name="value">The integer to write to the stream.</param>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+		///   
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public void WriteInt32(Int32 value)
+		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= _length)
+				return;
+
+			unsafe
+			{
+				Int32* pointer = (Int32*)_pointerOffset;
+				*pointer = value;
+
+				Position += 4;
+			}
+		}
+
+		/// <summary>
 		/// Writes a byte to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The byte to write to the stream.</param>
@@ -440,6 +690,230 @@ namespace GorgonLibrary.Data
 
 				Position++;
 			}			
+		}
+
+		/// <summary>
+		/// Function to write a floating point value to the stream and increment the position by the size of a float.
+		/// </summary>
+		/// <returns>
+		/// The float, or -1 if at the end of the stream.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public float ReadFloat()
+		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= Length)
+				return -1;
+
+			unsafe
+			{
+				float* pointer = (float*)_pointerOffset;
+				Position +=4;
+
+				return *pointer;
+			}
+		}
+
+		/// <summary>
+		/// Function to write a double to the stream and increment the position by the size of a double.
+		/// </summary>
+		/// <returns>
+		/// The double, or -1 if at the end of the stream.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public double ReadDouble()
+		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= Length)
+				return -1;
+
+			unsafe
+			{
+				double* pointer = (double*)_pointerOffset;
+				Position += sizeof(double);
+
+				return *pointer;
+			}
+		}
+
+		/// <summary>
+		/// Function to write an unsigned 16 bit integer to the stream and increment the position by the size of a 16 bit integer.
+		/// </summary>
+		/// <returns>
+		/// The unsigned 16 bit integer, or 0 if at the end of the stream.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public UInt16 ReadUInt16()
+		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= Length)
+				return 0;
+
+			unsafe
+			{
+				UInt16* pointer = (UInt16*)_pointerOffset;
+				Position+=2;
+
+				return *pointer;
+			}
+		}
+
+		/// <summary>
+		/// Function to write an unsigned 32 bit integer to the stream and increment the position by the size of a 32 bit integer.
+		/// </summary>
+		/// <returns>
+		/// The unsigned 32 bit integer, or 0 if at the end of the stream.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public UInt32 ReadUInt32()
+		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= Length)
+				return 0;
+
+			unsafe
+			{
+				UInt32* pointer = (UInt32*)_pointerOffset;
+				Position+=4;
+
+				return *pointer;
+			}
+		}
+
+		/// <summary>
+		/// Function to write an unsigned 64 bit integer to the stream and increment the position by the size of a 64 bit integer.
+		/// </summary>
+		/// <returns>
+		/// The unsigned 64 bit integer, or 0 if at the end of the stream.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public UInt64 ReadUInt64()
+		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= Length)
+				return 0;
+
+			unsafe
+			{
+				UInt64* pointer = (UInt64*)_pointerOffset;
+				Position+=8;
+
+				return *pointer;
+			}
+		}
+
+		/// <summary>
+		/// Function to write a 16 bit integer to the stream and increment the position by the size of a 16 bit integer.
+		/// </summary>
+		/// <returns>
+		/// The 16 bit integer, or -1 if at the end of the stream.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public Int16 ReadInt16()
+		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= Length)
+				return -1;
+
+			unsafe
+			{
+				Int16* pointer = (Int16*)_pointerOffset;
+				Position+=2;
+
+				return *pointer;
+			}
+		}
+
+		/// <summary>
+		/// Function to write a 32 bit integer to the stream and increment the position by the size of a 32 bit integer.
+		/// </summary>
+		/// <returns>
+		/// The 32 bit integer, or -1 if at the end of the stream.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public Int32 ReadInt32()
+		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= Length)
+				return -1;
+
+			unsafe
+			{
+				Int32* pointer = (Int32*)_pointerOffset;
+				Position+=4;
+
+				return *pointer;
+			}
+		}
+
+		/// <summary>
+		/// Function to write a 64 bit integer to the stream and increment the position by the size of a 64 bit integer.
+		/// </summary>
+		/// <returns>
+		/// The 64 bit integer, or -1 if at the end of the stream.
+		/// </returns>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		public Int64 ReadInt64()
+		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
+			if (_pointerPosition >= Length)
+				return -1;
+
+			unsafe
+			{
+				Int64* pointer = (Int64*)_pointerOffset;
+				Position+=8;
+
+				return *pointer;
+			}
 		}
 
 		/// <summary>
@@ -529,15 +1003,14 @@ namespace GorgonLibrary.Data
 		/// <param name="buffer">Array to read from.</param>
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="buffer"/> is null. </exception>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
 		public void WriteRange<T>(T[] buffer)
 			where T : struct
 		{
 			if (buffer == null)
 				throw new ArgumentNullException("buffer");
-
-			if (!CanWrite)
-				throw new NotSupportedException("Buffer is read only.");
 
 			WriteRange<T>(buffer, 0, buffer.Length);
 		}
@@ -547,10 +1020,10 @@ namespace GorgonLibrary.Data
 		/// </summary>
 		/// <typeparam name="T">Type of data to write.</typeparam>
 		/// <param name="item">Value to write.</param>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
 		/// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void Write<T>(T item)
 			where T : struct
 		{
@@ -631,13 +1104,11 @@ namespace GorgonLibrary.Data
 		/// <typeparam name="T">Type of data to write.</typeparam>
 		/// <param name="count">Number of items to read.</param>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
 		public T[] ReadRange<T>(int count)
 			where T : struct
 		{
-			if (!CanRead)
-				throw new NotSupportedException("Buffer is write only.");
-
 			T[] result = new T[count];
 
 			ReadRange<T>(result, 0, count);
@@ -649,9 +1120,10 @@ namespace GorgonLibrary.Data
 		/// Function to read a value type from the 
 		/// </summary>
 		/// <returns>The value type within the stream.</returns>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
 		public T Read<T>()
 			where T : struct
 		{
@@ -679,8 +1151,16 @@ namespace GorgonLibrary.Data
 		/// <param name="pointer">Pointer to read from.</param>
 		/// <param name="size">Size, in bytes, to read.</param>
 		/// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void Read(IntPtr pointer, int size)
 		{
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
 			if (size + Position > _length)
 				throw new AccessViolationException("Cannot read beyond the end of the stream.");
 
@@ -689,13 +1169,106 @@ namespace GorgonLibrary.Data
 		}
 
 		/// <summary>
+		/// Function to write a string to the stream.
+		/// </summary>
+		/// <param name="value">String to write into the stream.</param>
+		/// <param name="encoding">Encoding to use.</param>
+		public void WriteString(string value, Encoding encoding)
+		{
+			if (value == null)
+				return;
+
+			if (encoding == null)
+				encoding = Encoding.Default;
+
+			int length = encoding.GetByteCount(value);
+			byte[] stringData = encoding.GetBytes(value);
+
+			while (length >= 0x80)
+			{
+				WriteByte((byte)(length | 0x80));
+				length >>= 7;
+			}
+
+			WriteByte((byte)length);
+
+			Write(stringData, 0, stringData.Length);
+		}
+
+		/// <summary>
+		/// Function to write a string to the stream.
+		/// </summary>
+		/// <param name="value">String to write into the stream.</param>
+		public void WriteString(string value)
+		{
+			WriteString(value, null);
+		}
+
+		/// <summary>
+		/// Function to read a string from the stream.
+		/// </summary>
+		/// <returns>The string in the stream.</returns>
+		public string ReadString()
+		{
+			return ReadString(null);
+		}
+
+		/// <summary>
+		/// Function to read a string from the stream.
+		/// </summary>
+		/// <param name="encoding">Text encoding to use.</param>
+		/// <returns>The string in the stream.</returns>
+		public string ReadString(Encoding encoding)
+		{
+			int stringLength = 0;
+			string result = string.Empty;
+
+			if (encoding == null)
+				encoding = Encoding.Default;
+
+			// String length is encoded in a 7 bit integer.
+			// We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
+			int counter = 0;
+			while (true)
+			{
+				int value = ReadByte();
+				stringLength |= (value & 0x7F) << counter;
+				counter += 7;
+				if (((value & 0x80) == 0) || (counter > 32))
+					break;
+			}
+
+			if (stringLength + Position > Length)
+				stringLength = (int)(Length - Position);
+
+			if (stringLength == 0)
+				return string.Empty;
+
+			byte[] byteData = new byte[stringLength];
+			char[] chars = null;
+
+			Read(byteData, 0, byteData.Length);
+			chars = encoding.GetChars(byteData);
+
+			return new string(chars);
+		}
+
+		/// <summary>
 		/// Function to read the data from a pointer into the stream.		
 		/// </summary>
 		/// <param name="pointer">Pointer to write into.</param>
 		/// <param name="size">Size, in bytes, to write.</param>
 		/// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void Write(IntPtr pointer, int size)
 		{
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
+
 			if (size + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
 
@@ -713,9 +1286,17 @@ namespace GorgonLibrary.Data
 		/// <para>Passing FALSE to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
 		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>
 		/// </remarks>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteMarshal<T>(T data, bool deleteContents)
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
+
+			if (!CanWrite)
+				throw new NotSupportedException("Buffer is read only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
 
 			if (dataSize + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
@@ -732,9 +1313,18 @@ namespace GorgonLibrary.Data
 		/// <remarks>This method will marshal unmanaged data back into a new structure (object or value type).
 		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.PtrToStructure">Marshal.PtrToStructure</see> method.</para>
 		/// </remarks>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public T ReadMarshal<T>()
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
+
+			if (!CanRead)
+				throw new NotSupportedException("Buffer is write only.");
+
+			if (_data == IntPtr.Zero)
+				throw new ObjectDisposedException("GorgonDataStream");
 
 			if (dataSize + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
@@ -788,7 +1378,7 @@ namespace GorgonLibrary.Data
 			_data = Marshal.UnsafeAddrOfPinnedArrayElement(data, index);
 			_length = count;
 			_pointerOffset = _data;
-			_status = status;
+			StreamStatus = status;
 		}
 
 		/// <summary>
@@ -839,15 +1429,14 @@ namespace GorgonLibrary.Data
 		/// </summary>
 		/// <param name="source">The source pointer.</param>
 		/// <param name="size">The size of the buffer (in bytes).</param>
-		/// <param name="status">A flag indicating if the buffer is read only, write only or both.</param>
-		public GorgonDataStream(IntPtr source, int size, StreamStatus status)
+		public GorgonDataStream(IntPtr source, int size)
 		{
 			_ownsPointer = false;
 			_data = source;
 			_pointerOffset = source;
 			_pointerPosition = 0;
 			_length = size;
-			_status = status;
+			StreamStatus = StreamStatus.ReadWrite;
 		}
 
 		/// <summary>
