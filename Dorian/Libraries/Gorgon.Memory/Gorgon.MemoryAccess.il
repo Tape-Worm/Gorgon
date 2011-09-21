@@ -62,6 +62,14 @@
 .class public auto ansi GorgonLibrary.Data.DirectAccess
        extends [mscorlib]System.Object
 {
+	.method public hidebysig static pinvokeimpl("msvcrt.dll" as "memcpy" cdecl) 
+		void*  CopyMemory(void* dest,
+				  void* src,
+				  int64 count) cil managed preservesig
+	{
+	  .custom instance void [mscorlib]System.Security.SuppressUnmanagedCodeSecurityAttribute::.ctor() = ( 01 00 00 00 ) 
+	}
+
 	.method public hidebysig static
 		int32 SizeOf<valuetype .ctor T> () cil managed
 	{
@@ -99,6 +107,35 @@
 	}
 
 	.method public hidebysig static 
+		void Writex86<valuetype .ctor T> (
+			native int destination,
+			!!T[] buffer,
+			int32 offset,
+			int32 size
+		) cil managed 
+	{
+		// Method begins at RVA 0x1000
+		// Code size 24 (0x18)
+		.maxstack 3
+		.locals (
+			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
+		)
+
+		ldarg.1
+		ldarg.2
+		ldelema !!T
+		stloc.0
+		ldarga.s destination
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldloc.0
+		ldarg.3
+		conv.i8
+		call void * GorgonLibrary.Data.DirectAccess::CopyMemory(void *, void *, int64)
+		pop
+		ret
+	}
+
+	.method public hidebysig static 
 		void Read<valuetype .ctor T> (
 			native int source,
 			!!T[] buffer,
@@ -125,6 +162,35 @@
 		IL_0012: unaligned. 1
 		IL_0015: cpblk
 		IL_0017: ret
+	}
+
+	.method public hidebysig static 
+		void Readx86<valuetype .ctor T> (
+			native int source,
+			!!T[] buffer,
+			int32 offset,
+			int32 size
+		) cil managed 
+	{
+		// Method begins at RVA 0x1024
+		// Code size 24 (0x18)
+		.maxstack 3
+		.locals (
+			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
+		)
+
+		ldarg.1
+		ldarg.2
+		ldelema !!T
+		stloc.0
+		 ldloc.0
+		ldarga.s source
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldarg.3
+		conv.i8
+		call void* GorgonLibrary.Data.DirectAccess::CopyMemory(void *, void *, int64)
+		pop
+		ret
 	}
 
 	.method public hidebysig static 
@@ -170,6 +236,27 @@
 		IL_000c: ret
 	} 
 	
+	.method public hidebysig static
+		void Writex86
+		(
+			native int destination,
+			native int source,
+			int32 size
+		) cil managed	
+	{
+		.maxstack 3		
+			
+ 		ldarga.s   destination
+  		call       instance void* [mscorlib]System.IntPtr::ToPointer()
+  		ldarga.s   source
+  		call       instance void* [mscorlib]System.IntPtr::ToPointer()
+  		ldarg.2
+  		conv.i8
+  		call       void* GorgonLibrary.Data.DirectAccess::CopyMemory(void*,void*,int64)
+  		pop	
+  		ret
+	}
+
 	.method public hidebysig static
 		void Write
 		(

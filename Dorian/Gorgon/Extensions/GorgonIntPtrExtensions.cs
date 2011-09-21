@@ -24,6 +24,9 @@
 // 
 #endregion
 
+//#define MEMCPY		// Use only memcpy.
+//#define CPBLK			// Use only copy block IL.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,15 +42,15 @@ namespace GorgonLibrary.Data
 	public static class GorgonIntPtrExtensions
 	{
 		/// <summary>
-		/// External memcpy reference.
+		/// 
 		/// </summary>
-		/// <param name="dest">Destination pointer.</param>
-		/// <param name="src">Source pointer.</param>
-		/// <param name="count">Number of bytes.</param>
-		/// <returns>The number of bytes copied.</returns>
+		/// <param name="dest"></param>
+		/// <param name="src"></param>
+		/// <param name="count"></param>
+		/// <returns></returns>
 		[DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false), SuppressUnmanagedCodeSecurity]
-		private static unsafe extern void* CopyMemory(void* dest, void* src, ulong count);
-
+		public static unsafe extern void* CopyMemory(void* dest, void* src, long count);		
+		
 		/// <summary>
 		/// Function to copy the memory contents from this pointer to another.
 		/// </summary>
@@ -58,7 +61,18 @@ namespace GorgonLibrary.Data
 		/// <exception cref="System.ArgumentNullException">Thrown when the destination pointer is NULL (Nothing in VB.Net).</exception>
 		public unsafe static void CopyTo(this IntPtr source, IntPtr destination, int size)
 		{
+#if !MEMCPY && !CPBLK
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+				DirectAccess.Write(destination, source, size);
+			else
+				DirectAccess.Writex86(destination, source, size);
+#else
+#if MEMCPY
+			DirectAccess.Writex86(destination, source, size);
+#else
 			DirectAccess.Write(destination, source, size);
+#endif
+#endif
 		}
 
 		/// <summary>
@@ -156,7 +170,18 @@ namespace GorgonLibrary.Data
 			if (destinationIndex + size > destination.Length * DirectAccess.SizeOf<T>())
 				throw new ArgumentOutOfRangeException("destinationIndex", "Index and size cannot be larger than the array.");
 
+#if !MEMCPY && !CPBLK
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+				DirectAccess.Read<T>(source, destination, destinationIndex, size);
+			else
+				DirectAccess.Readx86<T>(source, destination, destinationIndex, size);
+#else
+#if MEMCPY
+			DirectAccess.Readx86<T>(source, destination, destinationIndex, size);
+#else
 			DirectAccess.Read<T>(source, destination, destinationIndex, size);
+#endif
+#endif
 		}
 
 		/// <summary>
@@ -209,7 +234,18 @@ namespace GorgonLibrary.Data
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
 		public static void CopyFrom(this IntPtr destination, IntPtr source, int size)
 		{
+#if !MEMCPY && !CPBLK
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+				DirectAccess.Write(destination, source, size);
+			else
+				DirectAccess.Writex86(destination, source, size);
+#else
+#if MEMCPY
+			DirectAccess.Writex86(destination, source, size);
+#else
 			DirectAccess.Write(destination, source, size);
+#endif
+#endif
 		}
 
 		/// <summary>
@@ -309,7 +345,18 @@ namespace GorgonLibrary.Data
 			if (sourceIndex + size > source.Length * typeSize)
 				throw new ArgumentOutOfRangeException("sourceIndex", "Index and size cannot be larger than the array.");
 
+#if !MEMCPY && !CPBLK
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+				DirectAccess.Write<T>(destination, source, sourceIndex, size);
+			else
+				DirectAccess.Writex86<T>(destination, source, sourceIndex, size);
+#else
+#if MEMCPY
+			DirectAccess.Writex86<T>(destination, source, sourceIndex, size);
+#else
 			DirectAccess.Write<T>(destination, source, sourceIndex, size);
+#endif
+#endif
 		}
 
 		/// <summary>

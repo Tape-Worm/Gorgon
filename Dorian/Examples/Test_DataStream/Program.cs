@@ -51,7 +51,7 @@ namespace Test_DataStream
 			}
 		}
 
-		private static int size = 0;
+		private static long size = 0;
 
 		static bool CheckCRC(Test[] source, Test[] crc)
 		{
@@ -68,13 +68,25 @@ namespace Test_DataStream
 		{
 			Console.WriteLine("Press a key to start.");
 			Console.ReadKey();
-			int byteSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test)); 
-			if ((Gorgon.PlatformArchitecture == PlatformArchitecture.x64) && (Gorgon.AvailablePhysicalRAM >= 8589934592))
+
+			Gorgon.Initialize();
+			long byteSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
+			long maxSize = Gorgon.AvailablePhysicalRAM;
+
+			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x86)
 			{
-				size = (Int32.MaxValue / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - (System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test)) * 100);
+				// Limit to 2GB per process on x86.
+				if (maxSize > Int32.MaxValue)
+					maxSize = Int32.MaxValue;
 			}
-			else
-				size = (402653184 / System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test))) - System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
+
+			size = ((long)((double)maxSize * 0.75) / 4);
+
+			if (size >= Int32.MaxValue)
+				size = Int32.MaxValue;
+
+			size = (size / byteSize) - byteSize;
+
 			//size = 80000000;
 
 			Test[] crc = new Test[size];
@@ -99,7 +111,7 @@ namespace Test_DataStream
 			}			
 			Console.WriteLine(": {0:N3}ms", _timer.Milliseconds);
 
-			GorgonDataStream newStream = new GorgonDataStream(System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test)) * size);
+			GorgonDataStream newStream = new GorgonDataStream((int)(byteSize * size));
 
 			try
 			{
@@ -145,7 +157,7 @@ namespace Test_DataStream
 
 				Console.Write("Reading {0} at once...", (size * byteSize).FormatMemory());
 				_timer.Reset();
-				items = newStream.ReadRange<Test>(size);
+				items = newStream.ReadRange<Test>((int)size);
 
 				Console.WriteLine(": {0:N3}ms", _timer.Milliseconds);
 
@@ -169,7 +181,7 @@ namespace Test_DataStream
 				size = 8;
 				int count = 10000;
 				byte[] buffer = new byte[size * 1048576];
-				newStream = new GorgonDataStream(size * 1048576);
+				newStream = new GorgonDataStream((int)(size * 1048576));
 				_rnd.NextBytes(buffer);
 
 				double megabytesPerSecond = 0;
