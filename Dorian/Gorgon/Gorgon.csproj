@@ -94,7 +94,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
+    <Reference Include="Gorgon.MemoryAccess">
       <HintPath>..\Libraries\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
     <Reference Include="System">
