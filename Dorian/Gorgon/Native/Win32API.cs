@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.Native
 {
-    #region Value types.
+	#region Value types.
 	/// <summary>
 	/// Used with GlobalMemoryStatusEx.
 	/// </summary>
@@ -60,39 +60,39 @@ namespace GorgonLibrary.Native
 	}
 	
 	/// <summary>
-    /// Value type representing a Window message.
-    /// </summary>
-    /// <remarks>
-    /// See the MSDN documentation for more detail.
-    /// <para>
-    /// Used to pass various messages back and forth between the OS and the app.
-    /// </para>
-    /// </remarks>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct MSG
-    {
-        /// <summary>Window handle.</summary>
-        public IntPtr hwnd;
-        /// <summary>Message to process.</summary>
-        public WindowMessages Message;
-        /// <summary>Window message parameter 1.</summary>
-        public uint wParam;
-        /// <summary>Window message parameter 2.</summary>
-        public uint lParam;
-        /// <summary>Time message was sent?</summary>
-        public uint time;
-        /// <summary>Mouse pointer position.</summary>
-        public Point pt;
-    }
-    #endregion
-    
-    /// <summary>
+	/// Value type representing a Window message.
+	/// </summary>
+	/// <remarks>
+	/// See the MSDN documentation for more detail.
+	/// <para>
+	/// Used to pass various messages back and forth between the OS and the app.
+	/// </para>
+	/// </remarks>
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct MSG
+	{
+		/// <summary>Window handle.</summary>
+		public IntPtr hwnd;
+		/// <summary>Message to process.</summary>
+		public WindowMessages Message;
+		/// <summary>Window message parameter 1.</summary>
+		public uint wParam;
+		/// <summary>Window message parameter 2.</summary>
+		public uint lParam;
+		/// <summary>Time message was sent?</summary>
+		public uint time;
+		/// <summary>Mouse pointer position.</summary>
+		public Point pt;
+	}
+	#endregion
+	
+	/// <summary>
 	/// Static class for Native Win32 methods and corresponding structures.
 	/// </summary>
 	/// <remarks>
 	/// This is a grouping of any Windows API calls used by Gorgon.
 	/// <para>
-    /// This list is by no means complete.  The Win32 API is just massive and would probably take a lifetime to map.
+	/// This list is by no means complete.  The Win32 API is just massive and would probably take a lifetime to map.
 	/// </para>
 	/// 	<para>
 	/// These calls are considered "unsafe" and thus should be used with care.  If you don't know how to use a function, or why you want it, you probably don't need to use them.
@@ -101,7 +101,7 @@ namespace GorgonLibrary.Native
 	/// Please note that a lot of the enumerators/structures have slightly different names than their Win32 counterparts.  This was done for the sake of readability.  This does NOT affect their results or their effect on the results of their related functionality.
 	/// </para>
 	/// </remarks>
-    [System.Security.SuppressUnmanagedCodeSecurity]
+	[System.Security.SuppressUnmanagedCodeSecurity]
 	internal static class Win32API
 	{
 		#region Properties.
@@ -146,82 +146,82 @@ namespace GorgonLibrary.Native
 		private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx stat);
 		
 		/// <summary>
-        /// Function to process window messages.
-        /// </summary>
-        /// <remarks>See the MSDN documentation for a detailed description.</remarks>
-        /// <param name="msg">Message block to retrieve.</param>
-        /// <param name="hwnd">Window to retrieve messages from, FALSE for all.</param>
-        /// <param name="wFilterMin">Minimum message.</param>
-        /// <param name="wFilterMax">Maximum message.</param>
-        /// <param name="flags">Flags for the function.</param>
-        /// <returns>TRUE if messages are ready for processing, FALSE if not.</returns>
-        [DllImport("User32.dll", CharSet=CharSet.Auto)]
-        public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, int wFilterMin, int wFilterMax, PeekMessageFlags flags);
+		/// Function to process window messages.
+		/// </summary>
+		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
+		/// <param name="msg">Message block to retrieve.</param>
+		/// <param name="hwnd">Window to retrieve messages from, FALSE for all.</param>
+		/// <param name="wFilterMin">Minimum message.</param>
+		/// <param name="wFilterMax">Maximum message.</param>
+		/// <param name="flags">Flags for the function.</param>
+		/// <returns>TRUE if messages are ready for processing, FALSE if not.</returns>
+		[DllImport("User32.dll", CharSet=CharSet.Auto)]
+		public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, int wFilterMin, int wFilterMax, PeekMessageFlags flags);
 
-        /// <summary>
-        /// Function to translate windows messages.
-        /// </summary>
-        /// <param name="msg">Message to translate.</param>
-        /// <returns>TRUE if successful, FALSE if not.</returns>
-        [DllImport("user32.dll")]
-        public static extern bool TranslateMessage([In] ref MSG msg);
+		/// <summary>
+		/// Function to translate windows messages.
+		/// </summary>
+		/// <param name="msg">Message to translate.</param>
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		[DllImport("user32.dll")]
+		public static extern bool TranslateMessage([In] ref MSG msg);
 
-        /// <summary>
-        /// Function to dispatch windows messages.
-        /// </summary>
-        /// <param name="msg">Message to dispatch.</param>
-        /// <returns>TRUE if successful, FALSE if not.</returns>
-        [DllImport("user32.dll")]
-        public static extern IntPtr DispatchMessage([In] ref MSG msg);
+		/// <summary>
+		/// Function to dispatch windows messages.
+		/// </summary>
+		/// <param name="msg">Message to dispatch.</param>
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		[DllImport("user32.dll")]
+		public static extern IntPtr DispatchMessage([In] ref MSG msg);
 
-        /// <summary>
-        /// Function to return the frequency of the high precision timer.
-        /// </summary>
-        /// <remarks>See the MSDN documentation for a detailed description.</remarks>
-        /// <param name="PerformanceFrequency">Frequency of timer.</param>
-        /// <returns>TRUE if system supports high precision timing, FALSE if not.</returns>
-        [DllImport("kernel32", CharSet=CharSet.Auto)]
-        public static extern bool QueryPerformanceFrequency(out long PerformanceFrequency);
+		/// <summary>
+		/// Function to return the frequency of the high precision timer.
+		/// </summary>
+		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
+		/// <param name="PerformanceFrequency">Frequency of timer.</param>
+		/// <returns>TRUE if system supports high precision timing, FALSE if not.</returns>
+		[DllImport("kernel32", CharSet=CharSet.Auto)]
+		public static extern bool QueryPerformanceFrequency(out long PerformanceFrequency);
 
-        /// <summary>
-        /// Function to return the time from a high resolution timer.
-        /// </summary>
-        /// <remarks>See the MSDN documentation for a detailed description.</remarks>
-        /// <param name="PerformanceCount">Time from the timer.</param>
-        /// <returns>TRUE if system supports high precision timing, FALSE if not.</returns>
-        [DllImport("kernel32",CharSet=CharSet.Auto)]
-        public static extern bool QueryPerformanceCounter(out long PerformanceCount);
+		/// <summary>
+		/// Function to return the time from a high resolution timer.
+		/// </summary>
+		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
+		/// <param name="PerformanceCount">Time from the timer.</param>
+		/// <returns>TRUE if system supports high precision timing, FALSE if not.</returns>
+		[DllImport("kernel32",CharSet=CharSet.Auto)]
+		public static extern bool QueryPerformanceCounter(out long PerformanceCount);
 
-        /// <summary>
-        /// Function to return time from a medium precision timer.
-        /// </summary>
-        /// <remarks>
-        /// See the MSDN documentation for a detailed description.
-        /// <para>
-        /// This timer is of lower precision than the high precision timers, do not use unless
-        /// your system does not support high resolution timers.
-        /// </para>
-        /// </remarks>
-        /// <returns>Time in milliseconds.</returns>
-        [DllImport("winmm.dll",CharSet=CharSet.Auto)]
-        public static extern int timeGetTime();
+		/// <summary>
+		/// Function to return time from a medium precision timer.
+		/// </summary>
+		/// <remarks>
+		/// See the MSDN documentation for a detailed description.
+		/// <para>
+		/// This timer is of lower precision than the high precision timers, do not use unless
+		/// your system does not support high resolution timers.
+		/// </para>
+		/// </remarks>
+		/// <returns>Time in milliseconds.</returns>
+		[DllImport("winmm.dll",CharSet=CharSet.Auto)]
+		public static extern int timeGetTime();
 
-        /// <summary>
-        /// Function to start a timing session.
-        /// </summary>
-        /// <param name="uPeriod">Minimum resolution in milliseconds.</param>
-        /// <returns>0 if successful, non 0 if not.</returns>
-        [DllImport("winmm.dll",CharSet=CharSet.Auto)]
-        public static extern int timeBeginPeriod(uint uPeriod);
+		/// <summary>
+		/// Function to start a timing session.
+		/// </summary>
+		/// <param name="uPeriod">Minimum resolution in milliseconds.</param>
+		/// <returns>0 if successful, non 0 if not.</returns>
+		[DllImport("winmm.dll",CharSet=CharSet.Auto)]
+		public static extern int timeBeginPeriod(uint uPeriod);
 
-        /// <summary>
-        /// Function to end a timing session.
-        /// </summary>
-        /// <param name="uPeriod">Minimum resolution in milliseconds.</param>
-        /// <returns>0 if successful, non 0 if not.</returns>
-        [DllImport("winmm.dll", CharSet = CharSet.Auto)]
-        public static extern int timeEndPeriod(uint uPeriod);
-        #endregion
+		/// <summary>
+		/// Function to end a timing session.
+		/// </summary>
+		/// <param name="uPeriod">Minimum resolution in milliseconds.</param>
+		/// <returns>0 if successful, non 0 if not.</returns>
+		[DllImport("winmm.dll", CharSet = CharSet.Auto)]
+		public static extern int timeEndPeriod(uint uPeriod);
+		#endregion
 
 		#region Constructor.
 		/// <summary>

@@ -630,6 +630,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// Function to retrieve the D3D declaration type.
 		/// </summary>
 		/// <param name="format">Format to parse.</param>
+		/// <param name="context">Context for the vertex element.</param>
 		/// <returns>The vertex declaration type.</returns>
 		private static DeclarationType GetDeclarationType(VertexElementFormat format, string context)
 		{

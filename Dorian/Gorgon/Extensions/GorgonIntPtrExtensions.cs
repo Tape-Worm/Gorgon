@@ -34,23 +34,13 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace GorgonLibrary.Data
+namespace GorgonLibrary.Native
 {
 	/// <summary>
 	/// Extensions for manipulating memory via an Intptr.
 	/// </summary>
 	public static class GorgonIntPtrExtensions
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dest"></param>
-		/// <param name="src"></param>
-		/// <param name="count"></param>
-		/// <returns></returns>
-		[DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false), SuppressUnmanagedCodeSecurity]
-		public static unsafe extern void* CopyMemory(void* dest, void* src, long count);		
-		
 		/// <summary>
 		/// Function to copy the memory contents from this pointer to another.
 		/// </summary>
