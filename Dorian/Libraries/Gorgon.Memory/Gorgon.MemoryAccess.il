@@ -1,7 +1,27 @@
 
-//  Microsoft (R) .NET Framework IL Disassembler.  Version 4.0.30319.1
-//  Copyright (c) Microsoft Corporation.  All rights reserved.
-
+// 
+// Gorgon.
+// Copyright (C) 2011 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: Sunday, September 19, 2011 1:10:19 PM
+// 
 
 
 // Metadata version: v4.0.30319
@@ -59,9 +79,10 @@
 
 // =============== CLASS MEMBERS DECLARATION ===================
 
-.class public auto ansi GorgonLibrary.Data.DirectAccess
+.class public auto ansi GorgonLibrary.Native.DirectAccess
        extends [mscorlib]System.Object
 {
+	// Native method to copy data from one pointer to another.  Used to optimize memory transfer under x86.
 	.method public hidebysig static pinvokeimpl("msvcrt.dll" as "memcpy" cdecl) 
 		void*  CopyMemory(void* dest,
 				  void* src,
@@ -70,6 +91,7 @@
 	  .custom instance void [mscorlib]System.Security.SuppressUnmanagedCodeSecurityAttribute::.ctor() = ( 01 00 00 00 ) 
 	}
 
+	// Function to return the size of a type (value types only) in bytes.
 	.method public hidebysig static
 		int32 SizeOf<valuetype .ctor T> () cil managed
 	{
@@ -77,6 +99,7 @@
 		IL_0006: ret
 	}
 	
+	// Function to write an array of value types to native memory.
 	.method public hidebysig static 
 		void Write<valuetype .ctor T> (
 			native int destination,
@@ -106,6 +129,7 @@
 		IL_0017: ret
 	}
 
+	// Function to write an array of value types to native memory.  Optimized for x86.
 	.method public hidebysig static 
 		void Writex86<valuetype .ctor T> (
 			native int destination,
@@ -130,11 +154,12 @@
 		ldloc.0
 		ldarg.3
 		conv.i8
-		call void * GorgonLibrary.Data.DirectAccess::CopyMemory(void *, void *, int64)
+		call void * GorgonLibrary.Native.DirectAccess::CopyMemory(void *, void *, int64)
 		pop
 		ret
 	}
 
+	// Function to read an array of value types from native memory.
 	.method public hidebysig static 
 		void Read<valuetype .ctor T> (
 			native int source,
@@ -164,6 +189,7 @@
 		IL_0017: ret
 	}
 
+	// Function to read an array of value types from native memory. Optimized for x86.
 	.method public hidebysig static 
 		void Readx86<valuetype .ctor T> (
 			native int source,
@@ -188,11 +214,12 @@
 		call instance void* [mscorlib]System.IntPtr::ToPointer()
 		ldarg.3
 		conv.i8
-		call void* GorgonLibrary.Data.DirectAccess::CopyMemory(void *, void *, int64)
+		call void* GorgonLibrary.Native.DirectAccess::CopyMemory(void *, void *, int64)
 		pop
 		ret
 	}
 
+	// Function to read a value types to native memory.
 	.method public hidebysig static 
 		!!T Read<valuetype .ctor T> (
 			native int source,
@@ -217,6 +244,7 @@
 		IL_0015: ret
 	} 
 
+	// Function to write a value type to native memory.
 	.method public hidebysig static 
 		void Write<valuetype .ctor T> (
 			native int destination,
@@ -236,6 +264,7 @@
 		IL_000c: ret
 	} 
 	
+	// Function to write a value type to native memory.  Optimized for x86.
 	.method public hidebysig static
 		void Writex86
 		(
@@ -252,11 +281,12 @@
   		call       instance void* [mscorlib]System.IntPtr::ToPointer()
   		ldarg.2
   		conv.i8
-  		call       void* GorgonLibrary.Data.DirectAccess::CopyMemory(void*,void*,int64)
+  		call       void* GorgonLibrary.Native.DirectAccess::CopyMemory(void*,void*,int64)
   		pop	
   		ret
 	}
 
+	// Function to copy data from one area of native memory to another.
 	.method public hidebysig static
 		void Write
 		(
@@ -276,6 +306,7 @@
 		IL_0011: ret
 	}
 	
+	// Function to initialize memory with zeroes.
 	.method public hidebysig static
 		void ZeroMemory
 		(
@@ -311,7 +342,7 @@
     IL_0006:  ret
   } // end of method DirectAccess::.ctor
 
-} // end of class GorgonLibrary.Data.DirectAccess
+} // end of class GorgonLibrary.Native.DirectAccess
 
 
 // =============================================================
