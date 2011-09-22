@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Data;
+using GorgonLibrary.Native;
 
 namespace Test_DataStream
 {

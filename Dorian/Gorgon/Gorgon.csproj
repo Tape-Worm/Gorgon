@@ -116,7 +116,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\GorgonDataStream.cs" />
     <Compile Include="Extensions\GorgonIntPtrExtensions.cs" />
     <Compile Include="Diagnostics\GorgonDebug.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
@@ -134,6 +133,7 @@
     <Compile Include="Math\GorgonMathUtility.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
+    <Compile Include="Native\GorgonDataStream.cs" />
     <Compile Include="Native\Win32API.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SlimDX;
-using GorgonLibrary.Data;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
@@ -70,17 +70,16 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="D3D9DataStream"/> class.
 		/// </summary>
 		/// <param name="stream">The stream to wrap.</param>
-		/// <param name="status">Status for the stream.</param>
 		public D3D9DataStream(DataStream stream)
 			: base(stream.DataPointer, (int)stream.Length)
 		{
 			if ((stream.CanWrite) && (!stream.CanRead))
 			{
-				StreamStatus = Data.StreamStatus.WriteOnly;
+				StreamStatus = StreamStatus.WriteOnly;
 			}
 			else if ((stream.CanRead) && (!stream.CanWrite))
 			{
-				StreamStatus = Data.StreamStatus.ReadOnly;
+				StreamStatus = StreamStatus.ReadOnly;
 			}			
 
 			_d3dstream = stream;
