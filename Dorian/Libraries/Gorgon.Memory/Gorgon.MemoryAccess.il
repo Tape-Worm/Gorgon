@@ -83,7 +83,7 @@
        extends [mscorlib]System.Object
 {
 	// Native method to copy data from one pointer to another.  Used to optimize memory transfer under x86.
-	.method public hidebysig static pinvokeimpl("msvcrt.dll" as "memcpy" cdecl) 
+	.method private hidebysig static pinvokeimpl("msvcrt.dll" as "memcpy" cdecl) 
 		void*  CopyMemory(void* dest,
 				  void* src,
 				  int64 count) cil managed preservesig
