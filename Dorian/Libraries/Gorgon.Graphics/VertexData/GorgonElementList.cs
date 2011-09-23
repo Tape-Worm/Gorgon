@@ -148,8 +148,9 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private List<GorgonVertexElement> _elements = null;		// List of elements.
-		private bool _isUpdated = false;					// Flag to indicate that the vertex was updated.
-		private Type[] _allowedTypes = null;				// Types allowed when pulling information from an object.
+		private IDictionary<int, int> _slotSizes = null;		// List of slot sizes.
+		private bool _isUpdated = false;						// Flag to indicate that the vertex was updated.
+		private Type[] _allowedTypes = null;					// Types allowed when pulling information from an object.
 		#endregion
 
 		#region Properties.
@@ -239,6 +240,14 @@ namespace GorgonLibrary.Graphics
 		private void UpdateVertexSize()
 		{
 			Size = _elements.Sum(item => item.Size);
+
+			_slotSizes = new Dictionary<int, int>();
+
+			var slotSizing = from slot in _elements
+							   group slot by slot.Slot;
+
+			foreach (var slotGroup in slotSizing)
+				_slotSizes[slotGroup.Key] = slotGroup.Sum(item => item.Size);
 		}
 
 		/// <summary>
@@ -255,6 +264,19 @@ namespace GorgonLibrary.Graphics
 			}
 
 			IsUpdated = true;
+		}
+
+		/// <summary>
+		/// Property to return the size of the elements for a given slot in a vertex.
+		/// </summary>
+		/// <param name="slot">Slot to count.</param>
+		/// <returns>The size of the elements in the slot, in bytes.</returns>
+		public int GetSlotSize(int slot)
+		{
+			if (IsUpdated)
+				UpdateVertexSize();
+
+			return _slotSizes[slot];
 		}
 
 		/// <summary>
@@ -604,8 +626,8 @@ namespace GorgonLibrary.Graphics
 			if ((item.Slot < 0) || (item.Slot > 15))
 				throw new ArgumentException("The value must be from 0 to 15.", "slot");
 
-			if (_elements.Count(element => ((element.Offset == item.Offset) || (string.Compare(element.Context, item.Context, true) == 0)) && element.Index == item.Index) > 0)
-				throw new ArgumentException("The offset '" + item.Offset + "' or context '" + item.Context + "' is in use by another item with the same index.", "context, offset");
+			if (_elements.Count(element => ((element.Offset == item.Offset) || (string.Compare(element.Context, item.Context, true) == 0)) && element.Index == item.Index && element.Slot == item.Slot) > 0)
+				throw new ArgumentException("The offset '" + item.Offset + "' or context '" + item.Context + "' is in use by another item with the same index or slot.", "context, offset");
 
 			_elements.Add(item);
 
@@ -641,9 +663,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="array">The array.</param>
 		/// <param name="arrayIndex">Index of the array.</param>
-		void ICollection<GorgonVertexElement>.CopyTo(GorgonVertexElement[] array, int arrayIndex)
+		public void CopyTo(GorgonVertexElement[] array, int arrayIndex)
 		{
-			throw new NotImplementedException();
+			_elements.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>

@@ -228,6 +228,9 @@ namespace GorgonLibrary.Graphics
 			Format = format;
 			Offset = offset;
 			Size = SizeOf(format);
+			Slot = slot;
+			Instanced = instanced;
+			InstanceCount = InstanceCount;
 		}
 		#endregion
 	}

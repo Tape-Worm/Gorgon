@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffers\D3D9VertexBuffer.cs" />
     <Compile Include="D3D9DataStream.cs" />
     <Compile Include="D3DConvert.cs" />
     <Compile Include="DeviceInfo\D3D9VideoDevice.cs" />
