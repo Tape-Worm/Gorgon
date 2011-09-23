@@ -134,6 +134,7 @@
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
     <Compile Include="Native\GorgonDataStream.cs" />
+    <Compile Include="Native\ILockableBuffer.cs" />
     <Compile Include="Native\Win32API.cs">
       <SubType>Code</SubType>
     </Compile>

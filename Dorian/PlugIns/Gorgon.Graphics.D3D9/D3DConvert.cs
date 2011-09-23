@@ -708,12 +708,12 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <returns>The D3D vertex declaration.</returns>
 		public static VertexElement[] Convert(IEnumerable<GorgonVertexElement> elements)
 		{
-			VertexElement[] vertices = new VertexElement[elements.Count() + 1];
+			List<VertexElement> vertices = new List<VertexElement>();
 			DeclarationType declType = DeclarationType.Unused;
 			DeclarationUsage usage = DeclarationUsage.Position;
 			int index = 0;
 
-			for(int i = 0; i < elements.Count(); i++)
+			for (int i = 0; i < elements.Count(); i++)
 			{
 				var element = elements.ElementAt(i);
 
@@ -725,12 +725,17 @@ namespace GorgonLibrary.Graphics.D3D9
 				if (string.Compare(element.Context, GorgonVertexElement.Specular, true) == 0)
 					index = 1;
 
-				vertices[i] = new VertexElement((short)element.Slot, (short)element.Offset, declType, DeclarationMethod.Default, usage, (byte)index);
+				vertices.Add(new VertexElement((short)element.Slot, (short)element.Offset, declType, DeclarationMethod.Default, usage, (byte)index));
 			}
 
-			vertices[elements.Count()] = VertexElement.VertexDeclarationEnd;
+			// Re-order because D3D likes contiguous data.
+			vertices = (from vertex in vertices
+						orderby vertex.Stream, vertex.Offset
+						select vertex).ToList();
+			
+			vertices.Add(VertexElement.VertexDeclarationEnd);
 
-			return vertices;
+			return vertices.ToArray();
 		}
 		#endregion
 	}

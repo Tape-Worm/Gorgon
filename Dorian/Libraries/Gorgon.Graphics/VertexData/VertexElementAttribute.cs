@@ -166,8 +166,9 @@ namespace GorgonLibrary.Graphics
 			Slot = slot;
 			Instanced = instanced;
 			InstanceCount = instanceCount;
+			Offset = offset;
 			AutoOffset = false;
-			ExplicitOrder = Int32.MinValue;
+			ExplicitOrder = Int32.MaxValue;
 		}
 
 		/// <summary>
@@ -217,6 +218,7 @@ namespace GorgonLibrary.Graphics
 			: this(context, format, 0, 0, 0, false, 0)
 		{
 			ExplicitOrder = fieldOrder;
+			Offset = 0;
 			AutoOffset = true;
 		}
 
@@ -229,6 +231,7 @@ namespace GorgonLibrary.Graphics
 			: this(context, VertexElementFormat.Unknown, 0, 0, 0, false, 0)
 		{
 			ExplicitOrder = fieldOrder;
+			Offset = 0;
 			AutoOffset = true;
 		}
 
@@ -240,6 +243,7 @@ namespace GorgonLibrary.Graphics
 			: this(string.Empty, VertexElementFormat.Unknown, 0, 0, 0, false, 0)
 		{
 			ExplicitOrder = fieldOrder;
+			Offset = 0;
 			AutoOffset = true;
 		}
 		#endregion
