@@ -102,6 +102,18 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			GetUsage();
 
+			if ((VertexElements.IsUpdated) && (D3DVertexDeclaration != null))
+			{
+				D3DVertexDeclaration.Dispose();
+				D3DVertexDeclaration = null;
+
+				if (D3DVertexBuffer != null)
+				{
+					D3DVertexBuffer.Dispose();
+					D3DVertexBuffer = null;
+				}
+			}
+
 			if (D3DVertexDeclaration == null)
 				D3DVertexDeclaration = new VertexDeclaration(_device, D3DConvert.Convert(VertexElements));
 
@@ -131,16 +143,10 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			if (((Usage & GeometryBufferUsage.Indices32) == GeometryBufferUsage.Indices32) || ((Usage & GeometryBufferUsage.Indices16) == GeometryBufferUsage.Indices16))
 			{
-				if (D3DIndexBuffer == null)
-					CreateIndexBuffer();
-
 				return new D3D9DataStream(D3DIndexBuffer.Lock(offset, size, D3DConvert.Convert(flags)));
 			}
 			else
 			{
-				if (D3DVertexBuffer == null)
-					CreateVertexBuffer();
-
 				return new D3D9DataStream(D3DVertexBuffer.Lock(offset, size, D3DConvert.Convert(flags)));
 			}
 		}
@@ -206,6 +212,17 @@ namespace GorgonLibrary.Graphics.D3D9
 		{
 			_device = device;
 			_thisBuffer = this;
+
+			if (((Usage & GeometryBufferUsage.Indices32) == GeometryBufferUsage.Indices32) || ((Usage & GeometryBufferUsage.Indices16) == GeometryBufferUsage.Indices16))
+			{
+				if (D3DIndexBuffer == null)
+					CreateIndexBuffer();
+			}
+			else
+			{
+				if ((D3DVertexBuffer == null) || (VertexElements.IsUpdated))
+					CreateVertexBuffer();
+			}
 		}
 		#endregion
 

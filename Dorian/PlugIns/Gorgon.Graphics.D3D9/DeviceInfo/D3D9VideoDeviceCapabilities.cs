@@ -107,7 +107,8 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			if ((_caps.PresentationIntervals & PresentInterval.Four) == PresentInterval.Four)
 				VSyncIntervals |= GorgonVSyncInterval.Four;
-			
+
+			MaxSlots = _caps.MaxStreams;			
 			
 			return result;
 		}
