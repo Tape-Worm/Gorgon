@@ -168,6 +168,41 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to re-organize the vertex element slots based on what the device can support.
+		/// </summary>
+		private void UpdateVertexElementSlots()
+		{
+			GorgonVideoDevice driver = Owner.Settings.Device;
+
+			if (Slot >= driver.Capabilities.MaxSlots)
+				Slot = driver.Capabilities.MaxSlots - 1;
+
+			var elements = from element in VertexElements
+						   where element.Slot >= driver.Capabilities.MaxSlots
+						   orderby element.Offset
+						   select element;
+
+			// We're good, leave us alone.
+			if (elements.Count() == 0)
+				return;
+
+			// If we have elements that are slotted higher than the device can allow, then reorganize them.
+			var maxOffset = (from element in VertexElements
+							 where element.Slot == (driver.Capabilities.MaxSlots - 1)
+							 orderby element.Offset descending
+							 select element).First();
+
+			int currentOffset = maxOffset.Size + maxOffset.Offset;
+
+			foreach (var element in elements)
+			{
+				element.Slot = driver.Capabilities.MaxSlots - 1;
+				element.Offset = currentOffset;
+				currentOffset = element.Size + element.Offset;
+			}
+		}
+
+		/// <summary>
 		/// Function to perform the lock on the vertex buffer.
 		/// </summary>
 		/// <param name="offset">Offset, in bytes, within the buffer to start the lock.</param>
@@ -228,12 +263,14 @@ namespace GorgonLibrary.Graphics
 				if ((elements == null) || (elements.Count == 0))
 					throw new ArgumentException("A vertex buffer requires a list of vertex elements.", "elements");
 
-				var findSlot = elements.Where(item => item.Slot == Slot);
-				if (findSlot.Count() == 0)
+				if (elements.Count(item => item.Slot == Slot) == 0)
 					throw new ArgumentException("There is no vertex element in slot " + slot.ToString() + ".", "slot");
 
 				VertexElements = elements;
 				ElementSize = elements.GetSlotSize(slot);
+
+				// Ensure that all vertex elements and buffers can fit into the number of slots available on the video device.
+				UpdateVertexElementSlots();
 			}
 
 			_sizeBytes = ElementSize * ElementCount;

@@ -61,6 +61,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the maximum number of concurrent data slots available.
+		/// </summary>
+		public int MaxSlots
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
 		/// A collection of renderer specific capabilities for the device.
 		/// </summary>
 		/// <remarks>This can be used to derive specific hardware functionality for a particular type of rendering back end.</remarks>
