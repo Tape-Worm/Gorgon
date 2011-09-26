@@ -737,6 +737,26 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			return vertices.ToArray();
 		}
+
+		/// <summary>
+		/// Function to convert Gorgon locking flags to Direct 3D locking flags.
+		/// </summary>
+		/// <param name="flags">Flags to convert.</param>
+		/// <returns>Direct 3D locking flags.</returns>
+		public static LockFlags Convert(Native.LockFlags flags)
+		{
+			switch (flags)
+			{
+				case Native.LockFlags.Discard:
+					return LockFlags.Discard;
+				case Native.LockFlags.NoOverwrite:
+					return LockFlags.NoOverwrite;
+				case Native.LockFlags.ReadOnly:
+					return LockFlags.ReadOnly;
+				default:
+					return LockFlags.None;
+			}
+		}
 		#endregion
 	}
 }

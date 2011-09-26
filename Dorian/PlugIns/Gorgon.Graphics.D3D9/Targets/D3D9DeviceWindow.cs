@@ -460,6 +460,21 @@ namespace GorgonLibrary.Graphics.D3D9
 		}
 
 		/// <summary>
+		/// Function to create a vertex buffer.
+		/// </summary>
+		/// <param name="elementCount">Size of the buffer, in elements.</param>
+		/// <param name="usage">Usage flags for the buffer.</param>
+		/// <param name="vertexElements">List of vertex elements.</param>
+		/// <param name="slot">Slot to assign this geometry buffer into.</param>
+		/// <returns>
+		/// A new geometry buffer.
+		/// </returns>
+		protected override GorgonGeometryBuffer CreateGeometryBufferImpl(int elementCount, GeometryBufferUsage usage, GorgonVertexElementList vertexElements, int slot)
+		{
+			return new D3D9GeometryBuffer(D3DDevice, this, elementCount, usage, vertexElements, slot);
+		}
+
+		/// <summary>
 		/// Function to clear a target.
 		/// </summary>
 		/// <param name="color">Color to clear with.</param>
