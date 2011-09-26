@@ -48,6 +48,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the assigned vertex buffer slots.
+		/// </summary>
+		internal IList<GorgonGeometryBuffer> VertexBufferSlots
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return whether the device window is a multi-head device window or not.
 		/// </summary>
 		public bool IsMultiHead
@@ -391,6 +400,85 @@ namespace GorgonLibrary.Graphics
 			Graphics.CheckValidMSAA(settings, Settings.Device);
 		}
 
+
+		/// <summary>
+		/// Function to create a vertex buffer.
+		/// </summary>
+		/// <param name="elementCount">Size of the buffer, in elements.</param>
+		/// <param name="usage">Usage flags for the buffer.</param>
+		/// <param name="vertexElements">List of vertex elements.</param>
+		/// <param name="slot">Slot to assign this geometry buffer into.</param>
+		/// <returns>A new geometry buffer.</returns>
+		protected abstract GorgonGeometryBuffer CreateGeometryBufferImpl(int elementCount, GeometryBufferUsage usage, GorgonVertexElementList vertexElements, int slot);
+
+		/// <summary>
+		/// Function to create a vertex buffer.
+		/// </summary>
+		/// <param name="elementCount">Size of the buffer, in elements.</param>
+		/// <param name="usage">Usage flags for the buffer.</param>
+		/// <param name="vertexElements">List of vertex elements.</param>
+		/// <param name="slot">Slot to assign this vertex buffer into.</param>
+		/// <returns>A new vertex buffer.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elementCount"/> parameter is less than 1.</exception>
+		public GorgonGeometryBuffer CreateVertexBuffer(int elementCount, GeometryBufferUsage usage, GorgonVertexElementList vertexElements, int slot)
+		{
+			if (elementCount < 1)
+				throw new ArgumentException("Geometry buffers must be at least 1 element.");
+
+			// Remove index buffer usages.
+			if ((usage & GeometryBufferUsage.Indices16) == GeometryBufferUsage.Indices16)
+				usage &= ~GeometryBufferUsage.Indices16;
+
+			if ((usage & GeometryBufferUsage.Indices32) == GeometryBufferUsage.Indices32)
+				usage &= ~GeometryBufferUsage.Indices32;
+
+			GorgonGeometryBuffer buffer = CreateGeometryBufferImpl(elementCount, usage, vertexElements, slot);
+
+			AddToObjectTracker(buffer);
+
+			return buffer;
+		}
+
+		/// <summary>
+		/// Function to create a vertex buffer.
+		/// </summary>
+		/// <param name="elementCount">Size of the buffer, in elements.</param>
+		/// <param name="usage">Usage flags for the buffer.</param>
+		/// <param name="vertexElements">List of vertex elements.</param>
+		/// <returns>A new vertex buffer.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elementCount"/> parameter is less than 1.</exception>
+		public GorgonGeometryBuffer CreateVertexBuffer(int elementCount, GeometryBufferUsage usage, GorgonVertexElementList vertexElements)
+		{
+			return CreateVertexBuffer(elementCount, usage, vertexElements, 0);
+		}
+
+		/// <summary>
+		/// Function to create an index buffer.
+		/// </summary>
+		/// <param name="elementCount">Size of the buffer, in elements.</param>
+		/// <param name="usage">Usage flags for the buffer.</param>
+		/// <returns>A new vertex buffer.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elementCount"/> parameter is less than 1.</exception>
+		public GorgonGeometryBuffer CreateIndexBuffer(int elementCount, GeometryBufferUsage usage)
+		{
+			if (elementCount < 1)
+				throw new ArgumentException("Geometry buffers must be at least 1 element.");
+
+			// Check for index buffer usages.
+			if (((usage & GeometryBufferUsage.Indices16) != GeometryBufferUsage.Indices16) || ((usage & GeometryBufferUsage.Indices32) == GeometryBufferUsage.Indices32))
+				usage |= GeometryBufferUsage.Indices16;
+
+			// Remove vertex buffer specific flags.
+			if ((usage & GeometryBufferUsage.PreClipped) == GeometryBufferUsage.PreClipped)
+				usage &= ~GeometryBufferUsage.PreClipped;
+
+			GorgonGeometryBuffer buffer = CreateGeometryBufferImpl(elementCount, usage, null, 0);
+
+			AddToObjectTracker(buffer);
+
+			return buffer;
+		}
+
 		/// <summary>
 		/// Function to create a swap chain.
 		/// </summary>
@@ -524,6 +612,9 @@ namespace GorgonLibrary.Graphics
 			_trackedObjects = new List<IDisposable>();
 
 			_wasWindowed = Settings.IsWindowed;
+
+			// TODO: Make this an array, and base it on the number of available streams/slots in the driver.
+			VertexBufferSlots = new List<GorgonGeometryBuffer>();
 
 			if (window != null)
 			{

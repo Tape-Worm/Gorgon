@@ -37,6 +37,10 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		/// <summary>
+		/// Alpha channel.
+		/// </summary>
+		public float Alpha;
+		/// <summary>
 		/// Red color channel.
 		/// </summary>
 		public float Red;
@@ -48,10 +52,6 @@ namespace GorgonLibrary.Graphics
 		/// Blue color channel.
 		/// </summary>
 		public float Blue;
-		/// <summary>
-		/// Alpha channel.
-		/// </summary>
-		public float Alpha;
 		#endregion
 
 		#region Methods.
@@ -174,7 +174,8 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The packed color value.</returns>
 		public int ToARGB()
 		{
-			return (((int)(Alpha * 255.0f)) & 0xff) << 24 | (((int)(Red * 255.0f)) & 0xff) << 16 | (((int)(Green * 255.0f)) << 0xff) >> 8 | ((int)(Blue * 255)) & 0xff;
+			uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Red * 255.0f)) & 0xff) << 16 | (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Blue * 255.0f)) & 0xff;
+			return (int)result;
 		}
 
 		/// <summary>
@@ -389,9 +390,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
-		/// <param name="r">The r.</param>
-		/// <param name="g">The g.</param>
-		/// <param name="b">The b.</param>
+		/// <param name="r">Red component.</param>
+		/// <param name="g">Green component.</param>
+		/// <param name="b">Blue component.</param>
 		public GorgonColor(float r, float g, float b)
 			: this(1.0f, r, g, b)
 		{

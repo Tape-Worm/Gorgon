@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using SlimDX;
 using SlimDX.Direct3D9;
+using GorgonLibrary.Native;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics.D3D9
@@ -22,11 +23,10 @@ namespace GorgonLibrary.Graphics.D3D9
 			[VertexElement("Texture_Coordinates", VertexElementFormat.Float2, 12, 0, 0)]
 			public Vector2D Texture_Coordinates;
 		}
-		
-		private VertexBuffer _vb = null;
-		private VertexBuffer _vb2 = null;
-		private IndexBuffer _ib = null;
-		private VertexDeclaration _vdecl = null;
+
+		private D3D9GeometryBuffer _vb = null;
+		private D3D9GeometryBuffer _vb2 = null;
+		private D3D9GeometryBuffer _ib = null;
 		private Vertex[] triangle = new Vertex[3];
 		private float _pos = -0.75f;
 		private Device _device = null;
@@ -39,7 +39,8 @@ namespace GorgonLibrary.Graphics.D3D9
 		private bool _timeSwitch = false;
 		private Texture _image = null;
 		private GorgonVertexElementList _vertexType = null;
-		private D3D9DataStream _lock = null;
+		private GorgonDataStream _lock = null;
+		private Random _rnd = new Random();
 		//private int imageNumber = 0;
 
 
@@ -50,6 +51,7 @@ namespace GorgonLibrary.Graphics.D3D9
 		/// <param name="device"></param>
 		public Test(T window, Device device)
 		{
+			GorgonDeviceWindow devWindow = window as GorgonDeviceWindow;
 			IRenderTargetWindow targetWindow = window as IRenderTargetWindow;
 			if (targetWindow != null)
 				targetWindow.AfterDeviceReset += new EventHandler(window_AfterDeviceReset);
@@ -57,18 +59,22 @@ namespace GorgonLibrary.Graphics.D3D9
 			_window = window;
 			_device = device;
 
+			if (devWindow == null)
+			{
+				GorgonSwapChain swap = window as GorgonSwapChain;
+				if (swap != null)
+					devWindow = swap.DeviceWindow;
+			}
+			
 			_vertexType = new GorgonVertexElementList(typeof(Vertex));
 			_vertexType.Add("Diffuse", VertexElementFormat.Color, 0, 0, 1);
 
-			_vdecl = new VertexDeclaration(device, D3DConvert.Convert(_vertexType));
+			_vb = devWindow.CreateVertexBuffer(4, GeometryBufferUsage.WriteOnly, _vertexType) as D3D9GeometryBuffer;
+			_vb2 = devWindow.CreateVertexBuffer(4, GeometryBufferUsage.WriteOnly, _vertexType, 1) as D3D9GeometryBuffer;
 
-			_vb = new VertexBuffer(device, 4 * (_vertexType.GetSlotSize(0)), Usage.WriteOnly, VertexFormat.None, Pool.Managed);
-			_vb2 = new VertexBuffer(device, 4 * (_vertexType.GetSlotSize(1)), Usage.WriteOnly, VertexFormat.None, Pool.Managed);
+			_ib = devWindow.CreateIndexBuffer(6, GeometryBufferUsage.WriteOnly) as D3D9GeometryBuffer;
 
-			_ib = new IndexBuffer(device, 12, Usage.WriteOnly, Pool.Managed, true);
-
-			_lock = new D3D9DataStream(_vb.Lock(0, 0, LockFlags.None));
-			_lock.WriteRange(
+			_vb.Lock(Native.LockFlags.None).WriteRange(
 				new[] {
 						new Vertex() { Position = new Vector3D(-0.5f, 0.5f, 0.0f), Texture_Coordinates = new Vector2D(0, 0.0f)},
 						new Vertex() { Position = new Vector3D(0.5f, -0.5f, 0.025f), Texture_Coordinates = new Vector2D(1.0f, 1.0f) },
@@ -76,11 +82,9 @@ namespace GorgonLibrary.Graphics.D3D9
 						new Vertex() { Position = new Vector3D(0.5f, 0.5f, 0.0f), Texture_Coordinates = new Vector2D(1.0f, 0.0f) }				
 			});
 			
-			_lock.Dispose();
 			_vb.Unlock();
 
-			_lock = new D3D9DataStream(_vb2.Lock(0, 0, LockFlags.None));
-			_lock.WriteRange(
+			_vb2.Lock(Native.LockFlags.None).WriteRange(
 				new[] {
 						new Color4(1.0f, 1.0f, 0.0f, 1.0f).ToArgb(),
 						new Color4(1.0f, 1.0f, 1.0f, 1.0f).ToArgb(),
@@ -88,12 +92,10 @@ namespace GorgonLibrary.Graphics.D3D9
 						new Color4(1.0f, 1.0f, 0.0f, 0.0f).ToArgb(),
 			});
 
-			_lock.Dispose();
 			_vb2.Unlock();
 
 
-			_lock = new D3D9DataStream(_ib.Lock(0, 0, LockFlags.None));
-			_lock.WriteRange(
+			_ib.Lock(Native.LockFlags.None).WriteRange(
 				new short[] 
 				{
 					1,
@@ -105,7 +107,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				}
 			);
 
-			_lock.Dispose();
 			_ib.Unlock();
 
 			device.SetRenderState(RenderState.Lighting, false);
@@ -158,11 +159,11 @@ namespace GorgonLibrary.Graphics.D3D9
 
 			_device.SetTransform(TransformState.Projection, Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)settings.Width / (float)settings.Height, 0.1f, 1000.0f));
 			_device.SetTransform(TransformState.View, Matrix.LookAtLH(new Vector3(0, 0, _pos), new Vector3(0, 0, 1.0f), Vector3.UnitY));
-
-			_device.SetStreamSource(0, _vb, 0, _vertexType.GetSlotSize(0));
-			_device.SetStreamSource(1, _vb2, 0, _vertexType.GetSlotSize(1));
-			_device.Indices = _ib;
-			_device.VertexDeclaration = _vdecl;
+			
+			_device.SetStreamSource(0, _vb.D3DVertexBuffer, 0, _vb.ElementSize);
+			_device.SetStreamSource(_vb2.Slot, _vb2.D3DVertexBuffer, 0, _vb2.ElementSize);
+			_device.Indices = _ib.D3DIndexBuffer;
+			_device.VertexDeclaration = _vb.D3DVertexDeclaration;
 
 			_device.SetTexture(0, _image);
 
@@ -188,7 +189,18 @@ namespace GorgonLibrary.Graphics.D3D9
 					_device.SetRenderState(RenderState.MultisampleMask, ((int)GorgonLibrary.Math.GorgonMathUtility.Pow(2, (8 - (devicePasses - i))) - 1) & 0xFF);
 				_device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
 			}
+
 			_device.EndScene();
+
+			_vb2.Lock(Native.LockFlags.None).WriteRange(
+			new[] {
+						new GorgonColor(1.0f, 1.0f, 1.0f).ToARGB(),
+						new GorgonColor(GorgonMathUtility.Radians(_angle), GorgonMathUtility.Radians(_angle), GorgonMathUtility.Radians(_angle)).ToARGB(),
+						new GorgonColor(1.0f, GorgonMathUtility.Radians(_angle), GorgonMathUtility.Radians(_angle)).ToARGB(),
+						new GorgonColor(1.0f, 1.0f, GorgonMathUtility.Radians(_angle)).ToARGB(),
+			});
+
+			_vb2.Unlock();
 		}
 
 		/// <summary>
@@ -211,8 +223,6 @@ namespace GorgonLibrary.Graphics.D3D9
 				_image.Dispose();
 			if (_ib != null)
 				_ib.Dispose();
-			if (_vdecl != null)
-				_vdecl.Dispose();
 			if (_vb2 != null)
 				_vb2.Dispose();
 			if (_vb != null)
