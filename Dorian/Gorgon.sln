@@ -13,13 +13,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_InputAndFS", "Examples\Tester_InputAndFS\Tester_InputAndFS.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_Graphics", "Examples\Tester_Graphics\Tester_Graphics.csproj", "{F00E19F5-5941-43C1-BC53-8A2430E7D71F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{88FBA52F-D83E-42A9-A003-51D1B8D0744B} = {88FBA52F-D83E-42A9-A003-51D1B8D0744B}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics", "Libraries\Gorgon.Graphics\Gorgon.Graphics.csproj", "{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.D3D9", "PlugIns\Gorgon.Graphics.D3D9\Gorgon.Graphics.D3D9.csproj", "{88FBA52F-D83E-42A9-A003-51D1B8D0744B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input", "Libraries\Gorgon.Input\Gorgon.Input.csproj", "{780B5B61-77BB-4456-AF77-E6681E7E48BF}"
 EndProject
@@ -71,10 +66,6 @@ Global
 		{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88FBA52F-D83E-42A9-A003-51D1B8D0744B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88FBA52F-D83E-42A9-A003-51D1B8D0744B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88FBA52F-D83E-42A9-A003-51D1B8D0744B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88FBA52F-D83E-42A9-A003-51D1B8D0744B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{780B5B61-77BB-4456-AF77-E6681E7E48BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{780B5B61-77BB-4456-AF77-E6681E7E48BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{780B5B61-77BB-4456-AF77-E6681E7E48BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
