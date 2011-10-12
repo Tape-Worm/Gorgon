@@ -46,9 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Buffers\GorgonGeometryBuffer.cs" />
-    <Compile Include="Collections\GorgonCustomValueCollection.cs" />
-    <Compile Include="Collections\GorgonCapabilityCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceCapabilities.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceCollection.cs" />
@@ -63,27 +60,10 @@
     <Compile Include="Enums\GorgonVSyncIntervals.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
-    <Compile Include="GorgonGraphicsPlugIn.cs" />
-    <Compile Include="GorgonRenderer.cs" />
-    <Compile Include="Images\GorgonSurface.cs" />
     <Compile Include="IObjectTracker.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Targets\GorgonDeviceWindow.cs" />
-    <Compile Include="Targets\GorgonDeviceWindowSettings.cs" />
-    <Compile Include="Targets\GorgonFormStateRecord.cs" />
-    <Compile Include="Targets\GorgonMSAAQualityLevel.cs" />
-    <Compile Include="Targets\GorgonRenderTarget.cs" />
-    <Compile Include="Targets\GorgonRenderTargetSettings.cs" />
-    <Compile Include="Targets\GorgonWindowTarget.cs" />
-    <Compile Include="Targets\GorgonSwapChain.cs" />
-    <Compile Include="Targets\GorgonSwapChainSettings.cs" />
-    <Compile Include="Targets\IDeviceWindowChild.cs" />
-    <Compile Include="Targets\IRenderTargetWindow.cs" />
-    <Compile Include="VertexData\GorgonElementList.cs" />
-    <Compile Include="VertexData\GorgonVertexElement.cs" />
-    <Compile Include="VertexData\VertexElementAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
