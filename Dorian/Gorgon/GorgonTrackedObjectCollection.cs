@@ -1,108 +1,47 @@
-﻿#region MIT.
-// 
-// Gorgon.
-// Copyright (C) 2011 Michael Winsor
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-// 
-// Created: Sunday, July 24, 2011 9:41:28 PM
-// 
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.Collections;
-using GI = SlimDX.DXGI;
 
-namespace GorgonLibrary.Graphics
+namespace GorgonLibrary
 {
 	/// <summary>
-	/// A collection of video outputs for a video device.
+	/// A collection of custom objects that are managed by the another interface.
 	/// </summary>
-	public class GorgonVideoOutputCollection
-		: IList<GorgonVideoOutput>
+	/// <remarks>This collection is intended for use by objects that manage the lifetimes of any child objects created from it.</remarks>
+	public class GorgonTrackedObjectCollection
+		: IList<IDisposable>
 	{
 		#region Variables.
-		private GorgonVideoDevice _videoDevice = null;			// Video device that owns the outputs in this collection.
-		private List<GorgonVideoOutput> _outputs = null;		// List of outputs.
+		private IList<IDisposable> _objects = null;			// List of tracked objects.
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to clear the outputs from the list.
+		/// Function to clean up all objects in the collection.
 		/// </summary>
-		internal void ClearOutputs()
+		public void ReleaseAll()
 		{
-			foreach (var item in _outputs)
-				((IDisposable)item).Dispose();
+			var items = _objects.ToArray();
 
-			_outputs.Clear();
-		}
+			foreach (var item in items)
+				item.Dispose();
 
-		/// <summary>
-		/// Function to retrieve the outputs for an adapter.
-		/// </summary>
-		public void Refresh()
-		{
-			int outputCount = _videoDevice.GIAdapter.GetOutputCount();
-
-			ClearOutputs();
-
-			Gorgon.Log.Print("Retrieving outputs for video device '{0}'...", Diagnostics.GorgonLoggingLevel.Simple, _videoDevice.Name);
-
-			for (int i = 0; i < outputCount; i++)
-			{
-				GorgonVideoOutput output = new GorgonVideoOutput(_videoDevice, _videoDevice.GIAdapter.GetOutput(i));
-				_outputs.Add(output);
-
-				Gorgon.Log.Print("Found output {0}.", Diagnostics.GorgonLoggingLevel.Simple,output.Name);
-				Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
-				Gorgon.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", Diagnostics.GorgonLoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
-				Gorgon.Log.Print("Monitor handle: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, output.Handle.FormatHex());
-				Gorgon.Log.Print("Attached to desktop: {0}", Diagnostics.GorgonLoggingLevel.Verbose, output.IsAttachedToDesktop);
-				Gorgon.Log.Print("Monitor rotation: {0}\u00B0", Diagnostics.GorgonLoggingLevel.Verbose, output.Rotation);
-				Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
-
-				output.VideoModes.Refresh();
-			}
-
-			Gorgon.Log.Print("Found {0} outputs for video device '{1}'.", Diagnostics.GorgonLoggingLevel.Simple, _outputs.Count, _videoDevice.Name);
+			_objects.Clear();
 		}
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVideoOutputCollection"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackedObjectCollection"/> class.
 		/// </summary>
-		/// <param name="videoDevice">Video device that owns the outputs in this collection.</param>
-		internal GorgonVideoOutputCollection(GorgonVideoDevice videoDevice)
+		public GorgonTrackedObjectCollection()
 		{
-			if (videoDevice == null)
-				throw new ArgumentNullException("videoDevice");
-
-			_outputs = new List<GorgonVideoOutput>();
-			_videoDevice = videoDevice;
+			_objects = new List<IDisposable>();
 		}
 		#endregion
 
-		#region IList<GorgonVideoOutput> Members
+		#region IList<IDisposable> Members
 		#region Properties.
 		/// <summary>
 		/// Gets or sets the element at the specified index.
@@ -117,15 +56,15 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The property is set and the <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		public GorgonVideoOutput this[int index]
+		public IDisposable this[int index]
 		{
 			get
 			{
-				return _outputs[index];
+				return _objects[index];
 			}
 			set
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 		}
 		#endregion
@@ -138,9 +77,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
 		/// </returns>
-		public int IndexOf(GorgonVideoOutput item)
+		public int IndexOf(IDisposable item)
 		{
-			return _outputs.IndexOf(item);
+			return _objects.IndexOf(item);
 		}
 
 		/// <summary>
@@ -154,9 +93,9 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		void IList<GorgonVideoOutput>.Insert(int index, GorgonVideoOutput item)
+		void IList<IDisposable>.Insert(int index, IDisposable item)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
@@ -169,14 +108,14 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		///   </exception>
-		void IList<GorgonVideoOutput>.RemoveAt(int index)
+		void IList<IDisposable>.RemoveAt(int index)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 		#endregion
 		#endregion
 
-		#region ICollection<GorgonVideoOutput> Members
+		#region ICollection<IDisposable> Members
 		#region Properties.
 		/// <summary>
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
@@ -188,7 +127,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				return _outputs.Count;
+				return _objects.Count;
 			}
 		}
 
@@ -199,9 +138,9 @@ namespace GorgonLibrary.Graphics
 		///   </returns>
 		public bool IsReadOnly
 		{
-			get 
+			get
 			{
-				return true;
+				return false;
 			}
 		}
 		#endregion
@@ -214,9 +153,10 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		///   </exception>
-		void ICollection<GorgonVideoOutput>.Add(GorgonVideoOutput item)
+		public void Add(IDisposable item)
 		{
-			throw new NotImplementedException();
+			if (!_objects.Contains(item))
+				_objects.Add(item);
 		}
 
 		/// <summary>
@@ -225,9 +165,9 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		///   </exception>
-		void ICollection<GorgonVideoOutput>.Clear()
+		void ICollection<IDisposable>.Clear()
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
@@ -237,9 +177,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
 		/// </returns>
-		public bool Contains(GorgonVideoOutput item)
+		public bool Contains(IDisposable item)
 		{
-			return _outputs.Contains(item);
+			return _objects.Contains(item);
 		}
 
 		/// <summary>
@@ -247,9 +187,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="array">The array.</param>
 		/// <param name="arrayIndex">Index of the array.</param>
-		public void CopyTo(GorgonVideoOutput[] array, int arrayIndex)
+		void ICollection<IDisposable>.CopyTo(IDisposable[] array, int arrayIndex)
 		{
-			_outputs.CopyTo(array, arrayIndex);
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
@@ -262,26 +202,28 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		///   </exception>
-		bool ICollection<GorgonVideoOutput>.Remove(GorgonVideoOutput item)
+		public bool Remove(IDisposable item)
 		{
-			throw new NotImplementedException();
+			if (!_objects.Contains(item))
+				return false;
+
+			return _objects.Remove(item);
 		}
 		#endregion
 		#endregion
 
-		#region IEnumerable<GorgonVideoOutput> Members
+		#region IEnumerable<IDisposable> Members
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>
 		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
 		/// </returns>
-		public IEnumerator<GorgonVideoOutput> GetEnumerator()
+		public IEnumerator<IDisposable> GetEnumerator()
 		{
-			foreach (var item in _outputs)
+			foreach (IDisposable item in _objects)
 				yield return item;
 		}
-
 		#endregion
 
 		#region IEnumerable Members

@@ -35,6 +35,9 @@
     <ApplicationIcon>GorIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SlimDX, Version=4.0.11.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64">
+      <HintPath>..\..\..\..\..\..\..\Assemblies\slimdx_mar11\Bin\net40\x64\SlimDX.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -46,8 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\GorgonCustomValueCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
-    <Compile Include="DeviceInfo\GorgonVideoDeviceCapabilities.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoMode.cs" />
     <Compile Include="DeviceInfo\GorgonVideoModeList.cs" />
@@ -64,6 +67,8 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Targets\GorgonSwapChain.cs" />
+    <Compile Include="Targets\GorgonSwapChainSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">

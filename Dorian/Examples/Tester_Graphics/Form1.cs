@@ -17,12 +17,8 @@ namespace Tester_Graphics
 {
 	public partial class Form1 : Form
 	{
-		GorgonDeviceWindowSettings settings = null;
-		GorgonGraphics _gfx = null;
-		GorgonDeviceWindow _dev = null;
-		//GorgonMultiHeadDeviceWindow _dev = null;
-		GorgonDeviceWindow _dev2 = null;
-		//GorgonSwapChain _dev2 = null;
+		GorgonGraphics _graphics = null;
+		GorgonSwapChain _swapChain = null;
 		private bool _running = true;
 		GorgonTimer _timer = new GorgonTimer(true);
 		Form2 form2 = null;
@@ -30,48 +26,7 @@ namespace Tester_Graphics
 
 		private bool Idle(GorgonFrameRate timing)
 		{			
-			
 			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
-
-/*			while (_timer.Milliseconds < GorgonTimer.FpsToMilliseconds(30.0f))
-			{
-			}*/
-
-			_timer.Reset();
-
-			if ((_dev2 != null) && (_running))
-			{
-				_dev2.CurrentTarget = null;
-				_dev2.Clear(new GorgonColor(1.0f, 0, 0.25f, 1.0f), 1.0f, 0);
-			    _dev2.RunTest(timing.FrameDelta);
-			    _dev2.Display();
-			}
-
-			if ((_dev != null) && (_running))
-			{
-				//_dev.CurrentHead = 0;
-				_dev.CurrentTarget = null;
-				_dev.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
-				_dev.RunTest(timing.FrameDelta);
-				//_dev.Surface.Save(@"d:\unpak\surface\0\" + framecounter.ToString() + ".png");
-				if (_dev.HeadCount > 1)
-				{
-					_dev.CurrentHead = 1;
-					_dev.Clear(new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 0);
-					_dev.RunTest(timing.FrameDelta);
-				}
-
-				_dev.Display();
-/*				if (_dev2 != null)
-				{		
-					_dev.CurrentTarget = _dev2;
-					_dev2.Clear(new GorgonColor(1.0f, 0, 0, 0), 1.0f, 0);
-					_dev2.RunTest(timing.FrameDelta);
-					_dev2.Display();
-				}*/
-
-				framecounter++;
-			}
 
 			return true;
 		}
@@ -79,64 +34,11 @@ namespace Tester_Graphics
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			try
-			{
-				if (e.KeyCode == Keys.F1)
-				{
-				    settings.IsWindowed = !_dev.Settings.IsWindowed;
-				    _dev.UpdateSettings();
-/*				    if (_dev2 != null)
-				    {
-				        _dev2.Settings.IsWindowed = settings.IsWindowed;
-				        _dev2.UpdateSettings();
-				    }*/
-				}
-
-				if (e.KeyCode == Keys.F)
-				{
-					settings.Width = 1024;
-					settings.Height = 768;
-					_dev.UpdateSettings();
-				}
-
-				if (e.KeyCode == Keys.Space)
-					_running = !_running;
-
-				if (e.KeyCode == Keys.Back)
-				{
-					_dev.Dispose();
-					_dev = null;
-				}
-			}
-			catch (Exception ex)
-			{
-				Gorgon.Stop();
-				_dev.Dispose();
-				if (_dev2 != null)
-					_dev2.Dispose();
-				_dev = null;
-				_dev2 = null;
-
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
-				Close();
-			}
-		}
-
-		private Random _rnd = new Random();
-
-		public struct Test
-		{
-			public float x;
-			public float y;
-			public int z;
-			public short w;
 		}
 
 		protected override void OnLoad(EventArgs e)
 		{			
 			base.OnLoad(e);
-
-			int? quality = null;
 
 			try
 			{
@@ -144,65 +46,16 @@ namespace Tester_Graphics
 				Gorgon.Initialize(this);
 
 				Gorgon.PlugIns.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
-				Gorgon.PlugIns.LoadPlugInAssembly("Gorgon.Graphics.D3D9.dll");
 
 				GorgonFrameRate.UseHighResolutionTimer = false;
 
 				Gorgon.UnfocusedSleepTime = 10;
-				Gorgon.AllowBackground = true;				
+				Gorgon.AllowBackground = true;
 
 				ClientSize = new System.Drawing.Size(640, 480);
-				_gfx = GorgonGraphics.CreateGraphics("GorgonLibrary.Graphics.GorgonD3D9");
 
-				form2 = new Form2();				
-				form2.Show();
-				form2.ClientSize = new System.Drawing.Size(640, 480);
-				form2.Location = new Point(Screen.AllScreens[1].Bounds.Width / 2 + Screen.AllScreens[1].Bounds.Left - 320, Screen.AllScreens[1].Bounds.Height / 2 + Screen.AllScreens[1].Bounds.Top - 240);
-				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
-
-				GorgonMSAALevel[] antiAliasLevels = new[] { GorgonMSAALevel.NonMasked };//(GorgonMSAALevel[])(Enum.GetValues(typeof(GorgonMSAALevel)));
-				for (int i = antiAliasLevels.Length - 1; i >= 0; i--)
-				{
-					quality = _gfx.VideoDevices[0].GetMultiSampleQuality(antiAliasLevels[i], GorgonBufferFormat.X8_R8G8B8_UIntNormal, true);
-					if (quality != null)
-						break;
-				}
-
-				//_dev = _gfx.CreateMultiHeadDeviceWindow("MultiHead", multiHead);				
-				//_dev.SetupTest();
-
-				settings = new GorgonDeviceWindowSettings()
-				{
-					//DisplayMode = new GorgonVideoMode(640, 480, GorgonBufferFormat.X8_R8G8B8_UIntNormal),
-					IsWindowed = true,
-					DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
-					MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0)),
-					/*HeadSettings = new GorgonDeviceWindowHeadSettingsCollection
-					{
-						new GorgonDeviceWindowHeadSettings(form2, _gfx.VideoDevices[0].Outputs[1])
-						{
-							DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal							
-						}
-					}*/
-				};
-								
-
-				_dev = _gfx.CreateDeviceWindow("Test", settings);
-				_dev.SetupTest();
-
-/*				_dev2 = _dev.CreateSwapChain("TestSwap", new GorgonSwapChainSettings(form2)
-															{
-																DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
-																MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
-															});*/
-
-				_dev2 = _gfx.CreateDeviceWindow("Test2", new GorgonDeviceWindowSettings(form2)
-					{						
-						IsWindowed = true,
-						DepthStencilFormat = GorgonBufferFormat.D16_UIntNormal,
-						MSAAQualityLevel = (quality != null ? new GorgonMSAAQualityLevel(GorgonMSAALevel.NonMasked, quality.Value) : new GorgonMSAAQualityLevel(GorgonMSAALevel.None, 0))
-					});
-				_dev2.SetupTest();
+				_graphics = new GorgonGraphics();
+				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings(_graphics.VideoDevices[0]));
 
 				Gorgon.Go(Idle);
 			}
@@ -216,11 +69,6 @@ namespace Tester_Graphics
 
 		void form2_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (_dev2 != null)
-			{
-				_dev2.Dispose();
-				_dev2 = null;
-			}
 			form2 = null;
 		}
 
@@ -229,13 +77,7 @@ namespace Tester_Graphics
 			base.OnFormClosing(e);
 
 			try
-			{
-				/*if (_dev != null)
-					_dev.Dispose();
-
-				if (_gfx != null)
-					_gfx.Dispose();*/
-
+			{				
 				Gorgon.Terminate();
 			}
 			catch (Exception ex)

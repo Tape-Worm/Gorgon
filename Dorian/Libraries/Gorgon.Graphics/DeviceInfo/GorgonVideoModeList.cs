@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GI = SlimDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -39,17 +40,52 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private List<GorgonVideoMode> _modes = null;				// List of video modes.
+		private GorgonVideoOutput _output = null;					// Output that owns the video modes.
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the video mode list.
+		/// </summary>
+		public void Refresh()
+		{
+			IList<GorgonBufferFormat> formats = Enum.GetValues(typeof(GorgonBufferFormat)) as IList<GorgonBufferFormat>;
+
+			Gorgon.Log.Print("Retrieving video modes for output '{0}'...", Diagnostics.GorgonLoggingLevel.Simple, _output.Name);
+			Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
+
+			foreach (var format in formats)
+			{
+				IList<GI.ModeDescription> modes = _output.GIOutput.GetDisplayModeList((GI.Format)format, GI.DisplayModeEnumerationFlags.Scaling | GI.DisplayModeEnumerationFlags.Interlaced);
+
+				if (modes != null)
+				{
+					foreach (var mode in modes)
+					{
+						GorgonVideoMode videoMode = GorgonVideoMode.Convert(mode);
+						_modes.Add(videoMode);
+						Gorgon.Log.Print("Mode: {0}x{1}, Format: {2}, Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, videoMode.Width, videoMode.Height, videoMode.Format, videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator);
+					}
+				}
+			}
+
+			Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
+			Gorgon.Log.Print("Found {0} video modes for output '{1}'.", Diagnostics.GorgonLoggingLevel.Simple, _modes.Count, _output.Name);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoModeList"/> class.
 		/// </summary>
-		/// <param name="videoModes">Enumerable list of video modes to add.</param>
-		internal GorgonVideoModeList(IEnumerable<GorgonVideoMode> videoModes)
+		/// <param name="output">Output that owns the video modes.</param>
+		internal GorgonVideoModeList(GorgonVideoOutput output)
 		{
+			if (output == null)
+				throw new ArgumentNullException("output");
+
 			_modes = new List<GorgonVideoMode>();
-			_modes.AddRange(videoModes);
+			_output = output;
 		}
 		#endregion
 
@@ -76,7 +112,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 		}
 		#endregion
@@ -107,7 +143,7 @@ namespace GorgonLibrary.Graphics
 		///   </exception>
 		void IList<GorgonVideoMode>.Insert(int index, GorgonVideoMode item)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
@@ -122,7 +158,7 @@ namespace GorgonLibrary.Graphics
 		///   </exception>
 		void IList<GorgonVideoMode>.RemoveAt(int index)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 		#endregion
 		#endregion
@@ -167,7 +203,7 @@ namespace GorgonLibrary.Graphics
 		///   </exception>
 		void ICollection<GorgonVideoMode>.Add(GorgonVideoMode item)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
@@ -178,7 +214,7 @@ namespace GorgonLibrary.Graphics
 		///   </exception>
 		void ICollection<GorgonVideoMode>.Clear()
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
@@ -215,7 +251,7 @@ namespace GorgonLibrary.Graphics
 		///   </exception>
 		bool ICollection<GorgonVideoMode>.Remove(GorgonVideoMode item)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 		#endregion
 		#endregion
@@ -232,7 +268,6 @@ namespace GorgonLibrary.Graphics
 			foreach (var mode in _modes)
 				yield return mode;
 		}
-
 		#endregion
 
 		#region IEnumerable Members

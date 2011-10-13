@@ -82,8 +82,9 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Variables.
-		private static ApplicationLoop _loop = null;					// Application loop.
-		private static GorgonFrameRate _timingData = null;				// Frame rate timing data.
+		private static ApplicationLoop _loop = null;							// Application loop.
+		private static GorgonFrameRate _timingData = null;						// Frame rate timing data.
+		private static GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
 		#endregion
 
 		#region Properties.
@@ -430,6 +431,34 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to add an object for tracking by the main Gorgon interface.
+		/// </summary>
+		/// <param name="trackedObject">Object to add.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="M:GorgonLibrary.Gorgon.Terminate">termination</see>.</remarks>
+		public static void AddTrackedObject(IDisposable trackedObject)
+		{
+			if (trackedObject == null)
+				throw new ArgumentNullException("trackedObject");
+
+			_trackedObjects.Add(trackedObject);
+		}
+
+		/// <summary>
+		/// Function to remove a tracked object from the Gorgon interface.
+		/// </summary>
+		/// <param name="trackedObject">Object to remove.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>This will -not- destroy the tracked object.</remarks>
+		public static void RemoveTrackedObject(IDisposable trackedObject)
+		{
+			if (trackedObject == null)
+				throw new ArgumentNullException("trackedObject");
+
+			_trackedObjects.Remove(trackedObject);
+		}
+
+		/// <summary>
 		/// Function to force the application to process any pending messages.
 		/// </summary>
 		/// <remarks>This method should be used when control over the message loop is necessary.</remarks>
@@ -509,6 +538,7 @@ namespace GorgonLibrary
 				// Get the primary application window.
 				ApplicationForm = applicationForm;
 
+				_trackedObjects = new GorgonTrackedObjectCollection();
 				PlugIns = new GorgonPlugInFactory();
 
 				if (ApplicationForm != null)
@@ -530,15 +560,18 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>
 		/// You must call this when finished with Gorgon, failure to do so can result in memory leaks.
+		/// <para>Any tracked objects added with <see cref="M:GorgonLibrary.Gorgon.AddTrackedObject">AddTrackedObject</see> will be disposed of by this method.</para>
 		/// </remarks>
 		public static void Terminate()
 		{
-			// If the engine wasn't initialized, do nothing.
+			// If the interface wasn't initialized, do nothing.
 			if (!IsInitialized)
 				return; 
 
 			// Stop the engine.
 			Stop();
+
+			_trackedObjects.ReleaseAll();
 
 			PlugIns.UnloadAll();
 

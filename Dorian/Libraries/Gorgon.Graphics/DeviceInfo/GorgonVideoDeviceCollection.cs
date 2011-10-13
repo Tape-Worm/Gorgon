@@ -30,6 +30,8 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.Native;
 using GorgonLibrary.Collections;
+using GI = SlimDX.DXGI;
+using D3D = SlimDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
@@ -39,6 +41,13 @@ namespace GorgonLibrary.Graphics
 	public class GorgonVideoDeviceCollection
 		: GorgonBaseNamedObjectCollection<GorgonVideoDevice>
 	{
+		#region Constants.
+		#endregion
+
+		#region Variables.
+		private GorgonGraphics _graphics = null;		// Graphics interface.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return a video device by its index.
@@ -79,35 +88,68 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the capabilities of each device in the collection.
+		/// Function to clear the items from the collection.
 		/// </summary>
-		internal void GetCapabilities()
+		protected override void ClearItems()
 		{
-			foreach (var device in this)
-				device.GetDeviceCapabilities();
+			foreach (var item in this)
+				((IDisposable)item).Dispose();
+
+			base.ClearItems();
 		}
 
 		/// <summary>
-		/// Function to retrieve a specific video output from a device by the placement of a control.
+		/// Function to clear the collection.
 		/// </summary>
-		/// <param name="control">Control to find.</param>
-		internal GorgonVideoOutput GetOutputFromControl(System.Windows.Forms.Control control)
+		internal void Clear()
 		{
-			IntPtr monitorHandle = Win32API.GetMonitor(control);
+			ClearItems();
+		}
 
-			if (monitorHandle == IntPtr.Zero)
-				throw new ArgumentException("Could not find the monitor that the control '0x" + control.Handle.FormatHex() + "' is located on.", "control");
+		/// <summary>
+		/// Function to enumerate the video devices attached to the computer.
+		/// </summary>
+		public void Refresh()
+		{
+			ClearItems();
+			
+			int adapterCount = _graphics.GIFactory.GetAdapterCount1();
 
-			// Find the correct video output.
-			var videoOutput = (from device in this
-							   from output in device.Outputs
-							   where output.Handle == monitorHandle
-							   select output).SingleOrDefault();
+			Gorgon.Log.Print("Enumerating video devices...", Diagnostics.GorgonLoggingLevel.Simple);
 
-			if (videoOutput == null)
-				throw new ArgumentException("Could not find the monitor that the control '0x" + control.Handle.FormatHex() + "' is located on.", "control");
+			for (int i = 0; i < adapterCount; i++)
+			{
+				Gorgon.Log.Print("Creating DXGI adapter interface...", Diagnostics.GorgonLoggingLevel.Verbose);
+				GI.Adapter1 adapter = _graphics.GIFactory.GetAdapter1(i);
 
-			return videoOutput;
+				// Only use local adapters.
+				if (adapter.Description1.Flags != GI.AdapterFlags.Remote)
+				{
+					GorgonVideoDevice device = new GorgonVideoDevice(adapter);
+
+					if (device.FeatureLevelVersion >= _graphics.MinimumSupportedFeatureLevelVersion)
+					{
+						this.AddItem(device);
+
+						Gorgon.Log.Print("Device found: {0}", Diagnostics.GorgonLoggingLevel.Simple ,device.Name);
+						Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
+						Gorgon.Log.Print("Supports feature level: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.FeatureLevelVersion);
+						Gorgon.Log.Print("Video memory: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.DedicatedVideoMemory.FormatMemory());
+						Gorgon.Log.Print("System memory: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.DedicatedSystemMemory.FormatMemory());
+						Gorgon.Log.Print("Shared memory: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.SharedSystemMemory.FormatMemory());
+						Gorgon.Log.Print("Device ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, device.DeviceID.FormatHex());
+						Gorgon.Log.Print("Sub-system ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, device.SubSystemID.FormatHex());
+						Gorgon.Log.Print("Vendor ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, device.VendorID.FormatHex());
+						Gorgon.Log.Print("Revision: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.Revision);
+						Gorgon.Log.Print("Unique ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, device.UUID.FormatHex());
+						Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
+												
+						device.Outputs.Refresh();
+					}						
+				}
+			}
+
+			Gorgon.Log.Print("Found {0} video devices.", Diagnostics.GorgonLoggingLevel.Simple, Count);
 		}
 		#endregion
 
@@ -115,22 +157,15 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoDeviceCollection"/> class.
 		/// </summary>
-		/// <param name="devices">Video devices to add.</param>
-		internal GorgonVideoDeviceCollection(IEnumerable<KeyValuePair<string, GorgonVideoDevice>> devices)
+		/// <param name="graphics">Graphics interface to use.</param>
+		internal GorgonVideoDeviceCollection(GorgonGraphics graphics)
 			: base(false)
 		{
-			string deviceName = string.Empty;
+			if (graphics == null)
+				throw new ArgumentNullException("graphics");
 
-			if (devices == null)
-				throw new ArgumentNullException("device");
-
-			if (devices.Count() == 0)
-				throw new ArgumentException("Must have at least one device.", "devices");
-
-			var deviceList = from device in devices
-							 select device.Value;
-
-			AddItems(deviceList);
+			_graphics = graphics;
+			Refresh();
 		}
 		#endregion
 	}
