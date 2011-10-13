@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GI = SlimDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -60,6 +61,26 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Converts between a DXGI mode description and a GorgonVideoMode.
+		/// </summary>
+		/// <param name="mode">The mode to convert.</param>
+		/// <returns>The DXGI mode.</returns>
+		internal static GI.ModeDescription Convert(GorgonVideoMode mode)
+		{
+			return new GI.ModeDescription(mode.Width, mode.Height, new SlimDX.Rational(mode.RefreshRateNumerator, mode.RefreshRateDenominator), (GI.Format)mode.Format);
+		}
+
+		/// <summary>
+		/// Converts between a DXGI mode description and a GorgonVideoMode.
+		/// </summary>
+		/// <param name="mode">The mode to convert.</param>
+		/// <returns>The DXGI mode.</returns>
+		internal static GorgonVideoMode Convert(GI.ModeDescription mode)
+		{
+			return new GorgonVideoMode(mode.Width, mode.Height, (GorgonBufferFormat)mode.Format, mode.RefreshRate.Numerator, mode.RefreshRate.Denominator);
+		}
+
 		/// <summary>
 		/// Implements the operator ==.
 		/// </summary>

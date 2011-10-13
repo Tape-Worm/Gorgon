@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using GI = SlimDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -36,25 +37,43 @@ namespace GorgonLibrary.Graphics
 	/// A video output on a video device.
 	/// </summary>
 	/// <remarks>A video output is a head on the video device.</remarks>
-	public abstract class GorgonVideoOutput
+	public class GorgonVideoOutput
+		: IDisposable
 	{
+		#region Variables.
+		private bool _disposed = false;		// Flag to indicate that the object was disposed.
+		#endregion
+
 		#region Properties.
+		/// <summary>
+		/// Property to return the GI output.
+		/// </summary>
+		internal GI.Output GIOutput
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the device name of the output.
 		/// </summary>
 		public string Name
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIOutput.Description.Name;
+			}
 		}
 
 		/// <summary>
-		/// Property to return the display dimensions of the desktop.
+		/// Property to return the display location and dimensions of the output.
 		/// </summary>
-		public Rectangle DesktopDimensions
+		public Rectangle OutputBounds
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIOutput.Description.DesktopBounds;
+			}
 		}
 
 		/// <summary>
@@ -62,8 +81,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public bool IsAttachedToDesktop
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIOutput.Description.IsAttachedToDesktop;
+			}
 		}
 
 		/// <summary>
@@ -71,8 +92,20 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int Rotation
 		{
-			get;
-			protected set;
+			get
+			{
+				switch (GIOutput.Description.Rotation)
+				{
+					case GI.DisplayModeRotation.Rotate90Degrees:
+						return 90;
+					case GI.DisplayModeRotation.Rotate270Degrees:
+						return 270;
+					case GI.DisplayModeRotation.Rotate180Degrees:
+						return 180;
+					default:
+						return 0;
+				}				
+			}
 		}
 
 		/// <summary>
@@ -98,8 +131,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public IntPtr Handle
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIOutput.Description.MonitorHandle;
+			}
 		}
 
 		/// <summary>
@@ -108,76 +143,60 @@ namespace GorgonLibrary.Graphics
 		public GorgonVideoDevice VideoDevice
 		{
 			get;
-			internal set;
+			private set;
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve the video modes for this output.
-		/// </summary>
-		/// <returns>An enumerable list of video modes.</returns>
-		protected abstract IEnumerable<GorgonVideoMode> GetVideoModes();
-
-		/// <summary>
-		/// Function to retrieve the video modes for the output.
-		/// </summary>
-		internal void GetOutputModes()
-		{
-			VideoModes = new GorgonVideoModeList(GetVideoModes());
-		}
-
-		/// <summary>
-		/// Function to determine if a specified display format is supported by the hardware or not.
-		/// </summary>
-		/// <param name="format">Backbuffer format to check.</param>
-		/// <param name="isWindowed">TRUE if in windowed mode, FALSE if not.</param>
-		/// <returns>TRUE if supported, FALSE if not.</returns>
-		/// <remarks>Some devices can handle having a
-		/// display mode with one format type, and a backbuffer of another format type.  This method will determine if the specific output is capable of this.
-		/// <para>Implementors may choose to override this to determine if a specific device format is supported in hardware.  But it is not required.</para>
-		/// </remarks>
-		public virtual bool SupportsBackBufferFormat(GorgonBufferFormat format, bool isWindowed)
-		{
-			return true;
-		}
-
-		/// <summary>
-		/// Function to determine if a depth/stencil format can be used with a specific display format.
-		/// </summary>
-		/// <param name="displayFormat">Display format to use.</param>
-		/// <param name="targetFormat">Format of the render target.</param>
-		/// <param name="depthStencilFormat">Depth/stencil format to check.</param>
-		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
-		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
-		/// <remarks>Implementors may choose to override this to determine if a specific device format is supported in hardware.  But it is not required.</remarks>
-		public virtual bool SupportsDepthFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat targetFormat, GorgonBufferFormat depthStencilFormat, bool isWindowed)
-		{
-			return true;
-		}
-
-		/// <summary>
-		/// Function to determine if a depth/stencil format can be used with a specific display format.
-		/// </summary>
-		/// <param name="displayFormat">Display format to use.</param>
-		/// <param name="depthStencilFormat">Depth/stencil format to check.</param>
-		/// <param name="isWindowed">TRUE if using windowed mode, FALSE if not.</param>
-		/// <returns>TRUE if the depth stencil type is supported, FALSE if not.</returns>
-		public bool SupportsDepthFormat(GorgonBufferFormat displayFormat, GorgonBufferFormat depthStencilFormat, bool isWindowed)
-		{
-			return SupportsDepthFormat(displayFormat, displayFormat, depthStencilFormat, isWindowed);
-		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoOutput"/> class.
 		/// </summary>
-		protected GorgonVideoOutput()
+		/// <param name="videoDevice">Video device that owns this output.</param>
+		/// <param name="output">Output to evaluate.</param>
+		internal GorgonVideoOutput(GorgonVideoDevice videoDevice, GI.Output output)
 		{
-			IsAttachedToDesktop = false;
-			Name = "NULL Display";
-			DesktopDimensions = new Rectangle(0, 0, 1, 1);
+			if (videoDevice == null)
+				throw new ArgumentNullException("videoDevice");
+
+			if (output == null)
+				throw new ArgumentNullException("output");
+
+			VideoModes = new GorgonVideoModeList(this);
+			VideoDevice = videoDevice;
+			GIOutput = output;
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (GIOutput != null)
+				{
+					Gorgon.Log.Print("Removing DXGI output...", Diagnostics.GorgonLoggingLevel.Verbose);
+					GIOutput.Dispose();
+				}
+
+				GIOutput = null;
+				_disposed = true;
+			}
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		void IDisposable.Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

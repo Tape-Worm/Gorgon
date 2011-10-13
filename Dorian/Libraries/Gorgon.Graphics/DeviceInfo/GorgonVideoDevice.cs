@@ -24,26 +24,52 @@
 // 
 #endregion
 
+// Uncomment this line to force DX10.1 feature levels.
+//#define DX10_1_CARD
+// Uncomment this line to force DX10.0 feature levels.
+//#define DX10_CARD
+// Uncomment this line to force DX9 feature levels.
+//#define DX9_CARD
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
+using GI = SlimDX.DXGI;
+using D3D = SlimDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// Contains information about a video device.
 	/// </summary>
-	public abstract class GorgonVideoDevice
-		: GorgonNamedObject, IDisposable
+	public class GorgonVideoDevice
+		: INamedObject, IDisposable
 	{
+		#region Variables.
+		private bool _disposed = false;						// Flag to indicate that the object was disposed.		
+		private D3D.Device _device = null;					// D3D 11 device object.
+		private D3D.FeatureLevel _highestFeatureLevel;		// Highest feature level.
+		private static object _lockSync = new object();		// Lock sync for thread locking.
+		#endregion
+
 		#region Properties.
 		/// <summary>
-		/// Property to return the index of the driver in the collection.
+		/// Property to return the DX GI adapter interface for this video device.
 		/// </summary>
-		public int Index
+		internal GI.Adapter1 GIAdapter
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the feature level that this device supports.
+		/// </summary>
+		/// <remarks>This is used to determine whether a device is a DirectX 11/10/10.1/9 capable device.</remarks>
+		public Version FeatureLevelVersion
 		{
 			get;
 			private set;
@@ -54,35 +80,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int DeviceID
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIAdapter.Description1.DeviceId;
+			}
 		}
 
 		/// <summary>
-		/// Property to return the name of the driver for the device.
+		/// Property to return the unique identifier for the device.
 		/// </summary>
-		public string DriverName
+		public long UUID
 		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to return the device name for the device.
-		/// </summary>
-		public string DeviceName
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to return the driver version for the device.
-		/// </summary>
-		public Version DriverVersion
-		{
-			get;
-			protected set;
+			get
+			{
+				return GIAdapter.Description1.Luid;
+			}
 		}
 
 		/// <summary>
@@ -90,8 +102,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int Revision
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIAdapter.Description1.Revision;
+			}
 		}
 
 		/// <summary>
@@ -99,8 +113,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int SubSystemID
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIAdapter.Description1.SubsystemId;
+			}
 		}
 
 		/// <summary>
@@ -108,17 +124,43 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int VendorID
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIAdapter.Description1.VendorId;
+			}
 		}
 
 		/// <summary>
-		/// Property to return the GUID for the device.
+		/// Property to return the amount of dedicated system memory for the device, in bytes.
 		/// </summary>
-		public Guid DeviceGUID
+		public long DedicatedSystemMemory
 		{
-			get;
-			protected set;
+			get
+			{
+				return GIAdapter.Description1.DedicatedSystemMemory;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the amount of dedicated video memory for the device, in bytes.
+		/// </summary>
+		public long DedicatedVideoMemory
+		{
+			get
+			{
+				return GIAdapter.Description1.DedicatedVideoMemory;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the amount of shared system memory for the device.
+		/// </summary>
+		public long SharedSystemMemory
+		{
+			get
+			{
+				return GIAdapter.Description1.SharedSystemMemory;
+			}
 		}
 
 		/// <summary>
@@ -130,81 +172,107 @@ namespace GorgonLibrary.Graphics
 			get;
 			protected set;
 		}
-
-		/// <summary>
-		/// Property to return the master output for this device.
-		/// </summary>
-		public GorgonVideoOutput MasterOutput
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to return the device capabilities.
-		/// </summary>
-		public GorgonVideoDeviceCapabilities Capabilities
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to create a renderer specific device capabilities object.
+		/// Function to retrieve feature levels for the hardware.
 		/// </summary>
-		/// <returns>A video device capabilities object.</returns>
-		protected abstract GorgonVideoDeviceCapabilities CreateDeviceCapabilities();
-
-		/// <summary>
-		/// Function to retrieve the outputs attached to the device.
-		/// </summary>
-		/// <returns>An enumerable list of video outputs.</returns>
-		protected abstract IEnumerable<GorgonVideoOutput> GetOutputs();
-
-		/// <summary>
-		/// Function to retrieve the device capability information.
-		/// </summary>
-		internal void GetDeviceCapabilities()
+		/// <returns>An array of feature levels to use.</returns>
+		private D3D.FeatureLevel[] GetFeatureLevels()
 		{
-			Capabilities = CreateDeviceCapabilities();
-			Capabilities.EnumerateCapabilities();
-
-			Outputs = new GorgonVideoOutputCollection(GetOutputs());
-
-			foreach (var head in Outputs)
+			switch (_highestFeatureLevel)
 			{
-				head.VideoDevice = this;
-				head.GetOutputModes();
+				case D3D.FeatureLevel.Level_11_0:
+					return new D3D.FeatureLevel[] { D3D.FeatureLevel.Level_11_0, D3D.FeatureLevel.Level_10_1, D3D.FeatureLevel.Level_10_0, D3D.FeatureLevel.Level_9_3, D3D.FeatureLevel.Level_9_2, D3D.FeatureLevel.Level_9_1 };
+				case D3D.FeatureLevel.Level_10_1:
+					return new D3D.FeatureLevel[] { D3D.FeatureLevel.Level_10_1, D3D.FeatureLevel.Level_10_0, D3D.FeatureLevel.Level_9_3, D3D.FeatureLevel.Level_9_2, D3D.FeatureLevel.Level_9_1 };
+				case D3D.FeatureLevel.Level_10_0:
+					return new D3D.FeatureLevel[] { D3D.FeatureLevel.Level_10_0, D3D.FeatureLevel.Level_9_3, D3D.FeatureLevel.Level_9_2, D3D.FeatureLevel.Level_9_1 };
+				case D3D.FeatureLevel.Level_9_3:
+					return new D3D.FeatureLevel[] { D3D.FeatureLevel.Level_9_3, D3D.FeatureLevel.Level_9_2, D3D.FeatureLevel.Level_9_1 };
+				default:
+					return null;
 			}
 		}
 
 		/// <summary>
-		/// Function to return the highest multi sample/AA quality for a given MSAA level.
+		/// Function to retrieve the D3D 11 device object associated with this video device.
 		/// </summary>
-		/// <param name="level">The multi sample level to test.</param>
-		/// <param name="format">Format to test for multi sampling capabilities.</param>
-		/// <param name="windowed">TRUE if testing for windowed mode, FALSE if not.</param>
-		/// <returns>The highest quality for the given level or NULL (Nothing in VB.Net) if the level is not supported.</returns>
-		/// <remarks>This method should be used to determine the maximum anti aliasing quality when setting up a <see cref="GorgonLibrary.Graphics.GorgonDeviceWindow">Device Window</see>.</remarks>
-		public abstract int? GetMultiSampleQuality(GorgonMSAALevel level, GorgonBufferFormat format, bool windowed);
+		/// <returns>A D3D 11 device interface.</returns>
+		internal D3D.Device GetDevice()
+		{
+			lock (_lockSync)
+			{
+				D3D.DeviceCreationFlags flags = D3D.DeviceCreationFlags.None;
+
+				if (_device == null)
+				{
+#if DEBUG
+					flags = D3D.DeviceCreationFlags.Debug;
+#endif
+					Gorgon.Log.Print("Creating D3D 11 device for video device '{0}'...", GorgonLoggingLevel.Verbose, Name);
+					_device = new D3D.Device(GIAdapter, flags, GetFeatureLevels());
+				}
+
+				return _device;
+			}
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
+		public override string ToString()
+		{
+			return string.Format("Gorgon Graphics Device: {0}", Name);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoDevice"/> class.
 		/// </summary>
-		/// <param name="name">Name of the device.</param>
-		/// <param name="index">Index of the driver in the collection.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		protected GorgonVideoDevice(string name, int index)
-			: base(name)
+		/// <param name="adapter">DXGI video adapter.</param>
+		internal GorgonVideoDevice(GI.Adapter1 adapter)
 		{
-			GorgonDebug.AssertParamString(name, "name");
+			if (adapter == null)
+				throw new ArgumentNullException("adapter");
 
-			Index = index;
+			GIAdapter = adapter;
+
+#if DX10_1_CARD
+			_highestFeatureLevel = D3D.FeatureLevel.Level_10_1;
+#elif DX10_CARD
+			_highestFeatureLevel = D3D.FeatureLevel.Level_10_0;
+#elif DX9_CARD
+			_highestFeatureLevel = D3D.FeatureLevel.Level_9_3;
+#else
+			_highestFeatureLevel = D3D.Device.GetSupportedFeatureLevel(adapter);
+#endif
+
+			switch (_highestFeatureLevel)
+			{
+				case D3D.FeatureLevel.Level_11_0:
+					FeatureLevelVersion = new Version(11, 0);
+					break;
+				case D3D.FeatureLevel.Level_10_1:
+					FeatureLevelVersion = new Version(10, 1);
+					break;
+				case D3D.FeatureLevel.Level_10_0:
+					FeatureLevelVersion = new Version(10, 0);
+					break;
+				case D3D.FeatureLevel.Level_9_3:
+					FeatureLevelVersion = new Version(9, 3);
+					break;
+				default:
+					FeatureLevelVersion = new Version(0, 0);
+					break;
+			}
+
+			Outputs = new GorgonVideoOutputCollection(this);
 		}
 		#endregion
 
@@ -213,19 +281,50 @@ namespace GorgonLibrary.Graphics
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing)
+		protected void Dispose(bool disposing)
 		{
-			// The base object has nothing to clean up.
-			// Dispose is only here for the implementations that require it.
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (_device != null)
+					{
+						Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name); 
+						_device.Dispose();
+					}
+
+					Outputs.ClearOutputs();
+
+					Gorgon.Log.Print("Removing DXGI adapter interface...", Diagnostics.GorgonLoggingLevel.Verbose);
+					GIAdapter.Dispose();
+				}
+
+				_device = null;
+				GIAdapter = null;
+				_disposed = true;
+			}
 		}
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		public void Dispose()
+		void IDisposable.Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+		#endregion
+
+		#region INamedObject Members
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		public string Name
+		{
+			get 
+			{
+				return GIAdapter.Description1.Description;
+			}
 		}
 		#endregion
 	}
