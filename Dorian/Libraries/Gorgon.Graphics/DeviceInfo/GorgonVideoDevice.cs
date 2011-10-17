@@ -214,7 +214,8 @@ namespace GorgonLibrary.Graphics
 			flags = D3D.DeviceCreationFlags.Debug;
 #endif
 			Gorgon.Log.Print("Creating D3D 11 device for video device '{0}'...", GorgonLoggingLevel.Verbose, Name);
-			D3DDevice = new D3D.Device(GIAdapter, flags, GetFeatureLevels());			
+			D3DDevice = new D3D.Device(GIAdapter, flags, GetFeatureLevels());
+			D3DDevice.DebugName = Name + " D3D11Device";
 		}
 
 		/// <summary>
