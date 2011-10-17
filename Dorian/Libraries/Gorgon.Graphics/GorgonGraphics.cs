@@ -200,19 +200,21 @@ namespace GorgonLibrary.Graphics
 				settings.BufferCount = 2;
 
 			// Perform window handling.
+			settings.Window.Visible = true;
+			settings.Window.Enabled = true;			
+
 			if (!settings.IsWindowed)
 			{
 				Form windowForm = settings.Window as Form;
 
 				if (windowForm.WindowState != FormWindowState.Minimized)
-					
-
-
-				windowForm.TopMost = true;
-				windowForm.FormBorderStyle = FormBorderStyle.None;
-				windowForm.WindowState = FormWindowState.Normal;
-				windowForm.ClientSize = new System.Drawing.Size(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height);
-				windowForm.Location = output.OutputBounds.Location;
+				{
+					windowForm.TopMost = true;
+					windowForm.FormBorderStyle = FormBorderStyle.None;
+					windowForm.WindowState = FormWindowState.Normal;
+					windowForm.ClientSize = new System.Drawing.Size(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height);
+					windowForm.Location = output.OutputBounds.Location;
+				}
 			}
 		}
 

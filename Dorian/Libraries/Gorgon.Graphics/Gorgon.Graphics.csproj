@@ -70,6 +70,7 @@
     <Compile Include="Targets\GorgonMultiSampling.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
+    <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">

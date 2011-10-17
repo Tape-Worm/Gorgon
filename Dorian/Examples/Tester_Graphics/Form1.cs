@@ -17,6 +17,7 @@ namespace Tester_Graphics
 {
 	public partial class Form1 : Form
 	{
+		Test _test = null;
 		GorgonGraphics _graphics = null;
 		GorgonSwapChain _swapChain = null;
 		private bool _running = true;
@@ -28,12 +29,18 @@ namespace Tester_Graphics
 		{			
 			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
 
+			if (_test != null)
+				_test.Run();
+
 			return true;
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
+
+			if ((e.Alt) && (e.KeyCode == Keys.Enter))
+				_swapChain.UpdateSettings(!_swapChain.Settings.IsWindowed);
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -55,7 +62,9 @@ namespace Tester_Graphics
 				ClientSize = new System.Drawing.Size(640, 480);
 
 				_graphics = new GorgonGraphics();
-				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings());
+				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true });
+
+				//_test = new Test(_swapChain);
 
 				Gorgon.Go(Idle);
 			}
@@ -77,7 +86,12 @@ namespace Tester_Graphics
 			base.OnFormClosing(e);
 
 			try
-			{				
+			{
+				if (_test != null)
+				{
+					_test.Dispose();
+					_test = null;
+				}
 				Gorgon.Terminate();
 			}
 			catch (Exception ex)
