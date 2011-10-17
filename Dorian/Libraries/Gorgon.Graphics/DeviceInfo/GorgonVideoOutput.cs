@@ -123,7 +123,7 @@ namespace GorgonLibrary.Graphics
 		public GorgonVideoMode DefaultVideoMode
 		{
 			get;
-			protected set;
+			internal set;
 		}
 
 		/// <summary>
@@ -148,6 +148,20 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to find the nearest video mode to the one specified.
+		/// </summary>
+		/// <param name="mode">Mode to find.</param>
+		/// <returns>The closest matching video mode to the <paramref name="mode"/> parameter.</returns>
+		public GorgonVideoMode FindMode(GorgonVideoMode mode)
+		{
+			GI.ModeDescription findMode = GorgonVideoMode.Convert(mode);
+			GI.ModeDescription result = default(GI.ModeDescription);
+
+			GIOutput.GetClosestMatchingMode(VideoDevice.D3DDevice, findMode, out result);
+
+			return GorgonVideoMode.Convert(result);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -167,6 +181,9 @@ namespace GorgonLibrary.Graphics
 			VideoModes = new GorgonVideoModeList(this);
 			VideoDevice = videoDevice;
 			GIOutput = output;
+
+			// Get the default video mode.
+			DefaultVideoMode = FindMode(new GorgonVideoMode(OutputBounds.Width, OutputBounds.Height, GorgonBufferFormat.R8G8B8A8_UIntNormal, 60, 1));
 		}
 		#endregion
 

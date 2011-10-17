@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GI = SlimDX.DXGI;
+using D3D = SlimDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
@@ -55,16 +56,19 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
 
 			foreach (var format in formats)
-			{
+			{				
 				IList<GI.ModeDescription> modes = _output.GIOutput.GetDisplayModeList((GI.Format)format, GI.DisplayModeEnumerationFlags.Scaling | GI.DisplayModeEnumerationFlags.Interlaced);
 
 				if (modes != null)
 				{
 					foreach (var mode in modes)
 					{
-						GorgonVideoMode videoMode = GorgonVideoMode.Convert(mode);
-						_modes.Add(videoMode);
-						Gorgon.Log.Print("Mode: {0}x{1}, Format: {2}, Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, videoMode.Width, videoMode.Height, videoMode.Format, videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator);
+						if ((_output.VideoDevice.D3DDevice.CheckFormatSupport(mode.Format) & D3D.FormatSupport.FormatDisplaySupport) == D3D.FormatSupport.FormatDisplaySupport)
+						{
+							GorgonVideoMode videoMode = GorgonVideoMode.Convert(mode);
+							_modes.Add(videoMode);
+							Gorgon.Log.Print("Mode: {0}x{1}, Format: {2}, Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, videoMode.Width, videoMode.Height, videoMode.Format, videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator);
+						}
 					}
 				}
 			}

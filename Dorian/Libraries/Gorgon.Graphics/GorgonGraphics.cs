@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 using SlimDX;
 using GI = SlimDX.DXGI;
 using D3D = SlimDX.Direct3D11;
@@ -92,6 +93,130 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to perform updating of the swap chain settings.
+		/// </summary>
+		/// <param name="settings">Settings to change.</param>
+		/// <param name="currentSwapChain">Swap chain that is being updated.</param>
+		internal void ValidateSwapChainSettings(GorgonSwapChainSettings settings, GorgonSwapChain currentSwapChain)
+		{
+			D3D.Device d3dDevice = null;
+			IntPtr monitor = IntPtr.Zero;
+			GorgonVideoOutput output = null;
+
+			// Default to using the default Gorgon application window.
+			if (settings.Window == null)
+			{
+				settings.Window = Gorgon.ApplicationForm;
+
+				// No application window, then we're out of luck.
+				if (settings.Window == null)
+					throw new ArgumentException("No window to bind with the swap chain.", "settings");
+			}
+
+			// Force to windowed mode if we're binding to a child control on a form.
+			if (!(settings.Window is Form))
+				settings.IsWindowed = true;
+
+			monitor = Win32API.GetMonitor(settings.Window);		// Get the monitor that the window is on.
+
+			// Find the video output for the window.
+			output = (from videoDevice in VideoDevices
+					  from videoOutput in videoDevice.Outputs
+					  where videoOutput.Handle == monitor
+					  select videoOutput).SingleOrDefault();
+
+			if (output == null)
+				throw new GorgonException(GorgonResult.CannotCreate, "Could not find the video output for the specified window.");
+
+			// If we've not defined a video device, find out which monitor has the window, and then determine the video device from that.
+			if (settings.VideoDevice == null)
+			{
+				var device = (from videoDevice in VideoDevices
+							  where videoDevice.Outputs.Contains(output)
+							  select videoDevice).SingleOrDefault();
+
+				// This should never happen, but if it does, we'll be ready for it.
+				if (device == null)
+					device = VideoDevices[0];
+
+				settings.VideoDevice = device;
+			}
+
+			// Get the Direct 3D device instance.
+			d3dDevice = settings.VideoDevice.D3DDevice;
+
+			// If we've not defined a video mode, determine the best mode to use.
+			if (settings.VideoMode == null)
+				settings.VideoMode = new GorgonVideoMode(settings.Window.ClientSize.Width, settings.Window.ClientSize.Height, output.DefaultVideoMode.Format, output.DefaultVideoMode.RefreshRateNumerator, output.DefaultVideoMode.RefreshRateDenominator);
+
+			// If going full screen, ensure that whatever mode we've chosen can be used, otherwise go to the closest match.
+			if (!settings.IsWindowed)
+			{
+				// Check to ensure that no other swap chains on the video output if we're going to full screen mode.
+				var swapChainCount = (from item in _trackedObjects
+									let swapChain = item as GorgonSwapChain
+									where ((swapChain != null) && (swapChain.VideoOutput == output) && ((swapChain != currentSwapChain) || (currentSwapChain == null)))
+									select item).Count();
+
+				if (swapChainCount > 0)
+					throw new GorgonException(GorgonResult.CannotCreate, "There is already a swap chain active on the video output '" + output.Name + "'.");
+
+				var modeCount = (from mode in output.VideoModes
+								 where ((mode.Width == settings.VideoMode.Value.Width) && (mode.Height == settings.VideoMode.Value.Height) &&
+									 (mode.Format == settings.VideoMode.Value.Format) && (mode.RefreshRateNumerator == settings.VideoMode.Value.RefreshRateNumerator) &&
+									 (mode.RefreshRateDenominator == settings.VideoMode.Value.RefreshRateDenominator))
+								 select mode).Count();
+
+				// We couldn't find the mode in the list, find the nearest match.
+				if (modeCount == 0)
+					settings.VideoMode = output.FindMode(settings.VideoMode.Value);
+			}
+			else
+			{
+				// We don't need a refresh rate for windowed mode.
+				settings.VideoMode = new GorgonVideoMode(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height, settings.VideoMode.Value.Format);
+			}
+
+			// If we don't pass a format, use the default format.
+			if (settings.VideoMode.Value.Format == GorgonBufferFormat.Unknown)
+				settings.VideoMode = new GorgonVideoMode(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height, output.DefaultVideoMode.Format);
+
+			// Ensure that the selected video format can be used.
+			if (!settings.VideoDevice.SupportsDisplayFormat(settings.VideoMode.Value.Format))
+				throw new ArgumentException("Cannot use the format '" + settings.VideoMode.Value.Format.ToString() + "' for display on the video device '" + settings.VideoDevice.Name + "'.");
+
+			// Check multi sampling levels.
+			if (settings.SwapEffect == SwapEffect.Sequential)
+				settings.MultiSamples = new GorgonMultiSampling(1, 0);
+
+			int quality = settings.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Value.Format, settings.MultiSamples.Count);
+
+			// Ensure that the quality of the sampling does not exceed what the card can do.
+			if (settings.MultiSamples.Quality > quality)
+				throw new ArgumentException("Video device '" + settings.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSamples.Count.ToString() + "' and a quality of '" + settings.MultiSamples.Quality.ToString() + " with a format of '" + settings.VideoMode.Value.Format + "'");
+
+			// Force 2 buffers for discard.
+			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
+				settings.BufferCount = 2;
+
+			// Perform window handling.
+			if (!settings.IsWindowed)
+			{
+				Form windowForm = settings.Window as Form;
+
+				if (windowForm.WindowState != FormWindowState.Minimized)
+					
+
+
+				windowForm.TopMost = true;
+				windowForm.FormBorderStyle = FormBorderStyle.None;
+				windowForm.WindowState = FormWindowState.Normal;
+				windowForm.ClientSize = new System.Drawing.Size(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height);
+				windowForm.Location = output.OutputBounds.Location;
+			}
+		}
+
+		/// <summary>
 		/// Function to create a swap chain.
 		/// </summary>
 		/// <param name="name">Name of the swap chain.</param>
@@ -100,11 +225,35 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
 		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support.</para>
+		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <para>-or-</para>
+		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
+		/// </exception>
+		/// <remarks>This will create our output swap chains for display to a window or control.  All functionality for sending or retrieving data from the video device can be accessed through the swap chain.
+		/// <para>Passing default settings for the <see cref="GorgonLibrary.Graphics.GorgonSwapChainSettings">settings parameters</see> will make Gorgon choose the closest possible settings appropriate for the video device and output that the window is on.  For example, passing NULL (Nothing in VB.Net) to 
+		/// the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.VideoMode">GorgonSwapChainSettings.VideoMode</see> parameter will make Gorgon find the closest video mode available to the current window size and desktop format (for the output).</para>
+		/// <para>If the multisampling quality in the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
+		/// what the maximum quality for the sample count for the video device should be, call the <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
+		/// </remarks>
 		public GorgonSwapChain CreateSwapChain(string name, GorgonSwapChainSettings settings)
 		{
-			GorgonSwapChain swapChain = new GorgonSwapChain(this, name, settings);
+			GorgonSwapChain swapChain = null;
 
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			ValidateSwapChainSettings(settings, null);
+			
+			swapChain = new GorgonSwapChain(this, name, settings);
+			swapChain.Initialize();
 			_trackedObjects.Add(swapChain);
 
 			return swapChain;
@@ -115,6 +264,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are capable of using Direct 3D 11, or the down level interfaces (Direct 3D 10.1, 10 or 9.3).</exception>
 		public GorgonGraphics()
 		{
 			_trackedObjects = new GorgonTrackedObjectCollection();
@@ -131,6 +281,9 @@ namespace GorgonLibrary.Graphics
 #endif
 
 			VideoDevices = new GorgonVideoDeviceCollection(this);
+
+			if (VideoDevices.Count == 0)
+				throw new GorgonException(GorgonResult.CannotCreate, "There were no video devices found on this system that can use Direct 3D 11, 10.1 or 9.3.");
 
 			Gorgon.AddTrackedObject(this);
 

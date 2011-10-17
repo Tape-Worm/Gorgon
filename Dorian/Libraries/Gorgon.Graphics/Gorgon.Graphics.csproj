@@ -67,6 +67,7 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Targets\GorgonMultiSampling.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
   </ItemGroup>
