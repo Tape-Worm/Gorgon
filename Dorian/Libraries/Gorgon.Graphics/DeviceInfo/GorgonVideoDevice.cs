@@ -29,7 +29,7 @@
 // Uncomment this line to force DX10.0 feature levels.
 //#define DX10_CARD
 // Uncomment this line to force DX9 feature levels.
-//#define DX9_CARD
+#define DX9_CARD
 
 using System;
 using System.Collections.Generic;
@@ -50,9 +50,7 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private bool _disposed = false;						// Flag to indicate that the object was disposed.		
-		private D3D.Device _device = null;					// D3D 11 device object.
 		private D3D.FeatureLevel _highestFeatureLevel;		// Highest feature level.
-		private static object _lockSync = new object();		// Lock sync for thread locking.
 		#endregion
 
 		#region Properties.
@@ -60,6 +58,15 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the DX GI adapter interface for this video device.
 		/// </summary>
 		internal GI.Adapter1 GIAdapter
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the D3D device interface for this video device.
+		/// </summary>
+		internal D3D.Device D3DDevice
 		{
 			get;
 			private set;
@@ -171,7 +178,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			protected set;
-		}
+		}		
 		#endregion
 
 		#region Methods.
@@ -199,24 +206,15 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to retrieve the D3D 11 device object associated with this video device.
 		/// </summary>
-		/// <returns>A D3D 11 device interface.</returns>
-		internal D3D.Device GetDevice()
+		private void GetDevice()
 		{
-			lock (_lockSync)
-			{
-				D3D.DeviceCreationFlags flags = D3D.DeviceCreationFlags.None;
+			D3D.DeviceCreationFlags flags = D3D.DeviceCreationFlags.None;
 
-				if (_device == null)
-				{
 #if DEBUG
-					flags = D3D.DeviceCreationFlags.Debug;
+			flags = D3D.DeviceCreationFlags.Debug;
 #endif
-					Gorgon.Log.Print("Creating D3D 11 device for video device '{0}'...", GorgonLoggingLevel.Verbose, Name);
-					_device = new D3D.Device(GIAdapter, flags, GetFeatureLevels());
-				}
-
-				return _device;
-			}
+			Gorgon.Log.Print("Creating D3D 11 device for video device '{0}'...", GorgonLoggingLevel.Verbose, Name);
+			D3DDevice = new D3D.Device(GIAdapter, flags, GetFeatureLevels());			
 		}
 
 		/// <summary>
@@ -228,6 +226,38 @@ namespace GorgonLibrary.Graphics
 		public override string ToString()
 		{
 			return string.Format("Gorgon Graphics Device: {0}", Name);
+		}
+
+		/// <summary>
+		/// Function to determine if the specified format is supported for display.
+		/// </summary>
+		/// <param name="format">Format to check.</param>
+		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
+		public bool SupportsDisplayFormat(GorgonBufferFormat format)
+		{
+			return ((D3DDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.FormatDisplaySupport) == D3D.FormatSupport.FormatDisplaySupport);
+		}
+
+		/// <summary>
+		/// Function to return the maximum number of quality levels supported by the device for multisampling.
+		/// </summary>
+		/// <param name="format">Format to test.</param>
+		/// <param name="count">Number of multisamples.</param>
+		/// <returns>A <see cref="GorgonLibrary.Graphics.GorgonMultiSampling">GorgonMultiSampling</see> value with the maximum supported multi-sample value.</returns>
+		public int GetMultiSampleQuality(GorgonBufferFormat format, int count)
+		{
+			if (format == GorgonBufferFormat.Unknown)
+				return 0;
+
+			if (count < 1)
+				count = 1;
+
+			int quality = D3DDevice.CheckMultisampleQualityLevels((GI.Format)format, count) - 1;
+
+			if (quality < 0)
+				quality = 0;
+
+			return quality;
 		}
 		#endregion
 
@@ -272,6 +302,8 @@ namespace GorgonLibrary.Graphics
 					break;
 			}
 
+			GetDevice();
+
 			Outputs = new GorgonVideoOutputCollection(this);
 		}
 		#endregion
@@ -287,10 +319,10 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					if (_device != null)
+					if (D3DDevice != null)
 					{
-						Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name); 
-						_device.Dispose();
+						Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name);
+						D3DDevice.Dispose();
 					}
 
 					Outputs.ClearOutputs();
@@ -299,7 +331,7 @@ namespace GorgonLibrary.Graphics
 					GIAdapter.Dispose();
 				}
 
-				_device = null;
+				D3DDevice = null;
 				GIAdapter = null;
 				_disposed = true;
 			}

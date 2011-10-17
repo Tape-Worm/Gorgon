@@ -55,7 +55,7 @@ namespace Tester_Graphics
 				ClientSize = new System.Drawing.Size(640, 480);
 
 				_graphics = new GorgonGraphics();
-				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings(_graphics.VideoDevices[0]));
+				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings());
 
 				Gorgon.Go(Idle);
 			}
