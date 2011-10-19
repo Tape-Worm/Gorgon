@@ -200,35 +200,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Handles the Deactivate event of the _parentForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void _parentForm_Deactivate(object sender, EventArgs e)
-		{
-			if (Settings.IsWindowed)
-			    return;
-
-			_wasWindowed = false;
-			//UpdateSettings(true);
-			//_parentForm.WindowState = FormWindowState.Minimized;
-		}
-
-		/// <summary>
-		/// Handles the Activated event of the _parentForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void _parentForm_Activated(object sender, EventArgs e)
-		{
-			if (!_wasWindowed)
-			{
-				_wasWindowed = true;
-				//UpdateSettings(false);
-			}
-		}
-
-		/// <summary>
 		/// Function to resize the back buffers.
 		/// </summary>
 		private void ResizeBuffers()
@@ -236,7 +207,7 @@ namespace GorgonLibrary.Graphics
 			ReleaseResources();
 			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
 
-			if ((!Settings.IsWindowed) && (!Settings.AllowRotation))
+			if ((GISwapChain.IsFullScreen) && (!Settings.AllowRotation))
 				flags |= GI.SwapChainFlags.NonPrerotated;
 
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height, (GI.Format)Settings.VideoMode.Value.Format, flags);
@@ -285,10 +256,6 @@ namespace GorgonLibrary.Graphics
 			// Due to a bug with winforms and DXGI, we have to manually handle transitions ourselves.
 			Graphics.GIFactory.SetWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
 
-			// We need to handle focus loss ourselves because of the aforementioned bug.
-			//_parentForm.Activated += new EventHandler(_parentForm_Activated);
-			//_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
-
 			if ((!Settings.IsWindowed) && (!Settings.AllowRotation))
 				flags |= GI.SwapChainFlags.NonPrerotated;
 
@@ -323,6 +290,8 @@ namespace GorgonLibrary.Graphics
 				GISwapChain.SetFullScreenState(true, VideoOutput.GIOutput);
 			else
 				GISwapChain.SetFullScreenState(false, null);
+
+			ResizeBuffers();
 		}
 
 		/// <summary>
@@ -458,8 +427,6 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					Settings.Window.Resize -= new EventHandler(Window_Resize);
-					_parentForm.Activated -= new EventHandler(_parentForm_Activated);
-					_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
 
 					ReleaseResources();
 
