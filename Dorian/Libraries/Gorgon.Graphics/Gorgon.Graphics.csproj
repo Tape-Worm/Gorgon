@@ -35,8 +35,8 @@
     <ApplicationIcon>GorIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SlimDX, Version=4.0.11.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64">
-      <HintPath>..\..\..\..\..\..\..\Assemblies\slimdx_mar11\Bin\net40\x64\SlimDX.dll</HintPath>
+    <Reference Include="SlimDX, Version=4.0.12.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64">
+      <HintPath>..\..\..\..\..\..\..\Assemblies\slimdx_sep11\Bin\net40\x64\SlimDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

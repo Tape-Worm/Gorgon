@@ -85,6 +85,7 @@ namespace GorgonLibrary
 		private static ApplicationLoop _loop = null;							// Application loop.
 		private static GorgonFrameRate _timingData = null;						// Frame rate timing data.
 		private static GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
+		private static Process _currentProcess = null;							// Gorgon process.
 		#endregion
 
 		#region Properties.
@@ -493,10 +494,13 @@ namespace GorgonLibrary
 		/// <param name="applicationForm">Windows form that will be used for the application.</param>
 		/// <remarks>This method must be called before any other method.  This is because it will setup support data for use by Gorgon and its various objects.</remarks>
 		public static void Initialize(Forms.Form applicationForm)
-		{			
+		{		
+
 			// Terminate if already initialized.
 			if (IsInitialized)
 				Terminate();
+
+			_currentProcess = GorgonProcess.ApplicationProcess;
 
 			if (Log == null)
 				Log = new GorgonLogFile(_logFile);
@@ -570,6 +574,13 @@ namespace GorgonLibrary
 
 			// Stop the engine.
 			Stop();
+
+			if (_currentProcess != null)
+			{
+				_currentProcess.Close();
+				_currentProcess.Dispose();
+			}
+			_currentProcess = null;
 
 			_trackedObjects.ReleaseAll();
 

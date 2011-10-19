@@ -319,7 +319,7 @@ namespace GorgonLibrary.Graphics
 			if (!_disposed)
 			{
 				if (disposing)
-				{
+				{					
 					if (D3DDevice != null)
 					{
 						Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name);

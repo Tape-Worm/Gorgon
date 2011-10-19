@@ -141,6 +141,22 @@ namespace GorgonLibrary.Native
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to retrieve the foreground window.
+		/// </summary>
+		/// <returns>The handle to the window in the foreground.</returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern IntPtr GetForegroundWindow();
+
+		/// <summary>
+		/// Function to retrieve the process ID of a window.
+		/// </summary>
+		/// <param name="hWnd"></param>
+		/// <param name="lpdwProcessId"></param>
+		/// <returns></returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern Int32 GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
 		/// <summary/>
 		[DllImport("kernel32.dll")]
 		private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx stat);

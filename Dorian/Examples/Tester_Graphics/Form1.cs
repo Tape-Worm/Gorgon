@@ -20,6 +20,7 @@ namespace Tester_Graphics
 		Test _test = null;
 		GorgonGraphics _graphics = null;
 		GorgonSwapChain _swapChain = null;
+		GorgonSwapChain _swapChain2 = null;
 		private bool _running = true;
 		GorgonTimer _timer = new GorgonTimer(true);
 		Form2 form2 = null;
@@ -40,7 +41,11 @@ namespace Tester_Graphics
 			base.OnKeyDown(e);
 
 			if ((e.Alt) && (e.KeyCode == Keys.Enter))
+			{
 				_swapChain.UpdateSettings(!_swapChain.Settings.IsWindowed);
+				if (_swapChain2 != null)
+					_swapChain2.UpdateSettings(_swapChain.Settings.IsWindowed);
+			}
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -61,10 +66,19 @@ namespace Tester_Graphics
 
 				ClientSize = new System.Drawing.Size(640, 480);
 
+				form2 = new Form2();
+				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
+				form2.Show(this);
+				form2.Location = Screen.AllScreens[1].Bounds.Location;
+
 				_graphics = new GorgonGraphics();
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true });
+				_swapChain2 = _graphics.CreateSwapChain("Swap2", new GorgonSwapChainSettings() { IsWindowed = true, Window = form2 });
 
-				//_test = new Test(_swapChain);
+				_swapChain.UpdateSettings(false);
+				_swapChain2.UpdateSettings(false);				
+
+				_test = new Test(_swapChain);
 
 				Gorgon.Go(Idle);
 			}
@@ -78,6 +92,9 @@ namespace Tester_Graphics
 
 		void form2_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (_swapChain2 != null)
+				_swapChain2.Dispose();
+			_swapChain2 = null;
 			form2 = null;
 		}
 
