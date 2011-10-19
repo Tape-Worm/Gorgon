@@ -44,7 +44,7 @@ namespace Tester_Graphics
 			{
 				_swapChain.UpdateSettings(!_swapChain.Settings.IsWindowed);
 				if (_swapChain2 != null)
-					_swapChain2.UpdateSettings(_swapChain.Settings.IsWindowed);
+					_swapChain2.UpdateSettings(!_swapChain2.Settings.IsWindowed);
 			}
 		}
 
@@ -64,21 +64,27 @@ namespace Tester_Graphics
 				Gorgon.UnfocusedSleepTime = 10;
 				Gorgon.AllowBackground = true;
 
+				this.Show();
+
 				ClientSize = new System.Drawing.Size(640, 480);
 
+#if MULTIMON
 				form2 = new Form2();
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
-				form2.Show(this);
+				form2.Show();
 				form2.Location = Screen.AllScreens[1].Bounds.Location;
+#endif
 
 				_graphics = new GorgonGraphics();
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true });
-				_swapChain2 = _graphics.CreateSwapChain("Swap2", new GorgonSwapChainSettings() { IsWindowed = true, Window = form2 });
+#if MULTIMON
+				_swapChain2 = _graphics.CreateSwapChain("Swap2", new GorgonSwapChainSettings() { IsWindowed = false, Window = form2 });
+#endif
 
-				_swapChain.UpdateSettings(false);
-				_swapChain2.UpdateSettings(false);				
+				//swapChain.UpdateSettings(false);
+				//_swapChain2.UpdateSettings(false);				
 
-				_test = new Test(_swapChain);
+				//_test = new Test(_swapChain);
 
 				Gorgon.Go(Idle);
 			}
