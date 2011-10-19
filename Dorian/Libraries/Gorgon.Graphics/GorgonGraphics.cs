@@ -102,7 +102,6 @@ namespace GorgonLibrary.Graphics
 			D3D.Device d3dDevice = null;
 			IntPtr monitor = IntPtr.Zero;
 			GorgonVideoOutput output = null;
-			Form windowForm = null;
 
 			// Default to using the default Gorgon application window.
 			if (settings.Window == null)
@@ -203,23 +202,6 @@ namespace GorgonLibrary.Graphics
 			// Perform window handling.
 			settings.Window.Visible = true;
 			settings.Window.Enabled = true;
-
-			windowForm = settings.Window as Form;
-
-			if (windowForm != null)
-				windowForm.ClientSize = new System.Drawing.Size(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height);
-
-			if (!settings.IsWindowed)
-			{
-				if (windowForm.WindowState != FormWindowState.Minimized)
-				{
-					windowForm.WindowState = FormWindowState.Normal;					
-					windowForm.TopMost = true;
-					windowForm.FormBorderStyle = FormBorderStyle.None;
-					windowForm.Location = output.OutputBounds.Location;
-					windowForm.Focus();
-				}
-			}
 		}
 
 		/// <summary>

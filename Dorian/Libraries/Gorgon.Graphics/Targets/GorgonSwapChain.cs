@@ -44,93 +44,10 @@ namespace GorgonLibrary.Graphics
 	public class GorgonSwapChain
 		: GorgonNamedObject, IDisposable
 	{
-		#region Classes.
-		/// <summary>
-		/// Records the form state.
-		/// </summary>
-		private class FormStateRecord
-		{
-			#region Variables.
-			private Point _location;					// Window location.
-			private Size _size;							// Window size.
-			private FormBorderStyle _border;			// Window border.
-			private bool _topMost;						// Topmost flag.
-			private bool _sysMenu;						// System menu flag.
-			private bool _maximizeButton;				// Maxmimize button flag.
-			private bool _minimizeButton;				// Minimize button flag.
-			private bool _visible;						// Visible flag.
-			private bool _enabled;						// Enabled flag.
-			private Form _window;						// Window.
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Function to restore the original window state.
-			/// </summary>
-			/// <param name="keepSize">TRUE to keep the size of the window, FALSE to restore it.</param>
-			/// <param name="dontMove">TRUE to keep the window from moving, FALSE to restore the last location.</param>
-			public void Restore(bool keepSize, bool dontMove)
-			{
-				if (_window == null)
-					return;
-
-				if (!dontMove)
-					_window.Location = _location;
-				if (!keepSize)
-					_window.Size = _size;
-				_window.FormBorderStyle = _border;
-				_window.TopMost = _topMost;
-				_window.ControlBox = _sysMenu;
-				_window.MaximizeBox = _maximizeButton;
-				_window.MinimizeBox = _minimizeButton;
-				_window.Enabled = _enabled;
-				_window.Visible = _visible;
-			}
-
-			/// <summary>
-			/// Function to update the form state.
-			/// </summary>
-			public void Update()
-			{
-				_location = _window.Location;
-				_size = _window.Size;
-				_border = _window.FormBorderStyle;
-				_topMost = _window.TopMost;
-				_sysMenu = _window.ControlBox;
-				_maximizeButton = _window.MaximizeBox;
-				_minimizeButton = _window.MinimizeBox;
-				_enabled = _window.Enabled;
-				_visible = _window.Visible;
-			}
-			#endregion
-
-			#region Constructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="FormStateRecord"/> struct.
-			/// </summary>
-			/// <param name="window">The window.</param>
-			public FormStateRecord(Form window)
-			{
-				_location = window.Location;
-				_size = window.Size;
-				_border = window.FormBorderStyle;
-				_topMost = window.TopMost;
-				_sysMenu = window.ControlBox;
-				_maximizeButton = window.MaximizeBox;
-				_minimizeButton = window.MinimizeBox;
-				_enabled = window.Enabled;
-				_visible = window.Visible;
-				_window = window;
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Variables.
 		private Form _parentForm = null;						// Parent form for our window.
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		private bool _wasWindowed = true;						// Flag to indicate that the window was in windowed mode because of a transition.
-		private FormStateRecord _formState = null;				// Form state.
 		#endregion
 
 		#region Properties.
@@ -312,6 +229,21 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to resize the back buffers.
+		/// </summary>
+		private void ResizeBuffers()
+		{
+			ReleaseResources();
+			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
+
+			if ((!Settings.IsWindowed) && (!Settings.AllowRotation))
+				flags |= GI.SwapChainFlags.NonPrerotated;
+
+			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height, (GI.Format)Settings.VideoMode.Value.Format, flags);
+			CreateResources();
+		}
+
+		/// <summary>
 		/// Handles the Resize event of the Window control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -320,18 +252,7 @@ namespace GorgonLibrary.Graphics
 		{
 			// Only do this if the size has changed, if we're just restoring the window, then don't bother.
 			if ((_parentForm.WindowState != FormWindowState.Minimized) && (GISwapChain != null))
-			{
-				ReleaseResources();
-				GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
-
-				if ((!Settings.IsWindowed) && (!Settings.AllowRotation))
-					flags |= GI.SwapChainFlags.NonPrerotated;
-
-				Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize.Width, Settings.Window.ClientSize.Height, Settings.VideoMode.Value.Format, Settings.VideoMode.Value.RefreshRateNumerator, Settings.VideoMode.Value.RefreshRateDenominator);
-				GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height, (GI.Format)Settings.VideoMode.Value.Format, flags);
-
-				CreateResources();
-			}
+				ResizeBuffers();
 		}
 		
 		/// <summary>
@@ -362,54 +283,46 @@ namespace GorgonLibrary.Graphics
 			GISwapChain.DebugName = Name + " DXGISwapChain";
 
 			// Due to a bug with winforms and DXGI, we have to manually handle transitions ourselves.
-			Graphics.GIFactory.SetWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAltEnter);
+			Graphics.GIFactory.SetWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
 
 			// We need to handle focus loss ourselves because of the aforementioned bug.
-			_parentForm.Activated += new EventHandler(_parentForm_Activated);
-			_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
+			//_parentForm.Activated += new EventHandler(_parentForm_Activated);
+			//_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
 
 			if ((!Settings.IsWindowed) && (!Settings.AllowRotation))
 				flags |= GI.SwapChainFlags.NonPrerotated;
 
 			if (!Settings.IsWindowed)
-				ModeStateUpdate(false, d3dSettings.ModeDescription, d3dSettings.BufferCount, flags, true);
+				ModeStateUpdate();
 			CreateResources();
 
-			if (Settings.IsWindowed)
-				Settings.Window.Resize += new EventHandler(Window_Resize);
+			Settings.Window.Resize += new EventHandler(Window_Resize);
 		}
 
 		/// <summary>
 		/// Gets the ref count.
 		/// </summary>
-		/// <param name="device">The device.</param>
+		/// <param name="comobject"></param>
 		/// <returns></returns>
-		internal static int GetRefCount(D3D.Device device)
+		internal static int GetRefCount(SlimDX.ComObject comobject)
 		{
-			System.Runtime.InteropServices.Marshal.AddRef(device.ComPointer);
-			return System.Runtime.InteropServices.Marshal.Release(device.ComPointer);
+			System.Runtime.InteropServices.Marshal.AddRef(comobject.ComPointer);
+			return System.Runtime.InteropServices.Marshal.Release(comobject.ComPointer);
 		}
 
 		/// <summary>
 		/// Function to update the fullscreen/windowed mode state.
 		/// </summary>
-		/// <param name="windowed">TRUE for windowed mode, FALSE for fullscreen.</param>
-		/// <param name="mode">Video mode to use.</param>
-		/// <param name="bufferCount">Number of back buffers.</param>
-		/// <param name="flags">Flags for the swap chain.</param>
-		/// <param name="overrideState">TRUE to force the mode switch, FALSE to let the swap chain determine if it needs to switch modes.</param>
-		private void ModeStateUpdate(bool windowed, GI.ModeDescription mode, int bufferCount, GI.SwapChainFlags flags, bool overrideState)
+		private void ModeStateUpdate()
 		{
+			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode.Value);
+
 			GISwapChain.ResizeTarget(mode);
 
-			if ((overrideState) || (windowed != Settings.IsWindowed))
-			{
-				if (!windowed)
-				    GISwapChain.SetFullScreenState(true, VideoOutput.GIOutput);
-				else
-				    GISwapChain.SetFullScreenState(false, null);
-			}
-			GISwapChain.ResizeBuffers(bufferCount, mode.Width, mode.Height, mode.Format, flags);
+			if (!Settings.IsWindowed)
+				GISwapChain.SetFullScreenState(true, VideoOutput.GIOutput);
+			else
+				GISwapChain.SetFullScreenState(false, null);
 		}
 
 		/// <summary>
@@ -494,59 +407,19 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public void UpdateSettings(GorgonVideoMode mode, bool isWindowed, int bufferCount, bool allowRotation)
 		{
-			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
-			GorgonSwapChainSettings settings = new GorgonSwapChainSettings();
-
 			if (GISwapChain == null)
 				return;
 
-			Settings.Window.Resize -= new EventHandler(Window_Resize);
+			// Use these previous settings.
+			Settings.IsWindowed = isWindowed;
+			Settings.AllowRotation = allowRotation;
+			Settings.VideoMode = mode;
+			Settings.BufferCount = bufferCount;
 
-			try
-			{
-				// Use these previous settings.
-				settings.Window = Settings.Window;
-				settings.VideoDevice = Settings.VideoDevice;
-				settings.Flags = Settings.Flags;
-				settings.MultiSamples = Settings.MultiSamples;
-				settings.SwapEffect = Settings.SwapEffect;
-				settings.IsWindowed = isWindowed;
-				settings.AllowRotation = allowRotation;
-				settings.VideoMode = mode;
-				settings.BufferCount = bufferCount;
+			// Validate and modify the settings as appropriate.
+			Graphics.ValidateSwapChainSettings(Settings, this);
 
-				// If we're going to full screen mode, remember the current form state.
-				if ((!settings.IsWindowed) && (Settings.IsWindowed) && (_parentForm.WindowState != FormWindowState.Minimized))
-					_formState.Update();
-
-				// Validate and modify the settings as appropriate.
-				Graphics.ValidateSwapChainSettings(settings, this);
-
-				// Modify the buffers.
-				if ((!settings.IsWindowed) && (!settings.AllowRotation))
-					flags |= GI.SwapChainFlags.NonPrerotated;
-
-				ReleaseResources();
-				ModeStateUpdate(settings.IsWindowed, GorgonVideoMode.Convert(settings.VideoMode.Value), settings.BufferCount, flags, false);
-
-				// If we're coming back from full screen mode, then restore the form state.
-				if ((settings.IsWindowed) && (!Settings.IsWindowed))
-					_formState.Restore(false, false);
-
-				// For some reason DXGI is giving the incorrect size and location information.
-				if (!settings.IsWindowed)
-					_parentForm.Location = VideoOutput.OutputBounds.Location;
-
-				_parentForm.ClientSize = new Size(Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height);
-
-				Settings = settings;
-				CreateResources();
-			}
-			finally
-			{
-				if (Settings.IsWindowed)
-					Settings.Window.Resize += new EventHandler(Window_Resize);
-			}
+			ModeStateUpdate();
 		}
 		#endregion
 
@@ -570,7 +443,6 @@ namespace GorgonLibrary.Graphics
 
 			// Get the parent form for our window.
 			_parentForm = Gorgon.GetTopLevelForm(settings.Window);
-			_formState = new FormStateRecord(_parentForm);
 		}
 		#endregion
 
@@ -594,9 +466,8 @@ namespace GorgonLibrary.Graphics
 					Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.GorgonLoggingLevel.Simple, Name);
 					if (GISwapChain != null)
 					{
-						if (GISwapChain.IsFullScreen)
-							GISwapChain.SetFullScreenState(false, null);
-
+						// Always go to windowed mode before destroying the swap chain.
+						GISwapChain.SetFullScreenState(false, null);
 						GISwapChain.Dispose();
 					}
 					if (Graphics != null)
