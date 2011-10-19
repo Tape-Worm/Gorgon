@@ -51,7 +51,7 @@ namespace GorgonLibrary.Graphics
 		private GorgonTrackedObjectCollection _trackedObjects = null;		// Tracked objects.
 		#endregion
 
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return the DX GI factory.
 		/// </summary>
@@ -102,6 +102,7 @@ namespace GorgonLibrary.Graphics
 			D3D.Device d3dDevice = null;
 			IntPtr monitor = IntPtr.Zero;
 			GorgonVideoOutput output = null;
+			Form windowForm = null;
 
 			// Default to using the default Gorgon application window.
 			if (settings.Window == null)
@@ -152,14 +153,14 @@ namespace GorgonLibrary.Graphics
 			// If going full screen, ensure that whatever mode we've chosen can be used, otherwise go to the closest match.
 			if (!settings.IsWindowed)
 			{
-				// Check to ensure that no other swap chains on the video output if we're going to full screen mode.
-				var swapChainCount = (from item in _trackedObjects
-									let swapChain = item as GorgonSwapChain
-									where ((swapChain != null) && (swapChain.VideoOutput == output) && ((swapChain != currentSwapChain) || (currentSwapChain == null)))
-									select item).Count();
+				//// Check to ensure that no other swap chains on the video output if we're going to full screen mode.
+				//var swapChainCount = (from item in _trackedObjects
+				//                    let swapChain = item as GorgonSwapChain
+				//                    where ((swapChain != null) && (swapChain.VideoOutput == output) && ((swapChain != currentSwapChain) || (currentSwapChain == null)))
+				//                    select item).Count();
 
-				if (swapChainCount > 0)
-					throw new GorgonException(GorgonResult.CannotCreate, "There is already a swap chain active on the video output '" + output.Name + "'.");
+				//if (swapChainCount > 0)
+				//    throw new GorgonException(GorgonResult.CannotCreate, "There is already a swap chain active on the video output '" + output.Name + "'.");
 
 				var modeCount = (from mode in output.VideoModes
 								 where ((mode.Width == settings.VideoMode.Value.Width) && (mode.Height == settings.VideoMode.Value.Height) &&
@@ -201,19 +202,22 @@ namespace GorgonLibrary.Graphics
 
 			// Perform window handling.
 			settings.Window.Visible = true;
-			settings.Window.Enabled = true;			
+			settings.Window.Enabled = true;
+
+			windowForm = settings.Window as Form;
+
+			if (windowForm != null)
+				windowForm.ClientSize = new System.Drawing.Size(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height);
 
 			if (!settings.IsWindowed)
 			{
-				Form windowForm = settings.Window as Form;
-
 				if (windowForm.WindowState != FormWindowState.Minimized)
 				{
+					windowForm.WindowState = FormWindowState.Normal;					
 					windowForm.TopMost = true;
 					windowForm.FormBorderStyle = FormBorderStyle.None;
-					windowForm.WindowState = FormWindowState.Normal;
-					windowForm.ClientSize = new System.Drawing.Size(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height);
 					windowForm.Location = output.OutputBounds.Location;
+					windowForm.Focus();
 				}
 			}
 		}

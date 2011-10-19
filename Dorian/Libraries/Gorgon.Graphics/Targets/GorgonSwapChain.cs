@@ -28,10 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using System.Windows.Forms;
 using System.Drawing;
 using GI = SlimDX.DXGI;
 using D3D = SlimDX.Direct3D11;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
@@ -270,6 +272,7 @@ namespace GorgonLibrary.Graphics
 			{
 				texture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(GISwapChain, 0);
 				D3DRenderTarget = new D3D.RenderTargetView(Settings.VideoDevice.D3DDevice, texture);
+				D3DRenderTarget.DebugName = "SwapChain '" + Name + "' D3DRenderTargetView";
 				D3DView = new D3D.Viewport(0, 0, Width, Height);
 			}
 			finally
@@ -290,8 +293,8 @@ namespace GorgonLibrary.Graphics
 			    return;
 
 			_wasWindowed = false;
-			UpdateSettings(true);
-			_parentForm.WindowState = FormWindowState.Minimized;
+			//UpdateSettings(true);
+			//_parentForm.WindowState = FormWindowState.Minimized;
 		}
 
 		/// <summary>
@@ -304,7 +307,7 @@ namespace GorgonLibrary.Graphics
 			if (!_wasWindowed)
 			{
 				_wasWindowed = true;
-				UpdateSettings(false);
+				//UpdateSettings(false);
 			}
 		}
 
@@ -356,9 +359,10 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", Diagnostics.GorgonLoggingLevel.Simple, Name);
 			GISwapChain = new GI.SwapChain(Graphics.GIFactory, Settings.VideoDevice.D3DDevice, d3dSettings);
+			GISwapChain.DebugName = Name + " DXGISwapChain";
 
 			// Due to a bug with winforms and DXGI, we have to manually handle transitions ourselves.
-			Graphics.GIFactory.SetWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
+			Graphics.GIFactory.SetWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAltEnter);
 
 			// We need to handle focus loss ourselves because of the aforementioned bug.
 			_parentForm.Activated += new EventHandler(_parentForm_Activated);
@@ -373,6 +377,17 @@ namespace GorgonLibrary.Graphics
 
 			if (Settings.IsWindowed)
 				Settings.Window.Resize += new EventHandler(Window_Resize);
+		}
+
+		/// <summary>
+		/// Gets the ref count.
+		/// </summary>
+		/// <param name="device">The device.</param>
+		/// <returns></returns>
+		internal static int GetRefCount(D3D.Device device)
+		{
+			System.Runtime.InteropServices.Marshal.AddRef(device.ComPointer);
+			return System.Runtime.InteropServices.Marshal.Release(device.ComPointer);
 		}
 
 		/// <summary>
@@ -394,7 +409,6 @@ namespace GorgonLibrary.Graphics
 				else
 				    GISwapChain.SetFullScreenState(false, null);
 			}
-
 			GISwapChain.ResizeBuffers(bufferCount, mode.Width, mode.Height, mode.Format, flags);
 		}
 
@@ -466,10 +480,6 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>If the <paramref name="allowRotation"/> parameter is set to TRUE, then a slight performance penalty will be introduced.
 		/// <para>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
-		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
@@ -523,8 +533,10 @@ namespace GorgonLibrary.Graphics
 				if ((settings.IsWindowed) && (!Settings.IsWindowed))
 					_formState.Restore(false, false);
 
-				// For some reason DXGI is giving the incorrect size information.
-				_parentForm.Location = VideoOutput.OutputBounds.Location;
+				// For some reason DXGI is giving the incorrect size and location information.
+				if (!settings.IsWindowed)
+					_parentForm.Location = VideoOutput.OutputBounds.Location;
+
 				_parentForm.ClientSize = new Size(Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height);
 
 				Settings = settings;
