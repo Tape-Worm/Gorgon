@@ -40,7 +40,7 @@ namespace Tester_Graphics
 		{
 			base.OnKeyDown(e);
 
-			if ((e.Alt) && (e.KeyCode == Keys.Enter))
+			if (e.KeyCode == Keys.F1) //((e.Alt) && (e.KeyCode == Keys.Enter))
 			{
 				_swapChain.UpdateSettings(!_swapChain.Settings.IsWindowed);
 				if (_swapChain2 != null)
@@ -84,7 +84,7 @@ namespace Tester_Graphics
 				//swapChain.UpdateSettings(false);
 				//_swapChain2.UpdateSettings(false);				
 
-				//_test = new Test(_swapChain);
+				_test = new Test(_swapChain);
 
 				Gorgon.Go(Idle);
 			}
