@@ -219,6 +219,21 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to reset the device.
+		/// </summary>
+		internal void Reset()
+		{
+			if (D3DDevice != null)
+			{
+				Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name);
+				D3DDevice.Dispose();
+				D3DDevice = null;
+			}
+
+			GetDevice();
+		}
+
+		/// <summary>
 		/// Returns a <see cref="System.String"/> that represents this instance.
 		/// </summary>
 		/// <returns>
