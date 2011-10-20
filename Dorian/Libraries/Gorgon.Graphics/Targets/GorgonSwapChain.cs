@@ -188,6 +188,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				texture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(GISwapChain, 0);
+				texture.DebugName = "SwapChain '" + Name + "' Texture2D";
 				D3DRenderTarget = new D3D.RenderTargetView(Settings.VideoDevice.D3DDevice, texture);
 				D3DRenderTarget.DebugName = "SwapChain '" + Name + "' D3DRenderTargetView";
 				D3DView = new D3D.Viewport(0, 0, Width, Height);
@@ -231,8 +232,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void Initialize()
 		{
+			Form window = Settings.Window as Form;
 			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
 			GI.SwapChainDescription d3dSettings = new GI.SwapChainDescription();
+
+			// Resize the window to match requested mode size.
+			if ((window != null) && (Settings.IsWindowed))
+				window.ClientSize = new Size(Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height);
 
 			d3dSettings.BufferCount = Settings.BufferCount;
 			d3dSettings.Flags = flags;
@@ -267,17 +273,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Gets the ref count.
-		/// </summary>
-		/// <param name="comobject"></param>
-		/// <returns></returns>
-		internal static int GetRefCount(SlimDX.ComObject comobject)
-		{
-			System.Runtime.InteropServices.Marshal.AddRef(comobject.ComPointer);
-			return System.Runtime.InteropServices.Marshal.Release(comobject.ComPointer);
-		}
-
-		/// <summary>
 		/// Function to update the fullscreen/windowed mode state.
 		/// </summary>
 		private void ModeStateUpdate()
@@ -287,7 +282,7 @@ namespace GorgonLibrary.Graphics
 			GISwapChain.ResizeTarget(mode);
 
 			if (!Settings.IsWindowed)
-				GISwapChain.SetFullScreenState(true, VideoOutput.GIOutput);
+				GISwapChain.SetFullScreenState(true, null);
 			else
 				GISwapChain.SetFullScreenState(false, null);
 
@@ -389,6 +384,11 @@ namespace GorgonLibrary.Graphics
 			Graphics.ValidateSwapChainSettings(Settings, this);
 
 			ModeStateUpdate();
+			
+			// Ensure our window is the proper size.
+			Form window = Settings.Window as Form;
+			if ((window != null) && (Settings.IsWindowed) && ((Settings.VideoMode.Value.Width != Settings.Window.ClientSize.Width) || (Settings.VideoMode.Value.Height != Settings.Window.ClientSize.Height)))
+				Settings.Window.ClientSize = new Size(Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height);
 		}
 		#endregion
 

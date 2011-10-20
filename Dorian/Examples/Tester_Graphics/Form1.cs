@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define MULTIMON
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,21 +19,29 @@ namespace Tester_Graphics
 {
 	public partial class Form1 : Form
 	{
-		Test _test = null;
+		GorgonVideoMode mode1 = default(GorgonVideoMode);
+		GorgonVideoMode mode2 = default(GorgonVideoMode);
+		Test _test1 = null;
+		Test _test2 = null;
 		GorgonGraphics _graphics = null;
 		GorgonSwapChain _swapChain = null;
 		GorgonSwapChain _swapChain2 = null;
 		private bool _running = true;
+		private bool _active = true;
 		GorgonTimer _timer = new GorgonTimer(true);
 		Form2 form2 = null;
 		int framecounter = 0;
+		
 
 		private bool Idle(GorgonFrameRate timing)
 		{			
 			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
 
-			if (_test != null)
-				_test.Run();
+			if (_test1 != null)
+				_test1.Run();
+
+			if (_test2 != null)
+				_test2.Run();
 
 			return true;
 		}
@@ -46,6 +56,38 @@ namespace Tester_Graphics
 				if (_swapChain2 != null)
 					_swapChain2.UpdateSettings(!_swapChain2.Settings.IsWindowed);
 			}
+		}
+
+		int activateCount = 0;
+
+		protected override void OnActivated(EventArgs e)
+		{
+			base.OnActivated(e);
+
+#if !MULTIMON			
+			activateCount++;
+
+			System.Diagnostics.Debug.Print("Activate: {0}", activateCount);
+			if ((!_running) && (!_active))
+			{
+				_swapChain.UpdateSettings(false);
+			}
+#endif
+		}
+
+		protected override void OnDeactivate(EventArgs e)
+		{
+			base.OnDeactivate(e);
+
+#if !MULTIMON
+			activateCount = 0;
+			if ((!_swapChain.Settings.IsWindowed) && (_running))
+			{
+			    _running = false;
+				_active = false;
+			}
+#endif
+
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -72,19 +114,37 @@ namespace Tester_Graphics
 				form2 = new Form2();
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 				form2.Show();
-				form2.Location = Screen.AllScreens[1].Bounds.Location;
 #endif
 
 				_graphics = new GorgonGraphics();
-				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true });
+				mode1 = (from videoMode in _graphics.VideoDevices[0].Outputs[0].VideoModes
+						 where videoMode.Width == 640 && videoMode.Height == 480 && videoMode.Format == GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB 
+						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
+						 select videoMode).First();
+
+
+				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true, VideoMode = mode1 });
 #if MULTIMON
-				_swapChain2 = _graphics.CreateSwapChain("Swap2", new GorgonSwapChainSettings() { IsWindowed = false, Window = form2 });
+				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;
+
+				mode2 = (from videoMode in _graphics.VideoDevices[0].Outputs[1].VideoModes
+						 where videoMode.Width == 640 && videoMode.Height == 480 && videoMode.Format == GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB
+						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
+						 select videoMode).First();
+
+				_swapChain2 = _graphics.CreateSwapChain("Swap2", new GorgonSwapChainSettings() { IsWindowed = true, Window = form2, VideoMode = mode2 });
+
 #endif
 
-				//swapChain.UpdateSettings(false);
-				//_swapChain2.UpdateSettings(false);				
+				_swapChain.UpdateSettings(false);
+#if MULTIMON
+				_swapChain2.UpdateSettings(false);				
+#endif
 
-				_test = new Test(_swapChain);
+				_test1 = new Test(_swapChain);
+#if MULTIMON
+				_test2 = new Test(_swapChain2);
+#endif
 
 				Gorgon.Go(Idle);
 			}
@@ -98,6 +158,9 @@ namespace Tester_Graphics
 
 		void form2_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (_test2 != null)
+				_test2.Dispose();
+			_test2 = null;
 			if (_swapChain2 != null)
 				_swapChain2.Dispose();
 			_swapChain2 = null;
@@ -110,11 +173,17 @@ namespace Tester_Graphics
 
 			try
 			{
-				if (_test != null)
+				if (form2 != null)
 				{
-					_test.Dispose();
-					_test = null;
+					form2.Close();
+					form2 = null;
 				}
+
+				if (_test1 != null)
+				{
+					_test1.Dispose();
+					_test1 = null;
+				}				
 				Gorgon.Terminate();
 			}
 			catch (Exception ex)
