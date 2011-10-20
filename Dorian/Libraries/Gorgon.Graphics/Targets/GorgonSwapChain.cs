@@ -41,13 +41,31 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// A swap chain used to display graphics to a window.
 	/// </summary>
+	/// <remarks>The swap chain is used to display data to the <see cref="GorgonLibrary.Graphics.GorgonVideoOutput">video output</see>, or it can be used as a shader input.
+	/// <para>Swap chains embedded into child controls (a panel, group box, etc...) will not be able to switch to full screen mode and will automatically revert to windowed mode.</para>
+	/// <para>Multiple swap chains can be set to full screen on different video outputs.  When setting up for multiple video outputs in full screen, ensure that the window
+	/// for the extra video output is located on the monitor attached to that video output.  Failure to do so will keep the mode from switching.
+	/// </para>	
+	/// <para>
+	/// Note that due to a known limitation on Windows 7, it is not currently possible to switch to full screen on multiple outputs on <see cref="GorgonLibrary.Graphics.GorgonVideoDevice">multiple video devices</see>.  
+	/// One possible workaround is to create a full screen borderless window on the secondary device and use that as a "fake" full screen mode.  If this workaround
+	/// is applied, then it is suggested to disable the Desktop Windows Compositor.  To disable the compositor, see this link http://msdn.microsoft.com/en-us/library/aa969510.aspx.
+	/// </para>	
+	/// <para>
+	/// It is recommended that user switching be avoided when in a multiple monitor scenario because, as of this writing, the application will not gracefully recover.
+	/// </para>
+	/// <para>If the window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when it regains focus.  
+	/// This functionality can be disabled with the <see cref="P:GorgonLibrary.Graphics.ResetFullscreenOnFocus">GorgonGraphics.ResetFullscreenOnFocus</see> property if it does not suit the needs of the 
+	/// developer.</para>
+	/// </remarks>
 	public class GorgonSwapChain
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private Form _parentForm = null;						// Parent form for our window.
-		private bool _disposed = false;							// Flag to indicate that the object was disposed.
-		private bool _wasWindowed = true;						// Flag to indicate that the window was in windowed mode because of a transition.
+		private Form _parentForm = null;							// Parent form for our window.
+		private bool _disposed = false;								// Flag to indicate that the object was disposed.
+		private bool _wasWindowed = false;							// Flag to indicate that the window was in windowed mode because of a transition.
+		private IEnumerable<GorgonSwapChain> _swapChains = null;	// A list of other full screen swap chains.
 		#endregion
 
 		#region Properties.
@@ -161,6 +179,82 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Deactivate event of the _parentForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void _parentForm_Deactivate(object sender, EventArgs e)
+		{			
+			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
+				return;
+
+			if ((Graphics.InitialSwapChain != null) && (Graphics.InitialSwapChain != this))
+			{
+				Graphics.InitialSwapChain._parentForm_Deactivate(this, e);
+				return;
+			}
+			else
+			{
+				// If there is no initial swap chain, then make this one the initial swap chain since it is the first with focus.
+				if (Graphics.InitialSwapChain == null)
+					Graphics.InitialSwapChain = this;
+			}
+
+			// Get the forms being used.
+			var applicationStillActive = from swapChain in _swapChains
+										 let form = swapChain.Settings.Window as Form
+										 where form != null
+										 select form;
+
+			// If we've just switched to another full screen form in the application, then we don't care.
+			foreach (var winForm in applicationStillActive)
+			{
+				if (Form.ActiveForm == winForm)
+					return;
+			}
+
+			// Find out if any of our swap chains gained focus.
+			if ((!_wasWindowed) && (GISwapChain.IsFullScreen))
+				_wasWindowed = true;
+		}
+
+		/// <summary>
+		/// Handles the Activated event of the _parentForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void _parentForm_Activated(object sender, EventArgs e)
+		{
+			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
+				return;
+
+			if ((Graphics.InitialSwapChain != null) && (Graphics.InitialSwapChain != this))
+			{
+				Graphics.InitialSwapChain._parentForm_Activated(this, e);
+				return;
+			}
+			else
+			{
+				// If there is no initial swap chain, then make this one the initial swap chain since it is the first with focus.
+				if (Graphics.InitialSwapChain == null)
+					Graphics.InitialSwapChain = this;
+			}
+
+			if ((_wasWindowed) && (!GISwapChain.IsFullScreen))
+			{
+				_wasWindowed = false;
+				UpdateSettings(false);
+
+				// Restore the other swap chains.
+				foreach (var swapChain in _swapChains)
+				{
+					if (swapChain != this)
+						swapChain.UpdateSettings(false);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Function to release any resources bound to the swap chain.
 		/// </summary>
 		private void ReleaseResources()
@@ -208,8 +302,8 @@ namespace GorgonLibrary.Graphics
 			ReleaseResources();
 			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
 
-			if ((GISwapChain.IsFullScreen) && (!Settings.AllowRotation))
-				flags |= GI.SwapChainFlags.NonPrerotated;
+			//if ((GISwapChain.IsFullScreen) && (!Settings.AllowRotation))
+			//    flags |= GI.SwapChainFlags.NonPrerotated;
 
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height, (GI.Format)Settings.VideoMode.Value.Format, flags);
 			CreateResources();
@@ -228,17 +322,87 @@ namespace GorgonLibrary.Graphics
 		}
 		
 		/// <summary>
+		/// Function to update the fullscreen/windowed mode state.
+		/// </summary>
+		private void ModeStateUpdate()
+		{
+			SlimDX.Result result = GI.ResultCode.Success;
+
+			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode.Value);
+
+			GISwapChain.ResizeTarget(mode);
+
+			try
+			{
+				if (!Settings.IsWindowed)
+					result = GISwapChain.SetFullScreenState(true, VideoOutput.GIOutput);
+				else
+					result = GISwapChain.SetFullScreenState(false, null);
+			}
+			catch (SlimDX.SlimDXException sdEx)
+			{
+				if (sdEx.ResultCode == GI.ResultCode.ModeChangeInProgress)
+				{
+					Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", GorgonLoggingLevel.All, Name);
+				}
+				else
+				{
+					if (string.Compare(sdEx.ResultCode.Name, "DXGI_ERROR_NOT_CURRENTLY_AVAILABLE", true) == 0)
+						Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .", GorgonLoggingLevel.All, Name);
+					else
+						throw sdEx;
+				}
+			}
+
+			ResizeBuffers();
+		}
+
+		/// <summary>
+		/// Function to force clean up.
+		/// </summary>
+		private void CleanUp()
+		{
+			if (Graphics.InitialSwapChain == this)
+				Graphics.InitialSwapChain = null;
+
+			_parentForm.Activated -= new EventHandler(_parentForm_Activated);
+			_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+			Settings.Window.Resize -= new EventHandler(Window_Resize);
+
+			ReleaseResources();
+
+			Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.GorgonLoggingLevel.Simple, Name);
+			if (GISwapChain != null)
+			{
+				// Always go to windowed mode before destroying the swap chain.
+				GISwapChain.SetFullScreenState(false, null);
+				GISwapChain.Dispose();
+			}
+			if (Graphics != null)
+				Graphics.RemoveTrackedObject(this);					
+
+			GISwapChain = null;
+		}
+
+		/// <summary>
 		/// Function to intialize the swap chain.
 		/// </summary>
 		internal void Initialize()
 		{
-			Form window = Settings.Window as Form;
 			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
 			GI.SwapChainDescription d3dSettings = new GI.SwapChainDescription();
 
 			// Resize the window to match requested mode size.
-			if ((window != null) && (Settings.IsWindowed))
-				window.ClientSize = new Size(Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height);
+			if ((_parentForm == Settings.Window) && (Settings.IsWindowed))
+				_parentForm.ClientSize = new Size(Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height);
+
+			_swapChains = Graphics.GetFullscreenSwapChains();
+
+			if (Graphics.InitialSwapChain == null)
+				Graphics.InitialSwapChain = this;
+
+			_parentForm.Activated += new EventHandler(_parentForm_Activated);			
+			_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);			
 
 			d3dSettings.BufferCount = Settings.BufferCount;
 			d3dSettings.Flags = flags;
@@ -270,23 +434,6 @@ namespace GorgonLibrary.Graphics
 			CreateResources();
 
 			Settings.Window.Resize += new EventHandler(Window_Resize);
-		}
-
-		/// <summary>
-		/// Function to update the fullscreen/windowed mode state.
-		/// </summary>
-		private void ModeStateUpdate()
-		{
-			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode.Value);
-
-			GISwapChain.ResizeTarget(mode);
-
-			if (!Settings.IsWindowed)
-				GISwapChain.SetFullScreenState(true, null);
-			else
-				GISwapChain.SetFullScreenState(false, null);
-
-			ResizeBuffers();
 		}
 
 		/// <summary>
@@ -374,7 +521,8 @@ namespace GorgonLibrary.Graphics
 			if (GISwapChain == null)
 				return;
 
-			// Use these previous settings.
+			// Assign the new settings.
+			_wasWindowed = true;
 			Settings.IsWindowed = isWindowed;
 			Settings.AllowRotation = allowRotation;
 			Settings.VideoMode = mode;
@@ -386,8 +534,7 @@ namespace GorgonLibrary.Graphics
 			ModeStateUpdate();
 			
 			// Ensure our window is the proper size.
-			Form window = Settings.Window as Form;
-			if ((window != null) && (Settings.IsWindowed) && ((Settings.VideoMode.Value.Width != Settings.Window.ClientSize.Width) || (Settings.VideoMode.Value.Height != Settings.Window.ClientSize.Height)))
+			if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && ((Settings.VideoMode.Value.Width != Settings.Window.ClientSize.Width) || (Settings.VideoMode.Value.Height != Settings.Window.ClientSize.Height)))
 				Settings.Window.ClientSize = new Size(Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height);
 		}
 		#endregion
@@ -425,23 +572,8 @@ namespace GorgonLibrary.Graphics
 			if (!_disposed)
 			{
 				if (disposing)
-				{
-					Settings.Window.Resize -= new EventHandler(Window_Resize);
+					CleanUp();
 
-					ReleaseResources();
-
-					Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.GorgonLoggingLevel.Simple, Name);
-					if (GISwapChain != null)
-					{
-						// Always go to windowed mode before destroying the swap chain.
-						GISwapChain.SetFullScreenState(false, null);
-						GISwapChain.Dispose();
-					}
-					if (Graphics != null)
-						Graphics.RemoveTrackedObject(this);					
-				}
-
-				GISwapChain = null;
 				Graphics = null;
 				_disposed = true;
 			}

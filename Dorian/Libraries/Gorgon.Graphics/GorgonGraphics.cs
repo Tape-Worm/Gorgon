@@ -62,6 +62,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return the initial swap chain.
+		/// </summary>
+		internal GorgonSwapChain InitialSwapChain
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return the minimum supported feature level for Gorgon.
 		/// </summary>
 		public Version MinimumSupportedFeatureLevelVersion
@@ -80,9 +89,35 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to set or return whether swap chains should reset their full screen setting on regaining focus.
+		/// </summary>
+		/// <remarks>
+		/// This will control whether Gorgon will try to reacquire full screen mode when a full screen swap chain window regains focus.  When this is set to FALSE, and the window 
+		/// containing the full screen swap chain loses focus, it will revert to windowed mode and remain in windowed mode.  When set to TRUE, it will try to reacquire full screen mode.
+		/// <para>The default value for this is TRUE.  However, for a full screen multimonitor scenario, this should be set to FALSE.</para>
+		/// </remarks>
+		public bool ResetFullscreenOnFocus
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to return the currently active full screen swap chains.
+		/// </summary>
+		/// <returns>A list of full screen swap chains.</returns>
+		internal IEnumerable<GorgonSwapChain> GetFullscreenSwapChains()
+		{
+			return (from item in _trackedObjects
+					let swapChain = item as GorgonSwapChain
+					where !swapChain.Settings.IsWindowed
+					select swapChain);
+		}
+
 		/// <summary>
 		/// Function to remove a tracked object from the collection.
 		/// </summary>
@@ -152,14 +187,23 @@ namespace GorgonLibrary.Graphics
 			// If going full screen, ensure that whatever mode we've chosen can be used, otherwise go to the closest match.
 			if (!settings.IsWindowed)
 			{
-				//// Check to ensure that no other swap chains on the video output if we're going to full screen mode.
-				//var swapChainCount = (from item in _trackedObjects
-				//                    let swapChain = item as GorgonSwapChain
-				//                    where ((swapChain != null) && (swapChain.VideoOutput == output) && ((swapChain != currentSwapChain) || (currentSwapChain == null)))
-				//                    select item).Count();
+				// Check to ensure that no other swap chains on the video output if we're going to full screen mode.
+				var swapChainCount = (from item in _trackedObjects
+				                    let swapChain = item as GorgonSwapChain
+				                    where ((swapChain != null) && (swapChain.VideoOutput == output) && (!swapChain.Settings.IsWindowed) && (swapChain.Settings.Window != settings.Window))
+				                    select item).Count();
 
+				if (swapChainCount > 0)
+				    throw new GorgonException(GorgonResult.CannotCreate, "There is already a swap chain active on the video output '" + output.Name + "'.");
+
+				swapChainCount = (from item in _trackedObjects
+								  let swapChain = item as GorgonSwapChain
+								  where ((swapChain != null) && (!swapChain.Settings.IsWindowed))
+								  select item).Count();
+
+				// Disable auto reset if we have more than one full screen swap chain.
 				//if (swapChainCount > 0)
-				//    throw new GorgonException(GorgonResult.CannotCreate, "There is already a swap chain active on the video output '" + output.Name + "'.");
+				//    ResetFullscreenOnFocus = false;
 
 				var modeCount = (from mode in output.VideoModes
 								 where ((mode.Width == settings.VideoMode.Value.Width) && (mode.Height == settings.VideoMode.Value.Height) &&
@@ -239,12 +283,46 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("settings");
 
 			ValidateSwapChainSettings(settings, null);
-			
+
 			swapChain = new GorgonSwapChain(this, name, settings);
 			swapChain.Initialize();
-			_trackedObjects.Add(swapChain);
+			_trackedObjects.Add(swapChain);			
 
 			return swapChain;
+		}
+
+		/// <summary>
+		/// Function to reset all data associated with this graphics interface.
+		/// </summary>
+		/// <remarks>Care must be taken with this method as it will destroy all resources created by this object.  This includes swap chains, textures, buffers, shaders, etc...</remarks>
+		public void Reset()
+		{
+			Gorgon.Log.Print("Gorgon Graphics resetting...", Diagnostics.GorgonLoggingLevel.Simple);
+
+			_trackedObjects.ReleaseAll();
+
+			VideoDevices.Clear();
+
+			InitialSwapChain = null;
+
+			Gorgon.Log.Print("Removing DXGI factory interface...", GorgonLoggingLevel.Verbose);
+
+			if (GIFactory != null)
+				GIFactory.Dispose();
+
+			GIFactory = null;
+
+			// Sleep for 2 seconds, allow the system to catch its worthless breath.
+			System.Threading.Thread.Sleep(2000);
+
+			Gorgon.Log.Print("Creating DXGI interface...", GorgonLoggingLevel.Verbose);
+			GIFactory = new GI.Factory1();
+			VideoDevices = new GorgonVideoDeviceCollection(this);
+
+			if (VideoDevices.Count == 0)
+				throw new GorgonException(GorgonResult.CannotCreate, "There were no video devices found on this system that can use Direct 3D 11, 10.1 or 9.3.");
+
+			Gorgon.Log.Print("Gorgon Graphics reset.", Diagnostics.GorgonLoggingLevel.Simple);
 		}
 		#endregion
 
@@ -256,6 +334,7 @@ namespace GorgonLibrary.Graphics
 		public GorgonGraphics()
 		{
 			_trackedObjects = new GorgonTrackedObjectCollection();
+			ResetFullscreenOnFocus = true;
 
 			Gorgon.Log.Print("Gorgon Graphics initializing...", Diagnostics.GorgonLoggingLevel.Simple);
 
@@ -293,8 +372,10 @@ namespace GorgonLibrary.Graphics
 					Gorgon.Log.Print("Gorgon Graphics shutting down...", Diagnostics.GorgonLoggingLevel.Simple);
 					
 					_trackedObjects.ReleaseAll();
-					
+
 					VideoDevices.Clear();
+
+					InitialSwapChain = null;
 
 					Gorgon.Log.Print("Removing DXGI factory interface...", GorgonLoggingLevel.Verbose);
 
