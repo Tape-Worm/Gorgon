@@ -51,13 +51,14 @@ namespace GorgonLibrary.Graphics
 			}
 			_device = swapChain.Settings.VideoDevice.D3DDevice;
 			
-			_shaderCode = Shaders.ShaderBytecode.Compile(_shader, "fx_5_0", flags, Shaders.EffectFlags.None, null, null, out errors );
-			_effect = new D3D.Effect(_device, _shaderCode);
-			_pass = _effect.GetTechniqueByIndex(0).GetPassByIndex(0);
+			_shaderCode = Shaders.ShaderBytecode.Compile(_shader, "fx_5_0", flags, Shaders.EffectFlags.None, null, null, out errors );			
+			_effect = new D3D.Effect(_device, _shaderCode);			
+			_pass = _effect.GetTechniqueByIndex(0).GetPassByIndex(0);			
 			_layout = new D3D.InputLayout(_device, _pass.Description.Signature, new[] {
 			new D3D.InputElement("POSITION", 0, GI.Format.R32G32B32A32_Float, 0, 0),
 			new D3D.InputElement("COLOR", 0, GI.Format.R32G32B32A32_Float, 16, 0) 
 			});
+			_layout.DebugName = _swapChain.Name + " Test Vertex Buffer";
 
 			using (DataStream stream = new DataStream(3 * 32, true, true))
 			{
@@ -75,28 +76,26 @@ namespace GorgonLibrary.Graphics
 					SizeInBytes = 3 * 32,
 					Usage = D3D.ResourceUsage.Default
 				});
+				_vertices.DebugName = _swapChain.Name + " Test Vertex Buffer";
 			}
 
 			_binding = new D3D.VertexBufferBinding(_vertices, 32, 0);
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
-
-			_form.Deactivate += new EventHandler(_form_Deactivate);
 		}
 
-		void _form_Deactivate(object sender, EventArgs e)
-		{
-			if (_form.WindowState == System.Windows.Forms.FormWindowState.Minimized)
-			{
-				_device.ImmediateContext.OutputMerger.SetTargets((D3D.RenderTargetView)null);
-			}
-		}
+		private bool _standBy = false;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		public void Run()
 		{
-			if (_form.WindowState != System.Windows.Forms.FormWindowState.Minimized)
+			if (_standBy)
+			{
+				if (_swapChain.GISwapChain.Present(0, GI.PresentFlags.Test) == GI.ResultCode.Success)
+					_standBy = false;
+			}
+			else
 			{
 				_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.D3DRenderTarget);
 				_device.ImmediateContext.Rasterizer.SetViewports(_swapChain.D3DView);
@@ -109,7 +108,9 @@ namespace GorgonLibrary.Graphics
 				_pass.Apply(_device.ImmediateContext);
 				_device.ImmediateContext.Draw(3, 0);
 
-				_swapChain.GISwapChain.Present(0, GI.PresentFlags.None);
+				SlimDX.Result result = _swapChain.GISwapChain.Present(0, GI.PresentFlags.None);
+				if ((result != GI.ResultCode.Success) && (result.IsSuccess))
+					_standBy = true;
 			}
 		}
 
