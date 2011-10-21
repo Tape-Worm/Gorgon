@@ -68,7 +68,7 @@ namespace Tester_Graphics
 
 				GorgonFrameRate.UseHighResolutionTimer = false;
 
-				Gorgon.UnfocusedSleepTime = 0;
+				Gorgon.UnfocusedSleepTime = 1;
 				Gorgon.AllowBackground = true;
 
 				this.Show();
@@ -80,15 +80,17 @@ namespace Tester_Graphics
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 				form2.Show();
 #endif
-
-				_graphics = new GorgonGraphics();
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level9_0_SM3);				
+ 
 				mode1 = (from videoMode in _graphics.VideoDevices[0].Outputs[0].VideoModes
 						 where videoMode.Width == 1024 && videoMode.Height == 768 && videoMode.Format == GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB 
 						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
 						 select videoMode).First();
 
-
-				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true, VideoMode = mode1 });
+				int count = 8;
+				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB, count);
+				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
+				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true, VideoMode = mode1, MultiSample = multiSample });
 #if MULTIMON
 				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;
 

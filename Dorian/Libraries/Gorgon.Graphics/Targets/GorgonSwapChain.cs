@@ -410,7 +410,7 @@ namespace GorgonLibrary.Graphics
 			d3dSettings.IsWindowed = true;
 			d3dSettings.ModeDescription = GorgonVideoMode.Convert(Settings.VideoMode.Value);
 			d3dSettings.OutputHandle = Settings.Window.Handle;
-			d3dSettings.SampleDescription = GorgonMultiSampling.Convert(Settings.MultiSamples);
+			d3dSettings.SampleDescription = GorgonMultiSampling.Convert(Settings.MultiSample);
 			d3dSettings.SwapEffect = GorgonSwapChainSettings.Convert(Settings.SwapEffect);
 
 			if ((Settings.Flags & SwapChainUsageFlags.RenderTarget) == SwapChainUsageFlags.RenderTarget)

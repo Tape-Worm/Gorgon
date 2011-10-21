@@ -34,53 +34,47 @@ using D3D = SlimDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Predefined sampling quality for multisampling.
-	/// </summary>
-	public enum PredefinedSamplingQuality
-	{
-		/// <summary>
-		/// Standard multisample pattern required by DX 11 and 10.1 video devices.
-		/// </summary>
-		StandardPattern = 0,
-		/// <summary>
-		/// Samples will be located at the pixel center.
-		/// </summary>
-		CenteredPattern = 1
-	}
-
-	/// <summary>
 	/// Values to define the number and quality of multisampling.
 	/// </summary>
 	/// <remarks>Setting the <see cref="GorgonLibrary.Graphics.GorgonMultiSampling.Count">count</see> and <see cref="GorgonLibrary.Graphics.GorgonMultiSampling.Quality">quality</see> values to 1 and 0 respectively, will disable multisampling.</remarks>
 	public struct GorgonMultiSampling
 	{
 		#region Variables.
-		/// <summary>
-		/// Number of multisamples per pixel.
-		/// </summary>
-		public int Count;
+		private int _count;
+
 		/// <summary>
 		/// Image quality.
 		/// </summary>
-		/// <remarks>There is a performance penalty for setting this value to higher levels.</remarks>
+		/// <remarks>There is a performance penalty for setting this value to higher levels.
+		/// <para>This value must be 0 or less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.  Failure to do so will cause the anything using the value to throw an exception.</para>
+		/// </remarks>
 		public int Quality;
 		#endregion
 
-		#region Methods.
+		#region Properties.
 		/// <summary>
-		/// Function to convert Gorgon predefined sampling quality values to D3D standard multisample quality values.
+		/// Property to set or return the number of samples per pixel.
 		/// </summary>
-		/// <param name="quality">Quality value to convert.</param>
-		/// <returns>The D3D standard multisample quality value.</returns>
-		internal static int Convert(PredefinedSamplingQuality quality)
+		/// <remarks>This value is limited to a range of 1 to 32.</remarks>
+		public int Count
 		{
-			// These values are no defined in SlimDX, so they may not be correct if the API changes.
-			if (quality == PredefinedSamplingQuality.StandardPattern)
-				return -1;
-			else
-				return -2;
-		}
+			get
+			{
+				return _count;
+			}
+			set
+			{
+				if (value < 1)
+					value = 1;
+				if (value > 32)
+					value = 32;
 
+				_count = value;
+			}
+		}
+		#endregion
+
+		#region Methods.
 		/// <summary>
 		/// Function to convert a Gorgon multisampling value to a D3D sample description.
 		/// </summary>
@@ -100,7 +94,12 @@ namespace GorgonLibrary.Graphics
 		/// <param name="quality">Image quality.</param>
 		public GorgonMultiSampling(int count, int quality)
 		{
-			Count = count;
+			if (count < 1)
+				count = 1;
+			if (count > 32)
+				count = 32;
+
+			_count = count;
 			Quality = quality;
 		}
 		#endregion
