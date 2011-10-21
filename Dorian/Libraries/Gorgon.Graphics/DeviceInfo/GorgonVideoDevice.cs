@@ -24,13 +24,6 @@
 // 
 #endregion
 
-// Uncomment this line to force DX10.1 feature levels.
-//#define DX10_1_CARD
-// Uncomment this line to force DX10.0 feature levels.
-//#define DX10_CARD
-// Uncomment this line to force DX9 feature levels.
-#define DX9_CARD
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,14 +36,42 @@ using D3D = SlimDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// Available D3D feature levels for the video device.
+	/// </summary>
+	[Flags()]
+	public enum DeviceFeatureLevel
+	{
+		/// <summary>
+		/// Gorgon does not support this direct 3D level.
+		/// </summary>
+		Unsupported = 0,
+		/// <summary>
+		/// Direct 3D 11, shader model 5.0.
+		/// </summary>
+		Level11_0_SM5 = 1,
+		/// <summary>
+		/// Direct 3D 10.1, shader model 4.0.
+		/// </summary>
+		Level10_1_SM4 = 2,
+		/// <summary>
+		/// Direct 3D 10, shader model 4.0.
+		/// </summary>
+		Level10_0_SM4 = 4,
+		/// <summary>
+		/// Direct 3D 9, shader model 3.0.
+		/// </summary>
+		Level9_0_SM3 = 8
+	}
+
+	/// <summary>
 	/// Contains information about a video device.
 	/// </summary>
 	public class GorgonVideoDevice
 		: INamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;						// Flag to indicate that the object was disposed.		
-		private D3D.FeatureLevel _highestFeatureLevel;		// Highest feature level.
+		private bool _disposed = false;														// Flag to indicate that the object was disposed.		
+		private DeviceFeatureLevel _currentFeatureLevel = DeviceFeatureLevel.Unsupported;	// Currently active feature level.
 		#endregion
 
 		#region Properties.
@@ -73,10 +94,9 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the feature level that this device supports.
+		/// Property to return the highest feature level that the hardware can support.
 		/// </summary>
-		/// <remarks>This is used to determine whether a device is a DirectX 11/10/10.1/9 capable device.</remarks>
-		public Version FeatureLevelVersion
+		public DeviceFeatureLevel HardwareFeatureLevels
 		{
 			get;
 			private set;
@@ -183,30 +203,68 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve feature levels for the hardware.
+		/// Function to convert a D3D feature level to a Gorgon device feature level.
 		/// </summary>
-		/// <returns>An array of feature levels to use.</returns>
-		private D3D.FeatureLevel[] GetFeatureLevels()
-		{
-			switch (_highestFeatureLevel)
+		/// <param name="featureLevel">D3D Feature level to convert.</param>
+		/// <returns>Gorgon device feature level.</returns>
+		private void Convert(D3D.FeatureLevel featureLevel)
+		{			
+			switch (featureLevel)
 			{
 				case D3D.FeatureLevel.Level_11_0:
-					return new D3D.FeatureLevel[] { D3D.FeatureLevel.Level_11_0, D3D.FeatureLevel.Level_10_1, D3D.FeatureLevel.Level_10_0, D3D.FeatureLevel.Level_9_3, D3D.FeatureLevel.Level_9_2, D3D.FeatureLevel.Level_9_1 };
+					HardwareFeatureLevels = DeviceFeatureLevel.Level11_0_SM5 | DeviceFeatureLevel.Level10_1_SM4  | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					break;
 				case D3D.FeatureLevel.Level_10_1:
-					return new D3D.FeatureLevel[] { D3D.FeatureLevel.Level_10_1, D3D.FeatureLevel.Level_10_0, D3D.FeatureLevel.Level_9_3, D3D.FeatureLevel.Level_9_2, D3D.FeatureLevel.Level_9_1 };
+					HardwareFeatureLevels = DeviceFeatureLevel.Level10_1_SM4 | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					break;
 				case D3D.FeatureLevel.Level_10_0:
-					return new D3D.FeatureLevel[] { D3D.FeatureLevel.Level_10_0, D3D.FeatureLevel.Level_9_3, D3D.FeatureLevel.Level_9_2, D3D.FeatureLevel.Level_9_1 };
+					HardwareFeatureLevels = DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					break;
 				case D3D.FeatureLevel.Level_9_3:
-					return new D3D.FeatureLevel[] { D3D.FeatureLevel.Level_9_3, D3D.FeatureLevel.Level_9_2, D3D.FeatureLevel.Level_9_1 };
+					HardwareFeatureLevels = DeviceFeatureLevel.Level9_0_SM3;
+					break;
 				default:
-					return null;
+					HardwareFeatureLevels = DeviceFeatureLevel.Unsupported;
+					break;
 			}
+		}
+
+		/// <summary>
+		/// Function to convert a Gorgon feature level into an array of applicable D3D feature levels.
+		/// </summary>
+		/// <param name="featureLevel">Gorgon feature level to convert.</param>
+		/// <returns>An array of D3D feature levels.</returns>
+		private D3D.FeatureLevel[] Convert(DeviceFeatureLevel featureLevel)
+		{
+			List<D3D.FeatureLevel> featureLevels = new List<D3D.FeatureLevel>();
+
+			if ((featureLevel & DeviceFeatureLevel.Level11_0_SM5) == DeviceFeatureLevel.Level11_0_SM5)
+				featureLevels.Add(D3D.FeatureLevel.Level_11_0);
+
+			if ((featureLevel & DeviceFeatureLevel.Level10_1_SM4) == DeviceFeatureLevel.Level10_1_SM4)
+				featureLevels.Add(D3D.FeatureLevel.Level_10_1);
+
+			if ((featureLevel & DeviceFeatureLevel.Level10_0_SM4) == DeviceFeatureLevel.Level10_0_SM4)
+				featureLevels.Add(D3D.FeatureLevel.Level_10_0);
+
+			if ((featureLevel & DeviceFeatureLevel.Level9_0_SM3) == DeviceFeatureLevel.Level9_0_SM3)
+				featureLevels.Add(D3D.FeatureLevel.Level_9_3);
+
+			if (featureLevels.Count > 0)
+			{
+				featureLevels.Add(D3D.FeatureLevel.Level_9_2);
+				featureLevels.Add(D3D.FeatureLevel.Level_9_1);
+			}
+			else
+				throw new NotSupportedException("The video device '" + Name + "' is not supported by Gorgon.");
+
+			return featureLevels.ToArray();
 		}
 
 		/// <summary>
 		/// Function to retrieve the D3D 11 device object associated with this video device.
 		/// </summary>
-		private void GetDevice()
+		internal void GetDevice()
 		{
 			D3D.DeviceCreationFlags flags = D3D.DeviceCreationFlags.None;
 
@@ -214,8 +272,10 @@ namespace GorgonLibrary.Graphics
 			flags = D3D.DeviceCreationFlags.Debug;
 #endif
 			Gorgon.Log.Print("Creating D3D 11 device for video device '{0}'...", GorgonLoggingLevel.Verbose, Name);
-			D3DDevice = new D3D.Device(GIAdapter, flags, GetFeatureLevels());
+			D3DDevice = new D3D.Device(GIAdapter, flags, Convert(_currentFeatureLevel));
 			D3DDevice.DebugName = Name + " D3D11Device";
+
+			Outputs = new GorgonVideoOutputCollection(this);
 		}
 
 		/// <summary>
@@ -259,7 +319,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="format">Format to test.</param>
 		/// <param name="count">Number of multisamples.</param>
-		/// <returns>A <see cref="GorgonLibrary.Graphics.GorgonMultiSampling">GorgonMultiSampling</see> value with the maximum supported multi-sample value.</returns>
+		/// <returns>The maximum quality level for the format, or 0 if not supported.</returns>
 		public int GetMultiSampleQuality(GorgonBufferFormat format, int count)
 		{
 			if (format == GorgonBufferFormat.Unknown)
@@ -268,12 +328,7 @@ namespace GorgonLibrary.Graphics
 			if (count < 1)
 				count = 1;
 
-			int quality = D3DDevice.CheckMultisampleQualityLevels((GI.Format)format, count) - 1;
-
-			if (quality < 0)
-				quality = 0;
-
-			return quality;
+			return D3DDevice.CheckMultisampleQualityLevels((GI.Format)format, count);
 		}
 		#endregion
 
@@ -288,39 +343,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("adapter");
 
 			GIAdapter = adapter;
-
-#if DX10_1_CARD
-			_highestFeatureLevel = D3D.FeatureLevel.Level_10_1;
-#elif DX10_CARD
-			_highestFeatureLevel = D3D.FeatureLevel.Level_10_0;
-#elif DX9_CARD
-			_highestFeatureLevel = D3D.FeatureLevel.Level_9_3;
-#else
-			_highestFeatureLevel = D3D.Device.GetSupportedFeatureLevel(adapter);
-#endif
-
-			switch (_highestFeatureLevel)
-			{
-				case D3D.FeatureLevel.Level_11_0:
-					FeatureLevelVersion = new Version(11, 0);
-					break;
-				case D3D.FeatureLevel.Level_10_1:
-					FeatureLevelVersion = new Version(10, 1);
-					break;
-				case D3D.FeatureLevel.Level_10_0:
-					FeatureLevelVersion = new Version(10, 0);
-					break;
-				case D3D.FeatureLevel.Level_9_3:
-					FeatureLevelVersion = new Version(9, 3);
-					break;
-				default:
-					FeatureLevelVersion = new Version(0, 0);
-					break;
-			}
-
-			GetDevice();
-
-			Outputs = new GorgonVideoOutputCollection(this);
+			Convert(D3D.Device.GetSupportedFeatureLevel(adapter));						
 		}
 		#endregion
 

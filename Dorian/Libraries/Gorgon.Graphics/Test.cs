@@ -42,14 +42,15 @@ namespace GorgonLibrary.Graphics
 			string errors = string.Empty;
 			Shaders.ShaderFlags flags = Shaders.ShaderFlags.Debug;
 
-			if (_swapChain.Settings.VideoDevice.FeatureLevelVersion == new Version(11, 0))
+			if ((_swapChain.Settings.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level11_0_SM5) == DeviceFeatureLevel.Level11_0_SM5)
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri11);
-			if (_swapChain.Settings.VideoDevice.FeatureLevelVersion.Major == 10)
+			if (((_swapChain.Settings.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_1_SM4) == DeviceFeatureLevel.Level10_1_SM4) ||
+				((_swapChain.Settings.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_0_SM4) == DeviceFeatureLevel.Level10_0_SM4))
 			{
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri10);
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 			}
-			if (_swapChain.Settings.VideoDevice.FeatureLevelVersion == new Version(9, 3))
+			if ((_swapChain.Settings.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level9_0_SM3) == DeviceFeatureLevel.Level9_0_SM3)
 			{
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri93);
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;

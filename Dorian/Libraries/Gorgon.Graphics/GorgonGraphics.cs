@@ -51,6 +51,9 @@ namespace GorgonLibrary.Graphics
 		private GorgonTrackedObjectCollection _trackedObjects = null;		// Tracked objects.
 		#endregion
 
+		#region Constants.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the DX GI factory.
@@ -71,14 +74,12 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the minimum supported feature level for Gorgon.
+		/// Property to return the maximum feature level to use for any video device.
 		/// </summary>
-		public Version MinimumSupportedFeatureLevelVersion
+		public DeviceFeatureLevel MaxFeatureLevel
 		{
-			get
-			{
-				return _minimumSupportedFeatureLevel;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -231,13 +232,13 @@ namespace GorgonLibrary.Graphics
 
 			// Check multi sampling levels.
 			if (settings.SwapEffect == SwapEffect.Sequential)
-				settings.MultiSamples = new GorgonMultiSampling(1, 0);
+				settings.MultiSample = new GorgonMultiSampling(1, 0);
 
-			int quality = settings.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Value.Format, settings.MultiSamples.Count);
+			int quality = settings.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Value.Format, settings.MultiSample.Count);
 
 			// Ensure that the quality of the sampling does not exceed what the card can do.
-			if (settings.MultiSamples.Quality > quality)
-				throw new ArgumentException("Video device '" + settings.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSamples.Count.ToString() + "' and a quality of '" + settings.MultiSamples.Quality.ToString() + " with a format of '" + settings.VideoMode.Value.Format + "'");
+			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
+				throw new ArgumentException("Video device '" + settings.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Value.Format + "'");
 
 			// Force 2 buffers for discard.
 			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
@@ -263,7 +264,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support.</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is less than 0 or not less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -290,49 +291,21 @@ namespace GorgonLibrary.Graphics
 
 			return swapChain;
 		}
-
-		/// <summary>
-		/// Function to reset all data associated with this graphics interface.
-		/// </summary>
-		/// <remarks>Care must be taken with this method as it will destroy all resources created by this object.  This includes swap chains, textures, buffers, shaders, etc...</remarks>
-		public void Reset()
-		{
-			Gorgon.Log.Print("Gorgon Graphics resetting...", Diagnostics.GorgonLoggingLevel.Simple);
-
-			_trackedObjects.ReleaseAll();
-
-			VideoDevices.Clear();
-
-			InitialSwapChain = null;
-
-			Gorgon.Log.Print("Removing DXGI factory interface...", GorgonLoggingLevel.Verbose);
-
-			if (GIFactory != null)
-				GIFactory.Dispose();
-
-			GIFactory = null;
-
-			// Sleep for 2 seconds, allow the system to catch its worthless breath.
-			System.Threading.Thread.Sleep(2000);
-
-			Gorgon.Log.Print("Creating DXGI interface...", GorgonLoggingLevel.Verbose);
-			GIFactory = new GI.Factory1();
-			VideoDevices = new GorgonVideoDeviceCollection(this);
-
-			if (VideoDevices.Count == 0)
-				throw new GorgonException(GorgonResult.CannotCreate, "There were no video devices found on this system that can use Direct 3D 11, 10.1 or 9.3.");
-
-			Gorgon.Log.Print("Gorgon Graphics reset.", Diagnostics.GorgonLoggingLevel.Simple);
-		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
+		/// <param name="featureLevel">The feature level to support for the devices enumerated.</param>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="featureLevel"/> parameter is invalid.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are capable of using Direct 3D 11, or the down level interfaces (Direct 3D 10.1, 10 or 9.3).</exception>
-		public GorgonGraphics()
+		public GorgonGraphics(DeviceFeatureLevel featureLevel)
 		{
+			if (featureLevel == DeviceFeatureLevel.Unsupported)
+				throw new ArgumentException("Must supply a known feature level.", "featureLevel");
+
+			MaxFeatureLevel = featureLevel;
 			_trackedObjects = new GorgonTrackedObjectCollection();
 			ResetFullscreenOnFocus = true;
 
@@ -355,6 +328,16 @@ namespace GorgonLibrary.Graphics
 			Gorgon.AddTrackedObject(this);
 
 			Gorgon.Log.Print("Gorgon Graphics initialized.", Diagnostics.GorgonLoggingLevel.Simple);
+		}
+
+		/// <summary>
+		/// Initializes the <see cref="GorgonGraphics"/> class.
+		/// </summary>
+		/// <param name="featureLevel">The feature level to support for the devices enumerated.</param>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are capable of using Direct 3D 11, or the down level interfaces (Direct 3D 10.1, 10 or 9.3).</exception>
+		public GorgonGraphics()
+			: this(DeviceFeatureLevel.Level11_0_SM5)
+		{
 		}
 		#endregion
 

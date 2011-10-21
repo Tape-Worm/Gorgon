@@ -119,8 +119,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the number and quality of sampling when using multisampling.
 		/// </summary>
-		/// <remarks>If this value is not specified, then multisampling will be disabled and the count and quality will be set to 1 and 0 respectively.</remarks>
-		public GorgonMultiSampling MultiSamples
+		/// <remarks>If this value is not specified, then multisampling will be disabled and the count and quality will be set to 1 and 0 respectively.
+		/// <para>When specifying this value, ensure that the quality is 0, or less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.  A value outside of this range will thrown an exception.</para>
+		/// </remarks>
+		public GorgonMultiSampling MultiSample
 		{
 			get;
 			set;
@@ -201,7 +203,7 @@ namespace GorgonLibrary.Graphics
 			IsWindowed = true;
 			Flags = SwapChainUsageFlags.RenderTarget;
 			SwapEffect = Graphics.SwapEffect.Discard;
-			MultiSamples = new GorgonMultiSampling(1, 0);
+			MultiSample = new GorgonMultiSampling(1, 0);
 			AllowRotation = false;
 		}
 		#endregion
