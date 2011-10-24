@@ -28,6 +28,8 @@ namespace GorgonLibrary.Graphics
 
 		private void Destroy()
 		{
+			if (_rastState != null)
+				_rastState.Dispose();
 			if (_shaderCode != null)
 				_shaderCode.Dispose();
 			if (_effect != null)
