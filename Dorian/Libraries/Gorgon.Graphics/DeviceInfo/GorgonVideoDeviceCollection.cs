@@ -127,13 +127,17 @@ namespace GorgonLibrary.Graphics
 				{
 					GorgonVideoDevice device = new GorgonVideoDevice(adapter);
 
-					if ((device.HardwareFeatureLevels  &  _graphics.MaxFeatureLevel) != _graphics.MaxFeatureLevel)
+					if ((device.SupportsFeatureLevels(_graphics.MaxFeatureLevel)) && (device.HardwareFeatureLevels != DeviceFeatureLevel.Unsupported))
 					{
 						this.AddItem(device);
+
+						// Get an instance of the Direct 3D device object.
+						device.GetDevice(_graphics.MaxFeatureLevel);
 
 						Gorgon.Log.Print("Device found: {0}", Diagnostics.GorgonLoggingLevel.Simple ,device.Name);
 						Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
 						Gorgon.Log.Print("Supports feature level: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.HardwareFeatureLevels);
+						Gorgon.Log.Print("Limited to feature level: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.SupportedFeatureLevels);
 						Gorgon.Log.Print("Video memory: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.DedicatedVideoMemory.FormatMemory());
 						Gorgon.Log.Print("System memory: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.DedicatedSystemMemory.FormatMemory());
 						Gorgon.Log.Print("Shared memory: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.SharedSystemMemory.FormatMemory());
@@ -143,9 +147,6 @@ namespace GorgonLibrary.Graphics
 						Gorgon.Log.Print("Revision: {0}", Diagnostics.GorgonLoggingLevel.Verbose, device.Revision);
 						Gorgon.Log.Print("Unique ID: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, device.UUID.FormatHex());
 						Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
-
-						// Get an instance of the Direct 3D device object.
-						device.GetDevice();
 
 						// Get the outputs for the device.
 						device.Outputs.Refresh();

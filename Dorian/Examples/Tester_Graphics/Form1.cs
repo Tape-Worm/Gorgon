@@ -80,15 +80,16 @@ namespace Tester_Graphics
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 				form2.Show();
 #endif
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level9_0_SM3);				
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level9_0_SM3);
+				//_graphics = new GorgonGraphics();
  
 				mode1 = (from videoMode in _graphics.VideoDevices[0].Outputs[0].VideoModes
-						 where videoMode.Width == 1024 && videoMode.Height == 768 && videoMode.Format == GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB 
+						 where videoMode.Width == 1024 && videoMode.Height == 768 && videoMode.Format == GorgonBufferFormat.B8G8R8A8_UIntNormal
 						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
 						 select videoMode).First();
 
-				int count = 8;
-				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB, count);
+				int count = 4;
+				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(GorgonBufferFormat.B8G8R8A8_UIntNormal, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true, VideoMode = mode1, MultiSample = multiSample });
 #if MULTIMON

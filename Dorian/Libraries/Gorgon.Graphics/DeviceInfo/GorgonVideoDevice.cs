@@ -44,6 +44,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Gorgon does not support this direct 3D level.
 		/// </summary>
+		/// <remarks>This value is exclusive.</remarks>
 		Unsupported = 0,
 		/// <summary>
 		/// Direct 3D 11, shader model 5.0.
@@ -70,8 +71,7 @@ namespace GorgonLibrary.Graphics
 		: INamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;														// Flag to indicate that the object was disposed.		
-		private DeviceFeatureLevel _currentFeatureLevel = DeviceFeatureLevel.Unsupported;	// Currently active feature level.
+		private bool _disposed = false;														// Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
@@ -96,7 +96,20 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the highest feature level that the hardware can support.
 		/// </summary>
+		/// <remarks>This is independant of the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.MaxFeatureLevel">GorgonGraphics.MaxFeatureLevel</see> property and will always return the true hardware feature level.</remarks>
 		public DeviceFeatureLevel HardwareFeatureLevels
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the supported feature levels.
+		/// </summary>
+		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.MaxFeatureLevel">GorgonGraphics.MaxFeatureLevel</see> property has been set, this will return the actual available feature levels.
+		/// <para>Due to the restrictions that may be imposed by specifying a feature level, the return value may differ from the <see cref="P:GorgonLibrary.GorgonGraphics.GorgonVideoDevice.HardwareFeatureLevels">HardwareFeatureLevels</see> property.</para>
+		/// </remarks>
+		public DeviceFeatureLevel SupportedFeatureLevels
 		{
 			get;
 			private set;
@@ -203,68 +216,93 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to convert a D3D feature level to a Gorgon device feature level.
+		/// Function to enumerate a D3D feature level to a Gorgon device feature level.
 		/// </summary>
-		/// <param name="featureLevel">D3D Feature level to convert.</param>
+		/// <param name="featureLevel">D3D Feature level to enumerate.</param>
 		/// <returns>Gorgon device feature level.</returns>
-		private void Convert(D3D.FeatureLevel featureLevel)
-		{			
+		private void EnumerateFeatureLevels(D3D.FeatureLevel featureLevel)
+		{
+			DeviceFeatureLevel featureLevels = DeviceFeatureLevel.Unsupported;
+
 			switch (featureLevel)
 			{
 				case D3D.FeatureLevel.Level_11_0:
-					HardwareFeatureLevels = DeviceFeatureLevel.Level11_0_SM5 | DeviceFeatureLevel.Level10_1_SM4  | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					featureLevels = DeviceFeatureLevel.Level11_0_SM5 | DeviceFeatureLevel.Level10_1_SM4  | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
 					break;
 				case D3D.FeatureLevel.Level_10_1:
-					HardwareFeatureLevels = DeviceFeatureLevel.Level10_1_SM4 | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					featureLevels = DeviceFeatureLevel.Level10_1_SM4 | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
 					break;
 				case D3D.FeatureLevel.Level_10_0:
-					HardwareFeatureLevels = DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					featureLevels = DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
 					break;
 				case D3D.FeatureLevel.Level_9_3:
-					HardwareFeatureLevels = DeviceFeatureLevel.Level9_0_SM3;
+					featureLevels = DeviceFeatureLevel.Level9_0_SM3;
 					break;
+			}
+
+			HardwareFeatureLevels = featureLevels;
+
+			// Default to the hardware levels.
+			SupportedFeatureLevels = HardwareFeatureLevels;
+		}
+
+		/// <summary>
+		/// Function to convert a Gorgon feature level into a D3D feature level.
+		/// </summary>
+		/// <param name="featureLevel">Feature level to convert.</param>
+		/// <returns>The D3D feature level.</returns>
+		private D3D.FeatureLevel Convert(DeviceFeatureLevel featureLevel)
+		{
+			switch (featureLevel)
+			{
+				case DeviceFeatureLevel.Level11_0_SM5:
+					return D3D.FeatureLevel.Level_11_0;
+				case DeviceFeatureLevel.Level10_1_SM4:
+					return D3D.FeatureLevel.Level_10_1;
+				case DeviceFeatureLevel.Level10_0_SM4:
+					return D3D.FeatureLevel.Level_10_0;
 				default:
-					HardwareFeatureLevels = DeviceFeatureLevel.Unsupported;
-					break;
+					return D3D.FeatureLevel.Level_9_3;
 			}
 		}
 
 		/// <summary>
 		/// Function to convert a Gorgon feature level into an array of applicable D3D feature levels.
 		/// </summary>
-		/// <param name="featureLevel">Gorgon feature level to convert.</param>
+		/// <param name="featureLevels">Gorgon feature level to convert.</param>
 		/// <returns>An array of D3D feature levels.</returns>
-		private D3D.FeatureLevel[] Convert(DeviceFeatureLevel featureLevel)
+		private D3D.FeatureLevel[] GetFeatureLevels(DeviceFeatureLevel featureLevels)
 		{
-			List<D3D.FeatureLevel> featureLevels = new List<D3D.FeatureLevel>();
+			List<D3D.FeatureLevel> D3DfeatureLevels = new List<D3D.FeatureLevel>();
+			DeviceFeatureLevel supported = DeviceFeatureLevel.Unsupported;
 
-			if ((featureLevel & DeviceFeatureLevel.Level11_0_SM5) == DeviceFeatureLevel.Level11_0_SM5)
-				featureLevels.Add(D3D.FeatureLevel.Level_11_0);
-
-			if ((featureLevel & DeviceFeatureLevel.Level10_1_SM4) == DeviceFeatureLevel.Level10_1_SM4)
-				featureLevels.Add(D3D.FeatureLevel.Level_10_1);
-
-			if ((featureLevel & DeviceFeatureLevel.Level10_0_SM4) == DeviceFeatureLevel.Level10_0_SM4)
-				featureLevels.Add(D3D.FeatureLevel.Level_10_0);
-
-			if ((featureLevel & DeviceFeatureLevel.Level9_0_SM3) == DeviceFeatureLevel.Level9_0_SM3)
-				featureLevels.Add(D3D.FeatureLevel.Level_9_3);
-
-			if (featureLevels.Count > 0)
+			foreach (var featureLevel in GorgonGraphics.GorgonFeatureLevels)
 			{
-				featureLevels.Add(D3D.FeatureLevel.Level_9_2);
-				featureLevels.Add(D3D.FeatureLevel.Level_9_1);
+				if (((featureLevels & featureLevel) == featureLevel) && (SupportsFeatureLevels(featureLevel)))
+				{
+					supported |= featureLevel;
+					D3DfeatureLevels.Add(Convert(featureLevel));					
+				}
+			}
+
+			if (D3DfeatureLevels.Count > 0)
+			{				
+				// Add 9.0 SM2 and SM1 just to be complete.
+				D3DfeatureLevels.Add(D3D.FeatureLevel.Level_9_2);
+				D3DfeatureLevels.Add(D3D.FeatureLevel.Level_9_1);
 			}
 			else
 				throw new NotSupportedException("The video device '" + Name + "' is not supported by Gorgon.");
 
-			return featureLevels.ToArray();
+			SupportedFeatureLevels = supported;
+			return D3DfeatureLevels.ToArray();
 		}
 
 		/// <summary>
 		/// Function to retrieve the D3D 11 device object associated with this video device.
 		/// </summary>
-		internal void GetDevice()
+		/// <param name="maxFeatureLevel">Maximum feature level to support.</param>
+		internal void GetDevice(DeviceFeatureLevel maxFeatureLevel)
 		{
 			D3D.DeviceCreationFlags flags = D3D.DeviceCreationFlags.None;
 
@@ -272,25 +310,53 @@ namespace GorgonLibrary.Graphics
 			flags = D3D.DeviceCreationFlags.Debug;
 #endif
 			Gorgon.Log.Print("Creating D3D 11 device for video device '{0}'...", GorgonLoggingLevel.Verbose, Name);
-			D3DDevice = new D3D.Device(GIAdapter, flags, Convert(_currentFeatureLevel));
+			D3DDevice = new D3D.Device(GIAdapter, flags, GetFeatureLevels(maxFeatureLevel));
 			D3DDevice.DebugName = Name + " D3D11Device";
+			D3DDevice.ImmediateContext.ClearState();
+
+			//// According to the MSDN, we need to remove the GIAdapter passed in and retrieve it again from the device.
+			//// This is because 10_Level_9 devices (i.e. D3D 9 cards) use their own device, which does not match
+			//// what we get from the enumeration.
+			//GI.Device1 giDevice = null;
+			//try
+			//{				
+			//    GIAdapter.Dispose();
+			//    GIAdapter = null;
+
+			//    // Get the real adapter.				
+			//    giDevice = new GI.Device1(D3DDevice);
+			//    GIAdapter = giDevice.Adapter;				
+			//}
+			//finally
+			//{
+			//    if (giDevice != null)
+			//        giDevice.Dispose();
+			//}
+			
 
 			Outputs = new GorgonVideoOutputCollection(this);
 		}
 
 		/// <summary>
-		/// Function to reset the device.
+		/// Function to determine if the specified feature levels are supported by the hardware.
 		/// </summary>
-		internal void Reset()
+		/// <param name="featureLevels">Feature levels to test.</param>
+		/// <returns>TRUE if supported, FALSE if not.</returns>
+		/// <remarks>The <paramref name="featureLevels"/> parameter can take multiple feature levels by OR'ing together the requested feature levels.
+		/// <para>Note that if one or more of the feature levels are supported, then this method will return TRUE.</para>
+		/// </remarks>
+		public bool SupportsFeatureLevels(DeviceFeatureLevel featureLevels)
 		{
-			if (D3DDevice != null)
+			if (featureLevels == DeviceFeatureLevel.Unsupported)
+				return false;
+
+			foreach (var featureLevel in GorgonGraphics.GorgonFeatureLevels)
 			{
-				Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name);
-				D3DDevice.Dispose();
-				D3DDevice = null;
+				if (((HardwareFeatureLevels & featureLevel) == featureLevel) && ((featureLevels & featureLevel) == featureLevel))
+					return true;
 			}
 
-			GetDevice();
+			return false;
 		}
 
 		/// <summary>
@@ -343,7 +409,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("adapter");
 
 			GIAdapter = adapter;
-			Convert(D3D.Device.GetSupportedFeatureLevel(adapter));						
+			EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));						
 		}
 		#endregion
 
@@ -361,6 +427,7 @@ namespace GorgonLibrary.Graphics
 					if (D3DDevice != null)
 					{
 						Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name);
+						D3DDevice.ImmediateContext.ClearState();
 						D3DDevice.Dispose();
 					}
 
