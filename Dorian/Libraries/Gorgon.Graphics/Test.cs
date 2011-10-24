@@ -23,6 +23,7 @@ namespace GorgonLibrary.Graphics
 		private D3D.InputLayout _layout = null;
 		private D3D.Buffer _vertices = null;
 		private D3D.EffectPass _pass = null;
+		private D3D.RasterizerState _rastState = null;
 		private D3D.VertexBufferBinding _binding = default(D3D.VertexBufferBinding);
 
 		private void Destroy()
@@ -87,6 +88,19 @@ namespace GorgonLibrary.Graphics
 
 			_binding = new D3D.VertexBufferBinding(_vertices, 32, 0);
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
+
+			D3D.RasterizerStateDescription desc = new D3D.RasterizerStateDescription();
+			desc.FillMode = D3D.FillMode.Solid;
+			desc.CullMode = D3D.CullMode.None;
+			desc.IsFrontCounterclockwise = false;
+			desc.DepthBias = 0;
+			desc.SlopeScaledDepthBias = 0;
+			desc.DepthBiasClamp = 0;
+			desc.IsDepthClipEnabled = true;
+			desc.IsScissorEnabled = false;
+			desc.IsMultisampleEnabled = true;
+			desc.IsAntialiasedLineEnabled = false;
+			_rastState = D3D.RasterizerState.FromDescription(_device, desc);
 		}
 
 		/// <summary>
@@ -123,6 +137,7 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
+				_device.ImmediateContext.Rasterizer.State = _rastState;
 				_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.D3DRenderTarget);
 				_device.ImmediateContext.Rasterizer.SetViewports(_swapChain.D3DView);
 
