@@ -88,7 +88,7 @@ namespace Tester_Graphics
 						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
 						 select videoMode).First();
 
-				int count = 2;
+				int count = 1;
 				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(GorgonBufferFormat.B8G8R8A8_UIntNormal, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true, VideoMode = mode1, MultiSample = multiSample });
