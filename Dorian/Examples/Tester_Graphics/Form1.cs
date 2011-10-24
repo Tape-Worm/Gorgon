@@ -80,7 +80,7 @@ namespace Tester_Graphics
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 				form2.Show();
 #endif
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level9_0_SM3);
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level10_1_SM4);
 				//_graphics = new GorgonGraphics();
  
 				mode1 = (from videoMode in _graphics.VideoDevices[0].Outputs[0].VideoModes
@@ -88,7 +88,7 @@ namespace Tester_Graphics
 						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
 						 select videoMode).First();
 
-				int count = 1;
+				int count = 2;
 				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(GorgonBufferFormat.B8G8R8A8_UIntNormal, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true, VideoMode = mode1, MultiSample = multiSample });
