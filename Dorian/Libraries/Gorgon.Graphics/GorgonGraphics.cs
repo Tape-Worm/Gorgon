@@ -46,9 +46,14 @@ namespace GorgonLibrary.Graphics
 		: IDisposable
 	{
 		#region Variables.
+		/// <summary>
+		/// Used to limit the feature levels that Gorgon will use.  This may not reflect the actual hardware.
+		/// </summary>
+		internal static readonly DeviceFeatureLevel[] GorgonFeatureLevels = Enum.GetValues(typeof(DeviceFeatureLevel)) as DeviceFeatureLevel[];
+		
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private Version _minimumSupportedFeatureLevel = new Version(9, 3);	// Minimum supported feature level version.		
-		private GorgonTrackedObjectCollection _trackedObjects = null;		// Tracked objects.
+		private GorgonTrackedObjectCollection _trackedObjects = null;		// Tracked objects.		
 		#endregion
 
 		#region Constants.
@@ -297,9 +302,13 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
-		/// <param name="featureLevel">The feature level to support for the devices enumerated.</param>
+		/// <param name="featureLevel">The maximum feature level to support for the devices enumerated.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="featureLevel"/> parameter is invalid.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are capable of using Direct 3D 11, or the down level interfaces (Direct 3D 10.1, 10 or 9.3).</exception>
+		/// <remarks>The use may pass multiple feature levels to the featureLevel parameter to allow only specific feature levels available.  For example, passing new GorgonGraphics(DeviceFeatureLevel.10_0_SM4 | DeviceFeatureLevel.9_0_SM3) will only allow functionality
+		/// for both Direct3D 10, and Direct 3D 9.
+		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.  If no feature levels are available (e.g. calling new GorgonGraphics(DeviceFeatureLevel.11_0_SM5) with a Direct 3D 9 or 10 card) then an exception will be raised.</para>
+		/// </remarks>
 		public GorgonGraphics(DeviceFeatureLevel featureLevel)
 		{
 			if (featureLevel == DeviceFeatureLevel.Unsupported)
@@ -313,7 +322,7 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("Creating DXGI interface...", GorgonLoggingLevel.Verbose);
 			GIFactory = new GI.Factory1();
-
+			
 #if DEBUG
 			SlimDX.Configuration.EnableObjectTracking = true;
 #else
@@ -323,7 +332,7 @@ namespace GorgonLibrary.Graphics
 			VideoDevices = new GorgonVideoDeviceCollection(this);
 
 			if (VideoDevices.Count == 0)
-				throw new GorgonException(GorgonResult.CannotCreate, "There were no video devices found on this system that can use Direct 3D 11, 10.1 or 9.3.");
+				throw new GorgonException(GorgonResult.CannotCreate, "There were no video devices found on this system that can use Direct 3D 11/SM5, 10.x/SM4 or 9.0/SM3.");
 
 			Gorgon.AddTrackedObject(this);
 
@@ -333,10 +342,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
-		/// <param name="featureLevel">The feature level to support for the devices enumerated.</param>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are capable of using Direct 3D 11, or the down level interfaces (Direct 3D 10.1, 10 or 9.3).</exception>
 		public GorgonGraphics()
-			: this(DeviceFeatureLevel.Level11_0_SM5)
+			: this(DeviceFeatureLevel.Level11_0_SM5 | DeviceFeatureLevel.Level10_1_SM4 | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3)
 		{
 		}
 		#endregion
