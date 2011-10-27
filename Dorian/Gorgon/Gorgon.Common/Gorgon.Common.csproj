@@ -10,7 +10,7 @@
     <ApplicationIcon>GorIcon.ico</ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>Gorgon</AssemblyName>
+    <AssemblyName>Gorgon.Common</AssemblyName>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
@@ -54,7 +54,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE;DEBUG;INCLUDE_D3DREF</DefineConstants>
-    <DocumentationFile>bin\Debug\Gorgon.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Gorgon.Common.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -78,7 +78,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>bin\Release\Gorgon.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Gorgon.Common.xml</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>

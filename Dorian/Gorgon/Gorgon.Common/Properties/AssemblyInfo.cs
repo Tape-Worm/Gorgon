@@ -39,12 +39,12 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 //
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon [DEBUG VERSION]")]
-[assembly: AssemblyDescription("The root object for the Gorgon libraries. [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Gorgon Common Objects [DEBUG VERSION]")]
+[assembly: AssemblyDescription("Contains common objects for the Gorgon libraries. [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
-[assembly: AssemblyTitle("Gorgon")]
-[assembly: AssemblyDescription("The root object for the Gorgon libraries.")]
+[assembly: AssemblyTitle("Gorgon Common Objects ")]
+[assembly: AssemblyDescription("Contains common objects for the Gorgon libraries.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]

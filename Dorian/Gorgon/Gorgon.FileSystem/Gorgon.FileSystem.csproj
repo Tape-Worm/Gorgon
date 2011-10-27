@@ -64,7 +64,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
-      <Name>Gorgon</Name>
+      <Name>Gorgon.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
