@@ -1,28 +1,28 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon", "Gorgon\Gorgon.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon", "Gorgon.Common\Gorgon.Common.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem", "Libraries\Gorgon.FileSystem\Gorgon.FileSystem.csproj", "{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem", "Gorgon.FileSystem\Gorgon.FileSystem.csproj", "{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.Zip", "PlugIns\Gorgon.FileSystem.Zip\Gorgon.FileSystem.Zip.csproj", "{B61F6907-0DDB-4293-AA8C-E8620DAEE795}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.Zip", "..\PlugIns\Gorgon.FileSystem.Zip\Gorgon.FileSystem.Zip.csproj", "{B61F6907-0DDB-4293-AA8C-E8620DAEE795}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_InputAndFS", "Examples\Tester_InputAndFS\Tester_InputAndFS.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_InputAndFS", "..\Examples\Tester_InputAndFS\Tester_InputAndFS.csproj", "{59A56133-5795-468A-9867-9DFCE72D8715}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_Graphics", "Examples\Tester_Graphics\Tester_Graphics.csproj", "{F00E19F5-5941-43C1-BC53-8A2430E7D71F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_Graphics", "..\Examples\Tester_Graphics\Tester_Graphics.csproj", "{F00E19F5-5941-43C1-BC53-8A2430E7D71F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics", "Libraries\Gorgon.Graphics\Gorgon.Graphics.csproj", "{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics", "Gorgon.Graphics\Gorgon.Graphics.csproj", "{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input", "Libraries\Gorgon.Input\Gorgon.Input.csproj", "{780B5B61-77BB-4456-AF77-E6681E7E48BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input", "Gorgon.Input\Gorgon.Input.csproj", "{780B5B61-77BB-4456-AF77-E6681E7E48BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.GorPack", "PlugIns\Gorgon.FileSystem.GorPack\Gorgon.FileSystem.GorPack.csproj", "{EDDBDEE0-8DA3-4A98-9E73-AD08830E6CC2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.GorPack", "..\PlugIns\Gorgon.FileSystem.GorPack\Gorgon.FileSystem.GorPack.csproj", "{EDDBDEE0-8DA3-4A98-9E73-AD08830E6CC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.Raw", "PlugIns\Gorgon.Input.RawInput\Gorgon.Input.Raw.csproj", "{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.Raw", "..\PlugIns\Gorgon.Input.RawInput\Gorgon.Input.Raw.csproj", "{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.WinForms", "PlugIns\Gorgon.Input.WinForms\Gorgon.Input.WinForms.csproj", "{BE449FB9-9001-4954-B856-B466F90D55E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.WinForms", "..\PlugIns\Gorgon.Input.WinForms\Gorgon.Input.WinForms.csproj", "{BE449FB9-9001-4954-B856-B466F90D55E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.XInput", "PlugIns\Gorgon.Input.XInput\Gorgon.Input.XInput.csproj", "{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.XInput", "..\PlugIns\Gorgon.Input.XInput\Gorgon.Input.XInput.csproj", "{7500ADE6-2E65-4923-8DC9-95F230D4C7DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_DataStream", "Examples\Test_DataStream\Test_DataStream.csproj", "{DC9B5AB5-928A-40BC-88DF-FCE6038C1270}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_DataStream", "..\Examples\Test_DataStream\Test_DataStream.csproj", "{DC9B5AB5-928A-40BC-88DF-FCE6038C1270}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

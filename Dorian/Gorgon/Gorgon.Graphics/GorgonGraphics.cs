@@ -34,6 +34,7 @@ using SlimDX;
 using GI = SlimDX.DXGI;
 using D3D = SlimDX.Direct3D11;
 using GorgonLibrary.Collections;
+using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
 

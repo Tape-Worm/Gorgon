@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GorgonLibrary
+namespace GorgonLibrary.Collections.Specialized
 {
 	/// <summary>
 	/// A collection of custom objects that are managed by the another interface.

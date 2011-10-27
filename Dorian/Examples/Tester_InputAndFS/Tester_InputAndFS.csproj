@@ -81,15 +81,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
+    <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
       <Project>{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}</Project>
       <Name>Gorgon.FileSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Gorgon.Input\Gorgon.Input.csproj">
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
       <Project>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</Project>
       <Name>Gorgon.Input</Name>
     </ProjectReference>

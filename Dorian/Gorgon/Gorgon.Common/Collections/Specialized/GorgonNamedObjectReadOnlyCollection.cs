@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GorgonLibrary.Collections
+namespace GorgonLibrary.Collections.Specialized
 {
 	/// <summary>
 	/// Read-only collection for Gorgon library named objects.
