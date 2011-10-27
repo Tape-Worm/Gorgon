@@ -78,12 +78,6 @@
     <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
-      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
-      <Name>Gorgon</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="GorIcon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +90,12 @@
     <None Include="Resources\TestTri10.fx" />
     <None Include="Resources\TestTri11.fx" />
     <None Include="Resources\TestTri93.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
+      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
+      <Name>Gorgon.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

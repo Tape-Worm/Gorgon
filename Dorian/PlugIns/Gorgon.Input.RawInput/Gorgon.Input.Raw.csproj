@@ -80,7 +80,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
-      <Name>Gorgon</Name>
+      <Name>Gorgon.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
       <Project>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</Project>
