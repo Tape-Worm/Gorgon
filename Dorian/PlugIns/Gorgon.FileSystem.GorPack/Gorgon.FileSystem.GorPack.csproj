@@ -66,19 +66,19 @@
     <Content Include="GorIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
+    <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
       <Project>{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}</Project>
       <Name>Gorgon.FileSystem</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetPath)" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
+copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

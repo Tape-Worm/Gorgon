@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Security.Policy;
 using System.Security.Permissions;
 using GorgonLibrary.Collections;
+using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.PlugIns

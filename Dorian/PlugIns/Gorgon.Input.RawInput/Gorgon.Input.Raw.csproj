@@ -78,18 +78,18 @@
     <Content Include="GorIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.csproj">
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Gorgon.Input\Gorgon.Input.csproj">
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
       <Project>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</Project>
       <Name>Gorgon.Input</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

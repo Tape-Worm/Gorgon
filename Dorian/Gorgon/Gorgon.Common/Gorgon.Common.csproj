@@ -95,7 +95,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gorgon.MemoryAccess">
-      <HintPath>..\Libraries\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
+      <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -116,17 +116,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Specialized\GorgonNamedObjectReadOnlyCollection.cs" />
+    <Compile Include="Collections\Specialized\GorgonTrackedObjectCollection.cs" />
     <Compile Include="Diagnostics\GorgonProcess.cs" />
     <Compile Include="Extensions\GorgonIntPtrExtensions.cs" />
     <Compile Include="Diagnostics\GorgonDebug.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
     <Compile Include="Extensions\GorgonStringFormatting.cs" />
-    <Compile Include="GorgonTrackedObjectCollection.cs" />
     <Compile Include="Math\GorgonRange.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
-    <Compile Include="Collections\GorgonNamedObjectReadOnlyCollection.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
     <Compile Include="Diagnostics\GorgonFrameRate.cs" />
