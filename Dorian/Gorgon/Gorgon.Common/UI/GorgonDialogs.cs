@@ -127,8 +127,8 @@ namespace GorgonLibrary.UI
 		/// <param name="caption">Caption for the error box.</param>
 		public static void ErrorBox(Form owner, string message, Exception innerException, string caption)
 		{
-			ErrorDialog errorDialog;		// Error dialog.
-			Exception nextException;		// Next exception.
+			ErrorDialog errorDialog;			// Error dialog.
+			Exception nextException;			// Next exception.			
 
 			errorDialog = new ErrorDialog();
 			// If the owner form is NULL or not available, center on screen.
@@ -145,11 +145,37 @@ namespace GorgonLibrary.UI
 					errorDialog.ErrorDetails += "Source:  " + nextException.Source + "\n";
 				if (nextException.TargetSite != null)
 					errorDialog.ErrorDetails += "Target site:  " + nextException.TargetSite.DeclaringType.FullName + "." + nextException.TargetSite.Name + "\n";
-				errorDialog.ErrorDetails += FormatStackTrace(nextException.StackTrace);
+
+				System.Collections.IDictionary extraInfo = nextException.Data;
+
+				// Print custom information.
+				if ((extraInfo != null) && (extraInfo.Count > 0))
+				{
+					string customData = string.Empty;	// Custom exception data.
+
+					foreach (System.Collections.DictionaryEntry item in extraInfo)
+					{
+						if (customData.Length > 0)
+							customData += "\n";
+						if ((item.Value != null) && (item.Key != null))
+							customData += item.Key.ToString() + ": " + item.Value.ToString();
+					}
+
+					if (customData.Length > 0)
+						errorDialog.ErrorDetails += "\nCustom Information:\n===================\n" + customData + "\n===================\n";				
+				}
+
+				string stackTrace = FormatStackTrace(nextException.StackTrace);
+
+				if (!string.IsNullOrEmpty(stackTrace))
+					errorDialog.ErrorDetails += stackTrace + "\n";
+
 				nextException = nextException.InnerException;
 
 				if (nextException != null)
-					errorDialog.ErrorDetails += "\n\nNext Exception:\n";
+				{
+					errorDialog.ErrorDetails += "\nNext Exception:\n===============\n";
+				}
 			}
 
 			if (string.IsNullOrEmpty(message))

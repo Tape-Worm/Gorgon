@@ -125,6 +125,7 @@ namespace GorgonLibrary
 		{
 			Exception inner = null;				// Inner exception.
 			string indicator = string.Empty;	// Inner exception indicator.
+			string branch = string.Empty;		// Branching character.
 
 			if (Log == null)
 				return;
@@ -150,24 +151,47 @@ namespace GorgonLibrary
 					Log.Print("{1}Target site: {0}", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
 				if (gorgonException != null)
 					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
+
+				System.Collections.IDictionary extraInfo = inner.Data;
+
+				// Print custom information.
+				if ((extraInfo != null) && (extraInfo.Count > 0))
+				{
+					Log.Print("{0}", GorgonLoggingLevel.Verbose, indicator);
+					Log.Print("{0}Custom Information:", GorgonLoggingLevel.Verbose, indicator);
+					Log.Print("{0}------------------------------------------------------------", GorgonLoggingLevel.Verbose, indicator);
+					foreach (System.Collections.DictionaryEntry item in extraInfo)
+					{
+						if ((item.Value != null) && (item.Key != null))
+							Log.Print("{0}{1}:  {2}", GorgonLoggingLevel.Verbose, indicator, item.Key, item.Value);
+					}
+					Log.Print("{0}------------------------------------------------------------", GorgonLoggingLevel.Verbose, indicator);
+					Log.Print("{0}", GorgonLoggingLevel.Verbose, indicator);
+				}
+				
 				FormatStackTrace(inner.StackTrace, indicator, (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose);
-
-
+				
 				if (inner.InnerException != null)
 				{
 					if (indicator != string.Empty)
-						indicator = "-" + indicator;
+					{
+						Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, branch + "|->   ");
+						branch += "  ";
+						indicator = branch + "|   ";
+					}
 					else
-						indicator = "> ";
-					Log.Print("", GorgonLoggingLevel.All);
-					Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, indicator);
+					{
+						Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, branch + "|-> ");
+						indicator = "|   ";
+					}
+										
 					Log.Print("{0}  Inner exception from \"{1}\"", GorgonLoggingLevel.Verbose, indicator, inner.Message);
 					Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, indicator);
 				}
 
 				inner = inner.InnerException;
 			}
-			Log.Print("", GorgonLoggingLevel.All);
+			Log.Print("", GorgonLoggingLevel.All);			
 		}
 
 		/// <summary>

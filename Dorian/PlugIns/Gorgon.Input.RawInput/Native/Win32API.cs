@@ -25,12 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Linq;
-using Microsoft.Win32;
-using GorgonLibrary.Input;
-using GorgonLibrary.Input.Raw;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Native
 {
@@ -226,7 +222,7 @@ namespace GorgonLibrary.Native
 
 							for (int i = 0; i < result.Length; i++)
 							{
-								if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+								if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
 									result[i] = (RAWINPUTDEVICELIST)(Marshal.PtrToStructure(new IntPtr(deviceList.ToInt64() + (structSize * i)), typeof(RAWINPUTDEVICELIST)));
 								else
 									result[i] = (RAWINPUTDEVICELIST)(Marshal.PtrToStructure(new IntPtr(deviceList.ToInt32() + (structSize * i)), typeof(RAWINPUTDEVICELIST)));

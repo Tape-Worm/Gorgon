@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary
 {
@@ -387,7 +388,7 @@ namespace GorgonLibrary
 		/// <remarks>This method will take into account whether the application is x64 or x86 and will format accordingly.</remarks>
 		public static string FormatHex(this IntPtr pointer)
 		{
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
 				return pointer.ToInt64().ToString("x").PadLeft(16, '0');
 			else
 				return pointer.ToInt32().ToString("x").PadLeft(8, '0');

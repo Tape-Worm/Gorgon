@@ -24,10 +24,6 @@ namespace Tester
 			{
 				GorgonException.Catch(ex, () => GorgonLibrary.UI.GorgonDialogs.ErrorBox(null, ex));
 			}
-			finally
-			{
-				Gorgon.Terminate();
-			}
 		}
 	}
 }

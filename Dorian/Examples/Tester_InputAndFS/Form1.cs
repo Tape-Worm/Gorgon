@@ -153,7 +153,6 @@ namespace Tester
 
 			try 
 			{
-				Gorgon.Initialize();
 				Gorgon.PlugIns.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.Raw.dll");
 				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.XInput.dll");
@@ -194,7 +193,6 @@ namespace Tester
 
 				CreateJoysticks();
 
-				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
 			{
@@ -307,7 +305,6 @@ namespace Tester
 				winput.Dispose();
 			if (xinput != null)
 				xinput.Dispose();*/
-			Gorgon.Terminate();
 		}
 
 		public Form1()

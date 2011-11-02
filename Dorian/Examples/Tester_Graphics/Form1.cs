@@ -62,7 +62,6 @@ namespace Tester_Graphics
 			try
 			{
 				this.panelDX.Visible = false;
-				Gorgon.Initialize(this);
 
 				Gorgon.PlugIns.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
 
@@ -113,7 +112,6 @@ namespace Tester_Graphics
 #if MULTIMON
 				_test2 = new Test(_swapChain2);
 #endif
-				Gorgon.Go(Idle);
 			}
 			catch (Exception ex)
 			{
@@ -150,8 +148,7 @@ namespace Tester_Graphics
 				{
 					_test1.Dispose();
 					_test1 = null;
-				}				
-				Gorgon.Terminate();
+				}
 			}
 			catch (Exception ex)
 			{
