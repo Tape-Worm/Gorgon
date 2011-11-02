@@ -88,16 +88,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the video device for the settings.
-		/// </summary>
-		/// <remarks>Leave this value as NULL (Nothing in VB.Net) to determine the device to use from the location of the <see cref="P:GorgonLibrary.Graphics.Window">bound window</see>.</remarks>
-		public GorgonVideoDevice VideoDevice
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the video mode to use.
 		/// </summary>
 		/// <remarks>Leave this value as NULL (Nothing in VB.Net) to let Gorgon find the best video mode based on the window dimensions and desktop format.</remarks>

@@ -72,7 +72,7 @@ namespace GorgonLibrary.Graphics
 				GorgonVideoOutput output = new GorgonVideoOutput(_videoDevice, _videoDevice.GIAdapter.GetOutput(i));
 				_outputs.Add(output);
 
-				Gorgon.Log.Print("Found output {0}.", Diagnostics.GorgonLoggingLevel.Simple,output.Name);
+				Gorgon.Log.Print("Found output {0}.", Diagnostics.GorgonLoggingLevel.Simple, output.Name);
 				Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
 				Gorgon.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", Diagnostics.GorgonLoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
 				Gorgon.Log.Print("Monitor handle: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, output.Handle.FormatHex());

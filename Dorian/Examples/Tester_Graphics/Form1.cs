@@ -83,7 +83,7 @@ namespace Tester_Graphics
 				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level10_1_SM4);
 				//_graphics = new GorgonGraphics();
  
-				mode1 = (from videoMode in _graphics.VideoDevices[0].Outputs[0].VideoModes
+				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
 						 where videoMode.Width == 1024 && videoMode.Height == 768 && videoMode.Format == GorgonBufferFormat.B8G8R8A8_UIntNormal
 						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
 						 select videoMode).First();
