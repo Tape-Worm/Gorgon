@@ -69,11 +69,10 @@ namespace Test_DataStream
 			Console.WriteLine("Press a key to start.");
 			Console.ReadKey();
 
-			Gorgon.Initialize();
 			long byteSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Test));
-			long maxSize = Gorgon.AvailablePhysicalRAM;
+			long maxSize = GorgonComputerInfo.AvailablePhysicalRAM;
 
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x86)
+			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x86)
 			{
 				// Limit to 2GB per process on x86.
 				if (maxSize > Int32.MaxValue)

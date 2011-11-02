@@ -118,6 +118,7 @@
   <ItemGroup>
     <Compile Include="Collections\Specialized\GorgonNamedObjectReadOnlyCollection.cs" />
     <Compile Include="Collections\Specialized\GorgonTrackedObjectCollection.cs" />
+    <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
     <Compile Include="Diagnostics\GorgonProcess.cs" />
     <Compile Include="Events\GorgonCancelEventArgs.cs" />
     <Compile Include="Events\GorgonHandledEventArgs.cs" />
@@ -125,11 +126,11 @@
     <Compile Include="Diagnostics\GorgonDebug.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
     <Compile Include="Extensions\GorgonStringFormatting.cs" />
+    <Compile Include="Gorgon.cs" />
     <Compile Include="Math\GorgonRange.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
-    <Compile Include="Main.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
     <Compile Include="Diagnostics\GorgonFrameRate.cs" />
     <Compile Include="Diagnostics\GorgonTimer.cs" />
@@ -242,9 +243,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="OLDE\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

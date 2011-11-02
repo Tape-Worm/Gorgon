@@ -39,10 +39,21 @@ namespace GorgonLibrary.Diagnostics
 	public static class GorgonProcess
 	{
 		#region Variables.
-
+		private static IDictionary<string, string> _processVariables = null;		// List of process specific environment variables.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the amount of memory mapped to the current process.
+		/// </summary>
+		public static long WorkingSet
+		{
+			get
+			{
+				return Environment.WorkingSet;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the Gorgon process that's currently executing.
 		/// </summary>
@@ -50,7 +61,18 @@ namespace GorgonLibrary.Diagnostics
 		{
 			get;
 			private set;
-		}		
+		}
+
+		/// <summary>
+		/// Property to return a list of process specific environment variables.
+		/// </summary>
+		public static IEnumerable<KeyValuePair<string, string>> EnvironmentVariables
+		{
+			get
+			{
+				return _processVariables;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -95,6 +117,19 @@ namespace GorgonLibrary.Diagnostics
 			Win32API.GetWindowThreadProcessId(windowHandle, out processID);
 
 			return Process.GetProcessById((int)processID);
+		}
+
+		/// <summary>
+		/// Method to refresh the list of process specific environment variables.
+		/// </summary>
+		public static void RefreshEnvironmentVariables()
+		{
+			System.Collections.IDictionary oldVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
+
+			_processVariables = new Dictionary<string, string>();
+
+			foreach (System.Collections.DictionaryEntry variable in oldVariables)
+				_processVariables.Add(variable.Key.ToString(), variable.Value.ToString());
 		}
 		#endregion
 

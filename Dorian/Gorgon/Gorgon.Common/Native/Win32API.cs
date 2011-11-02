@@ -175,12 +175,29 @@ namespace GorgonLibrary.Native
 		public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, int wFilterMin, int wFilterMax, PeekMessageFlags flags);
 
 		/// <summary>
+		/// Function to translate keyboard accelerator keys.
+		/// </summary>
+		/// <param name="hWnd">Window handle</param>
+		/// <param name="hAccTable">Accelerator table.</param>
+		/// <param name="lpMsg">Window message.</param>
+		/// <returns>Non 0 for success, 0 for failure.</returns>
+		[DllImport("user32.dll")]
+		public static extern int TranslateAccelerator(IntPtr hWnd, IntPtr hAccTable, [In] ref MSG lpMsg);
+
+		/// <summary>
 		/// Function to translate windows messages.
 		/// </summary>
 		/// <param name="msg">Message to translate.</param>
 		/// <returns>TRUE if successful, FALSE if not.</returns>
 		[DllImport("user32.dll")]
 		public static extern bool TranslateMessage([In] ref MSG msg);
+
+		/// <summary>
+		/// Function to post a quit message to the message queue.
+		/// </summary>
+		/// <param name="nExitCode">Exit code.</param>
+		[DllImport("user32.dll")]
+		public static extern void PostQuitMessage(int nExitCode);
 
 		/// <summary>
 		/// Function to dispatch windows messages.

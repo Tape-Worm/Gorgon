@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Security;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Native
 {
@@ -52,7 +53,7 @@ namespace GorgonLibrary.Native
 		public unsafe static void CopyTo(this IntPtr source, IntPtr destination, int size)
 		{
 #if !MEMCPY && !CPBLK
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
 				DirectAccess.Write(destination, source, size);
 			else
 				DirectAccess.Writex86(destination, source, size);
@@ -161,7 +162,7 @@ namespace GorgonLibrary.Native
 				throw new ArgumentOutOfRangeException("destinationIndex", "Index and size cannot be larger than the array.");
 
 #if !MEMCPY && !CPBLK
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
 				DirectAccess.Read<T>(source, destination, destinationIndex, size);
 			else
 				DirectAccess.Readx86<T>(source, destination, destinationIndex, size);
@@ -225,7 +226,7 @@ namespace GorgonLibrary.Native
 		public static void CopyFrom(this IntPtr destination, IntPtr source, int size)
 		{
 #if !MEMCPY && !CPBLK
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
 				DirectAccess.Write(destination, source, size);
 			else
 				DirectAccess.Writex86(destination, source, size);
@@ -336,7 +337,7 @@ namespace GorgonLibrary.Native
 				throw new ArgumentOutOfRangeException("sourceIndex", "Index and size cannot be larger than the array.");
 
 #if !MEMCPY && !CPBLK
-			if (Gorgon.PlatformArchitecture == PlatformArchitecture.x64)
+			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
 				DirectAccess.Write<T>(destination, source, sourceIndex, size);
 			else
 				DirectAccess.Writex86<T>(destination, source, sourceIndex, size);

@@ -203,17 +203,47 @@ namespace GorgonLibrary.Diagnostics
 		/// Initializes a new instance of the <see cref="GorgonLogFile"/> class.
 		/// </summary>
 		/// <param name="appname">File name for the log file.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <exception cref="System.ArgumentException">Thrown whent he parameter is empty.</exception>
-		public GorgonLogFile(string appname)
-		{			
+		/// <param name="extraPath">Additional directories for the path.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the appname parameter is empty.</exception>
+		public GorgonLogFile(string appname, string extraPath)
+		{	
 			GorgonDebug.AssertParamString(appname, "appname");
 
 			IsClosed = true;
 
 			LogApplication = appname;
 
-			LogPath = Gorgon.GetUserApplicationPath(appname) + Path.ChangeExtension(appname.FormatFileName(), ".log");
+			LogPath = GorgonComputerInfo.FolderPath(Environment.SpecialFolder.ApplicationData);
+			LogPath += Path.DirectorySeparatorChar.ToString();
+
+			// Verify the extra path information.
+			if (!string.IsNullOrEmpty(extraPath))
+			{
+				// Remove any text up to and after the volume separator character.
+				if (extraPath.Contains(Path.VolumeSeparatorChar.ToString()))
+				{
+					if (extraPath.IndexOf(Path.VolumeSeparatorChar) < (extraPath.Length - 1))
+						extraPath = extraPath.Substring(extraPath.IndexOf(Path.VolumeSeparatorChar) + 1);
+					else
+						extraPath = string.Empty;
+				}
+
+				if ((extraPath.StartsWith(Path.AltDirectorySeparatorChar.ToString())) || (extraPath.StartsWith(Path.DirectorySeparatorChar.ToString())))
+					extraPath = extraPath.Substring(1);
+
+				if (!extraPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+					extraPath += Path.DirectorySeparatorChar.ToString();
+
+				if (!string.IsNullOrEmpty(extraPath))
+				{
+					LogPath += extraPath;					
+				}
+			}
+
+			LogPath += appname;
+			LogPath = LogPath.FormatDirectory(Path.DirectorySeparatorChar);
+			LogPath += "ApplicationLogging.txt";
 
 			if (string.IsNullOrEmpty(LogPath))
 				throw new IOException("The assembly name is not valid for a file name.");
