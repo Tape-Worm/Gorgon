@@ -162,7 +162,7 @@ namespace GorgonLibrary.UI
 					}
 
 					if (customData.Length > 0)
-						errorDialog.ErrorDetails += "\nCustom Information:\n===================\n" + customData + "\n===================\n";				
+						errorDialog.ErrorDetails += "\nCustom Information:\n-------------------\n" + customData + "\n-------------------\n";				
 				}
 
 				string stackTrace = FormatStackTrace(nextException.StackTrace);
