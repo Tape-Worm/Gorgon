@@ -38,7 +38,7 @@ namespace GorgonLibrary.Diagnostics
 	{
 		#region Methods.
 		/// <summary>
-		/// Function to throw an exception if a string is null or empty.
+		/// Function to throw an exception if a string is NULL (Nothing in VB.Net) or empty.
 		/// </summary>
 		/// <param name="value">The value being passed.</param>
 		/// <param name="paramName">The name of the parameter.</param>
@@ -50,6 +50,20 @@ namespace GorgonLibrary.Diagnostics
 				throw new ArgumentNullException(paramName);
 			if (value == string.Empty)
 				throw new ArgumentException("The parameter must not be a zero-length string.", paramName);
+#endif
+		}
+
+		/// <summary>
+		/// Function to throw an exception if an object is NULL (Nothing in VB.Net).
+		/// </summary>
+		/// <typeparam name="T">A reference type to evaluate.</typeparam>
+		/// <param name="value">Value to evaluate.</param>
+		/// <param name="paramName">Name of the parameter to evaluate.</param>
+		public static void AssertNull<T>(T value, string paramName) where T : class
+		{
+#if DEBUG
+			if (value == null)
+				throw new ArgumentNullException(paramName);
 #endif
 		}
 		#endregion

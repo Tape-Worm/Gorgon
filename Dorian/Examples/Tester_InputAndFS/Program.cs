@@ -1,24 +1,325 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary;
+using GorgonLibrary.UI;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.FileSystem;
+using GorgonLibrary.Input;
 
 namespace Tester
 {
-	static class Program
+	class Program
 	{
+		private Form1 form = null;
+		private bool noIdle = false;
+		GorgonInputFactory input = null;
+		GorgonInputFactory winput = null;
+		GorgonInputFactory xinput = null;
+		GorgonPointingDevice mouse = null;
+		GorgonKeyboard keyboard = null;
+		GorgonFileSystem fileSystem = null;
+		GorgonJoystick joystick = null;
+		GorgonTimer pulseTimer = null;
+		bool pulse = false;
+		Random rnd = new Random();
+		string mouseInfo = string.Empty;
+		string keyValue = string.Empty;
+		string testStr = string.Empty;
+
+		private bool Idle(GorgonFrameRate timing)
+		{
+			if (noIdle)
+				return true;
+
+			if ((keyboard.KeyStates[KeyboardKeys.A] == KeyState.Down) && (keyboard.KeyStates[KeyboardKeys.D] == KeyState.Down))
+				form.BackColor = Color.Blue;
+			else
+				form.BackColor = Color.FromKnownColor(KnownColor.Control);
+
+			form.labelMouse.Text = mouseInfo + "\n\nKey: " + keyValue.Replace("\t", "    ") + "\n\n";
+
+			if (joystick != null)
+			{
+				joystick.Poll();
+
+				form.labelMouse.Text += string.Format("Left Stick: {0}x{1} ({8})\nRight stick:{2}x{3} ({9})\nRudder:{4}\nThrottle:{5}\nPOV: {6}\nPOV Direction: {7}\n",
+						joystick.X, joystick.Y, joystick.SecondaryX, joystick.SecondaryY, joystick.Rudder, joystick.Throttle, joystick.POV, joystick.Direction.POV, joystick.Direction.X | joystick.Direction.Y, joystick.Direction.SecondaryX | joystick.Direction.SecondaryY);
+
+				for (int i = 0; i < joystick.Capabilities.ButtonCount; i++)
+					form.labelMouse.Text += "Button :" + joystick.Button[i].Name + " " + joystick.Button[i].IsPressed.ToString() + "\n";
+
+				if (((joystick.Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) == JoystickCapabilityFlags.SupportsVibration) && (joystick.Button["A"].IsPressed))
+				{
+					pulseTimer = new GorgonTimer();
+				}
+
+				if (((joystick.Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) == JoystickCapabilityFlags.SupportsVibration) && (pulseTimer == null))
+				{
+					float normalize1 = (float)joystick.Rudder;
+					float normalize2 = (float)joystick.Throttle;
+
+					normalize1 = (float)Math.Pow(normalize1 + 1.0f, 2);
+					normalize2 = (float)Math.Pow(normalize2 + 1.0f, 2);
+
+					if (normalize1 > 65535.0f)
+						normalize1 = 65535.0f;
+					if (normalize2 > 65535.0f)
+						normalize2 = 65535.0f;
+
+					if (joystick.Rudder > 0)
+						joystick.Vibrate(0, (int)normalize1);
+					else
+						joystick.Vibrate(0, 0);
+
+					if (joystick.Throttle > 0)
+						joystick.Vibrate(1, (int)normalize2);
+					else
+						joystick.Vibrate(1, 0);
+				}
+
+				if (((joystick.Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) == JoystickCapabilityFlags.SupportsVibration) && (joystick.Button["B"].IsPressed))
+				{
+					joystick.Vibrate(0, 0);
+					joystick.Vibrate(1, 0);
+					pulseTimer = null;
+				}
+
+				if (pulseTimer != null)
+				{
+					if (pulseTimer.Milliseconds > 1000)
+					{
+						pulse = !pulse;
+						pulseTimer.Reset();
+					}
+
+					if (pulse)
+					{
+						joystick.Vibrate(0, rnd.Next(joystick.Capabilities.VibrationMotorRanges[0].Minimum, joystick.Capabilities.VibrationMotorRanges[0].Maximum));
+						joystick.Vibrate(1, 0);
+					}
+					else
+					{
+						joystick.Vibrate(0, 0);
+						joystick.Vibrate(1, rnd.Next(joystick.Capabilities.VibrationMotorRanges[0].Minimum, joystick.Capabilities.VibrationMotorRanges[0].Maximum));
+					}
+				}
+
+			}
+
+			return true;
+		}
+
+		private void CreateJoysticks()
+		{
+			if (xinput != null)
+			{
+				foreach (GorgonInputDeviceInfo device in xinput.JoystickDevices)
+				{
+					if (device.IsConnected)
+					{
+						joystick = xinput.CreateJoystick(form.panel1, device.Name);
+						break;
+					}
+				}
+			}
+
+			if (input != null)
+			{
+				if (joystick == null)
+				{
+					foreach (GorgonInputDeviceInfo device in input.JoystickDevices)
+					{
+						if (device.IsConnected)
+						{
+							joystick = input.CreateJoystick(form.panel1, device.Name);
+							break;
+						}
+					}
+				}
+			}
+
+
+			if (joystick != null)
+			{
+				joystick.DeadZone.X = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.Y = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.SecondaryX = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+				joystick.DeadZone.SecondaryY = new GorgonLibrary.Math.GorgonMinMax(-2500, 2500);
+			}
+		}
+
+		void mouse_MouseWheelMove(object sender, PointingDeviceEventArgs e)
+		{
+			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + "\n\n";
+		}
+
+		void mouse_MouseUp(object sender, PointingDeviceEventArgs e)
+		{
+			if ((e.Buttons == PointingDeviceButtons.Left) && (e.ShiftButtons == PointingDeviceButtons.Right))
+				mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + " - UP\n\n";
+			if (e.DoubleClick)
+			{
+				if (xinput != null)
+				{
+					xinput.Dispose();
+					xinput = null;
+					joystick = null;
+				}
+				else
+				{
+					xinput = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
+					CreateJoysticks();
+				}
+			}
+		}
+
+		void keyboard_KeyUp(object sender, KeyboardEventArgs e)
+		{
+			//keyValue = string.Empty;
+		}
+
+		void mouse_MouseDown(object sender, PointingDeviceEventArgs e)
+		{
+			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + " - DOWN\n\n";
+		}
+
+		/// <summary>
+		/// Handles the MouseMove event of the mouse control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="GorgonLibrary.Input.PointingDeviceEventArgs"/> instance containing the event data.</param>
+		void mouse_MouseMove(object sender, PointingDeviceEventArgs e)
+		{
+			mouseInfo = e.Position.X.ToString() + "x" + e.Position.Y.ToString() + "\nWheel: " + e.WheelPosition.ToString() + "\nButton:" + e.Buttons.ToString() + "\n\n";
+		}
+
+		void keyboard_KeyDown(object sender, KeyboardEventArgs e)
+		{
+			if ((e.Alt) && (e.Key == KeyboardKeys.F4))
+			{
+				form.Close();
+				return;
+			}
+
+			if (e.Key == KeyboardKeys.Enter)
+			{
+				//keyboard.Acquired = false;
+				GorgonDialogs.InfoBox(form, e.Key.ToString());
+				//keyboard.Acquired = true;
+				return;
+			}
+
+			if (e.Key == KeyboardKeys.Back)
+			{
+				if (keyValue.Length > 0)
+					keyValue = keyValue.Substring(0, keyValue.Length - 1);
+				return;
+			}
+
+			if (e.CharacterMapping.Character == '\0')
+				return;
+
+			if (e.Shift)
+			{
+				if (e.Key == KeyboardKeys.Tab)
+				{
+					int lastTab = keyValue.LastIndexOf('\t');
+
+					if (lastTab > -1)
+					{
+						string start = keyValue.Substring(0, lastTab);
+						string end = string.Empty;
+
+						if (lastTab < keyValue.Length - 1)
+							end = keyValue.Substring(lastTab + 1);
+						keyValue = start + end;
+					}
+
+					return;
+				}
+				keyValue += e.CharacterMapping.Shifted;
+			}
+			else
+				keyValue += e.CharacterMapping.Character;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void Initialize()
+		{
+			try
+			{
+				form = new Form1();
+
+				Gorgon.PlugIns.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.Raw.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.XInput.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.Input.WinForms.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.Zip.dll");
+				Gorgon.PlugIns.LoadPlugInAssembly(@"Gorgon.FileSystem.GorPack.dll");
+				input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+				winput = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
+				xinput = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
+
+				//mouse = input.CreatePointingDevice();
+				//keyboard = input.CreateKeyboard();
+
+				mouse = input.CreatePointingDevice(form.panel1);
+				mouse.PointingDeviceMove += new EventHandler<PointingDeviceEventArgs>(mouse_MouseMove);
+				mouse.PointingDeviceDown += new EventHandler<PointingDeviceEventArgs>(mouse_MouseDown);
+				mouse.PointingDeviceUp += new EventHandler<PointingDeviceEventArgs>(mouse_MouseUp);
+				mouse.PointingDeviceWheelMove += new EventHandler<PointingDeviceEventArgs>(mouse_MouseWheelMove);
+				//panel1.MouseDown += new MouseEventHandler(Form1_MouseDown);
+				//panel1.MouseUp += new MouseEventHandler(Form1_MouseUp);
+				//panel1.MouseMove += new MouseEventHandler(Form1_MouseMove);
+				keyboard = input.CreateKeyboard(form);
+				keyboard.Exclusive = true;
+				keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(keyboard_KeyDown);
+				keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(keyboard_KeyUp);
+
+				fileSystem = new GorgonFileSystem();
+				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipPlugIn");
+				fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonGorPackPlugIn");
+				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\", "/FS");
+				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\ParilTest.zip", "/Zip");
+				fileSystem.Mount(System.IO.Path.GetPathRoot(Application.ExecutablePath) + @"unpak\BZipFileSystem.gorPack");
+
+				System.IO.Stream stream = fileSystem.GetFile("/Shaders/Blur.fx").OpenStream(false);
+				byte[] streamFile = new byte[stream.Length];
+				stream.Read(streamFile, 0, (int)stream.Length);
+				byte[] file = fileSystem.GetFile("/Shaders/Cloak.fx").Read();
+
+				CreateJoysticks();
+
+				Gorgon.Run(form, Idle);
+
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
+				form.Close();
+			}
+		}
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
 		static void Main()
 		{
+			Program program = null;
 			try
 			{
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
-				Application.Run(new Form1());
+
+				//Application.Run(new Form1());				
+				program = new Program();
+				program.Initialize();				
 			}
 			catch (Exception ex)
 			{

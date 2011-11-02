@@ -65,8 +65,8 @@
 
 		#endregion
 
-		private System.Windows.Forms.Label labelMouse;
-		private System.Windows.Forms.Panel panel1;
+		internal System.Windows.Forms.Panel panel1;
+		internal System.Windows.Forms.Label labelMouse;
 	}
 }
 
