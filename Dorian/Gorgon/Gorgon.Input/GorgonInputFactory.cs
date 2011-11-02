@@ -436,6 +436,9 @@ namespace GorgonLibrary.Input
 
 			factory = plugIn.GetFactory();
 			factory._plugIn = plugIn;
+
+			Gorgon.AddTrackedObject(factory);
+
 			return factory;
 		}
 		#endregion
@@ -467,11 +470,10 @@ namespace GorgonLibrary.Input
 			{
 				if (disposing)
 				{
+					Gorgon.RemoveTrackedObject(this);
+
 					// Destroy any outstanding device instances.
 					DestroyDevices();
-
-					// Notify the plug-in that we're destroyed.
-					_plugIn.DeviceFactoryInstance = null;
 				}
 			}
 			_disposed = true;

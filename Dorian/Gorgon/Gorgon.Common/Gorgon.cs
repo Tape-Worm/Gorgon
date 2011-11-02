@@ -51,7 +51,11 @@ namespace GorgonLibrary
 	/// <summary>
 	/// The gorgon application.
 	/// </summary>
-	/// <remarks>Use this to replace the Application.Run(new Form()) method in the startup function.</remarks>
+	/// <remarks>Use this to replace the Application.Run(new Form()) method in the startup function.
+	/// <para>The application uses an <see cref="P:GorgonLibrary.Gorgon.ApplicationIdleLoop">idle loop method</see> to call the users code when it is running.  <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
+	/// <para>An application is started by calling its <see cref="M:GorgonLibrary.Gorgon.Run">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.</para>
+	/// <para>Any objects created in Gorgon, such as the Graphics interface, will be destroyed when the application ends.</para>
+	/// </remarks>
 	public static class Gorgon
 	{
 		#region Classes.
@@ -93,6 +97,10 @@ namespace GorgonLibrary
 			internal void Application_Idle(object sender, EventArgs e)
 			{
 				MSG message = new MSG();		// Message to retrieve.
+
+				// We have nothing to execute, just leave.
+				if (ApplicationIdleLoop == null)
+					return;
 
 				while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 				{
@@ -140,10 +148,8 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Variables.
-		private static readonly object _syncLock = new object();				// Sync lock.
-		private static GorgonLogFile _log = null;								// Log file.
+		private static ApplicationLoop _loop = null;							// Application loop method.
 		private static GorgonContext _context = null;							// Gorgon application context.
-		private static ApplicationLoop _loop = null;							// Application loop.
 		private static GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
 		#endregion
 
@@ -178,8 +184,7 @@ namespace GorgonLibrary
 		/// Property to set or return the application idle loop.
 		/// </summary>
 		/// <remarks>This is used to call the users code when the application is in an idle state.
-		/// <para>Users should call the <see cref="M:GorgonLibrary.Gorgon.Stop">Stop</see> method before attempting to change the application idle funtion.</para></remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the application is in a <see cref="P:GorgonLibrary.Gorgon.IsInitialized">running state</see>.</exception>		
+		/// </remarks>
 		public static ApplicationLoop ApplicationIdleLoop
 		{
 			get
@@ -188,8 +193,9 @@ namespace GorgonLibrary
 			}
 			set
 			{
-				if (IsRunning)
-					throw new GorgonException(GorgonResult.AccessDenied, "Cannot assign a new idle method while the application is in a running state.");
+				// We can't set both to NULL.
+				if ((ApplicationForm == null) && (value == null))
+					return;
 
 				_loop = value;
 			}
@@ -245,12 +251,28 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Property to return the primary window for the application.
+		/// Property to set or return the primary window for the application.
 		/// </summary>
 		public static Form ApplicationForm
 		{
-			get;
-			private set;
+			get
+			{
+				if (_context == null)
+					return null;
+
+				return _context.MainForm;
+			}
+			set
+			{
+				if (_context == null)
+					return;
+
+				// We can't set both to NULL.
+				if ((value == null) && (ApplicationIdleLoop == null))
+					return;
+
+				_context.MainForm = value;
+			}
 		}
 
 		/// <summary>
@@ -258,19 +280,8 @@ namespace GorgonLibrary
 		/// </summary>
 		public static GorgonLogFile Log
 		{
-			get
-			{
-				if (_log == null)
-				{
-					lock (_syncLock)
-					{
-						if (_log == null)
-							_log = new GorgonLogFile(Gorgon._logFile, "Tape_Worm");
-					}
-				}
-
-				return _log;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -283,7 +294,7 @@ namespace GorgonLibrary
 		}
 		#endregion
 
-		#region Methods.	
+		#region Methods.
 		/// <summary>
 		/// Method to quit the application.
 		/// </summary>
@@ -298,10 +309,15 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Method to run a Gorgon application.
 		/// </summary>
-		/// <param name="mainForm">Main application form.</param>
-		/// <param name="loop">Idle loop code for the application.</param>
+		/// <param name="mainForm">Form to use as the main form for the application.</param>
+		/// <param name="loop">Idle loop method for the application.</param>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to both the <paramref name="mainForm"/> and <paramref name="loop"/> parameters will raise an exception.</remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when the mainForm and the loop parameters are NULL.</exception>
 		public static void Run(Form mainForm, ApplicationLoop loop)
 		{
+			if ((mainForm == null) && (loop == null))
+				throw new InvalidOperationException("Cannot run an application without either a main form, or a idle method.");
+
 			_context = new GorgonContext(mainForm);
 			ApplicationForm = mainForm;
 
@@ -360,10 +376,25 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Method to run a Gorgon application.
 		/// </summary>
-		/// <param name="loop">Idle loop code for the application.</param>
+		/// <param name="loop">Idle loop method for the application.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public static void Run(ApplicationLoop loop)
 		{
-			Run(null, loop);
+			GorgonDebug.AssertNull<ApplicationLoop>(loop, "loop");
+
+			Run(ApplicationForm, loop);
+		}
+
+		/// <summary>
+		/// Method to run a Gorgon application.
+		/// </summary>
+		/// <param name="mainForm">Form to use as the main form for the application.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public static void Run(Form mainForm)
+		{
+			GorgonDebug.AssertNull<Form>(mainForm, "mainForm");
+
+			Run(mainForm, ApplicationIdleLoop);
 		}
 
 		/// <summary>
@@ -464,6 +495,7 @@ namespace GorgonLibrary
 		{
 			_trackedObjects = new GorgonTrackedObjectCollection();
 			PlugIns = new GorgonPlugInFactory();
+			Log = new GorgonLogFile(Gorgon._logFile, "Tape_Worm");
 
 			// Re-open the log if it's closed.
 			if (Log.IsClosed)
