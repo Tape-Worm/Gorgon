@@ -302,8 +302,12 @@ namespace GorgonLibrary.Graphics
 		/// Function to retrieve the D3D 11 device object associated with this video device.
 		/// </summary>
 		/// <param name="maxFeatureLevel">Maximum feature level to support.</param>
-		internal void GetDevice(DeviceFeatureLevel maxFeatureLevel)
+		internal void CreateDevice(DeviceFeatureLevel maxFeatureLevel)
 		{
+			// Do not re-create the device.
+			if (D3DDevice != null)
+				return;
+
 			D3D.DeviceCreationFlags flags = D3D.DeviceCreationFlags.None;
 
 #if DEBUG
@@ -313,28 +317,21 @@ namespace GorgonLibrary.Graphics
 			D3DDevice = new D3D.Device(GIAdapter, flags, GetFeatureLevels(maxFeatureLevel));
 			D3DDevice.DebugName = Name + " D3D11Device";
 			D3DDevice.ImmediateContext.ClearState();
+		}
 
-			//// According to the MSDN, we need to remove the GIAdapter passed in and retrieve it again from the device.
-			//// This is because 10_Level_9 devices (i.e. D3D 9 cards) use their own device, which does not match
-			//// what we get from the enumeration.
-			//GI.Device1 giDevice = null;
-			//try
-			//{				
-			//    GIAdapter.Dispose();
-			//    GIAdapter = null;
+		/// <summary>
+		/// Function to release the Direct 3D device.
+		/// </summary>
+		internal void ReleaseDevice()
+		{
+			Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name);
+			if (D3DDevice != null)
+			{
+				D3DDevice.ImmediateContext.ClearState();
+				D3DDevice.Dispose();
+			}
 
-			//    // Get the real adapter.				
-			//    giDevice = new GI.Device1(D3DDevice);
-			//    GIAdapter = giDevice.Adapter;				
-			//}
-			//finally
-			//{
-			//    if (giDevice != null)
-			//        giDevice.Dispose();
-			//}
-			
-
-			Outputs = new GorgonVideoOutputCollection(this);
+			D3DDevice = null;
 		}
 
 		/// <summary>
@@ -377,6 +374,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
 		public bool SupportsDisplayFormat(GorgonBufferFormat format)
 		{
+			if (D3DDevice == null)
+				return false;
+
 			return ((D3DDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.FormatDisplaySupport) == D3D.FormatSupport.FormatDisplaySupport);
 		}
 
@@ -388,7 +388,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The maximum quality level for the format, or 0 if not supported.</returns>
 		public int GetMultiSampleQuality(GorgonBufferFormat format, int count)
 		{
-			if (format == GorgonBufferFormat.Unknown)
+			if ((format == GorgonBufferFormat.Unknown) || (D3DDevice == null))
 				return 0;
 
 			if (count < 1)
@@ -409,7 +409,8 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("adapter");
 
 			GIAdapter = adapter;
-			EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));						
+			EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));
+			Outputs = new GorgonVideoOutputCollection(this);
 		}
 		#endregion
 
@@ -424,20 +425,13 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{					
-					if (D3DDevice != null)
-					{
-						Gorgon.Log.Print("Removing D3D 11 device for video device '{0}'.", GorgonLoggingLevel.Verbose, Name);
-						D3DDevice.ImmediateContext.ClearState();
-						D3DDevice.Dispose();
-					}
-
+					ReleaseDevice();
 					Outputs.ClearOutputs();
 
 					Gorgon.Log.Print("Removing DXGI adapter interface...", Diagnostics.GorgonLoggingLevel.Verbose);
 					GIAdapter.Dispose();
 				}
 
-				D3DDevice = null;
 				GIAdapter = null;
 				_disposed = true;
 			}

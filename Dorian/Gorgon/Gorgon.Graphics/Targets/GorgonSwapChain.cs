@@ -150,7 +150,7 @@ namespace GorgonLibrary.Graphics
 
 				GI.Output d3doutput = GISwapChain.ContainingOutput;
 
-				var videoOutput = (from output in Settings.VideoDevice.Outputs
+				var videoOutput = (from output in Graphics.VideoDevice.Outputs
 								   where output.Handle == d3doutput.Description.MonitorHandle
 								   select output).SingleOrDefault();
 
@@ -283,7 +283,7 @@ namespace GorgonLibrary.Graphics
 			{
 				texture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(GISwapChain, 0);
 				texture.DebugName = "SwapChain '" + Name + "' Texture2D";
-				D3DRenderTarget = new D3D.RenderTargetView(Settings.VideoDevice.D3DDevice, texture);
+				D3DRenderTarget = new D3D.RenderTargetView(Graphics.VideoDevice.D3DDevice, texture);
 				D3DRenderTarget.DebugName = "SwapChain '" + Name + "' D3DRenderTargetView";
 				D3DView = new D3D.Viewport(0, 0, Width, Height);
 			}
@@ -420,7 +420,7 @@ namespace GorgonLibrary.Graphics
 				d3dSettings.Usage |= GI.Usage.ShaderInput;
 
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", Diagnostics.GorgonLoggingLevel.Simple, Name);
-			GISwapChain = new GI.SwapChain(Graphics.GIFactory, Settings.VideoDevice.D3DDevice, d3dSettings);
+			GISwapChain = new GI.SwapChain(Graphics.GIFactory, Graphics.VideoDevice.D3DDevice, d3dSettings);
 			GISwapChain.DebugName = Name + " DXGISwapChain";
 
 			// Due to a bug with winforms and DXGI, we have to manually handle transitions ourselves.

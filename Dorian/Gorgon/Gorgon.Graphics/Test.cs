@@ -9,6 +9,9 @@ using Shaders = SlimDX.D3DCompiler;
 
 namespace GorgonLibrary.Graphics
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class Test
 		: IDisposable
 	{
@@ -45,20 +48,20 @@ namespace GorgonLibrary.Graphics
 			string errors = string.Empty;
 			Shaders.ShaderFlags flags = Shaders.ShaderFlags.Debug;
 
-			if ((_swapChain.Settings.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level11_0_SM5) == DeviceFeatureLevel.Level11_0_SM5)
+			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level11_0_SM5) == DeviceFeatureLevel.Level11_0_SM5)
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri11);
-			if (((_swapChain.Settings.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_1_SM4) == DeviceFeatureLevel.Level10_1_SM4) ||
-				((_swapChain.Settings.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_0_SM4) == DeviceFeatureLevel.Level10_0_SM4))
+			if (((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_1_SM4) == DeviceFeatureLevel.Level10_1_SM4) ||
+				((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_0_SM4) == DeviceFeatureLevel.Level10_0_SM4))
 			{
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri10);
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 			}
-			if ((_swapChain.Settings.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level9_0_SM3) == DeviceFeatureLevel.Level9_0_SM3)
+			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level9_0_SM3) == DeviceFeatureLevel.Level9_0_SM3)
 			{
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri93);
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 			}
-			_device = _swapChain.Settings.VideoDevice.D3DDevice;
+			_device = _swapChain.Graphics.VideoDevice.D3DDevice;
 
 			_shaderCode = Shaders.ShaderBytecode.Compile(_shader, "fx_5_0", flags, Shaders.EffectFlags.None, null, null, out errors);
 			_effect = new D3D.Effect(_device, _shaderCode);

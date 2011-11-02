@@ -40,6 +40,62 @@ using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
+#region Event Arguments.
+	/// <summary>
+	/// Arguments for the device change event arguments.
+	/// </summary>
+	public class GorgonBeforeDeviceChangeEventArgs
+		: GorgonCancelEventArgs
+	{
+		#region Variables.
+		private GorgonVideoDevice _newDevice = null;		// New video device.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the current video device.
+		/// </summary>
+		public GorgonVideoDevice CurrentDevice
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the new video device.
+		/// </summary>
+		public GorgonVideoDevice NewDevice
+		{
+			get
+			{
+				return _newDevice;
+			}
+			set
+			{
+				if (value == null)
+					_newDevice = CurrentDevice;
+				else
+					_newDevice = value;
+			}
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonBeforeDeviceChangeEventArgs"/> class.
+		/// </summary>
+		/// <param name="currentDevice">The current device.</param>
+		/// <param name="newDevice">The new device.</param>
+		public GorgonBeforeDeviceChangeEventArgs(GorgonVideoDevice currentDevice, GorgonVideoDevice newDevice)
+			: base(false)
+		{
+			CurrentDevice = currentDevice;
+			NewDevice = newDevice;
+		}
+		#endregion	
+	}
+#endregion
+
 	/// <summary>
 	/// The primary object for the graphics sub system.
 	/// </summary>
@@ -54,10 +110,23 @@ namespace GorgonLibrary.Graphics
 		
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private Version _minimumSupportedFeatureLevel = new Version(9, 3);	// Minimum supported feature level version.		
-		private GorgonTrackedObjectCollection _trackedObjects = null;		// Tracked objects.		
+		private GorgonTrackedObjectCollection _trackedObjects = null;		// Tracked objects.
+		private GorgonVideoDevice _videoDevice = null;						// Video device to use.
 		#endregion
 
 		#region Constants.
+		#endregion
+
+		#region Events.
+		/// <summary>
+		/// Event that is fired before a video device is changed.
+		/// </summary>
+		public event EventHandler<GorgonBeforeDeviceChangeEventArgs> BeforeVideoDeviceChange;
+
+		/// <summary>
+		/// Event that is fired after a video device is changed.
+		/// </summary>
+		public event EventHandler AfterVideoDeviceChange;
 		#endregion
 
 		#region Properties.
@@ -80,8 +149,68 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return the video device to use for this graphics interface.
+		/// </summary>
+		/// <remarks>When this value is set to NULL (Nothing in VB.Net), then the first video device in the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevices">VideoDevices</see> collection will be returned.
+		/// <para>When the device is changed, all resources associated with the device (swap chains, buffers, etc...) will be destroyed.  The user will be responsible for re-creating these resources, and should do so in the 
+		/// <see cref="E:GorgonLibrary.Graphics.GorgonGraphics.AfterDeviceChange">AfterDeviceChange</see> event.</para>
+		/// </remarks>
+		public GorgonVideoDevice VideoDevice
+		{
+			get
+			{
+				return _videoDevice;
+			}
+			set	
+			{
+				// Force the first device.
+				if (value == null)
+				{
+					// Ensure that we have a video device to use.
+					if (VideoDevices.Count > 0)
+						value = VideoDevices[0];
+					else
+						return;
+				}
+
+				// If we're not changing anything, then leave.
+				if (value == _videoDevice)
+					return;
+
+				// Create the D3D device.
+				value.CreateDevice(MaxFeatureLevel);
+
+				// Don't fire the event until we have a current device.
+				if (_videoDevice != null)
+				{
+					GorgonBeforeDeviceChangeEventArgs e = new GorgonBeforeDeviceChangeEventArgs(_videoDevice, value);
+					OnBeforeDeviceChange(e);
+
+					// User canceled the change, or set the same device, then leave.
+					if ((e.Cancel) || (e.CurrentDevice == e.NewDevice))
+					{
+						// Destroy the D3D device.
+						value.ReleaseDevice();
+						return;
+					}
+				}
+
+				// Release the current D3D device.
+				if (_videoDevice != null)
+					_videoDevice.ReleaseDevice();
+
+				// Destroy all the objects created by this instance.
+				_trackedObjects.ReleaseAll();
+		
+				_videoDevice = value;
+				OnAfterDeviceChange();
+			}
+		}
+
+		/// <summary>
 		/// Property to return the maximum feature level to use for any video device.
 		/// </summary>
+		/// <remarks>This is set in the constructor and is a means for artifically enforcing a specific feature level for a video device.</remarks>
 		public DeviceFeatureLevel MaxFeatureLevel
 		{
 			get;
@@ -114,6 +243,25 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to fire the <see cref="E:GorgonLibrary.Graphics.GorgonGraphics.BeforeDeviceChange">BeforeDeviceChange</see> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnBeforeDeviceChange(GorgonBeforeDeviceChangeEventArgs e)
+		{
+			if (BeforeVideoDeviceChange != null)
+				BeforeVideoDeviceChange(this, e);
+		}
+
+		/// <summary>
+		/// Function to fire the <see cref="E:GorgonLibrary.Graphics.GorgonGraphics.AfterDeviceChange">AfterDeviceChange</see> event.
+		/// </summary>
+		protected virtual void OnAfterDeviceChange()
+		{
+			if (AfterVideoDeviceChange != null)
+				AfterVideoDeviceChange(this, EventArgs.Empty);
+		}
+
+		/// <summary>
 		/// Function to return the currently active full screen swap chains.
 		/// </summary>
 		/// <returns>A list of full screen swap chains.</returns>
@@ -145,6 +293,9 @@ namespace GorgonLibrary.Graphics
 			IntPtr monitor = IntPtr.Zero;
 			GorgonVideoOutput output = null;
 
+			if (VideoDevice == null)
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the swap chain, no video device was selected.");
+
 			// Default to using the default Gorgon application window.
 			if (settings.Window == null)
 			{
@@ -170,22 +321,8 @@ namespace GorgonLibrary.Graphics
 			if (output == null)
 				throw new GorgonException(GorgonResult.CannotCreate, "Could not find the video output for the specified window.");
 
-			// If we've not defined a video device, find out which monitor has the window, and then determine the video device from that.
-			if (settings.VideoDevice == null)
-			{
-				var device = (from videoDevice in VideoDevices
-							  where videoDevice.Outputs.Contains(output)
-							  select videoDevice).SingleOrDefault();
-
-				// This should never happen, but if it does, we'll be ready for it.
-				if (device == null)
-					device = VideoDevices[0];
-
-				settings.VideoDevice = device;
-			}
-
 			// Get the Direct 3D device instance.
-			d3dDevice = settings.VideoDevice.D3DDevice;
+			d3dDevice = VideoDevice.D3DDevice;
 
 			// If we've not defined a video mode, determine the best mode to use.
 			if (settings.VideoMode == null)
@@ -208,10 +345,6 @@ namespace GorgonLibrary.Graphics
 								  where ((swapChain != null) && (!swapChain.Settings.IsWindowed))
 								  select item).Count();
 
-				// Disable auto reset if we have more than one full screen swap chain.
-				//if (swapChainCount > 0)
-				//    ResetFullscreenOnFocus = false;
-
 				var modeCount = (from mode in output.VideoModes
 								 where ((mode.Width == settings.VideoMode.Value.Width) && (mode.Height == settings.VideoMode.Value.Height) &&
 									 (mode.Format == settings.VideoMode.Value.Format) && (mode.RefreshRateNumerator == settings.VideoMode.Value.RefreshRateNumerator) &&
@@ -233,18 +366,18 @@ namespace GorgonLibrary.Graphics
 				settings.VideoMode = new GorgonVideoMode(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height, output.DefaultVideoMode.Format);
 
 			// Ensure that the selected video format can be used.
-			if (!settings.VideoDevice.SupportsDisplayFormat(settings.VideoMode.Value.Format))
-				throw new ArgumentException("Cannot use the format '" + settings.VideoMode.Value.Format.ToString() + "' for display on the video device '" + settings.VideoDevice.Name + "'.");
+			if (!VideoDevice.SupportsDisplayFormat(settings.VideoMode.Value.Format))
+				throw new ArgumentException("Cannot use the format '" + settings.VideoMode.Value.Format.ToString() + "' for display on the video device '" + VideoDevice.Name + "'.");
 
 			// Check multi sampling levels.
 			if (settings.SwapEffect == SwapEffect.Sequential)
 				settings.MultiSample = new GorgonMultiSampling(1, 0);
 
-			int quality = settings.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Value.Format, settings.MultiSample.Count);
+			int quality = VideoDevice.GetMultiSampleQuality(settings.VideoMode.Value.Format, settings.MultiSample.Count);
 
 			// Ensure that the quality of the sampling does not exceed what the card can do.
 			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
-				throw new ArgumentException("Video device '" + settings.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Value.Format + "'");
+				throw new ArgumentException("Video device '" + VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Value.Format + "'");
 
 			// Force 2 buffers for discard.
 			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
@@ -307,8 +440,8 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="featureLevel"/> parameter is invalid.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are capable of using Direct 3D 11, or the down level interfaces (Direct 3D 10.1, 10 or 9.3).</exception>
 		/// <remarks>The use may pass multiple feature levels to the featureLevel parameter to allow only specific feature levels available.  For example, passing new GorgonGraphics(DeviceFeatureLevel.10_0_SM4 | DeviceFeatureLevel.9_0_SM3) will only allow functionality
-		/// for both Direct3D 10, and Direct 3D 9.
-		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.  If no feature levels are available (e.g. calling new GorgonGraphics(DeviceFeatureLevel.11_0_SM5) with a Direct 3D 9 or 10 card) then an exception will be raised.</para>
+		/// for both Direct3D 10, and Direct 3D 9 capable video devices.
+		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.  If no feature levels are available (e.g. calling new GorgonGraphics(DeviceFeatureLevel.11_0_SM5) with a Direct 3D 9 or 10 video device) then an exception will be raised.</para>
 		/// </remarks>
 		public GorgonGraphics(DeviceFeatureLevel featureLevel)
 		{
@@ -334,6 +467,9 @@ namespace GorgonLibrary.Graphics
 
 			if (VideoDevices.Count == 0)
 				throw new GorgonException(GorgonResult.CannotCreate, "There were no video devices found on this system that can use Direct 3D 11/SM5, 10.x/SM4 or 9.0/SM3.");
+
+			// Default to the first available device.
+			VideoDevice = null;
 
 			Gorgon.AddTrackedObject(this);
 
