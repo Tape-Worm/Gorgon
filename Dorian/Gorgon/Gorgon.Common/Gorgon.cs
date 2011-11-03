@@ -40,12 +40,14 @@ namespace GorgonLibrary
 {
 	#region Delegates.
 	/// <summary>
-	/// Delegate for an application loop.
+	/// Delegate for an application loop method.
 	/// </summary>
 	/// <param name="timingData">Data used for frame rate timing.</param>
-	/// <returns>TRUE to continue processing, FALSE to stop.</returns>
-	/// <remarks>Use this to define the main loop for your application.</remarks>
-	public delegate bool ApplicationLoop(GorgonFrameRate timingData);
+	/// <returns>TRUE to continue executing the application, FALSE to end the application.</returns>
+	/// <remarks>Use this to execute custom code during idle time in the application.
+	/// <para>Returning FALSE will cause the application to shut down.  When the application shuts down, the main form, and any objects that are tracked by Gorgon (like the input or graphics) will be destroyed.</para>
+	/// </remarks>
+	public delegate bool ApplicationLoopMethod(GorgonFrameRate timingData);
 	#endregion
 
 	/// <summary>
@@ -53,7 +55,8 @@ namespace GorgonLibrary
 	/// </summary>
 	/// <remarks>Use this to replace the Application.Run(new Form()) method in the startup function.
 	/// <para>The application uses an <see cref="P:GorgonLibrary.Gorgon.ApplicationIdleLoop">idle loop method</see> to call the users code when it is running.  <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
-	/// <para>An application is started by calling its <see cref="M:GorgonLibrary.Gorgon.Run">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.</para>
+	/// <para>An application is started by calling its <see cref="M:GorgonLibrary.Gorgon.Run">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
+	/// Alternatively, the application can be terminated by returning FALSE from the idle loop method.</para>
 	/// <para>Any objects created in Gorgon, such as the Graphics interface, will be destroyed when the application ends.</para>
 	/// </remarks>
 	public static class Gorgon
@@ -99,14 +102,14 @@ namespace GorgonLibrary
 				MSG message = new MSG();		// Message to retrieve.
 
 				// We have nothing to execute, just leave.
-				if (ApplicationIdleLoop == null)
+				if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
 					return;
 
 				while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 				{
 					_timingData.Update();
 
-					if (!ApplicationIdleLoop(_timingData))
+					if (!ApplicationIdleLoopMethod(_timingData))
 					{
 						// Force an exit from the thread.
 						ExitThread();
@@ -148,7 +151,7 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Variables.
-		private static ApplicationLoop _loop = null;							// Application loop method.
+		private static ApplicationLoopMethod _loop = null;						// Application loop method.
 		private static GorgonContext _context = null;							// Gorgon application context.
 		private static GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
 		#endregion
@@ -185,7 +188,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>This is used to call the users code when the application is in an idle state.
 		/// </remarks>
-		public static ApplicationLoop ApplicationIdleLoop
+		public static ApplicationLoopMethod ApplicationIdleLoopMethod
 		{
 			get
 			{
@@ -193,11 +196,27 @@ namespace GorgonLibrary
 			}
 			set
 			{
+				if (_context == null)
+					return;
+
 				// We can't set both to NULL.
 				if ((ApplicationForm == null) && (value == null))
 					return;
 
+				// Remove the previous event.
+				if (IsRunning)
+				{
+					Application.Idle -= new EventHandler(_context.Application_Idle);
+					Log.Print("Application loop stopped.", GorgonLoggingLevel.Simple);
+				}
+				
 				_loop = value;
+
+				if ((value != null) && (IsRunning))
+				{
+					Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
+					Application.Idle += new EventHandler(_context.Application_Idle);
+				}
 			}
 		}
 
@@ -268,7 +287,7 @@ namespace GorgonLibrary
 					return;
 
 				// We can't set both to NULL.
-				if ((value == null) && (ApplicationIdleLoop == null))
+				if ((value == null) && (ApplicationIdleLoopMethod == null))
 					return;
 
 				_context.MainForm = value;
@@ -313,7 +332,7 @@ namespace GorgonLibrary
 		/// <param name="loop">Idle loop method for the application.</param>
 		/// <remarks>Passing NULL (Nothing in VB.Net) to both the <paramref name="mainForm"/> and <paramref name="loop"/> parameters will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the mainForm and the loop parameters are NULL.</exception>
-		public static void Run(Form mainForm, ApplicationLoop loop)
+		public static void Run(Form mainForm, ApplicationLoopMethod loop)
 		{
 			if ((mainForm == null) && (loop == null))
 				throw new InvalidOperationException("Cannot run an application without either a main form, or a idle method.");
@@ -326,20 +345,19 @@ namespace GorgonLibrary
 				if (ApplicationForm != null)
 					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, ApplicationForm.Handle.FormatHex(), ApplicationForm.Name, ApplicationForm.Text);
 
+				ApplicationIdleLoopMethod = loop;
+
 				// Display the form.
 				if (ApplicationForm != null)
 					ApplicationForm.Show();
 
-				ApplicationIdleLoop = loop;
-
-				IsRunning = true;
-
-				if (ApplicationIdleLoop != null)
+				if (ApplicationIdleLoopMethod != null)
 				{
 					Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
 					Application.Idle += new EventHandler(_context.Application_Idle);
 				}
 
+				IsRunning = true;
 				Application.Run(_context);
 			}
 			catch (Exception ex)
@@ -350,7 +368,7 @@ namespace GorgonLibrary
 			{
 				IsRunning = false;
 
-				if (ApplicationIdleLoop != null)
+				if (ApplicationIdleLoopMethod != null)
 				{
 					Application.Idle -= new EventHandler(_context.Application_Idle);
 					Log.Print("Application loop stopped.", GorgonLoggingLevel.Simple);
@@ -378,9 +396,9 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="loop">Idle loop method for the application.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public static void Run(ApplicationLoop loop)
+		public static void Run(ApplicationLoopMethod loop)
 		{
-			GorgonDebug.AssertNull<ApplicationLoop>(loop, "loop");
+			GorgonDebug.AssertNull<ApplicationLoopMethod>(loop, "loop");
 
 			Run(ApplicationForm, loop);
 		}
@@ -394,7 +412,7 @@ namespace GorgonLibrary
 		{
 			GorgonDebug.AssertNull<Form>(mainForm, "mainForm");
 
-			Run(mainForm, ApplicationIdleLoop);
+			Run(mainForm, ApplicationIdleLoopMethod);
 		}
 
 		/// <summary>

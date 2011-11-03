@@ -27,8 +27,56 @@ namespace Tester_Graphics
 		GorgonSwapChain _swapChain = null;
 		GorgonSwapChain _swapChain2 = null;
 		GorgonTimer _timer = new GorgonTimer(true);
+		Graphics g = null;
 		Form2 form2 = null;
+		Image backBuffer = null;
+		PointF pos = PointF.Empty;
 		
+
+		protected override void OnDoubleClick(EventArgs e)
+		{
+			base.OnDoubleClick(e);
+			if (Gorgon.ApplicationIdleLoopMethod == Idle)
+			{
+				backBuffer = new Bitmap(this.ClientSize.Width, this.ClientSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+				float aspect = (float)Properties.Resources.Haiku.Height / (float)Properties.Resources.Haiku.Width;
+				pos = this.PointToScreen(Point.Round(new PointF(backBuffer.Width / 4, (backBuffer.Height / 2) - (((backBuffer.Height / 2) * aspect) / 2))));
+
+				Gorgon.ApplicationIdleLoopMethod = Idle2;
+			}
+			else
+			{
+				backBuffer.Dispose();
+				Gorgon.ApplicationIdleLoopMethod = Idle;
+			}
+		}
+
+		private bool Idle2(GorgonFrameRate timing)
+		{
+			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
+
+			g = Graphics.FromImage(backBuffer);
+			g.Clear(Color.Purple);
+			g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+			g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			float aspect = (float)Properties.Resources.Haiku.Height / (float)Properties.Resources.Haiku.Width;
+			g.DrawEllipse(Pens.Yellow, new Rectangle(backBuffer.Width / 2 - backBuffer.Width / 4, backBuffer.Height / 2 - backBuffer.Height / 4, backBuffer.Width / 2, backBuffer.Height / 2));
+			g.DrawImage(Properties.Resources.Haiku, new RectangleF(Point.Round(pos).X - Location.X, Point.Round(pos).Y - Location.Y, backBuffer.Width / 2, (backBuffer.Height / 2) * aspect));
+			g.Dispose();
+
+			g = this.CreateGraphics();
+			g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+			g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			g.DrawImage(backBuffer, new RectangleF(0, 0, ClientSize.Width, ClientSize.Height), new RectangleF(0, 0, backBuffer.Width, backBuffer.Height), GraphicsUnit.Pixel);			
+			g.Dispose();			
+			
+			return true;
+		}
 
 		private bool Idle(GorgonFrameRate timing)
 		{			
@@ -90,7 +138,7 @@ namespace Tester_Graphics
 				int count = 2;
 				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(GorgonBufferFormat.B8G8R8A8_UIntNormal, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
-				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { IsWindowed = true, VideoMode = mode1, MultiSample = multiSample });
+				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample });
 #if MULTIMON
 				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;
 
@@ -112,6 +160,8 @@ namespace Tester_Graphics
 #if MULTIMON
 				_test2 = new Test(_swapChain2);
 #endif
+
+				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}
 			catch (Exception ex)
 			{
@@ -158,6 +208,8 @@ namespace Tester_Graphics
 
 		public Form1()
 		{
+			//this.SetStyle(ControlStyles.AllPaintingInWmPaint, false);
+			//this.SetStyle(ControlStyles.UserPaint, false);
 			InitializeComponent();
 		}
 	}
