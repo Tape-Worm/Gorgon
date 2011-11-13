@@ -1,3 +1,5 @@
+ matrix _world;
+
  struct VS_IN
  {
  	float4 pos : POSITION;
@@ -14,7 +16,7 @@
  {
  	PS_IN output = (PS_IN)0;
  	
- 	output.pos = input.pos;
+ 	output.pos = mul(input.pos, _world);
  	output.col = input.col;
  	
  	return output;

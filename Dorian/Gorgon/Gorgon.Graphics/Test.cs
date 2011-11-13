@@ -28,9 +28,16 @@ namespace GorgonLibrary.Graphics
 		private D3D.EffectPass _pass = null;
 		private D3D.RasterizerState _rastState = null;
 		private D3D.VertexBufferBinding _binding = default(D3D.VertexBufferBinding);
+		private SlimDX.Matrix _world = SlimDX.Matrix.Identity;
+		private float _rot = 0.0f;
+		private float _lastRot = 0.0f;
+		private D3D.EffectMatrixVariable _var = null;
+		private D3D.BlendState _blend = null;
 
 		private void Destroy()
 		{
+			if (_blend != null)
+				_blend.Dispose();
 			if (_rastState != null)
 				_rastState.Dispose();
 			if (_shaderCode != null)
@@ -65,6 +72,8 @@ namespace GorgonLibrary.Graphics
 
 			_shaderCode = Shaders.ShaderBytecode.Compile(_shader, "fx_5_0", flags, Shaders.EffectFlags.None, null, null, out errors);
 			_effect = new D3D.Effect(_device, _shaderCode);
+			_var = _effect.GetVariableByName("_world").AsMatrix();
+			
 			_pass = _effect.GetTechniqueByIndex(0).GetPassByIndex(0);
 			_layout = new D3D.InputLayout(_device, _pass.Description.Signature, new[] {
 			new D3D.InputElement("POSITION", 0, GI.Format.R32G32B32A32_Float, 0, 0),
@@ -123,9 +132,42 @@ namespace GorgonLibrary.Graphics
 		private bool _standBy = false;
 
 		/// <summary>
+		/// Transform.
+		/// </summary>
+		/// <param name="delta"></param>
+		public void Transform(float delta)
+		{
+			_rot += (delta * 10.0f);
+
+			if (_rot > 360.0f)
+				_rot = (360.0f - _rot);
+
+		}
+
+		/// <summary>
+		/// Creates the blend.
+		/// </summary>
+		public void CreateBlend()
+		{
+			D3D.BlendStateDescription desc;
+
+			if (_blend != null)
+			{
+				_blend.Dispose();
+				_blend = null;
+			}
+
+			desc = new D3D.BlendStateDescription();
+			desc.AlphaToCoverageEnable = false;
+			desc.IndependentBlendEnable = false;
+
+			_blend = D3D.BlendState.FromDescription(_device, desc);
+		}
+
+		/// <summary>
 		/// 
 		/// </summary>
-		public void Run()
+		public void Draw()
 		{
 			SlimDX.Result result = GI.ResultCode.Success;
 
@@ -142,6 +184,9 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
+				_var.SetMatrix(_world);
+				_world = SlimDX.Matrix.RotationZ(GorgonLibrary.Math.GorgonMathUtility.Radians(_rot));
+
 				_device.ImmediateContext.Rasterizer.State = _rastState;
 				_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.D3DRenderTarget);
 				_device.ImmediateContext.Rasterizer.SetViewports(_swapChain.D3DView);
@@ -150,7 +195,7 @@ namespace GorgonLibrary.Graphics
 				_device.ImmediateContext.InputAssembler.InputLayout = _layout;
 				_device.ImmediateContext.InputAssembler.PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
 				_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
-
+								
 				_pass.Apply(_device.ImmediateContext);
 				_device.ImmediateContext.Draw(3, 0);
 

@@ -151,6 +151,7 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Variables.
+		private static bool _mustQuit = false;									// Flag to indicate that the application needs to close.
 		private static ApplicationLoopMethod _loop = null;						// Application loop method.
 		private static GorgonContext _context = null;							// Gorgon application context.
 		private static GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
@@ -319,6 +320,8 @@ namespace GorgonLibrary
 		/// </summary>
 		public static void Quit()
 		{
+			_mustQuit = true;
+
 			if ((!IsRunning) || (_context == null))
 				return;
 
@@ -351,6 +354,10 @@ namespace GorgonLibrary
 				if (ApplicationForm != null)
 					ApplicationForm.Show();
 
+				// We exited before we got to the message pump, so end the application.
+				if (_mustQuit)
+					return;
+
 				if (ApplicationIdleLoopMethod != null)
 				{
 					Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
@@ -358,6 +365,7 @@ namespace GorgonLibrary
 				}
 
 				IsRunning = true;
+				_mustQuit = false;
 				Application.Run(_context);
 			}
 			catch (Exception ex)
