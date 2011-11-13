@@ -83,10 +83,13 @@ namespace Tester_Graphics
 			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
 
 			if (_test1 != null)
-				_test1.Run();
+			{
+				_test1.Transform(timing.FrameDelta);
+				_test1.Draw();
+			}
 
 			if (_test2 != null)
-				_test2.Run();
+				_test2.Draw();
 
 			return true;
 		}
@@ -127,7 +130,7 @@ namespace Tester_Graphics
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 				form2.Show();
 #endif
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level10_1_SM4);
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level9_0_SM3);
 				//_graphics = new GorgonGraphics();
  
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
@@ -166,7 +169,7 @@ namespace Tester_Graphics
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
-				Application.Exit();				
+				Gorgon.Quit();		
 			}
 
 		}
