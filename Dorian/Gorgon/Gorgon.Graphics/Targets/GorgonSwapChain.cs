@@ -302,9 +302,6 @@ namespace GorgonLibrary.Graphics
 			ReleaseResources();
 			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
 
-			//if ((GISwapChain.IsFullScreen) && (!Settings.AllowRotation))
-			//    flags |= GI.SwapChainFlags.NonPrerotated;
-
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Value.Width, Settings.VideoMode.Value.Height, (GI.Format)Settings.VideoMode.Value.Format, flags);
 			CreateResources();
 		}
@@ -317,8 +314,12 @@ namespace GorgonLibrary.Graphics
 		private void Window_Resize(object sender, EventArgs e)
 		{
 			// Only do this if the size has changed, if we're just restoring the window, then don't bother.
-			if ((_parentForm.WindowState != FormWindowState.Minimized) && (GISwapChain != null))
+			if (((_parentForm.WindowState != FormWindowState.Minimized) && (GISwapChain != null)) && (Settings.Window.ClientSize.Width > 0) && (Settings.Window.ClientSize.Height > 0))
+			{
+				// Resize the video mode.
+				Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize, Settings.VideoMode.Value);
 				ResizeBuffers();
+			}
 		}
 		
 		/// <summary>
@@ -382,6 +383,113 @@ namespace GorgonLibrary.Graphics
 				Graphics.RemoveTrackedObject(this);					
 
 			GISwapChain = null;
+		}
+
+		/// <summary>
+		/// Function to perform updating of the swap chain settings.
+		/// </summary>
+		/// <param name="graphics">Gorgon graphics interface to use.</param>
+		/// <param name="settings">Settings to change.</param>
+		/// <param name="currentSwapChain">Swap chain that is being updated.</param>
+		internal static void ValidateSwapChainSettings(GorgonGraphics graphics, GorgonSwapChainSettings settings, GorgonSwapChain currentSwapChain)
+		{
+			D3D.Device d3dDevice = null;
+			IntPtr monitor = IntPtr.Zero;
+			GorgonVideoOutput output = null;
+
+			if (graphics.VideoDevice == null)
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the swap chain, no video device was selected.");
+
+			// Default to using the default Gorgon application window.
+			if (settings.Window == null)
+			{
+				settings.Window = Gorgon.ApplicationForm;
+
+				// No application window, then we're out of luck.
+				if (settings.Window == null)
+					throw new ArgumentException("No window to bind with the swap chain.", "settings");
+			}
+
+			// Force to windowed mode if we're binding to a child control on a form.
+			if (!(settings.Window is Form))
+				settings.IsWindowed = true;
+
+			monitor = Win32API.GetMonitor(settings.Window);		// Get the monitor that the window is on.
+
+			// Find the video output for the window.
+			output = (from videoDevice in graphics.VideoDevices
+					  from videoOutput in videoDevice.Outputs
+					  where videoOutput.Handle == monitor
+					  select videoOutput).SingleOrDefault();
+
+			if (output == null)
+				throw new GorgonException(GorgonResult.CannotCreate, "Could not find the video output for the specified window.");
+
+			// Get the Direct 3D device instance.
+			d3dDevice = graphics.VideoDevice.D3DDevice;
+
+			// If we've not defined a video mode, determine the best mode to use.
+			if (settings.VideoMode == null)
+				settings.VideoMode = new GorgonVideoMode(settings.Window.ClientSize.Width, settings.Window.ClientSize.Height, output.DefaultVideoMode.Format, output.DefaultVideoMode.RefreshRateNumerator, output.DefaultVideoMode.RefreshRateDenominator);
+
+			// If going full screen, ensure that whatever mode we've chosen can be used, otherwise go to the closest match.
+			if (!settings.IsWindowed)
+			{
+				// Check to ensure that no other swap chains on the video output if we're going to full screen mode.
+				var swapChainCount = (from item in graphics.TrackedObjects
+									  let swapChain = item as GorgonSwapChain
+									  where ((swapChain != null) && (swapChain.VideoOutput == output) && (!swapChain.Settings.IsWindowed) && (swapChain.Settings.Window != settings.Window))
+									  select item).Count();
+
+				if (swapChainCount > 0)
+					throw new GorgonException(GorgonResult.CannotCreate, "There is already a swap chain active on the video output '" + output.Name + "'.");
+
+				swapChainCount = (from item in graphics.TrackedObjects
+								  let swapChain = item as GorgonSwapChain
+								  where ((swapChain != null) && (!swapChain.Settings.IsWindowed))
+								  select item).Count();
+
+				var modeCount = (from mode in output.VideoModes
+								 where ((mode.Width == settings.VideoMode.Value.Width) && (mode.Height == settings.VideoMode.Value.Height) &&
+									 (mode.Format == settings.VideoMode.Value.Format) && (mode.RefreshRateNumerator == settings.VideoMode.Value.RefreshRateNumerator) &&
+									 (mode.RefreshRateDenominator == settings.VideoMode.Value.RefreshRateDenominator))
+								 select mode).Count();
+
+				// We couldn't find the mode in the list, find the nearest match.
+				if (modeCount == 0)
+					settings.VideoMode = output.FindMode(settings.VideoMode.Value);
+			}
+			else
+			{
+				// We don't need a refresh rate for windowed mode.
+				settings.VideoMode = new GorgonVideoMode(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height, settings.VideoMode.Value.Format);
+			}
+
+			// If we don't pass a format, use the default format.
+			if (settings.VideoMode.Value.Format == GorgonBufferFormat.Unknown)
+				settings.VideoMode = new GorgonVideoMode(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height, output.DefaultVideoMode.Format);
+
+			// Ensure that the selected video format can be used.
+			if (!graphics.VideoDevice.SupportsDisplayFormat(settings.VideoMode.Value.Format))
+				throw new ArgumentException("Cannot use the format '" + settings.VideoMode.Value.Format.ToString() + "' for display on the video device '" + graphics.VideoDevice.Name + "'.");
+
+			// Check multi sampling levels.
+			if (settings.SwapEffect == SwapEffect.Sequential)
+				settings.MultiSample = new GorgonMultiSampling(1, 0);
+
+			int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Value.Format, settings.MultiSample.Count);
+
+			// Ensure that the quality of the sampling does not exceed what the card can do.
+			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
+				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Value.Format + "'");
+
+			// Force 2 buffers for discard.
+			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
+				settings.BufferCount = 2;
+
+			// Perform window handling.
+			settings.Window.Visible = true;
+			settings.Window.Enabled = true;
 		}
 
 		/// <summary>
@@ -529,7 +637,7 @@ namespace GorgonLibrary.Graphics
 			Settings.BufferCount = bufferCount;
 
 			// Validate and modify the settings as appropriate.
-			Graphics.ValidateSwapChainSettings(Settings, this);
+			ValidateSwapChainSettings(Graphics, Settings, this);
 
 			ModeStateUpdate();
 			

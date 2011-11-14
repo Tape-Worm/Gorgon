@@ -110,7 +110,6 @@ namespace GorgonLibrary.Graphics
 		
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private Version _minimumSupportedFeatureLevel = new Version(9, 3);	// Minimum supported feature level version.		
-		private GorgonTrackedObjectCollection _trackedObjects = null;		// Tracked objects.
 		private GorgonVideoDevice _videoDevice = null;						// Video device to use.
 		#endregion
 
@@ -146,6 +145,15 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the list of tracked objects.
+		/// </summary>
+		internal GorgonTrackedObjectCollection TrackedObjects
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -200,7 +208,7 @@ namespace GorgonLibrary.Graphics
 					_videoDevice.ReleaseDevice();
 
 				// Destroy all the objects created by this instance.
-				_trackedObjects.ReleaseAll();
+				TrackedObjects.ReleaseAll();
 		
 				_videoDevice = value;
 				OnAfterDeviceChange();
@@ -267,7 +275,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A list of full screen swap chains.</returns>
 		internal IEnumerable<GorgonSwapChain> GetFullscreenSwapChains()
 		{
-			return (from item in _trackedObjects
+			return (from item in TrackedObjects
 					let swapChain = item as GorgonSwapChain
 					where !swapChain.Settings.IsWindowed
 					select swapChain);
@@ -279,113 +287,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="trackedObject">Tracked object to remove.</param>
 		internal void RemoveTrackedObject(IDisposable trackedObject)
 		{
-			_trackedObjects.Remove(trackedObject);
-		}
-
-		/// <summary>
-		/// Function to perform updating of the swap chain settings.
-		/// </summary>
-		/// <param name="settings">Settings to change.</param>
-		/// <param name="currentSwapChain">Swap chain that is being updated.</param>
-		internal void ValidateSwapChainSettings(GorgonSwapChainSettings settings, GorgonSwapChain currentSwapChain)
-		{
-			D3D.Device d3dDevice = null;
-			IntPtr monitor = IntPtr.Zero;
-			GorgonVideoOutput output = null;
-
-			if (VideoDevice == null)
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the swap chain, no video device was selected.");
-
-			// Default to using the default Gorgon application window.
-			if (settings.Window == null)
-			{
-				settings.Window = Gorgon.ApplicationForm;
-
-				// No application window, then we're out of luck.
-				if (settings.Window == null)
-					throw new ArgumentException("No window to bind with the swap chain.", "settings");
-			}
-
-			// Force to windowed mode if we're binding to a child control on a form.
-			if (!(settings.Window is Form))
-				settings.IsWindowed = true;
-
-			monitor = Win32API.GetMonitor(settings.Window);		// Get the monitor that the window is on.
-
-			// Find the video output for the window.
-			output = (from videoDevice in VideoDevices
-					  from videoOutput in videoDevice.Outputs
-					  where videoOutput.Handle == monitor
-					  select videoOutput).SingleOrDefault();
-
-			if (output == null)
-				throw new GorgonException(GorgonResult.CannotCreate, "Could not find the video output for the specified window.");
-
-			// Get the Direct 3D device instance.
-			d3dDevice = VideoDevice.D3DDevice;
-
-			// If we've not defined a video mode, determine the best mode to use.
-			if (settings.VideoMode == null)
-				settings.VideoMode = new GorgonVideoMode(settings.Window.ClientSize.Width, settings.Window.ClientSize.Height, output.DefaultVideoMode.Format, output.DefaultVideoMode.RefreshRateNumerator, output.DefaultVideoMode.RefreshRateDenominator);
-
-			// If going full screen, ensure that whatever mode we've chosen can be used, otherwise go to the closest match.
-			if (!settings.IsWindowed)
-			{
-				// Check to ensure that no other swap chains on the video output if we're going to full screen mode.
-				var swapChainCount = (from item in _trackedObjects
-				                    let swapChain = item as GorgonSwapChain
-				                    where ((swapChain != null) && (swapChain.VideoOutput == output) && (!swapChain.Settings.IsWindowed) && (swapChain.Settings.Window != settings.Window))
-				                    select item).Count();
-
-				if (swapChainCount > 0)
-				    throw new GorgonException(GorgonResult.CannotCreate, "There is already a swap chain active on the video output '" + output.Name + "'.");
-
-				swapChainCount = (from item in _trackedObjects
-								  let swapChain = item as GorgonSwapChain
-								  where ((swapChain != null) && (!swapChain.Settings.IsWindowed))
-								  select item).Count();
-
-				var modeCount = (from mode in output.VideoModes
-								 where ((mode.Width == settings.VideoMode.Value.Width) && (mode.Height == settings.VideoMode.Value.Height) &&
-									 (mode.Format == settings.VideoMode.Value.Format) && (mode.RefreshRateNumerator == settings.VideoMode.Value.RefreshRateNumerator) &&
-									 (mode.RefreshRateDenominator == settings.VideoMode.Value.RefreshRateDenominator))
-								 select mode).Count();
-
-				// We couldn't find the mode in the list, find the nearest match.
-				if (modeCount == 0)
-					settings.VideoMode = output.FindMode(settings.VideoMode.Value);
-			}
-			else
-			{
-				// We don't need a refresh rate for windowed mode.
-				settings.VideoMode = new GorgonVideoMode(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height, settings.VideoMode.Value.Format);
-			}
-
-			// If we don't pass a format, use the default format.
-			if (settings.VideoMode.Value.Format == GorgonBufferFormat.Unknown)
-				settings.VideoMode = new GorgonVideoMode(settings.VideoMode.Value.Width, settings.VideoMode.Value.Height, output.DefaultVideoMode.Format);
-
-			// Ensure that the selected video format can be used.
-			if (!VideoDevice.SupportsDisplayFormat(settings.VideoMode.Value.Format))
-				throw new ArgumentException("Cannot use the format '" + settings.VideoMode.Value.Format.ToString() + "' for display on the video device '" + VideoDevice.Name + "'.");
-
-			// Check multi sampling levels.
-			if (settings.SwapEffect == SwapEffect.Sequential)
-				settings.MultiSample = new GorgonMultiSampling(1, 0);
-
-			int quality = VideoDevice.GetMultiSampleQuality(settings.VideoMode.Value.Format, settings.MultiSample.Count);
-
-			// Ensure that the quality of the sampling does not exceed what the card can do.
-			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
-				throw new ArgumentException("Video device '" + VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Value.Format + "'");
-
-			// Force 2 buffers for discard.
-			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
-				settings.BufferCount = 2;
-
-			// Perform window handling.
-			settings.Window.Visible = true;
-			settings.Window.Enabled = true;
+			TrackedObjects.Remove(trackedObject);
 		}
 
 		/// <summary>
@@ -422,11 +324,11 @@ namespace GorgonLibrary.Graphics
 			if (settings == null)
 				throw new ArgumentNullException("settings");
 
-			ValidateSwapChainSettings(settings, null);
+			GorgonSwapChain.ValidateSwapChainSettings(this, settings, null);
 
 			swapChain = new GorgonSwapChain(this, name, settings);
 			swapChain.Initialize();
-			_trackedObjects.Add(swapChain);			
+			TrackedObjects.Add(swapChain);			
 
 			return swapChain;
 		}
@@ -449,7 +351,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("Must supply a known feature level.", "featureLevel");
 
 			MaxFeatureLevel = featureLevel;
-			_trackedObjects = new GorgonTrackedObjectCollection();
+			TrackedObjects = new GorgonTrackedObjectCollection();
 			ResetFullscreenOnFocus = true;
 
 			Gorgon.Log.Print("Gorgon Graphics initializing...", Diagnostics.GorgonLoggingLevel.Simple);
@@ -499,7 +401,7 @@ namespace GorgonLibrary.Graphics
 				{
 					Gorgon.Log.Print("Gorgon Graphics shutting down...", Diagnostics.GorgonLoggingLevel.Simple);
 					
-					_trackedObjects.ReleaseAll();
+					TrackedObjects.ReleaseAll();
 
 					VideoDevices.Clear();
 
