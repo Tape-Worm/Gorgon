@@ -416,7 +416,7 @@ namespace GorgonLibrary.Graphics
 				_device.ImmediateContext.PixelShader.SetShaderResource(_textureView, 0);
 				_device.ImmediateContext.PixelShader.SetSampler(_sampler, 0);
 
-/*				float passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (_passes * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
+				float passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (_passes * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
 				buffer.World = Matrix.RotationZ(passAngle);
 				buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationZ(passAngle));
 				buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationY(passAngle));
@@ -425,10 +425,10 @@ namespace GorgonLibrary.Graphics
 				_changeStream.Position = 0;
 				_changeStream.Write<UpdateBuffer>(buffer);
 				_changeStream.Position = 0;
-				_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);*/
+				_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
 				_device.ImmediateContext.DrawIndexed(6, 0, 0);
 
-/*				buffer.Alpha = 0.0f;
+				buffer.Alpha = 0.0f;
 				//step = 1.0f;
 				for (int i = 0; i < (int)_passes; i++)
 				{
@@ -446,7 +446,6 @@ namespace GorgonLibrary.Graphics
 					_changeStream.Position = 0;
 					_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
 
-					//_device.ImmediateContext.PixelShader.SetSampler(_sampler, 0);
 					_device.ImmediateContext.DrawIndexed(6, 0, 0);
 				}
 
@@ -461,9 +460,8 @@ namespace GorgonLibrary.Graphics
 				//_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
 				//_device.ImmediateContext.DrawIndexed(6, 0, 0);
 
-				//System.Threading.Thread.Sleep(16);*/
-
-
+				//System.Threading.Thread.Sleep(16);
+				
 				result = _swapChain.GISwapChain.Present(0, GI.PresentFlags.None);
 				
 				if ((result != GI.ResultCode.Success) && (result.IsSuccess))

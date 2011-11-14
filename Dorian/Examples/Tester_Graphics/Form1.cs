@@ -80,14 +80,14 @@ namespace Tester_Graphics
 
 		private bool Idle(GorgonFrameRate timing)
 		{			
-			//Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
+			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
 
 			try
 			{
 				if (_test1 != null)
 				{
-					//_test1.Transform(timing.FrameDelta);
-					//_test1.Draw();
+					_test1.Transform(timing.FrameDelta);
+					_test1.Draw();
 				}
 
 				if (_test2 != null)
@@ -130,7 +130,7 @@ namespace Tester_Graphics
 				this.Show();
 
 				ClientSize = new System.Drawing.Size(640, 480);
-/*
+
 #if MULTIMON
 				form2 = new Form2();
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
@@ -168,7 +168,7 @@ namespace Tester_Graphics
 				_test1 = new Test(_swapChain);
 #if MULTIMON
 				_test2 = new Test(_swapChain2);
-#endif*/
+#endif
 				
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}

@@ -1,4 +1,4 @@
-﻿#region MIT.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2011 Michael Winsor
@@ -353,18 +353,18 @@ namespace GorgonLibrary
 			
 			while ((HasFocus) && (!PeekMessage()))
 			{
-				/*					_timingData.Update();
+				_timingData.Update();
+				
+				if (!ApplicationIdleLoopMethod(_timingData))
+				{
+					// Force an exit from the thread.
+					Application.Exit();
+					return;
+				}
 
-									if (!ApplicationIdleLoopMethod(_timingData))
-									{
-										// Force an exit from the thread.
-										ExitThread();
-										return;
-									}
-
-									// Give up CPU time if we're not focused.
-									if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
-										System.Threading.Thread.Sleep(UnfocusedSleepTime);*/
+				// Give up CPU time if we're not focused.
+				if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
+					System.Threading.Thread.Sleep(UnfocusedSleepTime);
 			}
 		}
 
@@ -404,8 +404,8 @@ namespace GorgonLibrary
 				ApplicationIdleLoopMethod = loop;
 
 				// Display the form.
-/*				if (ApplicationForm != null)
-					ApplicationForm.Show();*/
+				if (ApplicationForm != null)
+					ApplicationForm.Show();
 
 				// We exited before we got to the message pump, so end the application.
 				if (_mustQuit)
