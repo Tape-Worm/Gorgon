@@ -61,6 +61,91 @@ namespace GorgonLibrary
 	/// </remarks>
 	public static class Gorgon
 	{
+		#region Classes.
+		/// <summary>
+		/// The application context for Gorgon.
+		/// </summary>
+		internal class GorgonContext
+			: ApplicationContext
+		{
+			#region Variables.
+			private GorgonFrameRate _timingData = null;								// Frame rate timing data.
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return if the application has focus.
+			/// </summary>
+			private bool HasFocus
+			{
+				get
+				{
+					if ((Gorgon.AllowBackground) || (Gorgon.ApplicationForm == null))
+						return true;
+
+					if ((ApplicationForm.WindowState == FormWindowState.Minimized) || (!ApplicationForm.ContainsFocus))
+						return false;
+
+					return true;
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Handles the Idle event of the Application control.
+			/// </summary>
+			/// <param name="sender">The source of the event.</param>
+			/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+			internal void Application_Idle(object sender, EventArgs e)
+			{
+				MSG message = new MSG();		// Message to retrieve.
+
+				// We have nothing to execute, just leave.
+				if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
+					return;
+
+				while ((HasFocus) && (!Win32API.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
+				{
+					_timingData.Update();
+
+					if (!ApplicationIdleLoopMethod(_timingData))
+					{
+						// Force an exit from the thread.
+						ExitThread();
+						return;
+					}
+
+					// Give up CPU time if we're not focused.
+					if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
+						System.Threading.Thread.Sleep(UnfocusedSleepTime);
+				}
+			}
+
+			/// <summary>
+			/// Terminates the message loop of the thread.
+			/// </summary>
+			protected override void ExitThreadCore()
+			{
+				IsRunning = false;
+				base.ExitThreadCore();
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="Gorgon"/> class.
+			/// </summary>
+			/// <param name="form">The main form to use for the application.</param>
+			public GorgonContext(Form form)
+			{
+				_timingData = new GorgonFrameRate();
+				MainForm = form;
+			}
+			#endregion
+		}
+		#endregion
+
 		#region Constants.
 		private const string _logFile = "GorgonLibrary";				// Log file application name.
 		#endregion
