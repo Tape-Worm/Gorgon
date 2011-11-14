@@ -153,7 +153,7 @@ namespace GorgonLibrary
 		#region Variables.
 		private static Form _mainForm = null;									// Main application form.
 		private static GorgonFrameRate _timingData = null;						// Frame rate timing data.
-		private static bool _mustQuit = false;									// Flag to indicate that the application needs to close.
+		private static bool _quitSignalled = false;								// Flag to indicate that the application needs to close.
 		private static ApplicationLoopMethod _loop = null;						// Application loop method.
 		private static GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
 		#endregion
@@ -215,8 +215,8 @@ namespace GorgonLibrary
 			}
 			set
 			{
-				// We can't set both to NULL.
-				if ((ApplicationForm == null) && (value == null))
+				// We can't set all to NULL.
+				if ((ApplicationForm == null) && (value == null) && (ApplicationContext == null))
 					return;
 
 				// Remove the previous event.
@@ -239,38 +239,24 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return the directory for the currently running application.
 		/// </summary>
+		/// <remarks>This does not include the name of the assembly that is executing.</remarks>
 		public static string ApplicationDirectory
 		{
 			get
 			{
-				Assembly runningAssembly = Assembly.GetEntryAssembly();
-
-				if (runningAssembly == null)
-					runningAssembly = Assembly.GetCallingAssembly();
-
-				if (runningAssembly == null)
-					return string.Empty;
-
-				return Path.GetDirectoryName(runningAssembly.Location).FormatDirectory(Path.DirectorySeparatorChar);
+				return Application.StartupPath;
 			}
 		}
 
 		/// <summary>
 		/// Property to return the path for the currently running application.
 		/// </summary>
+		/// <remarks>This includes the name of the assembly that is executing.</remarks>
 		public static string ApplicationPath
 		{
 			get
 			{
-				Assembly runningAssembly = Assembly.GetEntryAssembly();
-
-				if (runningAssembly == null)
-					runningAssembly = Assembly.GetCallingAssembly();
-
-				if (runningAssembly == null)
-					return string.Empty;
-
-				return Path.GetDirectoryName(runningAssembly.Location).FormatDirectory(Path.DirectorySeparatorChar) + Path.GetFileName(runningAssembly.Location).FormatFileName();
+				return Application.ExecutablePath;
 			}
 		}
 
@@ -292,20 +278,20 @@ namespace GorgonLibrary
 		{
 			get
 			{
-
-				if (_mainForm == null)
-					return null;
+				if (ApplicationContext != null)
+					return ApplicationContext.MainForm;
 
 				return _mainForm;
 			}
-			set
-			{
-				// We can't set both to NULL.
-				if ((value == null) && (ApplicationIdleLoopMethod == null))
-					return;
+		}
 
-				_mainForm = value;
-			}
+		/// <summary>
+		/// Property to set or return the application context.
+		/// </summary>
+		public static ApplicationContext ApplicationContext
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -329,29 +315,19 @@ namespace GorgonLibrary
 
 		#region Methods.
 		/// <summary>
-		/// Function to process window messages.
-		/// </summary>
-		/// <returns>TRUE if there are messages waiting in the queue, FALSE if idle.</returns>
-		private static bool PeekMessage()
-		{
-			MSG message = new MSG();		// Message to retrieve.
-			
-			return Win32API.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove);
-		}
-
-		/// <summary>
 		/// Handles the Idle event of the Application control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private static void Application_Idle(object sender, EventArgs e)
-		{			
+		{
+			MSG message = new MSG();		// Message to retrieve.
 
 			// We have nothing to execute, just leave.
 			if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
 				return;
 			
-			while ((HasFocus) && (!PeekMessage()))
+			while ((HasFocus) && (!Win32API.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 			{
 				_timingData.Update();
 				
@@ -369,16 +345,113 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Method to initialize the main form and idle loop..
+		/// </summary>
+		/// <returns>TRUE if the application has signalled to quit before it starts running, FALSE to continue.</returns>
+		private static bool Initialize()
+		{
+			// Display the form.
+			if (ApplicationForm != null)
+				ApplicationForm.Show();
+
+			if ((ApplicationIdleLoopMethod != null) && (!_quitSignalled))
+			{
+				Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
+				Application.Idle += new EventHandler(Application_Idle);
+			}
+
+			return _quitSignalled;
+		}
+
+		/// <summary>
+		/// Method to clean up after an application exits.
+		/// </summary>
+		private static void CleanUp()
+		{
+			IsRunning = false;
+
+			if (ApplicationIdleLoopMethod != null)
+			{
+				Application.Idle -= new EventHandler(Application_Idle);
+				Log.Print("Application loop stopped.", GorgonLoggingLevel.Simple);
+			}
+
+			if (_trackedObjects != null)
+				_trackedObjects.ReleaseAll();
+
+			PlugIns.UnloadAll();
+
+			Log.Print("Shutting down.", GorgonLoggingLevel.All);
+
+			// Destroy log.
+			if (!Log.IsClosed)
+				Log.Close();
+		}
+
+		/// <summary>
 		/// Method to quit the application.
 		/// </summary>
 		public static void Quit()
 		{
-			_mustQuit = true;
+			_quitSignalled = true;
 
-			if ((!IsRunning) || (_mainForm == null))
+			if (IsRunning)
+			{
+				Application.Exit();
 				return;
+			}			
+		}
 
-			Application.Exit();
+		/// <summary>
+		/// Method to run a Gorgon application.
+		/// </summary>
+		/// <param name="context">Application context to use.</param>
+		/// <param name="loop">Idle loop method for the application.</param>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to both the <paramref name="context"/> and <paramref name="loop"/> parameters will raise an exception.</remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when the mainForm and the loop parameters are NULL.
+		/// <para>-or-</para>
+		/// Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.
+		/// </exception>
+		public static void Run(ApplicationContext context, ApplicationLoopMethod loop)
+		{
+			if ((context == null) && (loop == null))
+				throw new InvalidOperationException("Cannot run an application without either a main form, or a idle method.");
+
+			if (IsRunning)
+				throw new InvalidOperationException("The application is already running.");
+
+			ApplicationIdleLoopMethod = loop;
+			ApplicationContext = context;
+
+			try
+			{
+				if (Initialize())
+					return;
+
+				IsRunning = true;
+				Application.Run(context);
+			}
+			catch (Exception ex)
+			{
+				throw GorgonException.Catch(ex);
+			}
+			finally
+			{
+				CleanUp();
+			}
+		}
+
+		/// <summary>
+		/// Method to run a Gorgon application.
+		/// </summary>
+		/// <param name="context">Application context to use.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
+		public static void Run(ApplicationContext context)
+		{
+			GorgonDebug.AssertNull<ApplicationContext>(context, "context");
+
+			Run(context, ApplicationIdleLoopMethod);
 		}
 
 		/// <summary>
@@ -387,39 +460,28 @@ namespace GorgonLibrary
 		/// <param name="mainForm">Form to use as the main form for the application.</param>
 		/// <param name="loop">Idle loop method for the application.</param>
 		/// <remarks>Passing NULL (Nothing in VB.Net) to both the <paramref name="mainForm"/> and <paramref name="loop"/> parameters will raise an exception.</remarks>
-		/// <exception cref="System.InvalidOperationException">Thrown when the mainForm and the loop parameters are NULL.</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the mainForm and the loop parameters are NULL.
+		/// <para>-or-</para>
+		/// Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.
+		/// </exception>
 		public static void Run(Form mainForm, ApplicationLoopMethod loop)
 		{
 			if ((mainForm == null) && (loop == null))
 				throw new InvalidOperationException("Cannot run an application without either a main form, or a idle method.");
 
-			_timingData = new GorgonFrameRate();
-			ApplicationForm = mainForm;
+			if (IsRunning)
+				throw new InvalidOperationException("The application is already running.");
+
+			ApplicationIdleLoopMethod = loop;
+			_mainForm = mainForm;
 
 			try
 			{
-				if (ApplicationForm != null)
-					Log.Print("Using window '{1} ({2})' at '0x{0}' as the application window.", GorgonLoggingLevel.Verbose, ApplicationForm.Handle.FormatHex(), ApplicationForm.Name, ApplicationForm.Text);
-
-				ApplicationIdleLoopMethod = loop;
-
-				// Display the form.
-				if (ApplicationForm != null)
-					ApplicationForm.Show();
-
-				// We exited before we got to the message pump, so end the application.
-				if (_mustQuit)
+				if (Initialize())
 					return;
 
-				if (ApplicationIdleLoopMethod != null)
-				{
-					Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
-					Application.Idle += new EventHandler(Application_Idle);
-				}
-
 				IsRunning = true;
-				_mustQuit = false;
-				Application.Run(mainForm);
+				Application.Run(ApplicationForm);
 			}
 			catch (Exception ex)
 			{
@@ -427,37 +489,8 @@ namespace GorgonLibrary
 			}
 			finally
 			{
-				IsRunning = false;
-
-				if (ApplicationIdleLoopMethod != null)
-				{
-					Application.Idle -= new EventHandler(Application_Idle);
-					Log.Print("Application loop stopped.", GorgonLoggingLevel.Simple);
-				}
-
-				if (_trackedObjects != null)
-					_trackedObjects.ReleaseAll();
-
-				PlugIns.UnloadAll();
-
-				Log.Print("Shutting down.", GorgonLoggingLevel.All);
-
-				// Destroy log.
-				if (!Log.IsClosed)
-					Log.Close();
+				CleanUp();
 			}
-		}
-
-		/// <summary>
-		/// Method to run a Gorgon application.
-		/// </summary>
-		/// <param name="loop">Idle loop method for the application.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public static void Run(ApplicationLoopMethod loop)
-		{
-			GorgonDebug.AssertNull<ApplicationLoopMethod>(loop, "loop");
-
-			Run(ApplicationForm, loop);
 		}
 
 		/// <summary>
@@ -465,6 +498,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="mainForm">Form to use as the main form for the application.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
 		public static void Run(Form mainForm)
 		{
 			GorgonDebug.AssertNull<Form>(mainForm, "mainForm");
@@ -473,25 +507,37 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to force the application to process any pending messages.
+		/// Method to run a Gorgon application.
 		/// </summary>
-		/// <remarks>This method should be used when control over the message loop is necessary.</remarks>
-		/// <returns>TRUE if WM_QUIT is received, FALSE if not.</returns>
-		public static bool ProcessMessages()
+		/// <param name="loop">Idle loop method for the application.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
+		public static void Run(ApplicationLoopMethod loop)
 		{
-			MSG message = new MSG();		// Message to retrieve.
+			GorgonDebug.AssertNull<ApplicationLoopMethod>(loop, "loop");
 
-			// Forward the messages.
-			while (Win32API.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.Remove))
+			if (IsRunning)
+				throw new InvalidOperationException("The application is already running.");
+
+			ApplicationIdleLoopMethod = loop;
+
+			try
 			{
-				if ((WindowMessages)message.Message == WindowMessages.Quit)
-					return true;
-				Win32API.TranslateMessage(ref message);
-				Win32API.DispatchMessage(ref message);
-			}
+				if (Initialize())
+					return;
 
-			return false;
-		}	
+				IsRunning = true;
+				Application.Run();
+			}
+			catch (Exception ex)
+			{
+				throw GorgonException.Catch(ex);
+			}
+			finally
+			{
+				CleanUp();
+			}
+		}
 
 		/// <summary>
 		/// Function to add an object for tracking by the main Gorgon interface.
@@ -565,6 +611,7 @@ namespace GorgonLibrary
 			_trackedObjects = new GorgonTrackedObjectCollection();
 			PlugIns = new GorgonPlugInFactory();
 			Log = new GorgonLogFile(Gorgon._logFile, "Tape_Worm");
+			_timingData = new GorgonFrameRate();
 
 			// Re-open the log if it's closed.
 			if (Log.IsClosed)
@@ -588,8 +635,10 @@ namespace GorgonLibrary
 			GorgonException.Log = Log;
 			Log.Print("Initializing...", GorgonLoggingLevel.All);
 			Log.Print("Architecture: {0}", GorgonLoggingLevel.Verbose, GorgonComputerInfo.PlatformArchitecture);
+			Log.Print("Processor count: {0}", GorgonLoggingLevel.Verbose, GorgonComputerInfo.ProcessorCount);
 			Log.Print("Installed Memory: {0}", GorgonLoggingLevel.Verbose, GorgonComputerInfo.TotalPhysicalRAM.FormatMemory());
 			Log.Print("Available Memory: {0}", GorgonLoggingLevel.Verbose, GorgonComputerInfo.AvailablePhysicalRAM.FormatMemory());
+			Log.Print("Operating System: {0} ({1})", GorgonLoggingLevel.Verbose, GorgonComputerInfo.OperatingSystemVersionText, GorgonComputerInfo.OperatingSystemArchitecture); 
 
 			// Default to using 10 milliseconds of sleep time when the application is not focused.
 			UnfocusedSleepTime = 10;

@@ -124,14 +124,48 @@ namespace GorgonLibrary.Diagnostics
 		}
 
 		/// <summary>
-		/// Property to return the operating system version.
+		/// Property to return the platform for the Operating System.
 		/// </summary>
-		public static string OperatingSystemVersion
+		public static PlatformID OperatingSystemPlatform
+		{
+			get
+			{
+				return Environment.OSVersion.Platform;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the version of the operating system.
+		/// </summary>
+		public static Version OperatingSystemVersion
+		{
+			get
+			{
+				return Environment.OSVersion.Version;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the operating system version as a formatted text string.
+		/// </summary>
+		/// <remarks>This includes the platform, version number and service pack.</remarks>
+		public static string OperatingSystemVersionText
 		{
 			get
 			{
 				
-				return Environment.OSVersion.VersionString + " " + Environment.OSVersion.ServicePack;
+				return Environment.OSVersion.VersionString;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the service pack that is applied to the operating system.
+		/// </summary>
+		public static string OperatingSystemServicePack
+		{
+			get
+			{
+				return Environment.OSVersion.ServicePack;
 			}
 		}
 
