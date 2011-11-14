@@ -111,6 +111,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Refresh()
 		{
+			// Destroy previous graphics data.  Allow the user to cancel.
+			if (_graphics.CleanUpDeviceOnEnumeration())
+				return;
+
 			ClearItems();
 			
 			int adapterCount = _graphics.GIFactory.GetAdapterCount1();
@@ -160,8 +164,11 @@ namespace GorgonLibrary.Graphics
 					}						
 				}
 			}
-
+			
 			Gorgon.Log.Print("Found {0} video devices.", Diagnostics.GorgonLoggingLevel.Simple, Count);
+
+			// Use the first device by default.
+			_graphics.DeviceEnumerationComplete();
 		}
 		#endregion
 
@@ -177,7 +184,6 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("graphics");
 
 			_graphics = graphics;
-			Refresh();
 		}
 		#endregion
 	}

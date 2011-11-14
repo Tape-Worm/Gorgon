@@ -95,7 +95,6 @@ namespace GorgonLibrary.Graphics
 		private D3D.Buffer _changeBuffer = null;
 		private D3D.Buffer _noChangeBuffer = null;
 		private SlimDX.DataStream _changeStream = null;
-		private SlimDX.DataStream _noChangeStream = null;
 			
 
 		struct vertex
@@ -108,12 +107,12 @@ namespace GorgonLibrary.Graphics
 
 		private void Destroy()
 		{
+			_swapChain.Settings.Window.Resize -= new EventHandler(Window_Resize);
+
 			if (_textureView != null)
 				_textureView.Dispose();
 			if (_changeStream != null)
 				_changeStream.Dispose();
-			if (_noChangeStream != null)
-				_noChangeStream.Dispose();
 			if (_changeBuffer != null)
 				_changeBuffer.Dispose();
 			if (_noChangeBuffer != null)
@@ -149,6 +148,8 @@ namespace GorgonLibrary.Graphics
 			string errors = string.Empty;
 			Shaders.ShaderFlags flags = Shaders.ShaderFlags.Debug;
 
+			_swapChain.Settings.Window.Resize += new EventHandler(Window_Resize);
+
 			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level11_0_SM5) == DeviceFeatureLevel.Level11_0_SM5)
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri11);
 			if (((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_1_SM4) == DeviceFeatureLevel.Level10_1_SM4) ||
@@ -170,11 +171,6 @@ namespace GorgonLibrary.Graphics
 			_psShaderCode = Shaders.ShaderBytecode.Compile(_shader, "PS", "ps_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null, out errors);
 			_ps = new D3D.PixelShader(_device, _psShaderCode);
 
-			//_effect = new D3D.Effect(_device, _shaderCode);
-			//_matrix = _effect.GetConstantBufferByName("_transform");
-			//_alpha = _effect.GetVariableByName("_alpha").AsScalar();
-			
-			//_pass = _effect.GetTechniqueByIndex(0).GetPassByIndex(0);			
 			_layout = new D3D.InputLayout(_device, _vsShaderCode, new[] {
 			new D3D.InputElement("POSITION", 0, GI.Format.R32G32B32A32_Float, 0, 0),
 			new D3D.InputElement("COLOR", 0, GI.Format.R32G32B32A32_Float, 16, 0),
@@ -190,7 +186,7 @@ namespace GorgonLibrary.Graphics
 			new vertex() { Position = new SlimDX.Vector4(-0.5f, 0.5f, 0.0f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(0, 0)},
 			new vertex() { Position = new SlimDX.Vector4(0.5f, 0.5f, 0.0f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(1.0f, 0)},
 			new vertex() { Position = new SlimDX.Vector4(-0.5f, -0.5f, 0.0f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(0, 1.0f)},
-				new vertex() { Position = new SlimDX.Vector4(0.5f, -0.5f, 0.0f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(1.0f, 1.0f)}});
+				new vertex() { Position = new SlimDX.Vector4(0.5f, -0.5f, 0.12f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(1.0f, 1.0f)}});
 				stream.Position = 0;
 
 				_vertices = new D3D.Buffer(_device, stream, new D3D.BufferDescription()
@@ -264,21 +260,20 @@ namespace GorgonLibrary.Graphics
 			//SlimDX.Matrix.Transpose(ref matrix.Projection, out matrix.Projection);
 			//SlimDX.Matrix.Transpose(ref matrix.View, out matrix.View);
 
-			_noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true);				
-			_noChangeStream.Write<MatrixBuffer>(matrix);
-			_noChangeStream.Position = 0;
-			_noChangeBuffer = new D3D.Buffer(_device, _noChangeStream, new D3D.BufferDescription()
-				{
-					BindFlags = D3D.BindFlags.ConstantBuffer,
-					CpuAccessFlags = D3D.CpuAccessFlags.None,
-					OptionFlags = D3D.ResourceOptionFlags.None,
-					SizeInBytes = Marshal.SizeOf(typeof(MatrixBuffer)),
-					StructureByteStride = 0,
-					Usage = D3D.ResourceUsage.Default
-				});
-
-			_noChangeStream.Position = 0;
-			_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _noChangeStream), _noChangeBuffer, 0);
+			using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
+			{
+				noChangeStream.Write<MatrixBuffer>(matrix);
+				noChangeStream.Position = 0;
+				_noChangeBuffer = new D3D.Buffer(_device, noChangeStream, new D3D.BufferDescription()
+					{
+						BindFlags = D3D.BindFlags.ConstantBuffer,
+						CpuAccessFlags = D3D.CpuAccessFlags.None,
+						OptionFlags = D3D.ResourceOptionFlags.None,
+						SizeInBytes = Marshal.SizeOf(typeof(MatrixBuffer)),
+						StructureByteStride = 0,
+						Usage = D3D.ResourceUsage.Default
+					});
+			}
 
 			UpdateBuffer updatebuffer = new UpdateBuffer();
 			updatebuffer.World = SlimDX.Matrix.Identity;
@@ -302,6 +297,24 @@ namespace GorgonLibrary.Graphics
 			_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
 			
 			CreateBlend();
+		}
+
+		/// <summary>
+		/// Handles the Resize event of the Window control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		void Window_Resize(object sender, EventArgs e)
+		{
+			MatrixBuffer matrix = new MatrixBuffer();
+			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Value.Width / (float)_swapChain.Settings.VideoMode.Value.Height, 0.1f, 1000.0f));
+			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
+			using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
+			{
+				noChangeStream.Write<MatrixBuffer>(matrix);
+				noChangeStream.Position = 0;
+				_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, noChangeStream), _noChangeBuffer, 0);
+			}
 		}
 
 		/// <summary>
