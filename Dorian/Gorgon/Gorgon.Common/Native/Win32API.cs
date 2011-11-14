@@ -76,9 +76,9 @@ namespace GorgonLibrary.Native
 		/// <summary>Message to process.</summary>
 		public uint Message;
 		/// <summary>Window message parameter 1.</summary>
-		public uint wParam;
+		public IntPtr wParam;
 		/// <summary>Window message parameter 2.</summary>
-		public uint lParam;
+		public IntPtr lParam;
 		/// <summary>Time message was sent?</summary>
 		public uint time;
 		/// <summary>Mouse pointer position.</summary>
