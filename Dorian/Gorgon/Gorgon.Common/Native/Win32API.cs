@@ -74,7 +74,7 @@ namespace GorgonLibrary.Native
 		/// <summary>Window handle.</summary>
 		public IntPtr hwnd;
 		/// <summary>Message to process.</summary>
-		public WindowMessages Message;
+		public uint Message;
 		/// <summary>Window message parameter 1.</summary>
 		public uint wParam;
 		/// <summary>Window message parameter 2.</summary>
@@ -100,7 +100,7 @@ namespace GorgonLibrary.Native
 	/// 	<para>
 	/// Please note that a lot of the enumerators/structures have slightly different names than their Win32 counterparts.  This was done for the sake of readability.  This does NOT affect their results or their effect on the results of their related functionality.
 	/// </para>
-	/// </remarks>
+	/// </remarks>	
 	[System.Security.SuppressUnmanagedCodeSecurity]
 	internal static class Win32API
 	{
@@ -171,8 +171,9 @@ namespace GorgonLibrary.Native
 		/// <param name="wFilterMax">Maximum message.</param>
 		/// <param name="flags">Flags for the function.</param>
 		/// <returns>TRUE if messages are ready for processing, FALSE if not.</returns>
+		[return: MarshalAs(UnmanagedType.Bool)]
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
-		public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, int wFilterMin, int wFilterMax, PeekMessageFlags flags);
+		public static extern bool PeekMessage(ref MSG msg, IntPtr hwnd, uint wFilterMin, uint wFilterMax, PeekMessageFlags flags);
 
 		/// <summary>
 		/// Function to translate keyboard accelerator keys.

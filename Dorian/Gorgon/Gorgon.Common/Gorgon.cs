@@ -61,103 +61,36 @@ namespace GorgonLibrary
 	/// </remarks>
 	public static class Gorgon
 	{
-		#region Classes.
-		/// <summary>
-		/// The application context for Gorgon.
-		/// </summary>
-		internal class GorgonContext
-			: ApplicationContext
-		{
-			#region Variables.
-			private GorgonFrameRate _timingData = null;								// Frame rate timing data.
-			#endregion
-
-			#region Properties.
-			/// <summary>
-			/// Property to return if the application has focus.
-			/// </summary>
-			private bool HasFocus
-			{
-				get
-				{
-					if ((Gorgon.AllowBackground) || (Gorgon.ApplicationForm == null))
-						return true;
-
-					if ((ApplicationForm.WindowState == FormWindowState.Minimized) || (!ApplicationForm.ContainsFocus))
-						return false;
-
-					return true;
-				}
-			}
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Handles the Idle event of the Application control.
-			/// </summary>
-			/// <param name="sender">The source of the event.</param>
-			/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-			internal void Application_Idle(object sender, EventArgs e)
-			{
-				MSG message = new MSG();		// Message to retrieve.
-
-				// We have nothing to execute, just leave.
-				if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
-					return;
-
-				while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
-				{
-					_timingData.Update();
-
-					if (!ApplicationIdleLoopMethod(_timingData))
-					{
-						// Force an exit from the thread.
-						ExitThread();
-						return;
-					}
-
-					// Give up CPU time if we're not focused.
-					if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
-						System.Threading.Thread.Sleep(UnfocusedSleepTime);
-				}
-			}
-
-			/// <summary>
-			/// Terminates the message loop of the thread.
-			/// </summary>
-			protected override void ExitThreadCore()
-			{
-				IsRunning = false;
-				base.ExitThreadCore();
-			}
-			#endregion
-
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="Gorgon"/> class.
-			/// </summary>
-			/// <param name="form">The main form to use for the application.</param>
-			public GorgonContext(Form form)
-			{
-				_timingData = new GorgonFrameRate();
-				MainForm = form;
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Constants.
 		private const string _logFile = "GorgonLibrary";				// Log file application name.
 		#endregion
 
 		#region Variables.
+		private static Form _mainForm = null;									// Main application form.
+		private static GorgonFrameRate _timingData = null;						// Frame rate timing data.
 		private static bool _mustQuit = false;									// Flag to indicate that the application needs to close.
 		private static ApplicationLoopMethod _loop = null;						// Application loop method.
-		private static GorgonContext _context = null;							// Gorgon application context.
 		private static GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
 		#endregion
 
-		#region Properties.		
+		#region Properties.
+		/// <summary>
+		/// Property to return if the application has focus.
+		/// </summary>
+		private static bool HasFocus
+		{
+			get
+			{
+				if ((Gorgon.AllowBackground) || (Gorgon.ApplicationForm == null))
+					return true;
+
+				if ((ApplicationForm.WindowState == FormWindowState.Minimized) || (!ApplicationForm.ContainsFocus))
+					return false;
+
+				return true;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the amount of time in milliseconds to sleep when the application window is not focused.
 		/// </summary>
@@ -197,9 +130,6 @@ namespace GorgonLibrary
 			}
 			set
 			{
-				if (_context == null)
-					return;
-
 				// We can't set both to NULL.
 				if ((ApplicationForm == null) && (value == null))
 					return;
@@ -207,7 +137,7 @@ namespace GorgonLibrary
 				// Remove the previous event.
 				if (IsRunning)
 				{
-					Application.Idle -= new EventHandler(_context.Application_Idle);
+					Application.Idle -= new EventHandler(Application_Idle);
 					Log.Print("Application loop stopped.", GorgonLoggingLevel.Simple);
 				}
 				
@@ -216,7 +146,7 @@ namespace GorgonLibrary
 				if ((value != null) && (IsRunning))
 				{
 					Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
-					Application.Idle += new EventHandler(_context.Application_Idle);
+					Application.Idle += new EventHandler(Application_Idle);
 				}
 			}
 		}
@@ -277,21 +207,19 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (_context == null)
+
+				if (_mainForm == null)
 					return null;
 
-				return _context.MainForm;
+				return _mainForm;
 			}
 			set
 			{
-				if (_context == null)
-					return;
-
 				// We can't set both to NULL.
 				if ((value == null) && (ApplicationIdleLoopMethod == null))
 					return;
 
-				_context.MainForm = value;
+				_mainForm = value;
 			}
 		}
 
@@ -316,16 +244,56 @@ namespace GorgonLibrary
 
 		#region Methods.
 		/// <summary>
+		/// Function to process window messages.
+		/// </summary>
+		/// <returns>TRUE if there are messages waiting in the queue, FALSE if idle.</returns>
+		private static bool PeekMessage()
+		{
+			MSG message = new MSG();		// Message to retrieve.
+			
+			return Win32API.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove);
+		}
+
+		/// <summary>
+		/// Handles the Idle event of the Application control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private static void Application_Idle(object sender, EventArgs e)
+		{			
+
+			// We have nothing to execute, just leave.
+			if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
+				return;
+			
+			while ((HasFocus) && (!PeekMessage()))
+			{
+				/*					_timingData.Update();
+
+									if (!ApplicationIdleLoopMethod(_timingData))
+									{
+										// Force an exit from the thread.
+										ExitThread();
+										return;
+									}
+
+									// Give up CPU time if we're not focused.
+									if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
+										System.Threading.Thread.Sleep(UnfocusedSleepTime);*/
+			}
+		}
+
+		/// <summary>
 		/// Method to quit the application.
 		/// </summary>
 		public static void Quit()
 		{
 			_mustQuit = true;
 
-			if ((!IsRunning) || (_context == null))
+			if ((!IsRunning) || (_mainForm == null))
 				return;
 
-			_context.ExitThread();			
+			Application.Exit();
 		}
 
 		/// <summary>
@@ -340,7 +308,7 @@ namespace GorgonLibrary
 			if ((mainForm == null) && (loop == null))
 				throw new InvalidOperationException("Cannot run an application without either a main form, or a idle method.");
 
-			_context = new GorgonContext(mainForm);
+			_timingData = new GorgonFrameRate();
 			ApplicationForm = mainForm;
 
 			try
@@ -351,8 +319,8 @@ namespace GorgonLibrary
 				ApplicationIdleLoopMethod = loop;
 
 				// Display the form.
-				if (ApplicationForm != null)
-					ApplicationForm.Show();
+/*				if (ApplicationForm != null)
+					ApplicationForm.Show();*/
 
 				// We exited before we got to the message pump, so end the application.
 				if (_mustQuit)
@@ -361,12 +329,12 @@ namespace GorgonLibrary
 				if (ApplicationIdleLoopMethod != null)
 				{
 					Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
-					Application.Idle += new EventHandler(_context.Application_Idle);
+					Application.Idle += new EventHandler(Application_Idle);
 				}
 
 				IsRunning = true;
 				_mustQuit = false;
-				Application.Run(_context);
+				Application.Run(mainForm);
 			}
 			catch (Exception ex)
 			{
@@ -378,7 +346,7 @@ namespace GorgonLibrary
 
 				if (ApplicationIdleLoopMethod != null)
 				{
-					Application.Idle -= new EventHandler(_context.Application_Idle);
+					Application.Idle -= new EventHandler(Application_Idle);
 					Log.Print("Application loop stopped.", GorgonLoggingLevel.Simple);
 				}
 
@@ -392,10 +360,6 @@ namespace GorgonLibrary
 				// Destroy log.
 				if (!Log.IsClosed)
 					Log.Close();
-
-				if (_context != null)
-					_context.Dispose();
-				_context = null;
 			}
 		}
 
@@ -430,19 +394,13 @@ namespace GorgonLibrary
 		/// <returns>TRUE if WM_QUIT is received, FALSE if not.</returns>
 		public static bool ProcessMessages()
 		{
-			if (_context == null)
-				return true;
-
 			MSG message = new MSG();		// Message to retrieve.
 
 			// Forward the messages.
-			while (Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.Remove))
+			while (Win32API.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.Remove))
 			{
-				if (message.Message == WindowMessages.Quit)
-				{
-					_context.ExitThread();
+				if ((WindowMessages)message.Message == WindowMessages.Quit)
 					return true;
-				}
 				Win32API.TranslateMessage(ref message);
 				Win32API.DispatchMessage(ref message);
 			}
@@ -518,7 +476,7 @@ namespace GorgonLibrary
 		/// Initializes the <see cref="Gorgon"/> class.
 		/// </summary>
 		static Gorgon()		
-		{
+		{			
 			_trackedObjects = new GorgonTrackedObjectCollection();
 			PlugIns = new GorgonPlugInFactory();
 			Log = new GorgonLogFile(Gorgon._logFile, "Tape_Worm");

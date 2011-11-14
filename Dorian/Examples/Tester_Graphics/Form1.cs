@@ -80,16 +80,24 @@ namespace Tester_Graphics
 
 		private bool Idle(GorgonFrameRate timing)
 		{			
-			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
+			//Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
 
-			if (_test1 != null)
+			try
 			{
-				_test1.Transform(timing.FrameDelta);
-				_test1.Draw();
-			}
+				if (_test1 != null)
+				{
+					//_test1.Transform(timing.FrameDelta);
+					//_test1.Draw();
+				}
 
-			if (_test2 != null)
-				_test2.Draw();
+				if (_test2 != null)
+					_test2.Draw();
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonLibrary.UI.GorgonDialogs.ErrorBox(this, ex));
+				return false;
+			}
 
 			return true;
 		}
@@ -114,9 +122,7 @@ namespace Tester_Graphics
 			{
 				this.panelDX.Visible = false;
 
-				Gorgon.PlugIns.SearchPaths.Add(@"..\..\..\..\PlugIns\bin\debug");
-
-				GorgonFrameRate.UseHighResolutionTimer = false;
+				GorgonFrameRate.UseHighResolutionTimer = true;
 
 				Gorgon.UnfocusedSleepTime = 1;
 				Gorgon.AllowBackground = true;
@@ -124,7 +130,7 @@ namespace Tester_Graphics
 				this.Show();
 
 				ClientSize = new System.Drawing.Size(640, 480);
-
+/*
 #if MULTIMON
 				form2 = new Form2();
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
@@ -134,7 +140,7 @@ namespace Tester_Graphics
 				//_graphics = new GorgonGraphics();
  
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
-						 where videoMode.Width == 1024 && videoMode.Height == 768 && videoMode.Format == GorgonBufferFormat.B8G8R8A8_UIntNormal
+						 where videoMode.Width == 1280 && videoMode.Height == 800 && videoMode.Format == GorgonBufferFormat.B8G8R8A8_UIntNormal
 						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
 						 select videoMode).First();
 
@@ -162,8 +168,8 @@ namespace Tester_Graphics
 				_test1 = new Test(_swapChain);
 #if MULTIMON
 				_test2 = new Test(_swapChain2);
-#endif
-
+#endif*/
+				
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}
 			catch (Exception ex)

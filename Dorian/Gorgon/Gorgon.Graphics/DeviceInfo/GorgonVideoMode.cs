@@ -60,6 +60,19 @@ namespace GorgonLibrary.Graphics
 		public int RefreshRateDenominator;					
 		#endregion
 
+		#region Properties.
+		/// <summary>
+		/// Property to return the video mode width and height as a .NET Size value.
+		/// </summary>
+		public System.Drawing.Size Size
+		{
+			get
+			{
+				return new System.Drawing.Size(Width, Height);
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Converts between a DXGI mode description and a GorgonVideoMode.
@@ -143,6 +156,23 @@ namespace GorgonLibrary.Graphics
 
 			return false;
 		}
+
+		/// <summary>
+		/// Method to set the width and height of the video mode.
+		/// </summary>
+		/// <param name="width">Width of the video mode, in pixels.</param>
+		/// <param name="height">Height of the video mode, in pixels.</param>
+		public void SetSize(int width, int height)
+		{
+			if (width < 1)
+				throw new ArgumentException("Cannot be less than 1 pixel.", "width");
+
+			if (height < 1)
+				throw new ArgumentException("Cannot be less than 1 pixel.", "width");
+
+			Width = width;
+			Height = height;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -171,6 +201,29 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">The format for the video mode.</param>
 		public GorgonVideoMode(int width, int height, GorgonBufferFormat format)
 			: this(width, height, format, 0, 0)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVideoMode"/> struct.
+		/// </summary>
+		/// <param name="width">The width of the new video mode.</param>
+		/// <param name="height">The height of the new video mode.</param>
+		/// <param name="mode">The previous mode to copy settings from.</param>
+		/// <remarks>Use this to create a new video mode with the specified with and height.</remarks>
+		public GorgonVideoMode(int width, int height, GorgonVideoMode mode)
+			: this(width, height, mode.Format, mode.RefreshRateNumerator, mode.RefreshRateDenominator)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVideoMode"/> struct.
+		/// </summary>
+		/// <param name="size">The size of the new video mode.</param>
+		/// <param name="mode">The previous mode to copy settings from.</param>
+		/// <remarks>Use this to create a new video mode with the specified with and height.</remarks>
+		public GorgonVideoMode(System.Drawing.Size size, GorgonVideoMode mode)
+			: this(size.Width, size.Height, mode.Format, mode.RefreshRateNumerator, mode.RefreshRateDenominator)
 		{
 		}
 		#endregion
