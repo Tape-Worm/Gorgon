@@ -36,36 +36,40 @@ using D3D = SlimDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Available D3D feature levels for the video device.
+	/// Available feature levels for the video device.
 	/// </summary>
 	[Flags()]
 	public enum DeviceFeatureLevel
 	{
 		/// <summary>
-		/// Gorgon does not support this direct 3D level.
+		/// Gorgon does not support any feature level for the video device.
 		/// </summary>
 		/// <remarks>This value is exclusive.</remarks>
 		Unsupported = 0,
 		/// <summary>
-		/// Direct 3D 11, shader model 5.0.
+		/// Shader model 5.0.
 		/// </summary>
-		Level11_0_SM5 = 1,
+		SM5 = 1,
 		/// <summary>
-		/// Direct 3D 10.1, shader model 4.0.
+		/// Shader model 4.0 with a 4.1 profile.
 		/// </summary>
-		Level10_1_SM4 = 2,
+		/// <remarks>This the equivalent of a Direct 3D 10.1 video device.</remarks>
+		SM4_1 = 2,
 		/// <summary>
-		/// Direct 3D 10, shader model 4.0.
+		/// Shader model 4.0
 		/// </summary>
-		Level10_0_SM4 = 4,
+		/// <remarks>This the equivalent of a Direct 3D 10.0 video device.</remarks>
+		SM4 = 4,
 		/// <summary>
-		/// Direct 3D 9, shader model 2.x.
+		/// Shader model 2.0, with a 2.0a vertex shader profile and a 2.0b pixel shader profile.
 		/// </summary>
-		/// <remarks>Why SM 2.x and not SM 3.0?  I asked that too (especially since SM 3.0 is far superior in my opinion).  Apparently it's due to the sheer number of SM 2.x cards available when Microsoft was trying to 
-		/// factor the most common feature set amongst all video cards.  It's dumb I know, but I look at it as yet another reason to dump the old D3D9 interfaces 
-		/// and video devices and move on to 10.x or higher.  Please note that It was stated when I was deciding to move Gorgon to Direct 3D 11 that the downlevel support for D3D9
-		/// present in D3D11 was limited.  Regardless, I have no control over this.  It is the downlevel support in D3D 11 that is capping the shader model to 2.x.</remarks>
-		Level9_0_SM2x = 8
+		/// <remarks>
+		/// This the equivalent of a Direct 3D 9.0c video device.
+		/// <para>Please note that this is for video cards that support a vertex shader model of 2.0a and a pixel shader model of 2.0b.  Nothing below that (i.e. vanilla SM 2.0) will work.  This is a limitation
+		/// imposed by Gorgon to keep the code paths smaller.</para>
+		/// <para>The actual restriction of shader model 2.0 is from the Direct 3D 11 API itself.  There is no way around this except to upgrade the hardware to shader model 4 hardware.</para>
+		/// </remarks>
+		SM2_a_b = 8
 	}
 
 	/// <summary>
@@ -231,16 +235,16 @@ namespace GorgonLibrary.Graphics
 			switch (featureLevel)
 			{
 				case D3D.FeatureLevel.Level_11_0:
-					featureLevels = DeviceFeatureLevel.Level11_0_SM5 | DeviceFeatureLevel.Level10_1_SM4  | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM2x;
+					featureLevels = DeviceFeatureLevel.SM5 | DeviceFeatureLevel.SM4_1  | DeviceFeatureLevel.SM4 | DeviceFeatureLevel.SM2_a_b;
 					break;
 				case D3D.FeatureLevel.Level_10_1:
-					featureLevels = DeviceFeatureLevel.Level10_1_SM4 | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM2x;
+					featureLevels = DeviceFeatureLevel.SM4_1 | DeviceFeatureLevel.SM4 | DeviceFeatureLevel.SM2_a_b;
 					break;
 				case D3D.FeatureLevel.Level_10_0:
-					featureLevels = DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM2x;
+					featureLevels = DeviceFeatureLevel.SM4 | DeviceFeatureLevel.SM2_a_b;
 					break;
 				case D3D.FeatureLevel.Level_9_3:
-					featureLevels = DeviceFeatureLevel.Level9_0_SM2x;
+					featureLevels = DeviceFeatureLevel.SM2_a_b;
 					break;
 			}
 
@@ -259,11 +263,11 @@ namespace GorgonLibrary.Graphics
 		{
 			switch (featureLevel)
 			{
-				case DeviceFeatureLevel.Level11_0_SM5:
+				case DeviceFeatureLevel.SM5:
 					return D3D.FeatureLevel.Level_11_0;
-				case DeviceFeatureLevel.Level10_1_SM4:
+				case DeviceFeatureLevel.SM4_1:
 					return D3D.FeatureLevel.Level_10_1;
-				case DeviceFeatureLevel.Level10_0_SM4:
+				case DeviceFeatureLevel.SM4:
 					return D3D.FeatureLevel.Level_10_0;
 				default:
 					return D3D.FeatureLevel.Level_9_3;

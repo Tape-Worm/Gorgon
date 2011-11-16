@@ -136,7 +136,7 @@ namespace Tester_Graphics
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 				form2.Show();
 #endif
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.Level9_0_SM2x);
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
 				//_graphics = new GorgonGraphics();
  
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
