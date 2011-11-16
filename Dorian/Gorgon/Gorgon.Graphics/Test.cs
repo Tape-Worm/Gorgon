@@ -158,7 +158,7 @@ namespace GorgonLibrary.Graphics
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri10);
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 			}
-			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level9_0_SM3) == DeviceFeatureLevel.Level9_0_SM3)
+			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level9_0_SM2x) == DeviceFeatureLevel.Level9_0_SM2x)
 			{
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri93);
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
