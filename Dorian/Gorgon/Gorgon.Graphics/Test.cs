@@ -150,15 +150,15 @@ namespace GorgonLibrary.Graphics
 
 			_swapChain.Settings.Window.Resize += new EventHandler(Window_Resize);
 
-			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level11_0_SM5) == DeviceFeatureLevel.Level11_0_SM5)
+			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM5) == DeviceFeatureLevel.SM5)
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri11);
-			if (((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_1_SM4) == DeviceFeatureLevel.Level10_1_SM4) ||
-				((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level10_0_SM4) == DeviceFeatureLevel.Level10_0_SM4))
+			if (((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM4_1) == DeviceFeatureLevel.SM4_1) ||
+				((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM4) == DeviceFeatureLevel.SM4))
 			{
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri10);
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 			}
-			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.Level9_0_SM2x) == DeviceFeatureLevel.Level9_0_SM2x)
+			if ((_swapChain.Graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM2_a_b) == DeviceFeatureLevel.SM2_a_b)
 			{
 				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri93);
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;

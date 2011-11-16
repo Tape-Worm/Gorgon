@@ -479,7 +479,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
 		/// </exception>
 		public GorgonGraphics()
-			: this(DeviceFeatureLevel.Level11_0_SM5 | DeviceFeatureLevel.Level10_1_SM4 | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM2x)
+			: this(DeviceFeatureLevel.SM5 | DeviceFeatureLevel.SM4_1 | DeviceFeatureLevel.SM4 | DeviceFeatureLevel.SM2_a_b)
 		{
 		}
 		#endregion
