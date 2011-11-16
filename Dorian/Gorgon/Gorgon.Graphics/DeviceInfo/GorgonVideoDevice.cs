@@ -59,9 +59,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		Level10_0_SM4 = 4,
 		/// <summary>
-		/// Direct 3D 9, shader model 3.0.
+		/// Direct 3D 9, shader model 2.x.
 		/// </summary>
-		Level9_0_SM3 = 8
+		/// <remarks>Why SM 2.x and not SM 3.0?  I asked that too (especially since SM 3.0 is far superior in my opinion).  Apparently it's due to the sheer number of SM 2.x cards available when Microsoft was trying to 
+		/// factor the most common feature set amongst all video cards.  It's dumb I know, but I look at it as yet another reason to dump the old D3D9 interfaces 
+		/// and video devices and move on to 10.x or higher.  Please note that It was stated when I was deciding to move Gorgon to Direct 3D 11 that the downlevel support for D3D9
+		/// present in D3D11 was limited.  Regardless, I have no control over this.  It is the downlevel support in D3D 11 that is capping the shader model to 2.x.</remarks>
+		Level9_0_SM2x = 8
 	}
 
 	/// <summary>
@@ -227,16 +231,16 @@ namespace GorgonLibrary.Graphics
 			switch (featureLevel)
 			{
 				case D3D.FeatureLevel.Level_11_0:
-					featureLevels = DeviceFeatureLevel.Level11_0_SM5 | DeviceFeatureLevel.Level10_1_SM4  | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					featureLevels = DeviceFeatureLevel.Level11_0_SM5 | DeviceFeatureLevel.Level10_1_SM4  | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM2x;
 					break;
 				case D3D.FeatureLevel.Level_10_1:
-					featureLevels = DeviceFeatureLevel.Level10_1_SM4 | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					featureLevels = DeviceFeatureLevel.Level10_1_SM4 | DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM2x;
 					break;
 				case D3D.FeatureLevel.Level_10_0:
-					featureLevels = DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM3;
+					featureLevels = DeviceFeatureLevel.Level10_0_SM4 | DeviceFeatureLevel.Level9_0_SM2x;
 					break;
 				case D3D.FeatureLevel.Level_9_3:
-					featureLevels = DeviceFeatureLevel.Level9_0_SM3;
+					featureLevels = DeviceFeatureLevel.Level9_0_SM2x;
 					break;
 			}
 
