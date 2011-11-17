@@ -160,16 +160,20 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Method to set the width and height of the video mode.
 		/// </summary>
+		/// <param name="size">Width and height of the video mode, in pixels.</param>
+		public void SetSize(System.Drawing.Size size)
+		{
+			Width = size.Width;
+			Height = size.Height;
+		}
+
+		/// <summary>
+		/// Method to set the width and height of the video mode.
+		/// </summary>
 		/// <param name="width">Width of the video mode, in pixels.</param>
 		/// <param name="height">Height of the video mode, in pixels.</param>
 		public void SetSize(int width, int height)
 		{
-			if (width < 1)
-				throw new ArgumentException("Cannot be less than 1 pixel.", "width");
-
-			if (height < 1)
-				throw new ArgumentException("Cannot be less than 1 pixel.", "width");
-
 			Width = width;
 			Height = height;
 		}

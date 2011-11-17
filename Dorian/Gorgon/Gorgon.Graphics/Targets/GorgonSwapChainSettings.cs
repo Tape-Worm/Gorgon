@@ -73,10 +73,56 @@ namespace GorgonLibrary.Graphics
 	public class GorgonSwapChainSettings
 	{
 		#region Variables.
-		private int _backBufferCount = 2;			// Number of back buffers.
+		private int _backBufferCount = 2;									// Number of back buffers.
+		private GorgonVideoMode _mode = default(GorgonVideoMode);			// Gorgon video mode.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the width and height of the swap chain video mode.
+		/// </summary>
+		public System.Drawing.Size Size
+		{
+			get
+			{
+				return VideoMode.Size;
+			}
+			set
+			{
+				VideoMode.SetSize(value);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the width of the swap chain video mode.
+		/// </summary>
+		public int Width
+		{
+			get
+			{
+				return VideoMode.Width;
+			}
+			set
+			{
+				_mode.Width = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the height of the swap chain video mode.
+		/// </summary>
+		public int Height
+		{
+			get
+			{
+				return VideoMode.Height;
+			}
+			set
+			{
+				_mode.Height = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the window that is bound with the swap chain.
 		/// </summary>
@@ -90,11 +136,17 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the video mode to use.
 		/// </summary>
-		/// <remarks>Leave this value as NULL (Nothing in VB.Net) to let Gorgon find the best video mode based on the window dimensions and desktop format.</remarks>
-		public GorgonVideoMode? VideoMode
+		/// <remarks>Leaving the width, height or format undefined (i.e. 0, 0, or Unknown) will tell Gorgon to find the best video mode based on the window dimensions and desktop format.</remarks>
+		public GorgonVideoMode VideoMode
 		{
-			get;
-			set;
+			get
+			{
+				return _mode;
+			}
+			set
+			{
+				_mode = value;
+			}
 		}
 
 		/// <summary>
@@ -159,10 +211,10 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return whether to allow the swap chain to auto-rotate the contents to match the orientation of the output.
+		/// Property to set or return the depth and/or stencil buffer format.
 		/// </summary>
-		/// <remarks>Setting this value to TRUE will introduce a slight performance penalty, and is set to FALSE by default.  This setting is for full screen only.</remarks>
-		public bool AllowRotation
+		/// <remarks>Setting this value to Unknown will create the swap chain without a depth buffer.  The default value is Unknown.</remarks>
+		public GorgonBufferFormat DepthStencilFormat
 		{
 			get;
 			set;
@@ -190,11 +242,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonSwapChainSettings()
 		{
-			IsWindowed = true;
+			IsWindowed = true;			
 			Flags = SwapChainUsageFlags.RenderTarget;
 			SwapEffect = Graphics.SwapEffect.Discard;
 			MultiSample = new GorgonMultiSampling(1, 0);
-			AllowRotation = false;
+			DepthStencilFormat = GorgonBufferFormat.Unknown;
 		}
 		#endregion
 	}

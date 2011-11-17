@@ -445,7 +445,7 @@ namespace GorgonLibrary
 		/// Method to run a Gorgon application.
 		/// </summary>
 		/// <param name="context">Application context to use.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
 		public static void Run(ApplicationContext context)
 		{

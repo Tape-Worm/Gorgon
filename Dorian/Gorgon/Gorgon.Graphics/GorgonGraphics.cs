@@ -413,7 +413,7 @@ namespace GorgonLibrary.Graphics
 			if (settings == null)
 				throw new ArgumentNullException("settings");
 
-			GorgonSwapChain.ValidateSwapChainSettings(this, settings, null);
+			GorgonSwapChain.ValidateSwapChainSettings(this, settings);
 
 			swapChain = new GorgonSwapChain(this, name, settings);
 			swapChain.Initialize();
