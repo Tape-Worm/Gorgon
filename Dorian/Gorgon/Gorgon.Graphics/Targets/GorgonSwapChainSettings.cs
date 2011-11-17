@@ -219,6 +219,21 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the depth and/or stencil buffer shader format.
+		/// </summary>
+		/// <remarks>This is used for reading back the depth buffer in a shader as a texture.  The shader format should be typeless, while the 
+		/// <see cref="GorgonLibrary.Graphics.GorgonSwapChainSettings.DepthStencilFormat">DepthStencilFormat</see> should be set 
+		/// to a depth/stencil format such as D32_Float.
+		/// <para>If this value is set to Unknown (the default value), then the depth buffer cannot be read.  Also, this property is ignored if the DepthStencilFormat 
+		/// property is set to Unknown.</para>
+		/// </remarks>
+		public GorgonBufferFormat DepthStencilShaderFormat
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -247,6 +262,7 @@ namespace GorgonLibrary.Graphics
 			SwapEffect = Graphics.SwapEffect.Discard;
 			MultiSample = new GorgonMultiSampling(1, 0);
 			DepthStencilFormat = GorgonBufferFormat.Unknown;
+			DepthStencilShaderFormat = GorgonBufferFormat.Unknown;
 		}
 		#endregion
 	}

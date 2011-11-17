@@ -94,7 +94,10 @@ namespace GorgonLibrary.Graphics
 		private D3D.PixelShader _ps = null;
 		private D3D.Buffer _changeBuffer = null;
 		private D3D.Buffer _noChangeBuffer = null;
+		private D3D.DepthStencilState _depthStateNoAlpha = null;
+		private D3D.DepthStencilState _depthStateAlpha = null;
 		private SlimDX.DataStream _changeStream = null;
+		Random _rnd = new Random();
 			
 
 		struct vertex
@@ -109,6 +112,10 @@ namespace GorgonLibrary.Graphics
 		{
 			_swapChain.Settings.Window.Resize -= new EventHandler(Window_Resize);
 
+			if (_depthStateAlpha != null)
+				_depthStateAlpha.Dispose();
+			if (_depthStateNoAlpha != null)
+				_depthStateNoAlpha.Dispose();
 			if (_textureView != null)
 				_textureView.Dispose();
 			if (_changeStream != null)
@@ -218,8 +225,22 @@ namespace GorgonLibrary.Graphics
 				_index.DebugName = _swapChain.Name + " Test Index Buffer";
 			}
 
-			_texture = D3D.Texture2D.FromFile(_device, @"..\..\..\..\Resources\Images\VBback.jpg");
+			D3D.ImageLoadInformation info = new D3D.ImageLoadInformation();
+			info.BindFlags = D3D.BindFlags.ShaderResource;
+			info.CpuAccessFlags = D3D.CpuAccessFlags.None;
+			info.Depth = 0;
+			info.FilterFlags = D3D.FilterFlags.None;
+			info.FirstMipLevel = 0;
+			info.Format = GI.Format.B8G8R8A8_UNorm;
+			info.Height = 0;
+			info.Width = 0;
+			info.MipFilterFlags = D3D.FilterFlags.None;
+			info.MipLevels = 1;
+			info.OptionFlags = D3D.ResourceOptionFlags.None;
+			info.Usage = D3D.ResourceUsage.Default;
+			
 
+			_texture = D3D.Texture2D.FromFile(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
 			_textureView = new D3D.ShaderResourceView(_device, _texture);
 						
 			D3D.SamplerDescription sampleDesc = new D3D.SamplerDescription();
@@ -297,6 +318,7 @@ namespace GorgonLibrary.Graphics
 			_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
 			
 			CreateBlend();
+			CreateDepth();
 		}
 
 		/// <summary>
@@ -363,6 +385,43 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Creates the depth stencil state.
+		/// </summary>
+		public void CreateDepth()
+		{
+			D3D.DepthStencilStateDescription desc = new D3D.DepthStencilStateDescription();
+
+			desc.IsDepthEnabled = true;
+			desc.DepthWriteMask = D3D.DepthWriteMask.All;
+			desc.DepthComparison = D3D.Comparison.Less;
+
+			desc.IsStencilEnabled = false;
+			desc.StencilReadMask = 0xff;
+			desc.StencilWriteMask = 0xff;
+
+			D3D.DepthStencilOperationDescription front = new D3D.DepthStencilOperationDescription();
+			D3D.DepthStencilOperationDescription back = new D3D.DepthStencilOperationDescription();
+
+			front.Comparison = D3D.Comparison.Always;
+			front.DepthFailOperation = D3D.StencilOperation.Increment;
+			front.PassOperation = D3D.StencilOperation.Keep;
+			front.FailOperation = D3D.StencilOperation.Keep;
+
+			back.Comparison = D3D.Comparison.Always;
+			back.DepthFailOperation = D3D.StencilOperation.Increment;
+			back.PassOperation = D3D.StencilOperation.Keep;
+			back.FailOperation = D3D.StencilOperation.Keep;
+
+			desc.FrontFace = front;
+			desc.BackFace = back;		
+
+
+			_depthStateNoAlpha = D3D.DepthStencilState.FromDescription(_device, desc);
+			desc.DepthWriteMask = D3D.DepthWriteMask.Zero;
+			_depthStateAlpha = D3D.DepthStencilState.FromDescription(_device, desc);
+		}
+
+		/// <summary>
 		/// Creates the blend.
 		/// </summary>
 		public void CreateBlend()
@@ -412,10 +471,13 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
-				_device.ImmediateContext.ClearRenderTargetView(_swapChain.D3DRenderTarget, new SlimDX.Color4(1.0f, 0.0f, 0.0f, 0.0f));
+				_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.D3DDepthStencilTarget, _swapChain.D3DRenderTarget);
+
 				_device.ImmediateContext.Rasterizer.State = _rastState;
 				_device.ImmediateContext.OutputMerger.BlendState = _blend;
-				_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.D3DRenderTarget);
+				_device.ImmediateContext.OutputMerger.DepthStencilState = _depthStateAlpha;
+				
+				//_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.D3DRenderTarget);
 				_device.ImmediateContext.Rasterizer.SetViewports(_swapChain.D3DView);
 
 				_device.ImmediateContext.InputAssembler.InputLayout = _layout;
@@ -431,6 +493,16 @@ namespace GorgonLibrary.Graphics
 				_device.ImmediateContext.PixelShader.SetConstantBuffer(_changeBuffer, 1);
 				_device.ImmediateContext.PixelShader.SetShaderResource(_textureView, 0);
 				_device.ImmediateContext.PixelShader.SetSampler(_sampler, 0);
+
+				_device.ImmediateContext.ClearRenderTargetView(_swapChain.D3DRenderTarget, new SlimDX.Color4(1.0f, 0.0f, 0.0f, 0.0f));
+				_device.ImmediateContext.ClearDepthStencilView(_swapChain.D3DDepthStencilTarget, D3D.DepthStencilClearFlags.Depth, 1.0f, 0);
+
+				//SlimDX.DataBox box = _device.ImmediateContext.MapSubresource(_texture, 0, 0, D3D.MapMode.WriteDiscard, D3D.MapFlags.None);
+				//byte[] texelbuffer = new byte[box.Data.Length];
+				//_rnd.NextBytes(texelbuffer);
+				//box.Data.WriteRange<byte>(texelbuffer);
+				//box.Data.Dispose();
+				//_device.ImmediateContext.UnmapSubresource(_texture, 0);
 
 				float passAngle = 0.0f;
 /*				float passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (_passes * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
@@ -449,14 +521,18 @@ namespace GorgonLibrary.Graphics
 
 				buffer.Alpha = 0.0f;
 				//step = 1.0f;
+				//(
 				for (int i = 0; i < (int)_passes; i++)
 				{
-					passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (i * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));					
+					passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (i * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
 
 					if (i < (int)(_passes - 1))
 						buffer.Alpha += (1.0f / (_passes * 2.0f));
 					else
+					{
+						_device.ImmediateContext.OutputMerger.DepthStencilState = _depthStateNoAlpha;
 						buffer.Alpha = 1.0f;
+					}
 
 					buffer.World = Matrix.RotationZ(passAngle);
 					buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationZ(passAngle));
@@ -470,16 +546,16 @@ namespace GorgonLibrary.Graphics
 					_device.ImmediateContext.DrawIndexed(6, 0, 0);
 				}
 
-				//buffer.World = Matrix.Identity;
-				//buffer.World *= Matrix.Scaling(0.5f, 0.5f, 1.0f);
-				//buffer.World *= Matrix.Translation(0.5f, 0.25f, 0.0f);
-				//buffer.World = Matrix.Transpose(buffer.World);
-				//buffer.Alpha = 1.0f;
-				//_changeStream.Position = 0;
-				//_changeStream.Write<UpdateBuffer>(buffer);
-				//_changeStream.Position = 0;
-				//_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
-				//_device.ImmediateContext.DrawIndexed(6, 0, 0);
+				buffer.World = Matrix.Identity;
+				buffer.World *= Matrix.Scaling(0.5f, 0.5f, 1.0f);
+				buffer.World *= Matrix.Translation(0.5f, 0.25f, 0.0f);
+				buffer.World = Matrix.Transpose(buffer.World);
+				buffer.Alpha = 1.0f;
+				_changeStream.Position = 0;
+				_changeStream.Write<UpdateBuffer>(buffer);
+				_changeStream.Position = 0;
+				_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
+				_device.ImmediateContext.DrawIndexed(6, 0, 0);
 
 				//System.Threading.Thread.Sleep(16);
 				
