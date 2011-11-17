@@ -122,10 +122,10 @@ namespace Tester_Graphics
 			{
 				this.panelDX.Visible = false;
 
-				GorgonFrameRate.UseHighResolutionTimer = true;
+				GorgonFrameRate.UseHighResolutionTimer = false;
 
 				Gorgon.UnfocusedSleepTime = 1;
-				Gorgon.AllowBackground = true;
+				Gorgon.AllowBackground = false;
 
 				this.Show();
 
@@ -137,7 +137,6 @@ namespace Tester_Graphics
 				form2.Show();
 #endif
 				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
-				//_graphics = new GorgonGraphics();
  
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
 						 where videoMode.Width == 1280 && videoMode.Height == 800 && videoMode.Format == GorgonBufferFormat.B8G8R8A8_UIntNormal

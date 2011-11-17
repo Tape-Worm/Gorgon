@@ -38,10 +38,6 @@ namespace GorgonLibrary.Input
 	public abstract class GorgonInputPlugIn
 		: GorgonPlugIn
 	{
-		#region Variables.
-		private bool _disposed = false;							// Flag to indicate that the object was disposed.
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Function to perform the actual creation of the input factory object.

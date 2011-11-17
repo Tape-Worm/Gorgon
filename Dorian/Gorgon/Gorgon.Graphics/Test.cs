@@ -254,7 +254,7 @@ namespace GorgonLibrary.Graphics
 
 
 			MatrixBuffer matrix = new MatrixBuffer();
-			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Value.Width / (float)_swapChain.Settings.VideoMode.Value.Height, 0.1f, 1000.0f));
+			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Width / (float)_swapChain.Settings.VideoMode.Height, 0.1f, 1000.0f));
 			//matrix.Projection = Matrix.Identity;
 			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
 			//SlimDX.Matrix.Transpose(ref matrix.Projection, out matrix.Projection);
@@ -307,7 +307,7 @@ namespace GorgonLibrary.Graphics
 		void Window_Resize(object sender, EventArgs e)
 		{
 			MatrixBuffer matrix = new MatrixBuffer();
-			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Value.Width / (float)_swapChain.Settings.VideoMode.Value.Height, 0.1f, 1000.0f));
+			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Width / (float)_swapChain.Settings.VideoMode.Height, 0.1f, 1000.0f));
 			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
 			using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
 			{
@@ -337,7 +337,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="delta"></param>
 		public void Transform(float delta)
 		{
-			_degreesPerSecond = GorgonLibrary.Math.GorgonMathUtility.Abs((GorgonLibrary.Math.GorgonMathUtility.Cos(GorgonLibrary.Math.GorgonMathUtility.Radians(_rot)) * _currentTime)) + 5.0f;
+			if (delta > 0.2f)
+				delta = 0.0f;
+
+			_degreesPerSecond = GorgonLibrary.Math.GorgonMathUtility.Abs((GorgonLibrary.Math.GorgonMathUtility.Cos(GorgonLibrary.Math.GorgonMathUtility.Radians(_rot)) * _currentTime)) + 105.0f;
 
 			_rot += (_degreesPerSecond * delta);
 			if (_rot > 360.0f)
@@ -429,7 +432,8 @@ namespace GorgonLibrary.Graphics
 				_device.ImmediateContext.PixelShader.SetShaderResource(_textureView, 0);
 				_device.ImmediateContext.PixelShader.SetSampler(_sampler, 0);
 
-				float passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (_passes * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
+				float passAngle = 0.0f;
+/*				float passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (_passes * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
 				buffer.World = Matrix.RotationZ(passAngle);
 				buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationZ(passAngle));
 				buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationY(passAngle));
@@ -440,16 +444,20 @@ namespace GorgonLibrary.Graphics
 				_changeStream.Position = 0;
 				_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
 				_device.ImmediateContext.DrawIndexed(6, 0, 0);
+				passAngle = 0.0f;
+ */
 
 				buffer.Alpha = 0.0f;
 				//step = 1.0f;
 				for (int i = 0; i < (int)_passes; i++)
 				{
-					passAngle = 0.0f;
-
 					passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (i * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));					
 
-					buffer.Alpha += (1.0f / (_passes * 2.5f));
+					if (i < (int)(_passes - 1))
+						buffer.Alpha += (1.0f / (_passes * 2.0f));
+					else
+						buffer.Alpha = 1.0f;
+
 					buffer.World = Matrix.RotationZ(passAngle);
 					buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationZ(passAngle));
 					buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationY(passAngle));
