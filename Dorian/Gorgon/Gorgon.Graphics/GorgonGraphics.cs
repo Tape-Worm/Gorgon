@@ -416,8 +416,8 @@ namespace GorgonLibrary.Graphics
 			GorgonSwapChain.ValidateSwapChainSettings(this, settings);
 
 			swapChain = new GorgonSwapChain(this, name, settings);
+			TrackedObjects.Add(swapChain);
 			swapChain.Initialize();
-			TrackedObjects.Add(swapChain);			
 
 			return swapChain;
 		}

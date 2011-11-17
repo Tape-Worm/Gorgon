@@ -389,6 +389,32 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to determine if the specified format is supported for a 2D texture.
+		/// </summary>
+		/// <param name="format">Format to check.</param>
+		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
+		public bool Supports2DTextureFormat(GorgonBufferFormat format)
+		{
+			if (D3DDevice == null)
+				return false;
+
+			return ((D3DDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture2D) == D3D.FormatSupport.Texture2D);
+		}
+
+		/// <summary>
+		/// Function to determine if the specified depth buffer format is supported.
+		/// </summary>
+		/// <param name="format">Format to check.</param>
+		/// <returns>TRUE if the format is supported as a depth/stencil buffer, FALSE if not.</returns>
+		public bool SupportsDepthFormat(GorgonBufferFormat format)
+		{
+			if (D3DDevice == null)
+				return false;
+
+			return ((D3DDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.DepthStencil) == D3D.FormatSupport.DepthStencil);
+		}
+
+		/// <summary>
 		/// Function to return the maximum number of quality levels supported by the device for multisampling.
 		/// </summary>
 		/// <param name="format">Format to test.</param>

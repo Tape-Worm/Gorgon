@@ -88,6 +88,24 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the texture used for the depth/stencil buffer.
+		/// </summary>
+		internal D3D.Texture2D D3DDepthStencilTexture
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the D3D depth/stencil target interface.
+		/// </summary>
+		internal D3D.DepthStencilView D3DDepthStencilTarget
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return the D3D view data.
 		/// </summary>
 		internal D3D.Viewport D3DView
@@ -95,7 +113,7 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
-
+		
 		/// <summary>
 		/// Property to return the video output that the swap chain is operating on.
 		/// </summary>
@@ -217,11 +235,26 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ReleaseResources()
 		{
+			if (D3DDepthStencilTarget != null)
+			{
+				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing D3D11 depth stencil target view...", GorgonLoggingLevel.Intermediate, Name);
+				D3DDepthStencilTarget.Dispose();
+			}
+
+			if (D3DDepthStencilTexture != null)
+			{
+				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing D3D11 depth stencil texture...", GorgonLoggingLevel.Intermediate, Name);
+				D3DDepthStencilTexture.Dispose();
+			}
+
 			if (D3DRenderTarget != null)
 			{
 				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing D3D11 render target view...", Diagnostics.GorgonLoggingLevel.Intermediate, Name);
 				D3DRenderTarget.Dispose();
 			}
+
+			D3DDepthStencilTarget = null;
+			D3DDepthStencilTexture = null;
 			D3DRenderTarget = null;
 		}
 
@@ -230,7 +263,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateResources()
 		{			
-			D3D.Texture2D texture = null;
+			D3D.Texture2D texture = null;			
 
 			if (D3DRenderTarget != null)
 				ReleaseResources();
@@ -240,10 +273,51 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				texture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(GISwapChain, 0);
-				texture.DebugName = "SwapChain '" + Name + "' Texture2D";
+				texture.DebugName = "SwapChain '" + Name + "' Render Target Texture";
 				D3DRenderTarget = new D3D.RenderTargetView(Graphics.VideoDevice.D3DDevice, texture);
-				D3DRenderTarget.DebugName = "SwapChain '" + Name + "' D3DRenderTargetView";
-				D3DView = new D3D.Viewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height);
+				D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
+
+				// Create a depth buffer if we've requested one.
+				if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+				{
+					D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
+					D3D.DepthStencilViewDescription viewDesc = new D3D.DepthStencilViewDescription();
+
+					desc.ArraySize = 1;
+					desc.BindFlags = D3D.BindFlags.DepthStencil;
+					desc.Format = (GI.Format)Settings.DepthStencilFormat;
+
+					// Determine if we can bind this to a shader.
+					if (Settings.DepthStencilShaderFormat != GorgonBufferFormat.Unknown)						
+					{
+						desc.BindFlags |= D3D.BindFlags.ShaderResource;
+						desc.Format = (GI.Format)Settings.DepthStencilShaderFormat;
+					}
+
+					desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
+					desc.Height = Settings.Height;
+					desc.Width = Settings.Width;
+					desc.MipLevels = 1;
+					desc.OptionFlags = D3D.ResourceOptionFlags.None;
+					desc.SampleDescription = GorgonMultiSampling.Convert(Settings.MultiSample);
+					desc.Usage = D3D.ResourceUsage.Default;
+
+					// Create the view.
+					D3DDepthStencilTexture = new D3D.Texture2D(Graphics.VideoDevice.D3DDevice, desc);
+					viewDesc.ArraySize = 0;
+
+					if ((Settings.MultiSample.Count > 1) || (Settings.MultiSample.Quality > 1)) 
+						viewDesc.Dimension = D3D.DepthStencilViewDimension.Texture2DMultisampled;
+					else
+						viewDesc.Dimension = D3D.DepthStencilViewDimension.Texture2D;
+					viewDesc.FirstArraySlice = 0;
+					viewDesc.Flags = D3D.DepthStencilViewFlags.None;
+					viewDesc.Format = (GI.Format)Settings.DepthStencilFormat;
+					viewDesc.MipSlice = 0;					
+					D3DDepthStencilTarget = new D3D.DepthStencilView(Graphics.VideoDevice.D3DDevice, D3DDepthStencilTexture, viewDesc);
+
+					D3DView = new D3D.Viewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height);
+				}
 			}
 			finally
 			{
@@ -436,12 +510,44 @@ namespace GorgonLibrary.Graphics
 			// Check multi sampling levels.
 			if (settings.SwapEffect == SwapEffect.Sequential)
 				settings.MultiSample = new GorgonMultiSampling(1, 0);
-
+			
 			int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Format, settings.MultiSample.Count);
 
 			// Ensure that the quality of the sampling does not exceed what the card can do.
 			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
 				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
+
+			// Check to see if the depth/stencil is supported.
+			if (settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+			{
+				if (!graphics.VideoDevice.SupportsDepthFormat(settings.DepthStencilFormat))
+					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.DepthStencilFormat + "' as a depth/stencil buffer format.");
+
+				if (!graphics.VideoDevice.Supports2DTextureFormat(settings.DepthStencilFormat))
+					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.DepthStencilFormat + "' as texture format for the depth buffer.");
+
+				// Make sure we can use the same multi-sampling with our depth buffer.
+				quality = graphics.VideoDevice.GetMultiSampleQuality(settings.DepthStencilFormat, settings.MultiSample.Count);
+
+				// Ensure that the quality of the sampling does not exceed what the card can do.
+				if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
+					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
+				
+				if (settings.DepthStencilShaderFormat != GorgonBufferFormat.Unknown)
+				{
+					if (!graphics.VideoDevice.SupportsDepthFormat(settings.DepthStencilShaderFormat))
+						throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.DepthStencilShaderFormat + "' as a depth/stencil buffer format.");
+
+					// Ensure that this format can be used to pass to a shader.
+					if (!graphics.VideoDevice.Supports2DTextureFormat(settings.DepthStencilShaderFormat))
+						throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.DepthStencilShaderFormat + "' as texture format for the depth buffer.");
+
+					// Feature levels less than 4.1 can't read back multi sampled depth buffers in a shader.
+					if (((graphics.VideoDevice.SupportedFeatureLevels & DeviceFeatureLevel.SM4_1) != DeviceFeatureLevel.SM4_1) && ((graphics.VideoDevice.SupportedFeatureLevels & DeviceFeatureLevel.SM5) != DeviceFeatureLevel.SM5) && 
+						((settings.MultiSample.Count > 1) || (settings.MultiSample.Quality > 0)))
+						throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' cannot bind a multi sampled depth buffer to a shader if the feature level is less than SM_4_1");
+				}
+			}
 
 			// Force 2 buffers for discard.
 			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
