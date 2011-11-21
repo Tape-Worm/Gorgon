@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GI = SlimDX.DXGI;
+using GI = SharpDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -81,7 +81,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The DXGI mode.</returns>
 		internal static GI.ModeDescription Convert(GorgonVideoMode mode)
 		{
-			return new GI.ModeDescription(mode.Width, mode.Height, new SlimDX.Rational(mode.RefreshRateNumerator, mode.RefreshRateDenominator), (GI.Format)mode.Format);
+			return new GI.ModeDescription(mode.Width, mode.Height, new GI.Rational(mode.RefreshRateNumerator, mode.RefreshRateDenominator), (GI.Format)mode.Format);
 		}
 
 		/// <summary>

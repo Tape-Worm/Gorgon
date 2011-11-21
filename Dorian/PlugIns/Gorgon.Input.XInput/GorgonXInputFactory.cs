@@ -32,7 +32,7 @@ using Microsoft.Win32;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input;
-using XI = SlimDX.XInput;
+using XI = SharpDX.XInput;
 using Forms = System.Windows.Forms;
 
 namespace GorgonLibrary.Input.XInput
@@ -85,7 +85,7 @@ namespace GorgonLibrary.Input.XInput
 					if (controllerIndex[i] != XI.UserIndex.Any)
 					{
 						caps = controllers[i].GetCapabilities(XI.DeviceQueryType.Any);
-						devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput " + caps.Subtype.ToString() + " Controller", caps.Subtype.ToString(), "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
+						devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput " + caps.SubType.ToString() + " Controller", caps.SubType.ToString(), "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
 					}
 				}
 				else

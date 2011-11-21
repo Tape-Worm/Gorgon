@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using GI = SlimDX.DXGI;
+using GI = SharpDX.DXGI;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
