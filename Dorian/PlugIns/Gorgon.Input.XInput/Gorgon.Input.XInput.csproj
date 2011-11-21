@@ -49,6 +49,9 @@
     <Reference Include="SharpDX">
       <HintPath>..\..\Gorgon\packages\SharpDX.2.0.1\lib\net20\SharpDX.dll</HintPath>
     </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\..\Gorgon\packages\SharpDX.DXGI.2.0.1\lib\net20\SharpDX.DXGI.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.XInput">
       <HintPath>..\..\Gorgon\packages\SharpDX.XInput.2.0.1\lib\net20\SharpDX.XInput.dll</HintPath>
     </Reference>
