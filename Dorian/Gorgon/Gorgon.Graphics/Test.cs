@@ -546,16 +546,19 @@ namespace GorgonLibrary.Graphics
 					_device.ImmediateContext.DrawIndexed(6, 0, 0);
 				}
 
-				buffer.World = Matrix.Identity;
-				buffer.World *= Matrix.Scaling(0.5f, 0.5f, 1.0f);
-				buffer.World *= Matrix.Translation(0.5f, 0.25f, 0.0f);
-				buffer.World = Matrix.Transpose(buffer.World);
-				buffer.Alpha = 1.0f;
-				_changeStream.Position = 0;
-				_changeStream.Write<UpdateBuffer>(buffer);
-				_changeStream.Position = 0;
-				_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
-				_device.ImmediateContext.DrawIndexed(6, 0, 0);
+				for (int i = 0; i < 65536; i++)
+				{
+					buffer.World = Matrix.Identity;
+					buffer.World *= Matrix.Scaling(0.5f, 0.5f, 1.0f);
+					buffer.World *= Matrix.Translation(0.5f + ((float)i / 32767.0f) , 0.25f, 0.0f);
+					buffer.World = Matrix.Transpose(buffer.World);
+					buffer.Alpha = 1.0f;
+					_changeStream.Position = 0;
+					_changeStream.Write<UpdateBuffer>(buffer);
+					_changeStream.Position = 0;
+					_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
+					_device.ImmediateContext.DrawIndexed(6, 0, 0);
+				}
 
 				//System.Threading.Thread.Sleep(16);
 				
