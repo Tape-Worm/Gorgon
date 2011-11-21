@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
-using SlimDX;
+using SharpDX;
 using GorgonLibrary.Math;
-using GI = SlimDX.DXGI;
-using D3D = SlimDX.Direct3D11;
-using Shaders = SlimDX.D3DCompiler;
+using GI = SharpDX.DXGI;
+using D3D = SharpDX.Direct3D11;
+using D3DCommon = SharpDX.Direct3D;
+using Shaders = SharpDX.D3DCompiler;
 
 namespace GorgonLibrary.Graphics
 {
@@ -21,12 +22,12 @@ namespace GorgonLibrary.Graphics
 		/// /
 		/// </summary>
 		[FieldOffset(0)]
-		public SlimDX.Matrix Projection;
+		public SharpDX.Matrix Projection;
 		/// <summary>
 		/// 
 		/// </summary>
 		[FieldOffset(64)]
-		public SlimDX.Matrix View;
+		public SharpDX.Matrix View;
 	}
 
 	/// <summary>
@@ -39,7 +40,7 @@ namespace GorgonLibrary.Graphics
 		/// 
 		/// </summary>
 		[FieldOffset(0)]
-		public SlimDX.Matrix World;
+		public SharpDX.Matrix World;
 		/// <summary>
 		/// 
 		/// </summary>
@@ -96,15 +97,15 @@ namespace GorgonLibrary.Graphics
 		private D3D.Buffer _noChangeBuffer = null;
 		private D3D.DepthStencilState _depthStateNoAlpha = null;
 		private D3D.DepthStencilState _depthStateAlpha = null;
-		private SlimDX.DataStream _changeStream = null;
+		private SharpDX.DataStream _changeStream = null;
 		Random _rnd = new Random();
 			
 
 		struct vertex
 		{
-			public SlimDX.Vector4 Position;
-			public SlimDX.Vector4 Color;
-			public SlimDX.Vector2 UV;
+			public SharpDX.Vector4 Position;
+			public SharpDX.Vector4 Color;
+			public SharpDX.Vector2 UV;
 		}
 
 
@@ -173,9 +174,11 @@ namespace GorgonLibrary.Graphics
 			_device = _swapChain.Graphics.VideoDevice.D3DDevice;
 			
 			
-			_vsShaderCode = Shaders.ShaderBytecode.Compile(_shader, "VS", "vs_4_0_level_9_3",  flags, Shaders.EffectFlags.None, null, null, out errors);
+			//_vsShaderCode = Shaders.ShaderBytecode.Compile(_shader, "VS", "vs_4_0_level_9_3",  flags, Shaders.EffectFlags.None, null, null, out errors);			
+			_vsShaderCode = Shaders.ShaderBytecode.Compile(_shader, "VS", "vs_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null);			
 			_vs = new D3D.VertexShader(_device, _vsShaderCode);
-			_psShaderCode = Shaders.ShaderBytecode.Compile(_shader, "PS", "ps_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null, out errors);
+			//_psShaderCode = Shaders.ShaderBytecode.Compile(_shader, "PS", "ps_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null, out errors);
+			_psShaderCode = Shaders.ShaderBytecode.Compile(_shader, "PS", "ps_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null);
 			_ps = new D3D.PixelShader(_device, _psShaderCode);
 
 			_layout = new D3D.InputLayout(_device, _vsShaderCode, new[] {
@@ -190,10 +193,10 @@ namespace GorgonLibrary.Graphics
 			using (DataStream stream = new DataStream(4 * vertexSize, true, true))
 			{
 				stream.WriteRange(new vertex[] {
-			new vertex() { Position = new SlimDX.Vector4(-0.5f, 0.5f, 0.0f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(0, 0)},
-			new vertex() { Position = new SlimDX.Vector4(0.5f, 0.5f, 0.0f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(1.0f, 0)},
-			new vertex() { Position = new SlimDX.Vector4(-0.5f, -0.5f, 0.0f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(0, 1.0f)},
-				new vertex() { Position = new SlimDX.Vector4(0.5f, -0.5f, 0.12f, 0.0f), Color = new SlimDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SlimDX.Vector2(1.0f, 1.0f)}});
+			new vertex() { Position = new SharpDX.Vector4(-0.5f, 0.5f, 0.0f, 0.0f), Color = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SharpDX.Vector2(0, 0)},
+			new vertex() { Position = new SharpDX.Vector4(0.5f, 0.5f, 0.0f, 0.0f), Color = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SharpDX.Vector2(1.0f, 0)},
+			new vertex() { Position = new SharpDX.Vector4(-0.5f, -0.5f, 0.0f, 0.0f), Color = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SharpDX.Vector2(0, 1.0f)},
+				new vertex() { Position = new SharpDX.Vector4(0.5f, -0.5f, 0.12f, 0.0f), Color = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SharpDX.Vector2(1.0f, 1.0f)}});
 				stream.Position = 0;
 
 				_vertices = new D3D.Buffer(_device, stream, new D3D.BufferDescription()
@@ -229,25 +232,24 @@ namespace GorgonLibrary.Graphics
 			info.BindFlags = D3D.BindFlags.ShaderResource;
 			info.CpuAccessFlags = D3D.CpuAccessFlags.None;
 			info.Depth = 0;
-			info.FilterFlags = D3D.FilterFlags.None;
+			info.Filter = D3D.FilterFlags.None;
 			info.FirstMipLevel = 0;
 			info.Format = GI.Format.B8G8R8A8_UNorm;
 			info.Height = 0;
 			info.Width = 0;
-			info.MipFilterFlags = D3D.FilterFlags.None;
+			info.MipFilter = D3D.FilterFlags.None;
 			info.MipLevels = 1;
 			info.OptionFlags = D3D.ResourceOptionFlags.None;
 			info.Usage = D3D.ResourceUsage.Default;
-			
 
-			_texture = D3D.Texture2D.FromFile(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
+			_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
 			_textureView = new D3D.ShaderResourceView(_device, _texture);
-						
-			D3D.SamplerDescription sampleDesc = new D3D.SamplerDescription();
+
+			D3D.SamplerStateDescription sampleDesc = new D3D.SamplerStateDescription();
 			sampleDesc.AddressU = D3D.TextureAddressMode.Clamp;
 			sampleDesc.AddressV = D3D.TextureAddressMode.Clamp;
 			sampleDesc.AddressW = D3D.TextureAddressMode.Clamp;
-			sampleDesc.BorderColor = new SlimDX.Color4(System.Drawing.Color.Black);
+			sampleDesc.BorderColor = System.Drawing.Color.Black;
 			sampleDesc.ComparisonFunction = D3D.Comparison.Never;
 			sampleDesc.Filter = D3D.Filter.MinMagMipLinear;
 			sampleDesc.MaximumAnisotropy = 16;
@@ -255,7 +257,7 @@ namespace GorgonLibrary.Graphics
 			sampleDesc.MinimumLod = 0;
 			sampleDesc.MipLodBias = 0.0f;
 
-			_sampler = D3D.SamplerState.FromDescription(_device, sampleDesc);			
+			_sampler = new D3D.SamplerState(_device, sampleDesc);			
 
 			_binding = new D3D.VertexBufferBinding(_vertices, vertexSize, 0);
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
@@ -263,7 +265,7 @@ namespace GorgonLibrary.Graphics
 			D3D.RasterizerStateDescription desc = new D3D.RasterizerStateDescription();
 			desc.FillMode = D3D.FillMode.Solid;
 			desc.CullMode = D3D.CullMode.None;
-			desc.IsFrontCounterclockwise = false;
+			desc.IsFrontCounterClockwise = false;
 			desc.DepthBias = 0;
 			desc.SlopeScaledDepthBias = 0;
 			desc.DepthBiasClamp = 0;
@@ -271,15 +273,15 @@ namespace GorgonLibrary.Graphics
 			desc.IsScissorEnabled = false;
 			desc.IsMultisampleEnabled = true;
 			desc.IsAntialiasedLineEnabled = false;
-			_rastState = D3D.RasterizerState.FromDescription(_device, desc);
+			_rastState = new D3D.RasterizerState(_device, desc);
 
 
 			MatrixBuffer matrix = new MatrixBuffer();
 			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Width / (float)_swapChain.Settings.VideoMode.Height, 0.1f, 1000.0f));
 			//matrix.Projection = Matrix.Identity;
 			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
-			//SlimDX.Matrix.Transpose(ref matrix.Projection, out matrix.Projection);
-			//SlimDX.Matrix.Transpose(ref matrix.View, out matrix.View);
+			//SharpDX.Matrix.Transpose(ref matrix.Projection, out matrix.Projection);
+			//SharpDX.Matrix.Transpose(ref matrix.View, out matrix.View);
 
 			using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
 			{
@@ -297,8 +299,8 @@ namespace GorgonLibrary.Graphics
 			}
 
 			UpdateBuffer updatebuffer = new UpdateBuffer();
-			updatebuffer.World = SlimDX.Matrix.Identity;
-			//SlimDX.Matrix.Transpose(ref updatebuffer.World, out updatebuffer.World);
+			updatebuffer.World = SharpDX.Matrix.Identity;
+			//SharpDX.Matrix.Transpose(ref updatebuffer.World, out updatebuffer.World);
 			updatebuffer.Alpha = 1.0f;
 			_changeStream = new DataStream(Marshal.SizeOf(typeof(UpdateBuffer)), true, true);
 			_changeStream.Write<UpdateBuffer>(updatebuffer);
@@ -315,7 +317,7 @@ namespace GorgonLibrary.Graphics
 			});
 
 			_changeStream.Position = 0;
-			_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
+			_device.ImmediateContext.UpdateSubresource(new DataBox(_changeStream.DataPointer, 0, 0), _changeBuffer, 0);
 			
 			CreateBlend();
 			CreateDepth();
@@ -335,7 +337,7 @@ namespace GorgonLibrary.Graphics
 			{
 				noChangeStream.Write<MatrixBuffer>(matrix);
 				noChangeStream.Position = 0;
-				_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, noChangeStream), _noChangeBuffer, 0);
+				_device.ImmediateContext.UpdateSubresource(new DataBox(noChangeStream.DataPointer, 0, 0), _noChangeBuffer, 0);
 			}
 		}
 
@@ -416,9 +418,9 @@ namespace GorgonLibrary.Graphics
 			desc.BackFace = back;		
 
 
-			_depthStateNoAlpha = D3D.DepthStencilState.FromDescription(_device, desc);
+			_depthStateNoAlpha = new D3D.DepthStencilState(_device, desc);
 			desc.DepthWriteMask = D3D.DepthWriteMask.Zero;
-			_depthStateAlpha = D3D.DepthStencilState.FromDescription(_device, desc);
+			_depthStateAlpha = new D3D.DepthStencilState(_device, desc);
 		}
 
 		/// <summary>
@@ -437,16 +439,16 @@ namespace GorgonLibrary.Graphics
 			desc = new D3D.BlendStateDescription();
 			desc.AlphaToCoverageEnable = false;
 			desc.IndependentBlendEnable = false;
-			desc.RenderTargets[0].BlendEnable = true;
-			desc.RenderTargets[0].BlendOperation = D3D.BlendOperation.Add;
-			desc.RenderTargets[0].BlendOperationAlpha = D3D.BlendOperation.Add;
-			desc.RenderTargets[0].DestinationBlend = D3D.BlendOption.InverseSourceAlpha;
-			desc.RenderTargets[0].DestinationBlendAlpha = D3D.BlendOption.Zero;
-			desc.RenderTargets[0].SourceBlend = D3D.BlendOption.SourceAlpha;
-			desc.RenderTargets[0].SourceBlendAlpha = D3D.BlendOption.Zero;
-			desc.RenderTargets[0].RenderTargetWriteMask = D3D.ColorWriteMaskFlags.All;
+			desc.RenderTarget[0].IsBlendEnabled = true;
+			desc.RenderTarget[0].BlendOperation = D3D.BlendOperation.Add;
+			desc.RenderTarget[0].AlphaBlendOperation = D3D.BlendOperation.Add;
+			desc.RenderTarget[0].DestinationBlend = D3D.BlendOption.InverseSourceAlpha;
+			desc.RenderTarget[0].DestinationAlphaBlend = D3D.BlendOption.Zero;
+			desc.RenderTarget[0].SourceBlend = D3D.BlendOption.SourceAlpha;
+			desc.RenderTarget[0].SourceAlphaBlend = D3D.BlendOption.Zero;
+			desc.RenderTarget[0].RenderTargetWriteMask = D3D.ColorWriteMaskFlags.All;
 
-			_blend = D3D.BlendState.FromDescription(_device, desc);
+			_blend = new D3D.BlendState(_device, desc);
 		}
 
 		/// <summary>
@@ -454,14 +456,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Draw()
 		{
-			SlimDX.Result result = GI.ResultCode.Success;
+			SharpDX.Result result = Result.Ok;
 			UpdateBuffer buffer = new UpdateBuffer();			
 			
 
 			if (_standBy)
 			{
 				result = _swapChain.GISwapChain.Present(0, GI.PresentFlags.Test);
-				if (result == GI.ResultCode.Success)
+				if (result == Result.Ok)
 					_standBy = false;
 				else
 				{
@@ -481,23 +483,23 @@ namespace GorgonLibrary.Graphics
 				_device.ImmediateContext.Rasterizer.SetViewports(_swapChain.D3DView);
 
 				_device.ImmediateContext.InputAssembler.InputLayout = _layout;
-				_device.ImmediateContext.InputAssembler.PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
+				_device.ImmediateContext.InputAssembler.PrimitiveTopology = D3DCommon.PrimitiveTopology.TriangleList;
 				_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
 				_device.ImmediateContext.InputAssembler.SetIndexBuffer(_index, GI.Format.R32_UInt, 0);
 
 				_device.ImmediateContext.VertexShader.Set(_vs);
 				_device.ImmediateContext.PixelShader.Set(_ps);
 
-				_device.ImmediateContext.VertexShader.SetConstantBuffer(_noChangeBuffer, 0);
-				_device.ImmediateContext.VertexShader.SetConstantBuffer(_changeBuffer, 1);
-				_device.ImmediateContext.PixelShader.SetConstantBuffer(_changeBuffer, 1);
-				_device.ImmediateContext.PixelShader.SetShaderResource(_textureView, 0);
-				_device.ImmediateContext.PixelShader.SetSampler(_sampler, 0);
+				_device.ImmediateContext.VertexShader.SetConstantBuffer(0, _noChangeBuffer);
+				_device.ImmediateContext.VertexShader.SetConstantBuffer(1, _changeBuffer);
+				_device.ImmediateContext.PixelShader.SetConstantBuffer(1, _changeBuffer);
+				_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
+				_device.ImmediateContext.PixelShader.SetSampler(0, _sampler);
 
-				_device.ImmediateContext.ClearRenderTargetView(_swapChain.D3DRenderTarget, new SlimDX.Color4(1.0f, 0.0f, 0.0f, 0.0f));
+				_device.ImmediateContext.ClearRenderTargetView(_swapChain.D3DRenderTarget, new SharpDX.Color4(0.0f, 0.0f, 0.0f, 1.0f));
 				_device.ImmediateContext.ClearDepthStencilView(_swapChain.D3DDepthStencilTarget, D3D.DepthStencilClearFlags.Depth, 1.0f, 0);
 
-				//SlimDX.DataBox box = _device.ImmediateContext.MapSubresource(_texture, 0, 0, D3D.MapMode.WriteDiscard, D3D.MapFlags.None);
+				//SharpDX.DataBox box = _device.ImmediateContext.MapSubresource(_texture, 0, 0, D3D.MapMode.WriteDiscard, D3D.MapFlags.None);
 				//byte[] texelbuffer = new byte[box.Data.Length];
 				//_rnd.NextBytes(texelbuffer);
 				//box.Data.WriteRange<byte>(texelbuffer);
@@ -507,8 +509,8 @@ namespace GorgonLibrary.Graphics
 				float passAngle = 0.0f;
 /*				float passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (_passes * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
 				buffer.World = Matrix.RotationZ(passAngle);
-				buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationZ(passAngle));
-				buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationY(passAngle));
+				buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationZ(passAngle));
+				buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationY(passAngle));
 				buffer.World = Matrix.Transpose(buffer.World);
 				buffer.Alpha = 1.0f;
 				_changeStream.Position = 0;
@@ -535,13 +537,13 @@ namespace GorgonLibrary.Graphics
 					}
 
 					buffer.World = Matrix.RotationZ(passAngle);
-					buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationZ(passAngle));
-					buffer.World = SlimDX.Matrix.Multiply(buffer.World, SlimDX.Matrix.RotationY(passAngle));
+					buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationZ(passAngle));
+					buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationY(passAngle));
 					buffer.World = Matrix.Transpose(buffer.World);
 					_changeStream.Position = 0;
 					_changeStream.Write<UpdateBuffer>(buffer);
 					_changeStream.Position = 0;
-					_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
+					_device.ImmediateContext.UpdateSubresource(new DataBox(_changeStream.DataPointer, 0, 0), _changeBuffer, 0);
 
 					_device.ImmediateContext.DrawIndexed(6, 0, 0);
 				}
@@ -556,7 +558,7 @@ namespace GorgonLibrary.Graphics
 					_changeStream.Position = 0;
 					_changeStream.Write<UpdateBuffer>(buffer);
 					_changeStream.Position = 0;
-					_device.ImmediateContext.UpdateSubresource(new DataBox(0, 0, _changeStream), _changeBuffer, 0);
+					_device.ImmediateContext.UpdateSubresource(new DataBox(_changeStream.DataPointer, 0, 0), _changeBuffer, 0);
 					_device.ImmediateContext.DrawIndexed(6, 0, 0);
 				}
 
@@ -564,12 +566,12 @@ namespace GorgonLibrary.Graphics
 				
 				result = _swapChain.GISwapChain.Present(0, GI.PresentFlags.None);
 				
-				if ((result != GI.ResultCode.Success) && (result.IsSuccess))
+				if ((result != Result.Ok) && (result.Success))
 					_standBy = true;
 				else
 				{
-					if (result != GI.ResultCode.Success)
-						throw new Exception(result.Description);
+					if (result != Result.Ok)
+						throw new Exception(result.ToString());
 				}
 			}
 		}

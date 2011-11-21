@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
-using GI = SlimDX.DXGI;
+using GI = SharpDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -61,7 +61,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return GIOutput.Description.Name;
+				return GIOutput.Description.DeviceName;
 			}
 		}
 
@@ -96,11 +96,11 @@ namespace GorgonLibrary.Graphics
 			{
 				switch (GIOutput.Description.Rotation)
 				{
-					case GI.DisplayModeRotation.Rotate90Degrees:
+					case GI.DisplayModeRotation.Rotate90:
 						return 90;
-					case GI.DisplayModeRotation.Rotate270Degrees:
+					case GI.DisplayModeRotation.Rotate270:
 						return 270;
-					case GI.DisplayModeRotation.Rotate180Degrees:
+					case GI.DisplayModeRotation.Rotate180:
 						return 180;
 					default:
 						return 0;

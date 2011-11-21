@@ -28,8 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GI = SlimDX.DXGI;
-using D3D = SlimDX.Direct3D11;
+using GI = SharpDX.DXGI;
+using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
@@ -63,7 +63,7 @@ namespace GorgonLibrary.Graphics
 				{
 					foreach (var mode in modes)
 					{
-						if ((_output.VideoDevice.D3DDevice.CheckFormatSupport(mode.Format) & D3D.FormatSupport.FormatDisplaySupport) == D3D.FormatSupport.FormatDisplaySupport)
+						if (_output.VideoDevice.SupportsDisplayFormat((GorgonBufferFormat)mode.Format))
 						{
 							GorgonVideoMode videoMode = GorgonVideoMode.Convert(mode);
 							_modes.Add(videoMode);

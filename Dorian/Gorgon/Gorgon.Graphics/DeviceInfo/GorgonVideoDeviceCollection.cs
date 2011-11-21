@@ -30,8 +30,8 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.Native;
 using GorgonLibrary.Collections;
-using GI = SlimDX.DXGI;
-using D3D = SlimDX.Direct3D11;
+using GI = SharpDX.DXGI;
+using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {

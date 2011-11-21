@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using XI = SlimDX.XInput;
+using XI = SharpDX.XInput;
 
 namespace GorgonLibrary.Input.XInput
 {

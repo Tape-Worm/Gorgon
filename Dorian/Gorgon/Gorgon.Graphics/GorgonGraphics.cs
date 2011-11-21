@@ -30,9 +30,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
-using SlimDX;
-using GI = SlimDX.DXGI;
-using D3D = SlimDX.Direct3D11;
+using SharpDX;
+using GI = SharpDX.DXGI;
+using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
@@ -181,7 +181,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether object tracking is disabled.
 		/// </summary>
-		/// <remarks>This will enable SlimDX's object tracking to ensure references are destroyed upon application exit.
+		/// <remarks>This will enable SharpDX's object tracking to ensure references are destroyed upon application exit.
 		/// <para>The default value for DEBUG mode is TRUE, and for RELEASE it is set to FALSE.  Disabling object tracking will
 		/// give a slight performance increase.</para>
 		/// </remarks>
@@ -189,11 +189,11 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return SlimDX.Configuration.EnableObjectTracking;
+				return SharpDX.Configuration.EnableObjectTracking;
 			}
 			set
 			{
-				SlimDX.Configuration.EnableObjectTracking = value;
+				SharpDX.Configuration.EnableObjectTracking = value;
 			}
 		}
 
@@ -455,9 +455,9 @@ namespace GorgonLibrary.Graphics
 			GIFactory = new GI.Factory1();
 			
 #if DEBUG
-			SlimDX.Configuration.EnableObjectTracking = true;
+			SharpDX.Configuration.EnableObjectTracking = true;
 #else
-			SlimDX.Configuration.EnableObjectTracking = false;
+			SharpDX.Configuration.EnableObjectTracking = false;
 #endif
 
 			VideoDevices = new GorgonVideoDeviceCollection(this);

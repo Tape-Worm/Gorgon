@@ -31,8 +31,8 @@ using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Drawing;
-using GI = SlimDX.DXGI;
-using D3D = SlimDX.Direct3D11;
+using GI = SharpDX.DXGI;
+using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
 
@@ -304,16 +304,14 @@ namespace GorgonLibrary.Graphics
 
 					// Create the view.
 					D3DDepthStencilTexture = new D3D.Texture2D(Graphics.VideoDevice.D3DDevice, desc);
-					viewDesc.ArraySize = 0;
 
 					if ((Settings.MultiSample.Count > 1) || (Settings.MultiSample.Quality > 1)) 
 						viewDesc.Dimension = D3D.DepthStencilViewDimension.Texture2DMultisampled;
 					else
 						viewDesc.Dimension = D3D.DepthStencilViewDimension.Texture2D;
-					viewDesc.FirstArraySlice = 0;
+					viewDesc.Texture2D.MipSlice = 0;
 					viewDesc.Flags = D3D.DepthStencilViewFlags.None;
 					viewDesc.Format = (GI.Format)Settings.DepthStencilFormat;
-					viewDesc.MipSlice = 0;					
 					D3DDepthStencilTarget = new D3D.DepthStencilView(Graphics.VideoDevice.D3DDevice, D3DDepthStencilTexture, viewDesc);
 
 					D3DView = new D3D.Viewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height);
@@ -334,7 +332,7 @@ namespace GorgonLibrary.Graphics
 			ReleaseResources();
 			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
 
-			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
+			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, (int)flags);
 			CreateResources();
 		}
 
@@ -359,28 +357,28 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ModeStateUpdate()
 		{
-			SlimDX.Result result = GI.ResultCode.Success;
+			SharpDX.Result result = SharpDX.Result.Ok;
 
 			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode);
 
-			GISwapChain.ResizeTarget(mode);
+			GISwapChain.ResizeTarget(ref mode);
 
 			try
 			{
 				if (!Settings.IsWindowed)
-					result = GISwapChain.SetFullScreenState(true, VideoOutput.GIOutput);
+					result = GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
 				else
-					result = GISwapChain.SetFullScreenState(false, null);
+					result = GISwapChain.SetFullscreenState(false, null);
 			}
-			catch (SlimDX.SlimDXException sdEx)
+			catch (SharpDX.SharpDXException sdEx)
 			{
-				if (sdEx.ResultCode == GI.ResultCode.ModeChangeInProgress)
+				if (sdEx.ResultCode == (int)GI.DXGIStatus.ModeChangeInProgress)
 				{
 					Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", GorgonLoggingLevel.All, Name);
 				}
 				else
 				{
-					if (string.Compare(sdEx.ResultCode.Name, "DXGI_ERROR_NOT_CURRENTLY_AVAILABLE", true) == 0)
+					if (sdEx.ResultCode.Code == (int)GI.DXGIError.NotCurrentlyAvailable)
 						Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .", GorgonLoggingLevel.All, Name);
 					else
 						throw sdEx;
@@ -408,7 +406,7 @@ namespace GorgonLibrary.Graphics
 			if (GISwapChain != null)
 			{
 				// Always go to windowed mode before destroying the swap chain.
-				GISwapChain.SetFullScreenState(false, null);
+				GISwapChain.SetFullscreenState(false, null);
 				GISwapChain.Dispose();
 			}
 			if (Graphics != null)
@@ -598,10 +596,10 @@ namespace GorgonLibrary.Graphics
 			GISwapChain.DebugName = Name + " DXGISwapChain";
 
 			// Due to a bug with winforms and DXGI, we have to manually handle transitions ourselves.
-			Graphics.GIFactory.SetWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
+			Graphics.GIFactory.MakeWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
 
 			if (!Settings.IsWindowed)
-				flags |= GI.SwapChainFlags.NonPrerotated;
+				flags |= GI.SwapChainFlags.Nonprerotated;
 
 			if (!Settings.IsWindowed)
 				ModeStateUpdate();
