@@ -88,8 +88,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
-    <Content Include="sharpdx_direct3d11_effects_x64.dll" />
-    <Content Include="sharpdx_direct3d11_effects_x86.dll" />
+    <None Include="sharpdx_direct3d11_effects_x64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="sharpdx_direct3d11_effects_x86.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
