@@ -35,16 +35,16 @@
     <ApplicationIcon>GorIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpDX">
+    <Reference Include="SharpDX, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.2.0.1\lib\net20\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.D3DCompiler">
+    <Reference Include="SharpDX.D3DCompiler, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.D3DCompiler.2.0.1\lib\net20\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11">
+    <Reference Include="SharpDX.Direct3D11, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Direct3D11.2.0.1\lib\net20\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DXGI">
+    <Reference Include="SharpDX.DXGI, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.DXGI.2.0.1\lib\net20\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
