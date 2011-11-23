@@ -119,10 +119,13 @@ namespace GorgonLibrary.Graphics
 		/// Used to limit the feature levels that Gorgon will use.  This may not reflect the actual hardware.
 		/// </summary>
 		internal static readonly DeviceFeatureLevel[] GorgonFeatureLevels = Enum.GetValues(typeof(DeviceFeatureLevel)) as DeviceFeatureLevel[];
-		
+
+		private bool _rasterStateChanged = false;							// Flag to indicate that the rasterizer state had changed.
 		private bool _disposed = false;										// Flag to indicate that the object was disposed.
 		private Version _minimumSupportedFeatureLevel = new Version(9, 3);	// Minimum supported feature level version.		
 		private GorgonVideoDevice _videoDevice = null;						// Video device to use.
+		private GorgonRasterizerState _defaultRasterState = null;			// Default rasterizer state.
+		private GorgonRasterizerState _rasterState = null;					// Rasterizer state.
 		#endregion
 
 		#region Constants.
@@ -173,6 +176,48 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the list of tracked objects.
 		/// </summary>
 		internal GorgonTrackedObjectCollection TrackedObjects
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the current device context.
+		/// </summary>
+		internal D3D.DeviceContext Context
+		{
+			get
+			{
+				return VideoDevice.D3DDevice.ImmediateContext;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the current rasterizer state.
+		/// </summary>
+		public GorgonRasterizerState RasterizerState
+		{
+			get
+			{
+				if (_rasterState == null)
+					return _defaultRasterState;
+				else
+					return _rasterState;
+			}
+			set
+			{
+				if (value != _rasterState)
+				{
+					_rasterState = value;
+					_rasterStateChanged = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return a list of viewports to apply when rendering.
+		/// </summary>
+		public GorgonViewportCollection Viewports
 		{
 			get;
 			private set;
@@ -259,6 +304,8 @@ namespace GorgonLibrary.Graphics
 					_videoDevice.ReleaseDevice();
 	
 				_videoDevice = value;
+				CreateDefaultStates();
+
 				OnAfterDeviceChange();
 			}
 		}
@@ -297,7 +344,16 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.
+		#region Methods.	
+		/// <summary>
+		/// Function to create any default states.
+		/// </summary>
+		private void CreateDefaultStates()
+		{
+			// Set default states.
+			RasterizerState = _defaultRasterState = CreateRasterizerState();
+		}
+
 		/// <summary>
 		/// Function to fire the <see cref="E:GorgonLibrary.Graphics.GorgonGraphics.BeforeDeviceChange">BeforeDeviceChange</see> event.
 		/// </summary>
@@ -366,7 +422,7 @@ namespace GorgonLibrary.Graphics
 		{
 			return (from item in TrackedObjects
 					let swapChain = item as GorgonSwapChain
-					where !swapChain.Settings.IsWindowed
+					where (swapChain != null) && (!swapChain.Settings.IsWindowed)
 					select swapChain);
 		}
 
@@ -410,8 +466,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonSwapChain swapChain = null;
 
-			if (settings == null)
-				throw new ArgumentNullException("settings");
+			GorgonDebug.AssertNull<GorgonSwapChainSettings>(settings, "settings");
 
 			GorgonSwapChain.ValidateSwapChainSettings(this, settings);
 
@@ -420,6 +475,100 @@ namespace GorgonLibrary.Graphics
 			swapChain.Initialize();
 
 			return swapChain;
+		}
+
+		/// <summary>
+		/// Function to create a depth/stencil buffer.
+		/// </summary>
+		/// <param name="name">Name of the depth/stencil buffer.</param>
+		/// <param name="settings">Settings to apply to the depth/stencil buffer.</param>
+		/// <returns>A new depth/stencil buffer.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencilSettings.Format">GorgonDepthStencilSettings.Format</see> property is set to Unknown or is unsupported.</para>
+		/// </exception>
+		/// <remarks>
+		/// A depth buffer may be paired with a swapchain or render target through its DepthStencil property.  When pairing the depth/stencil to the render target, Ensure that the depth/stencil buffer width, height and multisample settings match that of the render target that it is paired with.
+		/// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_1 or better, and can be set to do so by setting the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencilSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property to a typeless format. 
+		/// If this is attempted on a video device that has a feature level of SM_4_0 or below, then an exception will be raised.</para>
+		/// </remarks>
+		public GorgonDepthStencil CreateDepthStencil(string name, GorgonDepthStencilSettings settings)
+		{
+			GorgonDepthStencil depthBuffer = null;
+
+			GorgonDebug.AssertNull<GorgonDepthStencilSettings>(settings, "settings");
+
+			GorgonDepthStencil.ValidateSettings(this, settings);
+
+			depthBuffer = new GorgonDepthStencil(this, name, settings);
+			TrackedObjects.Add(depthBuffer);
+			depthBuffer.UpdateSettings();
+
+			return depthBuffer;
+		}
+
+		/// <summary>
+		/// Function to create a rasterizer state object.
+		/// </summary>
+		/// <returns>A new rasterizer state object.</returns>
+		public GorgonRasterizerState CreateRasterizerState()
+		{
+			GorgonRasterizerState state = null;
+
+			state = new GorgonRasterizerState(this);
+			TrackedObjects.Add(state);
+			return state;
+		}
+
+		/// <summary>
+		/// Function to apply the viewports defined in the viewports collection.
+		/// </summary>
+		public void ApplyViewports()
+		{
+			if (Viewports.HasChanged)
+			{
+				if (Viewports.Count > 1)
+					Context.Rasterizer.SetViewports(Viewports.Convert());
+				else
+					Context.Rasterizer.SetViewport(Viewports[0].Region.X, Viewports[0].Region.Y, Viewports[0].Region.Width, Viewports[0].Region.Height, Viewports[0].MinimumZ, Viewports[0].MaximumZ);
+
+				Viewports.HasChanged = false;
+			}
+		}
+
+		/// <summary>
+		/// Function to apply a specific viewport.
+		/// </summary>
+		/// <param name="index">Index of the viewport to apply.</param>
+		/// <exception cref="System.IndexOutOfRangeException">Thrown when the index is less than 0 or greater than the number of view ports.</exception>
+		public void ApplyViewport(int index)
+		{
+			GorgonDebug.AssertRange(index, Viewports.Count);
+			Context.Rasterizer.SetViewport(Viewports[index].Region.X, Viewports[index].Region.Y, Viewports[index].Region.Width, Viewports[index].Region.Height, Viewports[index].MinimumZ, Viewports[index].MaximumZ);
+		}
+
+		/// <summary>
+		/// Function to apply any outstanding state objects.
+		/// </summary>
+		public void ApplyStates()
+		{
+			// Ensure the states have changed before applying.
+			if ((_rasterStateChanged) || ((RasterizerState != null) && (RasterizerState.HasChanged)))
+				Context.Rasterizer.State = _rasterState.Convert();
+		}
+
+		/// <summary>
+		/// Function to draw the scene.
+		/// </summary>
+		/// <remarks>This method applies the various states, shaders and renders the polygons in the vertex buffer to the scene.</remarks>
+		public void Draw()
+		{
+			ApplyViewports();
+			ApplyStates();
 		}
 		#endregion
 
@@ -444,7 +593,8 @@ namespace GorgonLibrary.Graphics
 
 			if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
 				throw new GorgonException(GorgonResult.CannotCreate, "The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater.");
-			
+
+			Viewports = new GorgonViewportCollection();
 			MaxFeatureLevel = featureLevel;
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			ResetFullscreenOnFocus = true;

@@ -71,6 +71,7 @@ namespace GorgonLibrary.Graphics
 	/// Settings for defining a swap chain.
 	/// </summary>
 	public class GorgonSwapChainSettings
+		: ICommonTargetSettings
 	{
 		#region Variables.
 		private int _backBufferCount = 2;									// Number of back buffers.
@@ -90,36 +91,6 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				VideoMode.SetSize(value);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the width of the swap chain video mode.
-		/// </summary>
-		public int Width
-		{
-			get
-			{
-				return VideoMode.Width;
-			}
-			set
-			{
-				_mode.Width = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the height of the swap chain video mode.
-		/// </summary>
-		public int Height
-		{
-			get
-			{
-				return VideoMode.Height;
-			}
-			set
-			{
-				_mode.Height = value;
 			}
 		}
 
@@ -153,18 +124,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return whether to use windowed mode or not.
 		/// </summary>
 		public bool IsWindowed
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the number and quality of sampling when using multisampling.
-		/// </summary>
-		/// <remarks>If this value is not specified, then multisampling will be disabled and the count and quality will be set to 1 and 0 respectively.
-		/// <para>When specifying this value, ensure that the quality is 0, or less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.  A value outside of this range will thrown an exception.</para>
-		/// </remarks>
-		public GorgonMultiSampling MultiSample
 		{
 			get;
 			set;
@@ -219,21 +178,6 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Property to set or return the depth and/or stencil buffer shader format.
-		/// </summary>
-		/// <remarks>This is used for reading back the depth buffer in a shader as a texture.  The shader format should be typeless, while the 
-		/// <see cref="GorgonLibrary.Graphics.GorgonSwapChainSettings.DepthStencilFormat">DepthStencilFormat</see> should be set 
-		/// to a depth/stencil format such as D32_Float.
-		/// <para>If this value is set to Unknown (the default value), then the depth buffer cannot be read.  Also, this property is ignored if the DepthStencilFormat 
-		/// property is set to Unknown.</para>
-		/// </remarks>
-		public GorgonBufferFormat DepthStencilShaderFormat
-		{
-			get;
-			set;
-		}
 		#endregion
 
 		#region Methods.
@@ -261,8 +205,63 @@ namespace GorgonLibrary.Graphics
 			Flags = SwapChainUsageFlags.RenderTarget;
 			SwapEffect = Graphics.SwapEffect.Discard;
 			MultiSample = new GorgonMultiSampling(1, 0);
-			DepthStencilFormat = GorgonBufferFormat.Unknown;
-			DepthStencilShaderFormat = GorgonBufferFormat.Unknown;
+			DepthStencilFormat = GorgonBufferFormat.Unknown;			
+		}
+		#endregion
+
+		#region ICommonTargetSettings Members
+		/// <summary>
+		/// Property to set or return the format of the back buffer for the swap chain.
+		/// </summary>
+		public GorgonBufferFormat Format
+		{
+			get
+			{
+				return _mode.Format;
+			}
+			set
+			{
+				_mode.Format = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the multisampling settings for the swap chain.
+		/// </summary>
+		public GorgonMultiSampling MultiSample
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the width of the swap chain.
+		/// </summary>
+		public int Width
+		{
+			get
+			{
+				return _mode.Width;
+			}
+			set
+			{
+				_mode.SetSize(value, _mode.Height);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the height of the swap chain.
+		/// </summary>
+		public int Height
+		{
+			get
+			{
+				return _mode.Height;
+			}
+			set
+			{
+				_mode.SetSize(_mode.Width, value);
+			}
 		}
 		#endregion
 	}

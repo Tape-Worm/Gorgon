@@ -31,6 +31,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Drawing;
+using SharpDX.Diagnostics;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
@@ -66,6 +67,8 @@ namespace GorgonLibrary.Graphics
 		private bool _disposed = false;								// Flag to indicate that the object was disposed.
 		private bool _wasWindowed = false;							// Flag to indicate that the window was in windowed mode because of a transition.
 		private IEnumerable<GorgonSwapChain> _swapChains = null;	// A list of other full screen swap chains.
+		private GorgonDepthStencil _internalDepthStencil = null;	// Internal depth/stencil for the target.
+		private GorgonDepthStencil _depthBuffer = null;				// Depth/stencil buffer for the target.
 		#endregion
 
 		#region Properties.
@@ -88,32 +91,40 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the texture used for the depth/stencil buffer.
+		/// Property to set or return the depth/stencil for this swap chain.
 		/// </summary>
-		internal D3D.Texture2D D3DDepthStencilTexture
+		/// <remarks>
+		/// Setting this value to NULL will reset this value to the internal depth/stencil buffer if one was created when the swap chain was created.  Use <see cref="M:GorgonLibrary.GorgonGraphics.GorgonSwapChain.UpdateSettings">UpdateSettings</see> to 
+		/// change the internal depth/stencil buffer.
+		/// <para>Care should be taken with the lifetime of the depth/stencil that is attached to this swap chain.  If a user creates the swap chain with a depth buffer, its 
+		/// lifetime will be managed by the swap chain (i.e. it will be disposed when the swap chain is disposed).  If a user sets this value to an external swap chain (regardless of whether 
+		/// they create the depth buffer or not), then the swap chain will -NOT- manage the lifetime of the external depth/stencil.</para>
+		/// </remarks>
+		public GorgonDepthStencil DepthStencil
+		{
+			get
+			{
+				if (_depthBuffer == null)
+					return _internalDepthStencil;
+
+				return _depthBuffer;
+			}
+			set
+			{
+				_depthBuffer = value;				
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether we're in stand by mode.
+		/// </summary>
+		/// <remarks>Stand by mode is entered when the <see cref="M:GorgonLibrary.Graphics.GorgonSwapChain.Flip">Flip</see> method detects that the window is occluded.</remarks>
+		public bool IsInStandBy
 		{
 			get;
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the D3D depth/stencil target interface.
-		/// </summary>
-		internal D3D.DepthStencilView D3DDepthStencilTarget
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the D3D view data.
-		/// </summary>
-		internal D3D.Viewport D3DView
-		{
-			get;
-			private set;
-		}
-		
 		/// <summary>
 		/// Property to return the video output that the swap chain is operating on.
 		/// </summary>
@@ -147,6 +158,15 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the graphics interface that owns this object.
 		/// </summary>
 		public GorgonGraphics Graphics
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the default viewport associated with this swap chain.
+		/// </summary>
+		public GorgonViewport Viewport
 		{
 			get;
 			private set;
@@ -235,16 +255,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ReleaseResources()
 		{
-			if (D3DDepthStencilTarget != null)
+			if (_internalDepthStencil != null)
 			{
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing D3D11 depth stencil target view...", GorgonLoggingLevel.Intermediate, Name);
-				D3DDepthStencilTarget.Dispose();
-			}
-
-			if (D3DDepthStencilTexture != null)
-			{
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing D3D11 depth stencil texture...", GorgonLoggingLevel.Intermediate, Name);
-				D3DDepthStencilTexture.Dispose();
+				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing internal depth stencil...", GorgonLoggingLevel.Verbose, Name);
+				_internalDepthStencil.Dispose();
+				_internalDepthStencil = null;
 			}
 
 			if (D3DRenderTarget != null)
@@ -253,8 +268,6 @@ namespace GorgonLibrary.Graphics
 				D3DRenderTarget.Dispose();
 			}
 
-			D3DDepthStencilTarget = null;
-			D3DDepthStencilTexture = null;
 			D3DRenderTarget = null;
 		}
 
@@ -280,42 +293,24 @@ namespace GorgonLibrary.Graphics
 				// Create a depth buffer if we've requested one.
 				if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
 				{
-					D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
-					D3D.DepthStencilViewDescription viewDesc = new D3D.DepthStencilViewDescription();
+					Gorgon.Log.Print("GorgonSwapChain '{0}': Creating internal depth/stencil...", Diagnostics.GorgonLoggingLevel.Verbose, Name);
 
-					desc.ArraySize = 1;
-					desc.BindFlags = D3D.BindFlags.DepthStencil;
-					desc.Format = (GI.Format)Settings.DepthStencilFormat;
+					GorgonDepthStencilSettings settings = new GorgonDepthStencilSettings {
+						Format = Settings.DepthStencilFormat,
+						Width = Settings.Width,
+						Height = Settings.Height,
+						MultiSample = Settings.MultiSample,
+						TextureFormat = GorgonBufferFormat.Unknown
+					};
 
-					// Determine if we can bind this to a shader.
-					if (Settings.DepthStencilShaderFormat != GorgonBufferFormat.Unknown)						
-					{
-						desc.BindFlags |= D3D.BindFlags.ShaderResource;
-						desc.Format = (GI.Format)Settings.DepthStencilShaderFormat;
-					}
+					GorgonDepthStencil.ValidateSettings(Graphics, settings);
 
-					desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
-					desc.Height = Settings.Height;
-					desc.Width = Settings.Width;
-					desc.MipLevels = 1;
-					desc.OptionFlags = D3D.ResourceOptionFlags.None;
-					desc.SampleDescription = GorgonMultiSampling.Convert(Settings.MultiSample);
-					desc.Usage = D3D.ResourceUsage.Default;
-
-					// Create the view.
-					D3DDepthStencilTexture = new D3D.Texture2D(Graphics.VideoDevice.D3DDevice, desc);
-
-					if ((Settings.MultiSample.Count > 1) || (Settings.MultiSample.Quality > 1)) 
-						viewDesc.Dimension = D3D.DepthStencilViewDimension.Texture2DMultisampled;
-					else
-						viewDesc.Dimension = D3D.DepthStencilViewDimension.Texture2D;
-					viewDesc.Texture2D.MipSlice = 0;
-					viewDesc.Flags = D3D.DepthStencilViewFlags.None;
-					viewDesc.Format = (GI.Format)Settings.DepthStencilFormat;
-					D3DDepthStencilTarget = new D3D.DepthStencilView(Graphics.VideoDevice.D3DDevice, D3DDepthStencilTexture, viewDesc);
-
-					D3DView = new D3D.Viewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height);
+					_internalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid().ToString(), settings);
+					_internalDepthStencil.UpdateSettings();
 				}
+
+				// Set up the default viewport.
+				Viewport = new GorgonViewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height, 0.0f, 1.0f);
 			}
 			finally
 			{
@@ -515,38 +510,6 @@ namespace GorgonLibrary.Graphics
 			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
 				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
 
-			// Check to see if the depth/stencil is supported.
-			if (settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
-			{
-				if (!graphics.VideoDevice.SupportsDepthFormat(settings.DepthStencilFormat))
-					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.DepthStencilFormat + "' as a depth/stencil buffer format.");
-
-				if (!graphics.VideoDevice.Supports2DTextureFormat(settings.DepthStencilFormat))
-					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.DepthStencilFormat + "' as texture format for the depth buffer.");
-
-				// Make sure we can use the same multi-sampling with our depth buffer.
-				quality = graphics.VideoDevice.GetMultiSampleQuality(settings.DepthStencilFormat, settings.MultiSample.Count);
-
-				// Ensure that the quality of the sampling does not exceed what the card can do.
-				if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
-					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
-				
-				if (settings.DepthStencilShaderFormat != GorgonBufferFormat.Unknown)
-				{
-					if (!graphics.VideoDevice.SupportsDepthFormat(settings.DepthStencilShaderFormat))
-						throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.DepthStencilShaderFormat + "' as a depth/stencil buffer format.");
-
-					// Ensure that this format can be used to pass to a shader.
-					if (!graphics.VideoDevice.Supports2DTextureFormat(settings.DepthStencilShaderFormat))
-						throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.DepthStencilShaderFormat + "' as texture format for the depth buffer.");
-
-					// Feature levels less than 4.1 can't read back multi sampled depth buffers in a shader.
-					if (((graphics.VideoDevice.SupportedFeatureLevels & DeviceFeatureLevel.SM4_1) != DeviceFeatureLevel.SM4_1) && ((graphics.VideoDevice.SupportedFeatureLevels & DeviceFeatureLevel.SM5) != DeviceFeatureLevel.SM5) && 
-						((settings.MultiSample.Count > 1) || (settings.MultiSample.Quality > 0)))
-						throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' cannot bind a multi sampled depth buffer to a shader if the feature level is less than SM_4_1");
-				}
-			}
-
 			// Force 2 buffers for discard.
 			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
 				settings.BufferCount = 2;
@@ -624,7 +587,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public void UpdateSettings(GorgonVideoMode mode)
 		{
-			UpdateSettings(mode, Settings.IsWindowed, Settings.BufferCount);
+			UpdateSettings(mode, Settings.IsWindowed, Settings.DepthStencilFormat, Settings.BufferCount);
 		}
 
 		/// <summary>
@@ -643,7 +606,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public void UpdateSettings(bool isWindowed)
 		{
-			UpdateSettings(Settings.VideoMode, isWindowed, Settings.BufferCount);
+			UpdateSettings(Settings.VideoMode, isWindowed, Settings.DepthStencilFormat, Settings.BufferCount);
 		}
 
 		/// <summary>
@@ -663,7 +626,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public void UpdateSettings(GorgonVideoMode mode, bool isWindowed)
 		{
-			UpdateSettings(Settings.VideoMode, isWindowed, Settings.BufferCount);
+			UpdateSettings(Settings.VideoMode, isWindowed, Settings.DepthStencilFormat, Settings.BufferCount);
 		}
 
 		/// <summary>
@@ -671,6 +634,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
 		/// <param name="isWindowed">TRUE to switch to windowed mode, FALSE to switch to full screen.</param>
+		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
 		/// <param name="bufferCount">Number of back buffers.</param>
 		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
@@ -685,7 +649,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
-		public void UpdateSettings(GorgonVideoMode mode, bool isWindowed, int bufferCount)
+		public void UpdateSettings(GorgonVideoMode mode, bool isWindowed, GorgonBufferFormat depthStencilFormat, int bufferCount)
 		{
 			if (GISwapChain == null)
 				return;
@@ -695,6 +659,7 @@ namespace GorgonLibrary.Graphics
 			Settings.IsWindowed = isWindowed;			
 			Settings.VideoMode = mode;
 			Settings.BufferCount = bufferCount;
+			Settings.DepthStencilFormat = depthStencilFormat;
 
 			// Validate and modify the settings as appropriate.
 			ValidateSwapChainSettings(Graphics, Settings);
@@ -704,6 +669,100 @@ namespace GorgonLibrary.Graphics
 			// Ensure our window is the proper size.
 			if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && ((Settings.VideoMode.Width != Settings.Window.ClientSize.Width) || (Settings.VideoMode.Height != Settings.Window.ClientSize.Height)))
 				Settings.Window.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
+		}
+
+		/// <summary>
+		/// Function to flip the buffers to the front buffer.
+		/// </summary>
+		/// <param name="interval">Vertical blank interval.</param>
+		/// <remarks>If <paramref name="interval"/> parameter is greater than 0, then this method will synchronize to the vertical blank count specified by interval  Passing 0 will display immediately.
+		/// <para>If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover (i.e. turn off stand by) once the device is ready for rendering again.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the interval parameter is less than 0 or greater than 4.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
+		public void Flip(int interval)
+		{
+			GI.PresentFlags flags = GI.PresentFlags.None;
+			SharpDX.Result result = SharpDX.Result.Ok;
+
+			GorgonDebug.AssertParamRange(interval, 0, 4, true, true, "interval");
+
+			if (GISwapChain == null)
+				return;
+
+			if (IsInStandBy)
+				flags = GI.PresentFlags.Test;
+			
+			result = GISwapChain.Present(interval, flags);
+
+			if (result != SharpDX.Result.Ok)
+			{
+				if (result.Success)
+					IsInStandBy = true;
+				else
+					throw new GorgonException(GorgonResult.CannotWrite, "Cannot update the swap chain front buffer.\nAn unrecoverable error has occurred:\n" + ErrorManager.GetErrorMessage(result.Code));
+			}
+			else
+				IsInStandBy = false;
+		}
+
+		/// <summary>
+		/// Function to flip the buffers to the front buffer.
+		/// </summary>
+		/// <remarks>If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover (i.e. turn off stand by) once the device is ready for rendering again.
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
+		public void Flip()
+		{
+			Flip(0);
+		}
+
+		/// <summary>
+		/// Function to clear the swap chain and any depth buffer attached to it.
+		/// </summary>
+		/// <param name="color">Color used to clear the swap chain.</param>
+		/// <remarks>This will only clear the swap chain.  Any attached depth/stencil buffer will remain untouched.</remarks>
+		public void Clear(GorgonColor color)
+		{
+			Graphics.Context.ClearRenderTargetView(D3DRenderTarget, color.ToColor());
+		}
+
+		/// <summary>
+		/// Function to clear the swap chain and an associated depth buffer.
+		/// </summary>
+		/// <param name="color">Color used to clear the swap chain.</param>
+		/// <param name="depthValue">Value used to fill the depth buffer.</param>
+		/// <remarks>This will clear the swap chain and depth buffer, but depth buffers with a stencil component will remain untouched.</remarks>
+		public void Clear(GorgonColor color, float depthValue)
+		{
+			Clear(color);
+
+			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth))
+				DepthStencil.ClearDepth(depthValue);
+		}
+
+		/// <summary>
+		/// Function to clear the swap chain and an associated depth buffer with a stencil component.
+		/// </summary>
+		/// <param name="color">Color used to clear the swap chain.</param>
+		/// <param name="depthValue">Value used to fill the depth buffer.</param>
+		/// <param name="stencilValue">Value used to fill the stencil component of the depth buffer.</param>
+		/// <remarks>This will clear the swap chain, depth buffer and stencil component of the depth buffer.</remarks>
+		public void Clear(GorgonColor color, float depthValue, int stencilValue)
+		{
+			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (!DepthStencil.FormatInformation.HasStencil))
+			{
+				Clear(color, depthValue);
+				return;
+			}
+
+			Clear(color);
+
+			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (DepthStencil.FormatInformation.HasStencil))
+			{
+				DepthStencil.Clear(depthValue, stencilValue);
+				return;
+			}
 		}
 		#endregion
 
@@ -719,9 +778,6 @@ namespace GorgonLibrary.Graphics
 		internal GorgonSwapChain(GorgonGraphics graphics, string name, GorgonSwapChainSettings settings)
 			: base(name)
 		{
-			if (graphics == null)
-				throw new ArgumentNullException("graphics");
-
 			Settings = settings;
 			Graphics = graphics;			
 

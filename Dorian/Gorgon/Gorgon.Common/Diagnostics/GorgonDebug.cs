@@ -54,6 +54,54 @@ namespace GorgonLibrary.Diagnostics
 		}
 
 		/// <summary>
+		/// Function to throw an exception if a value is not between the range specified.
+		/// </summary>
+		/// <param name="value">Value to compare.</param>
+		/// <param name="min">Minimum value.</param>
+		/// <param name="max">Maximum value.</param>
+		/// <param name="minInclusive">TRUE if the minimum is inclusive in the range (i.e. value &lt; min).</param>
+		/// <param name="maxInclusive">TRUE if the maximum is inclusive in the range (i.e. value &gt; max).</param>
+		/// <param name="paramName">Name of the parameter.</param>
+		public static void AssertParamRange(int value, int min, int max, bool minInclusive, bool maxInclusive, string paramName)
+		{
+#if DEBUG
+			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
+				throw new ArgumentOutOfRangeException(paramName, "The value '" + value.ToString() + "' is less than the minimum value '" + min.ToString() + "'");
+
+			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
+				throw new ArgumentOutOfRangeException(paramName, "The value '" + value.ToString() + "' is greater than the maximum value '" + max.ToString() + "'");
+#endif
+		}
+
+		/// <summary>
+		/// Function to throw an exception if a value is not between the range specified.
+		/// </summary>
+		/// <param name="value">Value to compare.</param>
+		/// <param name="min">Minimum value.</param>
+		/// <param name="max">Maximum value.</param>
+		/// <param name="paramName">Name of the parameter.</param>
+		/// <remarks>This overload includes the min value in the comparison, but excludes the max value (i.e. value &lt; 0 and value &gt;= max).</remarks>
+		public static void AssertParamRange(int value, int min, int max, string paramName)
+		{
+#if DEBUG
+			AssertParamRange(value, min, max, true, false, paramName);
+#endif
+		}
+
+		/// <summary>
+		/// Function to determine if a range is valid for a collection.
+		/// </summary>
+		/// <param name="index">Index being requested.</param>
+		/// <param name="count">Number of items in the collection.</param>
+		public static void AssertRange(int index, int count)
+		{
+#if DEBUG
+			if ((index < 0) || (index >= count))
+				throw new IndexOutOfRangeException("Out of range.  The index '" + index.ToString() + "' must be between 0 and " + count + ".");
+#endif
+		}
+
+		/// <summary>
 		/// Function to throw an exception if an object is NULL (Nothing in VB.Net).
 		/// </summary>
 		/// <typeparam name="T">A reference type to evaluate.</typeparam>
