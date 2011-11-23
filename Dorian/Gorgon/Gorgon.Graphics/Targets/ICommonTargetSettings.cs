@@ -20,31 +20,62 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, August 06, 2011 12:47:51 PM
+// Created: Tuesday, November 22, 2011 11:45:13 AM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Functions for how the system should copy its data to the front buffer during a page flip.
+	/// Interface for common settings for swap chains, render targets and depth buffers.
 	/// </summary>
-	/// <remarks>Both the Flip and Copy values may cause a performance bottleneck, Discard is the recommended choice.</remarks>
-	public enum GorgonDisplayFunction
+	public interface ICommonTargetSettings
 	{
+		#region Variables.
+
+		#endregion
+
+		#region Properties.
 		/// <summary>
-		/// Discard the buffer contents after a page flip.
+		/// Property to set or return the buffer format for the target
 		/// </summary>
-		Discard = 0,
+		GorgonBufferFormat Format
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
-		/// Recycles each buffer in the swap chain after a display operation.
+		/// Property to set or return the multisampling values for the target.
 		/// </summary>
-		Flip = 1,
+		GorgonMultiSampling MultiSample
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
-		/// Reuse the buffer.  Note that this can only be used in a swap chain with exactly 1 buffer.
+		/// Property to set or return the width of the target.
 		/// </summary>
-		Copy = 2
+		int Width
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of the target.
+		/// </summary>
+		int Height
+		{
+			get;
+			set;
+		}
+		#endregion
 	}
 }

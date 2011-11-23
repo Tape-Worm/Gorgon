@@ -41,6 +41,9 @@
     <Reference Include="SharpDX.D3DCompiler, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.D3DCompiler.2.0.1\lib\net20\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
+    <Reference Include="SharpDX.Diagnostics">
+      <HintPath>..\packages\SharpDX.Diagnostics.2.0.1\lib\net20\SharpDX.Diagnostics.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.Direct3D11, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Direct3D11.2.0.1\lib\net20\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
@@ -65,13 +68,10 @@
     <Compile Include="DeviceInfo\GorgonVideoModeList.cs" />
     <Compile Include="DeviceInfo\GorgonVideoOutput.cs" />
     <Compile Include="DeviceInfo\GorgonVideoOutputCollection.cs" />
-    <Compile Include="Enums\GorgonBufferFormats.cs" />
-    <Compile Include="Enums\GorgonCompareFlags.cs" />
-    <Compile Include="Enums\GorgonDisplayFunctions.cs" />
-    <Compile Include="Enums\GorgonMSAALevels.cs" />
-    <Compile Include="Enums\GorgonVSyncIntervals.cs" />
+    <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
+    <Compile Include="States\GorgonRasterizerState.cs" />
     <Compile Include="IObjectTracker.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
@@ -81,9 +81,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="States\GorgonStateObject.cs" />
+    <Compile Include="Targets\ICommonTargetSettings.cs" />
+    <Compile Include="Targets\GorgonDepthStencil.cs" />
+    <Compile Include="Targets\GorgonDepthStencilSettings.cs" />
     <Compile Include="Targets\GorgonMultiSampling.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
+    <Compile Include="Targets\GorgonViewport.cs" />
+    <Compile Include="Targets\GorgonViewportCollection.cs" />
     <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>

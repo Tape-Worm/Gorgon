@@ -26,6 +26,7 @@ namespace Tester_Graphics
 		GorgonGraphics _graphics = null;
 		GorgonSwapChain _swapChain = null;
 		GorgonSwapChain _swapChain2 = null;
+		GorgonRasterizerState _multiSample = null;
 		GorgonTimer _timer = new GorgonTimer(true);
 		Graphics g = null;
 		Form2 form2 = null;
@@ -78,20 +79,51 @@ namespace Tester_Graphics
 			return true;
 		}
 
+		int frameCount = 0;
+		float frameDepth = 0.0f;
+
 		private bool Idle(GorgonFrameRate timing)
 		{			
 			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
 
 			try
 			{
-				if (_test1 != null)
+				if (!_swapChain.IsInStandBy)
 				{
-					_test1.Transform(timing.FrameDelta);
-					_test1.Draw();
+					_graphics.Draw();
+					//_graphics.ApplyStates();
+					//_graphics.ApplyViewports();
+
+					_swapChain.DepthStencil.Clear(1.0f, 0);
+
+					if (frameCount == 0)
+					{
+						_swapChain.Clear(Color.Black);
+						frameCount = 0;
+					}
+
+					if (_test1 != null)
+					{
+						_test1.Transform(timing.FrameDelta);
+						_test1.Draw();
+					}
+
+
+					//_graphics.ApplyViewport(1);
+					//_test1.Draw();
+
+					if (_test2 != null)
+						_test2.Draw();
 				}
 
-				if (_test2 != null)
-					_test2.Draw();
+				_swapChain.Flip();
+
+				frameDepth += 0.05f * timing.FrameDelta;
+
+				if (frameDepth > 1.0f)
+					frameDepth = 0.0f;
+
+				frameCount++;
 			}
 			catch (Exception ex)
 			{
@@ -124,8 +156,8 @@ namespace Tester_Graphics
 
 				GorgonFrameRate.UseHighResolutionTimer = false;
 
-				Gorgon.UnfocusedSleepTime = 1;
-				Gorgon.AllowBackground = false;
+				Gorgon.UnfocusedSleepTime = 1000;
+				Gorgon.AllowBackground = true;
 
 				this.Show();
 
@@ -136,8 +168,12 @@ namespace Tester_Graphics
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
 				form2.Show();
 #endif
-				//_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
-				_graphics = new GorgonGraphics();
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
+				//_graphics = new GorgonGraphics();
+
+				_multiSample = _graphics.CreateRasterizerState();
+				_multiSample.IsMultisamplingEnabled = true;
+				_graphics.RasterizerState = _multiSample;
  
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
 						 where videoMode.Width == 1280 && videoMode.Height == 800 && videoMode.Format == GorgonBufferFormat.R8G8B8A8_UIntNormal 
@@ -147,7 +183,10 @@ namespace Tester_Graphics
 				int count = 2;
 				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(GorgonBufferFormat.R8G8B8A8_UIntNormal, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
-				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = GorgonBufferFormat.D24_UIntNormal_S8_UInt, DepthStencilShaderFormat = GorgonBufferFormat.Unknown });
+				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = GorgonBufferFormat.D24_UIntNormal_S8_UInt });
+				//_graphics.RasterizerState.IsMultisamplingEnabled = true;
+				_graphics.Viewports.Add(_swapChain.Viewport);
+				//_graphics.Viewports.Add(new GorgonViewport(640, 400, 640, 400));
 #if MULTIMON
 				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;
 

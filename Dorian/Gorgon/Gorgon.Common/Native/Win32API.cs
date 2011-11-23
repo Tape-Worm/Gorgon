@@ -173,7 +173,7 @@ namespace GorgonLibrary.Native
 		/// <returns>TRUE if messages are ready for processing, FALSE if not.</returns>
 		[return: MarshalAs(UnmanagedType.Bool)]
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
-		public static extern bool PeekMessage(ref MSG msg, IntPtr hwnd, uint wFilterMin, uint wFilterMax, PeekMessageFlags flags);
+		public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, uint wFilterMin, uint wFilterMax, PeekMessageFlags flags);
 
 		/// <summary>
 		/// Function to translate keyboard accelerator keys.

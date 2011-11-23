@@ -105,7 +105,7 @@ namespace GorgonLibrary
 				if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
 					return;
 
-				while ((HasFocus) && (!Win32API.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
+				while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 				{
 					_timingData.Update();
 
@@ -183,6 +183,7 @@ namespace GorgonLibrary
 		/// Set this value to 0 to use all CPU time when the application is not focused.  The default is 10 milliseconds.
 		/// <para>This is handy in situations when the application is in the background and processing does not need to continue.  For laptops this means battery savings when the application is not focused.
 		/// </para>
+		/// <para>This property is ignore when <see cref="P:GorgonLibrary.Gorgon.AllowBackground">AllowBackground</see> is set to FALSE.</para>
 		/// </remarks>
 		public static int UnfocusedSleepTime
 		{
@@ -194,7 +195,7 @@ namespace GorgonLibrary
 		/// Property to allow the idle loop to continue running while the window is not focused or minimized.
 		/// </summary>
 		/// <remarks>This is set to TRUE by default, and this means that the code in the idle loop will continue to execute when the window is not focused or minimized.  When it is FALSE, the application will suspend until it regains focus.
-		/// <para>There may be a delay when the code is executing in the background if the <see cref="P:GorgonLibrary.Gorgon.UnfocusedSleepTime">UnfocusedSleepTime</see> property is set greater than 0.</para>
+		/// <para>There will be a delay for code that is executing in the background when the <see cref="P:GorgonLibrary.Gorgon.UnfocusedSleepTime">UnfocusedSleepTime</see> property is set greater than 0.</para>
 		/// </remarks>
 		public static bool AllowBackground
 		{
@@ -327,7 +328,7 @@ namespace GorgonLibrary
 			if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
 				return;
 			
-			while ((HasFocus) && (!Win32API.PeekMessage(ref message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
+			while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 			{
 				_timingData.Update();
 				
