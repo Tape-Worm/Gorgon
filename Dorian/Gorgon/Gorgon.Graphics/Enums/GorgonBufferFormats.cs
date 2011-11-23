@@ -438,4 +438,226 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		BC7_UIntNormal_sRGB = 99
 	}
+
+	/// <summary>
+	/// Retrieves information about the format.
+	/// </summary>
+	public static class GorgonBufferFormatInfo
+	{
+		#region Classes.
+		/// <summary>
+		/// Information about a specific GorgonBufferFormat.
+		/// </summary>
+		public class GorgonFormatData
+		{
+			#region Variables.
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return the format.
+			/// </summary>
+			public GorgonBufferFormat Format
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return the best fit packed type.
+			/// </summary>
+			public Type PackedType
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return the types embedded within the format.
+			/// </summary>
+			public Type[] ComponentTypes
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return the packed bit depth for the format.
+			/// </summary>
+			public int PackedDepth
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return the bit depths for components within the format.
+			/// </summary>
+			public int[] ComponentDepths
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return the number of components in the format.
+			/// </summary>
+			public int ComponentCount
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return the left/right shift values for each component.
+			/// </summary>
+			public int[] Shifts
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return whether the format has a depth component.
+			/// </summary>
+			public bool HasDepth
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return whether the format has a stencil component.
+			/// </summary>
+			public bool HasStencil
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return whether the format expects normalized data.
+			/// </summary>
+			public bool[] IsNormalized
+			{
+				get;
+				private set;
+			}
+			#endregion
+
+			#region Methods.
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="GorgonFormatData"/> class.
+			/// </summary>
+			/// <param name="format">The format to evaluate.</param>
+			internal GorgonFormatData(GorgonBufferFormat format)
+			{
+				Format = format;
+				switch (format)
+				{
+					case GorgonBufferFormat.D16_UIntNormal:
+						ComponentCount = 1;
+						IsNormalized = new bool[] { true };
+						PackedType = typeof(uint);
+						PackedDepth = 32;
+						ComponentTypes = new Type[] { typeof(uint) };
+						ComponentDepths = new int[] { 16 };
+						HasDepth = true;
+						HasStencil = false;
+						Shifts = new int[] { 0 };						
+						break;
+					case GorgonBufferFormat.D24_UIntNormal_S8_UInt:
+						ComponentCount = 2;
+						IsNormalized = new bool[] { true, false };
+						ComponentTypes = new Type[] { typeof(uint), typeof(uint) };
+						ComponentDepths = new int[] { 24, 8 };
+						PackedType = typeof(uint);
+						PackedDepth = 32;
+						HasDepth = true;
+						HasStencil = true;
+						Shifts = new int[] { 8, 0 };						
+						break;
+					case GorgonBufferFormat.D32_Float:
+						ComponentCount = 1;
+						IsNormalized = new bool[] { false };
+						ComponentTypes = new Type[] { typeof(float) };
+						ComponentDepths = new int[] { 32 };
+						PackedType = typeof(float);
+						PackedDepth = 32;
+						HasDepth = true;
+						HasStencil = false;
+						Shifts = new int[] { 0 };						
+						break;
+					case GorgonBufferFormat.D32_Float_S8X24_UInt:
+						ComponentCount = 3;
+						IsNormalized = new bool[] { false, false };
+						ComponentTypes = new Type[] { typeof(float), typeof(uint) };
+						ComponentDepths = new int[] { 32, 8, 24 };
+						PackedType = typeof(ulong);
+						PackedDepth = 64;
+						HasDepth = true;
+						HasStencil = true;
+						Shifts = new int[] { 32, 24, 0 };						
+						break;
+					default:
+						ComponentCount = 0;
+						IsNormalized = new bool[] { };
+						PackedType = null;
+						PackedDepth = 0;
+						ComponentTypes = new Type[] { };
+						ComponentDepths = new int[] { };
+						HasDepth = false;
+						HasStencil = false;
+						Shifts = new int[] { };						
+						break;
+				}
+			}
+			#endregion
+		}
+		#endregion
+
+		#region Variables.
+		private static IDictionary<GorgonBufferFormat, GorgonFormatData> _formats = null;
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to build the format information.
+		/// </summary>
+		private static void GetFormatInfo()
+		{
+			GorgonBufferFormat[] formats = (GorgonBufferFormat[])Enum.GetValues(typeof(GorgonBufferFormat));
+
+			foreach (var format in formats)
+				_formats.Add(format, new GorgonFormatData(format));
+		}
+
+		/// <summary>
+		/// Function to retrieve information about a format.
+		/// </summary>
+		/// <param name="format">Format to retrieve information about.</param>
+		/// <returns>The information for the format.  If the format is unknown, then the data for the Unknown GorgonBufferFormat will be returned.</returns>
+		public static GorgonFormatData GetInfo(GorgonBufferFormat format)
+		{
+			if (!_formats.ContainsKey(format))
+				return _formats[GorgonBufferFormat.Unknown];
+
+			return _formats[format];
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes the <see cref="GorgonBufferFormatInfo"/> class.
+		/// </summary>
+		static GorgonBufferFormatInfo()
+		{
+			_formats = new Dictionary<GorgonBufferFormat, GorgonFormatData>();
+			GetFormatInfo();
+		}
+		#endregion
+	}
 }
