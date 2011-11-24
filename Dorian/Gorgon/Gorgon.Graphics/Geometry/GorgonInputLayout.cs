@@ -28,21 +28,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// 
+	/// An input element for a buffer.
 	/// </summary>
+	/// <remarks>This defines the layout of an item of data for a buffer.  Typically this is used with a Vertex buffer to define a specific element for a vertex.</remarks>
 	public class GorgonInputElement
+		: INamedObject
 	{
 		#region Properties.
 		/// <summary>
 		/// Property to return the context of the element.
 		/// </summary>
 		/// <remarks>This is a string value that corresponds to a shader input.  For example, to specify a position, the user would set this to "position".  
-		/// These contexts can be named whatever the user wishes.  However, some APIs (such as Direct3D 9) only have a set number of contexts and thus the
-		/// user should pass in one of the pre-defined constants for the context.
+		/// These contexts can be named whatever the user wishes.  This must map to a corresponding element in the shader.
 		/// </remarks>
 		public string Context
 		{
@@ -122,6 +124,22 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
+		#region Method.
+		/// <summary>
+		/// Function to convert this Gorgon input element into a Direct3D input element.
+		/// </summary>
+		/// <returns>The direct 3D input element.</returns>
+		internal D3D.InputElement Convert()
+		{
+			int instanceCount = InstanceCount;
+
+			if (!Instanced)
+				instanceCount = 0;
+
+			return new D3D.InputElement(Context, Index, (SharpDX.DXGI.Format)Format, Offset, Slot, (Instanced ? D3D.InputClassification.PerInstanceData : D3D.InputClassification.PerVertexData), instanceCount);
+		}
+		#endregion
+
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonInputElement"/> class.
@@ -143,6 +161,19 @@ namespace GorgonLibrary.Graphics
 			Slot = slot;
 			Instanced = instanced;
 			InstanceCount = InstanceCount;
+		}
+		#endregion
+
+		#region INamedObject Members
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		string INamedObject.Name
+		{
+			get 
+			{
+				return Context;
+			}
 		}
 		#endregion
 	}
