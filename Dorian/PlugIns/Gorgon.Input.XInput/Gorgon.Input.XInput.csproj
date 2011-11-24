@@ -47,11 +47,12 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpDX, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\Gorgon\packages\SharpDX.2.0.1\lib\net20\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX, Version=2.0.2.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Gorgon\packages\SharpDX.2.0.2.1\lib\net20\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.XInput, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\Gorgon\packages\SharpDX.XInput.2.0.1\lib\net20\SharpDX.XInput.dll</HintPath>
+    <Reference Include="SharpDX.XInput, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Gorgon\packages\SharpDX.XInput.2.0.2\lib\net20\SharpDX.XInput.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
