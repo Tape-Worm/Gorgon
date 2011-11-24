@@ -96,7 +96,7 @@ namespace Tester_Graphics
 
 					_swapChain.DepthStencil.Clear(1.0f, 0);
 
-					if (frameCount == 0)
+					//if (frameCount == 0)
 					{
 						_swapChain.Clear(Color.Black);
 						frameCount = 0;
