@@ -72,7 +72,9 @@
     <Compile Include="DeviceInfo\GorgonVideoModeList.cs" />
     <Compile Include="DeviceInfo\GorgonVideoOutput.cs" />
     <Compile Include="DeviceInfo\GorgonVideoOutputCollection.cs" />
-    <Compile Include="Geometry\GorgonInputLayout.cs" />
+    <Compile Include="Geometry\GorgonInputElement.cs" />
+    <Compile Include="Geometry\GorgonInputCollection.cs" />
+    <Compile Include="Geometry\InputElementAttribute.cs" />
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />

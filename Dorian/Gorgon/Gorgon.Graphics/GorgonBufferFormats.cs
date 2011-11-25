@@ -973,22 +973,8 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonBufferFormat[] formats = (GorgonBufferFormat[])Enum.GetValues(typeof(GorgonBufferFormat));
 
-			System.IO.StreamWriter writer = new System.IO.StreamWriter("c:/users/mike/desktop/formats.txt");
 			foreach (var format in formats)
-			{
-				GorgonFormatData data = new GorgonFormatData(format);
-				_formats.Add(format, data);
-				writer.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}", data.Format, data.BitDepth, data.SizeInBytes, data.HasAlpha, data.HasDepth, data.HasStencil );
-
-				foreach (var comp in data.Components.OrderByDescending(item => item.Shift))
-				{
-					writer.WriteLine("{0}, {1}, {2}, 0x{3:x}, {4}", comp.Name, comp.Type, comp.BitDepth, comp.Mask, comp.Shift);
-				}
-				writer.WriteLine();
-			}
-
-
-			writer.Close();
+				_formats.Add(format, new GorgonFormatData(format));
 		}
 
 		/// <summary>
