@@ -100,12 +100,15 @@ namespace GorgonLibrary.Graphics
 		private SharpDX.DataStream _changeStream = null;
 		Random _rnd = new Random();
 			
-
+		
 		struct vertex
 		{
-			public SharpDX.Vector4 Position;
-			public SharpDX.Vector4 Color;
-			public SharpDX.Vector2 UV;
+			[InputElement(0, "POSITION")]
+			public Vector4D Position;
+			[InputElement(1, "COLOR")]
+			public Vector4D Color;
+			[InputElement(2, "TEXTURECOORD")]
+			public Vector2D UV;
 		}
 
 
@@ -180,11 +183,14 @@ namespace GorgonLibrary.Graphics
 			_psShaderCode = Shaders.ShaderBytecode.Compile(_shader, "PS", "ps_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null);
 			_ps = new D3D.PixelShader(_device, _psShaderCode);
 
-			_layout = new D3D.InputLayout(_device, _vsShaderCode, new[] {
-			new D3D.InputElement("POSITION", 0, GI.Format.R32G32B32A32_Float, 0, 0),
-			new D3D.InputElement("COLOR", 0, GI.Format.R32G32B32A32_Float, 16, 0),
-			new D3D.InputElement("TEXTURECOORD", 0, GI.Format.R32G32_Float, 32, 0)
-			});
+			GorgonInputLayout layout = new GorgonInputLayout(typeof(vertex));
+
+			D3D.InputElement[] elements = new D3D.InputElement[layout.Count];
+
+			for (int i = 0; i < layout.Count; i++)
+				elements[i] = layout[i].Convert();
+			
+			_layout = new D3D.InputLayout(_device, _vsShaderCode, elements);
 
 			int vertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(vertex));
 			_layout.DebugName = _swapChain.Name + " Test Vertex Buffer";
@@ -192,10 +198,10 @@ namespace GorgonLibrary.Graphics
 			using (DataStream stream = new DataStream(4 * vertexSize, true, true))
 			{
 				stream.WriteRange(new vertex[] {
-			new vertex() { Position = new SharpDX.Vector4(-0.5f, 0.5f, 0.0f, 0.0f), Color = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SharpDX.Vector2(0, 0)},
-			new vertex() { Position = new SharpDX.Vector4(0.5f, 0.5f, 0.0f, 0.0f), Color = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SharpDX.Vector2(1.0f, 0)},
-			new vertex() { Position = new SharpDX.Vector4(-0.5f, -0.5f, 0.0f, 0.0f), Color = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SharpDX.Vector2(0, 1.0f)},
-				new vertex() { Position = new SharpDX.Vector4(0.5f, -0.5f, 0.12f, 0.0f), Color = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new SharpDX.Vector2(1.0f, 1.0f)}});
+				new vertex() { Position = new Vector4D(-0.5f, 0.5f, 0.0f, 0.0f), Color = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2D(0, 0)},
+				new vertex() { Position = new Vector4D(0.5f, 0.5f, 0.0f, 0.0f), Color = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2D(1.0f, 0)},
+				new vertex() { Position = new Vector4D(-0.5f, -0.5f, 0.0f, 0.0f), Color = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2D(0, 1.0f)},
+				new vertex() { Position = new Vector4D(0.5f, -0.5f, 0.12f, 0.0f), Color = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2D(1.0f, 1.0f)}});
 				stream.Position = 0;
 
 				_vertices = new D3D.Buffer(_device, stream, new D3D.BufferDescription()
