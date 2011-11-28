@@ -291,7 +291,7 @@ namespace GorgonLibrary.Graphics
 				D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
 
 				// Create a depth buffer if we've requested one.
-				if (Settings.DepthStencilFormat != GorgonBufferFormat.Unknown)
+				if (Settings.DepthStencilFormat != BufferFormat.Unknown)
 				{
 					Gorgon.Log.Print("GorgonSwapChain '{0}': Creating internal depth/stencil...", Diagnostics.GorgonLoggingLevel.Verbose, Name);
 
@@ -300,7 +300,7 @@ namespace GorgonLibrary.Graphics
 						Width = Settings.Width,
 						Height = Settings.Height,
 						MultiSample = Settings.MultiSample,
-						TextureFormat = GorgonBufferFormat.Unknown
+						TextureFormat = BufferFormat.Unknown
 					};
 
 					GorgonDepthStencil.ValidateSettings(Graphics, settings);
@@ -460,7 +460,7 @@ namespace GorgonLibrary.Graphics
 				stagedMode.Width = settings.Window.ClientSize.Width;
 			if (stagedMode.Height == 0)
 				stagedMode.Width = settings.Window.ClientSize.Height;
-			if (stagedMode.Format == GorgonBufferFormat.Unknown)
+			if (stagedMode.Format == BufferFormat.Unknown)
 				stagedMode.Format = output.DefaultVideoMode.Format;
 			if ((stagedMode.RefreshRateDenominator == 0) || (stagedMode.RefreshRateNumerator == 0))
 			{
@@ -649,7 +649,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
-		public void UpdateSettings(GorgonVideoMode mode, bool isWindowed, GorgonBufferFormat depthStencilFormat, int bufferCount)
+		public void UpdateSettings(GorgonVideoMode mode, bool isWindowed, BufferFormat depthStencilFormat, int bufferCount)
 		{
 			if (GISwapChain == null)
 				return;

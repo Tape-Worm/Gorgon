@@ -35,7 +35,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Defines how a triangle should be culled.
 	/// </summary>
-	public enum CullingMode
+	public enum GorgonCullingMode
 	{
 		/// <summary>
 		/// No culling.
@@ -54,7 +54,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Defines how a triangle should be filled.
 	/// </summary>
-	public enum FillMode
+	public enum GorgonFillMode
 	{
 		/// <summary>
 		/// Wireframe triangles.
@@ -81,11 +81,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the triangle culling mode for the rasterizer.
 		/// </summary>
-		public CullingMode CullingMode
+		public GorgonCullingMode CullingMode
 		{
 			get
 			{
-				return (CullingMode)_desc.CullMode;
+				return (GorgonCullingMode)_desc.CullMode;
 			}
 			set
 			{
@@ -100,11 +100,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the triangle filling mode.
 		/// </summary>
-		public FillMode FillMode
+		public GorgonFillMode FillMode
 		{
 			get
 			{
-				return (FillMode)_desc.FillMode;
+				return (GorgonFillMode)_desc.FillMode;
 			}
 			set
 			{
@@ -273,6 +273,15 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to apply any changes immediately if this state is the current state.
+		/// </summary>
+		protected override void ApplyImmediate()
+		{
+			if ((Graphics != null) && (Graphics.RasterizerState == this))
+				Graphics.Context.Rasterizer.State = Convert();
+		}
+
+		/// <summary>
 		/// Function to convert this state object into a rasterizer state.
 		/// </summary>
 		/// <returns>The new rasterizer state.</returns>
@@ -297,8 +306,8 @@ namespace GorgonLibrary.Graphics
 		internal GorgonRasterizerState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-			FillMode = FillMode.Solid;
-			CullingMode = CullingMode.Back;
+			FillMode = GorgonFillMode.Solid;
+			CullingMode = GorgonCullingMode.Back;
 			IsDepthClippingEnabled = true;
 		}
 		#endregion

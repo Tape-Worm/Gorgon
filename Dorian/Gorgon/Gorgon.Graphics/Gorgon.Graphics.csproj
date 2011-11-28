@@ -74,6 +74,8 @@
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
+    <Compile Include="States\GorgonBlendState.cs" />
+    <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonRasterizerState.cs" />
     <Compile Include="IObjectTracker.cs" />
     <Compile Include="Native\Win32API.cs" />
@@ -92,7 +94,6 @@
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />
-    <Compile Include="Targets\GorgonViewportCollection.cs" />
     <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>

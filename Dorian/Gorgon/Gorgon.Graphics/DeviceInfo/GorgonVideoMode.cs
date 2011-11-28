@@ -49,7 +49,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Format of the video mode.
 		/// </summary>
-		public GorgonBufferFormat Format;					
+		public BufferFormat Format;					
 		/// <summary>
 		/// Refresh rate numerator.
 		/// </summary>
@@ -91,7 +91,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The DXGI mode.</returns>
 		internal static GorgonVideoMode Convert(GI.ModeDescription mode)
 		{
-			return new GorgonVideoMode(mode.Width, mode.Height, (GorgonBufferFormat)mode.Format, mode.RefreshRate.Numerator, mode.RefreshRate.Denominator);
+			return new GorgonVideoMode(mode.Width, mode.Height, (BufferFormat)mode.Format, mode.RefreshRate.Numerator, mode.RefreshRate.Denominator);
 		}
 
 		/// <summary>
@@ -188,7 +188,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">The format for the video mode.</param>
 		/// <param name="refreshNumerator">The refresh rate numerator.</param>
 		/// <param name="refreshDenominator">The refresh rate denominator.</param>
-		public GorgonVideoMode(int width, int height, GorgonBufferFormat format, int refreshNumerator, int refreshDenominator)
+		public GorgonVideoMode(int width, int height, BufferFormat format, int refreshNumerator, int refreshDenominator)
 		{
 			Width = width;
 			Height = height;
@@ -203,7 +203,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="width">The width of the video mode.</param>
 		/// <param name="height">The height of the video mode.</param>
 		/// <param name="format">The format for the video mode.</param>
-		public GorgonVideoMode(int width, int height, GorgonBufferFormat format)
+		public GorgonVideoMode(int width, int height, BufferFormat format)
 			: this(width, height, format, 0, 0)
 		{
 		}

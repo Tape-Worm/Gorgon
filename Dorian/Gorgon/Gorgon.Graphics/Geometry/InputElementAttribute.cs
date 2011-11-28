@@ -91,7 +91,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the format of the data.
 		/// </summary>
 		/// <remarks>This is used to specify the format and type of the element.</remarks>
-		public GorgonBufferFormat Format
+		public BufferFormat Format
 		{
 			get;
 			private set;
@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">The vertex buffer slot for the element.</param>
 		/// <param name="instanced">TRUE if used for instanced data, FALSE if not.</param>
 		/// <param name="instanceCount">The number of instances allowed.</param>
-		public InputElementAttribute(string context, GorgonBufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
+		public InputElementAttribute(string context, BufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
 		{
 			if (slot < 0)
 				slot = 0;
@@ -178,7 +178,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="offset">Offset of the element in the structure.</param>
 		/// <param name="index">The index for the element.</param>
 		/// <param name="slot">The vertex buffer slot for the element.</param>
-		public InputElementAttribute(string context, GorgonBufferFormat format, int offset, int index, int slot)
+		public InputElementAttribute(string context, BufferFormat format, int offset, int index, int slot)
 			: this(context, format, offset, index, slot, false, 0)
 		{
 		}
@@ -190,7 +190,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">The format/type of the element.</param>
 		/// <param name="offset">Offset of the element in the structure.</param>
 		/// <param name="index">The index for the element.</param>
-		public InputElementAttribute(string context, GorgonBufferFormat format, int offset, int index)
+		public InputElementAttribute(string context, BufferFormat format, int offset, int index)
 			: this(context, format, offset, index, 0, false, 0)
 		{
 		}
@@ -202,7 +202,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="context">The context of the element.</param>
 		/// <param name="format">The format/type of the element.</param>
 		/// <param name="offset">Offset of the element in the structure.</param>
-		public InputElementAttribute(string context, GorgonBufferFormat format, int offset)
+		public InputElementAttribute(string context, BufferFormat format, int offset)
 			: this(context, format, offset, 0, 0, false, 0)
 		{
 		}
@@ -213,7 +213,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="fieldOrder">Explicit layout order of the field when being parsed from the type.</param>
 		/// <param name="context">The context of the element.</param>
 		/// <param name="format">The format/type of the element.</param>
-		public InputElementAttribute(int fieldOrder, string context, GorgonBufferFormat format)
+		public InputElementAttribute(int fieldOrder, string context, BufferFormat format)
 			: this(context, format, 0, 0, 0, false, 0)
 		{
 			ExplicitOrder = fieldOrder;
@@ -227,7 +227,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="fieldOrder">Explicit layout order of the field when being parsed from the type.</param>
 		/// <param name="context">The context of the element.</param>
 		public InputElementAttribute(int fieldOrder, string context)
-			: this(context, GorgonBufferFormat.Unknown, 0, 0, 0, false, 0)
+			: this(context, BufferFormat.Unknown, 0, 0, 0, false, 0)
 		{
 			ExplicitOrder = fieldOrder;
 			Offset = 0;
@@ -239,7 +239,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="fieldOrder">Explicit layout order of the field when being parsed from the type.</param>
 		public InputElementAttribute(int fieldOrder)
-			: this(string.Empty, GorgonBufferFormat.Unknown, 0, 0, 0, false, 0)
+			: this(string.Empty, BufferFormat.Unknown, 0, 0, 0, false, 0)
 		{
 			ExplicitOrder = fieldOrder;
 			Offset = 0;

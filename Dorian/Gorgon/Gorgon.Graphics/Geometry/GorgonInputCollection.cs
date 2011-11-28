@@ -98,38 +98,38 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="type">Type to use when evaluating.</param>
 		/// <returns>The element format.</returns>
-		private GorgonBufferFormat GetElementType(Type type)
+		private BufferFormat GetElementType(Type type)
 		{
 			if (type == typeof(byte))
-				return GorgonBufferFormat.R8_UInt;
+				return BufferFormat.R8_UInt;
 			if (type == typeof(SByte))
-				return GorgonBufferFormat.R8_Int;
+				return BufferFormat.R8_Int;
 
 			if (type == typeof(Int32))
-				return GorgonBufferFormat.R32_Int;
+				return BufferFormat.R32_Int;
 			if (type == typeof(UInt32))
-				return GorgonBufferFormat.R32_UInt;
+				return BufferFormat.R32_UInt;
 
 			if (type == typeof(Int16))
-				return GorgonBufferFormat.R16_Int;
+				return BufferFormat.R16_Int;
 			if (type == typeof(UInt16))
-				return GorgonBufferFormat.R16_UInt;
+				return BufferFormat.R16_UInt;
 
 			if (type == typeof(Int64))
-				return GorgonBufferFormat.R32G32_Int;
+				return BufferFormat.R32G32_Int;
 			if (type == typeof(UInt64))
-				return GorgonBufferFormat.R32G32_UInt;
+				return BufferFormat.R32G32_UInt;
 
 			if (type == typeof(float))
-				return GorgonBufferFormat.R32_Float;
+				return BufferFormat.R32_Float;
 			if (type == typeof(Vector2D))
-				return GorgonBufferFormat.R32G32_Float;
+				return BufferFormat.R32G32_Float;
 			if (type == typeof(Vector3D))
-				return GorgonBufferFormat.R32G32B32_Float;				
+				return BufferFormat.R32G32B32_Float;				
 			if (type == typeof(Vector4D))
-				return GorgonBufferFormat.R32G32B32A32_Float;
+				return BufferFormat.R32G32B32A32_Float;
 
-			return GorgonBufferFormat.Unknown;
+			return BufferFormat.Unknown;
 		}		
 
 		/// <summary>
@@ -225,7 +225,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown is the <paramref name="slot"/> parameter is less than 0 or greater than 15.</para>
 		/// </exception>
-		public GorgonInputElement Add(string context, GorgonBufferFormat format, int? offset, int index, int slot, bool instanced, int instanceCount)
+		public GorgonInputElement Add(string context, BufferFormat format, int? offset, int index, int slot, bool instanced, int instanceCount)
 		{
 			// Find the highest offset and increment by the last element size.
 			if (offset == null) 
@@ -266,7 +266,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown is the <paramref name="slot"/> parameter is less than 0 or greater than 15.</para>
 		/// </exception>
-		public GorgonInputElement Add(string context, GorgonBufferFormat format, int? offset, int index, int slot)
+		public GorgonInputElement Add(string context, BufferFormat format, int? offset, int index, int slot)
 		{
 			return Add(context, format, offset, index, slot, false, 0);
 		}
@@ -284,7 +284,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="offset"/> is in use and the <paramref name="index"/> is the same.</para>
 		/// </exception>
-		public GorgonInputElement Add(string context, GorgonBufferFormat format, int? offset, int index)
+		public GorgonInputElement Add(string context, BufferFormat format, int? offset, int index)
 		{
 			return Add(context, format, offset, index, 0, false, 0);
 		}
@@ -299,7 +299,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonInputElement">GorgonInputElement</see> type for details on the various parameters.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown if the <paramref name="format"/> is not supported.
 		/// </exception>
-		public GorgonInputElement Add(string context, GorgonBufferFormat format, int? offset)
+		public GorgonInputElement Add(string context, BufferFormat format, int? offset)
 		{
 			return Add(context, format, offset, 0, 0, false, 0);
 		}
@@ -353,17 +353,17 @@ namespace GorgonLibrary.Graphics
 
 			foreach (var item in propertiesAndFields)
 			{
-				GorgonBufferFormat format = item.Attribute.Format;
+				BufferFormat format = item.Attribute.Format;
 				string contextName = item.Attribute.Context;
 
 				if (!_allowedTypes.Contains(item.ReturnType))
 					throw new GorgonException(GorgonResult.CannotCreate, "The type '" + item.ReturnType.FullName.ToString() + "' is not a valid type for an input element.");
 
 				// Try to determine the format from the type.
-				if (format == GorgonBufferFormat.Unknown)
+				if (format == BufferFormat.Unknown)
 				{
 					format = GetElementType(item.ReturnType);
-					if (format == GorgonBufferFormat.Unknown)
+					if (format == BufferFormat.Unknown)
 						throw new GorgonException(GorgonResult.CannotCreate, "The type '" + item.ReturnType.FullName.ToString() + "' for the property/field '" + item.Name + "' cannot be mapped to a GorgonBufferFormat.");
 				}
 

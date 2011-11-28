@@ -36,7 +36,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Various buffer formats supported for textures, rendertargets, swap chains and display modes.
 	/// </summary>
-	public enum GorgonBufferFormat
+	public enum BufferFormat
 	{
 		/// <summary>
 		/// Unknown format.
@@ -720,7 +720,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Property to return the format.
 			/// </summary>
-			public GorgonBufferFormat Format
+			public BufferFormat Format
 			{
 				get;
 				private set;
@@ -862,7 +862,7 @@ namespace GorgonLibrary.Graphics
 			/// Function to parse the format.
 			/// </summary>
 			/// <param name="format">Format to parse.</param>
-			private void ParseFormat(GorgonBufferFormat format)
+			private void ParseFormat(BufferFormat format)
 			{
 				string[] types = new string[] { "UInt", "Int", "UIntNormal", "IntNormal", "Float", "SharedExp" };
 				string formatString = format.ToString();
@@ -946,12 +946,12 @@ namespace GorgonLibrary.Graphics
 			/// Initializes a new instance of the <see cref="GorgonFormatData"/> class.
 			/// </summary>
 			/// <param name="format">The format to evaluate.</param>
-			internal GorgonFormatData(GorgonBufferFormat format)
+			internal GorgonFormatData(BufferFormat format)
 			{
 				Format = format;
 				Components = new FormatComponents();
 
-				if (format != GorgonBufferFormat.Unknown)
+				if (format != BufferFormat.Unknown)
 				{
 					ParseFormat(format);
 					Components.AddNames();
@@ -962,7 +962,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private static IDictionary<GorgonBufferFormat, GorgonFormatData> _formats = null;
+		private static IDictionary<BufferFormat, GorgonFormatData> _formats = null;
 		#endregion
 
 		#region Methods.
@@ -971,7 +971,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private static void GetFormatInfo()
 		{
-			GorgonBufferFormat[] formats = (GorgonBufferFormat[])Enum.GetValues(typeof(GorgonBufferFormat));
+			BufferFormat[] formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 
 			foreach (var format in formats)
 				_formats.Add(format, new GorgonFormatData(format));
@@ -982,10 +982,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="format">Format to retrieve information about.</param>
 		/// <returns>The information for the format.  If the format is unknown, then the data for the Unknown GorgonBufferFormat will be returned.</returns>
-		public static GorgonFormatData GetInfo(GorgonBufferFormat format)
+		public static GorgonFormatData GetInfo(BufferFormat format)
 		{
 			if (!_formats.ContainsKey(format))
-				return _formats[GorgonBufferFormat.Unknown];
+				return _formats[BufferFormat.Unknown];
 
 			return _formats[format];
 		}
@@ -997,7 +997,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		static GorgonBufferFormatInfo()
 		{
-			_formats = new Dictionary<GorgonBufferFormat, GorgonFormatData>();
+			_formats = new Dictionary<BufferFormat, GorgonFormatData>();
 			GetFormatInfo();
 		}
 		#endregion
