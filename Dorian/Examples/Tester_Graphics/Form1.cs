@@ -173,19 +173,23 @@ namespace Tester_Graphics
 
 				_multiSample = _graphics.CreateRasterizerState();
 				_multiSample.IsMultisamplingEnabled = true;
+				_multiSample.CullingMode =  GorgonCullingMode.None;
 				_graphics.RasterizerState = _multiSample;
+				_graphics.BlendingState.RenderTarget[0].IsBlendingEnabled = true;
+				_graphics.BlendingState.RenderTarget[0].SourceBlend = BlendType.SourceAlpha;
+				_graphics.BlendingState.RenderTarget[0].DestinationBlend = BlendType.InverseSourceAlpha;
  
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
-						 where videoMode.Width == 1280 && videoMode.Height == 800 && videoMode.Format == GorgonBufferFormat.R8G8B8A8_UIntNormal 
+						 where videoMode.Width == 1280 && videoMode.Height == 800 && videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal 
 						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
 						 select videoMode).First();
 
-				int count = 2;
-				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(GorgonBufferFormat.R8G8B8A8_UIntNormal, count);
+				int count = 4;
+				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(BufferFormat.R8G8B8A8_UIntNormal, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
-				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = GorgonBufferFormat.D24_UIntNormal_S8_UInt });
+				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt });
 				//_graphics.RasterizerState.IsMultisamplingEnabled = true;
-				_graphics.Viewports.Add(_swapChain.Viewport);
+				_graphics.SetViewport(_swapChain.Viewport);
 				//_graphics.Viewports.Add(new GorgonViewport(640, 400, 640, 400));
 #if MULTIMON
 				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;

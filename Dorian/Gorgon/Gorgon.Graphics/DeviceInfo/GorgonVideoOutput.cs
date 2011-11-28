@@ -183,7 +183,7 @@ namespace GorgonLibrary.Graphics
 			GIOutput = output;
 
 			// Get the default video mode.
-			DefaultVideoMode = FindMode(new GorgonVideoMode(OutputBounds.Width, OutputBounds.Height, GorgonBufferFormat.R8G8B8A8_UIntNormal, 60, 1));
+			DefaultVideoMode = FindMode(new GorgonVideoMode(OutputBounds.Width, OutputBounds.Height, BufferFormat.R8G8B8A8_UIntNormal, 60, 1));
 		}
 		#endregion
 

@@ -67,7 +67,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the format of the data.
 		/// </summary>
 		/// <remarks>This is used to specify the format and type of the element.</remarks>
-		public GorgonBufferFormat Format
+		public BufferFormat Format
 		{
 			get;
 			internal set;
@@ -151,7 +151,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">The vertex buffer slot for the element.</param>
 		/// <param name="instanced">TRUE if using instanced data, FALSE if not.</param>
 		/// <param name="instanceCount">Number of instances to use before moving to the next element.</param>
-		public GorgonInputElement(string context, GorgonBufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
+		public GorgonInputElement(string context, BufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
 		{
 			Context = context;
 			Index = index;

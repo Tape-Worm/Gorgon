@@ -173,7 +173,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the depth and/or stencil buffer format.
 		/// </summary>
 		/// <remarks>Setting this value to Unknown will create the swap chain without a depth buffer.  The default value is Unknown.</remarks>
-		public GorgonBufferFormat DepthStencilFormat
+		public BufferFormat DepthStencilFormat
 		{
 			get;
 			set;
@@ -205,7 +205,7 @@ namespace GorgonLibrary.Graphics
 			Flags = SwapChainUsageFlags.RenderTarget;
 			SwapEffect = Graphics.SwapEffect.Discard;
 			MultiSample = new GorgonMultiSampling(1, 0);
-			DepthStencilFormat = GorgonBufferFormat.Unknown;			
+			DepthStencilFormat = BufferFormat.Unknown;			
 		}
 		#endregion
 
@@ -213,7 +213,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the format of the back buffer for the swap chain.
 		/// </summary>
-		public GorgonBufferFormat Format
+		public BufferFormat Format
 		{
 			get
 			{

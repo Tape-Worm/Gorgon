@@ -381,7 +381,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="format">Format to check.</param>
 		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
-		public bool SupportsDisplayFormat(GorgonBufferFormat format)
+		public bool SupportsDisplayFormat(BufferFormat format)
 		{
 			if (D3DDevice == null)
 				return false;
@@ -394,7 +394,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="format">Format to check.</param>
 		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
-		public bool Supports2DTextureFormat(GorgonBufferFormat format)
+		public bool Supports2DTextureFormat(BufferFormat format)
 		{
 			if (D3DDevice == null)
 				return false;
@@ -407,7 +407,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="format">Format to check.</param>
 		/// <returns>TRUE if the format is supported as a depth/stencil buffer, FALSE if not.</returns>
-		public bool SupportsDepthFormat(GorgonBufferFormat format)
+		public bool SupportsDepthFormat(BufferFormat format)
 		{
 			if (D3DDevice == null)
 				return false;
@@ -421,9 +421,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">Format to test.</param>
 		/// <param name="count">Number of multisamples.</param>
 		/// <returns>The maximum quality level for the format, or 0 if not supported.</returns>
-		public int GetMultiSampleQuality(GorgonBufferFormat format, int count)
+		public int GetMultiSampleQuality(BufferFormat format, int count)
 		{
-			if ((format == GorgonBufferFormat.Unknown) || (D3DDevice == null))
+			if ((format == BufferFormat.Unknown) || (D3DDevice == null))
 				return 0;
 
 			if (count < 1)

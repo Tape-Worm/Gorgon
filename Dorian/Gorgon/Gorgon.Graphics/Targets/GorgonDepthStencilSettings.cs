@@ -46,7 +46,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>The default value is Unknown.</para>
 		/// <para>Note that this only applies to the SM_4_1 and higher feature levels, other feature levels will ignore this setting.</para>
 		/// </remarks>
-		public GorgonBufferFormat TextureFormat
+		public BufferFormat TextureFormat
 		{
 			get;
 			set;
@@ -59,7 +59,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonDepthStencilSettings()
 		{
-			TextureFormat = GorgonBufferFormat.Unknown;
+			TextureFormat = BufferFormat.Unknown;
 		}
 		#endregion
 
@@ -67,7 +67,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the format for the depth/stencil buffer.
 		/// </summary>
-		public GorgonBufferFormat Format
+		public BufferFormat Format
 		{
 			get;
 			set;

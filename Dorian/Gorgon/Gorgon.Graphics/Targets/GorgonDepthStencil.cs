@@ -129,7 +129,7 @@ namespace GorgonLibrary.Graphics
 			desc.Format = (GI.Format)Settings.Format;
 
 			// Determine if we can bind this to a shader.
-			if (Settings.TextureFormat != GorgonBufferFormat.Unknown)
+			if (Settings.TextureFormat != BufferFormat.Unknown)
 			{
 				desc.BindFlags |= D3D.BindFlags.ShaderResource;
 				desc.Format = (GI.Format)Settings.TextureFormat;
@@ -168,7 +168,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Settings to validate.</param>
 		internal static void ValidateSettings(GorgonGraphics graphics, GorgonDepthStencilSettings settings)
 		{
-			if (settings.Format == GorgonBufferFormat.Unknown)
+			if (settings.Format == BufferFormat.Unknown)
 				throw new ArgumentException("The format for the depth buffer ('" + settings.Format.ToString() + "') is not valid.");
 
 			if (!graphics.VideoDevice.SupportsDepthFormat(settings.Format))
@@ -186,7 +186,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.Format + "'");
 
 			// Validate the texture format if it's different.
-			if ((settings.TextureFormat != GorgonBufferFormat.Unknown) && (settings.TextureFormat != settings.Format))
+			if ((settings.TextureFormat != BufferFormat.Unknown) && (settings.TextureFormat != settings.Format))
 			{
 				if (!graphics.VideoDevice.SupportsDepthFormat(settings.TextureFormat))
 					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.TextureFormat + "' as a depth/stencil buffer format.");

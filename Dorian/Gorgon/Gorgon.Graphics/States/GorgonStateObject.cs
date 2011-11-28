@@ -66,10 +66,26 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to apply any changes immediately if this state is the current state.
+		/// </summary>
+		protected abstract void ApplyImmediate();
+
+		/// <summary>
 		/// Function to convert this state object to the native state object type.
 		/// </summary>
 		/// <returns>The new native state object.</returns>
 		protected internal abstract T Convert();
+
+		/// <summary>
+		/// Method to set this state as the current state.
+		/// </summary>
+		public void Apply()
+		{
+			if ((Graphics == null) || (Graphics.Context == null))
+				return;
+
+			ApplyImmediate();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -95,7 +111,7 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region IDisposable Members		
+		#region IDisposable Members
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>

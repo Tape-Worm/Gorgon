@@ -44,7 +44,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the buffer format for the target
 		/// </summary>
-		GorgonBufferFormat Format
+		BufferFormat Format
 		{
 			get;
 			set;

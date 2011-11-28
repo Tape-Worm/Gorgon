@@ -50,7 +50,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Refresh()
 		{
-			IList<GorgonBufferFormat> formats = Enum.GetValues(typeof(GorgonBufferFormat)) as IList<GorgonBufferFormat>;
+			IList<BufferFormat> formats = Enum.GetValues(typeof(BufferFormat)) as IList<BufferFormat>;
 
 			Gorgon.Log.Print("Retrieving video modes for output '{0}'...", Diagnostics.GorgonLoggingLevel.Simple, _output.Name);
 			Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
@@ -63,7 +63,7 @@ namespace GorgonLibrary.Graphics
 				{
 					foreach (var mode in modes)
 					{
-						if (_output.VideoDevice.SupportsDisplayFormat((GorgonBufferFormat)mode.Format))
+						if (_output.VideoDevice.SupportsDisplayFormat((BufferFormat)mode.Format))
 						{
 							GorgonVideoMode videoMode = GorgonVideoMode.Convert(mode);
 							_modes.Add(videoMode);
