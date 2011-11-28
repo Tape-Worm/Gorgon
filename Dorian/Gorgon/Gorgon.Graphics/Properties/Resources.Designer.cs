@@ -60,23 +60,9 @@ namespace GorgonLibrary.Graphics.Properties {
             }
         }
         
-        internal static byte[] TestTri10 {
+        internal static byte[] Test {
             get {
-                object obj = ResourceManager.GetObject("TestTri10", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        internal static byte[] TestTri11 {
-            get {
-                object obj = ResourceManager.GetObject("TestTri11", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        internal static byte[] TestTri93 {
-            get {
-                object obj = ResourceManager.GetObject("TestTri93", resourceCulture);
+                object obj = ResourceManager.GetObject("Test", resourceCulture);
                 return ((byte[])(obj));
             }
         }
