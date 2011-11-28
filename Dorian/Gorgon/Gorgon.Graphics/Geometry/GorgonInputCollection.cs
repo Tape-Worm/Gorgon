@@ -327,7 +327,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to retrieve the input layout from a specific type.
 		/// </summary>
 		/// <param name="type">Type of retrieve layout info from.</param>
-		/// <remarks>Use this to create an input element layout from a type.  Properties and fields in this type must be marked with the <see cref="GorgonLibrary.Graphics.VertexElementAttribute">GorgonInputElementAttribute</see> in order for the element list to consider it and those fields or properties must be public.
+		/// <remarks>Use this to create an input element layout from a type.  Properties and fields in this type must be marked with the <see cref="GorgonLibrary.Graphics.InputElementAttribute">GorgonInputElementAttribute</see> in order for the element list to consider it and those fields or properties must be public.
 		/// <para>Fields/properties marked with the attribute must be either a (u)byte, (u)short, (u)int, (u)long, float or one of the Vector2/3/4D types.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="type"/> parameter is NULL (Nothing in VB.Net).</exception>

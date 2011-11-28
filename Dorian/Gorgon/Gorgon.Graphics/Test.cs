@@ -159,21 +159,13 @@ namespace GorgonLibrary.Graphics
 
 			_graphics = _swapChain.Graphics;
 			_swapChain.Settings.Window.Resize += new EventHandler(Window_Resize);
-			
 
-			if ((_graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM5) == DeviceFeatureLevel.SM5)
-				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri11);
-			if (((_graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM4_1) == DeviceFeatureLevel.SM4_1) ||
-				((_graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM4) == DeviceFeatureLevel.SM4))
-			{
-				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri10);
+
+			_shader = Encoding.UTF8.GetString(Properties.Resources.Test);
+
+			if ((_graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM5) != DeviceFeatureLevel.SM5)
 				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
-			}
-			if ((_graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM2_a_b) == DeviceFeatureLevel.SM2_a_b)
-			{
-				_shader = Encoding.UTF8.GetString(Properties.Resources.TestTri93);
-				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
-			}
+
 			_device = _graphics.VideoDevice.D3DDevice;
 			
 			
