@@ -95,7 +95,7 @@ namespace GorgonLibrary.Graphics
 		private D3D.Buffer _changeBuffer = null;
 		private D3D.Buffer _noChangeBuffer = null;
 		//private GorgonDepthStencilState _depthStateAlpha = null;
-		private DepthStencilStates _depthStateAlpha = DepthStencilStates.DefaultStates;
+		private GorgonDepthStencilStates _depthStateAlpha = GorgonDepthStencilStates.DefaultStates;
 		private SharpDX.DataStream _changeStream = null;
 		Random _rnd = new Random();
 			
@@ -319,7 +319,7 @@ namespace GorgonLibrary.Graphics
 			MatrixBuffer matrix = new MatrixBuffer();
 			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Width / (float)_swapChain.Settings.VideoMode.Height, 0.1f, 1000.0f));
 			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
-			_graphics.Viewports[0] = new GorgonViewport(_swapChain.Settings.Window.ClientRectangle, 0.0f, 1.0f);
+			_graphics.SetViewport(_swapChain.Viewport);
 			using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
 			{
 				noChangeStream.Write<MatrixBuffer>(matrix);
@@ -367,43 +367,6 @@ namespace GorgonLibrary.Graphics
 			if (_maxPasses > (int)_passes)
 				_maxPasses = (int)_passes;
 		}
-
-/*		/// <summary>
-		/// Creates the depth stencil state.
-		/// </summary>
-		public void CreateDepth()
-		{
-			D3D.DepthStencilStateDescription desc = new D3D.DepthStencilStateDescription();
-
-			desc.IsDepthEnabled = true;
-			desc.DepthWriteMask = D3D.DepthWriteMask.All;
-			desc.DepthComparison = D3D.Comparison.Less;
-
-			desc.IsStencilEnabled = false;
-			desc.StencilReadMask = 0xff;
-			desc.StencilWriteMask = 0xff;
-
-			D3D.DepthStencilOperationDescription front = new D3D.DepthStencilOperationDescription();
-			D3D.DepthStencilOperationDescription back = new D3D.DepthStencilOperationDescription();
-
-			front.Comparison = D3D.Comparison.Always;
-			front.DepthFailOperation = D3D.StencilOperation.Increment;
-			front.PassOperation = D3D.StencilOperation.Keep;
-			front.FailOperation = D3D.StencilOperation.Keep;
-
-			back.Comparison = D3D.Comparison.Always;
-			back.DepthFailOperation = D3D.StencilOperation.Increment;
-			back.PassOperation = D3D.StencilOperation.Keep;
-			back.FailOperation = D3D.StencilOperation.Keep;
-
-			desc.FrontFace = front;
-			desc.BackFace = back;		
-
-
-			_depthStateNoAlpha = new D3D.DepthStencilState(_device, desc);
-			desc.DepthWriteMask = D3D.DepthWriteMask.Zero;
-			_depthStateAlpha = new D3D.DepthStencilState(_device, desc);
-		}*/
 
 		/// <summary>
 		/// 
@@ -465,10 +428,10 @@ namespace GorgonLibrary.Graphics
 			_graphics.DepthStencilState.States = _depthStateAlpha;
 			//_graphics.DepthStencilState.IsDepthWriteEnabled = false;
 
-			_passes = (95.0f * 8.0f) / _degreesPerSecond;
+			//_passes = (95.0f * 8.0f) / _degreesPerSecond;
 
-			if (_passes < 1.0f)
-				_passes = 1.0f;
+			//if (_passes < 1.0f)
+				//_passes = 1.0f;
 
 			for (int i = 0; i < (int)_passes; i++)
 			{
@@ -478,7 +441,7 @@ namespace GorgonLibrary.Graphics
 					buffer.Alpha += (1.0f / (_passes * 3.25f));
 				else
 				{
-					_graphics.DepthStencilState.States = DepthStencilStates.DefaultStates;
+					_graphics.DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
 					//_graphics.DepthStencilState.IsDepthWriteEnabled = true;
 					//_device.ImmediateContext.OutputMerger.DepthStencilState = _default.Convert();
 					buffer.Alpha = 1.0f;

@@ -186,33 +186,35 @@ namespace Tester_Graphics
 				//_multiSample.CullingMode =  GorgonCullingMode.None;
 				_graphics.RasterizerState.States = _multiSample;
 				_graphics.BlendingState.States = new GorgonBlendState.BlendStates()
+				{
+					RenderTargetStates = new[]
 					{
-						RenderTargetStates = new[]
-					    {
-					        new GorgonBlendState.BlendStates.RenderTargetBlendState() 
-					        {								
-					            IsBlendingEnabled = true,
-					            SourceBlend = BlendType.SourceAlpha,
-					            DestinationBlend = BlendType.InverseSourceAlpha,
-								AlphaOperation = BlendOperation.Add,
-								BlendingOperation = BlendOperation.Add,
-								DestinationAlphaBlend = BlendType.Zero,
-								SourceAlphaBlend = BlendType.One,
-								WriteMask = ColorWriteMaskFlags.All
-					        }
+					    new GorgonBlendState.BlendStates.RenderTargetBlendState() 
+					    {								
+					        IsBlendingEnabled = true,
+					        SourceBlend = BlendType.SourceAlpha,
+					        DestinationBlend = BlendType.InverseSourceAlpha,
+							AlphaOperation = BlendOperation.Add,
+							BlendingOperation = BlendOperation.Add,
+							DestinationAlphaBlend = BlendType.Zero,
+							SourceAlphaBlend = BlendType.One,
+							WriteMask = ColorWriteMaskFlags.All
 					    }
-					};
+					}
+				};
  
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
-						 where videoMode.Width == 1280 && videoMode.Height == 800 && videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal 
-						 orderby videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
+						 where videoMode.Width == 1280 && videoMode.Height == 800 && 
+							(videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal_sRGB || videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal || videoMode.Format == BufferFormat.B8G8R8A8_UIntNormal || videoMode.Format == BufferFormat.B8G8R8A8_UIntNormal_sRGB)
+							&& (_graphics.VideoDevice.SupportsDisplayFormat(videoMode.Format))
+						 orderby videoMode.Format, videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
 						 select videoMode).First();
 
 				int count = 4;
-				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(BufferFormat.R8G8B8A8_UIntNormal, count);
+				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(mode1.Format, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt});
-				_graphics.Viewports[0] = _swapChain.Viewport;
+				_graphics.SetViewport(_swapChain.Viewport);
 				//_graphics.Viewports.Add(new GorgonViewport(640, 400, 640, 400));
 #if MULTIMON
 				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;

@@ -233,7 +233,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the current rasterizer state.
+		/// Property to set or return the current rasterizer render states.
 		/// </summary>
 		public GorgonRasterizerState RasterizerState
 		{
@@ -242,7 +242,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the current blending state.
+		/// Property to set or return the current blending render states.
 		/// </summary>
 		public GorgonBlendState BlendingState
 		{
@@ -251,10 +251,9 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the current depth/stencil state.
+		/// Property to set or return the current depth/stencil render states.
 		/// </summary>
-		/// <remarks>Settings this value to NULL (Nothing in VB.Net) will restore the depth/stencil to the default state.</remarks>
-		public GorgonDepthStencilState DepthStencilState
+		public GorgonDepthStencilRenderState DepthStencilState
 		{
 			get;
 			private set;
@@ -277,16 +276,6 @@ namespace GorgonLibrary.Graphics
 			{
 				SharpDX.Configuration.EnableObjectTracking = value;
 			}
-		}
-
-		/// <summary>
-		/// Property to return a list of viewports to apply when rendering.
-		/// </summary>
-		/// <remarks>By default, the first viewport is the active rendering viewport at index 0.  Which viewport is used is determined by the SV_ViewportArrayIndex semantic output in a geometry shader.</remarks>
-		public GorgonViewportCollection Viewports
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
@@ -416,8 +405,8 @@ namespace GorgonLibrary.Graphics
 			RasterizerState = new GorgonRasterizerState(this);
 			RasterizerState.States = GorgonRasterizerState.RasterizerStates.DefaultStates;
 
-			DepthStencilState = new GorgonDepthStencilState(this);
-			DepthStencilState.States = DepthStencilStates.DefaultStates;
+			DepthStencilState = new GorgonDepthStencilRenderState(this);
+			DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
 
 			BlendingState = new GorgonBlendState(this);
 			BlendingState.States = GorgonBlendState.BlendStates.DefaultStates;
@@ -585,19 +574,51 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to apply the viewports defined in the viewports collection.
+		/// Function to set a list of viewports.
 		/// </summary>
-		public void ApplyViewports()
+		/// <remarks>This will clip/scale the output to the the constraints in the viewport(s).
+		/// <para>Viewports must have a width and height greater than 0.</para>
+		/// <para>Which viewport to use is determined by the SV_ViewportArrayIndex semantic output by a geometry shader; if a geometry shader does not specify the semantic, then the first viewport in the list will be used.</para>
+		/// </remarks>
+		public void SetViewports(IEnumerable<GorgonViewport> viewPorts)
 		{
-			if (Viewports.HasChanged)
+			if (viewPorts == null)
 			{
-				if (Viewports.Count > 1)
-					Context.Rasterizer.SetViewports(Viewports.Convert());
-				else
-					Context.Rasterizer.SetViewport(Viewports[0].Region.X, Viewports[0].Region.Y, Viewports[0].Region.Width, Viewports[0].Region.Height, Viewports[0].MinimumZ, Viewports[0].MaximumZ);
-
-				Viewports.HasChanged = false;
+				Context.Rasterizer.SetViewport(0, 0, 1.0f, 1.0f, 0, 1.0f);
+				return;
 			}
+
+			var d3dViews = (from viewPort in viewPorts
+						   where viewPort.IsEnabled
+						   select viewPort.Convert()).ToArray();
+
+			Context.Rasterizer.SetViewports(d3dViews);
+		}
+
+
+		/// <summary>
+		/// Function to set a single viewport.
+		/// </summary>
+		/// <param name="x">The left corner of the viewport.</param>
+		/// <param name="y">The top corner of the viewport.</param>
+		/// <param name="width">The width of the viewport.</param>
+		/// <param name="height">The height of the viewport.</param>
+		/// <param name="minimumZ">The minimum depth of the viewport.</param>
+		/// <param name="maximumZ">The maximum depth of the viewport.</param>
+		/// <remarks>Viewports must have a width and height greater than 0 and the depths should be 0.0f and 1.0f.</remarks>
+		public void SetViewport(float x, float y, float width, float height, float minimumZ, float maximumZ)
+		{
+			Context.Rasterizer.SetViewport(x, y, width, height, minimumZ, maximumZ);
+		}
+
+		/// <summary>
+		/// Function to set a single viewport.
+		/// </summary>
+		/// <param name="viewPort">Viewport to set.</param>
+		/// <remarks>Viewports must have a width and height greater than 0.</remarks>
+		public void SetViewport(GorgonViewport viewPort)
+		{
+			Context.Rasterizer.SetViewport(viewPort.Region.X, viewPort.Region.Y, viewPort.Region.Width, viewPort.Region.Height, viewPort.MinimumZ, viewPort.MaximumZ);
 		}
 
 		/// <summary>
@@ -611,8 +632,6 @@ namespace GorgonLibrary.Graphics
 			if (Context == null)
 				throw new InvalidOperationException("There is no context available for the draw commands.");
 #endif
-
-			ApplyViewports();
 		}
 		#endregion
 
@@ -638,7 +657,6 @@ namespace GorgonLibrary.Graphics
 			if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
 				throw new GorgonException(GorgonResult.CannotCreate, "The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater.");
 
-			Viewports = new GorgonViewportCollection();
 			MaxFeatureLevel = featureLevel;
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			ResetFullscreenOnFocus = true;
