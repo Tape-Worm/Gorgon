@@ -159,17 +159,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal static readonly DeviceFeatureLevel[] GorgonFeatureLevels = Enum.GetValues(typeof(DeviceFeatureLevel)) as DeviceFeatureLevel[];
 
-		private bool _rasterStateChanged = false;							// Flag to indicate that the rasterizer state had changed.
-		private bool _blendStateChanged = false;							// Flag to indicate that the blend state had changed.
-		private bool _disposed = false;										// Flag to indicate that the object was disposed.
-		private Version _minimumSupportedFeatureLevel = new Version(9, 3);	// Minimum supported feature level version.		
-		private GorgonVideoDevice _videoDevice = null;						// Video device to use.
-		private GorgonRasterizerState _defaultRasterState = null;			// Default rasterizer state.
-		private GorgonRasterizerState _rasterState = null;					// Rasterizer state.
-		private GorgonBlendState _defaultBlendState = null;					// Default blending state.
-		private GorgonBlendState _blendState = null;						// Blending state.
-		private GorgonDepthStencilState _defaultDepthState = null;			// Default depth/stencil state.
-		private GorgonDepthStencilState _depthState = null;					// Depth/stencil state.
+		private bool _disposed = false;																							// Flag to indicate that the object was disposed.
+		private GorgonVideoDevice _videoDevice = null;																			// Video device to use.
 		#endregion
 
 		#region Constants.
@@ -246,21 +237,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonRasterizerState RasterizerState
 		{
-			get
-			{
-				if (_rasterState == null)
-					return _defaultRasterState;
-				else
-					return _rasterState;
-			}
-			set
-			{
-				if (value != _rasterState)
-				{
-					_rasterState = value;
-					_rasterStateChanged = true;
-				}
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -268,41 +246,18 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonBlendState BlendingState
 		{
-			get
-			{
-				if (_blendState == null)
-					return _defaultBlendState;
-				else
-					return _blendState;
-			}
-			set
-			{
-				if (value != _blendState)
-				{
-					_blendState = value;
-					_blendStateChanged = true;
-				}
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
 		/// Property to set or return the current depth/stencil state.
 		/// </summary>
+		/// <remarks>Settings this value to NULL (Nothing in VB.Net) will restore the depth/stencil to the default state.</remarks>
 		public GorgonDepthStencilState DepthStencilState
 		{
-			get
-			{
-				return _depthState;
-			}
-			set
-			{
-				if (value == null)
-					value = _defaultDepthState;
-
-				_depthState = value;
-				if (Context != null)
-					Context.OutputMerger.DepthStencilState = _depthState.Convert();
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -322,6 +277,16 @@ namespace GorgonLibrary.Graphics
 			{
 				SharpDX.Configuration.EnableObjectTracking = value;
 			}
+		}
+
+		/// <summary>
+		/// Property to return a list of viewports to apply when rendering.
+		/// </summary>
+		/// <remarks>By default, the first viewport is the active rendering viewport at index 0.  Which viewport is used is determined by the SV_ViewportArrayIndex semantic output in a geometry shader.</remarks>
+		public GorgonViewportCollection Viewports
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -381,6 +346,9 @@ namespace GorgonLibrary.Graphics
 				// Destroy all the objects created by this instance.
 				TrackedObjects.ReleaseAll();
 
+				// Remove all state information.
+				DestroyStates();
+
 				// Release the current D3D device.
 				if (_videoDevice != null)
 					_videoDevice.ReleaseDevice();
@@ -428,19 +396,31 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to clean up the state objects.
+		/// </summary>
+		private void DestroyStates()
+		{
+			if (RasterizerState != null)
+				((IDisposable)RasterizerState).Dispose();
+			if (DepthStencilState != null)
+				((IDisposable)DepthStencilState).Dispose();
+			if (BlendingState != null)
+				((IDisposable)BlendingState).Dispose();
+		}
+
+		/// <summary>
 		/// Function to create any default states.
 		/// </summary>
 		private void CreateDefaultStates()
 		{
-			// Set default states.
-			RasterizerState = _defaultRasterState = CreateRasterizerState();
-			
-			BlendingState = _defaultBlendState = CreateBlendingState();
-			BlendingState.BlendFactor = new GorgonColor(0.0f, 0.0f, 0.0f, 0.0f);
-			BlendingState.BlendSampleMask = uint.MaxValue;
+			RasterizerState = new GorgonRasterizerState(this);
+			RasterizerState.States = GorgonRasterizerState.RasterizerStates.DefaultStates;
 
-			_depthState = _defaultDepthState = CreateDepthStencilState();
-			_defaultDepthState.DepthStencilReference = 0;			
+			DepthStencilState = new GorgonDepthStencilState(this);
+			DepthStencilState.States = DepthStencilStates.DefaultStates;
+
+			BlendingState = new GorgonBlendState(this);
+			BlendingState.States = GorgonBlendState.BlendStates.DefaultStates;
 		}
 
 		/// <summary>
@@ -482,6 +462,10 @@ namespace GorgonLibrary.Graphics
 
 			// Destroy all the objects created by this instance.
 			TrackedObjects.ReleaseAll();
+
+			// Method to destroy the states.
+			DestroyStates();
+
 
 			// Release the current D3D device.
 			if (_videoDevice != null)
@@ -601,91 +585,34 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create a depth/stencil state object.
+		/// Function to apply the viewports defined in the viewports collection.
 		/// </summary>
-		/// <returns>A new depth/stencil state object.</returns>
-		public GorgonDepthStencilState CreateDepthStencilState()
+		public void ApplyViewports()
 		{
-			GorgonDepthStencilState state = null;
+			if (Viewports.HasChanged)
+			{
+				if (Viewports.Count > 1)
+					Context.Rasterizer.SetViewports(Viewports.Convert());
+				else
+					Context.Rasterizer.SetViewport(Viewports[0].Region.X, Viewports[0].Region.Y, Viewports[0].Region.Width, Viewports[0].Region.Height, Viewports[0].MinimumZ, Viewports[0].MaximumZ);
 
-			state = new GorgonDepthStencilState(this);
-			TrackedObjects.Add(state);
-
-			return state;
-		}
-
-		/// <summary>
-		/// Function to create a blending state object.
-		/// </summary>
-		/// <returns>A new blending state object.</returns>
-		public GorgonBlendState CreateBlendingState()
-		{
-			GorgonBlendState state = null;
-
-			state = new GorgonBlendState(this);
-			TrackedObjects.Add(state);
-
-			return state;
-		}
-
-		/// <summary>
-		/// Function to create a rasterizer state object.
-		/// </summary>
-		/// <returns>A new rasterizer state object.</returns>
-		public GorgonRasterizerState CreateRasterizerState()
-		{
-			GorgonRasterizerState state = null;
-
-			state = new GorgonRasterizerState(this);
-			TrackedObjects.Add(state);
-			return state;
-		}
-
-		/// <summary>
-		/// Function to set the current viewport.
-		/// </summary>
-		public void SetViewport(GorgonViewport viewPort)
-		{
-			Context.Rasterizer.SetViewport(viewPort.Region.X, viewPort.Region.Y, viewPort.Region.Width, viewPort.Region.Height, viewPort.MinimumZ, viewPort.MaximumZ);
-		}
-
-		/// <summary>
-		/// Function to apply a specific viewport.
-		/// </summary>
-		/// <param name="viewPorts">A list of viewports to set.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="viewPorts"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void SetViewports(IEnumerable<GorgonViewport> viewPorts)
-		{
-			GorgonDebug.AssertNull<IEnumerable<GorgonViewport>>(viewPorts, "viewPorts");
-
-			D3D.Viewport[] views = new D3D.Viewport[viewPorts.Count()];
-
-			for (int i = 0; i < views.Length; i++)
-				views[i] = viewPorts.ElementAt(i).Convert();
-
-			Context.Rasterizer.SetViewports(views);
-		}
-
-		/// <summary>
-		/// Function to apply any outstanding state objects.
-		/// </summary>
-		public void ApplyStates()
-		{
-			// Ensure the states have changed before applying.
-			if ((RasterizerState != null) && ((_rasterStateChanged) || (RasterizerState.HasChanged)))
-				Context.Rasterizer.State = RasterizerState.Convert();
-
-			if ((BlendingState != null) && ((_blendStateChanged) || (BlendingState.HasChanged)))
-				Context.OutputMerger.BlendState = BlendingState.Convert();
+				Viewports.HasChanged = false;
+			}
 		}
 
 		/// <summary>
 		/// Function to draw the scene.
 		/// </summary>
 		/// <remarks>This method applies the various states, shaders and renders the polygons in the vertex buffer to the scene.</remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when there is no valid context to draw with.</exception>
 		public void Draw()
 		{
-			ApplyStates();
+#if DEBUG			
+			if (Context == null)
+				throw new InvalidOperationException("There is no context available for the draw commands.");
+#endif
+
+			ApplyViewports();
 		}
 		#endregion
 
@@ -711,6 +638,7 @@ namespace GorgonLibrary.Graphics
 			if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
 				throw new GorgonException(GorgonResult.CannotCreate, "The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater.");
 
+			Viewports = new GorgonViewportCollection();
 			MaxFeatureLevel = featureLevel;
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			ResetFullscreenOnFocus = true;
@@ -718,7 +646,7 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("Gorgon Graphics initializing...", Diagnostics.GorgonLoggingLevel.Simple);
 
 			Gorgon.Log.Print("Creating DXGI interface...", GorgonLoggingLevel.Verbose);
-			GIFactory = new GI.Factory1();
+			GIFactory = new GI.Factory1();			
 			
 #if DEBUG
 			SharpDX.Configuration.EnableObjectTracking = true;
@@ -762,8 +690,9 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					Gorgon.Log.Print("Gorgon Graphics shutting down...", Diagnostics.GorgonLoggingLevel.Simple);
-					
+
 					TrackedObjects.ReleaseAll();
+					DestroyStates();
 
 					VideoDevices.Clear();
 

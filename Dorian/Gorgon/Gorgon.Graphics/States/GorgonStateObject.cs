@@ -35,23 +35,25 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Base state object class.
 	/// </summary>
-	/// <typeparam name="T">Type of state.</typeparam>
+	/// <typeparam name="T">Type of state description.</typeparam>
 	public abstract class GorgonStateObject<T> 
-		: INotifier, IDisposable		
-		where T : class, IDisposable
+		: IDisposable
+		where T : struct, IEquatable<T>
 	{
 		#region Variables.
-		private bool _disposed = false;			// Flag to indicate that the object was disposed.
+		private bool _disposed = false;									// Flag to indicate that the object was disposed.
+		private T _state = default(T);									// The immutable state for the object.		
+		private IList<Tuple<T, IDisposable>> _stateCache = null;		// State cache.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the state.
+		/// Property to return the cache pointer.
 		/// </summary>
-		protected T State
+		protected int CachePosition
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -62,30 +64,87 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to set or return the immutable states for this state object.
+		/// </summary>
+		public T States
+		{
+			get
+			{
+				return _state;
+			}
+			set
+			{
+#if DEBUG
+				if (Graphics.Context == null)
+					throw new InvalidOperationException("No usable context was found.");
+#endif
+
+				if (!_state.Equals(value))
+				{
+					_state = value;
+					ApplyState(GetState());
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to apply any changes immediately if this state is the current state.
+		/// Function to free any backing resources for the state.
 		/// </summary>
-		protected abstract void ApplyImmediate();
+		private void FreeResources()
+		{
+			if (_stateCache != null)
+			{
+				foreach (var item in _stateCache)
+				{
+					if (item.Item2 != null)
+						item.Item2.Dispose();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to get the state from the state cache.
+		/// </summary>
+		/// <returns>The Direct3D state object to apply.</returns>
+		private IDisposable GetState()
+		{
+			var state = (from stateItem in _stateCache
+						where stateItem.Item1.Equals(States) && stateItem.Item2 != null
+						select stateItem.Item2).FirstOrDefault();
+
+			if (state != null)
+				return state;
+
+			// If we have an entry here already, overwrite it.
+			if (_stateCache[CachePosition].Item2 != null)
+				_stateCache[CachePosition].Item2.Dispose();
+
+			// Add to the cache.
+			state = Convert();
+			_stateCache[CachePosition] = new Tuple<T, IDisposable>(States, state);
+
+			CachePosition++;
+			if (CachePosition >= _stateCache.Count)
+				CachePosition = 0;
+
+			return state;
+		}
+
+		/// <summary>
+		/// Function to apply the state to the appropriate state object.
+		/// </summary>
+		/// <param name="state">The Direct3D state object to apply.</param>
+		protected abstract void ApplyState(IDisposable state);
 
 		/// <summary>
 		/// Function to convert this state object to the native state object type.
 		/// </summary>
-		/// <returns>The new native state object.</returns>
-		protected internal abstract T Convert();
-
-		/// <summary>
-		/// Method to set this state as the current state.
-		/// </summary>
-		public void Apply()
-		{
-			if ((Graphics == null) || (Graphics.Context == null))
-				return;
-
-			ApplyImmediate();
-		}
+		/// <returns>The Direct 3D state object.</returns>
+		protected abstract IDisposable Convert();
 		#endregion
 
 		#region Constructor/Destructor.
@@ -96,18 +155,9 @@ namespace GorgonLibrary.Graphics
 		protected GorgonStateObject(GorgonGraphics graphics)
 		{
 			Graphics = graphics;
-			HasChanged = true;
-		}
-		#endregion
-
-		#region INotifier Members
-		/// <summary>
-		/// Property to set or return whether an object has been updated.
-		/// </summary>
-		public bool HasChanged
-		{
-			get;
-			set;
+			_stateCache = new Tuple<T, IDisposable>[4096];
+			for(int i = 0; i < _stateCache.Count; i++)
+				_stateCache[i] = new Tuple<T, IDisposable>(new T(), null);
 		}
 		#endregion
 
@@ -116,20 +166,18 @@ namespace GorgonLibrary.Graphics
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing)
+		private void Dispose(bool disposing)
 		{
 			if (!_disposed)
 			{
 				if (disposing)
 				{
-					if (State != null)
-						State.Dispose();
+					FreeResources();
 
 					if (Graphics != null)
 						Graphics.RemoveTrackedObject(this);
 				}
 
-				State = null;
 				_disposed = true;
 			}
 		}
@@ -137,7 +185,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		public void Dispose()
+		void IDisposable.Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);

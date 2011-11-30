@@ -94,7 +94,8 @@ namespace GorgonLibrary.Graphics
 		private D3D.PixelShader _ps = null;
 		private D3D.Buffer _changeBuffer = null;
 		private D3D.Buffer _noChangeBuffer = null;
-		private GorgonDepthStencilState _depthStateAlpha = null;
+		//private GorgonDepthStencilState _depthStateAlpha = null;
+		private DepthStencilStates _depthStateAlpha = DepthStencilStates.DefaultStates;
 		private SharpDX.DataStream _changeStream = null;
 		Random _rnd = new Random();
 			
@@ -114,8 +115,8 @@ namespace GorgonLibrary.Graphics
 		{
 			_swapChain.Settings.Window.Resize -= new EventHandler(Window_Resize);
 
-			if (_depthStateAlpha != null)
-				_depthStateAlpha.Dispose();
+			//if (_depthStateAlpha != null)
+				//_depthStateAlpha.Dispose();
 			if (_textureView != null)
 				_textureView.Dispose();
 			if (_changeStream != null)
@@ -163,11 +164,13 @@ namespace GorgonLibrary.Graphics
 			_device = _graphics.VideoDevice.D3DDevice;
 			
 			
-			_vsShaderCode = Shaders.ShaderBytecode.Compile(_shader, "VS", "vs_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null);			
+			_vsShaderCode = Shaders.ShaderBytecode.Compile(_shader, "VS", "vs_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null);						
 			_vs = new D3D.VertexShader(_device, _vsShaderCode);
+			_vs.DebugName = _swapChain.Name + " Test Vertex shader.";
 
 			_psShaderCode = Shaders.ShaderBytecode.Compile(_shader, "PS", "ps_4_0_level_9_3", flags, Shaders.EffectFlags.None, null, null);
 			_ps = new D3D.PixelShader(_device, _psShaderCode);
+			_ps.DebugName = _swapChain.Name + " Test Pixel shader.";
 
 			GorgonInputLayout layout = new GorgonInputLayout(typeof(vertex));
 
@@ -234,7 +237,9 @@ namespace GorgonLibrary.Graphics
 			info.Usage = D3D.ResourceUsage.Default;
 
 			_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
+			_texture.DebugName = _swapChain.Name + " Test texture.";
 			_textureView = new D3D.ShaderResourceView(_device, _texture);
+			_textureView.DebugName = _swapChain.Name + " Test texture view.";
 
 			D3D.SamplerStateDescription sampleDesc = new D3D.SamplerStateDescription();
 			sampleDesc.AddressU = D3D.TextureAddressMode.Clamp;
@@ -248,7 +253,8 @@ namespace GorgonLibrary.Graphics
 			sampleDesc.MinimumLod = 0;
 			sampleDesc.MipLodBias = 0.0f;
 
-			_sampler = new D3D.SamplerState(_device, sampleDesc);			
+			_sampler = new D3D.SamplerState(_device, sampleDesc);
+			_sampler.DebugName = _swapChain + " Test sampler";
 
 			_binding = new D3D.VertexBufferBinding(_vertices, vertexSize, 0);
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
@@ -273,6 +279,7 @@ namespace GorgonLibrary.Graphics
 						StructureByteStride = 0,
 						Usage = D3D.ResourceUsage.Default
 					});
+				_noChangeBuffer.DebugName = _swapChain.Name + " Test No Change buffer";
 			}
 
 			UpdateBuffer updatebuffer = new UpdateBuffer();
@@ -292,11 +299,13 @@ namespace GorgonLibrary.Graphics
 				StructureByteStride = 0,
 				Usage = D3D.ResourceUsage.Default
 			});
+			_changeBuffer.DebugName = _swapChain.Name + " Test Change buffer";
 
 			_changeStream.Position = 0;
 			_device.ImmediateContext.UpdateSubresource(new DataBox(_changeStream.DataPointer, 0, 0), _changeBuffer, 0);
 
-			_depthStateAlpha = _graphics.CreateDepthStencilState();
+			//_depthStateAlpha = _graphics.CreateDepthStencilState();
+			_depthStateAlpha.IsDepthEnabled = false;
 			_depthStateAlpha.IsDepthWriteEnabled = false;
 		}
 
@@ -310,6 +319,7 @@ namespace GorgonLibrary.Graphics
 			MatrixBuffer matrix = new MatrixBuffer();
 			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Width / (float)_swapChain.Settings.VideoMode.Height, 0.1f, 1000.0f));
 			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
+			_graphics.Viewports[0] = new GorgonViewport(_swapChain.Settings.Window.ClientRectangle, 0.0f, 1.0f);
 			using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
 			{
 				noChangeStream.Write<MatrixBuffer>(matrix);
@@ -336,10 +346,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="delta"></param>
 		public void Transform(float delta)
 		{
-			if (delta > 0.2f)
-				delta = 0.0f;
-
-			_degreesPerSecond = GorgonLibrary.Math.GorgonMathUtility.Abs((GorgonLibrary.Math.GorgonMathUtility.Cos(GorgonLibrary.Math.GorgonMathUtility.Radians(_rot)) * _currentTime)) + 105.0f;
+			_degreesPerSecond = GorgonLibrary.Math.GorgonMathUtility.Abs((GorgonLibrary.Math.GorgonMathUtility.Cos(GorgonLibrary.Math.GorgonMathUtility.Radians(_rot)) * _currentTime)) + 95.0f;
 
 			_rot += (_degreesPerSecond * delta);
 			if (_rot > 360.0f)
@@ -407,7 +414,7 @@ namespace GorgonLibrary.Graphics
 			UpdateBuffer buffer = new UpdateBuffer();
 
 			
-			_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.DepthStencil.D3DDepthStencilView, _swapChain.D3DRenderTarget);
+			_device.ImmediateContext.OutputMerger.SetTargets((_swapChain.DepthStencil != null ? _swapChain.DepthStencil.D3DDepthStencilView : null), _swapChain.D3DRenderTarget);
 				
 			//_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.D3DRenderTarget);
 
@@ -451,22 +458,35 @@ namespace GorgonLibrary.Graphics
 			//step = 1.0f;
 			//(
 
-			//_graphics.DepthStencilState = _depthStateAlpha;
+//			GorgonDepthStencilState _default = _graphics.DepthStencilState;
 
-			for (int i = 0; i < (int)1; i++)
+			//_device.ImmediateContext.OutputMerger.DepthStencilState = _depthStateAlpha.Convert();
+			//_graphics.DepthStencilState = _depthStateAlpha;
+			_graphics.DepthStencilState.States = _depthStateAlpha;
+			//_graphics.DepthStencilState.IsDepthWriteEnabled = false;
+
+			_passes = (95.0f * 8.0f) / _degreesPerSecond;
+
+			if (_passes < 1.0f)
+				_passes = 1.0f;
+
+			for (int i = 0; i < (int)_passes; i++)
 			{
 				passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (i * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
 
 				if (i < (int)(_passes - 1))
-					buffer.Alpha += (1.0f / (_passes * 2.0f));
+					buffer.Alpha += (1.0f / (_passes * 3.25f));
 				else
 				{
-					//_graphics.DepthStencilState = null;
+					_graphics.DepthStencilState.States = DepthStencilStates.DefaultStates;
+					//_graphics.DepthStencilState.IsDepthWriteEnabled = true;
+					//_device.ImmediateContext.OutputMerger.DepthStencilState = _default.Convert();
 					buffer.Alpha = 1.0f;
 				}
 
 				//_graphics.BlendingState.BlendSampleMask = ((uint)GorgonLibrary.Math.GorgonMathUtility.Pow(2, (4 - (_passes / 2 - i / 2))) - 1) & 0xFF;
 
+				_graphics.Draw();
 				buffer.World = Matrix.RotationZ(passAngle);
 				buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationZ(passAngle));
 				buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationY(passAngle));

@@ -34,6 +34,7 @@ namespace GorgonLibrary.Graphics
 	/// 4 component (Red, Green, Blue, and Alpha) color value.
 	/// </summary>
 	public struct GorgonColor
+		: IEquatable<GorgonColor>
 	{
 		#region Variables.
 		/// <summary>
@@ -54,6 +55,30 @@ namespace GorgonLibrary.Graphics
 		public float Blue;
 		#endregion
 
+		#region Properties.
+		/// <summary>
+		/// Property to return a SharpDX color4 type.
+		/// </summary>
+		internal SharpDX.Color4 SharpDXColor4
+		{
+			get
+			{
+				return new SharpDX.Color4(Red, Green, Blue, Alpha);
+			}
+		}
+
+		/// <summary>
+		/// Property to return a SharpDX color3 type.
+		/// </summary>
+		internal SharpDX.Color3 SharpDXColor3
+		{
+			get
+			{
+				return new SharpDX.Color3(Red, Green, Blue);
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
@@ -64,15 +89,10 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			GorgonColor color = (GorgonColor)obj;
-
 			if (obj is GorgonColor)
-			{
-				return GorgonMathUtility.EqualFloat(color.Red, Red) && GorgonMathUtility.EqualFloat(color.Green, Green) &&
-					GorgonMathUtility.EqualFloat(color.Blue, Blue) && GorgonMathUtility.EqualFloat(color.Alpha, Alpha);
-			}
+				return Equals((GorgonColor)obj);
 
-			return false;
+			return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -275,8 +295,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static bool operator ==(GorgonColor left, GorgonColor right)
 		{
-			return GorgonMathUtility.EqualFloat(left.Red, right.Red) && GorgonMathUtility.EqualFloat(left.Green, right.Green) &&
-				GorgonMathUtility.EqualFloat(left.Blue, right.Blue) && GorgonMathUtility.EqualFloat(left.Alpha, right.Alpha);
+			return right.Equals(left);
 		}
 
 		/// <summary>
@@ -375,6 +394,24 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
+		/// <param name="color">The SharpDX color to convert.</param>
+		internal GorgonColor(SharpDX.Color3 color)
+			: this(1.0f, color.Red, color.Green, color.Blue)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+		/// </summary>
+		/// <param name="color">The SharpDX color to convert.</param>
+		internal GorgonColor(SharpDX.Color4 color)
+			: this(color.Alpha, color.Red, color.Green, color.Blue)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+		/// </summary>
 		/// <param name="a">Alpha component.</param>
 		/// <param name="r">Red component.</param>
 		/// <param name="g">Green component.</param>
@@ -439,6 +476,20 @@ namespace GorgonLibrary.Graphics
 		public GorgonColor(Vector4D color)
 			: this(color.X, color.Y, color.Z, color.W)
 		{
+		}
+		#endregion
+
+		#region IEquatable<GorgonColor> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonColor other)
+		{
+			return (GorgonMathUtility.EqualFloat(other.Red, this.Red)) && (GorgonMathUtility.EqualFloat(other.Green, this.Green)) && (GorgonMathUtility.EqualFloat(other.Blue, this.Blue)) && (GorgonMathUtility.EqualFloat(other.Alpha, this.Alpha));
 		}
 		#endregion
 	}

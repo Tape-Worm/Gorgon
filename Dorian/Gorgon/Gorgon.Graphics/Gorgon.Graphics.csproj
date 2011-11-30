@@ -87,6 +87,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="States\GorgonStateObject.cs" />
+    <Compile Include="Targets\GorgonViewportCollection.cs" />
     <Compile Include="Targets\ICommonTargetSettings.cs" />
     <Compile Include="Targets\GorgonDepthStencil.cs" />
     <Compile Include="Targets\GorgonDepthStencilSettings.cs" />
