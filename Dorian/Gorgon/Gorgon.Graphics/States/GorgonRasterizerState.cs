@@ -70,232 +70,180 @@ namespace GorgonLibrary.Graphics
 	/// Render states for the rasterizer.
 	/// </summary>
 	public class GorgonRasterizerState
-		: GorgonStateObject<D3D.RasterizerState>
+		: GorgonStateObject<GorgonRasterizerState.RasterizerStates>
 	{
-		#region Variables.
-		private bool _disposed = false;							// Flag to indicate that the object was disposed of.
-		private D3D.RasterizerStateDescription _desc;			// Rasterizer state description.
-		#endregion
-
-		#region Properties.
+		#region Value Types.
 		/// <summary>
-		/// Property to set or return the triangle culling mode for the rasterizer.
+		/// Immutable states for the rasterizer.
 		/// </summary>
-		public GorgonCullingMode CullingMode
+		public struct RasterizerStates
+			: IEquatable<RasterizerStates>
 		{
-			get
+			#region Variables.
+			/// <summary>
+			/// Default rasterizer states.
+			/// </summary>
+			public static readonly RasterizerStates DefaultStates = new RasterizerStates()
 			{
-				return (GorgonCullingMode)_desc.CullMode;
-			}
-			set
-			{
-				if (_desc.CullMode != (D3D.CullMode)value)
-				{
-					_desc.CullMode = (D3D.CullMode)value;
-					HasChanged = true;
-				}
-			}
-		}
+				CullingMode = GorgonCullingMode.Back,
+				FillMode = GorgonFillMode.Solid,
+				IsFrontFacingTriangleCounterClockwise = false,
+				DepthBias = 0,
+				DepthBiasClamp = 0.0f,
+				SlopeScaledDepthBias = 0.0f,
+				IsDepthClippingEnabled = true,
+				IsAntialiasedLinesEnabled = false,
+				IsMultisamplingEnabled = false,
+				IsScissorTestingEnabled = false
+			};
 
-		/// <summary>
-		/// Property to set or return the triangle filling mode.
-		/// </summary>
-		public GorgonFillMode FillMode
-		{
-			get
-			{
-				return (GorgonFillMode)_desc.FillMode;
-			}
-			set
-			{
-				if (_desc.FillMode != (D3D.FillMode)value)
-				{
-					_desc.FillMode = (D3D.FillMode)value;
-					HasChanged = true;
-				}
-			}
-		}
+			/// <summary>
+			/// The triangle culling mode for the rasterizer.
+			/// </summary>
+			/// <remarks>The default value is Back.</remarks>
+			public GorgonCullingMode CullingMode;
 
-		/// <summary>
-		/// Property to set or return whether a triangle uses clockwise or counterclockwise vertices to determine whether it is front or back facing respectively.
-		/// </summary>
-		public bool IsFrontFacingTriangleCounterClockwise
-		{
-			get
-			{
-				return _desc.IsFrontCounterClockwise;
-			}
-			set
-			{
-				if (_desc.IsFrontCounterClockwise != value)
-				{
-					_desc.IsFrontCounterClockwise = value;
-					HasChanged = true;
-				}
-			}
-		}
+			/// <summary>
+			/// Property to set or return the triangle filling mode.
+			/// </summary>
+			/// <remarks>The default value is Solid.</remarks>
+			public GorgonFillMode FillMode;
 
-		/// <summary>
-		/// Property to set or return a value to add to a pixel when comparing depth.
-		/// </summary>
-		public int DepthBias
-		{
-			get
-			{
-				return _desc.DepthBias;
-			}
-			set
-			{
-				if (_desc.DepthBias != value)
-				{
-					_desc.DepthBias = value;
-					HasChanged = true;
-				}
-			}
-		}
+			/// <summary>
+			/// Property to set or return whether a triangle uses clockwise or counterclockwise vertices to determine whether it is front or back facing respectively.
+			/// </summary>
+			/// <remarks>The default value is FALSE.</remarks>
+			public bool IsFrontFacingTriangleCounterClockwise;
 
-		/// <summary>
-		/// Property to set or return the maximum depth bias for a pixel.
-		/// </summary>
-		public float DepthBiasClamp
-		{
-			get
-			{
-				return _desc.DepthBiasClamp;
-			}
-			set
-			{
-				if (_desc.DepthBiasClamp != value)
-				{
-					_desc.DepthBiasClamp = value;
-					HasChanged = true;
-				}
-			}
-		}
+			/// <summary>
+			/// Property to set or return a value to add to a pixel when comparing depth.
+			/// </summary>
+			/// <remarks>The default value is 0.</remarks>
+			public int DepthBias;
 
-		/// <summary>
-		/// Property to set or return the scalar value for a pixel slope.
-		/// </summary>
-		public float SlopeScaledDepthBias
-		{
-			get
-			{
-				return _desc.SlopeScaledDepthBias;
-			}
-			set
-			{
-				if (_desc.SlopeScaledDepthBias != value)
-				{
-					_desc.SlopeScaledDepthBias = value;
-					HasChanged = true;
-				}
-			}
-		}
+			/// <summary>
+			/// Property to set or return the maximum depth bias for a pixel.
+			/// </summary>
+			/// <remarks>The default value is 0.0f.</remarks>
+			public float DepthBiasClamp;
 
-		/// <summary>
-		/// Property to set or return whether the hardware should clip the Z value.
-		/// </summary>
-		public bool IsDepthClippingEnabled
-		{
-			get
-			{
-				return _desc.IsDepthClipEnabled;
-			}
-			set
-			{
-				if (_desc.IsDepthClipEnabled != value)
-				{
-					_desc.IsDepthClipEnabled = value;
-					HasChanged = true;
-				}
-			}
-		}
+			/// <summary>
+			/// Property to set or return the scalar value for a pixel slope.
+			/// </summary>
+			/// <remarks>The default value is 0.0f.</remarks>
+			public float SlopeScaledDepthBias;
 
-		/// <summary>
-		/// Property to set or return whether to enable scissor testing.
-		/// </summary>
-		/// <remarks>When this value is set to TRUE any pixels outside the active scissor rectangle are culled.</remarks>
-		public bool IsScissorTestingEnabled
-		{
-			get
-			{				
-				return _desc.IsScissorEnabled;
-			}
-			set
-			{
-				if (_desc.IsScissorEnabled != value)
-				{
-					_desc.IsScissorEnabled = value;
-					HasChanged = true;
-				}
-			}
-		}
+			/// <summary>
+			/// Property to set or return whether the hardware should clip the Z value.
+			/// </summary>
+			/// <remarks>The default value is TRUE.</remarks>
+			public bool IsDepthClippingEnabled;
 
-		/// <summary>
-		/// Property to set or return whether multisampling is enabled or not.
-		/// </summary>
-		public bool IsMultisamplingEnabled
-		{
-			get
-			{
-				return _desc.IsMultisampleEnabled;
-			}
-			set
-			{
-				if (_desc.IsMultisampleEnabled != value)
-				{
-					_desc.IsMultisampleEnabled = value;
-					HasChanged = true;
-				}
-			}
-		}
+			/// <summary>
+			/// Property to set or return whether to enable scissor testing.
+			/// </summary>
+			/// <remarks>When this value is set to TRUE any pixels outside the active scissor rectangle are culled.
+			/// <para>The default value is FALSE.</para>
+			/// </remarks>
+			public bool IsScissorTestingEnabled;
 
-		/// <summary>
-		/// Property to set or return whether antialiasing should be used when drawing lines.
-		/// </summary>
-		/// <remarks>This value is only valid if <see cref="P:GorgonLibrary.GorgonGraphics.GorgonRasterizerState.IsMultisamplingEnabled">IsMultisamplingEnabled</see> is equal to FALSE.</remarks>
-		public bool IsAntialiasedLinesEnabled
-		{
-			get
+			/// <summary>
+			/// Property to set or return whether multisampling is enabled or not.
+			/// </summary>
+			/// <remarks>This must be set to TRUE in order to activate multisampling.
+			/// <para>The default value is FALSE.</para>
+			/// </remarks>
+			public bool IsMultisamplingEnabled;
+
+			/// <summary>
+			/// Property to set or return whether antialiasing should be used when drawing lines.
+			/// </summary>
+			/// <remarks>This value is only valid if <see cref="P:GorgonLibrary.GorgonGraphics.GorgonRasterizerState.RasterizerStates.IsMultisamplingEnabled">IsMultisamplingEnabled</see> is equal to FALSE.
+			/// <para>The default value is FALSE.</para>
+			/// </remarks>
+			public bool IsAntialiasedLinesEnabled;
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Returns a hash code for this instance.
+			/// </summary>
+			/// <returns>
+			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+			/// </returns>
+			public override int GetHashCode()
 			{
-				return _desc.IsAntialiasedLineEnabled;
+				return ((this.CullingMode.GetHashCode()) ^ (this.DepthBias.GetHashCode()) ^ (this.DepthBiasClamp.GetHashCode()) ^ (this.FillMode.GetHashCode()) ^
+						(this.IsAntialiasedLinesEnabled.GetHashCode()) ^ (this.IsDepthClippingEnabled.GetHashCode()) ^ (this.IsFrontFacingTriangleCounterClockwise.GetHashCode()) ^
+						(this.IsMultisamplingEnabled.GetHashCode()) ^ (this.IsScissorTestingEnabled.GetHashCode()) ^ (this.SlopeScaledDepthBias.GetHashCode()));
 			}
-			set
+
+			/// <summary>
+			/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+			/// </summary>
+			/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+			/// <returns>
+			///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+			/// </returns>
+			public override bool Equals(object obj)
 			{
-				if (_desc.IsAntialiasedLineEnabled != value)
-				{
-					_desc.IsAntialiasedLineEnabled = value;
-					HasChanged = true;
-				}
+				if (obj is RasterizerStates)
+					return Equals((RasterizerStates)obj);
+
+				return base.Equals(obj);
 			}
+			#endregion
+
+			#region IEquatable<RasterizerStates> Members
+			/// <summary>
+			/// Indicates whether the current object is equal to another object of the same type.
+			/// </summary>
+			/// <param name="other">An object to compare with this object.</param>
+			/// <returns>
+			/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+			/// </returns>
+			public bool Equals(RasterizerStates other)
+			{
+				return ((other.CullingMode == CullingMode) && (other.DepthBias == DepthBias) && (other.DepthBiasClamp == DepthBiasClamp) && (other.FillMode == FillMode) &&
+						(other.IsAntialiasedLinesEnabled = IsAntialiasedLinesEnabled) && (other.IsDepthClippingEnabled == IsDepthClippingEnabled) && (other.IsFrontFacingTriangleCounterClockwise == IsFrontFacingTriangleCounterClockwise) &&
+						(other.IsMultisamplingEnabled == IsMultisamplingEnabled) && (other.IsScissorTestingEnabled == IsScissorTestingEnabled) && (other.SlopeScaledDepthBias == SlopeScaledDepthBias));
+			}
+			#endregion
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to apply any changes immediately if this state is the current state.
+		/// Function to apply the state to the appropriate state object.
 		/// </summary>
-		protected override void ApplyImmediate()
+		/// <param name="state">The Direct3D state object to apply.</param>
+		protected override void ApplyState(IDisposable state)
 		{
-			if ((Graphics != null) && (Graphics.RasterizerState == this))
-				Graphics.Context.Rasterizer.State = Convert();
+			Graphics.Context.Rasterizer.State = (D3D.RasterizerState)state;
 		}
 
 		/// <summary>
 		/// Function to convert this state object into a rasterizer state.
 		/// </summary>
 		/// <returns>The new rasterizer state.</returns>
-		protected internal override D3D.RasterizerState Convert()
+		protected override IDisposable Convert()
 		{			
-			if ((HasChanged) || (State == null))
-			{
-				if (State != null)
-					State.Dispose();
-				State = new D3D.RasterizerState(Graphics.VideoDevice.D3DDevice, _desc);
-				HasChanged = false;
-			}
+			D3D.RasterizerStateDescription desc = new D3D.RasterizerStateDescription();
 
-			return State;
+			desc.CullMode = (D3D.CullMode)States.CullingMode;
+			desc.DepthBias = States.DepthBias;
+			desc.DepthBiasClamp = States.DepthBiasClamp;
+			desc.FillMode = (D3D.FillMode)States.FillMode;
+			desc.IsAntialiasedLineEnabled = States.IsAntialiasedLinesEnabled;
+			desc.IsDepthClipEnabled = States.IsDepthClippingEnabled;
+			desc.IsFrontCounterClockwise = States.IsFrontFacingTriangleCounterClockwise;
+			desc.IsMultisampleEnabled = States.IsMultisamplingEnabled;
+			desc.IsScissorEnabled = States.IsScissorTestingEnabled;
+
+			D3D.RasterizerState state = new D3D.RasterizerState(Graphics.VideoDevice.D3DDevice, desc);
+			state.DebugName = "Rasterizer State #" + CachePosition.ToString();
+
+			return state;
 		}
 		#endregion
 
@@ -306,31 +254,6 @@ namespace GorgonLibrary.Graphics
 		internal GorgonRasterizerState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-			FillMode = GorgonFillMode.Solid;
-			CullingMode = GorgonCullingMode.Back;
-			IsDepthClippingEnabled = true;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					// Unassign this state.
-					if (Graphics.RasterizerState == this)
-						Graphics.RasterizerState = null;
-				}
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
 		}
 		#endregion
 	}

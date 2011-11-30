@@ -54,6 +54,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>This must be between 0 and 1.</remarks>
 		public float MaximumZ;
+		/// <summary>
+		/// Flag to indicate that the viewport is enabled.
+		/// </summary>
+		/// <remarks>The default value is TRUE.</remarks>
+		public bool IsEnabled;
 		#endregion
 
 		#region Methods.
@@ -146,6 +151,7 @@ namespace GorgonLibrary.Graphics
 			Region = region;
 			MinimumZ = minZ;
 			MaximumZ = maxZ;
+			IsEnabled = true;
 		}
 
 		/// <summary>

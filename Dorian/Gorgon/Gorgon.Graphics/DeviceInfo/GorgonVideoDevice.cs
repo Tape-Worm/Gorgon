@@ -443,7 +443,7 @@ namespace GorgonLibrary.Graphics
 			if (adapter == null)
 				throw new ArgumentNullException("adapter");
 
-			GIAdapter = adapter;
+			GIAdapter = adapter;			
 			EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));
 			Outputs = new GorgonVideoOutputCollection(this);
 		}

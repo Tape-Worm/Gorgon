@@ -32,447 +32,429 @@ using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
+/// <summary>
+/// Operations applied to stencil buffers.
+/// </summary>
+public enum StencilOperations
+{
 	/// <summary>
-	/// Operations applied to stencil buffers.
+	/// Keep existing stencil data.
 	/// </summary>
-	public enum StencilOperations
-	{
-		/// <summary>
-		/// Keep existing stencil data.
-		/// </summary>
-		Keep = 1,
-		/// <summary>
-		/// Set the stencil data to 0.
-		/// </summary>
-		Zero = 2,
-		/// <summary>
-		/// Set the stencil data to a reference value defined in the depth/stencil state object.
-		/// </summary>
-		Replace = 3,
-		/// <summary>
-		/// Increment the stencil value by 1 and clamp the result.
-		/// </summary>
-		IncrementClamp = 4,
-		/// <summary>
-		/// Decrement the stencil value by 1 and clamp the result.
-		/// </summary>
-		DecrementClamp = 5,
-		/// <summary>
-		/// Invert the stencil value.
-		/// </summary>
-		Invert = 6,
-		/// <summary>
-		/// Increment the stencil value by 1 and wrap if necessary.
-		/// </summary>
-		Increment = 7,
-		/// <summary>
-		/// Decrement the stencil value by 1 and wrap if necessary.
-		/// </summary>
-		Decrement = 8
-	}
+	Keep = 1,
+	/// <summary>
+	/// Set the stencil data to 0.
+	/// </summary>
+	Zero = 2,
+	/// <summary>
+	/// Set the stencil data to a reference value defined in the depth/stencil state object.
+	/// </summary>
+	Replace = 3,
+	/// <summary>
+	/// Increment the stencil value by 1 and clamp the result.
+	/// </summary>
+	IncrementClamp = 4,
+	/// <summary>
+	/// Decrement the stencil value by 1 and clamp the result.
+	/// </summary>
+	DecrementClamp = 5,
+	/// <summary>
+	/// Invert the stencil value.
+	/// </summary>
+	Invert = 6,
+	/// <summary>
+	/// Increment the stencil value by 1 and wrap if necessary.
+	/// </summary>
+	Increment = 7,
+	/// <summary>
+	/// Decrement the stencil value by 1 and wrap if necessary.
+	/// </summary>
+	Decrement = 8
+}
 
+/// <summary>
+/// States for the depth/stencil.
+/// </summary>
+public struct DepthStencilStates
+	: IEquatable<DepthStencilStates>
+{
+	#region Value Types.
 	/// <summary>
-	/// Depth/stencil buffer state.
+	/// Operations to perform on the depth/stencil buffer.
 	/// </summary>
-	/// <remarks>Used to control how depth/stencil testing is applied to a scene.
-	/// <para>State objects are immutable.  Therefore, when an application requires a different state, the user must create a new state object and give it the necessary parameters.  
-	/// This is different from previous methods of applying state, where one would modify a render state variable and it would apply immediately.  This model incurred performance penalties 
-	/// from too many state changes.  This method does not suffer from that as states can be reused.
-	/// </para>
-	/// </remarks>
-	public class GorgonDepthStencilState
-		: GorgonStateObject<D3D.DepthStencilState>
+	public struct DepthStencilOperations
+		: IEquatable<DepthStencilOperations>
 	{
 		#region Variables.
-		private bool _disposed = false;							// Flag to determine if the object was disposed or not. 
-		private D3D.DepthStencilStateDescription _desc;			// Description for the state.
-		#endregion
-
-		#region Properties.
 		/// <summary>
-		/// Property to set or return whether the depth buffer is enabled or not.
-		/// </summary>
-		/// <remarks>The default value is TRUE.</remarks>
-		public bool IsDepthEnabled
-		{
-			get
-			{
-				return _desc.IsDepthEnabled;
-			}
-			set
-			{
-				if (_desc.IsDepthEnabled != value)
-				{
-					_desc.IsDepthEnabled = value;
-					HasChanged = value;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether the stencil buffer is enabled or not.
-		/// </summary>
-		/// <remarks>The default value is FALSE.</remarks>
-		public bool IsStencilEnabled
-		{
-			get
-			{
-				return _desc.IsStencilEnabled;
-			}
-			set
-			{
-				if (_desc.IsStencilEnabled != value)
-				{
-					_desc.IsStencilEnabled = value;
-					HasChanged = value;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether depth writing is enabled.
-		/// </summary>
-		/// <remarks>The default value is TRUE.</remarks>
-		public bool IsDepthWriteEnabled
-		{
-			get
-			{
-				return (_desc.DepthWriteMask == D3D.DepthWriteMask.All);
-			}
-			set
-			{
-				if (((_desc.DepthWriteMask == D3D.DepthWriteMask.All) && (!value)) ||
-					((_desc.DepthWriteMask == D3D.DepthWriteMask.Zero) && (value)))
-				{
-					if (value)
-						_desc.DepthWriteMask = D3D.DepthWriteMask.All;
-					else
-						_desc.DepthWriteMask = D3D.DepthWriteMask.Zero;
-
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the comparison operator for the depth buffer test.
-		/// </summary>
-		/// <remarks>The default value is Less</remarks>
-		public ComparisonOperators DepthComparison
-		{
-			get
-			{
-				return (ComparisonOperators)_desc.DepthComparison;
-			}
-			set
-			{
-				if (_desc.DepthComparison != (D3D.Comparison)value)
-				{
-					_desc.DepthComparison = (D3D.Comparison)value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the mask used to read from the stencil buffer.
-		/// </summary>
-		/// <remarks>The default value is 0xFF.</remarks>
-		public byte StencilReadMask
-		{
-			get
-			{
-				return _desc.StencilReadMask;
-			}
-			set
-			{
-				if (_desc.StencilReadMask != value)
-				{
-					_desc.StencilReadMask = value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the mask used to write to the stencil buffer.
-		/// </summary>
-		/// <remarks>The default value is 0xFF.</remarks>
-		public byte StencilWriteMask
-		{
-			get
-			{
-				return _desc.StencilWriteMask;
-			}
-			set
-			{
-				if (_desc.StencilWriteMask != value)
-				{
-					_desc.StencilWriteMask = value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the operation to perform when the front face test fails.
-		/// </summary>
-		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations StencilFrontFace_FailOperation
-		{
-			get
-			{
-				return (StencilOperations)_desc.FrontFace.FailOperation;
-			}
-			set
-			{
-				if (_desc.FrontFace.FailOperation != (D3D.StencilOperation)value)
-				{
-					_desc.FrontFace.FailOperation = (D3D.StencilOperation)value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the operation to perform when the back face test fails.
-		/// </summary>
-		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations StencilBackFace_FailOperation
-		{
-			get
-			{
-				return (StencilOperations)_desc.BackFace.FailOperation;
-			}
-			set
-			{
-				if (_desc.BackFace.FailOperation != (D3D.StencilOperation)value)
-				{
-					_desc.BackFace.FailOperation = (D3D.StencilOperation)value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the operation to perform when the front face depth test fails.
-		/// </summary>
-		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations StencilFrontFace_DepthFailOperation
-		{
-			get
-			{
-				return (StencilOperations)_desc.FrontFace.DepthFailOperation;
-			}
-			set
-			{
-				if (_desc.FrontFace.DepthFailOperation != (D3D.StencilOperation)value)
-				{
-					_desc.FrontFace.DepthFailOperation = (D3D.StencilOperation)value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the operation to perform when the back face depth test fails.
-		/// </summary>
-		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations StencilBackFace_DepthFailOperation
-		{
-			get
-			{
-				return (StencilOperations)_desc.BackFace.DepthFailOperation;
-			}
-			set
-			{
-				if (_desc.BackFace.DepthFailOperation != (D3D.StencilOperation)value)
-				{
-					_desc.BackFace.DepthFailOperation = (D3D.StencilOperation)value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the operation to perform when the front face test succeeds.
-		/// </summary>
-		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations StencilFrontFace_PassOperation
-		{
-			get
-			{
-				return (StencilOperations)_desc.FrontFace.PassOperation;
-			}
-			set
-			{
-				if (_desc.FrontFace.PassOperation != (D3D.StencilOperation)value)
-				{
-					_desc.FrontFace.PassOperation = (D3D.StencilOperation)value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the operation to perform when the back depth test succeeds.
-		/// </summary>
-		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations StencilBackFace_PassOperation
-		{
-			get
-			{
-				return (StencilOperations)_desc.BackFace.PassOperation;
-			}
-			set
-			{
-				if (_desc.BackFace.PassOperation != (D3D.StencilOperation)value)
-				{
-					_desc.BackFace.PassOperation = (D3D.StencilOperation)value;
-					HasChanged = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the comparison operatpr for the front face stencil testing.
+		/// The comparison operator for the stencil testing.
 		/// </summary>
 		/// <remarks>The default value is Always.</remarks>
-		public ComparisonOperators StencilFrontFace_ComparisonOperator
-		{
-			get
-			{
-				return (ComparisonOperators)_desc.FrontFace.Comparison;
-			}
-			set
-			{
-				if (_desc.FrontFace.Comparison != (D3D.Comparison)value)
-				{
-					_desc.FrontFace.Comparison = (D3D.Comparison)value;
-					HasChanged = true;
-				}
-			}
-		}
+		public ComparisonOperators ComparisonOperator;
 
 		/// <summary>
-		/// Property to set or return the comparison operatpr for the back face stencil testing.
+		/// The operation to perform when the test fails.
 		/// </summary>
-		/// <remarks>The default value is Always.</remarks>
-		public ComparisonOperators StencilBackFace_ComparisonOperator
-		{
-			get
-			{
-				return (ComparisonOperators)_desc.BackFace.Comparison;
-			}
-			set
-			{
-				if (_desc.BackFace.Comparison != (D3D.Comparison)value)
-				{
-					_desc.BackFace.Comparison = (D3D.Comparison)value;
-					HasChanged = true;
-				}
-			}
-		}
+		/// <remarks>The default value is Keep.</remarks>
+		public StencilOperations FailOperation;
 
 		/// <summary>
-		/// Property to set or return the depth stencil reference value.
+		/// The operation to perform when the depth test fails.
 		/// </summary>
-		/// <remarks>This is the value used when the stencil state is set to Replace.
-		/// <para>The default value is 0.</para>
-		/// </remarks>
-		public int DepthStencilReference
-		{
-			get
-			{
-				return Graphics.Context.OutputMerger.DepthStencilReference;
-			}
-			set
-			{
-				Graphics.Context.OutputMerger.DepthStencilReference = value;				
-			}
-		}
+		/// <remarks>The default value is Keep.</remarks>
+		public StencilOperations DepthFailOperation;
+
+		/// <summary>
+		/// The operation to perform when the test succeeds.
+		/// </summary>
+		/// <remarks>The default value is Keep.</remarks>
+		public StencilOperations PassOperation;
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to apply any changes immediately if this state is the current state.
+		/// Determines whether the specified objects are equal.
 		/// </summary>
-		protected override void ApplyImmediate()
+		/// <param name="x">The first object of type <paramref name="T"/> to compare.</param>
+		/// <param name="y">The second object of type <paramref name="T"/> to compare.</param>
+		/// <returns>
+		/// true if the specified objects are equal; otherwise, false.
+		/// </returns>
+		public static bool Equals(ref DepthStencilOperations x, ref DepthStencilOperations y)
 		{
-			if (Graphics.DepthStencilState != this)
-				Graphics.DepthStencilState = this;
-
-			Graphics.Context.OutputMerger.DepthStencilState = Convert();
+			return ((x.ComparisonOperator == y.ComparisonOperator) && (x.FailOperation == y.FailOperation) && (x.DepthFailOperation == y.DepthFailOperation) && (x.PassOperation == y.PassOperation));
 		}
 
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
+		/// Returns a hash code for this instance.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// </returns>
+		public override int GetHashCode()
 		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if ((Graphics != null) && (Graphics.DepthStencilState == this))
-						Graphics.DepthStencilState = null;
-				}
-
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
+			return ComparisonOperator.GetHashCode() ^ FailOperation.GetHashCode() ^ DepthFailOperation.GetHashCode() ^ PassOperation.GetHashCode();
 		}
 
 		/// <summary>
-		/// Function to convert this state object into a Direct 3D state object.
+		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
 		/// </summary>
-		/// <returns>The Direct 3D state object.</returns>
-		protected internal override D3D.DepthStencilState Convert()
+		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		/// </returns>
+		public override bool Equals(object obj)
 		{
-			if (HasChanged)
-			{
-				if (State != null)
-				{
-					State.Dispose();
-					State = null;
-				}
-				
-				State = new D3D.DepthStencilState(Graphics.VideoDevice.D3DDevice, _desc);
+			if (obj is DepthStencilOperations)
+				return this.Equals((DepthStencilOperations)obj);
 
-				HasChanged = false;
-			}
+			return base.Equals(obj);
+		}
 
-			return State;
+		/// <summary>
+		/// Implements the operator ==.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
+		public static bool operator ==(DepthStencilOperations left, DepthStencilOperations right)
+		{
+			return DepthStencilOperations.Equals(ref left, ref right);
+		}
+
+		/// <summary>
+		/// Implements the operator !=.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
+		public static bool operator !=(DepthStencilOperations left, DepthStencilOperations right)
+		{
+			return !DepthStencilOperations.Equals(ref left, ref right);
 		}
 		#endregion
 
-		#region Constructor/Destructor.
+		#region IEquatable<DepthStencilOperations> Members
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
+		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
-		/// <param name="graphics">The graphics interface that owns this object.</param>
-		internal GorgonDepthStencilState(GorgonGraphics graphics)
-			: base(graphics)
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(DepthStencilOperations other)
 		{
-			_desc = new D3D.DepthStencilStateDescription();
-			_desc.FrontFace = new D3D.DepthStencilOperationDescription();
-			_desc.BackFace = new D3D.DepthStencilOperationDescription();
-
-			_desc.IsDepthEnabled = true;
-			_desc.DepthWriteMask = D3D.DepthWriteMask.All;
-			_desc.DepthComparison = D3D.Comparison.Less;
-			_desc.StencilReadMask = 0xff;
-			_desc.StencilWriteMask = 0xff;
-
-			_desc.FrontFace.FailOperation = D3D.StencilOperation.Keep;
-			_desc.FrontFace.DepthFailOperation = D3D.StencilOperation.Keep;
-			_desc.FrontFace.PassOperation = D3D.StencilOperation.Keep;
-			_desc.DepthComparison = D3D.Comparison.Always;
-
-			_desc.BackFace = _desc.FrontFace;
+			return ((ComparisonOperator == other.ComparisonOperator) && (FailOperation == other.FailOperation) && (DepthFailOperation == other.DepthFailOperation) && (PassOperation == other.PassOperation));
 		}
 		#endregion
 	}
+	#endregion
+
+	#region Variables.
+	/// <summary>
+	/// Default depth/stencil states.
+	/// </summary>
+	public static readonly DepthStencilStates DefaultStates = new DepthStencilStates()
+	{
+		IsDepthEnabled = true,
+		IsDepthWriteEnabled = true,
+		IsStencilEnabled = false,
+		StencilReadMask = 0xff,
+		StencilWriteMask = 0xff,
+		DepthComparison = ComparisonOperators.Less,
+		StencilFrontFace = new DepthStencilOperations()
+		{
+			ComparisonOperator = ComparisonOperators.Always,
+			DepthFailOperation = StencilOperations.Keep,
+			FailOperation = StencilOperations.Keep,
+			PassOperation = StencilOperations.Keep
+		},
+		StencilBackFace = new DepthStencilOperations()
+		{
+			ComparisonOperator = ComparisonOperators.Always,
+			DepthFailOperation = StencilOperations.Keep,
+			FailOperation = StencilOperations.Keep,
+			PassOperation = StencilOperations.Keep
+		}
+	};
+
+	/// <summary>
+	/// Operations to perform on the front face in a stencil test.
+	/// </summary>
+	public DepthStencilOperations StencilFrontFace;
+
+	/// <summary>
+	/// Operations to perform on the back face in a stencil test.
+	/// </summary>
+	public DepthStencilOperations StencilBackFace;
+
+	/// <summary>
+	/// Is the depth buffer enabled or not.
+	/// </summary>
+	/// <remarks>The default value is TRUE.</remarks>
+	public bool IsDepthEnabled;
+
+	/// <summary>
+	/// Is the stencil buffer enabled or not.
+	/// </summary>
+	/// <remarks>The default value is FALSE.</remarks>
+	public bool IsStencilEnabled;
+
+	/// <summary>
+	/// Is depth writing enabled or not.
+	/// </summary>
+	/// <remarks>The default value is TRUE.</remarks>
+	public bool IsDepthWriteEnabled;
+
+	/// <summary>
+	/// Comparison operator for the depth buffer test.
+	/// </summary>
+	/// <remarks>The default value is Less</remarks>
+	public ComparisonOperators DepthComparison;
+
+	/// <summary>
+	/// The mask used to read from the stencil buffer.
+	/// </summary>
+	/// <remarks>The default value is 0xFF.</remarks>
+	public byte StencilReadMask;
+
+	/// <summary>
+	/// The mask used to write to the stencil buffer.
+	/// </summary>
+	/// <remarks>The default value is 0xFF.</remarks>
+	public byte StencilWriteMask;
+	#endregion
+
+	#region Methods.
+	/// <summary>
+	/// Determines whether the specified objects are equal.
+	/// </summary>
+	/// <param name="x">The first object of type <paramref name="T"/> to compare.</param>
+	/// <param name="y">The second object of type <paramref name="T"/> to compare.</param>
+	/// <returns>
+	/// true if the specified objects are equal; otherwise, false.
+	/// </returns>
+	public static bool Equals(ref DepthStencilStates x, ref DepthStencilStates y)
+	{
+		return ((DepthStencilOperations.Equals(ref x.StencilFrontFace, ref y.StencilFrontFace)) && (DepthStencilOperations.Equals(ref x.StencilBackFace, ref y.StencilBackFace)) &&
+				(x.DepthComparison == y.DepthComparison) && (x.IsDepthEnabled == y.IsDepthEnabled) && (x.IsDepthWriteEnabled == y.IsDepthWriteEnabled) &&
+				(x.IsStencilEnabled == y.IsStencilEnabled) && (x.StencilReadMask == y.StencilReadMask) && (x.StencilWriteMask == y.StencilWriteMask));
+	}
+
+	/// <summary>
+	/// Returns a hash code for this instance.
+	/// </summary>
+	/// <returns>
+	/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+	/// </returns>
+	public override int GetHashCode()
+	{
+		return StencilFrontFace.GetHashCode() ^ StencilBackFace.GetHashCode() ^ IsDepthEnabled.GetHashCode() ^ IsStencilEnabled.GetHashCode() ^ IsDepthWriteEnabled.GetHashCode() ^
+				DepthComparison.GetHashCode() ^ StencilReadMask.GetHashCode() ^ StencilWriteMask.GetHashCode();
+	}
+
+	/// <summary>
+	/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+	/// </summary>
+	/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+	/// <returns>
+	///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+	/// </returns>
+	public override bool Equals(object obj)
+	{
+		if (obj is DepthStencilStates)
+			return Equals((DepthStencilStates)obj);
+
+		return base.Equals(obj);
+	}
+
+	/// <summary>
+	/// Implements the operator ==.
+	/// </summary>
+	/// <param name="left">The left.</param>
+	/// <param name="right">The right.</param>
+	/// <returns>
+	/// The result of the operator.
+	/// </returns>
+	public static bool operator ==(DepthStencilStates left, DepthStencilStates right)
+	{
+		return DepthStencilStates.Equals(left, right);
+	}
+
+	/// <summary>
+	/// Implements the operator !=.
+	/// </summary>
+	/// <param name="left">The left.</param>
+	/// <param name="right">The right.</param>
+	/// <returns>
+	/// The result of the operator.
+	/// </returns>
+	public static bool operator !=(DepthStencilStates left, DepthStencilStates right)
+	{
+		return !DepthStencilStates.Equals(left, right);
+	}
+	#endregion
+
+	#region IEquatable<DepthStencilStates> Members
+	/// <summary>
+	/// Indicates whether the current object is equal to another object of the same type.
+	/// </summary>
+	/// <param name="other">An object to compare with this object.</param>
+	/// <returns>
+	/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	/// </returns>
+	public bool Equals(DepthStencilStates other)
+	{
+		return ((this.StencilFrontFace.Equals(other.StencilFrontFace)) && (this.StencilBackFace.Equals(other.StencilBackFace)) &&
+				(this.DepthComparison == other.DepthComparison) && (this.IsDepthEnabled == other.IsDepthEnabled) && (this.IsDepthWriteEnabled == other.IsDepthWriteEnabled) &&
+				(this.IsStencilEnabled == other.IsStencilEnabled) && (this.StencilReadMask == other.StencilReadMask) && (this.StencilWriteMask == other.StencilWriteMask));
+	}
+	#endregion
+}
+
+
+
+/// <summary>
+/// Depth/stencil buffer state.
+/// </summary>
+/// <remarks>Used to control how depth/stencil testing is applied to a scene.
+/// <para>State objects are immutable.  Therefore, when an application requires a different state, the user must create a new state value, give it the necessary parameters and pass it to the 
+/// appropriate render state.  This is different from previous methods of applying state, where one would modify a render state variable and it would apply immediately.  This model incurred performance penalties 
+/// from too many state changes.  This method does not suffer as much because the states can be reused.  Currently, the system will cache 4096 unique state values for each render state type and 
+/// will reuse these state settings to lower the impact of changing states.
+/// </para>
+/// </remarks>
+public class GorgonDepthStencilState
+	: GorgonStateObject<DepthStencilStates>
+{
+	#region Variables.
+	private int _depthRef = 0;																// Depth reference.
+	#endregion
+
+	#region Properties.
+	/// <summary>
+	/// Property to set or return the depth stencil reference value.
+	/// </summary>
+	/// <remarks>This is the value used when the stencil state is set to Replace.
+	/// <para>The default value is 0.</para>
+	/// </remarks>
+	public int DepthStencilReference
+	{
+		get
+		{
+			return _depthRef;
+		}
+		set
+		{
+#if DEBUG
+			if (Graphics.Context == null)
+				throw new InvalidOperationException("No usable context was found.");
+#endif
+			if (_depthRef != value)
+			{
+				Graphics.Context.OutputMerger.DepthStencilReference = value;
+				_depthRef = value;
+			}
+		}
+	}
+	#endregion
+
+	#region Methods.
+	/// <summary>
+	/// Function to apply the state to the appropriate state object.
+	/// </summary>
+	/// <param name="state">The Direct3D state object to apply.</param>
+	protected override void ApplyState(IDisposable state)
+	{
+		Graphics.Context.OutputMerger.DepthStencilState = (D3D.DepthStencilState)state;
+	}
+
+	/// <summary>
+	/// Function to convert this state object to the native state object type and apply it.
+	/// </summary>
+	/// <returns>A direct 3D depth/stencil state object.</returns>
+	protected override IDisposable Convert()
+	{
+		D3D.DepthStencilStateDescription desc = new D3D.DepthStencilStateDescription();
+		desc.IsDepthEnabled = States.IsDepthEnabled;
+		desc.IsStencilEnabled = States.IsStencilEnabled;
+		desc.DepthComparison = (D3D.Comparison)States.DepthComparison;
+		desc.DepthWriteMask = (States.IsDepthWriteEnabled ? D3D.DepthWriteMask.All : D3D.DepthWriteMask.Zero);
+		desc.StencilReadMask = States.StencilReadMask;
+		desc.StencilWriteMask = States.StencilWriteMask;
+
+		desc.BackFace = new D3D.DepthStencilOperationDescription();
+		desc.FrontFace = new D3D.DepthStencilOperationDescription();
+
+		desc.FrontFace.Comparison = (D3D.Comparison)States.StencilFrontFace.ComparisonOperator;
+		desc.FrontFace.DepthFailOperation = (D3D.StencilOperation)States.StencilFrontFace.DepthFailOperation;
+		desc.FrontFace.FailOperation = (D3D.StencilOperation)States.StencilFrontFace.FailOperation;
+		desc.FrontFace.PassOperation = (D3D.StencilOperation)States.StencilFrontFace.PassOperation;
+
+		desc.BackFace.Comparison = (D3D.Comparison)States.StencilBackFace.ComparisonOperator;
+		desc.BackFace.DepthFailOperation = (D3D.StencilOperation)States.StencilBackFace.DepthFailOperation;
+		desc.BackFace.FailOperation = (D3D.StencilOperation)States.StencilBackFace.FailOperation;
+		desc.BackFace.PassOperation = (D3D.StencilOperation)States.StencilBackFace.PassOperation;
+
+		D3D.DepthStencilState state = new D3D.DepthStencilState(Graphics.VideoDevice.D3DDevice, desc);
+		state.DebugName = "Depth/stencil state #" + CachePosition.ToString();
+
+		return state;
+	}
+	#endregion
+
+	#region Constructor/Destructor.
+	/// <summary>
+	/// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
+	/// </summary>
+	/// <param name="graphics">The graphics interface that owns this object.</param>
+	internal GorgonDepthStencilState(GorgonGraphics graphics)
+		: base(graphics)
+	{
+	}
+	#endregion
+}
 }
