@@ -37,6 +37,7 @@ namespace GorgonLibrary.Graphics
 	/// A viewport rectangle to define extents for screen space rendering.
 	/// </summary>
 	public struct GorgonViewport
+		: IEquatable<GorgonViewport>
 	{
 		#region Variables.
 		/// <summary>
@@ -63,12 +64,23 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to convert this viewport rectangle into a thingy.
+		/// Function to convert this viewport rectangle into a Direct3D viewport.
 		/// </summary>
 		/// <returns></returns>
 		internal D3D.Viewport Convert()
 		{
 			return new D3D.Viewport(Region.X, Region.Y, Region.Width, Region.Height, MinimumZ, MaximumZ);
+		}
+
+		/// <summary>
+		/// Function to determine if the two values are equal.
+		/// </summary>
+		/// <param name="left">Left value to compare.</param>
+		/// <param name="right">Right value to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonViewport left, ref GorgonViewport right)
+		{
+			return ((left.Region.X == right.Region.X) && (left.Region.Y == right.Region.Y) && (left.Region.Width == right.Region.Width) && (left.Region.Height == right.Region.Height) && (left.MinimumZ == right.MinimumZ) && (left.MaximumZ == right.MaximumZ));
 		}
 
 		/// <summary>
@@ -81,7 +93,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonViewport left, GorgonViewport right)
 		{
-			return ((left.Region == right.Region) && (left.MinimumZ == right.MinimumZ) && (left.MaximumZ == right.MaximumZ));
+			return GorgonViewport.Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -94,7 +106,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonViewport left, GorgonViewport right)
 		{
-			return !(left == right);
+			return !GorgonViewport.Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -107,12 +119,9 @@ namespace GorgonLibrary.Graphics
 		public override bool Equals(object obj)
 		{
 			if (obj is GorgonViewport)
-			{
-				GorgonViewport view = (GorgonViewport)obj;
-				return ((view.Region == Region) && (view.MinimumZ == MinimumZ) && (view.MaximumZ == MaximumZ));
-			}
+				return this.Equals((GorgonViewport)obj);
 
-			return false;
+			return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -134,7 +143,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Gorgon Viewport:\n{0}x{1}-{2}x{3} (Width: {4}, Height: {5})\nMinimum depth: {6}\nMaximum depth: {7}", Region.X, Region.Y, Region.Right, Region.Bottom, Region.Width, Region.Height, MinimumZ, MaximumZ);
+			return string.Format("Gorgon Viewport: {0}x{1}-{2}x{3} (Width: {4}, Height: {5}) Minimum depth: {6} Maximum depth: {7}", Region.X, Region.Y, Region.Right, Region.Bottom, Region.Width, Region.Height, MinimumZ, MaximumZ);
 		}
 		#endregion
 
@@ -190,6 +199,20 @@ namespace GorgonLibrary.Graphics
 		public GorgonViewport(float x, float y, float width, float height)
 			: this(new RectangleF(x, y, width, height), 0.0f, 1.0f)
 		{
+		}
+		#endregion
+
+		#region IEquatable<GorgonViewport> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonViewport other)
+		{
+			return ((other.Region.X == Region.X) && (other.Region.Y == Region.Y) && (other.Region.Width == Region.Width) && (other.Region.Height == Region.Height) && (other.MinimumZ == MinimumZ) && (other.MaximumZ == MaximumZ));
 		}
 		#endregion
 	}

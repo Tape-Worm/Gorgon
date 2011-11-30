@@ -96,6 +96,17 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to compare two colors for equality.
+		/// </summary>
+		/// <param name="left">Left color to compare.</param>
+		/// <param name="right">Right color to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonColor left, ref GorgonColor right)
+		{
+			return (GorgonMathUtility.EqualFloat(left.Red, right.Red)) && (GorgonMathUtility.EqualFloat(left.Green, right.Green)) && (GorgonMathUtility.EqualFloat(left.Blue, right.Blue)) && (GorgonMathUtility.EqualFloat(left.Alpha, right.Alpha));
+		}
+
+		/// <summary>
 		/// Returns a hash code for this instance.
 		/// </summary>
 		/// <returns>
@@ -295,7 +306,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static bool operator ==(GorgonColor left, GorgonColor right)
 		{
-			return right.Equals(left);
+			return GorgonColor.Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -306,7 +317,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static bool operator !=(GorgonColor left, GorgonColor right)
 		{
-			return !(left == right);
+			return !GorgonColor.Equals(ref left, ref right);
 		}
 
 		/// <summary>
