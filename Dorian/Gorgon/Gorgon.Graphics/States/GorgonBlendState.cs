@@ -163,222 +163,228 @@ namespace GorgonLibrary.Graphics
 		All = 15,
 	}
 
+	#region Value Types.
 	/// <summary>
-	/// Blending state.
+	/// Blend states.
 	/// </summary>
-	/// <remarks>This is used to control how polygons are blended in a scene.</remarks>
-	public class GorgonBlendState
-		: GorgonStateObject<GorgonBlendState.BlendStates>
+	public struct GorgonBlendStates
+		: IEquatable<GorgonBlendStates>
 	{
 		#region Value Types.
 		/// <summary>
-		/// Blend states.
+		/// Blending state for an individual render target.
 		/// </summary>
-		public struct BlendStates
-			: IEquatable<BlendStates>
+		public struct RenderTargetBlendState
+			: IEquatable<RenderTargetBlendState>
 		{
-			#region Value Types.
-			/// <summary>
-			/// Blending state for an individual render target.
-			/// </summary>
-			public struct RenderTargetBlendState
-				: IEquatable<RenderTargetBlendState>
-			{
-				#region Variables.
-				/// <summary>
-				/// Default render target blending states.
-				/// </summary>
-				public static readonly RenderTargetBlendState DefaultStates = new RenderTargetBlendState()
-				{
-					IsBlendingEnabled = false,
-					AlphaOperation = BlendOperation.Add,
-					BlendingOperation = BlendOperation.Add,
-					SourceBlend = BlendType.One,
-					DestinationBlend = BlendType.Zero,
-					SourceAlphaBlend = BlendType.One,
-					DestinationAlphaBlend = BlendType.Zero,
-					WriteMask = ColorWriteMaskFlags.All
-				};
-
-				/// <summary>
-				/// Is blending enabled for this render target or not.
-				/// </summary>
-				/// <remarks>The default value is FALSE.</remarks>
-				public bool IsBlendingEnabled
-				{
-					get;
-					set;
-				}
-
-				/// <summary>
-				/// The alpha blending operation to perform.
-				/// </summary>
-				/// <remarks>This defines how the source and destination alpha channels will blend together.
-				/// <para>The default value is Add.</para>
-				/// </remarks>
-				public BlendOperation AlphaOperation
-				{
-					get;
-					set;
-				}
-
-				/// <summary>
-				/// The blending operation to perform.
-				/// </summary>
-				/// <remarks>This defines how the source and destination color channels will blend together.
-				/// <para>The default value is Add.</para>
-				/// </remarks>
-				public BlendOperation BlendingOperation
-				{
-					get;
-					set;
-				}
-
-				/// <summary>
-				/// The color blending type for the source.
-				/// </summary>
-				/// <remarks>This defines the operation to perform on color data.
-				/// <para>The default value is One.</para>
-				/// </remarks>
-				public BlendType SourceBlend
-				{
-					get;
-					set;
-				}
-
-				/// <summary>
-				/// The color blending type for the destination.
-				/// </summary>
-				/// <remarks>This defines the operation to perform on color data.
-				/// <para>The default value is Zero.</para>
-				/// </remarks>
-				public BlendType DestinationBlend
-				{
-					get;
-					set;
-				}
-
-				/// <summary>
-				/// The alpha blending type for the source.
-				/// </summary>
-				/// <remarks>This defines the operation to perform on alpha data.
-				/// <para>The default value is One.</para>
-				/// </remarks>
-				public BlendType SourceAlphaBlend
-				{
-					get;
-					set;
-				}
-
-				/// <summary>
-				/// The alpha blending type for the destination.
-				/// </summary>
-				/// <remarks>This defines the operation to perform on alpha data.
-				/// <para>The default value is Zero.</para>
-				/// </remarks>
-				public BlendType DestinationAlphaBlend
-				{
-					get;
-					set;
-				}
-
-				/// <summary>
-				/// The channels to use when blending.
-				/// </summary>
-				/// <remarks>The default value is All.</remarks>
-				public ColorWriteMaskFlags WriteMask
-				{
-					get;
-					set;
-				}
-				#endregion
-
-				#region IEquatable<BlendStates> Members
-				/// <summary>
-				/// Indicates whether the current object is equal to another object of the same type.
-				/// </summary>
-				/// <param name="other">An object to compare with this object.</param>
-				/// <returns>
-				/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-				/// </returns>
-				public bool Equals(RenderTargetBlendState other)
-				{
-					return ((other.AlphaOperation == AlphaOperation) && (other.BlendingOperation == BlendingOperation) && (other.DestinationAlphaBlend == DestinationAlphaBlend) &&
-							(other.DestinationBlend == DestinationBlend) && (other.IsBlendingEnabled == IsBlendingEnabled) && (other.SourceAlphaBlend == SourceAlphaBlend) &&
-							(other.SourceBlend == SourceBlend) && (other.WriteMask == WriteMask));
-				}
-				#endregion		
-			}
-			#endregion
-
 			#region Variables.
-			private RenderTargetBlendState[] _targetStates;		// Target states.
-
 			/// <summary>
-			/// Default blending states.
+			/// Default render target blending states.
 			/// </summary>
-			public static readonly BlendStates DefaultStates = new BlendStates()
-			{	
-				IsAlphaCoverageEnabled = false,
-				IsIndependentBlendEnabled = false
+			public static readonly RenderTargetBlendState DefaultStates = new RenderTargetBlendState()
+			{
+				IsBlendingEnabled = false,
+				AlphaOperation = BlendOperation.Add,
+				BlendingOperation = BlendOperation.Add,
+				SourceBlend = BlendType.One,
+				DestinationBlend = BlendType.Zero,
+				SourceAlphaBlend = BlendType.One,
+				DestinationAlphaBlend = BlendType.Zero,
+				WriteMask = ColorWriteMaskFlags.All
 			};
-
-			/// <summary>
-			/// Is alpha-to-coverage is enabled or not.
-			/// </summary>
-			/// <remarks>This is a multisample techique that smooths out the transparent edges of polygons with alpha blending.
-			/// <para>Please note that this is only available for devices that have a feature level of SM_4 and above.</para>
-			/// <para>The default value is FALSE.</para>
-			/// </remarks>
-			public bool IsAlphaCoverageEnabled;
-
-			/// <summary>
-			/// Is independent blending is enabled or not.
-			/// </summary>
-			/// <remarks>When this value is TRUE This allows for each render target to have its own blending settings.  When it is set to FALSE, it will only use the blending settings of the 
-			/// first target in the array.
-			/// <para>The default value is FALSE.</para>
-			/// </remarks>		
-			public bool IsIndependentBlendEnabled;
 			#endregion
 
 			#region Properties.
 			/// <summary>
-			/// Property to return a list of render target blending states.
+			/// Is blending enabled for this render target or not.
 			/// </summary>
-			public RenderTargetBlendState[] RenderTargetStates
+			/// <remarks>The default value is FALSE.</remarks>
+			public bool IsBlendingEnabled
 			{
-				get
-				{
-					// Initialize the states.
-					if (_targetStates == null)
-					{
-						_targetStates = new RenderTargetBlendState[8];
-						for (int i = 0; i < 8; i++)
-							_targetStates[i] = RenderTargetBlendState.DefaultStates;
-					}
+				get;
+				set;
+			}
 
-					return _targetStates;
-				}
-				set
-				{
-					int valueCount = 8;
+			/// <summary>
+			/// The alpha blending operation to perform.
+			/// </summary>
+			/// <remarks>This defines how the source and destination alpha channels will blend together.
+			/// <para>The default value is Add.</para>
+			/// </remarks>
+			public BlendOperation AlphaOperation
+			{
+				get;
+				set;
+			}
 
-					if (value != null)
-						valueCount = value.Length;
+			/// <summary>
+			/// The blending operation to perform.
+			/// </summary>
+			/// <remarks>This defines how the source and destination color channels will blend together.
+			/// <para>The default value is Add.</para>
+			/// </remarks>
+			public BlendOperation BlendingOperation
+			{
+				get;
+				set;
+			}
 
-					_targetStates = new RenderTargetBlendState[8];
-					for (int i = 0; i < 8; i++)
-					{
-						if (i < valueCount)
-							_targetStates[i] = value[i];
-						else
-							_targetStates[i] = RenderTargetBlendState.DefaultStates;
-					}					
-				}
+			/// <summary>
+			/// The color blending type for the source.
+			/// </summary>
+			/// <remarks>This defines the operation to perform on color data.
+			/// <para>The default value is One.</para>
+			/// </remarks>
+			public BlendType SourceBlend
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// The color blending type for the destination.
+			/// </summary>
+			/// <remarks>This defines the operation to perform on color data.
+			/// <para>The default value is Zero.</para>
+			/// </remarks>
+			public BlendType DestinationBlend
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// The alpha blending type for the source.
+			/// </summary>
+			/// <remarks>This defines the operation to perform on alpha data.
+			/// <para>The default value is One.</para>
+			/// </remarks>
+			public BlendType SourceAlphaBlend
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// The alpha blending type for the destination.
+			/// </summary>
+			/// <remarks>This defines the operation to perform on alpha data.
+			/// <para>The default value is Zero.</para>
+			/// </remarks>
+			public BlendType DestinationAlphaBlend
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// The channels to use when blending.
+			/// </summary>
+			/// <remarks>The default value is All.</remarks>
+			public ColorWriteMaskFlags WriteMask
+			{
+				get;
+				set;
 			}
 			#endregion
-		
+
+			#region Methods.
+			/// <summary>
+			/// Function to convert this render target blend state to a D3D blend description.
+			/// </summary>
+			/// <returns>The D3D render target blend description.</returns>
+			internal D3D.RenderTargetBlendDescription Convert()
+			{
+				D3D.RenderTargetBlendDescription desc = new D3D.RenderTargetBlendDescription();
+
+				desc.AlphaBlendOperation = (D3D.BlendOperation)AlphaOperation;
+				desc.BlendOperation = (D3D.BlendOperation)BlendingOperation;
+				desc.IsBlendEnabled = IsBlendingEnabled;
+				desc.DestinationAlphaBlend = (D3D.BlendOption)DestinationAlphaBlend;
+				desc.DestinationBlend = (D3D.BlendOption)DestinationBlend;
+				desc.RenderTargetWriteMask = (D3D.ColorWriteMaskFlags)WriteMask;
+				desc.SourceAlphaBlend = (D3D.BlendOption)SourceAlphaBlend;
+				desc.SourceBlend = (D3D.BlendOption)SourceBlend;
+
+				return desc;
+			}
+			
+			/// <summary>
+			/// Function to compare two render target blend states for equality.
+			/// </summary>
+			/// <param name="left">Left render target state to compare.</param>
+			/// <param name="right">Right render target state to compare.</param>
+			/// <returns>TRUE if equal, FALSE if not.</returns>
+			public static bool Equals(ref RenderTargetBlendState left, ref RenderTargetBlendState right)
+			{
+				return ((left.AlphaOperation == right.AlphaOperation) && (left.BlendingOperation == right.BlendingOperation) && (left.DestinationAlphaBlend == right.DestinationAlphaBlend) &&
+						(left.DestinationBlend == right.DestinationBlend) && (left.IsBlendingEnabled == right.IsBlendingEnabled) && (left.SourceAlphaBlend == right.SourceAlphaBlend) &&
+						(left.SourceBlend == right.SourceBlend) && (left.WriteMask == right.WriteMask));
+			}
+
+			/// <summary>
+			/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+			/// </summary>
+			/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+			/// <returns>
+			///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+			/// </returns>
+			public override bool Equals(object obj)
+			{
+				if (obj is RenderTargetBlendState)
+					return Equals((RenderTargetBlendState)obj);
+
+				return base.Equals(obj);
+			}
+
+			/// <summary>
+			/// Returns a hash code for this instance.
+			/// </summary>
+			/// <returns>
+			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+			/// </returns>
+			public override int GetHashCode()
+			{
+				unchecked
+				{
+					return 281.GenerateHash(AlphaOperation).
+							GenerateHash(BlendingOperation).
+							GenerateHash(DestinationBlend).
+							GenerateHash(DestinationAlphaBlend).
+							GenerateHash(IsBlendingEnabled).
+							GenerateHash(SourceAlphaBlend).
+							GenerateHash(SourceBlend).
+							GenerateHash(WriteMask);
+				}
+			}
+
+			/// <summary>
+			/// Implements the operator ==.
+			/// </summary>
+			/// <param name="left">The left.</param>
+			/// <param name="right">The right.</param>
+			/// <returns>
+			/// The result of the operator.
+			/// </returns>
+			public static bool operator ==(RenderTargetBlendState left, RenderTargetBlendState right)
+			{
+				return RenderTargetBlendState.Equals(ref left, ref right);
+			}
+
+			/// <summary>
+			/// Implements the operator !=.
+			/// </summary>
+			/// <param name="left">The left.</param>
+			/// <param name="right">The right.</param>
+			/// <returns>
+			/// The result of the operator.
+			/// </returns>
+			public static bool operator !=(RenderTargetBlendState left, RenderTargetBlendState right)
+			{
+				return !RenderTargetBlendState.Equals(ref left, ref right);
+			}
+			#endregion
+
 			#region IEquatable<BlendStates> Members
 			/// <summary>
 			/// Indicates whether the current object is equal to another object of the same type.
@@ -387,17 +393,197 @@ namespace GorgonLibrary.Graphics
 			/// <returns>
 			/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 			/// </returns>
-			public bool Equals(BlendStates other)
+			public bool Equals(RenderTargetBlendState other)
 			{
-				return ((other.IsAlphaCoverageEnabled == IsAlphaCoverageEnabled) && (other.IsIndependentBlendEnabled == IsIndependentBlendEnabled) && 
-						(other.RenderTargetStates[0].Equals(RenderTargetStates[0])) && (other.RenderTargetStates[1].Equals(RenderTargetStates[1])) && (other.RenderTargetStates[2].Equals(RenderTargetStates[2])) &&
-						(other.RenderTargetStates[3].Equals(RenderTargetStates[3])) && (other.RenderTargetStates[4].Equals(RenderTargetStates[4])) && (other.RenderTargetStates[5].Equals(RenderTargetStates[5])) &&
-						(other.RenderTargetStates[6].Equals(RenderTargetStates[6])) && (other.RenderTargetStates[7].Equals(RenderTargetStates[7])));
+				return RenderTargetBlendState.Equals(ref this, ref other);
 			}
 			#endregion
 		}
 		#endregion
 
+		#region Variables.
+		/// <summary>
+		/// Default blending states.
+		/// </summary>
+		public static readonly GorgonBlendStates DefaultStates = new GorgonBlendStates()
+		{
+			IsAlphaCoverageEnabled = false,
+			IsIndependentBlendEnabled = false,
+			RenderTarget0 = RenderTargetBlendState.DefaultStates,
+			RenderTarget1 = RenderTargetBlendState.DefaultStates,
+			RenderTarget2 = RenderTargetBlendState.DefaultStates,
+			RenderTarget3 = RenderTargetBlendState.DefaultStates,
+			RenderTarget4 = RenderTargetBlendState.DefaultStates,
+			RenderTarget5 = RenderTargetBlendState.DefaultStates,
+			RenderTarget6 = RenderTargetBlendState.DefaultStates,
+			RenderTarget7 = RenderTargetBlendState.DefaultStates
+		};
+
+		/// <summary>
+		/// Is alpha-to-coverage is enabled or not.
+		/// </summary>
+		/// <remarks>This is a multisample techique that smooths out the transparent edges of polygons with alpha blending.
+		/// <para>Please note that this is only available for devices that have a feature level of SM_4 and above.</para>
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool IsAlphaCoverageEnabled;
+
+		/// <summary>
+		/// Is independent blending is enabled or not.
+		/// </summary>
+		/// <remarks>When this value is TRUE This allows for each render target to have its own blending settings.  When it is set to FALSE, it will only use the blending settings of the 
+		/// first target in the array.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>		
+		public bool IsIndependentBlendEnabled;
+
+		/// <summary>
+		/// Blend states for render target 0.
+		/// </summary>
+		public RenderTargetBlendState RenderTarget0;
+
+		/// <summary>
+		/// Blend states for render target 1.
+		/// </summary>
+		public RenderTargetBlendState RenderTarget1;
+
+				/// <summary>
+		/// Blend states for render target 2.
+		/// </summary>
+		public RenderTargetBlendState RenderTarget2;
+
+		/// <summary>
+		/// Blend states for render target 3.
+		/// </summary>
+		public RenderTargetBlendState RenderTarget3;
+
+				/// <summary>
+		/// Blend states for render target 4.
+		/// </summary>
+		public RenderTargetBlendState RenderTarget4;
+
+		/// <summary>
+		/// Blend states for render target 5.
+		/// </summary>
+		public RenderTargetBlendState RenderTarget5;
+
+				/// <summary>
+		/// Blend states for render target 6.
+		/// </summary>
+		public RenderTargetBlendState RenderTarget6;
+
+		/// <summary>
+		/// Blend states for render target 7.
+		/// </summary>
+		public RenderTargetBlendState RenderTarget7;
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to compare and return whether two belnd states are equal or not.
+		/// </summary>
+		/// <param name="left">Left blend state to compare.</param>
+		/// <param name="right">Right blend state to compare.</param>
+		/// <returns></returns>
+		public static bool Equals(ref GorgonBlendStates left, ref GorgonBlendStates right)
+		{
+			return ((left.IsAlphaCoverageEnabled == right.IsAlphaCoverageEnabled) && (left.IsIndependentBlendEnabled == right.IsIndependentBlendEnabled) &&
+					(RenderTargetBlendState.Equals(ref left.RenderTarget0, ref right.RenderTarget0)) && (RenderTargetBlendState.Equals(ref left.RenderTarget1, ref right.RenderTarget1)) &&
+					(RenderTargetBlendState.Equals(ref left.RenderTarget2, ref right.RenderTarget2)) && (RenderTargetBlendState.Equals(ref left.RenderTarget3, ref right.RenderTarget3)) &&
+					(RenderTargetBlendState.Equals(ref left.RenderTarget4, ref right.RenderTarget4)) && (RenderTargetBlendState.Equals(ref left.RenderTarget5, ref right.RenderTarget5)) &&
+					(RenderTargetBlendState.Equals(ref left.RenderTarget6, ref right.RenderTarget6)) && (RenderTargetBlendState.Equals(ref left.RenderTarget7, ref right.RenderTarget7)));
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		/// </returns>
+		public override bool Equals(object obj)
+		{
+			if (obj is GorgonBlendStates)
+				return Equals((GorgonBlendStates)obj);
+
+			return base.Equals(obj);
+		}
+
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// </returns>
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				// Pick an arbitrary prime.
+				return 281.GenerateHash(IsAlphaCoverageEnabled).
+							GenerateHash(IsIndependentBlendEnabled).
+							GenerateHash(RenderTarget0).
+							GenerateHash(RenderTarget1).
+							GenerateHash(RenderTarget2).
+							GenerateHash(RenderTarget3).
+							GenerateHash(RenderTarget4).
+							GenerateHash(RenderTarget5).
+							GenerateHash(RenderTarget6).
+							GenerateHash(RenderTarget7);
+			}
+		}
+
+		/// <summary>
+		/// Implements the operator ==.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
+		public static bool operator ==(GorgonBlendStates left, GorgonBlendStates right)
+		{
+			return GorgonBlendStates.Equals(ref left, ref right);
+		}
+
+		/// <summary>
+		/// Implements the operator !=.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
+		public static bool operator !=(GorgonBlendStates left, GorgonBlendStates right)
+		{
+			return !GorgonBlendStates.Equals(ref left, ref right);
+		}
+		#endregion
+
+		#region IEquatable<BlendStates> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonBlendStates other)
+		{
+			return GorgonBlendStates.Equals(ref this, ref other);
+		}
+		#endregion
+	}
+	#endregion
+
+
+	/// <summary>
+	/// Blending state.
+	/// </summary>
+	/// <remarks>This is used to control how polygons are blended in a scene.</remarks>
+	public class GorgonBlendRenderState
+		: GorgonStateObject<GorgonBlendStates>
+	{
 		#region Variables.
 		private GorgonColor _blendFactor = new GorgonColor(0.0f, 0.0f, 0.0f, 0.0f);														// Blend factor.
 		private uint _sampleMask = 0xFFFFFFFF;																							// Sample mask.
@@ -474,20 +660,18 @@ namespace GorgonLibrary.Graphics
 			desc.AlphaToCoverageEnable = States.IsAlphaCoverageEnabled;
 			desc.IndependentBlendEnable = States.IsIndependentBlendEnabled;
 
-			for (int i = 0; i < desc.RenderTarget.Length; i++)
-			{
-				desc.RenderTarget[i].AlphaBlendOperation = (D3D.BlendOperation)States.RenderTargetStates[i].AlphaOperation;
-				desc.RenderTarget[i].BlendOperation = (D3D.BlendOperation)States.RenderTargetStates[i].BlendingOperation;
-				desc.RenderTarget[i].IsBlendEnabled = States.RenderTargetStates[i].IsBlendingEnabled;
-				desc.RenderTarget[i].DestinationAlphaBlend = (D3D.BlendOption)States.RenderTargetStates[i].DestinationAlphaBlend;
-				desc.RenderTarget[i].DestinationBlend = (D3D.BlendOption)States.RenderTargetStates[i].DestinationBlend;
-				desc.RenderTarget[i].RenderTargetWriteMask = (D3D.ColorWriteMaskFlags)States.RenderTargetStates[i].WriteMask;
-				desc.RenderTarget[i].SourceAlphaBlend = (D3D.BlendOption)States.RenderTargetStates[i].SourceAlphaBlend;
-				desc.RenderTarget[i].SourceBlend = (D3D.BlendOption)States.RenderTargetStates[i].SourceBlend;
-			}
+			// Copy render targets.
+			desc.RenderTarget[0] = States.RenderTarget0.Convert();
+			desc.RenderTarget[1] = States.RenderTarget1.Convert();
+			desc.RenderTarget[2] = States.RenderTarget2.Convert();
+			desc.RenderTarget[3] = States.RenderTarget3.Convert();
+			desc.RenderTarget[4] = States.RenderTarget4.Convert();
+			desc.RenderTarget[5] = States.RenderTarget5.Convert();
+			desc.RenderTarget[6] = States.RenderTarget6.Convert();
+			desc.RenderTarget[7] = States.RenderTarget7.Convert();
 
 			D3D.BlendState state = new D3D.BlendState(Graphics.VideoDevice.D3DDevice, desc);
-			state.DebugName = "Blend State #" + CachePosition.ToString();
+			state.DebugName = "Blend State #" + StateCacheCount.ToString();
 
 			return state;
 		}
@@ -495,11 +679,11 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBlendState"/> class.
+		/// Initializes a new instance of the <see cref="GorgonBlendRenderState"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
-		internal GorgonBlendState(GorgonGraphics graphics)
-			: base(graphics)
+		internal GorgonBlendRenderState(GorgonGraphics graphics)
+			: base(graphics, 4096, 20000)
 		{
 		}
 		#endregion

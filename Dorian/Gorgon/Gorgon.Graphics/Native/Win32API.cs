@@ -50,6 +50,22 @@ namespace GorgonLibrary.Native
 		private static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlags flags);
 
 		/// <summary>
+		/// Function to enable or disable desktop composition.
+		/// </summary>
+		/// <param name="uCompositionAction">Composition action.</param>
+		/// <returns></returns>
+		[DllImport("Dwmapi.dll")]
+		public static extern int DwmEnableComposition(int uCompositionAction);
+
+		/// <summary>
+		/// Function to determine if desktop composition is enabled or not.
+		/// </summary>
+		/// <param name="pfEnabled"></param>
+		/// <returns></returns>
+		[DllImport("dwmapi.dll")]
+		public static extern int DwmIsCompositionEnabled(out bool pfEnabled);
+
+		/// <summary>
 		/// Function to retrieve the monitor with the largest portion of the window inside of it.
 		/// </summary>
 		/// <param name="window">Window to locate.</param>

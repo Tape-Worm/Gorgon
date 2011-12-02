@@ -40,21 +40,90 @@ namespace GorgonLibrary.Graphics
 		: IDisposable
 		where T : struct, IEquatable<T>
 	{
+		#region Classes.
+		/// <summary>
+		/// A cached object.
+		/// </summary>
+		private class CachedObject
+		{
+			private DateTime _lastUsed;				// Time that the object was last used.
+			private DateTime _lifeTime;				// Lifetime of the object.
+			private int _lifeTimeMilliseconds = 0;	// The lifetime of the object, in milliseconds.
+
+			/// <summary>
+			/// Property to set or return the time that the object was last used.
+			/// </summary>
+			public DateTime LastUsed
+			{
+				get
+				{
+					return _lastUsed;
+				}
+			}
+
+			/// <summary>
+			/// Property to return whether this object is expired or not.
+			/// </summary>
+			public bool IsExpired
+			{
+				get
+				{
+					return DateTime.Now > _lifeTime;
+				}
+			}
+
+			
+			/// <summary>
+			/// Object being cached.
+			/// </summary>
+			public IDisposable CacheObject
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Function to update the last used time for this object.
+			/// </summary>
+			public void Touch()
+			{
+				_lastUsed = DateTime.Now;
+				_lifeTime = _lastUsed.AddMilliseconds(_lifeTimeMilliseconds);
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="GorgonStateObject&lt;T&gt;.CachedObject"/> class.
+			/// </summary>
+			/// <param name="cacheObject">The cache object.</param>
+			/// <param name="timeOutMilliseconds">The number of milliseconds the object has to live after the last use.</param>
+			public CachedObject(IDisposable cacheObject, int timeOutMilliseconds)
+			{
+				Touch();
+				CacheObject = cacheObject;
+				_lifeTimeMilliseconds = timeOutMilliseconds;
+			}
+		}
+		#endregion
+
 		#region Variables.
 		private bool _disposed = false;									// Flag to indicate that the object was disposed.
 		private T _state = default(T);									// The immutable state for the object.		
-		private IList<Tuple<T, IDisposable>> _stateCache = null;		// State cache.
+		private IDictionary<T, CachedObject> _stateCache = null;		// State cache.
+		private int _cacheLimit = 4096;									// Cache limit.
+		private int _cacheObjectLifetime = 0;							// The lifetime of an object in the cache, in milliseconds.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the cache pointer.
+		/// Property to return the number of items in the state cache.
 		/// </summary>
-		protected int CachePosition
+		protected int StateCacheCount
 		{
-			get;
-			private set;
-		}
+			get
+			{
+				return _stateCache.Count;
+			}
+		}		
 
 		/// <summary>
 		/// Property to return the graphics interface that created this state object.
@@ -86,11 +155,36 @@ namespace GorgonLibrary.Graphics
 					_state = value;
 					ApplyState(GetState());
 				}
+				else
+					_stateCache[value].Touch();
+
+				// Drop expired items if we are at or over our limit.
+				if (_stateCache.Count >= _cacheLimit)
+					EvictCache();
 			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to clean up the cache.
+		/// </summary>
+		private void EvictCache()
+		{
+			// Evict the oldest items.
+			var expired = (from cache in _stateCache
+							where cache.Value.IsExpired
+							select cache).ToList();
+
+			// Clean the cache.
+			while (expired.Count > 0)
+			{
+				expired[0].Value.CacheObject.Dispose();
+				_stateCache.Remove(expired[0].Key);
+				expired.Remove(expired[0]);
+			}
+		}
+
 		/// <summary>
 		/// Function to free any backing resources for the state.
 		/// </summary>
@@ -100,9 +194,11 @@ namespace GorgonLibrary.Graphics
 			{
 				foreach (var item in _stateCache)
 				{
-					if (item.Item2 != null)
-						item.Item2.Dispose();
+					if (item.Value != null)
+						item.Value.CacheObject.Dispose();
 				}
+
+				_stateCache.Clear();
 			}
 		}
 
@@ -112,26 +208,17 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The Direct3D state object to apply.</returns>
 		private IDisposable GetState()
 		{
-			var state = (from stateItem in _stateCache
-						where stateItem.Item1.Equals(States) && stateItem.Item2 != null
-						select stateItem.Item2).FirstOrDefault();
+			CachedObject cacheObj = null;
 
-			if (state != null)
-				return state;
-
-			// If we have an entry here already, overwrite it.
-			if (_stateCache[CachePosition].Item2 != null)
-				_stateCache[CachePosition].Item2.Dispose();
+			if (_stateCache.ContainsKey(States))
+			{
+				cacheObj = _stateCache[States];
+				return cacheObj.CacheObject;
+			}
 
 			// Add to the cache.
-			state = Convert();
-			_stateCache[CachePosition] = new Tuple<T, IDisposable>(States, state);
-
-			CachePosition++;
-			if (CachePosition >= _stateCache.Count)
-				CachePosition = 0;
-
-			return state;
+			_stateCache[States] = cacheObj = new CachedObject(Convert(), _cacheObjectLifetime);
+			return cacheObj.CacheObject;
 		}
 
 		/// <summary>
@@ -152,12 +239,13 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonStateObject&lt;T&gt;"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface to use.</param>
-		protected GorgonStateObject(GorgonGraphics graphics)
+		/// <param name="cacheLimit">Size limit for the cache.</param>
+		/// <param name="cacheObjectLifetime">The lifetime of an object in the cache, in milliseconds.</param>
+		protected GorgonStateObject(GorgonGraphics graphics, int cacheLimit, int cacheObjectLifetime)
 		{
 			Graphics = graphics;
-			_stateCache = new Tuple<T, IDisposable>[4096];
-			for(int i = 0; i < _stateCache.Count; i++)
-				_stateCache[i] = new Tuple<T, IDisposable>(new T(), null);
+			_stateCache = new Dictionary<T, CachedObject>(cacheLimit);
+			_cacheObjectLifetime = cacheObjectLifetime;
 		}
 		#endregion
 
@@ -171,12 +259,7 @@ namespace GorgonLibrary.Graphics
 			if (!_disposed)
 			{
 				if (disposing)
-				{
 					FreeResources();
-
-					if (Graphics != null)
-						Graphics.RemoveTrackedObject(this);
-				}
 
 				_disposed = true;
 			}

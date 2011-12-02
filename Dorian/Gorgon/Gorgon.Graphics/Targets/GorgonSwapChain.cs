@@ -180,8 +180,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void _parentForm_Deactivate(object sender, EventArgs e)
-		{			
-			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
+		{
+			if (GISwapChain == null) 
 				return;
 
 			if ((Graphics.InitialSwapChain != null) && (Graphics.InitialSwapChain != this))
@@ -209,9 +209,24 @@ namespace GorgonLibrary.Graphics
 					return;
 			}
 
-			// Find out if any of our swap chains gained focus.
-			if ((!_wasWindowed) && (GISwapChain.IsFullScreen))
-				_wasWindowed = true;
+			// Reset the video mode to windowed.
+			// Note:  For some reason, this is different than it was on SlimDX.  I never had to do this before, but with
+			// SharpDX I now have to handle the transition from full screen to windowed manually.
+			if (GISwapChain.IsFullScreen)
+			{
+				GISwapChain.SetFullscreenState(false, null);
+				
+				// Force all associated swap chains back to windowed mode.
+				foreach (var swapChain in _swapChains)
+				{
+				    if (swapChain != this)
+				        swapChain.GISwapChain.SetFullscreenState(false, null);
+				}
+
+				((Form)Settings.Window).WindowState = FormWindowState.Minimized;
+				
+				Settings.IsWindowed = true;
+			}
 		}
 
 		/// <summary>
@@ -224,6 +239,12 @@ namespace GorgonLibrary.Graphics
 			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
 				return;
 
+			// Get the forms being used.
+			var applicationStillActive = from swapChain in _swapChains
+										 let form = swapChain.Settings.Window as Form
+										 where form != null
+										 select form;
+
 			if ((Graphics.InitialSwapChain != null) && (Graphics.InitialSwapChain != this))
 			{
 				Graphics.InitialSwapChain._parentForm_Activated(this, e);
@@ -235,18 +256,17 @@ namespace GorgonLibrary.Graphics
 				if (Graphics.InitialSwapChain == null)
 					Graphics.InitialSwapChain = this;
 			}
-
-			if ((_wasWindowed) && (!GISwapChain.IsFullScreen))
+						
+			if (!GISwapChain.IsFullScreen) 
 			{
-				_wasWindowed = false;
-				UpdateSettings(false);
+				((Form)Settings.Window).WindowState = FormWindowState.Normal;
+				GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
 
-				// Restore the other swap chains.
-				foreach (var swapChain in _swapChains)
-				{
-					if (swapChain != this)
-						swapChain.UpdateSettings(false);
-				}
+				// Force all associated swap chains back to windowed mode.
+				foreach (var swapChain in _swapChains.Where(item => item != this))
+					swapChain.GISwapChain.SetFullscreenState(true, swapChain.VideoOutput.GIOutput);
+				
+				Settings.IsWindowed = false;
 			}
 		}
 
@@ -356,17 +376,24 @@ namespace GorgonLibrary.Graphics
 
 			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode);
 
-			GISwapChain.ResizeTarget(ref mode);
-
 			try
 			{
+				GISwapChain.ResizeTarget(ref mode);
+
 				if (!Settings.IsWindowed)
+				{
 					result = GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
+					_parentForm.Activated += new EventHandler(_parentForm_Activated);
+					_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
+				}
 				else
 					result = GISwapChain.SetFullscreenState(false, null);
 			}
 			catch (SharpDX.SharpDXException sdEx)
 			{
+#if DEBUG
+				UI.GorgonDialogs.ErrorBox(null, SharpDX.Diagnostics.ErrorManager.GetErrorMessage(sdEx.ResultCode.Code), sdEx);
+#endif
 				if (sdEx.ResultCode == (int)GI.DXGIStatus.ModeChangeInProgress)
 				{
 					Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", GorgonLoggingLevel.All, Name);
@@ -536,8 +563,8 @@ namespace GorgonLibrary.Graphics
 			if (Graphics.InitialSwapChain == null)
 				Graphics.InitialSwapChain = this;
 
-			_parentForm.Activated += new EventHandler(_parentForm_Activated);			
-			_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);			
+			//_parentForm.Activated += new EventHandler(_parentForm_Activated);			
+			//_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);			
 
 			d3dSettings.BufferCount = Settings.BufferCount;
 			d3dSettings.Flags = flags;
@@ -654,8 +681,17 @@ namespace GorgonLibrary.Graphics
 			if (GISwapChain == null)
 				return;
 
-			// Assign the new settings.
-			_wasWindowed = true;
+			_parentForm.Activated -= new EventHandler(_parentForm_Activated);
+			_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+
+			// If we're trying to go full screen, and we're currently windowed, then record that we were currently windowed
+			// before the transition.
+			if ((!isWindowed) && (!GISwapChain.IsFullScreen) && (Settings.IsWindowed))
+				_wasWindowed = true;
+			else
+				_wasWindowed = false;
+
+			// Assign the new settings.	
 			Settings.IsWindowed = isWindowed;			
 			Settings.VideoMode = mode;
 			Settings.BufferCount = bufferCount;

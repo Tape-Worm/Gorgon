@@ -114,7 +114,10 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Alpha.GetHashCode() ^ Red.GetHashCode() ^ Green.GetHashCode() ^ Blue.GetHashCode();
+			unchecked
+			{
+				return 281.GenerateHash(Alpha).GenerateHash(Red).GenerateHash(Green).GenerateHash(Blue);
+			}
 		}
 
 		/// <summary>
@@ -500,7 +503,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonColor other)
 		{
-			return (GorgonMathUtility.EqualFloat(other.Red, this.Red)) && (GorgonMathUtility.EqualFloat(other.Green, this.Green)) && (GorgonMathUtility.EqualFloat(other.Blue, this.Blue)) && (GorgonMathUtility.EqualFloat(other.Alpha, this.Alpha));
+			return GorgonColor.Equals(ref this, ref other);
 		}
 		#endregion
 	}

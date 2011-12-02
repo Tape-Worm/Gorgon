@@ -132,7 +132,13 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			public override int GetHashCode()
 			{
-				return ComparisonOperator.GetHashCode() ^ FailOperation.GetHashCode() ^ DepthFailOperation.GetHashCode() ^ PassOperation.GetHashCode();
+				unchecked
+				{
+					return 281.GenerateHash(ComparisonOperator).
+								GenerateHash(FailOperation).
+								GenerateHash(DepthFailOperation).
+								GenerateHash(PassOperation);
+				}
 			}
 
 			/// <summary>
@@ -292,8 +298,17 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return StencilFrontFace.GetHashCode() ^ StencilBackFace.GetHashCode() ^ IsDepthEnabled.GetHashCode() ^ IsStencilEnabled.GetHashCode() ^ IsDepthWriteEnabled.GetHashCode() ^
-					DepthComparison.GetHashCode() ^ StencilReadMask.GetHashCode() ^ StencilWriteMask.GetHashCode();
+			unchecked
+			{
+				return 281.GenerateHash(StencilBackFace).
+						GenerateHash(StencilBackFace).
+						GenerateHash(IsDepthEnabled).
+						GenerateHash(IsDepthWriteEnabled).
+						GenerateHash(IsStencilEnabled).
+						GenerateHash(DepthComparison).
+						GenerateHash(StencilReadMask).
+						GenerateHash(StencilWriteMask);
+			}
 		}
 
 		/// <summary>
@@ -348,9 +363,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonDepthStencilStates other)
 		{
-			return ((this.StencilFrontFace.Equals(other.StencilFrontFace)) && (this.StencilBackFace.Equals(other.StencilBackFace)) &&
-					(this.DepthComparison == other.DepthComparison) && (this.IsDepthEnabled == other.IsDepthEnabled) && (this.IsDepthWriteEnabled == other.IsDepthWriteEnabled) &&
-					(this.IsStencilEnabled == other.IsStencilEnabled) && (this.StencilReadMask == other.StencilReadMask) && (this.StencilWriteMask == other.StencilWriteMask));
+			return GorgonDepthStencilStates.Equals(ref this, ref other);
 		}
 		#endregion
 	}
@@ -438,7 +451,7 @@ namespace GorgonLibrary.Graphics
 			desc.BackFace.PassOperation = (D3D.StencilOperation)States.StencilBackFace.PassOperation;
 
 			D3D.DepthStencilState state = new D3D.DepthStencilState(Graphics.VideoDevice.D3DDevice, desc);
-			state.DebugName = "Depth/stencil state #" + CachePosition.ToString();
+			state.DebugName = "Depth/stencil state #" + StateCacheCount.ToString();
 
 			return state;
 		}
@@ -450,7 +463,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		internal GorgonDepthStencilRenderState(GorgonGraphics graphics)
-			: base(graphics)
+			: base(graphics, 4096, 15000)
 		{
 		}
 		#endregion
