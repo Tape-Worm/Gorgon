@@ -1,4 +1,4 @@
-﻿//#define MULTIMON
+﻿#define MULTIMON
 
 using System;
 using System.Collections.Generic;
@@ -28,9 +28,7 @@ namespace Tester_Graphics
 		GorgonSwapChain _swapChain2 = null;
 		GorgonRasterizerStates _multiSample = GorgonRasterizerStates.DefaultStates;
 		GorgonTimer _timer = new GorgonTimer(true);
-		Graphics g = null;
 		Form2 form2 = null;
-		Image backBuffer = null;
 		PointF pos = PointF.Empty;
 		GorgonBlendStates blend1 = GorgonBlendStates.DefaultStates;
 		GorgonBlendStates blend2 = GorgonBlendStates.DefaultStates;
@@ -83,10 +81,22 @@ namespace Tester_Graphics
 					//_test1.Draw();
 
 					if (_test2 != null)
+					{
+						if (_swapChain2.DepthStencil != null)
+							_swapChain2.DepthStencil.Clear(1.0f, 0);
+						_swapChain2.Clear(Color.Black);
+						if (!_pause)
+							_test2.Transform(timing.FrameDelta);
 						_test2.Draw();
+					}
 				}
 
 				_swapChain.Flip();
+
+#if MULTIMON
+				if (_swapChain2 != null)
+					_swapChain2.Flip();
+#endif
 
 				frameDepth += 0.05f * timing.FrameDelta;
 
@@ -124,7 +134,49 @@ namespace Tester_Graphics
 				if (_swapChain2 != null)
 					_swapChain2.UpdateSettings(!_swapChain2.Settings.IsWindowed);
 			}
-		}			
+		}
+
+		private bool _deactivated = false;
+
+		protected override void OnDeactivate(EventArgs e)
+		{
+			base.OnDeactivate(e);
+#if MULTIMON
+			if ((Form.ActiveForm == this) || (Form.ActiveForm == form2))
+				return;
+			_deactivated = true;
+#endif
+		}
+
+		protected override void OnActivated(EventArgs e)
+		{
+			base.OnActivated(e);
+
+#if MULTIMON
+			if ((Form.ActiveForm == form2) && (!_swapChain.Settings.IsWindowed))
+				return;
+
+			if ((_swapChain2 != null) && (_swapChain != null) && (_deactivated))
+			{
+				_swapChain.UpdateSettings(false);
+				_swapChain2.UpdateSettings(false);
+				_deactivated = false;
+			}
+#endif
+		}
+
+
+		void form2_Deactivate(object sender, EventArgs e)
+		{
+
+		}
+
+		void form2_Activated(object sender, EventArgs e)
+		{
+			if (_deactivated)
+				OnActivated(e);
+		}
+
 
 		protected override void OnLoad(EventArgs e)
 		{			
@@ -137,7 +189,7 @@ namespace Tester_Graphics
 				GorgonFrameRate.UseHighResolutionTimer = true;
 
 				Gorgon.UnfocusedSleepTime = 10;
-				Gorgon.AllowBackground = false;
+				Gorgon.AllowBackground = true;
 
 				this.Show();
 
@@ -146,12 +198,15 @@ namespace Tester_Graphics
 #if MULTIMON
 				form2 = new Form2();
 				form2.FormClosing += new FormClosingEventHandler(form2_FormClosing);
+				form2.Activated += new EventHandler(form2_Activated);
+				form2.Deactivate += new EventHandler(form2_Deactivate);
+				form2.ShowInTaskbar = false;
 				form2.Show();
 #endif
 				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
 				//_graphics.IsObjectTrackingEnabled = false;
 				//_graphics = new GorgonGraphics();
-				//_graphics.ResetFullscreenOnFocus = false;
+				_graphics.ResetFullscreenOnFocus = false;
 
 				_multiSample.IsMultisamplingEnabled = true;
 				//_multiSample.CullingMode =  GorgonCullingMode.None;
@@ -188,17 +243,19 @@ namespace Tester_Graphics
 				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;
 
 				mode2 = (from videoMode in _graphics.VideoDevices[0].Outputs[1].VideoModes
-						 where videoMode.Width == 1024 && videoMode.Height == 768 && videoMode.Format == GorgonBufferFormat.R8G8B8A8_UIntNormal_sRGB
-						 orderby videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator
+						 where videoMode.Width == 640 && videoMode.Height == 480 &&
+							(videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal_sRGB || videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal || videoMode.Format == BufferFormat.B8G8R8A8_UIntNormal || videoMode.Format == BufferFormat.B8G8R8A8_UIntNormal_sRGB)
+							&& (_graphics.VideoDevice.SupportsDisplayFormat(videoMode.Format))
+						 orderby videoMode.Format, videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator
 						 select videoMode).First();
 
-				_swapChain2 = _graphics.CreateSwapChain("Swap2", new GorgonSwapChainSettings() { IsWindowed = true, Window = form2, VideoMode = mode2 });
+				_swapChain2 = _graphics.CreateSwapChain("Swap2", new GorgonSwapChainSettings() { IsWindowed = true, Window = form2, VideoMode = mode2, DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt });
 				this.Focus();
 #endif
 
 				//_swapChain.UpdateSettings(false);
 #if MULTIMON
-				_swapChain2.UpdateSettings(false);				
+				//_swapChain2.UpdateSettings(false);				
 #endif				
 				
 				_test1 = new Test(_swapChain);

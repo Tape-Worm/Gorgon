@@ -201,15 +201,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the initial swap chain.
-		/// </summary>
-		internal GorgonSwapChain InitialSwapChain
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to return the list of tracked objects.
 		/// </summary>
 		internal GorgonTrackedObjectCollection TrackedObjects
@@ -756,8 +747,6 @@ namespace GorgonLibrary.Graphics
 					DestroyStates();
 
 					VideoDevices.Clear();
-
-					InitialSwapChain = null;
 
 					Gorgon.Log.Print("Removing DXGI factory interface...", GorgonLoggingLevel.Verbose);
 
