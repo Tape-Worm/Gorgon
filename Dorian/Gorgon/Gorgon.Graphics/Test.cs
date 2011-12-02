@@ -381,6 +381,8 @@ namespace GorgonLibrary.Graphics
 				
 			//_device.ImmediateContext.OutputMerger.SetTargets(_swapChain.D3DRenderTarget);
 
+			_graphics.SetViewport(_swapChain.Viewport);
+
 			_device.ImmediateContext.InputAssembler.InputLayout = _layout;
 			_device.ImmediateContext.InputAssembler.PrimitiveTopology = D3DCommon.PrimitiveTopology.TriangleList;
 			_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
