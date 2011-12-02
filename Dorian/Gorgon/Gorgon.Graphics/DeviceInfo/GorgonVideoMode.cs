@@ -36,6 +36,7 @@ namespace GorgonLibrary.Graphics
 	/// A video mode information record.
 	/// </summary>
 	public struct GorgonVideoMode
+		: IEquatable<GorgonVideoMode>
 	{
 		#region Variables.
 		/// <summary>
@@ -102,7 +103,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(GorgonVideoMode mode1, GorgonVideoMode mode2)
 		{
-			return ((mode1.Width == mode2.Width) && (mode1.Height == mode2.Height) && (mode1.RefreshRateNumerator == mode2.RefreshRateNumerator) && (mode1.RefreshRateDenominator == mode2.RefreshRateDenominator) && (mode1.Format == mode2.Format));
+			return GorgonVideoMode.Equals(ref mode1, ref mode2);
 		}
 
 		/// <summary>
@@ -113,7 +114,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if not equal, FALSE if equal.</returns>
 		public static bool operator !=(GorgonVideoMode mode1, GorgonVideoMode mode2)
 		{
-			return !(mode1 == mode2);
+			return !GorgonVideoMode.Equals(ref mode1, ref mode2);
 		}
 
 		/// <summary>
@@ -135,7 +136,10 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Width.GetHashCode() ^ Height.GetHashCode() ^ RefreshRateNumerator.GetHashCode() ^ RefreshRateDenominator.GetHashCode() ^ Format.GetHashCode();
+			unchecked
+			{
+				return 281.GenerateHash(Width).GenerateHash(Height).GenerateHash(RefreshRateDenominator).GenerateHash(RefreshRateNumerator).GenerateHash(Format);
+			}
 		}
 
 		/// <summary>
@@ -148,13 +152,21 @@ namespace GorgonLibrary.Graphics
 		public override bool Equals(object obj)
 		{
 			if (obj is GorgonVideoMode)
-			{
-				GorgonVideoMode videoMode = (GorgonVideoMode)obj;
+				return this.Equals((GorgonVideoMode)obj);
 
-				return ((videoMode.Width == Width) && (videoMode.Height == Height) && (videoMode.RefreshRateNumerator == RefreshRateNumerator) && (videoMode.RefreshRateDenominator == RefreshRateDenominator) && (videoMode.Format == Format));
-			}
+			return base.Equals(obj);
+		}
 
-			return false;
+		/// <summary>
+		/// Function to determine if two video modes are equal.
+		/// </summary>
+		/// <param name="left">Left video mode to compare.</param>
+		/// <param name="right">Right video mode to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonVideoMode left, ref GorgonVideoMode right)
+		{
+			return (left.Width == right.Width) && (left.Height == right.Height) && (left.Format == right.Format) &&
+					(left.RefreshRateDenominator == right.RefreshRateDenominator) && (left.RefreshRateNumerator == right.RefreshRateNumerator);
 		}
 
 		/// <summary>
@@ -229,6 +241,20 @@ namespace GorgonLibrary.Graphics
 		public GorgonVideoMode(System.Drawing.Size size, GorgonVideoMode mode)
 			: this(size.Width, size.Height, mode.Format, mode.RefreshRateNumerator, mode.RefreshRateDenominator)
 		{
+		}
+		#endregion
+
+		#region IEquatable<GorgonVideoMode> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonVideoMode other)
+		{
+			return GorgonVideoMode.Equals(ref this, ref other);
 		}
 		#endregion
 	}

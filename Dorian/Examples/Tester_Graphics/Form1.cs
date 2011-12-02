@@ -26,62 +26,20 @@ namespace Tester_Graphics
 		GorgonGraphics _graphics = null;
 		GorgonSwapChain _swapChain = null;
 		GorgonSwapChain _swapChain2 = null;
-		GorgonRasterizerState.RasterizerStates _multiSample = GorgonRasterizerState.RasterizerStates.DefaultStates;
+		GorgonRasterizerStates _multiSample = GorgonRasterizerStates.DefaultStates;
 		GorgonTimer _timer = new GorgonTimer(true);
 		Graphics g = null;
 		Form2 form2 = null;
 		Image backBuffer = null;
 		PointF pos = PointF.Empty;
+		GorgonBlendStates blend1 = GorgonBlendStates.DefaultStates;
+		GorgonBlendStates blend2 = GorgonBlendStates.DefaultStates;
 		
-
-		protected override void OnDoubleClick(EventArgs e)
-		{
-			base.OnDoubleClick(e);
-			if (Gorgon.ApplicationIdleLoopMethod == Idle)
-			{
-				backBuffer = new Bitmap(this.ClientSize.Width, this.ClientSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-				float aspect = (float)Properties.Resources.Haiku.Height / (float)Properties.Resources.Haiku.Width;
-				pos = this.PointToScreen(Point.Round(new PointF(backBuffer.Width / 4, (backBuffer.Height / 2) - (((backBuffer.Height / 2) * aspect) / 2))));
-
-				Gorgon.ApplicationIdleLoopMethod = Idle2;
-			}
-			else
-			{
-				backBuffer.Dispose();
-				Gorgon.ApplicationIdleLoopMethod = Idle;
-			}
-		}
-
-		private bool Idle2(GorgonFrameRate timing)
-		{
-			Text = "FPS: " + timing.FPS.ToString() + " DT:" + timing.FrameDelta.ToString();
-
-			g = Graphics.FromImage(backBuffer);
-			g.Clear(Color.Purple);
-			g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
-			g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-			float aspect = (float)Properties.Resources.Haiku.Height / (float)Properties.Resources.Haiku.Width;
-			g.DrawEllipse(Pens.Yellow, new Rectangle(backBuffer.Width / 2 - backBuffer.Width / 4, backBuffer.Height / 2 - backBuffer.Height / 4, backBuffer.Width / 2, backBuffer.Height / 2));
-			g.DrawImage(Properties.Resources.Haiku, new RectangleF(Point.Round(pos).X - Location.X, Point.Round(pos).Y - Location.Y, backBuffer.Width / 2, (backBuffer.Height / 2) * aspect));
-			g.Dispose();
-
-			g = this.CreateGraphics();
-			g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
-			g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-			g.DrawImage(backBuffer, new RectangleF(0, 0, ClientSize.Width, ClientSize.Height), new RectangleF(0, 0, backBuffer.Width, backBuffer.Height), GraphicsUnit.Pixel);			
-			g.Dispose();			
-			
-			return true;
-		}
 
 		int frameCount = 0;
 		float frameDepth = 0.0f;
 		bool _pause = false;
+		Random _rnd = new Random();
 
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
@@ -95,7 +53,9 @@ namespace Tester_Graphics
 			Text = "FPS: " + timing.FPS.ToString() + " DT:" + (timing.FrameDelta * 1000).ToString() + " msec.";
 
 			try
-			{				
+			{
+				//_graphics.SetViewport(_rnd.Next(0, ClientSize.Width - 1), _rnd.Next(ClientSize.Height - 1), _rnd.Next(ClientSize.Width - 1) + 1, _rnd.Next(ClientSize.Height - 1) + 1, 0, 1.0f);
+
 				if (!_swapChain.IsInStandBy)
 				{
 					//_graphics.Draw();
@@ -148,6 +108,16 @@ namespace Tester_Graphics
 		{
 			base.OnKeyDown(e);
 
+			if (e.KeyCode == Keys.D1)
+			{
+				_graphics.BlendingState.States = blend1;
+			}
+
+			if (e.KeyCode == Keys.D2)
+			{
+				_graphics.BlendingState.States = blend2;
+			}
+
 			if (e.KeyCode == Keys.F1) //((e.Alt) && (e.KeyCode == Keys.Enter))
 			{
 				_swapChain.UpdateSettings(!_swapChain.Settings.IsWindowed);
@@ -181,28 +151,26 @@ namespace Tester_Graphics
 				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
 				//_graphics.IsObjectTrackingEnabled = false;
 				//_graphics = new GorgonGraphics();
+				//_graphics.ResetFullscreenOnFocus = false;
 
 				_multiSample.IsMultisamplingEnabled = true;
 				//_multiSample.CullingMode =  GorgonCullingMode.None;
 				_graphics.RasterizerState.States = _multiSample;
-				_graphics.BlendingState.States = new GorgonBlendState.BlendStates()
-				{
-					RenderTargetStates = new[]
-					{
-					    new GorgonBlendState.BlendStates.RenderTargetBlendState() 
-					    {								
-					        IsBlendingEnabled = true,
-					        SourceBlend = BlendType.SourceAlpha,
-					        DestinationBlend = BlendType.InverseSourceAlpha,
-							AlphaOperation = BlendOperation.Add,
-							BlendingOperation = BlendOperation.Add,
-							DestinationAlphaBlend = BlendType.Zero,
-							SourceAlphaBlend = BlendType.One,
-							WriteMask = ColorWriteMaskFlags.All
-					    }
-					}
-				};
- 
+				blend1.RenderTarget0.IsBlendingEnabled = true;
+				blend1.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
+				blend1.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
+				//blend2.RenderTargetStates[0].IsBlendingEnabled = true;
+				//blend2.RenderTargetStates[0].SourceBlend = BlendType.SourceAlpha;
+				//blend2.RenderTargetStates[0].DestinationBlend = BlendType.InverseSourceAlpha;
+				blend2 = blend1;
+				blend2.RenderTarget0.DestinationBlend = BlendType.One;
+				//blend2.RenderTarget0.WriteMask = ColorWriteMaskFlags.Blue | ColorWriteMaskFlags.Green | ColorWriteMaskFlags.Alpha;
+				_graphics.BlendingState.States = blend1;
+
+				//GorgonGraphics.IsDWMCompositionEnabled = false;
+				//this.TopMost = true;
+				//this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+				//this.WindowState = FormWindowState.Maximized;
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
 						 where videoMode.Width == 1280 && videoMode.Height == 800 && 
 							(videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal_sRGB || videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal || videoMode.Format == BufferFormat.B8G8R8A8_UIntNormal || videoMode.Format == BufferFormat.B8G8R8A8_UIntNormal_sRGB)

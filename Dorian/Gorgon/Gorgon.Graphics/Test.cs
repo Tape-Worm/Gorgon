@@ -454,6 +454,7 @@ namespace GorgonLibrary.Graphics
 				buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationZ(passAngle));
 				buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationY(passAngle));
 				buffer.World = Matrix.Transpose(buffer.World);
+				//buffer.World = Matrix.Identity;
 				_changeStream.Position = 0;
 				_changeStream.Write<UpdateBuffer>(buffer);
 				_changeStream.Position = 0;

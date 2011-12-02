@@ -159,8 +159,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal static readonly DeviceFeatureLevel[] GorgonFeatureLevels = Enum.GetValues(typeof(DeviceFeatureLevel)) as DeviceFeatureLevel[];
 
-		private bool _disposed = false;																							// Flag to indicate that the object was disposed.
-		private GorgonVideoDevice _videoDevice = null;																			// Video device to use.
+		private static bool _isDWMEnabled = true;						// Flag to indicate that the desktop window manager compositor is enabled.
+		private static bool _dontEnableDWM = false;						// Flag to indicate that we should not enable the DWM.
+		private bool _disposed = false;									// Flag to indicate that the object was disposed.
+		private GorgonVideoDevice _videoDevice = null;					// Video device to use.
 		#endregion
 
 		#region Constants.
@@ -231,11 +233,42 @@ namespace GorgonLibrary.Graphics
 				return VideoDevice.D3DDevice.ImmediateContext;
 			}
 		}
+		
+		/// <summary>
+		/// Property to set or return whether DWM composition is enabled or not.
+		/// </summary>
+		/// <remarks>This property will have no effect on systems that initially have the desktop window manager compositor disabled.</remarks>
+		public static bool IsDWMCompositionEnabled
+		{
+			get
+			{
+				return _isDWMEnabled;
+			}
+			set
+			{
+				if (!value)
+				{
+					if (_isDWMEnabled)
+					{
+						Win32API.DwmEnableComposition(0);
+						_isDWMEnabled = false;
+					}
+				}
+				else
+				{
+					if ((!_isDWMEnabled) && (!_dontEnableDWM))
+					{
+						Win32API.DwmEnableComposition(1);
+						_isDWMEnabled = true;
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Property to set or return the current rasterizer render states.
 		/// </summary>
-		public GorgonRasterizerState RasterizerState
+		public GorgonRasterizerRenderState RasterizerState
 		{
 			get;
 			private set;
@@ -244,7 +277,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the current blending render states.
 		/// </summary>
-		public GorgonBlendState BlendingState
+		public GorgonBlendRenderState BlendingState
 		{
 			get;
 			private set;
@@ -402,14 +435,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateDefaultStates()
 		{
-			RasterizerState = new GorgonRasterizerState(this);
-			RasterizerState.States = GorgonRasterizerState.RasterizerStates.DefaultStates;
+			RasterizerState = new GorgonRasterizerRenderState(this);
+			RasterizerState.States = GorgonRasterizerStates.DefaultStates;
 
 			DepthStencilState = new GorgonDepthStencilRenderState(this);
 			DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
 
-			BlendingState = new GorgonBlendState(this);
-			BlendingState.States = GorgonBlendState.BlendStates.DefaultStates;
+			BlendingState = new GorgonBlendRenderState(this);
+			BlendingState.States = GorgonBlendStates.DefaultStates;
 		}
 
 		/// <summary>
@@ -693,6 +726,16 @@ namespace GorgonLibrary.Graphics
 		public GorgonGraphics()
 			: this(DeviceFeatureLevel.SM5 | DeviceFeatureLevel.SM4_1 | DeviceFeatureLevel.SM4 | DeviceFeatureLevel.SM2_a_b)
 		{
+		}
+
+		/// <summary>
+		/// Initializes the <see cref="GorgonGraphics"/> class.
+		/// </summary>
+		static GorgonGraphics()
+		{
+			Win32API.DwmIsCompositionEnabled(out _isDWMEnabled);
+			if (!_isDWMEnabled)
+				_dontEnableDWM = true;
 		}
 		#endregion
 

@@ -132,7 +132,11 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Region.GetHashCode() ^ MaximumZ.GetHashCode() ^ MinimumZ.GetHashCode();
+			unchecked
+			{
+				return 281.GenerateHash(Region.X).GenerateHash(Region.Y).GenerateHash(Region.Width).GenerateHash(Region.Height).
+						GenerateHash(MinimumZ).GenerateHash(MaximumZ);
+			}
 		}
 
 		/// <summary>
@@ -212,7 +216,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonViewport other)
 		{
-			return ((other.Region.X == Region.X) && (other.Region.Y == Region.Y) && (other.Region.Width == Region.Width) && (other.Region.Height == Region.Height) && (other.MinimumZ == MinimumZ) && (other.MaximumZ == MaximumZ));
+			return GorgonViewport.Equals(ref this, ref other);
 		}
 		#endregion
 	}
