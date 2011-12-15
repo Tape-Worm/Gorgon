@@ -43,15 +43,25 @@ namespace GorgonLibrary.Graphics
 	/// by passing the type of the input object to the <see cref="GorgonLibrary.Graphics.GorgonInputLayout.GetLayoutFromType">GetLayoutFromType</see> method.
 	/// </remarks>
 	public class GorgonInputLayout
-		: GorgonBaseNamedObjectList<GorgonInputElement>, INotifier
+		: GorgonBaseNamedObjectList<GorgonInputElement>, INotifier, IDisposable
 	{
 		#region Variables.
+		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		private IDictionary<int, int> _slotSizes = null;		// List of slot sizes.
 		private bool _isUpdated = false;						// Flag to indicate that the input was updated.
 		private Type[] _allowedTypes = null;					// Types allowed when pulling information from an object.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the Direct3D input layout.
+		/// </summary>
+		internal D3D.InputLayout D3DLayout
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to set or return whether the list has been updated.
 		/// </summary>
@@ -69,6 +79,15 @@ namespace GorgonLibrary.Graphics
 				if (value)
 					UpdateVertexSize();
 			}
+		}
+
+		/// <summary>
+		/// Property to return the shader that is bound with this input layout.
+		/// </summary>
+		public GorgonShader Shader
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -146,6 +165,29 @@ namespace GorgonLibrary.Graphics
 
 			foreach (var slotGroup in slotSizing)
 				_slotSizes[slotGroup.Key] = slotGroup.Sum(item => item.Size);
+		}
+
+		/// <summary>
+		/// Function to convert this input layout into a Direct3D input layout.
+		/// </summary>
+		/// <param name="device">Direct 3D device object.</param>
+		/// <returns>The Direct 3D 11 input layout.</returns>
+		internal D3D.InputLayout Convert(D3D.Device device)
+		{
+			if (HasChanged)
+			{
+				if (D3DLayout != null)
+					D3DLayout.Dispose();
+
+				D3D.InputElement[] elements = new D3D.InputElement[Count];
+
+				for (int i = 0; i < Count; i++)
+					elements[i] = this[i].Convert();
+
+				D3DLayout = new D3D.InputLayout(device, Shader.D3DByteCode, elements);
+			}
+
+			return D3DLayout;
 		}
 
 		/// <summary>
@@ -381,8 +423,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
 		/// </summary>
-		public GorgonInputLayout()			
+		/// <param name="shader">Vertex shader to bind the layout with.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public GorgonInputLayout(GorgonShader shader)			
 		{
+			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
+
+			Shader = shader;
+
 			_allowedTypes = new [] {		
 									typeof(SByte),
 									typeof(byte),
@@ -403,10 +451,42 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
 		/// </summary>
 		/// <param name="type">The type to parse for the layout.</param>
-		public GorgonInputLayout(Type type)
-			: this()
+		/// <param name="shader">Vertex shader to bind the layout with.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public GorgonInputLayout(Type type, GorgonShader shader)
+			: this(shader)
 		{
 			GetLayoutFromType(type);
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (D3DLayout != null)
+						D3DLayout.Dispose();					
+				}
+
+				D3DLayout = null;
+				_disposed = true;
+			}
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}
