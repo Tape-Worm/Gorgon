@@ -43,13 +43,14 @@ namespace GorgonLibrary.Graphics
 	/// by passing the type of the input object to the <see cref="GorgonLibrary.Graphics.GorgonInputLayout.GetLayoutFromType">GetLayoutFromType</see> method.
 	/// </remarks>
 	public class GorgonInputLayout
-		: GorgonBaseNamedObjectList<GorgonInputElement>, INotifier, IDisposable
+		: GorgonBaseNamedObjectList<GorgonInputElement>, INotifier, IDisposable, INamedObject 
 	{
 		#region Variables.
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		private IDictionary<int, int> _slotSizes = null;		// List of slot sizes.
 		private bool _isUpdated = false;						// Flag to indicate that the input was updated.
 		private Type[] _allowedTypes = null;					// Types allowed when pulling information from an object.
+		private string _name = string.Empty;					// Name of the object.
 		#endregion
 
 		#region Properties.
@@ -57,6 +58,15 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the Direct3D input layout.
 		/// </summary>
 		internal D3D.InputLayout D3DLayout
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the graphics interface that created this object.
+		/// </summary>
+		public GorgonGraphics Graphics
 		{
 			get;
 			private set;
@@ -185,6 +195,8 @@ namespace GorgonLibrary.Graphics
 					elements[i] = this[i].Convert();
 
 				D3DLayout = new D3D.InputLayout(device, Shader.D3DByteCode, elements);
+				D3DLayout.DebugName = "Gorgon Input Layout '" + Name + "'";
+				HasChanged = false;
 			}
 
 			return D3DLayout;
@@ -423,12 +435,15 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
 		/// </summary>
+		/// <param name="graphics">Graphics interface that created this object.</param>
+		/// <param name="name">Name of the object.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public GorgonInputLayout(GorgonShader shader)			
+		internal GorgonInputLayout(GorgonGraphics graphics, string name, GorgonShader shader)			
 		{
-			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
+			GorgonDebug.AssertParamString(name, "name");
 
+			_name = name;
+			Graphics = graphics;
 			Shader = shader;
 
 			_allowedTypes = new [] {		
@@ -446,18 +461,6 @@ namespace GorgonLibrary.Graphics
 									typeof(Vector4D)
 								};
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
-		/// </summary>
-		/// <param name="type">The type to parse for the layout.</param>
-		/// <param name="shader">Vertex shader to bind the layout with.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public GorgonInputLayout(Type type, GorgonShader shader)
-			: this(shader)
-		{
-			GetLayoutFromType(type);
-		}
 		#endregion
 
 		#region IDisposable Members
@@ -472,7 +475,9 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					if (D3DLayout != null)
-						D3DLayout.Dispose();					
+						D3DLayout.Dispose();
+
+					Graphics.RemoveTrackedObject(this);
 				}
 
 				D3DLayout = null;
@@ -487,6 +492,19 @@ namespace GorgonLibrary.Graphics
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+		#endregion
+
+		#region INamedObject Members
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		public string Name
+		{
+			get 
+			{
+				return _name;
+			}
 		}
 		#endregion
 	}
