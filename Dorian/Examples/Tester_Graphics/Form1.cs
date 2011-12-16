@@ -1,4 +1,4 @@
-﻿#define MULTIMON
+﻿//#define MULTIMON
 
 using System;
 using System.Collections.Generic;
@@ -120,12 +120,12 @@ namespace Tester_Graphics
 
 			if (e.KeyCode == Keys.D1)
 			{
-				_graphics.BlendingState.States = blend1;
+				_graphics.Blending.States = blend1;
 			}
 
 			if (e.KeyCode == Keys.D2)
 			{
-				_graphics.BlendingState.States = blend2;
+				_graphics.Blending.States = blend2;
 			}
 
 			if (e.KeyCode == Keys.F1) //((e.Alt) && (e.KeyCode == Keys.Enter))
@@ -210,7 +210,7 @@ namespace Tester_Graphics
 
 				_multiSample.IsMultisamplingEnabled = true;
 				//_multiSample.CullingMode =  GorgonCullingMode.None;
-				_graphics.RasterizerState.States = _multiSample;
+				_graphics.Rasterizer.States = _multiSample;
 				blend1.RenderTarget0.IsBlendingEnabled = true;
 				blend1.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
 				blend1.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
@@ -220,7 +220,7 @@ namespace Tester_Graphics
 				blend2 = blend1;
 				blend2.RenderTarget0.DestinationBlend = BlendType.One;
 				//blend2.RenderTarget0.WriteMask = ColorWriteMaskFlags.Blue | ColorWriteMaskFlags.Green | ColorWriteMaskFlags.Alpha;
-				_graphics.BlendingState.States = blend1;
+				_graphics.Blending.States = blend1;
 
 				//GorgonGraphics.IsDWMCompositionEnabled = false;
 				//this.TopMost = true;
@@ -237,7 +237,7 @@ namespace Tester_Graphics
 				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(mode1.Format, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt});
-				_graphics.SetViewport(_swapChain.Viewport);
+				_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
 				//_graphics.Viewports.Add(new GorgonViewport(640, 400, 640, 400));
 #if MULTIMON
 				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;

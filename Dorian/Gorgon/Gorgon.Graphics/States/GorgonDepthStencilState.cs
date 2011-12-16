@@ -451,7 +451,7 @@ namespace GorgonLibrary.Graphics
 			desc.BackFace.PassOperation = (D3D.StencilOperation)States.StencilBackFace.PassOperation;
 
 			D3D.DepthStencilState state = new D3D.DepthStencilState(Graphics.VideoDevice.D3DDevice, desc);
-			state.DebugName = "Depth/stencil state #" + StateCacheCount.ToString();
+			state.DebugName = "Gorgon Depth/stencil state #" + StateCacheCount.ToString();
 
 			return state;
 		}

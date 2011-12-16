@@ -7,7 +7,7 @@
  cbuffer _transformPerFrame : register(b1)
  {
 	matrix _world;
-	float _alpha = 1.0f;
+	float4 _alpha = float4(1.0f, 1.0f, 1.0f, 1.0f);
  }
 
  Texture2D theTexture : register(t0);
@@ -46,10 +46,10 @@
  {	
 	float4 color = theTexture.Sample(sample, input.uv) * input.col;
 
-	color.a *= _alpha;
-	return color;// * input.col;
-	
-	//return tex2D(sample, input.uv) + input.col;
-	//input.col.a = _alpha;
-	//return input.col;
+	if (color.b > 1.00f)
+		color.a *= _alpha.a;
+	else
+		color *= _alpha;
+
+	return color;
  }

@@ -288,9 +288,57 @@ namespace GorgonLibrary.Graphics
 			desc.IsScissorEnabled = States.IsScissorTestingEnabled;
 
 			D3D.RasterizerState state = new D3D.RasterizerState(Graphics.VideoDevice.D3DDevice, desc);
-			state.DebugName = "Rasterizer State #" + StateCacheCount.ToString();
+			state.DebugName = "Gorgon Rasterizer State #" + StateCacheCount.ToString();
 
 			return state;
+		}
+
+		/// <summary>
+		/// Function to set a list of viewports.
+		/// </summary>
+		/// <remarks>This will clip/scale the output to the the constraints in the viewport(s).
+		/// <para>Viewports must have a width and height greater than 0.</para>
+		/// <para>Which viewport to use is determined by the SV_ViewportArrayIndex semantic output by a geometry shader; if a geometry shader does not specify the semantic, then the first viewport in the list will be used.</para>
+		/// </remarks>
+		public void SetViewports(IEnumerable<GorgonViewport> viewPorts)
+		{
+			if (viewPorts == null)
+			{
+				Graphics.Context.Rasterizer.SetViewport(0, 0, 1.0f, 1.0f, 0, 1.0f);
+				return;
+			}
+
+			var d3dViews = (from viewPort in viewPorts
+							where viewPort.IsEnabled
+							select viewPort.Convert()).ToArray();
+
+			Graphics.Context.Rasterizer.SetViewports(d3dViews);
+		}
+
+
+		/// <summary>
+		/// Function to set a single viewport.
+		/// </summary>
+		/// <param name="x">The left corner of the viewport.</param>
+		/// <param name="y">The top corner of the viewport.</param>
+		/// <param name="width">The width of the viewport.</param>
+		/// <param name="height">The height of the viewport.</param>
+		/// <param name="minimumZ">The minimum depth of the viewport.</param>
+		/// <param name="maximumZ">The maximum depth of the viewport.</param>
+		/// <remarks>Viewports must have a width and height greater than 0 and the depths should be 0.0f and 1.0f.</remarks>
+		public void SetViewport(float x, float y, float width, float height, float minimumZ, float maximumZ)
+		{
+			Graphics.Context.Rasterizer.SetViewport(x, y, width, height, minimumZ, maximumZ);
+		}
+
+		/// <summary>
+		/// Function to set a single viewport.
+		/// </summary>
+		/// <param name="viewPort">Viewport to set.</param>
+		/// <remarks>Viewports must have a width and height greater than 0.</remarks>
+		public void SetViewport(GorgonViewport viewPort)
+		{
+			Graphics.Context.Rasterizer.SetViewport(viewPort.Region.X, viewPort.Region.Y, viewPort.Region.Width, viewPort.Region.Height, viewPort.MinimumZ, viewPort.MaximumZ);
 		}
 		#endregion
 

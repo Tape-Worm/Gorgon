@@ -671,7 +671,7 @@ namespace GorgonLibrary.Graphics
 			desc.RenderTarget[7] = States.RenderTarget7.Convert();
 
 			D3D.BlendState state = new D3D.BlendState(Graphics.VideoDevice.D3DDevice, desc);
-			state.DebugName = "Blend State #" + StateCacheCount.ToString();
+			state.DebugName = "Gorgon Blend State #" + StateCacheCount.ToString();
 
 			return state;
 		}

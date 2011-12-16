@@ -165,9 +165,6 @@ namespace GorgonLibrary.Graphics
 		private GorgonVideoDevice _videoDevice = null;					// Video device to use.
 		#endregion
 
-		#region Constants.
-		#endregion
-
 		#region Events.
 		/// <summary>
 		/// Event that is fired before a video device is changed.
@@ -257,27 +254,45 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the current rasterizer render states.
+		/// Property to set or return the input bindings.
 		/// </summary>
-		public GorgonRasterizerRenderState RasterizerState
+		public GorgonInputBindings InputBindings
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current blending render states.
+		/// Property to return the current rasterizer states.
 		/// </summary>
-		public GorgonBlendRenderState BlendingState
+		public GorgonRasterizerRenderState Rasterizer
+		{
+			get;
+			private set;
+		}		
+
+		/// <summary>
+		/// Property to return the current blending states.
+		/// </summary>
+		public GorgonBlendRenderState Blending
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current depth/stencil render states.
+		/// Property to return the current depth/stencil states.
 		/// </summary>
-		public GorgonDepthStencilRenderState DepthStencilState
+		public GorgonDepthStencilRenderState DepthStencil
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the current shader states.
+		/// </summary>
+		public GorgonShaderState Shaders
 		{
 			get;
 			private set;
@@ -413,12 +428,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void DestroyStates()
 		{
-			if (RasterizerState != null)
-				((IDisposable)RasterizerState).Dispose();
-			if (DepthStencilState != null)
-				((IDisposable)DepthStencilState).Dispose();
-			if (BlendingState != null)
-				((IDisposable)BlendingState).Dispose();
+			if (Rasterizer != null)
+				((IDisposable)Rasterizer).Dispose();
+			if (DepthStencil != null)
+				((IDisposable)DepthStencil).Dispose();
+			if (Blending != null)
+				((IDisposable)Blending).Dispose();
 		}
 
 		/// <summary>
@@ -426,14 +441,17 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateDefaultStates()
 		{
-			RasterizerState = new GorgonRasterizerRenderState(this);
-			RasterizerState.States = GorgonRasterizerStates.DefaultStates;
+			InputBindings = new GorgonInputBindings(this);
+			Shaders = new GorgonShaderState(this);
 
-			DepthStencilState = new GorgonDepthStencilRenderState(this);
-			DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
+			Rasterizer = new GorgonRasterizerRenderState(this);
+			Rasterizer.States = GorgonRasterizerStates.DefaultStates;
 
-			BlendingState = new GorgonBlendRenderState(this);
-			BlendingState.States = GorgonBlendStates.DefaultStates;
+			DepthStencil = new GorgonDepthStencilRenderState(this);
+			DepthStencil.States = GorgonDepthStencilStates.DefaultStates;
+
+			Blending = new GorgonBlendRenderState(this);
+			Blending.States = GorgonBlendStates.DefaultStates;
 		}
 
 		/// <summary>
@@ -522,6 +540,128 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create an input layout object.
+		/// </summary>
+		/// <param name="name">Name of the input layout.</param>
+		/// <param name="shader">The shader that holds the input layout signature.</param>
+		/// <returns>The input layout object to create.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when then name parameter is an empty string.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
+		/// </exception>
+		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
+		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
+		/// </remarks>
+		public GorgonInputLayout CreateInputLayout(string name, GorgonShader shader)
+		{
+			GorgonInputLayout layout = null;
+
+			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
+			layout = new GorgonInputLayout(this, name, shader);
+
+			TrackedObjects.Add(layout);
+			return layout;
+		}
+
+		/// <summary>
+		/// Function to create an input layout object from a predefined type.
+		/// </summary>
+		/// <param name="name">Name of the input layout.</param>
+		/// <param name="type">Type to evaluate.</param>
+		/// <param name="shader">The shader that holds the input layout signature.</param>
+		/// <returns>The input layout object to create.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when then <paramref name="name"/> parameter is an empty string.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="type"/> parameter is NULL.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the name parameter is NULL.</para>
+		/// </exception>
+		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
+		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
+		/// </remarks>
+		public GorgonInputLayout CreateInputLayout(string name, Type type, GorgonShader shader)
+		{
+			GorgonInputLayout layout = null;
+
+			GorgonDebug.AssertNull<Type>(type, "type");
+			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
+
+			layout = new GorgonInputLayout(this, name, shader);
+			layout.GetLayoutFromType(type);
+
+			TrackedObjects.Add(layout);
+
+			return layout;
+		}
+
+		/// <summary>
+		/// Function to create a constant buffer.
+		/// </summary>
+		/// <typeparam name="T">Type of data to pass to the constant buffer.</typeparam>
+		/// <param name="value">Value to initialize the buffer with.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <returns>A new constant buffer.</returns>
+		public GorgonConstantBuffer CreateConstantBuffer<T>(T value, bool allowCPUWrite)
+			where T : struct
+		{
+			GorgonConstantBuffer buffer = new GorgonConstantBuffer(this, allowCPUWrite);
+
+			buffer.Initialize<T>(value);
+
+			return buffer;
+		}
+
+		/// <summary>
+		/// Function to create a vertex shader.
+		/// </summary>
+		/// <param name="name">Name of the vertex shader.</param>
+		/// <param name="entryPoint">Entry point for the shader.</param>
+		/// <param name="sourceCode">Source code for the shader.</param>
+		/// <returns>A new vertex shader.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
+		public GorgonVertexShader CreateVertexShader(string name, string entryPoint, string sourceCode)
+		{
+			GorgonVertexShader shader = null;
+
+			GorgonDebug.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(entryPoint, "entryPoint");
+
+			shader = new GorgonVertexShader(this, name, entryPoint);
+			shader.SourceCode = sourceCode;
+			shader.Compile();
+			TrackedObjects.Add(shader);
+
+			return shader;
+		}
+
+		/// <summary>
+		/// Function to create a pixel shader.
+		/// </summary>
+		/// <param name="name">Name of the pixel shader.</param>
+		/// <param name="entryPoint">Entry point for the shader.</param>
+		/// <param name="sourceCode">Source code for the shader.</param>
+		/// <returns>A new pixel shader.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
+		public GorgonPixelShader CreatePixelShader(string name, string entryPoint, string sourceCode)
+		{
+			GorgonPixelShader shader = null;
+
+			GorgonDebug.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(entryPoint, "entryPoint");
+
+			shader = new GorgonPixelShader(this, name, entryPoint);
+			shader.SourceCode = sourceCode;
+			shader.Compile();
+			TrackedObjects.Add(shader);
+
+			return shader;
+		}
+
+		/// <summary>
 		/// Function to create a swap chain.
 		/// </summary>
 		/// <param name="name">Name of the swap chain.</param>
@@ -595,54 +735,6 @@ namespace GorgonLibrary.Graphics
 			depthBuffer.UpdateSettings();
 
 			return depthBuffer;
-		}
-
-		/// <summary>
-		/// Function to set a list of viewports.
-		/// </summary>
-		/// <remarks>This will clip/scale the output to the the constraints in the viewport(s).
-		/// <para>Viewports must have a width and height greater than 0.</para>
-		/// <para>Which viewport to use is determined by the SV_ViewportArrayIndex semantic output by a geometry shader; if a geometry shader does not specify the semantic, then the first viewport in the list will be used.</para>
-		/// </remarks>
-		public void SetViewports(IEnumerable<GorgonViewport> viewPorts)
-		{
-			if (viewPorts == null)
-			{
-				Context.Rasterizer.SetViewport(0, 0, 1.0f, 1.0f, 0, 1.0f);
-				return;
-			}
-
-			var d3dViews = (from viewPort in viewPorts
-						   where viewPort.IsEnabled
-						   select viewPort.Convert()).ToArray();
-
-			Context.Rasterizer.SetViewports(d3dViews);
-		}
-
-
-		/// <summary>
-		/// Function to set a single viewport.
-		/// </summary>
-		/// <param name="x">The left corner of the viewport.</param>
-		/// <param name="y">The top corner of the viewport.</param>
-		/// <param name="width">The width of the viewport.</param>
-		/// <param name="height">The height of the viewport.</param>
-		/// <param name="minimumZ">The minimum depth of the viewport.</param>
-		/// <param name="maximumZ">The maximum depth of the viewport.</param>
-		/// <remarks>Viewports must have a width and height greater than 0 and the depths should be 0.0f and 1.0f.</remarks>
-		public void SetViewport(float x, float y, float width, float height, float minimumZ, float maximumZ)
-		{
-			Context.Rasterizer.SetViewport(x, y, width, height, minimumZ, maximumZ);
-		}
-
-		/// <summary>
-		/// Function to set a single viewport.
-		/// </summary>
-		/// <param name="viewPort">Viewport to set.</param>
-		/// <remarks>Viewports must have a width and height greater than 0.</remarks>
-		public void SetViewport(GorgonViewport viewPort)
-		{
-			Context.Rasterizer.SetViewport(viewPort.Region.X, viewPort.Region.Y, viewPort.Region.Width, viewPort.Region.Height, viewPort.MinimumZ, viewPort.MaximumZ);
 		}
 
 		/// <summary>

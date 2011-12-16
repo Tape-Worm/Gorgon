@@ -35,6 +35,9 @@
     <ApplicationIcon>GorIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
+      <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\Dependencies\SharpDX\SharpDX.dll</HintPath>
     </Reference>
@@ -68,12 +71,18 @@
     <Compile Include="DeviceInfo\GorgonVideoModeList.cs" />
     <Compile Include="DeviceInfo\GorgonVideoOutput.cs" />
     <Compile Include="DeviceInfo\GorgonVideoOutputCollection.cs" />
+    <Compile Include="Geometry\GorgonInputBindings.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />
-    <Compile Include="Geometry\GorgonInputCollection.cs" />
+    <Compile Include="Geometry\GorgonInputLayout.cs" />
     <Compile Include="Geometry\InputElementAttribute.cs" />
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
+    <Compile Include="Buffers\GorgonConstantBuffer.cs" />
+    <Compile Include="Shaders\GorgonPixelShader.cs" />
+    <Compile Include="Shaders\GorgonShader.cs" />
+    <Compile Include="Shaders\GorgonShaderState.cs" />
+    <Compile Include="Shaders\GorgonVertexShader.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonRasterizerState.cs" />
