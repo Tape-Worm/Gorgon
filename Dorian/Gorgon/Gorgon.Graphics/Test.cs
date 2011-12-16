@@ -305,7 +305,7 @@ namespace GorgonLibrary.Graphics
 			_graphics.InputBindings.Layout = layout;
 			_graphics.Shaders.VertexShader = _vs;
 			_graphics.Shaders.PixelShader = _ps;
-
+						
 			_vs.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
 			_ps.ConstantBuffers[1] = _changeBuffer;
 		}

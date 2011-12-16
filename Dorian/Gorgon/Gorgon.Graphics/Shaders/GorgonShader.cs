@@ -99,6 +99,7 @@ namespace GorgonLibrary.Graphics
 		/// A list of constant buffers.
 		/// </summary>
 		public class ShaderConstantBuffers
+			: IEnumerable<GorgonConstantBuffer>
 		{
 			#region Variables.
 			private GorgonConstantBuffer[] _buffers = null;
@@ -168,6 +169,33 @@ namespace GorgonLibrary.Graphics
 			{
 				_buffers = new GorgonConstantBuffer[14];
 				_shader = shader;
+			}
+			#endregion
+
+			#region IEnumerable<GorgonConstantBuffer> Members
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An object that can be used to iterate through the collection.
+			/// </returns>
+			public IEnumerator<GorgonConstantBuffer> GetEnumerator()
+			{
+				foreach (var item in _buffers)
+					yield return item;
+			}
+			#endregion
+
+			#region IEnumerable Members
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+			/// </returns>
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
 			}
 			#endregion
 		}
