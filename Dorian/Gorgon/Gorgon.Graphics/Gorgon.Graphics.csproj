@@ -39,19 +39,19 @@
       <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\Dependencies\SharpDX\SharpDX.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.0.2\lib\net20\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.D3DCompiler">
-      <HintPath>..\..\Dependencies\SharpDX\SharpDX.D3DCompiler.dll</HintPath>
+    <Reference Include="SharpDX.D3DCompiler, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.D3DCompiler.2.0.2\lib\net20\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Diagnostics, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\Dependencies\SharpDX\SharpDX.Diagnostics.dll</HintPath>
+      <HintPath>..\packages\SharpDX.Diagnostics.2.0.2\lib\net20\SharpDX.Diagnostics.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <HintPath>..\..\Dependencies\SharpDX\SharpDX.Direct3D11.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D11, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D11.2.0.2\lib\net20\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DXGI">
-      <HintPath>..\..\Dependencies\SharpDX\SharpDX.DXGI.dll</HintPath>
+    <Reference Include="SharpDX.DXGI, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.2.0.2\lib\net20\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
+    <None Include="packages.config" />
     <None Include="sharpdx_direct3d11_effects_x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
