@@ -94,113 +94,6 @@ namespace GorgonLibrary.Graphics
 	public abstract class GorgonShader
 		: GorgonNamedObject, INotifier, IDisposable
 	{
-		#region Classes.
-		/// <summary>
-		/// A list of constant buffers.
-		/// </summary>
-		public class ShaderConstantBuffers
-			: IEnumerable<GorgonConstantBuffer>
-		{
-			#region Variables.
-			private GorgonConstantBuffer[] _buffers = null;
-			private GorgonShader _shader = null;
-			#endregion
-
-			#region Properties.
-			/// <summary>
-			/// Property to return the number of buffers.
-			/// </summary>
-			public int Count
-			{
-				get
-				{
-					return _buffers.Length;
-				}
-			}
-
-			/// <summary>
-			/// Property to set or return a constant buffer at the specified index.
-			/// </summary>
-			public GorgonConstantBuffer this[int index]
-			{
-				get
-				{
-					return _buffers[index];
-				}
-				set
-				{
-					_buffers[index] = value;
-					_shader.ApplyConstantBuffer(index, _buffers[index]);	
-				}
-			}
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Function to set a range of constant buffers at once.
-			/// </summary>
-			/// <param name="slot">Starting slot for the buffer.</param>
-			/// <param name="buffers">Buffers to set.</param>
-			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of constant buffer slots.
-			/// <para>-or-</para>
-			/// <para>Thrown when the <paramref name="buffers"/> count + the slot is greater than or equal to the number of available constant buffer slots.</para>
-			/// </exception>
-			public void SetRange(int slot, IEnumerable<GorgonConstantBuffer> buffers)
-			{
-				GorgonDebug.AssertNull<IEnumerable<GorgonConstantBuffer>>(buffers, "buffers");
-#if DEBUG
-				if ((slot < 0) || (slot >= _buffers.Length) || ((slot + buffers.Count()) >= _buffers.Length))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + _buffers.Length.ToString() + " slots occupied.");
-#endif
-
-				for (int i = 0; i < buffers.Count(); i++)
-					_buffers[i + slot] = buffers.ElementAt(i);
-				
-				_shader.ApplyConstantBuffers(slot, buffers);
-			}
-			#endregion
-
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="ShaderConstantBuffers"/> class.
-			/// </summary>
-			/// <param name="shader">Shader that owns these buffers.</param>
-			internal ShaderConstantBuffers(GorgonShader shader)
-			{
-				_buffers = new GorgonConstantBuffer[14];
-				_shader = shader;
-			}
-			#endregion
-
-			#region IEnumerable<GorgonConstantBuffer> Members
-			/// <summary>
-			/// Returns an enumerator that iterates through a collection.
-			/// </summary>
-			/// <returns>
-			/// An object that can be used to iterate through the collection.
-			/// </returns>
-			public IEnumerator<GorgonConstantBuffer> GetEnumerator()
-			{
-				foreach (var item in _buffers)
-					yield return item;
-			}
-			#endregion
-
-			#region IEnumerable Members
-			/// <summary>
-			/// Returns an enumerator that iterates through a collection.
-			/// </summary>
-			/// <returns>
-			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-			/// </returns>
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-			{
-				return GetEnumerator();
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Variables.
 		private bool _disposed = false;								// Flag to indicate that the object was disposed.
 		private string _source = null;								// Shader source code.
@@ -235,15 +128,6 @@ namespace GorgonLibrary.Graphics
 					HasChanged = true;
 				}
 			}
-		}
-
-		/// <summary>
-		/// Property to return the list of constant buffers for this shader.
-		/// </summary>
-		public ShaderConstantBuffers ConstantBuffers
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
@@ -389,33 +273,6 @@ namespace GorgonLibrary.Graphics
 		protected abstract void CompileImpl(Shaders.ShaderBytecode byteCode);
 
 		/// <summary>
-		/// Function to assign this shader and its states to the device.
-		/// </summary>
-		protected abstract void AssignImpl();
-
-		/// <summary>
-		/// Function to apply a single constant buffer.
-		/// </summary>
-		/// <param name="slot">Slot to index.</param>
-		/// <param name="buffer">Buffer to apply.</param>
-		protected abstract void ApplyConstantBuffer(int slot, GorgonConstantBuffer buffer);
-
-		/// <summary>
-		/// Function to apply multiple constant buffers.
-		/// </summary>
-		/// <param name="slot">Slot to index.</param>
-		/// <param name="buffers">Buffers to apply.</param>
-		protected abstract void ApplyConstantBuffers(int slot, IEnumerable<GorgonConstantBuffer> buffers);
-
-		/// <summary>
-		/// Function to assign this shader and its states to the device.
-		/// </summary>
-		internal void Assign()
-		{
-			AssignImpl();
-		}
-
-		/// <summary>
 		/// Function to compile the shader.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">Thrown when the shader is not supported by the current supported feature level for the video hardware.</exception>
@@ -467,9 +324,6 @@ namespace GorgonLibrary.Graphics
 #else
 			IsDebug = false;
 #endif
-
-			// Create the constant buffers for this shader.
-			ConstantBuffers = new ShaderConstantBuffers(this);
 
 			ShaderType = type;
 			EntryPoint = entryPoint;

@@ -77,8 +77,8 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					if (Graphics.Shaders.VertexShader == this)
-						Graphics.Shaders.VertexShader = null;
+					if (Graphics.VertexShader.Current == this)
+						Graphics.VertexShader.Current = null;
 					
 					if (D3DShader != null)
 						D3DShader.Dispose();
@@ -89,40 +89,6 @@ namespace GorgonLibrary.Graphics
 			}
 
 			base.Dispose(disposing);
-		}
-
-		/// <summary>
-		/// Function to assign this shader and its states to the device.
-		/// </summary>
-		protected override void AssignImpl()
-		{
-			Graphics.Context.VertexShader.Set(D3DShader);
-		}
-
-		/// <summary>
-		/// Function to apply a single constant buffer.
-		/// </summary>
-		/// <param name="slot">Slot to index.</param>
-		/// <param name="buffer">Buffer to apply.</param>
-		protected override void ApplyConstantBuffer(int slot, GorgonConstantBuffer buffer)
-		{
-			if (buffer != null)
-				Graphics.Context.VertexShader.SetConstantBuffer(slot, buffer.D3DBuffer);
-			else
-				Graphics.Context.VertexShader.SetConstantBuffer(slot, null);
-		}
-
-		/// <summary>
-		/// Function to apply multiple constant buffers.
-		/// </summary>
-		/// <param name="slot">Slot to index.</param>
-		/// <param name="buffers">Buffers to apply.</param>
-		protected override void ApplyConstantBuffers(int slot, IEnumerable<GorgonConstantBuffer> buffers)
-		{
-			var d3dbuffers = (from buffer in buffers
-							 select (buffer == null ? null : buffer.D3DBuffer)).ToArray();
-
-			Graphics.Context.VertexShader.SetConstantBuffers(slot, d3dbuffers);
 		}
 		#endregion
 

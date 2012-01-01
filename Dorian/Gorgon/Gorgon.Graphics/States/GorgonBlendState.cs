@@ -575,8 +575,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 	}
 	#endregion
-
-
+	
 	/// <summary>
 	/// Blending state.
 	/// </summary>

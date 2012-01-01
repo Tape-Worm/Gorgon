@@ -65,8 +65,8 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					// Disassociate any shaders after we've destroyed them.
-					if (Graphics.Shaders.PixelShader == this)
-						Graphics.Shaders.PixelShader = null;
+					if (Graphics.PixelShader.Current == this)
+						Graphics.PixelShader.Current = null;
 
 					if (D3DShader != null)
 						D3DShader.Dispose();
@@ -89,40 +89,6 @@ namespace GorgonLibrary.Graphics
 
 			D3DShader = new D3D.PixelShader(Graphics.VideoDevice.D3DDevice, byteCode, null);
 			D3DShader.DebugName = "Gorgon Pixel Shader '" + Name + "'";			
-		}
-
-		/// <summary>
-		/// Function to assign this shader and its states to the device.
-		/// </summary>
-		protected override void AssignImpl()
-		{
-			Graphics.Context.PixelShader.Set(D3DShader);
-		}
-
-		/// <summary>
-		/// Function to apply a single constant buffer.
-		/// </summary>
-		/// <param name="slot">Slot to index.</param>
-		/// <param name="buffer">Buffer to apply.</param>
-		protected override void ApplyConstantBuffer(int slot, GorgonConstantBuffer buffer)
-		{
-			if (buffer != null)
-				Graphics.Context.PixelShader.SetConstantBuffer(slot, buffer.D3DBuffer);
-			else
-				Graphics.Context.PixelShader.SetConstantBuffer(slot, null);
-		}
-
-		/// <summary>
-		/// Function to apply multiple constant buffers.
-		/// </summary>
-		/// <param name="slot">Slot to index.</param>
-		/// <param name="buffers">Buffers to apply.</param>
-		protected override void ApplyConstantBuffers(int slot, IEnumerable<GorgonConstantBuffer> buffers)
-		{
-			var d3dbuffers = (from buffer in buffers
-							  select (buffer == null ? null : buffer.D3DBuffer)).ToArray();
-
-			Graphics.Context.PixelShader.SetConstantBuffers(slot, d3dbuffers);
 		}
 		#endregion
 
