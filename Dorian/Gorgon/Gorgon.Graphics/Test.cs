@@ -89,7 +89,7 @@ namespace GorgonLibrary.Graphics
 		private float _passes = 8.0f;
 		private D3D.Texture2D _texture = null;		
 		private D3D.ShaderResourceView _textureView = null;
-		private D3D.SamplerState _sampler = null;
+		//private D3D.SamplerState _sampler = null;
 		//private D3D.VertexShader _vs = null;
 		//private D3D.PixelShader _ps = null;
 		//private D3D.Buffer _changeBuffer = null;
@@ -101,7 +101,7 @@ namespace GorgonLibrary.Graphics
 		//private SharpDX.DataStream _changeStream = null;
 		Random _rnd = new Random();
 		private GorgonVertexShader _vs = null;
-		private GorgonPixelShader _ps = null;
+		private GorgonPixelShader _ps = null;		
 			
 		
 		struct vertex
@@ -143,8 +143,8 @@ namespace GorgonLibrary.Graphics
 				//_layout.Dispose();
 			if (_texture != null)
 			    _texture.Dispose();
-			if (_sampler != null)
-				_sampler.Dispose();
+			//if (_sampler != null)
+				//_sampler.Dispose();
 			if (_vertices != null)
 				_vertices.Dispose();
 			if (_index != null)
@@ -231,20 +231,20 @@ namespace GorgonLibrary.Graphics
 			_textureView = new D3D.ShaderResourceView(_device, _texture);
 			_textureView.DebugName = _swapChain.Name + " Test texture view.";
 
-			D3D.SamplerStateDescription sampleDesc = new D3D.SamplerStateDescription();
-			sampleDesc.AddressU = D3D.TextureAddressMode.Clamp;
-			sampleDesc.AddressV = D3D.TextureAddressMode.Clamp;
-			sampleDesc.AddressW = D3D.TextureAddressMode.Clamp;
-			sampleDesc.BorderColor = System.Drawing.Color.Black;
-			sampleDesc.ComparisonFunction = D3D.Comparison.Never;
-			sampleDesc.Filter = D3D.Filter.MinMagMipLinear;
-			sampleDesc.MaximumAnisotropy = 16;
-			sampleDesc.MaximumLod = 3.402823466e+38f;
-			sampleDesc.MinimumLod = 0;
-			sampleDesc.MipLodBias = 0.0f;
+			//D3D.SamplerStateDescription sampleDesc = new D3D.SamplerStateDescription();
+			//sampleDesc.AddressU = D3D.TextureAddressMode.Clamp;
+			//sampleDesc.AddressV = D3D.TextureAddressMode.Clamp;
+			//sampleDesc.AddressW = D3D.TextureAddressMode.Clamp;
+			//sampleDesc.BorderColor = System.Drawing.Color.Black;
+			//sampleDesc.ComparisonFunction = D3D.Comparison.Never;
+			//sampleDesc.Filter = D3D.Filter.MinMagMipLinear;
+			//sampleDesc.MaximumAnisotropy = 16;
+			//sampleDesc.MaximumLod = 3.402823466e+38f;
+			//sampleDesc.MinimumLod = 0;
+			//sampleDesc.MipLodBias = 0.0f;
 
-			_sampler = new D3D.SamplerState(_device, sampleDesc);
-			_sampler.DebugName = _swapChain + " Test sampler";
+			//_sampler = new D3D.SamplerState(_device, sampleDesc);
+			//_sampler.DebugName = _swapChain + " Test sampler";
 
 			_binding = new D3D.VertexBufferBinding(_vertices, vertexSize, 0);
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
@@ -303,11 +303,13 @@ namespace GorgonLibrary.Graphics
 			_depthStateAlpha.IsDepthWriteEnabled = false;
 
 			_graphics.InputBindings.Layout = layout;
-			_graphics.Shaders.VertexShader = _vs;
-			_graphics.Shaders.PixelShader = _ps;
+			_graphics.VertexShader.Current = _vs;
+			_graphics.PixelShader.Current = _ps;
 						
-			_vs.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
-			_ps.ConstantBuffers[1] = _changeBuffer;
+			_graphics.VertexShader.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
+			_graphics.PixelShader.ConstantBuffers[1] = _changeBuffer;
+
+			_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
 		}
 
 		/// <summary>
@@ -390,7 +392,7 @@ namespace GorgonLibrary.Graphics
 			//_device.ImmediateContext.VertexShader.SetConstantBuffer(1, _changeBuffer);
 			//_device.ImmediateContext.PixelShader.SetConstantBuffer(1, _changeBuffer);
 			_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
-			_device.ImmediateContext.PixelShader.SetSampler(0, _sampler);
+			//_device.ImmediateContext.PixelShader.SetSampler(0, _sampler);
 
 			//SharpDX.DataBox box = _device.ImmediateContext.MapSubresource(_texture, 0, 0, D3D.MapMode.WriteDiscard, D3D.MapFlags.None);
 			//byte[] texelbuffer = new byte[box.Data.Length];

@@ -28,17 +28,114 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Shader state object.
+	/// Shader state interface.
 	/// </summary>
-	public class GorgonShaderState
+	public abstract class GorgonShaderState<T>
+		where T : GorgonShader
 	{
-		#region Variables.
-		private GorgonVertexShader _vertexShader = null;			// Current vertex shader.
-		private GorgonPixelShader _pixelShader = null;				// Current pixel shader.
+		#region Classes.
+		/// <summary>
+		/// A list of constant buffers.
+		/// </summary>
+		public class ShaderConstantBuffers
+		{
+			#region Variables.
+			private GorgonConstantBuffer[] _buffers = null;
+			private D3D.CommonShaderStage _d3dShaderStage = null;
+			private D3D.Buffer[] _d3dBufferArray = null;
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return the number of buffers.
+			/// </summary>
+			public int Count
+			{
+				get
+				{
+					return _buffers.Length;
+				}
+			}
+
+			/// <summary>
+			/// Property to set or return a constant buffer at the specified index.
+			/// </summary>
+			public GorgonConstantBuffer this[int index]
+			{
+				get
+				{
+					return _buffers[index];
+				}
+				set
+				{
+					_buffers[index] = value;
+					if (value != null)
+						_d3dShaderStage.SetConstantBuffer(index, value.D3DBuffer);
+					else
+						_d3dShaderStage.SetConstantBuffer(index, null);
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to set a range of constant buffers at once.
+			/// </summary>
+			/// <param name="slot">Starting slot for the buffer.</param>
+			/// <param name="buffers">Buffers to set.</param>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of constant buffer slots.
+			/// <para>-or-</para>
+			/// <para>Thrown when the <paramref name="buffers"/> count + the slot is greater than or equal to the number of available constant buffer slots.</para>
+			/// </exception>
+			public void SetRange(int slot, IEnumerable<GorgonConstantBuffer> buffers)
+			{
+				int count = 0;
+
+				GorgonDebug.AssertNull<IEnumerable<GorgonConstantBuffer>>(buffers, "buffers");
+#if DEBUG
+				if ((slot < 0) || (slot >= _buffers.Length) || ((slot + buffers.Count()) >= _buffers.Length))
+					throw new ArgumentOutOfRangeException("Cannot have more than " + _buffers.Length.ToString() + " slots occupied.");
+#endif
+
+				count = buffers.Count();
+				for (int i = 0; i < count; i++)
+				{
+					var buffer = buffers.ElementAtOrDefault(i);
+
+					_buffers[i + slot] = buffer;
+					if (buffer != null)
+						_d3dBufferArray[i + slot] = buffer.D3DBuffer;
+					else
+						_d3dBufferArray[i + slot] = null;
+				}
+
+				_d3dShaderStage.SetConstantBuffers(slot, count, _d3dBufferArray);
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="ShaderConstantBuffers"/> class.
+			/// </summary>
+			/// <param name="shaderStage">D3D common shader stage</param>
+			internal ShaderConstantBuffers(D3D.CommonShaderStage shaderStage)
+			{
+				_buffers = new GorgonConstantBuffer[D3D.CommonShaderStage.ConstantBufferApiSlotCount];
+				_d3dShaderStage = shaderStage;
+				_d3dBufferArray = new D3D.Buffer[_buffers.Length];
+			}
+			#endregion
+		}
+		#endregion
+
+		#region Variables.		
+		private T _current = null;			// Current shader.
 		#endregion
 
 		#region Properties.
@@ -52,62 +149,147 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the current vertex shader.
+		/// Property to set or return the current shader.
 		/// </summary>
-		public GorgonVertexShader VertexShader
+		public T Current
 		{
 			get
 			{
-				return _vertexShader;
+				return _current;
 			}
 			set
 			{
-				if (value != _vertexShader)
+				if (_current != value)
 				{
-					_vertexShader = value;
-					if (_vertexShader != null)
-						_vertexShader.Assign();
-					else
-						Graphics.Context.VertexShader.Set(null);
+					_current = value;
+					SetCurrent();
 				}
 			}
 		}
 
 		/// <summary>
-		/// Property to set or return the current pixel shader.
+		/// Property to return the list of constant buffers for the shaders.
 		/// </summary>
-		public GorgonPixelShader PixelShader
+		public ShaderConstantBuffers ConstantBuffers
 		{
-			get
-			{
-				return _pixelShader;
-			}
-			set
-			{
-				if (_pixelShader != value)
-				{
-					_pixelShader = value;
-					if (_pixelShader != null)
-						_pixelShader.Assign();
-					else
-						Graphics.Context.PixelShader.Set(null);
-				}
-			}
+			get;
+			private set;
+		}
+		
+		/// <summary>
+		/// Property to return the sampler states.
+		/// </summary>
+		public GorgonTextureSamplerState Samplers
+		{
+			get;
+			private set;
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to set the current shader.
+		/// </summary>
+		protected abstract void SetCurrent();
 
+		/// <summary>
+		/// Function to clean up.
+		/// </summary>
+		internal void Dispose()
+		{
+			if (Samplers != null)
+				((IDisposable)Samplers).Dispose();
+
+			Samplers = null;
+
+			GC.SuppressFinalize(this);
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonShaderState&lt;T&gt;"/> class.
+		/// </summary>
+		/// <param name="graphics">The graphics interface that owns this object.</param>
+		/// <param name="shaderStage">Direct 3D shader stage.</param>
+		protected GorgonShaderState(GorgonGraphics graphics, D3D.CommonShaderStage shaderStage)
+		{
+			Graphics = graphics;			
+			ConstantBuffers = new ShaderConstantBuffers(shaderStage);
+			Samplers = new GorgonTextureSamplerState(Graphics, shaderStage);
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Pixel shader states.
+	/// </summary>
+	public class GorgonPixelShaderState
+		: GorgonShaderState<GorgonPixelShader>
+	{
+		#region Variables.
+
+		#endregion
+
+		#region Properties.
+
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Property to set or return the current shader.
+		/// </summary>
+		protected override void SetCurrent()
+		{
+			if (Current == null)
+				Graphics.Context.PixelShader.Set(null);
+			else
+				Graphics.Context.PixelShader.Set(Current.D3DShader);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShaderState"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPixelShaderState"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
-		internal GorgonShaderState(GorgonGraphics graphics)
+		internal GorgonPixelShaderState(GorgonGraphics graphics)
+			: base(graphics, graphics.Context.PixelShader)
 		{
-			Graphics = graphics;
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Vertex shader states.
+	/// </summary>
+	public class GorgonVertexShaderState
+		: GorgonShaderState<GorgonVertexShader>
+	{
+		#region Variables.
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Property to set or return the current shader.
+		/// </summary>
+		protected override void SetCurrent()
+		{
+			if (Current == null)
+				Graphics.Context.VertexShader.Set(null);
+			else
+				Graphics.Context.VertexShader.Set(Current.D3DShader);
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVertexShaderState"/> class.
+		/// </summary>
+		/// <param name="graphics">The graphics interface that owns this object.</param>
+		internal GorgonVertexShaderState(GorgonGraphics graphics)
+			: base(graphics, graphics.Context.VertexShader)
+		{
 		}
 		#endregion
 	}

@@ -290,9 +290,18 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the current shader states.
+		/// Property to return the current vertex shader states.
 		/// </summary>
-		public GorgonShaderState Shaders
+		public GorgonVertexShaderState VertexShader
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the current vertex shader states.
+		/// </summary>
+		public GorgonPixelShaderState PixelShader
 		{
 			get;
 			private set;
@@ -428,6 +437,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void DestroyStates()
 		{
+			if (PixelShader != null)
+				PixelShader.Dispose();
+			if (VertexShader != null)
+				VertexShader.Dispose();
+
 			if (Rasterizer != null)
 				((IDisposable)Rasterizer).Dispose();
 			if (DepthStencil != null)
@@ -442,7 +456,8 @@ namespace GorgonLibrary.Graphics
 		private void CreateDefaultStates()
 		{
 			InputBindings = new GorgonInputBindings(this);
-			Shaders = new GorgonShaderState(this);
+			VertexShader = new GorgonVertexShaderState(this);
+			PixelShader = new GorgonPixelShaderState(this);
 
 			Rasterizer = new GorgonRasterizerRenderState(this);
 			Rasterizer.States = GorgonRasterizerStates.DefaultStates;
@@ -610,6 +625,7 @@ namespace GorgonLibrary.Graphics
 
 			buffer.Initialize<T>(value);
 
+			TrackedObjects.Add(buffer);
 			return buffer;
 		}
 
