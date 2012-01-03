@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
@@ -127,10 +129,21 @@ namespace GorgonLibrary.Graphics
 				usage = D3D.ResourceUsage.Dynamic;
 				cpuFlags = D3D.CpuAccessFlags.Write;
 			}
-						
+
+			var members = dataType.GetMembers();
+			var needsMarshal = (from member in members
+									  let memberAttribute = member.GetCustomAttributes(typeof(MarshalAsAttribute), true) as IList<MarshalAsAttribute>
+									  where ((member.MemberType == MemberTypes.Property) || (member.MemberType == MemberTypes.Field)) && ((memberAttribute != null) && (memberAttribute.Count > 0))
+									  select member).Count() > 1;
+
 			_data = new SharpDX.DataStream(ItemSize, true, true);
-			_data.Write<T>(value);
-			_data.Position = 0;
+			if (!needsMarshal)
+			{				
+				_data.Write<T>(value);
+				_data.Position = 0;
+			}
+			else
+				Marshal.StructureToPtr(value, _data.DataPointer, false);
 
 			D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, _data, new D3D.BufferDescription()
 			{

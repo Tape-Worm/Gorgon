@@ -2,6 +2,7 @@
  {
 	float4x4 _proj;
 	float4x4 _view;
+	float _array[3];
  }
 
  cbuffer _transformPerFrame : register(b1)
@@ -36,7 +37,8 @@
 	output.pos = mul(input.pos, _world);
 	output.pos = mul(output.pos, _view);
 	output.pos = mul(output.pos, _proj);
-	output.col = input.col;
+	//output.col = input.col;
+	output.col = float4(_array[0], _array[1], _array[2], 1.0f);
 	output.uv = input.uv;
 	
 	return output;

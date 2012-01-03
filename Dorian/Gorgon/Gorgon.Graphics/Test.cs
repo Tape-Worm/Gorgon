@@ -15,7 +15,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// 
 	/// </summary>
-	[StructLayout(LayoutKind.Explicit, Size = 128, Pack=1)]
+	[StructLayout(LayoutKind.Explicit, Size = 176, Pack=1)]
 	public struct MatrixBuffer
 	{
 		/// <summary>
@@ -28,6 +28,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		[FieldOffset(64)]
 		public SharpDX.Matrix View;
+		/// <summary>
+		///
+		/// </summary>
+		[FieldOffset(128), MarshalAs(UnmanagedType.ByValArray, SizeConst=3)]
+		public Vector4D[] Array;
 	}
 
 	/// <summary>
@@ -154,16 +159,11 @@ namespace GorgonLibrary.Graphics
 		private void Initialize()
 		{
 			string errors = string.Empty;
-			Shaders.ShaderFlags flags = Shaders.ShaderFlags.Debug;
 
 			_graphics = _swapChain.Graphics;
 			_swapChain.Settings.Window.Resize += new EventHandler(Window_Resize);
 
-
 			_shader = Encoding.UTF8.GetString(Properties.Resources.Test);
-
-			if ((_graphics.VideoDevice.HardwareFeatureLevels & DeviceFeatureLevel.SM5) != DeviceFeatureLevel.SM5)
-				flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 
 			_device = _graphics.VideoDevice.D3DDevice;
 			
@@ -172,7 +172,7 @@ namespace GorgonLibrary.Graphics
 						
 			GorgonInputLayout layout = _graphics.CreateInputLayout("Test Layout", typeof(vertex), _vs);
 
-			int vertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(vertex));			
+			int vertexSize = layout.Size;			
 
 			using (DataStream stream = new DataStream(4 * vertexSize, true, true))
 			{
@@ -253,6 +253,10 @@ namespace GorgonLibrary.Graphics
 			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f));
 			//matrix.Projection = Matrix.Identity;
 			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
+			matrix.Array = new Vector4D[3];
+			matrix.Array[0] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
+			matrix.Array[1] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
+			matrix.Array[2] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
 			//SharpDX.Matrix.Transpose(ref matrix.Projection, out matrix.Projection);
 			//SharpDX.Matrix.Transpose(ref matrix.View, out matrix.View);
 
