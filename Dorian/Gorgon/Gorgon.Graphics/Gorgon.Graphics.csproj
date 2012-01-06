@@ -83,11 +83,13 @@
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
-    <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
+    <Compile Include="Shaders\ShaderReflection\GorgonConstantBuffer.cs" />
+    <Compile Include="Shaders\ShaderReflection\GorgonConstantBufferCollection.cs" />
+    <Compile Include="Shaders\ShaderReflection\GorgonShaderVariable.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonRasterizerState.cs" />
