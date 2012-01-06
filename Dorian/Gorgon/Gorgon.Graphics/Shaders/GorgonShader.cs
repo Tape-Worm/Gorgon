@@ -266,11 +266,52 @@ namespace GorgonLibrary.Graphics
 			return prefix + "_" + version;
 		}
 
+		private IDictionary<string, IDictionary<string, object>> _constantBuffers = null;
+
+		/// <summary>
+		/// Function to retrieve the constant buffers for this shader.
+		/// </summary>
+		/// <param name="byteCode">Shader byte code to parse.</param>
+		private void GetConstantBuffers(Shaders.ShaderBytecode byteCode)
+		{
+			Shaders.ShaderReflection reflect = null;
+
+			try
+			{
+				_constantBuffers = new Dictionary<string, object>();
+
+				reflect = new Shaders.ShaderReflection(byteCode);
+
+				if (reflect.Description.ConstantBuffers <= 0)
+					return;
+
+				for (int i = 0; i < reflect.Description.ConstantBuffers; i++)
+				{
+					Shaders.ConstantBuffer buffer = reflect.GetConstantBuffer(i);
+
+					if (buffer.Description.Type != Shaders.ConstantBufferType.ConstantBuffer)
+						continue;
+
+					for (int j = 0; j < buffer.Description.VariableCount; j++)
+					{
+						Shaders.ShaderReflectionVariable variable = buffer.GetVariable(j);
+						variable.Description.
+					}
+				}
+			}
+			finally
+			{
+				if (reflect != null)
+					reflect.Dispose();
+				reflect = null;
+			}			
+		}
+
 		/// <summary>
 		/// Function to compile the shader.
 		/// </summary>
 		/// <param name="byteCode">Byte code for the shader.</param>
-		protected abstract void CompileImpl(Shaders.ShaderBytecode byteCode);
+		protected abstract void CompileImpl(Shaders.ShaderBytecode byteCode);		
 
 		/// <summary>
 		/// Function to compile the shader.
