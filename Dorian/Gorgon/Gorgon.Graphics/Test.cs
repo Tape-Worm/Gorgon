@@ -264,8 +264,9 @@ namespace GorgonLibrary.Graphics
 			updatebuffer.World = SharpDX.Matrix.Identity;
 			updatebuffer.Alpha = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
 
-			_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
-			_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
+			//_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
+			//_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
+
 			//using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
 			//{
 			//    noChangeStream.Write<MatrixBuffer>(matrix);
@@ -327,7 +328,7 @@ namespace GorgonLibrary.Graphics
 			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Width / (float)_swapChain.Settings.VideoMode.Height, 0.1f, 1000.0f));
 			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
 			_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
-			_noChangeBuffer.Write(matrix);
+			//_noChangeBuffer.Write(matrix);
 		}
 
 		/// <summary>
@@ -427,7 +428,7 @@ namespace GorgonLibrary.Graphics
 				buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationY(passAngle));
 				buffer.World = Matrix.Transpose(buffer.World);
 
-				_changeBuffer.Write(buffer);
+				//_changeBuffer.Write(buffer);
 
 				_device.ImmediateContext.DrawIndexed(6, 0, 0);
 			}
@@ -439,7 +440,7 @@ namespace GorgonLibrary.Graphics
 				buffer.World *= Matrix.Translation(0.5f + ((float)i / 32767.0f) , 0.25f, 0.0f);
 				buffer.World = Matrix.Transpose(buffer.World);
 				buffer.Alpha.W = 1.0f;
-				_changeBuffer.Write(buffer);
+				//_changeBuffer.Write(buffer);
 				_device.ImmediateContext.DrawIndexed(6, 0, 0);
 			}
 		}

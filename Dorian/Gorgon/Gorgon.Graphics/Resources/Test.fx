@@ -1,8 +1,18 @@
+ struct TEMPGUY
+ {
+	float value1;
+	float4x4 value2;
+	float tempArray[3];
+ };
+
  cbuffer _transformOnce : register(b0)
  {
 	float4x4 _proj;
 	float4x4 _view;
 	float _array[3];
+	TEMPGUY _valueType;
+	Texture2D _myTex;
+	SamplerState _sampler;
  }
 
  cbuffer _transformPerFrame : register(b1)

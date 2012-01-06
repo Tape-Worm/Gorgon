@@ -618,12 +618,12 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">Value to initialize the buffer with.</param>
 		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
 		/// <returns>A new constant buffer.</returns>
-		public GorgonConstantBuffer CreateConstantBuffer<T>(T value, bool allowCPUWrite)
+		public GorgonConstantBuffer CreateConstantBuffer<T>(T? value, bool allowCPUWrite)
 			where T : struct
 		{
-			GorgonConstantBuffer buffer = new GorgonConstantBuffer(this, allowCPUWrite);
+			GorgonConstantBuffer buffer = new GorgonConstantBuffer(this, allowCPUWrite, typeof(T));
 
-			buffer.Initialize<T>(value);
+			buffer.Initialize(value);
 
 			TrackedObjects.Add(buffer);
 			return buffer;
