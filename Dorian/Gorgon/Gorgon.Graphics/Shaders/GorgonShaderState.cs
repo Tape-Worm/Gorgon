@@ -134,7 +134,7 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Variables.		
+		#region Variables.
 		private T _current = null;			// Current shader.
 		#endregion
 
