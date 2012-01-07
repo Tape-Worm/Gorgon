@@ -267,42 +267,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to retrieve the constant buffers for this shader.
-		/// </summary>
-		/// <param name="byteCode">Shader byte code to parse.</param>
-		private void GetConstantBuffers()
-		{
-			Shaders.ShaderReflection reflect = null;
-
-			try
-			{
-				reflect = new Shaders.ShaderReflection(D3DByteCode);
-
-				if (reflect.Description.ConstantBuffers <= 0)
-					return;
-
-				for (int i = 0; i < reflect.Description.ConstantBuffers; i++)
-				{
-					Shaders.ConstantBuffer buffer = reflect.GetConstantBuffer(i);
-
-					if (buffer.Description.Type != Shaders.ConstantBufferType.ConstantBuffer)
-						continue;
-
-					for (int j = 0; j < buffer.Description.VariableCount; j++)
-					{
-						Shaders.ShaderReflectionVariable variable = buffer.GetVariable(j);
-					}
-				}
-			}1
-			finally
-			{
-				if (reflect != null)
-					reflect.Dispose();
-				reflect = null;
-			}			
-		}
-
-		/// <summary>
 		/// Function to compile the shader.
 		/// </summary>
 		/// <param name="byteCode">Byte code for the shader.</param>
@@ -329,7 +293,6 @@ namespace GorgonLibrary.Graphics
 
 				D3DByteCode = Shaders.ShaderBytecode.Compile(SourceCode, EntryPoint, GetD3DVersion(), flags, Shaders.EffectFlags.None, null, null);
 
-				GetConstantBuffers();
 				CompileImpl(D3DByteCode);
 				HasChanged = false;
 			}

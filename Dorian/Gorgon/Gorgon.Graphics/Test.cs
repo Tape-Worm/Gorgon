@@ -264,8 +264,8 @@ namespace GorgonLibrary.Graphics
 			updatebuffer.World = SharpDX.Matrix.Identity;
 			updatebuffer.Alpha = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
 
-			//_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
-			//_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
+			_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
+			_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
 
 			//using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
 			//{
