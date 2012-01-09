@@ -1393,6 +1393,9 @@ namespace GorgonLibrary.Native
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
 
 			_pointerOffset.MarshalFrom(data, deleteContents);
+
+			T result = _pointerOffset.MarshalTo<T>();
+			
 			Position += dataSize;
 		}
 

@@ -1,14 +1,14 @@
  struct TEMPGUY
  {
 	float value1;
-	float4x4 value2;
+	float4x4 _view;
 	float tempArray[3];
  };
 
  cbuffer _transformOnce : register(b0)
  {
 	float4x4 _proj;
-	float4x4 _view;
+	float4x4 value2;
 	float _array[3];
 	TEMPGUY _valueType;
 	Texture2D _myTex;
@@ -45,7 +45,7 @@
 	input.pos.w = 1.0f;	
 	//output.pos = input.pos;
 	output.pos = mul(input.pos, _world);
-	output.pos = mul(output.pos, _view);
+	output.pos = mul(output.pos, _valueType._view);
 	output.pos = mul(output.pos, _proj);
 	//output.col = input.col;
 	output.col = float4(_array[0], _array[1], _array[2], 1.0f);

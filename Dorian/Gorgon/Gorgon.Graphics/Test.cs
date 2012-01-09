@@ -15,7 +15,30 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// 
 	/// </summary>
-	[StructLayout(LayoutKind.Explicit, Size = 176, Pack=1)]
+	[StructLayout(LayoutKind.Explicit, Size = 128, Pack=1)]
+	public struct TEMPGUY
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		[FieldOffset(0)]
+		public float value1;
+		/// <summary>
+		/// 
+		/// </summary>
+		[FieldOffset(16)]
+		public SharpDX.Matrix value2;
+		/// <summary>
+		/// 
+		/// </summary>
+		[FieldOffset(80), MarshalAs(UnmanagedType.ByValArray, SizeConst=3)]
+		public Vector4D[] tempArray;
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	[StructLayout(LayoutKind.Explicit, Size = 304, Pack=1)]
 	public struct MatrixBuffer
 	{
 		/// <summary>
@@ -33,6 +56,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		[FieldOffset(128), MarshalAs(UnmanagedType.ByValArray, SizeConst=3)]
 		public Vector4D[] Array;
+		/// <summary>
+		/// 
+		/// </summary>
+		[FieldOffset(176)]
+		public TEMPGUY valueType;
 	}
 
 	/// <summary>
@@ -257,6 +285,10 @@ namespace GorgonLibrary.Graphics
 			matrix.Array[0] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
 			matrix.Array[1] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
 			matrix.Array[2] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
+			matrix.valueType = new TEMPGUY();
+			matrix.valueType.value2 = matrix.View;
+			matrix.valueType.tempArray = new Vector4D[3];
+			
 			//SharpDX.Matrix.Transpose(ref matrix.Projection, out matrix.Projection);
 			//SharpDX.Matrix.Transpose(ref matrix.View, out matrix.View);
 
