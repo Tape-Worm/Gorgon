@@ -190,7 +190,7 @@ namespace GorgonLibrary.Graphics
 
 			DX.DataStream dxStream = null;
 
-			Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.DoNotWait, out dxStream);
+			Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out dxStream);
 			_data = new GorgonConstantBufferStream(this, dxStream);
 			_locked = true;
 

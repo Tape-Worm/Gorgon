@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffers\GorgonBaseBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBufferStream.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
