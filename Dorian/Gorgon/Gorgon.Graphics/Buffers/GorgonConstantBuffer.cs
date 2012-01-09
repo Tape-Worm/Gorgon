@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
@@ -52,8 +53,7 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private bool _disposed = false;							// Flag to indicate that the buffer was disposed.
-		private SharpDX.DataStream _data = null;				// Stream for writing.
-		private IDictionary<string, int> _offsets = null;		// List of member offsets.
+		private GorgonConstantBufferStream _data = null;		// Constant buffer data stream.
 		private bool _locked = false;							// Flag to indicate that the buffer was locked for writing.
 		#endregion
 
@@ -62,6 +62,15 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the Direct3D buffer.
 		/// </summary>
 		internal D3D.Buffer D3DBuffer
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return whether the buffer is locked for read/write.
+		/// </summary>
+		public bool IsLocked
 		{
 			get;
 			private set;
@@ -109,9 +118,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to initialize the buffer.
 		/// </summary>
 		/// <param name="value">Value used to initialize the buffer.</param>
-		/// <typeparam name="T">Type of data to read/write.</typeparam>
-		internal void Initialize<T>(T? value)
-			where T : struct
+		internal void Initialize(GorgonDataStream value)
 		{
 			D3D.ResourceUsage usage = D3D.ResourceUsage.Default;
 			D3D.CpuAccessFlags cpuFlags = D3D.CpuAccessFlags.None;
@@ -125,19 +132,20 @@ namespace GorgonLibrary.Graphics
 				cpuFlags = D3D.CpuAccessFlags.Write;
 			}
 
-			_data = new SharpDX.DataStream(Size, true, true);
-			if (value.HasValue)
+			if (value != null)
 			{
-				_data.Write<T>(value.Value);
-				D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, _data, new D3D.BufferDescription()
+				using (DX.DataStream dxStream = new DX.DataStream(value.BasePointer, value.Length, true, true))
 				{
-					BindFlags = D3D.BindFlags.ConstantBuffer,
-					CpuAccessFlags = cpuFlags,
-					OptionFlags = D3D.ResourceOptionFlags.None,
-					SizeInBytes = Size,
-					StructureByteStride = 0,
-					Usage = usage
-				});
+					D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, dxStream, new D3D.BufferDescription()
+					{
+						BindFlags = D3D.BindFlags.ConstantBuffer,
+						CpuAccessFlags = cpuFlags,
+						OptionFlags = D3D.ResourceOptionFlags.None,
+						SizeInBytes = Size,
+						StructureByteStride = 0,
+						Usage = usage
+					});
+				}
 			}
 			else
 			{
@@ -158,12 +166,20 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to lock the buffer for writing.
 		/// </summary>
-		public void Lock()
+		/// <returns>Returns a constant buffer stream used to write into the buffer.</returns>
+		public GorgonConstantBufferStream Lock()
 		{
+			if (_locked)
+				return _data;
+
 			if (!AllowCPUWrite)
 			{
+				if (_data == null)
+					_data = new GorgonConstantBufferStream(this, Size);
+
 				_locked = true;
-				return;
+				_data.Position = 0;
+				return _data;
 			}
 
 			if (_data != null)
@@ -171,9 +187,14 @@ namespace GorgonLibrary.Graphics
 				_data.Dispose();
 				_data = null;
 			}
-			
-			Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.DoNotWait, out _data);
+
+			DX.DataStream dxStream = null;
+
+			Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.DoNotWait, out dxStream);
+			_data = new GorgonConstantBufferStream(this, dxStream);
 			_locked = true;
+
+			return _data;
 		}
 
 		/// <summary>
@@ -186,7 +207,7 @@ namespace GorgonLibrary.Graphics
 
 			if (!AllowCPUWrite)
 			{
-				Graphics.Context.UpdateSubresource(new SharpDX.DataBox(_data.DataPointer, 0, 0), D3DBuffer, 0);
+				Graphics.Context.UpdateSubresource(new DX.DataBox(_data.BasePointer, 0, 0), D3DBuffer, 0);
 				_locked = false;
 				return;
 			}
@@ -211,125 +232,7 @@ namespace GorgonLibrary.Graphics
 
 			if (((Size % 16) != 0) || (Size == 0))
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot use the type '" + DataType.FullName + "'.  The size of the type (" + Size.ToString() + " bytes) is not on a 16 byte boundary or is 0.");
-
-			// Get members.
-			_offsets = (from member in DataType.GetMembers()						  
-						  let memberAttrib = member.GetCustomAttributes(typeof(FieldOffsetAttribute), false) as IList<FieldOffsetAttribute>
-						  where ((memberAttrib != null) && (memberAttrib.Count > 0) && ((member.MemberType == System.Reflection.MemberTypes.Field) || (member.MemberType == System.Reflection.MemberTypes.Property)))
-						  select new { member.Name, memberAttrib[0].Value }).ToDictionary(item => item.Name, item => item.Value);			
-		}
-			
-
-		/// <summary>
-		/// Function to write a value type to the entire buffer.
-		/// </summary>
-		/// <typeparam name="T">Type of value to write.</typeparam>
-		/// <param name="item">Value to write to the buffer.</param>
-		/// <remarks>
-		/// Unlike the other write methods, this writes the values in a value type directly to the buffer instead of writing to a specific member within the buffer.  Use this 
-		/// method if the types within the value type are blittable (i.e. don't require marshalling).
-		/// <para>The <paramref name="item"/> parameter is not bounds checked, and can exceed the size of the constant buffer, please use caution when writing data.</para>
-		/// </remarks>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer hasn't been locked before writing.</exception>
-		public void Write<T>(T item)
-			where T : struct
-		{
-			if (!_locked)
-				throw new InvalidOperationException("Cannot write to an unlocked buffer.");
-
-			_data.Position = 0;
-			_data.Write<T>(item);
-		}
-		
-		/// <summary>
-		/// Function to write an item to a variable within the buffer.
-		/// </summary>
-		/// <param name="member">Name of the variable to write.</param>
-		/// <param name="item">Item to write.</param>
-		/// <typeparam name="T">Type of data to read/write.</typeparam>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="member"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the member parameter is an empty string.</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the member name was not found in the constant buffer.</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer hasn't been locked before writing.</exception>
-		/// <remarks>This method will only write to a specific variable member in the constant buffer.</remarks>
-		public void Write<T>(string member, T item)
-			where T : struct
-		{
-			GorgonDebug.AssertParamString(member, "member");
-
-			if (!_offsets.ContainsKey(member))
-				throw new KeyNotFoundException("The variable '" + member + "' does not exist within this constant buffer.");
-
-			if (!_locked)
-				throw new InvalidOperationException("Cannot write to an unlocked buffer.");
-
-			_data.Position = _offsets[member];
-			_data.Write<T>(item);
-		}
-
-		/// <summary>
-		/// Function to write an array of items to a variable within the buffer.
-		/// </summary>
-		/// <param name="member">Name of the variable to write.</param>
-		/// <param name="item">Item to write.</param>
-		/// <typeparam name="T">Type of data to read/write.</typeparam>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="member"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the member parameter is an empty string.</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the member name was not found in the constant buffer.</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer hasn't been locked before writing.</exception>
-		/// <remarks>This method will only write to a specific variable member in the constant buffer.  Please note that bounds checking is not enabled on this, and consequently the array may exceed the length of the buffer.
-		/// <para>Buffers must be locked with the <see cref="M:GorgonLibrary.Graphics.GorgonConstantBuffer.Lock">Lock</see> method before writing.</para>
-		/// </remarks>
-		public void WriteArray<T>(string member, T[] item)
-			where T : struct
-		{
-			if ((item == null) || (item.Length == 0))
-				return;
-
-			GorgonDebug.AssertParamString(member, "member");
-
-			if (!_offsets.ContainsKey(member))
-				throw new KeyNotFoundException("The variable '" + member + "' does not exist within this constant buffer.");
-
-			if (!_locked)
-				throw new InvalidOperationException("Cannot write to an unlocked buffer.");
-
-			int offset = _offsets[member];
-			int itemSize = DirectAccess.SizeOf<T>();
-
-			for (int i = 0; i < item.Length; i++)
-			{
-				_data.Position = offset + (itemSize * i);
-				_data.Write<T>(item[i]);
-			}
-		}
-
-		/// <summary>
-		/// Function to write a value to a variable within the buffer using marshalling.
-		/// </summary>
-		/// <param name="member">Name of the variable to write.</param>
-		/// <param name="value">Value to marhsal and write.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="member"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the member parameter is an empty string.</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the member name was not found in the constant buffer.</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer hasn't been locked before writing.</exception>
-		/// <remarks>This method will only write to a specific variable member in the constant buffer.  Please note that bounds checking is not enabled on this, and consequently the array may exceed the length of the buffer.
-		/// <para>This method should be used only when marshalling of a value is required.  This method is quite slow and should be used sparingly.</para>
-		/// <para>Buffers must be locked with the <see cref="M:GorgonLibrary.Graphics.GorgonConstantBuffer.Lock">Lock</see> method before writing.</para>
-		/// </remarks>
-		public void WriteMarshalled(string member, object value)
-		{
-			GorgonDebug.AssertParamString(member, "member");
-
-			if (!_offsets.ContainsKey(member))
-				throw new KeyNotFoundException("The variable '" + member + "' does not exist within this constant buffer.");
-
-			if (!_locked)
-				throw new InvalidOperationException("Cannot write to an unlocked buffer.");
-
-			_data.Position = _offsets[member];
-			Marshal.StructureToPtr(value, _data.PositionPointer, false);
-		}
+		}			
 		#endregion
 
 		#region Constructor/Destructor.
