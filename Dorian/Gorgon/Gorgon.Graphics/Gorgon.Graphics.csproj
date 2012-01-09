@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
+    <Compile Include="Buffers\GorgonConstantBufferStream.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Collections\GorgonCustomValueCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />

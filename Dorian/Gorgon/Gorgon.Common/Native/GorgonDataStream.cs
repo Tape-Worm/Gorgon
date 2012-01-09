@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.Native
@@ -170,9 +171,9 @@ namespace GorgonLibrary.Native
 		}
 
 		/// <summary>
-		/// Property to return the handle to the allocated unmanaged memory.
+		/// Property to return the base pointer address to the allocated unmanaged memory.
 		/// </summary>
-		public IntPtr Handle
+		public IntPtr BasePointer
 		{
 			get
 			{
@@ -181,9 +182,20 @@ namespace GorgonLibrary.Native
 		}
 
 		/// <summary>
+		/// Property to return the pointer address of the current position in the stream.
+		/// </summary>
+		public IntPtr PositionPointer
+		{
+			get
+			{
+				return _pointerOffset;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the pointer to the allocated unmanaged memory.
 		/// </summary>
-		public unsafe void* Pointer
+		public unsafe void* UnsafePointer
 		{
 			get
 			{
@@ -218,6 +230,85 @@ namespace GorgonLibrary.Native
 			}
 
 			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Function to determine if marshalling is required.
+		/// </summary>
+		/// <param name="type">Type to examine.</param>
+		/// <returns>TRUE if the type requires marshalling, FALSE if not.</returns>
+		private static bool UseMarshalling(Type type)
+		{
+			var members = type.GetMembers().Where(item => item.MemberType == MemberTypes.Property || item.MemberType == MemberTypes.Field);
+			
+			foreach (var member in members)
+			{				
+				FieldInfo field = member as FieldInfo;
+				PropertyInfo property = member as PropertyInfo;
+				Type memberType = null;
+				bool isValid = false;
+
+				if (field != null)
+				{
+					memberType = field.FieldType;
+					isValid = !field.IsInitOnly && !field.IsStatic;
+				}
+				else
+				{
+					memberType = property.PropertyType;
+					isValid = property.CanRead && property.CanWrite;
+				}
+
+				isValid = isValid && !memberType.IsPrimitive;
+
+				if (isValid)
+				{
+					var marshalAttrib = member.GetCustomAttributes(typeof(MarshalAsAttribute), true) as IList<MarshalAsAttribute>;
+					if ((marshalAttrib != null) && (marshalAttrib.Count > 0))
+						return true;
+
+					if (UseMarshalling(memberType))
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Function to marshal a value type into a Gorgon Data Stream.
+		/// </summary>
+		/// <typeparam name="T">Type of value to marshal.</typeparam>
+		/// <param name="value">Value to marshal.</param>
+		/// <returns>A data stream containing the marshalled data.</returns>
+		/// <remarks>Use this to create and initialize a data stream with marshalled data.
+		/// <para>Value types must include the System.Runtime.InteropServices.StructLayout attribute, and must use an explicit layout.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the type of <paramref name="value"/> is not explicitly laid out with the System.Runtime.InteropServices.StructLayout attribute.</exception>
+		public static GorgonDataStream ValueTypeToStream<T>(T value) where T : struct
+		{
+			GorgonDataStream result = null;			
+			Type type = typeof(T);
+			int size = 0;
+			
+			if (!type.IsExplicitLayout)
+				throw new ArgumentException("The type '" + type.FullName + "' is not explicitly laid out using the StructLayout attribute.", "value");
+
+			if (type.StructLayoutAttribute.Size <= 0)
+				size = DirectAccess.SizeOf<T>();
+			else
+				size = type.StructLayoutAttribute.Size;
+
+			result = new GorgonDataStream(size);
+
+			if (!UseMarshalling(type))
+				result.Write<T>(value);
+			else
+				result.WriteMarshal<T>(value, false);
+
+			result.Position = 0;
+
+			return result;
 		}
 
 		/// <summary>
@@ -1281,7 +1372,7 @@ namespace GorgonLibrary.Native
 		/// </summary>
 		/// <typeparam name="T">Type of data to marshal.</typeparam>
 		/// <param name="data">Data to marshal.</param>
-		/// <param name="deleteContents">TRUE to remove any pre-allocated, FALSE to leave alone.</param>
+		/// <param name="deleteContents">TRUE to remove any pre-allocated data within the data, FALSE to leave alone.</param>
 		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
 		/// <para>Passing FALSE to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
 		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>

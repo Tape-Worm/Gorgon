@@ -406,7 +406,7 @@ namespace GorgonLibrary.Native
 		/// </summary>
 		/// <param name="destination">Pointer to marhsal the data into.</param>
 		/// <param name="value">Object or value type to marshal.</param>
-		/// <param name="deleteContents">TRUE to remove any pre-allocated, FALSE to leave alone.</param>
+		/// <param name="deleteContents">TRUE to remove any pre-allocated data, FALSE to leave alone.</param>
 		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
 		/// <para>Passing FALSE to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
 		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>
