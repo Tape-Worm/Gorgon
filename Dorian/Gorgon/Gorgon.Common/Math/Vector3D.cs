@@ -1222,7 +1222,7 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">2D vector.</param>
 		/// <returns>3D vector.</returns>
-		public static implicit operator Vector3D(Vector2D vector)
+		public static implicit operator Vector3D(GorgonVector2 vector)
 		{
 			return new Vector3D(vector, 0.0f);
 		}
@@ -1232,9 +1232,9 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">3D vector to convert.</param>
 		/// <returns>2D vector.</returns>
-		public static explicit operator Vector2D(Vector3D vector)
+		public static explicit operator GorgonVector2(Vector3D vector)
 		{
-			return new Vector2D(vector.X, vector.Y);
+			return new GorgonVector2(vector.X, vector.Y);
 		}
 		#endregion
 
@@ -1266,7 +1266,7 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">The vector to copy.</param>
 		/// <param name="z">Z coordinate for the vector.</param>
-		public Vector3D(Vector2D vector, float z)
+		public Vector3D(GorgonVector2 vector, float z)
 		{
 			X = vector.X;
 			Y = vector.Y;
