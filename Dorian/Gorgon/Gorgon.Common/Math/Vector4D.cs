@@ -1,7 +1,7 @@
 #region MIT.
 // 
-// Orpheus.
-// Copyright (C) 2009 Michael Winsor
+// Gorgon.
+// Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, March 02, 2009 9:51:53 PM
+// Created: Tuesday, January 10, 2012 3:35:20 PM
 // 
 #endregion
 
@@ -28,7 +28,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 
-namespace OrpheusFramework
+namespace GorgonLibrary.Math
 {
 	/// <summary>
 	/// Value type to represent a 4 dimensional vector.
@@ -38,39 +38,39 @@ namespace OrpheusFramework
 	/// spatial related computations.
 	/// This valuetype provides us a convienient way to use vectors and their operations.
 	/// </remarks>
-	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.Vector4DConverter))]
-	public struct Vector4D
-		: IEquatable<Vector4D>
+	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.Vector4DTypeConverter))]
+	public struct GorgonVector4
+		: IEquatable<GorgonVector4>
 	{
 		#region Variables.
 		/// <summary>
 		/// Empty vector.
 		/// </summary>
-		public readonly static Vector4D Zero = new Vector4D(0);
+		public readonly static GorgonVector4 Zero = new GorgonVector4(0);
 		/// <summary>
 		/// Unit vector.
 		/// </summary>
-		public readonly static Vector4D Unit = new Vector4D(1.0f);
+		public readonly static GorgonVector4 Unit = new GorgonVector4(1.0f);
 		/// <summary>
 		/// Unit X vector.
 		/// </summary>
-		public readonly static Vector4D UnitX = new Vector4D(1.0f,0,0,0.0f);
+		public readonly static GorgonVector4 UnitX = new GorgonVector4(1.0f,0,0,0.0f);
 		/// <summary>
 		/// Unit Y vector.
 		/// </summary>
-		public readonly static Vector4D UnitY = new Vector4D(0,1.0f,0,0.0f);
+		public readonly static GorgonVector4 UnitY = new GorgonVector4(0,1.0f,0,0.0f);
 		/// <summary>
 		/// Unit Z vector.
 		/// </summary>
-		public readonly static Vector4D UnitZ = new Vector4D(0,0,1.0f,0.0f);
+		public readonly static GorgonVector4 UnitZ = new GorgonVector4(0,0,1.0f,0.0f);
 		/// <summary>
 		/// Unit W vector.
 		/// </summary>
-		public readonly static Vector4D UnitW = new Vector4D(0, 0, 0, 1.0f);
+		public readonly static GorgonVector4 UnitW = new GorgonVector4(0, 0, 0, 1.0f);
 		/// <summary>
 		/// The size of the vector in bytes.
 		/// </summary>
-		public readonly static int Size = Marshal.SizeOf(typeof(Vector4D));
+		public readonly static int Size = Marshal.SizeOf(typeof(GorgonVector4));
 		/// <summary>
 		/// Horizontal position of the vector.
 		/// </summary>
@@ -97,7 +97,7 @@ namespace OrpheusFramework
 		{
 			get
 			{
-				return MathUtility.Sqrt(X * X + Y * Y + Z * Z + W * W);
+				return GorgonMathUtility.Sqrt(X * X + Y * Y + Z * Z + W * W);
 			}
 		}
 
@@ -165,7 +165,7 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to add to.</param>
 		/// <param name="right">Vector to add with.</param>
 		/// <param name="result">The combined vectors.</param>
-		public static void Add(ref Vector4D left, ref Vector4D right, out Vector4D result)
+		public static void Add(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
 		{
 			result.X = left.X + right.X;
 			result.Y = left.Y + right.Y;
@@ -179,9 +179,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to add to.</param>
 		/// <param name="right">Vector to add with.</param>
 		/// <returns>The combined vectors.</returns>
-		public static Vector4D Add(Vector4D left, Vector4D right)
+		public static GorgonVector4 Add(GorgonVector4 left, GorgonVector4 right)
 		{
-			return new Vector4D(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+			return new GorgonVector4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
 		}
 
 		/// <summary>
@@ -190,7 +190,7 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to subtract.</param>
 		/// <param name="right">Vector to subtract with.</param>
 		/// <param name="result">The difference between the two vectors.</param>
-		public static void Subtract(ref Vector4D left, ref Vector4D right, out Vector4D result)
+		public static void Subtract(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
 		{
 			result.X = left.X - right.X;
 			result.Y = left.Y - right.Y;
@@ -204,9 +204,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to subtract.</param>
 		/// <param name="right">Vector to subtract with.</param>
 		/// <returns>The difference between the two vectors.</returns>
-		public static Vector4D Subtract(Vector4D left, Vector4D right)
+		public static GorgonVector4 Subtract(GorgonVector4 left, GorgonVector4 right)
 		{
-			return new Vector4D(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+			return new GorgonVector4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
 		}
 
 		/// <summary>
@@ -214,7 +214,7 @@ namespace OrpheusFramework
 		/// </summary>
 		/// <param name="vector">Vector to negate.</param>
 		/// <param name="result">The negated vector.</param>
-		public static void Negate(ref Vector4D vector, out Vector4D result)
+		public static void Negate(ref GorgonVector4 vector, out GorgonVector4 result)
 		{
 			result.X = -vector.X;
 			result.Y = -vector.Y;
@@ -227,9 +227,9 @@ namespace OrpheusFramework
 		/// </summary>
 		/// <param name="vector">Vector to negate.</param>
 		/// <returns>The negated vector.</returns>
-		public static Vector4D Negate(Vector4D vector)
+		public static GorgonVector4 Negate(GorgonVector4 vector)
 		{
-			return new Vector4D(-vector.X, -vector.Y, -vector.Z, -vector.W);
+			return new GorgonVector4(-vector.X, -vector.Y, -vector.Z, -vector.W);
 		}
 
 		/// <summary>
@@ -239,7 +239,7 @@ namespace OrpheusFramework
 		/// <param name="scalar">Scalar value to divide by.</param>
 		/// <param name="result">The quotient vector.</param>
 		/// <exception cref="System.DivideByZeroException">The divisor was 0.</exception>
-		public static void Divide(ref Vector4D left, float scalar, out Vector4D result)
+		public static void Divide(ref GorgonVector4 left, float scalar, out GorgonVector4 result)
 		{
 			// Do this so we don't have to do multiple divides.
 			float inverse = 1.0f / scalar;
@@ -257,12 +257,12 @@ namespace OrpheusFramework
 		/// <param name="scalar">Scalar value to divide by.</param>
 		/// <returns>The quotient vector.</returns>
 		/// <exception cref="System.DivideByZeroException">The divisor was 0.</exception>
-		public static Vector4D Divide(Vector4D left, float scalar)
+		public static GorgonVector4 Divide(GorgonVector4 left, float scalar)
 		{
 			// Do this so we don't have to do multiple divides.
 			float inverse = 1.0f / scalar;
 
-			return new Vector4D(left.X * inverse, left.Y * inverse, left.Z * inverse, left.W * inverse);
+			return new GorgonVector4(left.X * inverse, left.Y * inverse, left.Z * inverse, left.W * inverse);
 		}
 
 		/// <summary>
@@ -272,7 +272,7 @@ namespace OrpheusFramework
 		/// <param name="right">Vector to divide by.</param>
 		/// <param name="result">The quotient vector.</param>
 		/// <exception cref="System.DivideByZeroException">The divisor was 0.</exception>
-		public static void Divide(ref Vector4D left, ref Vector4D right, out Vector4D result)
+		public static void Divide(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
 		{
 			result.X = left.X / right.X;
 			result.Y = left.Y / right.Y;
@@ -287,9 +287,9 @@ namespace OrpheusFramework
 		/// <param name="right">Vector to divide by.</param>
 		/// <returns>The quotient vector.</returns>
 		/// <exception cref="System.DivideByZeroException">The divisor was 0.</exception>
-		public static Vector4D Divide(Vector4D left, Vector4D right)
+		public static GorgonVector4 Divide(GorgonVector4 left, GorgonVector4 right)
 		{
-			return new Vector4D(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
+			return new GorgonVector4(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
 		}
 
 		/// <summary>
@@ -298,7 +298,7 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to multiply.</param>
 		/// <param name="right">Vector to multiply by.</param>
 		/// <param name="result">The product of the vectors.</param>
-		public static void Multiply(ref Vector4D left, ref Vector4D right, out Vector4D result)
+		public static void Multiply(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
 		{
 			result.X = left.X * right.X;
 			result.Y = left.Y * right.Y;
@@ -312,9 +312,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to multiply.</param>
 		/// <param name="right">Vector to multiply by.</param>
 		/// <returns>The product of the vectors.</returns>
-		public static Vector4D Multiply(Vector4D left, Vector4D right)
+		public static GorgonVector4 Multiply(GorgonVector4 left, GorgonVector4 right)
 		{
-			return new Vector4D(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+			return new GorgonVector4(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
 		}
 
 		/// <summary>
@@ -323,7 +323,7 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to multiply with.</param>
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <param name="result">The product of the vector and the scalar.</param>
-		public static void Multiply(ref Vector4D left, float scalar, out Vector4D result)
+		public static void Multiply(ref GorgonVector4 left, float scalar, out GorgonVector4 result)
 		{
 			result.X = left.X * scalar;
 			result.Y = left.Y * scalar;
@@ -337,9 +337,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to multiply with.</param>
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <returns>The product of the vector and the scalar.</returns>
-		public static Vector4D Multiply(Vector4D left, float scalar)
+		public static GorgonVector4 Multiply(GorgonVector4 left, float scalar)
 		{
-			return new Vector4D(left.X * scalar, left.Y * scalar, left.Z * scalar, left.W * scalar);
+			return new GorgonVector4(left.X * scalar, left.Y * scalar, left.Z * scalar, left.W * scalar);
 		}
 
 		/// <summary>
@@ -347,21 +347,21 @@ namespace OrpheusFramework
 		/// </summary>
 		/// <param name="vector">Vector to round.</param>
 		/// <param name="result">Rounded vector.</param>
-		public static void Round(ref Vector4D vector, out Vector4D result)
+		public static void Round(ref GorgonVector4 vector, out GorgonVector4 result)
 		{
-			result.X = MathUtility.RoundInt(vector.X);
-			result.Y = MathUtility.RoundInt(vector.Y);
-			result.Z = MathUtility.RoundInt(vector.Z);
-			result.W = MathUtility.RoundInt(vector.W);
+			result.X = GorgonMathUtility.RoundInt(vector.X);
+			result.Y = GorgonMathUtility.RoundInt(vector.Y);
+			result.Z = GorgonMathUtility.RoundInt(vector.Z);
+			result.W = GorgonMathUtility.RoundInt(vector.W);
 		}
 
 		/// <summary>
 		/// Function to round the vector components to their nearest whole values.
 		/// </summary>
 		/// <param name="vector">Vector to round.</param>
-		public static Vector4D Round(Vector4D vector)
+		public static GorgonVector4 Round(GorgonVector4 vector)
 		{
-			return new Vector4D(MathUtility.RoundInt(vector.X),MathUtility.RoundInt(vector.Y),MathUtility.RoundInt(vector.Z),MathUtility.RoundInt(vector.W));
+			return new GorgonVector4(GorgonMathUtility.RoundInt(vector.X),GorgonMathUtility.RoundInt(vector.Y),GorgonMathUtility.RoundInt(vector.Z),GorgonMathUtility.RoundInt(vector.W));
 		}
 
 		/// <summary>
@@ -370,7 +370,7 @@ namespace OrpheusFramework
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <param name="result">A vector containing the lowest values of the two vectors.</param>
-		public static void Floor(ref Vector4D vector1, ref Vector4D vector2, out Vector4D result)
+		public static void Floor(ref GorgonVector4 vector1, ref GorgonVector4 vector2, out GorgonVector4 result)
 		{
 			result.X = (vector1.X < vector2.X) ? vector1.X : vector2.X;
 			result.Y = (vector1.Y < vector2.Y) ? vector1.Y : vector2.Y;
@@ -384,9 +384,9 @@ namespace OrpheusFramework
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <returns>A vector containing the lowest values of the two vectors.</returns>
-		public static Vector4D Floor(Vector4D vector1, Vector4D vector2)
+		public static GorgonVector4 Floor(GorgonVector4 vector1, GorgonVector4 vector2)
 		{
-			return new Vector4D((vector1.X < vector2.X) ? vector1.X : vector2.X, (vector1.Y < vector2.Y) ? vector1.Y : vector2.Y,
+			return new GorgonVector4((vector1.X < vector2.X) ? vector1.X : vector2.X, (vector1.Y < vector2.Y) ? vector1.Y : vector2.Y,
 								(vector1.Z < vector2.Z) ? vector1.Z : vector2.Z, (vector1.W < vector2.W) ? vector1.W : vector2.W);
 		}
 
@@ -396,7 +396,7 @@ namespace OrpheusFramework
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <param name="result">A vector containing the highest values of the two vectors.</param>
-		public static void Ceiling(ref Vector4D vector1, ref Vector4D vector2, out Vector4D result)
+		public static void Ceiling(ref GorgonVector4 vector1, ref GorgonVector4 vector2, out GorgonVector4 result)
 		{
 			result.X = (vector1.X > vector2.X) ? vector1.X : vector2.X;
 			result.Y = (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y;
@@ -410,9 +410,9 @@ namespace OrpheusFramework
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <returns>A vector containing the highest values of the two vectors.</returns>
-		public static Vector4D Ceiling(Vector4D vector1, Vector4D vector2)
+		public static GorgonVector4 Ceiling(GorgonVector4 vector1, GorgonVector4 vector2)
 		{
-			return new Vector4D((vector1.X > vector2.X) ? vector1.X : vector2.X, (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y,
+			return new GorgonVector4((vector1.X > vector2.X) ? vector1.X : vector2.X, (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y,
 								(vector1.Z > vector2.Z) ? vector1.Z : vector2.Z, (vector1.W > vector2.W) ? vector1.W : vector2.W);
 		}
 		
@@ -422,7 +422,7 @@ namespace OrpheusFramework
 		/// <param name="left">Left vector to use in the dot product operation.</param>
 		/// <param name="right">Right vector to use in the dot product operation.</param>
 		/// <param name="result">The dot product.</param>
-		public static void DotProduct(ref Vector4D left, ref Vector4D right, out float result)
+		public static void DotProduct(ref GorgonVector4 left, ref GorgonVector4 right, out float result)
 		{
 			result = left.X * right.X +
 					left.Y * right.Y +
@@ -436,7 +436,7 @@ namespace OrpheusFramework
 		/// <param name="left">Left vector to use in the dot product operation.</param>
 		/// <param name="right">Right vector to use in the dot product operation.</param>
 		/// <returns>The dot product.</returns>
-		public static float DotProduct(Vector4D left, Vector4D right)
+		public static float DotProduct(GorgonVector4 left, GorgonVector4 right)
 		{
 			return (left.X * right.X +
 					left.Y * right.Y +
@@ -450,7 +450,7 @@ namespace OrpheusFramework
 		/// <param name="left">Left vector to use in the dot product operation.</param>
 		/// <param name="right">Right vector to use in the dot product operation.</param>
 		/// <param name="result">The cross product of the two vectors.</param>
-		public static void CrossProduct(ref Vector4D left, ref Vector4D right, out Vector4D result)
+		public static void CrossProduct(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
 		{
 			result.X = ((left.X * right.Y) - (left.Y * right.X)) + ((left.X * right.Z) - (left.Z * right.X)) + ((left.Y * right.Z) - (left.Z * right.Y));
 			result.Y = ((left.Z * right.Y) - (left.Y * right.Z)) + ((left.Y * right.W) - (left.W * right.Y)) + ((left.Z * right.W) - (left.W * right.Z));
@@ -464,9 +464,9 @@ namespace OrpheusFramework
 		/// <param name="left">Left vector to use in the dot product operation.</param>
 		/// <param name="right">Right vector to use in the dot product operation.</param>
 		/// <returns>The cross product of the two vectors.</returns>
-		public static Vector4D CrossProduct(Vector4D left, Vector4D right)
+		public static GorgonVector4 CrossProduct(GorgonVector4 left, GorgonVector4 right)
 		{
-			return new Vector4D(((left.X * right.Y) - (left.Y * right.X)) + ((left.X * right.Z) - (left.Z * right.X)) + ((left.Y * right.Z) - (left.Z * right.Y)),
+			return new GorgonVector4(((left.X * right.Y) - (left.Y * right.X)) + ((left.X * right.Z) - (left.Z * right.X)) + ((left.Y * right.Z) - (left.Z * right.Y)),
 								((left.Z * right.Y) - (left.Y * right.Z)) + ((left.Y * right.W) - (left.W * right.Y)) + ((left.Z * right.W) - (left.W * right.Z)),
 								((left.X * right.Z) - (left.Z * right.X)) + ((left.W * right.X) - (left.X * right.W)) + ((left.Z * right.W) - (left.W * right.Z)),
 								((left.Y * right.X) - (left.X * right.Y)) + ((left.W * right.X) - (left.X * right.W)) + ((left.W * right.Y) - (left.Y * right.W)));
@@ -479,7 +479,7 @@ namespace OrpheusFramework
 		{
 			float length = Length;
 
-			if (MathUtility.EqualFloat(length, 0.0f, 0.000001f))
+			if (GorgonMathUtility.EqualFloat(length, 0.0f, 0.000001f))
 				return;
 
 			float invLength = 1.0f / length;
@@ -497,7 +497,7 @@ namespace OrpheusFramework
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public override bool Equals(object obj)
 		{
-			IEquatable<Vector4D> equate = obj as IEquatable<Vector4D>;
+			IEquatable<GorgonVector4> equate = obj as IEquatable<GorgonVector4>;
 
 			if (equate == null)
 				return equate.Equals(this);
@@ -511,10 +511,10 @@ namespace OrpheusFramework
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool Equals(ref Vector4D vector1, ref Vector4D vector2)
+		public static bool Equals(ref GorgonVector4 vector1, ref GorgonVector4 vector2)
 		{
-			return MathUtility.EqualFloat(vector1.X, vector2.X) && MathUtility.EqualFloat(vector1.Y, vector2.Y) && 
-				MathUtility.EqualFloat(vector1.Z, vector2.Z) && MathUtility.EqualFloat(vector1.W, vector2.W);
+			return GorgonMathUtility.EqualFloat(vector1.X, vector2.X) && GorgonMathUtility.EqualFloat(vector1.Y, vector2.Y) && 
+				GorgonMathUtility.EqualFloat(vector1.Z, vector2.Z) && GorgonMathUtility.EqualFloat(vector1.W, vector2.W);
 		}
 
 		/// <summary>
@@ -541,7 +541,7 @@ namespace OrpheusFramework
 		/// <param name="m">Matrix used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <param name="result">The resulting transformed vector.</param>
-		public static void Transform(ref Matrix m, ref Vector4D vec, out Vector4D result)
+		public static void Transform(ref Matrix m, ref GorgonVector4 vec, out GorgonVector4 result)
 		{
 			result.X = ((m.m11 * vec.X) + (m.m12 * vec.Y) + (m.m13 * vec.Z) + m.m14) * vec.W;
 			result.Y = ((m.m21 * vec.X) + (m.m22 * vec.Y) + (m.m23 * vec.Z) + m.m24) * vec.W;
@@ -555,9 +555,9 @@ namespace OrpheusFramework
 		/// <param name="m">Matrix used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <returns>The resulting transformed vector.</returns>
-		public static Vector4D Transform(Matrix m, Vector4D vec)
+		public static GorgonVector4 Transform(Matrix m, GorgonVector4 vec)
 		{
-			return new Vector4D(((m.m11 * vec.X) + (m.m12 * vec.Y) + (m.m13 * vec.Z) + m.m14) * vec.W,
+			return new GorgonVector4(((m.m11 * vec.X) + (m.m12 * vec.Y) + (m.m13 * vec.Z) + m.m14) * vec.W,
 								((m.m21 * vec.X) + (m.m22 * vec.Y) + (m.m23 * vec.Z) + m.m24) * vec.W,
 								((m.m31 * vec.X) + (m.m32 * vec.Y) + (m.m33 * vec.Z) + m.m34) * vec.W,
 								((m.m41 * vec.X) + (m.m42 * vec.Y) + (m.m43 * vec.Z) + m.m44) * vec.W);
@@ -569,7 +569,7 @@ namespace OrpheusFramework
 		/// <param name="q">Quaternion used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <param name="result">The resulting transformed vector.</param>
-		public static void Transform(ref Quaternion q, ref Vector4D vec, out Vector4D result)
+		public static void Transform(ref Quaternion q, ref GorgonVector4 vec, out GorgonVector4 result)
 		{
 			float x = q.X + q.X;
 			float y = q.Y + q.Y;
@@ -596,7 +596,7 @@ namespace OrpheusFramework
 		/// <param name="q">Quaternion used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <returns>The resulting transformed vector.</returns>
-		public static Vector4D Transform(Quaternion q, Vector4D vec)
+		public static GorgonVector4 Transform(Quaternion q, GorgonVector4 vec)
 		{
 			float x = q.X + q.X;
 			float y = q.Y + q.Y;
@@ -611,22 +611,22 @@ namespace OrpheusFramework
 			float yz = q.Y * z;
 			float zz = q.Z * z;
 
-			return new Vector4D(((vec.X * ((1.0f - yy) - zz)) + (vec.Y * (xy - wz))) + (vec.Z * (xz + wy)),
+			return new GorgonVector4(((vec.X * ((1.0f - yy) - zz)) + (vec.Y * (xy - wz))) + (vec.Z * (xz + wy)),
 								((vec.X * (xy + wz)) + (vec.Y * ((1.0f - xx) - zz))) + (vec.Z * (yz - wx)),
 								((vec.X * (xz - wy)) + (vec.Y * (yz + wx))) + (vec.Z * ((1.0f - xx) - yy)),
 								vec.W);
 		}
 
 		/// <summary>
-		/// Returns a <see cref="Vector4D"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 4D triangle.
+		/// Returns a <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 4D triangle.
 		/// </summary>
-		/// <param name="vertexCoordinate1">A <see cref="Vector4D"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-		/// <param name="vertexCoordinate2">A <see cref="Vector4D"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-		/// <param name="vertexCoordinate3">A <see cref="Vector4D"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+		/// <param name="vertexCoordinate1">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+		/// <param name="vertexCoordinate2">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+		/// <param name="vertexCoordinate3">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
 		/// <param name="vertex2Weight">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="vertexCoordinate2"/>).</param>
 		/// <param name="vertex3Weight">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="vertexCoordinate3"/>).</param>
 		/// <param name="result">When the method completes, contains the 4D Cartesian coordinates of the specified point.</param>
-		public static void Barycentric(ref Vector4D vertexCoordinate1, ref Vector4D vertexCoordinate2, ref Vector4D vertexCoordinate3, float vertex2Weight, float vertex3Weight, out Vector4D result)
+		public static void Barycentric(ref GorgonVector4 vertexCoordinate1, ref GorgonVector4 vertexCoordinate2, ref GorgonVector4 vertexCoordinate3, float vertex2Weight, float vertex3Weight, out GorgonVector4 result)
 		{
 			result.X = (vertexCoordinate1.X + (vertex2Weight * (vertexCoordinate2.X - vertexCoordinate1.X))) + (vertex3Weight * (vertexCoordinate3.X - vertexCoordinate1.X));
 			result.Y = (vertexCoordinate1.Y + (vertex2Weight * (vertexCoordinate2.Y - vertexCoordinate1.Y))) + (vertex3Weight * (vertexCoordinate3.Y - vertexCoordinate1.Y));
@@ -635,17 +635,17 @@ namespace OrpheusFramework
 		}
 
 		/// <summary>
-		/// Returns a <see cref="Vector4D"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 4D triangle.
+		/// Returns a <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 4D triangle.
 		/// </summary>
-		/// <param name="vertexCoordinate1">A <see cref="Vector4D"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-		/// <param name="vertexCoordinate2">A <see cref="Vector4D"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-		/// <param name="vertexCoordinate3">A <see cref="Vector4D"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+		/// <param name="vertexCoordinate1">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+		/// <param name="vertexCoordinate2">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+		/// <param name="vertexCoordinate3">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
 		/// <param name="vertex2Weight">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="vertexCoordinate2"/>).</param>
 		/// <param name="vertex3Weight">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="vertexCoordinate3"/>).</param>
 		/// <returns>When the method completes, contains the 4D Cartesian coordinates of the specified point.</returns>
-		public Vector4D Barycentric(Vector4D vertexCoordinate1, Vector4D vertexCoordinate2, Vector4D vertexCoordinate3, float vertex2Weight, float vertex3Weight)
+		public GorgonVector4 Barycentric(GorgonVector4 vertexCoordinate1, GorgonVector4 vertexCoordinate2, GorgonVector4 vertexCoordinate3, float vertex2Weight, float vertex3Weight)
 		{
-			return new Vector4D((vertexCoordinate1.X + (vertex2Weight * (vertexCoordinate2.X - vertexCoordinate1.X))) + (vertex3Weight * (vertexCoordinate3.X - vertexCoordinate1.X)),
+			return new GorgonVector4((vertexCoordinate1.X + (vertex2Weight * (vertexCoordinate2.X - vertexCoordinate1.X))) + (vertex3Weight * (vertexCoordinate3.X - vertexCoordinate1.X)),
 								(vertexCoordinate1.Y + (vertex2Weight * (vertexCoordinate2.Y - vertexCoordinate1.Y))) + (vertex3Weight * (vertexCoordinate3.Y - vertexCoordinate1.Y)),
 								(vertexCoordinate1.Z + (vertex2Weight * (vertexCoordinate2.Z - vertexCoordinate1.Z))) + (vertex3Weight * (vertexCoordinate3.Z - vertexCoordinate1.Z)),
 								(vertexCoordinate1.W + (vertex2Weight * (vertexCoordinate2.W - vertexCoordinate1.W))) + (vertex3Weight * (vertexCoordinate3.W - vertexCoordinate1.W)));
@@ -660,7 +660,7 @@ namespace OrpheusFramework
 		/// <param name="value4">The fourth position in the interpolation.</param>
 		/// <param name="amount">Weighting factor.</param>
 		/// <param name="result">When the method completes, contains the result of the Catmull-Rom interpolation.</param>
-		public static void CatmullRom(ref Vector4D value1, ref Vector4D value2, ref Vector4D value3, ref Vector4D value4, float amount, out Vector4D result)
+		public static void CatmullRom(ref GorgonVector4 value1, ref GorgonVector4 value2, ref GorgonVector4 value3, ref GorgonVector4 value4, float amount, out GorgonVector4 result)
 		{
 			float squared = amount * amount;
 			float cubed = amount * squared;
@@ -691,12 +691,12 @@ namespace OrpheusFramework
 		/// <param name="value4">The fourth position in the interpolation.</param>
 		/// <param name="amount">Weighting factor.</param>
 		/// <returns>When the method completes, contains the result of the Catmull-Rom interpolation.</returns>
-		public static Vector4D CatmullRom(Vector4D value1, Vector4D value2, Vector4D value3, Vector4D value4, float amount)
+		public static GorgonVector4 CatmullRom(GorgonVector4 value1, GorgonVector4 value2, GorgonVector4 value3, GorgonVector4 value4, float amount)
 		{
 			float squared = amount * amount;
 			float cubed = amount * squared;
 
-			return new Vector4D(0.5f * ((((2.0f * value2.X) + ((-value1.X + value3.X) * amount)) +
+			return new GorgonVector4(0.5f * ((((2.0f * value2.X) + ((-value1.X + value3.X) * amount)) +
 								(((((2.0f * value1.X) - (5.0f * value2.X)) + (4.0f * value3.X)) - value4.X) * squared)) +
 								((((-value1.X + (3.0f * value2.X)) - (3.0f * value3.X)) + value4.X) * cubed)),
 								0.5f * ((((2.0f * value2.Y) + ((-value1.Y + value3.Y) * amount)) +
@@ -719,7 +719,7 @@ namespace OrpheusFramework
 		/// <param name="tangent2">Second source tangent vector.</param>
 		/// <param name="amount">Weighting factor.</param>
 		/// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-		public static void Hermite(ref Vector4D value1, ref Vector4D tangent1, ref Vector4D value2, ref Vector4D tangent2, float amount, out Vector4D result)
+		public static void Hermite(ref GorgonVector4 value1, ref GorgonVector4 tangent1, ref GorgonVector4 value2, ref GorgonVector4 tangent2, float amount, out GorgonVector4 result)
 		{
 			float squared = amount * amount;
 			float cubed = amount * squared;
@@ -743,7 +743,7 @@ namespace OrpheusFramework
 		/// <param name="tangent2">Second source tangent vector.</param>
 		/// <param name="amount">Weighting factor.</param>
 		/// <returns>When the method completes, contains the result of the Hermite spline interpolation.</returns>
-		public static Vector4D Hermite(Vector4D value1, Vector4D tangent1, Vector4D value2, Vector4D tangent2, float amount)
+		public static GorgonVector4 Hermite(GorgonVector4 value1, GorgonVector4 tangent1, GorgonVector4 value2, GorgonVector4 tangent2, float amount)
 		{
 			float squared = amount * amount;
 			float cubed = amount * squared;
@@ -752,7 +752,7 @@ namespace OrpheusFramework
 			float part3 = (cubed - (2.0f * squared)) + amount;
 			float part4 = cubed - squared;
 
-			return new Vector4D((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+			return new GorgonVector4((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
 								(((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
 								(((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
 								(((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4));
@@ -770,7 +770,7 @@ namespace OrpheusFramework
 		/// <code>start + (end - start) * amount</code>
 		/// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
 		/// </remarks>
-		public static void Lerp(ref Vector4D start, ref Vector4D end, float amount, out Vector4D result)
+		public static void Lerp(ref GorgonVector4 start, ref GorgonVector4 end, float amount, out GorgonVector4 result)
 		{
 			result.X = start.X + ((end.X - start.X) * amount);
 			result.Y = start.Y + ((end.Y - start.Y) * amount);
@@ -790,9 +790,9 @@ namespace OrpheusFramework
 		/// <code>start + (end - start) * amount</code>
 		/// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
 		/// </remarks>
-		public static Vector4D Lerp(Vector4D start, Vector4D end, float amount)
+		public static GorgonVector4 Lerp(GorgonVector4 start, GorgonVector4 end, float amount)
 		{
-			return new Vector4D(start.X + ((end.X - start.X) * amount),
+			return new GorgonVector4(start.X + ((end.X - start.X) * amount),
 								start.Y + ((end.Y - start.Y) * amount),
 								start.Z + ((end.Z - start.Z) * amount),
 								start.W + ((end.W - start.W) * amount));
@@ -805,7 +805,7 @@ namespace OrpheusFramework
 		/// <param name="end">End vector.</param>
 		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
 		/// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
-		public static void SmoothStep(ref Vector4D start, ref Vector4D end, float amount, out Vector4D result)
+		public static void SmoothStep(ref GorgonVector4 start, ref GorgonVector4 end, float amount, out GorgonVector4 result)
 		{
 			amount = (amount > 1.0f) ? 1.0f : ((amount < 0.0f) ? 0.0f : amount);
 			amount = (amount * amount) * (3.0f - (2.0f * amount));
@@ -823,12 +823,12 @@ namespace OrpheusFramework
 		/// <param name="end">End vector.</param>
 		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
 		/// <returns>When the method completes, contains the cubic interpolation of the two vectors.</returns>
-		public static Vector4D SmoothStep(Vector4D start, Vector4D end, float amount)
+		public static GorgonVector4 SmoothStep(GorgonVector4 start, GorgonVector4 end, float amount)
 		{
 			amount = (amount > 1.0f) ? 1.0f : ((amount < 0.0f) ? 0.0f : amount);
 			amount = (amount * amount) * (3.0f - (2.0f * amount));
 
-			return new Vector4D(start.X + ((end.X - start.X) * amount),
+			return new GorgonVector4(start.X + ((end.X - start.X) * amount),
 								start.Y + ((end.Y - start.Y) * amount),
 								start.Z + ((end.Z - start.Z) * amount),
 								start.W + ((end.W - start.W) * amount));
@@ -840,14 +840,14 @@ namespace OrpheusFramework
 		/// <param name="value1">The first vector.</param>
 		/// <param name="value2">The second vector.</param>
 		/// <param name="result">The distance between the two vectors.</param>
-		public static void Distance(ref Vector4D value1, ref Vector4D value2, out float result)
+		public static void Distance(ref GorgonVector4 value1, ref GorgonVector4 value2, out float result)
 		{
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
 			float z = value1.Z - value2.Z;
 			float w = value1.W - value2.W;
 
-			result = MathUtility.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+			result = GorgonMathUtility.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
 		}
 
 		/// <summary>
@@ -856,14 +856,14 @@ namespace OrpheusFramework
 		/// <param name="value1">The first vector.</param>
 		/// <param name="value2">The second vector.</param>
 		/// <returns>The distance between the two vectors.</returns>
-		public static float Distance(Vector4D value1, Vector4D value2)
+		public static float Distance(GorgonVector4 value1, GorgonVector4 value2)
 		{
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
 			float z = value1.Z - value2.Z;
 			float w = value1.W - value2.W;
 
-			return MathUtility.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+			return GorgonMathUtility.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
 		}
 
 		/// <summary>
@@ -879,7 +879,7 @@ namespace OrpheusFramework
 		/// involves two square roots, which are computationally expensive. However, using distance squared 
 		/// provides the same information and avoids calculating two square roots.
 		/// </remarks>
-		public static void DistanceSquared(ref Vector4D value1, ref Vector4D value2, out float result)
+		public static void DistanceSquared(ref GorgonVector4 value1, ref GorgonVector4 value2, out float result)
 		{
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
@@ -902,7 +902,7 @@ namespace OrpheusFramework
 		/// involves two square roots, which are computationally expensive. However, using distance squared 
 		/// provides the same information and avoids calculating two square roots.
 		/// </remarks>
-		public static float DistanceSquared(Vector4D value1, Vector4D value2)
+		public static float DistanceSquared(GorgonVector4 value1, GorgonVector4 value2)
 		{
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
@@ -920,10 +920,10 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to compare.</param>
 		/// <param name="right">Vector to compare with.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool operator ==(Vector4D left,Vector4D right)
+		public static bool operator ==(GorgonVector4 left,GorgonVector4 right)
 		{
-			return (MathUtility.EqualFloat(left.X, right.X) && MathUtility.EqualFloat(left.Y, right.Y) &&
-						MathUtility.EqualFloat(left.Z, right.Z) && MathUtility.EqualFloat(left.W, right.W));
+			return (GorgonMathUtility.EqualFloat(left.X, right.X) && GorgonMathUtility.EqualFloat(left.Y, right.Y) &&
+						GorgonMathUtility.EqualFloat(left.Z, right.Z) && GorgonMathUtility.EqualFloat(left.W, right.W));
 		}
 
 		/// <summary>
@@ -932,7 +932,7 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to compare.</param>
 		/// <param name="right">Vector to compare with.</param>
 		/// <returns>TRUE if not equal, FALSE if they are.</returns>
-		public static bool operator !=(Vector4D left,Vector4D right)
+		public static bool operator !=(GorgonVector4 left,GorgonVector4 right)
 		{
 			return !(left == right);
 		}
@@ -943,9 +943,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to add to.</param>
 		/// <param name="right">Vector to add with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator +(Vector4D left,Vector4D right)
+		public static GorgonVector4 operator +(GorgonVector4 left,GorgonVector4 right)
 		{
-			Vector4D result;
+			GorgonVector4 result;
 			Add(ref left, ref right, out result);
 			return result;
 		}
@@ -956,9 +956,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to subtract.</param>
 		/// <param name="right">Vector to subtract with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator -(Vector4D left,Vector4D right)
+		public static GorgonVector4 operator -(GorgonVector4 left,GorgonVector4 right)
 		{
-			Vector4D result;
+			GorgonVector4 result;
 			Subtract(ref left, ref right, out result);
 			return result;
 		}
@@ -968,9 +968,9 @@ namespace OrpheusFramework
 		/// </summary>
 		/// <param name="vector">Vector to negate.</param>
 		/// <returns>A negated vector.</returns>
-		public static Vector4D operator -(Vector4D vector)
+		public static GorgonVector4 operator -(GorgonVector4 vector)
 		{
-			Vector4D result;
+			GorgonVector4 result;
 			Negate(ref vector, out result);
 			return result;
 		}
@@ -981,9 +981,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to multiply.</param>
 		/// <param name="right">Vector to multiply by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator *(Vector4D left,Vector4D right)
+		public static GorgonVector4 operator *(GorgonVector4 left,GorgonVector4 right)
 		{
-			Vector4D result;
+			GorgonVector4 result;
 			Multiply(ref left, ref right, out result);
 			return result;
 		}
@@ -994,9 +994,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to multiply with.</param>
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator *(Vector4D left,float scalar)
+		public static GorgonVector4 operator *(GorgonVector4 left,float scalar)
 		{
-			Vector4D result;
+			GorgonVector4 result;
 			Multiply(ref left, scalar, out result);
 			return result;
 		}
@@ -1007,9 +1007,9 @@ namespace OrpheusFramework
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <param name="right">Vector to multiply with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator *(float scalar,Vector4D right)
+		public static GorgonVector4 operator *(float scalar,GorgonVector4 right)
 		{
-			Vector4D result;
+			GorgonVector4 result;
 			Multiply(ref right, scalar, out result);
 			return result;
 		}
@@ -1020,9 +1020,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to divide.</param>
 		/// <param name="scalar">Scalar value to divide by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator /(Vector4D left,float scalar)
+		public static GorgonVector4 operator /(GorgonVector4 left,float scalar)
 		{
-			Vector4D result;
+			GorgonVector4 result;
 			Divide(ref left, scalar, out result);
 			return result;
 		}		
@@ -1033,9 +1033,9 @@ namespace OrpheusFramework
 		/// <param name="left">Vector to divide.</param>
 		/// <param name="right">Vector to divide by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector4D operator /(Vector4D left,Vector4D right)
+		public static GorgonVector4 operator /(GorgonVector4 left,GorgonVector4 right)
 		{
-			Vector4D result;
+			GorgonVector4 result;
 			Divide(ref left, ref right, out result);
 			return result;
 		}
@@ -1045,9 +1045,9 @@ namespace OrpheusFramework
 		/// </summary>
 		/// <param name="vector">2D vector.</param>
 		/// <returns>4D vector.</returns>
-		public static implicit operator Vector4D(Vector2D vector)
+		public static implicit operator GorgonVector4(Vector2D vector)
 		{
-			return new Vector4D(vector, 0.0f, 1.0f);
+			return new GorgonVector4(vector, 0.0f, 1.0f);
 		}
 
 		/// <summary>
@@ -1055,41 +1055,41 @@ namespace OrpheusFramework
 		/// </summary>
 		/// <param name="vector">3D vector</param>
 		/// <returns>4D vector.</returns>
-		public static implicit operator Vector4D(Vector3D vector)
+		public static implicit operator GorgonVector4(Vector3D vector)
 		{
-			return new Vector4D(vector, 1.0f);
+			return new GorgonVector4(vector, 1.0f);
 		}
 
-        /// <summary>
-        /// Operator to convert a 4D vector into a 3D vector.
-        /// </summary>
-        /// <param name="vector">4D vector to convert.</param>
-        /// <returns>3D vector.</returns>
-        public static explicit operator Vector3D(Vector4D vector)
-        {
-            return new Vector3D(vector.X, vector.Y, vector.Z);
-        }
+		/// <summary>
+		/// Operator to convert a 4D vector into a 3D vector.
+		/// </summary>
+		/// <param name="vector">4D vector to convert.</param>
+		/// <returns>3D vector.</returns>
+		public static explicit operator Vector3D(GorgonVector4 vector)
+		{
+			return new Vector3D(vector.X, vector.Y, vector.Z);
+		}
 
-        /// <summary>
-        /// Operator to convert a 4D vector into a 2D vector.
-        /// </summary>
-        /// <param name="vector">4D vector to convert.</param>
-        /// <returns>2D vector.</returns>
-        public static explicit operator Vector2D(Vector4D vector)
-        {
-            return new Vector2D(vector.X, vector.Y);
-        }
+		/// <summary>
+		/// Operator to convert a 4D vector into a 2D vector.
+		/// </summary>
+		/// <param name="vector">4D vector to convert.</param>
+		/// <returns>2D vector.</returns>
+		public static explicit operator Vector2D(GorgonVector4 vector)
+		{
+			return new Vector2D(vector.X, vector.Y);
+		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector4D"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonVector4"/> struct.
 		/// </summary>
 		/// <param name="x">Horizontal position of the vector.</param>
 		/// <param name="y">Vertical posiition of the vector.</param>
 		/// <param name="z">Depth position of the vector.</param>
 		/// <param name="w">W component of the vector.</param>
-		public Vector4D(float x,float y,float z,float w)
+		public GorgonVector4(float x,float y,float z,float w)
 		{
 			X = x;
 			Y = y;
@@ -1098,20 +1098,20 @@ namespace OrpheusFramework
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector4D"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonVector4"/> struct.
 		/// </summary>
 		/// <param name="value">The value used to initialize the vector.</param>
-		public Vector4D(float value)
+		public GorgonVector4(float value)
 		{
 			W = Z = Y = X = value;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector4D"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonVector4"/> struct.
 		/// </summary>
 		/// <param name="vector">The vector to convert.</param>
 		/// <param name="w">W component of the vector.</param>
-		public Vector4D(Vector3D vector, float w)
+		public GorgonVector4(Vector3D vector, float w)
 		{
 			X = vector.X;
 			Y = vector.Y;
@@ -1120,12 +1120,12 @@ namespace OrpheusFramework
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector4D"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonVector4"/> struct.
 		/// </summary>
 		/// <param name="vector">The vector to convert.</param>
 		/// <param name="z">Z component of the vector.</param>
 		/// <param name="w">W component of the vector.</param>
-		public Vector4D(Vector2D vector, float z, float w)
+		public GorgonVector4(Vector2D vector, float z, float w)
 		{
 			X = vector.X;
 			Y = vector.Y;
@@ -1142,9 +1142,9 @@ namespace OrpheusFramework
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(Vector4D other)
+		public bool Equals(GorgonVector4 other)
 		{
-			return (MathUtility.EqualFloat(other.X, X) && MathUtility.EqualFloat(other.Y, Y) && MathUtility.EqualFloat(other.Z, Z) && MathUtility.EqualFloat(other.W, W));
+			return (GorgonMathUtility.EqualFloat(other.X, X) && GorgonMathUtility.EqualFloat(other.Y, Y) && GorgonMathUtility.EqualFloat(other.Z, Z) && GorgonMathUtility.EqualFloat(other.W, W));
 		}
 		#endregion
 	}
