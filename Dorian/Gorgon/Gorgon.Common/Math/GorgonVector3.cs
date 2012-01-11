@@ -32,7 +32,7 @@ using System.Drawing;
 namespace GorgonLibrary.Math
 {
 	/// <summary>
-	/// Value type to represent a 3 dimensional vector.
+	/// A 3 dimensional vector.
 	/// </summary>
 	/// <remarks>
 	/// Vector mathematics are commonly used in graphical 3D applications.  And other
@@ -40,34 +40,34 @@ namespace GorgonLibrary.Math
 	/// This valuetype provides us a convienient way to use vectors and their operations.
 	/// </remarks>
 	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.Vector3DTypeConverter))]
-	public struct Vector3D
-		: IEquatable<Vector3D>
+	public struct GorgonVector3
+		: IEquatable<GorgonVector3>
 	{
 		#region Variables.
 		/// <summary>
 		/// Empty vector.
 		/// </summary>
-		public readonly static Vector3D Zero = new Vector3D(0);
+		public readonly static GorgonVector3 Zero = new GorgonVector3(0);
 		/// <summary>
 		/// Unit vector.
 		/// </summary>
-		public readonly static Vector3D Unit = new Vector3D(1.0f);
+		public readonly static GorgonVector3 Unit = new GorgonVector3(1.0f);
 		/// <summary>
 		/// Unit X vector.
 		/// </summary>
-		public readonly static Vector3D UnitX = new Vector3D(1.0f,0,0);
+		public readonly static GorgonVector3 UnitX = new GorgonVector3(1.0f,0,0);
 		/// <summary>
 		/// Unit Y vector.
 		/// </summary>
-		public readonly static Vector3D UnitY = new Vector3D(0,1.0f,0);
+		public readonly static GorgonVector3 UnitY = new GorgonVector3(0,1.0f,0);
 		/// <summary>
 		/// Unit Z vector.
 		/// </summary>
-		public readonly static Vector3D UnitZ = new Vector3D(0,0,1.0f);
+		public readonly static GorgonVector3 UnitZ = new GorgonVector3(0,0,1.0f);
 		/// <summary>
 		/// The size of the vector in bytes.
 		/// </summary>
-		public readonly static int Size = Marshal.SizeOf(typeof(Vector3D));
+		public readonly static int Size = Native.DirectAccess.SizeOf<GorgonVector3>();
 		/// <summary>
 		/// Horizontal position of the vector.
 		/// </summary>
@@ -153,7 +153,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to add to.</param>
 		/// <param name="right">Vector to add with.</param>
 		/// <param name="result">The combined vector.</param>
-		public static void Add(ref Vector3D left, ref Vector3D right, out Vector3D result)
+		public static void Add(ref GorgonVector3 left, ref GorgonVector3 right, out GorgonVector3 result)
 		{
 			result.X = left.X + right.X;
 			result.Y = left.Y + right.Y;
@@ -166,9 +166,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to add to.</param>
 		/// <param name="right">Vector to add with.</param>
 		/// <returns>The combined vector.</returns>
-		public static Vector3D Add(Vector3D left, Vector3D right)		
+		public static GorgonVector3 Add(GorgonVector3 left, GorgonVector3 right)		
 		{
-			return new Vector3D(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return new GorgonVector3(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
 		}
 
 		/// <summary>
@@ -177,7 +177,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to subtract.</param>
 		/// <param name="right">Vector to subtract with.</param>
 		/// <param name="result">The difference between the two vectors.</param>
-		public static void Subtract(ref Vector3D left, ref Vector3D right, out Vector3D result)
+		public static void Subtract(ref GorgonVector3 left, ref GorgonVector3 right, out GorgonVector3 result)
 		{
 			result.X = left.X - right.X;
 			result.Y = left.Y - right.Y;
@@ -190,9 +190,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to subtract.</param>
 		/// <param name="right">Vector to subtract with.</param>
 		/// <returns>The difference between the two vectors.</returns>
-		public static Vector3D Subtract(Vector3D left, Vector3D right)
+		public static GorgonVector3 Subtract(GorgonVector3 left, GorgonVector3 right)
 		{
-			return new Vector3D(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return new GorgonVector3(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
 		}
 
 		/// <summary>
@@ -200,7 +200,7 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">Vector to negate.</param>
 		/// <param name="result">The negated vector.</param>
-		public static void Negate(ref Vector3D vector, out Vector3D result)
+		public static void Negate(ref GorgonVector3 vector, out GorgonVector3 result)
 		{
 			result.X = -vector.X;
 			result.Y = -vector.Y;
@@ -212,9 +212,9 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">Vector to negate.</param>
 		/// <returns>The negated vector.</returns>
-		public static Vector3D Negate(Vector3D vector)
+		public static GorgonVector3 Negate(GorgonVector3 vector)
 		{
-			return new Vector3D(-vector.X, -vector.Y, -vector.Z);
+			return new GorgonVector3(-vector.X, -vector.Y, -vector.Z);
 		}
 
 		/// <summary>
@@ -224,7 +224,7 @@ namespace GorgonLibrary.Math
 		/// <param name="scalar">Scalar value to divide by.</param>
 		/// <param name="result">The quotient vector.</param>
 		/// <exception cref="System.DivideByZeroException">One of the components of the divisor was 0.</exception>
-		public static void Divide(ref Vector3D left, float scalar, out Vector3D result)
+		public static void Divide(ref GorgonVector3 left, float scalar, out GorgonVector3 result)
 		{
 			// Do this so we don't have to do multiple divides.
 			float inverse = 1.0f / scalar;
@@ -241,11 +241,11 @@ namespace GorgonLibrary.Math
 		/// <param name="scalar">Scalar value to divide by.</param>
 		/// <returns>The quotient vector.</returns>
 		/// <exception cref="System.DivideByZeroException">One of the components of the divisor was 0.</exception>
-		public static Vector3D Divide(Vector3D left, float scalar)
+		public static GorgonVector3 Divide(GorgonVector3 left, float scalar)
 		{
 			// Do this so we don't have to do multiple divides.
 			float inverse = 1.0f / scalar;
-			return new Vector3D(left.X * inverse, left.Y * inverse, left.Z * inverse);
+			return new GorgonVector3(left.X * inverse, left.Y * inverse, left.Z * inverse);
 		}
 
 		/// <summary>
@@ -255,7 +255,7 @@ namespace GorgonLibrary.Math
 		/// <param name="right">Vector to divide by.</param>
 		/// <param name="result">The quotient vector.</param>
 		/// <exception cref="System.DivideByZeroException">One of the components of the divisor was 0.</exception>
-		public static void Divide(ref Vector3D left, ref Vector3D right, out Vector3D result)
+		public static void Divide(ref GorgonVector3 left, ref GorgonVector3 right, out GorgonVector3 result)
 		{
 			result.X = left.X / right.X;
 			result.Y = left.Y / right.Y;
@@ -269,9 +269,9 @@ namespace GorgonLibrary.Math
 		/// <param name="right">Vector to divide by.</param>
 		/// <returns>The quotient vector.</returns>
 		/// <exception cref="System.DivideByZeroException">One of the components of the divisor was 0.</exception>
-		public static Vector3D Divide(Vector3D left, Vector3D right)
+		public static GorgonVector3 Divide(GorgonVector3 left, GorgonVector3 right)
 		{
-			return new Vector3D(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return new GorgonVector3(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
 		}
 
 		/// <summary>
@@ -280,7 +280,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to multiply.</param>
 		/// <param name="right">Vector to multiply by.</param>
 		/// <param name="result">The product of the two vectors.</param>
-		public static void Multiply(ref Vector3D left, ref Vector3D right, out Vector3D result)
+		public static void Multiply(ref GorgonVector3 left, ref GorgonVector3 right, out GorgonVector3 result)
 		{
 			result.X = left.X * right.X;
 			result.Y = left.Y * right.Y;
@@ -293,9 +293,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to multiply.</param>
 		/// <param name="right">Vector to multiply by.</param>
 		/// <returns>The product of the two vectors.</returns>
-		public static Vector3D Multiply(Vector3D left, Vector3D right)
+		public static GorgonVector3 Multiply(GorgonVector3 left, GorgonVector3 right)
 		{
-			return new Vector3D(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return new GorgonVector3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
 		}
 
 		/// <summary>
@@ -304,7 +304,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to multiply with.</param>
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <param name="result">The product of the vector and the scalar value.</param>
-		public static void Multiply(ref Vector3D left, float scalar, out Vector3D result)
+		public static void Multiply(ref GorgonVector3 left, float scalar, out GorgonVector3 result)
 		{
 			result.X = left.X * scalar;
 			result.Y = left.Y * scalar;
@@ -317,9 +317,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to multiply with.</param>
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <returns>The product of the vector and the scalar value.</returns>
-		public static Vector3D Multiply(Vector3D left, float scalar)
+		public static GorgonVector3 Multiply(GorgonVector3 left, float scalar)
 		{
-			return new Vector3D(left.X * scalar, left.Y * scalar, left.Z * scalar);
+			return new GorgonVector3(left.X * scalar, left.Y * scalar, left.Z * scalar);
 		}
 
 		/// <summary>
@@ -327,7 +327,7 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">Vector to round.</param>
 		/// <param name="result">Rounded vector.</param>
-		public static void Round(ref Vector3D vector, out Vector3D result)
+		public static void Round(ref GorgonVector3 vector, out GorgonVector3 result)
 		{
 			result.X = GorgonMathUtility.RoundInt(vector.X);
 			result.Y = GorgonMathUtility.RoundInt(vector.Y);
@@ -339,9 +339,9 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">Vector to round.</param>
 		/// <returns>Rounded vector.</returns>
-		public static Vector3D Round(Vector3D vector)
+		public static GorgonVector3 Round(GorgonVector3 vector)
 		{
-			return new Vector3D(GorgonMathUtility.RoundInt(vector.X), GorgonMathUtility.RoundInt(vector.Y), GorgonMathUtility.RoundInt(vector.Z));
+			return new GorgonVector3(GorgonMathUtility.RoundInt(vector.X), GorgonMathUtility.RoundInt(vector.Y), GorgonMathUtility.RoundInt(vector.Z));
 		}
 
 		/// <summary>
@@ -350,7 +350,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Left vector to use in the dot product operation.</param>
 		/// <param name="right">Right vector to use in the dot product operation.</param>
 		/// <param name="result">The dot product.</param>
-		public static void DotProduct(ref Vector3D left, ref Vector3D right, out float result)
+		public static void DotProduct(ref GorgonVector3 left, ref GorgonVector3 right, out float result)
 		{
 			result = (left.X * right.X + left.Y * right.Y + left.Z * right.Z);
 		}
@@ -361,7 +361,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Left vector to use in the dot product operation.</param>
 		/// <param name="right">Right vector to use in the dot product operation.</param>
 		/// <returns>The dot product.</returns>
-		public static float DotProduct(Vector3D left, Vector3D right)
+		public static float DotProduct(GorgonVector3 left, GorgonVector3 right)
 		{
 			return (left.X * right.X + left.Y * right.Y + left.Z * right.Z);
 		}
@@ -372,7 +372,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Left vector to use in the dot product operation.</param>
 		/// <param name="right">Right vector to use in the dot product operation.</param>
 		/// <param name="result">Vector containing the cross product.</param>
-		public static void CrossProduct(ref Vector3D left, ref Vector3D right, out Vector3D result)
+		public static void CrossProduct(ref GorgonVector3 left, ref GorgonVector3 right, out GorgonVector3 result)
 		{
 			result.X = left.Y * right.Z - left.Z * right.Y;
 			result.Y = left.Z * right.X - left.X * right.Z;
@@ -385,9 +385,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Left vector to use in the dot product operation.</param>
 		/// <param name="right">Right vector to use in the dot product operation.</param>
 		/// <returns>Vector containing the cross product.</returns>
-		public static Vector3D CrossProduct(Vector3D left, Vector3D right)
+		public static GorgonVector3 CrossProduct(GorgonVector3 left, GorgonVector3 right)
 		{
-			return new Vector3D(left.Y * right.Z - left.Z * right.Y, 
+			return new GorgonVector3(left.Y * right.Z - left.Z * right.Y, 
 								left.Z * right.X - left.X * right.Z,
 								left.X * right.Y - left.Y * right.X);
 		}
@@ -415,7 +415,7 @@ namespace GorgonLibrary.Math
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <param name="result">A vector containing the lowest values of the two vectors.</param>
-		public static void Floor(ref Vector3D vector1, ref Vector3D vector2, out Vector3D result)
+		public static void Floor(ref GorgonVector3 vector1, ref GorgonVector3 vector2, out GorgonVector3 result)
 		{
 			result.X = (vector1.X < vector2.X) ? vector1.X : vector2.X;
 			result.Y = (vector1.Y < vector2.Y) ? vector1.Y : vector2.Y;
@@ -428,9 +428,9 @@ namespace GorgonLibrary.Math
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <returns>A vector containing the lowest values of the two vectors.</returns>
-		public static Vector3D Floor(Vector3D vector1, Vector3D vector2)
+		public static GorgonVector3 Floor(GorgonVector3 vector1, GorgonVector3 vector2)
 		{
-			return new Vector3D((vector1.X < vector2.X) ? vector1.X : vector2.X, (vector1.Y < vector2.Y) ? vector1.Y : vector2.Y, (vector1.Z < vector2.Z) ? vector1.Z : vector2.Z);
+			return new GorgonVector3((vector1.X < vector2.X) ? vector1.X : vector2.X, (vector1.Y < vector2.Y) ? vector1.Y : vector2.Y, (vector1.Z < vector2.Z) ? vector1.Z : vector2.Z);
 		}
 
 		/// <summary>
@@ -439,7 +439,7 @@ namespace GorgonLibrary.Math
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <param name="result">A vector containing the highest values of the two vectors.</param>
-		public static void Ceiling(ref Vector3D vector1, ref Vector3D vector2, out Vector3D result)
+		public static void Ceiling(ref GorgonVector3 vector1, ref GorgonVector3 vector2, out GorgonVector3 result)
 		{
 			result.X = (vector1.X > vector2.X) ? vector1.X : vector2.X;
 			result.Y = (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y;
@@ -452,9 +452,9 @@ namespace GorgonLibrary.Math
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <returns>A vector containing the highest values of the two vectors.</returns>
-		public static Vector3D Ceiling(Vector3D vector1, Vector3D vector2)
+		public static GorgonVector3 Ceiling(GorgonVector3 vector1, GorgonVector3 vector2)
 		{
-			return new Vector3D((vector1.X > vector2.X) ? vector1.X : vector2.X, (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y, (vector1.Z > vector2.Z) ? vector1.Z : vector2.Z);
+			return new GorgonVector3((vector1.X > vector2.X) ? vector1.X : vector2.X, (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y, (vector1.Z > vector2.Z) ? vector1.Z : vector2.Z);
 		}
 
 		/// <summary>
@@ -464,7 +464,7 @@ namespace GorgonLibrary.Math
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public override bool Equals(object obj)
 		{
-			IEquatable<Vector3D> equate = obj as IEquatable<Vector3D>;
+			IEquatable<GorgonVector3> equate = obj as IEquatable<GorgonVector3>;
 
 			if (equate != null)
 				return equate.Equals(this);
@@ -478,7 +478,7 @@ namespace GorgonLibrary.Math
 		/// <param name="vector1">Vector to compare.</param>
 		/// <param name="vector2">Vector to compare.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool Equals(ref Vector3D vector1, ref Vector3D vector2)
+		public static bool Equals(ref GorgonVector3 vector1, ref GorgonVector3 vector2)
 		{
 			return GorgonMathUtility.EqualFloat(vector1.X, vector2.X) && GorgonMathUtility.EqualFloat(vector1.Y, vector2.Y) && GorgonMathUtility.EqualFloat(vector1.Z, vector2.Z);
 		}
@@ -489,7 +489,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The hash code for this object.</returns>
 		public override int GetHashCode()
 		{
-			return X.GetHashCode() ^ (Y.GetHashCode() ^ Z.GetHashCode());
+			return 281.GenerateHash(X).GenerateHash(Y).GenerateHash(Z);
 		}
 
 		/// <summary>
@@ -507,9 +507,10 @@ namespace GorgonLibrary.Math
 		/// <param name="m">Matrix used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <param name="result">The resulting transformed vector.</param>
-		public static void Transform(ref Matrix m, ref Vector3D vec, out Vector3D result)
+		public static void Transform(ref GorgonMatrix m, ref GorgonVector3 vec, out GorgonVector3 result)
 		{
 			float scale = 1.0f / (m.m41 * vec.X) + (m.m42 * vec.Y) + (m.m43 * vec.Z) + m.m44;
+
 
 			result.X = ((m.m11 * vec.X) + (m.m12 * vec.Y) + (m.m13 * vec.Z) + m.m14) * scale;
 			result.Y = ((m.m21 * vec.X) + (m.m22 * vec.Y) + (m.m23 * vec.Z) + m.m24) * scale;
@@ -522,11 +523,11 @@ namespace GorgonLibrary.Math
 		/// <param name="m">Matrix used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <returns>The resulting transformed vector.</returns>
-		public static Vector3D Transform(Matrix m, Vector3D vec)
+		public static GorgonVector3 Transform(GorgonMatrix m, GorgonVector3 vec)
 		{
 			float scale = 1.0f / (m.m41 * vec.X) + (m.m42 * vec.Y) + (m.m43 * vec.Z) + m.m44;
 
-			return new Vector3D(((m.m11 * vec.X) + (m.m12 * vec.Y) + (m.m13 * vec.Z) + m.m14) * scale,
+			return new GorgonVector3(((m.m11 * vec.X) + (m.m12 * vec.Y) + (m.m13 * vec.Z) + m.m14) * scale,
 								((m.m21 * vec.X) + (m.m22 * vec.Y) + (m.m23 * vec.Z) + m.m24) * scale,
 								((m.m31 * vec.X) + (m.m32 * vec.Y) + (m.m33 * vec.Z) + m.m34) * scale);
 		}
@@ -537,7 +538,7 @@ namespace GorgonLibrary.Math
 		/// <param name="q">Quaternion used to transform.</param>
 		/// <param name="vector">Vector to transform.</param>
 		/// <param name="result">The transformed vector.</param>
-		public static void Transform(ref Quaternion q, ref Vector3D vector, out Vector3D result)
+		public static void Transform(ref GorgonQuaternion q, ref GorgonVector3 vector, out GorgonVector3 result)
 		{
 			float x = q.X + q.X;
 			float y = q.Y + q.Y;
@@ -563,7 +564,7 @@ namespace GorgonLibrary.Math
 		/// <param name="q">Quaternion used to transform.</param>
 		/// <param name="vector">Vector to transform.</param>
 		/// <returns>The transformed vector.</returns>
-		public static Vector3D Transform(Quaternion q, Vector3D vector)
+		public static GorgonVector3 Transform(GorgonQuaternion q, GorgonVector3 vector)
 		{
 			float x = q.X + q.X;
 			float y = q.Y + q.Y;
@@ -578,21 +579,21 @@ namespace GorgonLibrary.Math
 			float yz = q.Y * z;
 			float zz = q.Z * z;
 
-			return new Vector3D(((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy)),
+			return new GorgonVector3(((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy)),
 								((vector.X * (xy + wz)) + (vector.Y * ((1.0f - xx) - zz))) + (vector.Z * (yz - wx)),
 								((vector.X * (xz - wy)) + (vector.Y * (yz + wx))) + (vector.Z * ((1.0f - xx) - yy)));
 		}
 
 		/// <summary>
-		/// Returns a <see cref="Vector3D"/> containing the 3D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 3D triangle.
+		/// Returns a <see cref="GorgonVector3"/> containing the 3D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 3D triangle.
 		/// </summary>
-		/// <param name="vertex1Coordinate">A <see cref="Vector3D"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
-		/// <param name="vertex2Coordinate">A <see cref="Vector3D"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
-		/// <param name="vertex3Coordinate">A <see cref="Vector3D"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
+		/// <param name="vertex1Coordinate">A <see cref="GorgonVector3"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
+		/// <param name="vertex2Coordinate">A <see cref="GorgonVector3"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
+		/// <param name="vertex3Coordinate">A <see cref="GorgonVector3"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
 		/// <param name="vertex2Weight">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="vertex2Coordinate"/>).</param>
 		/// <param name="vertex3Weight">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="vertex3Coordinate"/>).</param>
 		/// <param name="result">When the method completes, contains the 3D Cartesian coordinates of the specified point.</param>
-		public static void Barycentric(ref Vector3D vertex1Coordinate, ref Vector3D vertex2Coordinate, ref Vector3D vertex3Coordinate, float vertex2Weight, float vertex3Weight, out Vector3D result)
+		public static void Barycentric(ref GorgonVector3 vertex1Coordinate, ref GorgonVector3 vertex2Coordinate, ref GorgonVector3 vertex3Coordinate, float vertex2Weight, float vertex3Weight, out GorgonVector3 result)
 		{
 			result.X = (vertex1Coordinate.X + (vertex2Weight * (vertex2Coordinate.X - vertex1Coordinate.X))) + (vertex3Weight * (vertex3Coordinate.X - vertex1Coordinate.X));
 			result.Y = (vertex1Coordinate.Y + (vertex2Weight * (vertex2Coordinate.Y - vertex1Coordinate.Y))) + (vertex3Weight * (vertex3Coordinate.Y - vertex1Coordinate.Y));
@@ -600,17 +601,17 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Returns a <see cref="Vector3D"/> containing the 3D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 3D triangle.
+		/// Returns a <see cref="GorgonVector3"/> containing the 3D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 3D triangle.
 		/// </summary>
-		/// <param name="vertex1Coordinate">A <see cref="Vector3D"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
-		/// <param name="vertex2Coordinate">A <see cref="Vector3D"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
-		/// <param name="vertex3Coordinate">A <see cref="Vector3D"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
+		/// <param name="vertex1Coordinate">A <see cref="GorgonVector3"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
+		/// <param name="vertex2Coordinate">A <see cref="GorgonVector3"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
+		/// <param name="vertex3Coordinate">A <see cref="GorgonVector3"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
 		/// <param name="vertex2Weight">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="vertex2Coordinate"/>).</param>
 		/// <param name="vertex3Weight">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="vertex3Coordinate"/>).</param>
 		/// <returns>When the method completes, contains the 3D Cartesian coordinates of the specified point.</returns>
-		public static Vector3D Barycentric(Vector3D vertex1Coordinate, Vector3D vertex2Coordinate, Vector3D vertex3Coordinate, float vertex2Weight, float vertex3Weight)
+		public static GorgonVector3 Barycentric(GorgonVector3 vertex1Coordinate, GorgonVector3 vertex2Coordinate, GorgonVector3 vertex3Coordinate, float vertex2Weight, float vertex3Weight)
 		{
-			return new Vector3D((vertex1Coordinate.X + (vertex2Weight * (vertex2Coordinate.X - vertex1Coordinate.X))) + (vertex3Weight * (vertex3Coordinate.X - vertex1Coordinate.X)),
+			return new GorgonVector3((vertex1Coordinate.X + (vertex2Weight * (vertex2Coordinate.X - vertex1Coordinate.X))) + (vertex3Weight * (vertex3Coordinate.X - vertex1Coordinate.X)),
 								(vertex1Coordinate.Y + (vertex2Weight * (vertex2Coordinate.Y - vertex1Coordinate.Y))) + (vertex3Weight * (vertex3Coordinate.Y - vertex1Coordinate.Y)),
 								(vertex1Coordinate.Z + (vertex2Weight * (vertex2Coordinate.Z - vertex1Coordinate.Z))) + (vertex3Weight * (vertex3Coordinate.Z - vertex1Coordinate.Z)));
 		}
@@ -624,7 +625,7 @@ namespace GorgonLibrary.Math
 		/// <param name="value4">The fourth position in the interpolation.</param>
 		/// <param name="amount">Weighting factor.</param>
 		/// <param name="result">When the method completes, contains the result of the Catmull-Rom interpolation.</param>
-		public static void CatmullRom(ref Vector3D value1, ref Vector3D value2, ref Vector3D value3, ref Vector3D value4, float amount, out Vector3D result)
+		public static void CatmullRom(ref GorgonVector3 value1, ref GorgonVector3 value2, ref GorgonVector3 value3, ref GorgonVector3 value4, float amount, out GorgonVector3 result)
 		{
 			float squared = amount * amount;
 			float cubed = amount * squared;
@@ -651,12 +652,12 @@ namespace GorgonLibrary.Math
 		/// <param name="value4">The fourth position in the interpolation.</param>
 		/// <param name="amount">Weighting factor.</param>
 		/// <returns>When the method completes, contains the result of the Catmull-Rom interpolation.</returns>
-		public static Vector3D CatmullRom(Vector3D value1, Vector3D value2, Vector3D value3, Vector3D value4, float amount)
+		public static GorgonVector3 CatmullRom(GorgonVector3 value1, GorgonVector3 value2, GorgonVector3 value3, GorgonVector3 value4, float amount)
 		{
 			float squared = amount * amount;
 			float cubed = amount * squared;
 
-			return new Vector3D(0.5f * ((((2.0f * value2.X) + ((-value1.X + value3.X) * amount)) + 
+			return new GorgonVector3(0.5f * ((((2.0f * value2.X) + ((-value1.X + value3.X) * amount)) + 
 								(((((2.0f * value1.X) - (5.0f * value2.X)) + (4.0f * value3.X)) - value4.X) * squared)) + 
 								((((-value1.X + (3.0f * value2.X)) - (3.0f * value3.X)) + value4.X) * cubed)),
 								0.5f * ((((2.0f * value2.Y) + ((-value1.Y + value3.Y) * amount)) + 
@@ -676,7 +677,7 @@ namespace GorgonLibrary.Math
 		/// <param name="tangent2">Second source tangent vector.</param>
 		/// <param name="amount">Weighting factor.</param>
 		/// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-		public static void Hermite(ref Vector3D value1, ref Vector3D tangent1, ref Vector3D value2, ref Vector3D tangent2, float amount, out Vector3D result)
+		public static void Hermite(ref GorgonVector3 value1, ref GorgonVector3 tangent1, ref GorgonVector3 value2, ref GorgonVector3 tangent2, float amount, out GorgonVector3 result)
 		{
 			float squared = amount * amount;
 			float cubed = amount * squared;
@@ -699,7 +700,7 @@ namespace GorgonLibrary.Math
 		/// <param name="tangent2">Second source tangent vector.</param>
 		/// <param name="amount">Weighting factor.</param>
 		/// <returns>When the method completes, contains the result of the Hermite spline interpolation.</returns>
-		public static Vector3D Hermite(Vector3D value1, Vector3D tangent1, Vector3D value2, Vector3D tangent2, float amount)
+		public static GorgonVector3 Hermite(GorgonVector3 value1, GorgonVector3 tangent1, GorgonVector3 value2, GorgonVector3 tangent2, float amount)
 		{
 			float squared = amount * amount;
 			float cubed = amount * squared;
@@ -708,7 +709,7 @@ namespace GorgonLibrary.Math
 			float part3 = (cubed - (2.0f * squared)) + amount;
 			float part4 = cubed - squared;
 
-			return new Vector3D((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+			return new GorgonVector3((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
 								(((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
 								(((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4));
 		}
@@ -725,7 +726,7 @@ namespace GorgonLibrary.Math
 		/// <code>start + (end - start) * amount</code>
 		/// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
 		/// </remarks>
-		public static void Lerp(ref Vector3D start, ref Vector3D end, float amount, out Vector3D result)
+		public static void Lerp(ref GorgonVector3 start, ref GorgonVector3 end, float amount, out GorgonVector3 result)
 		{
 			result.X = start.X + ((end.X - start.X) * amount);
 			result.Y = start.Y + ((end.Y - start.Y) * amount);
@@ -744,9 +745,9 @@ namespace GorgonLibrary.Math
 		/// <code>start + (end - start) * amount</code>
 		/// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
 		/// </remarks>
-		public static Vector3D Lerp(Vector3D start, Vector3D end, float amount)
+		public static GorgonVector3 Lerp(GorgonVector3 start, GorgonVector3 end, float amount)
 		{
-			return new Vector3D(start.X + ((end.X - start.X) * amount), start.Y + ((end.Y - start.Y) * amount), start.Z + ((end.Z - start.Z) * amount));
+			return new GorgonVector3(start.X + ((end.X - start.X) * amount), start.Y + ((end.Y - start.Y) * amount), start.Z + ((end.Z - start.Z) * amount));
 		}
 
 		/// <summary>
@@ -756,7 +757,7 @@ namespace GorgonLibrary.Math
 		/// <param name="end">End vector.</param>
 		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
 		/// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
-		public static void SmoothStep(ref Vector3D start, ref Vector3D end, float amount, out Vector3D result)
+		public static void SmoothStep(ref GorgonVector3 start, ref GorgonVector3 end, float amount, out GorgonVector3 result)
 		{
 			amount = (amount > 1.0f) ? 1.0f : ((amount < 0.0f) ? 0.0f : amount);
 			amount = (amount * amount) * (3.0f - (2.0f * amount));
@@ -773,11 +774,11 @@ namespace GorgonLibrary.Math
 		/// <param name="end">End vector.</param>
 		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
 		/// <returns>When the method completes, contains the cubic interpolation of the two vectors.</returns>
-		public static Vector3D SmoothStep(Vector3D start, Vector3D end, float amount)
+		public static GorgonVector3 SmoothStep(GorgonVector3 start, GorgonVector3 end, float amount)
 		{
 			amount = (amount > 1.0f) ? 1.0f : ((amount < 0.0f) ? 0.0f : amount);
 			amount = (amount * amount) * (3.0f - (2.0f * amount));
-			return new Vector3D(start.X + ((end.X - start.X) * amount), start.Y + ((end.Y - start.Y) * amount), start.Z + ((end.Z - start.Z) * amount));
+			return new GorgonVector3(start.X + ((end.X - start.X) * amount), start.Y + ((end.Y - start.Y) * amount), start.Z + ((end.Z - start.Z) * amount));
 		}
 
 		/// <summary>
@@ -786,7 +787,7 @@ namespace GorgonLibrary.Math
 		/// <param name="vector1">Starting vector.</param>
 		/// <param name="vector2">Ending vector.</param>
 		/// <returns>The distance between the vectors.</returns>
-		public static float Distance(Vector3D vector1, Vector3D vector2)
+		public static float Distance(GorgonVector3 vector1, GorgonVector3 vector2)
 		{
 			float x = vector1.X - vector2.X;
 			float y = vector1.Y - vector2.Y;
@@ -800,7 +801,7 @@ namespace GorgonLibrary.Math
 		/// <param name="vector1">Starting vector.</param>
 		/// <param name="vector2">Ending vector.</param>
 		/// <returns>The squared distance between the vectors.</returns>
-		public static float DistanceSquared(Vector3D vector1, Vector3D vector2)
+		public static float DistanceSquared(GorgonVector3 vector1, GorgonVector3 vector2)
 		{
 			float x = vector1.X - vector2.X;
 			float y = vector1.Y - vector2.Y;
@@ -814,7 +815,7 @@ namespace GorgonLibrary.Math
 		/// <param name="vector1">Starting vector.</param>
 		/// <param name="vector2">Ending vector.</param>
 		/// <param name="result">The distance between the vectors.</param>
-		public static void Distance(ref Vector3D vector1, ref Vector3D vector2, out float result)
+		public static void Distance(ref GorgonVector3 vector1, ref GorgonVector3 vector2, out float result)
 		{
 			float x = vector1.X - vector2.X;
 			float y = vector1.Y - vector2.Y;
@@ -830,7 +831,7 @@ namespace GorgonLibrary.Math
 		/// <param name="result">When the method completes, contains the reflected vector.</param>
 		/// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
 		/// whether the original vector was close enough to the surface to hit it.</remarks>
-		public static void Reflect(ref Vector3D vector, ref Vector3D normal, out Vector3D result)
+		public static void Reflect(ref GorgonVector3 vector, ref GorgonVector3 normal, out GorgonVector3 result)
 		{
 			float dot = ((vector.X * normal.X) + (vector.Y * normal.Y)) + (vector.Z * normal.Z);
 
@@ -847,11 +848,11 @@ namespace GorgonLibrary.Math
 		/// <returns>When the method completes, contains the reflected vector.</returns>
 		/// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
 		/// whether the original vector was close enough to the surface to hit it.</remarks>
-		public static Vector3D Reflect(Vector3D vector, Vector3D normal)
+		public static GorgonVector3 Reflect(GorgonVector3 vector, GorgonVector3 normal)
 		{
 			float dot = ((vector.X * normal.X) + (vector.Y * normal.Y)) + (vector.Z * normal.Z);
 
-			return new Vector3D(vector.X - ((2.0f * dot) * normal.X), vector.Y - ((2.0f * dot) * normal.Y), vector.Z - ((2.0f * dot) * normal.Z));
+			return new GorgonVector3(vector.X - ((2.0f * dot) * normal.X), vector.Y - ((2.0f * dot) * normal.Y), vector.Z - ((2.0f * dot) * normal.Z));
 		}
 
 		/// <summary>
@@ -864,13 +865,13 @@ namespace GorgonLibrary.Math
 		/// <param name="view">The view matrix.</param>
 		/// <param name="world">The world matrix.</param>
 		/// <param name="result">When the method completes, contains the vector in screen space.</param>
-		public static void Project(ref Vector3D vector, ref RectangleF viewRectangle, ref OrpheusMinMaxF depthRange, ref Matrix projection, ref Matrix view, ref Matrix world, out Vector3D result)
+		public static void Project(ref GorgonVector3 vector, ref RectangleF viewRectangle, ref GorgonMinMaxF depthRange, ref GorgonMatrix projection, ref GorgonMatrix view, ref GorgonMatrix world, out GorgonVector3 result)
 		{
-			Vector4D homoVector = new Vector4D(vector, 1.0f);
+			GorgonVector4 homoVector = new GorgonVector4(vector, 1.0f);
 
-			Vector4D.Transform(ref world, ref homoVector, out homoVector);
-			Vector4D.Transform(ref view, ref homoVector, out homoVector);
-			Vector4D.Transform(ref projection, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref world, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref view, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref projection, ref homoVector, out homoVector);
 
 			float invW = 1.0f / homoVector.W;
 			float halfWidth = viewRectangle.Width * 0.5f;
@@ -890,12 +891,12 @@ namespace GorgonLibrary.Math
 		/// <param name="projection">The projection matrix.</param>
 		/// <param name="view">The view matrix.</param>
 		/// <param name="result">When the method completes, contains the vector in screen space.</param>
-		public static void Project(ref Vector3D vector, ref RectangleF viewRectangle, ref OrpheusMinMaxF depthRange, ref Matrix projection, ref Matrix view, out Vector3D result)
+		public static void Project(ref GorgonVector3 vector, ref RectangleF viewRectangle, ref GorgonMinMaxF depthRange, ref GorgonMatrix projection, ref GorgonMatrix view, out GorgonVector3 result)
 		{
-			Vector4D homoVector = new Vector4D(vector, 1.0f);
+			GorgonVector4 homoVector = new GorgonVector4(vector, 1.0f);
 
-			Vector4D.Transform(ref view, ref homoVector, out homoVector);
-			Vector4D.Transform(ref projection, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref view, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref projection, ref homoVector, out homoVector);
 
 			float invW = 1.0f / homoVector.W;
 
@@ -915,17 +916,17 @@ namespace GorgonLibrary.Math
 		/// <param name="world">The world matrix.</param>
 		/// <returns>When the method completes, contains the vector in screen space.</returns>
 		/// <remarks>THIS IS NOT TESTED, BE SURE TO TEST THIS FUNCTION AT THE EARLIEST OPPORTUNITY.</remarks>
-		public static Vector3D Project(Vector3D vector, RectangleF viewRectangle, OrpheusMinMaxF depthRange, Matrix projection, Matrix view, Matrix world)
+		public static GorgonVector3 Project(GorgonVector3 vector, RectangleF viewRectangle, GorgonMinMaxF depthRange, GorgonMatrix projection, GorgonMatrix view, GorgonMatrix world)
 		{
-			Vector4D homoVector = new Vector4D(vector, 1.0f);
+			GorgonVector4 homoVector = new GorgonVector4(vector, 1.0f);
 
-			Vector4D.Transform(ref world, ref homoVector, out homoVector);
-			Vector4D.Transform(ref view, ref homoVector, out homoVector);
-			Vector4D.Transform(ref projection, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref world, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref view, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref projection, ref homoVector, out homoVector);
 
 			float invW = 1.0f / homoVector.W;
 
-			return new Vector3D(((homoVector.X * viewRectangle.Width * 0.5f) + viewRectangle.Y) * invW,
+			return new GorgonVector3(((homoVector.X * viewRectangle.Width * 0.5f) + viewRectangle.Y) * invW,
 								((homoVector.Y * -viewRectangle.Height * 0.5f) + viewRectangle.Y) * invW,
 								((homoVector.Z * depthRange.Range) + depthRange.Minimum) * invW);
 		}
@@ -940,16 +941,16 @@ namespace GorgonLibrary.Math
 		/// <param name="view">The view matrix.</param>
 		/// <returns>When the method completes, contains the vector in screen space.</returns>
 		/// <remarks>THIS IS NOT TESTED, BE SURE TO TEST THIS FUNCTION AT THE EARLIEST OPPORTUNITY.</remarks>
-		public static Vector3D Project(Vector3D vector, RectangleF viewRectangle, OrpheusMinMaxF depthRange, Matrix projection, Matrix view)
+		public static GorgonVector3 Project(GorgonVector3 vector, RectangleF viewRectangle, GorgonMinMaxF depthRange, GorgonMatrix projection, GorgonMatrix view)
 		{
-			Vector4D homoVector = new Vector4D(vector, 1.0f);
+			GorgonVector4 homoVector = new GorgonVector4(vector, 1.0f);
 
-			Vector4D.Transform(ref view, ref homoVector, out homoVector);
-			Vector4D.Transform(ref projection, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref view, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref projection, ref homoVector, out homoVector);
 
 			float invW = 1.0f / homoVector.W;
 
-			return new Vector3D(((homoVector.X * viewRectangle.Width * 0.5f) + viewRectangle.Y) * invW,
+			return new GorgonVector3(((homoVector.X * viewRectangle.Width * 0.5f) + viewRectangle.Y) * invW,
 								((homoVector.Y * -viewRectangle.Height * 0.5f) + viewRectangle.Y) * invW,
 								((homoVector.Z * depthRange.Range) + depthRange.Minimum) * invW);
 		}
@@ -965,16 +966,16 @@ namespace GorgonLibrary.Math
 		/// <param name="world">The world matrix.</param>
 		/// <param name="result">When the method completes, contains the vector in object space.</param>
 		/// <remarks>THIS IS NOT TESTED, BE SURE TO TEST THIS FUNCTION AT THE EARLIEST OPPORTUNITY.</remarks>
-		public static void Unproject(ref Vector3D vector, ref RectangleF viewRectangle, ref OrpheusMinMaxF depthRange, ref Matrix projection, ref Matrix view, ref Matrix world, out Vector3D result)
+		public static void Unproject(ref GorgonVector3 vector, ref RectangleF viewRectangle, ref GorgonMinMaxF depthRange, ref GorgonMatrix projection, ref GorgonMatrix view, ref GorgonMatrix world, out GorgonVector3 result)
 		{
-			Vector4D homoVector = new Vector4D(vector, 1.0f);
+			GorgonVector4 homoVector = new GorgonVector4(vector, 1.0f);
 			float scaleX, scaleY;
-			Matrix invProjectViewWorld;
+			GorgonMatrix invProjectViewWorld;
 
 			// Get inverse matrix parts.
-			Matrix.Multiply(ref world, ref view, out invProjectViewWorld);
-			Matrix.Multiply(ref invProjectViewWorld, ref projection, out invProjectViewWorld);
-			Matrix.Inverse(ref invProjectViewWorld, out invProjectViewWorld);
+			GorgonMatrix.Multiply(ref world, ref view, out invProjectViewWorld);
+			GorgonMatrix.Multiply(ref invProjectViewWorld, ref projection, out invProjectViewWorld);
+			GorgonMatrix.Inverse(ref invProjectViewWorld, out invProjectViewWorld);
 
 			scaleX = (1.0f / (viewRectangle.Width * 0.5f));
 			scaleY = (1.0f / (-viewRectangle.Height * 0.5f));
@@ -983,7 +984,7 @@ namespace GorgonLibrary.Math
 			homoVector.Y = (homoVector.Y * scaleY) + (-viewRectangle.Y * scaleY) + 1.0f;
 			homoVector.Z = (homoVector.Z * (1.0f / depthRange.Range)) - depthRange.Minimum;
 
-			Vector4D.Transform(ref invProjectViewWorld, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref invProjectViewWorld, ref homoVector, out homoVector);
 
 			result.X = homoVector.X;
 			result.Y = homoVector.Y;
@@ -1000,15 +1001,15 @@ namespace GorgonLibrary.Math
 		/// <param name="view">The view matrix.</param>
 		/// <param name="result">When the method completes, contains the vector in object space.</param>
 		/// <remarks>THIS IS NOT TESTED, BE SURE TO TEST THIS FUNCTION AT THE EARLIEST OPPORTUNITY.</remarks>
-		public static void Unproject(ref Vector3D vector, ref RectangleF viewRectangle, ref OrpheusMinMaxF depthRange, ref Matrix projection, ref Matrix view, out Vector3D result)
+		public static void Unproject(ref GorgonVector3 vector, ref RectangleF viewRectangle, ref GorgonMinMaxF depthRange, ref GorgonMatrix projection, ref GorgonMatrix view, out GorgonVector3 result)
 		{
-			Vector4D homoVector = new Vector4D(vector, 1.0f);
+			GorgonVector4 homoVector = new GorgonVector4(vector, 1.0f);
 			float scaleX, scaleY;
-			Matrix invProjectView;
+			GorgonMatrix invProjectView;
 
 			// Get inverse matrix parts.
-			Matrix.Multiply(ref view, ref projection, out invProjectView);
-			Matrix.Inverse(ref invProjectView, out invProjectView);
+			GorgonMatrix.Multiply(ref view, ref projection, out invProjectView);
+			GorgonMatrix.Inverse(ref invProjectView, out invProjectView);
 
 			scaleX = (1.0f / (viewRectangle.Width * 0.5f));
 			scaleY = (1.0f / (-viewRectangle.Height * 0.5f));
@@ -1017,7 +1018,7 @@ namespace GorgonLibrary.Math
 			homoVector.Y = (homoVector.Y * scaleY) + (-viewRectangle.Y * scaleY) + 1.0f;
 			homoVector.Z = (homoVector.Z * (1.0f / depthRange.Range)) - depthRange.Minimum;
 
-			Vector4D.Transform(ref invProjectView, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref invProjectView, ref homoVector, out homoVector);
 
 			result.X = homoVector.X;
 			result.Y = homoVector.Y;
@@ -1035,16 +1036,16 @@ namespace GorgonLibrary.Math
 		/// <param name="world">The world matrix.</param>
 		/// <returns>When the method completes, contains the vector in object space.</returns>
 		/// <remarks>THIS IS NOT TESTED, BE SURE TO TEST THIS FUNCTION AT THE EARLIEST OPPORTUNITY.</remarks>
-		public static Vector3D Unproject(Vector3D vector, Rectangle viewRectangle, OrpheusMinMaxF depthRange, Matrix projection, Matrix view, Matrix world)
+		public static GorgonVector3 Unproject(GorgonVector3 vector, Rectangle viewRectangle, GorgonMinMaxF depthRange, GorgonMatrix projection, GorgonMatrix view, GorgonMatrix world)
 		{
-			Vector4D homoVector = new Vector4D(vector, 1.0f);
+			GorgonVector4 homoVector = new GorgonVector4(vector, 1.0f);
 			float scaleX, scaleY;
-			Matrix invProjectViewWorld;
+			GorgonMatrix invProjectViewWorld;
 
 			// Get inverse matrix parts.
-			Matrix.Multiply(ref world, ref view, out invProjectViewWorld);
-			Matrix.Multiply(ref invProjectViewWorld, ref projection, out invProjectViewWorld);
-			Matrix.Inverse(ref invProjectViewWorld, out invProjectViewWorld);
+			GorgonMatrix.Multiply(ref world, ref view, out invProjectViewWorld);
+			GorgonMatrix.Multiply(ref invProjectViewWorld, ref projection, out invProjectViewWorld);
+			GorgonMatrix.Inverse(ref invProjectViewWorld, out invProjectViewWorld);
 
 			scaleX = (1.0f / (viewRectangle.Width * 0.5f));
 			scaleY = (1.0f / (-viewRectangle.Height * 0.5f));
@@ -1053,9 +1054,9 @@ namespace GorgonLibrary.Math
 			homoVector.Y = (homoVector.Y * scaleY) + (-viewRectangle.Y * scaleY) + 1.0f;
 			homoVector.Z = (homoVector.Z * (1.0f / depthRange.Range)) - depthRange.Minimum;
 
-			Vector4D.Transform(ref invProjectViewWorld, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref invProjectViewWorld, ref homoVector, out homoVector);
 
-			return new Vector3D(homoVector.X, homoVector.Y, homoVector.Z);
+			return new GorgonVector3(homoVector.X, homoVector.Y, homoVector.Z);
 		}
 
 		/// <summary>
@@ -1068,15 +1069,15 @@ namespace GorgonLibrary.Math
 		/// <param name="view">The view matrix.</param>
 		/// <returns>When the method completes, contains the vector in object space.</returns>
 		/// <remarks>THIS IS NOT TESTED, BE SURE TO TEST THIS FUNCTION AT THE EARLIEST OPPORTUNITY.</remarks>
-		public static Vector3D Unproject(Vector3D vector, Rectangle viewRectangle, OrpheusMinMaxF depthRange, Matrix projection, Matrix view)
+		public static GorgonVector3 Unproject(GorgonVector3 vector, Rectangle viewRectangle, GorgonMinMaxF depthRange, GorgonMatrix projection, GorgonMatrix view)
 		{
-			Vector4D homoVector = new Vector4D(vector, 1.0f);
+			GorgonVector4 homoVector = new GorgonVector4(vector, 1.0f);
 			float scaleX, scaleY;
-			Matrix invProjectView;
+			GorgonMatrix invProjectView;
 
 			// Get inverse matrix parts.
-			Matrix.Multiply(ref view, ref projection, out invProjectView);
-			Matrix.Inverse(ref invProjectView, out invProjectView);
+			GorgonMatrix.Multiply(ref view, ref projection, out invProjectView);
+			GorgonMatrix.Inverse(ref invProjectView, out invProjectView);
 
 			scaleX = (1.0f / (viewRectangle.Width * 0.5f));
 			scaleY = (1.0f / (-viewRectangle.Height * 0.5f));
@@ -1085,9 +1086,9 @@ namespace GorgonLibrary.Math
 			homoVector.Y = (homoVector.Y * scaleY) + (-viewRectangle.Y * scaleY) + 1.0f;
 			homoVector.Z = (homoVector.Z * (1.0f / depthRange.Range)) - depthRange.Minimum;
 
-			Vector4D.Transform(ref invProjectView, ref homoVector, out homoVector);
+			GorgonVector4.Transform(ref invProjectView, ref homoVector, out homoVector);
 
-			return new Vector3D(homoVector.X, homoVector.Y, homoVector.Z);
+			return new GorgonVector3(homoVector.X, homoVector.Y, homoVector.Z);
 		}
 		#endregion
 
@@ -1098,7 +1099,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to compare.</param>
 		/// <param name="right">Vector to compare with.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool operator ==(Vector3D left,Vector3D right)
+		public static bool operator ==(GorgonVector3 left,GorgonVector3 right)
 		{
 			return (GorgonMathUtility.EqualFloat(left.X, right.X) && GorgonMathUtility.EqualFloat(left.Y, right.Y) && GorgonMathUtility.EqualFloat(left.Z, right.Z));
 		}
@@ -1109,7 +1110,7 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to compare.</param>
 		/// <param name="right">Vector to compare with.</param>
 		/// <returns>TRUE if not equal, FALSE if they are.</returns>
-		public static bool operator !=(Vector3D left,Vector3D right)
+		public static bool operator !=(GorgonVector3 left,GorgonVector3 right)
 		{
 			return !(left == right);
 		}
@@ -1120,9 +1121,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to add to.</param>
 		/// <param name="right">Vector to add with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector3D operator +(Vector3D left,Vector3D right)
+		public static GorgonVector3 operator +(GorgonVector3 left,GorgonVector3 right)
 		{
-			Vector3D result;
+			GorgonVector3 result;
 			Add(ref left, ref right, out result);
 			return result;
 		}
@@ -1133,9 +1134,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to subtract.</param>
 		/// <param name="right">Vector to subtract with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector3D operator -(Vector3D left,Vector3D right)
+		public static GorgonVector3 operator -(GorgonVector3 left,GorgonVector3 right)
 		{
-			Vector3D result;
+			GorgonVector3 result;
 			Subtract(ref left, ref right, out result);
 			return result;
 		}
@@ -1145,9 +1146,9 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="left">Vector to negate.</param>
 		/// <returns>A negated vector.</returns>
-		public static Vector3D operator -(Vector3D left)
+		public static GorgonVector3 operator -(GorgonVector3 left)
 		{
-			Vector3D result;
+			GorgonVector3 result;
 			Negate(ref left, out result);
 			return result;
 		}
@@ -1158,9 +1159,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to multiply.</param>
 		/// <param name="right">Vector to multiply by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector3D operator *(Vector3D left,Vector3D right)
+		public static GorgonVector3 operator *(GorgonVector3 left,GorgonVector3 right)
 		{
-			Vector3D result;
+			GorgonVector3 result;
 			Multiply(ref left, ref right, out result);
 			return result;
 		}
@@ -1171,9 +1172,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to multiply with.</param>
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector3D operator *(Vector3D left,float scalar)
+		public static GorgonVector3 operator *(GorgonVector3 left,float scalar)
 		{
-			Vector3D result;
+			GorgonVector3 result;
 			Multiply(ref left, scalar, out result);
 			return result;
 		}
@@ -1184,9 +1185,9 @@ namespace GorgonLibrary.Math
 		/// <param name="scalar">Scalar value to multiply by.</param>
 		/// <param name="right">Vector to multiply with.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector3D operator *(float scalar,Vector3D right)
+		public static GorgonVector3 operator *(float scalar,GorgonVector3 right)
 		{
-			Vector3D result;
+			GorgonVector3 result;
 			Multiply(ref right, scalar, out result);
 			return result;
 		}
@@ -1197,9 +1198,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to divide.</param>
 		/// <param name="scalar">Scalar value to divide by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector3D operator /(Vector3D left,float scalar)
+		public static GorgonVector3 operator /(GorgonVector3 left,float scalar)
 		{
-			Vector3D result;
+			GorgonVector3 result;
 			Divide(ref left, scalar, out result);
 			return result;
 		}		
@@ -1210,9 +1211,9 @@ namespace GorgonLibrary.Math
 		/// <param name="left">Vector to divide.</param>
 		/// <param name="right">Vector to divide by.</param>
 		/// <returns>A new vector.</returns>
-		public static Vector3D operator /(Vector3D left,Vector3D right)
+		public static GorgonVector3 operator /(GorgonVector3 left,GorgonVector3 right)
 		{
-			Vector3D result;
+			GorgonVector3 result;
 			Divide(ref left, ref right, out result);
 			return result;
 		}
@@ -1222,9 +1223,9 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">2D vector.</param>
 		/// <returns>3D vector.</returns>
-		public static implicit operator Vector3D(GorgonVector2 vector)
+		public static implicit operator GorgonVector3(GorgonVector2 vector)
 		{
-			return new Vector3D(vector, 0.0f);
+			return new GorgonVector3(vector, 0.0f);
 		}
 
 		/// <summary>
@@ -1232,7 +1233,7 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">3D vector to convert.</param>
 		/// <returns>2D vector.</returns>
-		public static explicit operator GorgonVector2(Vector3D vector)
+		public static explicit operator GorgonVector2(GorgonVector3 vector)
 		{
 			return new GorgonVector2(vector.X, vector.Y);
 		}
@@ -1240,21 +1241,21 @@ namespace GorgonLibrary.Math
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector3D"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonVector3"/> struct.
 		/// </summary>
 		/// <param name="value">The value used to initialize the vector.</param>
-		public Vector3D(float value)
+		public GorgonVector3(float value)
 		{
 			Z = Y = X = value;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector3D"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonVector3"/> struct.
 		/// </summary>
 		/// <param name="x">Horizontal position of the vector.</param>
 		/// <param name="y">Vertical posiition of the vector.</param>
 		/// <param name="z">Depth position of the vector.</param>
-		public Vector3D(float x,float y,float z)
+		public GorgonVector3(float x,float y,float z)
 		{
 			X = x;
 			Y = y;
@@ -1262,11 +1263,11 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector3D"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonVector3"/> struct.
 		/// </summary>
 		/// <param name="vector">The vector to copy.</param>
 		/// <param name="z">Z coordinate for the vector.</param>
-		public Vector3D(GorgonVector2 vector, float z)
+		public GorgonVector3(GorgonVector2 vector, float z)
 		{
 			X = vector.X;
 			Y = vector.Y;
@@ -1282,7 +1283,7 @@ namespace GorgonLibrary.Math
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(Vector3D other)
+		public bool Equals(GorgonVector3 other)
 		{
 			return (GorgonMathUtility.EqualFloat(other.X, X) && GorgonMathUtility.EqualFloat(other.Y, Y) && GorgonMathUtility.EqualFloat(other.Z, Z));
 		}

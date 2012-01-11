@@ -31,7 +31,7 @@ using System.ComponentModel;
 namespace GorgonLibrary.Math
 {
 	/// <summary>
-	/// Value type to represent a 4 dimensional vector.
+	/// A 4 dimensional vector.
 	/// </summary>
 	/// <remarks>
 	/// Vector mathematics are commonly used in graphical 3D applications.  And other
@@ -70,7 +70,7 @@ namespace GorgonLibrary.Math
 		/// <summary>
 		/// The size of the vector in bytes.
 		/// </summary>
-		public readonly static int Size = Marshal.SizeOf(typeof(GorgonVector4));
+		public readonly static int Size = Native.DirectAccess.SizeOf<GorgonVector4>();
 		/// <summary>
 		/// Horizontal position of the vector.
 		/// </summary>
@@ -523,7 +523,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The hash code for this object.</returns>
 		public override int GetHashCode()
 		{
-			return X.GetHashCode() ^ (Y.GetHashCode() ^ (Z.GetHashCode() ^ W.GetHashCode()));
+			return 281.GenerateHash(X).GenerateHash(Y).GenerateHash(Z).GenerateHash(W);
 		}
 
 		/// <summary>
@@ -541,7 +541,7 @@ namespace GorgonLibrary.Math
 		/// <param name="m">Matrix used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <param name="result">The resulting transformed vector.</param>
-		public static void Transform(ref Matrix m, ref GorgonVector4 vec, out GorgonVector4 result)
+		public static void Transform(ref GorgonMatrix m, ref GorgonVector4 vec, out GorgonVector4 result)
 		{
 			result.X = ((m.m11 * vec.X) + (m.m12 * vec.Y) + (m.m13 * vec.Z) + m.m14) * vec.W;
 			result.Y = ((m.m21 * vec.X) + (m.m22 * vec.Y) + (m.m23 * vec.Z) + m.m24) * vec.W;
@@ -555,7 +555,7 @@ namespace GorgonLibrary.Math
 		/// <param name="m">Matrix used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <returns>The resulting transformed vector.</returns>
-		public static GorgonVector4 Transform(Matrix m, GorgonVector4 vec)
+		public static GorgonVector4 Transform(GorgonMatrix m, GorgonVector4 vec)
 		{
 			return new GorgonVector4(((m.m11 * vec.X) + (m.m12 * vec.Y) + (m.m13 * vec.Z) + m.m14) * vec.W,
 								((m.m21 * vec.X) + (m.m22 * vec.Y) + (m.m23 * vec.Z) + m.m24) * vec.W,
@@ -569,7 +569,7 @@ namespace GorgonLibrary.Math
 		/// <param name="q">Quaternion used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <param name="result">The resulting transformed vector.</param>
-		public static void Transform(ref Quaternion q, ref GorgonVector4 vec, out GorgonVector4 result)
+		public static void Transform(ref GorgonQuaternion q, ref GorgonVector4 vec, out GorgonVector4 result)
 		{
 			float x = q.X + q.X;
 			float y = q.Y + q.Y;
@@ -596,7 +596,7 @@ namespace GorgonLibrary.Math
 		/// <param name="q">Quaternion used to transform the vector.</param>
 		/// <param name="vec">Vector to transform.</param>
 		/// <returns>The resulting transformed vector.</returns>
-		public static GorgonVector4 Transform(Quaternion q, GorgonVector4 vec)
+		public static GorgonVector4 Transform(GorgonQuaternion q, GorgonVector4 vec)
 		{
 			float x = q.X + q.X;
 			float y = q.Y + q.Y;
@@ -1045,7 +1045,7 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">2D vector.</param>
 		/// <returns>4D vector.</returns>
-		public static implicit operator GorgonVector4(Vector2D vector)
+		public static implicit operator GorgonVector4(GorgonVector2 vector)
 		{
 			return new GorgonVector4(vector, 0.0f, 1.0f);
 		}
@@ -1055,7 +1055,7 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">3D vector</param>
 		/// <returns>4D vector.</returns>
-		public static implicit operator GorgonVector4(Vector3D vector)
+		public static implicit operator GorgonVector4(GorgonVector3 vector)
 		{
 			return new GorgonVector4(vector, 1.0f);
 		}
@@ -1065,9 +1065,9 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">4D vector to convert.</param>
 		/// <returns>3D vector.</returns>
-		public static explicit operator Vector3D(GorgonVector4 vector)
+		public static explicit operator GorgonVector3(GorgonVector4 vector)
 		{
-			return new Vector3D(vector.X, vector.Y, vector.Z);
+			return new GorgonVector3(vector.X, vector.Y, vector.Z);
 		}
 
 		/// <summary>
@@ -1075,9 +1075,9 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">4D vector to convert.</param>
 		/// <returns>2D vector.</returns>
-		public static explicit operator Vector2D(GorgonVector4 vector)
+		public static explicit operator GorgonVector2(GorgonVector4 vector)
 		{
-			return new Vector2D(vector.X, vector.Y);
+			return new GorgonVector2(vector.X, vector.Y);
 		}
 		#endregion
 
@@ -1111,7 +1111,7 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="vector">The vector to convert.</param>
 		/// <param name="w">W component of the vector.</param>
-		public GorgonVector4(Vector3D vector, float w)
+		public GorgonVector4(GorgonVector3 vector, float w)
 		{
 			X = vector.X;
 			Y = vector.Y;
@@ -1125,7 +1125,7 @@ namespace GorgonLibrary.Math
 		/// <param name="vector">The vector to convert.</param>
 		/// <param name="z">Z component of the vector.</param>
 		/// <param name="w">W component of the vector.</param>
-		public GorgonVector4(Vector2D vector, float z, float w)
+		public GorgonVector4(GorgonVector2 vector, float z, float w)
 		{
 			X = vector.X;
 			Y = vector.Y;

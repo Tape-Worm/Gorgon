@@ -32,7 +32,7 @@ namespace GorgonLibrary.Graphics
 		/// 
 		/// </summary>
 		[FieldOffset(80), MarshalAs(UnmanagedType.ByValArray, SizeConst=3)]
-		public Vector4D[] tempArray;
+		public GorgonVector4[] tempArray;
 	}
 
 	/// <summary>
@@ -55,7 +55,7 @@ namespace GorgonLibrary.Graphics
 		///
 		/// </summary>
 		[FieldOffset(128), MarshalAs(UnmanagedType.ByValArray, SizeConst=3)]
-		public Vector4D[] Array;
+		public GorgonVector4[] Array;
 		/// <summary>
 		/// 
 		/// </summary>
@@ -78,7 +78,7 @@ namespace GorgonLibrary.Graphics
 		/// 
 		/// </summary>
 		[FieldOffset(64)]
-		public Vector4D Alpha;
+		public GorgonColor Alpha;
 		///// <summary>
 		///// Padding because the struct must be divisble by 16.
 		///// </summary>
@@ -122,6 +122,8 @@ namespace GorgonLibrary.Graphics
 		private float _passes = 8.0f;
 		private D3D.Texture2D _texture = null;		
 		private D3D.ShaderResourceView _textureView = null;
+		private D3D.Texture2D _texture2 = null;
+		private D3D.ShaderResourceView _textureView2 = null;
 		//private D3D.SamplerState _sampler = null;
 		//private D3D.VertexShader _vs = null;
 		//private D3D.PixelShader _ps = null;
@@ -140,11 +142,11 @@ namespace GorgonLibrary.Graphics
 		struct vertex
 		{
 			[InputElement(0, "POSITION")]
-			public Vector4D Position;
+			public GorgonVector4 Position;
 			[InputElement(1, "COLOR")]
-			public Vector4D Color;
+			public GorgonVector4 Color;
 			[InputElement(2, "TEXTURECOORD")]
-			public Vector2D UV;
+			public GorgonVector2 UV;
 		}
 
 
@@ -154,8 +156,6 @@ namespace GorgonLibrary.Graphics
 
 			//if (_depthStateAlpha != null)
 				//_depthStateAlpha.Dispose();
-			if (_textureView != null)
-				_textureView.Dispose();
 			//if (_changeStream != null)
 			//    _changeStream.Dispose();
 			//if (_changeBuffer != null)
@@ -174,8 +174,14 @@ namespace GorgonLibrary.Graphics
 			//    _effect.Dispose();
 			//if (_layout != null)
 				//_layout.Dispose();
+			if (_textureView != null)
+				_textureView.Dispose();
 			if (_texture != null)
 			    _texture.Dispose();
+			if (_textureView2 != null)
+				_textureView2.Dispose();
+			if (_texture2 != null)
+				_texture2.Dispose();
 			//if (_sampler != null)
 				//_sampler.Dispose();
 			if (_vertices != null)
@@ -205,10 +211,10 @@ namespace GorgonLibrary.Graphics
 			using (DataStream stream = new DataStream(4 * vertexSize, true, true))
 			{
 				stream.WriteRange(new vertex[] {
-				new vertex() { Position = new Vector4D(-0.5f, 0.5f, 0.0f, 0.0f), Color = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2D(0, 0)},
-				new vertex() { Position = new Vector4D(0.5f, 0.5f, 0.0f, 0.0f), Color = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2D(1.0f, 0)},
-				new vertex() { Position = new Vector4D(-0.5f, -0.5f, 0.0f, 0.0f), Color = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2D(0, 1.0f)},
-				new vertex() { Position = new Vector4D(0.5f, -0.5f, 0.12f, 0.0f), Color = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2D(1.0f, 1.0f)}});
+				new vertex() { Position = new GorgonVector4(-0.5f, 0.5f, 0.0f, 0.0f), Color = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new GorgonVector2(0, 0)},
+				new vertex() { Position = new GorgonVector4(0.5f, 0.5f, 0.0f, 0.0f), Color = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new GorgonVector2(1.0f, 0)},
+				new vertex() { Position = new GorgonVector4(-0.5f, -0.5f, 0.0f, 0.0f), Color = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new GorgonVector2(0, 1.0f)},
+				new vertex() { Position = new GorgonVector4(0.5f, -0.5f, 0.12f, 0.0f), Color = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new GorgonVector2(1.0f, 1.0f)}});
 				stream.Position = 0;
 
 				_vertices = new D3D.Buffer(_device, stream, new D3D.BufferDescription()
@@ -225,7 +231,7 @@ namespace GorgonLibrary.Graphics
 			using (DataStream stream = new DataStream(6 * 4, true, true))
 			{
 				stream.WriteRange(new int[] {
-					2, 1, 0, 2, 3, 1
+					0, 1, 2, 1, 3, 2
 				});
 				stream.Position = 0;
 
@@ -254,10 +260,15 @@ namespace GorgonLibrary.Graphics
 			info.OptionFlags = D3D.ResourceOptionFlags.None;
 			info.Usage = D3D.ResourceUsage.Default;
 
-			_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
+			_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\TextureTest.png", info);
 			_texture.DebugName = _swapChain.Name + " Test texture.";
 			_textureView = new D3D.ShaderResourceView(_device, _texture);
 			_textureView.DebugName = _swapChain.Name + " Test texture view.";
+
+			_texture2 = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
+			_texture2.DebugName = _swapChain.Name + " Test texture 2.";
+			_textureView2 = new D3D.ShaderResourceView(_device, _texture2);
+			_textureView2.DebugName = _swapChain.Name + " Test texture view 2.";
 
 			//D3D.SamplerStateDescription sampleDesc = new D3D.SamplerStateDescription();
 			//sampleDesc.AddressU = D3D.TextureAddressMode.Clamp;
@@ -278,23 +289,25 @@ namespace GorgonLibrary.Graphics
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
 
 			MatrixBuffer matrix = new MatrixBuffer();
-			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f));
+			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovRH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f));
+			//matrix.Projection = Matrix.PerspectiveFovRH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
 			//matrix.Projection = Matrix.Identity;
-			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
-			matrix.Array = new Vector4D[3];
-			matrix.Array[0] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
-			matrix.Array[1] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
-			matrix.Array[2] = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
+			matrix.View = Matrix.Transpose(Matrix.LookAtRH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
+			//matrix.View = Matrix.LookAtRH(new Vector3(0, 0, -0.75f), new Vector3(0, 0, 1.0f), Vector3.UnitY);
+			matrix.Array = new GorgonVector4[3];
+			matrix.Array[0] = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f);
+			matrix.Array[1] = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f);
+			matrix.Array[2] = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f);
 			matrix.valueType = new TEMPGUY();
 			matrix.valueType.value2 = matrix.View;
-			matrix.valueType.tempArray = new Vector4D[3];
+			matrix.valueType.tempArray = new GorgonVector4[3];
 			
 			//SharpDX.Matrix.Transpose(ref matrix.Projection, out matrix.Projection);
 			//SharpDX.Matrix.Transpose(ref matrix.View, out matrix.View);
 
 			UpdateBuffer updatebuffer = new UpdateBuffer();
 			updatebuffer.World = SharpDX.Matrix.Identity;
-			updatebuffer.Alpha = new Vector4D(1.0f, 1.0f, 1.0f, 1.0f);
+			updatebuffer.Alpha = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 			_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
 			_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
@@ -305,7 +318,6 @@ namespace GorgonLibrary.Graphics
 			//    stream.Write<Matrix>("View", matrix.View);
 			//    stream.WriteRange<Vector4D>("Array", matrix.Array);
 			//}
-			//_noChangeBuffer.Unlock();
 
 			//using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
 			//{
@@ -339,7 +351,7 @@ namespace GorgonLibrary.Graphics
 			//    Usage = D3D.ResourceUsage.Default
 			//});
 			//_changeBuffer.DebugName = _swapChain.Name + " Test Change buffer";
-
+			
 			//_changeStream.Position = 0;
 			//_device.ImmediateContext.UpdateSubresource(new DataBox(_changeStream.DataPointer, 0, 0), _changeBuffer, 0);
 
@@ -355,6 +367,7 @@ namespace GorgonLibrary.Graphics
 			_graphics.PixelShader.ConstantBuffers[1] = _changeBuffer;
 
 			_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
+			_graphics.PixelShader.Samplers[1] = GorgonTextureSamplerStates.DefaultStates;
 		}
 
 		/// <summary>
@@ -365,14 +378,22 @@ namespace GorgonLibrary.Graphics
 		void Window_Resize(object sender, EventArgs e)
 		{
 			MatrixBuffer matrix = new MatrixBuffer();
-			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Width / (float)_swapChain.Settings.VideoMode.Height, 0.1f, 1000.0f));
-			matrix.View = Matrix.Transpose(Matrix.LookAtLH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
+			matrix.Projection = Matrix.Transpose(Matrix.PerspectiveFovRH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)_swapChain.Settings.VideoMode.Width / (float)_swapChain.Settings.VideoMode.Height, 0.1f, 1000.0f));
+			matrix.View = Matrix.Transpose(Matrix.LookAtRH(new Vector3(0, 0, 0.75f), new Vector3(0, 0, -1.0f), Vector3.UnitY));
+			matrix.Array = new GorgonVector4[3];
+			matrix.Array[0] = new GorgonVector4(0.50f, 1.0f, 1.0f, 1.0f);
+			matrix.Array[1] = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f);
+			matrix.Array[2] = new GorgonVector4(1.0f, 1.0f, 1.0f, 1.0f);
+			matrix.valueType.value2 = matrix.View;
+			matrix.valueType.tempArray = new GorgonVector4[3];
 			_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
-			using (var stream = _noChangeBuffer.Lock())
+			using (var stream = _noChangeBuffer.GetBuffer())
 			{
-				stream.Write(matrix);
+				stream.Position = 0;
+				stream.Write(matrix.Projection);
+				stream.Position = 192;
+				stream.Write(matrix.View);
 			}			
-			_noChangeBuffer.Unlock();
 		}
 
 		/// <summary>
@@ -415,6 +436,8 @@ namespace GorgonLibrary.Graphics
 				_maxPasses = (int)_passes;
 		}
 
+		int frames = 0;
+		int textPos = 0;
 		/// <summary>
 		/// 
 		/// </summary>
@@ -441,14 +464,28 @@ namespace GorgonLibrary.Graphics
 			//_device.ImmediateContext.VertexShader.SetConstantBuffer(1, _changeBuffer);
 			//_device.ImmediateContext.PixelShader.SetConstantBuffer(1, _changeBuffer);
 			_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
+			_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
 			//_device.ImmediateContext.PixelShader.SetSampler(0, _sampler);
 
-			//SharpDX.DataBox box = _device.ImmediateContext.MapSubresource(_texture, 0, 0, D3D.MapMode.WriteDiscard, D3D.MapFlags.None);
-			//byte[] texelbuffer = new byte[box.Data.Length];
-			//_rnd.NextBytes(texelbuffer);
-			//box.Data.WriteRange<byte>(texelbuffer);
-			//box.Data.Dispose();
-			//_device.ImmediateContext.UnmapSubresource(_texture, 0);
+			if (frames == -1)
+			{
+				DataStream textureStream = null;
+				SharpDX.DataBox box = _device.ImmediateContext.MapSubresource(_texture, 0, 0, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out textureStream);
+				byte[] texelbuffer = new byte[] 
+				{
+					(byte)255, (byte)_rnd.Next(0, 255), (byte)_rnd.Next(0, 255), 255
+				};				
+				textureStream.Position = textPos;
+				textureStream.WriteRange<byte>(texelbuffer);
+				textPos = (int)textureStream.Position;
+				if (textPos >= textureStream.Length)
+					textPos = 0;
+				textureStream.Dispose();
+				_device.ImmediateContext.UnmapSubresource(_texture, 0);
+				//frames = 0;
+			}
+
+			frames += 1;
 
 			float passAngle = 0.0f;
 			buffer.Alpha = new GorgonColor(System.Drawing.Color.FromArgb(0, System.Drawing.Color.White));
@@ -459,11 +496,11 @@ namespace GorgonLibrary.Graphics
 				passAngle = GorgonLibrary.Math.GorgonMathUtility.Radians(_rot - (_passes - (i * (_degreesPerSecond / GorgonLibrary.Math.GorgonMathUtility.Pow(_passes, 2.25f)))));
 
 				if (i < (int)(_passes - 1))
-					buffer.Alpha.W += (1.0f / (_passes * 3.25f));
+					buffer.Alpha.Alpha += (1.0f / (_passes * 3.25f));
 				else
 				{
 					_graphics.DepthStencil.States = GorgonDepthStencilStates.DefaultStates;
-					buffer.Alpha.W = 1.0f;
+					buffer.Alpha.Alpha = 1.0f;
 				}
 
 				_graphics.Draw();
@@ -472,10 +509,10 @@ namespace GorgonLibrary.Graphics
 				buffer.World = SharpDX.Matrix.Multiply(buffer.World, SharpDX.Matrix.RotationY(passAngle));
 				buffer.World = Matrix.Transpose(buffer.World);
 
-				using (GorgonConstantBufferStream stream = _changeBuffer.Lock())
+				using (GorgonDataStream stream = _changeBuffer.GetBuffer())
+				{
 					stream.Write(buffer);
-
-				_changeBuffer.Unlock();
+				}
 
 				_device.ImmediateContext.DrawIndexed(6, 0, 0);
 			}
@@ -484,14 +521,13 @@ namespace GorgonLibrary.Graphics
 			{
 				buffer.World = Matrix.Identity;
 				buffer.World *= Matrix.Scaling(0.5f, 0.5f, 1.0f);
-				buffer.World *= Matrix.Translation(0.5f + ((float)i / 32767.0f) , 0.25f, 0.0f);
+				buffer.World *= Matrix.Translation(-0.5f + ((float)i / 32767.0f) , 0.25f, 0.0f);
 				buffer.World = Matrix.Transpose(buffer.World);
-				buffer.Alpha.W = 1.0f;
-				using (GorgonConstantBufferStream stream = _changeBuffer.Lock())
+				buffer.Alpha.Alpha = 1.0f;
+				using (GorgonDataStream stream = _changeBuffer.GetBuffer())
 				{
 					stream.Write(buffer);
 				}
-				_changeBuffer.Unlock();
 				_device.ImmediateContext.DrawIndexed(6, 0, 0);
 			}
 		}

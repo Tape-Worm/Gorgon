@@ -206,7 +206,7 @@ namespace Tester_Graphics
 				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
 				//_graphics.IsObjectTrackingEnabled = false;
 				//_graphics = new GorgonGraphics();
-				_graphics.ResetFullscreenOnFocus = false;
+				//_graphics.ResetFullscreenOnFocus = false;
 
 				_multiSample.IsMultisamplingEnabled = true;
 				//_multiSample.CullingMode =  GorgonCullingMode.None;

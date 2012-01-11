@@ -616,13 +616,16 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a constant buffer.
 		/// </summary>
-		/// <param name="dataType">Type matching the data in the stream.</param>
+		/// <param name="size">Size of the buffer, in bytes.</param>
 		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="dataType"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <returns>A new constant buffer.</returns>
-		public GorgonConstantBuffer CreateConstantBuffer(Type dataType, bool allowCPUWrite)
+		public GorgonConstantBuffer CreateConstantBuffer(int size, bool allowCPUWrite)
 		{
-			return CreateConstantBuffer(null, dataType, allowCPUWrite);
+			GorgonConstantBuffer buffer = new GorgonConstantBuffer(this, size, allowCPUWrite);
+			buffer.Initialize(null);
+
+			TrackedObjects.Add(buffer);
+			return buffer;
 		}
 
 		/// <summary>
@@ -637,27 +640,12 @@ namespace GorgonLibrary.Graphics
 		{
 			using (GorgonDataStream stream = GorgonDataStream.ValueTypeToStream<T>(value))
 			{
-				return CreateConstantBuffer(stream, typeof(T), allowCPUWrite);
+				GorgonConstantBuffer buffer = new GorgonConstantBuffer(this, (int)stream.Length, allowCPUWrite);
+				buffer.Initialize(stream);
+
+				TrackedObjects.Add(buffer);
+				return buffer;
 			}
-		}
-
-		/// <summary>
-		/// Function to create a constant buffer and initializes it with data from a stream.
-		/// </summary>
-		/// <param name="stream">Stream to write to the buffer.</param>
-		/// <param name="dataType">Type matching the data in the stream.</param>
-		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="dataType"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <returns>A new constant buffer.</returns>
-		public GorgonConstantBuffer CreateConstantBuffer(GorgonDataStream stream, Type dataType, bool allowCPUWrite)
-		{
-			GorgonDebug.AssertNull<Type>(dataType, "dataType");
-
-			GorgonConstantBuffer buffer = new GorgonConstantBuffer(this, allowCPUWrite, dataType);
-			buffer.Initialize(stream);
-
-			TrackedObjects.Add(buffer);
-			return buffer;
 		}
 
 		/// <summary>

@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
@@ -33,14 +34,11 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// 4 component (Red, Green, Blue, and Alpha) color value.
 	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
 	public struct GorgonColor
 		: IEquatable<GorgonColor>
 	{
 		#region Variables.
-		/// <summary>
-		/// Alpha channel.
-		/// </summary>
-		public float Alpha;
 		/// <summary>
 		/// Red color channel.
 		/// </summary>
@@ -53,6 +51,10 @@ namespace GorgonLibrary.Graphics
 		/// Blue color channel.
 		/// </summary>
 		public float Blue;
+		/// <summary>
+		/// Alpha channel.
+		/// </summary>
+		public float Alpha;
 		#endregion
 
 		#region Properties.
@@ -226,9 +228,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <returns>The 3D vector.</returns>
 		/// <remarks>This will map the R, G and B components to X, Y and Z respectively.</remarks>
-		public Vector3D ToVector3D()
+		public GorgonVector3 ToVector3D()
 		{
-			return new Vector3D(Red, Green, Blue);
+			return new GorgonVector3(Red, Green, Blue);
 		}
 
 		/// <summary>
@@ -236,9 +238,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <returns>The 4D vector.</returns>
 		/// <remarks>This will map the R, G, B and A components to X, Y, Z and W respectively.</remarks>
-		public Vector4D ToVector4D()
+		public GorgonVector4 ToVector4D()
 		{
-			return new Vector4D(Red, Green, Blue, Alpha);
+			return new GorgonVector4(Red, Green, Blue, Alpha);
 		}
 
 		/// <summary>
@@ -364,41 +366,41 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.Graphics.GorgonColor"/> to <see cref="GorgonLibrary.Math.Vector3D"/>.
+		/// Performs an explicit conversion from <see cref="GorgonLibrary.Graphics.GorgonColor"/> to <see cref="GorgonLibrary.Math.GorgonVector3"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static explicit operator Vector3D(GorgonColor color)
+		public static explicit operator GorgonVector3(GorgonColor color)
 		{
 			return color.ToVector3D();
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.Math.Vector3D"/> to <see cref="GorgonLibrary.Graphics.GorgonColor"/>.
+		/// Performs an explicit conversion from <see cref="GorgonLibrary.Math.GorgonVector3"/> to <see cref="GorgonLibrary.Graphics.GorgonColor"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonColor(Vector3D color)
+		public static explicit operator GorgonColor(GorgonVector3 color)
 		{
 			return new GorgonColor(color);
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonLibrary.Graphics.GorgonColor"/> to <see cref="GorgonLibrary.Math.Vector4D"/>.
+		/// Performs an implicit conversion from <see cref="GorgonLibrary.Graphics.GorgonColor"/> to <see cref="GorgonLibrary.Math.GorgonVector4"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static implicit operator Vector4D(GorgonColor color)
+		public static implicit operator GorgonVector4(GorgonColor color)
 		{
 			return color.ToVector4D();
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonLibrary.Math.Vector4D"/> to <see cref="GorgonLibrary.Graphics.GorgonColor"/>.
+		/// Performs an implicit conversion from <see cref="GorgonLibrary.Math.GorgonVector4"/> to <see cref="GorgonLibrary.Graphics.GorgonColor"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonColor(Vector4D color)
+		public static implicit operator GorgonColor(GorgonVector4 color)
 		{
 			return new GorgonColor(color);
 		}
@@ -478,7 +480,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
 		/// <param name="color">The 3D vector to convert to a color.</param>
-		public GorgonColor(Vector3D color)
+		public GorgonColor(GorgonVector3 color)
 			: this(1.0f, color.X, color.Y, color.Z)
 		{
 		}
@@ -487,7 +489,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
 		/// <param name="color">The 3D vector to convert to a color.</param>
-		public GorgonColor(Vector4D color)
+		public GorgonColor(GorgonVector4 color)
 			: this(color.X, color.Y, color.Z, color.W)
 		{
 		}

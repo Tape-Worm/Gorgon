@@ -31,8 +31,10 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Native;
 
-namespace GorgonLibrary.Native
+namespace GorgonLibrary
 {
 	/// <summary>
 	/// Status for the stream.
@@ -356,6 +358,7 @@ namespace GorgonLibrary.Native
 		{
 			int actualCount = count;
 
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
@@ -373,6 +376,7 @@ namespace GorgonLibrary.Native
 
 			if (offset + count > buffer.Length)
 				throw new ArgumentException("The sum of the offset and count are larger than the array.", "count + offset");
+#endif
 
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
@@ -400,8 +404,10 @@ namespace GorgonLibrary.Native
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the offset moves the position outside of the boundaries of the stream.</exception>
 		public override long Seek(long offset, SeekOrigin origin)
 		{
+#if DEBUG
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			switch (origin)
 			{
@@ -496,6 +502,7 @@ namespace GorgonLibrary.Native
 		{
 			int actualCount = count;
 
+#if DEBUG
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
 
@@ -513,6 +520,7 @@ namespace GorgonLibrary.Native
 
 			if (offset + count > buffer.Length)
 				throw new ArgumentException("The sum of the offset and count are larger than the array.", "count + offset");
+#endif
 
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
@@ -533,11 +541,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteFloat(float value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -562,11 +572,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteDouble(double value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -591,11 +603,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteUInt16(UInt16 value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -620,11 +634,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteUInt64(UInt64 value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -649,11 +665,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteUInt32(UInt32 value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -678,11 +696,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteInt16(Int16 value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -707,11 +727,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteInt64(Int64 value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -736,11 +758,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteInt32(Int32 value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -765,11 +789,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override void WriteByte(byte value)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= _length)
 				return;
@@ -793,11 +819,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public float ReadFloat()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return -1;
@@ -821,11 +849,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public double ReadDouble()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return -1;
@@ -849,11 +879,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public UInt16 ReadUInt16()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return 0;
@@ -877,11 +909,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public UInt32 ReadUInt32()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return 0;
@@ -905,11 +939,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public UInt64 ReadUInt64()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return 0;
@@ -933,11 +969,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public Int16 ReadInt16()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return -1;
@@ -961,11 +999,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public Int32 ReadInt32()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return -1;
@@ -989,11 +1029,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public Int64 ReadInt64()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return -1;
@@ -1018,11 +1060,13 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override int ReadByte()
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
+#endif
 
 			if (_pointerPosition >= Length)
 				return -1;
@@ -1062,6 +1106,7 @@ namespace GorgonLibrary.Native
 		{
 			int actualCount = count * DirectAccess.SizeOf<T>();
 
+#if DEBUG
 			if (_data == IntPtr.Zero)
 				throw new ObjectDisposedException("GorgonDataStream");
 
@@ -1079,6 +1124,7 @@ namespace GorgonLibrary.Native
 
 			if (offset + count > buffer.Length)
 				throw new ArgumentException("The sum of the offset and count are larger than the array.", "count + offset");
+#endif
 
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
@@ -1100,8 +1146,7 @@ namespace GorgonLibrary.Native
 		public void WriteRange<T>(T[] buffer)
 			where T : struct
 		{
-			if (buffer == null)
-				throw new ArgumentNullException("buffer");
+			GorgonDebug.AssertNull<T[]>(buffer, "buffer");
 
 			WriteRange<T>(buffer, 0, buffer.Length);
 		}
@@ -1120,6 +1165,7 @@ namespace GorgonLibrary.Native
 		{
 			int typeSize = DirectAccess.SizeOf<T>();
 
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
@@ -1128,6 +1174,7 @@ namespace GorgonLibrary.Native
 
 			if (typeSize + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+#endif
 
 			_pointerOffset.Write<T>(item, typeSize);
 			Position += typeSize;
@@ -1161,6 +1208,7 @@ namespace GorgonLibrary.Native
 		{
 			int actualCount = count * DirectAccess.SizeOf<T>();
 
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
@@ -1178,6 +1226,7 @@ namespace GorgonLibrary.Native
 
 			if (offset + count > buffer.Length)
 				throw new ArgumentException("The sum of the offset and count are larger than the array.", "count + offset");
+#endif
 
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
@@ -1220,6 +1269,7 @@ namespace GorgonLibrary.Native
 		{
 			int typeSize = DirectAccess.SizeOf<T>();
 
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
@@ -1228,6 +1278,7 @@ namespace GorgonLibrary.Native
 
 			if (typeSize + Position > _length)
 				throw new AccessViolationException("Cannot read beyond the end of the stream.");
+#endif
 
 			T result = default(T);
 			result = _pointerOffset.Read<T>(typeSize);
@@ -1246,6 +1297,7 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void Read(IntPtr pointer, int size)
 		{
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
@@ -1254,6 +1306,7 @@ namespace GorgonLibrary.Native
 
 			if (size + Position > _length)
 				throw new AccessViolationException("Cannot read beyond the end of the stream.");
+#endif
 
 			_pointerOffset.CopyTo(pointer, size);
 			Position += size;
@@ -1266,7 +1319,7 @@ namespace GorgonLibrary.Native
 		/// <param name="encoding">Encoding to use.</param>
 		public void WriteString(string value, Encoding encoding)
 		{
-			if (value == null)
+			if (string.IsNullOrEmpty(value))
 				return;
 
 			if (encoding == null)
@@ -1354,6 +1407,7 @@ namespace GorgonLibrary.Native
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void Write(IntPtr pointer, int size)
 		{
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
@@ -1362,6 +1416,7 @@ namespace GorgonLibrary.Native
 
 			if (size + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+#endif
 
 			_pointerOffset.CopyFrom(pointer, size);
 			Position += size;
@@ -1383,6 +1438,7 @@ namespace GorgonLibrary.Native
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
 
+#if DEBUG
 			if (!CanWrite)
 				throw new NotSupportedException("Buffer is read only.");
 
@@ -1391,9 +1447,11 @@ namespace GorgonLibrary.Native
 
 			if (dataSize + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+#endif
 
 			_pointerOffset.MarshalFrom(data, deleteContents);
 
+			// TODO: Remove this.
 			T result = _pointerOffset.MarshalTo<T>();
 			
 			Position += dataSize;
@@ -1414,6 +1472,7 @@ namespace GorgonLibrary.Native
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
 
+#if DEBUG
 			if (!CanRead)
 				throw new NotSupportedException("Buffer is write only.");
 
@@ -1422,6 +1481,7 @@ namespace GorgonLibrary.Native
 
 			if (dataSize + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+#endif
 
 			T value = _pointerOffset.MarshalTo<T>();			
 			Position += dataSize;
