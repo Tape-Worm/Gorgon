@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 
@@ -38,7 +40,7 @@ namespace GorgonLibrary.Math
 	/// spatial related computations.
 	/// This valuetype provides us a convienient way to use vectors and their operations.
 	/// </remarks>
-	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.Vector4DTypeConverter))]
+	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.GorgonVector4TypeConverter))]
 	public struct GorgonVector4
 		: IEquatable<GorgonVector4>
 	{
@@ -533,6 +535,16 @@ namespace GorgonLibrary.Math
 		public override string ToString()
 		{
 			return string.Format("4D Vector-> X:{0}, Y:{1}, Z:{2}, W:{3}",X,Y,Z,W);
+		}
+
+		/// <summary>
+		/// Function to convert the vector into a 4 element array.
+		/// </summary>
+		/// <returns>A 4 element array containing the elements of the vector.</returns>
+		/// <remarks>X is in the first element, Y is in the second element, Z is in the third element, W is in the fourth element.</remarks>
+		public float[] ToArray()
+		{
+			return new[] { X, Y, Z, W };
 		}
 
 		/// <summary>
@@ -1131,6 +1143,23 @@ namespace GorgonLibrary.Math
 			Y = vector.Y;
 			Z = z;
 			W = w;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVector4"/> struct.
+		/// </summary>
+		/// <param name="values">The values for the vector.</param>
+		/// <remarks>Only the first four elements in the list will be taken.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter has less than 4 elements.</exception>
+		public GorgonVector4(IEnumerable<float> values)
+		{
+			if (values.Count() < 4)
+				throw new ArgumentException("The number of elements must be at least 4 for a 4D vector.", "values");
+
+			X = values.ElementAt(0);
+			Y = values.ElementAt(1);
+			Z = values.ElementAt(2);
+			W = values.ElementAt(3);
 		}
 		#endregion
 

@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2012 Michael Winsor
@@ -25,8 +25,11 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.Math
@@ -39,9 +42,9 @@ namespace GorgonLibrary.Math
 	/// spatial related computations.
 	/// This type provides us a convienient way to use vectors and their operations.
 	/// </remarks>
-	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.Vector2DTypeConverter))]
+	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.GorgonVector2TypeConverter))]
 	public struct GorgonVector2
-		: IEquatable<GorgonVector2>
+		: IEquatable<GorgonVector2>, IFormattable
 	{
 		#region Variables.
 		/// <summary>
@@ -98,6 +101,17 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
+		/// Property to return whether this value is normalized or not.
+		/// </summary>
+		public bool IsNormalized
+		{
+			get 
+			{ 
+				return GorgonMathUtility.Abs(LengthSquare - 1f) < 1e-6f; 
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the components of the vector by an index.
 		/// </summary>
 		/// <remarks>The index must be between 0..1</remarks>
@@ -135,49 +149,55 @@ namespace GorgonLibrary.Math
 
 		#region Methods.
 		/// <summary>
-		/// Function to return a vector containing the lower values of the two vector values passed in.
+		/// Function to get the absolute value of the vector.
 		/// </summary>
-		/// <param name="vector1">Vector to compare.</param>
-		/// <param name="vector2">Vector to compare.</param>
-		/// <param name="result">A vector containing the lowest values of the two vectors.</param>
-		public static void Floor(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out GorgonVector2 result)
+		public void Abs()
 		{
-			result.X = (vector1.X < vector2.X) ? vector1.X : vector2.X;
-			result.Y = (vector1.Y < vector2.Y) ? vector1.Y : vector2.Y;
+			this.X = GorgonMathUtility.Abs(X);
+			this.Y = GorgonMathUtility.Abs(Y);
 		}
 
 		/// <summary>
-		/// Function to return a vector containing the lower values of the two vector values passed in.
+		/// Function to get the absolute value of the vector.
 		/// </summary>
-		/// <param name="vector1">Vector to compare.</param>
-		/// <param name="vector2">Vector to compare.</param>
-		/// <returns>A vector containing the lowest values of the two vectors.</returns>
-		public static GorgonVector2 Floor(GorgonVector2 vector1, GorgonVector2 vector2)
+		/// <param name="value">Vector to get the absolute value of.</param>
+		/// <param name="result">The absolute value of the vector.</param>
+		public static void Abs(ref GorgonVector2 value, out GorgonVector2 result)
 		{
-			return new GorgonVector2((vector1.X < vector2.X) ? vector1.X : vector2.X, (vector1.Y < vector2.Y) ? vector1.Y : vector2.Y);
+			result = new GorgonVector2(GorgonMathUtility.Abs(value.X), GorgonMathUtility.Abs(value.Y));
 		}
 
 		/// <summary>
-		/// Function to return a vector containing the highest values of the two vector values passed in.
+		/// Function to get the absolute value of the vector.
 		/// </summary>
-		/// <param name="vector1">Vector to compare.</param>
-		/// <param name="vector2">Vector to compare.</param>
-		/// <param name="result">A vector containing the highest values of the two vectors.</param>
-		public static void Ceiling(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out GorgonVector2 result)
+		/// <param name="value">Vector to get the absolute value of.</param>
+		/// <returns>The absolute value of the vector.</returns>
+		public static GorgonVector2 Abs(GorgonVector2 value)
 		{
-			result.X = (vector1.X > vector2.X) ? vector1.X : vector2.X;
-			result.Y = (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y;
+			return new GorgonVector2(GorgonMathUtility.Abs(value.X), GorgonMathUtility.Abs(value.Y));
 		}
 
 		/// <summary>
-		/// Function to return a vector containing the highest values of the two vector values passed in.
+		/// Function to add two vectors together.
 		/// </summary>
-		/// <param name="vector1">Vector to compare.</param>
-		/// <param name="vector2">Vector to compare.</param>
-		/// <returns>A vector containing the highest values of the two vectors.</returns>
-		public static GorgonVector2 Ceiling(GorgonVector2 vector1, GorgonVector2 vector2)
+		/// <param name="left">Left vector to add.</param>
+		/// <param name="right">Right vector to add.</param>
+		/// <returns>The combined vectors.</returns>
+		public static GorgonVector2 Add(GorgonVector2 left, GorgonVector2 right)
 		{
-			return new GorgonVector2((vector1.X > vector2.X) ? vector1.X : vector2.X, (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y);
+			return new GorgonVector2(left.X + right.X, left.Y + right.Y);
+		}
+
+		/// <summary>
+		/// Function to add two vectors together.
+		/// </summary>
+		/// <param name="left">Left vector to add.</param>
+		/// <param name="right">Right vector to add.</param>
+		/// <param name="result">The combined vectors.</param>
+		public static void Add(ref GorgonVector2 left, ref GorgonVector2 right, out GorgonVector2 result)
+		{
+			result.X = left.X + right.X;
+			result.Y = left.Y + right.Y;
 		}
 
 		/// <summary>
@@ -191,8 +211,10 @@ namespace GorgonLibrary.Math
 		/// <param name="result">The 2D Cartesian coordinates of the point.</param>
 		public static void Barycentric(ref GorgonVector2 vertex1Coordinate, ref GorgonVector2 vertex2Coordinate, ref GorgonVector2 vertex3Coordinate, float vertex2Weight, float vertex3Weight, out GorgonVector2 result)
 		{
-			result.X = (vertex1Coordinate.X + (vertex2Weight * (vertex2Coordinate.X - vertex1Coordinate.X))) + (vertex3Weight * (vertex3Coordinate.X - vertex1Coordinate.X));
-			result.Y = (vertex1Coordinate.Y + (vertex2Weight * (vertex2Coordinate.Y - vertex1Coordinate.Y))) + (vertex3Weight * (vertex3Coordinate.Y - vertex1Coordinate.Y));
+			result = new GorgonVector2(
+				(vertex1Coordinate.X + (vertex2Weight * (vertex2Coordinate.X - vertex1Coordinate.X))) + (vertex3Weight * (vertex3Coordinate.X - vertex1Coordinate.X)),
+				(vertex1Coordinate.Y + (vertex3Weight * (vertex2Coordinate.Y - vertex1Coordinate.Y))) + (vertex3Weight * (vertex3Coordinate.Y - vertex1Coordinate.Y))
+			);
 		}
 
 		/// <summary>
@@ -206,8 +228,9 @@ namespace GorgonLibrary.Math
 		/// <returns>The 2D Cartesian coordinates of the point.</returns>
 		public static GorgonVector2 Barycentric(GorgonVector2 vertex1Coordinate, GorgonVector2 vertex2Coordinate, GorgonVector2 vertex3Coordinate, float vertex2Weight, float vertex3Weight)
 		{
-			return new GorgonVector2((vertex1Coordinate.X + (vertex2Weight * (vertex2Coordinate.X - vertex1Coordinate.X))) + (vertex3Weight * (vertex3Coordinate.X - vertex1Coordinate.X)),
-				(vertex1Coordinate.Y + (vertex2Weight * (vertex2Coordinate.Y - vertex1Coordinate.Y))) + (vertex3Weight * (vertex3Coordinate.Y - vertex1Coordinate.Y)));
+			GorgonVector2 result = GorgonVector2.Zero;
+			Barycentric(ref vertex1Coordinate, ref vertex2Coordinate, ref vertex3Coordinate, vertex2Weight, vertex3Weight, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -224,13 +247,14 @@ namespace GorgonLibrary.Math
 			float squared = amount * amount;
 			float cubed = amount * squared;
 
-			result.X = 0.5f * ((((2.0f * value2.X) + ((-value1.X + value3.X) * amount)) + 
-				(((((2.0f * value1.X) - (5.0f * value2.X)) + (4.0f * value3.X)) - value4.X) * squared)) + 
-				((((-value1.X + (3.0f * value2.X)) - (3.0f * value3.X)) + value4.X) * cubed));
-
-			result.Y = 0.5f * ((((2.0f * value2.Y) + ((-value1.Y + value3.Y) * amount)) + 
-				(((((2.0f * value1.Y) - (5.0f * value2.Y)) + (4.0f * value3.Y)) - value4.Y) * squared)) + 
-				((((-value1.Y + (3.0f * value2.Y)) - (3.0f * value3.Y)) + value4.Y) * cubed));
+			result = new GorgonVector2(
+				0.5f * ((((2.0f * value2.X) + ((-value1.X + value3.X) * amount)) +
+				(((((2.0f * value1.X) - (5.0f * value2.X)) + (4.0f * value3.X)) - value4.X) * squared)) +
+				((((-value1.X + (3.0f * value2.X)) - (3.0f * value3.X)) + value4.X) * cubed)),
+				0.5f * ((((2.0f * value2.Y) + ((-value1.Y + value3.Y) * amount)) +
+				(((((2.0f * value1.Y) - (5.0f * value2.Y)) + (4.0f * value3.Y)) - value4.Y) * squared)) +
+				((((-value1.Y + (3.0f * value2.Y)) - (3.0f * value3.Y)) + value4.Y) * cubed))
+			);
 		}
 
 		/// <summary>
@@ -244,17 +268,380 @@ namespace GorgonLibrary.Math
 		/// <returns>When the method completes, contains the result of the Catmull-Rom interpolation.</returns>
 		public static GorgonVector2 CatmullRom(GorgonVector2 value1, GorgonVector2 value2, GorgonVector2 value3, GorgonVector2 value4, float amount)
 		{
-			float squared = amount * amount;
-			float cubed = amount * squared;
+			GorgonVector2 result = GorgonVector2.Zero;
 
-			return new GorgonVector2(0.5f * ((((2.0f * value2.X) + ((-value1.X + value3.X) * amount)) +
-									(((((2.0f * value1.X) - (5.0f * value2.X)) + (4.0f * value3.X)) - value4.X) * squared)) +
-									((((-value1.X + (3.0f * value2.X)) - (3.0f * value3.X)) + value4.X) * cubed)),
-								0.5f * ((((2.0f * value2.Y) + ((-value1.Y + value3.Y) * amount)) +
-									(((((2.0f * value1.Y) - (5.0f * value2.Y)) + (4.0f * value3.Y)) - value4.Y) * squared)) +
-									((((-value1.Y + (3.0f * value2.Y)) - (3.0f * value3.Y)) + value4.Y) * cubed)));
+			CatmullRom(ref value1, ref value2, ref value3, ref value4, amount, out result);
+
+			return result;
 		}
 
+		/// <summary>
+		/// Function to calculate the cosine of each element in the vector.
+		/// </summary>
+		/// <param name="value">Vector to calculate.</param>
+		/// <param name="result">The cosine of each element in the vector.</param>
+		public static void Cos(ref GorgonVector2 value, out GorgonVector2 result)
+		{
+			result = new GorgonVector2(GorgonMathUtility.Cos(value.X), GorgonMathUtility.Cos(value.Y));
+		}
+
+		/// <summary>
+		/// Function to calculate the cosine of each element in the vector.
+		/// </summary>
+		/// <param name="value">Vector to calculate.</param>
+		/// <returns>The cosine of each element in the vector.</returns>
+		public static GorgonVector2 Cos(GorgonVector2 value)
+		{
+			GorgonVector2 result = GorgonVector2.Zero;
+
+			Cos(ref value, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to perform a cross product between this and another vector.
+		/// </summary>
+		/// <param name="vector1">Vector to perform the cross product with.</param>
+		/// <param name="vector2">Vector to perform the cross product with.</param>
+		/// <param name="result">A new vector containing the cross product.</param>
+		public static void CrossProduct(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out GorgonVector2 result)
+		{
+			result = new GorgonVector2(
+				vector2.X * vector1.Y - vector2.Y * vector1.X,
+				vector2.Y * vector1.X - vector2.X * vector1.Y
+			);
+		}
+
+		/// <summary>
+		/// Function to perform a cross product between this and another vector.
+		/// </summary>
+		/// <param name="vector1">Vector to perform the cross product with.</param>
+		/// <param name="vector2">Vector to perform the cross product with.</param>
+		/// <returns>A new vector containing the cross product.</returns>
+		public static GorgonVector2 CrossProduct(GorgonVector2 vector1, GorgonVector2 vector2)
+		{
+			GorgonVector2 result = GorgonVector2.Zero;
+
+			CrossProduct(ref vector1, ref vector2, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return a vector containing the highest values of the two vector values passed in.
+		/// </summary>
+		/// <param name="vector1">Vector to compare.</param>
+		/// <param name="vector2">Vector to compare.</param>
+		/// <param name="result">A vector containing the highest values of the two vectors.</param>
+		public static void Ceiling(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out GorgonVector2 result)
+		{
+			result = new GorgonVector2(
+				(vector1.X > vector2.X) ? vector1.X : vector2.X,
+				(vector1.Y > vector2.Y) ? vector1.Y : vector2.Y
+			);
+		}
+
+		/// <summary>
+		/// Function to return a vector containing the highest values of the two vector values passed in.
+		/// </summary>
+		/// <param name="vector1">Vector to compare.</param>
+		/// <param name="vector2">Vector to compare.</param>
+		/// <returns>A vector containing the highest values of the two vectors.</returns>
+		public static GorgonVector2 Ceiling(GorgonVector2 vector1, GorgonVector2 vector2)
+		{
+			GorgonVector2 result = GorgonVector2.Zero;
+
+			Ceiling(ref vector1, ref vector2, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to clamp a vector to a specified range.
+		/// </summary>
+		/// <param name="value">Value to clamp.</param>
+		/// <param name="min">Minimum value to evaluate against.</param>
+		/// <param name="max">Maximum value to evaluate against.</param>
+		/// <param name="result">The clamped vector.</param>
+		public static void Clamp(ref GorgonVector2 value, ref GorgonVector2 min, ref GorgonVector2 max, out GorgonVector2 result)
+		{
+			float x = value.X;
+			float y = value.Y;
+
+			x = (x < min.X) ? min.X : x;
+			y = (y < min.Y) ? min.Y : y;
+			x = (x > max.X) ? max.X : x;
+			y = (y > max.Y) ? max.Y : y;
+
+			result = new GorgonVector2(x, y);
+		}
+
+		/// <summary>
+		/// Function to clamp a vector to a specified range.
+		/// </summary>
+		/// <param name="value">Value to clamp.</param>
+		/// <param name="min">Minimum value to evaluate against.</param>
+		/// <param name="max">Maximum value to evaluate against.</param>
+		/// <returns>The clamped vector.</returns>
+		public static GorgonVector2 Clamp(GorgonVector2 value, GorgonVector2 min, GorgonVector2 max)
+		{
+			GorgonVector2 result = GorgonVector2.Zero;
+
+			Clamp(ref value, ref min, ref max, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return the distance between two vectors.
+		/// </summary>
+		/// <param name="vector1">Starting vector.</param>
+		/// <param name="vector2">Ending vector.</param>
+		/// <param name="result">The distance between the vectors.</param>
+		public static void Distance(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out float result)
+		{
+			float x = vector1.X - vector2.X;
+			float y = vector1.Y - vector2.Y;
+
+			result = GorgonMathUtility.Sqrt((x * x) + (y * y));
+		}
+
+		/// <summary>
+		/// Function to return the distance between two vectors.
+		/// </summary>
+		/// <param name="vector1">Starting vector.</param>
+		/// <param name="vector2">Ending vector.</param>
+		/// <returns>The distance between the vectors.</returns>
+		public static float Distance(GorgonVector2 vector1, GorgonVector2 vector2)
+		{
+			float result = 0.0f;
+
+			Distance(ref vector1, ref vector2, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return the squared distance between two vectors.
+		/// </summary>
+		/// <param name="vector1">Starting vector.</param>
+		/// <param name="vector2">Ending vector.</param>
+		/// <param name="result">The squared distance between the vectors.</param>
+		public static void DistanceSquared(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out float result)
+		{
+			float x = vector1.X - vector2.X;
+			float y = vector1.Y - vector2.Y;
+
+			result = (x * x) + (y * y);
+		}
+
+		/// <summary>
+		/// Function to return the squared distance between two vectors.
+		/// </summary>
+		/// <param name="vector1">Starting vector.</param>
+		/// <param name="vector2">Ending vector.</param>
+		/// <returns>The squared distance between the vectors.</returns>
+		public static float DistanceSquared(GorgonVector2 vector1, GorgonVector2 vector2)
+		{
+			float result = 0.0f;
+
+			DistanceSquared(ref vector1, ref vector2, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to divide a vector by another vector.
+		/// </summary>
+		/// <param name="dividend">The vector to be divided.</param>
+		/// <param name="divisor">The vector that will divide the dividend.</param>
+		/// <param name="result">The quotient vector.</param>
+		/// <exception cref="System.DivideByZeroException">One of the components of the divisor was 0.</exception>
+		public static void Divide(ref GorgonVector2 dividend, ref GorgonVector2 divisor, out GorgonVector2 result)
+		{
+			result = new GorgonVector2(
+				dividend.X / divisor.X,
+				dividend.Y / divisor.Y
+			);
+		}
+
+		/// <summary>
+		/// Function to divide a vector by another vector.
+		/// </summary>
+		/// <param name="dividend">The vector to be divided.</param>
+		/// <param name="divisor">The vector that will divide the dividend.</param>
+		/// <returns>The quotient vector.</returns>
+		/// <exception cref="System.DivideByZeroException">One of the components of the divisor was 0.</exception>
+		public static GorgonVector2 Divide(GorgonVector2 dividend, GorgonVector2 divisor)
+		{
+			return new GorgonVector2(dividend.X / divisor.X, dividend.Y / divisor.Y);
+		}
+
+		/// <summary>
+		/// Function to divide a vector by a floating point value.
+		/// </summary>
+		/// <param name="dividend">The vector to be divided.</param>
+		/// <param name="divisor">The vector that will divide the dividend.</param>
+		/// <param name="result">The quotient vector.</param>
+		/// <exception cref="System.DivideByZeroException">The divisor was 0.</exception>
+		public static void Divide(ref GorgonVector2 dividend, float divisor, out GorgonVector2 result)
+		{
+			result = new GorgonVector2(
+				dividend.X / divisor,
+				dividend.Y / divisor
+			);
+		}
+
+		/// <summary>
+		/// Function to divide a vector by a floating point value.
+		/// </summary>
+		/// <param name="dividend">The vector to be divided.</param>
+		/// <param name="divisor">The vector that will divide the dividend.</param>
+		/// <returns>The quotient vector.</returns>
+		/// <exception cref="System.DivideByZeroException">The divisor was 0.</exception>
+		public static GorgonVector2 Divide(GorgonVector2 dividend, float divisor)
+		{
+			return new GorgonVector2(dividend.X / divisor, dividend.Y / divisor);
+		}
+
+		/// <summary>
+		/// Function to perform a dot product between this and another vector.
+		/// </summary>
+		/// <param name="left">Left vector to use in the dot product operation.</param>
+		/// <param name="right">Right vector to use in the dot product operation.</param>
+		/// <returns>The dot product of the two vectors.</returns>
+		public static float DotProduct(GorgonVector2 left, GorgonVector2 right)
+		{
+			return (left.X * right.X) + (left.Y * right.Y);
+		}
+
+		/// <summary>
+		/// Function to perform a dot product between this and another vector.
+		/// </summary>
+		/// <param name="left">Left vector to use in the dot product operation.</param>
+		/// <param name="right">Right vector to use in the dot product operation.</param>
+		/// <param name="result">The dot product of the two vectors.</param>
+		public static void DotProduct(ref GorgonVector2 left, ref GorgonVector2 right, out float result)
+		{
+			result = (left.X * right.X) + (left.Y * right.Y);
+		}
+
+		/// <summary>
+		/// Function to compare this vector to another object.
+		/// </summary>
+		/// <param name="obj">Object to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+				return false;
+
+			if (!(obj is GorgonVector2))
+				return false;
+
+			return Equals((GorgonVector2)obj);
+		}
+
+		/// <summary>
+		/// Function to return whether two vectors are equal.
+		/// </summary>
+		/// <param name="vector1">Vector to compare.</param>
+		/// <param name="vector2">Vector to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonVector2 vector1, ref GorgonVector2 vector2)
+		{
+			return (vector1.X == vector2.X) && (vector1.Y == vector2.Y);
+		}
+
+		/// <summary>
+		/// Function to return whether two vectors are equal.
+		/// </summary>
+		/// <param name="vector1">Vector to compare.</param>
+		/// <param name="vector2">Vector to compare.</param>
+		/// <param name="epsilon">Epsilon value to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonVector2 vector1, ref GorgonVector2 vector2, float epsilon)
+		{
+			return (GorgonMathUtility.EqualFloat(vector1.X, vector1.X, epsilon)) && (GorgonMathUtility.EqualFloat(vector1.Y, vector2.Y, epsilon));
+		}
+
+		/// <summary>
+		/// Function to return whether this vector and another are equal.
+		/// </summary>
+		/// <param name="vector">Vector to compare.</param>
+		/// <param name="epsilon">Epsilon value to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public bool Equals(GorgonVector2 vector, float epsilon)
+		{
+			return (GorgonMathUtility.EqualFloat(X, vector.X, epsilon)) && (GorgonMathUtility.EqualFloat(Y, vector.Y, epsilon));
+		}
+
+		/// <summary>
+		/// Function to take e raised to the elements in the vector.
+		/// </summary>
+		/// <param name="value">The value to take e raised to each element of.</param>
+		/// <param name="result">A vector containing e raised to the power of the components in the vector.</param>
+		public static void Exp(ref GorgonVector2 value, out GorgonVector2 result)
+		{
+			result = new GorgonVector2(
+				GorgonMathUtility.Exp(value.X),
+				GorgonMathUtility.Exp(value.Y)
+			);
+		}
+
+		/// <summary>
+		/// Function to take e raised to the elements in the vector.
+		/// </summary>
+		/// <param name="value">The value to take e raised to each element of.</param>
+		/// <returns>A vector containing e raised to the power of the components in the vector.</returns>
+		public static GorgonVector2 Exp(GorgonVector2 value)
+		{
+			GorgonVector2 result = GorgonVector2.Zero;
+
+			Exp(ref value, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return a vector containing the lower values of the two vector values passed in.
+		/// </summary>
+		/// <param name="vector1">Vector to compare.</param>
+		/// <param name="vector2">Vector to compare.</param>
+		/// <param name="result">A vector containing the lowest values of the two vectors.</param>
+		public static void Floor(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out GorgonVector2 result)
+		{
+			result = new GorgonVector2(
+					(vector1.X < vector2.X) ? vector1.X : vector2.X,
+					(vector1.Y < vector2.Y) ? vector1.Y : vector2.Y
+				);
+		}
+
+		/// <summary>
+		/// Function to return a vector containing the lower values of the two vector values passed in.
+		/// </summary>
+		/// <param name="vector1">Vector to compare.</param>
+		/// <param name="vector2">Vector to compare.</param>
+		/// <returns>A vector containing the lowest values of the two vectors.</returns>
+		public static GorgonVector2 Floor(GorgonVector2 vector1, GorgonVector2 vector2)
+		{
+			GorgonVector2 result = GorgonVector2.Zero;
+
+			Floor(ref vector1, ref vector2, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return the hash code for this object.
+		/// </summary>
+		/// <returns>The hash code for this object.</returns>
+		public override int GetHashCode()
+		{
+			return 281.GenerateHash(X).GenerateHash(Y);
+		}
+		
 		/// <summary>
 		/// Performs a Hermite spline interpolation.
 		/// </summary>
@@ -288,15 +675,11 @@ namespace GorgonLibrary.Math
 		/// <returns>When the method completes, contains the result of the Hermite spline interpolation.</returns>
 		public static GorgonVector2 Hermite(GorgonVector2 value1, GorgonVector2 tangent1, GorgonVector2 value2, GorgonVector2 tangent2, float amount)
 		{
-			float squared = amount * amount;
-			float cubed = amount * squared;
-			float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-			float part2 = (-2.0f * cubed) + (3.0f * squared);
-			float part3 = (cubed - (2.0f * squared)) + amount;
-			float part4 = cubed - squared;
+			GorgonVector2 result = GorgonVector2.Zero;
 
-			return new GorgonVector2((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
-								(((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4));
+			Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount, out result);
+
+			return result;
 		}
 
 		/// <summary>
@@ -313,8 +696,10 @@ namespace GorgonLibrary.Math
 		/// </remarks>
 		public static void Lerp(ref GorgonVector2 start, ref GorgonVector2 end, float amount, out GorgonVector2 result)
 		{
-			result.X = start.X + ((end.X - start.X) * amount);
-			result.Y = start.Y + ((end.Y - start.Y) * amount);
+			result = new GorgonVector2(
+				start.X + ((end.X - start.X) * amount),
+				start.Y + ((end.Y - start.Y) * amount)
+			);
 		}
 
 		/// <summary>
@@ -331,63 +716,115 @@ namespace GorgonLibrary.Math
 		/// </remarks>
 		public static GorgonVector2 Lerp(GorgonVector2 start, GorgonVector2 end, float amount)
 		{
-			return new GorgonVector2(start.X + ((end.X - start.X) * amount), start.Y + ((end.Y - start.Y) * amount));
+			GorgonVector2 result = GorgonVector2.Zero;
+
+			Lerp(ref start, ref end, amount, out result);
+
+			return result;
 		}
 
 		/// <summary>
-		/// Function to return the distance between two vectors.
+		/// Function to return a vector containing the largest elements of the two vectors.
 		/// </summary>
-		/// <param name="vector1">Starting vector.</param>
-		/// <param name="vector2">Ending vector.</param>
-		/// <returns>The distance between the vectors.</returns>
-		public static float Distance(GorgonVector2 vector1, GorgonVector2 vector2)
+		/// <param name="value1">The first vector.</param>
+		/// <param name="value2">The second vector.</param>
+		/// <param name="result">A vector with the maximum elements of each vector.</param>
+		public static void Max(ref GorgonVector2 value1, ref GorgonVector2 value2, out GorgonVector2 result)
 		{
-			float x = vector1.X - vector2.X;
-			float y = vector1.Y - vector2.Y;
-
-			return GorgonMathUtility.Sqrt((x * x) + (y * y));
+			result = new GorgonVector2(
+				(value1.X > value2.X) ? value1.X : value2.X,
+				(value1.Y > value2.Y) ? value1.Y : value2.Y
+			);
 		}
 
 		/// <summary>
-		/// Function to return the squared distance between two vectors.
+		/// Function to return a vector containing the largest elements of the two vectors.
 		/// </summary>
-		/// <param name="vector1">Starting vector.</param>
-		/// <param name="vector2">Ending vector.</param>
-		/// <returns>The squared distance between the vectors.</returns>
-		public static float DistanceSquared(GorgonVector2 vector1, GorgonVector2 vector2)
+		/// <param name="value1">The first vector.</param>
+		/// <param name="value2">The second vector.</param>
+		/// <returns>A vector with the maximum elements of each vector.</returns>
+		public static GorgonVector2 Max(GorgonVector2 value1, GorgonVector2 value2)
 		{
-			float x = vector1.X - vector2.X;
-			float y = vector1.Y - vector2.Y;
+			GorgonVector2 result = GorgonVector2.Zero;
 
-			return (x * x) + (y * y);
+			Max(ref value1, ref value2, out result);
+
+			return result;
 		}
 
 		/// <summary>
-		/// Function to return the distance between two vectors.
+		/// Function to return a vector containing the smallest elements of the two vectors.
 		/// </summary>
-		/// <param name="vector1">Starting vector.</param>
-		/// <param name="vector2">Ending vector.</param>
-		/// <param name="result">The distance between the vectors.</param>
-		public static void Distance(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out float result)
+		/// <param name="value1">The first vector.</param>
+		/// <param name="value2">The second vector.</param>
+		/// <param name="result">A vector with the minimum elements of each vector.</param>
+		public static void Min(ref GorgonVector2 value1, ref GorgonVector2 value2, out GorgonVector2 result)
 		{
-			float x = vector1.X - vector2.X;
-			float y = vector1.Y - vector2.Y;
-
-			result = GorgonMathUtility.Sqrt((x * x) + (y * y));
+			result = new GorgonVector2(
+				(value1.X < value2.X) ? value1.X : value2.X,
+				(value1.Y < value2.Y) ? value1.Y : value2.Y
+			);
 		}
 
 		/// <summary>
-		/// Function to return the squared distance between two vectors.
+		/// Function to return a vector containing the smallest elements of the two vectors.
 		/// </summary>
-		/// <param name="vector1">Starting vector.</param>
-		/// <param name="vector2">Ending vector.</param>
-		/// <param name="result">The squared distance between the vectors.</param>
-		public static void DistanceSquared(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out float result)
+		/// <param name="value1">The first vector.</param>
+		/// <param name="value2">The second vector.</param>
+		/// <returns>A vector with the minimum elements of each vector.</returns>
+		public static GorgonVector2 Min(GorgonVector2 value1, GorgonVector2 value2)
 		{
-			float x = vector1.X - vector2.X;
-			float y = vector1.Y - vector2.Y;
+			GorgonVector2 result = GorgonVector2.Zero;
 
-			result = (x * x) + (y * y);
+			Min(ref value1, ref value2, out result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to multiply two vectors together.
+		/// </summary>
+		/// <param name="left">Left vector to multiply.</param>
+		/// <param name="right">Right vector to multiply.</param>
+		/// <param name="result">The product of the two vectors.</param>
+		public static void Multiply(ref GorgonVector2 left, ref GorgonVector2 right, out GorgonVector2 result)
+		{
+			result.X = left.X * right.X;
+			result.Y = left.Y * right.Y;
+		}
+
+		/// <summary>
+		/// Function to multiply two vectors together.
+		/// </summary>
+		/// <param name="left">Left vector to multiply.</param>
+		/// <param name="right">Right vector to multiply.</param>
+		/// <returns>The product of the two vectors.</returns>
+		public static GorgonVector2 Multiply(GorgonVector2 left, GorgonVector2 right)
+		{
+			return new GorgonVector2(left.X * right.X, left.Y * right.Y);
+		}
+
+		/// <summary>
+		/// Function to multiply a vector by a floating point value.
+		/// </summary>
+		/// <param name="left">Left vector to multiply.</param>
+		/// <param name="scalar">Scalar value to multiply by.</param>
+		/// <param name="result">The product of the vector and scalar.</param>
+		public static void Multiply(ref GorgonVector2 left, float scalar, out GorgonVector2 result)
+		{
+			result.X = left.X * scalar;
+			result.Y = left.Y * scalar;
+		}
+
+		/// <summary>
+		/// Function to multiply a vector by a floating point value.
+		/// </summary>
+		/// <param name="left">Left vector to multiply.</param>
+		/// <param name="scalar">Scalar value to multiply by.</param>
+		/// <returns>The product of the vector and scalar.</returns>
+		public static GorgonVector2 Multiply(GorgonVector2 left, float scalar)
+		{
+			return new GorgonVector2(left.X * scalar, left.Y * scalar);
 		}
 
 		/// <summary>
@@ -445,50 +882,6 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Function to return a negated vector.
-		/// </summary>
-		/// <param name="vector">Vector to negate.</param>
-		/// <param name="result">The negated vector.</param>
-		public static void Negate(ref GorgonVector2 vector, out GorgonVector2 result)
-		{
-			result.X = -vector.X;
-			result.Y = -vector.Y;
-		}
-
-		/// <summary>
-		/// Function to return a negated vector.
-		/// </summary>
-		/// <param name="vector">Vector to negate.</param>
-		/// <returns>The negated vector.</returns>
-		public static GorgonVector2 Negate(GorgonVector2 vector)
-		{
-			return new GorgonVector2(-vector.X, -vector.Y);
-		}
-		
-		/// <summary>
-		/// Function to add two vectors together.
-		/// </summary>
-		/// <param name="left">Left vector to add.</param>
-		/// <param name="right">Right vector to add.</param>
-		/// <param name="result">The combined vectors.</param>
-		public static void Add(ref GorgonVector2 left, ref GorgonVector2 right, out GorgonVector2 result)
-		{
-			result.X = left.X + right.X;
-			result.Y = left.Y + right.Y;
-		}
-
-		/// <summary>
-		/// Function to add two vectors together.
-		/// </summary>
-		/// <param name="left">Left vector to add.</param>
-		/// <param name="right">Right vector to add.</param>
-		/// <returns>The combined vectors.</returns>
-		public static GorgonVector2 Add(GorgonVector2 left, GorgonVector2 right)
-		{
-			return new GorgonVector2(left.X + right.X, left.Y + right.Y);
-		}
-
-		/// <summary>
 		/// Function to subtract two vectors from each other.
 		/// </summary>
 		/// <param name="left">Left vector to subtract.</param>
@@ -512,131 +905,13 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Function to divide a vector by another vector.
-		/// </summary>
-		/// <param name="dividend">The vector to be divided.</param>
-		/// <param name="divisor">The vector that will divide the dividend.</param>
-		/// <param name="result">The quotient vector.</param>
-		/// <exception cref="System.DivideByZeroException">One of the components of the divisor was 0.</exception>
-		public static void Divide(ref GorgonVector2 dividend, ref GorgonVector2 divisor, out GorgonVector2 result)
-		{
-			result.X = dividend.X / divisor.X;
-			result.Y = dividend.Y / divisor.Y;
-		}
-
-		/// <summary>
-		/// Function to divide a vector by another vector.
-		/// </summary>
-		/// <param name="dividend">The vector to be divided.</param>
-		/// <param name="divisor">The vector that will divide the dividend.</param>
-		/// <returns>The quotient vector.</returns>
-		/// <exception cref="System.DivideByZeroException">One of the components of the divisor was 0.</exception>
-		public static GorgonVector2 Divide(GorgonVector2 dividend, GorgonVector2 divisor)
-		{
-			return new GorgonVector2(dividend.X / divisor.X, dividend.Y / divisor.Y);
-		}
-
-		/// <summary>
-		/// Function to divide a vector by a floating point value.
-		/// </summary>
-		/// <param name="dividend">The vector to be divided.</param>
-		/// <param name="divisor">The vector that will divide the dividend.</param>
-		/// <param name="result">The quotient vector.</param>
-		/// <exception cref="System.DivideByZeroException">The divisor was 0.</exception>
-		public static void Divide(ref GorgonVector2 dividend, float divisor, out GorgonVector2 result)
-		{
-			result.X = dividend.X / divisor;
-			result.Y = dividend.Y / divisor;
-		}
-
-		/// <summary>
-		/// Function to divide a vector by a floating point value.
-		/// </summary>
-		/// <param name="dividend">The vector to be divided.</param>
-		/// <param name="divisor">The vector that will divide the dividend.</param>
-		/// <returns>The quotient vector.</returns>
-		/// <exception cref="System.DivideByZeroException">The divisor was 0.</exception>
-		public static GorgonVector2 Divide(GorgonVector2 dividend, float divisor)
-		{
-			return new GorgonVector2(dividend.X / divisor, dividend.Y / divisor);
-		}
-
-		/// <summary>
-		/// Function to multiply two vectors together.
-		/// </summary>
-		/// <param name="left">Left vector to multiply.</param>
-		/// <param name="right">Right vector to multiply.</param>
-		/// <param name="result">The product of the two vectors.</param>
-		public static void Multiply(ref GorgonVector2 left, ref GorgonVector2 right, out GorgonVector2 result)
-		{
-			result.X = left.X * right.X;
-			result.Y = left.Y * right.Y;
-		}
-
-		/// <summary>
-		/// Function to multiply two vectors together.
-		/// </summary>
-		/// <param name="left">Left vector to multiply.</param>
-		/// <param name="right">Right vector to multiply.</param>
-		/// <returns>The product of the two vectors.</returns>
-		public static GorgonVector2 Multiply(GorgonVector2 left, GorgonVector2 right)
-		{
-			return new GorgonVector2(left.X * right.X, left.Y * right.Y);
-		}
-
-		/// <summary>
-		/// Function to multiply a vector by a floating point value.
-		/// </summary>
-		/// <param name="left">Left vector to multiply.</param>
-		/// <param name="scalar">Scalar value to multiply by.</param>
-		/// <param name="result">The product of the vector and scalar.</param>
-		public static void Multiply(ref GorgonVector2 left, float scalar, out GorgonVector2 result)
-		{
-			result.X = left.X * scalar;
-			result.Y = left.Y * scalar;
-		}
-
-		/// <summary>
-		/// Function to multiply a vector by a floating point value.
-		/// </summary>
-		/// <param name="left">Left vector to multiply.</param>
-		/// <param name="scalar">Scalar value to multiply by.</param>
-		/// <returns>The product of the vector and scalar.</returns>
-		public static GorgonVector2 Multiply(GorgonVector2 left, float scalar)
-		{
-			return new GorgonVector2(left.X * scalar, left.Y * scalar);
-		}
-
-		/// <summary>
-		/// Function to perform a dot product between this and another vector.
-		/// </summary>
-		/// <param name="left">Left vector to use in the dot product operation.</param>
-		/// <param name="right">Right vector to use in the dot product operation.</param>
-		/// <returns>The dot product of the two vectors.</returns>
-		public static float DotProduct(GorgonVector2 left, GorgonVector2 right)
-		{
-			return (left.X * right.X) + (left.Y * right.Y);
-		}
-
-		/// <summary>
-		/// Function to perform a dot product between this and another vector.
-		/// </summary>
-		/// <param name="left">Left vector to use in the dot product operation.</param>
-		/// <param name="right">Right vector to use in the dot product operation.</param>
-		/// <param name="result">The dot product of the two vectors.</param>
-		public static void DotProduct(ref GorgonVector2 left, ref GorgonVector2 right, out float result)
-		{
-			result = (left.X * right.X) + (left.Y * right.Y);
-		}
-
-		/// <summary>
 		/// Function to normalize this vector.
 		/// </summary>
 		public void Normalize()
 		{
 			float length = Length;
 
-			if (!GorgonMathUtility.EqualFloat(length, 0.0f, 0.000001f))
+			if (Length <= 1e-6f)
 				return;
 
 			float invLen = 1.0f / length;
@@ -646,62 +921,32 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Function to perform a cross product between this and another vector.
+		/// Function to return a negated vector.
 		/// </summary>
-		/// <param name="vector1">Vector to perform the cross product with.</param>
-		/// <param name="vector2">Vector to perform the cross product with.</param>
-		/// <param name="result">A new vector containing the cross product.</param>
-		public static void CrossProduct(ref GorgonVector2 vector1, ref GorgonVector2 vector2, out GorgonVector2 result)
+		/// <param name="vector">Vector to negate.</param>
+		/// <param name="result">The negated vector.</param>
+		public static void Negate(ref GorgonVector2 vector, out GorgonVector2 result)
 		{
-			result.X = vector2.X * vector1.Y - vector2.Y * vector1.X;
-			result.Y = vector2.Y * vector1.X - vector2.X * vector1.Y;
+			result = new GorgonVector2(-vector.X, -vector.Y);
 		}
 
 		/// <summary>
-		/// Function to perform a cross product between this and another vector.
+		/// Function to return a negated vector.
 		/// </summary>
-		/// <param name="vector1">Vector to perform the cross product with.</param>
-		/// <param name="vector2">Vector to perform the cross product with.</param>
-		/// <returns>A new vector containing the cross product.</returns>
-		public static GorgonVector2 CrossProduct(GorgonVector2 vector1, GorgonVector2 vector2)
+		/// <param name="vector">Vector to negate.</param>
+		/// <returns>The negated vector.</returns>
+		public static GorgonVector2 Negate(GorgonVector2 vector)
 		{
-			return new GorgonVector2(vector2.X * vector1.Y - vector2.Y * vector1.X, vector2.Y * vector1.X - vector2.X * vector1.Y);
-		}
-		
-		/// <summary>
-		/// Function to clamp a vector to a specified range.
-		/// </summary>
-		/// <param name="value">Value to clamp.</param>
-		/// <param name="min">Minimum value to evaluate against.</param>
-		/// <param name="max">Maximum value to evaluate against.</param>
-		/// <param name="result">The clamped vector.</param>
-		public static void Clamp(ref GorgonVector2 value, ref GorgonVector2 min, ref GorgonVector2 max, out GorgonVector2 result)
-		{
-			float x = value.X;
-			float y = value.Y;
-
-			x = (x < min.X) ? min.X : x;
-			y = (y < min.Y) ? min.Y : y;
-			x = (x > max.X) ? max.X : x;
-			y = (y > max.Y) ? max.Y : y;
-
-			result = new GorgonVector2(x, y);
+			return new GorgonVector2(-vector.X, -vector.Y);
 		}
 
 		/// <summary>
-		/// Function to clamp a vector to a specified range.
+		/// Function to negate this vector.
 		/// </summary>
-		/// <param name="value">Value to clamp.</param>
-		/// <param name="min">Minimum value to evaluate against.</param>
-		/// <param name="max">Maximum value to evaluate against.</param>
-		/// <returns>The clamped vector.</returns>
-		public static GorgonVector2 Clamp(GorgonVector2 value, GorgonVector2 min, GorgonVector2 max)
+		public void Negate()
 		{
-			GorgonVector2 result = GorgonVector2.Zero;
-
-			Clamp(ref value, ref min, ref max, out result);
-
-			return result;
+			X = -X;
+			Y = -Y;
 		}
 
 		/// <summary>
@@ -773,47 +1018,46 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Function to compare this vector to another object.
-		/// </summary>
-		/// <param name="obj">Object to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public override bool Equals(object obj)
-		{
-			IEquatable<GorgonVector2> equate = obj as IEquatable<GorgonVector2>;
-
-			if (equate != null)
-				return equate.Equals(this);
-
-			return false;
-		}
-
-		/// <summary>
-		/// Function to return whether two vectors are equal.
-		/// </summary>
-		/// <param name="vector1">Vector to compare.</param>
-		/// <param name="vector2">Vector to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool Equals(ref GorgonVector2 vector1, ref GorgonVector2 vector2)
-		{
-			return GorgonMathUtility.EqualFloat(vector1.X, vector2.X) && GorgonMathUtility.EqualFloat(vector1.Y, vector2.Y);
-		}
-
-		/// <summary>
-		/// Function to return the hash code for this object.
-		/// </summary>
-		/// <returns>The hash code for this object.</returns>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(X).GenerateHash(Y);
-		}
-
-		/// <summary>
 		/// Function to return the textual representation of this object.
 		/// </summary>
 		/// <returns>A string containing the type and values of the object.</returns>
 		public override string ToString()
 		{
-			return string.Format("2D Vector-> X:{0}, Y:{1}",X,Y);
+			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X, Y);
+		}
+
+		/// <summary>
+		/// Function to return the textual representation of this object.
+		/// </summary>
+		/// <param name="provider">String formatting provider.</param>
+		/// <returns>A string containing the type and values of this object.</returns>
+		public string ToString(IFormatProvider provider)
+		{
+			return string.Format(provider, "X:{0} Y:{1}", X, Y);
+		}
+
+
+		/// <summary>
+		/// Function to return the textual representation of this object.
+		/// </summary>
+		/// <param name="format">Format to use.</param>
+		/// <returns>A string containing the type and values of this object.</returns>
+		public string ToString(string format)
+		{
+			if (string.IsNullOrEmpty(format))
+				return ToString();
+
+			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture));
+		}
+
+		/// <summary>
+		/// Function to convert the vector into a 2 element array.
+		/// </summary>
+		/// <returns>A 2 element array containing the elements of the vector.</returns>
+		/// <remarks>X is in the first element, Y is in the second element.</remarks>
+		public float[] ToArray()
+		{
+			return new[] { X, Y };
 		}
 		#endregion
 
@@ -1084,6 +1328,21 @@ namespace GorgonLibrary.Math
 			X = size.Width;
 			Y = size.Height;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVector2"/> struct.
+		/// </summary>
+		/// <param name="values">A list of values.</param>
+		/// <remarks>Only the first two elements in the list will be taken.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter has less than 2 elements.</exception>
+		public GorgonVector2(IEnumerable<float> values)
+		{
+			if (values.Count() < 2)
+				throw new ArgumentException("The number of elements must be at least 2 for a 2D vector.", "values");
+
+			X = values.ElementAt(0);
+			Y = values.ElementAt(1);
+		}
 		#endregion
 
 		#region IEquatable<Vector2D> Members
@@ -1096,7 +1355,25 @@ namespace GorgonLibrary.Math
 		/// </returns>
 		public bool Equals(GorgonVector2 other)
 		{
-			return (GorgonMathUtility.EqualFloat(other.X, X) && GorgonMathUtility.EqualFloat(other.Y, Y));
+			return (X == other.X) && (Y == other.Y);
+		}
+		#endregion
+
+		#region IFormattable Members
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// </summary>
+		/// <param name="format">The format.</param>
+		/// <param name="formatProvider">The format provider.</param>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
+		public string ToString(string format, IFormatProvider formatProvider)
+		{
+			if (string.IsNullOrEmpty(format))
+				return ToString(formatProvider);
+
+			return string.Format(formatProvider, "X:{0}, Y:{1}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider));
 		}
 		#endregion
 	}
