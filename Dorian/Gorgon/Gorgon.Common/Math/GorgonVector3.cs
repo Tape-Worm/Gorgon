@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Drawing;
@@ -39,9 +41,9 @@ namespace GorgonLibrary.Math
 	/// spatial related computations.
 	/// This valuetype provides us a convienient way to use vectors and their operations.
 	/// </remarks>
-	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.Vector3DTypeConverter))]
+	[Serializable(), StructLayout(LayoutKind.Sequential, Pack = 4), TypeConverter(typeof(Design.GorgonVector3TypeConverter))]
 	public struct GorgonVector3
-		: IEquatable<GorgonVector3>
+		: Gorgon
 	{
 		#region Variables.
 		/// <summary>
@@ -499,6 +501,16 @@ namespace GorgonLibrary.Math
 		public override string ToString()
 		{
 			return string.Format("3D Vector-> X:{0}, Y:{1}, Z:{2}",X,Y,Z);
+		}
+
+		/// <summary>
+		/// Function to convert the vector into a 3 element array.
+		/// </summary>
+		/// <returns>A 3 element array containing the elements of the vector.</returns>
+		/// <remarks>X is in the first element, Y is in the second element, Z is in the third element.</remarks>
+		public float[] ToArray()
+		{
+			return new[] { X, Y, Z };
 		}
 		
 		/// <summary>
@@ -1272,6 +1284,22 @@ namespace GorgonLibrary.Math
 			X = vector.X;
 			Y = vector.Y;
 			Z = z;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVector3"/> struct.
+		/// </summary>
+		/// <param name="values">The values for the vector.</param>
+		/// <remarks>Only the first three elements in the list will be taken.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter has less than 3 elements.</exception>
+		public GorgonVector3(IEnumerable<float> values)
+		{
+			if (values.Count() < 3)
+				throw new ArgumentException("The number of elements must be at least 3 for a 3D vector.", "values");
+
+			X = values.ElementAt(0);
+			Y = values.ElementAt(1);
+			Z = values.ElementAt(2);
 		}
 		#endregion
 

@@ -48,6 +48,16 @@ namespace GorgonLibrary.Math
 
 		#region Methods.
 		/// <summary>
+		/// Function to take e raised to the power passed in.
+		/// </summary>
+		/// <param name="power">Value to take e from.</param>
+		/// <returns><c>e</c> raised to the power specified.</returns>
+		public static float Exp(float power)
+		{
+			return (float)System.Math.Exp(power);
+		}
+
+		/// <summary>
 		/// Function to raise a value to a specified power.
 		/// </summary>
 		/// <param name="value">Value to raise.</param>
@@ -255,7 +265,7 @@ namespace GorgonLibrary.Math
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool EqualFloat(float value1, float value2)
 		{
-			return EqualFloat(value1, value2, 0.000001f);
+			return EqualFloat(value1, value2, 1e-6f);
 		}
 
 		/// <summary>
