@@ -76,10 +76,11 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// A base buffer object.
 	/// </summary>
-	public class GorgonBaseBuffer
+	public abstract class GorgonBaseBuffer
+		: IDisposable
 	{
 		#region Variables.
-		
+		private bool _disposed = false;			// Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
@@ -129,32 +130,16 @@ namespace GorgonLibrary.Graphics
 		protected internal abstract void Initialize(GorgonDataStream data);
 
 		/// <summary>
-		/// Function used to lock the buffer for reading/writing.
+		/// Function used to lock the underlying buffer for reading/writing.
 		/// </summary>
-		/// <param name="offset">Offset into the buffer to lock, in bytes.</param>
-		/// <param name="lockSize">Amount of data to lock, in bytes.</param>
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
 		/// <returns>A data stream containing the buffer data.</returns>		
-		protected abstract GorgonDataStream LockImpl(BufferLockFlags lockFlags);
+		protected abstract void LockBuffer(BufferLockFlags lockFlags);
 
 		/// <summary>
-		/// Function used to unlock the buffer.
+		/// Function called to unlock the underlying data buffer.
 		/// </summary>
-		/// <remarks>This method must be called when the user is finished writing to it or reading from it.</remarks>
-		protected abstract void UnlockImpl();
-
-		/// <summary>
-		/// Function used to unlock the buffer.
-		/// </summary>
-		/// <remarks>This method must be called when the user is finished writing to it or reading from it.</remarks>
-		public void Unlock()
-		{
-			if (!IsLocked)
-				return;
-
-			UnlockImpl();
-			IsLocked = false;
-		}
+		protected internal abstract void UnlockBuffer();
 		#endregion
 
 		#region Constructor/Destructor.
@@ -169,6 +154,32 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull<GorgonGraphics>(graphics, "graphics");
 
 			Graphics = graphics;
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+					Graphics.RemoveTrackedObject(this);
+
+				_disposed = true;
+			}
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

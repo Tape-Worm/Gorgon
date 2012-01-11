@@ -57,11 +57,15 @@
  float4 PS( PS_IN input ) : SV_Target
  {	
 	float4 color = theTexture.Sample(sample, input.uv) * input.col;
+	float4 color2 = _myTex.Sample(_sampler, input.uv);
 
 	if (color.b > 1.00f)
 		color.a *= _alpha.a;
 	else
 		color *= _alpha;
 
-	return color;
+	if ((color.r > 0.75f) && (color.g > 0.75f) && (color.b > 0.75f) && ((input.uv.x < 0.5f) || (input.uv.y < 0.5f)))
+		return color;
+	else
+		return float4(color.rgb * color2.rgb, color.a);
  }

@@ -151,11 +151,11 @@ namespace GorgonLibrary.Graphics
 
 			if (type == typeof(float))
 				return BufferFormat.R32_Float;
-			if (type == typeof(Vector2D))
+			if (type == typeof(GorgonVector2))
 				return BufferFormat.R32G32_Float;
-			if (type == typeof(Vector3D))
+			if (type == typeof(GorgonVector3))
 				return BufferFormat.R32G32B32_Float;				
-			if (type == typeof(Vector4D))
+			if (type == typeof(GorgonVector4))
 				return BufferFormat.R32G32B32A32_Float;
 
 			return BufferFormat.Unknown;
@@ -456,9 +456,9 @@ namespace GorgonLibrary.Graphics
 									typeof(long),
 									typeof(ulong),
 									typeof(float),
-									typeof(Vector2D),
-									typeof(Vector3D),
-									typeof(Vector4D)
+									typeof(GorgonVector2),
+									typeof(GorgonVector3),
+									typeof(GorgonVector4)
 								};
 		}
 		#endregion

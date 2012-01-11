@@ -361,7 +361,7 @@ namespace GorgonLibrary.Math
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Minimum.GetHashCode() ^ Maximum.GetHashCode() ^ Range.GetHashCode();
+			return 281.GenerateHash(Minimum).GenerateHash(Maximum);
 		}
 
 		/// <summary>
@@ -923,7 +923,7 @@ namespace GorgonLibrary.Math
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Minimum.GetHashCode() ^ Maximum.GetHashCode() ^ Range.GetHashCode();
+			return 281.GenerateHash(Minimum).GenerateHash(Maximum);
 		}
 
 		/// <summary>
@@ -1485,7 +1485,7 @@ namespace GorgonLibrary.Math
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Minimum.GetHashCode() ^ Maximum.GetHashCode() ^ Range.GetHashCode();
+			return 281.GenerateHash(Maximum).GenerateHash(Minimum);
 		}
 
 		/// <summary>
