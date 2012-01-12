@@ -168,7 +168,7 @@ namespace GorgonLibrary.Math
 		/// <param name="right">Vector to add with.</param>
 		/// <param name="result">The combined vectors.</param>
 		public static void Add(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
-		{
+		{			
 			result.X = left.X + right.X;
 			result.Y = left.Y + right.Y;
 			result.Z = left.Z + right.Z;
@@ -295,12 +295,12 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Function to multiply two vectors together.
+		/// Function to modulate the elements of two vectors.
 		/// </summary>
-		/// <param name="left">Vector to multiply.</param>
-		/// <param name="right">Vector to multiply by.</param>
-		/// <param name="result">The product of the vectors.</param>
-		public static void Multiply(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
+		/// <param name="left">First vector to modulate.</param>
+		/// <param name="right">Second vector to modulate.</param>
+		/// <param name="result">A modulated vector.</param>
+		public static void Modulate(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
 		{
 			result.X = left.X * right.X;
 			result.Y = left.Y * right.Y;
@@ -309,12 +309,12 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Function to multiply two vectors together.
+		/// Function to modulate the elements of two vectors.
 		/// </summary>
-		/// <param name="left">Vector to multiply.</param>
-		/// <param name="right">Vector to multiply by.</param>
-		/// <returns>The product of the vectors.</returns>
-		public static GorgonVector4 Multiply(GorgonVector4 left, GorgonVector4 right)
+		/// <param name="left">First vector to modulate.</param>
+		/// <param name="right">Second vector to modulate.</param>
+		/// <returns>A modulated vector.</returns>
+		public static GorgonVector4 Modulate(GorgonVector4 left, GorgonVector4 right)
 		{
 			return new GorgonVector4(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
 		}
@@ -988,19 +988,6 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Operator to multiply two vectors together.
-		/// </summary>
-		/// <param name="left">Vector to multiply.</param>
-		/// <param name="right">Vector to multiply by.</param>
-		/// <returns>A new vector.</returns>
-		public static GorgonVector4 operator *(GorgonVector4 left,GorgonVector4 right)
-		{
-			GorgonVector4 result;
-			Multiply(ref left, ref right, out result);
-			return result;
-		}
-
-		/// <summary>
 		/// Operator to multiply a vector by a scalar value.
 		/// </summary>
 		/// <param name="left">Vector to multiply with.</param>
@@ -1038,19 +1025,6 @@ namespace GorgonLibrary.Math
 			Divide(ref left, scalar, out result);
 			return result;
 		}		
-
-		/// <summary>
-		/// Operator to divide a vector by another vector.
-		/// </summary>
-		/// <param name="left">Vector to divide.</param>
-		/// <param name="right">Vector to divide by.</param>
-		/// <returns>A new vector.</returns>
-		public static GorgonVector4 operator /(GorgonVector4 left,GorgonVector4 right)
-		{
-			GorgonVector4 result;
-			Divide(ref left, ref right, out result);
-			return result;
-		}
 
 		/// <summary>
 		/// Operator to convert a 2D vector into a 4D vector.
@@ -1151,8 +1125,11 @@ namespace GorgonLibrary.Math
 		/// <param name="values">The values for the vector.</param>
 		/// <remarks>Only the first four elements in the list will be taken.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter has less than 4 elements.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the values parameter is NULL (Nothing in VB.Net).</exception>
 		public GorgonVector4(IEnumerable<float> values)
 		{
+			if (values == null)
+				throw new ArgumentNullException("values");
 			if (values.Count() < 4)
 				throw new ArgumentException("The number of elements must be at least 4 for a 4D vector.", "values");
 
@@ -1163,7 +1140,7 @@ namespace GorgonLibrary.Math
 		}
 		#endregion
 
-		#region IEquatable<Vector4D> Members
+		#region IEquatable<GorgonVector4> Members
 		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
