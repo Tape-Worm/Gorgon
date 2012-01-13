@@ -133,7 +133,8 @@
     <Compile Include="Gorgon.cs" />
     <Compile Include="INotifier.cs" />
     <Compile Include="GorgonFieldDescriptor.cs" />
-    <Compile Include="Math\Design\GorgonTypeConverter.cs" />
+    <Compile Include="Math\Design\GorgonExpandableObjectTypeConverter.cs" />
+    <Compile Include="Math\Design\GorgonMatrixTypeConverter.cs" />
     <Compile Include="Math\Design\GorgonVector2TypeConverter.cs" />
     <Compile Include="Math\Design\GorgonVector3TypeConverter.cs" />
     <Compile Include="Math\Design\GorgonVector4TypeConverter.cs" />

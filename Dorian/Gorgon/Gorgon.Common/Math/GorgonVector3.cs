@@ -31,11 +31,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.Math
 {
@@ -332,6 +331,52 @@ namespace GorgonLibrary.Math
 		public static GorgonVector3 Ceiling(GorgonVector3 vector1, GorgonVector3 vector2)
 		{
 			return new GorgonVector3((vector1.X > vector2.X) ? vector1.X : vector2.X, (vector1.Y > vector2.Y) ? vector1.Y : vector2.Y, (vector1.Z > vector2.Z) ? vector1.Z : vector2.Z);
+		}
+
+		/// <summary>
+		/// Function to clamp a vector to a specified range.
+		/// </summary>
+		/// <param name="value">Value to clamp.</param>
+		/// <param name="min">Minimum value to evaluate against.</param>
+		/// <param name="max">Maximum value to evaluate against.</param>
+		/// <param name="result">The clamped vector.</param>
+		public static void Clamp(ref GorgonVector3 value, ref GorgonVector3 min, ref GorgonVector3 max, out GorgonVector3 result)
+		{
+			float x = value.X;
+			float y = value.Y;
+			float z = value.Z;
+
+			x = (x < min.X) ? min.X : x;
+			y = (y < min.Y) ? min.Y : y;
+			z = (z < min.Z) ? min.Z : z;
+			x = (x > max.X) ? max.X : x;
+			y = (y > max.Y) ? max.Y : y;
+			z = (z > max.Z) ? max.Z : z;
+
+			result = new GorgonVector3(x, y, z);
+		}
+
+		/// <summary>
+		/// Function to clamp a vector to a specified range.
+		/// </summary>
+		/// <param name="value">Value to clamp.</param>
+		/// <param name="min">Minimum value to evaluate against.</param>
+		/// <param name="max">Maximum value to evaluate against.</param>
+		/// <returns>The clamped vector.</returns>
+		public static GorgonVector3 Clamp(GorgonVector3 value, GorgonVector3 min, GorgonVector3 max)
+		{
+			float x = value.X;
+			float y = value.Y;
+			float z = value.Z;
+
+			x = (x < min.X) ? min.X : x;
+			y = (y < min.Y) ? min.Y : y;
+			z = (z < min.Z) ? min.Z : z;
+			x = (x > max.X) ? max.X : x;
+			y = (y > max.Y) ? max.Y : y;
+			z = (z > max.Z) ? max.Z : z;
+
+			return new GorgonVector3(x, y, z);
 		}
 
 		/// <summary>
@@ -807,6 +852,16 @@ namespace GorgonLibrary.Math
 		public static GorgonVector3 Multiply(GorgonVector3 left, float scalar)
 		{
 			return new GorgonVector3(left.X * scalar, left.Y * scalar, left.Z * scalar);
+		}
+
+		/// <summary>
+		/// Function to negate this vector.
+		/// </summary>
+		public void Negate()
+		{
+			X = -X;
+			Y = -Y;
+			Z = -Z;
 		}
 
 		/// <summary>
@@ -1701,7 +1756,7 @@ namespace GorgonLibrary.Math
 			if (string.IsNullOrEmpty(format))
 				return ToString(formatProvider);
 
-			return string.Format(formatProvider, "X:{0} Y:{1} Z:{1}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider), Z.ToString(format, formatProvider));			
+			return string.Format(formatProvider, "X:{0} Y:{1} Z:{2}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider), Z.ToString(format, formatProvider));			
 		}
 		#endregion
 	}

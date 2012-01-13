@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
@@ -37,19 +39,80 @@ namespace GorgonLibrary.Math
 	/// A matrix is used to track linear transformations and their coefficients.
 	/// They are used often in 3D graphics to facilitate the transformation of 
 	/// polygonal data.
+	/// <para>A Gorgon matrix is column major, which is the type normally used with mathematics.  A column major matrix would have 
+	/// <para>Each element is prefixed with a 'm', and uses two numbers to denote the column and row.  e.g. m32 would mean the element at row 3, column 3.</para>
 	/// </remarks>
-	[StructLayout(LayoutKind.Sequential)]
+	[Serializable]
+	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct GorgonMatrix
 	{
 		#region Variables.
-		/// <summary>Matrix row 1 values.</summary>
-		public float m11,m12,m13,m14;
-		/// <summary>Matrix row 2 values.</summary>
-		public float m21,m22,m23,m24;
-		/// <summary>Matrix row 3 values.</summary>
-		public float m31,m32,m33,m34;
-		/// <summary>Matrix row 4 values.</summary>
-		public float m41,m42,m43,m44;
+		/// <summary>
+		/// Row 1, column 1 of the matrix.
+		/// </summary>
+		public float m11;
+		/// <summary>
+		/// Row 1, column 2 of the matrix.
+		/// </summary>
+		public float m12;
+		/// <summary>
+		/// Row 1, column 3 of the matrix.
+		/// </summary>
+		public float m13;
+		/// <summary>
+		/// Row 1, column 4 of the matrix.
+		/// </summary>
+		public float m14;
+
+		/// <summary>
+		/// Row 2, column 1 of the matrix.
+		/// </summary>
+		public float m21;
+		/// <summary>
+		/// Row 2, column 2 of the matrix.
+		/// </summary>
+		public float m22;
+		/// <summary>
+		/// Row 2, column 3 of the matrix.
+		/// </summary>
+		public float m23;
+		/// <summary>
+		/// Row 2, column 4 of the matrix.
+		/// </summary>
+		public float m24;
+
+		/// <summary>
+		/// Row 3, column 1 of the matrix.
+		/// </summary>
+		public float m31;
+		/// <summary>
+		/// Row 3, column 2 of the matrix.
+		/// </summary>
+		public float m32;
+		/// <summary>
+		/// Row 3, column 3 of the matrix.
+		/// </summary>
+		public float m33;
+		/// <summary>
+		/// Row 3, column 4 of the matrix.
+		/// </summary>
+		public float m34;
+		/// <summary>
+		/// Row 4, column 1 of the matrix.
+		/// </summary>
+		public float m41;
+		/// <summary>
+		/// Row 4, column 2 of the matrix.
+		/// </summary>
+		public float m42;
+		/// <summary>
+		/// Row 4, column 3 of the matrix.
+		/// </summary>
+		public float m43;
+		/// <summary>
+		/// Row 4, column 4 of the matrix.
+		/// </summary>
+		public float m44;
 
 		/// <summary>
 		/// An empty matrix.
@@ -357,6 +420,19 @@ namespace GorgonLibrary.Math
 			return output.ToString();
 		}
 
+		/// <summary>
+		/// Function to convert the matrix into an array of floating point values.
+		/// </summary>
+		/// <returns>An array of floating point values.</returns>
+		public float[] ToArray()
+		{
+			return new[] {
+				m11, m21, m31, m41,
+				m12, m22, m32, m42,
+				m13, m23, m33, m43,
+				m14, m24, m34, m44
+			};
+		}
 
 		/// <summary>
 		/// Function to multiply two matrices together.
@@ -624,31 +700,75 @@ namespace GorgonLibrary.Math
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonMatrix"/> struct.
 		/// </summary>
-		/// <param name="p11">Initial value for m11.</param>
-		/// <param name="p12">Initial value for m12.</param>
-		/// <param name="p13">Initial value for m13.</param>
-		/// <param name="p14">Initial value for m14.</param>
-		/// <param name="p21">Initial value for m21.</param>
-		/// <param name="p22">Initial value for m22.</param>
-		/// <param name="p23">Initial value for m23.</param>
-		/// <param name="p24">Initial value for m24.</param>
-		/// <param name="p31">Initial value for m31.</param>
-		/// <param name="p32">Initial value for m32.</param>
-		/// <param name="p33">Initial value for m33.</param>
-		/// <param name="p34">Initial value for m34.</param>
-		/// <param name="p41">Initial value for m41.</param>
-		/// <param name="p42">Initial value for m42.</param>
-		/// <param name="p43">Initial value for m43.</param>
-		/// <param name="p44">Initial value for m44.</param>
-		public GorgonMatrix(float p11,float p12,float p13,float p14,
-			float p21,float p22,float p23,float p24,
-			float p31,float p32,float p33,float p34,
-			float p41,float p42,float p43,float p44)
+		/// <param name="M11">Column 1, row 1 value.</param>
+		/// <param name="M21">Column 2, row 1 value.</param>
+		/// <param name="M31">Column 3, row 1 value.</param>
+		/// <param name="M41">Column 4, row 1 value.</param>
+		/// <param name="M12">Column 1, row 2 value.</param>
+		/// <param name="M22">Column 2, row 2 value.</param>
+		/// <param name="M32">Column 3, row 2 value.</param>
+		/// <param name="M42">Column 4, row 2 value.</param>
+		/// <param name="M12">Column 1, row 3 value.</param>
+		/// <param name="M22">Column 2, row 3 value.</param>
+		/// <param name="M32">Column 3, row 3 value.</param>
+		/// <param name="M42">Column 4, row 3 value.</param>
+		/// <param name="M12">Column 1, row 4 value.</param>
+		/// <param name="M22">Column 2, row 4 value.</param>
+		/// <param name="M32">Column 3, row 4 value.</param>
+		/// <param name="M42">Column 4, row 4 value.</param>
+		public GorgonMatrix(float M11, float M21, float M31, float M41,
+			float M12, float M22, float M32, float M42,
+			float M13, float M23, float M33, float M43,
+			float M14,float M24,float M34,float M44)
 		{
-			m11 = p11; m12 = p12; m13 = p13; m14 = p14;
-			m21 = p21; m22 = p22; m23 = p23; m24 = p24;
-			m31 = p31; m32 = p32; m33 = p33; m34 = p34;
-			m41 = p41; m42 = p42; m43 = p43; m44 = p44;			
+			m11 = M11; 
+			m12 = M12; 
+			m13 = M13; 
+			m14 = M14;
+			m21 = M21; 
+			m22 = M22; 
+			m23 = M23; 
+			m24 = M24;
+			m31 = M31; 
+			m32 = M32; 
+			m33 = M33; 
+			m34 = M34;
+			m41 = M41; 
+			m42 = M42; 
+			m43 = M43; 
+			m44 = M44;			
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonMatrix"/> struct.
+		/// </summary>
+		/// <param name="values">The values.</param>
+		/// <remarks>Only the first 16 elements in the list will be taken.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter has less than 4 elements.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the values parameter is NULL (Nothing in VB.Net).</exception>
+		public GorgonMatrix(IEnumerable<float> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Count() <= 16)
+				throw new ArgumentException("The number of values must be at least 16 for a Matrix.", "values");
+
+			m11 = values.ElementAt(0);
+			m12 = values.ElementAt(1);
+			m13 = values.ElementAt(2);
+			m14 = values.ElementAt(3);
+			m21 = values.ElementAt(4);
+			m22 = values.ElementAt(5);
+			m23 = values.ElementAt(6);
+			m24 = values.ElementAt(7);
+			m31 = values.ElementAt(8);
+			m32 = values.ElementAt(9);
+			m33 = values.ElementAt(10);
+			m34 = values.ElementAt(11);
+			m41 = values.ElementAt(12);
+			m42 = values.ElementAt(13);
+			m43 = values.ElementAt(14);
+			m44 = values.ElementAt(15);
 		}
 		#endregion
 	}

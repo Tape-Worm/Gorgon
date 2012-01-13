@@ -24,6 +24,11 @@
 // 
 #endregion
 
+//
+//  Most of the code in this file was modified or taken directly from the SlimMath project by Mike Popoloski.
+//  SlimMath may be downloaded from: http://code.google.com/p/slimmath/
+//
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
