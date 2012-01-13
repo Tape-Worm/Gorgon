@@ -24,6 +24,11 @@
 // 
 #endregion
 
+//
+//  Most of the code in this file was modified or taken directly from the SlimMath project by Mike Popoloski.
+//  SlimMath may be downloaded from: http://code.google.com/p/slimmath/
+//
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -48,13 +53,13 @@ namespace GorgonLibrary.Math
 	{
 		#region Variables.
 		/// <summary>
-		/// Empty vector.
+		/// A vector with all elements set to zero.
 		/// </summary>
 		public readonly static GorgonVector2 Zero = new GorgonVector2(0);
 		/// <summary>
-		/// Unit vector.
+		/// A vector with all elements set to one.
 		/// </summary>
-		public readonly static GorgonVector2 Unit = new GorgonVector2(1.0f);
+		public readonly static GorgonVector2 One = new GorgonVector2(1.0f);
 		/// <summary>
 		/// Unit X vector.
 		/// </summary>
@@ -234,14 +239,14 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a Catmull-Rom interpolation using the specified positions.
+		/// Function to calcualte a Catmull-Rom interpolation using the specified positions.
 		/// </summary>
 		/// <param name="value1">The first position in the interpolation.</param>
 		/// <param name="value2">The second position in the interpolation.</param>
 		/// <param name="value3">The third position in the interpolation.</param>
 		/// <param name="value4">The fourth position in the interpolation.</param>
 		/// <param name="amount">Weighting factor.</param>
-		/// <param name="result">When the method completes, contains the result of the Catmull-Rom interpolation.</param>
+		/// <param name="result">The result of the Catmull-Rom interpolation.</param>
 		public static void CatmullRom(ref GorgonVector2 value1, ref GorgonVector2 value2, ref GorgonVector2 value3, ref GorgonVector2 value4, float amount, out GorgonVector2 result)
 		{
 			float squared = amount * amount;
@@ -258,14 +263,14 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a Catmull-Rom interpolation using the specified positions.
+		/// Function to calcualte a Catmull-Rom interpolation using the specified positions.
 		/// </summary>
 		/// <param name="value1">The first position in the interpolation.</param>
 		/// <param name="value2">The second position in the interpolation.</param>
 		/// <param name="value3">The third position in the interpolation.</param>
 		/// <param name="value4">The fourth position in the interpolation.</param>
 		/// <param name="amount">Weighting factor.</param>
-		/// <returns>When the method completes, contains the result of the Catmull-Rom interpolation.</returns>
+		/// <returns>The Catmull-Rom interpolation.</returns>
 		public static GorgonVector2 CatmullRom(GorgonVector2 value1, GorgonVector2 value2, GorgonVector2 value3, GorgonVector2 value4, float amount)
 		{
 			float squared = amount * amount;
@@ -613,14 +618,14 @@ namespace GorgonLibrary.Math
 		}
 		
 		/// <summary>
-		/// Performs a Hermite spline interpolation.
+		/// Function to calculate a Hermite spline interpolation.
 		/// </summary>
 		/// <param name="value1">First source position vector.</param>
 		/// <param name="tangent1">First source tangent vector.</param>
 		/// <param name="value2">Second source position vector.</param>
 		/// <param name="tangent2">Second source tangent vector.</param>
 		/// <param name="amount">Weighting factor.</param>
-		/// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
+		/// <param name="result">The Hermite spline interpolation.</param>
 		public static void Hermite(ref GorgonVector2 value1, ref GorgonVector2 tangent1, ref GorgonVector2 value2, ref GorgonVector2 tangent2, float amount, out GorgonVector2 result)
 		{
 			float squared = amount * amount;
@@ -637,14 +642,14 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a Hermite spline interpolation.
+		/// Function to calculate a Hermite spline interpolation.
 		/// </summary>
 		/// <param name="value1">First source position vector.</param>
 		/// <param name="tangent1">First source tangent vector.</param>
 		/// <param name="value2">Second source position vector.</param>
 		/// <param name="tangent2">Second source tangent vector.</param>
 		/// <param name="amount">Weighting factor.</param>
-		/// <returns>When the method completes, contains the result of the Hermite spline interpolation.</returns>
+		/// <returns>The Hermite spline interpolation.</returns>
 		public static GorgonVector2 Hermite(GorgonVector2 value1, GorgonVector2 tangent1, GorgonVector2 value2, GorgonVector2 tangent2, float amount)
 		{
 			float squared = amount * amount;
@@ -661,12 +666,12 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a linear interpolation between two vectors.
+		/// Function to calculate a linear interpolation between two vectors.
 		/// </summary>
 		/// <param name="start">Start vector.</param>
 		/// <param name="end">End vector.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
+		/// <param name="amount">Value between 0.0f and 1.0f indicating the weight of <paramref name="end"/>.</param>
+		/// <param name="result">The linear interpolation of the two vectors.</param>
 		/// <remarks>
 		/// This method performs the linear interpolation based on the following formula.
 		/// <code>start + (end - start) * amount</code>
@@ -681,12 +686,12 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a linear interpolation between two vectors.
+		/// Function to calculate a linear interpolation between two vectors.
 		/// </summary>
 		/// <param name="start">Start vector.</param>
 		/// <param name="end">End vector.</param>
 		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <returns>When the method completes, contains the linear interpolation of the two vectors.</returns>
+		/// <returns>The linear interpolation of the two vectors.</returns>
 		/// <remarks>
 		/// This method performs the linear interpolation based on the following formula.
 		/// <code>start + (end - start) * amount</code>
@@ -801,19 +806,63 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Function to normalize this vector.
+		/// Function to normalize this vector into a unit vector.
 		/// </summary>
 		public void Normalize()
 		{
 			float length = Length;
 
-			if (Length <= 1e-6f)
+			if (length <= 1e-6f)
 				return;
 
 			float invLen = 1.0f / length;
 
 			X *= invLen;
 			Y *= invLen;
+		}
+
+		/// <summary>
+		/// Function to normalize a vector into a vector.
+		/// </summary>
+		/// <param name="vector">The vector to normalize.</param>
+		/// <returns>The normalized vector.</returns>
+		public static GorgonVector2 Normalize(GorgonVector2 vector)
+		{
+			float length = vector.Length;
+
+			if (length > 1e-6f)
+			{
+				float invLen = 1.0f / length;
+
+				return new GorgonVector2(
+					vector.X * invLen,
+					vector.Y * invLen
+				);
+			}
+			else
+				return vector;
+		}
+
+		/// <summary>
+		/// Function to normalize a vector into a vector.
+		/// </summary>
+		/// <param name="vector">The vector to normalize.</param>
+		/// <param name="result">The normalized vector.</param>
+		public static void Normalize(ref GorgonVector2 vector, out GorgonVector2 result)
+		{
+			float length = vector.Length;
+
+			if (length > 1e-6f)
+			{
+				float invLen = 1.0f / length;
+
+				result = new GorgonVector2(
+					vector.X * invLen,
+					vector.Y * invLen
+				);
+			}
+			else
+				result = vector;
 		}
 
 		/// <summary>
@@ -1029,15 +1078,6 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Function to get the reciprocal of each element in this vector.
-		/// </summary>
-		public void Reciprocal()
-		{
-			X = 1.0f / X;
-			Y = 1.0f / Y;
-		}
-
-		/// <summary>
 		/// Function to find the square root of each element in the vector and then takes the reciprocal of each.
 		/// </summary>
 		/// <param name="value">The vector used to find the square root/recpirocal.</param>
@@ -1100,16 +1140,14 @@ namespace GorgonLibrary.Math
 
 			if (radicand < 0.0f)
 				result = GorgonVector2.Zero;
-			else
-			{
-				float cos2 = GorgonMathUtility.Sqrt(radicand);
-				GorgonVector2 angleNormal = GorgonVector2.Zero;
-				GorgonVector2 indexVector = GorgonVector2.Zero;
 
-				Multiply(ref vector, index, out indexVector);
-				Multiply(ref normal, cos2 - index * cos1, out angleNormal);
-				Add(ref indexVector, ref angleNormal, out result);
-			}
+			float cos2 = GorgonMathUtility.Sqrt(radicand);
+			GorgonVector2 angleNormal = GorgonVector2.Zero;
+			GorgonVector2 indexVector = GorgonVector2.Zero;
+
+			Multiply(ref vector, index, out indexVector);
+			Multiply(ref normal, cos2 - index * cos1, out angleNormal);
+			Add(ref indexVector, ref angleNormal, out result);
 		}
 
 		/// <summary>
@@ -1121,11 +1159,24 @@ namespace GorgonLibrary.Math
 		/// <returns>The refracted vector.</returns>
 		public static GorgonVector2 Refract(GorgonVector2 vector, GorgonVector2 normal, float index)
 		{
-			GorgonVector2 result = GorgonVector2.Zero;
+			float cos1;
 
-			Refract(ref vector, ref normal, index, out result);
+			DotProduct(ref vector, ref normal, out cos1);
 
-			return result;
+			float radicand = 1.0f - (index * index) * (1.0f - (cos1 * cos1));
+
+			if (radicand < 0.0f)
+				return GorgonVector2.Zero;
+
+			float cos2 = GorgonMathUtility.Sqrt(radicand);
+			GorgonVector2 angleNormal = GorgonVector2.Zero;
+			GorgonVector2 indexVector = GorgonVector2.Zero;				
+
+			Multiply(ref vector, index, out indexVector);
+			Multiply(ref normal, cos2 - index * cos1, out angleNormal);
+			Add(ref indexVector, ref angleNormal, out indexVector);
+
+			return indexVector;
 		}
 
 		/// <summary>
@@ -1226,6 +1277,32 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
+		/// Function to calculate the tangent of each element in the vector.
+		/// </summary>
+		/// <param name="value">The vector to take the tangent of.</param>
+		/// <param name="result">The tangent of each element.</param>
+		public static void Tan(ref GorgonVector2 value, out GorgonVector2 result)
+		{
+			result = new GorgonVector2(
+				GorgonMathUtility.Tan(value.X),
+				GorgonMathUtility.Tan(value.Y)
+			);
+		}
+
+		/// <summary>
+		/// Function to calculate the tangent of each element in the vector.
+		/// </summary>
+		/// <param name="value">The vector to take the tangent of.</param>
+		/// <returns>The tangent of each element.</returns>
+		public static GorgonVector2 Tan(GorgonVector2 value)
+		{
+			return new GorgonVector2(
+				GorgonMathUtility.Tan(value.X),
+				GorgonMathUtility.Tan(value.Y)
+			);
+		}
+
+		/// <summary>
 		/// Function to convert the vector into a 2 element array.
 		/// </summary>
 		/// <returns>A 2 element array containing the elements of the vector.</returns>
@@ -1267,6 +1344,7 @@ namespace GorgonLibrary.Math
 			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture));
 		}
 
+#warning Don't forget to implement these after Matrix and Quaternion are implemented (Transform/Coordinate/Normal).
 		/// <summary>
 		/// Function to transform a vector by a given matrix.
 		/// </summary>
