@@ -24,6 +24,11 @@
 // 
 #endregion
 
+//
+//  Most of the code in this file was modified or taken directly from the SlimMath project by Mike Popoloski.
+//  SlimMath may be downloaded from: http://code.google.com/p/slimmath/
+//
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,13 +51,13 @@ namespace GorgonLibrary.Math
 	{
 		#region Variables.
 		/// <summary>
-		/// Empty vector.
+		/// A vector with all elements set to zero.
 		/// </summary>
 		public readonly static GorgonVector4 Zero = new GorgonVector4(0);
 		/// <summary>
-		/// Unit vector.
+		/// A vector with all elements set to one.
 		/// </summary>
-		public readonly static GorgonVector4 Unit = new GorgonVector4(1.0f);
+		public readonly static GorgonVector4 One = new GorgonVector4(1.0f);
 		/// <summary>
 		/// Unit X vector.
 		/// </summary>
@@ -115,6 +120,17 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
+		/// Property to return whether the vector is normalized or not.
+		/// </summary>
+		public bool IsNormalized
+		{
+			get
+			{
+				return GorgonMathUtility.Abs((X * X + Y * Y + Z * Z + W * W) - 1f) < 1e-6f;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the components of the vector by an index.
 		/// </summary>
 		/// <remarks>The index must be between 0..3.</remarks>
@@ -168,11 +184,13 @@ namespace GorgonLibrary.Math
 		/// <param name="right">Vector to add with.</param>
 		/// <param name="result">The combined vectors.</param>
 		public static void Add(ref GorgonVector4 left, ref GorgonVector4 right, out GorgonVector4 result)
-		{			
-			result.X = left.X + right.X;
-			result.Y = left.Y + right.Y;
-			result.Z = left.Z + right.Z;
-			result.W = left.W + right.W;
+		{
+			result = new GorgonVector4(
+				left.X + right.X,
+				left.Y + right.Y,
+				left.Z + right.Z,
+				left.W + right.W
+			);
 		}
 
 		/// <summary>
@@ -185,6 +203,10 @@ namespace GorgonLibrary.Math
 		{
 			return new GorgonVector4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
 		}
+
+		/**********************************************************************************************************************************************
+		 * Begin conversion here
+		 * *******************************************************************************************************************************************/
 
 		/// <summary>
 		/// Function to perform subtraction upon two vectors.
@@ -630,14 +652,14 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Returns a <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 4D triangle.
+		/// Function to calculate a <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 4D triangle.
 		/// </summary>
 		/// <param name="vertexCoordinate1">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
 		/// <param name="vertexCoordinate2">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
 		/// <param name="vertexCoordinate3">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
 		/// <param name="vertex2Weight">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="vertexCoordinate2"/>).</param>
 		/// <param name="vertex3Weight">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="vertexCoordinate3"/>).</param>
-		/// <param name="result">When the method completes, contains the 4D Cartesian coordinates of the specified point.</param>
+		/// <param name="result">The 4D Cartesian coordinates of the specified point.</param>
 		public static void Barycentric(ref GorgonVector4 vertexCoordinate1, ref GorgonVector4 vertexCoordinate2, ref GorgonVector4 vertexCoordinate3, float vertex2Weight, float vertex3Weight, out GorgonVector4 result)
 		{
 			result.X = (vertexCoordinate1.X + (vertex2Weight * (vertexCoordinate2.X - vertexCoordinate1.X))) + (vertex3Weight * (vertexCoordinate3.X - vertexCoordinate1.X));
@@ -647,14 +669,14 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Returns a <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 4D triangle.
+		/// Function to calculate a <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 4D triangle.
 		/// </summary>
 		/// <param name="vertexCoordinate1">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
 		/// <param name="vertexCoordinate2">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
 		/// <param name="vertexCoordinate3">A <see cref="GorgonVector4"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
 		/// <param name="vertex2Weight">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="vertexCoordinate2"/>).</param>
 		/// <param name="vertex3Weight">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="vertexCoordinate3"/>).</param>
-		/// <returns>When the method completes, contains the 4D Cartesian coordinates of the specified point.</returns>
+		/// <returns>The 4D Cartesian coordinates of the specified point.</returns>
 		public GorgonVector4 Barycentric(GorgonVector4 vertexCoordinate1, GorgonVector4 vertexCoordinate2, GorgonVector4 vertexCoordinate3, float vertex2Weight, float vertex3Weight)
 		{
 			return new GorgonVector4((vertexCoordinate1.X + (vertex2Weight * (vertexCoordinate2.X - vertexCoordinate1.X))) + (vertex3Weight * (vertexCoordinate3.X - vertexCoordinate1.X)),
@@ -664,14 +686,14 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a Catmull-Rom interpolation using the specified positions.
+		/// Function to calculate a Catmull-Rom interpolation using the specified positions.
 		/// </summary>
 		/// <param name="value1">The first position in the interpolation.</param>
 		/// <param name="value2">The second position in the interpolation.</param>
 		/// <param name="value3">The third position in the interpolation.</param>
 		/// <param name="value4">The fourth position in the interpolation.</param>
 		/// <param name="amount">Weighting factor.</param>
-		/// <param name="result">When the method completes, contains the result of the Catmull-Rom interpolation.</param>
+		/// <param name="result">The Catmull-Rom interpolation.</param>
 		public static void CatmullRom(ref GorgonVector4 value1, ref GorgonVector4 value2, ref GorgonVector4 value3, ref GorgonVector4 value4, float amount, out GorgonVector4 result)
 		{
 			float squared = amount * amount;
@@ -695,14 +717,14 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a Catmull-Rom interpolation using the specified positions.
+		/// Function to calculate a Catmull-Rom interpolation using the specified positions.
 		/// </summary>
 		/// <param name="value1">The first position in the interpolation.</param>
 		/// <param name="value2">The second position in the interpolation.</param>
 		/// <param name="value3">The third position in the interpolation.</param>
 		/// <param name="value4">The fourth position in the interpolation.</param>
 		/// <param name="amount">Weighting factor.</param>
-		/// <returns>When the method completes, contains the result of the Catmull-Rom interpolation.</returns>
+		/// <returns>The Catmull-Rom interpolation.</returns>
 		public static GorgonVector4 CatmullRom(GorgonVector4 value1, GorgonVector4 value2, GorgonVector4 value3, GorgonVector4 value4, float amount)
 		{
 			float squared = amount * amount;
@@ -723,14 +745,14 @@ namespace GorgonLibrary.Math
 		}
 	
 		/// <summary>
-		/// Performs a Hermite spline interpolation.
+		/// Function to calculate a Hermite spline interpolation.
 		/// </summary>
 		/// <param name="value1">First source position vector.</param>
 		/// <param name="tangent1">First source tangent vector.</param>
 		/// <param name="value2">Second source position vector.</param>
 		/// <param name="tangent2">Second source tangent vector.</param>
 		/// <param name="amount">Weighting factor.</param>
-		/// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
+		/// <param name="result">The Hermite spline interpolation.</param>
 		public static void Hermite(ref GorgonVector4 value1, ref GorgonVector4 tangent1, ref GorgonVector4 value2, ref GorgonVector4 tangent2, float amount, out GorgonVector4 result)
 		{
 			float squared = amount * amount;
@@ -747,14 +769,14 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a Hermite spline interpolation.
+		/// Function to calculate a Hermite spline interpolation.
 		/// </summary>
 		/// <param name="value1">First source position vector.</param>
 		/// <param name="tangent1">First source tangent vector.</param>
 		/// <param name="value2">Second source position vector.</param>
 		/// <param name="tangent2">Second source tangent vector.</param>
 		/// <param name="amount">Weighting factor.</param>
-		/// <returns>When the method completes, contains the result of the Hermite spline interpolation.</returns>
+		/// <returns>The Hermite spline interpolation.</returns>
 		public static GorgonVector4 Hermite(GorgonVector4 value1, GorgonVector4 tangent1, GorgonVector4 value2, GorgonVector4 tangent2, float amount)
 		{
 			float squared = amount * amount;
@@ -771,12 +793,12 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a linear interpolation between two vectors.
+		/// Function to calculate a linear interpolation between two vectors.
 		/// </summary>
 		/// <param name="start">Start vector.</param>
 		/// <param name="end">End vector.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
+		/// <param name="amount">Value between 0.0f and 1.0f indicating the weight of <paramref name="end"/>.</param>
+		/// <param name="result">The linear interpolation of the two vectors.</param>
 		/// <remarks>
 		/// This method performs the linear interpolation based on the following formula.
 		/// <code>start + (end - start) * amount</code>
@@ -791,12 +813,12 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a linear interpolation between two vectors.
+		/// Function to calculate a linear interpolation between two vectors.
 		/// </summary>
 		/// <param name="start">Start vector.</param>
 		/// <param name="end">End vector.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <returns>When the method completes, contains the linear interpolation of the two vectors.</returns>
+		/// <param name="amount">Value between 0.0f and 1.0f indicating the weight of <paramref name="end"/>.</param>
+		/// <returns>The linear interpolation of the two vectors.</returns>
 		/// <remarks>
 		/// This method performs the linear interpolation based on the following formula.
 		/// <code>start + (end - start) * amount</code>
@@ -811,12 +833,12 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a cubic interpolation between two vectors.
+		/// Function to calculate a cubic interpolation between two vectors.
 		/// </summary>
 		/// <param name="start">Start vector.</param>
 		/// <param name="end">End vector.</param>
 		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
+		/// <param name="result">The cubic interpolation of the two vectors.</param>
 		public static void SmoothStep(ref GorgonVector4 start, ref GorgonVector4 end, float amount, out GorgonVector4 result)
 		{
 			amount = (amount > 1.0f) ? 1.0f : ((amount < 0.0f) ? 0.0f : amount);
@@ -829,12 +851,12 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Performs a cubic interpolation between two vectors.
+		/// Function to calculate a cubic interpolation between two vectors.
 		/// </summary>
 		/// <param name="start">Start vector.</param>
 		/// <param name="end">End vector.</param>
 		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <returns>When the method completes, contains the cubic interpolation of the two vectors.</returns>
+		/// <returns>The cubic interpolation of the two vectors.</returns>
 		public static GorgonVector4 SmoothStep(GorgonVector4 start, GorgonVector4 end, float amount)
 		{
 			amount = (amount > 1.0f) ? 1.0f : ((amount < 0.0f) ? 0.0f : amount);
@@ -847,7 +869,7 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Calculates the distance between two vectors.
+		/// Function to calculate the distance between two vectors.
 		/// </summary>
 		/// <param name="value1">The first vector.</param>
 		/// <param name="value2">The second vector.</param>
@@ -863,7 +885,7 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Calculates the distance between two vectors.
+		/// Function to calculate the distance between two vectors.
 		/// </summary>
 		/// <param name="value1">The first vector.</param>
 		/// <param name="value2">The second vector.</param>
@@ -879,18 +901,11 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Calculates the squared distance between two vectors.
+		/// Function to calculate the squared distance between two vectors.
 		/// </summary>
 		/// <param name="value1">The first vector.</param>
 		/// <param name="value2">The second vector.</param>
 		/// <param name="result">The squared distance between the two vectors.</param>
-		/// <remarks>Distance squared is the value before taking the square root. 
-		/// Distance squared can often be used in place of distance if relative comparisons are being made. 
-		/// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-		/// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-		/// involves two square roots, which are computationally expensive. However, using distance squared 
-		/// provides the same information and avoids calculating two square roots.
-		/// </remarks>
 		public static void DistanceSquared(ref GorgonVector4 value1, ref GorgonVector4 value2, out float result)
 		{
 			float x = value1.X - value2.X;
@@ -902,18 +917,11 @@ namespace GorgonLibrary.Math
 		}
 
 		/// <summary>
-		/// Calculates the squared distance between two vectors.
+		/// Function to calculate the distance between two vectors.
 		/// </summary>
 		/// <param name="value1">The first vector.</param>
 		/// <param name="value2">The second vector.</param>
 		/// <returns>The squared distance between the two vectors.</returns>
-		/// <remarks>Distance squared is the value before taking the square root. 
-		/// Distance squared can often be used in place of distance if relative comparisons are being made. 
-		/// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-		/// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-		/// involves two square roots, which are computationally expensive. However, using distance squared 
-		/// provides the same information and avoids calculating two square roots.
-		/// </remarks>
 		public static float DistanceSquared(GorgonVector4 value1, GorgonVector4 value2)
 		{
 			float x = value1.X - value2.X;
