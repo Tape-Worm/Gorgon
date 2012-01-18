@@ -97,7 +97,7 @@ namespace Tester_Graphics
 				if (_swapChain2 != null)
 					_swapChain2.Flip();
 #endif
-				System.Threading.Thread.Sleep(10);
+				//System.Threading.Thread.Sleep(10);
 				frameDepth += 0.05f * timing.FrameDelta;
 
 				if (frameDepth > 1.0f)
