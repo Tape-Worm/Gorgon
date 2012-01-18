@@ -57,6 +57,9 @@
     <Reference Include="SharpDX.DXGI, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.DXGI.2.0.2\lib\net20\SharpDX.DXGI.dll</HintPath>
     </Reference>
+    <Reference Include="SlimDX, Version=4.0.12.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64">
+      <HintPath>..\..\..\..\..\..\..\Assemblies\SlimDX_Sept11\Bin\net40\x64\SlimDX.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -86,6 +89,7 @@
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
+    <Compile Include="Math\GorgonMathConvert.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
@@ -134,6 +138,10 @@
     <None Include="Resources\Test.fx" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Dependencies\SlimMath\SlimMath\SlimMathVS2010.csproj">
+      <Project>{820FE441-822F-4519-994B-04F1DE27FF15}</Project>
+      <Name>SlimMathVS2010</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Common</Name>

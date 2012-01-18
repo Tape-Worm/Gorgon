@@ -30,9 +30,9 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using D3D = SharpDX.Direct3D11;
+using SlimMath;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections;
-using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -151,11 +151,11 @@ namespace GorgonLibrary.Graphics
 
 			if (type == typeof(float))
 				return BufferFormat.R32_Float;
-			if (type == typeof(GorgonVector2))
+			if (type == typeof(Vector2))
 				return BufferFormat.R32G32_Float;
-			if (type == typeof(GorgonVector3))
+			if (type == typeof(Vector3))
 				return BufferFormat.R32G32B32_Float;				
-			if (type == typeof(GorgonVector4))
+			if (type == typeof(Vector4))
 				return BufferFormat.R32G32B32A32_Float;
 
 			return BufferFormat.Unknown;
@@ -456,9 +456,9 @@ namespace GorgonLibrary.Graphics
 									typeof(long),
 									typeof(ulong),
 									typeof(float),
-									typeof(GorgonVector2),
-									typeof(GorgonVector3),
-									typeof(GorgonVector4)
+									typeof(Vector2),
+									typeof(Vector3),
+									typeof(Vector4)
 								};
 		}
 		#endregion

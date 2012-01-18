@@ -41,21 +41,26 @@
  PS_IN VS( VS_IN input )
  {
 	PS_IN output = (PS_IN)0;
+	//float4x4 wvp = mul(mul(_proj, _valueType._view), _world);
 
-	input.pos.w = 1.0f;	
+	//input.pos.w = 1.0f;	
 	//output.pos = input.pos;
-	output.pos = mul(input.pos, _world);
-	output.pos = mul(output.pos, _valueType._view);
-	output.pos = mul(output.pos, _proj);
+	//output.pos = mul(wvp, input.pos);
+	//output.pos = mul(_valueType._view, output.pos);
+	//output.pos = mul(_proj, output.pos);
 	//output.col = input.col;
-	output.col = float4(_array[0], _array[1], _array[2], 1.0f);
-	output.uv = input.uv;
+	//output.col = float4(_array[0], _array[1], _array[2], 1.0f);
+	//output.uv = input.uv;
+
+	output = input;
 	
 	return output;
  }
  
  float4 PS( PS_IN input ) : SV_Target
  {	
+	return theTexture.Sample(sample, input.uv);
+	/*
 	float4 color = theTexture.Sample(sample, input.uv) * input.col;
 	float4 color2 = _myTex.Sample(_sampler, input.uv);
 
@@ -67,5 +72,5 @@
 	if ((color.r > 0.75f) && (color.g > 0.75f) && (color.b > 0.75f) && ((input.uv.x < 0.5f) || (input.uv.y < 0.5f)))
 		return color;
 	else
-		return float4(color.rgb * color2.rgb, color.a);
+		return float4(color.rgb * color2.rgb, color.a);*/
  }

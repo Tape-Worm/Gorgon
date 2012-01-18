@@ -85,10 +85,10 @@ namespace GorgonLibrary.Input
 		#region Variables.
 		private bool _disposed = false;												// Flag to indicate that the object was disposed.
 		private bool _cursorHidden = false;											// Is the pointing device cursor visible?
-		private GorgonVector2 _doubleClickRange = new GorgonVector2(2.0f, 2.0f);				// Range that a double click is valid within.
-		private GorgonVector2 _position;													// Mouse horizontal and vertical position.
+		private PointF _doubleClickRange = new PointF(2.0f, 2.0f);					// Range that a double click is valid within.
+		private PointF _position;													// Mouse horizontal and vertical position.
 		private int _wheel;															// Mouse wheel position.
-		private GorgonVector2 _relativePosition = GorgonVector2.Zero;							// Mouse relative position.
+		private PointF _relativePosition = PointF.Empty;							// Mouse relative position.
 		private RectangleF _positionConstraint;										// Constraints for the pointing device position.
 		private Point _wheelConstraint;												// Constraints for the pointing device wheel.
 		private int _doubleClickDelay = 0;											// Double click delay in milliseconds.
@@ -134,7 +134,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to set or return the range in which a double click is valid (pixels).
 		/// </summary>
-		public GorgonVector2 DoubleClickRange
+		public PointF DoubleClickRange
 		{
 			get
 			{
@@ -240,7 +240,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the relative amount moved.
 		/// </summary>
-		public GorgonVector2 RelativePosition
+		public PointF RelativePosition
 		{
 			get
 			{
@@ -256,7 +256,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to set or return the position of the pointing device.
 		/// </summary>
-		public GorgonVector2 Position
+		public PointF Position
 		{
 			get
 			{
@@ -355,20 +355,20 @@ namespace GorgonLibrary.Input
 		/// <param name="newPosition">New position for the pointing device.</param>
 		/// <param name="setRelative">TRUE to calculate the relative motion of the device, FALSE to have the plug-in set it.</param>
 		/// <remarks>Some plug-ins provide their own relative position data, which is likely to be more accurate, so we can tell the library to not calculate in that instance.</remarks>
-		protected void OnPointingDeviceMove(GorgonVector2 newPosition, bool setRelative)
+		protected void OnPointingDeviceMove(PointF newPosition, bool setRelative)
 		{
-			RelativePosition = GorgonVector2.Zero;
+			RelativePosition = PointF.Empty;
 
 			if (newPosition != _position)
 			{
 				if (setRelative)
-					RelativePosition = GorgonVector2.Subtract(newPosition, _position);
+					RelativePosition = new PointF(newPosition.X - _position.X, newPosition.Y - _position.Y);
 				_position = newPosition;
 			}
 			else
 			{
 				if (setRelative)
-					RelativePosition = GorgonVector2.Zero;
+					RelativePosition = PointF.Empty;
 				return;
 			}
 
