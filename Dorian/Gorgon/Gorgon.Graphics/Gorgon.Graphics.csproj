@@ -120,6 +120,7 @@
   <ItemGroup>
     <Content Include="GorIcon.ico" />
     <None Include="packages.config" />
+    <None Include="Resources\Test.fx" />
     <None Include="sharpdx_direct3d11_effects_x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -133,9 +134,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Test.fx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Dependencies\SlimMath\SlimMath\SlimMathVS2010.csproj">

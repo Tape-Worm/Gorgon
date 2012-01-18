@@ -326,8 +326,8 @@ namespace GorgonLibrary.Graphics
 			updatebuffer.World = Matrix.Identity;
 			updatebuffer.Alpha = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-			_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
-			_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
+			//_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
+			//_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
 
 			//using (GorgonConstantBufferStream stream = _noChangeBuffer.Lock())
 			//{
@@ -378,8 +378,8 @@ namespace GorgonLibrary.Graphics
 			_graphics.VertexShader.Current = _vs;
 			_graphics.PixelShader.Current = _ps;
 						
-			_graphics.VertexShader.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
-			_graphics.PixelShader.ConstantBuffers[1] = _changeBuffer;
+			//_graphics.VertexShader.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
+			//_graphics.PixelShader.ConstantBuffers[1] = _changeBuffer;
 
 			_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
 			//_graphics.PixelShader.Samplers[1] = GorgonTextureSamplerStates.DefaultStates;
@@ -559,8 +559,8 @@ namespace GorgonLibrary.Graphics
 
 			DX.DataStream vstream = null;
 
-			//if (frames == 0)
-			//{
+			if (frames == 0)
+			{
 				_graphics.Context.MapSubresource(_vertices, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out vstream);
 
 				_bufferIndex = 0;
@@ -605,7 +605,8 @@ namespace GorgonLibrary.Graphics
 					vstream.WriteRange(_sprite);
 				}
 				_graphics.Context.UnmapSubresource(_vertices, 0);
-			//}
+				frames = Int32.MaxValue;
+			}
 			_device.ImmediateContext.DrawIndexed(6 * count, 0, 0);
 			//_device.ImmediateContext.Draw(4 * count, 0);
 		}
