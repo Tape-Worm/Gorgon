@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C1A27F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.2D", "Gorgon.Graphics.Draw2D\Gorgon.Graphics.2D.csproj", "{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlimMathVS2010", "..\Dependencies\SlimMath\SlimMath\SlimMathVS2010.csproj", "{820FE441-822F-4519-994B-04F1DE27FF15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{820FE441-822F-4519-994B-04F1DE27FF15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{820FE441-822F-4519-994B-04F1DE27FF15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{820FE441-822F-4519-994B-04F1DE27FF15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{820FE441-822F-4519-994B-04F1DE27FF15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
