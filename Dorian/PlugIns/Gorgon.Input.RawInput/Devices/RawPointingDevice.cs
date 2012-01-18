@@ -317,7 +317,7 @@ namespace GorgonLibrary.Input.Raw
 
 			// Fire events.
 			RelativePosition = new PointF(e.Data.Mouse.LastX, e.Data.Mouse.LastY);
-			OnPointingDeviceMove(GorgonVector2.Add(Position, new GorgonVector2(e.Data.Mouse.LastX, e.Data.Mouse.LastY)), false);
+			OnPointingDeviceMove(new PointF(Position.X + e.Data.Mouse.LastX, Position.Y + e.Data.Mouse.LastY), false);
 			UpdateCursorPosition();
 		}
 		#endregion

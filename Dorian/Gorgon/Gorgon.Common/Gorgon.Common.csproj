@@ -133,11 +133,6 @@
     <Compile Include="Gorgon.cs" />
     <Compile Include="INotifier.cs" />
     <Compile Include="GorgonFieldDescriptor.cs" />
-    <Compile Include="Math\Design\GorgonExpandableObjectTypeConverter.cs" />
-    <Compile Include="Math\Design\GorgonMatrixTypeConverter.cs" />
-    <Compile Include="Math\Design\GorgonVector2TypeConverter.cs" />
-    <Compile Include="Math\Design\GorgonVector3TypeConverter.cs" />
-    <Compile Include="Math\Design\GorgonVector4TypeConverter.cs" />
     <Compile Include="Math\GorgonRange.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
@@ -150,21 +145,10 @@
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
     <Compile Include="GorgonDataStream.cs" />
-    <Compile Include="Math\GorgonMatrix.cs" />
-    <Compile Include="Math\GorgonQuaternion.cs" />
     <Compile Include="Native\Win32API.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Native\Win32Enums.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Math\GorgonVector2.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Math\GorgonVector3.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Math\GorgonVector4.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Plugins\GorgonAssemblyCache.cs" />

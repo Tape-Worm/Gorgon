@@ -29,7 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
@@ -84,6 +84,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Dependencies\SlimMath\SlimMath\SlimMathVS2010.csproj">
+      <Project>{820FE441-822F-4519-994B-04F1DE27FF15}</Project>
+      <Name>SlimMathVS2010</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Common</Name>
