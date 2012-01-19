@@ -16,7 +16,7 @@ namespace Tester_Graphics
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-
+			
 			Gorgon.Run(new Form1());
 		}
 	}
