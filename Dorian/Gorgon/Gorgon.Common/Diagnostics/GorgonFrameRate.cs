@@ -200,6 +200,33 @@ namespace GorgonLibrary.Diagnostics
 			}
 		}
 
+
+		/// <summary>
+		/// Function to convert the desired frames per second to milliseconds.
+		/// </summary>
+		/// <param name="fps">Desired frames per second.</param>
+		/// <returns>Frames per second in milliseconds.</returns>
+		public static double FpsToMilliseconds(double fps)
+		{
+			if (fps > 0)
+				return 1000 / fps;
+			else
+				return 0;
+		}
+
+		/// <summary>
+		/// Function to convert the desired frames per second to microseconds.
+		/// </summary>
+		/// <param name="fps">Desired frames per second.</param>
+		/// <returns>Frames per second in microseconds.</returns>
+		public static double FpsToMicroseconds(double fps)
+		{
+			if (fps > 0)
+				return 1000000 / fps;
+			else
+				return 0;
+		}
+
 		/// <summary>
 		/// Function to clear the timing data.
 		/// </summary>

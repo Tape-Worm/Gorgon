@@ -1,6 +1,6 @@
  Texture2D theTexture : register(t0);
  SamplerState sample : register(s0);
-  
+ 
  struct VS_IN
  {
 	float4 pos : POSITION;
@@ -19,8 +19,8 @@
  {
 	return input;
  }
- 
+
  float4 PS( PS_IN input ) : SV_Target
  {	
-	return theTexture.Sample(sample, input.uv);
+	return theTexture.Sample(sample, input.uv) * input.col;
  }

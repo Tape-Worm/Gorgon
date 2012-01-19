@@ -40,6 +40,36 @@ using GorgonLibrary.Native;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// Event parameters for a full screen/windowed state change.
+	/// </summary>
+	public class GorgonBeforeStateTransitionEventArgs
+		: GorgonCancelEventArgs
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to return whether the swap chain was previously windowed.
+		/// </summary>
+		public bool WasWindowed
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonBeforeStateTransitionEventArgs"/> class.
+		/// </summary>
+		/// <param name="wasWindowed">TRUE if the swap chain was previously windowed, FALSE if it was full screen.</param>
+		public GorgonBeforeStateTransitionEventArgs(bool wasWindowed)
+			: base(false)
+		{
+			WasWindowed = wasWindowed;
+		}
+		#endregion
+	}
+
+	/// <summary>
 	/// A swap chain used to display graphics to a window.
 	/// </summary>
 	/// <remarks>The swap chain is used to display data to the <see cref="GorgonLibrary.Graphics.GorgonVideoOutput">video output</see>, or it can be used as a shader input.
@@ -66,6 +96,17 @@ namespace GorgonLibrary.Graphics
 		private IEnumerable<GorgonSwapChain> _swapChains = null;	// A list of other full screen swap chains.
 		private GorgonDepthStencil _internalDepthStencil = null;	// Internal depth/stencil for the target.
 		private GorgonDepthStencil _depthBuffer = null;				// Depth/stencil buffer for the target.
+		#endregion
+
+		#region Events.
+		/// <summary>
+		/// Event called before the swap chain transitions to full screen or windowed mode.
+		/// </summary>
+		public event EventHandler<GorgonBeforeStateTransitionEventArgs> BeforeStateTransition;
+		/// <summary>
+		/// Event called after the swap chain transiitons to full screen or windowed mode.
+		/// </summary>
+		public event EventHandler AfterStateTransition;
 		#endregion
 
 		#region Properties.
@@ -317,6 +358,7 @@ namespace GorgonLibrary.Graphics
 		private void ModeStateUpdate()
 		{
 			SharpDX.Result result = SharpDX.Result.Ok;
+			GorgonBeforeStateTransitionEventArgs e = null;
 
 			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode);
 
@@ -326,12 +368,27 @@ namespace GorgonLibrary.Graphics
 
 				if (!Settings.IsWindowed)
 				{
-					result = GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
-					_parentForm.Activated += new EventHandler(_parentForm_Activated);
-					_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
+					e = new GorgonBeforeStateTransitionEventArgs(true);
+					if (BeforeStateTransition != null)
+						BeforeStateTransition(this, new GorgonBeforeStateTransitionEventArgs(true));
+
+					if (!e.Cancel)
+					{
+						result = GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
+						_parentForm.Activated += new EventHandler(_parentForm_Activated);
+						_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
+					}
 				}
 				else
-					result = GISwapChain.SetFullscreenState(false, null);
+				{
+					e = new GorgonBeforeStateTransitionEventArgs(false);
+
+					if (BeforeStateTransition != null)
+						BeforeStateTransition(this, new GorgonBeforeStateTransitionEventArgs(false));
+
+					if (!e.Cancel)
+						result = GISwapChain.SetFullscreenState(false, null);
+				}
 			}
 			catch (SharpDX.SharpDXException sdEx)
 			{
@@ -352,6 +409,9 @@ namespace GorgonLibrary.Graphics
 			}
 
 			ResizeBuffers();
+
+			if ((!e.Cancel) && (AfterStateTransition != null))
+				AfterStateTransition(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -628,7 +688,7 @@ namespace GorgonLibrary.Graphics
 			// Validate and modify the settings as appropriate.
 			ValidateSwapChainSettings(Graphics, Settings);
 
-			ModeStateUpdate();
+			ModeStateUpdate();			
 			
 			// Ensure our window is the proper size.
 			if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && ((Settings.VideoMode.Width != Settings.Window.ClientSize.Width) || (Settings.VideoMode.Height != Settings.Window.ClientSize.Height)))

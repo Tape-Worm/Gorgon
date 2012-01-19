@@ -119,7 +119,7 @@ namespace GorgonLibrary.Graphics
 		{
 			unchecked
 			{
-				return 281.GenerateHash(Alpha).GenerateHash(Red).GenerateHash(Green).GenerateHash(Blue);
+				return 281.GenerateHash(Red).GenerateHash(Green).GenerateHash(Blue).GenerateHash(Alpha);
 			}
 		}
 
@@ -131,7 +131,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Color Value: Alpha={0}, Red={1}, Green={2}, Blue={3}", Alpha, Red, Green, Blue);
+			return string.Format("Color Value: Red={1}, Green={2}, Blue={3}, Alpha={0}", Red, Green, Blue, Alpha);
 		}
 
 		/// <summary>
@@ -212,6 +212,16 @@ namespace GorgonLibrary.Graphics
 		public int ToARGB()
 		{
 			uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Red * 255.0f)) & 0xff) << 16 | (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Blue * 255.0f)) & 0xff;
+			return (int)result;
+		}
+
+		/// <summary>
+		/// Function to return a packed color value.
+		/// </summary>
+		/// <returns>The packed color value.</returns>
+		public int ToRGBA()
+		{
+			uint result = (((uint)(Red * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 | (((uint)(Blue * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
 			return (int)result;
 		}
 
@@ -413,7 +423,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="color">The SharpDX color to convert.</param>
 		internal GorgonColor(SharpDX.Color3 color)
-			: this(1.0f, color.Red, color.Green, color.Blue)
+			: this(color.Red, color.Green, color.Blue, 1.0f)
 		{
 		}
 
@@ -422,18 +432,18 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="color">The SharpDX color to convert.</param>
 		internal GorgonColor(SharpDX.Color4 color)
-			: this(color.Alpha, color.Red, color.Green, color.Blue)
+			: this(color.Red, color.Green, color.Blue, color.Alpha)
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
-		/// <param name="a">Alpha component.</param>
 		/// <param name="r">Red component.</param>
 		/// <param name="g">Green component.</param>
 		/// <param name="b">Blue component.</param>
-		public GorgonColor(float a, float r, float g, float b)
+		/// <param name="a">Alpha component.</param>
+		public GorgonColor(float r, float g, float b, float a)
 		{
 			Alpha = a;
 			Red = r;
@@ -448,7 +458,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="g">Green component.</param>
 		/// <param name="b">Blue component.</param>
 		public GorgonColor(float r, float g, float b)
-			: this(1.0f, r, g, b)
+			: this(r, g, b, 1.0f)
 		{
 		}
 
@@ -456,13 +466,13 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
-		/// <param name="argb">Packed color components..</param>
-		public GorgonColor(int argb)			
+		/// <param name="rgba">Packed color components..</param>
+		public GorgonColor(int rgba)			
 		{
-			Alpha = ((float)((argb >> 24) & 0xff)) / 255.0f;
-			Red = ((float)((argb >> 16) & 0xff)) / 255.0f;
-			Green = ((float)((argb >> 8) & 0xff)) / 255.0f;
-			Blue = ((float)(argb & 0xff)) / 255.0f;
+			Red = ((float)((rgba >> 24) & 0xff)) / 255.0f;
+			Green = ((float)((rgba >> 16) & 0xff)) / 255.0f;
+			Blue = ((float)((rgba >> 8) & 0xff)) / 255.0f;
+			Alpha = ((float)(rgba & 0xff)) / 255.0f; 
 		}
 
 		/// <summary>
