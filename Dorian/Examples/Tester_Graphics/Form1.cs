@@ -211,7 +211,7 @@ namespace Tester_Graphics
 				form2.ShowInTaskbar = false;
 				form2.Show();
 #endif
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM5);
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM4_1);
 				//_graphics.IsObjectTrackingEnabled = false;
 				//_graphics = new GorgonGraphics();
 				//_graphics.ResetFullscreenOnFocus = false;
@@ -246,6 +246,7 @@ namespace Tester_Graphics
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.Unknown});
 				_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
 				//_graphics.Viewports.Add(new GorgonViewport(640, 400, 640, 400));
+
 #if MULTIMON
 				form2.Location = _graphics.VideoDevices[0].Outputs[1].OutputBounds.Location;
 

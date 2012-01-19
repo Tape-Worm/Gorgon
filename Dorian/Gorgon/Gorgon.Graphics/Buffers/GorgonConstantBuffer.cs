@@ -73,44 +73,25 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">Value used to initialize the buffer.</param>
 		protected internal override void Initialize(GorgonDataStream value)
 		{
-			D3D.ResourceUsage usage = D3D.ResourceUsage.Default;
-			D3D.CpuAccessFlags cpuFlags = D3D.CpuAccessFlags.None;			
-
 			if (D3DBuffer != null)
 				D3DBuffer.Dispose();
 
-			if ((BufferAccessFlags & BufferAccessFlags.AllowCPU) == BufferAccessFlags.AllowCPU)
-			{
-				usage = D3D.ResourceUsage.Dynamic;
-				cpuFlags = D3D.CpuAccessFlags.Write;
-			}
-
 			D3D.BufferDescription desc = new D3D.BufferDescription()
-					{
-						BindFlags = D3D.BindFlags.ConstantBuffer,
-						CpuAccessFlags = cpuFlags,
-						OptionFlags = D3D.ResourceOptionFlags.None,
-						SizeInBytes = Size,
-						StructureByteStride = 0,
-						Usage = usage
-					};
+			{
+				BindFlags = D3D.BindFlags.ConstantBuffer,
+				CpuAccessFlags = D3DCPUAccessFlags,
+				OptionFlags = D3D.ResourceOptionFlags.None,
+				SizeInBytes = Size,
+				StructureByteStride = 0,
+				Usage = D3DUsage
+			};
 
 			if (value != null)
 			{
-				using (DX.DataStream dxStream = new DX.DataStream(value.BasePointer, value.Length, true, true))
-				{
-					D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, dxStream, desc);
+				long position = value.Position;
 
-					// If we're not using CPU access, then copy the data to our persistent stream.
-					if ((BufferAccessFlags & BufferAccessFlags.AllowCPU) != BufferAccessFlags.AllowCPU)
-					{
-						dxStream.Position = 0;
-						_data = new GorgonBufferStream<GorgonConstantBuffer>(this, (int)dxStream.Length);
-						_data.IsPersistent = true;
-						_data.Write(dxStream.DataPointer, (int)dxStream.Length);
-						_data.Position = 0;
-					}
-				}
+				using (DX.DataStream dxStream = new DX.DataStream(value.PositionPointer, value.Length - position, true, true))
+					D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, dxStream, desc);
 			}
 			else
 				D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, desc);
@@ -127,20 +108,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A data stream containing the buffer data.</returns>		
 		protected override void LockBuffer(BufferLockFlags lockFlags)
 		{
-			if ((BufferAccessFlags & BufferAccessFlags.AllowCPU) != BufferAccessFlags.AllowCPU)
-			{
-				if (_data == null)
-				{
-					_data = new GorgonBufferStream<GorgonConstantBuffer>(this, Size);
-					_data.IsPersistent = true;
-				}
-
-				_data.Position = 0;
-				return;
-			}
-
 			if (_data != null)
 			{
+				_data.IsPersistent = false;
 				_data.Dispose();
 				_data = null;
 			}
@@ -159,15 +129,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected internal override void UnlockBuffer()
 		{
-			if ((BufferAccessFlags & BufferAccessFlags.AllowCPU) != BufferAccessFlags.AllowCPU)
-			{
-				Graphics.Context.UpdateSubresource(new DX.DataBox(_data.BasePointer, 0, 0), D3DBuffer, 0);
-				IsLocked = false;
-				return;
-			}
-
 			Graphics.Context.UnmapSubresource(D3DBuffer, 0);
-			IsLocked = false;
+			IsLocked = false;			
 		}
 
 		/// <summary>
@@ -202,21 +165,54 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to update the buffer.
+		/// </summary>
+		/// <param name="stream">Stream containing the data used to update the buffer.</param>
+		/// <param name="destIndex">Index of the sub data to use.</param>
+		/// <param name="range2D">2D contraints for the buffer.</param>
+		/// <param name="front">3D front face constraint for the buffer.</param>
+		/// <param name="back">3D back face constraint for the buffer.</param>
+		protected override void UpdateBuffer(GorgonDataStream stream, int destIndex, System.Drawing.Rectangle range2D, int front, int back)
+		{
+			Graphics.Context.UpdateSubresource(new DX.DataBox() { DataPointer = stream.PositionPointer, RowPitch = 0, SlicePitch = 0 }, D3DBuffer);
+		}
+
+		/// <summary>
+		/// Function to update data in the buffer.
+		/// </summary>
+		/// <param name="stream">Stream used to update the data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is NULL (or Nothing in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown if the constant buffer is accessible by the CPU.</exception>
+		public void UpdateData(GorgonDataStream stream)
+		{
+			GorgonDebug.AssertNull<GorgonDataStream>(stream, "stream");
+			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Dynamic)
+				throw new InvalidOperationException("Cannot update a constant buffer that is accessible by the CPU.");
+
+			UpdateBuffer(stream, 0, System.Drawing.Rectangle.Empty, 0, 0);
+		}
+
+		/// <summary>
 		/// Function to prepare the buffer for writing.
 		/// </summary>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer is already locked.</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the buffer is already locked.
+		/// <para>-or-</para>
+		/// <para>Thrown when the buffer usage is Default.</para>
+		/// </exception>
 		/// <returns>Returns a constant buffer stream used to write into the buffer.</returns>
-		/// <remarks>Once done with writing to the buffer, ensure that the buffer is disposed so that the data can be uploaded to the video device.</remarks>
+		/// <remarks>Once done with writing to the buffer, ensure that the buffer is disposed so that the data can be uploaded to the video device.</remarks>		
 		public GorgonBufferStream<GorgonConstantBuffer> GetBuffer()
 		{
 			if (IsLocked)
 				throw new InvalidOperationException("The buffer is already locked.");
+			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Default)
+				throw new InvalidOperationException("Cannot update a constant buffer that is not accessible by the CPU.");
 
 			LockBuffer(BufferLockFlags.Discard | BufferLockFlags.Write);
 			IsLocked = true;
 
 			return _data;
-		}
+		}		
 		#endregion
 
 		#region Constructor/Destructor.
@@ -227,7 +223,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="size">Size of the buffer, in bytes.</param>
 		/// <param name="allowCPUWrite">TRUE to allow the CPU write access to the buffer, FALSE to disallow.</param>
 		internal GorgonConstantBuffer(GorgonGraphics graphics, int size, bool allowCPUWrite)
-			: base(graphics, (allowCPUWrite ? BufferAccessFlags.CanWrite | BufferAccessFlags.AllowCPU : BufferAccessFlags.CanWrite))
+			: base(graphics, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default))
 		{
 			if ((Size % 16) != 0)
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the constant buffer.  The buffer size (" + size.ToString() + " bytes) need be evenly divisible by 16.");

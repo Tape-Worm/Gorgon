@@ -28,29 +28,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Flags for buffer access.
+	/// Buffer usage types.
 	/// </summary>
-	[Flags()]
-	public enum BufferAccessFlags
+	public enum BufferUsage
 	{
 		/// <summary>
-		/// Buffer is readable.
+		/// Allows read/write access to the buffer from the GPU.
 		/// </summary>
-		CanRead = 1,
+		Default = 0,
 		/// <summary>
-		/// Buffer is writeable.
+		/// Allows read access by the GPU and write access by the CPU.
 		/// </summary>
-		CanWrite = 2,
+		Dynamic = 1,
 		/// <summary>
-		/// Buffer can be accessed by the CPU.
+		/// Can only be read by the GPU, cannot be written to or read from by the CPU, and cannot be written to by the GPU.
 		/// </summary>
-		AllowCPU = 4
+		/// <remarks>Pre-initialize any buffer created with this usage, or else you will not be able to after it's been created.</remarks>
+		Immutable = 2,
+		/// <summary>
+		/// Allows reading/writing by the CPU and can be copied to a GPU compatiable buffer (but not used directly by the GPU).
+		/// </summary>
+		Staging = 3
 	}
 
 	/// <summary>
@@ -62,13 +67,18 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Lock the buffer for reading.
 		/// </summary>
-		Read = 1,
+		/// <remarks>This flag is mutually exclusive.</remarks>
+		Read = 0,
 		/// <summary>
 		/// Lock the buffer for writing.
 		/// </summary>
-		Write = 2,
+		Write = 1,
 		/// <summary>
-		/// Discard the contents of the buffer when writing.
+		/// Lock the buffer for writing, but guarantee that we will not overwrite a part of the buffer that's already in use.
+		/// </summary>
+		NoOverwrite = 2,
+		/// <summary>
+		/// Lock the buffer for writing, but mark its contents as invalid.
 		/// </summary>
 		Discard = 4
 	}
@@ -84,6 +94,24 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the D3D CPU access flags.
+		/// </summary>
+		internal D3D11.CpuAccessFlags D3DCPUAccessFlags
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the D3D usages.
+		/// </summary>
+		internal D3D11.ResourceUsage D3DUsage
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to return the graphics interface that created this buffer.
 		/// </summary>
@@ -112,9 +140,9 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the access flags for the buffer.
+		/// Property to return the usage for this buffer.
 		/// </summary>
-		public BufferAccessFlags BufferAccessFlags
+		public BufferUsage BufferUsage
 		{
 			get;
 			private set;
@@ -140,6 +168,16 @@ namespace GorgonLibrary.Graphics
 		/// Function called to unlock the underlying data buffer.
 		/// </summary>
 		protected internal abstract void UnlockBuffer();
+
+		/// <summary>
+		/// Function to update the buffer.
+		/// </summary>
+		/// <param name="stream">Stream containing the data used to update the buffer.</param>
+		/// <param name="destIndex">Index of the sub data to use.</param>
+		/// <param name="range2D">2D contraints for the buffer.</param>
+		/// <param name="front">3D front face constraint for the buffer.</param>
+		/// <param name="back">3D back face constraint for the buffer.</param>
+		protected abstract void UpdateBuffer(GorgonDataStream stream, int destIndex, System.Drawing.Rectangle range2D, int front, int back);
 		#endregion
 
 		#region Constructor/Destructor.
@@ -147,13 +185,35 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonBaseBuffer"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface used to create this object.</param>
-		/// <param name="accessFlags">Flags used to access the buffer.</param>
+		/// <param name="usage">Usage for this buffer.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected GorgonBaseBuffer(GorgonGraphics graphics, BufferAccessFlags accessFlags)			
+		protected GorgonBaseBuffer(GorgonGraphics graphics, BufferUsage usage)			
 		{
 			GorgonDebug.AssertNull<GorgonGraphics>(graphics, "graphics");
 
 			Graphics = graphics;
+			BufferUsage = usage;
+
+			switch (usage)
+			{
+				case BufferUsage.Dynamic:
+					D3DCPUAccessFlags = D3D11.CpuAccessFlags.Write;
+					D3DUsage = D3D11.ResourceUsage.Dynamic;
+					break;
+				case BufferUsage.Immutable:
+					D3DCPUAccessFlags = D3D11.CpuAccessFlags.None;
+					D3DUsage = D3D11.ResourceUsage.Immutable;
+					break;
+				case BufferUsage.Staging:
+					D3DCPUAccessFlags = D3D11.CpuAccessFlags.Write | D3D11.CpuAccessFlags.Read;
+					D3DUsage = D3D11.ResourceUsage.Staging;
+					break;
+				default:
+					D3DCPUAccessFlags = D3D11.CpuAccessFlags.None;
+					D3DUsage = D3D11.ResourceUsage.Default;
+					break;
+			}			
+
 		}
 		#endregion
 
