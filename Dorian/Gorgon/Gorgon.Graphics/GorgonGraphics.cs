@@ -649,6 +649,37 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create a vertex buffer.
+		/// </summary>
+		/// <param name="size">Size of the buffer, in bytes.</param>
+		/// <param name="usage">Usage of the buffer.</param>
+		/// <param name="initialData">Initial data to populate the vertex buffer with.</param>
+		/// <returns>A new vertex buffer.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
+		/// <para>-or-</para>
+		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.</remarks>
+		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage, GorgonDataStream initialData)
+		{
+			if (size < 1)
+				throw new ArgumentOutOfRangeException("size", "A vertex buffer needs at least 1 byte.");
+
+			if (usage == BufferUsage.Staging)
+				throw new ArgumentException("A vertex buffer cannot be used as a staging buffer.", "usage");
+
+			if ((usage == BufferUsage.Immutable) && (initialData == null))
+				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
+
+			GorgonVertexBuffer buffer = new GorgonVertexBuffer(this, size, usage);
+			buffer.Initialize(initialData);
+
+			TrackedObjects.Add(buffer);
+			return buffer;
+		}
+
+		/// <summary>
 		/// Function to create a vertex shader.
 		/// </summary>
 		/// <param name="name">Name of the vertex shader.</param>

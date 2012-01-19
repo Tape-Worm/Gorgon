@@ -228,10 +228,10 @@ namespace GorgonLibrary.Graphics
 				_vertices = new D3D.Buffer(_device, new D3D.BufferDescription()
 				{
 					BindFlags = D3D.BindFlags.VertexBuffer,
-					CpuAccessFlags = D3D.CpuAccessFlags.Write,
+					CpuAccessFlags = D3D.CpuAccessFlags.None,
 					OptionFlags = D3D.ResourceOptionFlags.None,
 					SizeInBytes = (4 * vertexSize) * count,
-					Usage = D3D.ResourceUsage.Dynamic
+					Usage = D3D.ResourceUsage.Default
 				});
 				_vertices.DebugName = _swapChain.Name + " Test Vertex Buffer";
 			//}
@@ -329,8 +329,9 @@ namespace GorgonLibrary.Graphics
 			updatebuffer.World = Matrix.Identity;
 			updatebuffer.Alpha = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-			//_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
-			//_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
+			_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
+			_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
+			
 
 			//using (GorgonConstantBufferStream stream = _noChangeBuffer.Lock())
 			//{
