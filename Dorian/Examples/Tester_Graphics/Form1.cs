@@ -75,7 +75,10 @@ namespace Tester_Graphics
 					{
 						if (!_pause) 
 						{
-							accum += timing.FrameDelta;
+							if (timing.FrameDelta < 0.119f)
+								accum += timing.FrameDelta;
+							else
+								accum += 0.119f;
 							while (accum >= target)
 							{
 								//_test1.Transform(timing.FrameDelta);
