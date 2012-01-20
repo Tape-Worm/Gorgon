@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.Native;
+using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
@@ -161,6 +162,8 @@ namespace GorgonLibrary.Graphics
 		/// Function used to lock the underlying buffer for reading/writing.
 		/// </summary>
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
+		/// <param name="offset">Offset into the buffer, in bytes.</param>
+		/// <param name="size">Amount of data to lock, in bytes.</param>
 		/// <returns>A data stream containing the buffer data.</returns>		
 		protected abstract void LockBuffer(BufferLockFlags lockFlags);
 
@@ -173,11 +176,10 @@ namespace GorgonLibrary.Graphics
 		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <param name="destIndex">Index of the sub data to use.</param>
-		/// <param name="range2D">2D contraints for the buffer.</param>
-		/// <param name="front">3D front face constraint for the buffer.</param>
-		/// <param name="back">3D back face constraint for the buffer.</param>
-		protected abstract void UpdateBuffer(GorgonDataStream stream, int destIndex, System.Drawing.Rectangle range2D, int front, int back);
+		/// <param name="destIndex">Index in the destination buffer to start writing at.</param>
+		/// <param name="range2D">2D constraints for the buffer.</param>
+		/// <param name="rangeDepth">Depth constraints for the buffer.</param>
+		protected abstract void UpdateBuffer(GorgonDataStream stream, int destIndex, System.Drawing.Rectangle range2D, GorgonMinMax rangeDepth);
 		#endregion
 
 		#region Constructor/Destructor.

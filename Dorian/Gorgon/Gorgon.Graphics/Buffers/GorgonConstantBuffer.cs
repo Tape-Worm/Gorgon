@@ -90,7 +90,7 @@ namespace GorgonLibrary.Graphics
 			{
 				long position = value.Position;
 
-				using (DX.DataStream dxStream = new DX.DataStream(value.PositionPointer, value.Length - position, true, true))
+				using (DX.DataStream dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
 					D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, dxStream, desc);
 			}
 			else
@@ -105,8 +105,10 @@ namespace GorgonLibrary.Graphics
 		/// Function used to lock the underlying buffer for reading/writing.
 		/// </summary>
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
+		/// <param name="offset">Offset into the buffer, in bytes.</param>
+		/// <param name="size">Amount of data to lock, in bytes.</param>
 		/// <returns>A data stream containing the buffer data.</returns>		
-		protected override void LockBuffer(BufferLockFlags lockFlags)
+		protected override void LockBuffer(BufferLockFlags lockFlags, int offset, int size)
 		{
 			if (_data != null)
 			{
@@ -168,13 +170,12 @@ namespace GorgonLibrary.Graphics
 		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <param name="destIndex">Index of the sub data to use.</param>
-		/// <param name="range2D">2D contraints for the buffer.</param>
-		/// <param name="front">3D front face constraint for the buffer.</param>
-		/// <param name="back">3D back face constraint for the buffer.</param>
-		protected override void UpdateBuffer(GorgonDataStream stream, int destIndex, System.Drawing.Rectangle range2D, int front, int back)
+		/// <param name="destIndex">Index in the destination buffer to start writing at.</param>
+		/// <param name="range2D">2D constraints for the buffer.</param>
+		/// <param name="rangeDepth">Depth constraints for the buffer.</param>
+		protected override void UpdateBuffer(GorgonDataStream stream, int destIndex, System.Drawing.Rectangle range2D, GorgonLibrary.Math.GorgonMinMax rangeDepth)
 		{
-			Graphics.Context.UpdateSubresource(new DX.DataBox() { DataPointer = stream.PositionPointer, RowPitch = 0, SlicePitch = 0 }, D3DBuffer);
+			Graphics.Context.UpdateSubresource(new DX.DataBox() { DataPointer = stream.BasePointer, RowPitch = 0, SlicePitch = 0 }, D3DBuffer, 0);
 		}
 
 		/// <summary>
@@ -183,13 +184,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="stream">Stream used to update the data.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is NULL (or Nothing in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown if the constant buffer is accessible by the CPU.</exception>
+		/// <remarks>Use this to update the entire buffer.</remarks>
 		public void UpdateData(GorgonDataStream stream)
 		{
 			GorgonDebug.AssertNull<GorgonDataStream>(stream, "stream");
+
 			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Dynamic)
 				throw new InvalidOperationException("Cannot update a constant buffer that is accessible by the CPU.");
-
-			UpdateBuffer(stream, 0, System.Drawing.Rectangle.Empty, 0, 0);
+			UpdateBuffer(stream, 0, System.Drawing.Rectangle.Empty, GorgonLibrary.Math.GorgonMinMax.Empty);
 		}
 
 		/// <summary>
@@ -197,7 +199,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <exception cref="System.InvalidOperationException">Thrown when the buffer is already locked.
 		/// <para>-or-</para>
-		/// <para>Thrown when the buffer usage is Default.</para>
+		/// <para>Thrown when the buffer is not accessible to the CPU.</para>
 		/// </exception>
 		/// <returns>Returns a constant buffer stream used to write into the buffer.</returns>
 		/// <remarks>Once done with writing to the buffer, ensure that the buffer is disposed so that the data can be uploaded to the video device.</remarks>		
@@ -208,7 +210,7 @@ namespace GorgonLibrary.Graphics
 			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Default)
 				throw new InvalidOperationException("Cannot update a constant buffer that is not accessible by the CPU.");
 
-			LockBuffer(BufferLockFlags.Discard | BufferLockFlags.Write);
+			LockBuffer(BufferLockFlags.Discard | BufferLockFlags.Write, 0, 0);
 			IsLocked = true;
 
 			return _data;

@@ -197,6 +197,15 @@ namespace GorgonLibrary.Graphics
 				_index.Dispose();
 		}
 
+		[StructLayout(LayoutKind.Explicit, Size=32, Pack=1)]
+		public struct CBufferTest
+		{
+			[FieldOffset(0)]
+			public Vector4 first;
+			[FieldOffset(16)]
+			public Vector4 second;
+		}
+
 		private void Initialize()
 		{
 			string errors = string.Empty;
@@ -228,10 +237,10 @@ namespace GorgonLibrary.Graphics
 				_vertices = new D3D.Buffer(_device, new D3D.BufferDescription()
 				{
 					BindFlags = D3D.BindFlags.VertexBuffer,
-					CpuAccessFlags = D3D.CpuAccessFlags.None,
+					CpuAccessFlags = D3D.CpuAccessFlags.Write,
 					OptionFlags = D3D.ResourceOptionFlags.None,
 					SizeInBytes = (4 * vertexSize) * count,
-					Usage = D3D.ResourceUsage.Default
+					Usage = D3D.ResourceUsage.Dynamic
 				});
 				_vertices.DebugName = _swapChain.Name + " Test Vertex Buffer";
 			//}
@@ -329,10 +338,23 @@ namespace GorgonLibrary.Graphics
 			updatebuffer.World = Matrix.Identity;
 			updatebuffer.Alpha = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-			_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
-			_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);
-			
+			//_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
+			//_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);			
 
+			//CBufferTest value = new CBufferTest()
+			//{
+			//    first = new Vector4(0.0f, 1.0f, 0.0f, 0.0f),
+			//    second = new Vector4(0.0f, 0.0f, 0.0f, 1.0f)
+			//};
+			//_noChangeBuffer = _graphics.CreateConstantBuffer(value, false);
+
+			//value.second = Vector4.UnitY;
+			//using (GorgonDataStream gstream = GorgonDataStream.ValueTypeToStream(value))
+			//{				
+			//    _noChangeBuffer.UpdateData(gstream);
+			//}
+
+			
 			//using (GorgonConstantBufferStream stream = _noChangeBuffer.Lock())
 			//{
 			//    stream.Write<Matrix>("Projection", matrix.Projection);
@@ -383,7 +405,7 @@ namespace GorgonLibrary.Graphics
 			_graphics.PixelShader.Current = _ps;
 						
 			//_graphics.VertexShader.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
-			//_graphics.PixelShader.ConstantBuffers[1] = _changeBuffer;
+			//_graphics.VertexShader.ConstantBuffers[0] = _graphics.PixelShader.ConstantBuffers[0] = _noChangeBuffer;
 
 			_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
 			//_graphics.PixelShader.Samplers[1] = GorgonTextureSamplerStates.DefaultStates;
