@@ -89,7 +89,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
 		/// <param name="offset">Offset into the buffer, in bytes.</param>
 		/// <param name="size">Amount of data to lock, in bytes.</param>
-		protected override void LockBuffer(BufferLockFlags lockFlags, int offset, int size)
+		protected override void LockBuffer(BufferLockFlags lockFlags)
 		{
 			D3D11.MapMode mapMode = D3D11.MapMode.Write;
 
@@ -201,7 +201,7 @@ namespace GorgonLibrary.Graphics
 				size = Size;
 			}
 
-			LockBuffer(flags, offset, Size);
+			LockBuffer(flags);
 			IsLocked = true;
 
 			return _lockStream;
