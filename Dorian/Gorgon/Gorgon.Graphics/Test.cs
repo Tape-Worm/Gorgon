@@ -590,7 +590,6 @@ namespace GorgonLibrary.Graphics
 
 			//if (frames == 0)
 			{
-				_graphics.Context.MapSubresource(_vertices, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out vstream);
 
 				_bufferIndex = 0;
 				Matrix trans = Matrix.Identity;
@@ -651,6 +650,7 @@ namespace GorgonLibrary.Graphics
 				//using (vstream)
 				//{
 				//vstream.Position = _bufferIndex;
+				_graphics.Context.MapSubresource(_vertices, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out vstream);
 				vstream.WriteRange(_sprite);
 				vstream.Position = 0;
 				_graphics.Context.UnmapSubresource(_vertices, 0);

@@ -108,7 +108,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="offset">Offset into the buffer, in bytes.</param>
 		/// <param name="size">Amount of data to lock, in bytes.</param>
 		/// <returns>A data stream containing the buffer data.</returns>		
-		protected override void LockBuffer(BufferLockFlags lockFlags, int offset, int size)
+		protected override void LockBuffer(BufferLockFlags lockFlags)
 		{
 			if (_data != null)
 			{
@@ -210,7 +210,7 @@ namespace GorgonLibrary.Graphics
 			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Default)
 				throw new InvalidOperationException("Cannot update a constant buffer that is not accessible by the CPU.");
 
-			LockBuffer(BufferLockFlags.Discard | BufferLockFlags.Write, 0, 0);
+			LockBuffer(BufferLockFlags.Discard | BufferLockFlags.Write);
 			IsLocked = true;
 
 			return _data;
