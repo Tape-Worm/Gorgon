@@ -87,8 +87,6 @@ namespace GorgonLibrary.Graphics
 		/// Function used to lock the underlying buffer for reading/writing.
 		/// </summary>
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
-		/// <param name="offset">Offset into the buffer, in bytes.</param>
-		/// <param name="size">Amount of data to lock, in bytes.</param>
 		protected override void LockBuffer(BufferLockFlags lockFlags)
 		{
 			D3D11.MapMode mapMode = D3D11.MapMode.Write;
@@ -109,7 +107,8 @@ namespace GorgonLibrary.Graphics
 			DX.DataStream stream = null;
 			Graphics.Context.MapSubresource(D3DVertexBuffer, mapMode, D3D11.MapFlags.None, out stream);
 			_lockStream = new GorgonBufferStream<GorgonVertexBuffer>(this, stream);
-			_lockStream.IsPersistent = true;			
+			_lockStream.IsPersistent = false;
+			IsLocked = true;
 		}
 
 		/// <summary>
@@ -117,7 +116,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected internal override void UnlockBuffer()
 		{
-			throw new NotImplementedException();
+			Graphics.Context.UnmapSubresource(D3DVertexBuffer, 0);
+			IsLocked = false;
 		}
 
 		/// <summary>

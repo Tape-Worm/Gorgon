@@ -105,8 +105,6 @@ namespace GorgonLibrary.Graphics
 		/// Function used to lock the underlying buffer for reading/writing.
 		/// </summary>
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
-		/// <param name="offset">Offset into the buffer, in bytes.</param>
-		/// <param name="size">Amount of data to lock, in bytes.</param>
 		/// <returns>A data stream containing the buffer data.</returns>		
 		protected override void LockBuffer(BufferLockFlags lockFlags)
 		{
