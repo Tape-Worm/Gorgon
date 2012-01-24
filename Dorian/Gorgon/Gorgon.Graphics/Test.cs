@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 	public class Test
 		: IDisposable
 	{
-		private int count = 8192;
+		private int count = 1024;
 		private D3D.Device _device = null;
 		private GorgonGraphics _graphics = null;
 		private GorgonSwapChain _swapChain = null;
@@ -144,6 +144,7 @@ namespace GorgonLibrary.Graphics
 		private Vector4[] _pos = new Vector4[4];
 		private vertex[] _sprite = null;
 		private Matrix pvw = Matrix.Identity;
+		private GorgonDataStream _tempStream = null;
 			
 		
 		struct vertex
@@ -161,6 +162,8 @@ namespace GorgonLibrary.Graphics
 		{
 			_swapChain.Settings.Window.Resize -= new EventHandler(Window_Resize);
 
+			if (_tempStream != null)
+				_tempStream.Dispose();
 			//if (_depthStateAlpha != null)
 				//_depthStateAlpha.Dispose();
 			//if (_changeStream != null)
@@ -234,6 +237,15 @@ namespace GorgonLibrary.Graphics
 			//    new vertex() { Position = new Vector4(0.5f, -0.5f, 0.12f, 0.0f), Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2(1.0f, 1.0f)}});
 			//    stream.Position = 0;
 
+				//_vertices = new D3D.Buffer(_device, new D3D.BufferDescription()
+				//{
+				//    BindFlags = D3D.BindFlags.VertexBuffer,
+				//    CpuAccessFlags = D3D.CpuAccessFlags.None,
+				//    OptionFlags = D3D.ResourceOptionFlags.None,
+				//    SizeInBytes = (4 * vertexSize) * count,
+				//    Usage = D3D.ResourceUsage.Default
+				//});
+
 				_vertices = new D3D.Buffer(_device, new D3D.BufferDescription()
 				{
 					BindFlags = D3D.BindFlags.VertexBuffer,
@@ -242,7 +254,8 @@ namespace GorgonLibrary.Graphics
 					SizeInBytes = (4 * vertexSize) * count,
 					Usage = D3D.ResourceUsage.Dynamic
 				});
-				_vertices.DebugName = _swapChain.Name + " Test Vertex Buffer";
+
+			_vertices.DebugName = _swapChain.Name + " Test Vertex Buffer";
 			//}
 
 			using (DX.DataStream stream = new DX.DataStream(count * 6 * 4, true, true))
@@ -317,7 +330,9 @@ namespace GorgonLibrary.Graphics
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
 
 			MatrixBuffer matrix = new MatrixBuffer();
-			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
+			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
+			//matrix.Projection = Matrix.OrthoLH(2.0f * 1.6f, 2.0f, 0.1f, 1000.0f);
+			//matrix.Projection = Matrix.OrthoOffCenterLH((1.0f * 1.6f), 0, 0, -1.0f, 0.1f, 1000.0f);
 			//matrix.Projection.Transpose();
 			matrix.View = Matrix.LookAtLH(new Vector3(0, 0, -0.75f), new Vector3(0, 0, 1.0f), Vector3.UnitY);
 			//matrix.View.Transpose();
@@ -418,6 +433,7 @@ namespace GorgonLibrary.Graphics
 			pvw = matrix.valueType.value2 * matrix.Projection;
 
 			_sprite = new vertex[count * 4];
+			_tempStream = new GorgonDataStream(_sprite.Length * vertexSize);
 		}
 
 		/// <summary>
@@ -428,8 +444,9 @@ namespace GorgonLibrary.Graphics
 		void Window_Resize(object sender, EventArgs e)
 		{
 			MatrixBuffer matrix = new MatrixBuffer();
+			
 			_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
-			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
+			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
 			matrix.View = Matrix.LookAtLH(new Vector3(0, 0, -0.75f), new Vector3(0, 0, 1.0f), Vector3.UnitY);			
 			//matrix.Projection.Transpose();
 			//matrix.View.Transpose();
@@ -497,6 +514,8 @@ namespace GorgonLibrary.Graphics
 				checker[i] = _rnd.Next(0, 100) > 50;
 				color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
 			}
+
+
 		}
 				
 		/// <summary>
@@ -535,10 +554,12 @@ namespace GorgonLibrary.Graphics
 				else
 					scale[i] += scaleDelta[i] * delta;
 
-				if ((scale[i] < 0.05f) || (scale[i] > 1.05f))
+				scale[i] = 1.05f;
+
+				if ((scale[i] < 0.05f) || (scale[i] > 1.0f))
 				{
-					if (scale[i] > 1.05f)
-						scale[i] = 1.05f;
+					if (scale[i] > 1.0f)
+						scale[i] = 1.0f;
 					if (scale[i] < 0.05f)
 					{
 						scale[i] = 0.05f;
@@ -558,28 +579,28 @@ namespace GorgonLibrary.Graphics
 				else
 					pos[i].X += (vel[i].X * delta);
 
-				if (pos[i].X > 0.75f)
+				if (pos[i].X > 1.0f)
 				{
-					pos[i].X = 0.75f;
+					pos[i].X = 1.0f;
 					vel[i].X = ((float)_rnd.NextDouble() * 0.5f) + 0.5f;
 					hBounce[i] = !hBounce[i];
 				}
-				if (pos[i].Y > 0.75f)
+				if (pos[i].Y > 1.0f)
 				{
-					pos[i].Y = 0.75f;
+					pos[i].Y = 1.0f;
 					vel[i].Y = ((float)_rnd.NextDouble() * 0.5f) + 0.5f;
 					vBounce[i] = !vBounce[i];
 				}
 
-				if (pos[i].X < -0.75f)
+				if (pos[i].X < -1.0f)
 				{
-					pos[i].X = -0.75f;
+					pos[i].X = -1.0f;
 					vel[i].X = (float)_rnd.NextDouble();
 					hBounce[i] = !hBounce[i];
 				}
-				if (pos[i].Y < -0.75f)
+				if (pos[i].Y < -1.0f)
 				{
-					pos[i].Y = -0.75f;
+					pos[i].Y = -1.0f;
 					vel[i].Y = (float)_rnd.NextDouble();
 					vBounce[i] = !vBounce[i];
 				}
@@ -636,10 +657,10 @@ namespace GorgonLibrary.Graphics
 						_sprite[i + 3].UV = new Vector2(0.5f, 1.0f);
 					}
 
-					_sprite[i].Position = Vector3.Transform(new Vector3(-0.150f, 0.150f, 0.0f), trans);
-					_sprite[i + 1].Position = Vector3.Transform(new Vector3(0.150f, 0.150f, 0.0f), trans);
-					_sprite[i + 2].Position = Vector3.Transform(new Vector3(-0.150f, -0.150f, 0.0f), trans);
-					_sprite[i + 3].Position = Vector3.Transform(new Vector3(0.150f, -0.150f, 0.0f), trans);
+					_sprite[i].Position = Vector3.Transform(new Vector3(-0.1401f, 0.1401f, 0.0f), trans);						
+					_sprite[i + 1].Position = Vector3.Transform(new Vector3(0.1401f, 0.1401f, 0.0f), trans);
+					_sprite[i + 2].Position = Vector3.Transform(new Vector3(-0.1401f, -0.1401f, 0.0f), trans);
+					_sprite[i + 3].Position = Vector3.Transform(new Vector3(0.1401f, -0.1401f, 0.0f), trans);
 
 					//_sprite[i].Position = new Vector4(-0.5f, 0.5f, 0.0f, 1.0f);
 					//_sprite[i + 1].Position = new Vector4(0.5f, 0.5f, 0.0f, 1.0f);
@@ -647,41 +668,28 @@ namespace GorgonLibrary.Graphics
 					//_sprite[i + 3].Position = new Vector4(0.5f, -0.5f, 0.0f, 1.0f);
 				}
 
-				//using (vstream)
-				//{
+//				_tempStream.Position = 0;
+//				_tempStream.WriteRange(_sprite);
+				//_graphics.Context.UpdateSubresource(new DX.DataBox { DataPointer = _tempStream.BasePointer, RowPitch = (int)_tempStream.Length }, _vertices);
+				/*_graphics.Context.UpdateSubresource(new DX.DataBox { DataPointer = _tempStream.BasePointer, RowPitch = (int)_tempStream.Length }, _vertices, 0, new D3D.ResourceRegion()
+					{
+						Left = 0,
+						Right = 81920,
+						Top = 0,
+						Bottom = 1,
+						Front = 0,
+						Back = 1
+					});*/
 				//vstream.Position = _bufferIndex;
-				_graphics.Context.MapSubresource(_vertices, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out vstream);
-				vstream.WriteRange(_sprite);
-				vstream.Position = 0;
-				_graphics.Context.UnmapSubresource(_vertices, 0);
-				vstream.Dispose();
-				//}
+				_graphics.Context.MapSubresource(_vertices, 0, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out vstream);
+				using (vstream)
+				{
+					vstream.WriteRange(_sprite, 0, _sprite.Length);
+					_graphics.Context.UnmapSubresource(_vertices, 0);
+				}
 
 				//frames = Int32.MaxValue;				
 			}
-
-
-			return;
-			_degreesPerSecond = GorgonLibrary.Math.GorgonMathUtility.Abs((GorgonLibrary.Math.GorgonMathUtility.Cos(GorgonLibrary.Math.GorgonMathUtility.Radians(_rot)) * _currentTime)) + 95.0f;
-
-			_rot += (_degreesPerSecond * delta);
-			if (_rot > 360.0f)
-			{			
-				_rot = 0.0f;
-				_timeSwitch = !_timeSwitch;
-			}
-
-			if (!_timeSwitch)
-				_currentTime += delta * 45.0f;
-			else
-				_currentTime -= delta * 45.0f;
-
-			if (_degreesPerSecond > 360.0f)
-				_currentTime = 0.0f;
-
-			_maxPasses += 1;
-			if (_maxPasses > (int)_passes)
-				_maxPasses = (int)_passes;
 		}
 
 		int frames = 0;

@@ -236,7 +236,7 @@ namespace Tester_Graphics
 				//this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 				//this.WindowState = FormWindowState.Maximized;
 				mode1 = (from videoMode in _graphics.VideoDevice.Outputs[0].VideoModes
-						 where videoMode.Width == 800 && videoMode.Height == 600 && 
+						 where videoMode.Width == 1280 && videoMode.Height == 800 && 
 							(videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal_sRGB || videoMode.Format == BufferFormat.R8G8B8A8_UIntNormal || videoMode.Format == BufferFormat.B8G8R8A8_UIntNormal || videoMode.Format == BufferFormat.B8G8R8A8_UIntNormal_sRGB)
 							&& (_graphics.VideoDevice.SupportsDisplayFormat(videoMode.Format))
 						 orderby videoMode.Format, videoMode.RefreshRateNumerator descending, videoMode.RefreshRateDenominator descending
