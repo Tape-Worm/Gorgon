@@ -32,6 +32,10 @@ using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
+	// TODO: Convert this to a value type and implement IEquatable<> on it.  We will use these elements to provide a lookup cache so
+	// we don't need to build a new input layout for every little thing. 
+	// - Ideally we'd build these things right at the beginning of a new scene/level/etc... and never use them again.
+
 	/// <summary>
 	/// An input element for a buffer.
 	/// </summary>

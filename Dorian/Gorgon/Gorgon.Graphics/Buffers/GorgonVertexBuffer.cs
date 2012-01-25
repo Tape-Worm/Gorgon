@@ -41,7 +41,7 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private bool _disposed = false;											// Flag to indicate that the object was disposed.
-		private GorgonBufferStream<GorgonVertexBuffer> _lockStream = null;		// Stream used when locking.
+		private DX.DataStream _lockStream = null;								// Stream used when locking.
 		#endregion
 
 		#region Properties.
@@ -87,16 +87,19 @@ namespace GorgonLibrary.Graphics
 		/// Function used to lock the underlying buffer for reading/writing.
 		/// </summary>
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
-		protected override void LockBuffer(BufferLockFlags lockFlags)
+		/// <returns>
+		/// A data stream containing the buffer data.
+		/// </returns>
+		protected override GorgonDataStream LockImpl(BufferLockFlags lockFlags)
 		{
 			D3D11.MapMode mapMode = D3D11.MapMode.Write;
 
-			if (_lockStream != null)
-			{
-				_lockStream.IsPersistent = false;
-				_lockStream.Dispose();
-				_lockStream = null;
-			}
+			// Read is mutually exclusive.
+			if ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read)
+				throw new ArgumentException("Cannot read a vertex buffer.", "lockFlags");
+
+			if (lockFlags == BufferLockFlags.Write)
+				throw new ArgumentException("Vertex buffer must use nooverwrite or discard when locking.", "lockFlags");
 
 			if ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
 				mapMode = D3D11.MapMode.WriteDiscard;
@@ -104,32 +107,45 @@ namespace GorgonLibrary.Graphics
 			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
 				mapMode = D3D11.MapMode.WriteNoOverwrite;			
 
-			DX.DataStream stream = null;
-			Graphics.Context.MapSubresource(D3DVertexBuffer, mapMode, D3D11.MapFlags.None, out stream);
-			_lockStream = new GorgonBufferStream<GorgonVertexBuffer>(this, stream);
-			_lockStream.IsPersistent = false;
-			IsLocked = true;
+			Graphics.Context.MapSubresource(D3DVertexBuffer, mapMode, D3D11.MapFlags.None, out _lockStream);
+			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
 		}
 
 		/// <summary>
 		/// Function called to unlock the underlying data buffer.
 		/// </summary>
-		protected internal override void UnlockBuffer()
+		protected internal override void UnlockImpl()
 		{
 			Graphics.Context.UnmapSubresource(D3DVertexBuffer, 0);
-			IsLocked = false;
+			_lockStream.Dispose();
+			_lockStream = null;
 		}
 
 		/// <summary>
 		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <param name="destIndex">Index of the sub data to use.</param>
-		/// <param name="range2D">2D constraints for the buffer.</param>
-		/// <param name="rangeDepth">Depth constraints for the buffer.</param>
-		protected override void UpdateBuffer(GorgonDataStream stream, int destIndex, System.Drawing.Rectangle range2D, GorgonLibrary.Math.GorgonMinMax rangeDepth)
+		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
+		/// <param name="size">The number of bytes to write.</param>
+		protected override void UpdateImpl(GorgonDataStream stream, int offset, int size)
 		{
-			throw new NotImplementedException();
+			Graphics.Context.UpdateSubresource(
+				new DX.DataBox()
+				{
+					DataPointer = stream.PositionPointer,
+					RowPitch = size
+				},
+				D3DVertexBuffer,
+				0,
+				new D3D11.ResourceRegion()
+				{
+					Left = offset,
+					Right = offset + size,
+					Top = 0,
+					Bottom = 1,
+					Front = 0,
+					Back = 1
+				});
 		}
 
 		/// <summary>
@@ -143,68 +159,15 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					if (IsLocked)
-					{
-						if (_lockStream != null)
-						{
-							_lockStream.IsPersistent = false;
-							_lockStream.Dispose();
-							_lockStream = null;
-						}
-					}
+						Unlock();
 
-					Graphics.RemoveTrackedObject(this);
+					if (D3DVertexBuffer != null)
+						D3DVertexBuffer.Dispose();
 				}
 
+				D3DVertexBuffer = null;
 				_disposed = true;
 			}
-		}
-
-		/// <summary>
-		/// Function to get access to the data being stored in the buffer.
-		/// </summary>
-		/// <param name="flags">Flags to control how the data is to be used.</param>
-		/// <param name="offset">Offset within the buffer to lock.</param>
-		/// <param name="size">Number of bytes to lock.</param>
-		/// <returns>A data stream containing the data in the buffer.</returns>
-		/// <returns>Returns a constant buffer stream used to write into the buffer.</returns>
-		/// <remarks>Once done with writing to the buffer, ensure that the buffer is disposed so that the data can be uploaded to the video device.</remarks>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer is already locked.
-		/// <para>-or-</para>
-		/// <para>Thrown when the buffer usage is set to immutable or default.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="flags"/> parameter has the Read flag.
-		/// <para>-or-</para>
-		/// <para>Thrown when the no overwrite or discard flags aren't specified with the write flag.</para>
-		/// </exception>
-		public GorgonDataStream GetBuffer(BufferLockFlags flags, int offset, int size)
-		{
-			if (IsLocked)
-				throw new InvalidOperationException("The buffer is already locked.");
-
-			// Read is mutually exclusive.
-			if ((flags & BufferLockFlags.Read) == BufferLockFlags.Read)
-				throw new ArgumentException("Cannot read a vertex buffer.", "flags");
-
-			if (BufferUsage == BufferUsage.Immutable)
-				throw new InvalidOperationException("The buffer is immutable and cannot be locked.");
-
-			if (BufferUsage == BufferUsage.Default)
-				throw new InvalidOperationException("Cannot lock a buffer with default usage.");
-
-			if (flags == BufferLockFlags.Write)
-				throw new ArgumentException("Vertex buffer must use nooverwrite or discard when locking.", "flags");
-
-			// Lock the entire buffer if we're discarding.
-			if ((flags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
-			{
-				offset = 0;
-				size = Size;
-			}
-
-			LockBuffer(flags);
-			IsLocked = true;
-
-			return _lockStream;
 		}
 		#endregion
 
@@ -213,12 +176,11 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonVertexBuffer"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics.</param>
-		/// <param name="size">The size.</param>
 		/// <param name="usage">The buffer usage</param>
-		internal GorgonVertexBuffer(GorgonGraphics graphics, int size, BufferUsage usage)
-			: base(graphics, usage)
+		/// <param name="size">The size.</param>
+		internal GorgonVertexBuffer(GorgonGraphics graphics, BufferUsage usage, int size)
+			: base(graphics, usage, size)
 		{
-			Size = size;
 		}
 		#endregion
 	}

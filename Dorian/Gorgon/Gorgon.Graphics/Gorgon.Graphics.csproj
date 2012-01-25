@@ -72,7 +72,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buffers\GorgonBaseBuffer.cs" />
-    <Compile Include="Buffers\GorgonBufferStream.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Collections\GorgonCustomValueCollection.cs" />

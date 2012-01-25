@@ -354,6 +354,8 @@ namespace GorgonLibrary.Graphics
 			updatebuffer.Alpha = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 			//_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
+			//_noChangeBuffer = _graphics.CreateConstantBuffer(Native.DirectAccess.SizeOf<CBufferTest>(), true);
+			//_noChangeBuffer = _graphics.CreateConstantBuffer(Native.DirectAccess.SizeOf<CBufferTest>(), false);
 			//_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);			
 
 			//CBufferTest value = new CBufferTest()
@@ -362,6 +364,11 @@ namespace GorgonLibrary.Graphics
 			//    second = new Vector4(0.0f, 0.0f, 0.0f, 1.0f)
 			//};
 			//_noChangeBuffer = _graphics.CreateConstantBuffer(value, false);
+			//using (var myStream = _noChangeBuffer.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
+			//{
+			//    myStream.Write(value);
+			//}
+			//_noChangeBuffer.Unlock();
 
 			//value.second = Vector4.UnitY;
 			//using (GorgonDataStream gstream = GorgonDataStream.ValueTypeToStream(value))
@@ -681,7 +688,7 @@ namespace GorgonLibrary.Graphics
 						Back = 1
 					});*/
 				//vstream.Position = _bufferIndex;
-				_graphics.Context.MapSubresource(_vertices, 0, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out vstream);
+				_graphics.Context.MapSubresource(_vertices, 0, D3D.MapMode.Write, D3D.MapFlags.None, out vstream);
 				using (vstream)
 				{
 					vstream.WriteRange(_sprite, 0, _sprite.Length);

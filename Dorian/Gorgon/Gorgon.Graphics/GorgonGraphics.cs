@@ -672,7 +672,7 @@ namespace GorgonLibrary.Graphics
 			if ((usage == BufferUsage.Immutable) && (initialData == null))
 				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
 
-			GorgonVertexBuffer buffer = new GorgonVertexBuffer(this, size, usage);
+			GorgonVertexBuffer buffer = new GorgonVertexBuffer(this, usage, size);
 			buffer.Initialize(initialData);
 
 			TrackedObjects.Add(buffer);

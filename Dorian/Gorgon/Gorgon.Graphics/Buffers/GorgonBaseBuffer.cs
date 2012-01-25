@@ -96,7 +96,7 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the D3D CPU access flags.
+		/// Property to set or return the D3D CPU access flags.
 		/// </summary>
 		internal D3D11.CpuAccessFlags D3DCPUAccessFlags
 		{
@@ -105,7 +105,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the D3D usages.
+		/// Property to set or return the D3D usages.
 		/// </summary>
 		internal D3D11.ResourceUsage D3DUsage
 		{
@@ -128,7 +128,7 @@ namespace GorgonLibrary.Graphics
 		public bool IsLocked
 		{
 			get;
-			protected set;
+			private set;
 		}
 
 		/// <summary>
@@ -137,7 +137,7 @@ namespace GorgonLibrary.Graphics
 		public int Size
 		{
 			get;
-			protected set;
+			private set;
 		}
 
 		/// <summary>
@@ -163,21 +163,75 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
 		/// <returns>A data stream containing the buffer data.</returns>		
-		protected abstract void LockBuffer(BufferLockFlags lockFlags);
+		protected abstract GorgonDataStream LockImpl(BufferLockFlags lockFlags);
 
 		/// <summary>
 		/// Function called to unlock the underlying data buffer.
 		/// </summary>
-		protected internal abstract void UnlockBuffer();
+		protected internal abstract void UnlockImpl();
 
 		/// <summary>
 		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <param name="destIndex">Index in the destination buffer to start writing at.</param>
-		/// <param name="range2D">2D constraints for the buffer.</param>
-		/// <param name="rangeDepth">Depth constraints for the buffer.</param>
-		protected abstract void UpdateBuffer(GorgonDataStream stream, int destIndex, System.Drawing.Rectangle range2D, GorgonMinMax rangeDepth);
+		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
+		/// <param name="size">The number of bytes to write.</param>
+		protected virtual void UpdateImpl(GorgonDataStream stream, int offset, int size)
+		{
+		}
+
+		/// <summary>
+		/// Function to unlock a locked buffer.
+		/// </summary>
+		public void Unlock()
+		{
+			if (!IsLocked)
+				return;
+
+			UnlockImpl();
+
+			IsLocked = false;
+		}
+
+		/// <summary>
+		/// Function to lock the buffer for reading/writing.
+		/// </summary>
+		/// <param name="lockFlags">The flags to use when locking the buffer.</param>
+		/// <returns>A data stream pointing to the memory used by the buffer.</returns>
+		/// <remarks>A data stream locked with this method does not have to be disposed of.  After it is <see cref="M:GorgonLibrary.Graphics.GorgonBaseBuffer.Unlock">unlocked</see>, the memory pointed 
+		/// at by the stream will be considered invalid.  However, for the sake of following practice, it is a good idea to call the Dispose method 
+		/// on the resulting data stream when finished.
+		/// <para>This method only works on buffers with a Dynamic or Staging usage.  Immutable or default buffers will throw an exception when an attempt 
+		/// is made to lock them.</para>
+		/// <para>Some buffers may raise an exception with locking with certain <paramref name="lockFlags"/>.  This is dependant upon the type of buffer.</para>
+		/// </remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when the buffer is already locked.
+		/// <para>-or-</para>
+		/// <para>Thrown when the usage for the buffer does not allow the buffer to be locked.</para>		
+		/// </exception>		
+		/// <exception cref="System.ArgumentException">Thrown when a constant buffer is locked with any other flag other than Discard.
+		/// <para>-or-</para>
+		/// <para>Thrown when an index/vertex buffer is locked with with a read flag, or a write flag without discard or nooverwrite.</para>
+		/// </exception>
+		public GorgonDataStream Lock(BufferLockFlags lockFlags)
+		{
+			GorgonDataStream result = null;
+
+			if (IsLocked)
+				throw new InvalidOperationException("The buffer is already locked.");
+
+			if (BufferUsage == BufferUsage.Default)
+				throw new InvalidOperationException("A buffer with default usage cannot be locked.");
+
+			if (BufferUsage == BufferUsage.Immutable)
+				throw new InvalidOperationException("The buffer is immutable and cannot be locked.");
+
+			result = LockImpl(lockFlags);
+
+			IsLocked = true;
+
+			return result;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -186,11 +240,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics interface used to create this object.</param>
 		/// <param name="usage">Usage for this buffer.</param>
+		/// <param name="size">The size of the buffer, in bytes.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected GorgonBaseBuffer(GorgonGraphics graphics, BufferUsage usage)			
+		protected GorgonBaseBuffer(GorgonGraphics graphics, BufferUsage usage, int size)			
 		{
 			GorgonDebug.AssertNull<GorgonGraphics>(graphics, "graphics");
 
+			Size = size;
 			Graphics = graphics;
 			BufferUsage = usage;
 
