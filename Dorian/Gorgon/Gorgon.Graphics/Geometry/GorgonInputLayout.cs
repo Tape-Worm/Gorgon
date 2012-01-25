@@ -440,6 +440,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		internal GorgonInputLayout(GorgonGraphics graphics, string name, GorgonShader shader)			
 		{
+			// TODO: We need to build a cache of these.  This way we won't need one for -every- shader, just ones with different layouts.
 			GorgonDebug.AssertParamString(name, "name");
 
 			_name = name;
