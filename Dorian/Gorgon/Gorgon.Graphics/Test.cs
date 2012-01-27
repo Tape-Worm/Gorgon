@@ -105,7 +105,6 @@ namespace GorgonLibrary.Graphics
 		private bool _disposed = false;
 		private string _shader = string.Empty;
 		private System.Windows.Forms.Form _form = null;
-
 		//private Shaders.ShaderBytecode _vsShaderCode = null;
 		//private Shaders.ShaderBytecode _psShaderCode = null;
 		//private D3D.Effect _effect = null;

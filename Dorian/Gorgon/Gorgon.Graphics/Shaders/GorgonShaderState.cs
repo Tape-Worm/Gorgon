@@ -85,6 +85,19 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
+			/// Function to unbind a constant buffer.
+			/// </summary>
+			/// <param name="buffer">Buffer to unbind.</param>
+			internal void Unbind(GorgonConstantBuffer buffer)
+			{
+				for (int i = 0; i < _buffers.Length - 1; i++)
+				{
+					if (_buffers[i] == buffer)
+						_buffers[i] = null;
+				}
+			}
+
+			/// <summary>
 			/// Function to set a range of constant buffers at once.
 			/// </summary>
 			/// <param name="slot">Starting slot for the buffer.</param>

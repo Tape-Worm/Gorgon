@@ -138,6 +138,10 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
+					// If we're bound with a pixel or vertex shader, then unbind.
+					Graphics.VertexShader.ConstantBuffers.Unbind(this);
+					Graphics.PixelShader.ConstantBuffers.Unbind(this);
+
 					if (IsLocked)
 						Unlock();
 
