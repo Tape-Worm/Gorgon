@@ -32,17 +32,24 @@ using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
-	// TODO: Convert this to a value type and implement IEquatable<> on it.  We will use these elements to provide a lookup cache so
-	// we don't need to build a new input layout for every little thing. 
-	// - Ideally we'd build these things right at the beginning of a new scene/level/etc... and never use them again.
-
 	/// <summary>
 	/// An input element for a buffer.
 	/// </summary>
 	/// <remarks>This defines the layout of an item of data for a buffer.  Typically this is used with a Vertex buffer to define a specific element for a vertex.</remarks>
-	public class GorgonInputElement
-		: INamedObject
+	public struct GorgonInputElement
+		: INamedObject, IEquatable<GorgonInputElement>
 	{
+		#region Variables.
+		private string _context;
+		private int _index;
+		private BufferFormat _format;
+		private int _offset;
+		private int _slot;
+		private bool _instanced;
+		private int _instanceCount;
+		private int _size;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the context of the element.
@@ -52,8 +59,10 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public string Context
 		{
-			get;
-			internal set;
+			get
+			{
+				return _context;
+			}
 		}
 
 		/// <summary>
@@ -63,8 +72,10 @@ namespace GorgonLibrary.Graphics
 		/// to 1.</remarks>
 		public int Index
 		{
-			get;
-			internal set;
+			get
+			{
+				return _index;
+			}
 		}
 
 		/// <summary>
@@ -73,8 +84,10 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This is used to specify the format and type of the element.</remarks>
 		public BufferFormat Format
 		{
-			get;
-			internal set;
+			get
+			{
+				return _format;
+			}
 		}
 
 		/// <summary>
@@ -83,8 +96,10 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>The format of the data dictates the offset of the element.  This value is optional.</remarks>
 		public int Offset
 		{
-			get;
-			internal set;
+			get
+			{
+				return _offset;
+			}
 		}
 
 		/// <summary>
@@ -94,8 +109,10 @@ namespace GorgonLibrary.Graphics
 		/// vertex buffer and provide better performance.</remarks>
 		public int Slot
 		{
-			get;
-			internal set;
+			get
+			{
+				return _slot;
+			}
 		}
 
 		/// <summary>
@@ -104,8 +121,10 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>Indicates that the element should be included in instancing.</remarks>
 		public bool Instanced
 		{
-			get;
-			internal set;
+			get
+			{
+				return _instanced;
+			}
 		}
 
 		/// <summary>
@@ -114,8 +133,10 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>The number of times this element should be used before moving to the next element.</remarks>
 		public int InstanceCount
 		{
-			get;
-			internal set;
+			get
+			{
+				return _instanceCount;
+			}
 		}
 
 		/// <summary>
@@ -123,8 +144,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int Size
 		{
-			get;
-			internal set;
+			get
+			{
+				return _size;
+			}
 		}
 		#endregion
 
@@ -142,6 +165,59 @@ namespace GorgonLibrary.Graphics
 
 			return new D3D.InputElement(Context, Index, (SharpDX.DXGI.Format)Format, Offset, Slot, (Instanced ? D3D.InputClassification.PerInstanceData : D3D.InputClassification.PerVertexData), instanceCount);
 		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		/// </returns>
+		public override bool Equals(object obj)
+		{
+			if (obj is GorgonInputElement)
+				return this.Equals((GorgonInputElement)obj);
+
+			return base.Equals(obj);
+		}
+
+
+		/// <summary>
+		/// Implements the operator ==.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
+		public static bool operator ==(GorgonInputElement left, GorgonInputElement right)
+		{
+			return left.Equals(right);
+		}
+
+		/// <summary>
+		/// Implements the operator !=.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
+		public static bool operator !=(GorgonInputElement left, GorgonInputElement right)
+		{
+			return !left.Equals(right);
+		}
+
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// </returns>
+		public override int GetHashCode()
+		{
+			return 281.GenerateHash(Context.GetHashCode()).GenerateHash(Index).GenerateHash(Format).GenerateHash(Offset).GenerateHash(Slot).GenerateHash(Instanced.GetHashCode()).GenerateHash(InstanceCount).GenerateHash(Size);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -157,14 +233,24 @@ namespace GorgonLibrary.Graphics
 		/// <param name="instanceCount">Number of instances to use before moving to the next element.</param>
 		public GorgonInputElement(string context, BufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
 		{
-			Context = context;
-			Index = index;
-			Format = format;
-			Offset = offset;
-			Size = GorgonBufferFormatInfo.GetInfo(format).SizeInBytes;
-			Slot = slot;
-			Instanced = instanced;
-			InstanceCount = InstanceCount;
+			_context = context;
+			_index = index;
+			_format = format;
+			_offset = offset;
+			_size = GorgonBufferFormatInfo.GetInfo(format).SizeInBytes;
+			_slot = slot;
+			_instanced = instanced;
+			_instanceCount = instanceCount;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonInputElement"/> struct.
+		/// </summary>
+		/// <param name="source">The source element.</param>
+		/// <param name="offset">The offset of the element.</param>
+		internal GorgonInputElement(GorgonInputElement source, int offset)
+			: this(source.Context, source.Format, offset, source.Index, source.Slot, source.Instanced, source.InstanceCount)
+		{
 		}
 		#endregion
 
@@ -178,6 +264,22 @@ namespace GorgonLibrary.Graphics
 			{
 				return Context;
 			}
+		}
+		#endregion
+
+		#region IEquatable<GorgonInputElement> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the other parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonInputElement other)
+		{
+			return (string.Compare(other.Context, this.Context, false) == 0) && (other.Format == this.Format) && (other.Index == this.Index) &&
+					(other.InstanceCount == this.InstanceCount) && (other.Instanced == this.Instanced) && (other.Offset == this.Offset) &&
+					(other.Size == this.Size) && (other.Slot == this.Slot);
 		}
 		#endregion
 	}

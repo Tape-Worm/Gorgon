@@ -90,7 +90,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 			using (MemoryStream sourceStream = new MemoryStream(data))
 			{
 				using (MemoryStream decompressedStream = new MemoryStream())
-				{
+				{			
 					BZip2.Decompress(sourceStream, decompressedStream, true);
 					return decompressedStream.ToArray();
 				}
