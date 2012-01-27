@@ -392,9 +392,6 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (SharpDX.SharpDXException sdEx)
 			{
-#if DEBUG
-				UI.GorgonDialogs.ErrorBox(null, SharpDX.Diagnostics.ErrorManager.GetErrorMessage(sdEx.ResultCode.Code), sdEx);
-#endif
 				if (sdEx.ResultCode == (int)GI.DXGIStatus.ModeChangeInProgress)
 				{
 					Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", GorgonLoggingLevel.All, Name);

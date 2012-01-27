@@ -649,6 +649,127 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create a index buffer.
+		/// </summary>
+		/// <param name="size">Size of the buffer, in bytes.</param>
+		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+		/// <param name="usage">Usage of the buffer.</param>
+		/// <returns>A new index buffer.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging or Immutable.
+		/// </exception>
+		public GorgonIndexBuffer CreateIndexBuffer(int size, bool is32bit, BufferUsage usage)
+		{
+			if ((usage == BufferUsage.Staging) || (usage == BufferUsage.Immutable))
+				throw new ArgumentException("A index buffer cannot be used as a staging or immutable buffer.", "usage");
+
+			return CreateIndexBuffer(size, usage, is32bit, null);
+		}
+
+		/// <summary>
+		/// Function to create a index buffer.
+		/// </summary>
+		/// <param name="usage">Usage of the buffer.</param>
+		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+		/// <param name="data">Data used to initialize the buffer.</param>
+		/// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
+		/// <returns>A new index buffer.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
+		/// <para>-or-</para>
+		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
+		/// </exception>
+		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
+		public GorgonIndexBuffer CreateIndexBuffer<T>(BufferUsage usage, bool is32bit, IList<T> data)
+			where T : struct
+		{
+			int size = data.Count * DirectAccess.SizeOf<T>();
+
+			using (GorgonDataStream dataStream = new GorgonDataStream(size))
+			{
+				for (int i = 0; i < data.Count; i++)
+					dataStream.Write<T>(data[i]);
+				dataStream.Position = 0;
+				return CreateIndexBuffer(size, usage, is32bit, dataStream);				
+			}
+		}
+
+		/// <summary>
+		/// Function to create a index buffer.
+		/// </summary>
+		/// <param name="size">Size of the buffer, in bytes.</param>
+		/// <param name="usage">Usage of the buffer.</param>
+		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+		/// <param name="initialData">Initial data to populate the index buffer with.</param>
+		/// <returns>A new index buffer.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
+		/// <para>-or-</para>
+		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
+		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32bit, GorgonDataStream initialData)
+		{
+			if (size < 1)
+				throw new ArgumentOutOfRangeException("size", "A index buffer needs at least 1 byte.");
+
+			if (usage == BufferUsage.Staging)
+				throw new ArgumentException("A index buffer cannot be used as a staging buffer.", "usage");
+
+			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
+				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
+
+			GorgonIndexBuffer buffer = new GorgonIndexBuffer(this, usage, size, is32bit);
+			buffer.Initialize(initialData);
+
+			TrackedObjects.Add(buffer);
+			return buffer;
+		}
+
+		/// <summary>
+		/// Function to create a vertex buffer.
+		/// </summary>
+		/// <param name="size">Size of the buffer, in bytes.</param>
+		/// <param name="usage">Usage of the buffer.</param>
+		/// <returns>A new vertex buffer.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging or Immutable.
+		/// </exception>
+		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage)
+		{
+			if ((usage == BufferUsage.Staging) || (usage == BufferUsage.Immutable))
+				throw new ArgumentException("A vertex buffer cannot be used as a staging or immutable buffer.", "usage");
+
+			return CreateVertexBuffer(size, usage, null);
+		}
+
+		/// <summary>
+		/// Function to create a vertex buffer.
+		/// </summary>
+		/// <param name="usage">Usage of the buffer.</param>
+		/// <param name="data">Data used to initialize the buffer.</param>
+		/// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
+		/// <returns>A new vertex buffer.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
+		/// <para>-or-</para>
+		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
+		/// </exception>
+		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.</remarks>
+		public GorgonVertexBuffer CreateVertexBuffer<T>(BufferUsage usage, IList<T> data)
+			where T : struct
+		{
+			GorgonDebug.AssertNull<IList<T>>(data, "data");
+			int size = data.Count * DirectAccess.SizeOf<T>();
+
+			using (GorgonDataStream dataStream = new GorgonDataStream(size))
+			{
+				for (int i = 0; i < data.Count; i++)
+					dataStream.Write<T>(data[i]);
+				dataStream.Position = 0;
+				return CreateVertexBuffer(size, usage, dataStream);
+			}
+		}
+
+		/// <summary>
 		/// Function to create a vertex buffer.
 		/// </summary>
 		/// <param name="size">Size of the buffer, in bytes.</param>
@@ -669,7 +790,7 @@ namespace GorgonLibrary.Graphics
 			if (usage == BufferUsage.Staging)
 				throw new ArgumentException("A vertex buffer cannot be used as a staging buffer.", "usage");
 
-			if ((usage == BufferUsage.Immutable) && (initialData == null))
+			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
 				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
 
 			GorgonVertexBuffer buffer = new GorgonVertexBuffer(this, usage, size);

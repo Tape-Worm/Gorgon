@@ -42,7 +42,7 @@ namespace GorgonLibrary.Graphics
 	/// <para>Typically, the user will define a value type that matches a constant buffer layout.  Then, if the value type uses nothing but blittable types, the user can then write the entire 
 	/// value type structure to the constant buffer.  If the value type contains more complex types, such as arrays, then the user can write each item in the value type to a variable in the constant 
 	/// buffer.  Please note that the names for the variables in the value type and the shader do -not- have to match, although, for the sake of clarity, it is a good idea that they do.</para>
-	/// <para>In order to write to a constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonConstantBuffer.GetBuffer">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
+	/// <para>In order to write to a constant buffer, the user must <see cref="M:GorgonLibrary.Graphics.GorgonBaseBuffer.Lock">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
 	/// <para>Constant buffers follow very specific rules, which are explained at http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx </para>
 	/// <para>When passing a value type to the constant buffer, ensure that the type has a System.Runtime.InteropServices.StructLayout attribute assigned to it, and that the layout is explicit.  Also, the size of the 
 	/// value type must be a multiple of 16, so padding variables may be required.</para>
@@ -171,21 +171,34 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to update data in the constant buffer.
+		/// Function to update the buffer.
 		/// </summary>
-		/// <param name="stream">Stream used to update the data.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is NULL (or Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown if the constant buffer is accessible by the CPU.</exception>
-		/// <remarks>This method will start reading from the last <see cref="P:GorgonLibrary.GorgonDataStream.Position">position</see> of the stream.  
-		/// To read from the beginning, reset the position to 0.</remarks>
+		/// <param name="stream">Stream containing the data used to update the buffer.</param>
+		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
+		/// <param name="size">The number of bytes to write.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		///   
+		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+		public new void Update(GorgonDataStream stream, int offset, int size)
+		{
+			base.Update(stream, 0, 0);
+		}
+
+		/// <summary>
+		/// Function to update the buffer.
+		/// </summary>
+		/// <param name="stream">Stream containing the data used to update the buffer.</param>
+		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
+		/// <para>This method will respect the <see cref="P:GorgonLibrary.GorgonDataStream.Position">Position</see> property of the data stream.  
+		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
+		/// to 0.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(GorgonDataStream stream)
 		{
-			GorgonDebug.AssertNull<GorgonDataStream>(stream, "stream");
-
-			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Dynamic)
-				throw new InvalidOperationException("Cannot update a constant buffer that is accessible by the CPU.");
-
-			UpdateImpl(stream, 0, (int)stream.Length);
+			Update(stream, 0, 0);
 		}
 		#endregion
 

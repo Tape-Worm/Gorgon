@@ -118,6 +118,10 @@ namespace GorgonLibrary.Graphics
 			{
 				return GetItem(index);
 			}
+			private set
+			{
+				SetItem(index, value);
+			}
 		}
 		#endregion
 
@@ -209,10 +213,10 @@ namespace GorgonLibrary.Graphics
 		{
 			int lastOffset = 0;
 
-			foreach (var element in this)
+			for (int i = 0; i < Count - 1; i++)
 			{
-				element.Offset = lastOffset;
-				lastOffset += element.Size;
+				this[i] = new GorgonInputElement(this[i], lastOffset);
+				lastOffset += this[i].Size;
 			}
 
 			HasChanged = true;
@@ -244,9 +248,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <remarks>See the <see cref="GorgonLibrary.Graphics.GorgonInputElement">GorgonInputElement</see> type for details on the various parameters.</remarks>
 		public void Add(GorgonInputElement element)
-		{
-			GorgonDebug.AssertNull<GorgonInputElement>(element, "element");
-
+		{			
 			if (GorgonBufferFormatInfo.GetInfo(element.Format).BitDepth == 0)
 				throw new ArgumentException("'" + element.Format.ToString() + "' is not a supported format.", "format");
 
@@ -388,7 +390,6 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if a field/property type cannot be mapped to a <see cref="E:GorgonLibrary.Graphics.GorgonBufferFormat">GorgonBufferFormat</see>.</exception>
 		public void GetLayoutFromType(Type type)
 		{
-			GorgonInputElement element = null;
 			IList<MemberInfo> members = type.GetMembers();
 			int byteOffset = 0;
 
@@ -425,8 +426,7 @@ namespace GorgonLibrary.Graphics
 				if (string.IsNullOrEmpty(contextName))
 					contextName = item.Name;
 
-				element = Add(contextName, format, (item.Attribute.AutoOffset ? byteOffset : item.Attribute.Offset), item.Attribute.Index, item.Attribute.Slot, item.Attribute.Instanced, item.Attribute.InstanceCount);
-				byteOffset += element.Size;
+				byteOffset += Add(contextName, format, (item.Attribute.AutoOffset ? byteOffset : item.Attribute.Offset), item.Attribute.Index, item.Attribute.Slot, item.Attribute.Instanced, item.Attribute.InstanceCount).Size;
 			}
 		}
 		#endregion
@@ -438,9 +438,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">Graphics interface that created this object.</param>
 		/// <param name="name">Name of the object.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
-		internal GorgonInputLayout(GorgonGraphics graphics, string name, GorgonShader shader)			
+		internal GorgonInputLayout(GorgonGraphics graphics, string name, GorgonShader shader)
 		{
-			// TODO: We need to build a cache of these.  This way we won't need one for -every- shader, just ones with different layouts.
 			GorgonDebug.AssertParamString(name, "name");
 
 			_name = name;

@@ -34,9 +34,9 @@ using D3D11 = SharpDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A buffer to hold a set of vertices.
+	/// A buffer to hold a set of indices.
 	/// </summary>
-	public class GorgonVertexBuffer
+	public class GorgonIndexBuffer
 		: GorgonBaseBuffer
 	{
 		#region Variables.
@@ -46,9 +46,18 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the Direct3D vertex buffer.
+		/// Property to return the Direct3D index buffer.
 		/// </summary>
-		internal D3D11.Buffer D3DVertexBuffer
+		internal D3D11.Buffer D3DIndexBuffer
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return whether the buffer uses 32 bit indices or not.
+		/// </summary>
+		public bool Is32Bit
 		{
 			get;
 			private set;
@@ -65,7 +74,7 @@ namespace GorgonLibrary.Graphics
 		{
 			D3D11.BufferDescription desc = new D3D11.BufferDescription();
 
-			desc.BindFlags = D3D11.BindFlags.VertexBuffer;
+			desc.BindFlags = D3D11.BindFlags.IndexBuffer;
 			desc.CpuAccessFlags = D3DCPUAccessFlags;
 			desc.OptionFlags = D3D11.ResourceOptionFlags.None;
 			desc.SizeInBytes = Size;
@@ -73,17 +82,17 @@ namespace GorgonLibrary.Graphics
 			desc.Usage = D3DUsage;
 
 			if (data == null)
-				D3DVertexBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice, desc);
+				D3DIndexBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice, desc);
 			else
 			{
 				long position = data.Position;
 
 				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - position, true, true))
-					D3DVertexBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice, stream, desc);
+					D3DIndexBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice, stream, desc);
 			}
 
 #if DEBUG
-			D3DVertexBuffer.DebugName = "Gorgon Vertex Buffer #" + Graphics.TrackedObjects.Count(item => item is GorgonVertexBuffer).ToString();
+			D3DIndexBuffer.DebugName = "Gorgon Index Buffer #" + Graphics.TrackedObjects.Count(item => item is GorgonIndexBuffer).ToString();
 #endif
 		}
 
@@ -100,10 +109,10 @@ namespace GorgonLibrary.Graphics
 
 			// Read is mutually exclusive.
 			if ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read)
-				throw new ArgumentException("Cannot read a vertex buffer.", "lockFlags");
+				throw new ArgumentException("Cannot read a index buffer.", "lockFlags");
 
 			if (lockFlags == BufferLockFlags.Write)
-				throw new ArgumentException("Vertex buffer must use nooverwrite or discard when locking.", "lockFlags");
+				throw new ArgumentException("Index buffer must use nooverwrite or discard when locking.", "lockFlags");
 
 			if ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
 				mapMode = D3D11.MapMode.WriteDiscard;
@@ -111,7 +120,7 @@ namespace GorgonLibrary.Graphics
 			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
 				mapMode = D3D11.MapMode.WriteNoOverwrite;			
 
-			Graphics.Context.MapSubresource(D3DVertexBuffer, mapMode, D3D11.MapFlags.None, out _lockStream);
+			Graphics.Context.MapSubresource(D3DIndexBuffer, mapMode, D3D11.MapFlags.None, out _lockStream);
 			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
 		}
 
@@ -120,7 +129,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected internal override void UnlockImpl()
 		{
-			Graphics.Context.UnmapSubresource(D3DVertexBuffer, 0);
+			Graphics.Context.UnmapSubresource(D3DIndexBuffer, 0);
 			_lockStream.Dispose();
 			_lockStream = null;
 		}
@@ -139,7 +148,7 @@ namespace GorgonLibrary.Graphics
 					DataPointer = stream.PositionPointer,
 					RowPitch = size
 				},
-				D3DVertexBuffer,
+				D3DIndexBuffer,
 				0,
 				new D3D11.ResourceRegion()
 				{
@@ -165,11 +174,11 @@ namespace GorgonLibrary.Graphics
 					if (IsLocked)
 						Unlock();
 
-					if (D3DVertexBuffer != null)
-						D3DVertexBuffer.Dispose();
+					if (D3DIndexBuffer != null)
+						D3DIndexBuffer.Dispose();
 				}
 
-				D3DVertexBuffer = null;
+				D3DIndexBuffer = null;
 				_disposed = true;
 			}
 		}
@@ -193,14 +202,16 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexBuffer"/> class.
+		/// Initializes a new instance of the <see cref="GorgonIndexBuffer"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics.</param>
 		/// <param name="usage">The buffer usage</param>
 		/// <param name="size">The size.</param>
-		internal GorgonVertexBuffer(GorgonGraphics graphics, BufferUsage usage, int size)
+		/// <param name="is32Bit">TRUE to use 32 bit indices, FALSE to use 16 bit.</param>
+		internal GorgonIndexBuffer(GorgonGraphics graphics, BufferUsage usage, int size, bool is32Bit)
 			: base(graphics, usage, size)
 		{
+			Is32Bit = is32Bit;
 		}
 		#endregion
 	}

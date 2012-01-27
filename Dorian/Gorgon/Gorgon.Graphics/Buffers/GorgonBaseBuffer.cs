@@ -69,19 +69,19 @@ namespace GorgonLibrary.Graphics
 		/// Lock the buffer for reading.
 		/// </summary>
 		/// <remarks>This flag is mutually exclusive.</remarks>
-		Read = 0,
+		Read = 1,
 		/// <summary>
 		/// Lock the buffer for writing.
 		/// </summary>
-		Write = 1,
+		Write = 2,
 		/// <summary>
 		/// Lock the buffer for writing, but guarantee that we will not overwrite a part of the buffer that's already in use.
 		/// </summary>
-		NoOverwrite = 2,
+		NoOverwrite = 4,
 		/// <summary>
 		/// Lock the buffer for writing, but mark its contents as invalid.
 		/// </summary>
-		Discard = 4
+		Discard = 8
 	}
 
 	/// <summary>
@@ -176,8 +176,30 @@ namespace GorgonLibrary.Graphics
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
 		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
 		/// <param name="size">The number of bytes to write.</param>
-		protected virtual void UpdateImpl(GorgonDataStream stream, int offset, int size)
+		protected abstract void UpdateImpl(GorgonDataStream stream, int offset, int size);
+
+		/// <summary>
+		/// Function to update the buffer.
+		/// </summary>
+		/// <param name="stream">Stream containing the data used to update the buffer.</param>
+		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
+		/// <param name="size">The number of bytes to write.</param>
+		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
+		/// <para>Please note that constant buffers don't use the <paramref name="offset"/> and <paramref name="size"/> parameters.</para>
+		/// <para>This method will respect the <see cref="P:GorgonLibrary.GorgonDataStream.Position">Position</see> property of the data stream.  
+		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
+		/// to 0.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
+		public void Update(GorgonDataStream stream, int offset, int size)
 		{
+			GorgonDebug.AssertNull<GorgonDataStream>(stream, "stream");
+
+			if (BufferUsage != GorgonLibrary.Graphics.BufferUsage.Default)
+				throw new InvalidOperationException("Cannot use Update on a non-default buffer.");
+
+			UpdateImpl(stream, offset, size);
 		}
 
 		/// <summary>

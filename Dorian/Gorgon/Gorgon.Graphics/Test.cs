@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 	public class Test
 		: IDisposable
 	{
-		private int count = 1024;
+		private int count = 8192;
 		private D3D.Device _device = null;
 		private GorgonGraphics _graphics = null;
 		private GorgonSwapChain _swapChain = null;
@@ -110,8 +110,9 @@ namespace GorgonLibrary.Graphics
 		//private Shaders.ShaderBytecode _psShaderCode = null;
 		//private D3D.Effect _effect = null;
 		//private D3D.InputLayout _layout = null;
-		private D3D.Buffer _vertices = null;
-		private D3D.Buffer _index = null;
+		//private D3D.Buffer _vertices = null;
+		private GorgonVertexBuffer _vertices = null;
+		private GorgonIndexBuffer _index = null;
 		//private D3D.EffectPass _pass = null;		
 		private D3D.VertexBufferBinding _binding = default(D3D.VertexBufferBinding);
 		private float _rot = 0.0f;
@@ -228,37 +229,9 @@ namespace GorgonLibrary.Graphics
 
 			int vertexSize = layout.Size;			
 
-			//using (DX.DataStream stream = new DX.DataStream(4 * vertexSize, true, true))
-			//{
-			//    stream.WriteRange(new vertex[] {
-			//    new vertex() { Position = new Vector4(-0.5f, 0.5f, 0.0f, 0.0f), Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2(0, 0)},
-			//    new vertex() { Position = new Vector4(0.5f, 0.5f, 0.0f, 0.0f), Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2(1.0f, 0)},
-			//    new vertex() { Position = new Vector4(-0.5f, -0.5f, 0.0f, 0.0f), Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2(0, 1.0f)},
-			//    new vertex() { Position = new Vector4(0.5f, -0.5f, 0.12f, 0.0f), Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f), UV = new Vector2(1.0f, 1.0f)}});
-			//    stream.Position = 0;
+			_vertices = _graphics.CreateVertexBuffer(4 * vertexSize * count, BufferUsage.Dynamic, null);
 
-				//_vertices = new D3D.Buffer(_device, new D3D.BufferDescription()
-				//{
-				//    BindFlags = D3D.BindFlags.VertexBuffer,
-				//    CpuAccessFlags = D3D.CpuAccessFlags.None,
-				//    OptionFlags = D3D.ResourceOptionFlags.None,
-				//    SizeInBytes = (4 * vertexSize) * count,
-				//    Usage = D3D.ResourceUsage.Default
-				//});
-
-				_vertices = new D3D.Buffer(_device, new D3D.BufferDescription()
-				{
-					BindFlags = D3D.BindFlags.VertexBuffer,
-					CpuAccessFlags = D3D.CpuAccessFlags.Write,
-					OptionFlags = D3D.ResourceOptionFlags.None,
-					SizeInBytes = (4 * vertexSize) * count,
-					Usage = D3D.ResourceUsage.Dynamic
-				});
-
-			_vertices.DebugName = _swapChain.Name + " Test Vertex Buffer";
-			//}
-
-			using (DX.DataStream stream = new DX.DataStream(count * 6 * 4, true, true))
+			using (GorgonDataStream stream = new GorgonDataStream(count * 6 * 4))
 			{
 				int index = 0;
 				for (int i = 0; i < count; i++)
@@ -272,18 +245,8 @@ namespace GorgonLibrary.Graphics
 					index += 4;
 				}
 
-				//stream.WriteRange(new int[] { 0, 1, 2, 1, 3, 2 });
-
 				stream.Position = 0;
-				_index = new D3D.Buffer(_device, stream, new D3D.BufferDescription()
-				{
-					BindFlags = D3D.BindFlags.IndexBuffer,
-					CpuAccessFlags = D3D.CpuAccessFlags.None,
-					OptionFlags = D3D.ResourceOptionFlags.None,
-					SizeInBytes = count * 6 * 4,
-					Usage = D3D.ResourceUsage.Default				
-				});
-				_index.DebugName = _swapChain.Name + " Test Index Buffer";
+				_index = _graphics.CreateIndexBuffer((int)stream.Length, BufferUsage.Default, true, stream);
 			}
 
 			D3D.ImageLoadInformation info = new D3D.ImageLoadInformation();
@@ -326,7 +289,7 @@ namespace GorgonLibrary.Graphics
 			//_sampler = new D3D.SamplerState(_device, sampleDesc);
 			//_sampler.DebugName = _swapChain + " Test sampler";
 
-			_binding = new D3D.VertexBufferBinding(_vertices, vertexSize, 0);
+			_binding = new D3D.VertexBufferBinding(_vertices.D3DVertexBuffer, vertexSize, 0);
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
 
 			MatrixBuffer matrix = new MatrixBuffer();
@@ -352,7 +315,7 @@ namespace GorgonLibrary.Graphics
 			UpdateBuffer updatebuffer = new UpdateBuffer();
 			updatebuffer.World = Matrix.Identity;
 			updatebuffer.Alpha = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
-
+			
 			//_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
 			//_noChangeBuffer = _graphics.CreateConstantBuffer(Native.DirectAccess.SizeOf<CBufferTest>(), true);
 			//_noChangeBuffer = _graphics.CreateConstantBuffer(Native.DirectAccess.SizeOf<CBufferTest>(), false);
@@ -434,7 +397,7 @@ namespace GorgonLibrary.Graphics
 
 			_device.ImmediateContext.OutputMerger.SetTargets((_swapChain.DepthStencil != null ? _swapChain.DepthStencil.D3DDepthStencilView : null), _swapChain.D3DRenderTarget);
 			_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
-			_device.ImmediateContext.InputAssembler.SetIndexBuffer(_index, GI.Format.R32_UInt, 0);
+			_device.ImmediateContext.InputAssembler.SetIndexBuffer(_index.D3DIndexBuffer, GI.Format.R32_UInt, 0);
 			_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
 			//_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
 			pvw = matrix.valueType.value2 * matrix.Projection;
@@ -561,7 +524,7 @@ namespace GorgonLibrary.Graphics
 				else
 					scale[i] += scaleDelta[i] * delta;
 
-				scale[i] = 1.05f;
+				//scale[i] = 1.05f;
 
 				if ((scale[i] < 0.05f) || (scale[i] > 1.0f))
 				{
@@ -613,9 +576,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 			}
-
-			DX.DataStream vstream = null;
-
+						
 			//if (frames == 0)
 			{
 
@@ -688,11 +649,10 @@ namespace GorgonLibrary.Graphics
 						Back = 1
 					});*/
 				//vstream.Position = _bufferIndex;
-				_graphics.Context.MapSubresource(_vertices, 0, D3D.MapMode.Write, D3D.MapFlags.None, out vstream);
-				using (vstream)
+				using (GorgonDataStream vstream = _vertices.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
 				{
 					vstream.WriteRange(_sprite, 0, _sprite.Length);
-					_graphics.Context.UnmapSubresource(_vertices, 0);
+					_vertices.Unlock();
 				}
 
 				//frames = Int32.MaxValue;				

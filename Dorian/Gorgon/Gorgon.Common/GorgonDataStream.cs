@@ -1081,7 +1081,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to write an array of value types to the stream.
+		/// Function to write a list of value types to the stream.
 		/// </summary>
 		/// <typeparam name="T">Type of data to write.</typeparam>
 		/// <param name="buffer">Array of data to write.</param>

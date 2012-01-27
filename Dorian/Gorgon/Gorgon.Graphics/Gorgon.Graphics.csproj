@@ -42,23 +42,24 @@
     <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
       <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.2.0.2\lib\net20\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX, Version=2.0.3.0, Culture=neutral, PublicKeyToken=6f19e8495e7498cf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.D3DCompiler, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.D3DCompiler.2.0.2\lib\net20\SharpDX.D3DCompiler.dll</HintPath>
+    <Reference Include="SharpDX.D3DCompiler, Version=2.0.3.0, Culture=neutral, PublicKeyToken=6f19e8495e7498cf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Diagnostics, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Diagnostics.2.0.2\lib\net20\SharpDX.Diagnostics.dll</HintPath>
+    <Reference Include="SharpDX.Diagnostics">
+      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.Diagnostics.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct3D11.2.0.2\lib\net20\SharpDX.Direct3D11.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D11, Version=2.0.3.0, Culture=neutral, PublicKeyToken=6f19e8495e7498cf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DXGI, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.DXGI.2.0.2\lib\net20\SharpDX.DXGI.dll</HintPath>
-    </Reference>
-    <Reference Include="SlimDX, Version=4.0.12.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64">
-      <HintPath>..\..\..\..\..\..\..\Assemblies\SlimDX_Sept11\Bin\net40\x64\SlimDX.dll</HintPath>
+    <Reference Include="SharpDX.DXGI, Version=2.0.3.0, Culture=neutral, PublicKeyToken=6f19e8495e7498cf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffers\GorgonIndexBuffer.cs" />
     <Compile Include="Buffers\GorgonBaseBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
@@ -88,7 +90,6 @@
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
-    <Compile Include="Math\GorgonMathConvert.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
@@ -118,14 +119,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
-    <None Include="packages.config" />
-    <None Include="Resources\Test.fx" />
     <None Include="sharpdx_direct3d11_effects_x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="sharpdx_direct3d11_effects_x86.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\Test.fx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -149,7 +149,6 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
