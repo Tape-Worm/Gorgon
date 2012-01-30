@@ -621,7 +621,6 @@ namespace GorgonLibrary.Graphics
 				using (GorgonDataStream vstream = _vertices.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
 				{
 					vstream.WriteRange(_sprite);
-					// Test subversion commit.
 					//using (GorgonDataStream cstream = _cols.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
 					//{
 					//    for (int i = 0; i < count * 4; i++)
