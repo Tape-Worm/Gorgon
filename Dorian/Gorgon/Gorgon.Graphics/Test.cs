@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 	public class Test
 		: IDisposable
 	{
-		private int count = 8192;
+		private int count = 1024;
 		private D3D.Device _device = null;
 		private GorgonGraphics _graphics = null;
 		private GorgonSwapChain _swapChain = null;
@@ -111,13 +111,13 @@ namespace GorgonLibrary.Graphics
 		//private D3D.InputLayout _layout = null;
 		//private D3D.Buffer _vertices = null;
 		private GorgonVertexBuffer _vertices = null;
-		private GorgonVertexBuffer _uvs = null;
-		private GorgonVertexBuffer _cols = null;
+		//private GorgonVertexBuffer _uvs = null;
+		//private GorgonVertexBuffer _cols = null;
 		private GorgonIndexBuffer _index = null;
 		//private D3D.EffectPass _pass = null;		
 		private D3D.VertexBufferBinding _binding = default(D3D.VertexBufferBinding);
-		private D3D.VertexBufferBinding _binding2 = default(D3D.VertexBufferBinding);
-		private D3D.VertexBufferBinding _binding3 = default(D3D.VertexBufferBinding);
+		//private D3D.VertexBufferBinding _binding2 = default(D3D.VertexBufferBinding);
+		//private D3D.VertexBufferBinding _binding3 = default(D3D.VertexBufferBinding);
 		//private float _rot = 0.0f;
 		//private float _degreesPerSecond = 0.0f;
 		//private D3D.EffectScalarVariable _alpha = null;
@@ -306,7 +306,7 @@ namespace GorgonLibrary.Graphics
 			//_graphics.VertexShader.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
 			//_graphics.VertexShader.ConstantBuffers[0] = _graphics.PixelShader.ConstantBuffers[0] = _noChangeBuffer;
 
-			//_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
+			_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
 			//_graphics.PixelShader.Samplers[1] = GorgonTextureSamplerStates.DefaultStates;
 
 			//using (GorgonDataStream stream = new GorgonDataStream(count * layout.GetSlotSize(2) * 4))

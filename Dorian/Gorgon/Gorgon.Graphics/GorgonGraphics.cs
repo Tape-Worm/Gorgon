@@ -863,6 +863,7 @@ namespace GorgonLibrary.Graphics
 					Gorgon.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);
 					if (D3DDevice != null)
 					{
+						Context.ClearState();
 						D3DDevice.Dispose();
 						D3DDevice = null;
 					}
@@ -870,7 +871,6 @@ namespace GorgonLibrary.Graphics
 					// Destroy the video device interface.
 					if (VideoDevice != null)
 					{
-						Context.ClearState();
 						VideoDevice.D3DDevice = null;
 						((IDisposable)VideoDevice).Dispose();
 					}
