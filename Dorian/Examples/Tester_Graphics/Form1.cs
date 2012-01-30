@@ -20,7 +20,9 @@ namespace Tester_Graphics
 	public partial class Form1 : Form
 	{
 		GorgonVideoMode mode1 = default(GorgonVideoMode);
+#if MULTIMON
 		GorgonVideoMode mode2 = default(GorgonVideoMode);
+#endif
 		Test _test1 = null;
 		Test _test2 = null;
 		GorgonGraphics _graphics = null;
@@ -35,11 +37,11 @@ namespace Tester_Graphics
 		
 
 		int frameCount = 0;
-		float frameDepth = 0.0f;
+		//float frameDepth = 0.0f;
 		bool _pause = false;
 		Random _rnd = new Random();
 		float accum = 0.0f;
-		float target = (float)GorgonFrameRate.FpsToMilliseconds(65) / 1000.0f;
+		float target = (float)GorgonFrameRate.FpsToMilliseconds(60) / 1000.0f;
 
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
@@ -49,8 +51,7 @@ namespace Tester_Graphics
 		}
 
 		private bool Idle(GorgonFrameRate timing)
-		{
-			Text = "FPS: " + timing.FPS.ToString() +" DT:" + (timing.FrameDelta * 1000).ToString() + " msec.";
+		{			
 
 			try
 			{
@@ -75,16 +76,19 @@ namespace Tester_Graphics
 					{
 						if (!_pause) 
 						{
-							if (timing.FrameDelta < 0.119f)
+							if (timing.FrameDelta < target)
 								accum += timing.FrameDelta;
 							else
-								accum += 0.119f;
+								accum += target;
 							while (accum >= target)
-							{
+							{								
 								//_test1.Transform(timing.FrameDelta);
 								_test1.Transform(target);
 								frameCount = 0;
 								accum -= target;
+
+								if (accum <= target)
+									Text = "FPS: " + timing.FPS.ToString() + " DT:" + (timing.FrameDelta * 1000).ToString() + " msec.";
 							}
 						}
 						_test1.Draw();
@@ -104,7 +108,7 @@ namespace Tester_Graphics
 						_test2.Draw();
 					}
 				}
-
+								
 				_swapChain.Flip();
 				
 				frameCount++;
@@ -213,10 +217,13 @@ namespace Tester_Graphics
 				form2.Deactivate += new EventHandler(form2_Deactivate);
 				form2.ShowInTaskbar = false;
 				form2.Show();
-#endif
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM4_1);
+#endif				
+				//GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(false, true);
+				//_graphics = new GorgonGraphics(devices[1], DeviceFeatureLevel.SM2_a_b);				
+				//devices.Dispose();				
+				_graphics = new GorgonGraphics();
+
 				//_graphics.IsObjectTrackingEnabled = false;
-				//_graphics = new GorgonGraphics();
 				//_graphics.ResetFullscreenOnFocus = false;
 
 				_multiSample.IsMultisamplingEnabled = false;
@@ -243,7 +250,7 @@ namespace Tester_Graphics
 						 select videoMode).First();
 
 				int count = 4;
-				int quality = _graphics.VideoDevices[0].GetMultiSampleQuality(mode1.Format, count);
+				int quality = _graphics.VideoDevice.GetMultiSampleQuality(mode1.Format, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				multiSample = new GorgonMultiSampling(1, 0);
 				_swapChain = _graphics.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.Unknown});

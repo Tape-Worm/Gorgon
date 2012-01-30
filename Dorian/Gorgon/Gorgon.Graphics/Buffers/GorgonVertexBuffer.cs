@@ -187,7 +187,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(GorgonDataStream stream)
 		{
-			UpdateImpl(stream, 0, 0);
+			UpdateImpl(stream, 0, (int)(stream.Length - stream.Position));
 		}
 		#endregion
 

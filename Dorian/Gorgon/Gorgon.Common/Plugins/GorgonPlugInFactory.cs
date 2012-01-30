@@ -411,7 +411,7 @@ namespace GorgonLibrary.PlugIns
 						throw new GorgonException(GorgonResult.CannotCreate, "Could not create the plug-in type '" + plugInType.FullName + "' in assembly '" + plugInType.Assembly.FullName + "'.  It was not of type EnginePlugIn.");
 					if (!this.Contains(plugIn.Name))
 					{
-						Gorgon.Log.Print("Plug-in '{0}' created.", Diagnostics.GorgonLoggingLevel.Simple, plugIn.Name);
+						Gorgon.Log.Print("Plug-in '{0}' created.", Diagnostics.LoggingLevel.Simple, plugIn.Name);
 						this.AddItem(plugIn);
 					}
 					else
@@ -422,7 +422,7 @@ namespace GorgonLibrary.PlugIns
 									"' already exists in another plug-in assembly '" + this[plugIn.Name].GetType().Assembly.FullName + "' and is not the same type.");
 						}
 						else
-							Gorgon.Log.Print("Plug-in '{0}' already created.  Using this instance.", Diagnostics.GorgonLoggingLevel.Simple, plugIn.Name);
+							Gorgon.Log.Print("Plug-in '{0}' already created.  Using this instance.", Diagnostics.LoggingLevel.Simple, plugIn.Name);
 					}
 				}
 			}

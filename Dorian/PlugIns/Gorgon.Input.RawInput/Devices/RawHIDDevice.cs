@@ -143,7 +143,7 @@ namespace GorgonLibrary.Input.Raw
 		public RawHIDDevice(GorgonInputFactory owner, GorgonRawInputDeviceInfo deviceData, Control boundWindow)
 			: base(owner, "Raw Input HID", boundWindow)
 		{
-			Gorgon.Log.Print("Raw input HID interface created for handle 0x{0}.", GorgonLoggingLevel.Verbose, deviceData.Handle.FormatHex());
+			Gorgon.Log.Print("Raw input HID interface created for handle 0x{0}.", LoggingLevel.Verbose, deviceData.Handle.FormatHex());
 			_deviceData = deviceData;
 			SetData("BinaryData", new byte[0]);
 		}

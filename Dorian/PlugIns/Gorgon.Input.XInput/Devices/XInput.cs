@@ -262,7 +262,7 @@ namespace GorgonLibrary.Input.XInput
 			XI.State state = default(XI.State);
 			if (!_controller.IsConnected)
 			{
-				Gorgon.Log.Print("XInput Controller {0} disconnected.", GorgonLoggingLevel.Verbose, _controllerID);
+				Gorgon.Log.Print("XInput Controller {0} disconnected.", LoggingLevel.Verbose, _controllerID);
 				IsConnected = false;				
 				return;
 			}
@@ -275,7 +275,7 @@ namespace GorgonLibrary.Input.XInput
 					IsConnected = true;
 #if DEBUG
 					XI.Capabilities caps = _controller.GetCapabilities(XI.DeviceQueryType.Any);
-					Gorgon.Log.Print("XInput Controller {0} (ID:{1}) re-connected.", GorgonLoggingLevel.Verbose, caps.SubType.ToString(), _controllerID);
+					Gorgon.Log.Print("XInput Controller {0} (ID:{1}) re-connected.", LoggingLevel.Verbose, caps.SubType.ToString(), _controllerID);
 #endif
 				}
 			}
@@ -350,12 +350,12 @@ namespace GorgonLibrary.Input.XInput
 				
 #if DEBUG
 				XI.Capabilities caps = controller.GetCapabilities(XI.DeviceQueryType.Any);
-				Gorgon.Log.Print("XInput XBOX 360 controller device {0} interface created (ID:{1}).", GorgonLoggingLevel.Simple, caps.SubType.ToString(), ID);
+				Gorgon.Log.Print("XInput XBOX 360 controller device {0} interface created (ID:{1}).", LoggingLevel.Simple, caps.SubType.ToString(), ID);
 #endif
 			}
 			else
 			{
-				Gorgon.Log.Print("Disconnected XInput XBOX 360 controller device #{0} interface created.", GorgonLoggingLevel.Simple, ID);
+				Gorgon.Log.Print("Disconnected XInput XBOX 360 controller device #{0} interface created.", LoggingLevel.Simple, ID);
 				IsConnected = false;				
 			}
 

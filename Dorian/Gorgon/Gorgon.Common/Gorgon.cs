@@ -62,92 +62,105 @@ namespace GorgonLibrary
 	public static class Gorgon
 	{
 		#region Classes.
-		/// <summary>
-		/// The application context for Gorgon.
-		/// </summary>
-		internal class GorgonContext
-			: ApplicationContext
-		{
-			#region Variables.
-			private GorgonFrameRate _timingData = null;								// Frame rate timing data.
-			#endregion
+		///// <summary>
+		///// The application context for Gorgon.
+		///// </summary>
+		//internal class GorgonContext
+		//    : ApplicationContext
+		//{
+		//    #region Variables.
+		//    private GorgonFrameRate _timingData = null;								// Frame rate timing data.
+		//    #endregion
 
-			#region Properties.
-			/// <summary>
-			/// Property to return if the application has focus.
-			/// </summary>
-			private bool HasFocus
-			{
-				get
-				{
-					if ((Gorgon.AllowBackground) || (Gorgon.ApplicationForm == null))
-						return true;
+		//    #region Properties.
+		//    /// <summary>
+		//    /// Property to return if the application has focus.
+		//    /// </summary>
+		//    private bool HasFocus
+		//    {
+		//        get
+		//        {
+		//            if ((Gorgon.AllowBackground) || (Gorgon.ApplicationForm == null))
+		//                return true;
 
-					if ((ApplicationForm.WindowState == FormWindowState.Minimized) || (!ApplicationForm.ContainsFocus))
-						return false;
+		//            if ((ApplicationForm.WindowState == FormWindowState.Minimized) || (!ApplicationForm.ContainsFocus))
+		//                return false;
 
-					return true;
-				}
-			}
-			#endregion
+		//            return true;
+		//        }
+		//    }
+		//    #endregion
 
-			#region Methods.
-			/// <summary>
-			/// Handles the Idle event of the Application control.
-			/// </summary>
-			/// <param name="sender">The source of the event.</param>
-			/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-			internal void Application_Idle(object sender, EventArgs e)
-			{
-				MSG message = new MSG();		// Message to retrieve.
+		//    #region Methods.
+		//    /// <summary>
+		//    /// Handles the Idle event of the Application control.
+		//    /// </summary>
+		//    /// <param name="sender">The source of the event.</param>
+		//    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		//    internal void Application_Idle(object sender, EventArgs e)
+		//    {
+		//        MSG message = new MSG();		// Message to retrieve.
 
-				// We have nothing to execute, just leave.
-				if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
-					return;
+		//        // We have nothing to execute, just leave.
+		//        if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
+		//            return;
 
-				while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
-				{
-					_timingData.Update();
+		//        while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
+		//        {
+		//            _timingData.Update();
 
-					if (!ApplicationIdleLoopMethod(_timingData))
-					{
-						// Force an exit from the thread.
-						ExitThread();
-						return;
-					}
+		//            if (!ApplicationIdleLoopMethod(_timingData))
+		//            {
+		//                // Force an exit from the thread.
+		//                ExitThread();
+		//                return;
+		//            }
 
-					// Give up CPU time if we're not focused.
-					if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
-						System.Threading.Thread.Sleep(UnfocusedSleepTime);
-				}
-			}
+		//            // Give up CPU time if we're not focused.
+		//            if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
+		//                System.Threading.Thread.Sleep(UnfocusedSleepTime);
+		//        }
+		//    }
 
-			/// <summary>
-			/// Terminates the message loop of the thread.
-			/// </summary>
-			protected override void ExitThreadCore()
-			{
-				IsRunning = false;
-				base.ExitThreadCore();
-			}
-			#endregion
+		//    /// <summary>
+		//    /// Terminates the message loop of the thread.
+		//    /// </summary>
+		//    protected override void ExitThreadCore()
+		//    {
+		//        IsRunning = false;
+		//        base.ExitThreadCore();
+		//    }
+		//    #endregion
 
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="Gorgon"/> class.
-			/// </summary>
-			/// <param name="form">The main form to use for the application.</param>
-			public GorgonContext(Form form)
-			{
-				_timingData = new GorgonFrameRate();
-				MainForm = form;
-			}
-			#endregion
-		}
+		//    #region Constructor/Destructor.
+		//    /// <summary>
+		//    /// Initializes a new instance of the <see cref="Gorgon"/> class.
+		//    /// </summary>
+		//    /// <param name="form">The main form to use for the application.</param>
+		//    public GorgonContext(Form form)
+		//    {
+		//        _timingData = new GorgonFrameRate();
+		//        MainForm = form;
+		//    }
+		//    #endregion
+		//}
 		#endregion
 
 		#region Constants.
 		private const string _logFile = "GorgonLibrary";				// Log file application name.
+		#endregion
+
+		#region Events.
+		/// <summary>
+		/// Event fired when the application is about to exit.
+		/// </summary>
+		/// <remarks>Be sure to remove any event handlers assigned to this event within the event handler, otherwise the application may still retain memory and cause a leak.</remarks>
+		public static event EventHandler Exit;
+		/// <summary>
+		/// Event fired when a message pump thread is about to exit.
+		/// </summary>
+		/// <remarks>Be sure to remove any event handlers assigned to this event within the event handler, otherwise the application may still retain memory and cause a leak.</remarks>
+		public static event EventHandler ThreadExit;
 		#endregion
 
 		#region Variables.
@@ -224,14 +237,14 @@ namespace GorgonLibrary
 				if (IsRunning)
 				{
 					Application.Idle -= new EventHandler(Application_Idle);
-					Log.Print("Application loop stopped.", GorgonLoggingLevel.Simple);
+					Log.Print("Application loop stopped.", LoggingLevel.Simple);
 				}
 				
 				_loop = value;
 
 				if ((value != null) && (IsRunning))
 				{
-					Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
+					Log.Print("Application loop starting...", LoggingLevel.Simple);
 					Application.Idle += new EventHandler(Application_Idle);
 				}
 			}
@@ -357,11 +370,37 @@ namespace GorgonLibrary
 
 			if ((ApplicationIdleLoopMethod != null) && (!_quitSignalled))
 			{
-				Log.Print("Application loop starting...", GorgonLoggingLevel.Simple);
+				Log.Print("Application loop starting...", LoggingLevel.Simple);
 				Application.Idle += new EventHandler(Application_Idle);
 			}
 
+			// Register quit handlers.
+			Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
+			Application.ThreadExit += new EventHandler(Application_ThreadExit);
+
 			return _quitSignalled;
+		}
+
+		/// <summary>
+		/// Handles the ThreadExit event of the Application control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private static void Application_ThreadExit(object sender, EventArgs e)
+		{
+			if (ThreadExit != null)
+				ThreadExit(sender, e);
+		}
+
+		/// <summary>
+		/// Handles the ApplicationExit event of the Application control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private static void Application_ApplicationExit(object sender, EventArgs e)
+		{
+			if (Exit != null)
+				Exit(sender, e);
 		}
 
 		/// <summary>
@@ -371,10 +410,14 @@ namespace GorgonLibrary
 		{
 			IsRunning = false;
 
+			// Remove quit handlers.
+			Application.ApplicationExit -= new EventHandler(Application_ApplicationExit);
+			Application.ThreadExit -= new EventHandler(Application_ThreadExit);
+
 			if (ApplicationIdleLoopMethod != null)
 			{
 				Application.Idle -= new EventHandler(Application_Idle);
-				Log.Print("Application loop stopped.", GorgonLoggingLevel.Simple);
+				Log.Print("Application loop stopped.", LoggingLevel.Simple);
 			}
 
 			if (_trackedObjects != null)
@@ -382,7 +425,7 @@ namespace GorgonLibrary
 
 			PlugIns.UnloadAll();
 
-			Log.Print("Shutting down.", GorgonLoggingLevel.All);
+			Log.Print("Shutting down.", LoggingLevel.All);
 
 			// Destroy log.
 			if (!Log.IsClosed)
@@ -420,7 +463,7 @@ namespace GorgonLibrary
 
 			if (IsRunning)
 				throw new InvalidOperationException("The application is already running.");
-
+						
 			ApplicationIdleLoopMethod = loop;
 			ApplicationContext = context;
 
@@ -634,12 +677,12 @@ namespace GorgonLibrary
 			}
 
 			GorgonException.Log = Log;
-			Log.Print("Initializing...", GorgonLoggingLevel.All);
-			Log.Print("Architecture: {0}", GorgonLoggingLevel.Verbose, GorgonComputerInfo.PlatformArchitecture);
-			Log.Print("Processor count: {0}", GorgonLoggingLevel.Verbose, GorgonComputerInfo.ProcessorCount);
-			Log.Print("Installed Memory: {0}", GorgonLoggingLevel.Verbose, GorgonComputerInfo.TotalPhysicalRAM.FormatMemory());
-			Log.Print("Available Memory: {0}", GorgonLoggingLevel.Verbose, GorgonComputerInfo.AvailablePhysicalRAM.FormatMemory());
-			Log.Print("Operating System: {0} ({1})", GorgonLoggingLevel.Verbose, GorgonComputerInfo.OperatingSystemVersionText, GorgonComputerInfo.OperatingSystemArchitecture); 
+			Log.Print("Initializing...", LoggingLevel.All);
+			Log.Print("Architecture: {0}", LoggingLevel.Verbose, GorgonComputerInfo.PlatformArchitecture);
+			Log.Print("Processor count: {0}", LoggingLevel.Verbose, GorgonComputerInfo.ProcessorCount);
+			Log.Print("Installed Memory: {0}", LoggingLevel.Verbose, GorgonComputerInfo.TotalPhysicalRAM.FormatMemory());
+			Log.Print("Available Memory: {0}", LoggingLevel.Verbose, GorgonComputerInfo.AvailablePhysicalRAM.FormatMemory());
+			Log.Print("Operating System: {0} ({1})", LoggingLevel.Verbose, GorgonComputerInfo.OperatingSystemVersionText, GorgonComputerInfo.OperatingSystemArchitecture); 
 
 			// Default to using 10 milliseconds of sleep time when the application is not focused.
 			UnfocusedSleepTime = 10;

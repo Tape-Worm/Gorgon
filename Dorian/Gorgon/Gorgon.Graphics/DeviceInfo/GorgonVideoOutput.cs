@@ -198,7 +198,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (GIOutput != null)
 				{
-					Gorgon.Log.Print("Removing DXGI output...", Diagnostics.GorgonLoggingLevel.Verbose);
+					Gorgon.Log.Print("Removing DXGI output...", Diagnostics.LoggingLevel.Verbose);
 					GIOutput.Dispose();
 				}
 

@@ -351,7 +351,7 @@ namespace GorgonLibrary.Input.Raw
 		{
 			_joystickID = ID;
 			Initialize();
-			Gorgon.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", GorgonLoggingLevel.Verbose, ID.ToString("x").PadLeft(8, '0'));
+			Gorgon.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", LoggingLevel.Verbose, ID.ToString("x").PadLeft(8, '0'));
 		}
 		#endregion
 	}

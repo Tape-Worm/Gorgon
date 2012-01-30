@@ -69,31 +69,31 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Point minification filtering.
 		/// </summary>
-		MinPoint = 0,
+		MinPoint = 1,
 		/// <summary>
 		/// Point magnifcation filtering.
 		/// </summary>
-		MagPoint = 1,
+		MagPoint = 2,
 		/// <summary>
 		/// Linear minification filtering.
 		/// </summary>
-		MinLinear = 2,
+		MinLinear = 4,
 		/// <summary>
 		/// Linear magnifcation filtering.
 		/// </summary>
-		MagLinear = 4,
+		MagLinear = 8,
 		/// <summary>
 		/// Mip map point sampling.
 		/// </summary>
-		MipPoint = 8,
+		MipPoint = 16,
 		/// <summary>
 		/// Mip map linear sampling.
 		/// </summary>
-		MipLinear = 16,
+		MipLinear = 32,
 		/// <summary>
 		/// Compare the result to the comparison value.
 		/// </summary>
-		Comparison = 32,
+		Comparison = 64,
 		/// <summary>
 		/// Linear filtering.
 		/// </summary>
@@ -294,7 +294,7 @@ namespace GorgonLibrary.Graphics
 		private D3D.SamplerState[] _states = null;				// Sampler states.
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to apply the specified state.
 		/// </summary>
