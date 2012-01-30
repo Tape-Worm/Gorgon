@@ -870,6 +870,7 @@ namespace GorgonLibrary.Graphics
 					// Destroy the video device interface.
 					if (VideoDevice != null)
 					{
+						Context.ClearState();
 						VideoDevice.D3DDevice = null;
 						((IDisposable)VideoDevice).Dispose();
 					}
