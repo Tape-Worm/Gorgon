@@ -41,62 +41,6 @@ using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
-#region Event Arguments.
-	/// <summary>
-	/// Arguments for the before device change event.
-	/// </summary>
-	public class GorgonBeforeDeviceChangeEventArgs
-		: GorgonCancelEventArgs
-	{
-		#region Variables.
-		private GorgonVideoDevice _newDevice = null;		// New video device.
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to return the current video device.
-		/// </summary>
-		public GorgonVideoDevice CurrentDevice
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the new video device.
-		/// </summary>
-		public GorgonVideoDevice NewDevice
-		{
-			get
-			{
-				return _newDevice;
-			}
-			set
-			{
-				if (value == null)
-					_newDevice = CurrentDevice;
-				else
-					_newDevice = value;
-			}
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBeforeDeviceChangeEventArgs"/> class.
-		/// </summary>
-		/// <param name="currentDevice">The current device.</param>
-		/// <param name="newDevice">The new device.</param>
-		public GorgonBeforeDeviceChangeEventArgs(GorgonVideoDevice currentDevice, GorgonVideoDevice newDevice)
-			: base(false)
-		{
-			CurrentDevice = currentDevice;
-			NewDevice = newDevice;
-		}
-		#endregion	
-	}
-#endregion
-
 	/// <summary>
 	/// Operators used for comparison operations.
 	/// </summary>
@@ -155,42 +99,14 @@ namespace GorgonLibrary.Graphics
 		: IDisposable
 	{
 		#region Variables.
-		/// <summary>
-		/// Used to limit the feature levels that Gorgon will use.  This may not reflect the actual hardware.
-		/// </summary>
-		internal static readonly DeviceFeatureLevel[] GorgonFeatureLevels = Enum.GetValues(typeof(DeviceFeatureLevel)) as DeviceFeatureLevel[];
-
 		private static bool _isDWMEnabled = true;						// Flag to indicate that the desktop window manager compositor is enabled.
 		private static bool _dontEnableDWM = false;						// Flag to indicate that we should not enable the DWM.
 		private bool _disposed = false;									// Flag to indicate that the object was disposed.
-		private GorgonVideoDevice _videoDevice = null;					// Video device to use.
-		#endregion
-
-		#region Events.
-		/// <summary>
-		/// Event that is fired before a video device is changed.
-		/// </summary>
-		public event EventHandler<GorgonBeforeDeviceChangeEventArgs> BeforeVideoDeviceChange;
-
-		/// <summary>
-		/// Event that is fired before a device enumeration.
-		/// </summary>
-		public event EventHandler<GorgonCancelEventArgs> BeforeDeviceEnumeration;
-
-		/// <summary>
-		/// Event that is fired after a device enumeration.
-		/// </summary>
-		public event EventHandler AfterDeviceEnumeration;
-
-		/// <summary>
-		/// Event that is fired after a video device is changed.
-		/// </summary>
-		public event EventHandler AfterVideoDeviceChange;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the DX GI factory.
+		/// Property to set or return the DX GI factory.
 		/// </summary>
 		internal GI.Factory1 GIFactory
 		{
@@ -221,6 +137,15 @@ namespace GorgonLibrary.Graphics
 
 				return VideoDevice.D3DDevice.ImmediateContext;
 			}
+		}
+
+		/// <summary>
+		/// Property to return the Direct3D 11 device object.
+		/// </summary>
+		internal D3D.Device D3DDevice
+		{
+			get;
+			private set;
 		}
 		
 		/// <summary>
@@ -336,83 +261,6 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public GorgonVideoDevice VideoDevice
 		{
-			get
-			{
-				return _videoDevice;
-			}
-			set	
-			{
-				// Force the first device.
-				if (value == null)
-				{
-					// Ensure that we have a video device to use.
-					if (VideoDevices.Count > 0)
-						value = VideoDevices[0];
-					else
-						return;
-				}
-
-				// If we're not changing anything, then leave.
-				if (value == _videoDevice)
-					return;
-
-				// Create the D3D device.
-				value.CreateDevice(MaxFeatureLevel);
-
-				// Don't fire the event until we have a current device.
-				if (_videoDevice != null)
-				{
-					GorgonBeforeDeviceChangeEventArgs e = new GorgonBeforeDeviceChangeEventArgs(_videoDevice, value);
-					OnBeforeDeviceChange(e);
-
-					// User canceled the change, or set the same device, then leave.
-					if ((e.Cancel) || (e.CurrentDevice == e.NewDevice))
-					{
-						// Destroy the D3D device.
-						value.ReleaseDevice();
-						return;
-					}
-
-					// If we've changed devices, force its creation here.
-					if (value != e.NewDevice)
-					{
-						value = e.NewDevice;
-						value.CreateDevice(MaxFeatureLevel);
-					}
-				}
-
-				// Destroy all the objects created by this instance.
-				TrackedObjects.ReleaseAll();
-
-				// Remove all state information.
-				DestroyStates();
-
-				// Release the current D3D device.
-				if (_videoDevice != null)
-					_videoDevice.ReleaseDevice();
-	
-				_videoDevice = value;
-				CreateDefaultStates();
-
-				OnAfterDeviceChange();
-			}
-		}
-
-		/// <summary>
-		/// Property to return the maximum feature level to use for any video device.
-		/// </summary>
-		/// <remarks>This is set in the constructor and is a means for artifically enforcing a specific feature level for a video device.</remarks>
-		public DeviceFeatureLevel MaxFeatureLevel
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return a list of video devices installed on the system.
-		/// </summary>
-		public GorgonVideoDeviceCollection VideoDevices
-		{
 			get;
 			private set;
 		}
@@ -468,70 +316,6 @@ namespace GorgonLibrary.Graphics
 
 			Blending = new GorgonBlendRenderState(this);
 			Blending.States = GorgonBlendStates.DefaultStates;
-		}
-
-		/// <summary>
-		/// Function to fire the <see cref="E:GorgonLibrary.Graphics.GorgonGraphics.BeforeDeviceChange">BeforeDeviceChange</see> event.
-		/// </summary>
-		/// <param name="e">Event arguments.</param>
-		protected virtual void OnBeforeDeviceChange(GorgonBeforeDeviceChangeEventArgs e)
-		{
-			if (BeforeVideoDeviceChange != null)
-				BeforeVideoDeviceChange(this, e);
-		}
-
-		/// <summary>
-		/// Function to fire the <see cref="E:GorgonLibrary.Graphics.GorgonGraphics.AfterDeviceChange">AfterDeviceChange</see> event.
-		/// </summary>
-		protected virtual void OnAfterDeviceChange()
-		{
-			if (AfterVideoDeviceChange != null)
-				AfterVideoDeviceChange(this, EventArgs.Empty);
-		}
-
-		/// <summary>
-		/// Method to clean up devices when the device list is being enumerated.
-		/// </summary>
-		/// <remarks>TRUE if canceled, FALSE if not.</remarks>
-		internal bool CleanUpDeviceOnEnumeration()
-		{
-			// Don't fire the event until we have a current device.
-			if (_videoDevice != null)
-			{
-				GorgonCancelEventArgs e = new GorgonCancelEventArgs(false);
-				if (BeforeDeviceEnumeration != null)
-					BeforeDeviceEnumeration(this, e);
-
-				// User canceled the change, leave.
-				if (e.Cancel)
-					return true;
-			}
-
-			// Destroy all the objects created by this instance.
-			TrackedObjects.ReleaseAll();
-
-			// Method to destroy the states.
-			DestroyStates();
-
-
-			// Release the current D3D device.
-			if (_videoDevice != null)
-				_videoDevice.ReleaseDevice();
-
-			_videoDevice = null;
-
-			return false;
-		}
-
-		/// <summary>
-		/// Method to initialize the current device object.
-		/// </summary>
-		internal void DeviceEnumerationComplete()
-		{
-			VideoDevice = null;
-
-			if (AfterDeviceEnumeration != null)
-				AfterDeviceEnumeration(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -942,32 +726,35 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
+		/// <param name="device">Video device to use.</param>
 		/// <param name="featureLevel">The maximum feature level to support for the devices enumerated.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="featureLevel"/> parameter is invalid.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are capable of using Direct 3D 11, or the down level interfaces (Direct 3D 10.1, 10 or 9.3).
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
 		/// <para>-or-</para>
 		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
 		/// </exception>
-		/// <remarks>The use may pass multiple feature levels to the featureLevel parameter to allow only specific feature levels available.  For example, passing new GorgonGraphics(DeviceFeatureLevel.10_0_SM4 | DeviceFeatureLevel.9_0_SM3) will only allow functionality
-		/// for both Direct3D 10, and Direct 3D 9 capable video devices.
-		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.  If no feature levels are available (e.g. calling new GorgonGraphics(DeviceFeatureLevel.11_0_SM5) with a Direct 3D 9 or 10 video device) then an exception will be raised.</para>
+		/// <remarks>
+		/// The <paramref name="device"/> parameter is the video device that should be used with Gorgon.  If the user passes NULL (Nothing in VB.Net), then the primary device will be used. 
+		/// To determine the devices on the system, check the <see cref="P:GorgonLibrary.Graphics.GorgonVideoDeviceCollection">GorgonVideoDeviceCollection</see> object.  The primary device will be the first device in this collection. 
+		/// <para>The user may pass in a feature level to the featureLevel parameter to limit the feature levels available.  Note that the feature levels imply all feature levels up until the feature level passed in, for example, passing <c>DeviceFeatureLevel.SM4</c> will only allow functionality 
+		/// for both Shader Model 4, and Shader Model 2/3 capable video devices, while DeviceFeatureLevel.SM4_1 will include Shader Model 4 with a 4.1 profile and Shader model 2/3 video devices.</para>
+		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.  That is, passing a SM5 feature level with a SM4 card will only use a SM4 feature level.  If the user omits the feature level (in one of the constructor 
+		/// overloads), then Gorgon will use the best available feature level for the video device being used.</para>
 		/// </remarks>
-		public GorgonGraphics(DeviceFeatureLevel featureLevel)
+		public GorgonGraphics(GorgonVideoDevice device, DeviceFeatureLevel featureLevel)
 		{
+			GorgonVideoDeviceCollection enumerator = null;
+
 			if (featureLevel == DeviceFeatureLevel.Unsupported)
 				throw new ArgumentException("Must supply a known feature level.", "featureLevel");
 
 			if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
 				throw new GorgonException(GorgonResult.CannotCreate, "The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater.");
 
-			MaxFeatureLevel = featureLevel;
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			ResetFullscreenOnFocus = true;
 
-			Gorgon.Log.Print("Gorgon Graphics initializing...", Diagnostics.GorgonLoggingLevel.Simple);
-
-			Gorgon.Log.Print("Creating DXGI interface...", GorgonLoggingLevel.Verbose);
-			GIFactory = new GI.Factory1();			
+			Gorgon.Log.Print("Gorgon Graphics initializing...", Diagnostics.LoggingLevel.Simple);
 			
 #if DEBUG
 			SharpDX.Configuration.EnableObjectTracking = true;
@@ -975,26 +762,74 @@ namespace GorgonLibrary.Graphics
 			SharpDX.Configuration.EnableObjectTracking = false;
 #endif
 
-			VideoDevices = new GorgonVideoDeviceCollection(this);
-			VideoDevices.Refresh();
+			if (device == null)
+			{
+				enumerator = new GorgonVideoDeviceCollection(false, false);
+				device = enumerator[0];
+			}
 
-			if (VideoDevices.Count == 0)
-				throw new GorgonException(GorgonResult.CannotCreate, "There were no video devices found on this system that can use Direct 3D 11/SM5, 10.x/SM4 or 9.0/SM3.");
+			if (device != null)
+			{
+				GIFactory = device.GIFactory;
+				VideoDevice = device;
+				D3DDevice = device.D3DDevice = device.CreateD3DDevice(featureLevel);				
+			}
+
+			if (enumerator != null)
+				enumerator.Dispose();
 
 			Gorgon.AddTrackedObject(this);
 
-			Gorgon.Log.Print("Gorgon Graphics initialized.", Diagnostics.GorgonLoggingLevel.Simple);
+			// Create default state objects.
+			CreateDefaultStates();
+
+			Gorgon.Log.Print("Gorgon Graphics initialized.", Diagnostics.LoggingLevel.Simple);
 		}
 
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are capable of using Direct 3D 11, or the down level interfaces (Direct 3D 10.1, 10 or 9.3).
+		/// <param name="device">Video device to use.</param>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
+		/// <para>-or-</para>
+		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
+		/// </exception>
+		/// <remarks>
+		/// The <paramref name="device"/> parameter is the video device that should be used with Gorgon.  If the user passes NULL (Nothing in VB.Net), then the primary device will be used. 
+		/// To determine the devices on the system, check the <see cref="P:GorgonLibrary.Graphics.GorgonVideoDeviceCollection">GorgonVideoDeviceCollection</see> object.  The primary device will be the first device in this collection. 
+		/// </remarks>
+		public GorgonGraphics(GorgonVideoDevice device)
+			: this(device, DeviceFeatureLevel.SM5)
+		{
+		}
+
+		/// <summary>
+		/// Initializes the <see cref="GorgonGraphics"/> class.
+		/// </summary>
+		/// <param name="featureLevel">The maximum feature level to support for the devices enumerated.</param>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="featureLevel"/> parameter is invalid.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
+		/// <para>-or-</para>
+		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
+		/// </exception>
+		/// <remarks>The user may pass in a feature level to the featureLevel parameter to limit the feature levels available.  Note that the feature levels imply all feature levels up until the feature level passed in, for example, passing <c>DeviceFeatureLevel.SM4</c> will only allow functionality 
+		/// for both Shader Model 4, and Shader Model 2/3 capable video devices, while DeviceFeatureLevel.SM4_1 will include Shader Model 4 with a 4.1 profile and Shader model 2/3 video devices.
+		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.</para>
+		/// </remarks>
+		public GorgonGraphics(DeviceFeatureLevel featureLevel)
+			: this(null, featureLevel)
+		{
+		}
+
+		/// <summary>
+		/// Initializes the <see cref="GorgonGraphics"/> class.
+		/// </summary>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
 		/// <para>-or-</para>
 		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
 		/// </exception>
 		public GorgonGraphics()
-			: this(DeviceFeatureLevel.SM5 | DeviceFeatureLevel.SM4_1 | DeviceFeatureLevel.SM4 | DeviceFeatureLevel.SM2_a_b)
+			: this(null, DeviceFeatureLevel.SM5)
 		{
 		}
 
@@ -1020,24 +855,36 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					Gorgon.Log.Print("Gorgon Graphics shutting down...", Diagnostics.GorgonLoggingLevel.Simple);
+					Gorgon.Log.Print("Gorgon Graphics shutting down...", Diagnostics.LoggingLevel.Simple);
 
 					TrackedObjects.ReleaseAll();
 					DestroyStates();
 
-					VideoDevices.Clear();
+					Gorgon.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);
+					if (D3DDevice != null)
+					{
+						D3DDevice.Dispose();
+						D3DDevice = null;
+					}
 
-					Gorgon.Log.Print("Removing DXGI factory interface...", GorgonLoggingLevel.Verbose);
+					// Destroy the video device interface.
+					if (VideoDevice != null)
+					{
+						VideoDevice.D3DDevice = null;
+						((IDisposable)VideoDevice).Dispose();
+					}
 
+					Gorgon.Log.Print("Removing DXGI factory interface...", LoggingLevel.Verbose);
 					if (GIFactory != null)
+					{
 						GIFactory.Dispose();
-
-					GIFactory = null;
+						GIFactory = null;
+					}
 
 					// Remove us from the object tracker.
 					Gorgon.RemoveTrackedObject(this);
 
-					Gorgon.Log.Print("Gorgon Graphics shut down successfully", Diagnostics.GorgonLoggingLevel.Simple);
+					Gorgon.Log.Print("Gorgon Graphics shut down successfully", Diagnostics.LoggingLevel.Simple);
 				}					
 
 				_disposed = true;

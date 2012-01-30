@@ -216,7 +216,7 @@ namespace GorgonLibrary.Input.Raw
 			result = new List<GorgonWMMDeviceInfo>();
 			deviceCount = Win32API.joyGetNumDevs();
 
-			Gorgon.Log.Print("Enumerating joysticks...", GorgonLoggingLevel.Intermediate);
+			Gorgon.Log.Print("Enumerating joysticks...", LoggingLevel.Intermediate);
 			for (int i = 0; i < deviceCount; i++)
 			{
 				error = Win32API.joyGetDevCaps(i, ref capabilities, Marshal.SizeOf(typeof(JOYCAPS)));
@@ -245,7 +245,7 @@ namespace GorgonLibrary.Input.Raw
 					}
 				}
 			}
-			Gorgon.Log.Print("{0} joysticks found.", GorgonLoggingLevel.Intermediate, result.Count);
+			Gorgon.Log.Print("{0} joysticks found.", LoggingLevel.Intermediate, result.Count);
 
 			return result;
 		}

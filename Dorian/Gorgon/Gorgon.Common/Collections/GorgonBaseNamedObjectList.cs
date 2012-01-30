@@ -52,6 +52,15 @@ namespace GorgonLibrary.Collections
 				return _list;
 			}
 		}
+
+		/// <summary>
+		/// Property to return whether the keys are case sensitive.
+		/// </summary>
+		public bool KeysAreCaseSensitive
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -66,6 +75,23 @@ namespace GorgonLibrary.Collections
 		}
 
 		/// <summary>
+		/// Function to retrieve the item by its name.
+		/// </summary>
+		/// <param name="name">Name of the item to find.</param>
+		/// <returns>The item with the specified name.</returns>
+		protected virtual T GetItem(string name)
+		{
+			for (int i = 0; i < Count; i++)
+			{
+				T item = GetItem(i);
+				if (string.Compare(name, item.Name, !KeysAreCaseSensitive) == 0)
+					return item;
+			}
+
+			throw new KeyNotFoundException("Could not find an object in the collection with the name '" + name + "'.");
+		}
+
+		/// <summary>
 		/// Function to set an item at the specified index.
 		/// </summary>
 		/// <param name="index">Index of the item to set.</param>
@@ -73,6 +99,20 @@ namespace GorgonLibrary.Collections
 		protected virtual void SetItem(int index, T value)
 		{
 			_list[index] = value;
+		}
+
+		/// <summary>
+		/// Function to set an item at the specified index.
+		/// </summary>
+		/// <param name="value">Value used to set the item with.</param>
+		protected virtual void SetItem(T value)
+		{
+			int i = IndexOf(value.Name);
+
+			if (i == -1)
+				throw new KeyNotFoundException("The key '" + value.Name + "' does not exist in this collection.");
+
+			SetItem(i, value);
 		}
 
 		/// <summary>
@@ -160,21 +200,51 @@ namespace GorgonLibrary.Collections
 		{
 			foreach(T item in _list)
 			{
-				if (string.Compare(item.Name, name, false) == 0)
+				if (string.Compare(item.Name, name, !KeysAreCaseSensitive) == 0)
 					return true;
 			}
 
 			return false;
 		}
+
+		/// <summary>
+		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		/// </summary>
+		/// <param name="name">Name of the item to find.</param>
+		/// <returns>
+		/// The index of <paramref name="name"/> if found in the list; otherwise, -1.
+		/// </returns>
+		public virtual int IndexOf(string name)
+		{
+			for (int i = 0; i < Count; i++)
+			{
+				T item = GetItem(i);
+
+				if (string.Compare(item.Name, name, !KeysAreCaseSensitive) == 0)
+					return i;
+			}
+
+			return -1;
+		}
 		#endregion
 
 		#region Constructor
 		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectList&lt;T&gt;"/> class.
+		/// </summary>
+		/// <param name="isCaseSensitive">TRUE to use case sensitive keys, FALSE to ignore casing.</param>
+		protected GorgonBaseNamedObjectList(bool isCaseSensitive)			
+		{
+			KeysAreCaseSensitive = isCaseSensitive;
+			_list = new List<T>();
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonLibrary.Collections.GorgonBaseNamedObjectCollection&lt;T&gt;"/> class.
 		/// </summary>
 		protected GorgonBaseNamedObjectList()
-		{
-			_list = new List<T>();
+			: this(false)
+		{			
 		}
 		#endregion
 

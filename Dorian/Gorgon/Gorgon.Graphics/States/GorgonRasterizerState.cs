@@ -35,7 +35,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Defines how a triangle should be culled.
 	/// </summary>
-	public enum GorgonCullingMode
+	public enum CullingMode
 	{
 		/// <summary>
 		/// No culling.
@@ -54,7 +54,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Defines how a triangle should be filled.
 	/// </summary>
-	public enum GorgonFillMode
+	public enum FillMode
 	{
 		/// <summary>
 		/// Wireframe triangles.
@@ -79,8 +79,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public static readonly GorgonRasterizerStates DefaultStates = new GorgonRasterizerStates()
 		{
-			CullingMode = GorgonCullingMode.Back,
-			FillMode = GorgonFillMode.Solid,
+			CullingMode = CullingMode.Back,
+			FillMode = FillMode.Solid,
 			IsFrontFacingTriangleCounterClockwise = false,
 			DepthBias = 0,
 			DepthBiasClamp = 0.0f,
@@ -95,13 +95,13 @@ namespace GorgonLibrary.Graphics
 		/// The triangle culling mode for the rasterizer.
 		/// </summary>
 		/// <remarks>The default value is Back.</remarks>
-		public GorgonCullingMode CullingMode;
+		public CullingMode CullingMode;
 
 		/// <summary>
 		/// Property to set or return the triangle filling mode.
 		/// </summary>
 		/// <remarks>The default value is Solid.</remarks>
-		public GorgonFillMode FillMode;
+		public FillMode FillMode;
 
 		/// <summary>
 		/// Property to set or return whether a triangle uses clockwise or counterclockwise vertices to determine whether it is front or back facing respectively.

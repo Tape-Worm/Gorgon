@@ -100,13 +100,13 @@ namespace GorgonLibrary.Graphics
 		{
 			if (D3DDepthStencilView != null)
 			{
-				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying D3D11 depth stencil view...", Diagnostics.GorgonLoggingLevel.Verbose, Name);
+				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying D3D11 depth stencil view...", Diagnostics.LoggingLevel.Verbose, Name);
 				D3DDepthStencilView.Dispose();
 			}
 
 			if (D3DTexture != null)
 			{
-				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying D3D11 depth stencil texture...", Diagnostics.GorgonLoggingLevel.Verbose, Name);
+				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying D3D11 depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
 				D3DTexture.Dispose();
 			}
 
@@ -119,7 +119,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateResources()
 		{
-			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil texture...", Diagnostics.GorgonLoggingLevel.Verbose, Name);
+			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
 
 			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
 			D3D.DepthStencilViewDescription viewDesc = new D3D.DepthStencilViewDescription();
@@ -147,7 +147,7 @@ namespace GorgonLibrary.Graphics
 			D3DTexture.DebugName = "Depth buffer '" + Name + "' texture.";
 
 			// Create the view.
-			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil view...", Diagnostics.GorgonLoggingLevel.Verbose, Name);
+			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil view...", Diagnostics.LoggingLevel.Verbose, Name);
 
 			// If we have multisampling enabled, then apply it to our view.
 			if ((Settings.MultiSample.Count > 1) || (Settings.MultiSample.Quality > 1))
@@ -198,7 +198,7 @@ namespace GorgonLibrary.Graphics
 					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.TextureFormat + "' as texture format for the depth buffer.");
 
 				// Feature levels less than 4.1 can't read back multi sampled depth buffers in a shader.
-				if (((graphics.VideoDevice.SupportedFeatureLevels & DeviceFeatureLevel.SM4_1) != DeviceFeatureLevel.SM4_1) && ((graphics.VideoDevice.SupportedFeatureLevels & DeviceFeatureLevel.SM5) != DeviceFeatureLevel.SM5) &&
+				if ((graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM4_1) && (graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5) &&
 					((settings.MultiSample.Count > 1) || (settings.MultiSample.Quality > 0)))
 					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' cannot bind a multi sampled depth buffer to a shader if the feature level is less than SM_4_1");
 			}

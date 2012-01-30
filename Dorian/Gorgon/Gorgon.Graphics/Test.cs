@@ -111,17 +111,21 @@ namespace GorgonLibrary.Graphics
 		//private D3D.InputLayout _layout = null;
 		//private D3D.Buffer _vertices = null;
 		private GorgonVertexBuffer _vertices = null;
+		private GorgonVertexBuffer _uvs = null;
+		private GorgonVertexBuffer _cols = null;
 		private GorgonIndexBuffer _index = null;
 		//private D3D.EffectPass _pass = null;		
 		private D3D.VertexBufferBinding _binding = default(D3D.VertexBufferBinding);
-		private float _rot = 0.0f;
-		private float _degreesPerSecond = 0.0f;
+		private D3D.VertexBufferBinding _binding2 = default(D3D.VertexBufferBinding);
+		private D3D.VertexBufferBinding _binding3 = default(D3D.VertexBufferBinding);
+		//private float _rot = 0.0f;
+		//private float _degreesPerSecond = 0.0f;
 		//private D3D.EffectScalarVariable _alpha = null;
 		//private D3D.EffectConstantBuffer _matrix = null;		
-		private float _currentTime = 0;
-		private int _maxPasses = 0;
-		private bool _timeSwitch = false;
-		private float _passes = 8.0f;
+		//private float _currentTime = 0;
+		//private int _maxPasses = 0;
+		//private bool _timeSwitch = false;
+		//private float _passes = 8.0f;
 		private D3D.Texture2D _texture = null;		
 		private D3D.ShaderResourceView _textureView = null;
 		private D3D.Texture2D _texture2 = null;
@@ -130,9 +134,9 @@ namespace GorgonLibrary.Graphics
 		//private D3D.VertexShader _vs = null;
 		//private D3D.PixelShader _ps = null;
 		//private D3D.Buffer _changeBuffer = null;
-		private GorgonConstantBuffer _noChangeBuffer = null;
-		private GorgonConstantBuffer _changeBuffer = null;
-		private GorgonConstantBuffer _alphaTestData = null;
+		//private GorgonConstantBuffer _noChangeBuffer = null;
+		//private GorgonConstantBuffer _changeBuffer = null;
+		//private GorgonConstantBuffer _alphaTestData = null;
 		//private D3D.Buffer _noChangeBuffer = null;
 		//private GorgonDepthStencilState _depthStateAlpha = null;
 		private GorgonDepthStencilStates _depthStateAlpha = GorgonDepthStencilStates.DefaultStates;
@@ -140,7 +144,6 @@ namespace GorgonLibrary.Graphics
 		Random _rnd = new Random();
 		private GorgonVertexShader _vs = null;
 		private GorgonPixelShader _ps = null;
-		private int _bufferIndex = 0;
 		private Vector4[] _pos = new Vector4[4];
 		private vertex[] _sprite = null;
 		private Matrix pvw = Matrix.Identity;
@@ -151,8 +154,10 @@ namespace GorgonLibrary.Graphics
 		{
 			[InputElement(0, "POSITION")]
 			public Vector4 Position;
+			//[InputElement("COLOR", BufferFormat.R32G32B32A32_Float, 0, 0, 1)]			
 			[InputElement(1, "COLOR")]
-			public Vector4 Color;
+			public Vector4 Color;			
+			//[InputElement("TEXTURECOORD", BufferFormat.R32G32_Float, 0, 0, 2)]
 			[InputElement(2, "TEXTURECOORD")]
 			public Vector2 UV;
 		}
@@ -194,19 +199,10 @@ namespace GorgonLibrary.Graphics
 				_texture2.Dispose();
 			//if (_sampler != null)
 				//_sampler.Dispose();
-			if (_vertices != null)
-				_vertices.Dispose();
-			if (_index != null)
-				_index.Dispose();
-		}
-
-		[StructLayout(LayoutKind.Explicit, Size=32, Pack=1)]
-		public struct CBufferTest
-		{
-			[FieldOffset(0)]
-			public Vector4 first;
-			[FieldOffset(16)]
-			public Vector4 second;
+			//if (_vertices != null)
+			//    _vertices.Dispose();
+			//if (_index != null)
+			//    _index.Dispose();
 		}
 
 		private void Initialize()
@@ -226,9 +222,10 @@ namespace GorgonLibrary.Graphics
 						
 			GorgonInputLayout layout = _graphics.CreateInputLayout("Test Layout", typeof(vertex), _vs);
 
-			int vertexSize = layout.Size;			
+			int vertexSize = layout.GetSlotSize(0);			
 
 			_vertices = _graphics.CreateVertexBuffer(4 * vertexSize * count, BufferUsage.Dynamic, null);
+			//_cols = _graphics.CreateVertexBuffer(4 * 16 * count, BufferUsage.Dynamic, null);
 
 			using (GorgonDataStream stream = new GorgonDataStream(count * 6 * 4))
 			{
@@ -257,7 +254,7 @@ namespace GorgonLibrary.Graphics
 			info.Format = GI.Format.B8G8R8A8_UNorm;
 			info.Height = 0;
 			info.Width = 0;
-			info.MipFilter = D3D.FilterFlags.None;
+			info.MipFilter = D3D.FilterFlags.Point;
 			info.MipLevels = 1;
 			info.OptionFlags = D3D.ResourceOptionFlags.None;
 			info.Usage = D3D.ResourceUsage.Default;
@@ -273,22 +270,6 @@ namespace GorgonLibrary.Graphics
 			_textureView2 = new D3D.ShaderResourceView(_device, _texture2);
 			_textureView2.DebugName = _swapChain.Name + " Test texture view 2.";
 
-			//D3D.SamplerStateDescription sampleDesc = new D3D.SamplerStateDescription();
-			//sampleDesc.AddressU = D3D.TextureAddressMode.Clamp;
-			//sampleDesc.AddressV = D3D.TextureAddressMode.Clamp;
-			//sampleDesc.AddressW = D3D.TextureAddressMode.Clamp;
-			//sampleDesc.BorderColor = System.Drawing.Color.Black;
-			//sampleDesc.ComparisonFunction = D3D.Comparison.Never;
-			//sampleDesc.Filter = D3D.Filter.MinMagMipLinear;
-			//sampleDesc.MaximumAnisotropy = 16;
-			//sampleDesc.MaximumLod = 3.402823466e+38f;
-			//sampleDesc.MinimumLod = 0;
-			//sampleDesc.MipLodBias = 0.0f;
-
-			//_sampler = new D3D.SamplerState(_device, sampleDesc);
-			//_sampler.DebugName = _swapChain + " Test sampler";
-
-			_binding = new D3D.VertexBufferBinding(_vertices.D3DVertexBuffer, vertexSize, 0);
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
 
 			MatrixBuffer matrix = new MatrixBuffer();
@@ -315,72 +296,6 @@ namespace GorgonLibrary.Graphics
 			updatebuffer.World = Matrix.Identity;
 			updatebuffer.Alpha = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 			
-			//_noChangeBuffer = _graphics.CreateConstantBuffer<MatrixBuffer>(matrix, false);
-			//_noChangeBuffer = _graphics.CreateConstantBuffer(Native.DirectAccess.SizeOf<CBufferTest>(), true);
-			//_noChangeBuffer = _graphics.CreateConstantBuffer(Native.DirectAccess.SizeOf<CBufferTest>(), false);
-			//_changeBuffer = _graphics.CreateConstantBuffer<UpdateBuffer>(updatebuffer, false);			
-
-			//CBufferTest value = new CBufferTest()
-			//{
-			//    first = new Vector4(0.0f, 1.0f, 0.0f, 0.0f),
-			//    second = new Vector4(0.0f, 0.0f, 0.0f, 1.0f)
-			//};
-			//_noChangeBuffer = _graphics.CreateConstantBuffer(value, false);
-			//using (var myStream = _noChangeBuffer.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
-			//{
-			//    myStream.Write(value);
-			//}
-			//_noChangeBuffer.Unlock();
-
-			//value.second = Vector4.UnitY;
-			//using (GorgonDataStream gstream = GorgonDataStream.ValueTypeToStream(value))
-			//{				
-			//    _noChangeBuffer.UpdateData(gstream);
-			//}
-
-			
-			//using (GorgonConstantBufferStream stream = _noChangeBuffer.Lock())
-			//{
-			//    stream.Write<Matrix>("Projection", matrix.Projection);
-			//    stream.Write<Matrix>("View", matrix.View);
-			//    stream.WriteRange<Vector4D>("Array", matrix.Array);
-			//}
-
-			//using (DataStream noChangeStream = new DataStream(Marshal.SizeOf(typeof(MatrixBuffer)), true, true))
-			//{
-			//    noChangeStream.Write<MatrixBuffer>(matrix);
-			//    noChangeStream.Position = 0;
-			//    _noChangeBuffer = new D3D.Buffer(_device, noChangeStream, new D3D.BufferDescription()
-			//        {
-			//            BindFlags = D3D.BindFlags.ConstantBuffer,
-			//            CpuAccessFlags = D3D.CpuAccessFlags.None,
-			//            OptionFlags = D3D.ResourceOptionFlags.None,
-			//            SizeInBytes = Marshal.SizeOf(typeof(MatrixBuffer)),
-			//            StructureByteStride = 0,
-			//            Usage = D3D.ResourceUsage.Default
-			//        });
-			//    _noChangeBuffer.DebugName = _swapChain.Name + " Test No Change buffer";
-			//}
-		
-			//_changeStream = new DataStream(Marshal.SizeOf(typeof(UpdateBuffer)), true, true);
-			//_changeStream.Write<UpdateBuffer>(updatebuffer);
-			//_changeStream.Position = 0;
-
-			//_changeBuffer = new D3D.Buffer(_device, _changeStream, new D3D.BufferDescription()
-			//{
-			//    BindFlags = D3D.BindFlags.ConstantBuffer,
-			//    CpuAccessFlags = D3D.CpuAccessFlags.None,
-			//    OptionFlags = D3D.ResourceOptionFlags.None,
-			//    SizeInBytes = Marshal.SizeOf(typeof(UpdateBuffer)),
-			//    StructureByteStride = 0,
-			//    Usage = D3D.ResourceUsage.Default
-			//});
-			//_changeBuffer.DebugName = _swapChain.Name + " Test Change buffer";
-			
-			//_changeStream.Position = 0;
-			//_device.ImmediateContext.UpdateSubresource(new DataBox(_changeStream.DataPointer, 0, 0), _changeBuffer, 0);
-
-			//_depthStateAlpha = _graphics.CreateDepthStencilState();
 			_depthStateAlpha.IsDepthEnabled = false;
 			_depthStateAlpha.IsDepthWriteEnabled = false;
 
@@ -391,18 +306,40 @@ namespace GorgonLibrary.Graphics
 			//_graphics.VertexShader.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
 			//_graphics.VertexShader.ConstantBuffers[0] = _graphics.PixelShader.ConstantBuffers[0] = _noChangeBuffer;
 
-			_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
+			//_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
 			//_graphics.PixelShader.Samplers[1] = GorgonTextureSamplerStates.DefaultStates;
 
+			//using (GorgonDataStream stream = new GorgonDataStream(count * layout.GetSlotSize(2) * 4))
+			//{
+			//    for (int i = 0; i < (count * 4); i+=4)
+			//    {					
+			//        stream.Write(_sprite[i].UV);
+			//        stream.Write(_sprite[i + 1].UV);
+			//        stream.Write(_sprite[i + 2].UV);
+			//        stream.Write(_sprite[i + 3].UV);
+			//        //stream.Position += 32;
+			//    }
+			//    stream.Position = 0;
+				
+			//    _uvs = _graphics.CreateVertexBuffer((int)stream.Length, BufferUsage.Immutable, stream);
+			//}
+
+			//_cols = _graphics.CreateVertexBuffer(layout.GetSlotSize(1) * count * 4, BufferUsage.Dynamic);
+
 			_device.ImmediateContext.OutputMerger.SetTargets((_swapChain.DepthStencil != null ? _swapChain.DepthStencil.D3DDepthStencilView : null), _swapChain.D3DRenderTarget);
+			_binding = new D3D.VertexBufferBinding(_vertices.D3DVertexBuffer, vertexSize, 0);
+			//_binding2 = new D3D.VertexBufferBinding(_cols.D3DVertexBuffer, layout.GetSlotSize(1), 0);
+			//_binding3 = new D3D.VertexBufferBinding(_uvs.D3DVertexBuffer, layout.GetSlotSize(2), 0);
 			_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
+			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(1, _binding2);
+			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(2, _binding3);
 			_device.ImmediateContext.InputAssembler.SetIndexBuffer(_index.D3DIndexBuffer, GI.Format.R32_UInt, 0);
 			_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
 			//_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
 			pvw = matrix.valueType.value2 * matrix.Projection;
 
-			_sprite = new vertex[count * 4];
-			_tempStream = new GorgonDataStream(_sprite.Length * vertexSize);
+			//_tempStream = new GorgonDataStream(_sprite.Length * vertexSize);
+
 		}
 
 		/// <summary>
@@ -446,9 +383,9 @@ namespace GorgonLibrary.Graphics
 		public Test(GorgonSwapChain swapChain)
 		{
 			_swapChain = swapChain;
+			_sprite = new vertex[count * 4];
 
-			Gorgon.Log.Print("Test: Creating objects.", Diagnostics.GorgonLoggingLevel.Verbose);
-			Initialize();
+			Gorgon.Log.Print("Test: Creating objects.", Diagnostics.LoggingLevel.Verbose);
 
 			scale = new float[count];
 			scaleDelta = new float[count];
@@ -482,10 +419,30 @@ namespace GorgonLibrary.Graphics
 				aBounce[i] = false;
 				checker[i] = _rnd.Next(0, 100) > 50;
 				color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
+				pos[i].X = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
+				pos[i].Y = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
+
+				int spriteIndex = i * 4;
+				if (checker[i])
+				{
+					_sprite[spriteIndex].UV = new Vector2(0.503f, 0.0f);
+					_sprite[spriteIndex + 1].UV = new Vector2(1.0f, 0.0f);
+					_sprite[spriteIndex + 2].UV = new Vector2(0.503f, 0.5f);
+					_sprite[spriteIndex + 3].UV = new Vector2(1.0f, 0.5f);
+				}
+				else
+				{
+					_sprite[spriteIndex].UV = new Vector2(0.0f, 0.503f);
+					_sprite[spriteIndex + 1].UV = new Vector2(0.5f, 0.503f);
+					_sprite[spriteIndex + 2].UV = new Vector2(0.0f, 1.0f);
+					_sprite[spriteIndex + 3].UV = new Vector2(0.5f, 1.0f);
+				}
 			}
 
-
+			Initialize();
 		}
+
+		private bool _needsUpdate = true;
 				
 		/// <summary>
 		/// Transform.
@@ -579,7 +536,6 @@ namespace GorgonLibrary.Graphics
 			//if (frames == 0)
 			{
 
-				_bufferIndex = 0;
 				Matrix trans = Matrix.Identity;
 				Matrix world = Matrix.Identity;
 				for (int i = 0; i < count * 4; i += 4)
@@ -609,21 +565,6 @@ namespace GorgonLibrary.Graphics
 					_sprite[i + 2].Color = _sprite[i].Color;
 					_sprite[i + 3].Color = _sprite[i].Color;
 
-					if (checker[arrayindex])
-					{
-						_sprite[i].UV = new Vector2(0.503f, 0.0f);
-						_sprite[i + 1].UV = new Vector2(1.0f, 0.0f);
-						_sprite[i + 2].UV = new Vector2(0.503f, 0.5f);
-						_sprite[i + 3].UV = new Vector2(1.0f, 0.5f);
-					}
-					else
-					{
-						_sprite[i].UV = new Vector2(0.0f, 0.503f);
-						_sprite[i + 1].UV = new Vector2(0.5f, 0.503f);
-						_sprite[i + 2].UV = new Vector2(0.0f, 1.0f);
-						_sprite[i + 3].UV = new Vector2(0.5f, 1.0f);
-					}
-
 					_sprite[i].Position = Vector3.Transform(new Vector3(-0.1401f, 0.1401f, 0.0f), trans);						
 					_sprite[i + 1].Position = Vector3.Transform(new Vector3(0.1401f, 0.1401f, 0.0f), trans);
 					_sprite[i + 2].Position = Vector3.Transform(new Vector3(-0.1401f, -0.1401f, 0.0f), trans);
@@ -647,19 +588,14 @@ namespace GorgonLibrary.Graphics
 						Front = 0,
 						Back = 1
 					});*/
-				//vstream.Position = _bufferIndex;
-				using (GorgonDataStream vstream = _vertices.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
-				{
-					vstream.WriteRange(_sprite, 0, _sprite.Length);
-					_vertices.Unlock();
-				}
-
 				//frames = Int32.MaxValue;				
 			}
+
+			_needsUpdate = true;
 		}
 
-		int frames = 0;
-		int textPos = 0;
+		//int frames = 0;
+		//int textPos = 0;
 		float[] scale = null;
 		float[] scaleDelta = null;
 		Vector2[] pos = null;
@@ -680,6 +616,25 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Draw()
 		{
+			if (_needsUpdate)
+			{
+				using (GorgonDataStream vstream = _vertices.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
+				{
+					vstream.WriteRange(_sprite);
+					//using (GorgonDataStream cstream = _cols.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
+					//{
+					//    for (int i = 0; i < count * 4; i++)
+					//    {
+					//        vstream.Write(_sprite[i].Position);
+					//        cstream.Write(_sprite[i].Color);
+					//    }
+					//    _cols.Unlock();
+					    _vertices.Unlock();
+					//}
+				}
+				_needsUpdate = false;
+			}
+
 			_device.ImmediateContext.DrawIndexed(6 * count, 0, 0);
 		}
 
@@ -694,7 +649,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					Gorgon.Log.Print("Test: Destroy objects.", Diagnostics.GorgonLoggingLevel.Verbose);
+					Gorgon.Log.Print("Test: Destroy objects.", Diagnostics.LoggingLevel.Verbose);
 					Destroy();
 				}
 

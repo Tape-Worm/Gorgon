@@ -33,7 +33,7 @@ namespace GorgonLibrary.Diagnostics
 	/// <summary>
 	/// Enumeration containing the logging levels.
 	/// </summary>
-	public enum GorgonLoggingLevel
+	public enum LoggingLevel
 	{
 		/// <summary>This will disable the log file.</summary>
 		NoLogging = 0,
@@ -55,14 +55,14 @@ namespace GorgonLibrary.Diagnostics
 	{
 		#region Variables.
 		private StreamWriter _stream = null;								// File stream object.
-		private GorgonLoggingLevel _filterLevel = GorgonLoggingLevel.All;	// Logging filter.
+		private LoggingLevel _filterLevel = LoggingLevel.All;	// Logging filter.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the filtering level of this log.
 		/// </summary>
-		public GorgonLoggingLevel LogFilterLevel
+		public LoggingLevel LogFilterLevel
 		{
 			get
 			{
@@ -70,11 +70,11 @@ namespace GorgonLibrary.Diagnostics
 			}
 			set
 			{
-				if ((_filterLevel != value) && (value != GorgonLoggingLevel.NoLogging))
+				if ((_filterLevel != value) && (value != LoggingLevel.NoLogging))
 				{
-					Print(string.Empty, GorgonLoggingLevel.All);
-					Print("**** Log Filter Level: {0}", GorgonLoggingLevel.All, value);
-					Print(string.Empty, GorgonLoggingLevel.All);
+					Print(string.Empty, LoggingLevel.All);
+					Print("**** Log Filter Level: {0}", LoggingLevel.All, value);
+					Print(string.Empty, LoggingLevel.All);
 				}
 
 				_filterLevel = value;
@@ -116,15 +116,15 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="formatSpecifier">Format specifier for the line.</param>
 		/// <param name="level">Level that this message falls under.</param>
 		/// <param name="arguments">List of optional arguments.</param>
-		public void Print(string formatSpecifier, GorgonLoggingLevel level, params object[] arguments)
+		public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
 		{
-			if (((LogFilterLevel == GorgonLoggingLevel.NoLogging) && (level != GorgonLoggingLevel.All)) || (IsClosed))
+			if (((LogFilterLevel == LoggingLevel.NoLogging) && (level != LoggingLevel.All)) || (IsClosed))
 				return;
 
 			StringBuilder outputLine = new StringBuilder(512);			// Output string 
 			string[] lines = null;										// List of lines.
 
-			if ((level <= LogFilterLevel) || (level == GorgonLoggingLevel.All))
+			if ((level <= LogFilterLevel) || (level == LoggingLevel.All))
 			{
 				if (string.IsNullOrEmpty(formatSpecifier) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
 				{
@@ -159,8 +159,8 @@ namespace GorgonLibrary.Diagnostics
 			if (!IsClosed)
 			{
 				// Clean up.
-				Print(string.Empty, GorgonLoggingLevel.All);
-				Print("**** {0} (Version {1}) logging ends. ****", GorgonLoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
+				Print(string.Empty, LoggingLevel.All);
+				Print("**** {0} (Version {1}) logging ends. ****", LoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
 
 				if (_stream != null)
 				{
@@ -190,10 +190,10 @@ namespace GorgonLibrary.Diagnostics
 				_stream.Flush();
 
 				IsClosed = false;
-				Print("**** {0} (Version {1}) logging begins ****", GorgonLoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
-				if (LogFilterLevel != GorgonLoggingLevel.NoLogging)
-					Print("**** Log Filter Level: {0}", GorgonLoggingLevel.All, LogFilterLevel);
-				Print(string.Empty, GorgonLoggingLevel.All);
+				Print("**** {0} (Version {1}) logging begins ****", LoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
+				if (LogFilterLevel != LoggingLevel.NoLogging)
+					Print("**** Log Filter Level: {0}", LoggingLevel.All, LogFilterLevel);
+				Print(string.Empty, LoggingLevel.All);
 			}
 		}
 		#endregion

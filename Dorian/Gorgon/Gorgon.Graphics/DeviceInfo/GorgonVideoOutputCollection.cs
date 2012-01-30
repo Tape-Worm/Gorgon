@@ -59,31 +59,31 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to retrieve the outputs for an adapter.
 		/// </summary>
-		public void Refresh()
+		internal void Refresh(SharpDX.Direct3D11.Device device)
 		{
 			int outputCount = _videoDevice.GIAdapter.GetOutputCount();
 
 			ClearOutputs();
 
-			Gorgon.Log.Print("Retrieving outputs for video device '{0}'...", Diagnostics.GorgonLoggingLevel.Simple, _videoDevice.Name);
+			Gorgon.Log.Print("Retrieving outputs for video device '{0}'...", Diagnostics.LoggingLevel.Simple, _videoDevice.Name);
 
 			for (int i = 0; i < outputCount; i++)
 			{
 				GorgonVideoOutput output = new GorgonVideoOutput(_videoDevice, _videoDevice.GIAdapter.GetOutput(i));
 				_outputs.Add(output);
 
-				Gorgon.Log.Print("Found output {0}.", Diagnostics.GorgonLoggingLevel.Simple, output.Name);
-				Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
-				Gorgon.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", Diagnostics.GorgonLoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
-				Gorgon.Log.Print("Monitor handle: 0x{0}", Diagnostics.GorgonLoggingLevel.Verbose, output.Handle.FormatHex());
-				Gorgon.Log.Print("Attached to desktop: {0}", Diagnostics.GorgonLoggingLevel.Verbose, output.IsAttachedToDesktop);
-				Gorgon.Log.Print("Monitor rotation: {0}\u00B0", Diagnostics.GorgonLoggingLevel.Verbose, output.Rotation);
-				Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
+				Gorgon.Log.Print("Found output {0}.", Diagnostics.LoggingLevel.Simple, output.Name);
+				Gorgon.Log.Print("===================================================================", Diagnostics.LoggingLevel.Verbose);
+				Gorgon.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", Diagnostics.LoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
+				Gorgon.Log.Print("Monitor handle: 0x{0}", Diagnostics.LoggingLevel.Verbose, output.Handle.FormatHex());
+				Gorgon.Log.Print("Attached to desktop: {0}", Diagnostics.LoggingLevel.Verbose, output.IsAttachedToDesktop);
+				Gorgon.Log.Print("Monitor rotation: {0}\u00B0", Diagnostics.LoggingLevel.Verbose, output.Rotation);
+				Gorgon.Log.Print("===================================================================", Diagnostics.LoggingLevel.Verbose);
 
-				output.VideoModes.Refresh();
+				output.VideoModes.Refresh(device);
 			}
 
-			Gorgon.Log.Print("Found {0} outputs for video device '{1}'.", Diagnostics.GorgonLoggingLevel.Simple, _outputs.Count, _videoDevice.Name);
+			Gorgon.Log.Print("Found {0} outputs for video device '{1}'.", Diagnostics.LoggingLevel.Simple, _outputs.Count, _videoDevice.Name);
 		}
 		#endregion
 

@@ -48,12 +48,13 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to retrieve the video mode list.
 		/// </summary>
-		public void Refresh()
+		/// <param name="d3dDevice">Direct 3D device instance to use.</param>
+		internal void Refresh(D3D.Device d3dDevice)
 		{
 			IList<BufferFormat> formats = Enum.GetValues(typeof(BufferFormat)) as IList<BufferFormat>;
 
-			Gorgon.Log.Print("Retrieving video modes for output '{0}'...", Diagnostics.GorgonLoggingLevel.Simple, _output.Name);
-			Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
+			Gorgon.Log.Print("Retrieving video modes for output '{0}'...", Diagnostics.LoggingLevel.Simple, _output.Name);
+			Gorgon.Log.Print("===================================================================", Diagnostics.LoggingLevel.Verbose);
 
 			foreach (var format in formats)
 			{				
@@ -63,18 +64,18 @@ namespace GorgonLibrary.Graphics
 				{
 					foreach (var mode in modes)
 					{
-						if (_output.VideoDevice.SupportsDisplayFormat((BufferFormat)mode.Format))
+						if ((d3dDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Display) == D3D.FormatSupport.Display)
 						{
 							GorgonVideoMode videoMode = GorgonVideoMode.Convert(mode);
 							_modes.Add(videoMode);
-							Gorgon.Log.Print("Mode: {0}x{1}, Format: {2}, Refresh Rate: {3}/{4}", Diagnostics.GorgonLoggingLevel.Verbose, videoMode.Width, videoMode.Height, videoMode.Format, videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator);
+							Gorgon.Log.Print("Mode: {0}x{1}, Format: {2}, Refresh Rate: {3}/{4}", Diagnostics.LoggingLevel.Verbose, videoMode.Width, videoMode.Height, videoMode.Format, videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator);
 						}
 					}
 				}
 			}
 
-			Gorgon.Log.Print("===================================================================", Diagnostics.GorgonLoggingLevel.Verbose);
-			Gorgon.Log.Print("Found {0} video modes for output '{1}'.", Diagnostics.GorgonLoggingLevel.Simple, _modes.Count, _output.Name);
+			Gorgon.Log.Print("===================================================================", Diagnostics.LoggingLevel.Verbose);
+			Gorgon.Log.Print("Found {0} video modes for output '{1}'.", Diagnostics.LoggingLevel.Simple, _modes.Count, _output.Name);
 		}
 		#endregion
 

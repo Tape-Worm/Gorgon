@@ -230,7 +230,7 @@ namespace GorgonLibrary.Input.WinForms
 		internal WinFormsPointingDevice(GorgonWinFormsInputFactory owner, Forms.Control boundWindow)
 			: base(owner, "Win Forms Mouse", boundWindow)
 		{			
-			Gorgon.Log.Print("Raw input pointing device interface created.", GorgonLoggingLevel.Verbose);
+			Gorgon.Log.Print("Raw input pointing device interface created.", LoggingLevel.Verbose);
 
 			// Default the position to the current screen position.
 			Position = BoundControl.PointToClient(Forms.Cursor.Position);

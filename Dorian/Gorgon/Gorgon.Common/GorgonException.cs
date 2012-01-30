@@ -68,7 +68,7 @@ namespace GorgonLibrary
 		/// <param name="stack">Stack trace to format.</param>
 		/// <param name="indicator">Inner exception indicator.</param>
 		/// <param name="logLevel">Logging level to use.</param>
-		private static void FormatStackTrace(string stack, string indicator, GorgonLoggingLevel logLevel)
+		private static void FormatStackTrace(string stack, string indicator, LoggingLevel logLevel)
 		{
 			string[] lines = null;		// List of lines.
 
@@ -99,7 +99,7 @@ namespace GorgonLibrary
 		/// <param name="message">Message to format.</param>
 		/// <param name="indicator">Inner exception indicator.</param>
 		/// <param name="logLevel">Logging level to use.</param>
-		private static void FormatMessage(string message, string indicator, GorgonLoggingLevel logLevel)
+		private static void FormatMessage(string message, string indicator, LoggingLevel logLevel)
 		{
 			string[] lines = null;		// List of lines.
 
@@ -133,65 +133,65 @@ namespace GorgonLibrary
 			if (ex == null)
 				return;
 
-			Log.Print("", GorgonLoggingLevel.All);
-			Log.Print("================================================", GorgonLoggingLevel.All);
-			Log.Print("\tEXCEPTION!!", GorgonLoggingLevel.All);
-			Log.Print("================================================", GorgonLoggingLevel.All);
+			Log.Print("", LoggingLevel.All);
+			Log.Print("================================================", LoggingLevel.All);
+			Log.Print("\tEXCEPTION!!", LoggingLevel.All);
+			Log.Print("================================================", LoggingLevel.All);
 
 			inner = ex;
 			while (inner != null)
 			{
 				GorgonException gorgonException = inner as GorgonException;
 
-				FormatMessage(inner.Message, indicator, (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose);
-				Log.Print("{1}Type: {0}", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, inner.GetType().FullName, indicator);
+				FormatMessage(inner.Message, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
+				Log.Print("{1}Type: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator);
 				if (inner.Source != null)
-					Log.Print("{1}Source: {0}", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, inner.Source, indicator);
+					Log.Print("{1}Source: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator);
 				if (inner.TargetSite != null)
-					Log.Print("{1}Target site: {0}", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
+					Log.Print("{1}Target site: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
 				if (gorgonException != null)
-					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose, gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
+					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
 
 				System.Collections.IDictionary extraInfo = inner.Data;
 
 				// Print custom information.
 				if ((extraInfo != null) && (extraInfo.Count > 0))
 				{
-					Log.Print("{0}", GorgonLoggingLevel.Verbose, indicator);
-					Log.Print("{0}Custom Information:", GorgonLoggingLevel.Verbose, indicator);
-					Log.Print("{0}------------------------------------------------------------", GorgonLoggingLevel.Verbose, indicator);
+					Log.Print("{0}", LoggingLevel.Verbose, indicator);
+					Log.Print("{0}Custom Information:", LoggingLevel.Verbose, indicator);
+					Log.Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
 					foreach (System.Collections.DictionaryEntry item in extraInfo)
 					{
 						if ((item.Value != null) && (item.Key != null))
-							Log.Print("{0}{1}:  {2}", GorgonLoggingLevel.Verbose, indicator, item.Key, item.Value);
+							Log.Print("{0}{1}:  {2}", LoggingLevel.Verbose, indicator, item.Key, item.Value);
 					}
-					Log.Print("{0}------------------------------------------------------------", GorgonLoggingLevel.Verbose, indicator);
-					Log.Print("{0}", GorgonLoggingLevel.Verbose, indicator);
+					Log.Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
+					Log.Print("{0}", LoggingLevel.Verbose, indicator);
 				}
 				
-				FormatStackTrace(inner.StackTrace, indicator, (inner == ex) ? GorgonLoggingLevel.All : GorgonLoggingLevel.Verbose);
+				FormatStackTrace(inner.StackTrace, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
 				
 				if (inner.InnerException != null)
 				{
 					if (indicator != string.Empty)
 					{
-						Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, branch + "|->   ");
+						Log.Print("{0}================================================================================================", LoggingLevel.Verbose, branch + "|->   ");
 						branch += "  ";
 						indicator = branch + "|   ";
 					}
 					else
 					{
-						Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, branch + "|-> ");
+						Log.Print("{0}================================================================================================", LoggingLevel.Verbose, branch + "|-> ");
 						indicator = "|   ";
 					}
 										
-					Log.Print("{0}  Inner exception from \"{1}\"", GorgonLoggingLevel.Verbose, indicator, inner.Message);
-					Log.Print("{0}================================================================================================", GorgonLoggingLevel.Verbose, indicator);
+					Log.Print("{0}  Inner exception from \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message);
+					Log.Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
 				}
 
 				inner = inner.InnerException;
 			}
-			Log.Print("", GorgonLoggingLevel.All);			
+			Log.Print("", LoggingLevel.All);			
 		}
 
 		/// <summary>

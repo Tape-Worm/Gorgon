@@ -52,16 +52,16 @@ namespace GorgonLibrary.PlugIns
 			if ((assemblies == null) || (assemblies.Length == 0))
 				return;
 
-			Gorgon.Log.Print("Assembly list is empty.  Retrieving assembly list...", Diagnostics.GorgonLoggingLevel.Verbose);
+			Gorgon.Log.Print("Assembly list is empty.  Retrieving assembly list...", Diagnostics.LoggingLevel.Verbose);
 			foreach (Assembly assembly in assemblies)
 			{
 				if (!_assemblies.ContainsKey(assembly.FullName))
 				{
 					_assemblies.Add(assembly.FullName, assembly);
-					Gorgon.Log.Print("Added Assembly '{0}' from {1}", Diagnostics.GorgonLoggingLevel.Verbose, assembly.FullName, assembly.EscapedCodeBase);
+					Gorgon.Log.Print("Added Assembly '{0}' from {1}", Diagnostics.LoggingLevel.Verbose, assembly.FullName, assembly.EscapedCodeBase);
 				}
 			}
-			Gorgon.Log.Print("{0} assemblies available.", Diagnostics.GorgonLoggingLevel.Verbose, _assemblies.Count);
+			Gorgon.Log.Print("{0} assemblies available.", Diagnostics.LoggingLevel.Verbose, _assemblies.Count);
 		}
 
 		/// <summary>
@@ -78,17 +78,17 @@ namespace GorgonLibrary.PlugIns
 
 			if (_assemblies.ContainsKey(assemblyName.FullName))
 			{
-				Gorgon.Log.Print("Plug-in assembly '{0}' from {1} is already loaded.  Using this assembly.", Diagnostics.GorgonLoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
+				Gorgon.Log.Print("Plug-in assembly '{0}' from {1} is already loaded.  Using this assembly.", Diagnostics.LoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
 				return _assemblies[assemblyName.FullName];
 			}
 
-			Gorgon.Log.Print("Loading plug-in assembly '{0}' from {1}", Diagnostics.GorgonLoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
+			Gorgon.Log.Print("Loading plug-in assembly '{0}' from {1}", Diagnostics.LoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
 			assembly = Assembly.Load(assemblyName);
 
 			if (!_assemblies.ContainsKey(assembly.FullName))
 				_assemblies.Add(assembly.FullName, assembly);
 
-			Gorgon.Log.Print("Plug-in assembly '{0}' loaded successfully.", Diagnostics.GorgonLoggingLevel.Simple, assemblyName.FullName);
+			Gorgon.Log.Print("Plug-in assembly '{0}' loaded successfully.", Diagnostics.LoggingLevel.Simple, assemblyName.FullName);
 
 			return assembly;
 		}

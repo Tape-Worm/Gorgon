@@ -262,14 +262,14 @@ namespace GorgonLibrary.Graphics
 		{
 			if (_internalDepthStencil != null)
 			{
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing internal depth stencil...", GorgonLoggingLevel.Verbose, Name);
+				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing internal depth stencil...", LoggingLevel.Verbose, Name);
 				_internalDepthStencil.Dispose();
 				_internalDepthStencil = null;
 			}
 
 			if (D3DRenderTarget != null)
 			{
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing D3D11 render target view...", Diagnostics.GorgonLoggingLevel.Intermediate, Name);
+				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
 				D3DRenderTarget.Dispose();
 			}
 
@@ -286,7 +286,7 @@ namespace GorgonLibrary.Graphics
 			if (D3DRenderTarget != null)
 				ReleaseResources();
 
-			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", Diagnostics.GorgonLoggingLevel.Intermediate, Name);
+			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
 
 			try
 			{
@@ -298,7 +298,7 @@ namespace GorgonLibrary.Graphics
 				// Create a depth buffer if we've requested one.
 				if (Settings.DepthStencilFormat != BufferFormat.Unknown)
 				{
-					Gorgon.Log.Print("GorgonSwapChain '{0}': Creating internal depth/stencil...", Diagnostics.GorgonLoggingLevel.Verbose, Name);
+					Gorgon.Log.Print("GorgonSwapChain '{0}': Creating internal depth/stencil...", Diagnostics.LoggingLevel.Verbose, Name);
 
 					GorgonDepthStencilSettings settings = new GorgonDepthStencilSettings {
 						Format = Settings.DepthStencilFormat,
@@ -394,12 +394,12 @@ namespace GorgonLibrary.Graphics
 			{
 				if (sdEx.ResultCode == (int)GI.DXGIStatus.ModeChangeInProgress)
 				{
-					Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", GorgonLoggingLevel.All, Name);
+					Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", LoggingLevel.All, Name);
 				}
 				else
 				{
 					if (sdEx.ResultCode.Code == GI.DXGIError.NotCurrentlyAvailable)
-						Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .", GorgonLoggingLevel.All, Name);
+						Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .", LoggingLevel.All, Name);
 					else
 						throw sdEx;
 				}
@@ -422,7 +422,7 @@ namespace GorgonLibrary.Graphics
 
 			ReleaseResources();
 
-			Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.GorgonLoggingLevel.Simple, Name);
+			Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
 			if (GISwapChain != null)
 			{
 				// Always go to windowed mode before destroying the swap chain.
@@ -466,8 +466,7 @@ namespace GorgonLibrary.Graphics
 			monitor = Win32API.GetMonitor(settings.Window);		// Get the monitor that the window is on.
 
 			// Find the video output for the window.
-			output = (from videoDevice in graphics.VideoDevices
-					  from videoOutput in videoDevice.Outputs
+			output = (from videoOutput in graphics.VideoDevice.Outputs
 					  where videoOutput.Handle == monitor
 					  select videoOutput).SingleOrDefault();
 
@@ -573,7 +572,7 @@ namespace GorgonLibrary.Graphics
 			if ((Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
 				d3dSettings.Usage |= GI.Usage.ShaderInput;
 
-			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", Diagnostics.GorgonLoggingLevel.Simple, Name);
+			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
 			GISwapChain = new GI.SwapChain(Graphics.GIFactory, Graphics.VideoDevice.D3DDevice, d3dSettings);
 			GISwapChain.DebugName = Name + " DXGISwapChain";
 
