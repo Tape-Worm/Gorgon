@@ -91,10 +91,10 @@ namespace GorgonLibrary.Graphics
 				long position = value.Position;
 
 				using (DX.DataStream dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
-					D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, dxStream, desc);
+					D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
 			}
 			else
-				D3DBuffer = new D3D.Buffer(Graphics.VideoDevice.D3DDevice, desc);
+				D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, desc);
 
 #if DEBUG
 			D3DBuffer.DebugName = "Gorgon Constant Buffer #" + Graphics.TrackedObjects.Count(item => item is GorgonConstantBuffer).ToString();
@@ -139,8 +139,8 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					// If we're bound with a pixel or vertex shader, then unbind.
-					Graphics.VertexShader.ConstantBuffers.Unbind(this);
-					Graphics.PixelShader.ConstantBuffers.Unbind(this);
+					Graphics.Shaders.VertexShader.ConstantBuffers.Unbind(this);
+					Graphics.Shaders.PixelShader.ConstantBuffers.Unbind(this);
 
 					if (IsLocked)
 						Unlock();

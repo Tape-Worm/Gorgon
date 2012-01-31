@@ -65,8 +65,8 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					// Disassociate any shaders after we've destroyed them.
-					if (Graphics.PixelShader.Current == this)
-						Graphics.PixelShader.Current = null;
+					if (Graphics.Shaders.PixelShader.Current == this)
+						Graphics.Shaders.PixelShader.Current = null;
 
 					if (D3DShader != null)
 						D3DShader.Dispose();
@@ -87,7 +87,7 @@ namespace GorgonLibrary.Graphics
 			if (D3DShader != null)
 				D3DShader.Dispose();
 
-			D3DShader = new D3D.PixelShader(Graphics.VideoDevice.D3DDevice, byteCode, null);
+			D3DShader = new D3D.PixelShader(Graphics.D3DDevice, byteCode, null);
 			D3DShader.DebugName = "Gorgon Pixel Shader '" + Name + "'";			
 		}
 		#endregion

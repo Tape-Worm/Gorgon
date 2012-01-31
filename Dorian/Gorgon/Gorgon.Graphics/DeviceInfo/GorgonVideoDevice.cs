@@ -122,9 +122,9 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the Direct3D device object assigned to this video device.
+		/// Property to set or return the graphics interface bound with this device.
 		/// </summary>
-		internal D3D.Device D3DDevice
+		internal GorgonGraphics Graphics
 		{
 			get;
 			set;
@@ -345,9 +345,9 @@ namespace GorgonLibrary.Graphics
 		private void GetDevice()
 		{
 			// If we've assigned a device externally, then return it.
-			if (D3DDevice != null)
+			if ((Graphics != null) && (Graphics.D3DDevice != null))
 			{
-				_tempDevice = D3DDevice;
+				_tempDevice = Graphics.D3DDevice;
 				return;
 			}
 
@@ -359,7 +359,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ReleaseTempDevice()
 		{
-			if ((_tempDevice != null) && (_tempDevice != D3DDevice))
+			if ((_tempDevice != null) && (Graphics != null) && (_tempDevice != Graphics.D3DDevice))
 				_tempDevice.Dispose();
 			_tempDevice = null;
 		}
@@ -479,7 +479,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				GetDevice();
-				return D3DDevice.CheckMultisampleQualityLevels((GI.Format)format, count);
+				return _tempDevice.CheckMultisampleQualityLevels((GI.Format)format, count);
 			}
 			finally
 			{
@@ -516,7 +516,7 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					// If we've assigned a device object externally, then do not destroy this object.
-					if (D3DDevice != null)
+					if (Graphics != null)
 						return;
 
 					if (GIFactory != null)
@@ -539,7 +539,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				_tempDevice = null;
-				D3DDevice = null;
+				Graphics = null;
 				GIFactory = null;
 				GIAdapter = null;
 				_disposed = true;
@@ -552,7 +552,7 @@ namespace GorgonLibrary.Graphics
 		void IDisposable.Dispose()
 		{
 			Dispose(true);
-			if (D3DDevice == null)
+			if (Graphics == null)
 				GC.SuppressFinalize(this);
 		}
 		#endregion
@@ -567,9 +567,9 @@ namespace GorgonLibrary.Graphics
 			{
 				switch(VideoDeviceType)
 				{
-					case Graphics.VideoDeviceType.ReferenceRasterizer:
+					case VideoDeviceType.ReferenceRasterizer:
 						return "Reference rasterizer";
-					case Graphics.VideoDeviceType.Software:
+					case VideoDeviceType.Software:
 						return "WARP software rasterizer";
 					default:
 						return GIAdapter.Description1.Description;

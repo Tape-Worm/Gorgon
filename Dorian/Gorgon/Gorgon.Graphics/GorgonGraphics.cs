@@ -131,11 +131,11 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 #if DEBUG
-				if ((VideoDevice == null) || (VideoDevice.D3DDevice == null))
+				if (D3DDevice == null)
 					return null;
 #endif
 
-				return VideoDevice.D3DDevice.ImmediateContext;
+				return D3DDevice.ImmediateContext;
 			}
 		}
 
@@ -147,7 +147,7 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
-		
+					
 		/// <summary>
 		/// Property to set or return whether DWM composition is enabled or not.
 		/// </summary>
@@ -180,9 +180,22 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the input bindings.
+		/// Property to return the input geometry interface.
 		/// </summary>
-		public GorgonInputBindings InputBindings
+		/// <remarks>
+		/// The input interface covers items such as the vertex buffer, index buffer, bindings of the aforementioned buffers, the primitive type, etc...
+		/// </remarks>
+		public GorgonInputGeometry InputGeometry
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the shader interface.
+		/// </summary>
+		/// <remarks>This is used to create shaders, create constant buffers and bind them to the pipeline.</remarks>
+		public GorgonShaderBinding Shaders
 		{
 			get;
 			private set;
@@ -210,24 +223,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the current depth/stencil states.
 		/// </summary>
 		public GorgonDepthStencilRenderState DepthStencil
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the current vertex shader states.
-		/// </summary>
-		public GorgonVertexShaderState VertexShader
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the current vertex shader states.
-		/// </summary>
-		public GorgonPixelShaderState PixelShader
 		{
 			get;
 			private set;
@@ -286,10 +281,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void DestroyStates()
 		{
-			if (PixelShader != null)
-				PixelShader.Dispose();
-			if (VertexShader != null)
-				VertexShader.Dispose();
+			if (Shaders != null)
+				Shaders.Dispose();
+			Shaders = null;
 
 			if (Rasterizer != null)
 				((IDisposable)Rasterizer).Dispose();
@@ -304,9 +298,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateDefaultStates()
 		{
-			InputBindings = new GorgonInputBindings(this);
-			VertexShader = new GorgonVertexShaderState(this);
-			PixelShader = new GorgonPixelShaderState(this);
 
 			Rasterizer = new GorgonRasterizerRenderState(this);
 			Rasterizer.States = GorgonRasterizerStates.DefaultStates;
@@ -337,299 +328,6 @@ namespace GorgonLibrary.Graphics
 		internal void RemoveTrackedObject(IDisposable trackedObject)
 		{
 			TrackedObjects.Remove(trackedObject);
-		}
-
-		/// <summary>
-		/// Function to create an input layout object.
-		/// </summary>
-		/// <param name="name">Name of the input layout.</param>
-		/// <param name="shader">The shader that holds the input layout signature.</param>
-		/// <returns>The input layout object to create.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when then name parameter is an empty string.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
-		/// </exception>
-		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
-		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
-		/// </remarks>
-		public GorgonInputLayout CreateInputLayout(string name, GorgonShader shader)
-		{
-			GorgonInputLayout layout = null;
-
-			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
-			layout = new GorgonInputLayout(this, name, shader);
-
-			TrackedObjects.Add(layout);
-			return layout;
-		}
-
-		/// <summary>
-		/// Function to create an input layout object from a predefined type.
-		/// </summary>
-		/// <param name="name">Name of the input layout.</param>
-		/// <param name="type">Type to evaluate.</param>
-		/// <param name="shader">The shader that holds the input layout signature.</param>
-		/// <returns>The input layout object to create.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when then <paramref name="name"/> parameter is an empty string.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="type"/> parameter is NULL.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the name parameter is NULL.</para>
-		/// </exception>
-		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
-		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
-		/// </remarks>
-		public GorgonInputLayout CreateInputLayout(string name, Type type, GorgonShader shader)
-		{
-			GorgonInputLayout layout = null;
-
-			GorgonDebug.AssertNull<Type>(type, "type");
-			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
-
-			layout = new GorgonInputLayout(this, name, shader);
-			layout.GetLayoutFromType(type);
-
-			TrackedObjects.Add(layout);
-
-			return layout;
-		}
-
-
-		/// <summary>
-		/// Function to create a constant buffer.
-		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
-		/// <returns>A new constant buffer.</returns>
-		public GorgonConstantBuffer CreateConstantBuffer(int size, bool allowCPUWrite)
-		{
-			GorgonConstantBuffer buffer = new GorgonConstantBuffer(this, size, allowCPUWrite);
-			buffer.Initialize(null);
-
-			TrackedObjects.Add(buffer);
-			return buffer;
-		}
-
-		/// <summary>
-		/// Function to create a constant buffer and initializes it with data.
-		/// </summary>
-		/// <typeparam name="T">Type of data to pass to the constant buffer.</typeparam>
-		/// <param name="value">Value to write to the buffer</param>
-		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
-		/// <returns>A new constant buffer.</returns>
-		public GorgonConstantBuffer CreateConstantBuffer<T>(T value, bool allowCPUWrite)
-			where T : struct
-		{
-			using (GorgonDataStream stream = GorgonDataStream.ValueTypeToStream<T>(value))
-			{
-				GorgonConstantBuffer buffer = new GorgonConstantBuffer(this, (int)stream.Length, allowCPUWrite);
-				buffer.Initialize(stream);
-
-				TrackedObjects.Add(buffer);
-				return buffer;
-			}
-		}
-
-		/// <summary>
-		/// Function to create a index buffer.
-		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <returns>A new index buffer.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging or Immutable.
-		/// </exception>
-		public GorgonIndexBuffer CreateIndexBuffer(int size, bool is32bit, BufferUsage usage)
-		{
-			if ((usage == BufferUsage.Staging) || (usage == BufferUsage.Immutable))
-				throw new ArgumentException("A index buffer cannot be used as a staging or immutable buffer.", "usage");
-
-			return CreateIndexBuffer(size, usage, is32bit, null);
-		}
-
-		/// <summary>
-		/// Function to create a index buffer.
-		/// </summary>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
-		/// <param name="data">Data used to initialize the buffer.</param>
-		/// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
-		/// <returns>A new index buffer.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
-		/// <para>-or-</para>
-		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
-		/// </exception>
-		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer<T>(BufferUsage usage, bool is32bit, IList<T> data)
-			where T : struct
-		{
-			int size = data.Count * DirectAccess.SizeOf<T>();
-
-			using (GorgonDataStream dataStream = new GorgonDataStream(size))
-			{
-				for (int i = 0; i < data.Count; i++)
-					dataStream.Write<T>(data[i]);
-				dataStream.Position = 0;
-				return CreateIndexBuffer(size, usage, is32bit, dataStream);				
-			}
-		}
-
-		/// <summary>
-		/// Function to create a index buffer.
-		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
-		/// <param name="initialData">Initial data to populate the index buffer with.</param>
-		/// <returns>A new index buffer.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
-		/// <para>-or-</para>
-		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
-		/// </exception>
-		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32bit, GorgonDataStream initialData)
-		{
-			if (size < 1)
-				throw new ArgumentOutOfRangeException("size", "A index buffer needs at least 1 byte.");
-
-			if (usage == BufferUsage.Staging)
-				throw new ArgumentException("A index buffer cannot be used as a staging buffer.", "usage");
-
-			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
-				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
-
-			GorgonIndexBuffer buffer = new GorgonIndexBuffer(this, usage, size, is32bit);
-			buffer.Initialize(initialData);
-
-			TrackedObjects.Add(buffer);
-			return buffer;
-		}
-
-		/// <summary>
-		/// Function to create a vertex buffer.
-		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <returns>A new vertex buffer.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging or Immutable.
-		/// </exception>
-		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage)
-		{
-			if ((usage == BufferUsage.Staging) || (usage == BufferUsage.Immutable))
-				throw new ArgumentException("A vertex buffer cannot be used as a staging or immutable buffer.", "usage");
-
-			return CreateVertexBuffer(size, usage, null);
-		}
-
-		/// <summary>
-		/// Function to create a vertex buffer.
-		/// </summary>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="data">Data used to initialize the buffer.</param>
-		/// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
-		/// <returns>A new vertex buffer.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
-		/// <para>-or-</para>
-		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
-		/// </exception>
-		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonVertexBuffer CreateVertexBuffer<T>(BufferUsage usage, IList<T> data)
-			where T : struct
-		{
-			GorgonDebug.AssertNull<IList<T>>(data, "data");
-			int size = data.Count * DirectAccess.SizeOf<T>();
-
-			using (GorgonDataStream dataStream = new GorgonDataStream(size))
-			{
-				for (int i = 0; i < data.Count; i++)
-					dataStream.Write<T>(data[i]);
-				dataStream.Position = 0;
-				return CreateVertexBuffer(size, usage, dataStream);
-			}
-		}
-
-		/// <summary>
-		/// Function to create a vertex buffer.
-		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="initialData">Initial data to populate the vertex buffer with.</param>
-		/// <returns>A new vertex buffer.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
-		/// <para>-or-</para>
-		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
-		/// </exception>
-		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage, GorgonDataStream initialData)
-		{
-			if (size < 1)
-				throw new ArgumentOutOfRangeException("size", "A vertex buffer needs at least 1 byte.");
-
-			if (usage == BufferUsage.Staging)
-				throw new ArgumentException("A vertex buffer cannot be used as a staging buffer.", "usage");
-
-			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
-				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
-
-			GorgonVertexBuffer buffer = new GorgonVertexBuffer(this, usage, size);
-			buffer.Initialize(initialData);
-
-			TrackedObjects.Add(buffer);
-			return buffer;
-		}
-
-		/// <summary>
-		/// Function to create a vertex shader.
-		/// </summary>
-		/// <param name="name">Name of the vertex shader.</param>
-		/// <param name="entryPoint">Entry point for the shader.</param>
-		/// <param name="sourceCode">Source code for the shader.</param>
-		/// <returns>A new vertex shader.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
-		public GorgonVertexShader CreateVertexShader(string name, string entryPoint, string sourceCode)
-		{
-			GorgonVertexShader shader = null;
-
-			GorgonDebug.AssertParamString(name, "name");
-			GorgonDebug.AssertParamString(entryPoint, "entryPoint");
-
-			shader = new GorgonVertexShader(this, name, entryPoint);
-			shader.SourceCode = sourceCode;
-			shader.Compile();
-			TrackedObjects.Add(shader);
-
-			return shader;
-		}
-
-		/// <summary>
-		/// Function to create a pixel shader.
-		/// </summary>
-		/// <param name="name">Name of the pixel shader.</param>
-		/// <param name="entryPoint">Entry point for the shader.</param>
-		/// <param name="sourceCode">Source code for the shader.</param>
-		/// <returns>A new pixel shader.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
-		public GorgonPixelShader CreatePixelShader(string name, string entryPoint, string sourceCode)
-		{
-			GorgonPixelShader shader = null;
-
-			GorgonDebug.AssertParamString(name, "name");
-			GorgonDebug.AssertParamString(entryPoint, "entryPoint");
-
-			shader = new GorgonPixelShader(this, name, entryPoint);
-			shader.SourceCode = sourceCode;
-			shader.Compile();
-			TrackedObjects.Add(shader);
-
-			return shader;
 		}
 
 		/// <summary>
@@ -764,7 +462,7 @@ namespace GorgonLibrary.Graphics
 
 			if (device == null)
 			{
-				enumerator = new GorgonVideoDeviceCollection(false, false);
+				enumerator = new GorgonVideoDeviceCollection(false, false);				
 				device = enumerator[0];
 			}
 
@@ -772,7 +470,8 @@ namespace GorgonLibrary.Graphics
 			{
 				GIFactory = device.GIFactory;
 				VideoDevice = device;
-				D3DDevice = device.D3DDevice = device.CreateD3DDevice(featureLevel);				
+				D3DDevice = device.CreateD3DDevice(featureLevel);
+				device.Graphics = this;
 			}
 
 			if (enumerator != null)
@@ -782,6 +481,10 @@ namespace GorgonLibrary.Graphics
 
 			// Create default state objects.
 			CreateDefaultStates();
+
+			// Create interfaces.
+			InputGeometry = new GorgonInputGeometry(this);
+			Shaders = new GorgonShaderBinding(this);
 
 			Gorgon.Log.Print("Gorgon Graphics initialized.", Diagnostics.LoggingLevel.Simple);
 		}
@@ -871,7 +574,7 @@ namespace GorgonLibrary.Graphics
 					// Destroy the video device interface.
 					if (VideoDevice != null)
 					{
-						VideoDevice.D3DDevice = null;
+						VideoDevice.Graphics = null;
 						((IDisposable)VideoDevice).Dispose();
 					}
 

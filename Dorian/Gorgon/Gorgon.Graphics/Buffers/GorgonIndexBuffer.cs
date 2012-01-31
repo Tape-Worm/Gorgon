@@ -82,13 +82,13 @@ namespace GorgonLibrary.Graphics
 			desc.Usage = D3DUsage;
 
 			if (data == null)
-				D3DIndexBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice, desc);
+				D3DIndexBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc);
 			else
 			{
 				long position = data.Position;
 
 				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - position, true, true))
-					D3DIndexBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice, stream, desc);
+					D3DIndexBuffer = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
 			}
 
 #if DEBUG

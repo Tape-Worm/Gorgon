@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 	public class Test
 		: IDisposable
 	{
-		private int count = 100000;
+		private int count = 1024;
 		private D3D.Device _device = null;
 		private GorgonGraphics _graphics = null;
 		private GorgonSwapChain _swapChain = null;
@@ -215,18 +215,17 @@ namespace GorgonLibrary.Graphics
 
 			_shader = Encoding.UTF8.GetString(Properties.Resources.Test);
 
-			_device = _graphics.VideoDevice.D3DDevice;
+			_device = _graphics.D3DDevice;
 			
-			_vs = _graphics.CreateVertexShader("TestVShader", "VS", _shader);
-			_ps = _graphics.CreatePixelShader("TestPShader", "PS", _shader);
+			_vs = _graphics.Shaders.CreateVertexShader("TestVShader", "VS", _shader);
+			_ps = _graphics.Shaders.CreatePixelShader("TestPShader", "PS", _shader);
 						
-			GorgonInputLayout layout = _graphics.CreateInputLayout("Test Layout", typeof(vertex), _vs);
+			GorgonInputLayout layout = _graphics.InputGeometry.CreateInputLayout("Test Layout", typeof(vertex), _vs);
 
 			int vertexSize = layout.GetSlotSize(0);			
 
-			_vertices = _graphics.CreateVertexBuffer(4 * vertexSize * count, BufferUsage.Dynamic, null);
+			_vertices = _graphics.InputGeometry.CreateVertexBuffer(4 * vertexSize * count, BufferUsage.Dynamic, null);
 			//_cols = _graphics.CreateVertexBuffer(4 * 16 * count, BufferUsage.Dynamic, null);
-
 			using (GorgonDataStream stream = new GorgonDataStream(count * 6 * 4))
 			{
 				int index = 0;
@@ -242,7 +241,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				stream.Position = 0;
-				_index = _graphics.CreateIndexBuffer((int)stream.Length, BufferUsage.Default, true, stream);
+				_index = _graphics.InputGeometry.CreateIndexBuffer((int)stream.Length, BufferUsage.Default, true, stream);
 			}
 
 			D3D.ImageLoadInformation info = new D3D.ImageLoadInformation();
@@ -299,14 +298,14 @@ namespace GorgonLibrary.Graphics
 			_depthStateAlpha.IsDepthEnabled = false;
 			_depthStateAlpha.IsDepthWriteEnabled = false;
 
-			_graphics.InputBindings.Layout = layout;
-			_graphics.VertexShader.Current = _vs;
-			_graphics.PixelShader.Current = _ps;
+			_graphics.InputGeometry.Layout = layout;
+			_graphics.Shaders.VertexShader.Current = _vs;
+			_graphics.Shaders.PixelShader.Current = _ps;
 						
 			//_graphics.VertexShader.ConstantBuffers.SetRange(0, new GorgonConstantBuffer[] { _noChangeBuffer, _changeBuffer });
 			//_graphics.VertexShader.ConstantBuffers[0] = _graphics.PixelShader.ConstantBuffers[0] = _noChangeBuffer;
 
-			_graphics.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
+			_graphics.Shaders.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
 			//_graphics.PixelShader.Samplers[1] = GorgonTextureSamplerStates.DefaultStates;
 
 			//using (GorgonDataStream stream = new GorgonDataStream(count * layout.GetSlotSize(2) * 4))
