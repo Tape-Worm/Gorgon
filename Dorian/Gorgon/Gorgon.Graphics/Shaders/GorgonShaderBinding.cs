@@ -36,10 +36,8 @@ namespace GorgonLibrary.Graphics
 	/// Used to manage shader bindings and shader buffers.
 	/// </summary>
 	public sealed class GorgonShaderBinding
-		: IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;					// Flag to indicate that the object was disposed.
 		private GorgonGraphics _graphics = null;		// Graphics interface.
 		#endregion
 
@@ -64,6 +62,20 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function clean up any resources within this interface.
+		/// </summary>
+		internal void CleanUp()
+		{
+			if (PixelShader != null)
+				PixelShader.Dispose();
+			if (VertexShader != null)
+				VertexShader.Dispose();
+
+			PixelShader = null;
+			VertexShader = null;
+		}
+
 		/// <summary>
 		/// Function to create a constant buffer.
 		/// </summary>
@@ -158,37 +170,6 @@ namespace GorgonLibrary.Graphics
 			VertexShader = new GorgonVertexShaderState(graphics);
 			PixelShader = new GorgonPixelShaderState(graphics);
 			_graphics = graphics;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (PixelShader != null)
-						PixelShader.Dispose();
-					if (VertexShader != null)
-						VertexShader.Dispose();
-				}
-
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

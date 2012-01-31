@@ -185,7 +185,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>
 		/// The input interface covers items such as the vertex buffer, index buffer, bindings of the aforementioned buffers, the primitive type, etc...
 		/// </remarks>
-		public GorgonInputGeometry InputGeometry
+		public GorgonInputGeometry Input
 		{
 			get;
 			private set;
@@ -211,24 +211,6 @@ namespace GorgonLibrary.Graphics
 		}		
 
 		/// <summary>
-		/// Property to return the current blending states.
-		/// </summary>
-		public GorgonBlendRenderState Blending
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the current depth/stencil states.
-		/// </summary>
-		public GorgonDepthStencilRenderState DepthStencil
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to set or return whether object tracking is disabled.
 		/// </summary>
 		/// <remarks>This will enable SharpDX's object tracking to ensure references are destroyed upon application exit.
@@ -245,6 +227,16 @@ namespace GorgonLibrary.Graphics
 			{
 				SharpDX.Configuration.EnableObjectTracking = value;
 			}
+		}
+
+		/// <summary>
+		/// Property to return the output merging interface.
+		/// </summary>
+		/// <remarks>This is responsible for setting blending states, depth/stencil states, creating render targets, etc...</remarks>
+		public GorgonOutputMerger Output
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -277,20 +269,21 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to clean up the state objects.
+		/// Function to clean up the categorized interfaces.
 		/// </summary>
-		private void DestroyStates()
+		private void DestroyInterfaces()
 		{
 			if (Shaders != null)
-				Shaders.Dispose();
+				Shaders.CleanUp();
 			Shaders = null;
+
+			if (Output != null)
+				Output.CleanUp();
+			Output = null;
+			
 
 			if (Rasterizer != null)
 				((IDisposable)Rasterizer).Dispose();
-			if (DepthStencil != null)
-				((IDisposable)DepthStencil).Dispose();
-			if (Blending != null)
-				((IDisposable)Blending).Dispose();
 		}
 
 		/// <summary>
@@ -299,8 +292,6 @@ namespace GorgonLibrary.Graphics
 		private void CreateDefaultStates()
 		{
 			Rasterizer = new GorgonRasterizerRenderState(this);
-			DepthStencil = new GorgonDepthStencilRenderState(this);
-			Blending = new GorgonBlendRenderState(this);			
 		}
 
 		/// <summary>
@@ -322,61 +313,6 @@ namespace GorgonLibrary.Graphics
 		internal void RemoveTrackedObject(IDisposable trackedObject)
 		{
 			TrackedObjects.Remove(trackedObject);
-		}
-
-		/// <summary>
-		/// Function to create a swap chain.
-		/// </summary>
-		/// <param name="name">Name of the swap chain.</param>
-		/// <param name="settings">Settings for the swap chain.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is less than 0 or not less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
-		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
-		/// <para>-or-</para>
-		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
-		/// </exception>
-		/// <remarks>This will create our output swap chains for display to a window or control.  All functionality for sending or retrieving data from the video device can be accessed through the swap chain.
-		/// <para>Passing default settings for the <see cref="GorgonLibrary.Graphics.GorgonSwapChainSettings">settings parameters</see> will make Gorgon choose the closest possible settings appropriate for the video device and output that the window is on.  For example, passing NULL (Nothing in VB.Net) to 
-		/// the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.VideoMode">GorgonSwapChainSettings.VideoMode</see> parameter will make Gorgon find the closest video mode available to the current window size and desktop format (for the output).</para>
-		/// <para>If the multisampling quality in the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
-		/// what the maximum quality for the sample count for the video device should be, call the <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
-		/// </remarks>
-		public GorgonSwapChain CreateSwapChain(string name, GorgonSwapChainSettings settings)
-		{
-			GorgonSwapChain swapChain = null;
-
-			GorgonDebug.AssertNull<GorgonSwapChainSettings>(settings, "settings");
-
-			GorgonSwapChain.ValidateSwapChainSettings(this, settings);
-
-			swapChain = new GorgonSwapChain(this, name, settings);
-			TrackedObjects.Add(swapChain);
-			swapChain.Initialize();
-
-			return swapChain;
-		}
-
-		/// <summary>
-		/// Function to draw the scene.
-		/// </summary>
-		/// <remarks>This method applies the various states, shaders and renders the polygons in the vertex buffer to the scene.</remarks>
-		/// <exception cref="System.InvalidOperationException">Thrown when there is no valid context to draw with.</exception>
-		public void Draw()
-		{
-#if DEBUG			
-			if (Context == null)
-				throw new InvalidOperationException("There is no context available for the draw commands.");
-#endif
 		}
 		#endregion
 
@@ -443,8 +379,9 @@ namespace GorgonLibrary.Graphics
 			CreateDefaultStates();
 
 			// Create interfaces.
-			InputGeometry = new GorgonInputGeometry(this);
+			Input = new GorgonInputGeometry(this);
 			Shaders = new GorgonShaderBinding(this);
+			Output = new GorgonOutputMerger(this);
 
 			Gorgon.Log.Print("Gorgon Graphics initialized.", Diagnostics.LoggingLevel.Simple);
 		}
@@ -521,7 +458,7 @@ namespace GorgonLibrary.Graphics
 					Gorgon.Log.Print("Gorgon Graphics shutting down...", Diagnostics.LoggingLevel.Simple);
 
 					TrackedObjects.ReleaseAll();
-					DestroyStates();
+					DestroyInterfaces();
 
 					Gorgon.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);
 					if (D3DDevice != null)

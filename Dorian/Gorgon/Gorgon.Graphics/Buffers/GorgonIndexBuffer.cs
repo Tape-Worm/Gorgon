@@ -171,6 +171,9 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
+					if (Graphics.Input.IndexBuffer == this)
+						Graphics.Input.IndexBuffer = null;
+
 					if (IsLocked)
 						Unlock();
 
