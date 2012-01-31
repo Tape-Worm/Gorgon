@@ -41,7 +41,7 @@ namespace Tester_Graphics
 		bool _pause = false;
 		Random _rnd = new Random();
 		float accum = 0.0f;
-		float target = (float)GorgonFrameRate.FpsToMilliseconds(60) / 1000.0f;
+		float target = (float)GorgonFrameRate.FpsToMilliseconds(20) / 1000.0f;
 
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
@@ -74,16 +74,17 @@ namespace Tester_Graphics
 
 					if (_test1 != null)
 					{
-						if (!_pause) 
+						//if (!_pause) 
 						{
-							if (timing.FrameDelta < target)
+							if (timing.FrameDelta < 0.16666666666666666666666666666667f)
 								accum += timing.FrameDelta;
 							else
-								accum += target;
+								accum += 0.16666666666666666666666666666667f;
 							while (accum >= target)
 							{								
 								//_test1.Transform(timing.FrameDelta);
-								_test1.Transform(target);
+								if (!_pause)
+									_test1.Transform(target);
 								frameCount = 0;
 								accum -= target;
 

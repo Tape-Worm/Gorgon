@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 	public class Test
 		: IDisposable
 	{
-		private int count = 1024;
+		private int count = 100000;
 		private D3D.Device _device = null;
 		private GorgonGraphics _graphics = null;
 		private GorgonSwapChain _swapChain = null;
@@ -338,7 +338,7 @@ namespace GorgonLibrary.Graphics
 			//_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
 			pvw = matrix.valueType.value2 * matrix.Projection;
 
-			//_tempStream = new GorgonDataStream(_sprite.Length * vertexSize);
+			_tempStream = new GorgonDataStream(_sprite.Length * vertexSize);
 
 		}
 
@@ -592,6 +592,11 @@ namespace GorgonLibrary.Graphics
 			}
 
 			_needsUpdate = true;
+
+			//_tempStream.Position = 0;			
+			//_tempStream.WriteRange(_sprite);
+			//_tempStream.Position = 0;
+			//_vertices.Update(_tempStream);
 		}
 
 		//int frames = 0;

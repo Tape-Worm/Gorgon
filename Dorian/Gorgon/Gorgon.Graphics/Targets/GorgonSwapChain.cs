@@ -173,13 +173,26 @@ namespace GorgonLibrary.Graphics
 				if (GISwapChain == null)
 					return null;
 
-				GI.Output d3doutput = GISwapChain.ContainingOutput;
+				if (Graphics.VideoDevice.Outputs.Count == 1)
+					return Graphics.VideoDevice.Outputs[0];
 
-				var videoOutput = (from output in Graphics.VideoDevice.Outputs
-								   where output.Handle == d3doutput.Description.MonitorHandle
-								   select output).SingleOrDefault();
+				GI.Output d3doutput = GISwapChain.ContainingOutput;				
 
-				return videoOutput;
+				try
+				{
+					for (int i = 0; i < Graphics.VideoDevice.Outputs.Count; i++)
+					{
+						if (Graphics.VideoDevice.Outputs[i].Handle == d3doutput.Description.MonitorHandle)
+							return Graphics.VideoDevice.Outputs[i];
+					}
+
+					return null;
+				}
+				finally
+				{
+					if (d3doutput != null)
+						d3doutput.Dispose();
+				}
 			}
 		}
 
