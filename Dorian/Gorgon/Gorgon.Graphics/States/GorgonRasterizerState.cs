@@ -300,7 +300,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Viewports must have a width and height greater than 0.</para>
 		/// <para>Which viewport to use is determined by the SV_ViewportArrayIndex semantic output by a geometry shader; if a geometry shader does not specify the semantic, then the first viewport in the list will be used.</para>
 		/// </remarks>
-		public void SetViewports(IEnumerable<GorgonViewport> viewPorts)
+		public void SetViewport(IEnumerable<GorgonViewport> viewPorts)
 		{
 			if (viewPorts == null)
 			{

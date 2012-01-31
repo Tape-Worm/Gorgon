@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GI = SharpDX.DXGI;
+using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
@@ -214,13 +216,110 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public sealed class GorgonInputGeometry
 	{
+		#region Classes.
+		/// <summary>
+		/// A list of vertex buffer bindings.
+		/// </summary>
+		public class GorgonVertexBufferBindingList
+			: IEnumerable<GorgonVertexBufferBinding>
+		{
+			#region Variables.
+			private IList<GorgonVertexBufferBinding> _bindings = null;		// List of bindings.
+			private GorgonGraphics _graphics = null;						// Graphics interface.
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return the number of available bindings.
+			/// </summary>
+			/// <remarks>On Shader Model 4 with a 4.1 profile and better, the number of bindings available is 32, otherwise it is 16.</remarks>
+			public int Count
+			{
+				get
+				{
+					return _bindings.Count;
+				}
+			}
+
+			// TODO: Start here.
+			public GorgonVertexBufferBinding this[int index]
+			{
+				get
+				{
+				}
+			}
+			#endregion
+
+			#region Methods.
+
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="GorgonVertexBufferBindingList"/> class.
+			/// </summary>
+			/// <param name="graphics">The graphics.</param>
+			internal GorgonVertexBufferBindingList(GorgonGraphics graphics)
+			{
+				_graphics = graphics;
+				_bindings = new GorgonVertexBuffer[_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
+			}
+			#endregion
+
+			#region IEnumerable<GorgonVertexBufferBinding> Members
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator&lt;GorgonVertexBufferBinding&gt;"/> object that can be used to iterate through the collection.
+			/// </returns>
+			public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
+			{
+				foreach (var item in _bindings)
+					yield return item;
+			}
+
+			#endregion
+
+			#region IEnumerable Members
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+			/// </returns>
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+			#endregion
+		}
+		#endregion
+
 		#region Variables.
 		private PrimitiveType _primitiveType = PrimitiveType.Unknown;		// Primitive type to use.
 		private GorgonInputLayout _inputLayout = null;						// The current input layout.
 		private GorgonGraphics _graphics = null;							// Current graphics interface.
+		private GorgonIndexBuffer _indexBuffer = null;						// The current index buffer.
+		private IList<GorgonVertexBuffer> _vertexBuffers = null;			// List of vertex buffers.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the index buffer.
+		/// </summary>
+		public GorgonIndexBuffer IndexBuffer
+		{
+			get
+			{
+				return _indexBuffer;
+			}
+			set
+			{
+				SetIndexBuffer(value, 0);
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the primtive type.
 		/// </summary>
@@ -264,6 +363,27 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to set the current index buffer, with an offset inside the buffer.
+		/// </summary>
+		/// <param name="buffer">Buffer to set.</param>
+		/// <param name="offset">Offset into the buffer to use, in bytes.</param>
+		public void SetIndexBuffer(GorgonIndexBuffer buffer, int offset)
+		{
+			if (_indexBuffer == buffer)
+				return;
+
+			if ((offset >= buffer.Size) || (offset < 0))
+				throw new ArgumentOutOfRangeException("offset", "The value is either less than 0, or is larger than the size of the buffer");
+
+			if (buffer == null)
+				_graphics.Context.InputAssembler.SetIndexBuffer(buffer.D3DIndexBuffer, buffer.Is32Bit ? GI.Format.R32_UInt : GI.Format.R16_UInt, offset);
+			else
+				_graphics.Context.InputAssembler.SetIndexBuffer(null, GI.Format.Unknown, 0);
+
+			_indexBuffer = buffer;
+		}
+
 		/// <summary>
 		/// Function to create a index buffer.
 		/// </summary>
@@ -482,6 +602,10 @@ namespace GorgonLibrary.Graphics
 		{
 			_graphics = graphics;
 			PrimitiveType = PrimitiveType.TriangleList;
+			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1)
+				_vertexBuffers = new GorgonVertexBuffer[16];
+			else
+				_vertexBuffers = new GorgonVertexBuffer[32];
 		}
 		#endregion
 	}

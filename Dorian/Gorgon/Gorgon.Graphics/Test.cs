@@ -220,11 +220,11 @@ namespace GorgonLibrary.Graphics
 			_vs = _graphics.Shaders.CreateVertexShader("TestVShader", "VS", _shader);
 			_ps = _graphics.Shaders.CreatePixelShader("TestPShader", "PS", _shader);
 						
-			GorgonInputLayout layout = _graphics.InputGeometry.CreateInputLayout("Test Layout", typeof(vertex), _vs);
+			GorgonInputLayout layout = _graphics.Input.CreateInputLayout("Test Layout", typeof(vertex), _vs);
 
 			int vertexSize = layout.GetSlotSize(0);			
 
-			_vertices = _graphics.InputGeometry.CreateVertexBuffer(4 * vertexSize * count, BufferUsage.Dynamic, null);
+			_vertices = _graphics.Input.CreateVertexBuffer(4 * vertexSize * count, BufferUsage.Dynamic, null);
 			//_cols = _graphics.CreateVertexBuffer(4 * 16 * count, BufferUsage.Dynamic, null);
 			using (GorgonDataStream stream = new GorgonDataStream(count * 6 * 4))
 			{
@@ -241,7 +241,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				stream.Position = 0;
-				_index = _graphics.InputGeometry.CreateIndexBuffer((int)stream.Length, BufferUsage.Default, true, stream);
+				_index = _graphics.Input.CreateIndexBuffer((int)stream.Length, BufferUsage.Default, true, stream);
 			}
 
 			D3D.ImageLoadInformation info = new D3D.ImageLoadInformation();
@@ -298,7 +298,7 @@ namespace GorgonLibrary.Graphics
 			_depthStateAlpha.IsDepthEnabled = false;
 			_depthStateAlpha.IsDepthWriteEnabled = false;
 
-			_graphics.InputGeometry.Layout = layout;
+			_graphics.Input.Layout = layout;
 			_graphics.Shaders.VertexShader.Current = _vs;
 			_graphics.Shaders.PixelShader.Current = _ps;
 						
@@ -332,13 +332,12 @@ namespace GorgonLibrary.Graphics
 			_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
 			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(1, _binding2);
 			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(2, _binding3);
-			_device.ImmediateContext.InputAssembler.SetIndexBuffer(_index.D3DIndexBuffer, GI.Format.R32_UInt, 0);
+			_graphics.Input.IndexBuffer = _index;
 			_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
 			//_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
 			pvw = matrix.valueType.value2 * matrix.Projection;
 
 			_tempStream = new GorgonDataStream(_sprite.Length * vertexSize);
-
 		}
 
 		/// <summary>
