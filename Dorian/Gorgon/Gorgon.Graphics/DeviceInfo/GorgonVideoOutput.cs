@@ -154,11 +154,12 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mode">Mode to find.</param>
 		/// <returns>The closest matching video mode to the <paramref name="mode"/> parameter.</returns>
 		public GorgonVideoMode FindMode(GorgonVideoMode mode)
-		{
+		{			
 			GI.ModeDescription findMode = GorgonVideoMode.Convert(mode);
 			GI.ModeDescription result = default(GI.ModeDescription);
 
-			GIOutput.GetClosestMatchingMode(VideoDevice.D3DDevice, findMode, out result);
+			if (VideoDevice.Graphics != null)
+				GIOutput.GetClosestMatchingMode(VideoDevice.Graphics.D3DDevice, findMode, out result);
 
 			return GorgonVideoMode.Convert(result);
 		}

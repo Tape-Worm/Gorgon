@@ -287,7 +287,7 @@ namespace GorgonLibrary.Graphics
 			desc.IsMultisampleEnabled = States.IsMultisamplingEnabled;
 			desc.IsScissorEnabled = States.IsScissorTestingEnabled;
 
-			D3D.RasterizerState state = new D3D.RasterizerState(Graphics.VideoDevice.D3DDevice, desc);
+			D3D.RasterizerState state = new D3D.RasterizerState(Graphics.D3DDevice, desc);
 			state.DebugName = "Gorgon Rasterizer State #" + StateCacheCount.ToString();
 
 			return state;

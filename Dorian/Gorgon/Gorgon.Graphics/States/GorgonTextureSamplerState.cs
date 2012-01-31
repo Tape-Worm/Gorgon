@@ -375,7 +375,7 @@ namespace GorgonLibrary.Graphics
 					desc.Filter = D3D.Filter.MinPointMagLinearMipPoint;
 			}
 
-			D3D.SamplerState state = new D3D.SamplerState(Graphics.VideoDevice.D3DDevice, desc);
+			D3D.SamplerState state = new D3D.SamplerState(Graphics.D3DDevice, desc);
 			state.DebugName = "Gorgon Sampler State #" + StateCacheCount.ToString();
 
 			return state;

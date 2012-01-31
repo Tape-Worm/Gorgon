@@ -63,7 +63,7 @@ namespace GorgonLibrary.Graphics
 			if (D3DShader != null)
 				D3DShader.Dispose();
 
-			D3DShader = new D3D.VertexShader(Graphics.VideoDevice.D3DDevice, byteCode, null);
+			D3DShader = new D3D.VertexShader(Graphics.D3DDevice, byteCode, null);
 			D3DShader.DebugName = "Gorgon Vertex Shader '" + Name + "'";
 		}
 
@@ -77,8 +77,8 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					if (Graphics.VertexShader.Current == this)
-						Graphics.VertexShader.Current = null;
+					if (Graphics.Shaders.VertexShader.Current == this)
+						Graphics.Shaders.VertexShader.Current = null;
 					
 					if (D3DShader != null)
 						D3DShader.Dispose();

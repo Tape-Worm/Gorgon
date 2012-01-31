@@ -143,7 +143,7 @@ namespace GorgonLibrary.Graphics
 			desc.SampleDescription = GorgonMultiSampling.Convert(Settings.MultiSample);
 			desc.Usage = D3D.ResourceUsage.Default;
 
-			D3DTexture = new D3D.Texture2D(Graphics.VideoDevice.D3DDevice, desc);
+			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
 			D3DTexture.DebugName = "Depth buffer '" + Name + "' texture.";
 
 			// Create the view.
@@ -157,7 +157,7 @@ namespace GorgonLibrary.Graphics
 			viewDesc.Texture2D.MipSlice = 0;
 			viewDesc.Flags = D3D.DepthStencilViewFlags.None;
 			viewDesc.Format = (GI.Format)Settings.Format;
-			D3DDepthStencilView = new D3D.DepthStencilView(Graphics.VideoDevice.D3DDevice, D3DTexture, viewDesc);
+			D3DDepthStencilView = new D3D.DepthStencilView(Graphics.D3DDevice, D3DTexture, viewDesc);
 			D3DDepthStencilView.DebugName = "Depth buffer '" + Name + "' view.";
 
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);

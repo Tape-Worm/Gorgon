@@ -1,5 +1,5 @@
-Texture2D theTexture : register(t0);
-SamplerState sample : register(s0);
+Texture2D _gorgonTexture : register(t0);
+SamplerState _gorgonSampler : register(s0);
  
 struct VS_IN
 {
@@ -22,5 +22,5 @@ PS_IN VS( VS_IN input )
 
 float4 PS( PS_IN input ) : SV_Target
 {		
-	return theTexture.Sample(sample, input.uv) * input.col;
+	return _gorgonTexture.Sample(_gorgonSampler, input.uv) * input.col;
 }

@@ -240,14 +240,6 @@ namespace GorgonLibrary.Graphics
 	public class GorgonPixelShaderState
 		: GorgonShaderState<GorgonPixelShader>
 	{
-		#region Variables.
-
-		#endregion
-
-		#region Properties.
-
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Property to set or return the current shader.
@@ -279,9 +271,6 @@ namespace GorgonLibrary.Graphics
 	public class GorgonVertexShaderState
 		: GorgonShaderState<GorgonVertexShader>
 	{
-		#region Variables.
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Property to set or return the current shader.
