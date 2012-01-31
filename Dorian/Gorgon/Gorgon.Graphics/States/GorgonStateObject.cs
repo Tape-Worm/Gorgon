@@ -139,7 +139,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the graphics interface that created this state object.
 		/// </summary>
-		public GorgonGraphics Graphics
+		protected GorgonGraphics Graphics
 		{
 			get;
 			private set;

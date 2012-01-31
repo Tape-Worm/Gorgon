@@ -349,6 +349,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonRasterizerRenderState(GorgonGraphics graphics)
 			: base(graphics, 4096, 10000)
 		{
+			States = GorgonRasterizerStates.DefaultStates;
 		}
 		#endregion
 	}

@@ -684,6 +684,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonBlendRenderState(GorgonGraphics graphics)
 			: base(graphics, 4096, 20000)
 		{
+			States = GorgonBlendStates.DefaultStates;
 		}
 		#endregion
 	}
