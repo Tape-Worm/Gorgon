@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
@@ -379,7 +380,7 @@ namespace GorgonLibrary.Graphics
 	/// </para>
 	/// </remarks>
 	public class GorgonDepthStencilRenderState
-	: GorgonStateObject<GorgonDepthStencilStates>
+		: GorgonStateObject<GorgonDepthStencilStates>
 	{
 		#region Variables.
 		private int _depthRef = 0;																// Depth reference.
@@ -455,6 +456,40 @@ namespace GorgonLibrary.Graphics
 
 			return state;
 		}
+
+		/// <summary>
+		/// Function to create a depth/stencil buffer.
+		/// </summary>
+		/// <param name="name">Name of the depth/stencil buffer.</param>
+		/// <param name="settings">Settings to apply to the depth/stencil buffer.</param>
+		/// <returns>A new depth/stencil buffer.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencilSettings.Format">GorgonDepthStencilSettings.Format</see> property is set to Unknown or is unsupported.</para>
+		/// </exception>
+		/// <remarks>
+		/// A depth buffer may be paired with a swapchain or render target through its DepthStencil property.  When pairing the depth/stencil to the render target, Ensure that the depth/stencil buffer width, height and multisample settings match that of the render target that it is paired with.
+		/// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_1 or better, and can be set to do so by setting the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencilSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property to a typeless format. 
+		/// If this is attempted on a video device that has a feature level of SM_4_0 or below, then an exception will be raised.</para>
+		/// </remarks>
+		public GorgonDepthStencil CreateDepthStencil(string name, GorgonDepthStencilSettings settings)
+		{
+			GorgonDepthStencil depthBuffer = null;
+
+			GorgonDebug.AssertNull<GorgonDepthStencilSettings>(settings, "settings");
+
+			GorgonDepthStencil.ValidateSettings(Graphics, settings);
+
+			depthBuffer = new GorgonDepthStencil(Graphics, name, settings);
+			Graphics.TrackedObjects.Add(depthBuffer);
+			depthBuffer.UpdateSettings();
+
+			return depthBuffer;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -465,6 +500,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonDepthStencilRenderState(GorgonGraphics graphics)
 			: base(graphics, 4096, 15000)
 		{
+			States = GorgonDepthStencilStates.DefaultStates;
 		}
 		#endregion
 	}

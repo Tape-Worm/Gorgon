@@ -307,7 +307,7 @@ namespace GorgonLibrary.Graphics
 
 			_graphics.Shaders.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
 			//_graphics.PixelShader.Samplers[1] = GorgonTextureSamplerStates.DefaultStates;
-
+			
 			//using (GorgonDataStream stream = new GorgonDataStream(count * layout.GetSlotSize(2) * 4))
 			//{
 			//    for (int i = 0; i < (count * 4); i+=4)
