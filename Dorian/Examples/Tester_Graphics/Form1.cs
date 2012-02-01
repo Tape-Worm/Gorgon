@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using SlimMath;
 using GorgonLibrary;
 using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
@@ -16,9 +17,47 @@ using GorgonLibrary.Collections;
 using GorgonLibrary.Graphics;
 
 namespace Tester_Graphics
-{
+{	
 	public partial class Form1 : Form
-	{
+	{	
+		/// <summary>
+		/// Vertex.
+		/// </summary>
+		private struct Vertex
+		{
+			[InputElement(0, "POSITION")]
+			public Vector4 Position;
+			[InputElement(1, "COLOR")]
+			public Vector4 Color;
+			[InputElement(2, "TEXCOORD0")]
+			public Vector2 UV;
+		}
+
+		private struct Sprite
+		{
+			public Vector2 Position;
+			public Vector2 Scale;
+			public float Rotation;
+			public GorgonColor Color;
+			public Vertex[] Vertices;
+
+			public Sprite(Vector2 pos, Vector2 scale, float rot, GorgonColor color)
+			{
+				Position = pos;
+				Scale = scale;
+				Rotation = rot;
+				Color = color;
+				Vertices = new Vertex[4];
+			}
+		}
+
+		private Sprite[] _sprites = new Sprite[1024];
+		private GorgonVertexBuffer _spriteVertices = null;
+		private GorgonIndexBuffer _spriteIndices = null;
+		private GorgonVertexShader _spriteVShader = null;
+		private GorgonPixelShader _spritePShader = null;
+
+
 		GorgonVideoMode mode1 = default(GorgonVideoMode);
 #if MULTIMON
 		GorgonVideoMode mode2 = default(GorgonVideoMode);

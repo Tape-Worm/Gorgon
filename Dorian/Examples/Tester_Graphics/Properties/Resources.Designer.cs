@@ -66,5 +66,12 @@ namespace Tester_Graphics.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static byte[] Test {
+            get {
+                object obj = ResourceManager.GetObject("Test", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
