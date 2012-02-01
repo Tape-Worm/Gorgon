@@ -162,6 +162,12 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
+					int bufferIndex = Graphics.Input.VertexBuffers.IndexOf(this);
+
+					// Unbind this buffer if it's bound.
+					if (bufferIndex != -1)
+						Graphics.Input.VertexBuffers[bufferIndex] = GorgonVertexBufferBinding.Empty;
+
 					if (IsLocked)
 						Unlock();
 

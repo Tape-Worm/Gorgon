@@ -326,12 +326,13 @@ namespace GorgonLibrary.Graphics
 			//_cols = _graphics.CreateVertexBuffer(layout.GetSlotSize(1) * count * 4, BufferUsage.Dynamic);
 
 			_device.ImmediateContext.OutputMerger.SetTargets((_swapChain.DepthStencil != null ? _swapChain.DepthStencil.D3DDepthStencilView : null), _swapChain.D3DRenderTarget);
-			_binding = new D3D.VertexBufferBinding(_vertices.D3DVertexBuffer, vertexSize, 0);
+			//_binding = new D3D.VertexBufferBinding(_vertices.D3DVertexBuffer, vertexSize, 0);
 			//_binding2 = new D3D.VertexBufferBinding(_cols.D3DVertexBuffer, layout.GetSlotSize(1), 0);
 			//_binding3 = new D3D.VertexBufferBinding(_uvs.D3DVertexBuffer, layout.GetSlotSize(2), 0);
-			_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
+			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
 			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(1, _binding2);
 			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(2, _binding3);
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, vertexSize);
 			_graphics.Input.IndexBuffer = _index;
 			_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
 			//_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
@@ -632,7 +633,7 @@ namespace GorgonLibrary.Graphics
 					//        cstream.Write(_sprite[i].Color);
 					//    }
 					//    _cols.Unlock();
-					    _vertices.Unlock();
+					_vertices.Unlock();
 					//}
 				}
 				_needsUpdate = false;

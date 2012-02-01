@@ -221,10 +221,11 @@ namespace GorgonLibrary.Graphics
 		/// A list of vertex buffer bindings.
 		/// </summary>
 		public class GorgonVertexBufferBindingList
-			: IEnumerable<GorgonVertexBufferBinding>
+			: IList<GorgonVertexBufferBinding>
 		{
 			#region Variables.
 			private IList<GorgonVertexBufferBinding> _bindings = null;		// List of bindings.
+			private D3D.VertexBufferBinding[] _d3dBindings = null;			// List of D3D bindings.
 			private GorgonGraphics _graphics = null;						// Graphics interface.
 			#endregion
 
@@ -241,17 +242,87 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 
-			// TODO: Start here.
+			/// <summary>
+			/// Property to set or return the vertex buffer binding for a given slot.
+			/// </summary>
 			public GorgonVertexBufferBinding this[int index]
 			{
 				get
 				{
+					return _bindings[index];
+				}
+				set
+				{
+					_bindings[index] = value;
+					_d3dBindings[index] = value.Convert();
+					_graphics.Context.InputAssembler.SetVertexBuffers(index, _d3dBindings[index]);
 				}
 			}
 			#endregion
 
 			#region Methods.
+			/// <summary>
+			/// Function to find the index of a vertex buffer binding that contains the specified vertex buffer.
+			/// </summary>
+			/// <param name="buffer">Vertex buffer to find.</param>
+			/// <returns>The index of the buffer binding in the list, -1 if not found.</returns>
+			public int IndexOf(GorgonVertexBuffer buffer)
+			{
+				for (int i = 0; i < _bindings.Count; i++)
+				{
+					if (_bindings[i].VertexBuffer == buffer)
+						return i;
+				}
 
+				return -1;
+			}
+
+			/// <summary>
+			/// Function to return whether the vertex buffer specified has a binding in the list.
+			/// </summary>
+			/// <param name="buffer">The buffer to find.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			public bool Contains(GorgonVertexBuffer buffer)
+			{
+				return IndexOf(buffer) != -1;
+			}
+
+			/// <summary>
+			/// Function to set a series of bindings at once.
+			/// </summary>
+			/// <param name="binding">Bindings to set.</param>
+			/// <param name="startIndex">Index to start writing at.</param>
+			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
+			public void SetVertexBindingRange(IEnumerable<GorgonVertexBufferBinding> binding)
+			{
+				SetVertexBindingRange(binding, 0);
+			}
+
+			/// <summary>
+			/// Function to set a series of bindings at once.
+			/// </summary>
+			/// <param name="binding">Bindings to set.</param>
+			/// <param name="startIndex">Index to start writing at.</param>
+			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the startIndex parameter is less than 0 or greater than the number of available bindings - 1.</exception>
+			public void SetVertexBindingRange(IEnumerable<GorgonVertexBufferBinding> binding, int startIndex)
+			{
+				int count = _bindings.Count - startIndex;
+
+				GorgonDebug.AssertParamRange(startIndex, 0, _bindings.Count, true, false,"startIndex");
+
+				if (count > binding.Count())
+					count = binding.Count();
+
+				for (int i = 0; i < count; i++)
+				{
+					GorgonVertexBufferBinding currentBinding = binding.ElementAt(i);
+					_bindings[startIndex + i] = currentBinding;
+					_d3dBindings[startIndex + i] = currentBinding.Convert();
+				}
+
+				_graphics.Context.InputAssembler.SetVertexBuffers(startIndex, _d3dBindings);
+			}
 			#endregion
 
 			#region Constructor/Destructor.
@@ -262,7 +333,13 @@ namespace GorgonLibrary.Graphics
 			internal GorgonVertexBufferBindingList(GorgonGraphics graphics)
 			{
 				_graphics = graphics;
-				_bindings = new GorgonVertexBuffer[_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
+				_bindings = new GorgonVertexBufferBinding[_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
+				_d3dBindings = new D3D.VertexBufferBinding[_bindings.Count];
+				for (int i = 0; i < _bindings.Count; i++)
+				{
+					_bindings[i] = GorgonVertexBufferBinding.Empty;
+					_d3dBindings[i] = new D3D.VertexBufferBinding();
+				}				
 			}
 			#endregion
 
@@ -278,7 +355,6 @@ namespace GorgonLibrary.Graphics
 				foreach (var item in _bindings)
 					yield return item;
 			}
-
 			#endregion
 
 			#region IEnumerable Members
@@ -293,6 +369,100 @@ namespace GorgonLibrary.Graphics
 				return GetEnumerator();
 			}
 			#endregion
+
+			#region IList<GorgonVertexBufferBinding> Members
+			/// <summary>
+			/// Function to return the index of a binding.
+			/// </summary>
+			/// <param name="item">The binding to find.</param>
+			/// <returns>The index of the binding, if found.  -1 if the binding was not found.</returns>
+			public int IndexOf(GorgonVertexBufferBinding item)
+			{
+				return _bindings.IndexOf(item);
+			}
+
+			/// <summary>
+			/// Inserts the specified index.
+			/// </summary>
+			/// <param name="index">The index.</param>
+			/// <param name="item">The item.</param>
+			void IList<GorgonVertexBufferBinding>.Insert(int index, GorgonVertexBufferBinding item)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Removes at.
+			/// </summary>
+			/// <param name="index">The index.</param>
+			void IList<GorgonVertexBufferBinding>.RemoveAt(int index)
+			{
+				throw new NotImplementedException();
+			}
+			#endregion
+
+			#region ICollection<GorgonVertexBufferBinding> Members
+			/// <summary>
+			/// Adds the specified item.
+			/// </summary>
+			/// <param name="item">The item.</param>
+			void ICollection<GorgonVertexBufferBinding>.Add(GorgonVertexBufferBinding item)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Clears this instance.
+			/// </summary>
+			void ICollection<GorgonVertexBufferBinding>.Clear()
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Function to return whether an item exists within this collection.
+			/// </summary>
+			/// <param name="item">Item to scan for.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			public bool Contains(GorgonVertexBufferBinding item)
+			{
+				return _bindings.Contains(item);
+			}
+
+			/// <summary>
+			/// Function to copy the bindings to an external array.
+			/// </summary>
+			/// <param name="array">The array to copy into.</param>
+			/// <param name="arrayIndex">Index of the array to start writing at.</param>
+			public void CopyTo(GorgonVertexBufferBinding[] array, int arrayIndex)
+			{
+				_bindings.CopyTo(array, arrayIndex);
+			}
+
+			/// <summary>
+			/// Gets a value indicating whether this instance is read only.
+			/// </summary>
+			/// <value>
+			/// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
+			/// </value>
+			public bool IsReadOnly
+			{
+				get 
+				{
+					return false;
+				}
+			}
+
+			/// <summary>
+			/// Removes the specified item.
+			/// </summary>
+			/// <param name="item">The item.</param>
+			/// <returns></returns>
+			bool ICollection<GorgonVertexBufferBinding>.Remove(GorgonVertexBufferBinding item)
+			{
+				throw new NotImplementedException();
+			}
+			#endregion
 		}
 		#endregion
 
@@ -301,7 +471,6 @@ namespace GorgonLibrary.Graphics
 		private GorgonInputLayout _inputLayout = null;						// The current input layout.
 		private GorgonGraphics _graphics = null;							// Current graphics interface.
 		private GorgonIndexBuffer _indexBuffer = null;						// The current index buffer.
-		private IList<GorgonVertexBuffer> _vertexBuffers = null;			// List of vertex buffers.
 		#endregion
 
 		#region Properties.
@@ -318,6 +487,15 @@ namespace GorgonLibrary.Graphics
 			{
 				SetIndexBuffer(value, 0);
 			}
+		}
+
+		/// <summary>
+		/// Property to return the vertex buffer binding interface.
+		/// </summary>
+		public GorgonVertexBufferBindingList VertexBuffers
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -373,10 +551,10 @@ namespace GorgonLibrary.Graphics
 			if (_indexBuffer == buffer)
 				return;
 
-			if ((offset >= buffer.Size) || (offset < 0))
+			if ((buffer != null) && ((offset >= buffer.Size) || (offset < 0)))
 				throw new ArgumentOutOfRangeException("offset", "The value is either less than 0, or is larger than the size of the buffer");
 
-			if (buffer == null)
+			if (buffer != null)
 				_graphics.Context.InputAssembler.SetIndexBuffer(buffer.D3DIndexBuffer, buffer.Is32Bit ? GI.Format.R32_UInt : GI.Format.R16_UInt, offset);
 			else
 				_graphics.Context.InputAssembler.SetIndexBuffer(null, GI.Format.Unknown, 0);
@@ -602,10 +780,7 @@ namespace GorgonLibrary.Graphics
 		{
 			_graphics = graphics;
 			PrimitiveType = PrimitiveType.TriangleList;
-			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1)
-				_vertexBuffers = new GorgonVertexBuffer[16];
-			else
-				_vertexBuffers = new GorgonVertexBuffer[32];
+			VertexBuffers = new GorgonVertexBufferBindingList(_graphics);
 		}
 		#endregion
 	}
