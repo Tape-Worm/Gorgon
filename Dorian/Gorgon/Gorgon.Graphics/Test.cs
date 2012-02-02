@@ -115,7 +115,7 @@ namespace GorgonLibrary.Graphics
 		//private GorgonVertexBuffer _cols = null;
 		private GorgonIndexBuffer _index = null;
 		//private D3D.EffectPass _pass = null;		
-		private D3D.VertexBufferBinding _binding = default(D3D.VertexBufferBinding);
+		//private D3D.VertexBufferBinding _binding = default(D3D.VertexBufferBinding);
 		//private D3D.VertexBufferBinding _binding2 = default(D3D.VertexBufferBinding);
 		//private D3D.VertexBufferBinding _binding3 = default(D3D.VertexBufferBinding);
 		//private float _rot = 0.0f;
@@ -325,19 +325,20 @@ namespace GorgonLibrary.Graphics
 
 			//_cols = _graphics.CreateVertexBuffer(layout.GetSlotSize(1) * count * 4, BufferUsage.Dynamic);
 
-			_device.ImmediateContext.OutputMerger.SetTargets((_swapChain.DepthStencil != null ? _swapChain.DepthStencil.D3DDepthStencilView : null), _swapChain.D3DRenderTarget);
+			//_device.ImmediateContext.OutputMerger.SetTargets((_swapChain.DepthStencil != null ? _swapChain.DepthStencil.D3DDepthStencilView : null), _swapChain.D3DRenderTarget);
 			//_binding = new D3D.VertexBufferBinding(_vertices.D3DVertexBuffer, vertexSize, 0);
 			//_binding2 = new D3D.VertexBufferBinding(_cols.D3DVertexBuffer, layout.GetSlotSize(1), 0);
 			//_binding3 = new D3D.VertexBufferBinding(_uvs.D3DVertexBuffer, layout.GetSlotSize(2), 0);
 			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(0, _binding);
 			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(1, _binding2);
 			//_device.ImmediateContext.InputAssembler.SetVertexBuffers(2, _binding3);
+			_graphics.Output.RenderTargets[0] = _swapChain;
 			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, vertexSize);
 			_graphics.Input.IndexBuffer = _index;
 			_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
 			//_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
 			pvw = matrix.valueType.value2 * matrix.Projection;
-
+			
 			_tempStream = new GorgonDataStream(_sprite.Length * vertexSize);
 		}
 
