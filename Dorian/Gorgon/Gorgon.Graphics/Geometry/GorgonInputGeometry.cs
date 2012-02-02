@@ -561,7 +561,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentOutOfRangeException("offset", "The value is either less than 0, or is larger than the size of the buffer");
 
 			if (buffer != null)
-				_graphics.Context.InputAssembler.SetIndexBuffer(buffer.D3DIndexBuffer, buffer.Is32Bit ? GI.Format.R32_UInt : GI.Format.R16_UInt, offset);
+				_graphics.Context.InputAssembler.SetIndexBuffer(buffer.D3DBuffer, buffer.Is32Bit ? GI.Format.R32_UInt : GI.Format.R16_UInt, offset);
 			else
 				_graphics.Context.InputAssembler.SetIndexBuffer(null, GI.Format.Unknown, 0);
 

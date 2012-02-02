@@ -828,6 +828,11 @@ namespace GorgonLibrary.Graphics
 		{
 			if (!_disposed)
 			{
+				int targetIndex = Graphics.Output.RenderTargets.IndexOf(this);
+				
+				if (targetIndex > -1)
+					Graphics.Output.RenderTargets[targetIndex] = null;
+
 				if (disposing)
 					CleanUp();
 

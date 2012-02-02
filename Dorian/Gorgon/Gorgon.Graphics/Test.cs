@@ -639,8 +639,6 @@ namespace GorgonLibrary.Graphics
 				}
 				_needsUpdate = false;
 			}
-
-			_device.ImmediateContext.DrawIndexed(6 * count, 0, 0);
 		}
 
 		#region IDisposable Members

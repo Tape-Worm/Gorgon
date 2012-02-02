@@ -44,17 +44,6 @@ namespace GorgonLibrary.Graphics
 		private DX.DataStream _lockStream = null;								// Stream used when locking.
 		#endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the Direct3D vertex buffer.
-		/// </summary>
-		internal D3D11.Buffer D3DVertexBuffer
-		{
-			get;
-			private set;
-		}
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Function used to initialize the buffer with data.
@@ -73,17 +62,17 @@ namespace GorgonLibrary.Graphics
 			desc.Usage = D3DUsage;
 
 			if (data == null)
-				D3DVertexBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc);
+				D3DBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc);
 			else
 			{
 				long position = data.Position;
 
 				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - position, true, true))
-					D3DVertexBuffer = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
+					D3DBuffer = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
 			}
 
 #if DEBUG
-			D3DVertexBuffer.DebugName = "Gorgon Vertex Buffer #" + Graphics.TrackedObjects.Count(item => item is GorgonVertexBuffer).ToString();
+			D3DBuffer.DebugName = "Gorgon Vertex Buffer #" + Graphics.TrackedObjects.Count(item => item is GorgonVertexBuffer).ToString();
 #endif
 		}
 
@@ -111,7 +100,7 @@ namespace GorgonLibrary.Graphics
 			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
 				mapMode = D3D11.MapMode.WriteNoOverwrite;			
 
-			Graphics.Context.MapSubresource(D3DVertexBuffer, mapMode, D3D11.MapFlags.None, out _lockStream);
+			Graphics.Context.MapSubresource(D3DBuffer, mapMode, D3D11.MapFlags.None, out _lockStream);
 			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
 		}
 
@@ -120,7 +109,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected internal override void UnlockImpl()
 		{
-			Graphics.Context.UnmapSubresource(D3DVertexBuffer, 0);
+			Graphics.Context.UnmapSubresource(D3DBuffer, 0);
 			_lockStream.Dispose();
 			_lockStream = null;
 		}
@@ -139,7 +128,7 @@ namespace GorgonLibrary.Graphics
 					DataPointer = stream.PositionPointer,
 					RowPitch = size
 				},
-				D3DVertexBuffer,
+				D3DBuffer,
 				0,
 				new D3D11.ResourceRegion()
 				{
@@ -171,11 +160,11 @@ namespace GorgonLibrary.Graphics
 					if (IsLocked)
 						Unlock();
 
-					if (D3DVertexBuffer != null)
-						D3DVertexBuffer.Dispose();
+					if (D3DBuffer != null)
+						D3DBuffer.Dispose();
 				}
 
-				D3DVertexBuffer = null;
+				D3DBuffer = null;
 				_disposed = true;
 			}
 		}

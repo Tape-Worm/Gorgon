@@ -66,7 +66,7 @@ namespace GorgonLibrary.Graphics
 		internal D3D.VertexBufferBinding Convert()
 		{
 			if (VertexBuffer != null)
-				return new D3D.VertexBufferBinding(VertexBuffer.D3DVertexBuffer, Stride, Offset);
+				return new D3D.VertexBufferBinding(VertexBuffer.D3DBuffer, Stride, Offset);
 			else
 				return new D3D.VertexBufferBinding(null, 0, 0);
 		}
