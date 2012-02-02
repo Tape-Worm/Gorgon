@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
@@ -37,6 +38,327 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public sealed class GorgonOutputMerger
 	{
+		/// <summary>
+		/// A list of render targets to bind.
+		/// </summary>
+		public class GorgonRenderTargetList
+			: IList<GorgonSwapChain>
+		{
+			// TODO: Change GorgonSwapChain to something more generic.
+			#region Variables.
+			private GorgonGraphics _graphics = null;
+			private IList<GorgonSwapChain> _targets = null;
+			private D3D.RenderTargetView[] _views = null;
+			private GorgonDepthStencil _depthStencilBuffer = null;
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return the number of render targets.
+			/// </summary>
+			public int Count
+			{
+				get
+				{
+					return _targets.Count;
+				}
+			}
+
+			/// <summary>
+			/// Property to set or return the depth/stencil buffer.
+			/// </summary>
+			public GorgonDepthStencil DepthStencilBuffer
+			{
+				get
+				{
+					return _depthStencilBuffer;
+				}
+				set
+				{
+					SetDepthStencil(value);
+				}
+			}
+
+			/// <summary>
+			/// Property to return a render target by name if bound.
+			/// </summary>
+			/// <remarks>This property is read-only.  To set a render target, use the default property that uses an index.</remarks>
+			public GorgonSwapChain this[string name]
+			{
+				get
+				{
+					int index = IndexOf(name);
+					if (index > -1)
+						return _targets[index];
+
+					throw new KeyNotFoundException("The render target '" + name + "' was not bound.");
+				}
+			}
+
+			/// <summary>
+			/// Property to set or return a render target binding.
+			/// </summary>
+			/// <remarks>This will set the depth/stencil buffer to the one that's assigned to the render target.  If there is a need to set a separate depth/stencil, then use then 
+			/// <see cref="M:GorgonLibrary.Graphics.GorgonOutputMerger.GorgonRenderTargetList.SetRenderTarget">SetRenderTarget</see> method.</remarks>
+			public GorgonSwapChain this[int index]
+			{
+				get
+				{
+					return _targets[index];
+				}
+				set
+				{
+					SetRenderTarget(index, value, value == null ? null : value.DepthStencil);
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to determine if a render target is bound by its name.
+			/// </summary>
+			/// <param name="name">Name of the render target.</param>
+			/// <returns>TRUE if the render target was found, FALSE if not.</returns>
+			public bool Contains(string name)
+			{
+				GorgonDebug.AssertParamString(name, "name");
+
+				return IndexOf(name) != -1;
+			}
+
+			/// <summary>
+			/// Function to determine the index of a bound render target by its name.
+			/// </summary>
+			/// <param name="name">Name of the render target to look up.</param>
+			/// <returns>The index of the render target, -1 if not found.</returns>
+			public int IndexOf(string name)
+			{
+				GorgonDebug.AssertParamString(name, "name");
+
+				for (int i = 0; i < _targets.Count; i++)
+				{
+					if ((_targets[i] != null) && (string.Compare(name, _targets[i].Name, true) == 0))
+						return i;
+				}
+
+				return -1;
+			}
+
+			/// <summary>
+			/// Function to set the depth buffer.
+			/// </summary>
+			/// <param name="depthBuffer">Depth buffer to set.</param>
+			public void SetDepthStencil(GorgonDepthStencil depthBuffer)
+			{
+				D3D.DepthStencilView view = (depthBuffer == null ? null : depthBuffer.D3DDepthStencilView);
+
+				_depthStencilBuffer = depthBuffer;
+				_graphics.Context.OutputMerger.SetTargets(view, _views);
+			}
+
+			/// <summary>
+			/// Function to bind a render target and a depth/stencil buffer.
+			/// </summary>
+			/// <param name="index">Index to bind at.</param>
+			/// <param name="target">Target to bind.</param>
+			/// <param name="depthStencil">Depth/stencil buffer to bind.</param>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
+			public void SetRenderTarget(int index, GorgonSwapChain target, GorgonDepthStencil depthStencil)
+			{
+				GorgonDebug.AssertParamRange(index, 0, 8, true, false, "startIndex");
+
+				_targets[index] = target;
+				_views[index] = target == null ? null : target.D3DRenderTarget;
+				SetDepthStencil(depthStencil);
+			}
+
+			/// <summary>
+			/// Function to set a range of render targets.
+			/// </summary>
+			/// <param name="targets">Render targets to set.</param>
+			/// <param name="depthStencil">The depth/stencil buffer to use.</param>
+			/// <param name="startIndex">The starting index that will be bound.</param>
+			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="targets"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
+			public void SetRenderTargetRange(IEnumerable<GorgonSwapChain> targets, GorgonDepthStencil depthStencil, int startIndex)
+			{
+				int count = _targets.Count - startIndex;
+
+				GorgonDebug.AssertParamRange(startIndex, 0, 8, true, false, "startIndex");
+
+				for (int i = 0; i < count; i++)
+				{
+					GorgonSwapChain target = null;
+
+					if (targets != null)
+						target = targets.ElementAt(i);
+					_targets[i + startIndex] = target;
+					_views[i + startIndex] = (target == null ? null : target.D3DRenderTarget);
+				}
+
+				SetDepthStencil(depthStencil);
+			}
+
+			/// <summary>
+			/// Function to set a range of render targets.
+			/// </summary>
+			/// <param name="targets">Render targets to set.</param>
+			/// <param name="depthStencil">The depth/stencil buffer to use.</param>
+			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="targets"/> parameter will set the bindings to empty.</remarks>
+			public void SetRenderTargetRange(IEnumerable<GorgonSwapChain> targets, GorgonDepthStencil depthStencil)
+			{
+				SetRenderTargetRange(targets, depthStencil, 0);
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="GorgonRenderTargetList"/> class.
+			/// </summary>
+			/// <param name="graphics">Graphics interface.</param>
+			internal GorgonRenderTargetList(GorgonGraphics graphics)
+			{
+				_graphics = graphics;
+				_targets = new GorgonSwapChain[8];
+				_views = new D3D.RenderTargetView[8];
+			}
+			#endregion
+
+			#region IList<GorgonSwapChain> Members
+			/// <summary>
+			/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+			/// </summary>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+			/// <returns>
+			/// The index of item if found in the list; otherwise, -1.
+			/// </returns>
+			public int IndexOf(GorgonSwapChain item)
+			{
+				return _targets.IndexOf(item);
+			}
+
+			/// <summary>
+			/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
+			/// </summary>
+			/// <param name="index">The zero-based index at which item should be inserted.</param>
+			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
+			///   
+			/// <exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
+			void IList<GorgonSwapChain>.Insert(int index, GorgonSwapChain item)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
+			/// </summary>
+			/// <param name="index">The zero-based index of the item to remove.</param>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
+			///   
+			/// <exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
+			void IList<GorgonSwapChain>.RemoveAt(int index)
+			{
+				throw new NotImplementedException();
+			}
+			#endregion
+
+			#region ICollection<GorgonSwapChain> Members
+			/// <summary>
+			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+			/// </summary>
+			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
+			void ICollection<GorgonSwapChain>.Add(GorgonSwapChain item)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+			/// </summary>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only. </exception>
+			void ICollection<GorgonSwapChain>.Clear()
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> contains a specific value.
+			/// </summary>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+			/// <returns>
+			/// true if item is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+			/// </returns>
+			public bool Contains(GorgonSwapChain item)
+			{
+				return _targets.Contains(item);
+			}
+
+			/// <summary>
+			/// Function to copy the bound targets to an array.
+			/// </summary>
+			/// <param name="array">The array to receive the targets.</param>
+			/// <param name="arrayIndex">Index to start writing at.</param>
+			public void CopyTo(GorgonSwapChain[] array, int arrayIndex)
+			{
+				_targets.CopyTo(array, arrayIndex);
+			}
+
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+			/// </summary>
+			/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
+			public bool IsReadOnly
+			{
+				get 
+				{
+					return false;
+				}
+			}
+
+			/// <summary>
+			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+			/// </summary>
+			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+			/// <returns>
+			/// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+			/// </returns>
+			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
+			bool ICollection<GorgonSwapChain>.Remove(GorgonSwapChain item)
+			{
+				throw new NotImplementedException();
+			}
+			#endregion
+
+			#region IEnumerable<GorgonSwapChain> Members
+			/// <summary>
+			/// Returns an enumerator that iterates through the collection.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+			/// </returns>
+			public IEnumerator<GorgonSwapChain> GetEnumerator()
+			{
+				foreach (var item in _targets)
+					yield return item;
+			}
+			#endregion
+
+			#region IEnumerable Members
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+			/// </returns>
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+			#endregion
+		}
+
 		#region Variables.
 		private GorgonGraphics _graphics = null;
 		#endregion
@@ -55,6 +377,15 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the depth/stencil render state interface.
 		/// </summary>
 		public GorgonDepthStencilRenderState DepthStencilState
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the render target bindings.
+		/// </summary>
+		public GorgonRenderTargetList RenderTargets
 		{
 			get;
 			private set;
@@ -163,6 +494,7 @@ namespace GorgonLibrary.Graphics
 			_graphics = graphics;
 			BlendingState = new GorgonBlendRenderState(_graphics);
 			DepthStencilState = new GorgonDepthStencilRenderState(_graphics);
+			RenderTargets = new GorgonRenderTargetList(_graphics);
 		}
 		#endregion
 	}

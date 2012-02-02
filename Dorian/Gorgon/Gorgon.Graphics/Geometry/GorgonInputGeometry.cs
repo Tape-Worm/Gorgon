@@ -268,6 +268,8 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The index of the buffer binding in the list, -1 if not found.</returns>
 			public int IndexOf(GorgonVertexBuffer buffer)
 			{
+				GorgonDebug.AssertNull<GorgonVertexBuffer>(buffer, "buffer");
+
 				for (int i = 0; i < _bindings.Count; i++)
 				{
 					if (_bindings[i].VertexBuffer == buffer)
@@ -284,6 +286,8 @@ namespace GorgonLibrary.Graphics
 			/// <returns>TRUE if found, FALSE if not.</returns>
 			public bool Contains(GorgonVertexBuffer buffer)
 			{
+				GorgonDebug.AssertNull<GorgonVertexBuffer>(buffer, "buffer");
+
 				return IndexOf(buffer) != -1;
 			}
 
@@ -291,8 +295,7 @@ namespace GorgonLibrary.Graphics
 			/// Function to set a series of bindings at once.
 			/// </summary>
 			/// <param name="binding">Bindings to set.</param>
-			/// <param name="startIndex">Index to start writing at.</param>
-			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
+			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty.</remarks>
 			public void SetVertexBindingRange(IEnumerable<GorgonVertexBufferBinding> binding)
 			{
 				SetVertexBindingRange(binding, 0);
@@ -316,7 +319,10 @@ namespace GorgonLibrary.Graphics
 
 				for (int i = 0; i < count; i++)
 				{
-					GorgonVertexBufferBinding currentBinding = binding.ElementAt(i);
+					GorgonVertexBufferBinding currentBinding = GorgonVertexBufferBinding.Empty;
+					if (binding == null)
+						currentBinding = binding.ElementAt(i);
+
 					_bindings[startIndex + i] = currentBinding;
 					_d3dBindings[startIndex + i] = currentBinding.Convert();
 				}
