@@ -131,7 +131,10 @@ namespace Tester_Graphics
 									Text = "FPS: " + timing.FPS.ToString() + " DT:" + (timing.FrameDelta * 1000).ToString() + " msec.";
 							}
 						}
+
 						_test1.Draw();
+
+						_graphics.DrawIndexed(0, 0, _sprites.Length * 6);
 					}
 
 

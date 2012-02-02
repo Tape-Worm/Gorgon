@@ -55,17 +55,6 @@ namespace GorgonLibrary.Graphics
 		private DX.DataStream _lockStream = null;							// Lock stream.
 		#endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the Direct3D buffer.
-		/// </summary>
-		internal D3D.Buffer D3DBuffer
-		{
-			get;
-			private set;
-		}
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Function to initialize the buffer.

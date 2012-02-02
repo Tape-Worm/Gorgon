@@ -114,6 +114,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return the Direct 3D buffer.
+		/// </summary>
+		internal D3D11.Buffer D3DBuffer
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return the graphics interface that created this buffer.
 		/// </summary>
 		public GorgonGraphics Graphics
