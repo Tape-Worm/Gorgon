@@ -45,14 +45,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		Default = 0,
 		/// <summary>
-		/// Allows read access by the GPU and write access by the CPU.
-		/// </summary>
-		Dynamic = 1,
-		/// <summary>
 		/// Can only be read by the GPU, cannot be written to or read from by the CPU, and cannot be written to by the GPU.
 		/// </summary>
 		/// <remarks>Pre-initialize any buffer created with this usage, or else you will not be able to after it's been created.</remarks>
-		Immutable = 2,
+		Immutable = 1,
+		/// <summary>
+		/// Allows read access by the GPU and write access by the CPU.
+		/// </summary>
+		Dynamic = 2,
 		/// <summary>
 		/// Allows reading/writing by the CPU and can be copied to a GPU compatiable buffer (but not used directly by the GPU).
 		/// </summary>
@@ -281,23 +281,20 @@ namespace GorgonLibrary.Graphics
 			Graphics = graphics;
 			BufferUsage = usage;
 
+			D3DUsage = (D3D11.ResourceUsage)usage;
 			switch (usage)
 			{
 				case BufferUsage.Dynamic:
 					D3DCPUAccessFlags = D3D11.CpuAccessFlags.Write;
-					D3DUsage = D3D11.ResourceUsage.Dynamic;
 					break;
 				case BufferUsage.Immutable:
 					D3DCPUAccessFlags = D3D11.CpuAccessFlags.None;
-					D3DUsage = D3D11.ResourceUsage.Immutable;
 					break;
 				case BufferUsage.Staging:
 					D3DCPUAccessFlags = D3D11.CpuAccessFlags.Write | D3D11.CpuAccessFlags.Read;
-					D3DUsage = D3D11.ResourceUsage.Staging;
 					break;
 				default:
 					D3DCPUAccessFlags = D3D11.CpuAccessFlags.None;
-					D3DUsage = D3D11.ResourceUsage.Default;
 					break;
 			}			
 

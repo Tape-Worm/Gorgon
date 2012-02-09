@@ -124,13 +124,83 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to retrieve the texture settings from an existing texture.
+		/// </summary>
+		private void RetrieveSettings()
+		{
+			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
+
+			settings.ArrayCount = D3DTexture.Description.ArraySize;
+			settings.Format = (BufferFormat)D3DTexture.Description.Format;
+			settings.Height = D3DTexture.Description.Height;
+			settings.MipCount = D3DTexture.Description.MipLevels;
+			settings.Multisampling = new GorgonMultiSampling(D3DTexture.Description.SampleDescription.Count, D3DTexture.Description.SampleDescription.Quality);
+			settings.Usage = (BufferUsage)D3DTexture.Description.Usage;
+			settings.Width = D3DTexture.Description.Width;
+
+			Settings = settings;
+		}
+
+		/// <summary>
+		/// Function to create the resource view for the texture.
+		/// </summary>
+		private void CreateResourceView()
+		{
+			D3DTexture.DebugName = "Gorgon 2D Texture '" + Name + "'";
+			D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
+			D3DResourceView.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
+		}
+
+		/// <summary>
+		/// Function to read image data from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the image data.</param>
+		/// <param name="size">Number of bytes to load.</param>
+		/// <param name="settings">Settings to apply to the image.</param>
+		/// <param name="filter">Filter to apply to the image.</param>
+		/// <param name="mipFilter">Mip map filter to apply to the mip levels of the image.</param>
+		protected internal void Initialize(System.IO.Stream stream, int size, ImageFilters filter, ImageFilters mipFilter)
+		{
+			D3D.ImageLoadInformation imageInfo = new D3D.ImageLoadInformation();
+
+			imageInfo.BindFlags = D3D.BindFlags.ShaderResource;
+			switch (Settings.Usage)
+			{
+				case BufferUsage.Staging:
+					imageInfo.CpuAccessFlags = D3D.CpuAccessFlags.Read | D3D.CpuAccessFlags.Write;
+					break;
+				case BufferUsage.Dynamic:
+					imageInfo.CpuAccessFlags = D3D.CpuAccessFlags.Write;
+					break;
+				default:
+					imageInfo.CpuAccessFlags = D3D.CpuAccessFlags.None;
+					break;
+			}
+			imageInfo.Depth = 0;
+			imageInfo.Filter = (D3D.FilterFlags)filter;
+			imageInfo.FirstMipLevel = 0;
+			imageInfo.Format = (SharpDX.DXGI.Format)Settings.Format;
+			imageInfo.Height = Settings.Height;
+			imageInfo.Width = Settings.Width;
+			imageInfo.MipFilter = (D3D.FilterFlags)mipFilter;
+			imageInfo.MipLevels = Settings.MipCount;
+			imageInfo.OptionFlags = D3D.ResourceOptionFlags.None;
+			imageInfo.Usage = (D3D.ResourceUsage)Settings.Usage;
+			imageInfo.Width = Settings.Width;
+
+			D3DTexture = D3D.Texture2D.FromStream<D3D.Texture2D>(Graphics.D3DDevice, stream, size, imageInfo);
+
+			RetrieveSettings();
+			CreateResourceView();
+		}
+
+		/// <summary>
 		/// Function to initialize the texture.
 		/// </summary>
 		/// <param name="data">Data used to populate the texture.</param>
 		protected internal void Initialize(GorgonTexture2DData? data)
 		{
 			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
-			D3D.ShaderResourceViewDescription resDesc = new D3D.ShaderResourceViewDescription();
 			DX.DataRectangle[] dataRects = null;
 
 			// TODO: Implement method to find a suitable texture format.
@@ -142,6 +212,7 @@ namespace GorgonLibrary.Graphics
 			desc.Height = Settings.Height;
 			desc.MipLevels = Settings.MipCount;
 			desc.BindFlags = D3D.BindFlags.ShaderResource;
+			desc.Usage = (D3D.ResourceUsage)Settings.Usage;
 			switch(Settings.Usage)
 			{
 				case BufferUsage.Staging:
@@ -171,13 +242,26 @@ namespace GorgonLibrary.Graphics
 			else
 				D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
 
-			D3DTexture.DebugName = "Gorgon 2D Texture '" + Name + "'";
-			D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
-			D3DResourceView.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
+			CreateResourceView();
 		}
 		#endregion
 
 		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
+		/// </summary>
+		/// <param name="swapChain">The swap chain to get texture information from.</param>
+		internal GorgonTexture2D(GorgonSwapChain swapChain)
+			: base(swapChain.Name + "_Internal_Texture_" + Guid.NewGuid().ToString())
+		{
+			Graphics = swapChain.Graphics;
+
+			D3DTexture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
+			D3DTexture.DebugName = "Gorgon swap chain texture '" + Name + "'";
+
+			RetrieveSettings();
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
 		/// </summary>

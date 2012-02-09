@@ -259,30 +259,32 @@ namespace GorgonLibrary.Graphics
 			info.OptionFlags = D3D.ResourceOptionFlags.None;
 			info.Usage = D3D.ResourceUsage.Default;
 
-			byte[] textureDataBytes = new byte[256 * 256 * 4];
-			_rnd.NextBytes(textureDataBytes);
+			//byte[] textureDataBytes = new byte[256 * 256 * 4];
+			//_rnd.NextBytes(textureDataBytes);
 
-			GorgonTexture2DData data = new GorgonTexture2DData(9);
-			GorgonDataStream textureStream = new GorgonDataStream(textureDataBytes);
-			for (int i = 0; i < data.Data.Length; i++)
-			{
-				int width = 256 / (i + 1);
-				data.Pitch[i] = width * GorgonBufferFormatInfo.GetInfo(BufferFormat.R8G8B8A8_UIntNormal).SizeInBytes;
-				data.Data[i] = textureStream;
-			}
+			//GorgonTexture2DData data = new GorgonTexture2DData(9);
+			//GorgonDataStream textureStream = new GorgonDataStream(textureDataBytes);
+			//for (int i = 0; i < data.Data.Length; i++)
+			//{
+			//    int width = 256 / (i + 1);
+			//    data.Pitch[i] = width * GorgonBufferFormatInfo.GetInfo(BufferFormat.R8G8B8A8_UIntNormal).SizeInBytes;
+			//    data.Data[i] = textureStream;
+			//}
 
-			_texture = _graphics.Textures.CreateTexture("Test Texture", new GorgonTexture2DSettings()
-														{
-															Width = 256,
-															Height = 256,
-															Format = BufferFormat.R8G8B8A8_UIntNormal,
-															MipCount = 0,
-															ArrayCount = 1,// <-- This needs to be 1.
-															Usage = BufferUsage.Default
-														}
-														, data);
+			//_texture = _graphics.Textures.CreateTexture("Test Texture", new GorgonTexture2DSettings()
+			//                                            {
+			//                                                Width = 256,
+			//                                                Height = 256,
+			//                                                Format = BufferFormat.R8G8B8A8_UIntNormal,
+			//                                                MipCount = 0,
+			//                                                ArrayCount = 1,// <-- This needs to be 1.
+			//                                                Usage = BufferUsage.Default
+			//                                            }
+			//                                            , data);
 
-			data.Data[0].Dispose();
+			//data.Data[0].Dispose();
+
+			_texture = _graphics.Textures.FromFile("Balls", @"..\..\..\..\Resources\BallDemo\BallDemo.png", new GorgonTexture2DSettings(), ImageFilters.None, ImageFilters.None);
 
 			//_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\TextureTest.png", info);
 			//_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\BallDemo\BallDemo.png", info);

@@ -154,6 +154,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the texture for the first buffer in the swap chain.
+		/// </summary>
+		public GorgonTexture2D Texture
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return whether we're in stand by mode.
 		/// </summary>
 		/// <remarks>Stand by mode is entered when the <see cref="M:GorgonLibrary.Graphics.GorgonSwapChain.Flip">Flip</see> method detects that the window is occluded.</remarks>
@@ -273,6 +282,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ReleaseResources()
 		{
+			if (Texture != null)
+				Texture.Dispose();
+
 			if (_internalDepthStencil != null)
 			{
 				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing internal depth stencil...", LoggingLevel.Verbose, Name);
@@ -287,6 +299,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			D3DRenderTarget = null;
+			Texture = null;
 		}
 
 		/// <summary>
@@ -294,47 +307,36 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateResources()
 		{			
-			D3D.Texture2D texture = null;			
-
 			if (D3DRenderTarget != null)
 				ReleaseResources();
 
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
 
-			try
+			Texture = new GorgonTexture2D(this);
+			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DTexture);
+			D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
+
+			// Create a depth buffer if we've requested one.
+			if (Settings.DepthStencilFormat != BufferFormat.Unknown)
 			{
-				texture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(GISwapChain, 0);
-				texture.DebugName = "SwapChain '" + Name + "' Render Target Texture";
-				D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, texture);
-				D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
+				Gorgon.Log.Print("GorgonSwapChain '{0}': Creating internal depth/stencil...", Diagnostics.LoggingLevel.Verbose, Name);
 
-				// Create a depth buffer if we've requested one.
-				if (Settings.DepthStencilFormat != BufferFormat.Unknown)
-				{
-					Gorgon.Log.Print("GorgonSwapChain '{0}': Creating internal depth/stencil...", Diagnostics.LoggingLevel.Verbose, Name);
+				GorgonDepthStencilSettings settings = new GorgonDepthStencilSettings {
+					Format = Settings.DepthStencilFormat,
+					Width = Settings.Width,
+					Height = Settings.Height,
+					MultiSample = Settings.MultiSample,
+					TextureFormat = BufferFormat.Unknown
+				};
 
-					GorgonDepthStencilSettings settings = new GorgonDepthStencilSettings {
-						Format = Settings.DepthStencilFormat,
-						Width = Settings.Width,
-						Height = Settings.Height,
-						MultiSample = Settings.MultiSample,
-						TextureFormat = BufferFormat.Unknown
-					};
+				GorgonDepthStencil.ValidateSettings(Graphics, settings);
 
-					GorgonDepthStencil.ValidateSettings(Graphics, settings);
-
-					_internalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid().ToString(), settings);
-					_internalDepthStencil.UpdateSettings();
-				}
-
-				// Set up the default viewport.
-				Viewport = new GorgonViewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height, 0.0f, 1.0f);
+				_internalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid().ToString(), settings);
+				_internalDepthStencil.UpdateSettings();
 			}
-			finally
-			{
-				if (texture != null)
-					texture.Dispose();
-			}
+
+			// Set up the default viewport.
+			Viewport = new GorgonViewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height, 0.0f, 1.0f);
 		}
 
 		/// <summary>
