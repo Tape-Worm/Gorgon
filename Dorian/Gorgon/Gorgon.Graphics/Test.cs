@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 	public class Test
 		: IDisposable
 	{
-		private int count = 1024;
+		private int count = 1;
 		private D3D.Device _device = null;
 		private GorgonGraphics _graphics = null;
 		private GorgonSwapChain _swapChain = null;
@@ -227,7 +227,7 @@ namespace GorgonLibrary.Graphics
 
 			_vertices = _graphics.Input.CreateVertexBuffer(4 * vertexSize * count, BufferUsage.Dynamic, null);
 			//_cols = _graphics.CreateVertexBuffer(4 * 16 * count, BufferUsage.Dynamic, null);
-			using (GorgonDataStream stream = new GorgonDataStream(count * 6 * 4))
+			using (GorgonDataStream stream = new GorgonDataStream(count * 6 * sizeof(int)))
 			{
 				int index = 0;
 				for (int i = 0; i < count; i++)
@@ -245,19 +245,19 @@ namespace GorgonLibrary.Graphics
 				_index = _graphics.Input.CreateIndexBuffer((int)stream.Length, BufferUsage.Default, true, stream);
 			}
 
-			D3D.ImageLoadInformation info = new D3D.ImageLoadInformation();
-			info.BindFlags = D3D.BindFlags.ShaderResource;
-			info.CpuAccessFlags = D3D.CpuAccessFlags.None;
-			info.Depth = 0;
-			info.Filter = D3D.FilterFlags.None;
-			info.FirstMipLevel = 0;
-			info.Format = GI.Format.B8G8R8A8_UNorm;
-			info.Height = 0;
-			info.Width = 0;
-			info.MipFilter = D3D.FilterFlags.Point;
-			info.MipLevels = 1;
-			info.OptionFlags = D3D.ResourceOptionFlags.None;
-			info.Usage = D3D.ResourceUsage.Default;
+			//D3D.ImageLoadInformation info = new D3D.ImageLoadInformation();
+			//info.BindFlags = D3D.BindFlags.ShaderResource;
+			//info.CpuAccessFlags = D3D.CpuAccessFlags.None;
+			//info.Depth = 0;
+			//info.Filter = D3D.FilterFlags.None;
+			//info.FirstMipLevel = 0;
+			//info.Format = GI.Format.B8G8R8A8_UNorm;
+			//info.Height = 0;
+			//info.Width = 0;
+			//info.MipFilter = D3D.FilterFlags.Point;
+			//info.MipLevels = 1;
+			//info.OptionFlags = D3D.ResourceOptionFlags.None;
+			//info.Usage = D3D.ResourceUsage.Default;
 
 			//byte[] textureDataBytes = new byte[256 * 256 * 4];
 			//_rnd.NextBytes(textureDataBytes);
@@ -284,7 +284,13 @@ namespace GorgonLibrary.Graphics
 
 			//data.Data[0].Dispose();
 
-			_texture = _graphics.Textures.FromFile("Balls", @"..\..\..\..\Resources\BallDemo\BallDemo.png", new GorgonTexture2DSettings(), ImageFilters.None, ImageFilters.None);
+			_texture = _graphics.Textures.FromFile("Balls", @"..\..\..\..\Resources\BallDemo\BallDemo.png", new GorgonTexture2DSettings()
+						{
+							MipCount = 1,
+							Width = 256,
+							Height = 256
+						}
+				, ImageFilters.None | ImageFilters.MirrorU | ImageFilters.MirrorV | ImageFilters.MirrorW, ImageFilters.None);
 
 			//_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\TextureTest.png", info);
 			//_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\BallDemo\BallDemo.png", info);
@@ -292,10 +298,10 @@ namespace GorgonLibrary.Graphics
 			//_textureView = new D3D.ShaderResourceView(_device, _texture);
 			//_textureView.DebugName = _swapChain.Name + " Test texture view.";
 
-			_texture2 = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
-			_texture2.DebugName = _swapChain.Name + " Test texture 2.";
-			_textureView2 = new D3D.ShaderResourceView(_device, _texture2);
-			_textureView2.DebugName = _swapChain.Name + " Test texture view 2.";
+			//_texture2 = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
+			//_texture2.DebugName = _swapChain.Name + " Test texture 2.";
+			//_textureView2 = new D3D.ShaderResourceView(_device, _texture2);
+			//_textureView2.DebugName = _swapChain.Name + " Test texture view 2.";
 
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
 
@@ -448,11 +454,16 @@ namespace GorgonLibrary.Graphics
 				checker[i] = _rnd.Next(0, 100) > 50;
 				//color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
 				color[i] = new Vector3(1.0f);
-				pos[i].X = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
-				pos[i].Y = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
+				//pos[i].X = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
+				//pos[i].Y = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
+				pos[i] = Vector2.Zero;
 
 				int spriteIndex = i * 4;
-				if (checker[i])
+				_sprite[spriteIndex].UV = Vector2.Zero;
+				_sprite[spriteIndex + 1].UV = new Vector2(1.0f, 0.0f);
+				_sprite[spriteIndex + 2].UV = new Vector2(0.0f, 1.0f);
+				_sprite[spriteIndex + 3].UV = new Vector2(1.0f);
+/*				if (checker[i])
 				{
 					_sprite[spriteIndex].UV = new Vector2(0.503f, 0.0f);
 					_sprite[spriteIndex + 1].UV = new Vector2(1.0f, 0.0f);
@@ -465,7 +476,7 @@ namespace GorgonLibrary.Graphics
 					_sprite[spriteIndex + 1].UV = new Vector2(0.5f, 0.503f);
 					_sprite[spriteIndex + 2].UV = new Vector2(0.0f, 1.0f);
 					_sprite[spriteIndex + 3].UV = new Vector2(0.5f, 1.0f);
-				}
+				}*/
 			}
 
 			Initialize();
@@ -504,6 +515,9 @@ namespace GorgonLibrary.Graphics
 					color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
 				}
 
+				color[i] = new Vector3(1.0f);
+				alpha[i] = 1.0f;
+
 				if (scaleBounce[i])				
 					scale[i] -= scaleDelta[i] * delta;
 				else
@@ -524,7 +538,7 @@ namespace GorgonLibrary.Graphics
 					scaleDelta[i] = ((float)_rnd.NextDouble() * 1.5f) + 0.25f;
 				}
 
-				if (vBounce[i])
+/*				if (vBounce[i])
 					pos[i].Y -= (vel[i].Y * delta);
 				else
 					pos[i].Y += (vel[i].Y * delta);
@@ -558,7 +572,7 @@ namespace GorgonLibrary.Graphics
 					pos[i].Y = -1.0f;
 					vel[i].Y = (float)_rnd.NextDouble();
 					vBounce[i] = !vBounce[i];
-				}
+				}*/
 
 			}
 						

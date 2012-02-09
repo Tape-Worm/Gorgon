@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
@@ -178,7 +179,7 @@ namespace GorgonLibrary.Graphics
 				settings.Multisampling = new GorgonMultiSampling(1, 0);
 
 			if (settings.Format == BufferFormat.Unknown)
-				settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+				settings.Format = BufferFormat.R8G8B8A8_IntNormal;
 
 			if (settings.Width < 0)
 				settings.Width = 0;
@@ -213,6 +214,63 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to load an image from a byte array.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="imageData">Array containing the image data.</param>
+		/// <param name="settings">Settings to apply to the texture.</param>
+		/// <param name="filter">Filtering to apply to the image.</param>
+		/// <param name="mipFilter">Filtering to apply to the mip levels.</param>
+		/// <returns>A new 2D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="imageData"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the imageData parameter is empty.</para>
+		/// </exception>
+		public GorgonTexture2D FromMemory(string name, byte[] imageData, GorgonTexture2DSettings settings, ImageFilters filter, ImageFilters mipFilter)
+		{
+			D3D.ImageInformation? info = null;
+			GorgonTexture2D result = null;
+
+			GorgonDebug.AssertParamString(name, "name");
+			GorgonDebug.AssertNull(imageData, "stream");
+
+			if (imageData.Length == 0)
+				throw new ArgumentException("There is no data for the image.", "imageData");			
+
+			// Get the file information.
+			info = D3D.ImageInformation.FromMemory(imageData);
+
+			// Assign defaults.
+			if (info != null)
+			{
+				// Only load 2D textures.
+				if (info.Value.ResourceDimension != D3D.ResourceDimension.Texture2D)
+					throw new ArgumentException("The specified texture is not a 2D texture.", "stream");
+
+				if (settings.Format == BufferFormat.Unknown)
+					settings.Format = (BufferFormat)info.Value.Format;
+				if (settings.Width < 1)
+					settings.Width = info.Value.Width;
+				if (settings.Height < 1)
+					settings.Height = info.Value.Height;
+				if (settings.MipCount == 0)
+					settings.MipCount = info.Value.MipLevels;
+				if (settings.ArrayCount == 0)
+					settings.ArrayCount = info.Value.ArraySize;
+			}
+
+			ValidateTexture2D(ref settings, true);
+
+			result = new GorgonTexture2D(_graphics, name, settings);
+			result.Initialize(imageData, filter, mipFilter);
+
+			_graphics.TrackedObjects.Add(result);
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to load an image from a stream.
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
@@ -226,19 +284,15 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonTexture2D FromStream(string name, Stream stream, int length, GorgonTexture2DSettings settings, ImageFilters filter, ImageFilters mipFilter)
 		{
-			GorgonTexture2D result = null;
+			byte[] imageData = new byte[length];
 
 			GorgonDebug.AssertParamString(name, "name");
 			GorgonDebug.AssertNull(stream, "stream");
 
-			ValidateTexture2D(ref settings, true);
+			// Read the image data.
+			stream.Read(imageData, 0, length);
 
-			result = new GorgonTexture2D(_graphics, name, settings);
-			result.Initialize(stream, length, filter, mipFilter);
-
-			_graphics.TrackedObjects.Add(result);
-
-			return result;
+			return FromMemory(name, imageData, settings, filter, mipFilter);
 		}
 
 		/// <summary>
