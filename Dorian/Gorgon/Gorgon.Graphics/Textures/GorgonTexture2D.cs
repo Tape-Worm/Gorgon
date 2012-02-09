@@ -39,10 +39,6 @@ namespace GorgonLibrary.Graphics
 	public struct GorgonTexture2DSettings
 	{
 		#region Variables.
-
-		#endregion
-
-		#region Properties.
 		/// <summary>
 		/// Width of the texture.
 		/// </summary>
@@ -71,6 +67,20 @@ namespace GorgonLibrary.Graphics
 		/// Multisampling settings for the texture.
 		/// </summary>
 		public GorgonMultiSampling Multisampling;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return whether the size of the texture is a power of 2 or not.
+		/// </summary>
+		public bool IsPowerOfTwo
+		{
+			get
+			{
+				return ((Width == 0) || (Width & (Width - 1)) == 0) && 
+						((Height == 0) || (Height & (Height - 1)) == 0);
+			}
+		}
 		#endregion
 	}
 
@@ -156,7 +166,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="stream">Stream containing the image data.</param>
 		/// <param name="size">Number of bytes to load.</param>
-		/// <param name="settings">Settings to apply to the image.</param>
 		/// <param name="filter">Filter to apply to the image.</param>
 		/// <param name="mipFilter">Mip map filter to apply to the mip levels of the image.</param>
 		protected internal void Initialize(System.IO.Stream stream, int size, ImageFilters filter, ImageFilters mipFilter)

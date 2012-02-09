@@ -147,22 +147,15 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The width and height bumped to the nearest power of two.</returns>
 		private Tuple<int, int> GetPow2Size(int width, int height)
 		{
-			double power = 0;		// Exponent power.
-
 			// Do width.
-			power = System.Math.Log((double)width, 2);
-			while ((power % 1) != 0)
+			while ((width != 0) && ((width & (width - 1)) != 0))
 			{
 				width++;
-				power = System.Math.Log((double)width, 2);
 			}
 
-			// Do height.
-			power = System.Math.Log((double)height, 2);
-			while ((power % 1) != 0)
+			while ((height != 0) && ((height & (height - 1)) != 0))
 			{
 				height++;
-				power = System.Math.Log((double)height, 2);
 			}
 
 			return new Tuple<int, int>(width, height);
@@ -193,8 +186,8 @@ namespace GorgonLibrary.Graphics
 			if (settings.Height < 0)
 				settings.Height = 0;
 
-			// Direct3D 9 video devices require resizing to power of two.
-			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			// Direct3D 9 video devices require resizing to power of two if there is more than 1 mip level.
+			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (settings.MipCount != 1))
 			{
 				Tuple<int, int> newSize = GetPow2Size(settings.Width, settings.Height);
 				settings.Width = newSize.Item1;
