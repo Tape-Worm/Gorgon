@@ -126,8 +126,9 @@ namespace GorgonLibrary.Graphics
 		//private int _maxPasses = 0;
 		//private bool _timeSwitch = false;
 		//private float _passes = 8.0f;
-		private D3D.Texture2D _texture = null;		
-		private D3D.ShaderResourceView _textureView = null;
+		private GorgonTexture2D _texture = null;
+		//private D3D.Texture2D _texture = null;		
+		//private D3D.ShaderResourceView _textureView = null;
 		private D3D.Texture2D _texture2 = null;
 		private D3D.ShaderResourceView _textureView2 = null;
 		//private D3D.SamplerState _sampler = null;
@@ -189,10 +190,10 @@ namespace GorgonLibrary.Graphics
 			//    _effect.Dispose();
 			//if (_layout != null)
 				//_layout.Dispose();
-			if (_textureView != null)
-				_textureView.Dispose();
-			if (_texture != null)
-			    _texture.Dispose();
+			//if (_textureView != null)
+			//    _textureView.Dispose();
+			//if (_texture != null)
+			//    _texture.Dispose();
 			if (_textureView2 != null)
 				_textureView2.Dispose();
 			if (_texture2 != null)
@@ -258,11 +259,36 @@ namespace GorgonLibrary.Graphics
 			info.OptionFlags = D3D.ResourceOptionFlags.None;
 			info.Usage = D3D.ResourceUsage.Default;
 
+			byte[] textureDataBytes = new byte[256 * 256 * 4];
+			_rnd.NextBytes(textureDataBytes);
+
+			GorgonTexture2DData data = new GorgonTexture2DData(9);
+			GorgonDataStream textureStream = new GorgonDataStream(textureDataBytes);
+			for (int i = 0; i < data.Data.Length; i++)
+			{
+				int width = 256 / (i + 1);
+				data.Pitch[i] = width * GorgonBufferFormatInfo.GetInfo(BufferFormat.R8G8B8A8_UIntNormal).SizeInBytes;
+				data.Data[i] = textureStream;
+			}
+
+			_texture = _graphics.Textures.CreateTexture("Test Texture", new GorgonTexture2DSettings()
+														{
+															Width = 256,
+															Height = 256,
+															Format = BufferFormat.R8G8B8A8_UIntNormal,
+															MipCount = 0,
+															ArrayCount = 1,// <-- This needs to be 1.
+															Usage = BufferUsage.Default
+														}
+														, data);
+
+			data.Data[0].Dispose();
+
 			//_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\TextureTest.png", info);
-			_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\BallDemo\BallDemo.png", info);
-			_texture.DebugName = _swapChain.Name + " Test texture.";
-			_textureView = new D3D.ShaderResourceView(_device, _texture);
-			_textureView.DebugName = _swapChain.Name + " Test texture view.";
+			//_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\BallDemo\BallDemo.png", info);
+			//_texture.DebugName = _swapChain.Name + " Test texture.";
+			//_textureView = new D3D.ShaderResourceView(_device, _texture);
+			//_textureView.DebugName = _swapChain.Name + " Test texture view.";
 
 			_texture2 = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
 			_texture2.DebugName = _swapChain.Name + " Test texture 2.";
@@ -335,7 +361,7 @@ namespace GorgonLibrary.Graphics
 			_graphics.Output.RenderTargets[0] = _swapChain;
 			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, vertexSize);
 			_graphics.Input.IndexBuffer = _index;
-			_device.ImmediateContext.PixelShader.SetShaderResource(0, _textureView);
+			_device.ImmediateContext.PixelShader.SetShaderResource(0, _texture.D3DResourceView);
 			//_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
 			pvw = matrix.valueType.value2 * matrix.Projection;
 			
@@ -418,7 +444,8 @@ namespace GorgonLibrary.Graphics
 				alphaDelta[i] = (float)_rnd.NextDouble() * 0.5f;
 				aBounce[i] = false;
 				checker[i] = _rnd.Next(0, 100) > 50;
-				color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
+				//color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
+				color[i] = new Vector3(1.0f);
 				pos[i].X = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
 				pos[i].Y = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
 

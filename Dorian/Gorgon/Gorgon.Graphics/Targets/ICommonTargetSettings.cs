@@ -36,10 +36,6 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public interface ICommonTargetSettings
 	{
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the buffer format for the target
