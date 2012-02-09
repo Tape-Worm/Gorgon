@@ -240,6 +240,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the textures interface.
+		/// </summary>
+		public GorgonTextures Textures
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to set or return the video device to use for this graphics interface.
 		/// </summary>
 		/// <remarks>When this value is set to NULL (Nothing in VB.Net), then the first video device in the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevices">VideoDevices</see> collection will be returned.
@@ -452,6 +461,7 @@ namespace GorgonLibrary.Graphics
 			Input = new GorgonInputGeometry(this);
 			Shaders = new GorgonShaderBinding(this);
 			Output = new GorgonOutputMerger(this);
+			Textures = new GorgonTextures(this);
 
 			Gorgon.Log.Print("Gorgon Graphics initialized.", Diagnostics.LoggingLevel.Simple);
 		}

@@ -122,6 +122,9 @@
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="Textures\GorgonTexture2D.cs" />
+    <Compile Include="Textures\GorgonTextureData.cs" />
+    <Compile Include="Textures\GorgonTextures.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
