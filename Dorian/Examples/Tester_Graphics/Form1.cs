@@ -134,7 +134,8 @@ namespace Tester_Graphics
 
 						_test1.Draw();
 
-						_graphics.DrawIndexed(0, 0, _sprites.Length * 6);
+						//_graphics.DrawIndexed(0, 0, _sprites.Length * 6);
+						_graphics.DrawIndexed(0, 0, 6);
 					}
 
 
@@ -264,6 +265,7 @@ namespace Tester_Graphics
 				//GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(false, true);
 				//_graphics = new GorgonGraphics(devices[1], DeviceFeatureLevel.SM2_a_b);				
 				//devices.Dispose();				
+				//_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
 				_graphics = new GorgonGraphics();
 
 				//_graphics.IsObjectTrackingEnabled = false;

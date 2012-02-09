@@ -58,6 +58,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Number of textures in a texture array.
 		/// </summary>
+		/// <remarks>This is not used for loading files.</remarks>
 		public int ArrayCount;
 		/// <summary>
 		/// Usage levels for the texture.
@@ -164,11 +165,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to read image data from a stream.
 		/// </summary>
-		/// <param name="stream">Stream containing the image data.</param>
-		/// <param name="size">Number of bytes to load.</param>
+		/// <param name="imageData">Array of bytes holding the image data.</param>
 		/// <param name="filter">Filter to apply to the image.</param>
 		/// <param name="mipFilter">Mip map filter to apply to the mip levels of the image.</param>
-		protected internal void Initialize(System.IO.Stream stream, int size, ImageFilters filter, ImageFilters mipFilter)
+		protected internal void Initialize(byte[] imageData, ImageFilters filter, ImageFilters mipFilter)
 		{
 			D3D.ImageLoadInformation imageInfo = new D3D.ImageLoadInformation();
 
@@ -197,7 +197,7 @@ namespace GorgonLibrary.Graphics
 			imageInfo.Usage = (D3D.ResourceUsage)Settings.Usage;
 			imageInfo.Width = Settings.Width;
 
-			D3DTexture = D3D.Texture2D.FromStream<D3D.Texture2D>(Graphics.D3DDevice, stream, size, imageInfo);
+			D3DTexture = D3D.Texture2D.FromMemory<D3D.Texture2D>(Graphics.D3DDevice, imageData, imageInfo);
 
 			RetrieveSettings();
 			CreateResourceView();
