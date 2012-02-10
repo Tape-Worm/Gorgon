@@ -369,7 +369,8 @@ namespace GorgonLibrary.Graphics
 			_graphics.Output.RenderTargets[0] = _swapChain;
 			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, vertexSize);
 			_graphics.Input.IndexBuffer = _index;
-			_device.ImmediateContext.PixelShader.SetShaderResource(0, _texture.D3DResourceView);
+			//_device.ImmediateContext.PixelShader.SetShaderResource(0, _texture.D3DResourceView);
+			_graphics.Shaders.PixelShader.Textures[0] = _texture;
 			//_device.ImmediateContext.PixelShader.SetShaderResource(1, _textureView2);
 			pvw = matrix.valueType.value2 * matrix.Projection;
 			
