@@ -308,6 +308,9 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
+					Graphics.Shaders.PixelShader.Textures.Unbind(this);
+					Graphics.Shaders.VertexShader.Textures.Unbind(this);
+
 					if (D3DResourceView != null)
 						D3DResourceView.Dispose();
 
