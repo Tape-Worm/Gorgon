@@ -1776,11 +1776,6 @@
             </summary>	
             <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='SharpDX.DXGI.DXGI']/*"/>	
         </member>
-        <member name="F:SharpDX.DXGI.DXGI.DllHandle0_">
-            <summary>
-            DLLs loaders
-            </summary>
-        </member>
         <member name="M:SharpDX.DXGI.DXGI.CreateDXGIFactory1(System.Guid,System.IntPtr@)">
             <summary>	
             Creates a DXGI 1.1 factory that generates objects used to enumerate and specify video graphics settings.	

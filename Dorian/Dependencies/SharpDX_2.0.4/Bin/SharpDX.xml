@@ -919,6 +919,24 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
+        <member name="E:SharpDX.DisposeBase.Disposing">
+            <summary>
+            Occurs when this instance is starting to be disposed.
+            </summary>
+        </member>
+        <member name="E:SharpDX.DisposeBase.Disposed">
+            <summary>
+            Occurs when this instance is fully disposed.
+            </summary>
+        </member>
+        <member name="P:SharpDX.DisposeBase.IsDisposed">
+            <summary>
+            Gets a value indicating whether this instance is disposed.
+            </summary>
+            <value>
+            	<c>true</c> if this instance is disposed; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="T:SharpDX.ICallbackable">
             <summary>
             Use this interface to tag a class that is called by an unmanaged
@@ -1009,6 +1027,393 @@
             Gets or sets the <see cref="!:T"/> with the specified i.
             </summary>
         </member>
+        <member name="T:SharpDX.DrawingSizeF">
+            <summary>
+            Structure using the same layout than <see cref="T:System.Drawing.SizeF"/>.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingSizeF.#ctor(System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.DrawingSizeF"/> struct.
+            </summary>
+            <param name="width">The x.</param>
+            <param name="height">The y.</param>
+        </member>
+        <member name="F:SharpDX.DrawingSizeF.Width">
+            <summary>
+            Width.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingSizeF.Height">
+            <summary>
+            Height.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingSizeF.Equals(SharpDX.DrawingSizeF)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="other">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingSizeF.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingSizeF.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingSizeF.op_Equality(SharpDX.DrawingSizeF,SharpDX.DrawingSizeF)">
+            <summary>
+            Implements the operator ==.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingSizeF.op_Inequality(SharpDX.DrawingSizeF,SharpDX.DrawingSizeF)">
+            <summary>
+            Implements the operator !=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingSizeF.op_Implicit(System.Drawing.SizeF)~SharpDX.DrawingSizeF">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Drawing.SizeF"/> to <see cref="T:SharpDX.DrawingSizeF"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingSizeF.op_Implicit(SharpDX.DrawingSizeF)~System.Drawing.SizeF">
+            <summary>
+            Performs an implicit conversion from <see cref="T:SharpDX.DrawingSizeF"/> to <see cref="T:System.Drawing.SizeF"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="T:SharpDX.DrawingSize">
+            <summary>
+            Structure using the same layout than <see cref="T:System.Drawing.Size"/>.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingSize.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.DrawingSize"/> struct.
+            </summary>
+            <param name="width">The x.</param>
+            <param name="height">The y.</param>
+        </member>
+        <member name="F:SharpDX.DrawingSize.Width">
+            <summary>
+            Width.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingSize.Height">
+            <summary>
+            Height.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingSize.Equals(SharpDX.DrawingSize)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="other">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingSize.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingSize.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingSize.op_Equality(SharpDX.DrawingSize,SharpDX.DrawingSize)">
+            <summary>
+            Implements the operator ==.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingSize.op_Inequality(SharpDX.DrawingSize,SharpDX.DrawingSize)">
+            <summary>
+            Implements the operator !=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingSize.op_Implicit(System.Drawing.Size)~SharpDX.DrawingSize">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Drawing.Size"/> to <see cref="T:SharpDX.DrawingSize"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingSize.op_Implicit(SharpDX.DrawingSize)~System.Drawing.Size">
+            <summary>
+            Performs an implicit conversion from <see cref="T:SharpDX.DrawingSize"/> to <see cref="T:System.Drawing.Size"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="T:SharpDX.DrawingPointF">
+            <summary>
+            Structure using the same layout than <see cref="T:System.Drawing.Point"/>.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingPointF.#ctor(System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.DrawingPointF"/> struct.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+        </member>
+        <member name="F:SharpDX.DrawingPointF.X">
+            <summary>
+            Left coordinate.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingPointF.Y">
+            <summary>
+            Top coordinate.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingPointF.Equals(SharpDX.DrawingPointF)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingPointF.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingPointF.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingPointF.op_Equality(SharpDX.DrawingPointF,SharpDX.DrawingPointF)">
+            <summary>
+            Implements the operator ==.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingPointF.op_Inequality(SharpDX.DrawingPointF,SharpDX.DrawingPointF)">
+            <summary>
+            Implements the operator !=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingPointF.op_Implicit(System.Drawing.PointF)~SharpDX.DrawingPointF">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Drawing.PointF"/> to <see cref="T:SharpDX.DrawingPointF"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingPointF.op_Implicit(SharpDX.DrawingPointF)~System.Drawing.PointF">
+            <summary>
+            Performs an implicit conversion from <see cref="T:SharpDX.DrawingPointF"/> to <see cref="T:System.Drawing.PointF"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="T:SharpDX.DrawingPoint">
+            <summary>
+            Structure using the same layout than <see cref="T:System.Drawing.Point"/>.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingPoint.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.DrawingPoint"/> struct.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+        </member>
+        <member name="F:SharpDX.DrawingPoint.X">
+            <summary>
+            Left coordinate.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingPoint.Y">
+            <summary>
+            Top coordinate.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingPoint.Equals(SharpDX.DrawingPoint)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingPoint.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingPoint.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingPoint.op_Equality(SharpDX.DrawingPoint,SharpDX.DrawingPoint)">
+            <summary>
+            Implements the operator ==.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingPoint.op_Inequality(SharpDX.DrawingPoint,SharpDX.DrawingPoint)">
+            <summary>
+            Implements the operator !=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingPoint.op_Implicit(System.Drawing.Point)~SharpDX.DrawingPoint">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Drawing.Point"/> to <see cref="T:SharpDX.DrawingPoint"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingPoint.op_Implicit(SharpDX.DrawingPoint)~System.Drawing.Point">
+            <summary>
+            Performs an implicit conversion from <see cref="T:SharpDX.DrawingPoint"/> to <see cref="T:System.Drawing.Point"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="T:SharpDX.DrawingRectangleF">
+            <summary>
+            Structure using the same layout than <see cref="T:System.Drawing.RectangleF"/>
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingRectangleF.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.DrawingRectangleF"/> struct.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+        </member>
+        <member name="F:SharpDX.DrawingRectangleF.X">
+            <summary>
+            Left coordinate.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingRectangleF.Y">
+            <summary>
+            Top coordinate.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingRectangleF.Width">
+            <summary>
+            Width of this rectangle.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingRectangleF.Height">
+            <summary>
+            Height of this rectangle.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingRectangleF.Equals(SharpDX.DrawingRectangleF)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingRectangleF.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingRectangleF.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingRectangleF.op_Equality(SharpDX.DrawingRectangleF,SharpDX.DrawingRectangleF)">
+            <summary>
+            Implements the operator ==.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingRectangleF.op_Inequality(SharpDX.DrawingRectangleF,SharpDX.DrawingRectangleF)">
+            <summary>
+            Implements the operator !=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingRectangleF.op_Implicit(System.Drawing.RectangleF)~SharpDX.DrawingRectangleF">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Drawing.RectangleF"/> to <see cref="T:SharpDX.DrawingRectangleF"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingRectangleF.op_Implicit(SharpDX.DrawingRectangleF)~System.Drawing.RectangleF">
+            <summary>
+            Performs an implicit conversion from <see cref="T:SharpDX.DrawingRectangleF"/> to <see cref="T:System.Drawing.RectangleF"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
         <member name="T:SharpDX.Direct3D.PixHelper">
             <summary>
             Helper class for PIX.
@@ -1055,6 +1460,93 @@
             <c>true</c> if this instance is currently profiled; otherwise, <c>false</c>.
             </value>
             <unmanaged>D3DPERF_GetStatus</unmanaged>
+        </member>
+        <member name="T:SharpDX.DrawingRectangle">
+            <summary>
+            Structure using the same layout than <see cref="T:System.Drawing.Rectangle"/> 
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingRectangle.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.DrawingRectangle"/> struct.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+        </member>
+        <member name="F:SharpDX.DrawingRectangle.X">
+            <summary>
+            Left coordinate.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingRectangle.Y">
+            <summary>
+            Top coordinate.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingRectangle.Width">
+            <summary>
+            Width of this rectangle.
+            </summary>
+        </member>
+        <member name="F:SharpDX.DrawingRectangle.Height">
+            <summary>
+            Height of this rectangle.
+            </summary>
+        </member>
+        <member name="M:SharpDX.DrawingRectangle.Equals(SharpDX.DrawingRectangle)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingRectangle.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingRectangle.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:SharpDX.DrawingRectangle.op_Equality(SharpDX.DrawingRectangle,SharpDX.DrawingRectangle)">
+            <summary>
+            Implements the operator ==.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingRectangle.op_Inequality(SharpDX.DrawingRectangle,SharpDX.DrawingRectangle)">
+            <summary>
+            Implements the operator !=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingRectangle.op_Implicit(System.Drawing.Rectangle)~SharpDX.DrawingRectangle">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Drawing.Rectangle"/> to <see cref="T:SharpDX.DrawingRectangle"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:SharpDX.DrawingRectangle.op_Implicit(SharpDX.DrawingRectangle)~System.Drawing.Rectangle">
+            <summary>
+            Performs an implicit conversion from <see cref="T:SharpDX.DrawingRectangle"/> to <see cref="T:System.Drawing.Rectangle"/>.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
         </member>
         <member name="T:SharpDX.IO.NativeFile">
             <summary>
@@ -5509,11 +6001,6 @@
             Functions	
             </summary>	
             <!-- No matching elements were found for the following include tag --><include file="..\..\Documentation\CodeComments.xml" path="/comments/comment[@id='SharpDX.Direct3D.D3DCommon']/*"/>	
-        </member>
-        <member name="F:SharpDX.Direct3D.D3DCommon.DllHandle0_">
-            <summary>
-            DLLs loaders
-            </summary>
         </member>
         <member name="M:SharpDX.Direct3D.D3DCommon.CreateBlob(SharpDX.PointerSize,SharpDX.Direct3D.Blob)">
             <summary>	
@@ -22035,6 +22522,7 @@
             <summary>
             WaveFormatAdpcm
             http://msdn.microsoft.com/en-us/library/microsoft.directx_sdk.xaudio2.adpcmwaveformat%28v=vs.85%29.aspx
+            Additional documentation: http://icculus.org/SDL_sound/downloads/external_documentation/wavecomp.htm
             </summary>
             <unmanaged>WAVEFORMATADPCM</unmanaged>
         </member>
@@ -22125,12 +22613,19 @@
             <param name="sampleRate">sample rate</param>
             <param name="channels">number of channels</param>
         </member>
-        <member name="M:SharpDX.Multimedia.WaveFormat.MarshalFromPtr(System.IntPtr)">
+        <member name="M:SharpDX.Multimedia.WaveFormat.MarshalFrom(System.Byte[])">
             <summary>
             Helper function to retrieve a WaveFormat structure from a pointer
             </summary>
-            <param name="pointer">WaveFormat structure</param>
-            <returns></returns>
+            <param name="rawdata">Buffer to the WaveFormat rawdata</param>
+            <returns>WaveFormat structure</returns>
+        </member>
+        <member name="M:SharpDX.Multimedia.WaveFormat.MarshalFrom(System.IntPtr)">
+            <summary>
+            Helper function to retrieve a WaveFormat structure from a pointer
+            </summary>
+            <param name="pointer">Pointer to the WaveFormat rawdata</param>
+            <returns>WaveFormat structure</returns>
         </member>
         <member name="M:SharpDX.Multimedia.WaveFormat.MarshalToPtr(SharpDX.Multimedia.WaveFormat)">
             <summary>
@@ -22227,10 +22722,13 @@
             Parameterless constructor for marshalling
             </summary>
         </member>
-        <member name="M:SharpDX.Multimedia.WaveFormatAdpcm.#ctor(System.Int32,System.Int32,System.Int32,System.UInt16,System.Int32[])">
+        <member name="M:SharpDX.Multimedia.WaveFormatAdpcm.#ctor(System.Int32,System.Int32,System.Int32)">
             <summary>
-            Creates a new WaveFormatAdpcm for PCM or IEEE
+            Creates a new WaveFormatAdpcm for MicrosoftADPCM
             </summary>
+            <param name="rate">The rate.</param>
+            <param name="channels">The channels.</param>
+            <param name="blockAlign">The block align. If 0, then 256 for [0, 11KHz], 512 for ]11KHz, 22Khz], 1024 for ]22Khz, +inf]</param>
         </member>
         <member name="P:SharpDX.Multimedia.WaveFormatAdpcm.SamplesPerBlock">
             <summary>
@@ -22240,7 +22738,15 @@
             The samples per block.
             </value>
         </member>
-        <member name="P:SharpDX.Multimedia.WaveFormatAdpcm.Coefficients">
+        <member name="P:SharpDX.Multimedia.WaveFormatAdpcm.Coefficients1">
+            <summary>
+            Gets or sets the coefficients.
+            </summary>
+            <value>
+            The coefficients.
+            </value>
+        </member>
+        <member name="P:SharpDX.Multimedia.WaveFormatAdpcm.Coefficients2">
             <summary>
             Gets or sets the coefficients.
             </summary>
@@ -23817,6 +24323,18 @@
             </summary>
             <value>The bottom.</value>
         </member>
+        <member name="P:SharpDX.Rectangle.X">
+            <summary>
+            Gets or sets the left position.
+            </summary>
+            <value>The left position.</value>
+        </member>
+        <member name="P:SharpDX.Rectangle.Y">
+            <summary>
+            Gets or sets the top position.
+            </summary>
+            <value>The top position.</value>
+        </member>
         <member name="P:SharpDX.Rectangle.Width">
             <summary>
             Gets or sets the width.
@@ -23858,6 +24376,9 @@
             <returns>
             	<c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:SharpDX.RectangleF.Equals(SharpDX.RectangleF)">
+            <inheritdoc/>
         </member>
         <member name="M:SharpDX.RectangleF.GetHashCode">
             <summary>
@@ -23920,6 +24441,18 @@
             Gets or sets the bottom.
             </summary>
             <value>The bottom.</value>
+        </member>
+        <member name="P:SharpDX.RectangleF.X">
+            <summary>
+            Gets or sets the left position.
+            </summary>
+            <value>The left position.</value>
+        </member>
+        <member name="P:SharpDX.RectangleF.Y">
+            <summary>
+            Gets or sets the top position.
+            </summary>
+            <value>The top position.</value>
         </member>
         <member name="P:SharpDX.RectangleF.Width">
             <summary>
@@ -27173,6 +27706,19 @@
             <value>
             	<c>true</c> if this instance is application idle; otherwise, <c>false</c>.
             </value>
+        </member>
+        <member name="P:SharpDX.Windows.RenderLoop.UseCustomDoEvents">
+            <summary>
+            Gets or sets a value indicating whether the render loop should use a custom windows event handler (default false).
+            </summary>
+            <value>
+              <c>true</c> if the render loop should use a custom windows event handler (default false); otherwise, <c>false</c>.
+            </value>
+            <remarks>
+            By default, RenderLoop is using <see cref="M:System.Windows.Forms.Application.DoEvents"/> to process windows event message. Set this parameter to true to use a custom event handler that could
+            lead to better performance. Note that using a custom windows event message handler is not compatible with <see cref="M:System.Windows.Forms.Application.AddMessageFilter(System.Windows.Forms.IMessageFilter)"/> or any other features
+            that are part of <see cref="T:System.Windows.Forms.Application"/>.
+            </remarks>
         </member>
         <member name="T:SharpDX.Windows.RenderLoop.RenderCallback">
             <summary>

@@ -30,11 +30,6 @@
             <returns>Result code.</returns>
             <unmanaged>HRESULT D3D10CompileEffectFromMemory([In] void* pData,[In] SIZE_T DataLength,[In] const char* pSrcFileName,[In, Buffer, Optional] const D3D_SHADER_MACRO* pDefines,[In] ID3DInclude* pInclude,[In] D3DCOMPILE_SHADER_FLAGS HLSLFlags,[In] D3DCOMPILE_EFFECT_FLAGS FXFlags,[In] ID3D10Blob** ppCompiledEffect,[In] ID3D10Blob** ppErrors)</unmanaged>
         </member>
-        <member name="F:SharpDX.D3DCompiler.D3D.DllHandle0_">
-            <summary>
-            DLLs loaders
-            </summary>
-        </member>
         <member name="M:SharpDX.D3DCompiler.D3D.CompressShaders(System.Int32,SharpDX.D3DCompiler.ShaderData[],System.Int32,SharpDX.Direct3D.Blob@)">
             <summary>	
             Compresses a set of shaders into a more compact form.	
@@ -3643,6 +3638,30 @@
             <returns>A compressed <see cref="T:SharpDX.D3DCompiler.ShaderBytecode"/>. </returns>
             <unmanaged>HRESULT D3DCompressShaders([In] int uNumShaders,[In, Buffer] D3D_SHADER_DATA* pShaderData,[In] int uFlags,[Out] ID3DBlob** ppCompressedData)</unmanaged>
         </member>
+        <member name="M:SharpDX.D3DCompiler.ShaderBytecode.Decompress">
+            <summary>	
+            Decompresses all shaders from a compressed set.	
+            </summary>	
+            <returns>Returns an array of decompresss shader bytecode.</returns>	
+            <unmanaged>HRESULT D3DDecompressShaders([In, Buffer] const void* pSrcData,[In] SIZE_T SrcDataSize,[In] unsigned int uNumShaders,[In] unsigned int uStartIndex,[In, Buffer, Optional] unsigned int* pIndices,[In] unsigned int uFlags,[Out, Buffer] ID3D10Blob** ppShaders,[Out, Optional] unsigned int* pTotalShaders)</unmanaged>	
+        </member>
+        <member name="M:SharpDX.D3DCompiler.ShaderBytecode.Decompress(System.Int32,System.Int32)">
+            <summary>	
+            Decompresses one or more shaders from a compressed set.	
+            </summary>	
+            <param name="numShaders"><para>The number of shaders to decompress.</para></param>	
+            <param name="startIndex"><para>The index of the first shader to decompress.</para></param>	
+            <returns>Returns an array of decompresss shader bytecode.</returns>	
+            <unmanaged>HRESULT D3DDecompressShaders([In, Buffer] const void* pSrcData,[In] SIZE_T SrcDataSize,[In] unsigned int uNumShaders,[In] unsigned int uStartIndex,[In, Buffer, Optional] unsigned int* pIndices,[In] unsigned int uFlags,[Out, Buffer] ID3D10Blob** ppShaders,[Out, Optional] unsigned int* pTotalShaders)</unmanaged>	
+        </member>
+        <member name="M:SharpDX.D3DCompiler.ShaderBytecode.Decompress(System.Int32[])">
+            <summary>	
+            Decompresses one or more shaders from a compressed set.	
+            </summary>	
+            <param name="indices"><para>An array of indexes that represent the shaders to decompress.</para></param>	
+            <returns>Returns an array of decompresss shader bytecode.</returns>	
+            <unmanaged>HRESULT D3DDecompressShaders([In, Buffer] const void* pSrcData,[In] SIZE_T SrcDataSize,[In] unsigned int uNumShaders,[In] unsigned int uStartIndex,[In, Buffer, Optional] unsigned int* pIndices,[In] unsigned int uFlags,[Out, Buffer] ID3D10Blob** ppShaders,[Out, Optional] unsigned int* pTotalShaders)</unmanaged>	
+        </member>
         <member name="M:SharpDX.D3DCompiler.ShaderBytecode.Disassemble">
             <summary>
               Disassembles compiled HLSL code back into textual source.
@@ -3808,7 +3827,7 @@
             Gets this instance is composed of compressed shaders.
             </summary>
             <value>
-            	<c>true</c> if this instance is compressed; otherwise, <c>false</c>.
+                <c>true</c> if this instance is compressed; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="P:SharpDX.D3DCompiler.ShaderBytecode.Data">
