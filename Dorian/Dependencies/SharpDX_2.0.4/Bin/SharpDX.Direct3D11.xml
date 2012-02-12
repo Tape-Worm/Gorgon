@@ -248,6 +248,23 @@
             <param name = "loadInfo">Specifies information used to load the texture.</param>
             <returns>The loaded texture object.</returns>
         </member>
+        <member name="M:SharpDX.Direct3D11.Resource.FromFile(SharpDX.Direct3D11.Device,System.String,SharpDX.Direct3D11.ImageLoadInformation)">
+            <summary>
+              Loads a texture from an image file.
+            </summary>
+            <param name = "device">The device used to load the texture.</param>
+            <param name = "fileName">Path to the file on disk.</param>
+            <param name = "loadInfo">Specifies information used to load the texture.</param>
+            <returns>The loaded texture object.</returns>
+        </member>
+        <member name="M:SharpDX.Direct3D11.Resource.FromFile(SharpDX.Direct3D11.Device,System.String)">
+            <summary>
+              Loads a texture from an image file.
+            </summary>
+            <param name = "device">The device used to load the texture.</param>
+            <param name = "fileName">Path to the file on disk.</param>
+            <returns>The loaded texture object.</returns>
+        </member>
         <member name="M:SharpDX.Direct3D11.Resource.LoadTextureFromTexture(SharpDX.Direct3D11.DeviceContext,SharpDX.Direct3D11.Resource,SharpDX.Direct3D11.Resource,SharpDX.Direct3D11.TextureLoadInformation)">
             <summary>	
             Load a texture from a texture.	
@@ -258,6 +275,16 @@
             <param name="loadInformation">Pointer to texture loading parameters. See <see cref="T:SharpDX.Direct3D11.TextureLoadInformation"/>. </param>
             <returns>The return value is one of the values listed in {{Direct3D 10 Return Codes}}. </returns>
             <unmanaged>HRESULT D3DX10LoadTextureFromTexture([None] ID3D10Resource* pSrcTexture,[None] D3DX10_TEXTURE_LOAD_INFO* pLoadInfo,[None] ID3D10Resource* pDstTexture)</unmanaged>
+        </member>
+        <member name="M:SharpDX.Direct3D11.Resource.FilterTexture(SharpDX.Direct3D11.DeviceContext,System.Int32,SharpDX.Direct3D11.FilterFlags)">
+            <summary>	
+            Generates mipmap chain using a particular texture filter for this texture instance.
+            </summary>	
+            <param name="deviceContext"><para>A reference to an <see cref="T:SharpDX.Direct3D11.DeviceContext"/> object.</para></param>	
+            <param name="sourceLevel"><para>The mipmap level whose data is used to generate the rest of the mipmap chain.</para></param>	
+            <param name="mipFilter"><para>Flags controlling how each miplevel is filtered (or D3DX11_DEFAULT for <see cref="F:SharpDX.Direct3D11.FilterFlags.Linear"/>). See <see cref="T:SharpDX.Direct3D11.FilterFlags"/>.</para></param>	
+            <returns>The return value is one of the values listed in Direct3D 11 Return Codes.</returns>	
+            <unmanaged>HRESULT D3DX11FilterTexture([In] ID3D11DeviceContext* pContext,[In] ID3D11Resource* pTexture,[In] unsigned int SrcLevel,[In] unsigned int MipFilter)</unmanaged>	
         </member>
         <member name="M:SharpDX.Direct3D11.Resource.ToFile``1(SharpDX.Direct3D11.DeviceContext,``0,SharpDX.Direct3D11.ImageFileFormat,System.String)">
             <summary>
@@ -286,6 +313,23 @@
             <param name = "loadInfo">Specifies information used to load the texture.</param>
             <returns>The loaded texture object.</returns>
         </member>
+        <member name="M:SharpDX.Direct3D11.Resource.FromMemory(SharpDX.Direct3D11.Device,System.Byte[])">
+            <summary>
+              Loads a texture from an image in memory.
+            </summary>
+            <param name = "device">The device used to load the texture.</param>
+            <param name = "memory">Array of memory containing the image data to load.</param>
+            <returns>The loaded texture object.</returns>
+        </member>
+        <member name="M:SharpDX.Direct3D11.Resource.FromMemory(SharpDX.Direct3D11.Device,System.Byte[],SharpDX.Direct3D11.ImageLoadInformation)">
+            <summary>
+              Loads a texture from an image in memory.
+            </summary>
+            <param name = "device">The device used to load the texture.</param>
+            <param name = "memory">Array of memory containing the image data to load.</param>
+            <param name = "loadInfo">Specifies information used to load the texture.</param>
+            <returns>The loaded texture object.</returns>
+        </member>
         <member name="M:SharpDX.Direct3D11.Resource.FromStream``1(SharpDX.Direct3D11.Device,System.IO.Stream,System.Int32)">
             <summary>
               Loads a texture from a stream of data.
@@ -296,6 +340,25 @@
             <returns>The loaded texture object.</returns>
         </member>
         <member name="M:SharpDX.Direct3D11.Resource.FromStream``1(SharpDX.Direct3D11.Device,System.IO.Stream,System.Int32,SharpDX.Direct3D11.ImageLoadInformation)">
+            <summary>
+              Loads a texture from a stream of data.
+            </summary>
+            <param name = "device">The device used to load the texture.</param>
+            <param name = "stream">A stream containing the image data to load.</param>
+            <param name = "sizeInBytes">Size of the image to load.</param>
+            <param name = "loadInfo">Specifies information used to load the texture.</param>
+            <returns>The loaded texture object.</returns>
+        </member>
+        <member name="M:SharpDX.Direct3D11.Resource.FromStream(SharpDX.Direct3D11.Device,System.IO.Stream,System.Int32)">
+            <summary>
+              Loads a texture from a stream of data.
+            </summary>
+            <param name = "device">The device used to load the texture.</param>
+            <param name = "stream">A stream containing the image data to load.</param>
+            <param name = "sizeInBytes">Size of the image to load.</param>
+            <returns>The loaded texture object.</returns>
+        </member>
+        <member name="M:SharpDX.Direct3D11.Resource.FromStream(SharpDX.Direct3D11.Device,System.IO.Stream,System.Int32,SharpDX.Direct3D11.ImageLoadInformation)">
             <summary>
               Loads a texture from a stream of data.
             </summary>
@@ -15121,11 +15184,6 @@
             <summary>Constant SdkVersion.</summary>
             <unmanaged>D3D11_SDK_VERSION</unmanaged>
         </member>
-        <member name="F:SharpDX.Direct3D11.D3D11.DllHandle0_">
-            <summary>
-            DLLs loaders
-            </summary>
-        </member>
         <member name="M:SharpDX.Direct3D11.D3D11.CreateDeviceAndSwapChain(SharpDX.DXGI.Adapter,SharpDX.Direct3D.DriverType,System.IntPtr,SharpDX.Direct3D11.DeviceCreationFlags,SharpDX.Direct3D.FeatureLevel[],System.Int32,System.Int32,SharpDX.DXGI.SwapChainDescription@,SharpDX.DXGI.SwapChain@,SharpDX.Direct3D11.Device@,SharpDX.Direct3D.FeatureLevel@,SharpDX.Direct3D11.DeviceContext@)">
             <summary>	
             Creates a device that represents the display adapter and a swap chain used for rendering.	
@@ -15179,11 +15237,6 @@
             Functions	
             </summary>	
             <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='SharpDX.Direct3D11.D3DCSX']/*"/>	
-        </member>
-        <member name="F:SharpDX.Direct3D11.D3DCSX.DllHandle0_">
-            <summary>
-            DLLs loaders
-            </summary>
         </member>
         <member name="M:SharpDX.Direct3D11.D3DCSX.CreateFFT2DComplex(SharpDX.Direct3D11.DeviceContext,System.Int32,System.Int32,System.Int32,SharpDX.Direct3D11.FastFourierTransformBufferRequirements@,SharpDX.Direct3D11.FastFourierTransform@)">
             <summary>	
@@ -15310,11 +15363,6 @@
             Functions	
             </summary>	
             <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='SharpDX.Direct3D11.D3DX11']/*"/>	
-        </member>
-        <member name="F:SharpDX.Direct3D11.D3DX11.DllHandle0_">
-            <summary>
-            DLLs loaders
-            </summary>
         </member>
         <member name="M:SharpDX.Direct3D11.D3DX11.CheckVersion(System.Int32,System.Int32)">
             <summary>	
@@ -15567,6 +15615,64 @@
             </remarks>	
             <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='D3DX11CreateEffectFromMemory']/*"/>	
             <unmanaged>HRESULT D3DX11CreateEffectFromMemory([In] const void* pData,[In] SIZE_T DataLength,[In] unsigned int FXFlags,[In] ID3D11Device* pDevice,[Out, Fast] ID3DX11Effect** ppEffect)</unmanaged>	
+        </member>
+        <member name="T:SharpDX.Direct3D11.ResultCode">
+            <summary>	
+            Functions	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='SharpDX.Direct3D11.ResultCode']/*"/>	
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.TooManyUniqueViewObjects">
+            <summary>Constant TooManyUniqueViewObjects.</summary>
+            <unmanaged>D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.FileNotFound">
+            <summary>Constant FileNotFound.</summary>
+            <unmanaged>D3D11_ERROR_FILE_NOT_FOUND</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.DeferredContextMapWithoutInitialDiscard">
+            <summary>Constant DeferredContextMapWithoutInitialDiscard.</summary>
+            <unmanaged>D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.TooManyUniqueStateObjects">
+            <summary>Constant TooManyUniqueStateObjects.</summary>
+            <unmanaged>D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.LoadedMeshHasNoData">
+            <summary>Constant LoadedMeshHasNoData.</summary>
+            <unmanaged>D3DX11_ERR_LOADED_MESH_HAS_NO_DATA</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.DuplicateNamedFragment">
+            <summary>Constant DuplicateNamedFragment.</summary>
+            <unmanaged>D3DX11_ERR_DUPLICATE_NAMED_FRAGMENT</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.InvalidMesh">
+            <summary>Constant InvalidMesh.</summary>
+            <unmanaged>D3DX11_ERR_INVALID_MESH</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.CannotModifyIndexBuffer">
+            <summary>Constant CannotModifyIndexBuffer.</summary>
+            <unmanaged>D3DX11_ERR_CANNOT_MODIFY_INDEX_BUFFER</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.InvalidData">
+            <summary>Constant InvalidData.</summary>
+            <unmanaged>D3DX11_ERR_INVALID_DATA</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.CannotAttrSort">
+            <summary>Constant CannotAttrSort.</summary>
+            <unmanaged>D3DX11_ERR_CANNOT_ATTR_SORT</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.TooManyInfluences">
+            <summary>Constant TooManyInfluences.</summary>
+            <unmanaged>D3DX11_ERR_TOO_MANY_INFLUENCES</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.CannotRemoveLastItem">
+            <summary>Constant CannotRemoveLastItem.</summary>
+            <unmanaged>D3DX11_ERR_CANNOT_REMOVE_LAST_ITEM</unmanaged>
+        </member>
+        <member name="F:SharpDX.Direct3D11.ResultCode.SkinningNotSupported">
+            <summary>Constant SkinningNotSupported.</summary>
+            <unmanaged>D3DX11_ERR_SKINNING_NOT_SUPPORTED</unmanaged>
         </member>
         <member name="T:SharpDX.Direct3D11.CommandList">
             <summary>	
