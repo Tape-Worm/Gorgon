@@ -176,7 +176,7 @@ namespace GorgonLibrary.Graphics
 					_states[i] = GetState(state);
 				}
 
-				_shader.SetSamplers(slot, _states);
+				_shader.SetSamplers(slot, count, _states);
 			}
 			#endregion
 
@@ -216,7 +216,7 @@ namespace GorgonLibrary.Graphics
 					{
 						_textureStates[index] = value;
 						_states[0] = GetState(value);
-						_shader.SetSamplers(index, _states);
+						_shader.SetSamplers(index, 1, _states);
 					}
 					else
 						Touch(value);
@@ -402,7 +402,7 @@ namespace GorgonLibrary.Graphics
 					else
 						_d3dBufferArray[0] = null;
 
-					_shader.SetConstantBuffers(index, _d3dBufferArray);
+					_shader.SetConstantBuffers(index, 1, _d3dBufferArray);
 				}
 			}
 			#endregion
@@ -447,12 +447,12 @@ namespace GorgonLibrary.Graphics
 
 					_buffers[i + slot] = buffer;
 					if (buffer != null)
-						_d3dBufferArray[i + slot] = buffer.D3DBuffer;
+						_d3dBufferArray[i] = buffer.D3DBuffer;
 					else
-						_d3dBufferArray[i + slot] = null;
+						_d3dBufferArray[i] = null;
 				}
 
-				_shader.SetConstantBuffers(slot, _d3dBufferArray);
+				_shader.SetConstantBuffers(slot, count, _d3dBufferArray);
 			}
 			#endregion
 
@@ -477,6 +477,8 @@ namespace GorgonLibrary.Graphics
 			/// <returns></returns>
 			public int IndexOf(GorgonConstantBuffer item)
 			{
+				GorgonDebug.AssertNull<GorgonConstantBuffer>(item, "item");
+
 				return _buffers.IndexOf(item);
 			}
 
@@ -592,14 +594,13 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// A list of shader resources.
+		/// A list of shader textures.
 		/// </summary>
-		public class ShaderResources
-			: IList<GorgonTexture2D>
+		public class ShaderTextures
+			: IList<GorgonTexture>
 		{
 			#region Variables.
 			private GorgonShaderState<T> _shader = null;				// Shader that owns this interface.
-			private IList<GorgonTexture2D> _textures = null;			// List of textures.
 			#endregion
 
 			#region Methods.
@@ -607,11 +608,11 @@ namespace GorgonLibrary.Graphics
 			/// Function to unbind a texture.
 			/// </summary>
 			/// <param name="texture">Texture to bind.</param>
-			internal void Unbind(GorgonTexture2D texture)
+			internal void Unbind(GorgonTexture texture)
 			{
 				for (int i = 0; i < Count; i++)
 				{
-					if (_textures[i] == texture)
+					if (_shader._resources[i] == texture)
 						this[i] = null;
 				}
 			}
@@ -627,7 +628,7 @@ namespace GorgonLibrary.Graphics
 
 				for (int i = 0; i < Count; i++)
 				{
-					if ((_textures[i] != null) && (string.Compare(_textures[i].Name, name, true) == 0))
+					if ((_shader._resources[i] != null) && (string.Compare(_shader._resources[i].Name, name, true) == 0))
 						return i;
 				}
 
@@ -656,14 +657,14 @@ namespace GorgonLibrary.Graphics
 			/// <para>-or-</para>
 			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available texture slots.</para>
 			/// </exception>
-			public void SetRange(int slot, IEnumerable<GorgonTexture2D> textures)
+			public void SetRange(int slot, IEnumerable<GorgonTexture> textures)
 			{
 				int count = 0;
 
-				GorgonDebug.AssertNull<IEnumerable<GorgonTexture2D>>(textures, "textures");
+				GorgonDebug.AssertNull<IEnumerable<GorgonTexture>>(textures, "textures");
 #if DEBUG
-				if ((slot < 0) || (slot >= _textures.Count) || ((slot + textures.Count()) >= _textures.Count))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + _textures.Count.ToString() + " slots occupied.");
+				if ((slot < 0) || (slot >= _shader._resources.Count) || ((slot + textures.Count()) >= _shader._resources.Count))
+					throw new ArgumentOutOfRangeException("Cannot have more than " + _shader._resources.Count.ToString() + " slots occupied.");
 #endif
 
 				count = textures.Count();
@@ -671,50 +672,48 @@ namespace GorgonLibrary.Graphics
 				{
 					var buffer = textures.ElementAtOrDefault(i);
 
-					_textures[i + slot] = buffer;
+					_shader._resources[i + slot] = buffer;
 					if (buffer != null)
-						_shader._views[i + slot] = ((IShaderResource)buffer).D3DResourceView;
+						_shader._views[i] = _shader._resources[i + slot].D3DResourceView;
 					else
-						_shader._views[i + slot] = null;
+						_shader._views[i] = null;
 				}
 
-				_shader.SetResources(slot);
+				_shader.SetResources(slot, count);
 			}
 			#endregion
 
 			#region Constructor/Destructor.
 			/// <summary>
-			/// Initializes a new instance of the <see cref="GorgonShaderState&lt;T&gt;.ShaderResources"/> class.
+			/// Initializes a new instance of the <see cref="GorgonShaderState&lt;T&gt;.ShaderTextures"/> class.
 			/// </summary>
 			/// <param name="shader">Shader state that owns this interface.</param>
-			internal ShaderResources(GorgonShaderState<T> shader)
+			internal ShaderTextures(GorgonShaderState<T> shader)
 			{
 				_shader = shader;
-				_textures = new GorgonTexture2D[D3D.CommonShaderStage.InputResourceSlotCount];
 			}
 			#endregion
 
-			#region IList<GorgonTexture2D> Members
+			#region IList<GorgonTexture> Members
 			#region Properties.
 			/// <summary>
 			/// Property to set or return the bound texture.
 			/// </summary>
-			public GorgonTexture2D this[int index]
+			public GorgonTexture this[int index]
 			{
 				get
 				{
-
-					return _textures[index];
+					return _shader._resources[index] as GorgonTexture;
 				}
 				set
 				{
-					_textures[index] = value;
+					_shader._resources[index] = value;
 					if (value != null)
-						_shader._views[0] = ((IShaderResource)value).D3DResourceView;
+						_shader._views[0] = _shader._resources[index].D3DResourceView;
 					else
 						_shader._views[0] = null;
 
-					_shader.SetResources(index);
+					_shader.SetResources(index, 1);
 				}
 			}
 			#endregion
@@ -725,11 +724,11 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">The texture to find the index of.</param>
 			/// <returns>The index if found, or -1 if not.</returns>
-			public int IndexOf(GorgonTexture2D item)
+			public int IndexOf(GorgonTexture item)
 			{
-				GorgonDebug.AssertNull<GorgonTexture2D>(item, "item");
+				GorgonDebug.AssertNull<GorgonTexture>(item, "item");
 
-				return _textures.IndexOf(item);
+				return _shader._resources.IndexOf(item);
 			}
 
 			/// <summary>
@@ -737,7 +736,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="index">The index.</param>
 			/// <param name="item">The item.</param>
-			void IList<GorgonTexture2D>.Insert(int index, GorgonTexture2D item)
+			void IList<GorgonTexture>.Insert(int index, GorgonTexture item)
 			{
 				throw new NotImplementedException();
 			}
@@ -746,14 +745,14 @@ namespace GorgonLibrary.Graphics
 			/// Removes at.
 			/// </summary>
 			/// <param name="index">The index.</param>
-			void IList<GorgonTexture2D>.RemoveAt(int index)
+			void IList<GorgonTexture>.RemoveAt(int index)
 			{
 				throw new NotImplementedException();
 			}
 			#endregion
 			#endregion
 
-			#region ICollection<GorgonTexture2D> Members
+			#region ICollection<GorgonTexture> Members
 			#region Properties.
 			/// <summary>
 			/// Property to return the number of texture slots.
@@ -762,7 +761,7 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _textures.Count;
+					return _shader._resources.Count;
 				}
 			}
 
@@ -783,7 +782,7 @@ namespace GorgonLibrary.Graphics
 			/// Adds the specified item.
 			/// </summary>
 			/// <param name="item">The item.</param>
-			void ICollection<GorgonTexture2D>.Add(GorgonTexture2D item)
+			void ICollection<GorgonTexture>.Add(GorgonTexture item)
 			{
 				throw new NotImplementedException();
 			}
@@ -791,7 +790,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Clears this instance.
 			/// </summary>
-			void ICollection<GorgonTexture2D>.Clear()
+			void ICollection<GorgonTexture>.Clear()
 			{
 				throw new NotImplementedException();
 			}
@@ -801,9 +800,9 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">Texture to find.</param>
 			/// <returns>TRUE if found, FALSE if not.</returns>
-			public bool Contains(GorgonTexture2D item)
+			public bool Contains(GorgonTexture item)
 			{
-				return _textures.Contains(item);
+				return _shader._resources.Contains(item);
 			}
 
 			/// <summary>
@@ -811,9 +810,18 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="array">Array to copy into.</param>
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
-			public void CopyTo(GorgonTexture2D[] array, int arrayIndex)
+			public void CopyTo(GorgonTexture[] array, int arrayIndex)
 			{
-				_textures.CopyTo(array, arrayIndex);
+				var textures = from shaderView in _shader._resources
+							   let texture = shaderView as GorgonTexture
+							   where texture != null
+							   select texture;
+
+				foreach (var item in textures)
+				{
+					array[arrayIndex] = item;
+					arrayIndex++;
+				}
 			}
 
 			/// <summary>
@@ -821,22 +829,22 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">The item.</param>
 			/// <returns></returns>
-			bool ICollection<GorgonTexture2D>.Remove(GorgonTexture2D item)
+			bool ICollection<GorgonTexture>.Remove(GorgonTexture item)
 			{
 				throw new NotImplementedException();
 			}
 			#endregion
 			#endregion
 
-			#region IEnumerable<GorgonTexture2D> Members
+			#region IEnumerable<GorgonTexture> Members
 			/// <summary>
 			/// Function to return an enumerator for the list.
 			/// </summary>
 			/// <returns>The enumerator for the list.</returns>
-			public IEnumerator<GorgonTexture2D> GetEnumerator()
+			public IEnumerator<GorgonTexture> GetEnumerator()
 			{
-				foreach (var item in this)
-					yield return item;
+				foreach (var texture in _shader._resources.Where(item => item is GorgonTexture))
+					yield return (GorgonTexture)texture;
 			}
 			#endregion
 
@@ -858,6 +866,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private T _current = null;									// Current shader.
 		private D3D.ShaderResourceView[] _views = null;				// Resource views.
+		private IList<IShaderResource> _resources = null;			// List of resources.
 		#endregion
 
 		#region Properties.
@@ -910,7 +919,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the list of textures for the shaders.
 		/// </summary>
-		public ShaderResources Textures
+		public ShaderTextures Textures
 		{
 			get;
 			private set;
@@ -927,31 +936,35 @@ namespace GorgonLibrary.Graphics
 		/// Function to set resources for the shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count">Number of resources to update.</param>
 		/// <param name="resources">Resources to update.</param>
-		protected abstract void SetResources(int slot, D3D.ShaderResourceView[] resources);
+		protected abstract void SetResources(int slot, int count, D3D.ShaderResourceView[] resources);
 
 		/// <summary>
 		/// Function to set the texture samplers for a shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count">Number of samplers to update.</param>
 		/// <param name="samplers">Samplers to update.</param>
-		internal abstract void SetSamplers(int slot, D3D.SamplerState[] samplers);		
+		internal abstract void SetSamplers(int slot, int count, D3D.SamplerState[] samplers);		
 
 		/// <summary>
 		/// Function to set resources for the shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
-		internal void SetResources(int slot)
+		/// <param name="count">Number of resources to update.</param>
+		internal void SetResources(int slot, int count)
 		{
-			SetResources(slot, _views);
+			SetResources(slot, count, _views);
 		}
 
 		/// <summary>
 		/// Function to set constant buffers for the shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count">Number of constant buffers to update.</param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		internal abstract void SetConstantBuffers(int slot, D3D.Buffer[] buffers);
+		internal abstract void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers);
 
 		/// <summary>
 		/// Function to clean up.
@@ -975,10 +988,12 @@ namespace GorgonLibrary.Graphics
 		protected GorgonShaderState(GorgonGraphics graphics)
 		{
 			_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
+			_resources = new IShaderResource[_views.Length];
+
 			Graphics = graphics;			
 			ConstantBuffers = new ShaderConstantBuffers(this);			
 			TextureSamplers = new TextureSamplerState(this);
-			Textures = new ShaderResources(this);
+			Textures = new ShaderTextures(this);
 		}
 		#endregion
 	}
@@ -1005,39 +1020,42 @@ namespace GorgonLibrary.Graphics
 		/// Function to set resources for the shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count"></param>
 		/// <param name="resources">Resources to update.</param>
-		protected override void SetResources(int slot, D3D.ShaderResourceView[] resources)
+		protected override void SetResources(int slot, int count, D3D.ShaderResourceView[] resources)
 		{
-			if (resources.Length == 1)
+			if (count == 1)
 				Graphics.Context.PixelShader.SetShaderResource(slot, resources[0]);
 			else
-				Graphics.Context.PixelShader.SetShaderResources(slot, resources.Length, resources);
+				Graphics.Context.PixelShader.SetShaderResources(slot, count, resources);
 		}
 
 		/// <summary>
 		/// Function to set the texture samplers for a shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
-		internal override void SetSamplers(int slot, D3D.SamplerState[] samplers)
+		internal override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
 		{
-			if (samplers.Length == 1)
+			if (count == 1)
 				Graphics.Context.PixelShader.SetSampler(slot, samplers[0]);
 			else
-				Graphics.Context.PixelShader.SetSamplers(slot, samplers.Length, samplers);
+				Graphics.Context.PixelShader.SetSamplers(slot, count, samplers);
 		}
 
 		/// <summary>
 		/// Function to set constant buffers for the shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count"></param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		internal override void SetConstantBuffers(int slot, D3D.Buffer[] buffers)
+		internal override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
 		{
-			if (buffers.Length == 1)
+			if (count == 1)
 				Graphics.Context.PixelShader.SetConstantBuffer(slot, buffers[0]);
 			else
-				Graphics.Context.PixelShader.SetConstantBuffers(slot, buffers.Length, buffers);
+				Graphics.Context.PixelShader.SetConstantBuffers(slot, count, buffers);
 		}
 		#endregion
 
@@ -1076,39 +1094,42 @@ namespace GorgonLibrary.Graphics
 		/// Function to set resources for the shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count"></param>
 		/// <param name="resources">Resources to update.</param>
-		protected override void SetResources(int slot, D3D.ShaderResourceView[] resources)
+		protected override void SetResources(int slot, int count, D3D.ShaderResourceView[] resources)
 		{
-			if (resources.Length == 1)
+			if (count == 1)
 				Graphics.Context.VertexShader.SetShaderResource(slot, resources[0]);
 			else
-				Graphics.Context.VertexShader.SetShaderResources(slot, resources.Length, resources);
+				Graphics.Context.VertexShader.SetShaderResources(slot, count, resources);
 		}
 
 		/// <summary>
 		/// Function to set the texture samplers for a shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
-		internal override void SetSamplers(int slot, D3D.SamplerState[] samplers)
+		internal override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
 		{
-			if (samplers.Length == 1)
+			if (count == 1)
 				Graphics.Context.VertexShader.SetSampler(slot, samplers[0]);
 			else
-				Graphics.Context.VertexShader.SetSamplers(slot, samplers.Length, samplers);
+				Graphics.Context.VertexShader.SetSamplers(slot, count, samplers);
 		}
 
 		/// <summary>
 		/// Function to set constant buffers for the shader.
 		/// </summary>
 		/// <param name="slot">Slot to start at.</param>
+		/// <param name="count"></param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		internal override void SetConstantBuffers(int slot, D3D.Buffer[] buffers)
+		internal override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
 		{
-			if (buffers.Length == 1)
+			if (count == 1)
 				Graphics.Context.VertexShader.SetConstantBuffer(slot, buffers[0]);
 			else
-				Graphics.Context.VertexShader.SetConstantBuffers(slot, buffers.Length, buffers);
+				Graphics.Context.VertexShader.SetConstantBuffers(slot, count, buffers);
 		}
 		#endregion
 

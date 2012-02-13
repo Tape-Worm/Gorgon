@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, February 08, 2012 3:04:49 PM
+// Created: Monday, February 13, 2012 7:22:40 AM
 // 
 #endregion
 
@@ -34,19 +34,15 @@ using D3D = SharpDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Settings for a 2D texture.
+	/// Settings for a 1D texture.
 	/// </summary>
-	public struct GorgonTexture2DSettings
+	public struct GorgonTexture1DSettings
 	{
 		#region Variables.
 		/// <summary>
 		/// Width of the texture.
 		/// </summary>
 		public int Width;
-		/// <summary>
-		/// Height of the texture.
-		/// </summary>
-		public int Height;
 		/// <summary>
 		/// Format of the texture.
 		/// </summary>
@@ -64,10 +60,6 @@ namespace GorgonLibrary.Graphics
 		/// Usage levels for the texture.
 		/// </summary>
 		public BufferUsage Usage;
-		/// <summary>
-		/// Multisampling settings for the texture.
-		/// </summary>
-		public GorgonMultiSampling Multisampling;
 		#endregion
 
 		#region Properties.
@@ -78,17 +70,16 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return ((Width == 0) || (Width & (Width - 1)) == 0) && 
-						((Height == 0) || (Height & (Height - 1)) == 0);
+				return ((Width == 0) || (Width & (Width - 1)) == 0);
 			}
 		}
 		#endregion
 	}
 
 	/// <summary>
-	/// A 2 dimensional texture object.
+	/// A 1 dimension texture object.
 	/// </summary>
-	public class GorgonTexture2D
+	public class GorgonTexture1D
 		: GorgonTexture
 	{
 		#region Variables.
@@ -99,7 +90,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the D3D texture object.
 		/// </summary>
-		internal D3D.Texture2D D3DTexture
+		internal D3D.Texture1D D3DTexture
 		{
 			get;
 			private set;
@@ -108,7 +99,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the settings for this texture.
 		/// </summary>
-		public GorgonTexture2DSettings Settings
+		public GorgonTexture1DSettings Settings
 		{
 			get;
 			private set;
@@ -121,13 +112,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void RetrieveSettings()
 		{
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
+			GorgonTexture1DSettings settings = new GorgonTexture1DSettings();
 
 			settings.ArrayCount = D3DTexture.Description.ArraySize;
 			settings.Format = (BufferFormat)D3DTexture.Description.Format;
-			settings.Height = D3DTexture.Description.Height;
 			settings.MipCount = D3DTexture.Description.MipLevels;
-			settings.Multisampling = new GorgonMultiSampling(D3DTexture.Description.SampleDescription.Count, D3DTexture.Description.SampleDescription.Quality);
 			settings.Usage = (BufferUsage)D3DTexture.Description.Usage;
 			settings.Width = D3DTexture.Description.Width;
 
@@ -139,29 +128,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateResourceView()
 		{
-			D3DTexture.DebugName = "Gorgon 2D Texture '" + Name + "'";
+			D3DTexture.DebugName = "Gorgon 1D Texture '" + Name + "'";
 			View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
-			View.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (D3DTexture != null)
-						D3DTexture.Dispose();
-				}
-
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
+			View.DebugName = "Gorgon 1D Texture '" + Name + "' resource view";
 		}
 
 		/// <summary>
@@ -191,37 +160,54 @@ namespace GorgonLibrary.Graphics
 			imageInfo.Filter = (D3D.FilterFlags)filter;
 			imageInfo.FirstMipLevel = 0;
 			imageInfo.Format = (SharpDX.DXGI.Format)Settings.Format;
-			imageInfo.Height = Settings.Height;
 			imageInfo.Width = Settings.Width;
 			imageInfo.MipFilter = (D3D.FilterFlags)mipFilter;
 			imageInfo.MipLevels = Settings.MipCount;
 			imageInfo.OptionFlags = D3D.ResourceOptionFlags.None;
 			imageInfo.Usage = (D3D.ResourceUsage)Settings.Usage;
-			imageInfo.Width = Settings.Width;
+			imageInfo.Width = Settings.Width;			
 
-			D3DTexture = D3D.Texture2D.FromMemory<D3D.Texture2D>(Graphics.D3DDevice, imageData, imageInfo);
+			D3DTexture = D3D.Texture1D.FromMemory<D3D.Texture1D>(Graphics.D3DDevice, imageData, imageInfo);
 
 			RetrieveSettings();
 			CreateResourceView();
 		}
 
 		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (D3DTexture != null)
+						D3DTexture.Dispose();
+				}
+
+				_disposed = true;
+			}
+
+			base.Dispose(disposing);
+		}
+
+		/// <summary>
 		/// Function to initialize the texture.
 		/// </summary>
 		/// <param name="data">Data used to populate the texture.</param>
-		protected internal void Initialize(GorgonTexture2DData? data)
+		protected internal void Initialize(GorgonDataStream data)
 		{
-			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
-			DX.DataRectangle[] dataRects = null;
+			D3D.Texture1DDescription desc = new D3D.Texture1DDescription();
 
 			desc.ArraySize = Settings.ArrayCount;
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
 			desc.Width = Settings.Width;
-			desc.Height = Settings.Height;
 			desc.MipLevels = Settings.MipCount;
 			desc.BindFlags = D3D.BindFlags.ShaderResource;
 			desc.Usage = (D3D.ResourceUsage)Settings.Usage;
-			switch(Settings.Usage)
+			switch (Settings.Usage)
 			{
 				case BufferUsage.Staging:
 					desc.CpuAccessFlags = D3D.CpuAccessFlags.Read | D3D.CpuAccessFlags.Write;
@@ -231,24 +217,17 @@ namespace GorgonLibrary.Graphics
 					break;
 				default:
 					desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
-					break;				
-			}
+					break;
+			}			
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = new DX.DXGI.SampleDescription(Settings.Multisampling.Count, Settings.Multisampling.Quality);
 
 			if (data != null)
 			{
-				dataRects = new DX.DataRectangle[data.Value.Data.Length];
-				for (int i = 0; i < dataRects.Length; i++)
-				{
-					dataRects[i].DataPointer = data.Value.Data[i].PositionPointer;
-					dataRects[i].Pitch = data.Value.Pitch[i];
-				}
-
-				D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc, dataRects);
+				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - data.Position, true, true))
+					D3DTexture = new D3D.Texture1D(Graphics.D3DDevice, desc, stream);
 			}
 			else
-				D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
+				D3DTexture = new D3D.Texture1D(Graphics.D3DDevice, desc);
 
 			CreateResourceView();
 		}
@@ -256,20 +235,7 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
-		/// </summary>
-		/// <param name="swapChain">The swap chain to get texture information from.</param>
-		internal GorgonTexture2D(GorgonSwapChain swapChain)
-			: base(swapChain.Graphics, swapChain.Name + "_Internal_Texture_" + Guid.NewGuid().ToString())
-		{
-			D3DTexture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
-			D3DTexture.DebugName = "Gorgon swap chain texture '" + Name + "'";
-
-			RetrieveSettings();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTexture1D"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this texture.</param>
 		/// <param name="name">The name of the texture.</param>
@@ -277,7 +243,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		internal GorgonTexture2D(GorgonGraphics graphics, string name, GorgonTexture2DSettings settings)
+		internal GorgonTexture1D(GorgonGraphics graphics, string name, GorgonTexture1DSettings settings)
 			: base(graphics, name)
 		{
 			if (settings.MipCount < 0)
@@ -286,9 +252,6 @@ namespace GorgonLibrary.Graphics
 			if (settings.ArrayCount < 1)
 				settings.ArrayCount = 1;
 
-			if (settings.Multisampling.Count < 1)
-				settings.Multisampling = new GorgonMultiSampling(1, 0);
-					
 			Settings = settings;
 		}
 		#endregion

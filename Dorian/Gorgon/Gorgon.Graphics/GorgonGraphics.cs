@@ -339,6 +339,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void DrawAuto()
 		{
+#if DEBUG
+			if (VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				throw new GorgonException(GorgonResult.AccessDenied, "SM 2.0 video devices cannot draw auto-generated data.");
+#endif
+
 			Context.DrawAuto();
 		}
 

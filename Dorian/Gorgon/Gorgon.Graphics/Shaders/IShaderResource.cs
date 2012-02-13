@@ -36,6 +36,7 @@ namespace GorgonLibrary.Graphics
 	/// Shader resource view.
 	/// </summary>
 	interface IShaderResource
+		: INamedObject
 	{
 		/// <summary>
 		/// Property to return the shader resource view for an object.

@@ -51,7 +51,7 @@ namespace Tester_Graphics
 			}
 		}
 
-		private Sprite[] _sprites = new Sprite[1024];
+		private Sprite[] _sprites = new Sprite[Test.count];
 		private GorgonVertexBuffer _spriteVertices = null;
 		private GorgonIndexBuffer _spriteIndices = null;
 		private GorgonVertexShader _spriteVShader = null;
@@ -80,7 +80,7 @@ namespace Tester_Graphics
 		bool _pause = false;
 		Random _rnd = new Random();
 		float accum = 0.0f;
-		float target = (float)GorgonFrameRate.FpsToMilliseconds(20) / 1000.0f;
+		float target = (float)GorgonFrameRate.FpsToMilliseconds(60) / 1000.0f;
 
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
@@ -134,8 +134,7 @@ namespace Tester_Graphics
 
 						_test1.Draw();
 
-						//_graphics.DrawIndexed(0, 0, _sprites.Length * 6);
-						_graphics.DrawIndexed(0, 0, 6);
+						_graphics.DrawIndexed(0, 0, _sprites.Length * 6);
 					}
 
 

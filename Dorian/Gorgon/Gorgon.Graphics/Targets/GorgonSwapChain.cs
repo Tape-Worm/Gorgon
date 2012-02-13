@@ -735,7 +735,7 @@ namespace GorgonLibrary.Graphics
 				if (result.Success)
 					IsInStandBy = true;
 				else
-					throw new GorgonException(GorgonResult.CannotWrite, "Cannot update the swap chain front buffer.\nAn unrecoverable error has occurred:\n" + ErrorManager.GetErrorMessage(result.Code));
+					throw new GorgonException(GorgonResult.CannotWrite, "Cannot update the swap chain front buffer.\nAn unrecoverable error has occurred:\n" + D3DErrors.GetError(result.Code).Description + " (" + D3DErrors.GetError(result.Code).Code + ")");
 			}
 			else
 				IsInStandBy = false;

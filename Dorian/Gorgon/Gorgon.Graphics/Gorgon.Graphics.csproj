@@ -48,9 +48,6 @@
     <Reference Include="SharpDX.D3DCompiler">
       <HintPath>..\..\Dependencies\SharpDX\Bin\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Diagnostics">
-      <HintPath>..\..\Dependencies\SharpDX\Bin\SharpDX.Diagnostics.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX.Direct3D11">
       <HintPath>..\..\Dependencies\SharpDX\Bin\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
@@ -77,6 +74,7 @@
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBufferBinding.cs" />
     <Compile Include="Collections\GorgonCustomValueCollection.cs" />
+    <Compile Include="D3DErrors.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceCollection.cs" />
     <Compile Include="DeviceInfo\GorgonVideoMode.cs" />
@@ -119,9 +117,11 @@
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="Textures\GorgonTexture1D.cs" />
     <Compile Include="Textures\GorgonTexture2D.cs" />
     <Compile Include="Textures\GorgonTextureData.cs" />
     <Compile Include="Textures\GorgonTextures.cs" />
+    <Compile Include="Textures\GorgonTexture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
