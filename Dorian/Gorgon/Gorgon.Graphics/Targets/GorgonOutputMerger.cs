@@ -115,6 +115,36 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
+			/// Function to determine if the render targets have the same bit depth.
+			/// </summary>
+			/// <param name="format">The format to check.</param>
+			/// <param name="index">Index of the render target being set.</param>
+			/// <returns>TRUE if the bit depths are the same, FALSE if not.</returns>
+			private bool HasSameBitDepth(BufferFormat format, int index)
+			{
+				int bitDepth = GorgonBufferFormatInfo.GetInfo(format).BitDepth;
+
+				if (_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
+					return true;
+
+				for (int i = 0; i < _targets.Count; i++)
+				{
+					if (index == i)
+						continue;
+
+					if (_targets[i] != null)
+					{
+						int otherBitDepth = GorgonBufferFormatInfo.GetInfo(_targets[i].Settings.Format).BitDepth;
+
+						if (otherBitDepth != bitDepth)
+							return false;
+					}
+				}
+
+				return true;
+			}
+
+			/// <summary>
 			/// Function to determine if a render target is bound by its name.
 			/// </summary>
 			/// <param name="name">Name of the render target.</param>
@@ -163,9 +193,18 @@ namespace GorgonLibrary.Graphics
 			/// <param name="target">Target to bind.</param>
 			/// <param name="depthStencil">Depth/stencil buffer to bind.</param>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown if the current video device is only SM 2.0 and the targets are not the same bit depth.</exception>
 			public void SetRenderTarget(int index, GorgonSwapChain target, GorgonDepthStencil depthStencil)
 			{
 				GorgonDebug.AssertParamRange(index, 0, 8, true, false, "startIndex");
+
+#if DEBUG
+				if (target != null)
+				{
+					if (!HasSameBitDepth(target.Settings.Format, index))
+						throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the render target, targets must be of the same bit depth for SM_2_a_b video devices.");
+				}
+#endif
 
 				_targets[index] = target;
 				_views[index] = target == null ? null : target.D3DRenderTarget;
@@ -180,6 +219,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="startIndex">The starting index that will be bound.</param>
 			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="targets"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown if the current video device is SM 2.0 and the targets are not the same bit depth.</exception>
 			public void SetRenderTargetRange(IEnumerable<GorgonSwapChain> targets, GorgonDepthStencil depthStencil, int startIndex)
 			{
 				int count = _targets.Count - startIndex;
@@ -191,7 +231,16 @@ namespace GorgonLibrary.Graphics
 					GorgonSwapChain target = null;
 
 					if (targets != null)
+					{
 						target = targets.ElementAt(i);
+#if DEBUG
+						if (target != null)
+						{
+							if (!HasSameBitDepth(target.Settings.Format, i + startIndex))
+								throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the render target, targets must be of the same bit depth for SM_2_a_b video devices.");
+						}
+#endif
+					}
 					_targets[i + startIndex] = target;
 					_views[i + startIndex] = (target == null ? null : target.D3DRenderTarget);
 				}
@@ -219,8 +268,12 @@ namespace GorgonLibrary.Graphics
 			internal GorgonRenderTargetList(GorgonGraphics graphics)
 			{
 				_graphics = graphics;
-				_targets = new GorgonSwapChain[8];
-				_views = new D3D.RenderTargetView[8];
+				if (graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+					_targets = new GorgonSwapChain[4];
+				else
+					_targets = new GorgonSwapChain[8];
+
+				_views = new D3D.RenderTargetView[_targets.Count];
 			}
 			#endregion
 
