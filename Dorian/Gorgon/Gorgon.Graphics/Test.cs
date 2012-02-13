@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 	public class Test
 		: IDisposable
 	{
-		public const int count = 512;
+		public const int count = 1024;
 		private D3D.Device _device = null;
 		private GorgonGraphics _graphics = null;
 		private GorgonSwapChain _swapChain = null;
@@ -148,6 +148,8 @@ namespace GorgonLibrary.Graphics
 		private vertex[] _sprite = null;
 		private Matrix pvw = Matrix.Identity;
 		private GorgonDataStream _tempStream = null;
+		private float _aspect = 0.0f;
+		private float _camPos = -0.75f;
 			
 		
 		struct vertex
@@ -299,13 +301,15 @@ namespace GorgonLibrary.Graphics
 			//_textureView2.DebugName = _swapChain.Name + " Test texture view 2.";
 
 			_form = Gorgon.GetTopLevelForm(_swapChain.Settings.Window);
+			_form.KeyDown += new System.Windows.Forms.KeyEventHandler(_form_KeyDown);
 
 			MatrixBuffer matrix = new MatrixBuffer();
-			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
+			_aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
+			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), _aspect, 0.1f, 1000.0f);
 			//matrix.Projection = Matrix.OrthoLH(2.0f * 1.6f, 2.0f, 0.1f, 1000.0f);
 			//matrix.Projection = Matrix.OrthoOffCenterLH((1.0f * 1.6f), 0, 0, -1.0f, 0.1f, 1000.0f);
 			//matrix.Projection.Transpose();
-			matrix.View = Matrix.LookAtLH(new Vector3(0, 0, -0.75f), new Vector3(0, 0, 1.0f), Vector3.UnitY);
+			matrix.View = Matrix.LookAtLH(new Vector3(0, 0, -1.0f), new Vector3(0, 0, 1.0f), Vector3.UnitY);
 			//matrix.View.Transpose();
 			
 			//Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
@@ -379,6 +383,30 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Handles the KeyDown event of the _form control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
+		void _form_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+		{
+			if (e.KeyCode == System.Windows.Forms.Keys.Down)
+				_camPos -= 0.01f;
+
+			if (e.KeyCode == System.Windows.Forms.Keys.Up)
+				_camPos += 0.01f;
+
+			if (_camPos < -1.0f)
+				_camPos = -1.0f;
+
+			if (_camPos > 1.0f)
+				_camPos = 1.0f;
+
+			Matrix matrix = Matrix.LookAtLH(new Vector3(0, 0, _camPos), new Vector3(0, 0, 1.0f), Vector3.UnitY);
+			Matrix projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), _aspect, 0.1f, 1000.0f);
+			pvw = matrix * projection;
+		}	
+
+		/// <summary>
 		/// Handles the Resize event of the Window control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -388,7 +416,8 @@ namespace GorgonLibrary.Graphics
 			MatrixBuffer matrix = new MatrixBuffer();
 			
 			_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
-			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
+			_aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
+			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), _aspect, 0.1f, 1000.0f);
 			matrix.View = Matrix.LookAtLH(new Vector3(0, 0, -0.75f), new Vector3(0, 0, 1.0f), Vector3.UnitY);			
 			//matrix.Projection.Transpose();
 			//matrix.View.Transpose();
@@ -407,7 +436,7 @@ namespace GorgonLibrary.Graphics
 				stream.Write(matrix.View);
 			}*/
 
-			_device.ImmediateContext.OutputMerger.SetTargets((_swapChain.DepthStencil != null ? _swapChain.DepthStencil.D3DDepthStencilView : null), _swapChain.D3DRenderTarget);
+			_graphics.Output.RenderTargets[0] = _swapChain;
 
 			pvw = matrix.View * matrix.Projection;
 		}
@@ -426,7 +455,7 @@ namespace GorgonLibrary.Graphics
 			scale = new float[count];
 			scaleDelta = new float[count];
 			scaleBounce = new bool[count];
-			pos = new Vector2[count];
+			pos = new Vector3[count];
 			hBounce = new bool[count];
 			vBounce = new bool[count];
 			vel = new Vector2[count];
@@ -441,12 +470,12 @@ namespace GorgonLibrary.Graphics
 			for (int i = 0; i < count; i++)
 			{
 				//scale[i] = ((float)_rnd.NextDouble() * 0.5f) + 0.5f;
-				scale[i] = (float)(i + 1) / count;
+				//scale[i] = (float)(i + 1) / count;
+				scale[i] = 1.0f;
 				scaleDelta[i] = ((float)_rnd.NextDouble() * 1.5f) + 0.25f;
 				scaleBounce[i] = false;
 				vBounce[i] = _rnd.Next(0, 100) > 50;
 				hBounce[i] = _rnd.Next(0, 100) < 50;
-				pos[i] = Vector2.Zero;
 				vel[i] = new Vector2(((float)_rnd.NextDouble() * 0.5f), ((float)_rnd.NextDouble() * 0.5f));
 				angle[i] = 0.0f;
 				angleDelta[i] = 1.0f;
@@ -458,6 +487,8 @@ namespace GorgonLibrary.Graphics
 				color[i] = new Vector3(1.0f);
 				pos[i].X = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
 				pos[i].Y = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
+				pos[i].Z = (float)_rnd.NextDouble();
+				
 				//pos[i] = Vector2.Zero;
 
 				int spriteIndex = i * 4;
@@ -520,10 +551,10 @@ namespace GorgonLibrary.Graphics
 				/*color[i] = new Vector3(1.0f);
 				alpha[i] = 1.0f;*/
 
-				if (scaleBounce[i])				
+				/*if (scaleBounce[i])				
 					scale[i] -= scaleDelta[i] * delta;
 				else
-					scale[i] += scaleDelta[i] * delta;
+					scale[i] += scaleDelta[i] * delta;*/
 
 				//scale[i] = 1.05f;
 
@@ -539,6 +570,7 @@ namespace GorgonLibrary.Graphics
 					scaleBounce[i] = !scaleBounce[i];
 					scaleDelta[i] = ((float)_rnd.NextDouble() * 1.5f) + 0.25f;
 				}
+				
 
 				if (vBounce[i])
 					pos[i].Y -= (vel[i].Y * delta);
@@ -550,28 +582,28 @@ namespace GorgonLibrary.Graphics
 				else
 					pos[i].X += (vel[i].X * delta);
 
-				if (pos[i].X > 1.0f)
+				if (pos[i].X > (1.0f * _aspect))
 				{
-					pos[i].X = 1.0f;
+					pos[i].X = (1.0f * _aspect);
 					vel[i].X = ((float)_rnd.NextDouble() * 0.5f) + 0.5f;
 					hBounce[i] = !hBounce[i];
 				}
-				if (pos[i].Y > 1.0f)
+				if (pos[i].Y > (1.0f * _aspect))
 				{
-					pos[i].Y = 1.0f;
+					pos[i].Y = (1.0f * _aspect);
 					vel[i].Y = ((float)_rnd.NextDouble() * 0.5f) + 0.5f;
 					vBounce[i] = !vBounce[i];
 				}
 
-				if (pos[i].X < -1.0f)
+				if (pos[i].X < (-1.0f * _aspect))
 				{
-					pos[i].X = -1.0f;
+					pos[i].X = (-1.0f * _aspect);
 					vel[i].X = (float)_rnd.NextDouble();
 					hBounce[i] = !hBounce[i];
 				}
-				if (pos[i].Y < -1.0f)
+				if (pos[i].Y < (-1.0f * _aspect))
 				{
-					pos[i].Y = -1.0f;
+					pos[i].Y = (-1.0f * _aspect);
 					vel[i].Y = (float)_rnd.NextDouble();
 					vBounce[i] = !vBounce[i];
 				}
@@ -583,14 +615,20 @@ namespace GorgonLibrary.Graphics
 
 				Matrix trans = Matrix.Identity;
 				Matrix world = Matrix.Identity;
+				Quaternion rot = Quaternion.Identity;
+				var sortPos = pos.OrderByDescending(item => item.Z).ToArray();
 				for (int i = 0; i < count * 4; i += 4)
 				{
 					int arrayindex = i / 4;
 
 					trans = Matrix.Identity;
 					//buffer.World = Matrix.Scaling(0.248f, 0.248f, 1.0f);// *Matrix.Translation(-0.5f + ((float)(i / 4) / (float)count), 0.25f, 0.0f);
+
 					//buffer.World = Matrix.RotationZ(angle[arrayindex]);
-					world = Matrix.RotationZ(-angle[arrayindex]) * (Matrix.Scaling(scale[arrayindex], scale[arrayindex], 1.0f)) * Matrix.Translation(pos[arrayindex].X, pos[arrayindex].Y, 0.0f);
+					//rot = Quaternion.RotationYawPitchRoll(GorgonMathUtility.Sin(angle[arrayindex]) * 2.0f, GorgonMathUtility.Cos(angle[arrayindex]) * 0.125f, -angle[arrayindex]);
+					//Matrix.RotationQuaternion(ref rot, out world);
+					world = Matrix.RotationZ(-angle[arrayindex]);
+					world = world * (Matrix.Scaling(scale[arrayindex], scale[arrayindex], 1.0f)) * Matrix.Translation(sortPos[arrayindex].X, sortPos[arrayindex].Y, sortPos[arrayindex].Z);
 					Matrix.Multiply(ref world, ref pvw, out trans);
 
 
@@ -610,7 +648,7 @@ namespace GorgonLibrary.Graphics
 					_sprite[i + 2].Color = _sprite[i].Color;
 					_sprite[i + 3].Color = _sprite[i].Color;
 
-					_sprite[i].Position = Vector3.Transform(new Vector3(-0.1401f, 0.1401f, 0.0f), trans);						
+					_sprite[i].Position = Vector3.Transform(new Vector3(-0.1401f, 0.1401f, 0.0f), trans);
 					_sprite[i + 1].Position = Vector3.Transform(new Vector3(0.1401f, 0.1401f, 0.0f), trans);
 					_sprite[i + 2].Position = Vector3.Transform(new Vector3(-0.1401f, -0.1401f, 0.0f), trans);
 					_sprite[i + 3].Position = Vector3.Transform(new Vector3(0.1401f, -0.1401f, 0.0f), trans);
@@ -648,7 +686,7 @@ namespace GorgonLibrary.Graphics
 		//int textPos = 0;
 		float[] scale = null;
 		float[] scaleDelta = null;
-		Vector2[] pos = null;
+		Vector3[] pos = null;
 		Vector2[] vel = null;
 		float[] angle = null;
 		float[] angleDelta = null;

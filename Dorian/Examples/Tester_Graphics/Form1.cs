@@ -264,7 +264,7 @@ namespace Tester_Graphics
 				//GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(false, true);
 				//_graphics = new GorgonGraphics(devices[1], DeviceFeatureLevel.SM2_a_b);				
 				//devices.Dispose();				
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);				
 				//_graphics = new GorgonGraphics();
 
 				//_graphics.IsObjectTrackingEnabled = false;
@@ -281,7 +281,7 @@ namespace Tester_Graphics
 				blend2.RenderTarget0.DestinationBlend = BlendType.One;
 				//blend2.RenderTarget0.WriteMask = ColorWriteMaskFlags.Blue | ColorWriteMaskFlags.Green | ColorWriteMaskFlags.Alpha;
 				_graphics.Output.BlendingState.States = blend1;
-
+				
 				//GorgonGraphics.IsDWMCompositionEnabled = false;
 				//this.TopMost = true;
 				//this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -297,7 +297,8 @@ namespace Tester_Graphics
 				int quality = _graphics.VideoDevice.GetMultiSampleQuality(mode1.Format, count);
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				multiSample = new GorgonMultiSampling(1, 0);
-				_swapChain = _graphics.Output.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.Unknown});
+				_swapChain = _graphics.Output.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt});
+
 				_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
 				//_graphics.Viewports.Add(new GorgonViewport(640, 400, 640, 400));
 
