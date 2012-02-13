@@ -42,24 +42,20 @@
     <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
       <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX, Version=2.0.3.0, Culture=neutral, PublicKeyToken=6f19e8495e7498cf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\Dependencies\SharpDX\Bin\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.D3DCompiler, Version=2.0.3.0, Culture=neutral, PublicKeyToken=6f19e8495e7498cf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.D3DCompiler.dll</HintPath>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\..\Dependencies\SharpDX\Bin\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Diagnostics">
-      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.Diagnostics.dll</HintPath>
+      <HintPath>..\..\Dependencies\SharpDX\Bin\SharpDX.Diagnostics.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=2.0.3.0, Culture=neutral, PublicKeyToken=6f19e8495e7498cf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.Direct3D11.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>..\..\Dependencies\SharpDX\Bin\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DXGI, Version=2.0.3.0, Culture=neutral, PublicKeyToken=6f19e8495e7498cf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpDX_2.0.3\Bin\SharpDX.DXGI.dll</HintPath>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\..\Dependencies\SharpDX\Bin\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="SlimMath, Version=1.0.0.0, Culture=neutral, PublicKeyToken=eb5b190254be1642, processorArchitecture=MSIL">
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
@@ -128,12 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
-    <None Include="sharpdx_direct3d11_effects_x64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="sharpdx_direct3d11_effects_x86.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Resources\Test.fx" />
   </ItemGroup>
   <ItemGroup>
