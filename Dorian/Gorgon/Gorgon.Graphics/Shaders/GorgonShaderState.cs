@@ -41,6 +41,327 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Classes.
 		/// <summary>
+		/// Sampler states.
+		/// </summary>
+		/// <remarks>This is used to control how textures are displayed.</remarks>
+		public class TextureSamplerState
+			: GorgonStateCache<GorgonTextureSamplerStates>, IList<GorgonTextureSamplerStates>
+		{
+			#region Variables.
+			private GorgonShaderState<T> _shader = null;							// Shader that owns the state.
+			private IList<GorgonTextureSamplerStates> _textureStates = null;		// Sampler states.
+			private D3D.SamplerState[] _states = null;								// D3D Sampler states.
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to retrieve the cached sampler state or return a new one.
+			/// </summary>
+			/// <param name="state">State to look up or create.</param>
+			/// <returns>The cached/new state.</returns>
+			private D3D.SamplerState GetState(GorgonTextureSamplerStates state)
+			{
+				D3D.SamplerState result = null;
+
+				result = GetItem(state) as D3D.SamplerState;
+				if (result == null)
+				{
+					result = Convert(state);
+					SetItem(state, result);
+				}
+
+				return result;
+			}
+
+			/// <summary>
+			/// Function to convert this blend state into a Direct3D blend state.
+			/// </summary>
+			/// <param name="states">States being converted.</param>
+			/// <returns>The Direct3D blend state.</returns>
+			private D3D.SamplerState Convert(GorgonTextureSamplerStates states)
+			{
+				D3D.SamplerStateDescription desc = new D3D.SamplerStateDescription();
+
+				desc.AddressU = (D3D.TextureAddressMode)states.HorizontalAddressing;
+				desc.AddressV = (D3D.TextureAddressMode)states.VerticalAddressing;
+				desc.AddressW = (D3D.TextureAddressMode)states.DepthAddressing;
+				desc.BorderColor = new SharpDX.Color4(states.BorderColor.Red, states.BorderColor.Green, states.BorderColor.Blue, states.BorderColor.Alpha);
+				desc.ComparisonFunction = (D3D.Comparison)states.ComparisonFunction;
+				desc.MaximumAnisotropy = states.MaxAnisotropy;
+				desc.MaximumLod = states.MaxLOD;
+				desc.MinimumLod = states.MinLOD;
+				desc.MipLodBias = states.MipLODBias;
+
+
+				if (states.TextureFilter == TextureFilter.Anisotropic)
+					desc.Filter = D3D.Filter.Anisotropic;
+				if (states.TextureFilter == TextureFilter.CompareAnisotropic)
+					desc.Filter = D3D.Filter.ComparisonAnisotropic;
+
+				// Sort out filter states.
+				// Check comparison states.
+				if ((states.TextureFilter & TextureFilter.Comparison) == TextureFilter.Comparison)
+				{
+					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+						desc.Filter = D3D.Filter.ComparisonMinMagMipLinear;
+					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+						desc.Filter = D3D.Filter.ComparisonMinMagMipPoint;
+
+					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+						desc.Filter = D3D.Filter.ComparisonMinMagLinearMipPoint;
+					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+						desc.Filter = D3D.Filter.ComparisonMinLinearMagMipPoint;
+					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+						desc.Filter = D3D.Filter.ComparisonMinLinearMagPointMipLinear;
+
+					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+						desc.Filter = D3D.Filter.ComparisonMinPointMagMipLinear;
+					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+						desc.Filter = D3D.Filter.ComparisonMinMagPointMipLinear;
+					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+						desc.Filter = D3D.Filter.ComparisonMinPointMagLinearMipPoint;
+				}
+				else
+				{
+					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+						desc.Filter = D3D.Filter.MinMagMipLinear;
+					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+						desc.Filter = D3D.Filter.MinMagMipPoint;
+
+					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+						desc.Filter = D3D.Filter.MinMagLinearMipPoint;
+					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+						desc.Filter = D3D.Filter.MinLinearMagMipPoint;
+					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+						desc.Filter = D3D.Filter.MinLinearMagPointMipLinear;
+
+					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+						desc.Filter = D3D.Filter.MinPointMagMipLinear;
+					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+						desc.Filter = D3D.Filter.MinMagPointMipLinear;
+					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+						desc.Filter = D3D.Filter.MinPointMagLinearMipPoint;
+				}
+
+				D3D.SamplerState state = new D3D.SamplerState(Graphics.D3DDevice, desc);
+				state.DebugName = "Gorgon Sampler State #" + StateCacheCount.ToString();
+
+				return state;
+			}
+
+			/// <summary>
+			/// Function to set a range of states at once.
+			/// </summary>
+			/// <param name="slot">Starting slot for the states.</param>
+			/// <param name="states">States to set.</param>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of state slots.
+			/// <para>-or-</para>
+			/// <para>Thrown when the <paramref name="states"/> count + the slot is greater than or equal to the number of available state slots.</para>
+			/// </exception>
+			public void SetRange(int slot, IEnumerable<GorgonTextureSamplerStates> states)
+			{
+				int count = 0;
+
+				GorgonDebug.AssertNull<IEnumerable<GorgonTextureSamplerStates>>(states, "states");
+#if DEBUG
+				if ((slot < 0) || (slot >= Count) || ((slot + states.Count()) >= Count))
+					throw new ArgumentOutOfRangeException("Cannot have more than " + Count.ToString() + " slots occupied.");
+#endif
+
+				count = states.Count();
+				for (int i = 0; i < count; i++)
+				{
+					var state = states.ElementAtOrDefault(i);
+					_textureStates[i + slot] = state;
+					_states[i] = GetState(state);
+				}
+
+				_shader.SetSamplers(slot, _states);
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="GorgonBlendRenderState"/> class.
+			/// </summary>
+			/// <param name="shaderState">Shader that owns the state.</param>
+			internal TextureSamplerState(GorgonShaderState<T> shaderState)
+				: base(shaderState.Graphics, 4096, Int32.MaxValue)
+			{
+				_shader = shaderState;
+				_textureStates = new GorgonTextureSamplerStates[D3D.CommonShaderStage.SamplerSlotCount];
+				_states = new D3D.SamplerState[_textureStates.Count];
+			}
+			#endregion
+
+			#region IList<GorgonTextureSamplerStates> Members
+			#region Properties.
+			/// <summary>
+			/// Gets or sets the element at the specified index.
+			/// </summary>
+			/// <returns>The element at the specified index.</returns>
+			///   
+			/// <exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
+			///   
+			/// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
+			public GorgonTextureSamplerStates this[int index]
+			{
+				get
+				{
+					return _textureStates[index];
+				}
+				set
+				{
+					if (_textureStates[index] != value)
+					{
+						_textureStates[index] = value;
+						_states[0] = GetState(value);
+						_shader.SetSamplers(index, _states);
+					}
+					else
+						Touch(value);
+
+					// Drop expired items if we are at or over our limit.
+					if (StateCacheCount >= CacheLimit)
+						EvictCache();
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+			/// </summary>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+			/// <returns>
+			/// The index of item if found in the list; otherwise, -1.
+			/// </returns>
+			public int IndexOf(GorgonTextureSamplerStates item)
+			{
+				return _textureStates.IndexOf(item);
+			}
+
+			/// <summary>
+			/// Inserts the specified index.
+			/// </summary>
+			/// <param name="index">The index.</param>
+			/// <param name="item">The item.</param>
+			void IList<GorgonTextureSamplerStates>.Insert(int index, GorgonTextureSamplerStates item)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Removes at.
+			/// </summary>
+			/// <param name="index">The index.</param>
+			void IList<GorgonTextureSamplerStates>.RemoveAt(int index)
+			{
+				throw new NotImplementedException();
+			}
+			#endregion
+			#endregion
+
+			#region ICollection<GorgonTextureSamplerStates> Members
+			#region Properties.
+			/// <summary>
+			/// Property to return the number of sampler slots.
+			/// </summary>
+			public int Count
+			{
+				get
+				{
+					return _textureStates.Count;
+				}
+			}
+
+			/// <summary>
+			/// Property to return whether this list is read-only or not.
+			/// </summary>
+			public bool IsReadOnly
+			{
+				get
+				{
+					return false;
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Adds the specified item.
+			/// </summary>
+			/// <param name="item">The item.</param>
+			void ICollection<GorgonTextureSamplerStates>.Add(GorgonTextureSamplerStates item)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Clears this instance.
+			/// </summary>
+			void ICollection<GorgonTextureSamplerStates>.Clear()
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Function to return whether the specified sampler state is bound.
+			/// </summary>
+			/// <param name="item">Sampler state to look up.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			public new bool Contains(GorgonTextureSamplerStates item)
+			{
+				return _textureStates.Contains(item);
+			}
+
+			/// <summary>
+			/// Function to copy the list of bound sampler states to an array.
+			/// </summary>
+			/// <param name="array">The array to copy into.</param>
+			/// <param name="arrayIndex">Index of the array to start writing at.</param>
+			public void CopyTo(GorgonTextureSamplerStates[] array, int arrayIndex)
+			{
+				_textureStates.CopyTo(array, arrayIndex);
+			}
+
+			/// <summary>
+			/// Removes the specified item.
+			/// </summary>
+			/// <param name="item">The item.</param>
+			/// <returns></returns>
+			bool ICollection<GorgonTextureSamplerStates>.Remove(GorgonTextureSamplerStates item)
+			{
+				throw new NotImplementedException();
+			}
+			#endregion
+			#endregion
+
+			#region IEnumerable<GorgonTextureSamplerStates> Members
+			/// <summary>
+			/// Function to return an enumerator for the sampler states.
+			/// </summary>
+			/// <returns>The enumerator for the sampler states.</returns>
+			public IEnumerator<GorgonTextureSamplerStates> GetEnumerator()
+			{
+				foreach (var item in _textureStates)
+					yield return item;
+			}
+			#endregion
+
+			#region IEnumerable Members
+			/// <summary>
+			/// Gets the enumerator.
+			/// </summary>
+			/// <returns></returns>
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+			#endregion
+		}
+
+		/// <summary>
 		/// A list of constant buffers.
 		/// </summary>
 		public class ShaderConstantBuffers
@@ -48,7 +369,7 @@ namespace GorgonLibrary.Graphics
 		{
 			#region Variables.
 			private IList<GorgonConstantBuffer> _buffers = null;
-			private D3D.CommonShaderStage _d3dShaderStage = null;
+			private GorgonShaderState<T> _shader = null;
 			private D3D.Buffer[] _d3dBufferArray = null;
 			#endregion
 
@@ -77,9 +398,11 @@ namespace GorgonLibrary.Graphics
 				{
 					_buffers[index] = value;
 					if (value != null)
-						_d3dShaderStage.SetConstantBuffer(index, value.D3DBuffer);
+						_d3dBufferArray[0] = value.D3DBuffer;
 					else
-						_d3dShaderStage.SetConstantBuffer(index, null);
+						_d3dBufferArray[0] = null;
+
+					_shader.SetConstantBuffers(index, _d3dBufferArray);
 				}
 			}
 			#endregion
@@ -129,7 +452,7 @@ namespace GorgonLibrary.Graphics
 						_d3dBufferArray[i + slot] = null;
 				}
 
-				_d3dShaderStage.SetConstantBuffers(slot, count, _d3dBufferArray);
+				_shader.SetConstantBuffers(slot, _d3dBufferArray);
 			}
 			#endregion
 
@@ -137,11 +460,11 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Initializes a new instance of the <see cref="ShaderConstantBuffers"/> class.
 			/// </summary>
-			/// <param name="shaderStage">D3D common shader stage</param>
-			internal ShaderConstantBuffers(D3D.CommonShaderStage shaderStage)
+			/// <param name="shader">Shader stage state.</param>
+			internal ShaderConstantBuffers(GorgonShaderState<T> shader)
 			{
 				_buffers = new GorgonConstantBuffer[D3D.CommonShaderStage.ConstantBufferApiSlotCount];
-				_d3dShaderStage = shaderStage;
+				_shader = shader;
 				_d3dBufferArray = new D3D.Buffer[_buffers.Count];
 			}
 			#endregion
@@ -269,19 +592,14 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// A list of textures.
+		/// A list of shader resources.
 		/// </summary>
-		public class ShaderTextures
+		public class ShaderResources
 			: IList<GorgonTexture2D>
 		{
 			#region Variables.
-			private D3D.CommonShaderStage _d3dShaderStage = null;		// Shader stage.
+			private GorgonShaderState<T> _shader = null;				// Shader that owns this interface.
 			private IList<GorgonTexture2D> _textures = null;			// List of textures.
-			private D3D.ShaderResourceView[] _views = null;				// Resource views.
-			#endregion
-
-			#region Properties.
-
 			#endregion
 
 			#region Methods.
@@ -355,26 +673,24 @@ namespace GorgonLibrary.Graphics
 
 					_textures[i + slot] = buffer;
 					if (buffer != null)
-						_views[i + slot] = buffer.D3DResourceView;
+						_shader._views[i + slot] = ((IShaderResource)buffer).D3DResourceView;
 					else
-						_views[i + slot] = null;
+						_shader._views[i + slot] = null;
 				}
 
-				_d3dShaderStage.SetShaderResources(slot, count, _views);
+				_shader.SetResources(slot);
 			}
 			#endregion
 
 			#region Constructor/Destructor.
 			/// <summary>
-			/// Initializes a new instance of the <see cref="GorgonShaderState&lt;T&gt;.ShaderTextures"/> class.
+			/// Initializes a new instance of the <see cref="GorgonShaderState&lt;T&gt;.ShaderResources"/> class.
 			/// </summary>
-			/// <param name="shaderStage">D3D common shader stage.</param>
-			/// <param name="views">Resource view pool.</param>
-			internal ShaderTextures(D3D.CommonShaderStage shaderStage, D3D.ShaderResourceView[] views)
+			/// <param name="shader">Shader state that owns this interface.</param>
+			internal ShaderResources(GorgonShaderState<T> shader)
 			{
-				_d3dShaderStage = shaderStage;
+				_shader = shader;
 				_textures = new GorgonTexture2D[D3D.CommonShaderStage.InputResourceSlotCount];
-				_views = views;
 			}
 			#endregion
 
@@ -394,9 +710,11 @@ namespace GorgonLibrary.Graphics
 				{
 					_textures[index] = value;
 					if (value != null)
-						_d3dShaderStage.SetShaderResource(index, value.D3DResourceView);
+						_shader._views[0] = ((IShaderResource)value).D3DResourceView;
 					else
-						_d3dShaderStage.SetShaderResource(index, null);
+						_shader._views[0] = null;
+
+					_shader.SetResources(index);
 				}
 			}
 			#endregion
@@ -583,7 +901,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the sampler states.
 		/// </summary>
-		public GorgonTextureSamplerState Samplers
+		public TextureSamplerState TextureSamplers
 		{
 			get;
 			private set;
@@ -592,7 +910,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the list of textures for the shaders.
 		/// </summary>
-		public ShaderTextures Textures
+		public ShaderResources Textures
 		{
 			get;
 			private set;
@@ -606,14 +924,44 @@ namespace GorgonLibrary.Graphics
 		protected abstract void SetCurrent();
 
 		/// <summary>
+		/// Function to set resources for the shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="resources">Resources to update.</param>
+		protected abstract void SetResources(int slot, D3D.ShaderResourceView[] resources);
+
+		/// <summary>
+		/// Function to set the texture samplers for a shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="samplers">Samplers to update.</param>
+		internal abstract void SetSamplers(int slot, D3D.SamplerState[] samplers);		
+
+		/// <summary>
+		/// Function to set resources for the shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		internal void SetResources(int slot)
+		{
+			SetResources(slot, _views);
+		}
+
+		/// <summary>
+		/// Function to set constant buffers for the shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="buffers">Constant buffers to update.</param>
+		internal abstract void SetConstantBuffers(int slot, D3D.Buffer[] buffers);
+
+		/// <summary>
 		/// Function to clean up.
 		/// </summary>
 		internal void Dispose()
 		{
-			if (Samplers != null)
-				((IDisposable)Samplers).Dispose();
+			if (TextureSamplers != null)
+				((IDisposable)TextureSamplers).Dispose();
 
-			Samplers = null;
+			TextureSamplers = null;
 
 			GC.SuppressFinalize(this);
 		}
@@ -624,14 +972,13 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonShaderState&lt;T&gt;"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
-		/// <param name="shaderStage">Direct 3D shader stage.</param>
-		protected GorgonShaderState(GorgonGraphics graphics, D3D.CommonShaderStage shaderStage)
+		protected GorgonShaderState(GorgonGraphics graphics)
 		{
 			_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
 			Graphics = graphics;			
-			ConstantBuffers = new ShaderConstantBuffers(shaderStage);			
-			Samplers = new GorgonTextureSamplerState(Graphics, shaderStage);
-			Textures = new ShaderTextures(shaderStage, _views);
+			ConstantBuffers = new ShaderConstantBuffers(this);			
+			TextureSamplers = new TextureSamplerState(this);
+			Textures = new ShaderResources(this);
 		}
 		#endregion
 	}
@@ -653,6 +1000,45 @@ namespace GorgonLibrary.Graphics
 			else
 				Graphics.Context.PixelShader.Set(Current.D3DShader);
 		}
+
+		/// <summary>
+		/// Function to set resources for the shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="resources">Resources to update.</param>
+		protected override void SetResources(int slot, D3D.ShaderResourceView[] resources)
+		{
+			if (resources.Length == 1)
+				Graphics.Context.PixelShader.SetShaderResource(slot, resources[0]);
+			else
+				Graphics.Context.PixelShader.SetShaderResources(slot, resources.Length, resources);
+		}
+
+		/// <summary>
+		/// Function to set the texture samplers for a shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="samplers">Samplers to update.</param>
+		internal override void SetSamplers(int slot, D3D.SamplerState[] samplers)
+		{
+			if (samplers.Length == 1)
+				Graphics.Context.PixelShader.SetSampler(slot, samplers[0]);
+			else
+				Graphics.Context.PixelShader.SetSamplers(slot, samplers.Length, samplers);
+		}
+
+		/// <summary>
+		/// Function to set constant buffers for the shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="buffers">Constant buffers to update.</param>
+		internal override void SetConstantBuffers(int slot, D3D.Buffer[] buffers)
+		{
+			if (buffers.Length == 1)
+				Graphics.Context.PixelShader.SetConstantBuffer(slot, buffers[0]);
+			else
+				Graphics.Context.PixelShader.SetConstantBuffers(slot, buffers.Length, buffers);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -661,8 +1047,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		internal GorgonPixelShaderState(GorgonGraphics graphics)
-			: base(graphics, graphics.Context.PixelShader)
+			: base(graphics)
 		{
+
 		}
 		#endregion
 	}
@@ -684,6 +1071,45 @@ namespace GorgonLibrary.Graphics
 			else
 				Graphics.Context.VertexShader.Set(Current.D3DShader);
 		}
+
+		/// <summary>
+		/// Function to set resources for the shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="resources">Resources to update.</param>
+		protected override void SetResources(int slot, D3D.ShaderResourceView[] resources)
+		{
+			if (resources.Length == 1)
+				Graphics.Context.VertexShader.SetShaderResource(slot, resources[0]);
+			else
+				Graphics.Context.VertexShader.SetShaderResources(slot, resources.Length, resources);
+		}
+
+		/// <summary>
+		/// Function to set the texture samplers for a shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="samplers">Samplers to update.</param>
+		internal override void SetSamplers(int slot, D3D.SamplerState[] samplers)
+		{
+			if (samplers.Length == 1)
+				Graphics.Context.VertexShader.SetSampler(slot, samplers[0]);
+			else
+				Graphics.Context.VertexShader.SetSamplers(slot, samplers.Length, samplers);
+		}
+
+		/// <summary>
+		/// Function to set constant buffers for the shader.
+		/// </summary>
+		/// <param name="slot">Slot to start at.</param>
+		/// <param name="buffers">Constant buffers to update.</param>
+		internal override void SetConstantBuffers(int slot, D3D.Buffer[] buffers)
+		{
+			if (buffers.Length == 1)
+				Graphics.Context.VertexShader.SetConstantBuffer(slot, buffers[0]);
+			else
+				Graphics.Context.VertexShader.SetConstantBuffers(slot, buffers.Length, buffers);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -692,7 +1118,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		internal GorgonVertexShaderState(GorgonGraphics graphics)
-			: base(graphics, graphics.Context.VertexShader)
+			: base(graphics)
 		{
 		}
 		#endregion

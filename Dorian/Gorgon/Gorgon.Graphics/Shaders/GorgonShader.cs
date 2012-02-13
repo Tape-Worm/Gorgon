@@ -271,7 +271,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to compile the shader.
 		/// </summary>
 		/// <param name="byteCode">Byte code for the shader.</param>
-		protected abstract void CompileImpl(Shaders.ShaderBytecode byteCode);		
+		protected abstract void CompileImpl(Shaders.ShaderBytecode byteCode);
 
 		/// <summary>
 		/// Function to compile the shader.

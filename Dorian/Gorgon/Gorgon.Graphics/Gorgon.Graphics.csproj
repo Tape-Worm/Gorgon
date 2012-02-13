@@ -95,6 +95,7 @@
     <Compile Include="Shaders\GorgonShaderBinding.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
+    <Compile Include="Shaders\IShaderResource.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonRasterizerState.cs" />
