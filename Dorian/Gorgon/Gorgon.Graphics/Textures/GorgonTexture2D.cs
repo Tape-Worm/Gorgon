@@ -89,10 +89,11 @@ namespace GorgonLibrary.Graphics
 	/// A 2 dimensional texture object.
 	/// </summary>
 	public class GorgonTexture2D
-		: GorgonNamedObject, IDisposable
+		: GorgonNamedObject, IDisposable, IShaderResource
 	{
 		#region Variables.
-		private bool _disposed = false;			// Flag to indicate that the object was disposed.
+		private bool _disposed = false;					// Flag to indicate that the object was disposed.
+		private D3D.ShaderResourceView _view = null;	// Shader resource view.
 		#endregion
 
 		#region Properties.
@@ -100,15 +101,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the D3D texture object.
 		/// </summary>
 		internal D3D.Texture2D D3DTexture
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the D3D resource view.
-		/// </summary>
-		internal D3D.ShaderResourceView D3DResourceView
 		{
 			get;
 			private set;
@@ -158,8 +150,8 @@ namespace GorgonLibrary.Graphics
 		private void CreateResourceView()
 		{
 			D3DTexture.DebugName = "Gorgon 2D Texture '" + Name + "'";
-			D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
-			D3DResourceView.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
+			_view = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
+			_view.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
 		}
 
 		/// <summary>
@@ -311,8 +303,8 @@ namespace GorgonLibrary.Graphics
 					Graphics.Shaders.PixelShader.Textures.Unbind(this);
 					Graphics.Shaders.VertexShader.Textures.Unbind(this);
 
-					if (D3DResourceView != null)
-						D3DResourceView.Dispose();
+					if (_view != null)
+						_view.Dispose();
 
 					if (D3DTexture != null)
 						D3DTexture.Dispose();
@@ -331,6 +323,19 @@ namespace GorgonLibrary.Graphics
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+		#endregion
+
+		#region IShaderResource Members
+		/// <summary>
+		/// Property to return the shader resource view for an object.
+		/// </summary>
+		D3D.ShaderResourceView IShaderResource.D3DResourceView
+		{
+			get
+			{
+				return _view;
+			}
 		}
 		#endregion
 	}
