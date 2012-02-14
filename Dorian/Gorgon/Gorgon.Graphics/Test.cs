@@ -95,9 +95,75 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// 
 	/// </summary>
+	public struct SpriteBall
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		public Vector3 Position;
+		/// <summary>
+		/// 
+		/// </summary>
+		public Vector3 Velocity;
+		/// <summary>
+		/// 
+		/// </summary>
+		public float Scale;
+		/// <summary>
+		/// 
+		/// </summary>
+		public float ScaleDelta;
+		/// <summary>
+		/// 
+		/// </summary>
+		public float Angle;
+		/// <summary>
+		/// 
+		/// </summary>
+		public float AngleDelta;
+		/// <summary>
+		/// 
+		/// </summary>
+		public Vector4 Color;
+		/// <summary>
+		/// 
+		/// </summary>
+		public float AlphaDelta;
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool XBounce;
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool YBounce;
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool ZBounce;
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool ScaleBouce;
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool Checkered;
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool AlphaBounce;
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
 	public class Test
 		: IDisposable
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public const int count = 1024;
 		private D3D.Device _device = null;
 		private GorgonGraphics _graphics = null;
@@ -151,6 +217,7 @@ namespace GorgonLibrary.Graphics
 		private float _aspect = 0.0f;
 		private float _camPos = -0.75f;
 		private bool _3d = false;
+		private SpriteBall[] _balls = new SpriteBall[count];
 			
 		
 		struct vertex
@@ -306,7 +373,7 @@ namespace GorgonLibrary.Graphics
 
 			MatrixBuffer matrix = new MatrixBuffer();
 			_aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
-			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), _aspect, 0.1f, 1000.0f);
+			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), _aspect, 0.01f, 1000.0f);
 			//matrix.Projection = Matrix.OrthoLH(2.0f * 1.6f, 2.0f, 0.1f, 1000.0f);
 			//matrix.Projection = Matrix.OrthoOffCenterLH((1.0f * 1.6f), 0, 0, -1.0f, 0.1f, 1000.0f);
 			//matrix.Projection.Transpose();
@@ -455,42 +522,22 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("Test: Creating objects.", Diagnostics.LoggingLevel.Verbose);
 
-			scale = new float[count];
-			scaleDelta = new float[count];
-			scaleBounce = new bool[count];
-			pos = new Vector3[count];
-			hBounce = new bool[count];
-			vBounce = new bool[count];
-			vel = new Vector2[count];
-			aBounce = new bool[count];
-			alpha = new float[count];
-			alphaDelta = new float[count];
-			angle = new float[count];
-			angleDelta = new float[count];
-			checker = new bool[count];
-			color = new Vector3[count];
 
 			for (int i = 0; i < count; i++)
 			{
-				//scale[i] = ((float)_rnd.NextDouble() * 0.5f) + 0.5f;
-				//scale[i] = (float)(i + 1) / count;
-				scale[i] = 1.0f;
-				scaleDelta[i] = ((float)_rnd.NextDouble() * 1.5f) + 0.25f;
-				scaleBounce[i] = false;
-				vBounce[i] = _rnd.Next(0, 100) > 50;
-				hBounce[i] = _rnd.Next(0, 100) < 50;
-				vel[i] = new Vector2(((float)_rnd.NextDouble() * 0.5f), ((float)_rnd.NextDouble() * 0.5f));
-				angle[i] = 0.0f;
-				angleDelta[i] = 1.0f;
-				alpha[i] = scale[i];
-				alphaDelta[i] = (float)_rnd.NextDouble() * 0.5f;
-				aBounce[i] = false;
-				checker[i] = _rnd.Next(0, 100) > 50;
-				//color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
-				color[i] = new Vector3(1.0f);
-				pos[i].X = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
-				pos[i].Y = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
-				pos[i].Z = (float)_rnd.NextDouble();
+				_balls[i].Scale = 1.0f;
+				_balls[i].ScaleDelta = ((float)_rnd.NextDouble() * 1.5f) + 0.25f;
+				_balls[i].AlphaBounce = _balls[i].ScaleBouce = false;
+				_balls[i].XBounce = _rnd.Next(0, 100) > 50;
+				_balls[i].YBounce = _rnd.Next(0, 100) > 50;
+				_balls[i].ZBounce = _rnd.Next(0, 100) > 50;
+				_balls[i].Velocity = new Vector3(((float)_rnd.NextDouble() * 0.5f), ((float)_rnd.NextDouble() * 0.5f), ((float)_rnd.NextDouble() * 0.5f));
+				_balls[i].Angle = 0.0f;
+				_balls[i].AngleDelta = 1.0f;
+				_balls[i].Color = new Vector4(1.0f);
+				_balls[i].AlphaDelta = (float)_rnd.NextDouble() * 0.5f;
+				_balls[i].Checkered = _rnd.Next(0, 100) > 50;
+				_balls[i].Position = new Vector3(((float)_rnd.NextDouble() * 2.0f) - 1.0f, ((float)_rnd.NextDouble() * 2.0f) - 1.0f, (float)_rnd.NextDouble());
 				
 				//pos[i] = Vector2.Zero;
 
@@ -499,20 +546,6 @@ namespace GorgonLibrary.Graphics
 				_sprite[spriteIndex + 1].UV = new Vector2(1.0f, 0.0f);
 				_sprite[spriteIndex + 2].UV = new Vector2(0.0f, 1.0f);
 				_sprite[spriteIndex + 3].UV = new Vector2(1.0f);*/
-				if (checker[i])
-				{
-					_sprite[spriteIndex].UV = new Vector2(0.503f, 0.0f);
-					_sprite[spriteIndex + 1].UV = new Vector2(1.0f, 0.0f);
-					_sprite[spriteIndex + 2].UV = new Vector2(0.503f, 0.5f);
-					_sprite[spriteIndex + 3].UV = new Vector2(1.0f, 0.5f);
-				}
-				else
-				{
-					_sprite[spriteIndex].UV = new Vector2(0.0f, 0.503f);
-					_sprite[spriteIndex + 1].UV = new Vector2(0.5f, 0.503f);
-					_sprite[spriteIndex + 2].UV = new Vector2(0.0f, 1.0f);
-					_sprite[spriteIndex + 3].UV = new Vector2(0.5f, 1.0f);
-				}
 			}
 
 			Initialize();
@@ -529,88 +562,105 @@ namespace GorgonLibrary.Graphics
 
 			for (int i = 0; i < count; i++)
 			{
-				angle[i] += angleDelta[i] * delta;
+				_balls[i].Angle += _balls[i].AngleDelta * delta;
 
-				if (angle[i] > 360.0f)
+				if (_balls[i].Angle > 360.0f)
 				{
-					angle[i] = angle[i] - 360.0f;
-					angleDelta[i] = (float)_rnd.NextDouble() * 90.0f;
+					_balls[i].Angle = _balls[i].Angle - 360.0f;
+					_balls[i].AngleDelta = (float)_rnd.NextDouble() * 90.0f;
 				}
 
-				if (scaleBounce[i])
-					alpha[i] -= scaleDelta[i] * delta;
+				if ((_balls[i].ScaleBouce) || (!_balls[i].ZBounce))
+					_balls[i].Color.W -= _balls[i].Velocity.Z * delta;
 				else
-					alpha[i] += scaleDelta[i] * delta;
+					_balls[i].Color.W += _balls[i].Velocity.Z * delta;
 
-				if (alpha[i] > 1.0f)
-					alpha[i] = 1.0f;
+				if (_balls[i].Color.W > 1.0f)
+					_balls[i].Color.W = 1.0f;
 
-				if (alpha[i] < 0.0f)
+				if (_balls[i].Color.W < 0.0f)
 				{
-					alpha[i] = 0.0f;
-					color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
+					_balls[i].Color.W = 0.0f;
+					_balls[i].Color = new Vector4(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, 0.0f);
 				}
 
-				/*color[i] = new Vector3(1.0f);
-				alpha[i] = 1.0f;*/
+				//_balls[i].Color = new Vector4(1.0f);
 
-				/*if (scaleBounce[i])				
-					scale[i] -= scaleDelta[i] * delta;
+				/*if (_balls[i].ScaleBouce)
+					_balls[i].Scale -= _balls[i].ScaleDelta * delta;
 				else
-					scale[i] += scaleDelta[i] * delta;*/
+					_balls[i].Scale += _balls[i].ScaleDelta * delta;*/
 
-				//scale[i] = 1.05f;
+				//_balls[i].Scale = 1.05f;
 
-				if ((scale[i] < 0.05f) || (scale[i] > 1.0f))
+/*				if ((_balls[i].Scale < 0.05f) || (_balls[i].Scale > 1.0f))
 				{
-					if (scale[i] > 1.0f)
-						scale[i] = 1.0f;
-					if (scale[i] < 0.05f)
+					if (_balls[i].Scale > 1.0f)
+						_balls[i].Scale = 1.0f;
+					if (_balls[i].Scale < 0.05f)
 					{
-						scale[i] = 0.05f;
-						color[i] = new Vector3(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f);
+						_balls[i].Scale = 0.05f;
+						_balls[i].Color = new Vector4(((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, ((float)_rnd.NextDouble() * 0.961f) + 0.039f, _balls[i].Color.W);
 					}
-					scaleBounce[i] = !scaleBounce[i];
-					scaleDelta[i] = ((float)_rnd.NextDouble() * 1.5f) + 0.25f;
-				}
+					_balls[i].ScaleBouce = !_balls[i].ScaleBouce;
+					_balls[i].ScaleDelta = ((float)_rnd.NextDouble() * 1.5f) + 0.25f;
+				}*/
 				
 
-				if (vBounce[i])
-					pos[i].Y -= (vel[i].Y * delta);
+				if (_balls[i].YBounce)
+					_balls[i].Position.Y -= (_balls[i].Velocity.Y * delta);
 				else
-					pos[i].Y += (vel[i].Y * delta);
+					_balls[i].Position.Y += (_balls[i].Velocity.Y * delta);
 
-				if (hBounce[i])
-					pos[i].X -= (vel[i].X * delta);
+				if (_balls[i].XBounce)
+					_balls[i].Position.X -= (_balls[i].Velocity.X * delta);
 				else
-					pos[i].X += (vel[i].X * delta);
+					_balls[i].Position.X += (_balls[i].Velocity.X * delta);
+				if (_balls[i].ZBounce)
+					_balls[i].Position.Z -= (_balls[i].Velocity.Z * delta);
+				else
+					_balls[i].Position.Z += (_balls[i].Velocity.Z * delta);
 
-				if (pos[i].X > (1.0f * _aspect))
+				if (_balls[i].Position.X > (1.0f * _aspect))
 				{
-					pos[i].X = (1.0f * _aspect);
-					vel[i].X = ((float)_rnd.NextDouble() * 0.5f) + 0.5f;
-					hBounce[i] = !hBounce[i];
+					_balls[i].Position.X = (1.0f * _aspect);
+					_balls[i].Velocity.X = ((float)_rnd.NextDouble() * 0.5f);
+					_balls[i].XBounce = !_balls[i].XBounce;
 				}
-				if (pos[i].Y > (1.0f * _aspect))
+				if (_balls[i].Position.Y > (1.0f * _aspect))
 				{
-					pos[i].Y = (1.0f * _aspect);
-					vel[i].Y = ((float)_rnd.NextDouble() * 0.5f) + 0.5f;
-					vBounce[i] = !vBounce[i];
-				}
-
-				if (pos[i].X < (-1.0f * _aspect))
-				{
-					pos[i].X = (-1.0f * _aspect);
-					vel[i].X = (float)_rnd.NextDouble();
-					hBounce[i] = !hBounce[i];
-				}
-				if (pos[i].Y < (-1.0f * _aspect))
-				{
-					pos[i].Y = (-1.0f * _aspect);
-					vel[i].Y = (float)_rnd.NextDouble();
-					vBounce[i] = !vBounce[i];
+					_balls[i].Position.Y = (1.0f * _aspect);
+					_balls[i].Velocity.Y = ((float)_rnd.NextDouble() * 0.5f);
+					_balls[i].YBounce = !_balls[i].YBounce;
 				}
 
+				if (_balls[i].Position.X < (-1.0f * _aspect))
+				{
+					_balls[i].Position.X = (-1.0f * _aspect);
+					_balls[i].Velocity.X = (float)_rnd.NextDouble() * 0.5f;
+					_balls[i].XBounce = !_balls[i].XBounce;
+				}
+				if (_balls[i].Position.Y < (-1.0f * _aspect))
+				{
+					_balls[i].Position.Y = (-1.0f * _aspect);
+					_balls[i].Velocity.Y = (float)_rnd.NextDouble() * 0.5f;
+					_balls[i].YBounce = !_balls[i].YBounce;
+				}
+
+
+				if (_balls[i].Position.Z < -1.0f)
+				{
+					_balls[i].Position.Z = -1.0f;
+					_balls[i].Velocity.Z = (float)_rnd.NextDouble() * 0.5f;
+					_balls[i].ZBounce = !_balls[i].ZBounce;
+				}
+
+				if (_balls[i].Position.Z > 1.0f)
+				{
+					_balls[i].Position.Z = 1.0f;
+					_balls[i].Velocity.Z = (float)_rnd.NextDouble() * 0.5f;
+					_balls[i].ZBounce = !_balls[i].ZBounce;
+				}
 			}
 						
 			//if (frames == 0)
@@ -619,7 +669,7 @@ namespace GorgonLibrary.Graphics
 				Matrix trans = Matrix.Identity;
 				Matrix world = Matrix.Identity;
 				Quaternion rot = Quaternion.Identity;
-				var sortPos = pos.OrderByDescending(item => item.Z).ToArray();
+				var sortPos = _balls.OrderByDescending(item => item.Position.Z).ToArray();
 				for (int i = 0; i < count * 4; i += 4)
 				{
 					int arrayindex = i / 4;
@@ -630,12 +680,12 @@ namespace GorgonLibrary.Graphics
 					//buffer.World = Matrix.RotationZ(angle[arrayindex]);
 					if (_3d)
 					{
-						rot = Quaternion.RotationYawPitchRoll(0.0f, GorgonMathUtility.Sin(-angle[arrayindex]) * 2.0f, -angle[arrayindex]);
+						rot = Quaternion.RotationYawPitchRoll(0.0f, GorgonMathUtility.Sin(-sortPos[arrayindex].Angle) * 2.0f, -sortPos[arrayindex].Angle);
 						Matrix.RotationQuaternion(ref rot, out world);
 					}
 					else
-						world = Matrix.RotationZ(-angle[arrayindex]);
-					world = world * (Matrix.Scaling(scale[arrayindex], scale[arrayindex], 1.0f)) * Matrix.Translation(sortPos[arrayindex].X, sortPos[arrayindex].Y, sortPos[arrayindex].Z);
+						world = Matrix.RotationZ(-sortPos[arrayindex].Angle);
+					world = world * (Matrix.Scaling(sortPos[arrayindex].Scale, sortPos[arrayindex].Scale, 1.0f)) * Matrix.Translation(sortPos[arrayindex].Position.X, sortPos[arrayindex].Position.Y, sortPos[arrayindex].Position.Z);
 					Matrix.Multiply(ref world, ref pvw, out trans);
 
 
@@ -649,7 +699,7 @@ namespace GorgonLibrary.Graphics
 									{
 										stream.Write(buffer);
 									}*/
-					_sprite[i].Color = new GorgonColor(color[arrayindex].X, color[arrayindex].Y, color[arrayindex].Z, alpha[arrayindex]);
+					_sprite[i].Color = new GorgonColor(sortPos[arrayindex].Color.X, sortPos[arrayindex].Color.Y, sortPos[arrayindex].Color.Z, sortPos[arrayindex].Color.W);
 					//_sprite[i].Color = new GorgonColor(System.Drawing.Color.White);
 					_sprite[i + 1].Color = _sprite[i].Color;
 					_sprite[i + 2].Color = _sprite[i].Color;
@@ -664,6 +714,21 @@ namespace GorgonLibrary.Graphics
 					//_sprite[i + 1].Position = new Vector4(0.5f, 0.5f, 0.0f, 1.0f);
 					//_sprite[i + 2].Position = new Vector4(-0.5f, -0.5f, 0.0f, 1.0f);
 					//_sprite[i + 3].Position = new Vector4(0.5f, -0.5f, 0.0f, 1.0f);
+
+					if (sortPos[arrayindex].Checkered)
+					{
+						_sprite[i].UV = new Vector2(0.503f, 0.0f);
+						_sprite[i + 1].UV = new Vector2(1.0f, 0.0f);
+						_sprite[i + 2].UV = new Vector2(0.503f, 0.5f);
+						_sprite[i + 3].UV = new Vector2(1.0f, 0.5f);
+					}
+					else
+					{
+						_sprite[i].UV = new Vector2(0.0f, 0.503f);
+						_sprite[i + 1].UV = new Vector2(0.5f, 0.503f);
+						_sprite[i + 2].UV = new Vector2(0.0f, 1.0f);
+						_sprite[i + 3].UV = new Vector2(0.5f, 1.0f);
+					}
 				}
 
 //				_tempStream.Position = 0;
@@ -691,21 +756,7 @@ namespace GorgonLibrary.Graphics
 
 		//int frames = 0;
 		//int textPos = 0;
-		float[] scale = null;
-		float[] scaleDelta = null;
-		Vector3[] pos = null;
-		Vector2[] vel = null;
-		float[] angle = null;
-		float[] angleDelta = null;
-		float[] alpha = null;
-		float[] alphaDelta = null;
-		bool[] scaleBounce = null;
-		bool[] hBounce = null;
-		bool[] vBounce = null;
-		bool[] aBounce = null;
-		bool[] checker = null;
-		Vector3[] color = null;
-		
+	
 		/// <summary>
 		/// 
 		/// </summary>
