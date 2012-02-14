@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
@@ -319,26 +320,41 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to set a single viewport.
 		/// </summary>
-		/// <param name="x">The left corner of the viewport.</param>
-		/// <param name="y">The top corner of the viewport.</param>
-		/// <param name="width">The width of the viewport.</param>
-		/// <param name="height">The height of the viewport.</param>
-		/// <param name="minimumZ">The minimum depth of the viewport.</param>
-		/// <param name="maximumZ">The maximum depth of the viewport.</param>
-		/// <remarks>Viewports must have a width and height greater than 0 and the depths should be 0.0f and 1.0f.</remarks>
-		public void SetViewport(float x, float y, float width, float height, float minimumZ, float maximumZ)
-		{
-			Graphics.Context.Rasterizer.SetViewport(x, y, width, height, minimumZ, maximumZ);
-		}
-
-		/// <summary>
-		/// Function to set a single viewport.
-		/// </summary>
 		/// <param name="viewPort">Viewport to set.</param>
 		/// <remarks>Viewports must have a width and height greater than 0.</remarks>
 		public void SetViewport(GorgonViewport viewPort)
 		{
-			Graphics.Context.Rasterizer.SetViewport(viewPort.Region.X, viewPort.Region.Y, viewPort.Region.Width, viewPort.Region.Height, viewPort.MinimumZ, viewPort.MaximumZ);
+			Graphics.Context.Rasterizer.SetViewport(viewPort.Region.X, viewPort.Region.Y, viewPort.Region.Width, viewPort.Region.Height, viewPort.MinimumZ, viewPort.MaximumZ);			
+		}
+
+		/// <summary>
+		/// Function to set a scissor rectangle clipping region.
+		/// </summary>
+		/// <param name="region">Region to set.</param>
+		public void SetClip(System.Drawing.Rectangle region)
+		{
+			Graphics.Context.Rasterizer.SetScissorRectangle(region.Left, region.Top, region.Right, region.Bottom);
+		}
+
+		/// <summary>
+		/// Function to set a list of scissor rectangle clipping regions.
+		/// </summary>
+		/// <param name="regions">Regions to set.</param>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="regions"/> parameter will use the width/height of the current <see cref="P:GorgonLibrary.Graphics.OutputMerger.RenderTargets">render target</see>.</remarks>
+		public void SetClip(IEnumerable<System.Drawing.Rectangle> regions)
+		{
+			if (regions == null)
+			{
+				if (Graphics.Output.RenderTargets[0] != null)
+					SetClip(new System.Drawing.Rectangle(0, 0, Graphics.Output.RenderTargets[0].Settings.Width, Graphics.Output.RenderTargets[0].Settings.Height));
+				return;
+			}
+
+			var dxRegions = (from region in regions
+							 let dxRegion = new SharpDX.Rectangle(region.Left, region.Top, region.Right, region.Bottom)
+							 select dxRegion).ToArray();
+
+			Graphics.Context.Rasterizer.SetScissorRectangles(dxRegions);
 		}
 		#endregion
 
