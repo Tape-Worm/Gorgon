@@ -150,6 +150,7 @@ namespace GorgonLibrary.Graphics
 		private GorgonDataStream _tempStream = null;
 		private float _aspect = 0.0f;
 		private float _camPos = -0.75f;
+		private bool _3d = false;
 			
 		
 		struct vertex
@@ -309,7 +310,7 @@ namespace GorgonLibrary.Graphics
 			//matrix.Projection = Matrix.OrthoLH(2.0f * 1.6f, 2.0f, 0.1f, 1000.0f);
 			//matrix.Projection = Matrix.OrthoOffCenterLH((1.0f * 1.6f), 0, 0, -1.0f, 0.1f, 1000.0f);
 			//matrix.Projection.Transpose();
-			matrix.View = Matrix.LookAtLH(new Vector3(0, 0, -1.0f), new Vector3(0, 0, 1.0f), Vector3.UnitY);
+			matrix.View = Matrix.LookAtLH(new Vector3(0, 0, _camPos), new Vector3(0, 0, 1.0f), Vector3.UnitY);
 			//matrix.View.Transpose();
 			
 			//Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height), 0.1f, 1000.0f);
@@ -401,6 +402,8 @@ namespace GorgonLibrary.Graphics
 			if (_camPos > 1.0f)
 				_camPos = 1.0f;
 
+			if (e.KeyCode == System.Windows.Forms.Keys.D3)
+				_3d = !_3d;
 			Matrix matrix = Matrix.LookAtLH(new Vector3(0, 0, _camPos), new Vector3(0, 0, 1.0f), Vector3.UnitY);
 			Matrix projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), _aspect, 0.1f, 1000.0f);
 			pvw = matrix * projection;
@@ -625,9 +628,13 @@ namespace GorgonLibrary.Graphics
 					//buffer.World = Matrix.Scaling(0.248f, 0.248f, 1.0f);// *Matrix.Translation(-0.5f + ((float)(i / 4) / (float)count), 0.25f, 0.0f);
 
 					//buffer.World = Matrix.RotationZ(angle[arrayindex]);
-					//rot = Quaternion.RotationYawPitchRoll(GorgonMathUtility.Sin(angle[arrayindex]) * 2.0f, GorgonMathUtility.Cos(angle[arrayindex]) * 0.125f, -angle[arrayindex]);
-					//Matrix.RotationQuaternion(ref rot, out world);
-					world = Matrix.RotationZ(-angle[arrayindex]);
+					if (_3d)
+					{
+						rot = Quaternion.RotationYawPitchRoll(0.0f, GorgonMathUtility.Sin(-angle[arrayindex]) * 2.0f, -angle[arrayindex]);
+						Matrix.RotationQuaternion(ref rot, out world);
+					}
+					else
+						world = Matrix.RotationZ(-angle[arrayindex]);
 					world = world * (Matrix.Scaling(scale[arrayindex], scale[arrayindex], 1.0f)) * Matrix.Translation(sortPos[arrayindex].X, sortPos[arrayindex].Y, sortPos[arrayindex].Z);
 					Matrix.Multiply(ref world, ref pvw, out trans);
 
