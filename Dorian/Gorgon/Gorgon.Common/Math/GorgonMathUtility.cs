@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using SlimMath;
 
 namespace GorgonLibrary.Math
 {
@@ -266,6 +267,78 @@ namespace GorgonLibrary.Math
 		public static bool EqualFloat(float value1, float value2)
 		{
 			return EqualFloat(value1, value2, 1e-6f);
+		}
+
+		/// <summary>
+		/// Function to return if two 2D vectors are equal.
+		/// </summary>
+		/// <param name="value1">First vector value to compare.</param>
+		/// <param name="value2">Second vector value to compare.</param>
+		/// <param name="epsilon">Tolerance of floating point error.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool EqualVector2(Vector2 value1, Vector2 value2, float epsilon)
+		{
+			return EqualFloat(value1.X, value2.X, epsilon) && EqualFloat(value1.Y, value1.Y, epsilon);
+		}
+
+		/// <summary>
+		/// Function to return if two 2D vectors are equal.
+		/// </summary>
+		/// <param name="value1">First vector value to compare.</param>
+		/// <param name="value2">Second vector value to compare.</param>
+		/// <param name="epsilon">Tolerance of floating point error.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool EqualVector2(Vector2 value1, Vector2 value2)
+		{
+			return EqualVector2(value1, value2, 1e-6f);
+		}
+
+		/// <summary>
+		/// Function to return if two 3D vectors are equal.
+		/// </summary>
+		/// <param name="value1">First vector value to compare.</param>
+		/// <param name="value2">Second vector value to compare.</param>
+		/// <param name="epsilon">Tolerance of floating point error.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool EqualVector3(Vector3 value1, Vector3 value2, float epsilon)
+		{
+			return EqualFloat(value1.X, value2.X, epsilon) && EqualFloat(value1.Y, value1.Y, epsilon) & EqualFloat(value1.Z, value2.Z, epsilon);
+		}
+
+		/// <summary>
+		/// Function to return if two 3D vectors are equal.
+		/// </summary>
+		/// <param name="value1">First vector value to compare.</param>
+		/// <param name="value2">Second vector value to compare.</param>
+		/// <param name="epsilon">Tolerance of floating point error.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool EqualVector3(Vector3 value1, Vector3 value2)
+		{
+			return EqualVector3(value1, value2, 1e-6f);
+		}
+
+		/// <summary>
+		/// Function to return if two 4D vectors are equal.
+		/// </summary>
+		/// <param name="value1">First vector value to compare.</param>
+		/// <param name="value2">Second vector value to compare.</param>
+		/// <param name="epsilon">Tolerance of floating point error.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool EqualVector4(Vector4 value1, Vector4 value2, float epsilon)
+		{
+			return EqualFloat(value1.X, value2.X, epsilon) && EqualFloat(value1.Y, value1.Y, epsilon) & EqualFloat(value1.Z, value2.Z, epsilon) & EqualFloat(value1.W, value2.W, epsilon);
+		}
+
+		/// <summary>
+		/// Function to return if two 4D vectors are equal.
+		/// </summary>
+		/// <param name="value1">First vector value to compare.</param>
+		/// <param name="value2">Second vector value to compare.</param>
+		/// <param name="epsilon">Tolerance of floating point error.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool EqualVector4(Vector4 value1, Vector4 value2)
+		{
+			return EqualVector4(value1, value2, 1e-6f);
 		}
 
 		/// <summary>

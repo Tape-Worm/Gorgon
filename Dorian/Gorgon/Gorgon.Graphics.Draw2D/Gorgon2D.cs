@@ -257,7 +257,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private void UpdateProjection()
 		{
 			// Update based on the current render target.
-			Matrix.OrthoOffCenterLH(0, Target.Settings.Width, Target.Settings.Height, 0.0f, 0.0f, 1000.0f, out _defaultProjection);
+			Matrix.OrthoOffCenterLH(0, Target.Settings.Width, Target.Settings.Height, 0.0f, 0.1f, 1000.0f, out _defaultProjection);
 			Graphics.Rasterizer.SetViewport(Target.Viewport);
 
 			Shaders.UpdateGorgonTransformation();
@@ -312,7 +312,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			VertexBuffer = Graphics.Input.CreateVertexBuffer(spriteVBSize, BufferUsage.Dynamic);
 
 			GorgonRasterizerStates rastState = GorgonRasterizerStates.DefaultStates;
-			rastState.CullingMode = CullingMode.None;
+			rastState.CullingMode = CullingMode.Back;
 			Graphics.Rasterizer.States = rastState;
 
 			Graphics.Input.IndexBuffer = IndexBuffer;

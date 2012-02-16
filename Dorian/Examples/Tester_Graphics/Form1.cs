@@ -92,6 +92,8 @@ namespace Tester_Graphics
 		}
 
 		Vector2 testMove = Vector2.Zero;
+		float angle = 0.0f;
+		GorgonTexture2D _texture = null;
 		private bool Idle(GorgonFrameRate timing)
 		{			
 
@@ -102,8 +104,10 @@ namespace Tester_Graphics
 				if (!_swapChain.IsInStandBy)
 				{
 					_swapChain.Clear(Color.Black);
-					_sprite.Left = testMove.X;
-					_sprite.Top = testMove.Y;
+					_sprite.Scale = new Vector2(2.0f, 2.0f);
+					//_sprite.TextureOffset = testMove;
+					_sprite.Angle = new Vector3(0, 0, angle);
+					_sprite.Position = new Vector3((_swapChain.Settings.Width / 2) - (_sprite.Size.X / 2), _swapChain.Settings.Height / 2 - (_sprite.Size.Y / 2), 0);
 					_sprite.Draw();
 
 					/*_sprite.Left = 400.0f;
@@ -112,8 +116,12 @@ namespace Tester_Graphics
 
 					_graphics2D.Render();
 
-					testMove.X += 100.0f * timing.FrameDelta;
-					testMove.Y += 100.0f * timing.FrameDelta;
+					angle += 5.0f * timing.FrameDelta;
+					if (angle > 360.0f)
+						angle = 360.0f - angle;
+
+					testMove.X += 1.0f * timing.FrameDelta;
+					testMove.Y += 1.0f * timing.FrameDelta;
 					//_graphics.Draw();
 					//_graphics.ApplyStates();
 					//_graphics.ApplyViewports();
@@ -317,6 +325,12 @@ namespace Tester_Graphics
 
 				_graphics2D = new Gorgon2D(_swapChain);
 				_sprite = _graphics2D.CreateSprite("Test", 100.0f, 100.0f);
+				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\Images\VBback.jpg", GorgonTexture2DSettings.FromFile);
+				//_sprite.Texture = _texture;
+				_sprite.Size = new Vector2(256, 256);
+				_sprite.Anchor = new Vector2(128, 128);
+				_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(0.0f, 0.025f, -1.0f), new Vector3(0, 0, 1.0f), Vector3.UnitY);
+				//_sprite.TextureSize = new Vector2(128, 128);
 				//_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
 				//_graphics.Viewports.Add(new GorgonViewport(640, 400, 640, 400));
 
