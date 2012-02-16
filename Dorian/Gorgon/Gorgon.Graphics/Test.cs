@@ -353,8 +353,7 @@ namespace GorgonLibrary.Graphics
 
 			//data.Data[0].Dispose();
 
-			_texture = _graphics.Textures.FromFile("Balls", @"..\..\..\..\Resources\BallDemo\BallDemo.png", new GorgonTexture2DSettings()
-				, ImageFilters.None | ImageFilters.MirrorU | ImageFilters.MirrorV | ImageFilters.MirrorW, ImageFilters.None);
+			_texture = _graphics.Textures.FromFile("Balls", @"..\..\..\..\Resources\BallDemo\BallDemo.png", GorgonTexture2DSettings.FromFile);
 
 			//_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\TextureTest.png", info);
 			//_texture = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\BallDemo\BallDemo.png", info);
@@ -362,7 +361,8 @@ namespace GorgonLibrary.Graphics
 			//_textureView = new D3D.ShaderResourceView(_device, _texture);
 			//_textureView.DebugName = _swapChain.Name + " Test texture view.";
 
-			_texture2 = _graphics.Textures.FromFile("VBBack", @"..\..\..\..\Resources\Images\VBback.jpg", new GorgonTexture2DSettings(), ImageFilters.None, ImageFilters.None);
+			_texture2 = _graphics.Textures.FromFile("VBBack", @"..\..\..\..\Resources\Images\VBback.jpg", GorgonTexture2DSettings.FromFile);
+
 			//_texture2 = D3D.Resource.FromFile<D3D.Texture2D>(_device, @"..\..\..\..\Resources\Images\VBback.jpg", info);
 			//_texture2.DebugName = _swapChain.Name + " Test texture 2.";
 			//_textureView2 = new D3D.ShaderResourceView(_device, _texture2);
@@ -373,8 +373,8 @@ namespace GorgonLibrary.Graphics
 
 			MatrixBuffer matrix = new MatrixBuffer();
 			_aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
-			matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), _aspect, 0.01f, 1000.0f);
-			//matrix.Projection = Matrix.OrthoLH(2.0f * 1.6f, 2.0f, 0.1f, 1000.0f);
+			//matrix.Projection = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(100.39f), _aspect, 0.01f, 1000.0f);
+			matrix.Projection = Matrix.OrthoLH(320.0f, 240.0f, 0.1f, 1000.0f);
 			//matrix.Projection = Matrix.OrthoOffCenterLH((1.0f * 1.6f), 0, 0, -1.0f, 0.1f, 1000.0f);
 			//matrix.Projection.Transpose();
 			matrix.View = Matrix.LookAtLH(new Vector3(0, 0, _camPos), new Vector3(0, 0, 1.0f), Vector3.UnitY);

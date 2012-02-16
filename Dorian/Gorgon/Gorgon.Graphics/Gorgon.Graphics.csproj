@@ -117,6 +117,7 @@
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="Textures\GorgonTexture3D.cs" />
     <Compile Include="Textures\GorgonTexture1D.cs" />
     <Compile Include="Textures\GorgonTexture2D.cs" />
     <Compile Include="Textures\GorgonTextureData.cs" />

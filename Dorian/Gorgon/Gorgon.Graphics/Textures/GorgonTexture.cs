@@ -28,17 +28,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
+	/// <summary>
+	/// Formats for image files.
+	/// </summary>
+	public enum ImageFileFormat
+	{
+		/// <summary>
+		/// Portable network graphics.
+		/// </summary>
+		PNG = 3,
+		/// <summary>
+		/// Joint Photographic Experts Group.
+		/// </summary>
+		JPG = 1,
+		/// <summary>
+		/// Windows bitmap.
+		/// </summary>
+		BMP = 0,
+		/// <summary>
+		/// Direct Draw Surface.
+		/// </summary>
+		DDS = 4
+	}
+
 	/// <summary>
 	/// The base texture object for all textures.
 	/// </summary>
 	public abstract class GorgonTexture
 		: GorgonNamedObject, IDisposable, IShaderResource
 	{
-		#region Variables.	
+		#region Variables.
 		private bool _disposed = false;						// Flag to indicate that the texture was disposed.
 		#endregion
 
@@ -60,10 +85,79 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return information about the format for the texture.
+		/// </summary>
+		public GorgonBufferFormatInfo.GorgonFormatData FormatInformation
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
-		
+		/// <summary>
+		/// Function to retrieve information about the texture format.
+		/// </summary>
+		/// <param name="format">Format of the texture.</param>
+		protected void GetFormatInformation(BufferFormat format)
+		{
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(format);
+		}
+
+		/// <summary>
+		/// Function to save the texture data to an array of bytes.
+		/// </summary>
+		/// <param name="format">Image format to use.</param>
+		/// <returns>An array of bytes containing the image data.</returns>
+		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the format is anything other than DDS.</exception>
+		public byte[] Save(ImageFileFormat format)
+		{
+			MemoryStream stream = new MemoryStream();
+			Save(stream, format);
+			stream.Position = 0;
+			return stream.ToArray();
+		}
+
+		/// <summary>
+		/// Function to save the texture data to a stream.
+		/// </summary>
+		/// <param name="stream">Stream to write.</param>
+		/// <param name="format">Image format to use.</param>
+		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the format is anything other than DDS.</exception>
+		public abstract void Save(System.IO.Stream stream, ImageFileFormat format);
+
+		/// <summary>
+		/// Function to save the texture data to a file.
+		/// </summary>
+		/// <param name="fileName">Name of the file to save into.</param>
+		/// <param name="format">Image format to use.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is anything other than DDS for a volume (3D) texture.</para>
+		/// </exception>
+		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.</remarks>
+		public void Save(string fileName, ImageFileFormat format)
+		{
+			GorgonDebug.AssertParamString(fileName, "fileName");
+
+			FileStream stream = null;
+
+			try
+			{
+				stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+				Save(stream, format);
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Dispose();
+			}
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -102,12 +196,15 @@ namespace GorgonLibrary.Graphics
 			if (!_disposed)
 			{
 				if (disposing)
-				{
+				{					
 					Graphics.Shaders.PixelShader.Textures.Unbind(this);
 					Graphics.Shaders.VertexShader.Textures.Unbind(this);
 
+					Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", Diagnostics.LoggingLevel.Verbose, Name);
+
 					if (View != null)
 						View.Dispose();
+					Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 resource view.", Diagnostics.LoggingLevel.Verbose, Name);
 
 					Graphics.RemoveTrackedObject(this);
 				}				

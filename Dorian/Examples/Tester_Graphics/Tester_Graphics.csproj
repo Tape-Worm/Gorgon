@@ -21,7 +21,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
@@ -91,6 +91,10 @@
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Draw2D\Gorgon.Graphics.2D.csproj">
+      <Project>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</Project>
+      <Name>Gorgon.Graphics.2D</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
       <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>

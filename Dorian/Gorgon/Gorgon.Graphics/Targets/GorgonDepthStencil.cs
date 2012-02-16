@@ -47,18 +47,18 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the D3D texture for the depth/stencil buffer.
+		/// Property to return the D3D depth/stencil view for the depth/stencil buffer.
 		/// </summary>
-		internal D3D.Texture2D D3DTexture
+		internal D3D.DepthStencilView D3DDepthStencilView
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return the D3D depth/stencil view for the depth/stencil buffer.
+		/// Property to return the texture for the depth buffer.
 		/// </summary>
-		internal D3D.DepthStencilView D3DDepthStencilView
+		public GorgonTexture2D Texture
 		{
 			get;
 			private set;
@@ -104,13 +104,13 @@ namespace GorgonLibrary.Graphics
 				D3DDepthStencilView.Dispose();
 			}
 
-			if (D3DTexture != null)
+			if (Texture != null)
 			{
-				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying D3D11 depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
-				D3DTexture.Dispose();
+				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
+				Texture.Dispose();
 			}
-
-			D3DTexture = null;
+			
+			Texture = null;
 			D3DDepthStencilView = null;
 		}
 
@@ -119,32 +119,22 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateResources()
 		{
-			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
+			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
 
-			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
 			D3D.DepthStencilViewDescription viewDesc = new D3D.DepthStencilViewDescription();
 
-			desc.ArraySize = 1;
-			desc.BindFlags = D3D.BindFlags.DepthStencil;
-			desc.Format = (GI.Format)Settings.Format;
+			Texture = new GorgonTexture2D(Graphics, "Depth buffer '" + Name + "' texture.", new GorgonTexture2DSettings()
+				{
+					Width = Settings.Width,
+					Height = Settings.Height,
+					MipCount = 1,
+					ArrayCount = 1,
+					Multisampling = Settings.MultiSample,
+					Format = (Settings.TextureFormat != BufferFormat.Unknown ? Settings.TextureFormat : Settings.Format),
+					Usage = BufferUsage.Default
+				});
 
-			// Determine if we can bind this to a shader.
-			if (Settings.TextureFormat != BufferFormat.Unknown)
-			{
-				desc.BindFlags |= D3D.BindFlags.ShaderResource;
-				desc.Format = (GI.Format)Settings.TextureFormat;
-			}
-
-			desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
-			desc.Height = Settings.Height;
-			desc.Width = Settings.Width;
-			desc.MipLevels = 1;
-			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultiSampling.Convert(Settings.MultiSample);
-			desc.Usage = D3D.ResourceUsage.Default;
-
-			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
-			D3DTexture.DebugName = "Depth buffer '" + Name + "' texture.";
+			Texture.InitializeDepth(Settings.TextureFormat != BufferFormat.Unknown);
 
 			// Create the view.
 			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil view...", Diagnostics.LoggingLevel.Verbose, Name);
@@ -157,7 +147,7 @@ namespace GorgonLibrary.Graphics
 			viewDesc.Texture2D.MipSlice = 0;
 			viewDesc.Flags = D3D.DepthStencilViewFlags.None;
 			viewDesc.Format = (GI.Format)Settings.Format;
-			D3DDepthStencilView = new D3D.DepthStencilView(Graphics.D3DDevice, D3DTexture, viewDesc);
+			D3DDepthStencilView = new D3D.DepthStencilView(Graphics.D3DDevice, Texture.D3DTexture, viewDesc);
 			D3DDepthStencilView.DebugName = "Depth buffer '" + Name + "' view.";
 
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);

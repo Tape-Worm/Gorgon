@@ -35,24 +35,23 @@ using D3D = SharpDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Settings for a 2D texture.
+	/// Settings for a 3D texture.
 	/// </summary>
-	public struct GorgonTexture2DSettings
+	public struct GorgonTexture3DSettings
 	{
 		#region Variables.
 		/// <summary>
 		/// Default settings for the texture.
 		/// </summary>
 		/// <remarks>This should be used when loading a texture from memory, a stream or a file.</remarks>
-		public static readonly GorgonTexture2DSettings FromFile = new GorgonTexture2DSettings()
+		public static readonly GorgonTexture3DSettings FromFile = new GorgonTexture3DSettings()
 		{
 			Width = 0,
 			Height = 0,
-			Format = BufferFormat.Unknown,
+			Depth = 0,
 			MipCount = 1,
-			ArrayCount = 1,
+			Format = BufferFormat.Unknown,
 			Usage = BufferUsage.Default,
-			Multisampling = new GorgonMultiSampling(1, 0)
 		};
 
 		/// <summary>
@@ -64,26 +63,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int Height;
 		/// <summary>
+		/// Depth of the texture.
+		/// </summary>
+		public int Depth;
+		/// <summary>
+		/// Number of mip levels.
+		/// </summary>
+		public int MipCount;
+		/// <summary>
 		/// Format of the texture.
 		/// </summary>
 		public BufferFormat Format;
 		/// <summary>
-		/// Number of mip map levels.
-		/// </summary>
-		public int MipCount;
-		/// <summary>
-		/// Number of textures in a texture array.
-		/// </summary>
-		/// <remarks>This is not used for loading files.</remarks>
-		public int ArrayCount;
-		/// <summary>
 		/// Usage levels for the texture.
 		/// </summary>
 		public BufferUsage Usage;
-		/// <summary>
-		/// Multisampling settings for the texture.
-		/// </summary>
-		public GorgonMultiSampling Multisampling;
 		#endregion
 
 		#region Properties.
@@ -95,16 +89,17 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				return ((Width == 0) || (Width & (Width - 1)) == 0) && 
-						((Height == 0) || (Height & (Height - 1)) == 0);
+						((Height == 0) || (Height & (Height - 1)) == 0) &&
+						((Depth == 0) || (Depth & (Depth - 1)) == 0);
 			}
 		}
 		#endregion
 	}
 
 	/// <summary>
-	/// A 2 dimensional texture object.
+	/// A 3 dimensional texture object.
 	/// </summary>
-	public class GorgonTexture2D
+	public class GorgonTexture3D
 		: GorgonTexture
 	{
 		#region Variables.
@@ -115,25 +110,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the D3D texture object.
 		/// </summary>
-		internal D3D.Texture2D D3DTexture
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether this texture is for a render target.
-		/// </summary>
-		public bool IsRenderTarget
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether this texture is for a depth/stencil buffer.
-		/// </summary>
-		public bool IsDepthStencil
+		internal D3D.Texture3D D3DTexture
 		{
 			get;
 			private set;
@@ -142,7 +119,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the settings for this texture.
 		/// </summary>
-		public GorgonTexture2DSettings Settings
+		public GorgonTexture3DSettings Settings
 		{
 			get;
 			private set;
@@ -155,13 +132,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void RetrieveSettings()
 		{
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
+			GorgonTexture3DSettings settings = new GorgonTexture3DSettings();
 
-			settings.ArrayCount = D3DTexture.Description.ArraySize;
+			settings.Depth = D3DTexture.Description.Depth;
 			settings.Format = (BufferFormat)D3DTexture.Description.Format;
 			settings.Height = D3DTexture.Description.Height;
 			settings.MipCount = D3DTexture.Description.MipLevels;
-			settings.Multisampling = new GorgonMultiSampling(D3DTexture.Description.SampleDescription.Count, D3DTexture.Description.SampleDescription.Quality);
 			settings.Usage = (BufferUsage)D3DTexture.Description.Usage;
 			settings.Width = D3DTexture.Description.Width;
 
@@ -173,10 +149,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateResourceView()
 		{
-			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating D3D11 resource view...", Diagnostics.LoggingLevel.Verbose, Name);
-			D3DTexture.DebugName = "Gorgon 2D Texture '" + Name + "'";
+			Gorgon.Log.Print("Gorgon 3D texture {0}: Creating D3D11 resource view...", Diagnostics.LoggingLevel.Verbose, Name);
+			D3DTexture.DebugName = "Gorgon 3D Texture '" + Name + "'";
 			View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
-			View.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
+			View.DebugName = "Gorgon 3D Texture '" + Name + "' resource view";
 
 			GetFormatInformation(Settings.Format);
 		}
@@ -194,7 +170,7 @@ namespace GorgonLibrary.Graphics
 					if (D3DTexture != null)
 						D3DTexture.Dispose();
 
-					Gorgon.Log.Print("Gorgon 2D texture {0}: D3D 11 Texture destroyed", Diagnostics.LoggingLevel.Verbose, Name);
+					Gorgon.Log.Print("Gorgon 3D texture {0}: D3D 11 Texture destroyed", Diagnostics.LoggingLevel.Verbose, Name);
 				}
 
 				_disposed = true;
@@ -226,7 +202,7 @@ namespace GorgonLibrary.Graphics
 					imageInfo.CpuAccessFlags = D3D.CpuAccessFlags.None;
 					break;
 			}
-			imageInfo.Depth = 0;
+			imageInfo.Depth = Settings.Depth;
 			imageInfo.Filter = (D3D.FilterFlags)filter;
 			imageInfo.FirstMipLevel = 0;
 			imageInfo.Format = (SharpDX.DXGI.Format)Settings.Format;
@@ -238,74 +214,26 @@ namespace GorgonLibrary.Graphics
 			imageInfo.Usage = (D3D.ResourceUsage)Settings.Usage;
 			imageInfo.Width = Settings.Width;
 
-			Gorgon.Log.Print("Gorgon 2D texture {0}: Loading D3D11 2D texture...", Diagnostics.LoggingLevel.Verbose, Name);
-			D3DTexture = D3D.Texture2D.FromMemory<D3D.Texture2D>(Graphics.D3DDevice, imageData, imageInfo);
+			Gorgon.Log.Print("Gorgon 3D texture {0}: Loading D3D11 3D texture...", Diagnostics.LoggingLevel.Verbose, Name);
+			D3DTexture = D3D.Texture3D.FromMemory<D3D.Texture3D>(Graphics.D3DDevice, imageData, imageInfo);
 
 			RetrieveSettings();
 			CreateResourceView();
 		}
 
 		/// <summary>
-		/// Function to initialize a render target texture.
-		/// </summary>
-		internal void InitializeRenderTarget()
-		{
-			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
-
-			desc.ArraySize = 1;
-			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
-			desc.Width = Settings.Width;
-			desc.Height = Settings.Height;
-			desc.MipLevels = 1;
-			desc.BindFlags = D3D.BindFlags.RenderTarget | D3D.BindFlags.ShaderResource;
-			desc.Usage = D3D.ResourceUsage.Default;
-			desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
-			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultiSampling.Convert(Settings.Multisampling);
-
-			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating 2D render target texture...", Diagnostics.LoggingLevel.Verbose, Name);
-			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
-		}
-
-		/// <summary>
-		/// Function to initialize a depth/stencil texture.
-		/// </summary>
-		/// <param name="isShaderBound">TRUE if the texture should be used in a shader, FALSE if not.</param>
-		internal void InitializeDepth(bool isShaderBound)
-		{
-			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
-
-			desc.ArraySize = 1;
-			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
-			desc.Width = Settings.Width;
-			desc.Height = Settings.Height;
-			desc.MipLevels = Settings.MipCount;
-			desc.BindFlags = D3D.BindFlags.DepthStencil;
-			if (isShaderBound)
-				desc.BindFlags |= D3D.BindFlags.ShaderResource;
-			desc.Usage = D3D.ResourceUsage.Default;
-			desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
-			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultiSampling.Convert(Settings.Multisampling);
-
-			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating 2D depth/stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
-			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
-			IsDepthStencil = true;
-		}
-
-		/// <summary>
 		/// Function to initialize the texture.
 		/// </summary>
 		/// <param name="data">Data used to populate the texture.</param>
-		protected internal void Initialize(GorgonTexture2DData? data)
+		protected internal void Initialize(GorgonTexture3DData? data)
 		{
-			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
-			DX.DataRectangle[] dataRects = null;
+			D3D.Texture3DDescription desc = new D3D.Texture3DDescription();
+			DX.DataBox[] dataRects = null;
 
-			desc.ArraySize = Settings.ArrayCount;
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
 			desc.Width = Settings.Width;
 			desc.Height = Settings.Height;
+			desc.Depth = Settings.Depth;
 			desc.MipLevels = Settings.MipCount;
 			desc.BindFlags = D3D.BindFlags.ShaderResource;
 			desc.Usage = (D3D.ResourceUsage)Settings.Usage;
@@ -322,22 +250,22 @@ namespace GorgonLibrary.Graphics
 					break;				
 			}
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultiSampling.Convert(Settings.Multisampling);
 
-			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating D3D11 2D texture...", Diagnostics.LoggingLevel.Verbose, Name);
+			Gorgon.Log.Print("Gorgon 3D texture {0}: Creating D3D11 3D texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			if (data != null)
 			{
-				dataRects = new DX.DataRectangle[data.Value.Data.Length];
+				dataRects = new DX.DataBox[data.Value.Data.Length];
 				for (int i = 0; i < dataRects.Length; i++)
 				{
 					dataRects[i].DataPointer = data.Value.Data[i].PositionPointer;
-					dataRects[i].Pitch = data.Value.Pitch[i];
+					dataRects[i].RowPitch = data.Value.Pitch[i];
+					dataRects[i].SlicePitch = data.Value.Slice[i];
 				}
 
-				D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc, dataRects);
+				D3DTexture = new D3D.Texture3D(Graphics.D3DDevice, desc, dataRects);
 			}
 			else
-				D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
+				D3DTexture = new D3D.Texture3D(Graphics.D3DDevice, desc);
 
 			CreateResourceView();
 		}
@@ -349,37 +277,22 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">Image format to use.</param>
 		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the format is anything other than DDS.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to save a <see cref="GorgonLibrary.Graphics.GorgonTexture2D.IsDepthStencil">depth/stencil texture</see>.</exception>
 		public override void Save(System.IO.Stream stream, ImageFileFormat format)
 		{
 			D3D.ImageFileFormat fileFormat = (D3D.ImageFileFormat)format;
 			long position = stream.Position;
 
-			if (IsDepthStencil)
-				throw new GorgonException(GorgonResult.CannotWrite, "Cannot save a depth/stencil buffer texture.");
-
-			D3D.Texture2D.ToStream<D3D.Texture2D>(Graphics.Context, D3DTexture, fileFormat, stream);
+			if (format == ImageFileFormat.DDS)
+				throw new ArgumentException("Volume textures can only be saved to DDS format.", "format");
+			
+			D3D.Texture3D.ToStream<D3D.Texture3D>(Graphics.Context, D3DTexture, fileFormat, stream);
 			stream.Position = position;
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
-		/// </summary>
-		/// <param name="swapChain">The swap chain to get texture information from.</param>
-		internal GorgonTexture2D(GorgonSwapChain swapChain)
-			: base(swapChain.Graphics, swapChain.Name + "_Internal_Texture_" + Guid.NewGuid().ToString())
-		{
-			D3DTexture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
-			D3DTexture.DebugName = "Gorgon swap chain texture '" + Name + "'";
-
-			IsRenderTarget = true;
-			RetrieveSettings();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTexture3D"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this texture.</param>
 		/// <param name="name">The name of the texture.</param>
@@ -387,18 +300,12 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		internal GorgonTexture2D(GorgonGraphics graphics, string name, GorgonTexture2DSettings settings)
+		internal GorgonTexture3D(GorgonGraphics graphics, string name, GorgonTexture3DSettings settings)
 			: base(graphics, name)
 		{
 			if (settings.MipCount < 0)
 				settings.MipCount = 0;
 
-			if (settings.ArrayCount < 1)
-				settings.ArrayCount = 1;
-
-			if (settings.Multisampling.Count < 1)
-				settings.Multisampling = new GorgonMultiSampling(1, 0);
-					
 			Settings = settings;
 		}
 		#endregion

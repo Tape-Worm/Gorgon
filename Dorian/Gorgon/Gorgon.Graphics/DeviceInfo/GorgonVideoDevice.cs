@@ -427,6 +427,24 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to determine if the specified format is supported for a 3D texture.
+		/// </summary>
+		/// <param name="format">Format to check.</param>
+		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
+		public bool Supports3DTextureFormat(BufferFormat format)
+		{
+			try
+			{
+				GetDevice();
+				return ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture3D) == D3D.FormatSupport.Texture3D);
+			}
+			finally
+			{
+				ReleaseTempDevice();
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if the specified format is supported for a 2D texture.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
@@ -437,6 +455,24 @@ namespace GorgonLibrary.Graphics
 			{
 				GetDevice();
 				return ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture2D) == D3D.FormatSupport.Texture2D);
+			}
+			finally
+			{
+				ReleaseTempDevice();
+			}
+		}
+
+		/// <summary>
+		/// Function to determine if the specified format is supported for a 1D texture.
+		/// </summary>
+		/// <param name="format">Format to check.</param>
+		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
+		public bool Supports1DTextureFormat(BufferFormat format)
+		{
+			try
+			{
+				GetDevice();
+				return ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture1D) == D3D.FormatSupport.Texture1D);
 			}
 			finally
 			{

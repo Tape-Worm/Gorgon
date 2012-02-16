@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
@@ -39,6 +40,19 @@ namespace GorgonLibrary.Graphics
 	public struct GorgonTexture1DSettings
 	{
 		#region Variables.
+		/// <summary>
+		/// Default settings for the texture.
+		/// </summary>
+		/// <remarks>This should be used when loading a texture from memory, a stream or a file.</remarks>
+		public static readonly GorgonTexture1DSettings FromFile = new GorgonTexture1DSettings()
+		{
+			Width = 0,
+			Format = BufferFormat.Unknown,
+			MipCount = 1,
+			ArrayCount = 1,
+			Usage = BufferUsage.Default
+		};
+
 		/// <summary>
 		/// Width of the texture.
 		/// </summary>
@@ -128,9 +142,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateResourceView()
 		{
+			Gorgon.Log.Print("Gorgon 1D texture {0}: Creating D3D11 resource view...", Diagnostics.LoggingLevel.Verbose, Name);
+
 			D3DTexture.DebugName = "Gorgon 1D Texture '" + Name + "'";
 			View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
 			View.DebugName = "Gorgon 1D Texture '" + Name + "' resource view";
+
+			GetFormatInformation(Settings.Format);
 		}
 
 		/// <summary>
@@ -165,10 +183,11 @@ namespace GorgonLibrary.Graphics
 			imageInfo.MipLevels = Settings.MipCount;
 			imageInfo.OptionFlags = D3D.ResourceOptionFlags.None;
 			imageInfo.Usage = (D3D.ResourceUsage)Settings.Usage;
-			imageInfo.Width = Settings.Width;			
+			imageInfo.Width = Settings.Width;
 
+			Gorgon.Log.Print("Gorgon 2D texture {0}: Loading D3D11 1D texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			D3DTexture = D3D.Texture1D.FromMemory<D3D.Texture1D>(Graphics.D3DDevice, imageData, imageInfo);
-
+			
 			RetrieveSettings();
 			CreateResourceView();
 		}
@@ -185,6 +204,7 @@ namespace GorgonLibrary.Graphics
 				{
 					if (D3DTexture != null)
 						D3DTexture.Dispose();
+					Gorgon.Log.Print("Gorgon 1D texture {0}: D3D 11 Texture destroyed", Diagnostics.LoggingLevel.Verbose, Name);
 				}
 
 				_disposed = true;
@@ -221,6 +241,7 @@ namespace GorgonLibrary.Graphics
 			}			
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
 
+			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating D3D11 1D texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			if (data != null)
 			{
 				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - data.Position, true, true))
@@ -229,7 +250,20 @@ namespace GorgonLibrary.Graphics
 			else
 				D3DTexture = new D3D.Texture1D(Graphics.D3DDevice, desc);
 
-			CreateResourceView();
+			CreateResourceView();			
+		}
+
+		/// <summary>
+		/// Function to save the texture data to a stream.
+		/// </summary>
+		/// <param name="stream">Stream to write.</param>
+		/// <param name="format">Image format to use.</param>
+		public override void Save(System.IO.Stream stream, ImageFileFormat format)
+		{
+			D3D.ImageFileFormat fileFormat = (D3D.ImageFileFormat)format;
+			long position = stream.Position;
+			D3D.Texture1D.ToStream<D3D.Texture1D>(Graphics.Context, D3DTexture, fileFormat, stream);
+			stream.Position = position;
 		}
 		#endregion
 

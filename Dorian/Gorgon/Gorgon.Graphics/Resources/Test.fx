@@ -23,8 +23,9 @@ PS_IN VS( VS_IN input )
 }
 
 float4 PS( PS_IN input ) : SV_Target
-{	
-	return float4((_gorgonTexture.Sample(_gorgonSampler, input.uv).rgb / 2.0f) * _backTexture.Sample(_backSampler, input.uv).rgb, _gorgonTexture.Sample(_gorgonSampler, input.uv).a) * input.col;
+{
+	return _gorgonTexture.Sample(_gorgonSampler, input.uv) * input.col;
+//	return float4((_gorgonTexture.Sample(_gorgonSampler, input.uv).rgb / 2.0f) * _backTexture.Sample(_backSampler, input.uv).rgb, _gorgonTexture.Sample(_gorgonSampler, input.uv).a) * input.col;
 /*	float4 topTexel = _gorgonTexture.Sample(_gorgonSampler, input.uv);
 	float4 bottomTexel = _backTexture.Sample(_backSampler, input.uv);
 
