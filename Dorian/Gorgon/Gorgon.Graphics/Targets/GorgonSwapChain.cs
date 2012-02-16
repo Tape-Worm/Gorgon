@@ -107,6 +107,10 @@ namespace GorgonLibrary.Graphics
 		/// Event called after the swap chain transiitons to full screen or windowed mode.
 		/// </summary>
 		public event EventHandler AfterStateTransition;
+		/// <summary>
+		/// Event called after the swap chain has been resized.
+		/// </summary>
+		public event EventHandler Resized;
 		#endregion
 
 		#region Properties.
@@ -349,6 +353,9 @@ namespace GorgonLibrary.Graphics
 
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, (int)flags);
 			CreateResources();
+
+			if (Resized != null)
+				Resized(this, EventArgs.Empty);
 		}
 
 		/// <summary>
