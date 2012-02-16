@@ -100,6 +100,9 @@
     <Reference Include="Gorgon.MemoryAccess">
       <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
+    <Reference Include="SlimMath">
+      <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
