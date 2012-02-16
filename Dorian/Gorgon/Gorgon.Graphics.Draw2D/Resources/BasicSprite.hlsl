@@ -10,33 +10,33 @@ struct GorgonSpriteVertex
    float2 uv : TEXCOORD;
 };
 
-// The transformation matrix.
-cbuffer GorgonTransformMatrix
+// The transformation matrices.
+cbuffer GorgonViewProjection
 {
-	float4x4 worldViewProjection;
+	float4x4 ViewProjection;
 }
 
 // TODO:  Add constant buffers for transformation and other sprite attributes.
 
 // Our default vertex shader.
-GorgonSpriteVertex SpriteVertexShader(GorgonSpriteVertex vertex)
+GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
 	GorgonSpriteVertex output = vertex;
 
-	output.position = mul(worldViewProjection, vertex.position);
+	output.position = mul(ViewProjection, output.position);
 
 	return output;
 }
 
 // Our default pixel shader with textures.
-float4 SpritePixelShaderTexture(GorgonSpriteVertex vertex) : SV_Target
+float4 GorgonPixelShaderTexture(GorgonSpriteVertex vertex) : SV_Target
 {
    // TODO: Create function(s) for alpha testing.
    return _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 }
 
 // Our default pixel shader without textures.
-float4 SpritePixelShaderNoTexture(GorgonSpriteVertex vertex)  : SV_Target
+float4 GorgonPixelShaderNoTexture(GorgonSpriteVertex vertex)  : SV_Target
 {
    // TODO: Create function(s) for alpha testing.
    return vertex.color;

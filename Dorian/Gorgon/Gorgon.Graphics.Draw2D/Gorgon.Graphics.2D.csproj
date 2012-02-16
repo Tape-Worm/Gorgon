@@ -50,6 +50,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,6 +65,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Shaders\Gorgon2DShader.cs" />
+    <Compile Include="Shaders\Gorgon2DShaders.cs" />
+    <Compile Include="Shaders\GorgonDefaultShader.cs" />
+    <Compile Include="Sprite\GorgonSprite.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
