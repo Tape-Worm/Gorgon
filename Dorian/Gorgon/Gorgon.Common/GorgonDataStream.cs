@@ -1130,6 +1130,7 @@ namespace GorgonLibrary
 				actualCount = (_length - _pointerPosition);
 
 			_pointerOffset.CopyFrom<T>(buffer, offset, actualCount);
+			
 			Position += actualCount;
 		}
 

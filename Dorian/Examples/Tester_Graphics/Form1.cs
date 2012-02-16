@@ -58,7 +58,7 @@ namespace Tester_Graphics
 		private GorgonIndexBuffer _spriteIndices = null;
 		private GorgonVertexShader _spriteVShader = null;
 		private GorgonPixelShader _spritePShader = null;
-
+		private GorgonSprite _sprite = null;
 
 		GorgonVideoMode mode1 = default(GorgonVideoMode);
 #if MULTIMON
@@ -91,6 +91,7 @@ namespace Tester_Graphics
 				_pause = !_pause;
 		}
 
+		Vector2 testMove = Vector2.Zero;
 		private bool Idle(GorgonFrameRate timing)
 		{			
 
@@ -101,7 +102,18 @@ namespace Tester_Graphics
 				if (!_swapChain.IsInStandBy)
 				{
 					_swapChain.Clear(Color.Black);
+					_sprite.Left = testMove.X;
+					_sprite.Top = testMove.Y;
+					_sprite.Draw();
+
+					/*_sprite.Left = 400.0f;
+					_sprite.Top = 300.0f;
+					_sprite.Draw();*/
+
 					_graphics2D.Render();
+
+					testMove.X += 100.0f * timing.FrameDelta;
+					testMove.Y += 100.0f * timing.FrameDelta;
 					//_graphics.Draw();
 					//_graphics.ApplyStates();
 					//_graphics.ApplyViewports();
@@ -132,7 +144,7 @@ namespace Tester_Graphics
 				//                accum -= target;
 
 				//                if (accum <= target)
-				//                    Text = "FPS: " + timing.FPS.ToString() + " DT:" + (timing.FrameDelta * 1000).ToString() + " msec.";
+				                    Text = "FPS: " + timing.FPS.ToString() + " DT:" + (timing.FrameDelta * 1000).ToString() + " msec.";
 				//            }
 				//        }
 
@@ -304,7 +316,7 @@ namespace Tester_Graphics
 				_swapChain = _graphics.Output.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.Unknown});
 
 				_graphics2D = new Gorgon2D(_swapChain);
-
+				_sprite = _graphics2D.CreateSprite("Test", 100.0f, 100.0f);
 				//_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
 				//_graphics.Viewports.Add(new GorgonViewport(640, 400, 640, 400));
 
