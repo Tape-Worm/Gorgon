@@ -126,13 +126,18 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			set
 			{
-				_texture = value;
+				if (_texture != value)
+				{
+					_texture = value;
 
-				// Assign the texture name.
-				if (_texture != null)
-					_textureName = _texture.Name;
-				else
-					_textureName = string.Empty;
+					// Assign the texture name.
+					if (_texture != null)
+						_textureName = _texture.Name;
+					else
+						_textureName = string.Empty;
+
+					NeedsTextureUpdate = true;
+				}
 			}
 		}
 
@@ -211,7 +216,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to update the texture coordinates.
 		/// </summary>
@@ -263,6 +268,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			_texture = (from texture in Gorgon2D.Graphics.GetGraphicsObjectOfType<GorgonTexture2D>()
 						where (texture != null) && (string.Compare(texture.Name, _textureName, true) == 0)
 						select texture).FirstOrDefault();
+
+			NeedsTextureUpdate = true;
 		}
 
 		/// <summary>
