@@ -244,7 +244,6 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			Graphics.Output.RenderTargets[0] = Target;
 			UpdateProjection();
-			Shaders.UpdateGorgonTransformation();
 
 			// Re-assign the event.
 			if (Target != null)
@@ -257,7 +256,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private void UpdateProjection()
 		{
 			// Update based on the current render target.
-			Matrix.OrthoOffCenterLH(0, Target.Settings.Width, Target.Settings.Height, 0.0f, 0.1f, 1000.0f, out _defaultProjection);
+			Matrix.OrthoOffCenterLH(0, Target.Settings.Width, Target.Settings.Height, 0.0f, 0.0f, 100.0f, out _defaultProjection);
 			Graphics.Rasterizer.SetViewport(Target.Viewport);
 
 			Shaders.UpdateGorgonTransformation();
@@ -324,10 +323,9 @@ namespace GorgonLibrary.Graphics.Renderers
 			_cacheStart = 0;
 			_cacheEnd = 0;
 			_cacheWritten = 0;
-			
-			UpdateProjection();
-			UpdateTarget();
+
 			Shaders.UpdateShaders();
+			UpdateTarget();
 		}
 
 		/// <summary>
