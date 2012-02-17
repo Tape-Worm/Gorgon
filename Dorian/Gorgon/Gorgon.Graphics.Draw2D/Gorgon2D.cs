@@ -52,7 +52,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// A vertex for a sprite.
 		/// </summary>		
-		internal struct Vertex
+		public struct Vertex
 		{
 			/// <summary>
 			/// Position of the vertex.
@@ -86,12 +86,13 @@ namespace GorgonLibrary.Graphics.Renderers
 		#endregion
 
 		#region Variables.
+		private int _vertexSize = 0;													// Size, in bytes, of a vertex.
 		private Vertex[] _vertexCache = null;											// List of vertices to cache.
 		private int _cacheStart = 0;													// Starting cache vertex buffer index.
-		private int _cacheEnd = 0;													// Ending vertex buffer cache index.
+		private int _cacheEnd = 0;														// Ending vertex buffer cache index.
 		private int _cacheWritten = 0;													// Number of vertices written.
 		private bool _disposed = false;													// Flag to indicate that the object was disposed.
-		private int _cacheSize = 4096;													// Number of sprites that we can stuff into a vertex buffer.
+		private int _cacheSize = 4096;													// Number of vertices that we can stuff into a vertex buffer.
 		private Matrix _defaultProjection = Matrix.Identity;							// Default projection matrix.
 		private Matrix _defaultView = Matrix.Identity;									// Default view matrix.
 		private Matrix? _projection = null;												// Current projection matrix.
@@ -182,9 +183,9 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the number of sprites that can be cached into a vertex buffer.
+		/// Property to set or return the number of vertices that can be cached into a vertex buffer.
 		/// </summary>
-		public int SpriteCacheSize
+		public int VertexCacheSize
 		{
 			get
 			{
@@ -268,7 +269,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private void Initialize()
 		{
 			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
-
+			
 			// Create the default projection matrix.
 			Target.Resized -= new EventHandler(target_Resized);
 
@@ -278,14 +279,17 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			// Create layout information so we can bind our vertices to the shader.
 			if (_layout == null)
-				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Vertex), Shaders.Current.VertexShader);
+			{
+				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Vertex), Shaders.DefaultShader.DefaultVertex);
+				_vertexSize = _layout.GetSlotSize(0);
+			}
 
 			if (IndexBuffer != null)
 				IndexBuffer.Dispose();
 			if (VertexBuffer != null)
 				VertexBuffer.Dispose();
 						
-			int spriteVBSize = _layout.GetSlotSize(0) * _cacheSize * 4;
+			int spriteVBSize = _vertexSize * _cacheSize * 4;
 			int spriteIBSize = sizeof(int) * _cacheSize * 6;
 
 			// Set up our index buffer.
@@ -315,17 +319,21 @@ namespace GorgonLibrary.Graphics.Renderers
 			Graphics.Rasterizer.States = rastState;
 
 			Graphics.Input.IndexBuffer = IndexBuffer;
-			Graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(VertexBuffer, _layout.GetSlotSize(0));
+			Graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(VertexBuffer, _vertexSize);
 			Graphics.Input.Layout = _layout;
 
 			// Create the vertex cache.
-			_vertexCache = new Vertex[SpriteCacheSize * 4];
+			_vertexCache = new Vertex[VertexCacheSize];
 			_cacheStart = 0;
 			_cacheEnd = 0;
 			_cacheWritten = 0;
 
-			Shaders.UpdateShaders();
 			UpdateTarget();
+
+			// Set our default shaders.
+			Shaders.DefaultShader.VertexShader = Shaders.DefaultShader.DefaultVertex;
+			Shaders.DefaultShader.PixelShader = Shaders.DefaultShader.DefaultPixelDiffuse;
+			Shaders.DefaultShader.VSConstantBuffers[0] = Shaders.ViewProjection;
 		}
 
 		/// <summary>
@@ -340,18 +348,75 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Function to add vertices to the vertex buffer.
+		/// Function to determine if state has changed, and if it has, will flush the renderer.
 		/// </summary>
-		/// <param name="vertices">Vertices to add.</param>
-		internal void AddVertices(IList<Vertex> vertices)
+		/// <param name="renderable">Renderable object to check for state change.</param>
+		private bool CheckStateChange(GorgonRenderable renderable)
 		{
-			for (int i = 0; i < vertices.Count; i++)
-				_vertexCache[_cacheEnd + i] = vertices[i];
+			if (renderable.Texture != Shaders.Current.Textures[0])
+				return true;
 
-			_cacheEnd += vertices.Count;
+			return false;
+		}
+
+		/// <summary>
+		/// Function to apply the states for a renderable.
+		/// </summary>
+		/// <param name="renderable">Renderable with states to apply.</param>
+		private void ApplyStates(GorgonRenderable renderable)
+		{
+			if (Shaders.Current.Textures[0] != renderable.Texture)
+			{
+				Shaders.Current.Textures[0] = renderable.Texture;
+
+				// If we're using the default shader, switch between the default no texture or textured pixel shader depending on our state.
+				if (Shaders.Current == Shaders.DefaultShader)
+				{
+					if ((renderable.Texture != null) && (Shaders.Current.PixelShader == Shaders.DefaultShader.DefaultPixelDiffuse))
+						Shaders.Current.PixelShader = Shaders.DefaultShader.DefaultPixelTextured;
+
+					if ((renderable.Texture == null) && (Shaders.Current.PixelShader == Shaders.DefaultShader.DefaultPixelTextured)) 
+						Shaders.Current.PixelShader = Shaders.DefaultShader.DefaultPixelDiffuse;
+						
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to add a renderable object to the vertex buffer.
+		/// </summary>
+		/// <param name="renderable">Renderable object to add.</param>
+		internal void AddRenderable(GorgonRenderable renderable)
+		{
+			bool hasRendered = false;
+
+			if (CheckStateChange(renderable))
+			{
+				Render();
+				hasRendered = true;
+				ApplyStates(renderable);
+			}
+
+			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
+			if ((_cacheEnd + renderable.TransformedVertices.Length) > _vertexCache.Length)
+			{
+				// Ensure that we don't render the same scene twice.
+				if (!hasRendered)
+					Render();
+
+				_cacheStart = 0;
+				_cacheWritten = 0;
+				_cacheEnd = 0;
+			}
+
+			for (int i = 0; i < renderable.TransformedVertices.Length; i++)
+				_vertexCache[_cacheEnd + i] = renderable.TransformedVertices[i];
+
+			_cacheEnd += renderable.TransformedVertices.Length;
 			_cacheWritten = _cacheEnd - _cacheStart;
 
-			if (_cacheWritten + _cacheEnd > _vertexCache.Length)
+			// If we've filled the cache, then empty it.
+			if (_cacheEnd == _vertexCache.Length)
 			{
 				Render();
 				_cacheStart = 0;
@@ -363,6 +428,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Function to force the renderer to render its data to the current render target.
 		/// </summary>
+		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
+		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
+		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
+		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
+		/// user is now responsible for calling this method.</para>
+		/// </remarks>
 		public void Render()
 		{
 			BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
@@ -375,7 +446,7 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			using (GorgonDataStream stream = VertexBuffer.Lock(flags))
 			{
-				stream.Position = _cacheStart * 40;
+				stream.Position = _cacheStart * _vertexSize;
 				stream.WriteRange<Vertex>(_vertexCache, _cacheStart, _cacheWritten);
 				VertexBuffer.Unlock();
 			}
@@ -383,6 +454,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			Graphics.DrawIndexed((_cacheStart * 6) / _cacheWritten, 0, (_cacheWritten / 2) * 3);
 
 			_cacheStart = _cacheEnd;
+
+			Target.Flip();			
 		}
 
 		/// <summary>

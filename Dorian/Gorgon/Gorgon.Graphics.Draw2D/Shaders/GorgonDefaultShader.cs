@@ -39,49 +39,34 @@ namespace GorgonLibrary.Graphics.Renderers
 	{
 		#region Variables.
 		private bool _disposed = false;								// Flag to indicate that the object was disposed.
-		private GorgonVertexShader _defaultVertex;					// Property to set or return the default vertex shader.
-		private GorgonPixelShader _defaultPixelDiffuse;				// Property to set or return the default pixel diffuse shader.
-		private GorgonPixelShader _defaultPixelTextured;			// The default pixel texture shader.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the current pixel shader.
+		/// Property to set or return the default vertex shader.
 		/// </summary>
-		internal override GorgonPixelShader PixelShader
+		public GorgonVertexShader DefaultVertex
 		{
-			get
-			{
-				// Check to see if any textures are bound.
-				if (Gorgon2D.Graphics.Shaders.PixelShader != null)
-				{
-					for (int i = 0; i < Gorgon2D.Graphics.Shaders.PixelShader.Textures.Count; i++)
-					{
-						if (Gorgon2D.Graphics.Shaders.PixelShader.Textures[i] != null)
-							return _defaultPixelTextured;
-					}
-				}
-
-				return _defaultPixelDiffuse;
-			}
-			set
-			{				
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current vertex shader.
+		/// Property to return the default pixel diffuse shader.
 		/// </summary>
-		/// <value></value>
-		internal override GorgonVertexShader VertexShader
+		public GorgonPixelShader DefaultPixelDiffuse
 		{
-			get
-			{
-				return _defaultVertex;
-			}
-			set
-			{
-			}
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the default pixel texture shader.
+		/// </summary>
+		public GorgonPixelShader DefaultPixelTextured
+		{
+			get;
+			private set;
 		}
 		#endregion
 
@@ -96,18 +81,28 @@ namespace GorgonLibrary.Graphics.Renderers
 			{
 				if (disposing)
 				{
-					if (_defaultVertex != null)
-						_defaultVertex.Dispose();
-					if (_defaultPixelTextured != null)
-						_defaultPixelTextured.Dispose();
-					if (_defaultPixelDiffuse != null)
-						_defaultPixelDiffuse.Dispose();
+					if (DefaultVertex != null)
+						DefaultVertex.Dispose();
+					if (DefaultPixelTextured != null)
+						DefaultPixelTextured.Dispose();
+					if (DefaultPixelDiffuse != null)
+						DefaultPixelDiffuse.Dispose();
 				}
 
 				_disposed = true;
 			}
 
 			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Function to set the default shaders.
+		/// </summary>
+		public void SetDefault()
+		{
+			VertexShader = DefaultVertex;
+			PixelShader = DefaultPixelDiffuse;
+			Gorgon2D.Shaders.UpdateGorgonTransformation();
 		}
 		#endregion
 
@@ -122,9 +117,9 @@ namespace GorgonLibrary.Graphics.Renderers
 			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);			
 
 			// Create default shaders.
-			_defaultVertex = gorgon2D.Graphics.Shaders.CreateVertexShader("Default_Basic_Vertex_Shader", "GorgonVertexShader", shaderSource);
-			_defaultPixelTextured = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTexture", shaderSource);
-			_defaultPixelDiffuse = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_No_Texture", "GorgonPixelShaderNoTexture", shaderSource);
+			DefaultVertex = gorgon2D.Graphics.Shaders.CreateVertexShader("Default_Basic_Vertex_Shader", "GorgonVertexShader", shaderSource);
+			DefaultPixelTextured = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTexture", shaderSource);
+			DefaultPixelDiffuse = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_No_Texture", "GorgonPixelShaderNoTexture", shaderSource);
 		}
 		#endregion
 	}

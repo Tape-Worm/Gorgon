@@ -134,6 +134,7 @@
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
     <Compile Include="Extensions\GorgonStringFormatting.cs" />
     <Compile Include="Gorgon.cs" />
+    <Compile Include="ICloneable.cs" />
     <Compile Include="INotifier.cs" />
     <Compile Include="GorgonFieldDescriptor.cs" />
     <Compile Include="Math\GorgonRange.cs" />

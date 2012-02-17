@@ -104,10 +104,10 @@ namespace Tester_Graphics
 				if (!_swapChain.IsInStandBy)
 				{
 					_swapChain.Clear(Color.Black);
-					_graphics2D.ViewMatrix = Matrix.Translation(-400.0f, -300.0f, 0) * Matrix.RotationZ(GorgonLibrary.Math.GorgonMathUtility.Sin(GorgonLibrary.Math.GorgonMathUtility.Radians(-angle * 2.0f))) * Matrix.Translation(400, 300, 0);
+					//_graphics2D.ViewMatrix = Matrix.Translation(-400.0f, -300.0f, 0) * Matrix.RotationZ(GorgonLibrary.Math.GorgonMathUtility.Sin(GorgonLibrary.Math.GorgonMathUtility.Radians(-angle * 2.0f))) * Matrix.Translation(400, 300, 0);
 					_sprite.Scale = new Vector2(2.0f, 2.0f);
 					//_sprite.TextureOffset = testMove;
-					//_sprite.Angle = new Vector3(0, 0, angle);					
+					_sprite.Angle = new Vector3(0, 0, angle);					
 					_sprite.Position = new Vector3((_swapChain.Settings.Width / 2) - (_sprite.Size.X / 2), _swapChain.Settings.Height / 2 - (_sprite.Size.Y / 2), 0);
 					_sprite.Draw();
 
@@ -327,8 +327,9 @@ namespace Tester_Graphics
 				_graphics2D = new Gorgon2D(_swapChain);
 				_sprite = _graphics2D.CreateSprite("Test", 100.0f, 100.0f);
 				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\Images\VBback.jpg", GorgonTexture2DSettings.FromFile);
-				//_sprite.Texture = _texture;
-				_sprite.Size = new Vector2(256, 256);
+				_sprite.Texture = _texture;
+				_sprite.TextureScale = new Vector2(0.5f, 0.5f);
+				_sprite.Size = new Vector2(256, 256);				
 				_sprite.Anchor = new Vector2(128, 128);
 				//_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(0.0f, 0.0f, -5.0f), new Vector3(0, 0, 1.0f), Vector3.UnitY);				
 				//_sprite.TextureSize = new Vector2(128, 128);

@@ -39,6 +39,8 @@ namespace GorgonLibrary.Graphics.Renderers
 	{
 		#region Variables.
 		private bool _disposed = false;										// Flag to indicate that this object has been disposed.
+		private GorgonPixelShader _pixelShader = null;						// Current pixel shader.
+		private GorgonVertexShader _vertexShader = null;					// Current vertex shader.
 		#endregion
 
 		#region Properties.
@@ -56,8 +58,18 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		internal virtual GorgonPixelShader PixelShader
 		{
-			get;
-			set;
+			get
+			{
+				return _pixelShader;
+			}
+			set
+			{
+				if (value != _pixelShader)
+				{
+					_pixelShader = value;
+					Gorgon2D.Graphics.Shaders.PixelShader.Current = value;
+				}
+			}
 		}
 
 		/// <summary>
@@ -65,8 +77,18 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		internal virtual GorgonVertexShader VertexShader
 		{
-			get;
-			set;
+			get
+			{
+				return _vertexShader;
+			}
+			set
+			{
+				if (value != _vertexShader)
+				{
+					_vertexShader = value;
+					Gorgon2D.Graphics.Shaders.VertexShader.Current = value;
+				}
+			}
 		}
 
 		/// <summary>
