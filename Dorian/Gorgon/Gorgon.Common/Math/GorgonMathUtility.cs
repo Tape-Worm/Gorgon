@@ -286,7 +286,6 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="value1">First vector value to compare.</param>
 		/// <param name="value2">Second vector value to compare.</param>
-		/// <param name="epsilon">Tolerance of floating point error.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool EqualVector2(Vector2 value1, Vector2 value2)
 		{
@@ -310,7 +309,6 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="value1">First vector value to compare.</param>
 		/// <param name="value2">Second vector value to compare.</param>
-		/// <param name="epsilon">Tolerance of floating point error.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool EqualVector3(Vector3 value1, Vector3 value2)
 		{
@@ -334,7 +332,6 @@ namespace GorgonLibrary.Math
 		/// </summary>
 		/// <param name="value1">First vector value to compare.</param>
 		/// <param name="value2">Second vector value to compare.</param>
-		/// <param name="epsilon">Tolerance of floating point error.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool EqualVector4(Vector4 value1, Vector4 value2)
 		{

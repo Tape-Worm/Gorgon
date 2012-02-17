@@ -37,19 +37,13 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// A sprite object.
 	/// </summary>
 	public class GorgonSprite
-		: GorgonNamedObject
+		: GorgonRenderable
 	{
 		#region Variables.
-		private GorgonTexture2D _texture = null;										// Texture for the sprite.
-		private Gorgon2D.Vertex[] _vertices = new Gorgon2D.Vertex[4];					// Vertices for the sprite.
-		private Gorgon2D.Vertex[] _transformedVertices = new Gorgon2D.Vertex[4];		// Vertices for the sprite.
 		private Vector3 _angle = Vector3.Zero;											// Angle of rotation.
 		private Vector3 _position = Vector3.Zero;										// Position of the sprite.
 		private Vector2 _scale = new Vector2(1);										// Scale for the sprite.
 		private Vector4 _anchor = Vector3.Zero;											// Anchor point.
-		private Vector2 _size = Vector2.Zero;											// Size of the sprite.
-		private Vector2 _textureSize = Vector2.Zero;									// Size of the sprite on the texture.
-		private Vector2 _textureOffset = Vector2.Zero;									// Offset of the sprite on the texture.
 		private Matrix _translation = Matrix.Identity;									// Translation matrix.
 		private Matrix _rotation = Matrix.Identity;										// Rotation matrix.
 		private Matrix _scaling = Matrix.Identity;										// Scaling matrix.
@@ -58,12 +52,14 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the interface that owns this object.
+		/// Property to return an index buffer.
 		/// </summary>
-		public Gorgon2D Gorgon2D
+		protected internal override bool UseIndexBuffer
 		{
-			get;
-			private set;
+			get 
+			{
+				return true;
+			}
 		}
 
 		/// <summary>
@@ -73,81 +69,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the size of the sprite.
-		/// </summary>
-		public Vector2 Size
-		{
-			get
-			{
-				return _size;
-			}
-			set
-			{
-				_size = value;
-				CreateVertices();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the offset in the texture for the sprite.
-		/// </summary>
-		public Vector2 TextureOffset
-		{
-			get
-			{
-				return _textureOffset;
-			}
-			set
-			{
-				_textureOffset = value;
-				CreateVertices();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the size on the texture that the sprite will cover.
-		/// </summary>
-		public Vector2 TextureSize
-		{
-			get
-			{
-				return _textureSize;
-			}
-			set
-			{
-				_textureSize = value;
-				CreateVertices();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the texture for the sprite.
-		/// </summary>
-		public GorgonTexture2D Texture
-		{
-			get
-			{
-				return _texture;
-			}
-			set
-			{
-				_texture = value;
-				if (value != null)
-				{
-					TextureOffset = Vector2.Zero;
-					TextureSize = new Vector2(_texture.Settings.Width, _texture.Settings.Height);
-				}
-				else
-				{
-					TextureOffset = Vector2.Zero;
-					TextureSize = Vector2.Zero;
-				}
-
-				CreateVertices();
-			}
 		}
 
 		/// <summary>
@@ -201,37 +122,6 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Methods.
 		/// <summary>
-		/// Function to create the vertices for the sprite.
-		/// </summary>
-		private void CreateVertices()
-		{
-			// Calculate texture coordinates.
-			Vector2 scaleUV = Vector2.Zero;
-			Vector2 offsetUV = Vector2.Zero;
-
-			if (Texture != null)
-			{
-				if (_textureSize.X > 0)
-				{
-					offsetUV.X = TextureOffset.X / TextureSize.X;
-					scaleUV.X = (TextureOffset.X + Size.X) / TextureSize.X;
-				}
-
-				if (_textureSize.Y > 0)
-				{
-					offsetUV.Y = TextureOffset.Y / TextureSize.Y;
-					scaleUV.Y = (TextureOffset.Y + Size.Y) / TextureSize.Y;
-				}
-			}
-			
-			// Set up vertices.
-			_vertices[0] = new Gorgon2D.Vertex(new Vector4(0, 0, 0.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), offsetUV);
-			_vertices[1] = new Gorgon2D.Vertex(new Vector4(Size.X, 0, 0.0f, 1.0f), new Vector4(0.0f, 1.0f, 1.0f, 1.0f), new Vector2(scaleUV.X, offsetUV.Y));
-			_vertices[2] = new Gorgon2D.Vertex(new Vector4(0, Size.Y, 0.0f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(offsetUV.X, scaleUV.Y));
-			_vertices[3] = new Gorgon2D.Vertex(new Vector4(Size.X, Size.Y, 0.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), scaleUV);
-		}
-
-		/// <summary>
 		/// Function to transform the vertices.
 		/// </summary>
 		private void TransformVertices()
@@ -261,39 +151,84 @@ namespace GorgonLibrary.Graphics.Renderers
 			_translation.TranslationVector = Position;
 			Matrix.Multiply(ref _worldMatrix, ref _translation, out _worldMatrix);
 
-			for (int i = 0; i < _vertices.Length; i++)
+			for (int i = 0; i < Vertices.Length; i++)
 			{
-				_transformedVertices[i] = _vertices[i];
+				Gorgon2D.Vertex transformedVertex = Vertices[i];				
 
 				if (_anchor != Vector4.Zero)
-					Vector4.Subtract(ref _transformedVertices[i].Position, ref _anchor, out anchoredPosition);
-				Vector4.Transform(ref anchoredPosition, ref _worldMatrix, out _transformedVertices[i].Position);
+					Vector4.Subtract(ref transformedVertex.Position, ref _anchor, out anchoredPosition);
+				Vector4.Transform(ref anchoredPosition, ref _worldMatrix, out transformedVertex.Position);
 				if (_anchor != Vector4.Zero)
-					Vector4.Add(ref _anchor, ref _transformedVertices[i].Position, out _transformedVertices[i].Position);
+					Vector4.Add(ref _anchor, ref transformedVertex.Position, out transformedVertex.Position);
+
+				TransformedVertices[i] = transformedVertex;
 			}
 		}
 
 		/// <summary>
-		/// Function to draw the sprite.
+		/// Function to update the texture coordinates.
 		/// </summary>
-		public void Draw()
-		{			
-			if (Gorgon2D.Shaders.Current.Textures[0] != Texture)
-			{
-				if (Texture != null)
-				{
-					Gorgon2D.Shaders.Current = null;
-					Gorgon2D.Shaders.Current.Textures[0] = Texture;
-					Gorgon2D.Shaders.Current.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;					
-				}
-				else
-					Gorgon2D.Shaders.Current.Textures[0] = null;
+		protected override void UpdateTextureCoordinates()
+		{
+			// Calculate texture coordinates.
+			Vector2 scaleUV = Vector2.Zero;
+			Vector2 offsetUV = Vector2.Zero;
+			Vector2 scaledTexture = Vector2.Zero;
 
-				Gorgon2D.Shaders.UpdateShaders();
+			if (Texture == null)
+			{
+				Vertices[0].UV = Vertices[1].UV = Vertices[2].UV = Vertices[3].UV = Vector2.Zero;
+				return;
 			}
 
+			scaledTexture = Vector2.Modulate(new Vector2(Texture.Settings.Width, Texture.Settings.Height), TextureScale);
+
+			offsetUV.X = TextureOffset.X / scaledTexture.X;
+			scaleUV.X = (TextureOffset.X + Size.X) / scaledTexture.X;
+
+			offsetUV.Y = TextureOffset.Y / scaledTexture.Y;
+			scaleUV.Y = (TextureOffset.Y + Size.Y) / scaledTexture.Y;
+			
+			Vertices[0].UV = offsetUV;
+			Vertices[1].UV = new Vector2(scaleUV.X, offsetUV.Y);
+			Vertices[2].UV = new Vector2(offsetUV.X, scaleUV.Y);
+			Vertices[3].UV = scaleUV;
+		}
+
+		/// <summary>
+		/// Function to update the vertices for the renderable.
+		/// </summary>
+		protected override void UpdateVertices()
+		{
+			// Set up vertices.
+			// TODO: Set only object space vertex position in here.   Put color into an UpdateColors() method.
+			Vertices[0] = new Gorgon2D.Vertex(new Vector4(0, 0, 0.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vertices[0].UV);
+			Vertices[1] = new Gorgon2D.Vertex(new Vector4(Size.X, 0, 0.0f, 1.0f), new Vector4(0.0f, 1.0f, 1.0f, 1.0f), Vertices[1].UV);
+			Vertices[2] = new Gorgon2D.Vertex(new Vector4(0, Size.Y, 0.0f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f), Vertices[2].UV);
+			Vertices[3] = new Gorgon2D.Vertex(new Vector4(Size.X, Size.Y, 0.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vertices[3].UV);
+		}
+
+		/// <summary>
+		/// Function to draw the object.
+		/// </summary>
+		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be
+		/// drawn when <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// </remarks>
+		public override void Draw()
+		{			
 			TransformVertices();
-			Gorgon2D.AddVertices(_transformedVertices);
+
+			base.Draw();
+		}
+
+		/// <summary>
+		/// Function to clone this renderable object.
+		/// </summary>
+		/// <returns>The clone of the renderable object.</returns>
+		public override GorgonRenderable Clone()
+		{
+			// TODO: Add clone.
+			return null;
 		}
 		#endregion
 
@@ -306,12 +241,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="width">The width of the sprite.</param>
 		/// <param name="height">The height of the sprite.</param>
 		internal GorgonSprite(Gorgon2D gorgon2D, string name, float width, float height)
-			: base(name)
+			: base(gorgon2D, name)
 		{
-			Gorgon2D = gorgon2D;
 			Size = new Vector2(width, height);
-			TextureSize = Size;			
-			CreateVertices();
+			InitializeVertices(4);
 		}
 		#endregion
 	}

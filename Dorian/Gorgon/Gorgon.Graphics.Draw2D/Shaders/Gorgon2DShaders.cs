@@ -15,11 +15,27 @@ namespace GorgonLibrary.Graphics.Renderers
 		#region Variables.
 		private Gorgon2D _gorgon2D = null;						// 2D interface that owns this object.
 		private Gorgon2DShader _current = null;					// The current 2D shader.
-		private GorgonDefaultShader _default = null;			// The default 2D shader.
-		private GorgonConstantBuffer _viewProjection = null;	// The view/projection matrix.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the constant buffer for the view/projection buffer.
+		/// </summary>
+		internal GorgonConstantBuffer ViewProjection
+		{
+			get;
+			private set;
+		}
+		
+		/// <summary>
+		/// Property to return the default shader.
+		/// </summary>
+		internal GorgonDefaultShader DefaultShader
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to set or return the current shader.
 		/// </summary>
@@ -28,15 +44,21 @@ namespace GorgonLibrary.Graphics.Renderers
 			get
 			{
 				if (_current == null)
-					return _default;
+					return DefaultShader;
+
 				return _current;
 			}
 			set
 			{
-				if (_current != null)
+				if (_current != value)
 				{
-					_current = value;
-					UpdateShaders();
+					if (_current != null)
+					{
+						_current = value;
+						UpdateShaders();
+					}
+					else
+						DefaultShader.SetDefault();
 				}
 			}
 		}
@@ -44,26 +66,24 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Methods.
 		/// <summary>
+		/// Function to update the default constants for the shader(s).
+		/// </summary>
+		private void UpdateShaders()
+		{
+			_gorgon2D.Graphics.Shaders.VertexShader.ConstantBuffers[0] = ViewProjection;
+		}
+
+		/// <summary>
 		/// Function to gorgon's transformation matrix.
 		/// </summary>
 		internal void UpdateGorgonTransformation()
 		{
-			using (GorgonDataStream streamBuffer = _viewProjection.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
+			using (GorgonDataStream streamBuffer = ViewProjection.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
 			{
 				Matrix viewProjection = Matrix.Multiply(_gorgon2D.ViewMatrix.Value, _gorgon2D.ProjectionMatrix.Value);
 				streamBuffer.Write(viewProjection);
-				_viewProjection.Unlock();
+				ViewProjection.Unlock();
 			}
-		}
-
-		/// <summary>
-		/// Function to update the shaders.
-		/// </summary>
-		internal void UpdateShaders()
-		{
-			_gorgon2D.Graphics.Shaders.PixelShader.Current = Current.PixelShader;
-			_gorgon2D.Graphics.Shaders.VertexShader.Current = Current.VertexShader;
-			_gorgon2D.Graphics.Shaders.VertexShader.ConstantBuffers[0] = _viewProjection;
 		}
 
 		/// <summary>
@@ -71,11 +91,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		internal void CleanUp()
 		{
-			if (_viewProjection != null)
-				_viewProjection.Dispose();
+			if (ViewProjection != null)
+				ViewProjection.Dispose();
 
-			if (_default != null)
-				_default.Dispose();	
+			if (DefaultShader != null)
+				DefaultShader.Dispose();	
 		}
 
 		/// <summary>
@@ -104,8 +124,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		internal Gorgon2DShaders(Gorgon2D gorgon2D)
 		{
 			_gorgon2D = gorgon2D;
-			_default = new GorgonDefaultShader(gorgon2D);
-			_viewProjection = gorgon2D.Graphics.Shaders.CreateConstantBuffer(DirectAccess.SizeOf<Matrix>(), true);
+			DefaultShader = new GorgonDefaultShader(gorgon2D);
+			ViewProjection = gorgon2D.Graphics.Shaders.CreateConstantBuffer(DirectAccess.SizeOf<Matrix>(), true);
 		}
 		#endregion
 	}

@@ -325,6 +325,19 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to retrieve a list of objects created by this interface by its type.
+		/// </summary>
+		/// <typeparam name="T">Type of object to retrieve.</typeparam>
+		/// <returns>A list of objects of the specified type.</returns>
+		public IList<T> GetGraphicsObjectOfType<T>()
+			where T : IDisposable
+		{
+			return (from trackedObject in TrackedObjects
+						  where trackedObject is T
+						  select (T)trackedObject).ToArray();
+		}
+
+		/// <summary>
 		/// Function to draw polygons to the current render target.
 		/// </summary>
 		/// <param name="vertexStart">Vertex to start at.</param>
