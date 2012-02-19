@@ -65,15 +65,17 @@ namespace Tester_Graphics
 				{
 					_swapChain.Clear(Color.Black);
 					//_graphics2D.ViewMatrix = Matrix.Translation(-400.0f, -300.0f, 0) * Matrix.RotationZ(GorgonLibrary.Math.GorgonMathUtility.Sin(GorgonLibrary.Math.GorgonMathUtility.Radians(-angle * 2.0f))) * Matrix.Translation(400, 300, 0);
-					_sprite.Scale = new Vector2(2.0f, 2.0f);
+					_sprite.Scale = new Vector2(4.0f, 4.0f);
 					//_sprite.TextureOffset = testMove;
+					_sprite.Opacity = 0.25f;
 					_sprite.Angle = new Vector3(0, 0, angle);					
 					_sprite.Position = new Vector3((_swapChain.Settings.Width / 2) - (_sprite.Size.X / 2), _swapChain.Settings.Height / 2 - (_sprite.Size.Y / 2), 0);
 					_sprite.Draw();
 
-					/*_sprite.Left = 400.0f;
-					_sprite.Top = 300.0f;
-					_sprite.Draw();*/
+					_sprite.Opacity = 1;
+					_sprite.Angle = Vector3.Zero;
+					_sprite.Position = Vector3.Subtract(_sprite.Position, new Vector3(64, 64, 0));
+					_sprite.Draw();
 
 					_graphics2D.Render();
 
@@ -277,16 +279,18 @@ namespace Tester_Graphics
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				multiSample = new GorgonMultiSampling(1, 0);
 				_swapChain = _graphics.Output.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.Unknown});
-
+				
 				_graphics2D = new Gorgon2D(_swapChain);
 				_sprite = _graphics2D.CreateSprite("Test", 100.0f, 100.0f);
-				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\Images\VBback.jpg", GorgonTexture2DSettings.FromFile);
+				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\BallDemo\BallDemo.png", GorgonTexture2DSettings.FromFile);
 				_sprite.Texture = _texture;
 				//_sprite.TextureScale = new Vector2(0.5f, 0.5f);
-				_sprite.Size = new Vector2(128, 128);
-				_sprite.Anchor = new Vector2(64, 64);
-				_sprite.SetVertexColor(SpriteCorner.UpperRight, new GorgonColor(0.0f, 1.0f, 1.0f, 1.0f));
-				_sprite.SetVertexColor(SpriteCorner.LowerLeft, new GorgonColor(0.0f, 0.0f, 1.0f, 1.0f));
+				_sprite.TextureOffset = new Vector2(64, 0);
+				_sprite.Size = new Vector2(64, 64);
+				_sprite.Anchor = new Vector2(32, 32);
+				_sprite.Opacity = 0.25f;
+				//_sprite.SetVertexColor(SpriteCorner.UpperRight, new GorgonColor(0.0f, 1.0f, 1.0f, 1.0f));
+				//_sprite.SetVertexColor(SpriteCorner.LowerLeft, new GorgonColor(0.0f, 0.0f, 1.0f, 1.0f));
 				//_sprite.SetVertexOffset(SpriteCorner.UpperLeft, new Vector3(-10.0f, -20.0f, 0.0f));
 				//_sprite.SetVertexOffset(SpriteCorner.LowerRight, new Vector3(10.0f, 20.0f, 0.0f));
 				//_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(0.0f, 0.0f, -5.0f), new Vector3(0, 0, 1.0f), Vector3.UnitY);				

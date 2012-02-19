@@ -80,13 +80,24 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Properties.
 		/// <summary>
-		/// Property to return an index buffer.
+		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		protected internal override bool UseIndexBuffer
+		protected internal override int IndexCount
 		{
 			get 
 			{
-				return true;
+				return 6;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the type of primitive for the renderable.
+		/// </summary>
+		protected internal override PrimitiveType PrimitiveType
+		{
+			get 
+			{
+				return Graphics.PrimitiveType.TriangleList;
 			}
 		}
 
@@ -212,7 +223,10 @@ namespace GorgonLibrary.Graphics.Renderers
 				return;
 			}
 
-			scaledTexture = Vector2.Modulate(new Vector2(Texture.Settings.Width, Texture.Settings.Height), TextureScale);
+			if ((!GorgonMathUtility.EqualFloat(TextureScale.X, 1.0f)) && (!GorgonMathUtility.EqualFloat(TextureScale.Y, 1.0f)))
+				scaledTexture = Vector2.Modulate(new Vector2(Texture.Settings.Width, Texture.Settings.Height), TextureScale);
+			else
+				scaledTexture = new Vector2(Texture.Settings.Width, Texture.Settings.Height);
 
 			offsetUV.X = TextureOffset.X / scaledTexture.X;
 			scaleUV.X = (TextureOffset.X + Size.X) / scaledTexture.X;
@@ -269,16 +283,6 @@ namespace GorgonLibrary.Graphics.Renderers
 			TransformVertices();
 
 			base.Draw();
-		}
-
-		/// <summary>
-		/// Function to clone this renderable object.
-		/// </summary>
-		/// <returns>The clone of the renderable object.</returns>
-		public override GorgonRenderable Clone()
-		{
-			// TODO: Add clone.
-			return null;
 		}
 		#endregion
 

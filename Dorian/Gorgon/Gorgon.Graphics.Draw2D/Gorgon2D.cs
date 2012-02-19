@@ -48,7 +48,86 @@ namespace GorgonLibrary.Graphics.Renderers
 	public class Gorgon2D
 		: IDisposable
 	{
+		#region Enumerations.
+		/// <summary>
+		/// A list of state changes.
+		/// </summary>
+		[Flags()]
+		internal enum StateChanges
+		{
+			/// <summary>
+			/// No state change.
+			/// </summary>
+			None = 0,
+			/// <summary>
+			/// Texture changed.
+			/// </summary>
+			Texture = 1,
+			/// <summary>
+			/// Shader changed.
+			/// </summary>
+			Shader = 2,
+			/// <summary>
+			/// Blending state changed.
+			/// </summary>
+			BlendState = 4,
+			/// <summary>
+			/// Primitive type changed.
+			/// </summary>
+			PrimitiveType = 8,
+			/// <summary>
+			/// Vertex buffer changed.
+			/// </summary>
+			VertexBuffer = 16,
+			/// <summary>
+			/// Index buffer changed.
+			/// </summary>
+			IndexBuffer = 32
+		}
+		#endregion
+
 		#region Value Types.
+		/// <summary>
+		/// The current set of states when the renderer was started.
+		/// </summary>
+		private struct PreviousStates
+		{
+			/// <summary>
+			/// Blending states.
+			/// </summary>
+			public GorgonBlendStates BlendStates;
+			/// <summary>
+			/// Blending factor.
+			/// </summary>
+			public GorgonColor BlendFactor;
+			/// <summary>
+			/// Blending sample mask.
+			/// </summary>
+			public uint BlendSampleMask;
+
+			/// <summary>
+			/// Function to restore the previous states.
+			/// </summary>
+			/// <param name="graphics">Graphics interface.</param>
+			public void Restore(GorgonGraphics graphics)
+			{
+				graphics.Output.BlendingState.BlendSampleMask = BlendSampleMask;
+				graphics.Output.BlendingState.BlendFactor = BlendFactor;
+				graphics.Output.BlendingState.States = BlendStates;
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="PreviousStates"/> struct.
+			/// </summary>
+			/// <param name="graphics">The graphics.</param>
+			public PreviousStates(GorgonGraphics graphics)
+			{
+				BlendStates = graphics.Output.BlendingState.States;
+				BlendFactor = graphics.Output.BlendingState.BlendFactor;
+				BlendSampleMask = graphics.Output.BlendingState.BlendSampleMask;
+			}
+		}
+
 		/// <summary>
 		/// A vertex for a sprite.
 		/// </summary>		
@@ -86,36 +165,40 @@ namespace GorgonLibrary.Graphics.Renderers
 		#endregion
 
 		#region Variables.
-		private int _vertexSize = 0;													// Size, in bytes, of a vertex.
-		private Vertex[] _vertexCache = null;											// List of vertices to cache.
-		private int _cacheStart = 0;													// Starting cache vertex buffer index.
-		private int _cacheEnd = 0;														// Ending vertex buffer cache index.
-		private int _cacheWritten = 0;													// Number of vertices written.
-		private bool _disposed = false;													// Flag to indicate that the object was disposed.
-		private int _cacheSize = 4096;													// Number of vertices that we can stuff into a vertex buffer.
-		private Matrix _defaultProjection = Matrix.Identity;							// Default projection matrix.
-		private Matrix _defaultView = Matrix.Identity;									// Default view matrix.
-		private Matrix? _projection = null;												// Current projection matrix.
-		private Matrix? _view = null;													// Current view matrix.
-		private GorgonSwapChain _defaultTarget = null;									// Default render target.
-		private GorgonSwapChain _target = null;											// Current render target.	
-		private GorgonInputLayout _layout = null;										// Input layout.
+		private int _vertexSize = 0;																// Size, in bytes, of a vertex.
+		private Vertex[] _vertexCache = null;														// List of vertices to cache.
+		private int _cacheStart = 0;																// Starting cache vertex buffer index.
+		private int _renderIndexStart = 0;															// Starting index to render.
+		private int _renderIndexCount = 0;															// Number of indices to render.
+		private int _cacheEnd = 0;																	// Ending vertex buffer cache index.
+		private int _cacheWritten = 0;																// Number of vertices written.
+		private bool _disposed = false;																// Flag to indicate that the object was disposed.
+		private int _cacheSize = 4096;																// Number of vertices that we can stuff into a vertex buffer.
+		private Matrix _defaultProjection = Matrix.Identity;										// Default projection matrix.
+		private Matrix _defaultView = Matrix.Identity;												// Default view matrix.
+		private Matrix? _projection = null;															// Current projection matrix.
+		private Matrix? _view = null;																// Current view matrix.
+		private GorgonSwapChain _defaultTarget = null;												// Default render target.
+		private GorgonSwapChain _target = null;														// Current render target.	
+		private GorgonInputLayout _layout = null;													// Input layout.
+		private Stack<PreviousStates> _stateRecall = null;											// State recall.
+		private GorgonBlendStates _blendState = GorgonBlendStates.DefaultStates;					// Blending state for the library.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return our global vertex buffer.
+		/// Property to return our default vertex buffer binding.
 		/// </summary>
-		internal GorgonVertexBuffer VertexBuffer
+		internal GorgonVertexBufferBinding DefaultVertexBufferBinding
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return our global index buffer.
+		/// Property to return our default index buffer.
 		/// </summary>
-		internal GorgonIndexBuffer IndexBuffer
+		internal GorgonIndexBuffer DefaultIndexBuffer
 		{
 			get;
 			private set;
@@ -284,12 +367,12 @@ namespace GorgonLibrary.Graphics.Renderers
 				_vertexSize = _layout.GetSlotSize(0);
 			}
 
-			if (IndexBuffer != null)
-				IndexBuffer.Dispose();
-			if (VertexBuffer != null)
-				VertexBuffer.Dispose();
+			if (DefaultIndexBuffer != null)
+				DefaultIndexBuffer.Dispose();
+			if (DefaultVertexBufferBinding.VertexBuffer != null)
+				DefaultVertexBufferBinding.VertexBuffer.Dispose();
 						
-			int spriteVBSize = _vertexSize * _cacheSize * 4;
+			int spriteVBSize = _vertexSize * _cacheSize;
 			int spriteIBSize = sizeof(int) * _cacheSize * 6;
 
 			// Set up our index buffer.
@@ -308,18 +391,18 @@ namespace GorgonLibrary.Graphics.Renderers
 				}
 
 				ibData.Position = 0;
-				IndexBuffer = Graphics.Input.CreateIndexBuffer((int)ibData.Length, BufferUsage.Immutable, true, ibData);
+				DefaultIndexBuffer = Graphics.Input.CreateIndexBuffer((int)ibData.Length, BufferUsage.Immutable, true, ibData);
 			}
 			
 			// Create our empty vertex buffer.
-			VertexBuffer = Graphics.Input.CreateVertexBuffer(spriteVBSize, BufferUsage.Dynamic);
+			DefaultVertexBufferBinding = new GorgonVertexBufferBinding(Graphics.Input.CreateVertexBuffer(spriteVBSize, BufferUsage.Dynamic), _vertexSize);
 
 			GorgonRasterizerStates rastState = GorgonRasterizerStates.DefaultStates;
 			rastState.CullingMode = CullingMode.Back;
 			Graphics.Rasterizer.States = rastState;
 
-			Graphics.Input.IndexBuffer = IndexBuffer;
-			Graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(VertexBuffer, _vertexSize);
+			Graphics.Input.IndexBuffer = DefaultIndexBuffer;
+			Graphics.Input.VertexBuffers[0] = DefaultVertexBufferBinding;
 			Graphics.Input.Layout = _layout;
 
 			// Create the vertex cache.
@@ -327,6 +410,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			_cacheStart = 0;
 			_cacheEnd = 0;
 			_cacheWritten = 0;
+			_renderIndexStart = 0;
+			_renderIndexCount = 0;
 
 			UpdateTarget();
 
@@ -350,23 +435,43 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Function to determine if state has changed, and if it has, will flush the renderer.
 		/// </summary>
 		/// <param name="renderable">Renderable object to check for state change.</param>
-		private bool CheckStateChange(GorgonRenderable renderable)
+		/// <returns>The states that have changed.</returns>
+		private StateChanges CheckStateChange(GorgonRenderable renderable)
 		{
-			if (renderable.Texture != Shaders.PixelShader.Textures[0])
-				return true;
+			StateChanges result = StateChanges.None;
 
-			return false;
+			if (renderable.Texture != Shaders.PixelShader.Textures[0])
+				result |= StateChanges.Texture;
+
+			if (!renderable.GorgonBlendStates.Equals(Graphics.Output.BlendingState.States))
+				result |= StateChanges.BlendState;
+
+			if (renderable.PrimitiveType != Graphics.Input.PrimitiveType)
+				result |= StateChanges.PrimitiveType;
+
+			if (!renderable.VertexBufferBinding.Equals(Graphics.Input.VertexBuffers[0]))
+				result |= StateChanges.VertexBuffer;
+
+			if (renderable.IndexBuffer != Graphics.Input.IndexBuffer)
+				result |= StateChanges.IndexBuffer;
+
+			return result;
 		}
 
 		/// <summary>
 		/// Function to apply the states for a renderable.
 		/// </summary>
 		/// <param name="renderable">Renderable with states to apply.</param>
-		private void ApplyStates(GorgonRenderable renderable)
+		/// <param name="stateChange">Which states have changed.</param>
+		private void ApplyStates(GorgonRenderable renderable, StateChanges stateChange)
 		{
-			if (Shaders.PixelShader.Textures[0] != renderable.Texture)
+			if ((stateChange & StateChanges.Texture) == StateChanges.Texture)
 			{
 				Shaders.PixelShader.Textures[0] = renderable.Texture;
+				if (renderable.Texture != null)
+					Shaders.PixelShader.Samplers[0] = renderable.SamplerState;
+				else
+					Shaders.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
 
 				// If we're using the default shader, switch between the default no texture or textured pixel shader depending on our state.
 				if ((renderable.Texture != null) && (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuse))
@@ -375,6 +480,18 @@ namespace GorgonLibrary.Graphics.Renderers
 				if ((renderable.Texture == null) && (Shaders.PixelShader == Shaders.DefaultPixelShaderTextured)) 
 					Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuse;
 			}
+
+			if ((stateChange & StateChanges.BlendState) == StateChanges.BlendState)
+				Graphics.Output.BlendingState.States = renderable.GorgonBlendStates;
+
+			if ((stateChange & StateChanges.PrimitiveType) == StateChanges.PrimitiveType)
+				Graphics.Input.PrimitiveType = renderable.PrimitiveType;
+
+			if ((stateChange & StateChanges.IndexBuffer) == StateChanges.IndexBuffer)
+				Graphics.Input.IndexBuffer = renderable.IndexBuffer;
+
+			if ((stateChange & StateChanges.VertexBuffer) == StateChanges.VertexBuffer)
+				Graphics.Input.VertexBuffers[0] = renderable.VertexBufferBinding;
 		}
 
 		/// <summary>
@@ -383,13 +500,17 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="renderable">Renderable object to add.</param>
 		internal void AddRenderable(GorgonRenderable renderable)
 		{
+			StateChanges stateChange = StateChanges.None;
 			bool hasRendered = false;
 
-			if (CheckStateChange(renderable))
+			// Check for state changes.
+			stateChange = CheckStateChange(renderable);
+
+			if (stateChange != StateChanges.None)
 			{
 				Render();
 				hasRendered = true;
-				ApplyStates(renderable);
+				ApplyStates(renderable, stateChange);
 			}
 
 			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
@@ -402,11 +523,13 @@ namespace GorgonLibrary.Graphics.Renderers
 				_cacheStart = 0;
 				_cacheWritten = 0;
 				_cacheEnd = 0;
+				_renderIndexStart = 0;
 			}
 
 			for (int i = 0; i < renderable.TransformedVertices.Length; i++)
 				_vertexCache[_cacheEnd + i] = renderable.TransformedVertices[i];
 
+			_renderIndexCount += renderable.IndexCount;
 			_cacheEnd += renderable.TransformedVertices.Length;
 			_cacheWritten = _cacheEnd - _cacheStart;
 
@@ -417,6 +540,42 @@ namespace GorgonLibrary.Graphics.Renderers
 				_cacheStart = 0;
 				_cacheEnd = 0;
 				_cacheWritten = 0;
+				_renderIndexStart = 0;
+			}
+		}
+
+		/// <summary>
+		/// Function to start 2D rendering.
+		/// </summary>
+		/// <remarks>This is used to remember previous states, and set the default states for the 2D renderer.
+		/// <para>The 2D renderer uses a LIFO stack to remember the last set of states, so calling this method multiple times and calling <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.End2D">End2D</see> will restore the last set of render states prior to the Begin2D call.</para>
+		/// <para>This is implicitly called by the constructor and does not need to be called after creating an instance of the 2D interface.</para>
+		/// </remarks>
+		public void Begin2D()
+		{
+			GorgonBlendStates state = GorgonBlendStates.DefaultStates;
+
+			_stateRecall.Push(new PreviousStates(Graphics));			
+
+			state.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
+			state.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
+			state.RenderTarget0.IsBlendingEnabled = true;
+
+			Graphics.Output.BlendingState.States = state;
+		}
+
+		/// <summary>
+		/// Function to end 2D rendering.
+		/// </summary>
+		/// <remarks>This will restore the states to their original values before the 2D renderer was started, or to when the last <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.Begin2D">Begin2D</see> method called.
+		/// <para>The 2D renderer uses a LIFO stack to remember the last set of states, so calling this method multiple times will rewind the stack for each Begin2D call.</para>
+		/// </remarks>		
+		public void End2D()
+		{
+			if (_stateRecall.Count > 0)
+			{
+				PreviousStates states = _stateRecall.Pop();
+				states.Restore(Graphics);
 			}
 		}
 
@@ -439,16 +598,30 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (_cacheStart > 0)
 				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
 
-			using (GorgonDataStream stream = VertexBuffer.Lock(flags))
+			using (GorgonDataStream stream = DefaultVertexBufferBinding.VertexBuffer.Lock(flags))
 			{
 				stream.Position = _cacheStart * _vertexSize;
 				stream.WriteRange<Vertex>(_vertexCache, _cacheStart, _cacheWritten);
-				VertexBuffer.Unlock();
+				DefaultVertexBufferBinding.VertexBuffer.Unlock();
 			}
 
-			Graphics.DrawIndexed((_cacheStart * 6) / _cacheWritten, 0, (_cacheWritten / 2) * 3);
+			switch(Graphics.Input.PrimitiveType)
+			{
+				case PrimitiveType.PointList:
+				case PrimitiveType.LineList:
+					Graphics.Draw(_cacheStart, _cacheWritten);
+					break;
+				case PrimitiveType.TriangleList:
+					if (Graphics.Input.IndexBuffer == null)
+						Graphics.Draw(_cacheStart, _cacheWritten);
+					else
+						Graphics.DrawIndexed(_renderIndexStart, 0, _renderIndexCount);
+					break;
+			}
 
 			_cacheStart = _cacheEnd;
+			_renderIndexStart = _renderIndexCount;
+			_renderIndexCount = 0;
 
 			Target.Flip();			
 		}
@@ -476,11 +649,13 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			GorgonDebug.AssertNull<GorgonSwapChain>(target, "target");
 
+			_stateRecall = new Stack<PreviousStates>(32);
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			Graphics = target.Graphics;
 			_defaultTarget = target;
 
 			Initialize();
+			Begin2D();
 		}
 		#endregion
 
@@ -505,10 +680,10 @@ namespace GorgonLibrary.Graphics.Renderers
 
 					if (_layout != null)
 						_layout.Dispose();
-					if (VertexBuffer != null)
-						VertexBuffer.Dispose();
-					if (IndexBuffer != null)
-						IndexBuffer.Dispose();
+					if (DefaultVertexBufferBinding != null)
+						DefaultVertexBufferBinding.VertexBuffer.Dispose();
+					if (DefaultIndexBuffer != null)
+						DefaultIndexBuffer.Dispose();
 				}
 
 				_disposed = true;
