@@ -280,7 +280,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			// Create layout information so we can bind our vertices to the shader.
 			if (_layout == null)
 			{
-				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Vertex), Shaders.DefaultShader.DefaultVertex);
+				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Vertex), Shaders.DefaultVertexShader.Shader);
 				_vertexSize = _layout.GetSlotSize(0);
 			}
 
@@ -331,9 +331,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			UpdateTarget();
 
 			// Set our default shaders.
-			Shaders.DefaultShader.VertexShader = Shaders.DefaultShader.DefaultVertex;
-			Shaders.DefaultShader.PixelShader = Shaders.DefaultShader.DefaultPixelDiffuse;
-			Shaders.DefaultShader.VSConstantBuffers[0] = Shaders.ViewProjection;
+			Shaders.VertexShader = Shaders.DefaultVertexShader;
+			Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuse;
 		}
 
 		/// <summary>
@@ -353,7 +352,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="renderable">Renderable object to check for state change.</param>
 		private bool CheckStateChange(GorgonRenderable renderable)
 		{
-			if (renderable.Texture != Shaders.Current.Textures[0])
+			if (renderable.Texture != Shaders.PixelShader.Textures[0])
 				return true;
 
 			return false;
@@ -365,20 +364,16 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="renderable">Renderable with states to apply.</param>
 		private void ApplyStates(GorgonRenderable renderable)
 		{
-			if (Shaders.Current.Textures[0] != renderable.Texture)
+			if (Shaders.PixelShader.Textures[0] != renderable.Texture)
 			{
-				Shaders.Current.Textures[0] = renderable.Texture;
+				Shaders.PixelShader.Textures[0] = renderable.Texture;
 
 				// If we're using the default shader, switch between the default no texture or textured pixel shader depending on our state.
-				if (Shaders.Current == Shaders.DefaultShader)
-				{
-					if ((renderable.Texture != null) && (Shaders.Current.PixelShader == Shaders.DefaultShader.DefaultPixelDiffuse))
-						Shaders.Current.PixelShader = Shaders.DefaultShader.DefaultPixelTextured;
+				if ((renderable.Texture != null) && (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuse))
+					Shaders.PixelShader = Shaders.DefaultPixelShaderTextured;
 
-					if ((renderable.Texture == null) && (Shaders.Current.PixelShader == Shaders.DefaultShader.DefaultPixelTextured)) 
-						Shaders.Current.PixelShader = Shaders.DefaultShader.DefaultPixelDiffuse;
-						
-				}
+				if ((renderable.Texture == null) && (Shaders.PixelShader == Shaders.DefaultPixelShaderTextured)) 
+					Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuse;
 			}
 		}
 

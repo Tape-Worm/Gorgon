@@ -14,51 +14,93 @@ namespace GorgonLibrary.Graphics.Renderers
 	{
 		#region Variables.
 		private Gorgon2D _gorgon2D = null;						// 2D interface that owns this object.
-		private Gorgon2DShader _current = null;					// The current 2D shader.
+		private Gorgon2DVertexShader _vertexShader = null;		// Current vertex shader.
+		private Gorgon2DPixelShader _pixelShader = null;		// Current pixel shader.
+		private GorgonConstantBuffer _viewProjection = null;	// Constant buffer for handling the view/projection matrix upload to the video device.
 		#endregion
 
 		#region Properties.
+
 		/// <summary>
-		/// Property to return the constant buffer for the view/projection buffer.
+		/// Property to return the default verte shader.
 		/// </summary>
-		internal GorgonConstantBuffer ViewProjection
+		internal GorgonDefaultVertexShader DefaultVertexShader
 		{
 			get;
 			private set;
 		}
 		
 		/// <summary>
-		/// Property to return the default shader.
+		/// Property to return the default diffuse pixel shader.
 		/// </summary>
-		internal GorgonDefaultShader DefaultShader
+		internal GorgonDefaultPixelShaderDiffuse DefaultPixelShaderDiffuse
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current shader.
+		/// Property to return the default textured pixel shader.
 		/// </summary>
-		public Gorgon2DShader Current
+		internal GorgonDefaultPixelShaderTextured DefaultPixelShaderTextured
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current vertex shader.
+		/// </summary>
+		public Gorgon2DVertexShader VertexShader
 		{
 			get
 			{
-				if (_current == null)
-					return DefaultShader;
-
-				return _current;
+				return _vertexShader;
 			}
 			set
 			{
-				if (_current != value)
+				if ((_vertexShader != value) || ((value == null) && (_vertexShader != DefaultVertexShader)))
 				{
-					if (_current != null)
+					if (value == null)
+						_vertexShader = DefaultVertexShader;
+					else
+						_vertexShader = value;
+
+					if (value != null)
+						_gorgon2D.Graphics.Shaders.VertexShader.Current = _vertexShader.Shader;
+					else
+						_gorgon2D.Graphics.Shaders.VertexShader.Current = DefaultVertexShader.Shader;
+
+					_gorgon2D.Graphics.Shaders.VertexShader.ConstantBuffers[0] = _viewProjection;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the current pixel shader.
+		/// </summary>
+		public Gorgon2DPixelShader PixelShader
+		{
+			get
+			{
+				return _pixelShader;
+			}
+			set
+			{
+				if ((_pixelShader != value) || ((value == null) && (_pixelShader != DefaultPixelShaderTextured) && (_pixelShader != DefaultPixelShaderDiffuse)))
+				{
+					if (value == null)
 					{
-						_current = value;
-						UpdateShaders();
+						// If we have a texture in the first slot, then set the proper shader.
+						if (_gorgon2D.Graphics.Shaders.PixelShader.Textures[0] == null)
+							_pixelShader = DefaultPixelShaderDiffuse;
+						else
+							_pixelShader = DefaultPixelShaderTextured;
 					}
 					else
-						DefaultShader.SetDefault();
+						_pixelShader = value;
+					
+					_gorgon2D.Graphics.Shaders.PixelShader.Current = _pixelShader.Shader;
 				}
 			}
 		}
@@ -66,23 +108,15 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the default constants for the shader(s).
-		/// </summary>
-		private void UpdateShaders()
-		{
-			_gorgon2D.Graphics.Shaders.VertexShader.ConstantBuffers[0] = ViewProjection;
-		}
-
-		/// <summary>
 		/// Function to gorgon's transformation matrix.
 		/// </summary>
 		internal void UpdateGorgonTransformation()
 		{
-			using (GorgonDataStream streamBuffer = ViewProjection.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
+			using (GorgonDataStream streamBuffer = _viewProjection.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
 			{
 				Matrix viewProjection = Matrix.Multiply(_gorgon2D.ViewMatrix.Value, _gorgon2D.ProjectionMatrix.Value);
 				streamBuffer.Write(viewProjection);
-				ViewProjection.Unlock();
+				_viewProjection.Unlock();
 			}
 		}
 
@@ -91,28 +125,17 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		internal void CleanUp()
 		{
-			if (ViewProjection != null)
-				ViewProjection.Dispose();
+			if (_viewProjection != null)
+				_viewProjection.Dispose();
 
-			if (DefaultShader != null)
-				DefaultShader.Dispose();	
-		}
+			if (DefaultVertexShader != null)
+				DefaultVertexShader.Dispose();
 
-		/// <summary>
-		/// Function to create a shader object.
-		/// </summary>
-		/// <param name="name">Name of the shader object.</param>
-		/// <returns>A new shader object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public Gorgon2DShader CreateShader(string name)
-		{
-			Gorgon2DShader result = null;
+			if (DefaultPixelShaderDiffuse != null)
+				DefaultPixelShaderDiffuse.Dispose();
 
-			result = new Gorgon2DShader(_gorgon2D, name);
-
-			_gorgon2D.TrackedObjects.Add(result);
-			return result;
+			if (DefaultPixelShaderTextured != null)
+				DefaultPixelShaderTextured.Dispose();
 		}
 		#endregion
 
@@ -124,8 +147,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		internal Gorgon2DShaders(Gorgon2D gorgon2D)
 		{
 			_gorgon2D = gorgon2D;
-			DefaultShader = new GorgonDefaultShader(gorgon2D);
-			ViewProjection = gorgon2D.Graphics.Shaders.CreateConstantBuffer(DirectAccess.SizeOf<Matrix>(), true);
+			
+			DefaultVertexShader = new GorgonDefaultVertexShader(gorgon2D);
+			DefaultPixelShaderDiffuse = new GorgonDefaultPixelShaderDiffuse(gorgon2D);
+			DefaultPixelShaderTextured = new GorgonDefaultPixelShaderTextured(gorgon2D);
+
+			_viewProjection = gorgon2D.Graphics.Shaders.CreateConstantBuffer(DirectAccess.SizeOf<Matrix>(), true);
 		}
 		#endregion
 	}

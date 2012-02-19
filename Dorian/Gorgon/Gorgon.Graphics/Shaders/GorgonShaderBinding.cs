@@ -116,10 +116,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the vertex shader.</param>
 		/// <param name="entryPoint">Entry point for the shader.</param>
 		/// <param name="sourceCode">Source code for the shader.</param>
+		/// <param name="debug">TRUE to include debug information, FALSE to exclude.</param>
 		/// <returns>A new vertex shader.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
-		public GorgonVertexShader CreateVertexShader(string name, string entryPoint, string sourceCode)
+		public GorgonVertexShader CreateVertexShader(string name, string entryPoint, string sourceCode, bool debug)
 		{
 			GorgonVertexShader shader = null;
 
@@ -128,7 +129,7 @@ namespace GorgonLibrary.Graphics
 
 			shader = new GorgonVertexShader(_graphics, name, entryPoint);
 			shader.SourceCode = sourceCode;
-			shader.Compile();
+			shader.Compile(debug);
 			_graphics.TrackedObjects.Add(shader);
 
 			return shader;
@@ -140,10 +141,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the pixel shader.</param>
 		/// <param name="entryPoint">Entry point for the shader.</param>
 		/// <param name="sourceCode">Source code for the shader.</param>
+		/// <param name="debug">TRUE to include debug information, FALSE to exclude it.</param>
 		/// <returns>A new pixel shader.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
-		public GorgonPixelShader CreatePixelShader(string name, string entryPoint, string sourceCode)
+		public GorgonPixelShader CreatePixelShader(string name, string entryPoint, string sourceCode, bool debug)
 		{
 			GorgonPixelShader shader = null;
 
@@ -152,7 +154,7 @@ namespace GorgonLibrary.Graphics
 
 			shader = new GorgonPixelShader(_graphics, name, entryPoint);
 			shader.SourceCode = sourceCode;
-			shader.Compile();
+			shader.Compile(debug);
 			_graphics.TrackedObjects.Add(shader);
 
 			return shader;

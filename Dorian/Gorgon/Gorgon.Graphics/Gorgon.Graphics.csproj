@@ -101,11 +101,6 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="States\GorgonStateObject.cs" />
     <Compile Include="States\GorgonTextureSamplerState.cs" />
     <Compile Include="Targets\GorgonOutputMerger.cs" />
@@ -116,7 +111,7 @@
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />
-    <Compile Include="Test.cs" />
+    <None Include="Test.cs" />
     <Compile Include="Textures\GorgonTexture3D.cs" />
     <Compile Include="Textures\GorgonTexture1D.cs" />
     <Compile Include="Textures\GorgonTexture2D.cs" />
@@ -127,13 +122,6 @@
   <ItemGroup>
     <Content Include="GorIcon.ico" />
     <None Include="Resources\Test.fx" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">

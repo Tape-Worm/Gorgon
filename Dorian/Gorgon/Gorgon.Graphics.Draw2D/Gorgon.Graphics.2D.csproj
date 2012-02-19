@@ -66,9 +66,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Shaders\Gorgon2DShader.cs" />
+    <Compile Include="Shaders\Gorgon2DVertexShader.cs" />
+    <Compile Include="Shaders\GorgonDefaultShaders.cs" />
+    <Compile Include="Shaders\Gorgon2DPixelShader.cs" />
     <Compile Include="Shaders\Gorgon2DShaders.cs" />
-    <Compile Include="Shaders\GorgonDefaultShader.cs" />
     <Compile Include="Sprite\GorgonSprite.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -89,9 +90,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BasicSprite.hlsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -22,56 +22,16 @@ namespace Tester_Graphics
 	public partial class Form1 : Form
 	{
 		private Gorgon2D _graphics2D = null;
-		/// <summary>
-		/// Vertex.
-		/// </summary>
-		private struct Vertex
-		{
-			[InputElement(0, "POSITION")]
-			public Vector4 Position;
-			[InputElement(1, "COLOR")]
-			public Vector4 Color;
-			[InputElement(2, "TEXCOORD")]
-			public Vector2 UV;
-		}
-
-		private struct Sprite
-		{
-			public Vector2 Position;
-			public Vector2 Scale;
-			public float Rotation;
-			public GorgonColor Color;
-			public Vertex[] Vertices;
-
-			public Sprite(Vector2 pos, Vector2 scale, float rot, GorgonColor color)
-			{
-				Position = pos;
-				Scale = scale;
-				Rotation = rot;
-				Color = color;
-				Vertices = new Vertex[4];
-			}
-		}
-
-		private Sprite[] _sprites = new Sprite[Test.count];
-		private GorgonVertexBuffer _spriteVertices = null;
-		private GorgonIndexBuffer _spriteIndices = null;
-		private GorgonVertexShader _spriteVShader = null;
-		private GorgonPixelShader _spritePShader = null;
 		private GorgonSprite _sprite = null;
 
 		GorgonVideoMode mode1 = default(GorgonVideoMode);
 #if MULTIMON
 		GorgonVideoMode mode2 = default(GorgonVideoMode);
 #endif
-		Test _test1 = null;
-		Test _test2 = null;
 		GorgonGraphics _graphics = null;
 		GorgonSwapChain _swapChain = null;
-		GorgonSwapChain _swapChain2 = null;
 		GorgonRasterizerStates _multiSample = GorgonRasterizerStates.DefaultStates;
 		GorgonTimer _timer = new GorgonTimer(true);
-		Form2 form2 = null;
 		PointF pos = PointF.Empty;
 		GorgonBlendStates blend1 = GorgonBlendStates.DefaultStates;
 		GorgonBlendStates blend2 = GorgonBlendStates.DefaultStates;
@@ -105,7 +65,7 @@ namespace Tester_Graphics
 				{
 					_swapChain.Clear(Color.Black);
 					//_graphics2D.ViewMatrix = Matrix.Translation(-400.0f, -300.0f, 0) * Matrix.RotationZ(GorgonLibrary.Math.GorgonMathUtility.Sin(GorgonLibrary.Math.GorgonMathUtility.Radians(-angle * 2.0f))) * Matrix.Translation(400, 300, 0);
-					//_sprite.Scale = new Vector2(2.0f, 2.0f);
+					_sprite.Scale = new Vector2(2.0f, 2.0f);
 					//_sprite.TextureOffset = testMove;
 					_sprite.Angle = new Vector3(0, 0, angle);					
 					_sprite.Position = new Vector3((_swapChain.Settings.Width / 2) - (_sprite.Size.X / 2), _swapChain.Settings.Height / 2 - (_sprite.Size.Y / 2), 0);
@@ -209,11 +169,7 @@ namespace Tester_Graphics
 			}
 
 			if (e.KeyCode == Keys.F1) //((e.Alt) && (e.KeyCode == Keys.Enter))
-			{
 				_swapChain.UpdateSettings(!_swapChain.Settings.IsWindowed);
-				if (_swapChain2 != null)
-					_swapChain2.UpdateSettings(!_swapChain2.Settings.IsWindowed);
-			}
 		}
 
 		private bool _deactivated = false;
@@ -326,9 +282,13 @@ namespace Tester_Graphics
 				_sprite = _graphics2D.CreateSprite("Test", 100.0f, 100.0f);
 				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\Images\VBback.jpg", GorgonTexture2DSettings.FromFile);
 				_sprite.Texture = _texture;
-				_sprite.TextureScale = new Vector2(0.5f, 0.5f);
-				_sprite.Size = new Vector2(64, 64);				
-				_sprite.Anchor = new Vector2(32, 32);
+				//_sprite.TextureScale = new Vector2(0.5f, 0.5f);
+				_sprite.Size = new Vector2(128, 128);
+				_sprite.Anchor = new Vector2(64, 64);
+				_sprite.SetVertexColor(SpriteCorner.UpperRight, new GorgonColor(0.0f, 1.0f, 1.0f, 1.0f));
+				_sprite.SetVertexColor(SpriteCorner.LowerLeft, new GorgonColor(0.0f, 0.0f, 1.0f, 1.0f));
+				//_sprite.SetVertexOffset(SpriteCorner.UpperLeft, new Vector3(-10.0f, -20.0f, 0.0f));
+				//_sprite.SetVertexOffset(SpriteCorner.LowerRight, new Vector3(10.0f, 20.0f, 0.0f));
 				//_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(0.0f, 0.0f, -5.0f), new Vector3(0, 0, 1.0f), Vector3.UnitY);				
 				//_sprite.TextureSize = new Vector2(128, 128);
 				//_graphics.Rasterizer.SetViewport(_swapChain.Viewport);
@@ -368,35 +328,12 @@ namespace Tester_Graphics
 
 		}
 
-		void form2_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			if (_test2 != null)
-				_test2.Dispose();
-			_test2 = null;
-			if (_swapChain2 != null)
-				_swapChain2.Dispose();
-			_swapChain2 = null;
-			form2 = null;
-		}
-
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
 
 			try
 			{
-				if (form2 != null)
-				{
-					form2.Close();
-					form2 = null;
-				}
-
-				if (_test1 != null)
-				{
-					_test1.Dispose();
-					_test1 = null;
-				}
-
 				if (_graphics2D != null)
 					_graphics2D.Dispose();
 			}

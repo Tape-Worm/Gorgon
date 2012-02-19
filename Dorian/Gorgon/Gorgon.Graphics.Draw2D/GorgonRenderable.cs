@@ -44,7 +44,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonTexture2D _texture = null;								// Texture to use for the renderable.
 		private Vector2 _textureOffset = Vector2.Zero;							// Texture offset.
 		private Vector2 _textureScale = new Vector2(1);							// Texture scale.
-		private Vector2 _size = Vector2.Zero;									// Size of the renderable.
+		private Vector2 _size = Vector2.Zero;									// Size of the renderable.		
 		#endregion
 
 		#region Properties.
@@ -90,6 +90,28 @@ namespace GorgonLibrary.Graphics.Renderers
 		protected internal abstract bool UseIndexBuffer
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Property to set or return the color for a renderable object.
+		/// </summary>
+		/// <remarks>This will only return the color for the first vertex of the renderable and consequently will set all the vertices to the same color.</remarks>
+		public virtual GorgonColor Color
+		{
+			get
+			{
+				return Vertices[0].Color;
+			}
+			set
+			{
+				GorgonColor current = Vertices[0].Color;
+
+				if (value != current)
+				{
+					for (int i = 0; i < Vertices.Length; i++)
+						Vertices[i].Color = value;
+				}
+			}
 		}
 
 		/// <summary>
@@ -243,13 +265,16 @@ namespace GorgonLibrary.Graphics.Renderers
 			Vertices = new Gorgon2D.Vertex[vertexCount];
 			TransformedVertices = new Gorgon2D.Vertex[vertexCount];
 
+			for (int i = 0; i < Vertices.Length; i++)
+				Vertices[i].Color = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
+
 			UpdateTextureCoordinates();
 			UpdateVertices();
 			InitializeCustomVertexInformation();
 
 			NeedsVertexUpdate = false;
 			NeedsTextureUpdate = false;
-		}
+		}		
 
 		/// <summary>
 		/// Function to assign a deferred texture.
