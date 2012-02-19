@@ -578,7 +578,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging or Immutable.
 		/// </exception>
-		public GorgonIndexBuffer CreateIndexBuffer(int size, bool is32bit, BufferUsage usage)
+		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32bit)
 		{
 			if ((usage == BufferUsage.Staging) || (usage == BufferUsage.Immutable))
 				throw new ArgumentException("A index buffer cannot be used as a staging or immutable buffer.", "usage");

@@ -121,7 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
-    <None Include="Resources\Test.fx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">

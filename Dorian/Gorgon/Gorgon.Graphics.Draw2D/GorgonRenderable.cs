@@ -36,15 +36,17 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// <summary>
 	/// A renderable object.
 	/// </summary>
+	/// <remarks>This is the base object for any object that can be drawn to a render target.</remarks>
 	public abstract class GorgonRenderable
-		: GorgonNamedObject, ICloneable<GorgonRenderable>
+		: GorgonNamedObject
 	{
 		#region Variables.
-		private string _textureName = string.Empty;								// Name of the texture for deferred loading.
-		private GorgonTexture2D _texture = null;								// Texture to use for the renderable.
-		private Vector2 _textureOffset = Vector2.Zero;							// Texture offset.
-		private Vector2 _textureScale = new Vector2(1);							// Texture scale.
-		private Vector2 _size = Vector2.Zero;									// Size of the renderable.		
+		private string _textureName = string.Empty;															// Name of the texture for deferred loading.
+		private GorgonTexture2D _texture = null;															// Texture to use for the renderable.
+		private Vector2 _textureOffset = Vector2.Zero;														// Texture offset.
+		private Vector2 _textureScale = new Vector2(1);														// Texture scale.
+		private Vector2 _size = Vector2.Zero;																// Size of the renderable.
+		private GorgonBlendStates _blendStates = GorgonBlendStates.DefaultStates;							// Blending states.		
 		#endregion
 
 		#region Properties.
@@ -67,6 +69,34 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
+		/// Property to set or return the vertex buffer binding for this renderable.
+		/// </summary>
+		protected internal virtual GorgonVertexBufferBinding VertexBufferBinding
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to set or return the index buffer for this renderable.
+		/// </summary>
+		protected internal virtual GorgonIndexBuffer IndexBuffer
+		{
+			get
+			{
+				return Gorgon2D.DefaultIndexBuffer;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the type of primitive for the renderable.
+		/// </summary>
+		protected internal abstract PrimitiveType PrimitiveType
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return a list of transformed vertices.
 		/// </summary>
 		protected internal Gorgon2D.Vertex[] TransformedVertices
@@ -85,11 +115,67 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to return an index buffer.
+		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		protected internal abstract bool UseIndexBuffer
+		/// <remarks>This is only matters when the renderable uses an index buffer.</remarks>
+		protected internal abstract int IndexCount
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Property to return the blending render states.
+		/// </summary>
+		internal GorgonBlendStates GorgonBlendStates
+		{
+			get
+			{
+				return _blendStates;
+			}
+		}
+
+		
+
+		/// <summary>
+		/// Property to set or return the sampler state for the texture.
+		/// </summary>
+		public GorgonTextureSamplerStates SamplerState
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current blending state for the renderable.
+		/// </summary>
+		/// <remarks>This only sets or returns the blending state for the first render target.</remarks>
+		public GorgonRenderTargetBlendState BlendingState
+		{
+			get
+			{				
+				return _blendStates.RenderTarget0;
+			}
+			set
+			{
+				_blendStates.RenderTarget0 = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the opacity (Alpha channel) of the renderable object.
+		/// </summary>
+		/// <remarks>This will only return the alpha value for the first vertex of the renderable and consequently will set all the vertices to the same alpha value.</remarks>
+		public virtual float Opacity
+		{
+			get
+			{
+				return Vertices[0].Color.W;
+			}
+			set
+			{
+				if (value != Vertices[0].Color.W)
+					Vertices[3].Color.W = Vertices[2].Color.W = Vertices[1].Color.W = Vertices[0].Color.W = value;
+			}
 		}
 
 		/// <summary>
@@ -107,10 +193,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				GorgonColor current = Vertices[0].Color;
 
 				if (value != current)
-				{
-					for (int i = 0; i < Vertices.Length; i++)
-						Vertices[i].Color = value;
-				}
+					Vertices[3].Color = Vertices[2].Color = Vertices[1].Color = Vertices[0].Color = value;
 			}
 		}
 
@@ -334,19 +417,16 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonRenderable(Gorgon2D gorgon2D, string name)
 			: base(name)
-		{
+		{			
 			GorgonDebug.AssertNull<Gorgon2D>(gorgon2D, "gorgon2D");
 						
 			Gorgon2D = gorgon2D;
+			_blendStates.RenderTarget0.IsBlendingEnabled = true;
+			_blendStates.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
+			_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
+			SamplerState = GorgonTextureSamplerStates.DefaultStates;
+			VertexBufferBinding = gorgon2D.DefaultVertexBufferBinding;
 		}
-		#endregion
-
-		#region ICloneable<GorgonRenderable> Members
-		/// <summary>
-		/// Function to clone this renderable object.
-		/// </summary>
-		/// <returns>The clone of the renderable object.</returns>
-		public abstract GorgonRenderable Clone();
 		#endregion
 	}
 }
