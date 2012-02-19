@@ -98,7 +98,6 @@ namespace GorgonLibrary.Graphics
 		private bool _disposed = false;								// Flag to indicate that the object was disposed.
 		private string _source = null;								// Shader source code.
 		private ShaderVersion _version = ShaderVersion.Version2a_b;	// Shader model version.
-		private bool _debug = false;								// Flag to indicate that the shader has debug information.		
 		#endregion
 
 		#region Properties.
@@ -112,22 +111,12 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return whether to include debug information in the shader or not.
+		/// Property to return whether to include debug information in the shader or not.
 		/// </summary>
 		public bool IsDebug
 		{
-			get
-			{
-				return _debug;
-			}
-			set
-			{
-				if (_debug != value)
-				{
-					_debug = value;
-					HasChanged = true;
-				}
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -276,8 +265,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to compile the shader.
 		/// </summary>
+		/// <param name="includeDebugInfo">TRUE to include debug information, FALSE to exclude it.</param>
 		/// <exception cref="System.NotSupportedException">Thrown when the shader is not supported by the current supported feature level for the video hardware.</exception>
-		public void Compile()
+		public void Compile(bool includeDebugInfo)
 		{
 			Shaders.ShaderFlags flags = Shaders.ShaderFlags.OptimizationLevel3;			
 
@@ -285,7 +275,9 @@ namespace GorgonLibrary.Graphics
 				return;
 
 			try
-			{				
+			{
+				IsDebug = includeDebugInfo;
+
 				if (IsDebug)
 					flags = Shaders.ShaderFlags.Debug;
 

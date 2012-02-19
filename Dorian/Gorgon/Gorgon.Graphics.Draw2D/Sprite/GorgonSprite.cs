@@ -34,6 +34,33 @@ using GorgonLibrary.Math;
 namespace GorgonLibrary.Graphics.Renderers
 {
 	/// <summary>
+	/// The corners of a sprite.
+	/// </summary>
+	public enum SpriteCorner
+	{
+		/// <summary>
+		/// Upper left hand corner of the sprite.
+		/// </summary>
+		/// <remarks>This equates to vertex #0 in the sprite.</remarks>
+		UpperLeft = 0,
+		/// <summary>
+		/// Upper right hand corner of the sprite.
+		/// </summary>
+		/// <remarks>This equates to vertex #1 in the sprite.</remarks>
+		UpperRight = 1,
+		/// <summary>
+		/// Lower left hand corner of the sprite.
+		/// </summary>
+		/// <remarks>This equates to vertex #2 in the sprite.</remarks>
+		LowerLeft = 2,
+		/// <summary>
+		/// Lower right hand corner of the sprite.
+		/// </summary>
+		/// <remarks>This equates to vertex #3 in the sprite.</remarks>
+		LowerRight = 3
+	}
+
+	/// <summary>
 	/// A sprite object.
 	/// </summary>
 	public class GorgonSprite
@@ -48,6 +75,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Matrix _rotation = Matrix.Identity;										// Rotation matrix.
 		private Matrix _scaling = Matrix.Identity;										// Scaling matrix.
 		private Matrix _worldMatrix = Matrix.Identity;									// World matrix for the sprite.
+		private Vector4[] _offsets = null;												// A list of vertex offsets.
 		#endregion
 
 		#region Properties.
@@ -161,6 +189,9 @@ namespace GorgonLibrary.Graphics.Renderers
 				if (_anchor != Vector4.Zero)
 					Vector4.Add(ref _anchor, ref transformedVertex.Position, out transformedVertex.Position);
 
+				if (_offsets[i] != Vector4.Zero)
+					Vector4.Add(ref _offsets[i], ref transformedVertex.Position, out transformedVertex.Position);
+
 				TransformedVertices[i] = transformedVertex;
 			}
 		}
@@ -201,11 +232,30 @@ namespace GorgonLibrary.Graphics.Renderers
 		protected override void UpdateVertices()
 		{
 			// Set up vertices.
-			// TODO: Set only object space vertex position in here.   Put color into an UpdateColors() method.
-			Vertices[0] = new Gorgon2D.Vertex(new Vector4(0, 0, 0.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vertices[0].UV);
-			Vertices[1] = new Gorgon2D.Vertex(new Vector4(Size.X, 0, 0.0f, 1.0f), new Vector4(0.0f, 1.0f, 1.0f, 1.0f), Vertices[1].UV);
-			Vertices[2] = new Gorgon2D.Vertex(new Vector4(0, Size.Y, 0.0f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f), Vertices[2].UV);
-			Vertices[3] = new Gorgon2D.Vertex(new Vector4(Size.X, Size.Y, 0.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vertices[3].UV);
+			Vertices[0].Position = new Vector4(0, 0, 0.0f, 1.0f);
+			Vertices[1].Position = new Vector4(Size.X, 0, 0.0f, 1.0f);
+			Vertices[2].Position = new Vector4(0, Size.Y, 0.0f, 1.0f);
+			Vertices[3].Position = new Vector4(Size, 0.0f, 1.0f);
+		}
+
+		/// <summary>
+		/// Function to set an offset for a vertex.
+		/// </summary>
+		/// <param name="corner">Corner of the sprite to set.</param>
+		/// <param name="offset">Offset for the vertex.</param>
+		public void SetVertexOffset(SpriteCorner corner, Vector3 offset)
+		{
+			_offsets[(int)corner] = new Vector4(offset, 0.0f);
+		}
+
+		/// <summary>
+		/// Function to set the color for a specific vertex on the sprite.
+		/// </summary>
+		/// <param name="corner">Corner of the sprite to set.</param>
+		/// <param name="color">Color to set.</param>
+		public void SetVertexColor(SpriteCorner corner, GorgonColor color)
+		{
+			Vertices[(int)corner].Color = color;
 		}
 
 		/// <summary>
@@ -245,6 +295,13 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			Size = new Vector2(width, height);
 			InitializeVertices(4);
+
+			_offsets = new [] { 
+				Vector4.Zero, 
+				Vector4.Zero, 
+				Vector4.Zero, 
+				Vector4.Zero, 
+			};
 		}
 		#endregion
 	}
