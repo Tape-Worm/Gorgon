@@ -13,14 +13,15 @@ namespace GorgonLibrary.Graphics.Renderers
 	public class Gorgon2DShaders
 	{
 		#region Variables.
-		private Gorgon2D _gorgon2D = null;						// 2D interface that owns this object.
-		private Gorgon2DVertexShader _vertexShader = null;		// Current vertex shader.
-		private Gorgon2DPixelShader _pixelShader = null;		// Current pixel shader.
-		private GorgonConstantBuffer _viewProjection = null;	// Constant buffer for handling the view/projection matrix upload to the video device.
+		private Gorgon2D _gorgon2D = null;								// 2D interface that owns this object.
+		private Gorgon2DVertexShader _vertexShader = null;				// Current vertex shader.
+		private Gorgon2DPixelShader _pixelShader = null;				// Current pixel shader.
+		private GorgonConstantBuffer _viewProjection = null;			// Constant buffer for handling the view/projection matrix upload to the video device.
+		private GorgonConstantBuffer _renderableStates = null;			// States for renderable objects.
+		private GorgonMinMaxF? _alphaTestValue = null;					// Alpha test value.
 		#endregion
 
 		#region Properties.
-
 		/// <summary>
 		/// Property to return the default verte shader.
 		/// </summary>
@@ -48,6 +49,67 @@ namespace GorgonLibrary.Graphics.Renderers
 			private set;
 		}
 
+		/// <summary>
+		/// Property to return the default diffuse pixel shader with alpha testing.
+		/// </summary>
+		internal GorgonDefaultPixelShaderDiffuseAlphaTest DefaultPixelShaderDiffuseAlphaTest
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the default textured pixel shader with alpha testing.
+		/// </summary>
+		internal GorgonDefaultPixelShaderTexturedAlphaTest DefaultPixelShaderTexturedAlphaTest
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the alpha test value to send to the shader.
+		/// </summary>
+		public GorgonMinMaxF? AlphaTestValue
+		{
+			get
+			{
+				return _alphaTestValue;
+			}
+			set
+			{
+				if (_alphaTestValue != value)
+				{
+					if (value.HasValue)
+						_alphaTestValue = value.Value;
+					else
+						_alphaTestValue = GorgonMinMaxF.Empty;
+
+					using (GorgonDataStream stream = _renderableStates.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
+					{
+						stream.Write(value.HasValue);
+
+						// Pad out the boolean as it's only 1 byte in .NET.
+						stream.Write<byte>(0);
+						stream.Write<byte>(0);
+						stream.Write<byte>(0);
+
+						if (_alphaTestValue.HasValue)
+						{
+							stream.Write(_alphaTestValue.Value.Minimum);
+							stream.Write(_alphaTestValue.Value.Maximum);
+						}
+						else
+						{
+							stream.Write(0.0f);
+							stream.Write(0.0f);
+						}
+						_renderableStates.Unlock();
+					}
+				}
+			}
+		}
+		
 		/// <summary>
 		/// Property to set or return the current vertex shader.
 		/// </summary>
@@ -101,6 +163,7 @@ namespace GorgonLibrary.Graphics.Renderers
 						_pixelShader = value;
 					
 					_gorgon2D.Graphics.Shaders.PixelShader.Current = _pixelShader.Shader;
+					_gorgon2D.Graphics.Shaders.PixelShader.ConstantBuffers[0] = _renderableStates;
 				}
 			}
 		}
@@ -128,6 +191,9 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (_viewProjection != null)
 				_viewProjection.Dispose();
 
+			if (_renderableStates != null)
+				_renderableStates.Dispose();
+
 			if (DefaultVertexShader != null)
 				DefaultVertexShader.Dispose();
 
@@ -151,8 +217,11 @@ namespace GorgonLibrary.Graphics.Renderers
 			DefaultVertexShader = new GorgonDefaultVertexShader(gorgon2D);
 			DefaultPixelShaderDiffuse = new GorgonDefaultPixelShaderDiffuse(gorgon2D);
 			DefaultPixelShaderTextured = new GorgonDefaultPixelShaderTextured(gorgon2D);
+			DefaultPixelShaderDiffuseAlphaTest = new GorgonDefaultPixelShaderDiffuseAlphaTest(gorgon2D);
+			DefaultPixelShaderTexturedAlphaTest = new GorgonDefaultPixelShaderTexturedAlphaTest(gorgon2D);
 
 			_viewProjection = gorgon2D.Graphics.Shaders.CreateConstantBuffer(DirectAccess.SizeOf<Matrix>(), true);
+			_renderableStates = gorgon2D.Graphics.Shaders.CreateConstantBuffer(16, true);
 		}
 		#endregion
 	}

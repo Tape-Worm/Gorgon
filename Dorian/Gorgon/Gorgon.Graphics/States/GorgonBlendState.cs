@@ -654,6 +654,9 @@ namespace GorgonLibrary.Graphics
 		{			
 			D3D.BlendStateDescription desc = new D3D.BlendStateDescription();
 
+			if ((desc.AlphaToCoverageEnable) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the blending state.  Alpha to coverage is only available on SM 4.x or better video devices.");
+			
 			desc.AlphaToCoverageEnable = States.IsAlphaCoverageEnabled;
 			desc.IndependentBlendEnable = States.IsIndependentBlendEnabled;
 
