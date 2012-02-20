@@ -82,7 +82,11 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// <summary>
 			/// Index buffer changed.
 			/// </summary>
-			IndexBuffer = 32
+			IndexBuffer = 32,
+			/// <summary>
+			/// Alpha testing value changed.
+			/// </summary>
+			AlphaTestValue = 64
 		}
 		#endregion
 
@@ -441,7 +445,13 @@ namespace GorgonLibrary.Graphics.Renderers
 			StateChanges result = StateChanges.None;
 
 			if (renderable.Texture != Shaders.PixelShader.Textures[0])
+			{
 				result |= StateChanges.Texture;
+
+				if ((((Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuseAlphaTest) || (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuse)) && (renderable.Texture != null)) || 
+					(((Shaders.PixelShader == Shaders.DefaultPixelShaderTexturedAlphaTest) || (Shaders.PixelShader == Shaders.DefaultPixelShaderTextured)) && (renderable.Texture == null)))
+					result |= StateChanges.Shader;
+			}
 
 			if (!renderable.GorgonBlendStates.Equals(Graphics.Output.BlendingState.States))
 				result |= StateChanges.BlendState;
@@ -454,6 +464,22 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if (renderable.IndexBuffer != Graphics.Input.IndexBuffer)
 				result |= StateChanges.IndexBuffer;
+
+			if (renderable.AlphaTestValues != Shaders.AlphaTestValue)
+			{
+				result |= StateChanges.AlphaTestValue;
+
+				if (renderable.AlphaTestValues.HasValue)
+				{
+					if ((Shaders.PixelShader == Shaders.DefaultPixelShaderTextured) || (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuse))
+						result |= StateChanges.Shader;
+				}
+				else
+				{
+					if ((Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuseAlphaTest) || (Shaders.PixelShader == Shaders.DefaultPixelShaderTexturedAlphaTest))
+						result |= StateChanges.Shader;
+				}
+			}
 
 			return result;
 		}
@@ -472,13 +498,38 @@ namespace GorgonLibrary.Graphics.Renderers
 					Shaders.PixelShader.Samplers[0] = renderable.SamplerState;
 				else
 					Shaders.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
+			}
 
+			if ((stateChange & StateChanges.Shader) == StateChanges.Shader)
+			{
 				// If we're using the default shader, switch between the default no texture or textured pixel shader depending on our state.
-				if ((renderable.Texture != null) && (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuse))
-					Shaders.PixelShader = Shaders.DefaultPixelShaderTextured;
-
-				if ((renderable.Texture == null) && (Shaders.PixelShader == Shaders.DefaultPixelShaderTextured)) 
-					Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuse;
+				if (renderable.Texture != null) 
+				{
+					if (renderable.AlphaTestValues.HasValue)
+					{
+						if ((Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuse) || (Shaders.PixelShader == Shaders.DefaultPixelShaderTextured) || (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuseAlphaTest))
+							Shaders.PixelShader = Shaders.DefaultPixelShaderTexturedAlphaTest;
+					}
+					else
+					{
+						if ((Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuse) || (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuseAlphaTest) || (Shaders.PixelShader == Shaders.DefaultPixelShaderTexturedAlphaTest))
+							Shaders.PixelShader = Shaders.DefaultPixelShaderTextured;
+					}
+				}
+				else
+				{
+					// If we're using the default shader, switch between the default no texture or textured pixel shader depending on our state.
+					if (renderable.AlphaTestValues.HasValue)
+					{
+						if ((Shaders.PixelShader == Shaders.DefaultPixelShaderTexturedAlphaTest) || (Shaders.PixelShader == Shaders.DefaultPixelShaderTextured) || (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuse))
+							Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuseAlphaTest;
+					}
+					else
+					{
+						if ((Shaders.PixelShader == Shaders.DefaultPixelShaderTexturedAlphaTest) || (Shaders.PixelShader == Shaders.DefaultPixelShaderTextured) || (Shaders.PixelShader == Shaders.DefaultPixelShaderDiffuseAlphaTest))
+							Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuse;
+					}
+				}
 			}
 
 			if ((stateChange & StateChanges.BlendState) == StateChanges.BlendState)
@@ -492,6 +543,9 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if ((stateChange & StateChanges.VertexBuffer) == StateChanges.VertexBuffer)
 				Graphics.Input.VertexBuffers[0] = renderable.VertexBufferBinding;
+
+			if ((stateChange & StateChanges.AlphaTestValue) == StateChanges.AlphaTestValue)
+				Shaders.AlphaTestValue = renderable.AlphaTestValues;
 		}
 
 		/// <summary>
@@ -508,8 +562,11 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if (stateChange != StateChanges.None)
 			{
-				Render();
-				hasRendered = true;
+				if (_cacheWritten > 0)
+				{
+					RenderObjects();
+					hasRendered = true;
+				}
 				ApplyStates(renderable, stateChange);
 			}
 
@@ -517,11 +574,10 @@ namespace GorgonLibrary.Graphics.Renderers
 			if ((_cacheEnd + renderable.TransformedVertices.Length) > _vertexCache.Length)
 			{
 				// Ensure that we don't render the same scene twice.
-				if (!hasRendered)
-					Render();
+				if ((!hasRendered) && (_cacheWritten > 0))
+					RenderObjects();
 
 				_cacheStart = 0;
-				_cacheWritten = 0;
 				_cacheEnd = 0;
 				_renderIndexStart = 0;
 			}
@@ -536,12 +592,51 @@ namespace GorgonLibrary.Graphics.Renderers
 			// If we've filled the cache, then empty it.
 			if (_cacheEnd == _vertexCache.Length)
 			{
-				Render();
+				RenderObjects();
 				_cacheStart = 0;
 				_cacheEnd = 0;
-				_cacheWritten = 0;
 				_renderIndexStart = 0;
 			}
+		}
+
+		/// <summary>
+		/// Function to render our objects with the current state.
+		/// </summary>
+		internal void RenderObjects()
+		{
+			BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
+
+			if (_cacheWritten == 0)
+				return;
+
+			if (_cacheStart > 0)
+				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
+
+			using (GorgonDataStream stream = DefaultVertexBufferBinding.VertexBuffer.Lock(flags))
+			{
+				stream.Position = _cacheStart * _vertexSize;
+				stream.WriteRange<Vertex>(_vertexCache, _cacheStart, _cacheWritten);
+				DefaultVertexBufferBinding.VertexBuffer.Unlock();
+			}
+
+			switch (Graphics.Input.PrimitiveType)
+			{
+				case PrimitiveType.PointList:
+				case PrimitiveType.LineList:
+					Graphics.Draw(_cacheStart, _cacheWritten);
+					break;
+				case PrimitiveType.TriangleList:
+					if (Graphics.Input.IndexBuffer == null)
+						Graphics.Draw(_cacheStart, _cacheWritten);
+					else
+						Graphics.DrawIndexed(_renderIndexStart, 0, _renderIndexCount);
+					break;
+			}
+
+			_cacheStart = _cacheEnd;
+			_cacheWritten = 0;
+			_renderIndexStart += _renderIndexCount;
+			_renderIndexCount = 0;
 		}
 
 		/// <summary>
@@ -590,39 +685,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </remarks>
 		public void Render()
 		{
-			BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
-
-			if (_cacheWritten == 0)
-				return;
-
-			if (_cacheStart > 0)
-				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
-
-			using (GorgonDataStream stream = DefaultVertexBufferBinding.VertexBuffer.Lock(flags))
-			{
-				stream.Position = _cacheStart * _vertexSize;
-				stream.WriteRange<Vertex>(_vertexCache, _cacheStart, _cacheWritten);
-				DefaultVertexBufferBinding.VertexBuffer.Unlock();
-			}
-
-			switch(Graphics.Input.PrimitiveType)
-			{
-				case PrimitiveType.PointList:
-				case PrimitiveType.LineList:
-					Graphics.Draw(_cacheStart, _cacheWritten);
-					break;
-				case PrimitiveType.TriangleList:
-					if (Graphics.Input.IndexBuffer == null)
-						Graphics.Draw(_cacheStart, _cacheWritten);
-					else
-						Graphics.DrawIndexed(_renderIndexStart, 0, _renderIndexCount);
-					break;
-			}
-
-			_cacheStart = _cacheEnd;
-			_renderIndexStart = _renderIndexCount;
-			_renderIndexCount = 0;
-
+			RenderObjects();
 			Target.Flip();			
 		}
 

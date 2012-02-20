@@ -34,6 +34,37 @@ using GorgonLibrary.Diagnostics;
 namespace GorgonLibrary.Graphics.Renderers
 {
 	/// <summary>
+	/// Default blending modes.
+	/// </summary>
+	public enum BlendingMode
+	{
+		/// <summary>
+		/// No blending.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Modulated blending.
+		/// </summary>
+		Modulate = 1,
+		/// <summary>
+		/// Additive blending.
+		/// </summary>
+		Additive = 2,
+		/// <summary>
+		/// Inverted blending.
+		/// </summary>
+		Inverted = 3,
+		/// <summary>
+		/// Pre-multiplied alpha.
+		/// </summary>
+		PreMultiplied = 4,
+		/// <summary>
+		/// Custom blending.
+		/// </summary>
+		Custom = 32767
+	}
+
+	/// <summary>
 	/// A renderable object.
 	/// </summary>
 	/// <remarks>This is the base object for any object that can be drawn to a render target.</remarks>
@@ -134,8 +165,76 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 		}
 
-		
+		/// <summary>
+		/// Property to set or return a pre-defined blending mode for the renderable.
+		/// </summary>
+		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.BlendingState">BlendingState</see> property.</remarks>
+		public virtual BlendingMode BlendingMode
+		{
+			get
+			{
+				if ((BlendingState.SourceBlend == BlendType.One) && (BlendingState.DestinationBlend == BlendType.Zero))
+					return Renderers.BlendingMode.None;
 
+				if (BlendingState.SourceBlend == BlendType.SourceAlpha) 
+				{	
+					if (BlendingState.DestinationBlend == BlendType.InverseSourceAlpha)
+						return Renderers.BlendingMode.Modulate;
+					if (BlendingState.DestinationBlend == BlendType.One)
+						return Renderers.BlendingMode.Additive;
+				}
+
+				if ((BlendingState.SourceBlend == BlendType.One) && (BlendingState.DestinationBlend == BlendType.InverseSourceAlpha))
+					return Renderers.BlendingMode.PreMultiplied;
+
+				if ((BlendingState.SourceBlend == BlendType.InverseDestinationColor) && (BlendingState.DestinationBlend == BlendType.InverseSourceColor))
+					return Renderers.BlendingMode.Inverted;
+				
+				return Renderers.BlendingMode.Custom;
+			}
+			set
+			{
+				switch (value)
+				{
+					case Renderers.BlendingMode.Additive:
+						_blendStates.RenderTarget0.IsBlendingEnabled = true;
+						_blendStates.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
+						_blendStates.RenderTarget0.DestinationBlend = BlendType.One;
+						break;
+					case Renderers.BlendingMode.Inverted:
+						_blendStates.RenderTarget0.IsBlendingEnabled = true;
+						_blendStates.RenderTarget0.SourceBlend = BlendType.InverseDestinationColor;
+						_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceColor;
+						break;
+					case Renderers.BlendingMode.Modulate:
+						_blendStates.RenderTarget0.IsBlendingEnabled = true;
+						_blendStates.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
+						_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
+						break;
+					case Renderers.BlendingMode.PreMultiplied:
+						_blendStates.RenderTarget0.IsBlendingEnabled = true;
+						_blendStates.RenderTarget0.SourceBlend = BlendType.One;
+						_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
+						break;
+					default:
+						_blendStates.RenderTarget0.IsBlendingEnabled = false;
+						_blendStates.RenderTarget0.SourceBlend = BlendType.One;
+						_blendStates.RenderTarget0.DestinationBlend = BlendType.Zero;
+						break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the range of alpha values to reject on this renderable.
+		/// </summary>
+		/// <remarks>The alpha testing tests to see if a value is between or equal to the values.</remarks>
+		public virtual GorgonMinMaxF? AlphaTestValues
+		{
+			get;
+			set;
+		}
+		
 		/// <summary>
 		/// Property to set or return the sampler state for the texture.
 		/// </summary>
@@ -333,6 +432,24 @@ namespace GorgonLibrary.Graphics.Renderers
 		protected abstract void UpdateVertices();
 
 		/// <summary>
+		/// Function to process the renderable to get it ready to be rendered.
+		/// </summary>
+		protected virtual void ProcessRenderable()
+		{
+			if (NeedsTextureUpdate)
+			{
+				UpdateTextureCoordinates();
+				NeedsTextureUpdate = false;
+			}
+
+			if (NeedsVertexUpdate)
+			{
+				UpdateVertices();
+				NeedsVertexUpdate = false;
+			}
+		}
+
+		/// <summary>
 		/// Function to set up any additional information for the renderable.
 		/// </summary>
 		protected virtual void InitializeCustomVertexInformation()
@@ -388,18 +505,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </remarks>
 		public virtual void Draw()
 		{
-			if (NeedsTextureUpdate)
-			{
-				UpdateTextureCoordinates();
-				NeedsTextureUpdate = false;
-			}
-
-			if (NeedsVertexUpdate)
-			{
-				UpdateVertices();
-				NeedsVertexUpdate = false;
-			}
-
+			ProcessRenderable();
 			Gorgon2D.AddRenderable(this);
 		}
 		#endregion
@@ -426,6 +532,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
 			SamplerState = GorgonTextureSamplerStates.DefaultStates;
 			VertexBufferBinding = gorgon2D.DefaultVertexBufferBinding;
+			AlphaTestValues = null;
 		}
 		#endregion
 	}

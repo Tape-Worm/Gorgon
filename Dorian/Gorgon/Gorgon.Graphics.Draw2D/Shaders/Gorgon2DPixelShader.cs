@@ -39,6 +39,7 @@ namespace GorgonLibrary.Graphics.Renderers
 	{
 		#region Variables.
 		private bool _disposed = false;				// Flag to indicate that the object was disposed.
+		private float _alphaTestValue = 0.0f;		// Alpha test value.
 		#endregion
 
 		#region Properties.

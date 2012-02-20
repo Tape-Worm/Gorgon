@@ -253,6 +253,16 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
+		/// Function to process the renderable to get it ready to be rendered.
+		/// </summary>
+		protected override void ProcessRenderable()
+		{
+			base.ProcessRenderable();
+
+			TransformVertices();
+		}
+
+		/// <summary>
 		/// Function to set an offset for a vertex.
 		/// </summary>
 		/// <param name="corner">Corner of the sprite to set.</param>
@@ -270,19 +280,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		public void SetVertexColor(SpriteCorner corner, GorgonColor color)
 		{
 			Vertices[(int)corner].Color = color;
-		}
-
-		/// <summary>
-		/// Function to draw the object.
-		/// </summary>
-		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be
-		/// drawn when <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.Render">Render</see> is called.
-		/// </remarks>
-		public override void Draw()
-		{			
-			TransformVertices();
-
-			base.Draw();
 		}
 		#endregion
 
