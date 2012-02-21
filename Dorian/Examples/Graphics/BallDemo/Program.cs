@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
@@ -169,6 +170,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Draw balls.
 			for (int i = 0; i < _ballCount; i++)
 			{
+				_ball.Angle = new Vector3(0, 0, _ballList[i].Rotation);
 				_ball.Scale = new Vector2(_ballList[i].Scale);
 				_ball.Position = _ballList[i].Position;
 				_ball.Color = _ballList[i].Color;
@@ -226,11 +228,8 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create the wall sprite.
 			_wall = _2D.CreateSprite("Wall", 64, 64);
-			_wall.TextureFilter = TextureFilter.Point;
 			_wall.Texture = _ballTexture;
-			_wall.TextureFilter = TextureFilter.Point;
 			_wall.BlendingMode = BlendingMode.None;
-			_wall.HorizontalWrapping = _wall.VerticalWrapping = TextureAddressing.Wrap;
 
 			// Create the ball sprite.
 			_ball = _2D.CreateSprite("Ball", 64, 64);
@@ -290,7 +289,7 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => UI.GorgonDialogs.ErrorBox(_form, ex));
+				GorgonException.Catch(ex, () => UI.GorgonDialogs.ErrorBox(null, ex));
 			}
 			finally
 			{

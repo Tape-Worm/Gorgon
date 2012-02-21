@@ -98,9 +98,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AmigaBall.ico" />
-    <None Include="BallDemo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">

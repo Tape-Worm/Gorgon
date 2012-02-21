@@ -67,6 +67,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		: GorgonMoveable, IDeferredTextureLoad
 	{
 		#region Variables.
+		private float[] _corners = new float[4];										// Corners for the sprite.
 		private string _textureName = string.Empty;										// Name of the texture for the sprite.
 		private Matrix _rotation = Matrix.Identity;										// Rotation matrix.
 		private Matrix _scaling = Matrix.Identity;										// Scaling matrix.
@@ -113,42 +114,128 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		protected override void TransformVertices()
 		{
-			Vector4 anchoredPosition = Vector4.Zero;
-			Vector4 anchor = new Vector4(Anchor, 0.0f);
+			float posX1;		// Horizontal position 1.
+			float posX2;		// Horizontal position 2.
+			float posY1;		// Vertical position 1.
+			float posY2;		// Vertical position 2.			
 
-			if (NeedsRotation)
+			posX1 = _corners[0];
+			posX2 = _corners[2];
+			posY1 = _corners[1];
+			posY2 = _corners[3];
+
+			// Scale horizontally if necessary.
+			if (Scale.X != 1.0f)
 			{
-				Quaternion rotationAngle = Quaternion.Identity;
-
-				Quaternion.RotationYawPitchRoll(GorgonMathUtility.Radians(Angle.Y), GorgonMathUtility.Radians(Angle.X), GorgonMathUtility.Radians(Angle.Z), out rotationAngle);
-				Matrix.RotationQuaternion(ref rotationAngle, out _rotation);
-			}
-						
-			if (NeedsScaling)
-				_scaling.ScaleVector = new Vector3(Scale, 1.0f);
-
-			if ((NeedsScaling) || (NeedsRotation))
-				Matrix.Multiply(ref _scaling, ref _rotation, out _worldMatrix);
-
-			_worldMatrix.TranslationVector = Position;
-
-			for (int i = 0; i < Vertices.Length; i++)
-			{
-				Gorgon2D.Vertex transformedVertex = Vertices[i];
-				
-				if (!anchor.Equals(Vector4.Zero))
-					Vector4.Subtract(ref transformedVertex.Position, ref anchor, out transformedVertex.Position);
-
-				Vector4.Transform(ref transformedVertex.Position, ref _worldMatrix, out transformedVertex.Position);
-
-				if (NeedsVertexOffsetUpdate)
-					Vector4.Add(ref _offsets[i], ref transformedVertex.Position, out transformedVertex.Position);
-
-				TransformedVertices[i] = transformedVertex;
+				posX1 *= Scale.X;
+				posX2 *= Scale.X;
 			}
 
-			NeedsVertexOffsetUpdate = false;
+			// Scale vertically.
+			if (Scale.Y != 1.0f)
+			{
+				posY1 *= Scale.Y;
+				posY2 *= Scale.Y;
+			}
+
+			// Calculate rotation if necessary.
+			if (Angle.Z != 0.0f)
+			{
+				float angle = GorgonMathUtility.Radians(Angle.Z);	// Angle in radians.
+				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
+				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+
+				Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal);
+				Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal);
+
+				Vertices[1].Position.X = (posX2 * cosVal - posY1 * sinVal);
+				Vertices[1].Position.Y = (posX2 * sinVal + posY1 * cosVal);
+
+				Vertices[2].Position.X = (posX1 * cosVal - posY2 * sinVal);
+				Vertices[2].Position.Y = (posX1 * sinVal + posY2 * cosVal);
+
+				Vertices[3].Position.X = (posX2 * cosVal - posY2 * sinVal);
+				Vertices[3].Position.Y = (posX2 * sinVal + posY2 * cosVal);
+			}
+			else
+			{
+				Vertices[0].Position.X = posX1;
+				Vertices[0].Position.Y = posY1;
+				Vertices[1].Position.X = posX2;
+				Vertices[1].Position.Y = posY1;
+				Vertices[2].Position.X = posX1;
+				Vertices[2].Position.Y = posY2;
+				Vertices[3].Position.X = posX2;
+				Vertices[3].Position.Y = posY2;
+			}
+
+			// Translate.
+			if (Position.X != 0.0f)
+			{
+				Vertices[0].Position.X += Position.X;
+				Vertices[1].Position.X += Position.X;
+				Vertices[2].Position.X += Position.X;
+				Vertices[3].Position.X += Position.X;
+			}
+
+			if (Position.Y != 0.0f)
+			{
+				Vertices[0].Position.Y += Position.Y;
+				Vertices[1].Position.Y += Position.Y;
+				Vertices[2].Position.Y += Position.Y;
+				Vertices[3].Position.Y += Position.Y;
+			}
+
+			Vertices[0].Position.X += _offsets[0].X;
+			Vertices[0].Position.Y += _offsets[0].Y;
+			Vertices[1].Position.X += _offsets[1].X;
+			Vertices[1].Position.Y += _offsets[1].Y;
+			Vertices[2].Position.X += _offsets[2].X;
+			Vertices[2].Position.Y += _offsets[2].Y;
+			Vertices[3].Position.X += _offsets[3].X;
+			Vertices[3].Position.Y += _offsets[3].Y;			
 		}
+		///// <summary>
+		///// Function to transform the vertices.
+		///// </summary>
+		//protected override void TransformVertices()
+		//{
+		//    Vector4 anchoredPosition = Vector4.Zero;
+		//    Vector4 anchor = new Vector4(Anchor, 0.0f);
+
+		//    if (NeedsRotation)
+		//    {
+		//        Quaternion rotationAngle = Quaternion.Identity;
+
+		//        Quaternion.RotationYawPitchRoll(GorgonMathUtility.Radians(Angle.Y), GorgonMathUtility.Radians(Angle.X), GorgonMathUtility.Radians(Angle.Z), out rotationAngle);
+		//        Matrix.RotationQuaternion(ref rotationAngle, out _rotation);
+		//    }
+						
+		//    if (NeedsScaling)
+		//        _scaling.ScaleVector = new Vector3(Scale, 1.0f);
+
+		//    if ((NeedsScaling) || (NeedsRotation))
+		//        Matrix.Multiply(ref _scaling, ref _rotation, out _worldMatrix);
+
+		//    _worldMatrix.TranslationVector = Position;
+
+		//    for (int i = 0; i < Vertices.Length; i++)
+		//    {
+		//        Gorgon2D.Vertex transformedVertex = Vertices[i];
+				
+		//        if (!anchor.Equals(Vector4.Zero))
+		//            Vector4.Subtract(ref transformedVertex.Position, ref anchor, out transformedVertex.Position);
+
+		//        Vector4.Transform(ref transformedVertex.Position, ref _worldMatrix, out transformedVertex.Position);
+
+		//        if (NeedsVertexOffsetUpdate)
+		//            Vector4.Add(ref _offsets[i], ref transformedVertex.Position, out transformedVertex.Position);
+
+		//        TransformedVertices[i] = transformedVertex;
+		//    }
+
+		//    NeedsVertexOffsetUpdate = false;
+		//}
 
 		/// <summary>
 		/// Function to update the texture coordinates.
@@ -188,11 +275,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		protected override void UpdateVertices()
 		{
-			// Set up vertices.
-			Vertices[0].Position = new Vector4(0, 0, 0.0f, 1.0f);
-			Vertices[1].Position = new Vector4(Size.X, 0, 0.0f, 1.0f);
-			Vertices[2].Position = new Vector4(0, Size.Y, 0.0f, 1.0f);
-			Vertices[3].Position = new Vector4(Size, 0.0f, 1.0f);
+			_corners[0] = -Anchor.X;
+			_corners[1] = -Anchor.Y;
+			_corners[2] = Size.X - Anchor.X;
+			_corners[3] = Size.Y - Anchor.Y;
 		}
 
 		/// <summary>

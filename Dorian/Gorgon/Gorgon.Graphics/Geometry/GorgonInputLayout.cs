@@ -161,6 +161,8 @@ namespace GorgonLibrary.Graphics
 				return BufferFormat.R32G32B32_Float;				
 			if (type == typeof(Vector4))
 				return BufferFormat.R32G32B32A32_Float;
+			if (type == typeof(GorgonColor))
+				return BufferFormat.R32G32B32A32_Float;
 
 			return BufferFormat.Unknown;
 		}		
@@ -458,7 +460,8 @@ namespace GorgonLibrary.Graphics
 									typeof(float),
 									typeof(Vector2),
 									typeof(Vector3),
-									typeof(Vector4)
+									typeof(Vector4),
+									typeof(GorgonColor)
 								};
 		}
 		#endregion
