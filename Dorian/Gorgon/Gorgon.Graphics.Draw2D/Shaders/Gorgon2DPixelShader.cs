@@ -38,8 +38,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;				// Flag to indicate that the object was disposed.
-		private float _alphaTestValue = 0.0f;		// Alpha test value.
+		private bool _disposed = false;																	// Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
@@ -66,13 +65,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public GorgonShaderState<GorgonPixelShader>.ShaderTextures Textures
 		{
-			get
-			{
-				if (Gorgon2D.Graphics.Shaders.PixelShader == null)
-					return null;
-
-				return Gorgon2D.Graphics.Shaders.PixelShader.Textures;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -80,13 +74,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public GorgonShaderState<GorgonPixelShader>.TextureSamplerState Samplers
 		{
-			get
-			{
-				if (Gorgon2D.Graphics.Shaders.PixelShader == null)
-					return null;
-
-				return Gorgon2D.Graphics.Shaders.PixelShader.TextureSamplers;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -94,18 +83,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public GorgonShaderState<GorgonPixelShader>.ShaderConstantBuffers ConstantBuffers
 		{
-			get
-			{
-				if (Gorgon2D.Graphics.Shaders.PixelShader == null)
-					return null;
-
-				return Gorgon2D.Graphics.Shaders.PixelShader.ConstantBuffers;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
 		#region Methods.
-
 		#endregion
 
 		#region Constructor/Destructor.
@@ -118,6 +101,10 @@ namespace GorgonLibrary.Graphics.Renderers
 			: base(name)
 		{
 			Gorgon2D = gorgon2D;
+
+			ConstantBuffers = Gorgon2D.Graphics.Shaders.PixelShader.ConstantBuffers;
+			Textures = Gorgon2D.Graphics.Shaders.PixelShader.Textures;
+			Samplers = Gorgon2D.Graphics.Shaders.PixelShader.TextureSamplers;
 		}
 		#endregion
 

@@ -86,7 +86,19 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// <summary>
 			/// Alpha testing value changed.
 			/// </summary>
-			AlphaTestValue = 64
+			AlphaTestValue = 64,
+			/// <summary>
+			/// Sampler state changed.
+			/// </summary>
+			Sampler = 128,
+			/// <summary>
+			/// Blending factor.
+			/// </summary>
+			BlendFactor = 256,
+			/// <summary>
+			/// Rasterizer state changed.
+			/// </summary>
+			Raster = 512
 		}
 		#endregion
 
@@ -94,8 +106,16 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// The current set of states when the renderer was started.
 		/// </summary>
-		private struct PreviousStates
+		private class PreviousStates
 		{
+			/// <summary>
+			/// Pixel shader.
+			/// </summary>
+			public GorgonPixelShader PixelShader;
+			/// <summary>
+			/// Vertex shader.
+			/// </summary>
+			public GorgonVertexShader VertexShader;
 			/// <summary>
 			/// Blending states.
 			/// </summary>
@@ -108,6 +128,38 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// Blending sample mask.
 			/// </summary>
 			public uint BlendSampleMask;
+			/// <summary>
+			/// Rasterizer states.
+			/// </summary>
+			public GorgonRasterizerStates RasterStates;
+			/// <summary>
+			/// Sampler states.
+			/// </summary>
+			public GorgonTextureSamplerStates SamplerState;
+			/// <summary>
+			/// Textures.
+			/// </summary>
+			public GorgonTexture Texture;
+			/// <summary>
+			/// Default target.
+			/// </summary>
+			public GorgonSwapChain Target;
+			/// <summary>
+			/// Index buffer.
+			/// </summary>
+			public GorgonIndexBuffer IndexBuffer;
+			/// <summary>
+			/// Vertex buffer.
+			/// </summary>
+			public GorgonVertexBufferBinding VertexBuffer;
+			/// <summary>
+			/// Input layout.
+			/// </summary>
+			public GorgonInputLayout InputLayout;
+			/// <summary>
+			/// Primitive type.
+			/// </summary>
+			public PrimitiveType PrimitiveType;
 
 			/// <summary>
 			/// Function to restore the previous states.
@@ -115,9 +167,19 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// <param name="graphics">Graphics interface.</param>
 			public void Restore(GorgonGraphics graphics)
 			{
+				graphics.Output.RenderTargets[0] = Target;
+				graphics.Input.IndexBuffer = IndexBuffer;
+				graphics.Input.VertexBuffers[0] = VertexBuffer;
+				graphics.Input.Layout = InputLayout;
+				graphics.Input.PrimitiveType = PrimitiveType;
+				graphics.Shaders.PixelShader.Current = PixelShader;
+				graphics.Shaders.VertexShader.Current = VertexShader;
 				graphics.Output.BlendingState.BlendSampleMask = BlendSampleMask;
 				graphics.Output.BlendingState.BlendFactor = BlendFactor;
 				graphics.Output.BlendingState.States = BlendStates;
+				graphics.Rasterizer.States = RasterStates;
+				graphics.Shaders.PixelShader.Textures[0] = Texture;
+				graphics.Shaders.PixelShader.TextureSamplers[0] = SamplerState;
 			}
 
 			/// <summary>
@@ -126,9 +188,19 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// <param name="graphics">The graphics.</param>
 			public PreviousStates(GorgonGraphics graphics)
 			{
+				Target = graphics.Output.RenderTargets[0];
+				IndexBuffer = graphics.Input.IndexBuffer;
+				VertexBuffer = graphics.Input.VertexBuffers[0];
+				InputLayout = graphics.Input.Layout;
+				PrimitiveType = graphics.Input.PrimitiveType;
+				PixelShader = graphics.Shaders.PixelShader.Current;
+				VertexShader = graphics.Shaders.VertexShader.Current;
 				BlendStates = graphics.Output.BlendingState.States;
 				BlendFactor = graphics.Output.BlendingState.BlendFactor;
 				BlendSampleMask = graphics.Output.BlendingState.BlendSampleMask;
+				RasterStates = graphics.Rasterizer.States;
+				SamplerState = graphics.Shaders.PixelShader.TextureSamplers[0];
+				Texture = graphics.Shaders.PixelShader.Textures[0];
 			}
 		}
 
@@ -177,7 +249,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private int _cacheEnd = 0;																	// Ending vertex buffer cache index.
 		private int _cacheWritten = 0;																// Number of vertices written.
 		private bool _disposed = false;																// Flag to indicate that the object was disposed.
-		private int _cacheSize = 4096;																// Number of vertices that we can stuff into a vertex buffer.
+		private int _cacheSize = 32768;																// Number of vertices that we can stuff into a vertex buffer.
 		private Matrix _defaultProjection = Matrix.Identity;										// Default projection matrix.
 		private Matrix _defaultView = Matrix.Identity;												// Default view matrix.
 		private Matrix? _projection = null;															// Current projection matrix.
@@ -215,6 +287,15 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to use multisampling.
+		/// </summary>
+		public bool UseMultisampling
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -401,14 +482,6 @@ namespace GorgonLibrary.Graphics.Renderers
 			// Create our empty vertex buffer.
 			DefaultVertexBufferBinding = new GorgonVertexBufferBinding(Graphics.Input.CreateVertexBuffer(spriteVBSize, BufferUsage.Dynamic), _vertexSize);
 
-			GorgonRasterizerStates rastState = GorgonRasterizerStates.DefaultStates;
-			rastState.CullingMode = CullingMode.Back;
-			Graphics.Rasterizer.States = rastState;
-
-			Graphics.Input.IndexBuffer = DefaultIndexBuffer;
-			Graphics.Input.VertexBuffers[0] = DefaultVertexBufferBinding;
-			Graphics.Input.Layout = _layout;
-
 			// Create the vertex cache.
 			_vertexCache = new Vertex[VertexCacheSize];
 			_cacheStart = 0;
@@ -416,12 +489,6 @@ namespace GorgonLibrary.Graphics.Renderers
 			_cacheWritten = 0;
 			_renderIndexStart = 0;
 			_renderIndexCount = 0;
-
-			UpdateTarget();
-
-			// Set our default shaders.
-			Shaders.VertexShader = Shaders.DefaultVertexShader;
-			Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuse;
 		}
 
 		/// <summary>
@@ -453,8 +520,11 @@ namespace GorgonLibrary.Graphics.Renderers
 					result |= StateChanges.Shader;
 			}
 
-			if (!renderable.GorgonBlendStates.Equals(Graphics.Output.BlendingState.States))
-				result |= StateChanges.BlendState;
+			if (!renderable.BlendFactor.Equals(Graphics.Output.BlendingState.BlendFactor))
+				result |= StateChanges.BlendFactor;
+
+			if (!renderable.BlendingState.RenderTarget0.Equals(Graphics.Output.BlendingState.States.RenderTarget0))
+			    result |= StateChanges.BlendState;
 
 			if (renderable.PrimitiveType != Graphics.Input.PrimitiveType)
 				result |= StateChanges.PrimitiveType;
@@ -464,6 +534,12 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if (renderable.IndexBuffer != Graphics.Input.IndexBuffer)
 				result |= StateChanges.IndexBuffer;
+
+			if (!renderable.SamplerState.Equals(Shaders.PixelShader.Samplers[0]))
+			    result |= StateChanges.Sampler;
+
+			if (!renderable.RasterizerStates.Equals(Graphics.Rasterizer.States))
+			    result |= StateChanges.Raster;
 
 			if (renderable.AlphaTestValues != Shaders.AlphaTestValue)
 			{
@@ -492,13 +568,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private void ApplyStates(GorgonRenderable renderable, StateChanges stateChange)
 		{
 			if ((stateChange & StateChanges.Texture) == StateChanges.Texture)
-			{
 				Shaders.PixelShader.Textures[0] = renderable.Texture;
-				if (renderable.Texture != null)
-					Shaders.PixelShader.Samplers[0] = renderable.SamplerState;
-				else
-					Shaders.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
-			}
 
 			if ((stateChange & StateChanges.Shader) == StateChanges.Shader)
 			{
@@ -532,8 +602,14 @@ namespace GorgonLibrary.Graphics.Renderers
 				}
 			}
 
+			if ((stateChange & StateChanges.Raster) == StateChanges.Raster)
+				Graphics.Rasterizer.States = renderable.RasterizerStates;
+
+			if ((stateChange & StateChanges.BlendFactor) == StateChanges.BlendFactor)
+				Graphics.Output.BlendingState.BlendFactor = renderable.BlendFactor;
+
 			if ((stateChange & StateChanges.BlendState) == StateChanges.BlendState)
-				Graphics.Output.BlendingState.States = renderable.GorgonBlendStates;
+				Graphics.Output.BlendingState.States = renderable.BlendingState;
 
 			if ((stateChange & StateChanges.PrimitiveType) == StateChanges.PrimitiveType)
 				Graphics.Input.PrimitiveType = renderable.PrimitiveType;
@@ -546,6 +622,9 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if ((stateChange & StateChanges.AlphaTestValue) == StateChanges.AlphaTestValue)
 				Shaders.AlphaTestValue = renderable.AlphaTestValues;
+
+			if ((stateChange & StateChanges.Sampler) == StateChanges.Sampler)
+				Shaders.PixelShader.Samplers[0] = renderable.SamplerState;
 		}
 
 		/// <summary>
@@ -649,14 +728,37 @@ namespace GorgonLibrary.Graphics.Renderers
 		public void Begin2D()
 		{
 			GorgonBlendStates state = GorgonBlendStates.DefaultStates;
+			GorgonRasterizerStates rasterState = GorgonRasterizerStates.DefaultStates;
 
-			_stateRecall.Push(new PreviousStates(Graphics));			
+			_stateRecall.Push(new PreviousStates(Graphics));
+
+			rasterState.IsMultisamplingEnabled = UseMultisampling = Graphics.Rasterizer.States.IsMultisamplingEnabled;
+
+			// Set our default shaders.
+			Shaders.VertexShader = Shaders.DefaultVertexShader;
+			Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuse;
+			Graphics.Input.IndexBuffer = DefaultIndexBuffer;
+			Graphics.Input.VertexBuffers[0] = DefaultVertexBufferBinding;
+			Graphics.Input.Layout = _layout;
+			Graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
 
 			state.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
 			state.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
 			state.RenderTarget0.IsBlendingEnabled = true;
 
+			if (Shaders.PixelShader != null)
+			{
+				Shaders.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
+				Shaders.PixelShader.Textures[0] = null;
+			}
+
+			Graphics.Rasterizer.SetViewport(Target.Viewport);
+			Graphics.Rasterizer.SetClip(new System.Drawing.Rectangle(0, 0, Target.Settings.Width, Target.Settings.Height));
+
+			Graphics.Rasterizer.States = rasterState;
 			Graphics.Output.BlendingState.States = state;
+
+			UpdateTarget();
 		}
 
 		/// <summary>
@@ -712,7 +814,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			GorgonDebug.AssertNull<GorgonSwapChain>(target, "target");
 
-			_stateRecall = new Stack<PreviousStates>(32);
+			_stateRecall = new Stack<PreviousStates>(16);
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			Graphics = target.Graphics;
 			_defaultTarget = target;
@@ -733,6 +835,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			{
 				if (disposing)
 				{
+					End2D();
+
 					TrackedObjects.ReleaseAll();
 
 					if (Shaders != null)

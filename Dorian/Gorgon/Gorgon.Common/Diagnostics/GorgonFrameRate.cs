@@ -35,6 +35,7 @@ namespace GorgonLibrary.Diagnostics
 	public class GorgonFrameRate
 	{
 		#region Variables.
+		private bool _initialized = false;					// Flag to indicate that we're initalized.
 		private GorgonTimer _timer = null;					// Timer used in calculations.
 		private long _frameCounter = 0;						// Frame counter.
 		private long _averageCounter = 0;					// Counter for averages.
@@ -142,19 +143,27 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		internal void Update()
 		{
-			double timerValue = 0.0;			// Value from the timer.
+			double theTime = 0.0;				// Time value.
 			double delta = 0.0;					// Frame delta.
 
 			// If we switch the timer precision, then update it.
-			if (UseHighResolutionTimer != _timer.IsHighResolution)
+			if ((UseHighResolutionTimer != _timer.IsHighResolution) || (!_initialized))
 				Reset();
-			
-			timerValue = _timer.Milliseconds;
-			delta = (timerValue - _lastTimerValue);
+
+			do
+			{
+				theTime = _timer.Milliseconds;
+				delta = (theTime - _lastTimerValue);
+			} while ((delta < 0.000001) && (delta != 0.0));
+
+			// If our delta since the last time was too high, then don't allow any movement until
+			// the simulation is caught up.
+			if (delta > 200)
+				delta = 0;
 
 			FrameDelta = (float)delta / 1000.0f;
 
-			_lastTimerValue = timerValue;
+			_lastTimerValue = theTime;
 
 			FrameCount++;
 			_frameCounter++;
@@ -233,7 +242,7 @@ namespace GorgonLibrary.Diagnostics
 		public void Reset()
 		{
 			if ((_timer == null) || (UseHighResolutionTimer != _timer.IsHighResolution))
-				_timer = new GorgonTimer(UseHighResolutionTimer);
+				_timer = new GorgonTimer(UseHighResolutionTimer);			
 			UseHighResolutionTimer = _timer.IsHighResolution;
 			HighestFPS = float.MinValue;
 			LowestFPS = float.MaxValue;
@@ -250,6 +259,8 @@ namespace GorgonLibrary.Diagnostics
 			_lastTimerValue = 0.0;
 			_averageFPSTotal = 0.0f;
 			_averageDTTotal = 0.0f;
+			_timer.Reset();
+			_initialized = true;
 		}
 		#endregion
 
@@ -260,6 +271,7 @@ namespace GorgonLibrary.Diagnostics
 		internal GorgonFrameRate()
 		{
 			Reset();
+			_initialized = false;
 		}
 
 		/// <summary>

@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.XInput", "..\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.2D", "Gorgon.Graphics.Draw2D\Gorgon.Graphics.2D.csproj", "{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallDemo", "..\Examples\Graphics\BallDemo\BallDemo.csproj", "{0DF9E8D6-336E-46EA-8873-6215ED363B0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +74,10 @@ Global
 		{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DF9E8D6-336E-46EA-8873-6215ED363B0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DF9E8D6-336E-46EA-8873-6215ED363B0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DF9E8D6-336E-46EA-8873-6215ED363B0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DF9E8D6-336E-46EA-8873-6215ED363B0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

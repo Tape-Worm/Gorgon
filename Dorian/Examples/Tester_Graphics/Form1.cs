@@ -23,6 +23,7 @@ namespace Tester_Graphics
 	{
 		private Gorgon2D _graphics2D = null;
 		private GorgonSprite _sprite = null;
+		private GorgonSprite _sprite2 = null;
 
 		GorgonVideoMode mode1 = default(GorgonVideoMode);
 #if MULTIMON
@@ -66,28 +67,31 @@ namespace Tester_Graphics
 				{
 					_swapChain.Clear(Color.Black);
 					//_sprite.BlendingMode = BlendingMode.None;
-					if (alphaTest > 0.25f)
-						_sprite.AlphaTestValues = new GorgonMinMaxF(alphaTest - 0.25f, alphaTest);
-					else
-						_sprite.AlphaTestValues = new GorgonMinMaxF(0, alphaTest);
+					//if (alphaTest > 0.25f)
+					//    _sprite.AlphaTestValues = new GorgonMinMaxF(alphaTest - 0.25f, alphaTest);
+					//else
+					//    _sprite.AlphaTestValues = new GorgonMinMaxF(0, alphaTest);
 
 					//_graphics2D.ViewMatrix = Matrix.Translation(-400.0f, -300.0f, 0) * Matrix.RotationZ(GorgonLibrary.Math.GorgonMathUtility.Sin(GorgonLibrary.Math.GorgonMathUtility.Radians(-angle * 2.0f))) * Matrix.Translation(400, 300, 0);
-					_sprite.Scale = new Vector2(4.0f, 4.0f);
+					//_sprite.Scale = new Vector2(4.0f, 4.0f);
 					//_sprite.TextureOffset = testMove;
 					//_sprite.Opacity = 1.0f;
-					_sprite.Angle = new Vector3(0, 0, angle);					
-					_sprite.Position = new Vector3((_swapChain.Settings.Width / 2) - (_sprite.Size.X / 2), _swapChain.Settings.Height / 2 - (_sprite.Size.Y / 2), 0);
+					//_sprite.Angle = new Vector3(angle, 0, angle);					
+					//_sprite.Position = new Vector3((_swapChain.Settings.Width / 2) - (_sprite.Size.X / 2), _swapChain.Settings.Height / 2 - (_sprite.Size.Y / 2), 0);
+					//_sprite.Position = new Vector3(_swapChain.Settings.Width / 2.0f, _swapChain.Settings.Height / 2.0f, 0);
+					_sprite.Position = new Vector3(0f, 0f, 0.0f);
 					_sprite.Draw();
 
 					//_sprite.Opacity = 0.75f;
 					//_sprite.BlendingMode = BlendingMode.Additive;
-					_sprite.Angle = Vector3.Zero;
-					_sprite.Position = Vector3.Subtract(_sprite.Position, new Vector3(64, 64, 0));
-					_sprite.Draw();
+					_sprite2.Position = Vector3.Subtract(_sprite.Position, new Vector3(128, 128, 0));
+					//_sprite.Angle = Vector3.Zero;
+					//_sprite.Position = Vector3.Subtract(_sprite.Position, new Vector3(128, 128, 0));
+					_sprite2.Draw();
 
 					_graphics2D.Render();
 
-					angle += 5.0f * timing.FrameDelta;
+					angle += 90.0f * timing.FrameDelta;
 					if (angle > 360.0f)
 						angle = 360.0f - angle;
 
@@ -228,7 +232,7 @@ namespace Tester_Graphics
 				OnActivated(e);
 		}
 
-
+		
 		protected override void OnLoad(EventArgs e)
 		{			
 			base.OnLoad(e);
@@ -263,7 +267,7 @@ namespace Tester_Graphics
 				////_graphics.IsObjectTrackingEnabled = false;
 				////_graphics.ResetFullscreenOnFocus = false;
 
-				//_multiSample.IsMultisamplingEnabled = false;
+				//_multiSample.IsMultisamplingEnabled = true;
 				//_multiSample.IsScissorTestingEnabled = false;
 				////_multiSample.CullingMode =  GorgonCullingMode.None;
 				//_graphics.Rasterizer.States = _multiSample;
@@ -292,18 +296,39 @@ namespace Tester_Graphics
 				GorgonMultiSampling multiSample = new GorgonMultiSampling(count, quality - 1);
 				multiSample = new GorgonMultiSampling(1, 0);
 				_swapChain = _graphics.Output.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.Unknown});
+				_swapChain.Resized += new EventHandler(_swapChain_Resized);
 				
 				_graphics2D = new Gorgon2D(_swapChain);
+				float aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
+				_graphics2D.ProjectionMatrix = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), aspect, 0.01f, 10000.0f);
+				_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(-0.0f, -0.0f, 0.1f), new Vector3(0, 0, -0.1f), -Vector3.UnitY);
 				_sprite = _graphics2D.CreateSprite("Test", 100.0f, 100.0f);
 				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\BallDemo\BallDemo.png", GorgonTexture2DSettings.FromFile);
-				//_sprite.Texture = _texture;
-				//_sprite.TextureScale = new Vector2(0.5f, 0.5f);
-				_sprite.TextureOffset = new Vector2(64, 0);
-				_sprite.Size = new Vector2(64, 64);
-				_sprite.Anchor = new Vector2(32, 32);
+				_sprite.Texture = _texture;
+				_sprite.TextureScale = new Vector2((1.0f / 128.0f) , (1.0f / 128.0f));
+				_sprite.TextureOffset = new Vector2(0.5f, 0);
+				_sprite.Size = new Vector2(0.5f, 0.5f);
+				_sprite.Anchor = new Vector2(0.25f, 0.25f);
+				_sprite.Scale = new Vector2(0.03125f, 0.03125f);
+				//_sprite.CullingMode = CullingMode.None;
+
+				// TODO: Make a new sprite type for perspective correct sprites.
+				//       Allow the user to set the texture coordinates manually and don't use sprite size to determine region.
+
+				_sprite2 = _graphics2D.CreateSprite("Test2", 100.0f, 100.0f);				
+				
+				//_sprite.HorizontalWrapping = TextureAddressing.Border;
+				//_sprite.BorderColor = Color.Blue;
 				//_sprite.Opacity = 0.25f;				
-				_sprite.SetVertexColor(SpriteCorner.UpperRight, new GorgonColor(0.0f, 1.0f, 1.0f, 1.0f));
-				_sprite.SetVertexColor(SpriteCorner.LowerLeft, new GorgonColor(0.0f, 0.0f, 1.0f, 0.0f));
+				_sprite2.TextureOffset = new Vector2(64, 0);
+				_sprite2.Size = new Vector2(64, 64);
+				_sprite2.Anchor = new Vector2(32, 32);
+				_sprite2.Scale = new Vector2(4, 4);
+
+				_sprite2.Texture = _texture;
+				//_sprite2.SetVertexColor(SpriteCorner.UpperRight, new GorgonColor(0.0f, 1.0f, 1.0f, 1.0f));
+				//_sprite2.SetVertexColor(SpriteCorner.LowerLeft, new GorgonColor(0.0f, 0.0f, 1.0f, 0.0f));
+				//_sprite2.Angle = new Vector3(0, 0, 45.0f);
 				//_sprite.SetVertexOffset(SpriteCorner.UpperLeft, new Vector3(-10.0f, -20.0f, 0.0f));
 				//_sprite.SetVertexOffset(SpriteCorner.LowerRight, new Vector3(10.0f, 20.0f, 0.0f));
 				//_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(0.0f, 0.0f, -5.0f), new Vector3(0, 0, 1.0f), Vector3.UnitY);				
@@ -343,6 +368,12 @@ namespace Tester_Graphics
 				Gorgon.Quit();		
 			}
 
+		}
+
+		void _swapChain_Resized(object sender, EventArgs e)
+		{
+			float aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
+			_graphics2D.ProjectionMatrix = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), aspect, 0.01f, 10000.0f);
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)

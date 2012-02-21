@@ -64,14 +64,10 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// A sprite object.
 	/// </summary>
 	public class GorgonSprite
-		: GorgonRenderable
+		: GorgonMoveable, IDeferredTextureLoad
 	{
 		#region Variables.
-		private Vector3 _angle = Vector3.Zero;											// Angle of rotation.
-		private Vector3 _position = Vector3.Zero;										// Position of the sprite.
-		private Vector2 _scale = new Vector2(1);										// Scale for the sprite.
-		private Vector4 _anchor = Vector3.Zero;											// Anchor point.
-		private Matrix _translation = Matrix.Identity;									// Translation matrix.
+		private string _textureName = string.Empty;										// Name of the texture for the sprite.
 		private Matrix _rotation = Matrix.Identity;										// Rotation matrix.
 		private Matrix _scaling = Matrix.Identity;										// Scaling matrix.
 		private Matrix _worldMatrix = Matrix.Identity;									// World matrix for the sprite.
@@ -79,6 +75,15 @@ namespace GorgonLibrary.Graphics.Renderers
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return whether the vertices need to be updated due to an offset.
+		/// </summary>
+		protected bool NeedsVertexOffsetUpdate
+		{
+			get;
+			set;
+		}
+		
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
@@ -100,111 +105,49 @@ namespace GorgonLibrary.Graphics.Renderers
 				return Graphics.PrimitiveType.TriangleList;
 			}
 		}
-
-		/// <summary>
-		/// Property to set or return the position of the sprite.
-		/// </summary>
-		public Vector3 Position
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the angle of rotation (in degrees) for a given axis.
-		/// </summary>
-		public Vector3 Angle
-		{
-			get
-			{
-				return _angle;
-			}
-			set
-			{
-				_angle = value;
-				TransformVertices();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the scale of the sprite.
-		/// </summary>
-		public Vector2 Scale
-		{
-			get
-			{
-				return _scale;
-			}
-			set
-			{
-				_scale = value;
-				TransformVertices();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the anchor point of the sprite.
-		/// </summary>
-		public Vector3 Anchor
-		{
-			get
-			{
-				return (Vector3)_anchor;
-			}			
-			set
-			{
-				_anchor = value;
-				TransformVertices();
-			}
-		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to transform the vertices.
 		/// </summary>
-		private void TransformVertices()
+		protected override void TransformVertices()
 		{
 			Vector4 anchoredPosition = Vector4.Zero;
+			Vector4 anchor = new Vector4(Anchor, 0.0f);
 
-			if (!GorgonMathUtility.EqualVector3(_angle, Vector3.Zero))
+			if (NeedsRotation)
 			{
 				Quaternion rotationAngle = Quaternion.Identity;
 
 				Quaternion.RotationYawPitchRoll(GorgonMathUtility.Radians(Angle.Y), GorgonMathUtility.Radians(Angle.X), GorgonMathUtility.Radians(Angle.Z), out rotationAngle);
 				Matrix.RotationQuaternion(ref rotationAngle, out _rotation);
 			}
-			else
-				_rotation = Matrix.Identity;
-
-			_worldMatrix = _rotation;
-
-			if (!GorgonMathUtility.EqualVector2(_scale, new Vector2(1.0f)))
-			{
+						
+			if (NeedsScaling)
 				_scaling.ScaleVector = new Vector3(Scale, 1.0f);
-				Matrix.Multiply(ref _scaling, ref _rotation, out _worldMatrix);
-			}
-			else
-				_scaling = Matrix.Identity;
 
-			_translation.TranslationVector = Position;
-			Matrix.Multiply(ref _worldMatrix, ref _translation, out _worldMatrix);
+			if ((NeedsScaling) || (NeedsRotation))
+				Matrix.Multiply(ref _scaling, ref _rotation, out _worldMatrix);
+
+			_worldMatrix.TranslationVector = Position;
 
 			for (int i = 0; i < Vertices.Length; i++)
 			{
-				Gorgon2D.Vertex transformedVertex = Vertices[i];				
+				Gorgon2D.Vertex transformedVertex = Vertices[i];
+				
+				if (!anchor.Equals(Vector4.Zero))
+					Vector4.Subtract(ref transformedVertex.Position, ref anchor, out transformedVertex.Position);
 
-				if (_anchor != Vector4.Zero)
-					Vector4.Subtract(ref transformedVertex.Position, ref _anchor, out anchoredPosition);
-				Vector4.Transform(ref anchoredPosition, ref _worldMatrix, out transformedVertex.Position);
-				if (_anchor != Vector4.Zero)
-					Vector4.Add(ref _anchor, ref transformedVertex.Position, out transformedVertex.Position);
+				Vector4.Transform(ref transformedVertex.Position, ref _worldMatrix, out transformedVertex.Position);
 
-				if (_offsets[i] != Vector4.Zero)
+				if (NeedsVertexOffsetUpdate)
 					Vector4.Add(ref _offsets[i], ref transformedVertex.Position, out transformedVertex.Position);
 
 				TransformedVertices[i] = transformedVertex;
 			}
+
+			NeedsVertexOffsetUpdate = false;
 		}
 
 		/// <summary>
@@ -223,7 +166,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				return;
 			}
 
-			if ((!GorgonMathUtility.EqualFloat(TextureScale.X, 1.0f)) && (!GorgonMathUtility.EqualFloat(TextureScale.Y, 1.0f)))
+			if ((TextureScale.X != 1.0f) || (TextureScale.Y != 1.0f))
 				scaledTexture = Vector2.Modulate(new Vector2(Texture.Settings.Width, Texture.Settings.Height), TextureScale);
 			else
 				scaledTexture = new Vector2(Texture.Settings.Width, Texture.Settings.Height);
@@ -253,23 +196,20 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Function to process the renderable to get it ready to be rendered.
-		/// </summary>
-		protected override void ProcessRenderable()
-		{
-			base.ProcessRenderable();
-
-			TransformVertices();
-		}
-
-		/// <summary>
 		/// Function to set an offset for a vertex.
 		/// </summary>
 		/// <param name="corner">Corner of the sprite to set.</param>
 		/// <param name="offset">Offset for the vertex.</param>
 		public void SetVertexOffset(SpriteCorner corner, Vector3 offset)
 		{
-			_offsets[(int)corner] = new Vector4(offset, 0.0f);
+			int index = (int)corner;
+			Vector4 vector = new Vector4(offset , 0.0f);
+
+			if (_offsets[index] != vector)
+			{
+				_offsets[(int)corner] = vector;
+				NeedsVertexOffsetUpdate = true;
+			}
 		}
 
 		/// <summary>
@@ -303,6 +243,51 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vector4.Zero, 
 				Vector4.Zero, 
 			};
+		}
+		#endregion
+
+		#region IDeferredTextureLoad Members
+		/// <summary>
+		/// Property to return the name of the texture bound to this image.
+		/// </summary>
+		/// <remarks>This is used to defer the texture assignment until it the texture with the specified name is loaded.</remarks>
+		public string DeferredTextureName
+		{
+			get
+			{
+				return _textureName;
+			}
+			set
+			{
+				if (value == null)
+					value = string.Empty;
+
+				if (string.Compare(_textureName, value, true) != 0)
+				{
+					_textureName = value;
+					GetDeferredTexture();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to assign a deferred texture.
+		/// </summary>
+		/// <remarks>If there are multiple textures with the same name, then the first texture will be chosen.</remarks>
+		public virtual void GetDeferredTexture()
+		{
+			if (string.IsNullOrEmpty(_textureName))
+			{
+				base.Texture = null;
+				return;
+			}
+
+			// Look through the tracked objects in the graphics object.
+			// FYI, LINQ is fucking awesome (if a little slow)...
+			base.Texture = (from texture in Gorgon2D.Graphics.GetGraphicsObjectOfType<GorgonTexture2D>()
+							where (texture != null) && (string.Compare(texture.Name, _textureName, true) == 0)
+							select texture).FirstOrDefault();
+			NeedsTextureUpdate = true;
 		}
 		#endregion
 	}

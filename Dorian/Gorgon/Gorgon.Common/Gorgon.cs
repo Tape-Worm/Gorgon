@@ -340,7 +340,7 @@ namespace GorgonLibrary
 			// We have nothing to execute, just leave.
 			if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
 				return;
-			
+
 			while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 			{
 				_timingData.Update();
