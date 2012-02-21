@@ -12,7 +12,7 @@
       <Value Profile="(Default)">800</Value>
     </Setting>
     <Setting Name="BallCount" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">8192</Value>
+      <Value Profile="(Default)">1024</Value>
     </Setting>
   </Settings>
 </SettingsFile>

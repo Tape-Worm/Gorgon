@@ -98,7 +98,11 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// <summary>
 			/// Rasterizer state changed.
 			/// </summary>
-			Raster = 512
+			Raster = 512,
+			/// <summary>
+			/// Depth/stencil state changed.
+			/// </summary>
+			DepthStencil = 1024
 		}
 		#endregion
 
@@ -218,7 +222,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// Color of the vertex.
 			/// </summary>
 			[InputElement(1, "COLOR")]
-			public Vector4 Color;
+			public GorgonColor Color;
 			/// <summary>
 			/// Texture coordinates.
 			/// </summary>
@@ -258,7 +262,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonSwapChain _target = null;														// Current render target.	
 		private GorgonInputLayout _layout = null;													// Input layout.
 		private Stack<PreviousStates> _stateRecall = null;											// State recall.
-		private GorgonBlendStates _blendState = GorgonBlendStates.DefaultStates;					// Blending state for the library.
+		private GorgonStateManager _stateManager = null;											// State manager.
 		#endregion
 
 		#region Properties.
@@ -541,6 +545,9 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (!renderable.RasterizerStates.Equals(Graphics.Rasterizer.States))
 			    result |= StateChanges.Raster;
 
+			if (!renderable.DepthStencilState.Equals(Graphics.Output.DepthStencilState))
+				result |= StateChanges.DepthStencil;
+
 			if (renderable.AlphaTestValues != Shaders.AlphaTestValue)
 			{
 				result |= StateChanges.AlphaTestValue;
@@ -633,24 +640,27 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="renderable">Renderable object to add.</param>
 		internal void AddRenderable(GorgonRenderable renderable)
 		{
-			StateChanges stateChange = StateChanges.None;
+			int cacheIndex = 0;
+			int verticesCount = renderable.Vertices.Length;
+			int cacheEnd = verticesCount + _cacheEnd;
+			StateChange stateChange = StateChange.None;
 			bool hasRendered = false;
 
 			// Check for state changes.
-			stateChange = CheckStateChange(renderable);
+			stateChange = _stateManager.CheckState(renderable);
 
-			if (stateChange != StateChanges.None)
+			if (stateChange != StateChange.None)
 			{
 				if (_cacheWritten > 0)
 				{
 					RenderObjects();
 					hasRendered = true;
 				}
-				ApplyStates(renderable, stateChange);
+				_stateManager.ApplyState(renderable, stateChange);
 			}
 
 			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
-			if ((_cacheEnd + renderable.TransformedVertices.Length) > _vertexCache.Length)
+			if (cacheEnd > _vertexCache.Length)
 			{
 				// Ensure that we don't render the same scene twice.
 				if ((!hasRendered) && (_cacheWritten > 0))
@@ -661,11 +671,14 @@ namespace GorgonLibrary.Graphics.Renderers
 				_renderIndexStart = 0;
 			}
 
-			for (int i = 0; i < renderable.TransformedVertices.Length; i++)
-				_vertexCache[_cacheEnd + i] = renderable.TransformedVertices[i];
+			for (int i = 0; i < verticesCount; i++)
+			{
+				cacheIndex = _cacheEnd + i;
+				_vertexCache[cacheIndex] = renderable.Vertices[i];
+			}
 
 			_renderIndexCount += renderable.IndexCount;
-			_cacheEnd += renderable.TransformedVertices.Length;
+			_cacheEnd = cacheEnd;
 			_cacheWritten = _cacheEnd - _cacheStart;
 
 			// If we've filled the cache, then empty it.
@@ -748,7 +761,9 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if (Shaders.PixelShader != null)
 			{
-				Shaders.PixelShader.Samplers[0] = GorgonTextureSamplerStates.DefaultStates;
+				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.DefaultStates;
+				sampler.TextureFilter = TextureFilter.Point;
+				Shaders.PixelShader.Samplers[0] = sampler;
 				Shaders.PixelShader.Textures[0] = null;
 			}
 
@@ -757,6 +772,11 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			Graphics.Rasterizer.States = rasterState;
 			Graphics.Output.BlendingState.States = state;
+
+			if (_stateManager == null)
+				_stateManager = new GorgonStateManager(this);
+
+			_stateManager.GetDefaults();
 
 			UpdateTarget();
 		}

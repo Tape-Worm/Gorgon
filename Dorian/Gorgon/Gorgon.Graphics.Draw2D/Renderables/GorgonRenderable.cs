@@ -76,6 +76,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonBlendStates _blendStates = GorgonBlendStates.DefaultStates;							// Blending states.		
 		private GorgonTextureSamplerStates _sampler = GorgonTextureSamplerStates.DefaultStates;				// Texture sampler.
 		private GorgonRasterizerStates _raster = GorgonRasterizerStates.DefaultStates;						// Rasterizer states.
+		private GorgonDepthStencilStates _depthStencil = GorgonDepthStencilStates.DefaultStates;			// Depth/stencil states.
 		#endregion
 
 		#region Properties.
@@ -126,18 +127,9 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to return a list of transformed vertices.
-		/// </summary>
-		protected internal Gorgon2D.Vertex[] TransformedVertices
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		protected Gorgon2D.Vertex[] Vertices
+		protected internal Gorgon2D.Vertex[] Vertices
 		{
 			get;
 			private set;
@@ -150,6 +142,21 @@ namespace GorgonLibrary.Graphics.Renderers
 		protected internal abstract int IndexCount
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Property to return the depth/stencil states.
+		/// </summary>
+		protected internal GorgonDepthStencilStates DepthStencilState
+		{
+			get
+			{
+				return _depthStencil;
+			}
+			set
+			{
+				_depthStencil = value;
+			}
 		}
 		
 		/// <summary>
@@ -493,14 +500,14 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return Vertices[0].Color.W;
+				return Vertices[0].Color.Alpha;
 			}
 			set
 			{
-				if (value != Vertices[0].Color.W)
+				if (value != Vertices[0].Color.Alpha)
 				{
 					for (int i = 0; i < Vertices.Length; i++)
-						Vertices[i].Color.W = value;
+						Vertices[i].Color.Alpha = value;
 				}
 			}
 		}
@@ -571,10 +578,13 @@ namespace GorgonLibrary.Graphics.Renderers
 		protected void InitializeVertices(int vertexCount)
 		{
 			Vertices = new Gorgon2D.Vertex[vertexCount];
-			TransformedVertices = new Gorgon2D.Vertex[vertexCount];
 
 			for (int i = 0; i < Vertices.Length; i++)
+			{
 				Vertices[i].Color = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
+				Vertices[i].Position = new Vector4(0, 0, 0, 1.0f);
+				Vertices[i].UV = Vector2.Zero;
+			}
 
 			InitializeCustomVertexInformation();
 		}		
@@ -612,7 +622,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_blendStates.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
 			_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
 			_sampler = GorgonTextureSamplerStates.DefaultStates;
-			_sampler.TextureFilter = Graphics.TextureFilter.Point;
+			_sampler.TextureFilter = Graphics.TextureFilter.Point;			
 			VertexBufferBinding = gorgon2D.DefaultVertexBufferBinding;
 			AlphaTestValues = null;
 		}

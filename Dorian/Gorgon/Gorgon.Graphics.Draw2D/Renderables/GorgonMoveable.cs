@@ -49,34 +49,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Vector3 _anchor = Vector3.Zero;																// Anchor point.
 		#endregion
 
-		#region Properties.	
-		/// <summary>
-		/// Property to set or return whether the renderable needs translation.
-		/// </summary>
-		protected bool NeedsTranslate
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether rotation needs updating or not.
-		/// </summary>
-		protected bool NeedsRotation
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether scaling needs updating or not.
-		/// </summary>
-		protected bool NeedsScaling
-		{
-			get;
-			set;
-		}
-
+		#region Properties.
 		/// <summary>
 		/// Property to set or return the position of the sprite.
 		/// </summary>
@@ -88,11 +61,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			set
 			{
-				if (_position != value)
-				{
-					_position = value;
-					NeedsTranslate = true;
-				}
+				_position = value;
 			}
 		}
 
@@ -107,11 +76,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			set
 			{
-				if (_angle != value)
-				{
-					_angle = value;
-					NeedsRotation = true;
-				}
+				_angle = value;
 			}
 		}
 
@@ -126,11 +91,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			set
 			{
-				if (_scale != value)
-				{
-					_scale = value;
-					NeedsScaling = true;
-				}
+				_scale = value;
 			}
 		}
 
@@ -148,7 +109,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				if (_anchor != value)
 				{
 					_anchor = value;
-					NeedsTranslate = true;
+					NeedsVertexUpdate = true;
 				}
 			}
 		}
@@ -214,10 +175,10 @@ namespace GorgonLibrary.Graphics.Renderers
 				if (_textureScale != value)
 				{
 					// Lock the size.
-					if (_textureScale.X < 0)
+					if (_textureScale.X == 0.0f)
 						_textureScale.X = 1e-6f;
 
-					if (_textureScale.Y < 0)
+					if (_textureScale.Y == 0.0f)
 						_textureScale.Y = 1e-6f;
 
 					_textureScale = value;
@@ -267,14 +228,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		protected override void InitializeCustomVertexInformation()
 		{
-			UpdateTextureCoordinates();
 			UpdateVertices();
+			UpdateTextureCoordinates();
 
 			NeedsVertexUpdate = false;
 			NeedsTextureUpdate = false;
-			NeedsRotation = true;
-			NeedsScaling = true;
-			NeedsTranslate = true;
 		}
 
 		/// <summary>
@@ -294,13 +252,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				NeedsVertexUpdate = false;
 			}
 
-			if ((NeedsTranslate) || (NeedsRotation) || (NeedsScaling))
-			{
-				TransformVertices();
-				NeedsTranslate = false;
-				NeedsRotation = false;
-				NeedsScaling = false;
-			}
+			TransformVertices();
 
 			base.Draw();
 		}
