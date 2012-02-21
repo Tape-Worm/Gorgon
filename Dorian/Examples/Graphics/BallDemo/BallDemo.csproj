@@ -1,4 +1,5 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,9 +8,9 @@
     <ProjectGuid>{0DF9E8D6-336E-46EA-8873-6215ED363B0E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Example</RootNamespace>
+    <RootNamespace>GorgonLibrary.Graphics.Example</RootNamespace>
     <AssemblyName>BallDemo</AssemblyName>
-    <StartupObject>GorgonLibrary.Example.Program</StartupObject>
+    <StartupObject>GorgonLibrary.Graphics.Example.Program</StartupObject>
     <ApplicationIcon>AmigaBall.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
@@ -18,9 +19,25 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <OldToolsVersion>2.0</OldToolsVersion>
+    <OldToolsVersion>3.5</OldToolsVersion>
     <DelaySign>false</DelaySign>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,13 +65,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DialogHelper, Version=1.0.3031.30561, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Tools\DialogHelper\bin\Release\DialogHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="Gorgon, Version=1.1.3259.25915, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
+    <Reference Include="SlimMath">
+      <HintPath>..\..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -64,6 +76,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ball.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,6 +119,37 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
+      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
+      <Name>Gorgon.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Draw2D\Gorgon.Graphics.2D.csproj">
+      <Project>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</Project>
+      <Name>Gorgon.Graphics.2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
+      <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
+      <Name>Gorgon.Graphics</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

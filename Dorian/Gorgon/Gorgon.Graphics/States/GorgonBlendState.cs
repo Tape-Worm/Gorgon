@@ -192,11 +192,7 @@ namespace GorgonLibrary.Graphics
 		/// Is blending enabled for this render target or not.
 		/// </summary>
 		/// <remarks>The default value is FALSE.</remarks>
-		public bool IsBlendingEnabled
-		{
-			get;
-			set;
-		}
+		public bool IsBlendingEnabled;
 
 		/// <summary>
 		/// The alpha blending operation to perform.
@@ -204,11 +200,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This defines how the source and destination alpha channels will blend together.
 		/// <para>The default value is Add.</para>
 		/// </remarks>
-		public BlendOperation AlphaOperation
-		{
-			get;
-			set;
-		}
+		public BlendOperation AlphaOperation;
 
 		/// <summary>
 		/// The blending operation to perform.
@@ -216,11 +208,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This defines how the source and destination color channels will blend together.
 		/// <para>The default value is Add.</para>
 		/// </remarks>
-		public BlendOperation BlendingOperation
-		{
-			get;
-			set;
-		}
+		public BlendOperation BlendingOperation;
 
 		/// <summary>
 		/// The color blending type for the source.
@@ -228,11 +216,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This defines the operation to perform on color data.
 		/// <para>The default value is One.</para>
 		/// </remarks>
-		public BlendType SourceBlend
-		{
-			get;
-			set;
-		}
+		public BlendType SourceBlend;
 
 		/// <summary>
 		/// The color blending type for the destination.
@@ -240,11 +224,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This defines the operation to perform on color data.
 		/// <para>The default value is Zero.</para>
 		/// </remarks>
-		public BlendType DestinationBlend
-		{
-			get;
-			set;
-		}
+		public BlendType DestinationBlend;
 
 		/// <summary>
 		/// The alpha blending type for the source.
@@ -252,11 +232,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This defines the operation to perform on alpha data.
 		/// <para>The default value is One.</para>
 		/// </remarks>
-		public BlendType SourceAlphaBlend
-		{
-			get;
-			set;
-		}
+		public BlendType SourceAlphaBlend;
 
 		/// <summary>
 		/// The alpha blending type for the destination.
@@ -264,21 +240,13 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This defines the operation to perform on alpha data.
 		/// <para>The default value is Zero.</para>
 		/// </remarks>
-		public BlendType DestinationAlphaBlend
-		{
-			get;
-			set;
-		}
+		public BlendType DestinationAlphaBlend;
 
 		/// <summary>
 		/// The channels to use when blending.
 		/// </summary>
 		/// <remarks>The default value is All.</remarks>
-		public ColorWriteMaskFlags WriteMask
-		{
-			get;
-			set;
-		}
+		public ColorWriteMaskFlags WriteMask;
 		#endregion
 
 		#region Methods.

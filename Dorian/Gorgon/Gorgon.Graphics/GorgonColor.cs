@@ -106,7 +106,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonColor left, ref GorgonColor right)
 		{
-			return (GorgonMathUtility.EqualFloat(left.Red, right.Red)) && (GorgonMathUtility.EqualFloat(left.Green, right.Green)) && (GorgonMathUtility.EqualFloat(left.Blue, right.Blue)) && (GorgonMathUtility.EqualFloat(left.Alpha, right.Alpha));
+			return (left.Red == right.Red) && (left.Green == right.Green) && (left.Blue == right.Blue) && (left.Alpha == right.Alpha);
 		}
 
 		/// <summary>

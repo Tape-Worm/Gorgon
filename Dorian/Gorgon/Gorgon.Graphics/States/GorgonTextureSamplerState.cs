@@ -203,9 +203,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonTextureSamplerStates left, ref GorgonTextureSamplerStates right)
 		{
-			return ((left.BorderColor == right.BorderColor) && (left.ComparisonFunction == right.ComparisonFunction) && (left.DepthAddressing == right.DepthAddressing) &&
-				(left.HorizontalAddressing == right.HorizontalAddressing) && (left.MaxAnisotropy == right.MaxAnisotropy) && (Math.GorgonMathUtility.EqualFloat(left.MaxLOD, right.MaxLOD)) &&
-				(Math.GorgonMathUtility.EqualFloat(left.MinLOD, right.MinLOD)) && (Math.GorgonMathUtility.EqualFloat(left.MipLODBias, right.MipLODBias)) && (left.TextureFilter == right.TextureFilter) &&
+			return ((GorgonColor.Equals(ref left.BorderColor, ref right.BorderColor)) && (left.ComparisonFunction == right.ComparisonFunction) && (left.DepthAddressing == right.DepthAddressing) &&
+				(left.HorizontalAddressing == right.HorizontalAddressing) && (left.MaxAnisotropy == right.MaxAnisotropy) && (left.MaxLOD == right.MaxLOD) &&
+				(left.MinLOD == right.MinLOD) && (left.MipLODBias == right.MipLODBias) && (left.TextureFilter == right.TextureFilter) &&
 				(left.VerticalAddressing == right.VerticalAddressing));
 		}
 

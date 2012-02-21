@@ -44,9 +44,6 @@ using System.Security.Permissions;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: CLSCompliant(false)]
-[assembly: FileIOPermission(SecurityAction.RequestMinimum, AllFiles = FileIOPermissionAccess.AllAccess)]
-[assembly: ReflectionPermission(SecurityAction.RequestMinimum, Flags = ReflectionPermissionFlag.MemberAccess)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -63,5 +60,5 @@ using System.Security.Permissions;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.1.*")]
-[assembly: AssemblyFileVersion("1.1.4119.34319")]
+[assembly: AssemblyVersion("2.0.*")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

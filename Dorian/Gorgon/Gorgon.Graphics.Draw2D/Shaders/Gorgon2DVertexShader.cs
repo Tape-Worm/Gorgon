@@ -65,13 +65,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public GorgonShaderState<GorgonVertexShader>.ShaderConstantBuffers ConstantBuffers
 		{
-			get
-			{
-				if (Gorgon2D.Graphics.Shaders.PixelShader == null)
-					return null;
-
-				return Gorgon2D.Graphics.Shaders.VertexShader.ConstantBuffers;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
@@ -89,6 +84,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			: base(name)
 		{
 			Gorgon2D = gorgon2D;
+			
+			ConstantBuffers = Gorgon2D.Graphics.Shaders.VertexShader.ConstantBuffers;
 		}
 		#endregion
 

@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			set
 			{
-				if ((_pixelShader != value) || ((value == null) && (_pixelShader != DefaultPixelShaderTextured) && (_pixelShader != DefaultPixelShaderDiffuse)))
+				if ((_pixelShader != value) || ((value == null) && (_pixelShader != DefaultPixelShaderTextured) && (_pixelShader != DefaultPixelShaderDiffuse) && (_pixelShader != DefaultPixelShaderDiffuseAlphaTest) && (_pixelShader != DefaultPixelShaderTexturedAlphaTest)))
 				{
 					if (value == null)
 					{
@@ -221,7 +221,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			DefaultPixelShaderTexturedAlphaTest = new GorgonDefaultPixelShaderTexturedAlphaTest(gorgon2D);
 
 			_viewProjection = gorgon2D.Graphics.Shaders.CreateConstantBuffer(DirectAccess.SizeOf<Matrix>(), true);
-			_renderableStates = gorgon2D.Graphics.Shaders.CreateConstantBuffer(16, true);
+			_renderableStates = gorgon2D.Graphics.Shaders.CreateConstantBuffer(32, true);
 		}
 		#endregion
 	}
