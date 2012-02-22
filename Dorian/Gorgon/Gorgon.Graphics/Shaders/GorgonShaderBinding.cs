@@ -84,8 +84,20 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new constant buffer.</returns>
 		public GorgonConstantBuffer CreateConstantBuffer(int size, bool allowCPUWrite)
 		{
+			return CreateConstantBuffer(size, allowCPUWrite, null);
+		}
+
+		/// <summary>
+		/// Function to create a constant buffer.
+		/// </summary>
+		/// <param name="size">Size of the buffer, in bytes.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <param name="stream">Stream used to initialize the buffer.</param>
+		/// <returns>A new constant buffer.</returns>
+		public GorgonConstantBuffer CreateConstantBuffer(int size, bool allowCPUWrite, GorgonDataStream stream)
+		{			
 			GorgonConstantBuffer buffer = new GorgonConstantBuffer(_graphics, size, allowCPUWrite);
-			buffer.Initialize(null);
+			buffer.Initialize(stream);
 			_graphics.TrackedObjects.Add(buffer);
 			return buffer;
 		}

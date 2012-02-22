@@ -1531,7 +1531,7 @@ namespace GorgonLibrary
 			// Pin the array.
 			_handle = GCHandle.Alloc(data, GCHandleType.Pinned);
 			_data = Marshal.UnsafeAddrOfPinnedArrayElement(data, index);
-			_length = count;
+			_length = count * Marshal.SizeOf(data.GetType().GetElementType());
 			_pointerOffset = _data;
 			StreamStatus = status;
 		}

@@ -84,7 +84,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Depth/stencil state changed.
 		/// </summary>
-		DepthStencil = 1024
+		DepthStencil = 1024,
+		/// <summary>
+		/// Alpha test enabled state changed.
+		/// </summary>
+		AlphaTestEnable = 2048
 	}
 
 	/// <summary>
@@ -132,8 +136,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			{
 				result |= StateChange.Texture;
 
-				if ((((_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuseAlphaTest) || (_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuse)) && (renderable.Texture != null)) ||
-					(((_shaders.PixelShader == _shaders.DefaultPixelShaderTexturedAlphaTest) || (_shaders.PixelShader == _shaders.DefaultPixelShaderTextured)) && (renderable.Texture == null)))
+				if (((_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuse) && (renderable.Texture != null)) ||
+					(_shaders.PixelShader ==_shaders.DefaultPixelShaderTextured) && (renderable.Texture == null))
 					result |= StateChange.Shader;
 			}
 
@@ -168,6 +172,12 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (!renderable.VertexBufferBinding.Equals(_vertexBuffer))
 				result |= StateChange.VertexBuffer;
 
+			if (renderable.IsAlphaTestEnabled != _shaders.IsAlphaTestEnabled)
+				result |= StateChange.AlphaTestEnable;
+
+			if ((renderable.AlphaTestValues != _shaders.AlphaTestValue) && (renderable.IsAlphaTestEnabled))
+				result |= StateChange.AlphaTestValue;
+
 			return result;
 		}
 
@@ -185,32 +195,9 @@ namespace GorgonLibrary.Graphics.Renderers
 			{
 				// If we're using the default shader, switch between the default no texture or textured pixel shader depending on our state.
 				if (renderable.Texture != null)
-				{
-					if (renderable.AlphaTestValues.HasValue)
-					{
-						if ((_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuse) || (_shaders.PixelShader == _shaders.DefaultPixelShaderTextured) || (_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuseAlphaTest))
-							_shaders.PixelShader = _shaders.DefaultPixelShaderTexturedAlphaTest;
-					}
-					else
-					{
-						if ((_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuse) || (_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuseAlphaTest) || (_shaders.PixelShader == _shaders.DefaultPixelShaderTexturedAlphaTest))
-							_shaders.PixelShader = _shaders.DefaultPixelShaderTextured;
-					}
-				}
+					_shaders.PixelShader = _shaders.DefaultPixelShaderTextured;
 				else
-				{
-					// If we're using the default shader, switch between the default no texture or textured pixel shader depending on our state.
-					if (renderable.AlphaTestValues.HasValue)
-					{
-						if ((_shaders.PixelShader == _shaders.DefaultPixelShaderTexturedAlphaTest) || (_shaders.PixelShader == _shaders.DefaultPixelShaderTextured) || (_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuse))
-							_shaders.PixelShader = _shaders.DefaultPixelShaderDiffuseAlphaTest;
-					}
-					else
-					{
-						if ((_shaders.PixelShader == _shaders.DefaultPixelShaderTexturedAlphaTest) || (_shaders.PixelShader == _shaders.DefaultPixelShaderTextured) || (_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuseAlphaTest))
-							_shaders.PixelShader = _shaders.DefaultPixelShaderDiffuse;
-					}
-				}
+					_shaders.PixelShader = _shaders.DefaultPixelShaderDiffuse;
 			}
 
 			if ((state & StateChange.BlendFactor) == StateChange.BlendFactor)
@@ -258,6 +245,12 @@ namespace GorgonLibrary.Graphics.Renderers
 				_vertexBuffer = renderable.VertexBufferBinding;
 				_graphics.Input.VertexBuffers[0] = renderable.VertexBufferBinding;
 			}
+
+			if ((state & StateChange.AlphaTestEnable) == StateChange.AlphaTestEnable)
+				_shaders.IsAlphaTestEnabled = renderable.IsAlphaTestEnabled;
+
+			if ((state & StateChange.AlphaTestValue) == StateChange.AlphaTestValue)
+				_shaders.AlphaTestValue = renderable.AlphaTestValues;
 		}
 
 		/// <summary>

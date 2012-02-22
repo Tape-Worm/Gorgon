@@ -43,17 +43,17 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Vector2 _textureOffset = Vector2.Zero;														// Texture offset.
 		private Vector2 _textureScale = new Vector2(1);														// Texture scale.
 		private Vector2 _size = Vector2.Zero;																// Size of the renderable.
-		private Vector3 _angle = Vector3.Zero;																// Angle of rotation.
-		private Vector3 _position = Vector3.Zero;															// Position of the sprite.
+		private float _angle = 0.0f;																		// Angle of rotation.
+		private Vector2 _position = Vector2.Zero;															// Position of the sprite.
 		private Vector2 _scale = new Vector2(1);															// Scale for the sprite.
-		private Vector3 _anchor = Vector3.Zero;																// Anchor point.
+		private Vector2 _anchor = Vector2.Zero;																// Anchor point.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the position of the sprite.
 		/// </summary>
-		public Vector3 Position
+		public Vector2 Position
 		{
 			get
 			{
@@ -68,7 +68,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for a given axis.
 		/// </summary>
-		public Vector3 Angle
+		public float Angle
 		{
 			get
 			{
@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the anchor point of the sprite.
 		/// </summary>
-		public Vector3 Anchor
+		public Vector2 Anchor
 		{
 			get
 			{
@@ -112,6 +112,15 @@ namespace GorgonLibrary.Graphics.Renderers
 					NeedsVertexUpdate = true;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return the "depth" of the renderable in a depth buffer.
+		/// </summary>
+		public float Depth
+		{
+			get;
+			set;
 		}
 
 		/// <summary>

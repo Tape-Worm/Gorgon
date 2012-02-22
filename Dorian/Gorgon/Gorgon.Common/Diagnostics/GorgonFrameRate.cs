@@ -186,28 +186,29 @@ namespace GorgonLibrary.Diagnostics
 					HighestFrameDelta = FrameDelta;
 				if (FrameDelta < LowestFrameDelta)
 					LowestFrameDelta = FrameDelta;
+			}
 
-				if (GorgonMathUtility.EqualFloat(AverageFPS, 0.0f))
-					AverageFPS = FPS;
-				if (GorgonMathUtility.EqualFloat(AverageFrameDelta, 0.0f))
-					AverageFrameDelta = FrameDelta;
+			if (AverageFPS == 0.0f)
+				AverageFPS = FPS;
+			if (AverageFrameDelta == 0.0f)
+				AverageFrameDelta = FrameDelta;
 
-				if (_averageCounter > 10)
-				{
-					AverageFPS = _averageFPSTotal / _averageCounter;
-					AverageFrameDelta = _averageDTTotal / _averageCounter;
-					_averageDTTotal = 0.0f;
-					_averageFPSTotal = 0.0f;
-					_averageCounter = 0;
-				}
-				else
-				{
-					_averageFPSTotal += FPS;
-					_averageDTTotal += FrameDelta;
-					_averageCounter++;
-				}
+			if (_averageCounter > 256)
+			{
+				AverageFPS = _averageFPSTotal / _averageCounter;
+				AverageFrameDelta = _averageDTTotal / _averageCounter;
+				_averageDTTotal = 0.0f;
+				_averageFPSTotal = 0.0f;
+				_averageCounter = 0;
+			}
+			else
+			{
+				_averageFPSTotal += FPS;
+				_averageDTTotal += FrameDelta;
+				_averageCounter++;
 			}
 		}
+
 
 
 		/// <summary>

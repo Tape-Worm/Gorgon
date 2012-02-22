@@ -11,17 +11,17 @@ struct GorgonSpriteVertex
 };
 
 // The transformation matrices.
-cbuffer GorgonViewProjection
+cbuffer GorgonViewProjection : register(b0)
 {
 	float4x4 ViewProjection;
 }
 
 // Alpha test value.
-cbuffer GorgonRenderable
+cbuffer GorgonAlphaTest : register(b1)
 {
-	bool alphaTestEnabled;
-	float alphaTestValueLow;
-	float alphaTestValueHi;
+	bool alphaTestEnabled = false;
+	float alphaTestValueLow = 0.0f;
+	float alphaTestValueHi = 0.0f;
 }
 
 // Our default vertex shader.
@@ -51,17 +51,5 @@ float4 GorgonPixelShaderNoTextureAlphaTest(GorgonSpriteVertex vertex)  : SV_Targ
 	if (alphaTestEnabled)
 		clip((vertex.color.a <= alphaTestValueHi && vertex.color.a >= alphaTestValueLow) ? -1 : 1);		
 
-   return vertex.color;
-}
-
-// Our default pixel shader with textures.
-float4 GorgonPixelShaderTexture(GorgonSpriteVertex vertex) : SV_Target
-{
-	return _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-}
-
-// Our default pixel shader without textures.
-float4 GorgonPixelShaderNoTexture(GorgonSpriteVertex vertex)  : SV_Target
-{
    return vertex.color;
 }

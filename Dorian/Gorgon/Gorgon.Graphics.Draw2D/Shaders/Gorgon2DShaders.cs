@@ -17,8 +17,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Gorgon2DVertexShader _vertexShader = null;				// Current vertex shader.
 		private Gorgon2DPixelShader _pixelShader = null;				// Current pixel shader.
 		private GorgonConstantBuffer _viewProjection = null;			// Constant buffer for handling the view/projection matrix upload to the video device.
-		private GorgonConstantBuffer _renderableStates = null;			// States for renderable objects.
-		private GorgonMinMaxF? _alphaTestValue = null;					// Alpha test value.
+		private GorgonConstantBuffer _alphaTest = null;					// Alpha testing data for the shader.
+		private GorgonConstantBuffer _noAlphaTest = null;				// Alpha testing data for the shader.
+		private GorgonMinMaxF _alphaTestValue = GorgonMinMaxF.Empty;	// Alpha test value.
+		private GorgonDataStream _alphaTestData = null;					// Data for constant buffer.
+		private GorgonDataStream _projViewData = null;					// Data for constant buffer.
+		private bool _alphaTestEnabled = false;							// Flag to indicate that alpha testing is enabled.
 		#endregion
 
 		#region Properties.
@@ -32,7 +36,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 		
 		/// <summary>
-		/// Property to return the default diffuse pixel shader.
+		/// Property to return the default diffuse pixel shader with alpha testing.
 		/// </summary>
 		internal GorgonDefaultPixelShaderDiffuse DefaultPixelShaderDiffuse
 		{
@@ -41,7 +45,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to return the default textured pixel shader.
+		/// Property to return the default textured pixel shader with alpha testing.
 		/// </summary>
 		internal GorgonDefaultPixelShaderTextured DefaultPixelShaderTextured
 		{
@@ -50,27 +54,31 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to return the default diffuse pixel shader with alpha testing.
+		/// Property to set or return whether alpha testing is enabled or not.
 		/// </summary>
-		internal GorgonDefaultPixelShaderDiffuseAlphaTest DefaultPixelShaderDiffuseAlphaTest
+		public bool IsAlphaTestEnabled
 		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the default textured pixel shader with alpha testing.
-		/// </summary>
-		internal GorgonDefaultPixelShaderTexturedAlphaTest DefaultPixelShaderTexturedAlphaTest
-		{
-			get;
-			private set;
+			get
+			{
+				return _alphaTestEnabled;
+			}
+			set
+			{
+				if (_alphaTestEnabled != value)
+				{
+					_alphaTestEnabled = value;
+					if (value)
+						_gorgon2D.Graphics.Shaders.PixelShader.ConstantBuffers[1] = _alphaTest;
+					else
+						_gorgon2D.Graphics.Shaders.PixelShader.ConstantBuffers[1] = null;
+				}
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the alpha test value to send to the shader.
 		/// </summary>
-		public GorgonMinMaxF? AlphaTestValue
+		public GorgonMinMaxF AlphaTestValue
 		{
 			get
 			{
@@ -79,33 +87,18 @@ namespace GorgonLibrary.Graphics.Renderers
 			set
 			{
 				if (_alphaTestValue != value)
-				{
-					if (value.HasValue)
-						_alphaTestValue = value.Value;
-					else
-						_alphaTestValue = GorgonMinMaxF.Empty;
+				{					
+					_alphaTestValue = value;
 
-					using (GorgonDataStream stream = _renderableStates.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
-					{
-						stream.Write(value.HasValue);
-
-						// Pad out the boolean as it's only 1 byte in .NET.
-						stream.Write<byte>(0);
-						stream.Write<byte>(0);
-						stream.Write<byte>(0);
-
-						if (_alphaTestValue.HasValue)
-						{
-							stream.Write(_alphaTestValue.Value.Minimum);
-							stream.Write(_alphaTestValue.Value.Maximum);
-						}
-						else
-						{
-							stream.Write(0.0f);
-							stream.Write(0.0f);
-						}
-						_renderableStates.Unlock();
-					}
+					_alphaTestData.Write(IsAlphaTestEnabled);
+					// Pad out the boolean as it's only 1 byte in .NET.
+					_alphaTestData.Write<byte>(0);
+					_alphaTestData.Write<byte>(0);
+					_alphaTestData.Write<byte>(0);
+					_alphaTestData.Write(value.Minimum);
+					_alphaTestData.Write(value.Maximum);
+					_alphaTestData.Position = 0;
+					_alphaTest.Update(_alphaTestData);
 				}
 			}
 		}
@@ -149,7 +142,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			set
 			{
-				if ((_pixelShader != value) || ((value == null) && (_pixelShader != DefaultPixelShaderTextured) && (_pixelShader != DefaultPixelShaderDiffuse) && (_pixelShader != DefaultPixelShaderDiffuseAlphaTest) && (_pixelShader != DefaultPixelShaderTexturedAlphaTest)))
+				if ((_pixelShader != value) || ((value == null) && (_pixelShader != DefaultPixelShaderTextured) && (_pixelShader != DefaultPixelShaderDiffuse) && (_pixelShader != DefaultPixelShaderDiffuse) && (_pixelShader != DefaultPixelShaderTextured)))
 				{
 					if (value == null)
 					{
@@ -163,7 +156,7 @@ namespace GorgonLibrary.Graphics.Renderers
 						_pixelShader = value;
 					
 					_gorgon2D.Graphics.Shaders.PixelShader.Current = _pixelShader.Shader;
-					_gorgon2D.Graphics.Shaders.PixelShader.ConstantBuffers[0] = _renderableStates;
+					_gorgon2D.Graphics.Shaders.PixelShader.ConstantBuffers[0] = _viewProjection;
 				}
 			}
 		}
@@ -175,12 +168,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		internal void UpdateGorgonTransformation()
 		{
-			using (GorgonDataStream streamBuffer = _viewProjection.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
-			{
-				Matrix viewProjection = Matrix.Multiply(_gorgon2D.ViewMatrix.Value, _gorgon2D.ProjectionMatrix.Value);
-				streamBuffer.Write(viewProjection);
-				_viewProjection.Unlock();
-			}
+			Matrix viewProjection = Matrix.Multiply(_gorgon2D.ViewMatrix.Value, _gorgon2D.ProjectionMatrix.Value);
+
+			_projViewData.Write(viewProjection);
+			_projViewData.Position = 0;
+
+			_viewProjection.Update(_projViewData);
 		}
 
 		/// <summary>
@@ -191,8 +184,17 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (_viewProjection != null)
 				_viewProjection.Dispose();
 
-			if (_renderableStates != null)
-				_renderableStates.Dispose();
+			if (_alphaTest != null)
+				_alphaTest.Dispose();
+
+			if (_noAlphaTest != null)
+				_noAlphaTest.Dispose();
+
+			if (_alphaTestData != null)
+				_alphaTestData.Dispose();
+
+			if (_projViewData != null)
+				_projViewData.Dispose();
 
 			if (DefaultVertexShader != null)
 				DefaultVertexShader.Dispose();
@@ -216,12 +218,20 @@ namespace GorgonLibrary.Graphics.Renderers
 			
 			DefaultVertexShader = new GorgonDefaultVertexShader(gorgon2D);
 			DefaultPixelShaderDiffuse = new GorgonDefaultPixelShaderDiffuse(gorgon2D);
-			DefaultPixelShaderTextured = new GorgonDefaultPixelShaderTextured(gorgon2D);
-			DefaultPixelShaderDiffuseAlphaTest = new GorgonDefaultPixelShaderDiffuseAlphaTest(gorgon2D);
-			DefaultPixelShaderTexturedAlphaTest = new GorgonDefaultPixelShaderTexturedAlphaTest(gorgon2D);
+			DefaultPixelShaderTextured = new GorgonDefaultPixelShaderTextured(gorgon2D);			
 
-			_viewProjection = gorgon2D.Graphics.Shaders.CreateConstantBuffer(DirectAccess.SizeOf<Matrix>(), true);
-			_renderableStates = gorgon2D.Graphics.Shaders.CreateConstantBuffer(32, true);
+			_alphaTestData = new GorgonDataStream(32);
+			_projViewData = new GorgonDataStream(DirectAccess.SizeOf<Matrix>());
+
+			_viewProjection = gorgon2D.Graphics.Shaders.CreateConstantBuffer((int)_projViewData.Length, false);
+			
+			_alphaTestData.Write<int>(-1);
+			_alphaTestData.Write(0.0f);
+			_alphaTestData.Write(0.0f);
+			_alphaTestData.Position = 0;
+
+			_noAlphaTest = gorgon2D.Graphics.Shaders.CreateConstantBuffer((int)_alphaTestData.Length, false, _alphaTestData);
+			_alphaTest = gorgon2D.Graphics.Shaders.CreateConstantBuffer((int)_alphaTestData.Length, false, _alphaTestData);
 		}
 		#endregion
 	}

@@ -110,6 +110,7 @@ namespace GorgonLibrary.Graphics.Example
 				currentBall.Scale += currentBall.ScaleDelta * frameTime;
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
 				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
+				//currentBall.Opacity = 0.65f;
 
 				// Adjust position.
 				if ((currentBall.Position.X > _mainScreen.Settings.Width) || (currentBall.Position.X < 0))
@@ -170,7 +171,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Draw balls.
 			for (int i = 0; i < _ballCount; i++)
 			{
-				_ball.Angle = new Vector3(0, 0, _ballList[i].Rotation);
+				_ball.Angle = _ballList[i].Rotation;
 				_ball.Scale = new Vector2(_ballList[i].Scale);
 				_ball.Position = _ballList[i].Position;
 				_ball.Color = _ballList[i].Color;
@@ -181,12 +182,15 @@ namespace GorgonLibrary.Graphics.Example
 				else
 					_ball.TextureOffset = new Vector2(0, 64);
 
+				if (_ball.AlphaTestValues == null)
+					_ball.Opacity = _ballList[i].Opacity;
+
 				_ball.Draw();
 			}
 
 			_2D.Render();
 
-			_form.Text = "FPS: " + timing.FPS.ToString() + " DT:" + (timing.FrameDelta * 1000).ToString() + " msec.";
+			_form.Text = "FPS: " + timing.AverageFPS.ToString("###0.0") + " DT:" + (timing.AverageFrameDelta * 1000).ToString("##0.0") + " msec.";
 
 			return true;
 		}
@@ -229,7 +233,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Create the wall sprite.
 			_wall = _2D.CreateSprite("Wall", 64, 64);
 			_wall.Texture = _ballTexture;
-			_wall.BlendingMode = BlendingMode.None;
+			_wall.BlendingMode = BlendingMode.None;			
 
 			// Create the ball sprite.
 			_ball = _2D.CreateSprite("Ball", 64, 64);
@@ -253,6 +257,9 @@ namespace GorgonLibrary.Graphics.Example
 				case Keys.Enter:
 					if (e.Alt)
 						_mainScreen.UpdateSettings(!_mainScreen.Settings.IsWindowed);
+					break;
+				case Keys.A:
+					_ball.IsAlphaTestEnabled = !_ball.IsAlphaTestEnabled;
 					break;
 			}
 		}
