@@ -79,12 +79,12 @@ namespace Tester_Graphics
 					//_sprite.Angle = new Vector3(angle, 0, angle);					
 					//_sprite.Position = new Vector3((_swapChain.Settings.Width / 2) - (_sprite.Size.X / 2), _swapChain.Settings.Height / 2 - (_sprite.Size.Y / 2), 0);
 					//_sprite.Position = new Vector3(_swapChain.Settings.Width / 2.0f, _swapChain.Settings.Height / 2.0f, 0);
-					_sprite.Position = new Vector3(0f, 0f, 0.0f);
+					_sprite.Position = Vector2.Zero;
 					_sprite.Draw();
 
 					//_sprite.Opacity = 0.75f;
 					//_sprite.BlendingMode = BlendingMode.Additive;
-					_sprite2.Position = Vector3.Subtract(_sprite.Position, new Vector3(128, 128, 0));
+					_sprite2.Position = Vector2.Subtract(_sprite.Position, new Vector2(128, 128));
 					//_sprite.Angle = Vector3.Zero;
 					//_sprite.Position = Vector3.Subtract(_sprite.Position, new Vector3(128, 128, 0));
 					_sprite2.Draw();

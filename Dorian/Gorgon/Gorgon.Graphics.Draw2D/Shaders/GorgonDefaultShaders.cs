@@ -34,15 +34,15 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// <summary>
 	/// A default pixel shader for diffuse only pixels with alpha testing.
 	/// </summary>
-	class GorgonDefaultPixelShaderDiffuseAlphaTest
+	class GorgonDefaultPixelShaderDiffuse
 		: Gorgon2DPixelShader
 	{
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDefaultPixelShaderDiffuseAlphaTest"/> class.
+		/// Initializes a new instance of the <see cref="GorgonDefaultPixelShaderDiffuse"/> class.
 		/// </summary>
 		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal GorgonDefaultPixelShaderDiffuseAlphaTest(Gorgon2D gorgon2D)
+		internal GorgonDefaultPixelShaderDiffuse(Gorgon2D gorgon2D)
 			: base(gorgon2D, "DefaultPixelShader_Diffuse_AlphaTest")
 		{
 			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
@@ -59,57 +59,6 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// <summary>
 	/// A default pixel shader for diffuse and textured pixels with alpha testing.
 	/// </summary>
-	class GorgonDefaultPixelShaderTexturedAlphaTest
-		: Gorgon2DPixelShader
-	{
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDefaultPixelShaderTexturedAlphaTest"/> class.
-		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal GorgonDefaultPixelShaderTexturedAlphaTest(Gorgon2D gorgon2D)
-			: base(gorgon2D, "DefaultPixelShader_Texture_AlphaTest")
-		{
-			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
-
-#if DEBUG
-			Shader = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_Texture_AlphaTest", "GorgonPixelShaderTextureAlphaTest", shaderSource, true);
-#else
-			Shader = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextureAlphaTest", shaderSource, false);
-#endif
-		}
-		#endregion
-	}
-
-
-	/// <summary>
-	/// A default pixel shader for diffuse only pixels.
-	/// </summary>
-	class GorgonDefaultPixelShaderDiffuse
-		: Gorgon2DPixelShader
-	{
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDefaultPixelShaderDiffuse"/> class.
-		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal GorgonDefaultPixelShaderDiffuse(Gorgon2D gorgon2D)
-			: base(gorgon2D, "DefaultPixelShader_Diffuse")
-		{
-			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
-
-#if DEBUG
-			Shader = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_No_Texture", "GorgonPixelShaderNoTexture", shaderSource, true);
-#else
-			Shader = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_No_Texture", "GorgonPixelShaderNoTexture", shaderSource, false);
-#endif
-		}
-		#endregion
-	}
-
-	/// <summary>
-	/// A default pixel shader for diffuse and textured pixels.
-	/// </summary>
 	class GorgonDefaultPixelShaderTextured
 		: Gorgon2DPixelShader
 	{
@@ -119,14 +68,14 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
 		internal GorgonDefaultPixelShaderTextured(Gorgon2D gorgon2D)
-			: base(gorgon2D, "DefaultPixelShader_Texture")
+			: base(gorgon2D, "DefaultPixelShader_Texture_AlphaTest")
 		{
 			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
 
 #if DEBUG
-			Shader = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTexture", shaderSource, true);
+			Shader = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_Texture_AlphaTest", "GorgonPixelShaderTextureAlphaTest", shaderSource, true);
 #else
-			Shader = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTexture", shaderSource, false);
+			Shader = gorgon2D.Graphics.Shaders.CreatePixelShader("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextureAlphaTest", shaderSource, false);
 #endif
 		}
 		#endregion

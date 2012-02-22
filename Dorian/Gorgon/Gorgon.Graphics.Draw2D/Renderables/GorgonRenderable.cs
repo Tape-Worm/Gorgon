@@ -483,10 +483,29 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
+		/// Property to set or return whether to use alpha testing for this renderable.
+		/// </summary>
+		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values in <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.AlphaTestValues">AlphaTestValues</see> and rejects the pixel if it is not.
+		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
+		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
+		/// in order to take advantage of alpha testing.</para>
+		/// </remarks>
+		public virtual bool IsAlphaTestEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the range of alpha values to reject on this renderable.
 		/// </summary>
-		/// <remarks>The alpha testing tests to see if a value is between or equal to the values.</remarks>
-		public virtual GorgonMinMaxF? AlphaTestValues
+		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values and rejects the pixel if it is not.
+		/// <para>This value will not take effect until <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to TRUE.</para>
+		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
+		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
+		/// in order to take advantage of alpha testing.</para>
+		/// </remarks>
+		public virtual GorgonMinMaxF AlphaTestValues
 		{
 			get;
 			set;
@@ -624,7 +643,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			_sampler = GorgonTextureSamplerStates.DefaultStates;
 			_sampler.TextureFilter = Graphics.TextureFilter.Point;			
 			VertexBufferBinding = gorgon2D.DefaultVertexBufferBinding;
-			AlphaTestValues = null;
+			AlphaTestValues = GorgonMinMaxF.Empty;
+			IsAlphaTestEnabled = true;
 		}
 		#endregion
 	}

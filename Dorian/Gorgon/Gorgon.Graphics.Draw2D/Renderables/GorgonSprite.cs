@@ -139,9 +139,9 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 
 			// Calculate rotation if necessary.
-			if (Angle.Z != 0.0f)
+			if (Angle != 0.0f)
 			{
-				float angle = GorgonMathUtility.Radians(Angle.Z);	// Angle in radians.
+				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
 				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
 				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
 
@@ -184,6 +184,15 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vertices[1].Position.Y += Position.Y;
 				Vertices[2].Position.Y += Position.Y;
 				Vertices[3].Position.Y += Position.Y;
+			}
+
+			// Apply depth to the sprite.
+			if (Depth != 0.0f)
+			{
+				Vertices[0].Position.Z = Depth;
+				Vertices[1].Position.Z = Depth;
+				Vertices[2].Position.Z = Depth;
+				Vertices[3].Position.Z = Depth;
 			}
 
 			Vertices[0].Position.X += _offsets[0].X;
