@@ -461,6 +461,81 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to draw polygons to the current render target.
+		/// </summary>
+		/// <param name="vertexStart">Vertex to start at.</param>
+		/// <param name="vertexCount">Number of vertices to draw.</param>
+		public void Draw(int vertexStart, int vertexCount)
+		{
+			_graphics.Context.Draw(vertexCount, vertexStart);
+		}
+
+		/// <summary>
+		/// Function to draw geometry of an unknown size.
+		/// </summary>
+		public void DrawAuto()
+		{
+#if DEBUG
+			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				throw new GorgonException(GorgonResult.AccessDenied, "SM 2.0 video devices cannot draw auto-generated data.");
+#endif
+
+			_graphics.Context.DrawAuto();
+		}
+
+		/// <summary>
+		/// Function to draw indexed polygons.
+		/// </summary>
+		/// <param name="indexStart">Starting index to use.</param>
+		/// <param name="baseVertex">Vertex index added to each index.</param>
+		/// <param name="indexCount">Number of indices to use.</param>
+		public void DrawIndexed(int indexStart, int baseVertex, int indexCount)
+		{
+			_graphics.Context.DrawIndexed(indexCount, indexStart, baseVertex);
+		}
+
+		/// <summary>
+		/// Function to draw indexed instanced polygons.
+		/// </summary>
+		/// <param name="startInstance">A value added to each index.</param>
+		/// <param name="indexStart">Starting index to use.</param>
+		/// <param name="baseVertex">Vertex index added to each index.</param>
+		/// <param name="instanceCount">Number of indices to use.</param>
+		/// <param name="indexCount">Number of indices to read per instance.</param>
+		public void DrawIndexedInstanced(int startInstance, int indexStart, int baseVertex, int instanceCount, int indexCount)
+		{
+			_graphics.Context.DrawIndexedInstanced(indexCount, instanceCount, indexStart, baseVertex, startInstance);
+		}
+
+		/// <summary>
+		/// Function to draw instanced polygons.
+		/// </summary>
+		/// <param name="startInstance">Value added to each index.</param>
+		/// <param name="startVertex">Vertex to start at.</param>
+		/// <param name="instanceCount">Number of instances to draw.</param>
+		/// <param name="vertexCount">Number of vertices to draw.</param>
+		public void DrawInstanced(int startInstance, int startVertex, int instanceCount, int vertexCount)
+		{
+			_graphics.Context.DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
+		}
+
+		/// <summary>
+		/// Function to draw indexed, instanced GPU generated data.
+		/// </summary>
+		/// <param name="buffer">Buffer holding the GPU generated data.</param>
+		/// <param name="alignedAyteOffset">Number of bytes to start at within the buffer.</param>
+		/// <param name="isIndexed">TRUE if the data is indexed, FALSE if not.</param>
+		public void DrawInstancedIndirect(GorgonBaseBuffer buffer, int alignedAyteOffset, bool isIndexed)
+		{
+			GorgonDebug.AssertNull<GorgonBaseBuffer>(buffer, "buffer");
+
+			if (isIndexed)
+				_graphics.Context.DrawIndexedInstancedIndirect(buffer.D3DBuffer, alignedAyteOffset);
+			else
+				_graphics.Context.DrawInstancedIndirect(buffer.D3DBuffer, alignedAyteOffset);
+		}
+
+		/// <summary>
 		/// Function to create a depth/stencil buffer.
 		/// </summary>
 		/// <param name="name">Name of the depth/stencil buffer.</param>
