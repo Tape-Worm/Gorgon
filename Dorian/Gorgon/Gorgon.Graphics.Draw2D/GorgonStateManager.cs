@@ -113,7 +113,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonTextureSamplerStates _samplerState = GorgonTextureSamplerStates.DefaultStates;
 		private GorgonVertexBufferBinding _vertexBuffer = default(GorgonVertexBufferBinding);
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
-		private bool _clipEnabled = false;
 		private Gorgon2DShaders _shaders = null;
 		private GorgonTexture _texture = null;
 		#endregion

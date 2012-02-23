@@ -6,13 +6,13 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ScreenWidth" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1280</Value>
-    </Setting>
-    <Setting Name="ScreenHeight" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">800</Value>
     </Setting>
+    <Setting Name="ScreenHeight" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">600</Value>
+    </Setting>
     <Setting Name="BallCount" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">4</Value>
+      <Value Profile="(Default)">1024</Value>
     </Setting>
   </Settings>
 </SettingsFile>

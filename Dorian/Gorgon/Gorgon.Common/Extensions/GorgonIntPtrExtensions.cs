@@ -442,7 +442,7 @@ namespace GorgonLibrary.Native
 		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.PtrToStructure">Marshal.PtrToStructure</see> method.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public static void MarshalTo<T>(this IntPtr source, T value)
+		public static void MarshalTo<T>(this IntPtr source, ref T value)
 			where T : class
 		{
 			Marshal.PtrToStructure(source, value);
@@ -454,14 +454,13 @@ namespace GorgonLibrary.Native
 		/// <typeparam name="T">Type of value to write.</typeparam>
 		/// <param name="destination">The destination pointer.</param>
 		/// <param name="value">The value to write.</param>
-		/// <param name="size">Size of the data, in bytes.</param>
 		/// <remarks>This method can only write value types composed of primitives, reference objects will not work.
 		/// <para>There is no way to determine the size of the data pointed at by the pointer, so the user must take care not to write outside the bounds of the memory.</para>
 		/// </remarks>
-		public static void Write<T>(this IntPtr destination, T value, int size)
+		public static void Write<T>(this IntPtr destination, ref T value)
 			where T : struct
 		{
-			DirectAccess.Write<T>(destination, value, size);
+			DirectAccess.Write<T>(destination, DirectAccess.SizeOf<T>(), ref value);
 		}
 
 		/// <summary>
@@ -469,15 +468,15 @@ namespace GorgonLibrary.Native
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.</typeparam>
 		/// <param name="source">The source pointer.</param>
-		/// <param name="size">Size of the data, in bytes.</param>
+		/// <param name="value">The value that was read from memory.</param>
 		/// <returns>The value at the pointer.</returns>
 		/// <remarks>This method can only write value types composed of primitives, reference objects will not work.
 		/// <para>There is no way to determine the size of the data pointed at by the pointer, so the user must take care not to write outside the bounds of the memory.</para>
 		/// </remarks>
-		public static T Read<T>(this IntPtr source, int size)
+		public static void Read<T>(this IntPtr source, out T value)
 			where T : struct
 		{
-			return DirectAccess.Read<T>(source, size);
+			DirectAccess.Read<T>(source, DirectAccess.SizeOf<T>(), out value);
 		}
 	}
 }

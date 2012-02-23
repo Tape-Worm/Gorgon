@@ -109,7 +109,8 @@ namespace GorgonLibrary.Graphics.Example
 				currentBall.Position = Vector2.Add(currentBall.Position, Vector2.Multiply(currentBall.PositionDelta, frameTime));
 				currentBall.Scale += currentBall.ScaleDelta * frameTime;
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
-				currentBall.Opacity += currentBall.ScaleDelta * frameTime;
+				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
+				//currentBall.Opacity += currentBall.ScaleDelta * frameTime;
 				//currentBall.Opacity = 0.65f;
 
 				// Adjust position.
