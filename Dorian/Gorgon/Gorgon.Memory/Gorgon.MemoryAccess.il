@@ -221,49 +221,54 @@
 
 	// Function to read a value types to native memory.
 	.method public hidebysig static 
-		!!T Read<valuetype .ctor T> (
+		void Read<valuetype .ctor T> (
 			native int source,
-			int32 size
+			int32 size,
+			[out] !!T& retValue 
 		) cil managed 
 	{
 		// Method begins at RVA 0x1070
 		// Code size 26 (0x1a)
 		.maxstack 3
 		.locals (
-			[0] !!T
+			[0] !!T& pinned 
 		)
 
-		IL_0000: ldloca.s 0
-		IL_0002: initobj !!T
-		IL_0008: ldloca.s 0
-		IL_000a: ldarga.s source
-		IL_000c: call instance void* [mscorlib]System.IntPtr::ToPointer()
-		IL_0011: ldarg.1
-		IL_0012: cpblk
-		IL_0014: ldloc.0
-		IL_0015: ret
+		ldarg.2
+		stloc.0
+		ldloc.0
+		ldarga.s source
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldarg.1
+		cpblk
+		ret
 	} 
 
 	// Function to write a value type to native memory.
 	.method public hidebysig static 
 		void Write<valuetype .ctor T> (
 			native int destination,
-			!!T 'value',
-			int32 size
+			int32 size,
+			!!T& 'value'
 		) cil managed 
 	{
 		// Method begins at RVA 0x1048
 		// Code size 25 (0x19)
 		.maxstack 3
-
-		IL_0000: ldarga.s destination
-		IL_0002: call instance void* [mscorlib]System.IntPtr::ToPointer()
-		IL_0007: ldarga.s 'value'
-		IL_0009: ldarg.2
-		IL_000a: cpblk
-		IL_000c: ret
+		.locals (
+			[0] !!T& pinned 
+		)
+		
+		ldarg.2
+		stloc.0
+		ldarga.s destination
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldloc.0
+		ldarg.1
+		cpblk
+		ret
 	} 
-	
+
 	// Function to write a value type to native memory.  Optimized for x86.
 	.method public hidebysig static
 		void Writex86
@@ -346,6 +351,3 @@
 
 
 // =============================================================
-
-// *********** DISASSEMBLY COMPLETE ***********************
-// WARNING: Created Win32 resource file D:\Code\Current\Gorgon\Branches\2.x\Dorian\Libraries\Gorgon.Memory\Gorgon.Memory.res
