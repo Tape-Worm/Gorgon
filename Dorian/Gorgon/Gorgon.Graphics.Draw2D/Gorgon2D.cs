@@ -28,11 +28,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using SlimMath;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections.Specialized;
+using GorgonLibrary.Graphics.Design;
 
 namespace GorgonLibrary.Graphics.Renderers
 {
@@ -170,8 +172,10 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// </summary>
 			/// <param name="graphics">Graphics interface.</param>
 			public void Restore(GorgonGraphics graphics)
-			{
+			{				
 				graphics.Output.RenderTargets[0] = Target;
+				if (Target != null)
+					graphics.Rasterizer.SetViewport(Target.Viewport);
 				graphics.Input.IndexBuffer = IndexBuffer;
 				graphics.Input.VertexBuffers[0] = VertexBuffer;
 				graphics.Input.Layout = InputLayout;
@@ -205,6 +209,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				RasterStates = graphics.Rasterizer.States;
 				SamplerState = graphics.Shaders.PixelShader.TextureSamplers[0];
 				Texture = graphics.Shaders.PixelShader.Textures[0];
+				RasterStates.IsScissorTestingEnabled = false;
 			}
 		}
 
@@ -263,6 +268,9 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonInputLayout _layout = null;													// Input layout.
 		private Stack<PreviousStates> _stateRecall = null;											// State recall.
 		private GorgonStateManager _stateManager = null;											// State manager.
+		private bool _multiSampleEnable = false;													// Flag to indicate that multi sampling is enabled.
+		private GorgonViewport _viewPort = default(GorgonViewport);									// Viewport to use.
+		private Rectangle _clip = Rectangle.Empty;													// Clipping rectangle.
 		#endregion
 
 		#region Properties.
@@ -296,10 +304,69 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return whether to use multisampling.
 		/// </summary>
-		public bool UseMultisampling
+		/// <remarks>This will turn multisampling on or off.
+		/// <para>Please note that if using a video device that supports SM4_1 or SM5, this setting cannot be disabled.  SM4_1/5 video devices always enable multisampling 
+		/// when the sample count is greater than 1 for a render target.  For SM2_a_b or SM4 devices, this setting will disable multisampling regardless of sample count.</para>
+		/// </remarks>
+		public bool IsMultisamplingEnabled
 		{
-			get;
-			set;
+			get
+			{
+				return _multiSampleEnable;
+			}
+			set
+			{
+				if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
+					_multiSampleEnable = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the current viewport.
+		/// </summary>
+		/// <remarks>Changing this will constrain the view to the area passed in.  By defining a new viewport the display area will be stretched or shrunk to accomodate 
+		/// the size of the view and consequently all rendered data in the view will be scaled appropriately.
+		/// <para>This will not allow for clipping to a rectangle.  Use the <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.ClipRegion">ClipRegion</see> property instead.</para>
+		/// </remarks>
+		public GorgonViewport Viewport
+		{
+			get
+			{
+				return _viewPort;
+			}
+			set
+			{
+				if (_viewPort != value)
+				{
+					_viewPort = value;
+					// Force a render when switching viewports.
+					RenderObjects();
+					Graphics.Rasterizer.SetViewport(_viewPort);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the clipping region.
+		/// </summary>
+		/// <remarks>Use this to clip a rectangular region on the target.  Pixels outside of the region do not get rendered.
+		/// <para>Clipping state is not restored when <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.End2D">End2D</see> is called, it is merely turned off and must be restored by the user.</para>
+		/// </remarks>
+		public Rectangle ClipRegion
+		{
+			get
+			{
+				return _clip;
+			}
+			set
+			{
+				if (_clip != value)
+				{
+					_clip = value;
+					RenderObjects();
+					Graphics.Rasterizer.SetClip(_clip);
+				}
+			}
 		}
 
 		/// <summary>
@@ -310,7 +377,29 @@ namespace GorgonLibrary.Graphics.Renderers
 			get;
 			private set;
 		}
+		
+		/// <summary>
+		/// Property to set or return whether blending is enabled or not.
+		/// </summary>
+		public bool IsBlendingEnabled
+		{
+			get;
+			set;
+		}
 
+		/// <summary>
+		/// Property to set or return whether to use alpha testing for this renderable.
+		/// </summary>
+		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values in <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.AlphaTestValues">AlphaTestValues</see> and rejects the pixel if it is not.
+		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
+		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
+		/// in order to take advantage of alpha testing.</para>
+		/// </remarks>
+		public bool IsAlphaTestEnabled
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Property to set or return the projection matrix.
@@ -548,13 +637,13 @@ namespace GorgonLibrary.Graphics.Renderers
 			{
 				case PrimitiveType.PointList:
 				case PrimitiveType.LineList:
-					Graphics.Draw(_cacheStart, _cacheWritten);
+					Graphics.Output.Draw(_cacheStart, _cacheWritten);
 					break;
 				case PrimitiveType.TriangleList:
 					if (Graphics.Input.IndexBuffer == null)
-						Graphics.Draw(_cacheStart, _cacheWritten);
+						Graphics.Output.Draw(_cacheStart, _cacheWritten);
 					else
-						Graphics.DrawIndexed(_renderIndexStart, 0, _renderIndexCount);
+						Graphics.Output.DrawIndexed(_renderIndexStart, 0, _renderIndexCount);
 					break;
 			}
 
@@ -630,12 +719,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </remarks>
 		public void Begin2D()
 		{
-			GorgonBlendStates state = GorgonBlendStates.DefaultStates;
-			GorgonRasterizerStates rasterState = GorgonRasterizerStates.DefaultStates;
-
 			_stateRecall.Push(new PreviousStates(Graphics));
-
-			rasterState.IsMultisamplingEnabled = UseMultisampling = Graphics.Rasterizer.States.IsMultisamplingEnabled;
 
 			// Set our default shaders.
 			Shaders.VertexShader = Shaders.DefaultVertexShader;
@@ -644,10 +728,15 @@ namespace GorgonLibrary.Graphics.Renderers
 			Graphics.Input.VertexBuffers[0] = DefaultVertexBufferBinding;
 			Graphics.Input.Layout = _layout;
 			Graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
+						
+			IsMultisamplingEnabled = Graphics.Rasterizer.States.IsMultisamplingEnabled;
 
-			state.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
-			state.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
-			state.RenderTarget0.IsBlendingEnabled = true;
+			// By default, turn on multi sampling over a count of 2.
+			if ((!IsMultisamplingEnabled) && (Target.Settings.MultiSample.Count > 1) && ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM5)))
+			    IsMultisamplingEnabled = true;
+
+			IsBlendingEnabled = true;
+			IsAlphaTestEnabled = true;
 
 			if (Shaders.PixelShader != null)
 			{
@@ -657,11 +746,12 @@ namespace GorgonLibrary.Graphics.Renderers
 				Shaders.PixelShader.Textures[0] = null;
 			}
 
-			Graphics.Rasterizer.SetViewport(Target.Viewport);
-			Graphics.Rasterizer.SetClip(new System.Drawing.Rectangle(0, 0, Target.Settings.Width, Target.Settings.Height));
+			_viewPort = Target.Viewport;
+			_clip = Rectangle.Empty;
+			Graphics.Rasterizer.SetViewport(_viewPort);
 
-			Graphics.Rasterizer.States = rasterState;
-			Graphics.Output.BlendingState.States = state;
+			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
+			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;
 
 			if (_stateManager == null)
 				_stateManager = new GorgonStateManager(this);
@@ -676,6 +766,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <remarks>This will restore the states to their original values before the 2D renderer was started, or to when the last <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.Begin2D">Begin2D</see> method called.
 		/// <para>The 2D renderer uses a LIFO stack to remember the last set of states, so calling this method multiple times will rewind the stack for each Begin2D call.</para>
+		/// <para>When restoring, the viewport may not be reset when the initial render target is NULL (Nothing in VB.Net), and consequently will need to be set when a new render target is assigned to the <see cref="GorgonLibrary.Graphics.GorgonGraphics">Graphics</see> interface.</para>
 		/// </remarks>		
 		public void End2D()
 		{
@@ -718,12 +809,9 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2D"/> class.
 		/// </summary>
-		/// <param name="target">The primary render target to use.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public Gorgon2D(GorgonSwapChain target)
-		{
-			GorgonDebug.AssertNull<GorgonSwapChain>(target, "target");
-
+		/// <param name="target">The primary render target to use.</param>		
+		internal Gorgon2D(GorgonSwapChain target)
+		{			
 			_stateRecall = new Stack<PreviousStates>(16);
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			Graphics = target.Graphics;
@@ -772,6 +860,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public void Dispose()
 		{
+			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 		#endregion

@@ -73,7 +73,7 @@ namespace GorgonLibrary.Graphics.Renderers
 	{
 		#region Variables.
 		private GorgonTexture2D _texture = null;															// Texture to use for the renderable.
-		private GorgonBlendStates _blendStates = GorgonBlendStates.DefaultStates;							// Blending states.		
+		private GorgonRenderTargetBlendState _blendStates = GorgonRenderTargetBlendState.DefaultStates;		// Blending states.		
 		private GorgonTextureSamplerStates _sampler = GorgonTextureSamplerStates.DefaultStates;				// Texture sampler.
 		private GorgonRasterizerStates _raster = GorgonRasterizerStates.DefaultStates;						// Rasterizer states.
 		private GorgonDepthStencilStates _depthStencil = GorgonDepthStencilStates.DefaultStates;			// Depth/stencil states.
@@ -160,52 +160,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 		
 		/// <summary>
-		/// Property to set or return the sampler state for the texture.
-		/// </summary>
-		protected internal GorgonTextureSamplerStates SamplerState
-		{
-			get
-			{
-				return _sampler;
-			}
-			set
-			{
-				_sampler = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the blending render states.
-		/// </summary>
-		protected internal GorgonBlendStates BlendingState
-		{
-			get
-			{
-				return _blendStates;
-			}
-			set
-			{
-				_blendStates = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the rasterizer states.
-		/// </summary>
-		protected internal GorgonRasterizerStates RasterizerStates
-		{
-			get
-			{
-				_raster.IsMultisamplingEnabled = Gorgon2D.UseMultisampling;
-				return _raster;
-			}
-			set
-			{
-				_raster = value;
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return the border color for areas outside of the texture.
 		/// </summary>
 		public virtual GorgonColor BorderColor
@@ -275,21 +229,21 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				if ((BlendingState.RenderTarget0.SourceBlend == BlendType.One) && (BlendingState.RenderTarget0.DestinationBlend == BlendType.Zero))
+				if ((_blendStates.SourceBlend == BlendType.One) && (_blendStates.DestinationBlend == BlendType.Zero))
 					return Renderers.BlendingMode.None;
 
-				if (BlendingState.RenderTarget0.SourceBlend == BlendType.SourceAlpha) 
+				if (_blendStates.SourceBlend == BlendType.SourceAlpha) 
 				{	
-					if (BlendingState.RenderTarget0.DestinationBlend == BlendType.InverseSourceAlpha)
+					if (_blendStates.DestinationBlend == BlendType.InverseSourceAlpha)
 						return Renderers.BlendingMode.Modulate;
-					if (BlendingState.RenderTarget0.DestinationBlend == BlendType.One)
+					if (_blendStates.DestinationBlend == BlendType.One)
 						return Renderers.BlendingMode.Additive;
 				}
 
-				if ((BlendingState.RenderTarget0.SourceBlend == BlendType.One) && (BlendingState.RenderTarget0.DestinationBlend == BlendType.InverseSourceAlpha))
+				if ((_blendStates.SourceBlend == BlendType.One) && (_blendStates.DestinationBlend == BlendType.InverseSourceAlpha))
 					return Renderers.BlendingMode.PreMultiplied;
 
-				if ((BlendingState.RenderTarget0.SourceBlend == BlendType.InverseDestinationColor) && (BlendingState.RenderTarget0.DestinationBlend == BlendType.InverseSourceColor))
+				if ((_blendStates.SourceBlend == BlendType.InverseDestinationColor) && (_blendStates.DestinationBlend == BlendType.InverseSourceColor))
 					return Renderers.BlendingMode.Inverted;
 				
 				return Renderers.BlendingMode.Custom;
@@ -299,29 +253,24 @@ namespace GorgonLibrary.Graphics.Renderers
 				switch (value)
 				{
 					case Renderers.BlendingMode.Additive:
-						_blendStates.RenderTarget0.IsBlendingEnabled = true;
-						_blendStates.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
-						_blendStates.RenderTarget0.DestinationBlend = BlendType.One;
+						_blendStates.SourceBlend = BlendType.SourceAlpha;
+						_blendStates.DestinationBlend = BlendType.One;
 						break;
 					case Renderers.BlendingMode.Inverted:
-						_blendStates.RenderTarget0.IsBlendingEnabled = true;
-						_blendStates.RenderTarget0.SourceBlend = BlendType.InverseDestinationColor;
-						_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceColor;
+						_blendStates.SourceBlend = BlendType.InverseDestinationColor;
+						_blendStates.DestinationBlend = BlendType.InverseSourceColor;
 						break;
 					case Renderers.BlendingMode.Modulate:
-						_blendStates.RenderTarget0.IsBlendingEnabled = true;
-						_blendStates.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
-						_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
+						_blendStates.SourceBlend = BlendType.SourceAlpha;
+						_blendStates.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
 					case Renderers.BlendingMode.PreMultiplied:
-						_blendStates.RenderTarget0.IsBlendingEnabled = true;
-						_blendStates.RenderTarget0.SourceBlend = BlendType.One;
-						_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
+						_blendStates.SourceBlend = BlendType.One;
+						_blendStates.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
 					default:
-						_blendStates.RenderTarget0.IsBlendingEnabled = false;
-						_blendStates.RenderTarget0.SourceBlend = BlendType.One;
-						_blendStates.RenderTarget0.DestinationBlend = BlendType.Zero;
+						_blendStates.SourceBlend = BlendType.One;
+						_blendStates.DestinationBlend = BlendType.Zero;
 						break;
 				}
 			}
@@ -350,11 +299,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _blendStates.RenderTarget0.WriteMask;
+				return _blendStates.WriteMask;
 			}
 			set
 			{
-				_blendStates.RenderTarget0.WriteMask = value;				
+				_blendStates.WriteMask = value;				
 			}
 		}
 
@@ -365,11 +314,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _blendStates.RenderTarget0.AlphaOperation;
+				return _blendStates.AlphaOperation;
 			}
 			set
 			{
-				_blendStates.RenderTarget0.AlphaOperation = value;
+				_blendStates.AlphaOperation = value;
 			}
 		}
 
@@ -380,11 +329,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _blendStates.RenderTarget0.BlendingOperation;
+				return _blendStates.BlendingOperation;
 			}
 			set
 			{
-				_blendStates.RenderTarget0.BlendingOperation = value;
+				_blendStates.BlendingOperation = value;
 			}
 		}
 
@@ -395,7 +344,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _blendStates.RenderTarget0.SourceAlphaBlend;
+				return _blendStates.SourceAlphaBlend;
 			}
 			set
 			{
@@ -411,7 +360,7 @@ namespace GorgonLibrary.Graphics.Renderers
 						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
 				}
 #endif
-				_blendStates.RenderTarget0.SourceAlphaBlend = value;
+				_blendStates.SourceAlphaBlend = value;
 			}
 		}
 
@@ -422,7 +371,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _blendStates.RenderTarget0.DestinationAlphaBlend;
+				return _blendStates.DestinationAlphaBlend;
 			}
 			set
 			{
@@ -438,7 +387,7 @@ namespace GorgonLibrary.Graphics.Renderers
 						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
 				}
 #endif
-				_blendStates.RenderTarget0.DestinationAlphaBlend = value;
+				_blendStates.DestinationAlphaBlend = value;
 			}
 		}
 
@@ -459,11 +408,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{				
-				return _blendStates.RenderTarget0.SourceBlend;
+				return _blendStates.SourceBlend;
 			}
 			set
 			{
-				_blendStates.RenderTarget0.SourceBlend = value;
+				_blendStates.SourceBlend = value;
 			}
 		}
 
@@ -474,33 +423,19 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _blendStates.RenderTarget0.DestinationBlend;
+				return _blendStates.DestinationBlend;
 			}
 			set
 			{
-				_blendStates.RenderTarget0.DestinationBlend = value;
+				_blendStates.DestinationBlend = value;
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether to use alpha testing for this renderable.
-		/// </summary>
-		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values in <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.AlphaTestValues">AlphaTestValues</see> and rejects the pixel if it is not.
-		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
-		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
-		/// in order to take advantage of alpha testing.</para>
-		/// </remarks>
-		public virtual bool IsAlphaTestEnabled
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
 		/// Property to set or return the range of alpha values to reject on this renderable.
 		/// </summary>
 		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values and rejects the pixel if it is not.
-		/// <para>This value will not take effect until <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to TRUE.</para>
+		/// <para>This value will not take effect until <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to TRUE.</para>
 		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>
@@ -637,14 +572,14 @@ namespace GorgonLibrary.Graphics.Renderers
 			GorgonDebug.AssertNull<Gorgon2D>(gorgon2D, "gorgon2D");
 						
 			Gorgon2D = gorgon2D;
-			_blendStates.RenderTarget0.IsBlendingEnabled = true;
-			_blendStates.RenderTarget0.SourceBlend = BlendType.SourceAlpha;
-			_blendStates.RenderTarget0.DestinationBlend = BlendType.InverseSourceAlpha;
+			_raster.CullingMode = Graphics.CullingMode.Back;
+			_blendStates.IsBlendingEnabled = true;
+			_blendStates.SourceBlend = BlendType.SourceAlpha;
+			_blendStates.DestinationBlend = BlendType.InverseSourceAlpha;
 			_sampler = GorgonTextureSamplerStates.DefaultStates;
 			_sampler.TextureFilter = Graphics.TextureFilter.Point;			
 			VertexBufferBinding = gorgon2D.DefaultVertexBufferBinding;
 			AlphaTestValues = GorgonMinMaxF.Empty;
-			IsAlphaTestEnabled = true;
 		}
 		#endregion
 	}

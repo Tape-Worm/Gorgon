@@ -1067,7 +1067,8 @@ namespace GorgonLibrary.Graphics
 		internal GorgonPixelShaderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-
+			for (int i = 0; i < TextureSamplers.Count; i++)
+				TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
 		}
 		#endregion
 	}
@@ -1141,6 +1142,8 @@ namespace GorgonLibrary.Graphics
 		internal GorgonVertexShaderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
+			for (int i = 0; i < TextureSamplers.Count; i++)
+				TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
 		}
 		#endregion
 	}

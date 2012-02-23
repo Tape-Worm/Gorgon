@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace GorgonLibrary.Graphics.Renderers
 {	
@@ -88,7 +89,15 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Alpha test enabled state changed.
 		/// </summary>
-		AlphaTestEnable = 2048
+		AlphaTestEnable = 2048,
+		/// <summary>
+		/// Blending enable state changed.
+		/// </summary>
+		BlendEnable = 4096,
+		/// <summary>
+		/// Clipping enable state changed.
+		/// </summary>
+		ClipEnable = 8192
 	}
 
 	/// <summary>
@@ -99,21 +108,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		#region Variables.
 		private GorgonGraphics _graphics = null;
 		private Gorgon2D _gorgon2D = null;
-		private BlendType _sourceBlend = BlendType.Zero;
-		private BlendType _destBlend = BlendType.Zero;
-		private BlendType _sourceAlphaBlend = BlendType.Zero;
-		private BlendType _destAlphaBlend = BlendType.Zero;
-		private BlendOperation _alphaOp = BlendOperation.Add;
-		private BlendOperation _blendOp = BlendOperation.Add;
+		private GorgonBlendStates _blendState = GorgonBlendStates.DefaultStates;
+		private GorgonRasterizerStates _rasterState = GorgonRasterizerStates.DefaultStates;
+		private GorgonTextureSamplerStates _samplerState = GorgonTextureSamplerStates.DefaultStates;
 		private GorgonVertexBufferBinding _vertexBuffer = default(GorgonVertexBufferBinding);
-		private ColorWriteMaskFlags _writeMask = ColorWriteMaskFlags.All;
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
-		private GorgonColor _borderColor = new GorgonColor(0, 0, 0, 0);
-		private TextureAddressing _uWrap = TextureAddressing.Clamp;
-		private TextureAddressing _vWrap = TextureAddressing.Clamp;
-		private TextureFilter _filter = TextureFilter.Point;
-		private CullingMode _cullMode = CullingMode.Front;
-		private bool _multiSamplingEnable = false;
+		private bool _clipEnabled = false;
 		private Gorgon2DShaders _shaders = null;
 		private GorgonTexture _texture = null;
 		#endregion
@@ -141,26 +141,33 @@ namespace GorgonLibrary.Graphics.Renderers
 					result |= StateChange.Shader;
 			}
 
-			if (!renderable.BlendFactor.Equals(_blendFactor))
-				result |= StateChange.BlendFactor;
+			if (_gorgon2D.IsBlendingEnabled != _blendState.RenderTarget0.IsBlendingEnabled)
+				result |= StateChange.BlendEnable;
 
-			if ((renderable.SourceBlend != _sourceBlend) 
-				|| (renderable.DestinationBlend != _destBlend) 
-				|| (renderable.AlphaOperation != _alphaOp) 
-				|| (renderable.BlendOperation != _blendOp)
-				|| (renderable.SourceAlphaBlend != _sourceAlphaBlend) 
-				|| (renderable.DestinationAlphaBlend != _destAlphaBlend) 
-				|| (renderable.WriteMask != _writeMask))
-				result |= StateChange.BlendState;
+			if (_gorgon2D.IsBlendingEnabled)
+			{
+				if (!renderable.BlendFactor.Equals(_blendFactor))
+					result |= StateChange.BlendFactor;
 
-			if ((renderable.TextureFilter != _filter) 
-				|| (renderable.VerticalWrapping != _vWrap)
-				|| (renderable.HorizontalWrapping != _uWrap) 
-				|| (!renderable.BorderColor.Equals(_borderColor)))
+				if ((renderable.SourceBlend != _blendState.RenderTarget0.SourceBlend)
+					|| (renderable.DestinationBlend != _blendState.RenderTarget0.DestinationBlend)
+					|| (renderable.AlphaOperation != _blendState.RenderTarget0.AlphaOperation)
+					|| (renderable.BlendOperation != _blendState.RenderTarget0.BlendingOperation)
+					|| (renderable.SourceAlphaBlend != _blendState.RenderTarget0.SourceAlphaBlend)
+					|| (renderable.DestinationAlphaBlend != _blendState.RenderTarget0.DestinationAlphaBlend)
+					|| (renderable.WriteMask != _blendState.RenderTarget0.WriteMask))
+					result |= StateChange.BlendState;
+			}
+
+			if ((renderable.TextureFilter != _samplerState.TextureFilter)
+				|| (renderable.VerticalWrapping != _samplerState.VerticalAddressing)
+				|| (renderable.HorizontalWrapping != _samplerState.HorizontalAddressing)
+				|| (!renderable.BorderColor.Equals(_samplerState.BorderColor)))
 				result |= StateChange.Sampler;
 
-			if ((renderable.CullingMode != _cullMode) 
-				|| (_gorgon2D.UseMultisampling != _multiSamplingEnable))
+			if (((_gorgon2D.ClipRegion == Rectangle.Empty) != (!_rasterState.IsScissorTestingEnabled))
+				|| (renderable.CullingMode != _rasterState.CullingMode)
+				|| (_gorgon2D.IsMultisamplingEnabled != _rasterState.IsMultisamplingEnabled))
 				result |= StateChange.Raster;
 
 			if (renderable.PrimitiveType != _graphics.Input.PrimitiveType)
@@ -172,10 +179,10 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (!renderable.VertexBufferBinding.Equals(_vertexBuffer))
 				result |= StateChange.VertexBuffer;
 
-			if (renderable.IsAlphaTestEnabled != _shaders.IsAlphaTestEnabled)
+			if (_gorgon2D.IsAlphaTestEnabled != _shaders.IsAlphaTestEnabled)
 				result |= StateChange.AlphaTestEnable;
 
-			if ((renderable.AlphaTestValues != _shaders.AlphaTestValue) && (renderable.IsAlphaTestEnabled))
+			if ((_gorgon2D.IsAlphaTestEnabled) && (renderable.AlphaTestValues != _shaders.AlphaTestValue))
 				result |= StateChange.AlphaTestValue;
 
 			return result;
@@ -200,6 +207,12 @@ namespace GorgonLibrary.Graphics.Renderers
 					_shaders.PixelShader = _shaders.DefaultPixelShaderDiffuse;
 			}
 
+			if ((state & StateChange.BlendEnable) == StateChange.BlendEnable)
+			{
+				_blendState.RenderTarget0.IsBlendingEnabled = _gorgon2D.IsBlendingEnabled;
+				_graphics.Output.BlendingState.States = _blendState;
+			}
+
 			if ((state & StateChange.BlendFactor) == StateChange.BlendFactor)
 			{
 				_blendFactor = renderable.BlendFactor;
@@ -208,30 +221,31 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if ((state & StateChange.BlendState) == StateChange.BlendState)
 			{
-				_sourceBlend = renderable.SourceBlend;
-				_destBlend = renderable.DestinationBlend;
-				_sourceAlphaBlend = renderable.SourceAlphaBlend;
-				_destAlphaBlend = renderable.DestinationAlphaBlend;
-				_alphaOp = renderable.AlphaOperation;
-				_blendOp = renderable.BlendOperation;
-				_writeMask = renderable.WriteMask;
-				_graphics.Output.BlendingState.States = renderable.BlendingState;
+				_blendState.RenderTarget0.AlphaOperation = renderable.AlphaOperation;
+				_blendState.RenderTarget0.BlendingOperation = renderable.BlendOperation;
+				_blendState.RenderTarget0.DestinationAlphaBlend = renderable.DestinationAlphaBlend;
+				_blendState.RenderTarget0.DestinationBlend = renderable.DestinationBlend;
+				_blendState.RenderTarget0.SourceAlphaBlend = renderable.SourceAlphaBlend;
+				_blendState.RenderTarget0.SourceBlend = renderable.SourceBlend;
+				_blendState.RenderTarget0.WriteMask = renderable.WriteMask;
+				_graphics.Output.BlendingState.States = _blendState;
 			}
 
 			if ((state & StateChange.Sampler) == StateChange.Sampler)
 			{
-				_uWrap = renderable.HorizontalWrapping;
-				_vWrap = renderable.VerticalWrapping;
-				_borderColor = renderable.BorderColor;
-				_filter = renderable.TextureFilter;
-				_shaders.PixelShader.Samplers[0] = renderable.SamplerState;
+				_samplerState.HorizontalAddressing = renderable.HorizontalWrapping;
+				_samplerState.VerticalAddressing = renderable.VerticalWrapping;
+				_samplerState.BorderColor = renderable.BorderColor;
+				_samplerState.TextureFilter = renderable.TextureFilter;
+				_shaders.PixelShader.Samplers[0] = _samplerState;
 			}
 
 			if ((state & StateChange.Raster) == StateChange.Raster)
 			{
-				_cullMode = renderable.CullingMode;
-				_multiSamplingEnable = _gorgon2D.UseMultisampling;
-				_graphics.Rasterizer.States = renderable.RasterizerStates;
+				_rasterState.IsScissorTestingEnabled = (_gorgon2D.ClipRegion != Rectangle.Empty);
+				_rasterState.CullingMode = renderable.CullingMode;
+				_rasterState.IsMultisamplingEnabled = _gorgon2D.IsMultisamplingEnabled;
+				_graphics.Rasterizer.States = _rasterState;
 			}
 
 			if ((state & StateChange.PrimitiveType) == StateChange.PrimitiveType)
@@ -247,7 +261,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 
 			if ((state & StateChange.AlphaTestEnable) == StateChange.AlphaTestEnable)
-				_shaders.IsAlphaTestEnabled = renderable.IsAlphaTestEnabled;
+				_shaders.IsAlphaTestEnabled = _gorgon2D.IsAlphaTestEnabled;
 
 			if ((state & StateChange.AlphaTestValue) == StateChange.AlphaTestValue)
 				_shaders.AlphaTestValue = renderable.AlphaTestValues;
@@ -260,20 +274,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			_vertexBuffer = _graphics.Input.VertexBuffers[0];
 
-			_sourceBlend = _graphics.Output.BlendingState.States.RenderTarget0.SourceBlend;
-			_destBlend = _graphics.Output.BlendingState.States.RenderTarget0.DestinationBlend;
-			_sourceAlphaBlend = _graphics.Output.BlendingState.States.RenderTarget0.SourceAlphaBlend;
-			_destAlphaBlend = _graphics.Output.BlendingState.States.RenderTarget0.DestinationAlphaBlend;
-			_alphaOp = _graphics.Output.BlendingState.States.RenderTarget0.AlphaOperation;
-			_blendOp = _graphics.Output.BlendingState.States.RenderTarget0.BlendingOperation;
-			_writeMask = _graphics.Output.BlendingState.States.RenderTarget0.WriteMask;
+			_blendState = _graphics.Output.BlendingState.States;
+			_blendFactor = _graphics.Output.BlendingState.BlendFactor;
+			_rasterState = _graphics.Rasterizer.States;
+			_samplerState = _graphics.Shaders.PixelShader.TextureSamplers[0];
 			_texture = _shaders.PixelShader.Textures[0];
-			_borderColor = _shaders.PixelShader.Samplers[0].BorderColor;
-			_uWrap = _shaders.PixelShader.Samplers[0].HorizontalAddressing;
-			_vWrap = _shaders.PixelShader.Samplers[0].VerticalAddressing;
-			_filter = _shaders.PixelShader.Samplers[0].TextureFilter;
-			_cullMode = _graphics.Rasterizer.States.CullingMode;
-			_multiSamplingEnable = _graphics.Rasterizer.States.IsMultisamplingEnabled;
 		}
 		#endregion
 

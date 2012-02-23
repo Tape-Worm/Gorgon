@@ -298,7 +298,7 @@ namespace Tester_Graphics
 				_swapChain = _graphics.Output.CreateSwapChain("Swap", new GorgonSwapChainSettings() { Window = this, IsWindowed = true, VideoMode = mode1, MultiSample = multiSample, DepthStencilFormat = BufferFormat.Unknown});
 				_swapChain.Resized += new EventHandler(_swapChain_Resized);
 				
-				_graphics2D = new Gorgon2D(_swapChain);
+				_graphics2D = _graphics.Create2DRenderer(_swapChain);
 				float aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
 				_graphics2D.ProjectionMatrix = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), aspect, 0.01f, 10000.0f);
 				_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(-0.0f, -0.0f, 0.1f), new Vector3(0, 0, -0.1f), -Vector3.UnitY);

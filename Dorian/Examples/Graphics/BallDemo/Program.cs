@@ -109,7 +109,7 @@ namespace GorgonLibrary.Graphics.Example
 				currentBall.Position = Vector2.Add(currentBall.Position, Vector2.Multiply(currentBall.PositionDelta, frameTime));
 				currentBall.Scale += currentBall.ScaleDelta * frameTime;
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
-				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
+				currentBall.Opacity += currentBall.ScaleDelta * frameTime;
 				//currentBall.Opacity = 0.65f;
 
 				// Adjust position.
@@ -190,7 +190,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			_2D.Render();
 
-			_form.Text = "FPS: " + timing.AverageFPS.ToString("###0.0") + " DT:" + (timing.AverageFrameDelta * 1000).ToString("##0.0") + " msec.";
+			_form.Text = "FPS: " + timing.AverageFPS.ToString("###0.0") + " DT:" + (timing.AverageFrameDelta * 1000).ToString("##0.0") + " msec.  Ball Count:" + _ballCount.ToString();
 
 			return true;
 		}
@@ -228,7 +228,7 @@ namespace GorgonLibrary.Graphics.Example
 			_ballTexture = _graphics.Textures.FromFile("BallTexture", @"..\..\..\..\Resources\Images\BallDemo.png", GorgonTexture2DSettings.FromFile);
 
 			// Create the 2D interface.
-			_2D = new Gorgon2D(_mainScreen);
+			_2D = _graphics.Create2DRenderer(_mainScreen);
 
 			// Create the wall sprite.
 			_wall = _2D.CreateSprite("Wall", 64, 64);
@@ -252,14 +252,59 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
 		private static void _form_KeyDown(object sender, KeyEventArgs e)
 		{
+			int ballIncrement = 1;
 			switch (e.KeyCode)
 			{
+				case Keys.Up:
+					if ((e.Control) && (e.Shift))
+						ballIncrement = 1000;
+					else
+					{
+						if (e.Control)
+							ballIncrement = 100;
+						if (e.Shift)
+							ballIncrement = 10;
+					}					
+					GenerateBalls(ballIncrement);
+					break;
+				case Keys.Down:
+					if ((e.Control) && (e.Shift))
+						ballIncrement = 1000;
+					else
+					{
+						if (e.Control)
+							ballIncrement = 100;
+						if (e.Shift)
+							ballIncrement = 10;
+					}					
+					GenerateBalls(-ballIncrement);
+					break;
 				case Keys.Enter:
 					if (e.Alt)
 						_mainScreen.UpdateSettings(!_mainScreen.Settings.IsWindowed);
 					break;
 				case Keys.A:
-					_ball.IsAlphaTestEnabled = !_ball.IsAlphaTestEnabled;
+					_2D.IsAlphaTestEnabled = !_2D.IsAlphaTestEnabled;
+					break;
+				case Keys.B:
+					_2D.IsBlendingEnabled = !_2D.IsBlendingEnabled;
+					break;
+				case Keys.M:
+					_2D.IsMultisamplingEnabled = !_2D.IsMultisamplingEnabled;
+					break;
+				case Keys.V:
+					if (_2D.Viewport.Region.X != 10.0f)
+						_2D.Viewport = new GorgonViewport(10.0f, 10.0f, 800.0f, 600.0f, 0.0f, 1.0f);
+					else
+						_2D.Viewport = _mainScreen.Viewport;
+
+					//_2D.ProjectionMatrix = Matrix.OrthoOffCenterLH(0.0f, _2D.Viewport.Region.Width, _2D.Viewport.Region.Height, 0.0f, 0.0f, 100.0f);
+					break;
+				case Keys.C:
+					if (_2D.ClipRegion == Rectangle.Empty)
+						_2D.ClipRegion = new Rectangle(-10, -10, 640, 480);
+					else
+						_2D.ClipRegion = Rectangle.Empty;
 					break;
 			}
 		}
@@ -274,9 +319,6 @@ namespace GorgonLibrary.Graphics.Example
 
 			if (_graphics != null)
 				_graphics.Dispose();
-
-			if (_2D != null)
-				_2D.Dispose();
 		}
 
 		/// <summary>

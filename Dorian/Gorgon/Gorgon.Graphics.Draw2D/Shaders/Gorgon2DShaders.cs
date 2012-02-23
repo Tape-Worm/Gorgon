@@ -18,7 +18,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Gorgon2DPixelShader _pixelShader = null;				// Current pixel shader.
 		private GorgonConstantBuffer _viewProjection = null;			// Constant buffer for handling the view/projection matrix upload to the video device.
 		private GorgonConstantBuffer _alphaTest = null;					// Alpha testing data for the shader.
-		private GorgonConstantBuffer _noAlphaTest = null;				// Alpha testing data for the shader.
 		private GorgonMinMaxF _alphaTestValue = GorgonMinMaxF.Empty;	// Alpha test value.
 		private GorgonDataStream _alphaTestData = null;					// Data for constant buffer.
 		private GorgonDataStream _projViewData = null;					// Data for constant buffer.
@@ -187,9 +186,6 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (_alphaTest != null)
 				_alphaTest.Dispose();
 
-			if (_noAlphaTest != null)
-				_noAlphaTest.Dispose();
-
 			if (_alphaTestData != null)
 				_alphaTestData.Dispose();
 
@@ -230,7 +226,6 @@ namespace GorgonLibrary.Graphics.Renderers
 			_alphaTestData.Write(0.0f);
 			_alphaTestData.Position = 0;
 
-			_noAlphaTest = gorgon2D.Graphics.Shaders.CreateConstantBuffer((int)_alphaTestData.Length, false, _alphaTestData);
 			_alphaTest = gorgon2D.Graphics.Shaders.CreateConstantBuffer((int)_alphaTestData.Length, false, _alphaTestData);
 		}
 		#endregion
