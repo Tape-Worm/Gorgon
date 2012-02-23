@@ -1177,7 +1177,7 @@ namespace GorgonLibrary
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
 #endif
 
-			_pointerOffset.Write<T>(item, typeSize);
+			_pointerOffset.Write<T>(ref item);
 			Position += typeSize;
 		}
 
@@ -1282,7 +1282,7 @@ namespace GorgonLibrary
 #endif
 
 			T result = default(T);
-			result = _pointerOffset.Read<T>(typeSize);
+			_pointerOffset.Read<T>(out result);
 			Position += typeSize;
 
 			return result;
