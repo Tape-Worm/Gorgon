@@ -97,7 +97,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Clipping enable state changed.
 		/// </summary>
-		ClipEnable = 8192
+		ClipEnable = 8192,
+		/// <summary>
+		/// Depth stencil reference changed.
+		/// </summary>
+		DepthStencilReference = 16384
 	}
 
 	/// <summary>
@@ -112,6 +116,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonRasterizerStates _rasterState = GorgonRasterizerStates.DefaultStates;
 		private GorgonTextureSamplerStates _samplerState = GorgonTextureSamplerStates.DefaultStates;
 		private GorgonVertexBufferBinding _vertexBuffer = default(GorgonVertexBufferBinding);
+		private GorgonDepthStencilStates _depthState = GorgonDepthStencilStates.DefaultStates;
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 		private Gorgon2DShaders _shaders = null;
 		private GorgonTexture _texture = null;
@@ -130,6 +135,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		public StateChange CheckState(GorgonRenderable renderable)
 		{
 			StateChange result = StateChange.None;
+			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
 
 			if (renderable.Texture != _texture)
 			{
@@ -149,7 +155,7 @@ namespace GorgonLibrary.Graphics.Renderers
 					result |= StateChange.BlendFactor;
 
 				if ((renderable.SourceBlend != _blendState.RenderTarget0.SourceBlend)
-					|| (renderable.DestinationBlend != _blendState.RenderTarget0.DestinationBlend)
+					|| (renderable.DestinationBlend != _blendState.RenderTarget0.DestinationBlend)					
 					|| (renderable.AlphaOperation != _blendState.RenderTarget0.AlphaOperation)
 					|| (renderable.BlendOperation != _blendState.RenderTarget0.BlendingOperation)
 					|| (renderable.SourceAlphaBlend != _blendState.RenderTarget0.SourceAlphaBlend)
@@ -164,7 +170,8 @@ namespace GorgonLibrary.Graphics.Renderers
 				|| (!renderable.BorderColor.Equals(_samplerState.BorderColor)))
 				result |= StateChange.Sampler;
 
-			if (((_gorgon2D.ClipRegion == Rectangle.Empty) != (!_rasterState.IsScissorTestingEnabled))
+			if (((_gorgon2D.ClipRegion != null) != (_rasterState.IsScissorTestingEnabled))
+				|| (renderable.DepthStencil.DepthBias != _rasterState.DepthBias)
 				|| (renderable.CullingMode != _rasterState.CullingMode)
 				|| (_gorgon2D.IsMultisamplingEnabled != _rasterState.IsMultisamplingEnabled))
 				result |= StateChange.Raster;
@@ -184,6 +191,33 @@ namespace GorgonLibrary.Graphics.Renderers
 			if ((_gorgon2D.IsAlphaTestEnabled) && (renderable.AlphaTestValues != _shaders.AlphaTestValue))
 				result |= StateChange.AlphaTestValue;
 
+			if ((_gorgon2D.IsDepthBufferEnabled != _depthState.IsDepthEnabled) 
+				|| (_gorgon2D.IsStencilEnabled != _depthState.IsStencilEnabled))
+				result |= StateChange.DepthStencil;
+
+			if (depthStencil.DepthStencilReference != _graphics.Output.DepthStencilState.DepthStencilReference)
+				result |= StateChange.DepthStencilReference;
+
+			if ((_gorgon2D.IsDepthBufferEnabled) &&
+				(depthStencil.IsDepthWriteEnabled != _depthState.IsDepthWriteEnabled)
+				|| (depthStencil.DepthComparison != _depthState.DepthComparison))
+				result |= StateChange.DepthStencil;
+
+			if (_gorgon2D.IsStencilEnabled)
+			{
+				if ((_depthState.StencilReadMask != depthStencil.StencilReadMask) 
+					|| (_depthState.StencilWriteMask != depthStencil.StencilWriteMask)
+					|| (_depthState.StencilFrontFace.ComparisonOperator != depthStencil.FrontFace.ComparisonOperator)
+					|| (_depthState.StencilFrontFace.DepthFailOperation != depthStencil.FrontFace.DepthFailOperation)
+					|| (_depthState.StencilFrontFace.FailOperation != depthStencil.FrontFace.FailOperation)
+					|| (_depthState.StencilFrontFace.PassOperation != depthStencil.FrontFace.PassOperation)
+					|| (_depthState.StencilBackFace.ComparisonOperator != depthStencil.BackFace.ComparisonOperator)
+					|| (_depthState.StencilBackFace.DepthFailOperation != depthStencil.BackFace.DepthFailOperation)
+					|| (_depthState.StencilBackFace.FailOperation != depthStencil.BackFace.FailOperation)
+					|| (_depthState.StencilBackFace.PassOperation != depthStencil.BackFace.PassOperation))
+					result |= StateChange.DepthStencil;
+			}				
+
 			return result;
 		}
 
@@ -194,6 +228,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="state">States that need updating.</param>
 		public void ApplyState(GorgonRenderable renderable, StateChange state)
 		{
+			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
+
 			if ((state & StateChange.Texture) == StateChange.Texture)
 				_texture = _shaders.PixelShader.Textures[0] = renderable.Texture;
 			
@@ -241,9 +277,10 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if ((state & StateChange.Raster) == StateChange.Raster)
 			{
-				_rasterState.IsScissorTestingEnabled = (_gorgon2D.ClipRegion != Rectangle.Empty);
+				_rasterState.IsScissorTestingEnabled = (_gorgon2D.ClipRegion != null);
 				_rasterState.CullingMode = renderable.CullingMode;
 				_rasterState.IsMultisamplingEnabled = _gorgon2D.IsMultisamplingEnabled;
+				_rasterState.DepthBias = depthStencil.DepthBias;
 				_graphics.Rasterizer.States = _rasterState;
 			}
 
@@ -264,6 +301,28 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if ((state & StateChange.AlphaTestValue) == StateChange.AlphaTestValue)
 				_shaders.AlphaTestValue = renderable.AlphaTestValues;
+
+			if ((state & StateChange.DepthStencilReference) == StateChange.DepthStencilReference)
+				_graphics.Output.DepthStencilState.DepthStencilReference = depthStencil.DepthStencilReference;
+
+			if ((state & StateChange.DepthStencil) == StateChange.DepthStencil)
+			{				
+				_depthState.IsDepthEnabled = _gorgon2D.IsDepthBufferEnabled;
+				_depthState.IsDepthWriteEnabled = depthStencil.IsDepthWriteEnabled;
+				_depthState.DepthComparison = depthStencil.DepthComparison;
+				_depthState.StencilReadMask = depthStencil.StencilReadMask;
+				_depthState.StencilWriteMask = depthStencil.StencilWriteMask;
+				_depthState.IsStencilEnabled = _gorgon2D.IsStencilEnabled;
+				_depthState.StencilFrontFace.ComparisonOperator = depthStencil.FrontFace.ComparisonOperator;
+				_depthState.StencilFrontFace.DepthFailOperation = depthStencil.FrontFace.DepthFailOperation;
+				_depthState.StencilFrontFace.FailOperation = depthStencil.FrontFace.FailOperation;
+				_depthState.StencilFrontFace.PassOperation = depthStencil.FrontFace.PassOperation;
+				_depthState.StencilBackFace.ComparisonOperator = depthStencil.BackFace.ComparisonOperator;
+				_depthState.StencilBackFace.DepthFailOperation = depthStencil.BackFace.DepthFailOperation;
+				_depthState.StencilBackFace.FailOperation = depthStencil.BackFace.FailOperation;
+				_depthState.StencilBackFace.PassOperation = depthStencil.BackFace.PassOperation;
+				_graphics.Output.DepthStencilState.States = _depthState;
+			}
 		}
 
 		/// <summary>
@@ -272,11 +331,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		public void GetDefaults()
 		{
 			_vertexBuffer = _graphics.Input.VertexBuffers[0];
-
 			_blendState = _graphics.Output.BlendingState.States;
 			_blendFactor = _graphics.Output.BlendingState.BlendFactor;
 			_rasterState = _graphics.Rasterizer.States;
 			_samplerState = _graphics.Shaders.PixelShader.TextureSamplers[0];
+			_depthState = _graphics.Output.DepthStencilState.States;
 			_texture = _shaders.PixelShader.Textures[0];
 		}
 		#endregion

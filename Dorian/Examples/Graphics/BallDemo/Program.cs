@@ -111,7 +111,7 @@ namespace GorgonLibrary.Graphics.Example
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
 				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
 				//currentBall.Opacity += currentBall.ScaleDelta * frameTime;
-				//currentBall.Opacity = 0.65f;
+				currentBall.Opacity = 1.0f;
 
 				// Adjust position.
 				if ((currentBall.Position.X > _mainScreen.Settings.Width) || (currentBall.Position.X < 0))
@@ -146,11 +146,13 @@ namespace GorgonLibrary.Graphics.Example
 		/// <remarks>This is used as the main loop for the application.  All drawing and logic can go in here.</remarks>
 		/// <returns>TRUE to keep running, FALSE to exit.</returns>
 		private static bool Idle(GorgonFrameRate timing)
-		{			
+		{
+			_mainScreen.Clear(Color.White, 1.0f, 0);
+
 			// Draw background.
-			for (int y = 0; y < _mainScreen.Settings.Height; y += 64)
+			for (int y = 0; y < _mainScreen.Settings.Height; y += (int)_wall.Size.Y)
 			{
-				for (int x = 0; x < _mainScreen.Settings.Width; x += 64)
+				for (int x = 0; x < _mainScreen.Settings.Width; x += (int)_wall.Size.X)
 				{
 					_wall.Position = new Vector2(x, y);
 					_wall.Draw();
@@ -182,10 +184,6 @@ namespace GorgonLibrary.Graphics.Example
 					_ball.TextureOffset = new Vector2(64, 0);
 				else
 					_ball.TextureOffset = new Vector2(0, 64);
-
-				if (_ball.AlphaTestValues == null)
-					_ball.Opacity = _ballList[i].Opacity;
-
 				_ball.Draw();
 			}
 
@@ -216,7 +214,8 @@ namespace GorgonLibrary.Graphics.Example
 							Height = Properties.Settings.Default.ScreenHeight,
 							Format = BufferFormat.R8G8B8A8_UIntNormal,
 							Window = _form,
-							IsWindowed = Properties.Settings.Default.Windowed
+							IsWindowed = Properties.Settings.Default.Windowed,
+							DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt
 						});
 
 			if (_mainScreen.Settings.IsWindowed)
@@ -232,9 +231,10 @@ namespace GorgonLibrary.Graphics.Example
 			_2D = _graphics.Create2DRenderer(_mainScreen);
 
 			// Create the wall sprite.
-			_wall = _2D.CreateSprite("Wall", 64, 64);
+			_wall = _2D.CreateSprite("Wall", 63, 63);
 			_wall.Texture = _ballTexture;
-			_wall.BlendingMode = BlendingMode.None;			
+			_wall.BlendingMode = BlendingMode.None;
+			_wall.Depth = 0.01f;
 
 			// Create the ball sprite.
 			_ball = _2D.CreateSprite("Ball", 64, 64);
@@ -294,18 +294,22 @@ namespace GorgonLibrary.Graphics.Example
 					_2D.IsMultisamplingEnabled = !_2D.IsMultisamplingEnabled;
 					break;
 				case Keys.V:
-					if (_2D.Viewport.Region.X != 10.0f)
+					if (_2D.Viewport == null)
+					{
 						_2D.Viewport = new GorgonViewport(10.0f, 10.0f, 800.0f, 600.0f, 0.0f, 1.0f);
+						_2D.ProjectionMatrix = Matrix.OrthoOffCenterLH(10.0f, _form.ClientSize.Width, _form.ClientSize.Height, 10.0f, 0.0f, 100.0f);
+					}
 					else
-						_2D.Viewport = _mainScreen.Viewport;
-
-					//_2D.ProjectionMatrix = Matrix.OrthoOffCenterLH(0.0f, _2D.Viewport.Region.Width, _2D.Viewport.Region.Height, 0.0f, 0.0f, 100.0f);
+					{
+						_2D.Viewport = null;
+						_2D.ProjectionMatrix = null;
+					}					
 					break;
 				case Keys.C:
-					if (_2D.ClipRegion == Rectangle.Empty)
+					if (_2D.ClipRegion == null)
 						_2D.ClipRegion = new Rectangle(-10, -10, 640, 480);
 					else
-						_2D.ClipRegion = Rectangle.Empty;
+						_2D.ClipRegion = null;
 					break;
 			}
 		}

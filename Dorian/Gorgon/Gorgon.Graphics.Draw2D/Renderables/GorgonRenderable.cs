@@ -71,14 +71,174 @@ namespace GorgonLibrary.Graphics.Renderers
 	public abstract class GorgonRenderable
 		: GorgonNamedObject
 	{
-		#region Variables.
-		private GorgonTexture2D _texture = null;															// Texture to use for the renderable.
-		private GorgonRenderTargetBlendState _blendStates = GorgonRenderTargetBlendState.DefaultStates;		// Blending states.		
-		private GorgonTextureSamplerStates _sampler = GorgonTextureSamplerStates.DefaultStates;				// Texture sampler.
-		private GorgonRasterizerStates _raster = GorgonRasterizerStates.DefaultStates;						// Rasterizer states.
-		private GorgonDepthStencilStates _depthStencil = GorgonDepthStencilStates.DefaultStates;			// Depth/stencil states.
+		#region Classes.
+		/// <summary>
+		/// Depth/Stencil buffer states for a renderable.
+		/// </summary>
+		public class DepthStencilStates
+		{
+			#region Classes.
+			/// <summary>
+			/// A stencil state.
+			/// </summary>
+			public class StencilState
+			{
+				#region Properties.
+				/// <summary>
+				/// Property to set or return the comparison operator.
+				/// </summary>
+				public ComparisonOperators ComparisonOperator
+				{
+					get;
+					set;
+				}
+
+				/// <summary>
+				/// Property to set or return the operation to perform if the depth test fails.
+				/// </summary>
+				public StencilOperations DepthFailOperation
+				{
+					get;
+					set;
+				}
+
+				/// <summary>
+				/// Property to set or return the operation to perform if the stencil test fails.
+				/// </summary>
+				public StencilOperations FailOperation
+				{
+					get;
+					set;
+				}
+
+				/// <summary>
+				/// Property to set or return the operation to perform if the stencil test passes.
+				/// </summary>
+				public StencilOperations PassOperation
+				{
+					get;
+					set;
+				}
+				#endregion
+
+				#region Constructor.
+				/// <summary>
+				/// Initializes a new instance of the <see cref="StencilState"/> class.
+				/// </summary>
+				internal StencilState()
+				{
+					ComparisonOperator = ComparisonOperators.Always;
+					PassOperation = FailOperation = DepthFailOperation = StencilOperations.Keep;
+				}
+				#endregion
+			}
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return the stencil state for front facing polygons.
+			/// </summary>
+			public StencilState FrontFace
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return the stencil state for back facing polygons.
+			/// </summary>
+			public StencilState BackFace
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to set or return the read mask for the stencil buffer and this renderable.
+			/// </summary>
+			public byte StencilReadMask
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the write mask for the stencil buffer and this renderable.
+			/// </summary>
+			public byte StencilWriteMask
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the depth bias for this renderable.
+			/// </summary>
+			/// <remarks>This value adds to a pixel when comparing depth.  This helps mitigate z-fighting between two objects sharing the same depth.</remarks>
+			public int DepthBias
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the depth comparison function to use.
+			/// </summary>
+			public ComparisonOperators DepthComparison
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return whether this renderable can write to the depth buffer.
+			/// </summary>
+			/// <remarks>This value is only effective when <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.IsDepthBufferEnabled">IsDepthBufferEnabled</see> is TRUE.
+			/// <para>Note that the renderable will still take the depth buffer into account even when this is FALSE.  That is, it will read the depth buffer and mask 
+			/// depth areas that are less than the current depth value.</para>
+			/// </remarks>
+			public bool IsDepthWriteEnabled
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the depth/stencil reference value for this renderable.
+			/// </summary>
+			public int DepthStencilReference
+			{
+				get;
+				set;
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="DepthStencilStates"/> class.
+			/// </summary>
+			internal DepthStencilStates()
+			{
+				IsDepthWriteEnabled = true;
+				DepthStencilReference = 0;
+				DepthComparison = ComparisonOperators.Less;
+				DepthBias = 0;
+				StencilReadMask = 0xFF;
+				StencilWriteMask = 0xFF;
+				FrontFace = new StencilState();
+				BackFace = new StencilState();
+			}
+			#endregion
+		}
 		#endregion
 
+		#region Variables.
+		private GorgonTexture2D _texture = null;															// Texture to use for the renderable.
+		private BlendType _sourceAlphaBlend = BlendType.One;												// Source alpha blend.
+		private BlendType _destAlphaBlend = BlendType.Zero;													// Destination alpha blend.
+		#endregion
+
+		// TODO:  Put blending, texture sampler and rasterizer states into state interfaces like the depth buffer.
 		#region Properties.
 		/// <summary>
 		/// Property to set or return whether the renderable needs to adjust its dimensions.
@@ -145,33 +305,21 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to return the depth/stencil states.
+		/// Property to return depth/stencil buffer states for this renderable.
 		/// </summary>
-		protected internal GorgonDepthStencilStates DepthStencilState
+		public DepthStencilStates DepthStencil
 		{
-			get
-			{
-				return _depthStencil;
-			}
-			set
-			{
-				_depthStencil = value;
-			}
+			get;
+			private set;
 		}
-		
+	
 		/// <summary>
 		/// Property to set or return the border color for areas outside of the texture.
 		/// </summary>
 		public virtual GorgonColor BorderColor
 		{
-			get
-			{
-				return _sampler.BorderColor;
-			}
-			set
-			{
-				_sampler.BorderColor = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -179,14 +327,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public virtual TextureAddressing HorizontalWrapping
 		{
-			get
-			{
-				return _sampler.HorizontalAddressing;
-			}
-			set
-			{
-				_sampler.HorizontalAddressing = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -194,14 +336,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public virtual TextureAddressing VerticalWrapping
 		{
-			get
-			{
-				return _sampler.VerticalAddressing;
-			}
-			set
-			{
-				_sampler.VerticalAddressing = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -209,14 +345,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public virtual TextureFilter TextureFilter
 		{
-			get
-			{
-				return _sampler.TextureFilter;
-			}
-			set
-			{
-				_sampler.TextureFilter = value;
-			}
+			get;
+			set;
 		}
 
 
@@ -229,21 +359,21 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				if ((_blendStates.SourceBlend == BlendType.One) && (_blendStates.DestinationBlend == BlendType.Zero))
+				if ((SourceBlend == BlendType.One) && (DestinationBlend == BlendType.Zero))
 					return Renderers.BlendingMode.None;
 
-				if (_blendStates.SourceBlend == BlendType.SourceAlpha) 
+				if (SourceBlend == BlendType.SourceAlpha) 
 				{	
-					if (_blendStates.DestinationBlend == BlendType.InverseSourceAlpha)
+					if (DestinationBlend == BlendType.InverseSourceAlpha)
 						return Renderers.BlendingMode.Modulate;
-					if (_blendStates.DestinationBlend == BlendType.One)
+					if (DestinationBlend == BlendType.One)
 						return Renderers.BlendingMode.Additive;
 				}
 
-				if ((_blendStates.SourceBlend == BlendType.One) && (_blendStates.DestinationBlend == BlendType.InverseSourceAlpha))
+				if ((SourceBlend == BlendType.One) && (DestinationBlend == BlendType.InverseSourceAlpha))
 					return Renderers.BlendingMode.PreMultiplied;
 
-				if ((_blendStates.SourceBlend == BlendType.InverseDestinationColor) && (_blendStates.DestinationBlend == BlendType.InverseSourceColor))
+				if ((SourceBlend == BlendType.InverseDestinationColor) && (DestinationBlend == BlendType.InverseSourceColor))
 					return Renderers.BlendingMode.Inverted;
 				
 				return Renderers.BlendingMode.Custom;
@@ -253,24 +383,24 @@ namespace GorgonLibrary.Graphics.Renderers
 				switch (value)
 				{
 					case Renderers.BlendingMode.Additive:
-						_blendStates.SourceBlend = BlendType.SourceAlpha;
-						_blendStates.DestinationBlend = BlendType.One;
+						SourceBlend = BlendType.SourceAlpha;
+						DestinationBlend = BlendType.One;
 						break;
 					case Renderers.BlendingMode.Inverted:
-						_blendStates.SourceBlend = BlendType.InverseDestinationColor;
-						_blendStates.DestinationBlend = BlendType.InverseSourceColor;
+						SourceBlend = BlendType.InverseDestinationColor;
+						DestinationBlend = BlendType.InverseSourceColor;
 						break;
 					case Renderers.BlendingMode.Modulate:
-						_blendStates.SourceBlend = BlendType.SourceAlpha;
-						_blendStates.DestinationBlend = BlendType.InverseSourceAlpha;
+						SourceBlend = BlendType.SourceAlpha;
+						DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
 					case Renderers.BlendingMode.PreMultiplied:
-						_blendStates.SourceBlend = BlendType.One;
-						_blendStates.DestinationBlend = BlendType.InverseSourceAlpha;
+						SourceBlend = BlendType.One;
+						DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
 					default:
-						_blendStates.SourceBlend = BlendType.One;
-						_blendStates.DestinationBlend = BlendType.Zero;
+						SourceBlend = BlendType.One;
+						DestinationBlend = BlendType.Zero;
 						break;
 				}
 			}
@@ -282,14 +412,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <remarks>Use this to make a renderable two-sided.</remarks>
 		public CullingMode CullingMode
 		{
-			get
-			{
-				return _raster.CullingMode;
-			}
-			set
-			{
-				_raster.CullingMode = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -297,14 +421,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public ColorWriteMaskFlags WriteMask
 		{
-			get
-			{
-				return _blendStates.WriteMask;
-			}
-			set
-			{
-				_blendStates.WriteMask = value;				
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -312,14 +430,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public BlendOperation AlphaOperation
 		{
-			get
-			{
-				return _blendStates.AlphaOperation;
-			}
-			set
-			{
-				_blendStates.AlphaOperation = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -327,14 +439,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public BlendOperation BlendOperation
 		{
-			get
-			{
-				return _blendStates.BlendingOperation;
-			}
-			set
-			{
-				_blendStates.BlendingOperation = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -344,7 +450,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _blendStates.SourceAlphaBlend;
+				return _sourceAlphaBlend;
 			}
 			set
 			{
@@ -360,7 +466,7 @@ namespace GorgonLibrary.Graphics.Renderers
 						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
 				}
 #endif
-				_blendStates.SourceAlphaBlend = value;
+				_sourceAlphaBlend = value;
 			}
 		}
 
@@ -371,7 +477,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _blendStates.DestinationAlphaBlend;
+				return _destAlphaBlend;
 			}
 			set
 			{
@@ -387,7 +493,7 @@ namespace GorgonLibrary.Graphics.Renderers
 						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
 				}
 #endif
-				_blendStates.DestinationAlphaBlend = value;
+				_destAlphaBlend = value;
 			}
 		}
 
@@ -406,14 +512,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public BlendType SourceBlend
 		{
-			get
-			{				
-				return _blendStates.SourceBlend;
-			}
-			set
-			{
-				_blendStates.SourceBlend = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -421,14 +521,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public BlendType DestinationBlend
 		{
-			get
-			{
-				return _blendStates.DestinationBlend;
-			}
-			set
-			{
-				_blendStates.DestinationBlend = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -572,14 +666,23 @@ namespace GorgonLibrary.Graphics.Renderers
 			GorgonDebug.AssertNull<Gorgon2D>(gorgon2D, "gorgon2D");
 						
 			Gorgon2D = gorgon2D;
-			_raster.CullingMode = Graphics.CullingMode.Back;
-			_blendStates.IsBlendingEnabled = true;
-			_blendStates.SourceBlend = BlendType.SourceAlpha;
-			_blendStates.DestinationBlend = BlendType.InverseSourceAlpha;
-			_sampler = GorgonTextureSamplerStates.DefaultStates;
-			_sampler.TextureFilter = Graphics.TextureFilter.Point;			
+			CullingMode = Graphics.CullingMode.Back;
+	
+			SourceBlend = BlendType.SourceAlpha;
+			DestinationBlend = BlendType.InverseSourceAlpha;
+			BlendFactor = new GorgonColor(0);
+			BlendOperation = Graphics.BlendOperation.Add;
+			AlphaOperation = Graphics.BlendOperation.Add;
+			WriteMask = ColorWriteMaskFlags.All;
+
+			BorderColor = new GorgonColor(0);
+			HorizontalWrapping = TextureAddressing.Clamp;
+			VerticalWrapping = TextureAddressing.Clamp;
+			TextureFilter = TextureFilter.Point;
+
 			VertexBufferBinding = gorgon2D.DefaultVertexBufferBinding;
 			AlphaTestValues = GorgonMinMaxF.Empty;
+			DepthStencil = new DepthStencilStates();
 		}
 		#endregion
 	}
