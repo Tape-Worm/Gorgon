@@ -1,0 +1,39 @@
+﻿			_ball.DepthStencil.DepthStencilReference = 0;
+			_ball.DepthStencil.FrontFace.ComparisonOperator = ComparisonOperators.Never;
+			_ball.DepthStencil.FrontFace.PassOperation = StencilOperations.Replace;
+			_ball.DepthStencil.FrontFace.FailOperation = StencilOperations.Replace;
+			_ball.DepthStencil.FrontFace.DepthFailOperation = StencilOperations.Replace;
+			// Draw balls.
+			for (int i = 0; i < _ballCount; i++)
+			{
+				if (!_ballList[i].Checkered)
+				{
+					_ball.Angle = _ballList[i].Rotation;
+					_ball.Scale = new Vector2(_ballList[i].Scale);
+					_ball.Position = _ballList[i].Position;
+					_ball.Opacity = 1.0f;
+					_ball.Draw();
+				}
+			}
+
+			_ball.DepthStencil.DepthStencilReference = 0;
+			_ball.DepthStencil.FrontFace.ComparisonOperator = ComparisonOperators.LessEqual;
+			_ball.DepthStencil.FrontFace.PassOperation = StencilOperations.Keep;
+			_ball.DepthStencil.FrontFace.FailOperation = StencilOperations.Keep;
+			_ball.DepthStencil.FrontFace.DepthFailOperation = StencilOperations.Keep;
+			// Draw balls.
+			for (int i = 0; i < _ballCount; i++)
+			{
+				_ball.Angle = _ballList[i].Rotation;
+				_ball.Scale = new Vector2(_ballList[i].Scale);
+				_ball.Position = _ballList[i].Position;
+				_ball.Color = _ballList[i].Color;
+				_ball.Opacity = _ballList[i].Opacity;
+
+				if (_ballList[i].Checkered)
+					_ball.TextureOffset = new Vector2(64, 0);
+				else
+					_ball.TextureOffset = new Vector2(0, 64);
+				_ball.Draw();
+			}
+

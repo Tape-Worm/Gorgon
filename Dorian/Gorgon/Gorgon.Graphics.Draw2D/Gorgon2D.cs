@@ -166,6 +166,14 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// Primitive type.
 			/// </summary>
 			public PrimitiveType PrimitiveType;
+			/// <summary>
+			/// Depth stencil states
+			/// </summary>
+			public GorgonDepthStencilStates DepthStencilState;
+			/// <summary>
+			/// Depth stencil reference.
+			/// </summary>
+			public int DepthStencilReference;
 
 			/// <summary>
 			/// Function to restore the previous states.
@@ -185,6 +193,8 @@ namespace GorgonLibrary.Graphics.Renderers
 				graphics.Output.BlendingState.BlendSampleMask = BlendSampleMask;
 				graphics.Output.BlendingState.BlendFactor = BlendFactor;
 				graphics.Output.BlendingState.States = BlendStates;
+				graphics.Output.DepthStencilState.States = DepthStencilState;
+				graphics.Output.DepthStencilState.DepthStencilReference = DepthStencilReference;
 				graphics.Rasterizer.States = RasterStates;
 				graphics.Shaders.PixelShader.Textures[0] = Texture;
 				graphics.Shaders.PixelShader.TextureSamplers[0] = SamplerState;
@@ -209,6 +219,8 @@ namespace GorgonLibrary.Graphics.Renderers
 				RasterStates = graphics.Rasterizer.States;
 				SamplerState = graphics.Shaders.PixelShader.TextureSamplers[0];
 				Texture = graphics.Shaders.PixelShader.Textures[0];
+				DepthStencilState = graphics.Output.DepthStencilState.States;
+				DepthStencilReference = graphics.Output.DepthStencilState.DepthStencilReference;
 				RasterStates.IsScissorTestingEnabled = false;
 			}
 		}
@@ -269,8 +281,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Stack<PreviousStates> _stateRecall = null;											// State recall.
 		private GorgonStateManager _stateManager = null;											// State manager.
 		private bool _multiSampleEnable = false;													// Flag to indicate that multi sampling is enabled.
-		private GorgonViewport _viewPort = default(GorgonViewport);									// Viewport to use.
-		private Rectangle _clip = Rectangle.Empty;													// Clipping rectangle.
+		private GorgonViewport? _viewPort = null;													// Viewport to use.
+		private Rectangle? _clip = null;															// Clipping rectangle.
 		#endregion
 
 		#region Properties.
@@ -328,7 +340,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// the size of the view and consequently all rendered data in the view will be scaled appropriately.
 		/// <para>This will not allow for clipping to a rectangle.  Use the <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.ClipRegion">ClipRegion</see> property instead.</para>
 		/// </remarks>
-		public GorgonViewport Viewport
+		public GorgonViewport? Viewport
 		{
 			get
 			{
@@ -338,10 +350,14 @@ namespace GorgonLibrary.Graphics.Renderers
 			{
 				if (_viewPort != value)
 				{
-					_viewPort = value;
 					// Force a render when switching viewports.
 					RenderObjects();
-					Graphics.Rasterizer.SetViewport(_viewPort);
+
+					_viewPort = value;
+					if (value != null)
+						Graphics.Rasterizer.SetViewport(_viewPort.Value);
+					else
+						Graphics.Rasterizer.SetViewport(Target.Viewport);
 				}
 			}
 		}
@@ -352,7 +368,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <remarks>Use this to clip a rectangular region on the target.  Pixels outside of the region do not get rendered.
 		/// <para>Clipping state is not restored when <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.End2D">End2D</see> is called, it is merely turned off and must be restored by the user.</para>
 		/// </remarks>
-		public Rectangle ClipRegion
+		public Rectangle? ClipRegion
 		{
 			get
 			{
@@ -362,9 +378,11 @@ namespace GorgonLibrary.Graphics.Renderers
 			{
 				if (_clip != value)
 				{
-					_clip = value;
 					RenderObjects();
-					Graphics.Rasterizer.SetClip(_clip);
+
+					_clip = value;
+					if (value != null)
+						Graphics.Rasterizer.SetClip(_clip.Value);
 				}
 			}
 		}
@@ -376,6 +394,24 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the depth buffer should be enabled.
+		/// </summary>
+		public bool IsDepthBufferEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the stencil buffer is enabled.
+		/// </summary>
+		public bool IsStencilEnabled
+		{
+			get;
+			set;
 		}
 		
 		/// <summary>
@@ -505,23 +541,14 @@ namespace GorgonLibrary.Graphics.Renderers
 				Target.Resized -= new EventHandler(target_Resized);
 
 			Graphics.Output.RenderTargets[0] = Target;
-			UpdateProjection();
+			Matrix.OrthoOffCenterLH(0, Target.Settings.Width, Target.Settings.Height, 0.0f, 0.0f, 100.0f, out _defaultProjection);
+			if (_viewPort == null)
+				Graphics.Rasterizer.SetViewport(Target.Viewport);
+			Shaders.UpdateGorgonTransformation();
 
 			// Re-assign the event.
 			if (Target != null)
 				Target.Resized += new EventHandler(target_Resized);
-		}
-
-		/// <summary>
-		/// Function to update the default projection matrix.
-		/// </summary>
-		private void UpdateProjection()
-		{
-			// Update based on the current render target.
-			Matrix.OrthoOffCenterLH(0, Target.Settings.Width, Target.Settings.Height, 0.0f, 0.0f, 100.0f, out _defaultProjection);
-			Graphics.Rasterizer.SetViewport(Target.Viewport);
-
-			Shaders.UpdateGorgonTransformation();
 		}
 
 		/// <summary>
@@ -591,7 +618,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="e">Event parameters.</param>
 		private void target_Resized(object sender, EventArgs e)
 		{
-			UpdateProjection();
 			UpdateTarget();
 		}
 
@@ -746,12 +772,11 @@ namespace GorgonLibrary.Graphics.Renderers
 				Shaders.PixelShader.Textures[0] = null;
 			}
 
-			_viewPort = Target.Viewport;
-			_clip = Rectangle.Empty;
-			Graphics.Rasterizer.SetViewport(_viewPort);
-
+			Graphics.Rasterizer.SetViewport(Target.Viewport);
 			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
-			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;
+			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;			
+			Graphics.Output.DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
+			Graphics.Output.DepthStencilState.DepthStencilReference = 0;
 
 			if (_stateManager == null)
 				_stateManager = new GorgonStateManager(this);
@@ -780,6 +805,23 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Function to force the renderer to render its data to the current render target.
 		/// </summary>
+		/// <param name="flip">TRUE to flip the back buffer to the front buffer of the render target.</param>
+		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
+		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
+		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
+		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
+		/// user is now responsible for calling this method.</para>
+		/// </remarks>
+		public void Render(bool flip)
+		{
+			RenderObjects();
+			if (flip)
+				Target.Flip();
+		}
+
+		/// <summary>
+		/// Function to force the renderer to render its data to the current render target.
+		/// </summary>
 		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
 		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
 		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
@@ -788,8 +830,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </remarks>
 		public void Render()
 		{
-			RenderObjects();
-			Target.Flip();			
+			Render(true);
 		}
 
 		/// <summary>
