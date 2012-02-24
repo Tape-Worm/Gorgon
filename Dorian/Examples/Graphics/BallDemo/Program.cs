@@ -111,7 +111,7 @@ namespace GorgonLibrary.Graphics.Example
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
 				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
 				//currentBall.Opacity += currentBall.ScaleDelta * frameTime;
-				currentBall.Opacity = 1.0f;
+				//currentBall.Opacity = 1.0f;
 
 				// Adjust position.
 				if ((currentBall.Position.X > _mainScreen.Settings.Width) || (currentBall.Position.X < 0))
@@ -147,7 +147,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// <returns>TRUE to keep running, FALSE to exit.</returns>
 		private static bool Idle(GorgonFrameRate timing)
 		{
-			_mainScreen.Clear(Color.White, 1.0f, 0);
+			//_mainScreen.Clear(Color.White, 1.0f, 0);
 
 			// Draw background.
 			for (int y = 0; y < _mainScreen.Settings.Height; y += (int)_wall.Size.Y)

@@ -154,7 +154,7 @@ namespace GorgonLibrary.Diagnostics
 			{
 				theTime = _timer.Milliseconds;
 				delta = (theTime - _lastTimerValue);
-			} while ((delta < 0.000001) && (delta != 0.0));
+			} while ((delta < 0.0001) && (delta != 0.0));
 
 			// If our delta since the last time was too high, then don't allow any movement until
 			// the simulation is caught up.
@@ -193,7 +193,7 @@ namespace GorgonLibrary.Diagnostics
 			if (AverageFrameDelta == 0.0f)
 				AverageFrameDelta = FrameDelta;
 
-			if (_averageCounter > 256)
+			if (_averageCounter > 60)
 			{
 				AverageFPS = _averageFPSTotal / _averageCounter;
 				AverageFrameDelta = _averageDTTotal / _averageCounter;
