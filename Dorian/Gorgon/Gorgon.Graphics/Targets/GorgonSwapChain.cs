@@ -83,7 +83,7 @@ namespace GorgonLibrary.Graphics
 	/// is applied, then it is suggested to disable the Desktop Windows Compositor.  To disable the compositor, see this link http://msdn.microsoft.com/en-us/library/aa969510.aspx.
 	/// </para>	
 	/// <para>If the window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when it regains focus.  
-	/// This functionality can be disabled with the <see cref="P:GorgonLibrary.Graphics.ResetFullscreenOnFocus">GorgonGraphics.ResetFullscreenOnFocus</see> property if it does not suit the needs of the 
+	/// This functionality can be disabled with the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.ResetFullscreenOnFocus">GorgonGraphics.ResetFullscreenOnFocus</see> property if it does not suit the needs of the 
 	/// developer.  This is mandatory in full screen multi-monitor applications, if the ResetFullscreenOnFocus flag is FALSE in this scenario, then the behaviour when switching between applications will be undefined.  
 	/// It is the responsibility of the developer to handle task switching in multi-monitor environments.</para>
 	/// </remarks>
@@ -518,10 +518,7 @@ namespace GorgonLibrary.Graphics
 			if (!settings.IsWindowed)
 			{
 				// Check to ensure that no other swap chain is on the video output if we're going to full screen mode.
-				var swapChainCount = (from item in graphics.TrackedObjects
-									  let swapChain = item as GorgonSwapChain
-									  where ((swapChain != null) && (swapChain.VideoOutput == output) && (!swapChain.Settings.IsWindowed) && (swapChain.Settings.Window != settings.Window))
-									  select item).Count();
+				var swapChainCount = graphics.GetGraphicsObjectOfType<GorgonSwapChain>().Count(item => (item.VideoOutput == output) && (!item.Settings.IsWindowed) && (item.Settings.Window != settings.Window));
 
 				if (swapChainCount > 0)
 					throw new GorgonException(GorgonResult.CannotCreate, "There is already a full screen swap chain active on the video output '" + output.Name + "'.");

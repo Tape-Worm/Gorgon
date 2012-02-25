@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 		{			
 			GorgonConstantBuffer buffer = new GorgonConstantBuffer(_graphics, size, allowCPUWrite);
 			buffer.Initialize(stream);
-			_graphics.TrackedObjects.Add(buffer);
+			_graphics.AddTrackedObject(buffer);
 			return buffer;
 		}
 
@@ -117,7 +117,7 @@ namespace GorgonLibrary.Graphics
 				GorgonConstantBuffer buffer = new GorgonConstantBuffer(_graphics, (int)stream.Length, allowCPUWrite);
 				buffer.Initialize(stream);
 
-				_graphics.TrackedObjects.Add(buffer);
+				_graphics.AddTrackedObject(buffer);
 				return buffer;
 			}
 		}
@@ -142,7 +142,7 @@ namespace GorgonLibrary.Graphics
 			shader = new GorgonVertexShader(_graphics, name, entryPoint);
 			shader.SourceCode = sourceCode;
 			shader.Compile(debug);
-			_graphics.TrackedObjects.Add(shader);
+			_graphics.AddTrackedObject(shader);
 
 			return shader;
 		}
@@ -167,7 +167,7 @@ namespace GorgonLibrary.Graphics
 			shader = new GorgonPixelShader(_graphics, name, entryPoint);
 			shader.SourceCode = sourceCode;
 			shader.Compile(debug);
-			_graphics.TrackedObjects.Add(shader);
+			_graphics.AddTrackedObject(shader);
 
 			return shader;
 		}

@@ -175,10 +175,10 @@ namespace GorgonLibrary.Graphics.Example
 			for (int i = 0; i < _ballCount; i++)
 			{
 				_ball.Angle = _ballList[i].Rotation;
-				_ball.Scale = new Vector2(_ballList[i].Scale);
 				_ball.Position = _ballList[i].Position;
 				_ball.Color = _ballList[i].Color;
 				_ball.Opacity = _ballList[i].Opacity;
+				_ball.RelativeScale = new Vector2(_ballList[i].Scale, _ballList[i].Scale);
 
 				if (_ballList[i].Checkered)
 					_ball.TextureOffset = new Vector2(64, 0);
@@ -234,14 +234,13 @@ namespace GorgonLibrary.Graphics.Example
 			_wall = _2D.CreateSprite("Wall", 63, 63);
 			_wall.Texture = _ballTexture;
 			_wall.BlendingMode = BlendingMode.None;
-			_wall.Depth = 0.01f;
 
 			// Create the ball sprite.
 			_ball = _2D.CreateSprite("Ball", 64, 64);
 			_ball.Anchor = new Vector2(32, 32);
-			_ball.Texture = _ballTexture;		
-			_ball.TextureFilter = TextureFilter.Linear;
-
+			_ball.Texture = _ballTexture;
+			_ball.SmoothingMode = SmoothingMode.Smooth;
+			
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);
 		}

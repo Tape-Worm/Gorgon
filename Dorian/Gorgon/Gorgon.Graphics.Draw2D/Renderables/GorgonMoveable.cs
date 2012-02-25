@@ -43,62 +43,66 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Vector2 _textureOffset = Vector2.Zero;														// Texture offset.
 		private Vector2 _textureScale = new Vector2(1);														// Texture scale.
 		private Vector2 _size = Vector2.Zero;																// Size of the renderable.
-		private float _angle = 0.0f;																		// Angle of rotation.
-		private Vector2 _position = Vector2.Zero;															// Position of the sprite.
-		private Vector2 _scale = new Vector2(1);															// Scale for the sprite.
 		private Vector2 _anchor = Vector2.Zero;																// Anchor point.
+		private Vector2 _scale = Vector2.Zero;																// Relative scale for the moveable object.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the position of the sprite.
 		/// </summary>
-		public Vector2 Position
+		public virtual Vector2 Position
 		{
-			get
-			{
-				return _position;
-			}
-			set
-			{
-				_position = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for a given axis.
 		/// </summary>
-		public float Angle
+		public virtual float Angle
 		{
-			get
-			{
-				return _angle;
-			}
-			set
-			{
-				_angle = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
 		/// Property to set or return the scale of the sprite.
 		/// </summary>
-		public Vector2 Scale
+		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.AbsoluteScale">AbsoluteScale</see> property.
+		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
+		/// </remarks>
+		public virtual Vector2 RelativeScale
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the scaled width of the object.
+		/// </summary>
+		/// <remarks>Unlike the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.RelativeScale">RelativeScale</see> property, which uses scalar values to provide a relative scale, this property takes an absolute size and scales it to that size.</remarks>
+		/// <exception cref="System.DivideByZeroException">Thrown when the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.Size">Size</see> property is 0 for X or Y.</exception>
+		public virtual Vector2 AbsoluteScale
 		{
 			get
-			{
-				return _scale;
+			{				
+				return new Vector2(_scale.X * _size.X, _scale.Y * _size.Y);
 			}
 			set
 			{
-				_scale = value;
+#if DEBUG
+				if ((_size.X == 0.0f) || (_size.Y == 0.0f))
+					throw new DivideByZeroException();
+#endif
+				_scale = new Vector2(value.X / _size.X, value.Y / _size.Y);
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the anchor point of the sprite.
 		/// </summary>
-		public Vector2 Anchor
+		public virtual Vector2 Anchor
 		{
 			get
 			{
@@ -117,37 +121,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the "depth" of the renderable in a depth buffer.
 		/// </summary>
-		public float Depth
+		public virtual float Depth
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to set or return a texture for the renderable.
-		/// </summary>
-		public override GorgonTexture2D Texture
-		{
-			get
-			{
-				return base.Texture;
-			}
-			set
-			{
-				if (value != base.Texture)
-				{
-					base.Texture = value;
-
-					// Assign the texture name.
-					if (Texture != null)
-						_textureName = Texture.Name;
-					else
-						_textureName = string.Empty;
-
-
-					NeedsTextureUpdate = true;
-				}
-			}
 		}
 
 		/// <summary>
@@ -276,6 +253,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		protected GorgonMoveable(Gorgon2D gorgon2D, string name)
 			: base(gorgon2D, name)
 		{
+			Position = Vector2.Zero;
+			RelativeScale = new Vector2(1.0f);
+			Angle = 0;
+			Anchor = Vector2.Zero;
 		}
 		#endregion
 	}

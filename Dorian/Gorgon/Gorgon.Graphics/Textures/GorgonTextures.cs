@@ -379,7 +379,7 @@ namespace GorgonLibrary.Graphics
 			result = new GorgonTexture3D(_graphics, name, settings);
 			result.Initialize(imageData, filter, mipFilter);
 
-			_graphics.TrackedObjects.Add(result);
+			_graphics.AddTrackedObject(result);
 
 			return result;
 		}
@@ -453,7 +453,7 @@ namespace GorgonLibrary.Graphics
 			result = new GorgonTexture2D(_graphics, name, settings);
 			result.Initialize(imageData, filter, mipFilter);
 
-			_graphics.TrackedObjects.Add(result);
+			_graphics.AddTrackedObject(result);
 
 			return result;
 		}
@@ -525,7 +525,7 @@ namespace GorgonLibrary.Graphics
 			result = new GorgonTexture1D(_graphics, name, settings);
 			result.Initialize(imageData, filter, mipFilter);
 
-			_graphics.TrackedObjects.Add(result);
+			_graphics.AddTrackedObject(result);
 
 			return result;
 		}
@@ -922,7 +922,7 @@ namespace GorgonLibrary.Graphics
 			texture = new GorgonTexture3D(_graphics, name, settings);
 			texture.Initialize(data);
 
-			_graphics.TrackedObjects.Add(texture);
+			_graphics.AddTrackedObject(texture);
 			return texture;
 		}
 
@@ -956,7 +956,7 @@ namespace GorgonLibrary.Graphics
 			texture = new GorgonTexture2D(_graphics, name, settings);
 			texture.Initialize(data);
 
-			_graphics.TrackedObjects.Add(texture);
+			_graphics.AddTrackedObject(texture);
 			return texture;
 		}
 
@@ -990,7 +990,7 @@ namespace GorgonLibrary.Graphics
 			texture = new GorgonTexture1D(_graphics, name, settings);
 			texture.Initialize(data);
 
-			_graphics.TrackedObjects.Add(texture);
+			_graphics.AddTrackedObject(texture);
 			return texture;
 		}
 		#endregion

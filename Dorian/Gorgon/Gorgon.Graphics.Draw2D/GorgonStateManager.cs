@@ -136,6 +136,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			StateChange result = StateChange.None;
 			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
+			GorgonRenderable.BlendState blending = renderable.Blending;
+			GorgonRenderable.TextureSamplerState sampler = renderable.TextureSampler;
 
 			if (renderable.Texture != _texture)
 			{
@@ -151,23 +153,23 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if (_gorgon2D.IsBlendingEnabled)
 			{
-				if (!renderable.BlendFactor.Equals(_blendFactor))
+				if (!blending.BlendFactor.Equals(_blendFactor))
 					result |= StateChange.BlendFactor;
 
-				if ((renderable.SourceBlend != _blendState.RenderTarget0.SourceBlend)
-					|| (renderable.DestinationBlend != _blendState.RenderTarget0.DestinationBlend)					
-					|| (renderable.AlphaOperation != _blendState.RenderTarget0.AlphaOperation)
-					|| (renderable.BlendOperation != _blendState.RenderTarget0.BlendingOperation)
-					|| (renderable.SourceAlphaBlend != _blendState.RenderTarget0.SourceAlphaBlend)
-					|| (renderable.DestinationAlphaBlend != _blendState.RenderTarget0.DestinationAlphaBlend)
-					|| (renderable.WriteMask != _blendState.RenderTarget0.WriteMask))
+				if ((blending.SourceBlend != _blendState.RenderTarget0.SourceBlend)
+					|| (blending.DestinationBlend != _blendState.RenderTarget0.DestinationBlend)					
+					|| (blending.AlphaOperation != _blendState.RenderTarget0.AlphaOperation)
+					|| (blending.BlendOperation != _blendState.RenderTarget0.BlendingOperation)
+					|| (blending.SourceAlphaBlend != _blendState.RenderTarget0.SourceAlphaBlend)
+					|| (blending.DestinationAlphaBlend != _blendState.RenderTarget0.DestinationAlphaBlend)
+					|| (blending.WriteMask != _blendState.RenderTarget0.WriteMask))
 					result |= StateChange.BlendState;
 			}
 
-			if ((renderable.TextureFilter != _samplerState.TextureFilter)
-				|| (renderable.VerticalWrapping != _samplerState.VerticalAddressing)
-				|| (renderable.HorizontalWrapping != _samplerState.HorizontalAddressing)
-				|| (!renderable.BorderColor.Equals(_samplerState.BorderColor)))
+			if ((sampler.TextureFilter != _samplerState.TextureFilter)
+				|| (sampler.VerticalWrapping != _samplerState.VerticalAddressing)
+				|| (sampler.HorizontalWrapping != _samplerState.HorizontalAddressing)
+				|| (!sampler.BorderColor.Equals(_samplerState.BorderColor)))
 				result |= StateChange.Sampler;
 
 			if (((_gorgon2D.ClipRegion != null) != (_rasterState.IsScissorTestingEnabled))
@@ -229,6 +231,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		public void ApplyState(GorgonRenderable renderable, StateChange state)
 		{
 			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
+			GorgonRenderable.BlendState blending = renderable.Blending;
+			GorgonRenderable.TextureSamplerState sampler = renderable.TextureSampler;
 
 			if ((state & StateChange.Texture) == StateChange.Texture)
 				_texture = _shaders.PixelShader.Textures[0] = renderable.Texture;
@@ -250,28 +254,28 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if ((state & StateChange.BlendFactor) == StateChange.BlendFactor)
 			{
-				_blendFactor = renderable.BlendFactor;
-				_graphics.Output.BlendingState.BlendFactor = renderable.BlendFactor;
+				_blendFactor = blending.BlendFactor;
+				_graphics.Output.BlendingState.BlendFactor = blending.BlendFactor;
 			}
 
 			if ((state & StateChange.BlendState) == StateChange.BlendState)
 			{
-				_blendState.RenderTarget0.AlphaOperation = renderable.AlphaOperation;
-				_blendState.RenderTarget0.BlendingOperation = renderable.BlendOperation;
-				_blendState.RenderTarget0.DestinationAlphaBlend = renderable.DestinationAlphaBlend;
-				_blendState.RenderTarget0.DestinationBlend = renderable.DestinationBlend;
-				_blendState.RenderTarget0.SourceAlphaBlend = renderable.SourceAlphaBlend;
-				_blendState.RenderTarget0.SourceBlend = renderable.SourceBlend;
-				_blendState.RenderTarget0.WriteMask = renderable.WriteMask;
+				_blendState.RenderTarget0.AlphaOperation = blending.AlphaOperation;
+				_blendState.RenderTarget0.BlendingOperation = blending.BlendOperation;
+				_blendState.RenderTarget0.DestinationAlphaBlend = blending.DestinationAlphaBlend;
+				_blendState.RenderTarget0.DestinationBlend = blending.DestinationBlend;
+				_blendState.RenderTarget0.SourceAlphaBlend = blending.SourceAlphaBlend;
+				_blendState.RenderTarget0.SourceBlend = blending.SourceBlend;
+				_blendState.RenderTarget0.WriteMask = blending.WriteMask;
 				_graphics.Output.BlendingState.States = _blendState;
 			}
 
 			if ((state & StateChange.Sampler) == StateChange.Sampler)
 			{
-				_samplerState.HorizontalAddressing = renderable.HorizontalWrapping;
-				_samplerState.VerticalAddressing = renderable.VerticalWrapping;
-				_samplerState.BorderColor = renderable.BorderColor;
-				_samplerState.TextureFilter = renderable.TextureFilter;
+				_samplerState.HorizontalAddressing = sampler.HorizontalWrapping;
+				_samplerState.VerticalAddressing = sampler.VerticalWrapping;
+				_samplerState.BorderColor = sampler.BorderColor;
+				_samplerState.TextureFilter = sampler.TextureFilter;
 				_shaders.PixelShader.Samplers[0] = _samplerState;
 			}
 

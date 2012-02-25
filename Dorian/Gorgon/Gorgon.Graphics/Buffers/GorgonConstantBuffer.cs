@@ -86,7 +86,7 @@ namespace GorgonLibrary.Graphics
 				D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, desc);
 
 #if DEBUG
-			D3DBuffer.DebugName = "Gorgon Constant Buffer #" + Graphics.TrackedObjects.Count(item => item is GorgonConstantBuffer).ToString();
+			D3DBuffer.DebugName = "Gorgon Constant Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonConstantBuffer>().Count().ToString(); 
 #endif
 		}
 
