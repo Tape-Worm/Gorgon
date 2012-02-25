@@ -122,14 +122,20 @@
       </ComponentConfig>
     </ComponentConfigurations>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Gorgon\bin\Debug\Gorgon.dll" />
-<DocumentationSource sourceFile="..\Libraries\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
-<DocumentationSource sourceFile="..\Libraries\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
-<DocumentationSource sourceFile="..\Libraries\Gorgon.Graphics\bin\Debug\Gorgon.Graphics.dll" />
-<DocumentationSource sourceFile="..\Libraries\Gorgon.Graphics\bin\Debug\Gorgon.Graphics.xml" />
-<DocumentationSource sourceFile="..\Libraries\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
-<DocumentationSource sourceFile="..\Libraries\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
-<DocumentationSource sourceFile="..\Gorgon\bin\Debug\Gorgon.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\Gorgon.Common.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\Gorgon.Common.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Draw2D\bin\Debug\Gorgon.Graphics.2D.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Draw2D\bin\Debug\Gorgon.Graphics.2D.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics\bin\Debug\Gorgon.Graphics.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics\bin\Debug\Gorgon.Graphics.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\Gorgon.MemoryAccess.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\Gorgon.MemoryAccess.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\SlimMath.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\SlimMath.xml" /></DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
       <NamespaceSummaryItem name="Dialogs" isDocumented="True" xmlns="">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
