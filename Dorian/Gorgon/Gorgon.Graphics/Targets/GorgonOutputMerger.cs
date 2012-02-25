@@ -563,7 +563,7 @@ namespace GorgonLibrary.Graphics
 			GorgonDepthStencil.ValidateSettings(_graphics, settings);
 
 			depthBuffer = new GorgonDepthStencil(_graphics, name, settings);
-			_graphics.TrackedObjects.Add(depthBuffer);
+			_graphics.AddTrackedObject(depthBuffer);
 			depthBuffer.UpdateSettings();
 
 			return depthBuffer;
@@ -605,7 +605,7 @@ namespace GorgonLibrary.Graphics
 			GorgonSwapChain.ValidateSwapChainSettings(_graphics, settings);
 
 			swapChain = new GorgonSwapChain(_graphics, name, settings);
-			_graphics.TrackedObjects.Add(swapChain);
+			_graphics.AddTrackedObject(swapChain);
 			swapChain.Initialize();
 
 			return swapChain;

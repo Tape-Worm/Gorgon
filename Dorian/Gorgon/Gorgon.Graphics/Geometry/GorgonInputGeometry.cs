@@ -641,7 +641,7 @@ namespace GorgonLibrary.Graphics
 			GorgonIndexBuffer buffer = new GorgonIndexBuffer(_graphics, usage, size, is32bit);
 			buffer.Initialize(initialData);
 
-			_graphics.TrackedObjects.Add(buffer);
+			_graphics.AddTrackedObject(buffer);
 			return buffer;
 		}
 
@@ -716,7 +716,7 @@ namespace GorgonLibrary.Graphics
 			GorgonVertexBuffer buffer = new GorgonVertexBuffer(_graphics, usage, size);
 			buffer.Initialize(initialData);
 
-			_graphics.TrackedObjects.Add(buffer);
+			_graphics.AddTrackedObject(buffer);
 			return buffer;
 		}
 
@@ -747,7 +747,7 @@ namespace GorgonLibrary.Graphics
 			layout = new GorgonInputLayout(_graphics, name, shader);
 			layout.GetLayoutFromType(type);
 
-			_graphics.TrackedObjects.Add(layout);
+			_graphics.AddTrackedObject(layout);
 
 			return layout;
 		}
@@ -773,7 +773,7 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
 			layout = new GorgonInputLayout(_graphics, name, shader);
 
-			_graphics.TrackedObjects.Add(layout);
+			_graphics.AddTrackedObject(layout);
 			return layout;
 		}
 		#endregion

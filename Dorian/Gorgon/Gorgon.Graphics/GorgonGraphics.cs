@@ -102,6 +102,7 @@ namespace GorgonLibrary.Graphics
 		private static bool _isDWMEnabled = true;						// Flag to indicate that the desktop window manager compositor is enabled.
 		private static bool _dontEnableDWM = false;						// Flag to indicate that we should not enable the DWM.
 		private bool _disposed = false;									// Flag to indicate that the object was disposed.
+		private GorgonTrackedObjectCollection TrackedObjects = null;	// Tracked objects.
 		#endregion
 
 		#region Properties.
@@ -109,15 +110,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the DX GI factory.
 		/// </summary>
 		internal GI.Factory1 GIFactory
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the list of tracked objects.
-		/// </summary>
-		internal GorgonTrackedObjectCollection TrackedObjects
 		{
 			get;
 			private set;
@@ -316,11 +308,28 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to remove a tracked object from the collection.
+		/// Function to add a new object to the object tracker.
+		/// </summary>
+		/// <param name="trackedObject">Object to track.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>Use this to have the graphics interface track your custom object so that it will be disposed when the graphics interface shuts down.</remarks>
+		public void AddTrackedObject(IDisposable trackedObject)
+		{
+			GorgonDebug.AssertNull<IDisposable>(trackedObject, "trackedObject");
+
+			TrackedObjects.Add(trackedObject);
+		}
+
+		/// <summary>
+		/// Function to remove a tracked object from the object tracker.
 		/// </summary>
 		/// <param name="trackedObject">Tracked object to remove.</param>
-		internal void RemoveTrackedObject(IDisposable trackedObject)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>If your custom object is being tracked by the graphics interface, then this must be called in the dispose method to remove it from the tracker.</remarks>
+		public void RemoveTrackedObject(IDisposable trackedObject)
 		{
+			GorgonDebug.AssertNull<IDisposable>(trackedObject, "trackedObject");
+
 			TrackedObjects.Remove(trackedObject);
 		}
 

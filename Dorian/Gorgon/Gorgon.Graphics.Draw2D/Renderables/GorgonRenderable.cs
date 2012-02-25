@@ -28,13 +28,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel;
 using SlimMath;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics.Renderers
 {
 	/// <summary>
-	/// Default blending modes.
+	/// Renderable smoothing modes.
+	/// </summary>
+	public enum SmoothingMode
+	{
+		/// <summary>
+		/// No smoothing.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Smooth both minified and magnified renderables.
+		/// </summary>
+		Smooth = 1,
+		/// <summary>
+		/// Smooth only minified renderables.
+		/// </summary>
+		SmoothMinify = 2,
+		/// <summary>
+		/// Smooth only magnified renderables.
+		/// </summary>
+		SmoothMagnify = 3,
+		/// <summary>
+		/// Custom smoothing set in the advanced texture sampler state.
+		/// </summary>
+		Custom = 32767
+	}
+
+	/// <summary>
+	/// Renderable blending modes.
 	/// </summary>
 	public enum BlendingMode
 	{
@@ -59,7 +87,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		PreMultiplied = 4,
 		/// <summary>
-		/// Custom blending.
+		/// Custom blending set in the advanced blending state.
 		/// </summary>
 		Custom = 32767
 	}
@@ -72,6 +100,200 @@ namespace GorgonLibrary.Graphics.Renderers
 		: GorgonNamedObject
 	{
 		#region Classes.
+		/// <summary>
+		/// A texture sampler state.
+		/// </summary>
+		public class TextureSamplerState
+		{
+			#region Properties.
+			/// <summary>
+			/// Property to set or return the border color for areas outside of the texture.
+			/// </summary>
+			public virtual GorgonColor BorderColor
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the horizontal wrapping mode for areas outside of the texture.
+			/// </summary>
+			public virtual TextureAddressing HorizontalWrapping
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the vertical wrapping mode for areas outside of the texture.
+			/// </summary>
+			public virtual TextureAddressing VerticalWrapping
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the type of filtering for the texture.
+			/// </summary>
+			public virtual TextureFilter TextureFilter
+			{
+				get;
+				set;
+			}
+			#endregion
+
+			#region Constructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="TextureSamplerState"/> class.
+			/// </summary>
+			public TextureSamplerState()
+			{
+				BorderColor = new GorgonColor(0);
+				HorizontalWrapping = TextureAddressing.Clamp;
+				VerticalWrapping = TextureAddressing.Clamp;
+				TextureFilter = TextureFilter.Point;
+			}
+			#endregion
+		}
+
+		/// <summary>
+		/// A blending state.
+		/// </summary>
+		public class BlendState
+		{
+			#region Variables.
+			private BlendType _sourceAlphaBlend = BlendType.One;												// Source alpha blend.
+			private BlendType _destAlphaBlend = BlendType.Zero;													// Destination alpha blend.
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to set or return the write mask to mask out specific channels of color (or alpha).
+			/// </summary>
+			public ColorWriteMaskFlags WriteMask
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the alpha blending operation.
+			/// </summary>
+			public BlendOperation AlphaOperation
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the blending operation.
+			/// </summary>
+			public BlendOperation BlendOperation
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the source alpha blending function.
+			/// </summary>
+			public BlendType SourceAlphaBlend
+			{
+				get
+				{
+					return _sourceAlphaBlend;
+				}
+				set
+				{
+#if DEBUG
+				switch (value)
+				{
+					case BlendType.DestinationColor:
+					case BlendType.InverseDestinationColor:
+					case BlendType.InverseSecondarySourceColor:
+					case BlendType.InverseSourceColor:
+					case BlendType.SecondarySourceColor:
+					case BlendType.SourceColor:
+						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
+				}
+#endif
+					_sourceAlphaBlend = value;
+				}
+			}
+
+			/// <summary>
+			/// Property to set or return the destination alpha blending function.
+			/// </summary>
+			public BlendType DestinationAlphaBlend
+			{
+				get
+				{
+					return _destAlphaBlend;
+				}
+				set
+				{
+#if DEBUG
+				switch (value)
+				{
+					case BlendType.DestinationColor:
+					case BlendType.InverseDestinationColor:
+					case BlendType.InverseSecondarySourceColor:
+					case BlendType.InverseSourceColor:
+					case BlendType.SecondarySourceColor:
+					case BlendType.SourceColor:
+						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
+				}
+#endif
+					_destAlphaBlend = value;
+				}
+			}
+
+			/// <summary>
+			/// Property to set or return the blend factor.
+			/// </summary>
+			/// <remarks>This is only valid when the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.SourceBlend">SourceBlend</see> or the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.DestinationBlend">DestinationBlend</see> are set to BlendFactor.</remarks>
+			public GorgonColor BlendFactor
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the source blending function.
+			/// </summary>
+			public BlendType SourceBlend
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the destination blending function.
+			/// </summary>
+			public BlendType DestinationBlend
+			{
+				get;
+				set;
+			}
+			#endregion
+
+			#region Constructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="BlendState"/> class.
+			/// </summary>
+			public BlendState()
+			{
+				SourceBlend = BlendType.SourceAlpha;
+				DestinationBlend = BlendType.InverseSourceAlpha;
+				BlendFactor = new GorgonColor(0);
+				BlendOperation = Graphics.BlendOperation.Add;
+				AlphaOperation = Graphics.BlendOperation.Add;
+				WriteMask = ColorWriteMaskFlags.All;
+			}
+			#endregion
+		}
+
 		/// <summary>
 		/// Depth/Stencil buffer states for a renderable.
 		/// </summary>
@@ -217,7 +439,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// <summary>
 			/// Initializes a new instance of the <see cref="DepthStencilStates"/> class.
 			/// </summary>
-			internal DepthStencilStates()
+			public DepthStencilStates()
 			{
 				IsDepthWriteEnabled = true;
 				DepthStencilReference = 0;
@@ -234,8 +456,6 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Variables.
 		private GorgonTexture2D _texture = null;															// Texture to use for the renderable.
-		private BlendType _sourceAlphaBlend = BlendType.One;												// Source alpha blend.
-		private BlendType _destAlphaBlend = BlendType.Zero;													// Destination alpha blend.
 		#endregion
 
 		// TODO:  Put blending, texture sampler and rasterizer states into state interfaces like the depth buffer.
@@ -305,75 +525,100 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to return depth/stencil buffer states for this renderable.
+		/// Property to set or return depth/stencil buffer states for this renderable.
 		/// </summary>
 		public DepthStencilStates DepthStencil
 		{
 			get;
-			private set;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return advanced blending states for this renderable.
+		/// </summary>
+		public BlendState Blending
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return advanded texture sampler states for this renderable.
+		/// </summary>
+		public TextureSamplerState TextureSampler
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return pre-defined smoothing states for the renderable.
+		/// </summary>
+		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter.">TextureFilter</see> 
+		/// property exposed by the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.TextureSampler.">TextureSampler</see> property.</remarks>
+		public virtual SmoothingMode SmoothingMode
+		{
+			get
+			{
+				switch(TextureSampler.TextureFilter)
+				{
+					case TextureFilter.Point:
+						return SmoothingMode.None;
+					case TextureFilter.Linear:
+						return SmoothingMode.Smooth;
+					case TextureFilter.MinLinear | TextureFilter.MipLinear:
+						return SmoothingMode.SmoothMinify;
+					case TextureFilter.MagLinear | TextureFilter.MipLinear:
+						return SmoothingMode.SmoothMagnify;
+					default:
+						return SmoothingMode.Custom;
+				}
+			}
+			set
+			{
+				switch (value)
+				{
+					case SmoothingMode.None:
+						TextureSampler.TextureFilter = TextureFilter.Point;			
+						break;
+					case SmoothingMode.Smooth:
+						TextureSampler.TextureFilter = TextureFilter.Linear;
+						break;
+					case SmoothingMode.SmoothMinify:
+						TextureSampler.TextureFilter = TextureFilter.MinLinear | TextureFilter.MipLinear;
+						break;
+					case SmoothingMode.SmoothMagnify:
+						TextureSampler.TextureFilter = TextureFilter.MagLinear | TextureFilter.MipLinear;
+						break;
+				}
+			}		
 		}
 	
 		/// <summary>
-		/// Property to set or return the border color for areas outside of the texture.
+		/// Property to set or return a pre-defined blending states for the renderable.
 		/// </summary>
-		public virtual GorgonColor BorderColor
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the horizontal wrapping mode for areas outside of the texture.
-		/// </summary>
-		public virtual TextureAddressing HorizontalWrapping
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the vertical wrapping mode for areas outside of the texture.
-		/// </summary>
-		public virtual TextureAddressing VerticalWrapping
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the type of filtering for the texture.
-		/// </summary>
-		public virtual TextureFilter TextureFilter
-		{
-			get;
-			set;
-		}
-
-
-		/// <summary>
-		/// Property to set or return a pre-defined blending mode for the renderable.
-		/// </summary>
-		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.SourceBlend">SourceBlend</see> 
-		/// or the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.DestinationBlend">DestinationBlend</see> property.</remarks>
+		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.BlendingState.SourceBlend">SourceBlend</see> 
+		/// or the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.Blending.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+		/// <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
 		public virtual BlendingMode BlendingMode
 		{
 			get
 			{
-				if ((SourceBlend == BlendType.One) && (DestinationBlend == BlendType.Zero))
+				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.Zero))
 					return Renderers.BlendingMode.None;
 
-				if (SourceBlend == BlendType.SourceAlpha) 
+				if (Blending.SourceBlend == BlendType.SourceAlpha) 
 				{	
-					if (DestinationBlend == BlendType.InverseSourceAlpha)
+					if (Blending.DestinationBlend == BlendType.InverseSourceAlpha)
 						return Renderers.BlendingMode.Modulate;
-					if (DestinationBlend == BlendType.One)
+					if (Blending.DestinationBlend == BlendType.One)
 						return Renderers.BlendingMode.Additive;
 				}
 
-				if ((SourceBlend == BlendType.One) && (DestinationBlend == BlendType.InverseSourceAlpha))
+				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.InverseSourceAlpha))
 					return Renderers.BlendingMode.PreMultiplied;
 
-				if ((SourceBlend == BlendType.InverseDestinationColor) && (DestinationBlend == BlendType.InverseSourceColor))
+				if ((Blending.SourceBlend == BlendType.InverseDestinationColor) && (Blending.DestinationBlend == BlendType.InverseSourceColor))
 					return Renderers.BlendingMode.Inverted;
 				
 				return Renderers.BlendingMode.Custom;
@@ -383,24 +628,20 @@ namespace GorgonLibrary.Graphics.Renderers
 				switch (value)
 				{
 					case Renderers.BlendingMode.Additive:
-						SourceBlend = BlendType.SourceAlpha;
-						DestinationBlend = BlendType.One;
+						Blending.SourceBlend = BlendType.SourceAlpha;
+						Blending.DestinationBlend = BlendType.One;
 						break;
 					case Renderers.BlendingMode.Inverted:
-						SourceBlend = BlendType.InverseDestinationColor;
-						DestinationBlend = BlendType.InverseSourceColor;
+						Blending.SourceBlend = BlendType.InverseDestinationColor;
+						Blending.DestinationBlend = BlendType.InverseSourceColor;
 						break;
 					case Renderers.BlendingMode.Modulate:
-						SourceBlend = BlendType.SourceAlpha;
-						DestinationBlend = BlendType.InverseSourceAlpha;
+						Blending.SourceBlend = BlendType.SourceAlpha;
+						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
 					case Renderers.BlendingMode.PreMultiplied:
-						SourceBlend = BlendType.One;
-						DestinationBlend = BlendType.InverseSourceAlpha;
-						break;
-					default:
-						SourceBlend = BlendType.One;
-						DestinationBlend = BlendType.Zero;
+						Blending.SourceBlend = BlendType.One;
+						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
 				}
 			}
@@ -411,115 +652,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <remarks>Use this to make a renderable two-sided.</remarks>
 		public CullingMode CullingMode
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the write mask to mask out specific channels of color (or alpha).
-		/// </summary>
-		public ColorWriteMaskFlags WriteMask
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the alpha blending operation.
-		/// </summary>
-		public BlendOperation AlphaOperation
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the blending operation.
-		/// </summary>
-		public BlendOperation BlendOperation
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the source alpha blending function.
-		/// </summary>
-		public BlendType SourceAlphaBlend
-		{
-			get
-			{
-				return _sourceAlphaBlend;
-			}
-			set
-			{
-#if DEBUG
-				switch (value)
-				{
-					case BlendType.DestinationColor:
-					case BlendType.InverseDestinationColor:
-					case BlendType.InverseSecondarySourceColor:
-					case BlendType.InverseSourceColor:
-					case BlendType.SecondarySourceColor:
-					case BlendType.SourceColor:
-						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
-				}
-#endif
-				_sourceAlphaBlend = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the destination alpha blending function.
-		/// </summary>
-		public BlendType DestinationAlphaBlend
-		{
-			get
-			{
-				return _destAlphaBlend;
-			}
-			set
-			{
-#if DEBUG
-				switch (value)
-				{
-					case BlendType.DestinationColor:
-					case BlendType.InverseDestinationColor:
-					case BlendType.InverseSecondarySourceColor:
-					case BlendType.InverseSourceColor:
-					case BlendType.SecondarySourceColor:
-					case BlendType.SourceColor:
-						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
-				}
-#endif
-				_destAlphaBlend = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the blend factor.
-		/// </summary>
-		/// <remarks>This is only valid when the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.SourceBlend">SourceBlend</see> or the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.DestinationBlend">DestinationBlend</see> are set to BlendFactor.</remarks>
-		public GorgonColor BlendFactor
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the source blending function.
-		/// </summary>
-		public BlendType SourceBlend
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the destination blending function.
-		/// </summary>
-		public BlendType DestinationBlend
 		{
 			get;
 			set;
@@ -668,21 +800,11 @@ namespace GorgonLibrary.Graphics.Renderers
 			Gorgon2D = gorgon2D;
 			CullingMode = Graphics.CullingMode.Back;
 	
-			SourceBlend = BlendType.SourceAlpha;
-			DestinationBlend = BlendType.InverseSourceAlpha;
-			BlendFactor = new GorgonColor(0);
-			BlendOperation = Graphics.BlendOperation.Add;
-			AlphaOperation = Graphics.BlendOperation.Add;
-			WriteMask = ColorWriteMaskFlags.All;
-
-			BorderColor = new GorgonColor(0);
-			HorizontalWrapping = TextureAddressing.Clamp;
-			VerticalWrapping = TextureAddressing.Clamp;
-			TextureFilter = TextureFilter.Point;
-
 			VertexBufferBinding = gorgon2D.DefaultVertexBufferBinding;
 			AlphaTestValues = GorgonMinMaxF.Empty;
 			DepthStencil = new DepthStencilStates();
+			Blending = new BlendState();
+			TextureSampler = new TextureSamplerState();
 		}
 		#endregion
 	}

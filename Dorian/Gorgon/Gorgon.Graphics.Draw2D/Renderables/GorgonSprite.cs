@@ -106,6 +106,33 @@ namespace GorgonLibrary.Graphics.Renderers
 				return Graphics.PrimitiveType.TriangleList;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return a texture for the renderable.
+		/// </summary>
+		public override GorgonTexture2D Texture
+		{
+			get
+			{
+				return base.Texture;
+			}
+			set
+			{
+				if (value != base.Texture)
+				{
+					base.Texture = value;
+
+					// Assign the texture name.
+					if (Texture != null)
+						_textureName = Texture.Name;
+					else
+						_textureName = string.Empty;
+
+
+					NeedsTextureUpdate = true;
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -125,17 +152,17 @@ namespace GorgonLibrary.Graphics.Renderers
 			posY2 = _corners[3];
 
 			// Scale horizontally if necessary.
-			if (Scale.X != 1.0f)
+			if (RelativeScale.X != 1.0f)
 			{
-				posX1 *= Scale.X;
-				posX2 *= Scale.X;
+				posX1 *= RelativeScale.X;
+				posX2 *= RelativeScale.X;
 			}
 
 			// Scale vertically.
-			if (Scale.Y != 1.0f)
+			if (RelativeScale.Y != 1.0f)
 			{
-				posY1 *= Scale.Y;
-				posY2 *= Scale.Y;
+				posY1 *= RelativeScale.Y;
+				posY2 *= RelativeScale.Y;
 			}
 
 			// Calculate rotation if necessary.
@@ -204,47 +231,6 @@ namespace GorgonLibrary.Graphics.Renderers
 			Vertices[3].Position.X += _offsets[3].X;
 			Vertices[3].Position.Y += _offsets[3].Y;			
 		}
-		///// <summary>
-		///// Function to transform the vertices.
-		///// </summary>
-		//protected override void TransformVertices()
-		//{
-		//    Vector4 anchoredPosition = Vector4.Zero;
-		//    Vector4 anchor = new Vector4(Anchor, 0.0f);
-
-		//    if (NeedsRotation)
-		//    {
-		//        Quaternion rotationAngle = Quaternion.Identity;
-
-		//        Quaternion.RotationYawPitchRoll(GorgonMathUtility.Radians(Angle.Y), GorgonMathUtility.Radians(Angle.X), GorgonMathUtility.Radians(Angle.Z), out rotationAngle);
-		//        Matrix.RotationQuaternion(ref rotationAngle, out _rotation);
-		//    }
-						
-		//    if (NeedsScaling)
-		//        _scaling.ScaleVector = new Vector3(Scale, 1.0f);
-
-		//    if ((NeedsScaling) || (NeedsRotation))
-		//        Matrix.Multiply(ref _scaling, ref _rotation, out _worldMatrix);
-
-		//    _worldMatrix.TranslationVector = Position;
-
-		//    for (int i = 0; i < Vertices.Length; i++)
-		//    {
-		//        Gorgon2D.Vertex transformedVertex = Vertices[i];
-				
-		//        if (!anchor.Equals(Vector4.Zero))
-		//            Vector4.Subtract(ref transformedVertex.Position, ref anchor, out transformedVertex.Position);
-
-		//        Vector4.Transform(ref transformedVertex.Position, ref _worldMatrix, out transformedVertex.Position);
-
-		//        if (NeedsVertexOffsetUpdate)
-		//            Vector4.Add(ref _offsets[i], ref transformedVertex.Position, out transformedVertex.Position);
-
-		//        TransformedVertices[i] = transformedVertex;
-		//    }
-
-		//    NeedsVertexOffsetUpdate = false;
-		//}
 
 		/// <summary>
 		/// Function to update the texture coordinates.

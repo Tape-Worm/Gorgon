@@ -72,7 +72,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 #if DEBUG
-			D3DBuffer.DebugName = "Gorgon Vertex Buffer #" + Graphics.TrackedObjects.Count(item => item is GorgonVertexBuffer).ToString();
+			D3DBuffer.DebugName = "Gorgon Vertex Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonVertexBuffer>().Count().ToString();
 #endif
 		}
 

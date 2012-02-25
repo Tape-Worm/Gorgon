@@ -54,8 +54,8 @@ namespace GorgonLibrary
 	/// The gorgon application.
 	/// </summary>
 	/// <remarks>Use this to replace the Application.Run(new Form()) method in the startup function.
-	/// <para>The application uses an <see cref="P:GorgonLibrary.Gorgon.ApplicationIdleLoop">idle loop method</see> to call the users code when it is running.  <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
-	/// <para>An application is started by calling its <see cref="M:GorgonLibrary.Gorgon.Run">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
+	/// <para>The application uses an <see cref="P:GorgonLibrary.Gorgon.ApplicationIdleLoopMethod">idle loop method</see> to call the users code when it is running.  <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
+	/// <para>An application is started by calling its <see cref="M:GorgonLibrary.Gorgon.Run(System.Windows.Forms.Form,GorgonLibrary.ApplicationLoopMethod)">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
 	/// Alternatively, the application can be terminated by returning FALSE from the idle loop method.</para>
 	/// <para>Any objects created in Gorgon, such as the Graphics interface, will be destroyed when the application ends.</para>
 	/// </remarks>
@@ -277,7 +277,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Property to return if the app is in a running state or not.
 		/// </summary>
-		/// <remarks>This flag is set to TRUE when the <see cref="M:GorgonLibrary.Gorgon.Go">Go</see> method is called and FALSE when the <see cref="M:GorgonLibrary.Gorgon.Stop">Stop</see> method is called.</remarks>
+		/// <remarks>This flag is set to TRUE when the application is in a running state and FALSE when it is not.</remarks>
 		/// <value>TRUE if the application is running, and FALSE if not.</value>
 		public static bool IsRunning
 		{

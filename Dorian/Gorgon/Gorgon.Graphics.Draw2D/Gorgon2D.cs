@@ -34,7 +34,6 @@ using SlimMath;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections.Specialized;
-using GorgonLibrary.Graphics.Design;
 
 namespace GorgonLibrary.Graphics.Renderers
 {
@@ -44,7 +43,7 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// <remarks>This is the interface to handle sprites, primitives like lines, circles, ellipses, etc... and text.  The 2D renderer allows for using sprites in a 3D space.  
 	/// That is, it respects the depth axis so that placing a 2 sprites, one at coordinates (0.1, 0.1, 0.1) and the other at (0.1, 0.1, 1.0), will make the 2nd appear 
 	/// smaller.
-	/// <para>A default render target is required to use this interface, however that render target can be a render target texture or <see cref="M:GorgonLibrary.Graphics.Output.CreateSwapChain">swap chain</see>.  
+	/// <para>A default render target is required to use this interface, however that render target can be a render target texture or <see cref="M:GorgonLibrary.Graphics.GorgonOutputMerger.CreateSwapChain">swap chain</see>.  
 	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.Target">Target</see> property.</para>
 	/// </remarks>
 	public class Gorgon2D
@@ -890,6 +889,8 @@ namespace GorgonLibrary.Graphics.Renderers
 						DefaultVertexBufferBinding.VertexBuffer.Dispose();
 					if (DefaultIndexBuffer != null)
 						DefaultIndexBuffer.Dispose();
+
+					Graphics.RemoveTrackedObject(this);
 				}
 
 				_disposed = true;

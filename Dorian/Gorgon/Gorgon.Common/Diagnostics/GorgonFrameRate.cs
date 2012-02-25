@@ -31,7 +31,7 @@ namespace GorgonLibrary.Diagnostics
 	/// <summary>
 	/// Data used for frame rate timing operations.
 	/// </summary>
-	/// <remarks>This object is returned to the main application loop from the <see cref="M:GorgonLibrary.Gorgon.Go">Go</see> method.</remarks>
+	/// <remarks>This object is returned to the main application loop from the <see cref="D:GorgonLibrary.Gorgon.ApplicationLoopMethod">ApplicationLoopMethod</see> delgate.</remarks>
 	public class GorgonFrameRate
 	{
 		#region Variables.
