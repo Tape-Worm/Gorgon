@@ -220,10 +220,10 @@ namespace GorgonLibrary.Graphics.Example
 			_2D.Primitives.FilledRectangle(new RectangleF(0, 0, 640, 480), Color.Blue);
 			_2D.Primitives.DrawPoint(new Vector2(320, 240), Color.Yellow);
 			_2D.Primitives.DrawLine(new Vector2(10, 10), new Vector2(300, 220), Color.Green);
-			_2D.Primitives.FilledEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Black, 64);
+			_2D.Primitives.FilledEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.White, 64, _ballTexture, new RectangleF(64, 0, 64.0f, 64.0f));
 			_2D.Primitives.DrawEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Red, 64);
 
-			_line.Angle = _ballList[0].Rotation;
+			//_line.Angle = _ballList[0].Rotation;
 			//_line.Color = _pt.Color;
 			_line.EndPoint = new Vector2(0, 20);
 			_line.Draw();
@@ -328,19 +328,19 @@ namespace GorgonLibrary.Graphics.Example
 
 			_line = _2D.CreateLine("Lineum", new Vector2(20, 20), new Vector2(40, 20));
 			_line.PenSize = new Vector2(4, 4);
-			//_line.Texture = _ballTexture;
-			_line.TextureStart = new Vector2(64, 0);
-			_line.TextureEnd = new Vector2(128, 8);
+//			_line.Texture = _ballTexture;
+			_line.TextureStart = new Vector2(128, 64);
+			_line.TextureEnd = new Vector2(64, 0);
 			//_line.Angle = 45.0f;
-			_line.Anchor = new Vector2(40, 40);
+			//_line.Anchor = new Vector2(40, 40);
 			//_line.PenSize = new Vector2(16, 16);
 
-			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(63, 63), 4, false);
+			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(62, 62), 64, false);
 			//_ellipse.PenSize = new Vector2(2.0f, 2.0f);
-			_ellipse.Scale = new Vector2(4.5f, 4.5f);
+			//_ellipse.Scale = new Vector2(2.5f, 2.5f);
 			_ellipse.Texture = _ballTexture;
 			_ellipse.Anchor = new Vector2(31.5f, 31.5f);
-			_ellipse.TextureOffset = new Vector2(64, 0);
+			_ellipse.TextureOffset = new Vector2(65, 2);
 			//_ellipse.Size = new Vector2(198, 198);			
 
 			// Generate the ball list.
