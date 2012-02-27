@@ -339,20 +339,17 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			else
 			{
-				Vertices[0].UV.X = TextureStart.X / Texture.Settings.Width;
-				Vertices[0].UV.Y = TextureStart.Y / Texture.Settings.Height;
-				Vertices[1].UV.X = TextureEnd.X / Texture.Settings.Width;
-				Vertices[1].UV.Y = TextureStart.Y / Texture.Settings.Height;
-				Vertices[2].UV.X = TextureStart.X / Texture.Settings.Width;
-				Vertices[2].UV.Y = TextureStart.Y / Texture.Settings.Height;
-				Vertices[3].UV.X = TextureEnd.X / Texture.Settings.Width;
-				Vertices[3].UV.Y = TextureStart.Y / Texture.Settings.Height;
+				Vertices[0].UV.X = (TextureStart.X) / Texture.Settings.Width;
+				Vertices[0].UV.Y = (TextureEnd.Y) / Texture.Settings.Height;
 
+				Vertices[1].UV.X = (TextureStart.X) / Texture.Settings.Width;
+				Vertices[1].UV.Y = (TextureStart.Y) / Texture.Settings.Height;
 
-/*				Vertices[2].UV.X = Vertices[0].UV.X = TextureStart.X / Texture.Settings.Width;
-				Vertices[1].UV.Y = Vertices[0].UV.Y = TextureStart.Y / Texture.Settings.Height;
-				Vertices[3].UV.X = Vertices[1].UV.X = TextureEnd.X / Texture.Settings.Width;
-				Vertices[2].UV.Y = Vertices[3].UV.Y = TextureEnd.Y / Texture.Settings.Height;*/
+				Vertices[2].UV.X = (TextureEnd.X) / Texture.Settings.Width;
+				Vertices[2].UV.Y = (TextureEnd.Y) / Texture.Settings.Height;
+				
+				Vertices[3].UV.X = (TextureEnd.X) / Texture.Settings.Width;
+				Vertices[3].UV.Y = (TextureStart.Y) / Texture.Settings.Height;
 			}
 		}
 
@@ -560,16 +557,16 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public override void Draw()
 		{
-			if (NeedsTextureUpdate)
-			{
-				UpdateTextureCoordinates();
-				NeedsTextureUpdate = false;
-			}
-
 			if (NeedsVertexUpdate)
 			{
 				UpdateVertices();
 				NeedsVertexUpdate = false;
+			}
+
+			if (NeedsTextureUpdate)
+			{
+				UpdateTextureCoordinates();
+				NeedsTextureUpdate = false;
 			}
 
 			TransformVertices();

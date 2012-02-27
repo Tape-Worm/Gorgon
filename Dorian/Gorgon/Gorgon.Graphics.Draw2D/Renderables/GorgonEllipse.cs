@@ -102,11 +102,6 @@ namespace GorgonLibrary.Graphics.Renderers
 				{
 					_isFilled = value;
 
-					if (value)
-						BaseVertexCount = VertexCount = _points.Length * 3;
-					else
-						BaseVertexCount = VertexCount = _points.Length * 2;
-
 					NeedsTextureUpdate = true;
 					NeedsVertexUpdate = true;
 				}
@@ -131,9 +126,9 @@ namespace GorgonLibrary.Graphics.Renderers
 				if (_quality != value)
 				{
 					_quality = value;
-					BaseVertexCount = _quality * 4;
-					VertexCount = _quality * 4;
-					InitializeVertices(_quality * 4);
+					BaseVertexCount = _quality * 3;
+					VertexCount = _quality * 3;
+					InitializeVertices(_quality * 3);
 				}
 			}
 		}
@@ -201,7 +196,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="endUV">Ending UV coordinate.</param>
 		private void UpdateUnfilledTextureCoordinates(int index, int nextIndex, out Vector2 startUV, out Vector2 endUV)
 		{
-			Vector2 offsetUV = Vector2.Zero;
 			Vector2 scaledTexture = Vector2.Zero;
 			Vector2 scaledPos = Vector2.Zero;
 
@@ -215,10 +209,11 @@ namespace GorgonLibrary.Graphics.Renderers
 			scaledPos = new Vector2(TextureOffset.X / Texture.Settings.Width, TextureOffset.Y / Texture.Settings.Height);
 			scaledTexture = new Vector2(TextureRegion.Width / Texture.Settings.Width, TextureRegion.Height / Texture.Settings.Height);
 			
-			Vector2.Modulate(ref _offsets[index], ref scaledTexture, out endUV);
-			Vector2.Modulate(ref _offsets[nextIndex], ref scaledTexture, out startUV);
+			Vector2.Modulate(ref _offsets[index], ref scaledTexture, out startUV);
+			Vector2.Modulate(ref _offsets[nextIndex], ref scaledTexture, out endUV);
 
 			Vector2.Add(ref startUV, ref scaledPos, out startUV);
+			Vector2.Add(ref endUV, ref scaledPos, out endUV);
 
 			startUV.X *= Texture.Settings.Width;
 			startUV.Y *= Texture.Settings.Height;
@@ -259,6 +254,7 @@ namespace GorgonLibrary.Graphics.Renderers
 					Vector2.Modulate(ref _offsets[0], ref scaledTexture, out scaleUV);
 
 				Vector2.Add(ref scaleUV, ref scaledPos, out scaleUV);
+				Vector2.Add(ref offsetUV, ref scaledPos, out offsetUV);
 
 				// Set center coordinate.
 				Vertices[vertexIndex].UV.X = (TextureOffset.X + midPoint.X) / Texture.Settings.Width;
@@ -439,6 +435,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				return;
 			}
 
+			// Draw unfilled with a line object.
 			if (NeedsVertexUpdate)
 			{
 				UpdateVertices();
@@ -493,7 +490,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			Position = position;
 			Size = size;			
 			Quality = quality;
-			IsFilled = isFilled;
+			IsFilled = isFilled;			
 			_line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero);
 		}
 		#endregion
