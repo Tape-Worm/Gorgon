@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="renderable">Renderable object to use.</param>
 		/// <returns></returns>
-		public StateChange CheckState(GorgonRenderable renderable)
+		public StateChange CheckState(IRenderable renderable)
 		{
 			StateChange result = StateChange.None;
 			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
@@ -228,7 +228,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="renderable">Renderable object to retrieve states from.</param>
 		/// <param name="state">States that need updating.</param>
-		public void ApplyState(GorgonRenderable renderable, StateChange state)
+		public void ApplyState(IRenderable renderable, StateChange state)
 		{
 			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
 			GorgonRenderable.BlendState blending = renderable.Blending;

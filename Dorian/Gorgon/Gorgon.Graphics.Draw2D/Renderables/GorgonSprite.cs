@@ -34,29 +34,29 @@ using GorgonLibrary.Math;
 namespace GorgonLibrary.Graphics.Renderers
 {
 	/// <summary>
-	/// The corners of a sprite.
+	/// The corners of a rectangle.
 	/// </summary>
-	public enum SpriteCorner
+	public enum RectangleCorner
 	{
 		/// <summary>
-		/// Upper left hand corner of the sprite.
+		/// Upper left hand corner of the rectangle.
 		/// </summary>
-		/// <remarks>This equates to vertex #0 in the sprite.</remarks>
+		/// <remarks>This equates to vertex #0 in a sprite.</remarks>
 		UpperLeft = 0,
 		/// <summary>
 		/// Upper right hand corner of the sprite.
 		/// </summary>
-		/// <remarks>This equates to vertex #1 in the sprite.</remarks>
+		/// <remarks>This equates to vertex #1 in a sprite.</remarks>
 		UpperRight = 1,
 		/// <summary>
 		/// Lower left hand corner of the sprite.
 		/// </summary>
-		/// <remarks>This equates to vertex #2 in the sprite.</remarks>
+		/// <remarks>This equates to vertex #2 in a sprite.</remarks>
 		LowerLeft = 2,
 		/// <summary>
 		/// Lower right hand corner of the sprite.
 		/// </summary>
-		/// <remarks>This equates to vertex #3 in the sprite.</remarks>
+		/// <remarks>This equates to vertex #3 in a sprite.</remarks>
 		LowerRight = 3
 	}
 
@@ -69,9 +69,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		#region Variables.
 		private float[] _corners = new float[4];										// Corners for the sprite.
 		private string _textureName = string.Empty;										// Name of the texture for the sprite.
-		private Matrix _rotation = Matrix.Identity;										// Rotation matrix.
-		private Matrix _scaling = Matrix.Identity;										// Scaling matrix.
-		private Matrix _worldMatrix = Matrix.Identity;									// World matrix for the sprite.
 		private Vector4[] _offsets = null;												// A list of vertex offsets.
 		#endregion
 
@@ -152,17 +149,17 @@ namespace GorgonLibrary.Graphics.Renderers
 			posY2 = _corners[3];
 
 			// Scale horizontally if necessary.
-			if (RelativeScale.X != 1.0f)
+			if (Scale.X != 1.0f)
 			{
-				posX1 *= RelativeScale.X;
-				posX2 *= RelativeScale.X;
+				posX1 *= Scale.X;
+				posX2 *= Scale.X;
 			}
 
 			// Scale vertically.
-			if (RelativeScale.Y != 1.0f)
+			if (Scale.Y != 1.0f)
 			{
-				posY1 *= RelativeScale.Y;
-				posY2 *= RelativeScale.Y;
+				posY1 *= Scale.Y;
+				posY2 *= Scale.Y;
 			}
 
 			// Calculate rotation if necessary.
@@ -240,7 +237,6 @@ namespace GorgonLibrary.Graphics.Renderers
 			// Calculate texture coordinates.
 			Vector2 scaleUV = Vector2.Zero;
 			Vector2 offsetUV = Vector2.Zero;
-			Vector2 scaledTexture = Vector2.Zero;
 
 			if (Texture == null)
 			{
@@ -248,16 +244,11 @@ namespace GorgonLibrary.Graphics.Renderers
 				return;
 			}
 
-			if ((TextureScale.X != 1.0f) || (TextureScale.Y != 1.0f))
-				scaledTexture = Vector2.Modulate(new Vector2(Texture.Settings.Width, Texture.Settings.Height), TextureScale);
-			else
-				scaledTexture = new Vector2(Texture.Settings.Width, Texture.Settings.Height);
+			offsetUV.X = TextureOffset.X / Texture.Settings.Width;
+			scaleUV.X = TextureRegion.Right / Texture.Settings.Width;
 
-			offsetUV.X = TextureOffset.X / scaledTexture.X;
-			scaleUV.X = (TextureOffset.X + Size.X) / scaledTexture.X;
-
-			offsetUV.Y = TextureOffset.Y / scaledTexture.Y;
-			scaleUV.Y = (TextureOffset.Y + Size.Y) / scaledTexture.Y;
+			offsetUV.Y = TextureOffset.Y / Texture.Settings.Height;
+			scaleUV.Y = TextureRegion.Bottom / Texture.Settings.Height;
 			
 			Vertices[0].UV = offsetUV;
 			Vertices[1].UV = new Vector2(scaleUV.X, offsetUV.Y);
@@ -281,7 +272,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="corner">Corner of the sprite to set.</param>
 		/// <param name="offset">Offset for the vertex.</param>
-		public void SetVertexOffset(SpriteCorner corner, Vector3 offset)
+		public void SetVertexOffset(RectangleCorner corner, Vector3 offset)
 		{
 			int index = (int)corner;
 			Vector4 vector = new Vector4(offset , 0.0f);
@@ -298,7 +289,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="corner">Corner of the sprite to set.</param>
 		/// <param name="color">Color to set.</param>
-		public void SetVertexColor(SpriteCorner corner, GorgonColor color)
+		public void SetVertexColor(RectangleCorner corner, GorgonColor color)
 		{
 			Vertices[(int)corner].Color = color;
 		}
@@ -316,6 +307,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			: base(gorgon2D, name)
 		{
 			Size = new Vector2(width, height);
+			TextureRegion = new System.Drawing.RectangleF(0, 0, width, height);
 			InitializeVertices(4);
 
 			_offsets = new [] { 
@@ -324,6 +316,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vector4.Zero, 
 				Vector4.Zero, 
 			};
+
 		}
 		#endregion
 

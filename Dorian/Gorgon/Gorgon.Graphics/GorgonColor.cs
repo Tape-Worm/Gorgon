@@ -131,7 +131,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Color Value: Red={1}, Green={2}, Blue={3}, Alpha={0}", Red, Green, Blue, Alpha);
+			return string.Format("Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}", Red, Green, Blue, Alpha);
 		}
 
 		/// <summary>

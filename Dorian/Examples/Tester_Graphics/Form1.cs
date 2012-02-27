@@ -305,11 +305,11 @@ namespace Tester_Graphics
 				_sprite = _graphics2D.CreateSprite("Test", 100.0f, 100.0f);
 				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\BallDemo\BallDemo.png", GorgonTexture2DSettings.FromFile);
 				_sprite.Texture = _texture;
-				_sprite.TextureScale = new Vector2((1.0f / 128.0f) , (1.0f / 128.0f));
+				
 				_sprite.TextureOffset = new Vector2(0.5f, 0);
 				_sprite.Size = new Vector2(0.5f, 0.5f);
 				_sprite.Anchor = new Vector2(0.25f, 0.25f);
-				_sprite.RelativeScale = new Vector2(0.03125f, 0.03125f);
+				_sprite.Scale = new Vector2(0.03125f, 0.03125f);
 				//_sprite.CullingMode = CullingMode.None;
 
 				// TODO: Make a new sprite type for perspective correct sprites.
@@ -323,7 +323,7 @@ namespace Tester_Graphics
 				_sprite2.TextureOffset = new Vector2(64, 0);
 				_sprite2.Size = new Vector2(64, 64);
 				_sprite2.Anchor = new Vector2(32, 32);
-				_sprite2.RelativeScale = new Vector2(4, 4);
+				_sprite2.Scale = new Vector2(4, 4);
 
 				_sprite2.Texture = _texture;
 				//_sprite2.SetVertexColor(SpriteCorner.UpperRight, new GorgonColor(0.0f, 1.0f, 1.0f, 1.0f));
