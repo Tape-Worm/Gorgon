@@ -140,6 +140,36 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
+		/// Property to set or return the color for the start point.
+		/// </summary>
+		public GorgonColor StartColor
+		{
+			get
+			{
+				return Vertices[0].Color;
+			}
+			set
+			{
+				Vertices[2].Color = Vertices[0].Color = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the color for the end point.
+		/// </summary>
+		public GorgonColor EndColor
+		{
+			get
+			{
+				return Vertices[1].Color;
+			}
+			set
+			{
+				Vertices[3].Color = Vertices[1].Color = value;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the anchor point of the sprite.
 		/// </summary>
 		public Vector2 Anchor
@@ -229,7 +259,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the texture offset for the start point.
 		/// </summary>
-		public Vector2 TextureOffsetStart
+		public Vector2 TextureStart
 		{
 			get
 			{
@@ -248,7 +278,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the texture offset for the end point.
 		/// </summary>
-		public Vector2 TextureOffsetEnd
+		public Vector2 TextureEnd
 		{
 			get
 			{
@@ -302,17 +332,27 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if ((PenSize.X == 1.0f) && (PenSize.Y == 1.0f))
 			{
-				Vertices[0].UV.X = TextureOffsetStart.X / Texture.Settings.Width;
-				Vertices[1].UV.X = TextureOffsetEnd.X / Texture.Settings.Width;
-				Vertices[0].UV.Y = TextureOffsetStart.Y / Texture.Settings.Height;
-				Vertices[1].UV.Y = TextureOffsetEnd.Y / Texture.Settings.Height;
+				Vertices[0].UV.X = TextureStart.X / Texture.Settings.Width;
+				Vertices[1].UV.X = TextureEnd.X / Texture.Settings.Width;
+				Vertices[0].UV.Y = TextureStart.Y / Texture.Settings.Height;
+				Vertices[1].UV.Y = TextureEnd.Y / Texture.Settings.Height;
 			}
 			else
 			{
-				Vertices[2].UV.X = Vertices[0].UV.X = TextureOffsetStart.X / Texture.Settings.Width;
-				Vertices[1].UV.Y = Vertices[0].UV.Y = TextureOffsetStart.Y / Texture.Settings.Height;
-				Vertices[3].UV.X = Vertices[1].UV.X = TextureOffsetEnd.X / Texture.Settings.Width;
-				Vertices[2].UV.Y = Vertices[3].UV.Y = TextureOffsetEnd.Y / Texture.Settings.Height;
+				Vertices[0].UV.X = TextureStart.X / Texture.Settings.Width;
+				Vertices[0].UV.Y = TextureStart.Y / Texture.Settings.Height;
+				Vertices[1].UV.X = TextureEnd.X / Texture.Settings.Width;
+				Vertices[1].UV.Y = TextureStart.Y / Texture.Settings.Height;
+				Vertices[2].UV.X = TextureStart.X / Texture.Settings.Width;
+				Vertices[2].UV.Y = TextureStart.Y / Texture.Settings.Height;
+				Vertices[3].UV.X = TextureEnd.X / Texture.Settings.Width;
+				Vertices[3].UV.Y = TextureStart.Y / Texture.Settings.Height;
+
+
+/*				Vertices[2].UV.X = Vertices[0].UV.X = TextureStart.X / Texture.Settings.Width;
+				Vertices[1].UV.Y = Vertices[0].UV.Y = TextureStart.Y / Texture.Settings.Height;
+				Vertices[3].UV.X = Vertices[1].UV.X = TextureEnd.X / Texture.Settings.Width;
+				Vertices[2].UV.Y = Vertices[3].UV.Y = TextureEnd.Y / Texture.Settings.Height;*/
 			}
 		}
 
@@ -323,93 +363,77 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			_corners[0] = -Anchor.X;
 			_corners[1] = -Anchor.Y;
-			_corners[2] = Size.X - Anchor.X;
-			_corners[3] = Size.Y - Anchor.Y;
+			_corners[2] = _line.Width - Anchor.X;
+			_corners[3] = _line.Height - Anchor.Y;
 		}
 
 		/// <summary>
-		/// Function to transform the vertices.
+		/// Function to transform the line quad.
 		/// </summary>
-		private void TransformVertices()
+		private void TransformQuad()
 		{
-			float posX1;						// Horizontal position 1.
-			float posX2;						// Horizontal position 2.
-			float posY1;						// Vertical position 1.
-			float posY2;						// Vertical position 2.			
-			Vector2 penMid = Vector2.Zero;		// Pen mid point.
-			bool updateForQuad = false;			// Flag to indicate that we're drawing a quad.
+			Vector2 lineDims = Vector2.Zero;										// Line dimensions.
+			Vector2 startPoint = _line.Location;									// Start point.
+			Vector2 endPoint = new Vector2(_line.Right, _line.Bottom);				// End point.
+			Vector2 corner1 = Vector2.Zero;											// 1st corner.
+			Vector2 corner2 = Vector2.Zero;											// 2nd corner.
+			Vector2 corner3 = Vector2.Zero;											// 3rd corner.
+			Vector2 corner4 = Vector2.Zero;											// 4th corner.
+			float lineLength = 0.0f;												// Line length.
 
-			posX1 = _corners[0];
-			posX2 = _corners[2];
-			posY1 = _corners[1];
-			posY2 = _corners[3];
+			Vector2.Subtract(ref endPoint, ref startPoint, out lineDims);
+			lineLength = lineDims.Length;
 
-			if ((_penSize.X > 1.0f) || (_penSize.Y > 1.0f))
-			{
-				BaseVertexCount = 0;
-				VertexCount = 4;
+			BaseVertexCount = 0;
+			VertexCount = 4;
 
-				Vector2.Divide(ref _penSize, 2.0f, out penMid);
-				posX1 -= penMid.X;
-				posX2 += penMid.X;
-				posY1 -= penMid.Y;
-				posY2 += penMid.Y;
+			if (lineLength <= 0.0f)
+				return;
 
-				updateForQuad = true;
-			}
-			else
-			{
-				BaseVertexCount = 2;
-				VertexCount = 2;
-			}
+			Vector2 normalLine = lineDims * (1.0f / lineLength);
+			Vector2 crossProduct = Vector2.Zero;
 
-			// Calculate rotation if necessary.
+			crossProduct = new Vector2(normalLine.Y, -normalLine.X);
+			crossProduct.X *= _penSize.X;
+			crossProduct.Y *= _penSize.Y;
+			
+			corner1.X = _corners[0] + crossProduct.X;
+			corner1.Y = _corners[1] + crossProduct.Y;
+
+			corner2.X = _corners[0] - crossProduct.X;
+			corner2.Y = _corners[1] - crossProduct.Y;
+
+			corner3.X = _corners[2] + crossProduct.X;
+			corner3.Y = _corners[3] + crossProduct.Y;
+
+			corner4.X = _corners[2] - crossProduct.X;
+			corner4.Y = _corners[3] - crossProduct.Y;
+
 			if (Angle != 0.0f)
 			{
 				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
 				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
 				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
 
-				if (!updateForQuad)
-				{
-					Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal);
-					Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal);
-
-					Vertices[1].Position.X = (posX2 * cosVal - posY2 * sinVal);
-					Vertices[1].Position.Y = (posX2 * sinVal + posY2 * cosVal);
-				}
-				else
-				{
-					Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal);
-					Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal);
-					Vertices[1].Position.X = (posX2 * cosVal - posY1 * sinVal);
-					Vertices[1].Position.Y = (posX2 * sinVal + posY1 * cosVal);
-					Vertices[2].Position.X = (posX1 * cosVal - posY2 * sinVal);
-					Vertices[2].Position.Y = (posX1 * sinVal + posY2 * cosVal);
-					Vertices[3].Position.X = (posX2 * cosVal - posY2 * sinVal);
-					Vertices[3].Position.Y = (posX2 * sinVal + posY2 * cosVal);
-				}
+				Vertices[0].Position.X = (corner4.X * cosVal - corner4.Y * sinVal);
+				Vertices[0].Position.Y = (corner4.X * sinVal + corner4.Y * cosVal);
+				Vertices[1].Position.X = (corner2.X * cosVal - corner2.Y * sinVal);
+				Vertices[1].Position.Y = (corner2.X * sinVal + corner2.Y * cosVal);
+				Vertices[2].Position.X = (corner3.X * cosVal - corner3.Y * sinVal);
+				Vertices[2].Position.Y = (corner3.X * sinVal + corner3.Y * cosVal);
+				Vertices[3].Position.X = (corner1.X * cosVal - corner1.Y * sinVal);
+				Vertices[3].Position.Y = (corner1.X * sinVal + corner1.Y * cosVal);
 			}
 			else
 			{
-				if (!updateForQuad)
-				{
-					Vertices[0].Position.X = posX1;
-					Vertices[0].Position.Y = posY1;
-					Vertices[1].Position.X = posX2;
-					Vertices[1].Position.Y = posY2;
-				}
-				else
-				{
-					Vertices[0].Position.X = posX1;
-					Vertices[0].Position.Y = posY1;
-					Vertices[1].Position.X = posX2;
-					Vertices[1].Position.Y = posY1;
-					Vertices[2].Position.X = posX1;
-					Vertices[2].Position.Y = posY2;
-					Vertices[3].Position.X = posX2;
-					Vertices[3].Position.Y = posY2;
-				}
+				Vertices[0].Position.X = corner4.X;
+				Vertices[0].Position.Y = corner4.Y;
+				Vertices[1].Position.X = corner2.X;
+				Vertices[1].Position.Y = corner2.Y;
+				Vertices[2].Position.X = corner3.X;
+				Vertices[2].Position.Y = corner3.Y;
+				Vertices[3].Position.X = corner1.X;
+				Vertices[3].Position.Y = corner1.Y;
 			}
 
 			// Translate.
@@ -417,22 +441,16 @@ namespace GorgonLibrary.Graphics.Renderers
 			{
 				Vertices[0].Position.X += StartPoint.X;
 				Vertices[1].Position.X += StartPoint.X;
-				if (updateForQuad)
-				{
-					Vertices[2].Position.X += StartPoint.X;
-					Vertices[3].Position.X += StartPoint.X;
-				}
+				Vertices[2].Position.X += StartPoint.X;
+				Vertices[3].Position.X += StartPoint.X;
 			}
 
 			if (StartPoint.Y != 0.0f)
 			{
 				Vertices[0].Position.Y += StartPoint.Y;
 				Vertices[1].Position.Y += StartPoint.Y;
-				if (updateForQuad)
-				{
-					Vertices[2].Position.Y += StartPoint.Y;
-					Vertices[3].Position.Y += StartPoint.Y;
-				}
+				Vertices[2].Position.Y += StartPoint.Y;
+				Vertices[3].Position.Y += StartPoint.Y;
 			}
 
 			// Apply depth to the sprite.
@@ -442,6 +460,72 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vertices[1].Position.Z = Depth;
 				Vertices[2].Position.Z = Depth;
 				Vertices[3].Position.Z = Depth;
+			}
+		}
+
+		/// <summary>
+		/// Function to transform the vertices.
+		/// </summary>
+		private void TransformVertices()
+		{
+			float posX1;															// Horizontal position 1.
+			float posX2;															// Horizontal position 2.
+			float posY1;															// Vertical position 1.
+			float posY2;															// Vertical position 2.			
+
+			if ((_penSize.X > 1.0f) || (_penSize.Y > 1.0f))
+			{
+				TransformQuad();
+				return;
+			}
+
+			BaseVertexCount = 2;
+			VertexCount = 2;
+
+			posX1 = _corners[0];
+			posX2 = _corners[2];
+			posY1 = _corners[1];
+			posY2 = _corners[3];
+
+			// Calculate rotation if necessary.
+			if (Angle != 0.0f)
+			{
+				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
+				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
+				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+
+				Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal);
+				Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal);
+
+				Vertices[1].Position.X = (posX2 * cosVal - posY2 * sinVal);
+				Vertices[1].Position.Y = (posX2 * sinVal + posY2 * cosVal);
+			}
+			else
+			{
+				Vertices[0].Position.X = posX1;
+				Vertices[0].Position.Y = posY1;
+				Vertices[1].Position.X = posX2;
+				Vertices[1].Position.Y = posY2;
+			}
+
+			// Translate.
+			if (StartPoint.X != 0.0f)
+			{
+				Vertices[0].Position.X += StartPoint.X;
+				Vertices[1].Position.X += StartPoint.X;
+			}
+
+			if (StartPoint.Y != 0.0f)
+			{
+				Vertices[0].Position.Y += StartPoint.Y;
+				Vertices[1].Position.Y += StartPoint.Y;
+			}
+
+			// Apply depth to the sprite.
+			if (Depth != 0.0f)
+			{
+				Vertices[0].Position.Z = Depth;
+				Vertices[1].Position.Z = Depth;
 			}
 		}
 
@@ -508,7 +592,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_corners = new float[4];
 			_textureEnd = end;
 			StartPoint = start;
-			EndPoint = end;			
+			EndPoint = end;
 			InitializeVertices(4);
 			PenSize = new Vector2(1);
 		}

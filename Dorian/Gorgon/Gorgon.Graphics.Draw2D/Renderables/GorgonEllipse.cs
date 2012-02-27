@@ -43,13 +43,14 @@ namespace GorgonLibrary.Graphics.Renderers
 		: GorgonMoveable
 	{
 		#region Variables.
-		private int _quality = 0;					// Quality for the ellipse rendering.
-		private Vector2 _center = Vector2.Zero;		// Center point for the ellipse.
-		private Vector2[] _offsets = null;			// Offsets for the ellipse points.
-		private Vector2[] _points = null;			// List of points for the ellipse.
-		private GorgonColor[] _colors = null;		// Colors for points.
-		private Vector2[] _uv = null;				// Texture coordinates for ellipse.
-		private bool _isFilled = false;				// Flag to indicate whether to draw the ellipse as filled or as an outline.
+		private int _quality = 0;						// Quality for the ellipse rendering.
+		private Vector2 _center = Vector2.Zero;			// Center point for the ellipse.
+		private Vector2[] _offsets = null;				// Offsets for the ellipse points.
+		private Vector2[] _points = null;				// List of points for the ellipse.
+		private GorgonColor[] _colors = null;			// Colors for points.
+		private GorgonLine _line = null;				// List of lines to draw.
+		private Vector2 _penSize = new Vector2(1.0f);	// Line thickness.
+		private bool _isFilled = false;					// Flag to indicate whether to draw the ellipse as filled or as an outline.
 		#endregion
 
 		#region Properties.
@@ -60,10 +61,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				if (IsFilled)
-					return Graphics.PrimitiveType.TriangleList;
-				else
-					return Graphics.PrimitiveType.LineList;
+				return Graphics.PrimitiveType.TriangleList;
 			}
 		}
 
@@ -133,9 +131,9 @@ namespace GorgonLibrary.Graphics.Renderers
 				if (_quality != value)
 				{
 					_quality = value;
-					BaseVertexCount = _quality * 3;
-					VertexCount = _quality * 3;
-					InitializeVertices(_quality * 3);
+					BaseVertexCount = _quality * 4;
+					VertexCount = _quality * 4;
+					InitializeVertices(_quality * 4);
 				}
 			}
 		}
@@ -155,51 +153,83 @@ namespace GorgonLibrary.Graphics.Renderers
 					_colors[i] = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the pen size for the outlined ellipse.
+		/// </summary>
+		public Vector2 PenSize
+		{
+			get
+			{
+				return _line.PenSize;
+			}
+			set
+			{
+				if (_line.PenSize != value)
+					_line.PenSize = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return a texture for the renderable.
+		/// </summary>
+		/// <value></value>
+		public override GorgonTexture2D Texture
+		{
+			get
+			{
+				return base.Texture;
+			}
+			set
+			{
+				if (base.Texture != value)
+				{
+					base.Texture = value;
+					_line.Texture = value;
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to update the texture coordinates for the unfilled ellipse.
 		/// </summary>
-		private void UpdateUnfilledTextureCoordinates()
+		/// <param name="index">Index of the point.</param>
+		/// <param name="nextIndex">Index of the next point.</param>
+		/// <param name="startUV">Starting UV coordinate.</param>
+		/// <param name="endUV">Ending UV coordinate.</param>
+		private void UpdateUnfilledTextureCoordinates(int index, int nextIndex, out Vector2 startUV, out Vector2 endUV)
 		{
-			Vector2 scaleUV = Vector2.Zero;
 			Vector2 offsetUV = Vector2.Zero;
-			Vector2 scaledPos = Vector2.Zero;
 			Vector2 scaledTexture = Vector2.Zero;
-			int vertexIndex = 0;
+			Vector2 scaledPos = Vector2.Zero;
 
 			if (Texture == null)
 			{
-				for (int i = 0; i < Vertices.Length; i++)
-					Vertices[i].UV = Vector2.Zero;
+				startUV = Vector2.Zero;
+				endUV = Vector2.Zero;
 				return;
 			}
-
+						
 			scaledPos = new Vector2(TextureOffset.X / Texture.Settings.Width, TextureOffset.Y / Texture.Settings.Height);
 			scaledTexture = new Vector2(TextureRegion.Width / Texture.Settings.Width, TextureRegion.Height / Texture.Settings.Height);
-			for (int i = 0; i < _offsets.Length; i++)
-			{
-				Vector2.Modulate(ref _offsets[i], ref scaledTexture, out offsetUV);
+			
+			Vector2.Modulate(ref _offsets[index], ref scaledTexture, out endUV);
+			Vector2.Modulate(ref _offsets[nextIndex], ref scaledTexture, out startUV);
 
-				if (i + 1 < _offsets.Length)
-					Vector2.Modulate(ref _offsets[i + 1], ref scaledTexture, out scaleUV);
-				else
-					Vector2.Modulate(ref _offsets[0], ref scaledTexture, out scaleUV);
+			Vector2.Add(ref startUV, ref scaledPos, out startUV);
 
-				Vector2.Add(ref scaleUV, ref scaledPos, out scaleUV);
-
-				// Set center coordinate.
-				Vertices[vertexIndex].UV = offsetUV;
-				Vertices[vertexIndex + 1].UV = scaleUV;
-				vertexIndex += 2;
-			}
+			startUV.X *= Texture.Settings.Width;
+			startUV.Y *= Texture.Settings.Height;
+			endUV.X *= Texture.Settings.Width;
+			endUV.Y *= Texture.Settings.Height;
 		}
 
 		/// <summary>
-		/// Function to update the texture coordinates for the filled ellipse.
+		/// Function to update the texture coordinates.
 		/// </summary>
-		private void UpdateFilledTextureCoordinates()
+		protected override void UpdateTextureCoordinates()
 		{
 			// Calculate texture coordinates.
 			Vector2 scaleUV = Vector2.Zero;
@@ -229,7 +259,7 @@ namespace GorgonLibrary.Graphics.Renderers
 					Vector2.Modulate(ref _offsets[0], ref scaledTexture, out scaleUV);
 
 				Vector2.Add(ref scaleUV, ref scaledPos, out scaleUV);
-				
+
 				// Set center coordinate.
 				Vertices[vertexIndex].UV.X = (TextureOffset.X + midPoint.X) / Texture.Settings.Width;
 				Vertices[vertexIndex].UV.Y = (TextureOffset.Y + midPoint.Y) / Texture.Settings.Height;
@@ -237,17 +267,6 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vertices[vertexIndex + 2].UV = scaleUV;
 				vertexIndex += 3;
 			}
-		}
-
-		/// <summary>
-		/// Function to update the texture coordinates.
-		/// </summary>
-		protected override void UpdateTextureCoordinates()
-		{
-			if (!IsFilled)
-				UpdateUnfilledTextureCoordinates();
-			else
-				UpdateFilledTextureCoordinates();
 		}
 
 		/// <summary>
@@ -269,82 +288,40 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Function to transform the unfilled vertices.
 		/// </summary>
-		private void TransformUnfilled()
+		private Vector2 TransformUnfilled(ref Vector2 vector)
 		{
-			int vertexIndex = 0;
-			for (int i = 0; i < _points.Length; i++)
+			Vector2 result = vector;
+
+			if (Scale.X != 1.0f)
+				result.X *= Scale.X;
+
+			if (Scale.Y != 1.0f)
+				result.Y *= Scale.Y;
+
+			if (Angle != 0.0f)
 			{
-				Vector2 startPosition = _points[i];
-				Vector2 endPosition = Vector2.Zero;
-				if (i + 1 < _points.Length)
-					endPosition = _points[i + 1];
-				else
-					endPosition = _points[0];
+				Vector2 rotVector = result;
+				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
+				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
+				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
 
-				if (Scale.X != 1.0f)
-				{
-					startPosition.X *= Scale.X;
-					endPosition.X *= Scale.X;
-				}
-
-				if (Scale.Y != 1.0f)
-				{
-					startPosition.Y *= Scale.Y;
-					endPosition.Y *= Scale.Y;
-				}
-
-				if (Angle != 0.0f)
-				{
-					float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
-					float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
-					float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
-
-					Vertices[vertexIndex].Position.X = (startPosition.X * cosVal - startPosition.Y * sinVal);
-					Vertices[vertexIndex].Position.Y = (startPosition.X * sinVal + startPosition.Y * cosVal);
-
-					Vertices[vertexIndex + 1].Position.X = (endPosition.X * cosVal - endPosition.Y * sinVal);
-					Vertices[vertexIndex + 1].Position.Y = (endPosition.X * sinVal + endPosition.Y * cosVal);
-				}
-				else
-				{
-					Vertices[vertexIndex].Position.X = startPosition.X;
-					Vertices[vertexIndex].Position.Y = startPosition.Y;
-					Vertices[vertexIndex + 1].Position.X = endPosition.X;
-					Vertices[vertexIndex + 1].Position.Y = endPosition.Y;
-				}
-
-				if (Position.X != 0.0f)
-				{
-					Vertices[vertexIndex].Position.X += Position.X;
-					Vertices[vertexIndex + 1].Position.X += Position.X;
-				}
-
-				if (Position.Y != 0.0f)
-				{
-					Vertices[vertexIndex].Position.Y += Position.Y;
-					Vertices[vertexIndex + 1].Position.Y += Position.Y;
-				}
-
-				if (Depth != 0.0f)
-				{
-					Vertices[vertexIndex].Position.Z = Depth;
-					Vertices[vertexIndex + 1].Position.Z = Depth;
-				}
-
-				Vertices[vertexIndex].Color = _colors[i];
-				if (i + 1 < _points.Length)
-					Vertices[vertexIndex + 1].Color = _colors[i + 1];
-				else
-					Vertices[vertexIndex + 1].Color = _colors[0];
-
-				vertexIndex += 2;
+				result.X = (rotVector.X * cosVal - rotVector.Y * sinVal);
+				result.Y = (rotVector.X * sinVal + rotVector.Y * cosVal);
 			}
+
+			if (Position.X != 0.0f)
+				result.X += Position.X;
+
+			if (Position.Y != 0.0f)
+				result.Y += Position.Y;
+
+			return result;
 		}
 
 		/// <summary>
-		/// Function to transform the filled vertices.
+		/// Function to transform the vertices.
 		/// </summary>
-		private void TransformFilled()
+		protected override void TransformVertices()
 		{
 			int vertexIndex = 0;
 			Vector2 center = _center;
@@ -357,7 +334,7 @@ namespace GorgonLibrary.Graphics.Renderers
 					endPosition = _points[i + 1];
 				else
 					endPosition = _points[0];
-				
+
 				if (Scale.X != 1.0f)
 				{
 					startPosition.X *= Scale.X;
@@ -425,17 +402,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Function to transform the vertices.
-		/// </summary>
-		protected override void TransformVertices()
-		{
-			if (!IsFilled)
-				TransformUnfilled();
-			else
-				TransformFilled();
-		}
-
-		/// <summary>
 		/// Function to set up any additional information for the renderable.
 		/// </summary>
 		protected override void InitializeCustomVertexInformation()
@@ -446,7 +412,6 @@ namespace GorgonLibrary.Graphics.Renderers
 			_offsets = new Vector2[_quality];
 			_points = new Vector2[_offsets.Length];
 			_colors = new GorgonColor[_offsets.Length];
-			_uv = new Vector2[_offsets.Length];
 
 			for (int i = 0; i < _offsets.Length; i++)
 			{
@@ -461,6 +426,53 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			NeedsTextureUpdate = false;
 			NeedsVertexUpdate = false;
+		}
+
+		/// <summary>
+		/// Function to draw the ellipse.
+		/// </summary>
+		public override void Draw()
+		{
+			if (_isFilled)
+			{
+				base.Draw();
+				return;
+			}
+
+			if (NeedsVertexUpdate)
+			{
+				UpdateVertices();
+				NeedsVertexUpdate = false;
+			}
+
+			for (int i = 0; i < _points.Length; i++)
+			{
+				int endPointIndex = i + 1;
+
+				if (endPointIndex >= _points.Length)
+					endPointIndex = 0;
+
+				Vector2 start = TransformUnfilled(ref _points[i]);
+				Vector2 end = TransformUnfilled(ref _points[endPointIndex]);
+
+				Vector2 uvStart = Vector2.Zero;
+				Vector2 uvEnd = Vector2.Zero;
+
+				if (Texture != null)
+					UpdateUnfilledTextureCoordinates(i, endPointIndex, out uvStart, out uvEnd);
+				_line.TextureStart = uvStart;
+				_line.TextureEnd = uvEnd;
+
+				_line.StartColor = _colors[i];
+				_line.EndColor = _colors[endPointIndex];
+				_line.StartPoint = start;
+				_line.EndPoint = end;
+				_line.Depth = Depth;
+				
+				_line.Draw();
+			}
+
+			NeedsTextureUpdate = false;
 		}
 		#endregion
 
@@ -479,9 +491,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			TextureRegion = new System.Drawing.RectangleF(0, 0, size.X, size.Y);
 			Position = position;
-			Size = size;
+			Size = size;			
 			Quality = quality;
 			IsFilled = isFilled;
+			_line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero);
 		}
 		#endregion
 	}

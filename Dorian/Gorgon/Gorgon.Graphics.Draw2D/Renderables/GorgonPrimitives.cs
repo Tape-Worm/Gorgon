@@ -85,8 +85,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="rectangle">Rectangle dimensions.</param>
 		/// <param name="color">Color for the rectangle.</param>
-		/// <param name="texture">Texture to apply to the rectangle.</param>
-		/// <param name="textureRegion">Texture dimensions to use.</param>
 		public void FilledRectangle(RectangleF rectangle, GorgonColor color)
 		{
 			FilledRectangle(rectangle, color, null, RectangleF.Empty);
@@ -188,7 +186,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="dimensions">Ellipse dimensions.</param>
 		/// <param name="color">Color for the ellipse.</param>
 		/// <param name="quality">Quality of rendering for the ellipse.</param>
-		/// <param name="texture">Texture to apply to the ellipse.</param>
 		/// <remarks>The <paramref name="quality"/> parameter can have a value from 4 to 256.  The higher the quality, the better looking the ellipse, however this will impact performance.</remarks>
 		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality)
 		{
@@ -200,8 +197,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="dimensions">Ellipse dimensions.</param>
 		/// <param name="color">Color for the ellipse.</param>
-		/// <param name="quality">Quality of rendering for the ellipse.</param>
-		/// <param name="texture">Texture to apply to the ellipse.</param>
 		public void DrawEllipse(RectangleF dimensions, GorgonColor color)
 		{
 			DrawEllipse(dimensions, color, 64, null, RectangleF.Empty);
@@ -254,7 +249,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="rectangle">Rectangle dimensions.</param>
 		/// <param name="color">Color for the rectangle.</param>
-		/// <param name="thickness">Thickness of the lines to draw.</param>
 		public void DrawRectangle(RectangleF rectangle, GorgonColor color)
 		{
 			DrawRectangle(rectangle, color, new Vector2(1.0f), null, RectangleF.Empty);
@@ -279,7 +273,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="position">Position of the point.</param>
 		/// <param name="color">Color of the point.</param>
-		/// <param name="thickness">Thickness of the point.</param>
 		public void DrawPoint(Vector2 position, GorgonColor color)
 		{
 			DrawPoint(position, color, new Vector2(1.0f));
@@ -302,8 +295,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			_line.Color = color;
 			_line.PenSize = thickness;
 			_line.Texture = texture;
-			_line.TextureOffsetStart = textureStart;
-			_line.TextureOffsetEnd = textureEnd;
+			_line.TextureStart = textureStart;
+			_line.TextureEnd = textureEnd;
 			_line.Draw();
 		}
 
