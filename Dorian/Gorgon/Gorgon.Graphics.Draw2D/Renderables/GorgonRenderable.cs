@@ -97,7 +97,7 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// </summary>
 	/// <remarks>This is the base object for any object that can be drawn to a render target.</remarks>
 	public abstract class GorgonRenderable
-		: GorgonNamedObject
+		: GorgonNamedObject, IRenderable
 	{
 		#region Classes.
 		/// <summary>
@@ -456,9 +456,11 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Variables.
 		private GorgonTexture2D _texture = null;															// Texture to use for the renderable.
+		private DepthStencilStates _depthStencil = null;													// Depth stencil interface.
+		private BlendState _blendState = null;																// Blending state.
+		private TextureSamplerState _samplerState = null;													// Texture sampler state.
 		#endregion
 
-		// TODO:  Put blending, texture sampler and rasterizer states into state interfaces like the depth buffer.
 		#region Properties.
 		/// <summary>
 		/// Property to set or return whether the renderable needs to adjust its dimensions.
@@ -481,7 +483,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the vertex buffer binding for this renderable.
 		/// </summary>
-		protected internal virtual GorgonVertexBufferBinding VertexBufferBinding
+		protected internal GorgonVertexBufferBinding VertexBufferBinding
 		{
 			get;
 			protected set;
@@ -525,30 +527,75 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return depth/stencil buffer states for this renderable.
+		/// Property to set or return the number of vertices to add to the base starting index.
 		/// </summary>
-		public DepthStencilStates DepthStencil
+		protected internal int BaseVertexCount
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the number of vertices for the renderable.
+		/// </summary>
+		protected internal int VertexCount
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to set or return depth/stencil buffer states for this renderable.
+		/// </summary>
+		public virtual DepthStencilStates DepthStencil
+		{
+			get
+			{
+				return _depthStencil;
+			}
+			set
+			{
+				if (value == null)
+					return;
+
+				_depthStencil = value;
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return advanced blending states for this renderable.
 		/// </summary>
-		public BlendState Blending
+		public virtual BlendState Blending
 		{
-			get;
-			set;
+			get
+			{
+				return _blendState;
+			}
+			set
+			{
+				if (value == null)
+					return;
+
+				_blendState = value;
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return advanded texture sampler states for this renderable.
 		/// </summary>
-		public TextureSamplerState TextureSampler
+		public virtual TextureSamplerState TextureSampler
 		{
-			get;
-			set;
+			get
+			{
+				return _samplerState;
+			}
+			set
+			{
+				if (value == null)
+					return;
+
+				_samplerState = value;
+			}
 		}
 
 		/// <summary>
@@ -651,7 +698,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Property to set or return the culling mode.
 		/// </summary>
 		/// <remarks>Use this to make a renderable two-sided.</remarks>
-		public CullingMode CullingMode
+		public virtual CullingMode CullingMode
 		{
 			get;
 			set;
@@ -757,8 +804,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="vertexCount">Number of vertices in this renderable object.</param>
 		protected void InitializeVertices(int vertexCount)
 		{
-			Vertices = new Gorgon2D.Vertex[vertexCount];
+			VertexCount = vertexCount;
 
+			Vertices = new Gorgon2D.Vertex[vertexCount];
+			
 			for (int i = 0; i < Vertices.Length; i++)
 			{
 				Vertices[i].Color = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -805,6 +854,86 @@ namespace GorgonLibrary.Graphics.Renderers
 			DepthStencil = new DepthStencilStates();
 			Blending = new BlendState();
 			TextureSampler = new TextureSamplerState();
+			BaseVertexCount = 0;
+		}
+		#endregion
+
+		#region IRenderable Members
+		/// <summary>
+		/// Property to set or return the vertex buffer binding for this renderable.
+		/// </summary>
+		GorgonVertexBufferBinding IRenderable.VertexBufferBinding
+		{
+			get
+			{
+				return VertexBufferBinding;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the index buffer for this renderable.
+		/// </summary>
+		GorgonIndexBuffer IRenderable.IndexBuffer
+		{
+			get 
+			{
+				return IndexBuffer;				
+			}
+		}
+
+		/// <summary>
+		/// Property to return the type of primitive for the renderable.
+		/// </summary>
+		PrimitiveType IRenderable.PrimitiveType
+		{
+			get 
+			{
+				return PrimitiveType;
+			}
+		}
+
+		/// <summary>
+		/// Property to return a list of vertices to render.
+		/// </summary>
+		Gorgon2D.Vertex[] IRenderable.Vertices
+		{
+			get 
+			{
+				return Vertices;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the number of indices that make up this renderable.
+		/// </summary>
+		int IRenderable.IndexCount
+		{
+			get 
+			{
+				return IndexCount;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the number of vertices to add to the base starting index.
+		/// </summary>
+		int IRenderable.BaseVertexCount
+		{
+			get
+			{
+				return BaseVertexCount;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the number of vertices for the renderable.
+		/// </summary>
+		int IRenderable.VertexCount
+		{
+			get
+			{
+				return VertexCount;
+			}
 		}
 		#endregion
 	}

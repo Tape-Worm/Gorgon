@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using SlimMath;
 
 namespace GorgonLibrary.Graphics.Renderers
@@ -40,14 +41,32 @@ namespace GorgonLibrary.Graphics.Renderers
 	{
 		#region Variables.
 		private string _textureName = string.Empty;															// Name of the texture for deferred loading.
-		private Vector2 _textureOffset = Vector2.Zero;														// Texture offset.
-		private Vector2 _textureScale = new Vector2(1);														// Texture scale.
 		private Vector2 _size = Vector2.Zero;																// Size of the renderable.
 		private Vector2 _anchor = Vector2.Zero;																// Anchor point.
 		private Vector2 _scale = Vector2.Zero;																// Relative scale for the moveable object.
+		private RectangleF _textureRegion = RectangleF.Empty;												// Texture region.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		public RectangleF TextureRegion
+		{
+			get
+			{
+				return _textureRegion;
+			}
+			set
+			{
+				if (_textureRegion != value)
+				{
+					_textureRegion = value;
+					NeedsTextureUpdate = true;
+				}			
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the position of the sprite.
 		/// </summary>
@@ -69,33 +88,18 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the scale of the sprite.
 		/// </summary>
-		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.AbsoluteScale">AbsoluteScale</see> property.
+		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.Size">Size</see> property.
 		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
 		/// </remarks>
-		public virtual Vector2 RelativeScale
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the scaled width of the object.
-		/// </summary>
-		/// <remarks>Unlike the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.RelativeScale">RelativeScale</see> property, which uses scalar values to provide a relative scale, this property takes an absolute size and scales it to that size.</remarks>
-		/// <exception cref="System.DivideByZeroException">Thrown when the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.Size">Size</see> property is 0 for X or Y.</exception>
-		public virtual Vector2 AbsoluteScale
+		public virtual Vector2 Scale
 		{
 			get
-			{				
-				return new Vector2(_scale.X * _size.X, _scale.Y * _size.Y);
+			{
+				return _scale;
 			}
 			set
 			{
-#if DEBUG
-				if ((_size.X == 0.0f) || (_size.Y == 0.0f))
-					throw new DivideByZeroException();
-#endif
-				_scale = new Vector2(value.X / _size.X, value.Y / _size.Y);
+				_scale = value;
 			}
 		}
 
@@ -135,13 +139,13 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _textureOffset;
+				return _textureRegion.Location;
 			}
 			set
 			{
-				if (_textureOffset != value)
+				if (!value.Equals(_textureRegion.Location))
 				{
-					_textureOffset = value;
+					_textureRegion.Location = value;
 					NeedsTextureUpdate = true;
 				}
 			}
@@ -150,24 +154,24 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
-		public virtual Vector2 TextureScale
+		public virtual Vector2 TextureSize
 		{
 			get
 			{
-				return _textureScale;
+				return _textureRegion.Size;
 			}
 			set
 			{
-				if (_textureScale != value)
+				if (!value.Equals(_textureRegion.Size))
 				{
 					// Lock the size.
-					if (_textureScale.X == 0.0f)
-						_textureScale.X = 1e-6f;
+					if (value.X == 0.0f)
+						value.X = 1e-6f;
 
-					if (_textureScale.Y == 0.0f)
-						_textureScale.Y = 1e-6f;
+					if (value.Y == 0.0f)
+						value.Y = 1e-6f;
 
-					_textureScale = value;
+					_textureRegion.Size = value;
 					NeedsTextureUpdate = true;
 				}
 			}
@@ -185,8 +189,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			set
 			{
 				if (_size != value)
-				{
-					_size = value;
+				{					
+					_size = value;					
 					NeedsVertexUpdate = true;
 				}
 			}
@@ -226,16 +230,16 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		public override void Draw()
 		{
-			if (NeedsTextureUpdate)
-			{
-				UpdateTextureCoordinates();
-				NeedsTextureUpdate = false;
-			}
-
 			if (NeedsVertexUpdate)
 			{
 				UpdateVertices();
 				NeedsVertexUpdate = false;
+			}
+
+			if (NeedsTextureUpdate)
+			{
+				UpdateTextureCoordinates();
+				NeedsTextureUpdate = false;
 			}
 
 			TransformVertices();
@@ -254,7 +258,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			: base(gorgon2D, name)
 		{
 			Position = Vector2.Zero;
-			RelativeScale = new Vector2(1.0f);
+			Scale = new Vector2(1.0f);
 			Angle = 0;
 			Anchor = Vector2.Zero;
 		}

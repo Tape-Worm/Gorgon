@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.2D", "Gorgo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallDemo", "..\Examples\Graphics\BallDemo\BallDemo.csproj", "{0DF9E8D6-336E-46EA-8873-6215ED363B0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGDIShapes", "TestGDIShapes\TestGDIShapes.csproj", "{9D0773AC-8A3B-4852-816D-F0DA5C1CB89E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{0DF9E8D6-336E-46EA-8873-6215ED363B0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DF9E8D6-336E-46EA-8873-6215ED363B0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DF9E8D6-336E-46EA-8873-6215ED363B0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D0773AC-8A3B-4852-816D-F0DA5C1CB89E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D0773AC-8A3B-4852-816D-F0DA5C1CB89E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D0773AC-8A3B-4852-816D-F0DA5C1CB89E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D0773AC-8A3B-4852-816D-F0DA5C1CB89E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

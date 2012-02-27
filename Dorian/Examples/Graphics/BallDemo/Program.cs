@@ -47,7 +47,7 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonSwapChain _mainScreen = null;													// The swap chain for our primary display.
 		private static GorgonTexture2D _ballTexture = null;													// Texture for the balls.
 		private static GorgonSprite _wall = null;															// Background checked wall sprite.
-		private static GorgonSprite _ball = null;															// Ball sprite.
+		private static GorgonSprite _ball = null;															// Ball sprite.		
 		private static IList<Ball> _ballList = null;														// Our list of balls.
 		private static int _ballCount = 0;																	// Number of balls.
 		private static float _accumulator = 0;																// Our accumulator for running at a fixed frame rate.
@@ -147,16 +147,17 @@ namespace GorgonLibrary.Graphics.Example
 		/// <returns>TRUE to keep running, FALSE to exit.</returns>
 		private static bool Idle(GorgonFrameRate timing)
 		{
-			//_mainScreen.Clear(Color.White, 1.0f, 0);
+			_mainScreen.Clear(Color.Black, 1.0f, 0);
 
 			// Draw background.
 			for (int y = 0; y < _mainScreen.Settings.Height; y += (int)_wall.Size.Y)
 			{
-				for (int x = 0; x < _mainScreen.Settings.Width; x += (int)_wall.Size.X)
-				{
-					_wall.Position = new Vector2(x, y);
-					_wall.Draw();
-				}
+			    for (int x = 0; x < _mainScreen.Settings.Width; x += (int)_wall.Size.X)
+			    {
+					_wall.Color = Color.White;
+			        _wall.Position = new Vector2(x, y);
+			        _wall.Draw();
+			    }
 			}
 
 			// Update the simulation at our desired frame rate.
@@ -178,7 +179,7 @@ namespace GorgonLibrary.Graphics.Example
 				_ball.Position = _ballList[i].Position;
 				_ball.Color = _ballList[i].Color;
 				_ball.Opacity = _ballList[i].Opacity;
-				_ball.RelativeScale = new Vector2(_ballList[i].Scale, _ballList[i].Scale);
+				_ball.Scale = new Vector2(_ballList[i].Scale, _ballList[i].Scale);
 
 				if (_ballList[i].Checkered)
 					_ball.TextureOffset = new Vector2(64, 0);
@@ -187,12 +188,66 @@ namespace GorgonLibrary.Graphics.Example
 				_ball.Draw();
 			}
 
+			for (int i = 0; i < 1000; i++)
+			{
+				_pt.Position = new Vector2((float)_rnd.NextDouble() * 400, (float)_rnd.NextDouble() * 400);
+				_pt.Color = new GorgonColor((float)_rnd.NextDouble(), (float)_rnd.NextDouble(), (float)_rnd.NextDouble(), 1.0f);
+				_pt.Draw();
+			}
+
+			_line.Color = _pt.Color;
+			_line.Draw();
+			_line.Angle = _ballList[0].Rotation;
+
+			_rect.Position = new Vector2(20, 20);
+			_rect.IsFilled = false;
+			_rect.Size = new Vector2(100, 100);
+			_rect.Angle = _ballList[0].Rotation;
+			//_rect.Draw();
+			_rect.Position = new Vector2(140, 20);
+			_rect.IsFilled = true;
+			_rect.Angle = 0;
+			_rect.Size = new Vector2(150, 150);
+			//_rect.Draw();
+
+			_ball.Scale = new Vector2(1);
+			_ball.Position = new Vector2(370, 300);
+			_ball.Angle = 0.0f;
+			_ball.TextureOffset = new Vector2(64, 0);
+			_ball.Color = Color.White;
+			_ball.Size = new Vector2(128, 128);
+			_ball.Draw();
+			_ball.Size = new Vector2(64, 64);
+
+			
+			
+
+			_wall.Color = Color.Blue;
+			_wall.Position = new Vector2(398, 398);
+			_wall.Size = new Vector2(100, 100);
+			_wall.Draw();
+			_wall.Size = new Vector2(63, 63);
+
+			_2D.Primitives.FilledRectangle(new RectangleF(0, 0, 640, 480), Color.Blue);
+			_2D.Primitives.DrawPoint(new Vector2(320, 240), Color.Yellow);
+			_2D.Primitives.DrawLine(new Vector2(10, 10), new Vector2(300, 220), Color.Green);
+			_2D.Primitives.FilledEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Black, 64);
+			_2D.Primitives.DrawEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Red, 64);
+
+			_ellipse.Angle = _ballList[0].Rotation;
+			_ellipse.Draw();
+
 			_2D.Render();
 
 			_form.Text = "FPS: " + timing.AverageFPS.ToString("###0.0") + " DT:" + (timing.AverageFrameDelta * 1000).ToString("##0.0") + " msec.  Ball Count:" + _ballCount.ToString();
-
+			
 			return true;
 		}
+
+		private static GorgonRectangle _rect = null;
+		private static GorgonPoint _pt = null;
+		private static GorgonLine _line = null;
+		private static GorgonEllipse _ellipse = null;
 
 		/// <summary>
 		/// Function to initialize the application.
@@ -214,8 +269,7 @@ namespace GorgonLibrary.Graphics.Example
 							Height = Properties.Settings.Default.ScreenHeight,
 							Format = BufferFormat.R8G8B8A8_UIntNormal,
 							Window = _form,
-							IsWindowed = Properties.Settings.Default.Windowed,
-							DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt
+							IsWindowed = Properties.Settings.Default.Windowed							
 						});
 
 			if (_mainScreen.Settings.IsWindowed)
@@ -240,7 +294,28 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Anchor = new Vector2(32, 32);
 			_ball.Texture = _ballTexture;
 			_ball.SmoothingMode = SmoothingMode.Smooth;
-			
+
+			_rect = _2D.CreateRectangle("Rectum", RectangleF.FromLTRB(20, 20, 84, 84), false);
+			//_rect.PenSize = new Vector2(1, 8);
+			//_rect.Color = Color.Purple;
+			//_rect.Texture = _ballTexture;
+			//_rect.TextureRegion = new RectangleF(64, 0, 64, 64);
+			//_rect.TextureOffset = new Vector2(64, 0);
+
+			_pt = _2D.CreatePoint("Pointum", new Vector2(2, 2));
+			_pt.PenSize = new Vector2(3, 3);
+
+			_line = _2D.CreateLine("Lineum", new Vector2(20, 20), new Vector2(120, 20));
+			//_line.Anchor = new Vector2(50, 0);
+			//_line.PenSize = new Vector2(16, 16);
+
+			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(63, 63), 64, true);
+			_ellipse.Scale = new Vector2(0.5f, 0.5f);
+			_ellipse.Texture = _ballTexture;
+			_ellipse.Anchor = new Vector2(31.5f, 31.5f);
+			_ellipse.TextureOffset = new Vector2(0, 0);
+			//_ellipse.Size = new Vector2(198, 198);			
+
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);
 		}

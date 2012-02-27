@@ -261,6 +261,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		#endregion
 
 		#region Variables.
+		private int _baseVertex = 0;																// Base vertex.
 		private int _vertexSize = 0;																// Size, in bytes, of a vertex.
 		private Vertex[] _vertexCache = null;														// List of vertices to cache.
 		private int _cacheStart = 0;																// Starting cache vertex buffer index.
@@ -268,6 +269,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private int _renderIndexCount = 0;															// Number of indices to render.
 		private int _cacheEnd = 0;																	// Ending vertex buffer cache index.
 		private int _cacheWritten = 0;																// Number of vertices written.
+		private bool _useCache = true;																// Flag to indicate that we want to use the cache.
 		private bool _disposed = false;																// Flag to indicate that the object was disposed.
 		private int _cacheSize = 32768;																// Number of vertices that we can stuff into a vertex buffer.
 		private Matrix _defaultProjection = Matrix.Identity;										// Default projection matrix.
@@ -307,6 +309,16 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Property to return the tracked objects interface.
 		/// </summary>
 		internal GorgonTrackedObjectCollection TrackedObjects
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the primitive interface.
+		/// </summary>
+		/// <remarks>This is used to create primitive objects (ellipses, lines, rectangles, etc...) or draw them directly.</remarks>
+		public GorgonPrimitives Primitives
 		{
 			get;
 			private set;
@@ -489,8 +501,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			set
 			{
-				if (_cacheSize < 1024)
-					_cacheSize = 1024;
+				if (value < 1024)
+					value = 1024;
 				_cacheSize = value;
 
 				Initialize();
@@ -606,8 +618,9 @@ namespace GorgonLibrary.Graphics.Renderers
 			_cacheStart = 0;
 			_cacheEnd = 0;
 			_cacheWritten = 0;
-			_renderIndexStart = 0;
+			_renderIndexStart = 0;		
 			_renderIndexCount = 0;
+			_baseVertex = 0;
 		}
 
 		/// <summary>
@@ -634,28 +647,32 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (_cacheStart > 0)
 				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
 
-			// Ensure that we have a vertex buffer bound.
-			if (vbBinding == null)
+			// If we're using the cache, then populate the default vertex buffer.
+			if (_useCache)
 			{
-				vbBinding = DefaultVertexBufferBinding;
-				Graphics.Input.VertexBuffers[0] = vbBinding;
-			}
+				// Ensure that we have a vertex buffer bound.
+				if ((vbBinding.VertexBuffer == null) || (vbBinding.Stride == 0))
+				{
+					vbBinding = DefaultVertexBufferBinding;
+					Graphics.Input.VertexBuffers[0] = vbBinding;
+				}
 
-			// Update buffers depending on type.
-			switch (vbBinding.VertexBuffer.BufferUsage)
-			{
-				case BufferUsage.Dynamic:
-					using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
-					{
-						stream.Position = _cacheStart * _vertexSize;
-						stream.WriteRange<Vertex>(_vertexCache, _cacheStart, _cacheWritten);
-						vbBinding.VertexBuffer.Unlock();
-					}
-					break;
-				case BufferUsage.Default:
-					using (GorgonDataStream stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
-						vbBinding.VertexBuffer.Update(stream, _cacheStart * _vertexSize, (int)stream.Length);
-					break;
+				// Update buffers depending on type.
+				switch (vbBinding.VertexBuffer.BufferUsage)
+				{
+					case BufferUsage.Dynamic:
+						using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
+						{
+							stream.Position = _cacheStart * _vertexSize;
+							stream.WriteRange<Vertex>(_vertexCache, _cacheStart, _cacheWritten);
+							vbBinding.VertexBuffer.Unlock();
+						}
+						break;
+					case BufferUsage.Default:
+						using (GorgonDataStream stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
+							vbBinding.VertexBuffer.Update(stream, _cacheStart * _vertexSize, (int)stream.Length);
+						break;
+				}
 			}
 
 			switch (Graphics.Input.PrimitiveType)
@@ -668,7 +685,7 @@ namespace GorgonLibrary.Graphics.Renderers
 					if (Graphics.Input.IndexBuffer == null)
 						Graphics.Output.Draw(_cacheStart, _cacheWritten);
 					else
-						Graphics.Output.DrawIndexed(_renderIndexStart, 0, _renderIndexCount);
+						Graphics.Output.DrawIndexed(_renderIndexStart, _baseVertex, _renderIndexCount);
 					break;
 			}
 
@@ -682,10 +699,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Function to add a renderable object to the vertex buffer.
 		/// </summary>
 		/// <param name="renderable">Renderable object to add.</param>
-		internal void AddRenderable(GorgonRenderable renderable)
+		internal void AddRenderable(IRenderable renderable)
 		{
 			int cacheIndex = 0;
-			int verticesCount = renderable.Vertices.Length;
+			int verticesCount = renderable.VertexCount;
 			int cacheEnd = verticesCount + _cacheEnd;
 			StateChange stateChange = StateChange.None;
 			bool hasRendered = false;
@@ -701,18 +718,39 @@ namespace GorgonLibrary.Graphics.Renderers
 					hasRendered = true;
 				}
 				_stateManager.ApplyState(renderable, stateChange);
+
+				// If we switch vertex buffers, then reset the cache.
+				if ((stateChange & StateChange.VertexBuffer) == StateChange.VertexBuffer)
+				{
+					_baseVertex = 0;
+					_cacheStart = 0;
+					_cacheEnd = 0;
+					_renderIndexCount = 0;
+					_renderIndexStart = 0;
+					cacheEnd = 0;
+					_useCache = Graphics.Input.VertexBuffers[0].Equals(DefaultVertexBufferBinding);
+
+					if (!_useCache)
+					{
+						// We skip the cache for objects that have their own vertex buffers.
+						_cacheEnd = verticesCount;
+						return;
+					}
+				}
 			}
 
 			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
-			if (cacheEnd > _vertexCache.Length)
+			if (cacheEnd > _cacheSize)
 			{
 				// Ensure that we don't render the same scene twice.
 				if ((!hasRendered) && (_cacheWritten > 0))
 					RenderObjects();
 
+				_baseVertex = 0;
 				_cacheStart = 0;
 				_cacheEnd = 0;
 				_renderIndexStart = 0;
+				cacheEnd = 0;
 			}
 
 			for (int i = 0; i < verticesCount; i++)
@@ -722,17 +760,11 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 
 			_renderIndexCount += renderable.IndexCount;
-			_cacheEnd = cacheEnd;
+			_cacheEnd += verticesCount;
 			_cacheWritten = _cacheEnd - _cacheStart;
 
-			// If we've filled the cache, then empty it.
-			if (_cacheEnd == _vertexCache.Length)
-			{
-				RenderObjects();
-				_cacheStart = 0;
-				_cacheEnd = 0;
-				_renderIndexStart = 0;
-			}
+			// We need to shift the vertices for those items that change the index buffer.
+			_baseVertex += renderable.BaseVertexCount;
 		}
 
 		/// <summary>
@@ -843,6 +875,55 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			return new GorgonSprite(this, name, width, height);
 		}
+
+		/// <summary>
+		/// Function to create a rectangle object.
+		/// </summary>
+		/// <param name="name">Name of the rectangle.</param>
+		/// <param name="rectangle">Rectangle dimensions.</param>
+		/// <param name="filled">TRUE to create a filled rectangle, FALSE to create an empty rectangle.</param>
+		/// <returns>A new rectangle primitive object.</returns>
+		public GorgonRectangle CreateRectangle(string name, RectangleF rectangle, bool filled)
+		{
+			return new GorgonRectangle(this, name, rectangle, filled);
+		}
+
+		/// <summary>
+		/// Function to create a line object.
+		/// </summary>
+		/// <param name="name">Name of the line.</param>
+		/// <param name="startPosition">Starting point for the line.</param>
+		/// <param name="endPosition">Ending point for the line.</param>
+		/// <returns>A new line primitive object.</returns>
+		public GorgonLine CreateLine(string name, Vector2 startPosition, Vector2 endPosition)
+		{
+			return new GorgonLine(this, name, startPosition, endPosition);
+		}
+
+		/// <summary>
+		/// Function to create a point object.
+		/// </summary>
+		/// <param name="name">Name of the point.</param>
+		/// <param name="position">The position of the point.</param>
+		/// <returns>A new point primitive object.</returns>
+		public GorgonPoint CreatePoint(string name, Vector2 position)
+		{
+			return new GorgonPoint(this, name, position);
+		}
+
+		/// <summary>
+		/// Function to create an ellipse object.
+		/// </summary>
+		/// <param name="name">Name of the ellipse.</param>
+		/// <param name="position">Position of the ellipse.</param>
+		/// <param name="size">Size of the ellipse.</param>
+		/// <param name="quality">Quality of the ellipse rendering.</param>
+		/// <param name="isFilled">TRUE if the ellipse should be filled, FALSE if not.</param>
+		/// <returns>A new ellipse object.</returns>
+		public GorgonEllipse CreateEllipse(string name, Vector2 position, Vector2 size, int quality, bool isFilled)
+		{
+			return new GorgonEllipse(this, name, position, size, quality, isFilled);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -859,6 +940,8 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			Initialize();
 			Begin2D();
+
+			Primitives = new GorgonPrimitives(this);
 		}
 		#endregion
 
