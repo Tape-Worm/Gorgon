@@ -195,9 +195,7 @@ namespace GorgonLibrary.Graphics.Example
 				_pt.Draw();
 			}
 
-			_line.Color = _pt.Color;
-			_line.Draw();
-			_line.Angle = _ballList[0].Rotation;
+			//_line.Angle = _ballList[0].Rotation;
 
 			_rect.Position = new Vector2(20, 20);
 			_rect.IsFilled = false;
@@ -218,23 +216,46 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Size = new Vector2(128, 128);
 			_ball.Draw();
 			_ball.Size = new Vector2(64, 64);
-
 			
-			
-
-			_wall.Color = Color.Blue;
-			_wall.Position = new Vector2(398, 398);
-			_wall.Size = new Vector2(100, 100);
-			_wall.Draw();
-			_wall.Size = new Vector2(63, 63);
-
 			_2D.Primitives.FilledRectangle(new RectangleF(0, 0, 640, 480), Color.Blue);
 			_2D.Primitives.DrawPoint(new Vector2(320, 240), Color.Yellow);
 			_2D.Primitives.DrawLine(new Vector2(10, 10), new Vector2(300, 220), Color.Green);
 			_2D.Primitives.FilledEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Black, 64);
 			_2D.Primitives.DrawEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Red, 64);
 
-			_ellipse.Angle = _ballList[0].Rotation;
+			_line.Angle = _ballList[0].Rotation;
+			//_line.Color = _pt.Color;
+			_line.EndPoint = new Vector2(0, 20);
+			_line.Draw();
+
+			_line.EndPoint = new Vector2(0, 0);
+			_line.Draw();
+
+			_line.EndPoint = new Vector2(20, 0);
+			_line.Draw();
+
+			_line.EndPoint = new Vector2(40, 0);
+			_line.Draw();
+
+			_line.EndPoint = new Vector2(40, 20);
+			_line.Draw();
+
+			_line.EndPoint = new Vector2(40, 40);
+			_line.Draw();
+
+			_line.EndPoint = new Vector2(20, 40);
+			_line.Draw();
+
+			_line.EndPoint = new Vector2(0, 40);
+			_line.Draw();
+
+			_wall.Color = Color.Blue;
+			_wall.Position = new Vector2(300, 300);
+			_wall.Size = new Vector2(100, 100);
+			_wall.Draw();
+			_wall.Size = new Vector2(63, 63);
+
+			//_ellipse.Angle = _ballList[0].Rotation;
 			_ellipse.Draw();
 
 			_2D.Render();
@@ -305,15 +326,21 @@ namespace GorgonLibrary.Graphics.Example
 			_pt = _2D.CreatePoint("Pointum", new Vector2(2, 2));
 			_pt.PenSize = new Vector2(3, 3);
 
-			_line = _2D.CreateLine("Lineum", new Vector2(20, 20), new Vector2(120, 20));
-			//_line.Anchor = new Vector2(50, 0);
+			_line = _2D.CreateLine("Lineum", new Vector2(20, 20), new Vector2(40, 20));
+			_line.PenSize = new Vector2(4, 4);
+			//_line.Texture = _ballTexture;
+			_line.TextureStart = new Vector2(64, 0);
+			_line.TextureEnd = new Vector2(128, 8);
+			//_line.Angle = 45.0f;
+			_line.Anchor = new Vector2(40, 40);
 			//_line.PenSize = new Vector2(16, 16);
 
-			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(63, 63), 64, true);
-			_ellipse.Scale = new Vector2(0.5f, 0.5f);
+			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(63, 63), 4, false);
+			//_ellipse.PenSize = new Vector2(2.0f, 2.0f);
+			_ellipse.Scale = new Vector2(4.5f, 4.5f);
 			_ellipse.Texture = _ballTexture;
 			_ellipse.Anchor = new Vector2(31.5f, 31.5f);
-			_ellipse.TextureOffset = new Vector2(0, 0);
+			_ellipse.TextureOffset = new Vector2(64, 0);
 			//_ellipse.Size = new Vector2(198, 198);			
 
 			// Generate the ball list.
