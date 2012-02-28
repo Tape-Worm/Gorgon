@@ -152,10 +152,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="dimensions">Ellipse dimensions.</param>
 		/// <param name="color">Color for the ellipse.</param>
 		/// <param name="quality">Quality of rendering for the ellipse.</param>
+		/// <param name="thickness">Thickness of the line.</param>
 		/// <param name="texture">Texture to apply to the ellipse.</param>
 		/// <param name="textureRegion">Texture dimensions to use.</param>
 		/// <remarks>The <paramref name="quality"/> parameter can have a value from 4 to 256.  The higher the quality, the better looking the ellipse, however this will impact performance.</remarks>
-		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality, GorgonTexture2D texture, RectangleF textureRegion)
+		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality, Vector2 thickness, GorgonTexture2D texture, RectangleF textureRegion)
 		{
 			_ellipse.IsFilled = false;
 			_ellipse.Position = dimensions.Location;
@@ -164,6 +165,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_ellipse.Quality = quality;
 			_ellipse.Texture = texture;
 			_ellipse.TextureRegion = textureRegion;
+			_ellipse.PenSize = thickness;
 			_ellipse.Draw();
 		}
 
@@ -173,11 +175,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="dimensions">Ellipse dimensions.</param>
 		/// <param name="color">Color for the ellipse.</param>
 		/// <param name="quality">Quality of rendering for the ellipse.</param>
+		/// <param name="thickness">Thickness of the line.</param>
 		/// <param name="texture">Texture to apply to the ellipse.</param>
 		/// <remarks>The <paramref name="quality"/> parameter can have a value from 4 to 256.  The higher the quality, the better looking the ellipse, however this will impact performance.</remarks>
-		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality, GorgonTexture2D texture)
+		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality, Vector2 thickness, GorgonTexture2D texture)
 		{
-			DrawEllipse(dimensions, color, quality, texture, new RectangleF(0, 0, dimensions.Width, dimensions.Height));
+			DrawEllipse(dimensions, color, quality, thickness, texture, new RectangleF(0, 0, dimensions.Width, dimensions.Height));
 		}
 
 		/// <summary>
@@ -186,10 +189,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="dimensions">Ellipse dimensions.</param>
 		/// <param name="color">Color for the ellipse.</param>
 		/// <param name="quality">Quality of rendering for the ellipse.</param>
+		/// <param name="thickness">Thickness of the line.</param>
 		/// <remarks>The <paramref name="quality"/> parameter can have a value from 4 to 256.  The higher the quality, the better looking the ellipse, however this will impact performance.</remarks>
-		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality)
+		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality, Vector2 thickness)
 		{
-			DrawEllipse(dimensions, color, quality, null, RectangleF.Empty);
+			DrawEllipse(dimensions, color, quality, thickness, null, RectangleF.Empty);
 		}
 
 		/// <summary>
@@ -197,9 +201,21 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="dimensions">Ellipse dimensions.</param>
 		/// <param name="color">Color for the ellipse.</param>
+		/// <param name="quality">Quality of rendering for the ellipse.</param>
+		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality)
+		{
+			DrawEllipse(dimensions, color, quality, new Vector2(1.0f), null, RectangleF.Empty);
+		}
+
+		/// <summary>
+		/// Function to draw an ellipse onto the current target.
+		/// </summary>
+		/// <param name="dimensions">Ellipse dimensions.</param>
+		/// <param name="color">Color for the ellipse.</param>
+		/// <remarks>The default <paramref name="quality"/> is 64 segments.</remarks>
 		public void DrawEllipse(RectangleF dimensions, GorgonColor color)
 		{
-			DrawEllipse(dimensions, color, 64, null, RectangleF.Empty);
+			DrawEllipse(dimensions, color, 64, new Vector2(1.0f), null, RectangleF.Empty);
 		}
 
 		/// <summary>

@@ -192,7 +192,7 @@ namespace GorgonLibrary.Graphics.Example
 			{
 				_pt.Position = new Vector2((float)_rnd.NextDouble() * 400, (float)_rnd.NextDouble() * 400);
 				_pt.Color = new GorgonColor((float)_rnd.NextDouble(), (float)_rnd.NextDouble(), (float)_rnd.NextDouble(), 1.0f);
-				_pt.Draw();
+				//_pt.Draw();
 			}
 
 			//_line.Angle = _ballList[0].Rotation;
@@ -201,12 +201,12 @@ namespace GorgonLibrary.Graphics.Example
 			_rect.IsFilled = false;
 			_rect.Size = new Vector2(100, 100);
 			_rect.Angle = _ballList[0].Rotation;
-			//_rect.Draw();
+			_rect.Draw();
 			_rect.Position = new Vector2(140, 20);
 			_rect.IsFilled = true;
 			_rect.Angle = 0;
 			_rect.Size = new Vector2(150, 150);
-			//_rect.Draw();
+			_rect.Draw();
 
 			_ball.Scale = new Vector2(1);
 			_ball.Position = new Vector2(370, 300);
@@ -327,7 +327,7 @@ namespace GorgonLibrary.Graphics.Example
 			_pt.PenSize = new Vector2(3, 3);
 
 			_line = _2D.CreateLine("Lineum", new Vector2(20, 20), new Vector2(40, 20));
-			_line.PenSize = new Vector2(4, 4);
+			//_line.PenSize = new Vector2(4, 4);
 //			_line.Texture = _ballTexture;
 			_line.TextureStart = new Vector2(128, 64);
 			_line.TextureEnd = new Vector2(64, 0);
@@ -338,9 +338,11 @@ namespace GorgonLibrary.Graphics.Example
 			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(62, 62), 64, false);
 			//_ellipse.PenSize = new Vector2(2.0f, 2.0f);
 			//_ellipse.Scale = new Vector2(2.5f, 2.5f);
-			_ellipse.Texture = _ballTexture;
+			//_ellipse.Texture = _ballTexture;
 			_ellipse.Anchor = new Vector2(31.5f, 31.5f);
 			_ellipse.TextureOffset = new Vector2(65, 2);
+			for (int i = 0; i < _ellipse.Quality / 4; i++)
+				_ellipse.SetPointColor(i, new GorgonColor(i * 2, 0, 0));
 			//_ellipse.Size = new Vector2(198, 198);			
 
 			// Generate the ball list.
