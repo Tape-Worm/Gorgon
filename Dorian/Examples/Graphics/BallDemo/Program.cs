@@ -235,6 +235,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			//_line.Angle = _ballList[0].Rotation;
 			//_line.Color = _pt.Color;
+			//_line.LineThickness = new Vector2(4, 4);
 			//_line.EndPoint = new Vector2(0, 20);
 			//_line.Draw();
 
@@ -249,7 +250,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			//_line.EndPoint = new Vector2(40, 20);
 			//_line.Draw();
-
+			
 			//_line.EndPoint = new Vector2(40, 40);
 			//_line.Draw();
 
@@ -270,19 +271,19 @@ namespace GorgonLibrary.Graphics.Example
 
 			// TODO: Texture not mapping correctly for thick lines.
 
-			//_rect.LineThickness = new Vector2(3, 3);
+			_rect.LineThickness = new Vector2(3, 3);
 			_rect.Position = new Vector2(30, 30);
 			_rect.Size = new Vector2(100, 100);
 			_rect.IsFilled = false;
-			_rect.Texture = _ballTexture;
+			//_rect.Texture = _ballTexture;
 			_rect.Color = Color.White;
-			_rect.TextureRegion = new RectangleF(0, 0, 62.0f, 62.0f);
+			_rect.TextureRegion = new RectangleF(67, 3, 58.0f, 58.0f);
 			_rect.Draw();
 			
 			float rot = _ballList[0].Rotation / 360.0f;
 			//_ellipse.Angle = _ballList[0].Rotation;
-			for (int i = 0; i < _ellipse.Quality; i++)
-				_ellipse.SetPointColor(i, new GorgonColor(rot * ((float)i / (float)_ellipse.Quality), 0, 0));
+			//for (int i = 0; i < _ellipse.Quality; i++)
+			//    _ellipse.SetPointColor(i, new GorgonColor(rot * ((float)i / (float)_ellipse.Quality), 0, 0));
 			_ellipse.Draw();
 
 			_2D.Render();
@@ -354,7 +355,7 @@ namespace GorgonLibrary.Graphics.Example
 			_pt.PointThickness = new Vector2(3, 3);
 
 			_line = _2D.CreateLine("Lineum", new Vector2(20, 20), new Vector2(40, 20));
-			//_line.PenSize = new Vector2(4, 4);
+//			_line.PenSize = new Vector2(4, 4);
 //			_line.Texture = _ballTexture;
 			_line.TextureStart = new Vector2(128, 64);
 			_line.TextureEnd = new Vector2(64, 0);
@@ -365,9 +366,9 @@ namespace GorgonLibrary.Graphics.Example
 			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(62, 62), 64, false);
 			_ellipse.LineThickness = new Vector2(2.0f, 2.0f);
 			_ellipse.Scale = new Vector2(2.5f, 2.5f);
-			//_ellipse.Texture = _ballTexture;
+			_ellipse.Texture = _ballTexture;
 			_ellipse.Anchor = new Vector2(31.5f, 31.5f);
-			_ellipse.TextureOffset = new Vector2(65, 2);
+			_ellipse.TextureRegion = new RectangleF(67, 3, 58, 58);
 			//_ellipse.Size = new Vector2(198, 198);			
 
 			// Generate the ball list.
