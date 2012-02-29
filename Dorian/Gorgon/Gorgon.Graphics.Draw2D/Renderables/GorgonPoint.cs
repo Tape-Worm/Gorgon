@@ -46,7 +46,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonRenderable.DepthStencilStates _depthState = null;						// Depth/stencil state.
 		private GorgonRenderable.TextureSamplerState _samplerState = null;					// Sampler state.
 		private Gorgon2D.Vertex[] _vertices = null;											// List of vertices.
-		private Vector2 _penSize = new Vector2(1);											// Pen size.
+		private Vector2 _pointSize = new Vector2(1);										// Point size.
 		#endregion
 
 		#region Properties.	
@@ -80,22 +80,23 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the size of the point.
 		/// </summary>
-		public Vector2 PenSize
+		/// <remarks>This value cannot be less than 1.</remarks>
+		public Vector2 PointThickness
 		{
 			get
 			{
-				return _penSize;
+				return _pointSize;
 			}
 			set
 			{
-				if (_penSize != value)
+				if (_pointSize != value)
 				{
 					if (value.X < 1)
 						value.X = 1;
 					if (value.Y < 1)
 						value.Y = 1;
 
-					_penSize = value;
+					_pointSize = value;
 				}
 			}
 		}
@@ -109,12 +110,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			_vertices[0].Position.X = Position.X;
 			_vertices[0].Position.Y = Position.Y;
-			_vertices[1].Position.X = Position.X + _penSize.X;
+			_vertices[1].Position.X = Position.X + _pointSize.X;
 			_vertices[1].Position.Y = Position.Y;
 			_vertices[2].Position.X = Position.X;
-			_vertices[2].Position.Y = Position.Y + _penSize.Y;
-			_vertices[3].Position.X = Position.X + _penSize.X;
-			_vertices[3].Position.Y = Position.Y + _penSize.Y;
+			_vertices[2].Position.Y = Position.Y + _pointSize.Y;
+			_vertices[3].Position.X = Position.X + _pointSize.X;
+			_vertices[3].Position.Y = Position.Y + _pointSize.Y;
 
 			// Apply depth to the sprite.
 			if (Depth != 0.0f)
@@ -187,7 +188,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_pointSize.X == 1.0f) && (_pointSize.Y == 1.0f))
 					return null;
 				else
 					return Gorgon2D.DefaultIndexBuffer;
@@ -201,7 +202,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_pointSize.X == 1.0f) && (_pointSize.Y == 1.0f))
 					return PrimitiveType.PointList;
 				else
 					return PrimitiveType.TriangleList;
@@ -226,7 +227,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_pointSize.X == 1.0f) && (_pointSize.Y == 1.0f))
 					return 0;
 				else
 					return 6;
@@ -240,7 +241,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_pointSize.X == 1.0f) && (_pointSize.Y == 1.0f))
 					return 1;
 				else
 					return 0;
@@ -254,7 +255,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_pointSize.X == 1.0f) && (_pointSize.Y == 1.0f))
 					return 1;
 				else
 					return 4;

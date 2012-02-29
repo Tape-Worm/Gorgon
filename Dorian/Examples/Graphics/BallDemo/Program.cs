@@ -110,15 +110,25 @@ namespace GorgonLibrary.Graphics.Example
 				currentBall.Scale += currentBall.ScaleDelta * frameTime;
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
 				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
-				//currentBall.Opacity += currentBall.ScaleDelta * frameTime;
-				//currentBall.Opacity = 1.0f;
+
+				if (currentBall.Rotation > 360.0f)
+					currentBall.Rotation = currentBall.Rotation - 360.0f;
+
+				if (currentBall.Rotation < 0.0f)
+					currentBall.Rotation = currentBall.Rotation + 360.0f;
 
 				// Adjust position.
 				if ((currentBall.Position.X > _mainScreen.Settings.Width) || (currentBall.Position.X < 0))
+				{
 					currentBall.PositionDelta.X = -currentBall.PositionDelta.X;
+					currentBall.RotationDelta = -currentBall.RotationDelta;
+				}
 
 				if ((currentBall.Position.Y > _mainScreen.Settings.Height) || (currentBall.Position.Y < 0))
+				{
 					currentBall.PositionDelta.Y = -currentBall.PositionDelta.Y;
+					currentBall.RotationDelta = -currentBall.RotationDelta;
+				}
 
 				// Adjust scale.
 				if ((currentBall.Scale > 1.5f) || (currentBall.Scale < 0.5f))
@@ -147,7 +157,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// <returns>TRUE to keep running, FALSE to exit.</returns>
 		private static bool Idle(GorgonFrameRate timing)
 		{
-			_mainScreen.Clear(Color.Black, 1.0f, 0);
+			//_mainScreen.Clear(Color.Black, 1.0f, 0);
 
 			// Draw background.
 			for (int y = 0; y < _mainScreen.Settings.Height; y += (int)_wall.Size.Y)
@@ -201,12 +211,12 @@ namespace GorgonLibrary.Graphics.Example
 			_rect.IsFilled = false;
 			_rect.Size = new Vector2(100, 100);
 			_rect.Angle = _ballList[0].Rotation;
-			_rect.Draw();
+			//_rect.Draw();
 			_rect.Position = new Vector2(140, 20);
 			_rect.IsFilled = true;
 			_rect.Angle = 0;
 			_rect.Size = new Vector2(150, 150);
-			_rect.Draw();
+			//_rect.Draw();
 
 			_ball.Scale = new Vector2(1);
 			_ball.Position = new Vector2(370, 300);
@@ -225,29 +235,29 @@ namespace GorgonLibrary.Graphics.Example
 
 			//_line.Angle = _ballList[0].Rotation;
 			//_line.Color = _pt.Color;
-			_line.EndPoint = new Vector2(0, 20);
-			_line.Draw();
+			//_line.EndPoint = new Vector2(0, 20);
+			//_line.Draw();
 
-			_line.EndPoint = new Vector2(0, 0);
-			_line.Draw();
+			//_line.EndPoint = new Vector2(0, 0);
+			//_line.Draw();
 
-			_line.EndPoint = new Vector2(20, 0);
-			_line.Draw();
+			//_line.EndPoint = new Vector2(20, 0);
+			//_line.Draw();
 
-			_line.EndPoint = new Vector2(40, 0);
-			_line.Draw();
+			//_line.EndPoint = new Vector2(40, 0);
+			//_line.Draw();
 
-			_line.EndPoint = new Vector2(40, 20);
-			_line.Draw();
+			//_line.EndPoint = new Vector2(40, 20);
+			//_line.Draw();
 
-			_line.EndPoint = new Vector2(40, 40);
-			_line.Draw();
+			//_line.EndPoint = new Vector2(40, 40);
+			//_line.Draw();
 
-			_line.EndPoint = new Vector2(20, 40);
-			_line.Draw();
+			//_line.EndPoint = new Vector2(20, 40);
+			//_line.Draw();
 
-			_line.EndPoint = new Vector2(0, 40);
-			_line.Draw();
+			//_line.EndPoint = new Vector2(0, 40);
+			//_line.Draw();
 
 			_wall.Color = Color.Blue;
 			_wall.Position = new Vector2(300, 300);
@@ -255,7 +265,24 @@ namespace GorgonLibrary.Graphics.Example
 			_wall.Draw();
 			_wall.Size = new Vector2(63, 63);
 
+			//_rect.Anchor = new Vector2(50, 50);
+			//_rect.Angle = _ballList[0].Rotation;
+
+			// TODO: Texture not mapping correctly for thick lines.
+
+			//_rect.LineThickness = new Vector2(3, 3);
+			_rect.Position = new Vector2(30, 30);
+			_rect.Size = new Vector2(100, 100);
+			_rect.IsFilled = false;
+			_rect.Texture = _ballTexture;
+			_rect.Color = Color.White;
+			_rect.TextureRegion = new RectangleF(0, 0, 62.0f, 62.0f);
+			_rect.Draw();
+			
+			float rot = _ballList[0].Rotation / 360.0f;
 			//_ellipse.Angle = _ballList[0].Rotation;
+			for (int i = 0; i < _ellipse.Quality; i++)
+				_ellipse.SetPointColor(i, new GorgonColor(rot * ((float)i / (float)_ellipse.Quality), 0, 0));
 			_ellipse.Draw();
 
 			_2D.Render();
@@ -324,7 +351,7 @@ namespace GorgonLibrary.Graphics.Example
 			//_rect.TextureOffset = new Vector2(64, 0);
 
 			_pt = _2D.CreatePoint("Pointum", new Vector2(2, 2));
-			_pt.PenSize = new Vector2(3, 3);
+			_pt.PointThickness = new Vector2(3, 3);
 
 			_line = _2D.CreateLine("Lineum", new Vector2(20, 20), new Vector2(40, 20));
 			//_line.PenSize = new Vector2(4, 4);
@@ -336,13 +363,11 @@ namespace GorgonLibrary.Graphics.Example
 			//_line.PenSize = new Vector2(16, 16);
 
 			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(62, 62), 64, false);
-			//_ellipse.PenSize = new Vector2(2.0f, 2.0f);
-			//_ellipse.Scale = new Vector2(2.5f, 2.5f);
+			_ellipse.LineThickness = new Vector2(2.0f, 2.0f);
+			_ellipse.Scale = new Vector2(2.5f, 2.5f);
 			//_ellipse.Texture = _ballTexture;
 			_ellipse.Anchor = new Vector2(31.5f, 31.5f);
 			_ellipse.TextureOffset = new Vector2(65, 2);
-			for (int i = 0; i < _ellipse.Quality / 4; i++)
-				_ellipse.SetPointColor(i, new GorgonColor(i * 2, 0, 0));
 			//_ellipse.Size = new Vector2(198, 198);			
 
 			// Generate the ball list.
