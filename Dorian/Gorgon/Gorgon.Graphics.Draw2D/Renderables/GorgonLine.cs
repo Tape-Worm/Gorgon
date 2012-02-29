@@ -353,16 +353,16 @@ namespace GorgonLibrary.Graphics.Renderers
 			else
 			{
 				Vertices[0].UV.X = (TextureStart.X) / Texture.Settings.Width;
-				Vertices[0].UV.Y = (TextureEnd.Y) / Texture.Settings.Height;
+				Vertices[0].UV.Y = (TextureStart.Y) / Texture.Settings.Height;
 
-				Vertices[1].UV.X = (TextureStart.X) / Texture.Settings.Width;
+				Vertices[1].UV.X = (TextureEnd.X) / Texture.Settings.Width;
 				Vertices[1].UV.Y = (TextureStart.Y) / Texture.Settings.Height;
 
-				Vertices[2].UV.X = (TextureEnd.X) / Texture.Settings.Width;
+				Vertices[2].UV.X = (TextureStart.X) / Texture.Settings.Width;
 				Vertices[2].UV.Y = (TextureEnd.Y) / Texture.Settings.Height;
 				
 				Vertices[3].UV.X = (TextureEnd.X) / Texture.Settings.Width;
-				Vertices[3].UV.Y = (TextureStart.Y) / Texture.Settings.Height;
+				Vertices[3].UV.Y = (TextureEnd.Y) / Texture.Settings.Height;
 			}
 		}
 
@@ -425,25 +425,25 @@ namespace GorgonLibrary.Graphics.Renderers
 				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
 				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
 
-				Vertices[0].Position.X = (corner4.X * cosVal - corner4.Y * sinVal);
-				Vertices[0].Position.Y = (corner4.X * sinVal + corner4.Y * cosVal);
-				Vertices[1].Position.X = (corner2.X * cosVal - corner2.Y * sinVal);
-				Vertices[1].Position.Y = (corner2.X * sinVal + corner2.Y * cosVal);
-				Vertices[2].Position.X = (corner3.X * cosVal - corner3.Y * sinVal);
-				Vertices[2].Position.Y = (corner3.X * sinVal + corner3.Y * cosVal);
-				Vertices[3].Position.X = (corner1.X * cosVal - corner1.Y * sinVal);
-				Vertices[3].Position.Y = (corner1.X * sinVal + corner1.Y * cosVal);
+				Vertices[0].Position.X = (corner1.X * cosVal - corner1.Y * sinVal);
+				Vertices[0].Position.Y = (corner1.X * sinVal + corner1.Y * cosVal);
+				Vertices[1].Position.X = (corner3.X * cosVal - corner3.Y * sinVal);
+				Vertices[1].Position.Y = (corner3.X * sinVal + corner3.Y * cosVal);
+				Vertices[2].Position.X = (corner2.X * cosVal - corner2.Y * sinVal);
+				Vertices[2].Position.Y = (corner2.X * sinVal + corner2.Y * cosVal);
+				Vertices[3].Position.X = (corner4.X * cosVal - corner4.Y * sinVal);
+				Vertices[3].Position.Y = (corner4.X * sinVal + corner4.Y * cosVal);
 			}
 			else
 			{
-				Vertices[0].Position.X = corner4.X;
-				Vertices[0].Position.Y = corner4.Y;
-				Vertices[1].Position.X = corner2.X;
-				Vertices[1].Position.Y = corner2.Y;
-				Vertices[2].Position.X = corner3.X;
-				Vertices[2].Position.Y = corner3.Y;
-				Vertices[3].Position.X = corner1.X;
-				Vertices[3].Position.Y = corner1.Y;
+				Vertices[0].Position.X = corner1.X;
+				Vertices[0].Position.Y = corner1.Y;
+				Vertices[1].Position.X = corner3.X;
+				Vertices[1].Position.Y = corner3.Y;
+				Vertices[2].Position.X = corner2.X;
+				Vertices[2].Position.Y = corner2.Y;
+				Vertices[3].Position.X = corner4.X;
+				Vertices[3].Position.Y = corner4.Y;
 			}
 
 			// Translate.
