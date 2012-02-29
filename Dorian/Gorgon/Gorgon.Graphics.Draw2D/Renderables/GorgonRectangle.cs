@@ -42,7 +42,7 @@ namespace GorgonLibrary.Graphics.Renderers
 	public class GorgonRectangle
 		: GorgonMoveable
 	{
-		#region Variables.		
+		#region Variables.
 		private GorgonColor[] _colors = null;				// Colors for each corner.
 		private GorgonLine _line = null;					// Line used for outlined drawing.
 		private GorgonSprite _filled = null;				// Sprite used for rectangle drawing.
@@ -183,7 +183,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				penMid = Vector2.Divide(LineThickness, 2.0f);
 
 			_line.TextureStart = TextureRegion.Location;
-			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Top);
+			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Top + LineThickness.Y);
 			_line.StartColor = _colors[0];
 			_line.EndColor = _colors[1];
 			_line.StartPoint = new Vector2(Rectangle.Left - penMid.X, Rectangle.Top + 1 - penMid.Y);
@@ -198,7 +198,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_line.EndPoint = new Vector2(Rectangle.Right - penMid.X, Rectangle.Bottom + penMid.Y);
 			_line.Draw();
 
-			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Bottom);
+			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Bottom - LineThickness.Y);
 			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Bottom);
 			_line.StartColor = _colors[2];
 			_line.EndColor = _colors[3];

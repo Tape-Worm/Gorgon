@@ -62,6 +62,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Vector2 _textureStart = Vector2.Zero;									// Texture offset for the start point.
 		private Vector2 _anchor = Vector2.Zero;											// Anchor point for rotation and scaling.
 		private Vector2 _lineThickness = new Vector2(1.0f);								// Thickness for the line.
+		private Vector2 _crossProduct = Vector2.Zero;									// Cross product of the line.
 		#endregion
 
 		#region Properties.
@@ -332,11 +333,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		private void UpdateTextureCoordinates()
 		{
-			// Calculate texture coordinates.
-			Vector2 scaleUV = Vector2.Zero;
-			Vector2 offsetUV = Vector2.Zero;
-			Vector2 scaledTexture = Vector2.Zero;
-
 			if (Texture == null)
 			{
 				Vertices[3].UV = Vertices[2].UV = Vertices[0].UV = Vertices[1].UV = Vector2.Zero;
@@ -352,17 +348,17 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			else
 			{
-				Vertices[0].UV.X = (TextureStart.X) / Texture.Settings.Width;
-				Vertices[0].UV.Y = (TextureStart.Y) / Texture.Settings.Height;
+				Vertices[0].UV.X = (TextureStart.X + _crossProduct.X) / Texture.Settings.Width;
+				Vertices[0].UV.Y = (TextureStart.Y + _crossProduct.Y) / Texture.Settings.Height;
 
-				Vertices[1].UV.X = (TextureEnd.X) / Texture.Settings.Width;
-				Vertices[1].UV.Y = (TextureStart.Y) / Texture.Settings.Height;
+				Vertices[1].UV.X = (TextureEnd.X + _crossProduct.X) / Texture.Settings.Width;
+				Vertices[1].UV.Y = (TextureEnd.Y + _crossProduct.Y) / Texture.Settings.Height;
 
-				Vertices[2].UV.X = (TextureStart.X) / Texture.Settings.Width;
-				Vertices[2].UV.Y = (TextureEnd.Y) / Texture.Settings.Height;
+				Vertices[2].UV.X = (TextureStart.X - _crossProduct.X) / Texture.Settings.Width;
+				Vertices[2].UV.Y = (TextureStart.Y - _crossProduct.Y) / Texture.Settings.Height;
 				
-				Vertices[3].UV.X = (TextureEnd.X) / Texture.Settings.Width;
-				Vertices[3].UV.Y = (TextureEnd.Y) / Texture.Settings.Height;
+				Vertices[3].UV.X = (TextureEnd.X - _crossProduct.X) / Texture.Settings.Width;
+				Vertices[3].UV.Y = (TextureEnd.Y - _crossProduct.Y) / Texture.Settings.Height;
 			}
 		}
 
@@ -371,6 +367,13 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		private void UpdateVertices()
 		{
+			Vector2 lineDims = new Vector2(_line.Right - _line.Left, _line.Bottom - _line.Top);
+			Vector2 lineNormal = lineDims * (1.0f / lineDims.Length);
+
+			_crossProduct = new Vector2(lineNormal.Y, -lineNormal.X);
+			_crossProduct.X *= LineThickness.X;
+			_crossProduct.Y *= LineThickness.Y;
+
 			_corners[0] = -Anchor.X;
 			_corners[1] = -Anchor.Y;
 			_corners[2] = _line.Width - Anchor.X;
@@ -382,42 +385,25 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		private void TransformQuad()
 		{
-			Vector2 lineDims = Vector2.Zero;										// Line dimensions.
-			Vector2 startPoint = _line.Location;									// Start point.
-			Vector2 endPoint = new Vector2(_line.Right, _line.Bottom);				// End point.
 			Vector2 corner1 = Vector2.Zero;											// 1st corner.
 			Vector2 corner2 = Vector2.Zero;											// 2nd corner.
 			Vector2 corner3 = Vector2.Zero;											// 3rd corner.
 			Vector2 corner4 = Vector2.Zero;											// 4th corner.
-			float lineLength = 0.0f;												// Line length.
-
-			Vector2.Subtract(ref endPoint, ref startPoint, out lineDims);
-			lineLength = lineDims.Length;
 
 			BaseVertexCount = 0;
 			VertexCount = 4;
 
-			if (lineLength <= 0.0f)
-				return;
+			corner1.X = _corners[0] + _crossProduct.X;
+			corner1.Y = _corners[1] + _crossProduct.Y;
 
-			Vector2 normalLine = lineDims * (1.0f / lineLength);
-			Vector2 crossProduct = Vector2.Zero;
+			corner2.X = _corners[0] - _crossProduct.X;
+			corner2.Y = _corners[1] - _crossProduct.Y;
 
-			crossProduct = new Vector2(normalLine.Y, -normalLine.X);
-			crossProduct.X *= _lineThickness.X;
-			crossProduct.Y *= _lineThickness.Y;
-			
-			corner1.X = _corners[0] + crossProduct.X;
-			corner1.Y = _corners[1] + crossProduct.Y;
+			corner3.X = _corners[2] + _crossProduct.X;
+			corner3.Y = _corners[3] + _crossProduct.Y;
 
-			corner2.X = _corners[0] - crossProduct.X;
-			corner2.Y = _corners[1] - crossProduct.Y;
-
-			corner3.X = _corners[2] + crossProduct.X;
-			corner3.Y = _corners[3] + crossProduct.Y;
-
-			corner4.X = _corners[2] - crossProduct.X;
-			corner4.Y = _corners[3] - crossProduct.Y;
+			corner4.X = _corners[2] - _crossProduct.X;
+			corner4.Y = _corners[3] - _crossProduct.Y;
 
 			if (Angle != 0.0f)
 			{
