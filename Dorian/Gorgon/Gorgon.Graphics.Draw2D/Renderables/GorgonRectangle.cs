@@ -39,14 +39,14 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// A renderable object for drawing a rectangle on the screen.
 	/// </summary>
 	/// <remarks>This is similar to a sprite only that the object can be filled or unfilled.</remarks>
-	public class GorgonRectangle
+	public class _GorgonRectangle_
 		: GorgonMoveable
 	{
 		#region Variables.
 		private float[] _corners = null;												// Corners for the rectangle.
 		private bool _isFilled = false;													// Flag to indicate that the rectangle is filled.
 		private RectangleF _rectangle = RectangleF.Empty;								// Rectangle dimensions.
-		private Vector2 _penSize = new Vector2(1.0f);									// Pen size for the outline rectangle.
+		private Vector2 _lineThickness = new Vector2(1.0f);								// Thickness for the outline rectangle lines.
 		private GorgonColor[] _colors = null;											// List of colors for each corner.
 		#endregion
 
@@ -58,7 +58,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((!_isFilled) && (_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((!_isFilled) && (_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					return Graphics.PrimitiveType.LineList;
 				else
 					return Graphics.PrimitiveType.TriangleList;
@@ -72,7 +72,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((!_isFilled) && (_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((!_isFilled) && (_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					return 0;
 				else
 				{
@@ -91,7 +91,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				if ((!_isFilled) && (_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((!_isFilled) && (_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					return null;
 				else
 					return Gorgon2D.DefaultIndexBuffer;
@@ -123,24 +123,25 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the pen size for an unfilled rectangle.
+		/// Property to set or return the thickness of the lines for an unfilled rectangle.
 		/// </summary>
-		public Vector2 PenSize
+		/// <remarks>These values cannot be less than 1.</remarks>
+		public Vector2 LineThickness
 		{
 			get
 			{
-				return _penSize;
+				return _lineThickness;
 			}
 			set
 			{
-				if (value != _penSize)
+				if (value != _lineThickness)
 				{
 					if (value.X < 1.0f)
 						value.X = 1.0f;
 					if (value.Y < 1.0f)
 						value.Y = 1.0f;
 
-					_penSize = value;
+					_lineThickness = value;
 				}
 			}
 		}
@@ -235,7 +236,7 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			BaseVertexCount = 0;
 			VertexCount = 16;
-			Vector2.Divide(ref _penSize, 2.0f, out midPen);
+			Vector2.Divide(ref _lineThickness, 2.0f, out midPen);
 
 			for (int i = 0; i < 16; i+=4)
 			{
@@ -633,7 +634,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				return;
 			}
 
-			Vector2.Divide(ref _penSize, 2.0f, out penMid);
+			Vector2.Divide(ref _lineThickness, 2.0f, out penMid);
 
 			// Top line.
 			Vertices[0].UV.X = (TextureRegion.X) / Texture.Settings.Width;
@@ -641,25 +642,25 @@ namespace GorgonLibrary.Graphics.Renderers
 			Vertices[1].UV.X = (TextureRegion.Right) / Texture.Settings.Width;
 			Vertices[1].UV.Y = (TextureRegion.Y) / Texture.Settings.Height;
 			Vertices[2].UV.X = (TextureRegion.X) / Texture.Settings.Width;
-			Vertices[2].UV.Y = (TextureRegion.Y + _penSize.Y) / Texture.Settings.Height;
+			Vertices[2].UV.Y = (TextureRegion.Y + _lineThickness.Y) / Texture.Settings.Height;
 			Vertices[3].UV.X = (TextureRegion.Right) / Texture.Settings.Width;
-			Vertices[3].UV.Y = (TextureRegion.Y + _penSize.Y) / Texture.Settings.Height;
+			Vertices[3].UV.Y = (TextureRegion.Y + _lineThickness.Y) / Texture.Settings.Height;
 
 			// Right line.
-			Vertices[4].UV.X = (TextureRegion.Right - _penSize.X) / Texture.Settings.Width;
+			Vertices[4].UV.X = (TextureRegion.Right - _lineThickness.X) / Texture.Settings.Width;
 			Vertices[4].UV.Y = (TextureRegion.Y) / Texture.Settings.Height;
 			Vertices[5].UV.X = (TextureRegion.Right) / Texture.Settings.Width;
 			Vertices[5].UV.Y = (TextureRegion.Y) / Texture.Settings.Height;
-			Vertices[6].UV.X = (TextureRegion.Right - _penSize.X) / Texture.Settings.Width;
+			Vertices[6].UV.X = (TextureRegion.Right - _lineThickness.X) / Texture.Settings.Width;
 			Vertices[6].UV.Y = (TextureRegion.Bottom) / Texture.Settings.Height;
 			Vertices[7].UV.X = (TextureRegion.Right) / Texture.Settings.Width;
 			Vertices[7].UV.Y = (TextureRegion.Bottom) / Texture.Settings.Height;
 
 			// Bottom line.
 			Vertices[8].UV.X = (TextureRegion.X) / Texture.Settings.Width;
-			Vertices[8].UV.Y = (TextureRegion.Bottom - _penSize.Y) / Texture.Settings.Height;
+			Vertices[8].UV.Y = (TextureRegion.Bottom - _lineThickness.Y) / Texture.Settings.Height;
 			Vertices[9].UV.X = (TextureRegion.Right) / Texture.Settings.Width;
-			Vertices[9].UV.Y = (TextureRegion.Bottom - _penSize.Y) / Texture.Settings.Height;
+			Vertices[9].UV.Y = (TextureRegion.Bottom - _lineThickness.Y) / Texture.Settings.Height;
 			Vertices[10].UV.X = (TextureRegion.X) / Texture.Settings.Width;
 			Vertices[10].UV.Y = (TextureRegion.Bottom) / Texture.Settings.Height;
 			Vertices[11].UV.X = (TextureRegion.Right) / Texture.Settings.Width;
@@ -668,11 +669,11 @@ namespace GorgonLibrary.Graphics.Renderers
 			// Left line.
 			Vertices[12].UV.X = (TextureRegion.X) / Texture.Settings.Width;
 			Vertices[12].UV.Y = (TextureRegion.Y) / Texture.Settings.Height;
-			Vertices[13].UV.X = (TextureRegion.X + _penSize.X) / Texture.Settings.Width;
+			Vertices[13].UV.X = (TextureRegion.X + _lineThickness.X) / Texture.Settings.Width;
 			Vertices[13].UV.Y = (TextureRegion.Y) / Texture.Settings.Height;
 			Vertices[14].UV.X = (TextureRegion.X) / Texture.Settings.Width;
 			Vertices[14].UV.Y = (TextureRegion.Bottom) / Texture.Settings.Height;
-			Vertices[15].UV.X = (TextureRegion.X + _penSize.X) / Texture.Settings.Width;
+			Vertices[15].UV.X = (TextureRegion.X + _lineThickness.X) / Texture.Settings.Width;
 			Vertices[15].UV.Y = (TextureRegion.Bottom) / Texture.Settings.Height;
 		}
 
@@ -685,7 +686,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				UpdatedTextureCoordinatesFilled();
 			else
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					UpdateTextureCoordinatesUnfilled();
 				else
 					UpdateTextureCoordinatesQuads();
@@ -710,7 +711,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			if (!_isFilled)
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					TransformUnfilled();
 				else
 					TransformUnfilledQuads();
@@ -732,13 +733,13 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRectangle"/> class.
+		/// Initializes a new instance of the <see cref="_GorgonRectangle_"/> class.
 		/// </summary>
 		/// <param name="gorgon2D">Gorgon interface that owns this renderable.</param>
 		/// <param name="name">The name of the rectangle.</param>
 		/// <param name="rectangle">The rectangle position and size.</param>
 		/// <param name="filled">TRUE to have a filled rectangle, FALSE to have an outline.</param>
-		internal GorgonRectangle(Gorgon2D gorgon2D, string name, RectangleF rectangle, bool filled)
+		internal _GorgonRectangle_(Gorgon2D gorgon2D, string name, RectangleF rectangle, bool filled)
 			: base(gorgon2D, name)
 		{
 			_corners = new float[4];

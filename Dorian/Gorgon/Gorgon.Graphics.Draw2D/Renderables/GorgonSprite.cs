@@ -69,7 +69,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		#region Variables.
 		private float[] _corners = new float[4];										// Corners for the sprite.
 		private string _textureName = string.Empty;										// Name of the texture for the sprite.
-		private Vector4[] _offsets = null;												// A list of vertex offsets.
+		private Vector2[] _offsets = null;												// A list of vertex offsets.
 		#endregion
 
 		#region Properties.
@@ -268,30 +268,49 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Function to set an offset for a vertex.
+		/// Function to set an offset for a corner.
 		/// </summary>
 		/// <param name="corner">Corner of the sprite to set.</param>
-		/// <param name="offset">Offset for the vertex.</param>
-		public void SetVertexOffset(RectangleCorner corner, Vector3 offset)
+		/// <param name="offset">Offset for the corner.</param>
+		public void SetCornerOffset(RectangleCorner corner, Vector2 offset)
 		{
 			int index = (int)corner;
-			Vector4 vector = new Vector4(offset , 0.0f);
 
-			if (_offsets[index] != vector)
+			if (_offsets[index] != offset)
 			{
-				_offsets[(int)corner] = vector;
+				_offsets[index] = offset;
 				NeedsVertexOffsetUpdate = true;
 			}
 		}
 
 		/// <summary>
-		/// Function to set the color for a specific vertex on the sprite.
+		/// Function to retrieve an offset for a corner.
+		/// </summary>
+		/// <param name="corner">Corner of the sprite to retrieve the offset from.</param>
+		/// <returns>The offset of the corner.</returns>
+		public Vector2 GetCornerOffset(RectangleCorner corner)
+		{
+			return _offsets[(int)corner];
+		}
+
+		/// <summary>
+		/// Function to set the color for a specific corner on the sprite.
 		/// </summary>
 		/// <param name="corner">Corner of the sprite to set.</param>
 		/// <param name="color">Color to set.</param>
-		public void SetVertexColor(RectangleCorner corner, GorgonColor color)
+		public void SetCornerColor(RectangleCorner corner, GorgonColor color)
 		{
 			Vertices[(int)corner].Color = color;
+		}
+
+		/// <summary>
+		/// Function to retrieve the color for a specific corner on the sprite.
+		/// </summary>
+		/// <param name="corner">Corner of the sprite to retrieve the color from.</param>
+		/// <returns>The color on the specified corner of the sprite.</returns>
+		public GorgonColor GetCornerColor(RectangleCorner corner)
+		{
+			return Vertices[(int)corner].Color;
 		}
 		#endregion
 
@@ -311,10 +330,10 @@ namespace GorgonLibrary.Graphics.Renderers
 			InitializeVertices(4);
 
 			_offsets = new [] { 
-				Vector4.Zero, 
-				Vector4.Zero, 
-				Vector4.Zero, 
-				Vector4.Zero, 
+				Vector2.Zero, 
+				Vector2.Zero, 
+				Vector2.Zero, 
+				Vector2.Zero, 
 			};
 
 		}

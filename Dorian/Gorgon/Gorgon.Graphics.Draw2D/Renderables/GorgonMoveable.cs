@@ -77,7 +77,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the angle of rotation (in degrees) for a given axis.
+		/// Property to set or return the angle of rotation (in degrees) for a renderable.
 		/// </summary>
 		public virtual float Angle
 		{

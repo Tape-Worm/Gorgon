@@ -61,7 +61,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private Vector2 _textureEnd = Vector2.Zero;										// Texture offset for the end point.
 		private Vector2 _textureStart = Vector2.Zero;									// Texture offset for the start point.
 		private Vector2 _anchor = Vector2.Zero;											// Anchor point for rotation and scaling.
-		private Vector2 _penSize = new Vector2(1.0f);									// Pen size for line.
+		private Vector2 _lineThickness = new Vector2(1.0f);								// Thickness for the line.
 		#endregion
 
 		#region Properties.
@@ -72,7 +72,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					return Graphics.PrimitiveType.LineList;
 				else
 					return Graphics.PrimitiveType.TriangleList;
@@ -86,7 +86,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get 
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					return 0;
 				else
 					return 6;
@@ -100,7 +100,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				if ((_penSize.X == 1.0f) && (_penSize.Y == 1.0f))
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					return null;
 				else
 					return Gorgon2D.DefaultIndexBuffer;
@@ -117,24 +117,25 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the pen size for the line.
+		/// Property to set or return the thickness for the line.
 		/// </summary>
-		public Vector2 PenSize
+		/// <remarks>This value cannot be less than 1.</remarks>
+		public Vector2 LineThickness
 		{
 			get
 			{
-				return _penSize;
+				return _lineThickness;
 			}
 			set
 			{
-				if (_penSize != value)
+				if (_lineThickness != value)
 				{
 					if (value.X < 1.0f)
 						value.X = 1.0f;
 					if (value.Y < 1.0f)
 						value.Y = 1.0f;
 
-					_penSize = value;
+					_lineThickness = value;
 				}
 			}			
 		}
@@ -146,11 +147,17 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return Vertices[0].Color;
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
+					return Vertices[0].Color;
+				else
+					return Vertices[1].Color;
 			}
 			set
 			{
-				Vertices[2].Color = Vertices[0].Color = value;
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
+					Vertices[0].Color = value;
+				else
+					Vertices[3].Color = Vertices[1].Color = value;
 			}
 		}
 
@@ -161,16 +168,22 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return Vertices[1].Color;
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
+					return Vertices[1].Color;
+				else
+					return Vertices[0].Color;
 			}
 			set
 			{
-				Vertices[3].Color = Vertices[1].Color = value;
+				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
+					Vertices[1].Color = value;
+				else
+					Vertices[2].Color = Vertices[0].Color = value;
 			}
 		}
 
 		/// <summary>
-		/// Property to set or return the anchor point of the sprite.
+		/// Property to set or return the anchor point of the line.
 		/// </summary>
 		public Vector2 Anchor
 		{
@@ -304,7 +317,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the angle of rotation (in degrees) for a given axis.
+		/// Property to set or return the angle of rotation (in degrees) for the line.
 		/// </summary>
 		public float Angle
 		{
@@ -330,7 +343,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				return;
 			}
 
-			if ((PenSize.X == 1.0f) && (PenSize.Y == 1.0f))
+			if ((LineThickness.X == 1.0f) && (LineThickness.Y == 1.0f))
 			{
 				Vertices[0].UV.X = TextureStart.X / Texture.Settings.Width;
 				Vertices[1].UV.X = TextureEnd.X / Texture.Settings.Width;
@@ -391,8 +404,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			Vector2 crossProduct = Vector2.Zero;
 
 			crossProduct = new Vector2(normalLine.Y, -normalLine.X);
-			crossProduct.X *= _penSize.X;
-			crossProduct.Y *= _penSize.Y;
+			crossProduct.X *= _lineThickness.X;
+			crossProduct.Y *= _lineThickness.Y;
 			
 			corner1.X = _corners[0] + crossProduct.X;
 			corner1.Y = _corners[1] + crossProduct.Y;
@@ -450,7 +463,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vertices[3].Position.Y += StartPoint.Y;
 			}
 
-			// Apply depth to the sprite.
+			// Apply depth to the line.
 			if (Depth != 0.0f)
 			{
 				Vertices[0].Position.Z = Depth;
@@ -470,7 +483,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			float posY1;															// Vertical position 1.
 			float posY2;															// Vertical position 2.			
 
-			if ((_penSize.X > 1.0f) || (_penSize.Y > 1.0f))
+			if ((_lineThickness.X > 1.0f) || (_lineThickness.Y > 1.0f))
 			{
 				TransformQuad();
 				return;
@@ -518,7 +531,7 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vertices[1].Position.Y += StartPoint.Y;
 			}
 
-			// Apply depth to the sprite.
+			// Apply depth to the line.
 			if (Depth != 0.0f)
 			{
 				Vertices[0].Position.Z = Depth;
@@ -539,7 +552,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Function to set the color for a specific vertex on the sprite.
+		/// Function to set the color for a specific vertex on the line.
 		/// </summary>
 		/// <param name="point">Point on the line to set.</param>
 		/// <param name="color">Color to set.</param>
@@ -591,7 +604,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			StartPoint = start;
 			EndPoint = end;
 			InitializeVertices(4);
-			PenSize = new Vector2(1);
+			LineThickness = new Vector2(1);
 		}
 		#endregion
 	}

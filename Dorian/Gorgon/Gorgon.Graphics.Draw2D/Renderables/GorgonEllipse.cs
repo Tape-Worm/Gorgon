@@ -43,14 +43,13 @@ namespace GorgonLibrary.Graphics.Renderers
 		: GorgonMoveable
 	{
 		#region Variables.
-		private int _quality = 0;						// Quality for the ellipse rendering.
-		private Vector2 _center = Vector2.Zero;			// Center point for the ellipse.
-		private Vector2[] _offsets = null;				// Offsets for the ellipse points.
-		private Vector2[] _points = null;				// List of points for the ellipse.
-		private GorgonColor[] _colors = null;			// Colors for points.
-		private GorgonLine _line = null;				// List of lines to draw.
-		private Vector2 _penSize = new Vector2(1.0f);	// Line thickness.
-		private bool _isFilled = false;					// Flag to indicate whether to draw the ellipse as filled or as an outline.
+		private int _quality = 0;								// Quality for the ellipse rendering.
+		private Vector2 _center = Vector2.Zero;					// Center point for the ellipse.
+		private Vector2[] _offsets = null;						// Offsets for the ellipse points.
+		private Vector2[] _points = null;						// List of points for the ellipse.
+		private GorgonColor[] _colors = null;					// Colors for points.
+		private GorgonLine _line = null;						// List of lines to draw.
+		private bool _isFilled = false;							// Flag to indicate whether to draw the ellipse as filled or as an outline.
 		#endregion
 
 		#region Properties.
@@ -150,18 +149,19 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the pen size for the outlined ellipse.
+		/// Property to set or return the thickness of the lines for an outlined ellipse.
 		/// </summary>
-		public Vector2 PenSize
+		/// <remarks>These values cannot be less than 1.</remarks>
+		public Vector2 LineThickness
 		{
 			get
 			{
-				return _line.PenSize;
+				return _line.LineThickness;
 			}
 			set
 			{
-				if (_line.PenSize != value)
-					_line.PenSize = value;
+				if (_line.LineThickness != value)
+					_line.LineThickness = value;
 			}
 		}
 

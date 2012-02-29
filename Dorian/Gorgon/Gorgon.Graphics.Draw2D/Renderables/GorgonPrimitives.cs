@@ -65,7 +65,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_rect.Texture = texture;
 			_rect.TextureRegion = textureRegion;
 			_rect.Rectangle = rectangle;
-			_rect.PenSize = new Vector2(1.0f);
+			_rect.LineThickness = new Vector2(1.0f);
 			_rect.Draw();
 		}
 
@@ -165,7 +165,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_ellipse.Quality = quality;
 			_ellipse.Texture = texture;
 			_ellipse.TextureRegion = textureRegion;
-			_ellipse.PenSize = thickness;
+			_ellipse.LineThickness = thickness;
 			_ellipse.Draw();
 		}
 
@@ -212,7 +212,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="dimensions">Ellipse dimensions.</param>
 		/// <param name="color">Color for the ellipse.</param>
-		/// <remarks>The default <paramref name="quality"/> is 64 segments.</remarks>
+		/// <remarks>The default quality is 64 segments.</remarks>
 		public void DrawEllipse(RectangleF dimensions, GorgonColor color)
 		{
 			DrawEllipse(dimensions, color, 64, new Vector2(1.0f), null, RectangleF.Empty);
@@ -233,7 +233,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_rect.Texture = texture;
 			_rect.TextureRegion = textureRegion;
 			_rect.Rectangle = rectangle;
-			_rect.PenSize = thickness;
+			_rect.LineThickness = thickness;
 			_rect.Draw();
 		}
 
@@ -279,7 +279,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		public void DrawPoint(Vector2 position, GorgonColor color, Vector2 thickness)
 		{
 			_point.Position = position;
-			_point.PenSize = thickness;
+			_point.PointThickness = thickness;
 			_point.Color = color;
 			_point.Draw();
 		}
@@ -309,7 +309,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_line.StartPoint = startPosition;
 			_line.EndPoint = endPosition;
 			_line.Color = color;
-			_line.PenSize = thickness;
+			_line.LineThickness = thickness;
 			_line.Texture = texture;
 			_line.TextureStart = textureStart;
 			_line.TextureEnd = textureEnd;
