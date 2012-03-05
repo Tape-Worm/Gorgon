@@ -727,15 +727,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return Vertices[0].Color.Alpha;
+				return Color.Alpha;
 			}
 			set
 			{
-				if (value != Vertices[0].Color.Alpha)
-				{
-					for (int i = 0; i < Vertices.Length; i++)
-						Vertices[i].Color.Alpha = value;
-				}
+				if (value != Color.Alpha)
+					Color = new GorgonColor(Color.Red, Color.Green, Color.Blue, value);
 			}
 		}
 

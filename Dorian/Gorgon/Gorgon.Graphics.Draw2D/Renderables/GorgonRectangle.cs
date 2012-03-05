@@ -43,6 +43,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		: GorgonMoveable
 	{
 		#region Variables.
+		private Vector2[] _corners = null;					// Corner points.
+		private RectangleF _rectangle = RectangleF.Empty;	// Rectangle dimensions.
 		private GorgonColor[] _colors = null;				// Colors for each corner.
 		private GorgonLine _line = null;					// Line used for outlined drawing.
 		private GorgonSprite _filled = null;				// Sprite used for rectangle drawing.
@@ -96,6 +98,34 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
+		/// Property to set or return the thickness of the lines for a rectangle outline.
+		/// </summary>
+		public Vector2 LineThickness
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the rectangle dimensions.
+		/// </summary>
+		public RectangleF Rectangle
+		{
+			get
+			{
+				return _rectangle;
+			}
+			set
+			{
+				if (value != _rectangle)
+				{
+					_rectangle = value;
+					NeedsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return whether the rectangle should be filled or not.
 		/// </summary>
 		public bool IsFilled
@@ -142,25 +172,82 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		protected override void TransformVertices()
 		{
-			throw new NotImplementedException();
-		}
+			float posX1;					// Horizontal position 1.
+			float posX2;					// Horizontal position 2.
+			float posY1;					// Vertical position 1.
+			float posY2;					// Vertical position 2.			
 
-		/// <summary>
-		/// Property to set or return the thickness of the lines for a rectangle outline.
-		/// </summary>
-		public Vector2 LineThickness
-		{
-			get;
-			set;
-		}
+			_corners[0] = new Vector2(-Anchor.X, -Anchor.Y);
+			_corners[1] = new Vector2(_rectangle.Width - Anchor.X, -Anchor.Y);
+			_corners[2] = new Vector2(_rectangle.Width - Anchor.X, _rectangle.Height - Anchor.Y);
+			_corners[3] = new Vector2(-Anchor.X, _rectangle.Height - Anchor.Y);
+			
+			posX1 = _corners[0].X;
+			posX2 = _corners[1].X;
+			posY1 = _corners[0].Y;
+			posY2 = _corners[2].Y;
 
-		/// <summary>
-		/// Property to set or return the rectangle dimensions.
-		/// </summary>
-		public RectangleF Rectangle
-		{
-			get;
-			set;
+			// Scale horizontally if necessary.
+			if (Scale.X != 1.0f)
+			{
+				posX1 *= Scale.X;
+				posX2 *= Scale.X;
+			}
+
+			// Scale vertically.
+			if (Scale.Y != 1.0f)
+			{
+				posY1 *= Scale.Y;
+				posY2 *= Scale.Y;
+			}
+
+			// Calculate rotation if necessary.
+			if (Angle != 0.0f)
+			{
+				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
+				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
+				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+
+				_corners[0].X = (posX1 * cosVal - posY1 * sinVal);
+				_corners[0].Y = (posX1 * sinVal + posY1 * cosVal);
+
+				_corners[1].X = (posX2 * cosVal - posY1 * sinVal);
+				_corners[1].Y = (posX2 * sinVal + posY1 * cosVal);
+
+				_corners[2].X = (posX2 * cosVal - posY2 * sinVal);
+				_corners[2].Y = (posX2 * sinVal + posY2 * cosVal);
+
+				_corners[3].X = (posX1 * cosVal - posY2 * sinVal);
+				_corners[3].Y = (posX1 * sinVal + posY2 * cosVal);
+			}
+			else
+			{
+				_corners[0].X = posX1;
+				_corners[0].Y = posY1;
+				_corners[1].X = posX2;
+				_corners[1].Y = posY1;
+				_corners[2].X = posX2;
+				_corners[2].Y = posY2;
+				_corners[3].X = posX1;
+				_corners[3].Y = posY2;
+			}
+
+			// Translate.
+			if (Position.X != 0.0f)
+			{
+				_corners[0].X += Position.X;
+				_corners[1].X += Position.X;
+				_corners[2].X += Position.X;
+				_corners[3].X += Position.X;
+			}
+
+			if (Position.Y != 0.0f)
+			{
+				_corners[0].Y += Position.Y;
+				_corners[1].Y += Position.Y;
+				_corners[2].Y += Position.Y;
+				_corners[3].Y += Position.Y;
+			}
 		}
 
 		/// <summary>
@@ -168,50 +255,50 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		private void DrawUnfilled()
 		{
-			Vector2 penMid = Vector2.Zero;
+			Vector2 texOffset = Vector2.Zero;		// Texture offset.
+
+			texOffset.X = LineThickness.X - 1.0f;
+			texOffset.Y = LineThickness.Y - 1.0f;
+
+			TransformVertices();
 
 			// Set global line state.
 			_line.AlphaTestValues = AlphaTestValues;
-			_line.Anchor = Anchor;
-			_line.Angle = Angle;
 			_line.Texture = Texture;
 			_line.LineThickness = LineThickness;
 			_line.CullingMode = CullingMode;
 			_line.Depth = Depth;
 
-			if ((LineThickness.X > 1.0f) || (LineThickness.Y > 1.0f))
-				penMid = Vector2.Divide(LineThickness, 2.0f);
-
 			_line.TextureStart = TextureRegion.Location;
-			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Top + LineThickness.Y);
+			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Top + texOffset.Y);
 			_line.StartColor = _colors[0];
 			_line.EndColor = _colors[1];
-			_line.StartPoint = new Vector2(Rectangle.Left - penMid.X, Rectangle.Top + 1 - penMid.Y);
-			_line.EndPoint = new Vector2(Rectangle.Right + penMid.Y, Rectangle.Top + 1 - penMid.Y);
+			_line.StartPoint = new Vector2(_corners[0].X, _corners[0].Y);
+			_line.EndPoint = new Vector2(_corners[1].X, _corners[1].Y);
 			_line.Draw();
 
 			_line.TextureStart = new Vector2(TextureRegion.Right, TextureRegion.Top);
 			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Bottom);
 			_line.StartColor = _colors[1];
 			_line.EndColor = _colors[2];
-			_line.StartPoint = new Vector2(Rectangle.Right - penMid.X, Rectangle.Top - penMid.Y);
-			_line.EndPoint = new Vector2(Rectangle.Right - penMid.X, Rectangle.Bottom + penMid.Y);
+			_line.StartPoint = new Vector2(_corners[1].X, _corners[1].Y);
+			_line.EndPoint = new Vector2(_corners[2].X, _corners[2].Y);
 			_line.Draw();
 
-			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Bottom - LineThickness.Y);
+			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Bottom - texOffset.Y);
 			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Bottom);
 			_line.StartColor = _colors[2];
 			_line.EndColor = _colors[3];
-			_line.StartPoint = new Vector2(Rectangle.Left - penMid.X, Rectangle.Bottom - penMid.Y);
-			_line.EndPoint = new Vector2(Rectangle.Right, Rectangle.Bottom - penMid.Y);
+			_line.StartPoint = new Vector2(_corners[2].X, _corners[2].Y);
+			_line.EndPoint = new Vector2(_corners[3].X, _corners[3].Y);
 			_line.Draw();
 
 			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Top);
 			_line.TextureEnd = new Vector2(TextureRegion.Left, TextureRegion.Bottom);
 			_line.StartColor = _colors[3];
 			_line.EndColor = _colors[0];
-			_line.StartPoint = new Vector2(Rectangle.Left + 1, Rectangle.Top);
-			_line.EndPoint = new Vector2(Rectangle.Left + 1, Rectangle.Bottom);
+			_line.StartPoint = new Vector2(_corners[3].X, _corners[3].Y);
+			_line.EndPoint = new Vector2(_corners[0].X, _corners[0].Y);
 			_line.Draw();
 		}
 
@@ -256,23 +343,33 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="gorgon2D">Gorgon interface that owns this renderable.</param>
 		/// <param name="name">The name of the rectangle.</param>
 		/// <param name="rectangle">The rectangle position and size.</param>
+		/// <param name="color">Color of the rectangle.</param>
 		/// <param name="filled">TRUE to have a filled rectangle, FALSE to have an outline.</param>
-		internal GorgonRectangle(Gorgon2D gorgon2D, string name, RectangleF rectangle, bool filled)
+		internal GorgonRectangle(Gorgon2D gorgon2D, string name, RectangleF rectangle, GorgonColor color, bool filled)
 			: base(gorgon2D, name)
 		{
 			_colors = new GorgonColor[]
 			{
-				new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f),
-				new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f),
-				new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f),
-				new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)
+				color,
+				color,
+				color,
+				color
 			};
+
+			_corners = new[]
+			{
+				Vector2.Zero,
+				Vector2.Zero,
+				Vector2.Zero,
+				Vector2.Zero
+			};
+
 			TextureRegion = rectangle;
 			Size = new Vector2(rectangle.Width, rectangle.Height);
 			Position = new Vector2(rectangle.X, rectangle.Y);
 			IsFilled = filled;
 			_filled = new GorgonSprite(gorgon2D, "Rectangle.Sprite", Size.X, Size.Y);
-			_line = new GorgonLine(gorgon2D, "Rectangle.Line", Position, new Vector2(rectangle.Right, rectangle.Bottom));
+			_line = new GorgonLine(gorgon2D, "Rectangle.Line", Position, new Vector2(rectangle.Right, rectangle.Bottom), Color);
 
 			_line.Blending = _filled.Blending = this.Blending;
 			_line.DepthStencil = _filled.DepthStencil = this.DepthStencil;
