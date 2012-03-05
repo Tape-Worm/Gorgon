@@ -288,6 +288,15 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the icons used for specific renderable items.
+		/// </summary>
+		internal GorgonTexture2D Icons
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return our default vertex buffer binding.
 		/// </summary>
 		internal GorgonVertexBufferBinding DefaultVertexBufferBinding
@@ -322,6 +331,15 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the Gorgon logo should be shown in the lower right hand corner of the target.
+		/// </summary>
+		public bool IsLogoVisible
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -565,6 +583,9 @@ namespace GorgonLibrary.Graphics.Renderers
 			Matrix.OrthoOffCenterLH(0, Target.Settings.Width, Target.Settings.Height, 0.0f, 0.0f, 100.0f, out _defaultProjection);
 			if (_viewPort == null)
 				Graphics.Rasterizer.SetViewport(Target.Viewport);
+			else
+				Graphics.Rasterizer.SetViewport(_viewPort.Value);
+
 			Shaders.UpdateGorgonTransformation();
 
 			// Re-assign the event.
@@ -844,6 +865,18 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
+		/// Function to draw the Gorgon logo at the bottom-right of the screen.
+		/// </summary>
+		private void DrawLogo()
+		{
+			Drawing.FilledRectangle(
+				new RectangleF(Target.Settings.Width - Graphics.Textures.GorgonLogo.Settings.Width, Target.Settings.Height - Graphics.Textures.GorgonLogo.Settings.Height, Graphics.Textures.GorgonLogo.Settings.Width, Graphics.Textures.GorgonLogo.Settings.Height),
+				Color.White,
+				Graphics.Textures.GorgonLogo,
+				new RectangleF(0, 0, 200.0f, 56.0f));			
+		}
+
+		/// <summary>
 		/// Function to force the renderer to render its data to the current render target.
 		/// </summary>
 		/// <param name="flip">TRUE to flip the back buffer to the front buffer of the render target.</param>
@@ -855,9 +888,44 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </remarks>
 		public void Render(bool flip)
 		{
+			Matrix? view = _view;
+			Matrix? projection = _projection;
+			GorgonViewport? previousViewport = _viewPort;
+			Rectangle? previousClip = _clip;
+
+			if ((flip) && (IsLogoVisible))
+			{
+				// Reset any view/projection/clip/viewport.
+				if (_view != null)
+					ViewMatrix = null;
+				if (_projection != null)
+					ProjectionMatrix = null;
+				if (_viewPort != null)
+					Viewport = null;
+				if (_clip != null)
+					ClipRegion = null;
+
+				DrawLogo();
+			}
+
 			RenderObjects();
+
 			if (flip)
+			{
 				Target.Flip();
+
+				if (IsLogoVisible)
+				{
+					if (view != null)
+						ViewMatrix = view;
+					if (projection != null)
+						ProjectionMatrix = projection;
+					if (previousViewport != null)
+						Viewport = previousViewport;
+					if (previousClip != null)
+						ClipRegion = previousClip;
+				}
+			}
 		}
 
 		/// <summary>
@@ -892,6 +960,8 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			Renderables = new GorgonRenderables(this);
 			Drawing = new GorgonDrawing(this);
+
+			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, GorgonTexture2DSettings.FromFile);
 		}
 		#endregion
 
@@ -907,6 +977,9 @@ namespace GorgonLibrary.Graphics.Renderers
 				if (disposing)
 				{
 					End2D();
+
+					if (Icons != null)
+						Icons.Dispose();
 
 					TrackedObjects.ReleaseAll();
 
@@ -926,6 +999,7 @@ namespace GorgonLibrary.Graphics.Renderers
 					Graphics.RemoveTrackedObject(this);
 				}
 
+				Icons = null;
 				_disposed = true;
 			}
 		}

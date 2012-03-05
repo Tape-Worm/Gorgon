@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GorgonLibrary.Graphics.Renderers.Properties {
+namespace GorgonLibrary.Graphics.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace GorgonLibrary.Graphics.Renderers.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GorgonLibrary.Graphics.Renderers.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GorgonLibrary.Graphics.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,16 +60,9 @@ namespace GorgonLibrary.Graphics.Renderers.Properties {
             }
         }
         
-        internal static byte[] BasicSprite {
+        internal static System.Drawing.Bitmap GorgonLogo3 {
             get {
-                object obj = ResourceManager.GetObject("BasicSprite", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap Icons {
-            get {
-                object obj = ResourceManager.GetObject("Icons", resourceCulture);
+                object obj = ResourceManager.GetObject("GorgonLogo3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -280,22 +280,22 @@ namespace GorgonLibrary.Graphics.Renderers
 			_line.TextureStart = new Vector2(TextureRegion.Right, TextureRegion.Top);
 			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Bottom);
 			_line.StartColor = _colors[1];
-			_line.EndColor = _colors[2];
+			_line.EndColor = _colors[3];
 			_line.StartPoint = new Vector2(_corners[1].X, _corners[1].Y);
 			_line.EndPoint = new Vector2(_corners[2].X, _corners[2].Y);
 			_line.Draw();
 
 			_line.TextureStart = new Vector2(TextureRegion.Right, TextureRegion.Bottom - texOffset.Y);
 			_line.TextureEnd = new Vector2(TextureRegion.Left, TextureRegion.Bottom);
-			_line.StartColor = _colors[2];
-			_line.EndColor = _colors[3];
+			_line.StartColor = _colors[3];
+			_line.EndColor = _colors[2];
 			_line.StartPoint = new Vector2(_corners[2].X, _corners[2].Y);
 			_line.EndPoint = new Vector2(_corners[3].X, _corners[3].Y);
 			_line.Draw();
 
 			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Bottom);
 			_line.TextureEnd = new Vector2(TextureRegion.Left, TextureRegion.Top);
-			_line.StartColor = _colors[3];
+			_line.StartColor = _colors[2];
 			_line.EndColor = _colors[0];
 			_line.StartPoint = new Vector2(_corners[3].X, _corners[3].Y);
 			_line.EndPoint = new Vector2(_corners[0].X, _corners[0].Y);
@@ -322,6 +322,26 @@ namespace GorgonLibrary.Graphics.Renderers
 			_filled.TextureRegion = TextureRegion;
 
 			_filled.Draw();
+		}
+
+		/// <summary>
+		/// Function to set a color for a specific corner of the rectangle.
+		/// </summary>
+		/// <param name="corner">Corner to set the color on.</param>
+		/// <param name="color">Color to set.</param>
+		public void SetCornerColor(RectangleCorner corner, GorgonColor color)
+		{
+			_colors[(int)corner] = color;
+		}
+
+		/// <summary>
+		/// Function to retrieve a color for a specific corner of the rectangle.
+		/// </summary>
+		/// <param name="corner">Corner to retrieve color from.</param>
+		/// <returns>The color on the specified corner.</returns>
+		public GorgonColor GetCornerColor(RectangleCorner corner)
+		{
+			return _colors[(int)corner];
 		}
 
 		/// <summary>
