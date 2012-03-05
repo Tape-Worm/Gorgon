@@ -285,16 +285,16 @@ namespace GorgonLibrary.Graphics.Renderers
 			_line.EndPoint = new Vector2(_corners[2].X, _corners[2].Y);
 			_line.Draw();
 
-			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Bottom - texOffset.Y);
-			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Bottom);
+			_line.TextureStart = new Vector2(TextureRegion.Right, TextureRegion.Bottom - texOffset.Y);
+			_line.TextureEnd = new Vector2(TextureRegion.Left, TextureRegion.Bottom);
 			_line.StartColor = _colors[2];
 			_line.EndColor = _colors[3];
 			_line.StartPoint = new Vector2(_corners[2].X, _corners[2].Y);
 			_line.EndPoint = new Vector2(_corners[3].X, _corners[3].Y);
 			_line.Draw();
 
-			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Top);
-			_line.TextureEnd = new Vector2(TextureRegion.Left, TextureRegion.Bottom);
+			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Bottom);
+			_line.TextureEnd = new Vector2(TextureRegion.Left, TextureRegion.Top);
 			_line.StartColor = _colors[3];
 			_line.EndColor = _colors[0];
 			_line.StartPoint = new Vector2(_corners[3].X, _corners[3].Y);

@@ -38,6 +38,41 @@ using GorgonLibrary.Collections.Specialized;
 namespace GorgonLibrary.Graphics.Renderers
 {
 	/// <summary>
+	/// A vertex for a renderable object.
+	/// </summary>		
+	public struct Gorgon2DVertex
+	{
+		/// <summary>
+		/// Position of the vertex.
+		/// </summary>
+		[InputElement(0, "SV_POSITION")]
+		public Vector4 Position;
+		/// <summary>
+		/// Color of the vertex.
+		/// </summary>
+		[InputElement(1, "COLOR")]
+		public GorgonColor Color;
+		/// <summary>
+		/// Texture coordinates.
+		/// </summary>
+		[InputElement(2, "TEXCOORD")]
+		public Vector2 UV;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Gorgon2DVertex"/> struct.
+		/// </summary>
+		/// <param name="position">The position.</param>
+		/// <param name="color">The color.</param>
+		/// <param name="uv">The texture coordinate.</param>
+		public Gorgon2DVertex(Vector4 position, Vector4 color, Vector2 uv)
+		{
+			Position = position;
+			Color = color;
+			UV = uv;
+		}
+	}
+
+	/// <summary>
 	/// The renderer for 2D graphics.
 	/// </summary>
 	/// <remarks>This is the interface to handle sprites, primitives like lines, circles, ellipses, etc... and text.  The 2D renderer allows for using sprites in a 3D space.  
@@ -223,47 +258,12 @@ namespace GorgonLibrary.Graphics.Renderers
 				RasterStates.IsScissorTestingEnabled = false;
 			}
 		}
-
-		/// <summary>
-		/// A vertex for a sprite.
-		/// </summary>		
-		public struct Vertex
-		{
-			/// <summary>
-			/// Position of the vertex.
-			/// </summary>
-			[InputElement(0, "SV_POSITION")]
-			public Vector4 Position;
-			/// <summary>
-			/// Color of the vertex.
-			/// </summary>
-			[InputElement(1, "COLOR")]
-			public GorgonColor Color;
-			/// <summary>
-			/// Texture coordinates.
-			/// </summary>
-			[InputElement(2, "TEXCOORD")]
-			public Vector2 UV;
-
-			/// <summary>
-			/// Initializes a new instance of the <see cref="Vertex"/> struct.
-			/// </summary>
-			/// <param name="position">The position.</param>
-			/// <param name="color">The color.</param>
-			/// <param name="uv">The texture coordinate.</param>
-			public Vertex(Vector4 position, Vector4 color, Vector2 uv)
-			{
-				Position = position;
-				Color = color;
-				UV = uv;
-			}
-		}
 		#endregion
 
 		#region Variables.
 		private int _baseVertex = 0;																// Base vertex.
 		private int _vertexSize = 0;																// Size, in bytes, of a vertex.
-		private Vertex[] _vertexCache = null;														// List of vertices to cache.
+		private Gorgon2DVertex[] _vertexCache = null;														// List of vertices to cache.
 		private int _cacheStart = 0;																// Starting cache vertex buffer index.
 		private int _renderIndexStart = 0;															// Starting index to render.
 		private int _renderIndexCount = 0;															// Number of indices to render.
@@ -589,7 +589,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			// Create layout information so we can bind our vertices to the shader.
 			if (_layout == null)
 			{
-				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Vertex), Shaders.DefaultVertexShader.Shader);
+				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Gorgon2DVertex), Shaders.DefaultVertexShader.Shader);
 				_vertexSize = _layout.GetSlotSize(0);
 			}
 
@@ -624,7 +624,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			DefaultVertexBufferBinding = new GorgonVertexBufferBinding(Graphics.Input.CreateVertexBuffer(spriteVBSize, BufferUsage.Dynamic), _vertexSize);
 
 			// Create the vertex cache.
-			_vertexCache = new Vertex[VertexCacheSize];
+			_vertexCache = new Gorgon2DVertex[VertexCacheSize];
 			_cacheStart = 0;
 			_cacheEnd = 0;
 			_cacheWritten = 0;
@@ -674,7 +674,7 @@ namespace GorgonLibrary.Graphics.Renderers
 						using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
 						{
 							stream.Position = _cacheStart * _vertexSize;
-							stream.WriteRange<Vertex>(_vertexCache, _cacheStart, _cacheWritten);
+							stream.WriteRange<Gorgon2DVertex>(_vertexCache, _cacheStart, _cacheWritten);
 							vbBinding.VertexBuffer.Unlock();
 						}
 						break;

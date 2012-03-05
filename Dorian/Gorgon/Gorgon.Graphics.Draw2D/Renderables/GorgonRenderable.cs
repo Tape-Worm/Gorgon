@@ -511,7 +511,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		protected internal Gorgon2D.Vertex[] Vertices
+		protected internal Gorgon2DVertex[] Vertices
 		{
 			get;
 			private set;
@@ -803,7 +803,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			VertexCount = vertexCount;
 
-			Vertices = new Gorgon2D.Vertex[vertexCount];
+			Vertices = new Gorgon2DVertex[vertexCount];
 			
 			for (int i = 0; i < Vertices.Length; i++)
 			{
@@ -892,7 +892,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		Gorgon2D.Vertex[] IRenderable.Vertices
+		Gorgon2DVertex[] IRenderable.Vertices
 		{
 			get 
 			{

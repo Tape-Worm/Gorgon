@@ -336,17 +336,31 @@ namespace GorgonLibrary.Graphics.Renderers
 			}
 			else
 			{
-				Vertices[0].UV.X = (TextureStart.X + _crossProduct.X) / Texture.Settings.Width;
-				Vertices[0].UV.Y = (TextureStart.Y + _crossProduct.Y) / Texture.Settings.Height;
+				Vector2 textureDims = new Vector2(_textureEnd.X - _textureStart.X, _textureEnd.Y - _textureStart.Y);
+				Vector2 textureNormal = Vector2.Zero;
+				Vector2 textureCP = Vector2.Zero;
+				float length = textureDims.Length;
 
-				Vertices[1].UV.X = (TextureEnd.X + _crossProduct.X) / Texture.Settings.Width;
-				Vertices[1].UV.Y = (TextureEnd.Y + _crossProduct.Y) / Texture.Settings.Height;
 
-				Vertices[2].UV.X = (TextureStart.X - _crossProduct.X) / Texture.Settings.Width;
-				Vertices[2].UV.Y = (TextureStart.Y - _crossProduct.Y) / Texture.Settings.Height;
+				if (length > 0)
+				{
+					textureNormal = textureDims * (1.0f / textureDims.Length);
+					textureCP = new Vector2(textureNormal.Y, -textureNormal.X);
+					textureCP.X *= LineThickness.X;
+					textureCP.Y *= LineThickness.Y;
+				}
+
+				Vertices[0].UV.X = (TextureStart.X + textureCP.X) / Texture.Settings.Width;
+				Vertices[0].UV.Y = (TextureStart.Y + textureCP.Y) / Texture.Settings.Height;
+
+				Vertices[1].UV.X = (TextureEnd.X + textureCP.X) / Texture.Settings.Width;
+				Vertices[1].UV.Y = (TextureEnd.Y + textureCP.Y) / Texture.Settings.Height;
+
+				Vertices[2].UV.X = (TextureStart.X - textureCP.X) / Texture.Settings.Width;
+				Vertices[2].UV.Y = (TextureStart.Y - textureCP.Y) / Texture.Settings.Height;
 				
-				Vertices[3].UV.X = (TextureEnd.X - _crossProduct.X) / Texture.Settings.Width;
-				Vertices[3].UV.Y = (TextureEnd.Y - _crossProduct.Y) / Texture.Settings.Height;
+				Vertices[3].UV.X = (TextureEnd.X - textureCP.X) / Texture.Settings.Width;
+				Vertices[3].UV.Y = (TextureEnd.Y - textureCP.Y) / Texture.Settings.Height;
 			}
 		}
 
@@ -356,11 +370,18 @@ namespace GorgonLibrary.Graphics.Renderers
 		private void UpdateVertices()
 		{
 			Vector2 lineDims = new Vector2(_line.Right - _line.Left, _line.Bottom - _line.Top);
-			Vector2 lineNormal = lineDims * (1.0f / lineDims.Length);
+			float lineLength = lineDims.Length;
 
-			_crossProduct = new Vector2(lineNormal.Y, -lineNormal.X);
-			_crossProduct.X *= LineThickness.X;
-			_crossProduct.Y *= LineThickness.Y;
+			if (lineLength > 0)
+			{
+				Vector2 lineNormal = lineDims * (1.0f / lineDims.Length);
+
+				_crossProduct = new Vector2(lineNormal.Y, -lineNormal.X);
+				_crossProduct.X *= LineThickness.X;
+				_crossProduct.Y *= LineThickness.Y;
+			}
+			else
+				_crossProduct = Vector2.Zero;
 
 			_corners[0] = -Anchor.X;
 			_corners[1] = -Anchor.Y;
