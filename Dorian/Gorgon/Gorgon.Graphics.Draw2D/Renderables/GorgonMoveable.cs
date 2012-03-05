@@ -68,7 +68,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the position of the sprite.
+		/// Property to set or return the position of the renderable.
 		/// </summary>
 		public virtual Vector2 Position
 		{
@@ -86,7 +86,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the scale of the sprite.
+		/// Property to set or return the scale of the renderable.
 		/// </summary>
 		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.Size">Size</see> property.
 		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
@@ -104,7 +104,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the anchor point of the sprite.
+		/// Property to set or return the anchor point of the renderable.
 		/// </summary>
 		public virtual Vector2 Anchor
 		{
@@ -134,7 +134,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
 		/// </summary>
-		/// <remarks>You can use this property to scroll the texture in the sprite.</remarks>
+		/// <remarks>You can use this property to scroll the texture in the renderable.</remarks>
 		public virtual Vector2 TextureOffset
 		{
 			get

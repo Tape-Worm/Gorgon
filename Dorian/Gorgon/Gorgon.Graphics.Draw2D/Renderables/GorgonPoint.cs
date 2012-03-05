@@ -45,7 +45,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonRenderable.BlendState _blendState = null;								// Blending state.
 		private GorgonRenderable.DepthStencilStates _depthState = null;						// Depth/stencil state.
 		private GorgonRenderable.TextureSamplerState _samplerState = null;					// Sampler state.
-		private Gorgon2D.Vertex[] _vertices = null;											// List of vertices.
+		private Gorgon2DVertex[] _vertices = null;											// List of vertices.
 		private Vector2 _pointSize = new Vector2(1);										// Point size.
 		#endregion
 
@@ -142,25 +142,25 @@ namespace GorgonLibrary.Graphics.Renderers
 			_samplerState = new GorgonRenderable.TextureSamplerState();
 			_vertices = new []
 			{
-				new Gorgon2D.Vertex() 
+				new Gorgon2DVertex() 
 				{
 					Position = new Vector4(0, 0, 0, 1.0f),
 					UV = Vector2.Zero,
 					Color = color
 				},
-				new Gorgon2D.Vertex() 
+				new Gorgon2DVertex() 
 				{
 					Position = new Vector4(0, 0, 0, 1.0f),
 					UV = Vector2.Zero,
 					Color = color
 				},
-				new Gorgon2D.Vertex() 
+				new Gorgon2DVertex() 
 				{
 					Position = new Vector4(0, 0, 0, 1.0f),
 					UV = Vector2.Zero,
 					Color = color
 				},
-				new Gorgon2D.Vertex() 
+				new Gorgon2DVertex() 
 				{
 					Position = new Vector4(0, 0, 0, 1.0f),
 					UV = Vector2.Zero,
@@ -213,7 +213,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		Gorgon2D.Vertex[] IRenderable.Vertices
+		Gorgon2DVertex[] IRenderable.Vertices
 		{
 			get 
 			{

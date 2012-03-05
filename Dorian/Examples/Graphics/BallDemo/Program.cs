@@ -210,11 +210,11 @@ namespace GorgonLibrary.Graphics.Example
 			_rect.Position = new Vector2(20, 20);
 			_rect.IsFilled = false;
 			_rect.Size = new Vector2(100, 100);
-			_rect.Angle = _ballList[0].Rotation;
+			//_rect.Angle = _ballList[0].Rotation;
 			//_rect.Draw();
 			_rect.Position = new Vector2(140, 20);
 			_rect.IsFilled = true;
-			_rect.Angle = 0;
+			//_rect.Angle = 0;
 			_rect.Size = new Vector2(150, 150);
 			//_rect.Draw();
 
@@ -232,6 +232,22 @@ namespace GorgonLibrary.Graphics.Example
 			_2D.Drawing.DrawLine(new Vector2(10, 10), new Vector2(300, 220), Color.Green);
 			_2D.Drawing.FilledEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.White, 64, _ballTexture, new RectangleF(64, 0, 64.0f, 64.0f));
 			_2D.Drawing.DrawEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Red, 64);
+			_2D.Drawing.FilledTriangle(new Vector2(600, 300), new GorgonTriangle.TrianglePoint()
+			{
+				Position = new Vector2(0, 0),
+				Color = Color.Red
+			},
+			new GorgonTriangle.TrianglePoint()
+			{
+				Position = new Vector2(50, 50),
+				Color = Color.Green
+			},
+			new GorgonTriangle.TrianglePoint()
+			{
+				Position = new Vector2(-50, 50),
+				Color = Color.Blue
+			}, null);
+
 
 			//_line.Angle = _ballList[0].Rotation;
 			//_line.Color = _pt.Color;
@@ -276,7 +292,7 @@ namespace GorgonLibrary.Graphics.Example
 			_rect.Texture = _ballTexture;
 			_rect.Color = Color.White;
 			_rect.TextureRegion = new RectangleF(67, 3, 58.0f, 58.0f);
-			_rect.Angle = _ballList[0].Rotation;
+			_rect.Angle += 10.0f * timing.FrameDelta;
 			_rect.Draw();
 			
 			float rot = _ballList[0].Rotation / 360.0f;
@@ -375,14 +391,29 @@ namespace GorgonLibrary.Graphics.Example
 			_ellipse.TextureRegion = new RectangleF(67, 3, 58, 58);
 			//_ellipse.Size = new Vector2(198, 198);			
 
-			_triangle = _2D.Renderables.CreateTriangle("Triangleum", new Vector2(-50, 250), new Vector2(0, 0), new Vector2(50, 250), Color.White, true);
+			_triangle = _2D.Renderables.CreateTriangle("Triangleum", 
+				new GorgonTriangle.TrianglePoint 
+				{
+					Position = new Vector2(-50, 250),
+					Color = Color.Red,
+					TextureCoordinate = new Vector2(64, 64)
+				},
+				new GorgonTriangle.TrianglePoint
+				{
+					Position = new Vector2(0, 0),
+					Color = Color.Cyan,
+					TextureCoordinate = new Vector2(96, 0)
+				},
+				new GorgonTriangle.TrianglePoint
+				{
+					Position = new Vector2(50, 250),
+					Color = Color.Yellow,
+					TextureCoordinate = new Vector2(128, 64)
+				}
+				, true);
 			_triangle.Position = new Vector2(150, 450);
 			_triangle.LineThickness = new Vector2(4.0f, 4.0f);
-			_triangle.SetPointColor(0, Color.Red);
-			_triangle.SetPointColor(1, Color.Cyan);
-			_triangle.SetPointColor(2, Color.Yellow);
 			_triangle.Texture = _ballTexture;
-			_triangle.TextureRegion = new RectangleF(64, 0, 64, 64);
 
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);

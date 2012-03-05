@@ -63,7 +63,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		Gorgon2D.Vertex[] Vertices
+		Gorgon2DVertex[] Vertices
 		{
 			get;
 		}

@@ -39,12 +39,71 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// A renderable object for drawing a triangle on the target.
 	/// </summary>
 	public class GorgonTriangle
-		: GorgonMoveable
+		: GorgonRenderable
 	{
+		#region Value Types.
+		/// <summary>
+		/// A point for a triangle.
+		/// </summary>
+		/// <remarks>Points in a triangle use relative coordinates, that is, they are defined as an offset from 0,0.  So passing a point of 30,50 will create that point 30 units to the right, and 50 units down.</remarks>
+		public struct TrianglePoint
+		{
+			/// <summary>
+			/// Position of the point.
+			/// </summary>
+			/// <remarks>The position is relative.</remarks>
+			public Vector2 Position;
+			/// <summary>
+			/// The texture coordinate of the point.
+			/// </summary>
+			public Vector2 TextureCoordinate;
+			/// <summary>
+			/// The color of the point.
+			/// </summary>
+			public GorgonColor Color;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="TrianglePoint"/> struct.
+			/// </summary>
+			/// <param name="position">The position of the point.</param>
+			/// <param name="color">Color for the point.</param>
+			/// <param name="textureCoordinate">The texture coordinate for the point.</param>
+			public TrianglePoint(Vector2 position, GorgonColor color, Vector2 textureCoordinate)
+			{
+				Position = position;
+				Color = color;
+				TextureCoordinate = textureCoordinate;
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="TrianglePoint"/> struct.
+			/// </summary>
+			/// <param name="position">The position of the point.</param>
+			/// <param name="color">Color for the point.</param>
+			public TrianglePoint(Vector2 position, GorgonColor color)
+			{
+				Position = position;
+				Color = color;
+				TextureCoordinate = Vector2.Zero;
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="TrianglePoint"/> struct.
+			/// </summary>
+			/// <param name="position">The position of the point.</param>
+			public TrianglePoint(Vector2 position)
+			{
+				Position = position;
+				Color = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
+				TextureCoordinate = Vector2.Zero;
+			}
+		}
+		#endregion
+
 		#region Variables.
 		private GorgonLine _line = null;												// Line used to draw outlined triangle.
-		private GorgonColor[] _colors = null;											// Colors for each point.
-		private Vector2[] _points = null;												// Points for the triangle.
+		private TrianglePoint[] _points = null;											// Points for the triangle.
+		private Vector2 _anchor = Vector2.Zero;											// Anchor point.
 		#endregion
 
 		#region Properties.
@@ -88,11 +147,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				return _colors[0];
+				return _points[0].Color;
 			}
 			set
 			{
-				_colors[0] = _colors[1] = _colors[2] = value;
+				_points[0].Color = _points[1].Color = _points[2].Color = value;
 			}
 		}
 
@@ -119,13 +178,71 @@ namespace GorgonLibrary.Graphics.Renderers
 				_line.LineThickness = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the anchor point for the triangle.
+		/// </summary>
+		public Vector2 Anchor
+		{
+			get
+			{
+				return _anchor;
+			}
+			set
+			{
+				if (_anchor != value)
+				{
+					_anchor = value;
+					NeedsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the angle of rotation (in degrees) for the triangle.
+		/// </summary>
+		public float Angle
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the position of the triangle.
+		/// </summary>
+		public Vector2 Position
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the relative scale of the triangle.
+		/// </summary>
+		/// <remarks>This property uses scalar values to provide a relative scale. 
+		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
+		/// </remarks>
+		public Vector2 Scale
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the "depth" of the renderable in a depth buffer.
+		/// </summary>
+		public float Depth
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to update the texture coordinates.
 		/// </summary>
-		protected override void UpdateTextureCoordinates()
+		private void UpdateTextureCoordinates()
 		{
 			Vector2 uvScale = Vector2.Zero;
 			Vector2 uvOffset = Vector2.Zero;
@@ -135,44 +252,27 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vertices[0].UV = Vertices[1].UV = Vertices[2].UV = Vector2.Zero;
 				return;
 			}
-
-			// TODO: Need a way to convert points into unit vectors.
-
-			for (int i = 0; i < 3; i++)
-			{
-				int endIndex = i + 1;
-
-				if (i + 1 > 2)
-					endIndex = 0;
-
-				uvOffset = new Vector2(TextureOffset.X + _points[i].X, TextureOffset.Y + _points[i].Y);
-				uvScale = new Vector2(TextureRegion.Width + _points[endIndex].X, TextureRegion.Height + _points[endIndex].Y);
-
-				Vertices[i].UV = new Vector2(uvOffset.X / Texture.Settings.Width, uvOffset.Y / Texture.Settings.Height);
-				Vertices[endIndex].UV = new Vector2(uvScale.X / Texture.Settings.Width, uvScale.Y / Texture.Settings.Height);
-			}
-		}
-
-		/// <summary>
-		/// Function to update the vertices for the renderable.
-		/// </summary>
-		protected override void UpdateVertices()
-		{
-			// TODO: Update Size property and add Get/SetPointOffset methods.
+			
+			Vertices[0].UV = new Vector2(_points[0].TextureCoordinate.X / Texture.Settings.Width, _points[0].TextureCoordinate.Y / Texture.Settings.Height);
+			Vertices[1].UV = new Vector2(_points[1].TextureCoordinate.X / Texture.Settings.Width, _points[1].TextureCoordinate.Y / Texture.Settings.Height);
+			Vertices[2].UV = new Vector2(_points[2].TextureCoordinate.X / Texture.Settings.Width, _points[2].TextureCoordinate.Y / Texture.Settings.Height);
 		}
 
 		/// <summary>
 		/// Function to transform the vertices.
 		/// </summary>
-		protected override void TransformVertices()
+		private void TransformVertices()
 		{
-			Vector2 point1 = Vector2.Zero;
-			Vector2 point2 = Vector2.Zero;
-			Vector2 point3 = Vector2.Zero;
+			Vector2 point1 = _points[0].Position;
+			Vector2 point2 = _points[1].Position;
+			Vector2 point3 = _points[2].Position;
 
-			point1 = Vector2.Subtract(_points[0], Anchor);
-			point2 = Vector2.Subtract(_points[1], Anchor);
-			point3 = Vector2.Subtract(_points[2], Anchor);
+			if ((Anchor.X != 0) || (Anchor.Y != 0))
+			{
+				point1 = Vector2.Subtract(point1, Anchor);
+				point2 = Vector2.Subtract(point2, Anchor);
+				point3 = Vector2.Subtract(point3, Anchor);
+			}
 
 			// Scale horizontally if necessary.
 			if (Scale.X != 1.0f)
@@ -235,9 +335,16 @@ namespace GorgonLibrary.Graphics.Renderers
 				Vertices[2].Position.Z = Depth;
 			}
 
-			Vertices[0].Color = _colors[0];
-			Vertices[1].Color = _colors[1];
-			Vertices[2].Color = _colors[2];
+			Vertices[0].Color = _points[0].Color;
+			Vertices[1].Color = _points[1].Color;
+			Vertices[2].Color = _points[2].Color;
+		}
+
+		/// <summary>
+		/// Function to set up any additional information for the renderable.
+		/// </summary>
+		protected override void InitializeCustomVertexInformation()
+		{			
 		}
 
 		/// <summary>
@@ -249,6 +356,14 @@ namespace GorgonLibrary.Graphics.Renderers
 
 			if (IsFilled)
 			{
+				if (NeedsTextureUpdate)
+				{
+					UpdateTextureCoordinates();
+					NeedsTextureUpdate = false;
+				}
+
+				TransformVertices();
+
 				base.Draw();
 				return;
 			}
@@ -264,57 +379,58 @@ namespace GorgonLibrary.Graphics.Renderers
 			_line.CullingMode = CullingMode;
 			_line.Depth = Depth;
 
-			_line.TextureStart = TextureRegion.Location;
-			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Top + offset.Y);
-			_line.StartColor = _colors[0];
-			_line.EndColor = _colors[1];
+			_line.TextureStart = _points[0].TextureCoordinate;
+			_line.TextureEnd = _points[1].TextureCoordinate;
+			_line.StartColor = _points[0].Color;
+			_line.EndColor = _points[1].Color;
 			_line.StartPoint = new Vector2(Vertices[0].Position.X, Vertices[0].Position.Y);
 			_line.EndPoint = new Vector2(Vertices[1].Position.X, Vertices[1].Position.Y);
 			_line.Draw();
 
-			_line.TextureStart = new Vector2(TextureRegion.Right, TextureRegion.Top);
-			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Bottom);
-			_line.StartColor = _colors[1];
-			_line.EndColor = _colors[2];
+			_line.TextureStart = _points[1].TextureCoordinate;
+			_line.TextureEnd = _points[2].TextureCoordinate;
+			_line.StartColor = _points[1].Color;
+			_line.EndColor = _points[2].Color;
 			_line.StartPoint = new Vector2(Vertices[1].Position.X, Vertices[1].Position.Y);
 			_line.EndPoint = new Vector2(Vertices[2].Position.X, Vertices[2].Position.Y);
 			_line.Draw();
 
-			_line.TextureStart = new Vector2(TextureRegion.Left, TextureRegion.Bottom - offset.Y);
-			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Bottom);
-			_line.StartColor = _colors[0];
-			_line.EndColor = _colors[2];
-			_line.StartPoint = (Vector2)Vertices[0].Position;
-			_line.EndPoint = (Vector2)Vertices[2].Position;
+			_line.TextureStart = _points[2].TextureCoordinate;
+			_line.TextureEnd = _points[0].TextureCoordinate;
+			_line.StartColor = _points[2].Color;
+			_line.EndColor = _points[0].Color;
+			_line.StartPoint = (Vector2)Vertices[2].Position;
+			_line.EndPoint = (Vector2)Vertices[0].Position;
 			_line.Draw();
 		}
 
 		/// <summary>
-		/// Function to set a color for a specific point on the triangle.
+		/// Function to update a point in the triangle.
 		/// </summary>
 		/// <param name="pointIndex">Index of the point.</param>
-		/// <param name="color">Color to set.</param>
-		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and 2 or an exception will be raised.</remarks>
+		/// <param name="point">Point information.</param>
+		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and 2 (inclusive) or an exception will be raised.</remarks>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the pointIndex parameter is less than 0 or greater than 2.</exception>
-		public void SetPointColor(int pointIndex, GorgonColor color)
+		public void SetPoint(int pointIndex, TrianglePoint point)
 		{
 			GorgonDebug.AssertParamRange(pointIndex, 0, 2, true, true, "pointIndex");
 
-			_colors[pointIndex] = color;
+			_points[pointIndex] = point;
+			NeedsTextureUpdate = true;
 		}
 
 		/// <summary>
-		/// Function to get a color from a specific point on the triangle.
+		/// Function to retrieve a point in the triangle.
 		/// </summary>
 		/// <param name="pointIndex">Index of the point.</param>
-		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and 2 or an exception will be raised.</remarks>
+		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and 2 (inclusive) or an exception will be raised.</remarks>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the pointIndex parameter is less than 0 or greater than 2.</exception>
-		/// <returns>The color of the specified point.</returns>
-		public GorgonColor GetPointColor(int pointIndex)
+		/// <returns>The point at the specified index.</returns>
+		public TrianglePoint GetPoint(int pointIndex)
 		{
 			GorgonDebug.AssertParamRange(pointIndex, 0, 2, true, true, "pointIndex");
 
-			return _colors[pointIndex];
+			return _points[pointIndex];
 		}
 		#endregion
 
@@ -327,11 +443,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="point1">The first point.</param>
 		/// <param name="point2">The second point.</param>
 		/// <param name="point3">The third point.</param>
-		/// <param name="color">The color of the triangle.</param>
 		/// <param name="isFilled">TRUE to create a filled triangle, FALSE to create an unfilled triangle.</param>
-		internal GorgonTriangle(Gorgon2D gorgon2D, string name, Vector2 point1, Vector2 point2, Vector2 point3, GorgonColor color, bool isFilled)
+		internal GorgonTriangle(Gorgon2D gorgon2D, string name, TrianglePoint point1, TrianglePoint point2, TrianglePoint point3, bool isFilled)
 			: base(gorgon2D, name)
 		{
+			Scale = new Vector2(1);
 			InitializeVertices(3);
 			VertexCount = 3;
 			BaseVertexCount = 3;
@@ -344,13 +460,7 @@ namespace GorgonLibrary.Graphics.Renderers
 					point3
 				};
 
-			_colors = new[]
-				{
-					color,
-					color,
-					color
-				};
-			_line = new GorgonLine(gorgon2D, "Triangle.Line", Vector2.Zero, Vector2.Zero, color);
+			_line = new GorgonLine(gorgon2D, "Triangle.Line", Vector2.Zero, Vector2.Zero, point1.Color);
 		}
 		#endregion
 	}

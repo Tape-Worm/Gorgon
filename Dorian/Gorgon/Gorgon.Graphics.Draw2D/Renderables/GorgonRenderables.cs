@@ -69,12 +69,12 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="point1">First point in the triangle.</param>
 		/// <param name="point2">Second point in the triangle.</param>
 		/// <param name="point3">Third point in the triangle.</param>
-		/// <param name="color">Color of the triangle.</param>
 		/// <param name="filled">TRUE to create a filled triangle, FALSE to create an unfilled triangle.</param>
-		/// <returns></returns>
-		public GorgonTriangle CreateTriangle(string name, Vector2 point1, Vector2 point2, Vector2 point3, GorgonColor color, bool filled)
+		/// <returns>A new triangle primitive object.</returns>
+		/// <remarks>The points defined in the triangle use relative coordinates, and are offset from an origin that is defined by the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonTriangle.Anchor">Anchor</see> property.</remarks>
+		public GorgonTriangle CreateTriangle(string name, GorgonTriangle.TrianglePoint point1, GorgonTriangle.TrianglePoint point2, GorgonTriangle.TrianglePoint point3, bool filled)
 		{
-			return new GorgonTriangle(_gorgon2D, name, point1, point2, point3, color, filled);
+			return new GorgonTriangle(_gorgon2D, name, point1, point2, point3, filled);
 		}
 
 		/// <summary>

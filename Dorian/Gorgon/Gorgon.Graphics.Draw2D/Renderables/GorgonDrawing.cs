@@ -44,6 +44,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonPoint _point = null;			// Point.
 		private GorgonLine _line = null;			// Line.
 		private GorgonEllipse _ellipse = null;		// Ellipse.
+		private GorgonTriangle _triangle = null;	// Triangle.
 		#endregion
 
 		#region Properties.
@@ -144,6 +145,48 @@ namespace GorgonLibrary.Graphics.Renderers
 		public void FilledEllipse(RectangleF dimensions, GorgonColor color)
 		{
 			FilledEllipse(dimensions, color, 64, null, RectangleF.Empty);
+		}
+
+		/// <summary>
+		/// Function to draw a filled triangle.
+		/// </summary>
+		/// <param name="position">Position of the triangle.</param>
+		/// <param name="point1">First point in the triangle.</param>
+		/// <param name="point2">Second point in the triangle.</param>
+		/// <param name="point3">Third point in the triangle.</param>
+		/// <param name="texture">Texture to apply to the triangle.</param>
+		public void FilledTriangle(Vector2 position, GorgonTriangle.TrianglePoint point1, GorgonTriangle.TrianglePoint point2, GorgonTriangle.TrianglePoint point3, GorgonTexture2D texture)
+		{
+			_triangle.IsFilled = true;
+			_triangle.Position = position;
+			_triangle.SetPoint(0, point1);
+			_triangle.SetPoint(1, point2);
+			_triangle.SetPoint(2, point3);
+			_triangle.Texture = texture;
+			_triangle.LineThickness = new Vector2(1.0f);
+			_triangle.Draw();
+		}
+
+		/// <summary>
+		/// Function to draw an unfilled triangle.
+		/// </summary>
+		/// <param name="position">Position of the triangle.</param>
+		/// <param name="point1">First point in the triangle.</param>
+		/// <param name="point2">Second point in the triangle.</param>
+		/// <param name="point3">Third point in the triangle.</param>
+		/// <param name="color">Color of the triangle.</param>
+		/// <param name="thickness">Line thickness.</param>
+		/// <param name="texture">Texture to apply to the triangle.</param>
+		public void DrawTriangle(Vector2 position, GorgonTriangle.TrianglePoint point1, GorgonTriangle.TrianglePoint point2, GorgonTriangle.TrianglePoint point3, Vector2 thickness, GorgonTexture2D texture)
+		{
+			_triangle.IsFilled = false;
+			_triangle.Position = position;
+			_triangle.SetPoint(0, point1);
+			_triangle.SetPoint(1, point2);
+			_triangle.SetPoint(2, point3);
+			_triangle.Texture = texture;
+			_triangle.LineThickness = thickness;
+			_triangle.Draw();
 		}
 
 		/// <summary>
@@ -365,6 +408,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			_point = new GorgonPoint(gorgon2D, "Gorgon2D.Point", Vector2.Zero, Color.White);
 			_line = new GorgonLine(gorgon2D, "Gorgon2D.Line", Vector2.Zero, Vector2.Zero, Color.White);
 			_ellipse = new GorgonEllipse(gorgon2D, "Gorgon2D.Ellipse", Vector2.Zero, Vector2.Zero, Color.White, 64, false);
+			_triangle = new GorgonTriangle(gorgon2D, "Gorgon2D.Triangle", new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), false);
 		}
 		#endregion
 	}
