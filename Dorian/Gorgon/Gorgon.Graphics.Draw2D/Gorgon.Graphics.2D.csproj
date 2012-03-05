@@ -67,14 +67,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Renderables\GorgonDrawing.cs" />
     <Compile Include="Renderables\GorgonRectangle.cs" />
     <Compile Include="Renderables\GorgonEllipse.cs" />
     <Compile Include="Renderables\GorgonLine.cs" />
     <Compile Include="Renderables\GorgonPoint.cs" />
     <Compile Include="Renderables\GorgonMoveable.cs" />
-    <Compile Include="Renderables\GorgonPrimitives.cs" />
+    <Compile Include="Renderables\GorgonRenderables.cs" />
     <Compile Include="Renderables\GorgonRenderable.cs" />
     <Compile Include="Renderables\GorgonSprite.cs" />
+    <Compile Include="Renderables\GorgonTriangle.cs" />
     <Compile Include="Renderables\IDeferredTextureLoad.cs" />
     <Compile Include="Renderables\IRenderable.cs" />
     <Compile Include="Shaders\Gorgon2DVertexShader.cs" />

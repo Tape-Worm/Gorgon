@@ -315,10 +315,20 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to return the primitive interface.
+		/// Property to return the renderables interface.
 		/// </summary>
-		/// <remarks>This is used to create primitive objects (ellipses, lines, rectangles, etc...) or draw them directly.</remarks>
-		public GorgonPrimitives Primitives
+		/// <remarks>This is used to create renderable objects (sprites, ellipses, lines, rectangles, etc...) or draw them directly.</remarks>
+		public GorgonRenderables Renderables
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the immediate drawing interface.
+		/// </summary>
+		/// <remarks>This is used to draw items like points, rectangles, etc...  It is also used to perform quick blitting of render targets and textures to the current render target.</remarks>
+		public GorgonDrawing Drawing
 		{
 			get;
 			private set;
@@ -863,67 +873,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			Render(true);
 		}
-
-		/// <summary>
-		/// Function to create a new sprite object.
-		/// </summary>
-		/// <param name="name">Name of the sprite.</param>
-		/// <param name="width">Width of the sprite.</param>
-		/// <param name="height">Height of the sprite.</param>
-		/// <returns>A new sprite.</returns>
-		public GorgonSprite CreateSprite(string name, float width, float height)
-		{
-			return new GorgonSprite(this, name, width, height);
-		}
-
-		/// <summary>
-		/// Function to create a rectangle object.
-		/// </summary>
-		/// <param name="name">Name of the rectangle.</param>
-		/// <param name="rectangle">Rectangle dimensions.</param>
-		/// <param name="filled">TRUE to create a filled rectangle, FALSE to create an empty rectangle.</param>
-		/// <returns>A new rectangle primitive object.</returns>
-		public GorgonRectangle CreateRectangle(string name, RectangleF rectangle, bool filled)
-		{
-			return new GorgonRectangle(this, name, rectangle, filled);
-		}
-
-		/// <summary>
-		/// Function to create a line object.
-		/// </summary>
-		/// <param name="name">Name of the line.</param>
-		/// <param name="startPosition">Starting point for the line.</param>
-		/// <param name="endPosition">Ending point for the line.</param>
-		/// <returns>A new line primitive object.</returns>
-		public GorgonLine CreateLine(string name, Vector2 startPosition, Vector2 endPosition)
-		{
-			return new GorgonLine(this, name, startPosition, endPosition);
-		}
-
-		/// <summary>
-		/// Function to create a point object.
-		/// </summary>
-		/// <param name="name">Name of the point.</param>
-		/// <param name="position">The position of the point.</param>
-		/// <returns>A new point primitive object.</returns>
-		public GorgonPoint CreatePoint(string name, Vector2 position)
-		{
-			return new GorgonPoint(this, name, position);
-		}
-
-		/// <summary>
-		/// Function to create an ellipse object.
-		/// </summary>
-		/// <param name="name">Name of the ellipse.</param>
-		/// <param name="position">Position of the ellipse.</param>
-		/// <param name="size">Size of the ellipse.</param>
-		/// <param name="quality">Quality of the ellipse rendering.</param>
-		/// <param name="isFilled">TRUE if the ellipse should be filled, FALSE if not.</param>
-		/// <returns>A new ellipse object.</returns>
-		public GorgonEllipse CreateEllipse(string name, Vector2 position, Vector2 size, int quality, bool isFilled)
-		{
-			return new GorgonEllipse(this, name, position, size, quality, isFilled);
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -941,7 +890,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			Initialize();
 			Begin2D();
 
-			Primitives = new GorgonPrimitives(this);
+			Renderables = new GorgonRenderables(this);
+			Drawing = new GorgonDrawing(this);
 		}
 		#endregion
 

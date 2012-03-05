@@ -227,11 +227,11 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Draw();
 			_ball.Size = new Vector2(64, 64);
 			
-			_2D.Primitives.FilledRectangle(new RectangleF(0, 0, 640, 480), Color.Blue);
-			_2D.Primitives.DrawPoint(new Vector2(320, 240), Color.Yellow);
-			_2D.Primitives.DrawLine(new Vector2(10, 10), new Vector2(300, 220), Color.Green);
-			_2D.Primitives.FilledEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.White, 64, _ballTexture, new RectangleF(64, 0, 64.0f, 64.0f));
-			_2D.Primitives.DrawEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Red, 64);
+			_2D.Drawing.FilledRectangle(new RectangleF(0, 0, 640, 480), Color.Blue);
+			_2D.Drawing.DrawPoint(new Vector2(320, 240), Color.Yellow);
+			_2D.Drawing.DrawLine(new Vector2(10, 10), new Vector2(300, 220), Color.Green);
+			_2D.Drawing.FilledEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.White, 64, _ballTexture, new RectangleF(64, 0, 64.0f, 64.0f));
+			_2D.Drawing.DrawEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Red, 64);
 
 			//_line.Angle = _ballList[0].Rotation;
 			//_line.Color = _pt.Color;
@@ -269,22 +269,25 @@ namespace GorgonLibrary.Graphics.Example
 			//_rect.Anchor = new Vector2(50, 50);
 			//_rect.Angle = _ballList[0].Rotation;
 
-			// TODO: Texture not mapping correctly for thick lines.
-
 			_rect.LineThickness = new Vector2(3, 3);
 			_rect.Position = new Vector2(30, 30);
 			_rect.Size = new Vector2(100, 100);
 			_rect.IsFilled = false;
-			//_rect.Texture = _ballTexture;
+			_rect.Texture = _ballTexture;
 			_rect.Color = Color.White;
 			_rect.TextureRegion = new RectangleF(67, 3, 58.0f, 58.0f);
+			_rect.Angle = _ballList[0].Rotation;
 			_rect.Draw();
 			
 			float rot = _ballList[0].Rotation / 360.0f;
 			//_ellipse.Angle = _ballList[0].Rotation;
 			//for (int i = 0; i < _ellipse.Quality; i++)
 			//    _ellipse.SetPointColor(i, new GorgonColor(rot * ((float)i / (float)_ellipse.Quality), 0, 0));
+			_ellipse.Angle = _ballList[0].Rotation;
 			_ellipse.Draw();
+
+			//_triangle.Angle = _ballList[0].Rotation;
+			_triangle.Draw();
 
 			_2D.Render();
 
@@ -297,6 +300,7 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonPoint _pt = null;
 		private static GorgonLine _line = null;
 		private static GorgonEllipse _ellipse = null;
+		private static GorgonTriangle _triangle = null;
 
 		/// <summary>
 		/// Function to initialize the application.
@@ -334,27 +338,27 @@ namespace GorgonLibrary.Graphics.Example
 			_2D = _graphics.Create2DRenderer(_mainScreen);
 
 			// Create the wall sprite.
-			_wall = _2D.CreateSprite("Wall", 63, 63);
+			_wall = _2D.Renderables.CreateSprite("Wall", 63, 63);
 			_wall.Texture = _ballTexture;
 			_wall.BlendingMode = BlendingMode.None;
 
 			// Create the ball sprite.
-			_ball = _2D.CreateSprite("Ball", 64, 64);
+			_ball = _2D.Renderables.CreateSprite("Ball", 64, 64);
 			_ball.Anchor = new Vector2(32, 32);
 			_ball.Texture = _ballTexture;
 			_ball.SmoothingMode = SmoothingMode.Smooth;
 
-			_rect = _2D.CreateRectangle("Rectum", RectangleF.FromLTRB(20, 20, 84, 84), false);
+			_rect = _2D.Renderables.CreateRectangle("Rectum", RectangleF.FromLTRB(20, 20, 84, 84), Color.Cyan, false);
 			//_rect.PenSize = new Vector2(1, 8);
 			//_rect.Color = Color.Purple;
 			//_rect.Texture = _ballTexture;
 			//_rect.TextureRegion = new RectangleF(64, 0, 64, 64);
 			//_rect.TextureOffset = new Vector2(64, 0);
 
-			_pt = _2D.CreatePoint("Pointum", new Vector2(2, 2));
+			_pt = _2D.Renderables.CreatePoint("Pointum", new Vector2(2, 2), Color.Cyan);
 			_pt.PointThickness = new Vector2(3, 3);
 
-			_line = _2D.CreateLine("Lineum", new Vector2(20, 20), new Vector2(40, 20));
+			_line = _2D.Renderables.CreateLine("Lineum", new Vector2(20, 20), new Vector2(40, 20), Color.Cyan);
 //			_line.PenSize = new Vector2(4, 4);
 //			_line.Texture = _ballTexture;
 			_line.TextureStart = new Vector2(128, 64);
@@ -363,13 +367,22 @@ namespace GorgonLibrary.Graphics.Example
 			//_line.Anchor = new Vector2(40, 40);
 			//_line.PenSize = new Vector2(16, 16);
 
-			_ellipse = _2D.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(62, 62), 64, false);
+			_ellipse = _2D.Renderables.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(62, 62), Color.Cyan, false, 64);
 			_ellipse.LineThickness = new Vector2(2.0f, 2.0f);
 			_ellipse.Scale = new Vector2(2.5f, 2.5f);
 			_ellipse.Texture = _ballTexture;
-			_ellipse.Anchor = new Vector2(31.5f, 31.5f);
+			//_ellipse.Anchor = new Vector2(31.5f, 31.5f);
 			_ellipse.TextureRegion = new RectangleF(67, 3, 58, 58);
 			//_ellipse.Size = new Vector2(198, 198);			
+
+			_triangle = _2D.Renderables.CreateTriangle("Triangleum", new Vector2(-50, 250), new Vector2(0, 0), new Vector2(50, 250), Color.White, true);
+			_triangle.Position = new Vector2(150, 450);
+			_triangle.LineThickness = new Vector2(4.0f, 4.0f);
+			_triangle.SetPointColor(0, Color.Red);
+			_triangle.SetPointColor(1, Color.Cyan);
+			_triangle.SetPointColor(2, Color.Yellow);
+			_triangle.Texture = _ballTexture;
+			_triangle.TextureRegion = new RectangleF(64, 0, 64, 64);
 
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, February 26, 2012 9:33:35 PM
+// Created: Sunday, March 04, 2012 4:01:07 PM
 // 
 #endregion
 
@@ -34,12 +34,12 @@ using SlimMath;
 namespace GorgonLibrary.Graphics.Renderers
 {
 	/// <summary>
-	/// Interface for primitives.
+	/// Interface for immediate drawing of renderables.
 	/// </summary>
-	public class GorgonPrimitives
+	public class GorgonDrawing
 	{
 		#region Variables.
-		private Gorgon2D _gorgon2D = null;			// Gorgon 2D interface.
+		private Gorgon2D _gorgon2D = null;			// 2D interface.
 		private GorgonRectangle _rect = null;		// Rectangle.
 		private GorgonPoint _point = null;			// Point.
 		private GorgonLine _line = null;			// Line.
@@ -355,16 +355,16 @@ namespace GorgonLibrary.Graphics.Renderers
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPrimitives"/> class.
+		/// Initializes a new instance of the <see cref="GorgonDrawing"/> class.
 		/// </summary>
 		/// <param name="gorgon2D">The gorgon 2D interface that owns this object.</param>
-		internal GorgonPrimitives(Gorgon2D gorgon2D)
+		internal GorgonDrawing(Gorgon2D gorgon2D)
 		{
 			_gorgon2D = gorgon2D;
-			_rect = new GorgonRectangle(gorgon2D, "Gorgon2D.Rectangle", RectangleF.Empty, false);
-			_point = new GorgonPoint(gorgon2D, "Gorgon2D.Point", Vector2.Zero);
-			_line = new GorgonLine(gorgon2D, "Gorgon2D.Line", Vector2.Zero, Vector2.Zero);
-			_ellipse = new GorgonEllipse(gorgon2D, "Gorgon2D.Ellipse", Vector2.Zero, Vector2.Zero, 64, false);
+			_rect = new GorgonRectangle(gorgon2D, "Gorgon2D.Rectangle", RectangleF.Empty, Color.White, false);
+			_point = new GorgonPoint(gorgon2D, "Gorgon2D.Point", Vector2.Zero, Color.White);
+			_line = new GorgonLine(gorgon2D, "Gorgon2D.Line", Vector2.Zero, Vector2.Zero, Color.White);
+			_ellipse = new GorgonEllipse(gorgon2D, "Gorgon2D.Ellipse", Vector2.Zero, Vector2.Zero, Color.White, 64, false);
 		}
 		#endregion
 	}

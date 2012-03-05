@@ -492,9 +492,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="name">The name of the object.</param>
 		/// <param name="position">The position of the ellipse.</param>
 		/// <param name="size">The size of the ellipse.</param>
+		/// <param name="color">Color of the ellipse.</param>
 		/// <param name="quality">Quality of the ellipse.</param>
 		/// <param name="isFilled">TRUE if the ellipse should be filled.</param>
-		internal GorgonEllipse(Gorgon2D gorgon2D, string name, Vector2 position, Vector2 size, int quality, bool isFilled)
+		internal GorgonEllipse(Gorgon2D gorgon2D, string name, Vector2 position, Vector2 size, GorgonColor color, int quality, bool isFilled)
 			: base(gorgon2D, name)
 		{
 			TextureRegion = new System.Drawing.RectangleF(0, 0, size.X, size.Y);
@@ -502,7 +503,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			Size = size;			
 			Quality = quality;
 			IsFilled = isFilled;			
-			_line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero);
+			_line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero, color);
+			Color = color;
 		}
 		#endregion
 	}

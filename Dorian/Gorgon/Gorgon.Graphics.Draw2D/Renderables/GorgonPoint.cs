@@ -130,7 +130,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="gorgon2D">Gorgon interface that owns this renderable.</param>
 		/// <param name="name">The name of the point.</param>
 		/// <param name="position">Position of the point.</param>
-		internal GorgonPoint(Gorgon2D gorgon2D, string name, Vector2 position)
+		/// <param name="color">Color of the point.</param>
+		internal GorgonPoint(Gorgon2D gorgon2D, string name, Vector2 position, GorgonColor color)
 			: base(name)
 		{
 			CullingMode = Graphics.CullingMode.Back;
@@ -145,25 +146,25 @@ namespace GorgonLibrary.Graphics.Renderers
 				{
 					Position = new Vector4(0, 0, 0, 1.0f),
 					UV = Vector2.Zero,
-					Color = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)
+					Color = color
 				},
 				new Gorgon2D.Vertex() 
 				{
 					Position = new Vector4(0, 0, 0, 1.0f),
 					UV = Vector2.Zero,
-					Color = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)
+					Color = color
 				},
 				new Gorgon2D.Vertex() 
 				{
 					Position = new Vector4(0, 0, 0, 1.0f),
 					UV = Vector2.Zero,
-					Color = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)
+					Color = color
 				},
 				new Gorgon2D.Vertex() 
 				{
 					Position = new Vector4(0, 0, 0, 1.0f),
 					UV = Vector2.Zero,
-					Color = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)
+					Color = color
 				}
 			};
 		}

@@ -302,7 +302,7 @@ namespace Tester_Graphics
 				float aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
 				_graphics2D.ProjectionMatrix = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), aspect, 0.01f, 10000.0f);
 				_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(-0.0f, -0.0f, 0.1f), new Vector3(0, 0, -0.1f), -Vector3.UnitY);
-				_sprite = _graphics2D.CreateSprite("Test", 100.0f, 100.0f);
+				_sprite = _graphics2D.Renderables.CreateSprite("Test", 100.0f, 100.0f);
 				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\BallDemo\BallDemo.png", GorgonTexture2DSettings.FromFile);
 				_sprite.Texture = _texture;
 				
@@ -315,7 +315,7 @@ namespace Tester_Graphics
 				// TODO: Make a new sprite type for perspective correct sprites.
 				//       Allow the user to set the texture coordinates manually and don't use sprite size to determine region.
 
-				_sprite2 = _graphics2D.CreateSprite("Test2", 100.0f, 100.0f);				
+				_sprite2 = _graphics2D.Renderables.CreateSprite("Test2", 100.0f, 100.0f);				
 				
 				//_sprite.HorizontalWrapping = TextureAddressing.Border;
 				//_sprite.BorderColor = Color.Blue;

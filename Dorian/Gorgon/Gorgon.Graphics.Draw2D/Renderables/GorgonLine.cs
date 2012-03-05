@@ -148,17 +148,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
-					return Vertices[0].Color;
-				else
-					return Vertices[1].Color;
+				return Vertices[0].Color;
 			}
 			set
 			{
-				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
-					Vertices[0].Color = value;
-				else
-					Vertices[3].Color = Vertices[1].Color = value;
+				Vertices[2].Color = Vertices[0].Color = value;
 			}
 		}
 
@@ -169,17 +163,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		{
 			get
 			{
-				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
-					return Vertices[1].Color;
-				else
-					return Vertices[0].Color;
+				return Vertices[1].Color;
 			}
 			set
 			{
-				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
-					Vertices[1].Color = value;
-				else
-					Vertices[2].Color = Vertices[0].Color = value;
+				Vertices[3].Color = Vertices[1].Color = value;
 			}
 		}
 
@@ -582,7 +570,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="name">The name of the line.</param>
 		/// <param name="start">Line starting point.</param>
 		/// <param name="end">Line ending point.</param>
-		internal GorgonLine(Gorgon2D gorgon2D, string name, Vector2 start, Vector2 end)
+		/// <param name="color">Color of the line.</param>
+		internal GorgonLine(Gorgon2D gorgon2D, string name, Vector2 start, Vector2 end, GorgonColor color)
 			: base(gorgon2D, name)
 		{
 			_corners = new float[4];
@@ -591,6 +580,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			EndPoint = end;
 			InitializeVertices(4);
 			LineThickness = new Vector2(1);
+			Color = color;
 		}
 		#endregion
 	}
