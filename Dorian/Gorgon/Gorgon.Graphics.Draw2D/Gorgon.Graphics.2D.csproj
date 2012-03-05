@@ -58,6 +58,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cameras\GorgonOrthoCamera.cs" />
+    <Compile Include="Cameras\ICamera.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="GorgonGraphicsExtensions.cs" />
     <Compile Include="GorgonStateManager.cs" />
@@ -86,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
+    <None Include="Resources\Icons.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">

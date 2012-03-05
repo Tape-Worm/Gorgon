@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Drawing;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 
@@ -98,6 +99,15 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the texture for the Gorgon logo.
+		/// </summary>
+		public GorgonTexture2D GorgonLogo
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the maximum width of a texture.
 		/// </summary>
@@ -325,6 +335,36 @@ namespace GorgonLibrary.Graphics
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports1DTextureFormat(settings.Format))
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format.ToString() + "' is not supported by the hardware.");
+		}
+
+		/// <summary>
+		/// Function to load a texture from a GDI+ bitmap object.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="bitmap">Bitmap to load.</param>
+		/// <param name="settings">Settings for the texture.</param>
+		/// <returns>The new 2D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture2D FromGDIBitmap(string name, Image bitmap, GorgonTexture2DSettings settings)
+		{
+			GorgonTexture2D result = null;
+			MemoryStream stream = null;
+
+			try
+			{
+				stream = new MemoryStream();
+				bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+				stream.Position = 0;
+				result = FromStream(name, stream, (int)stream.Length, settings);
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Dispose();
+			}			
+
+			return result;
 		}
 
 		/// <summary>
@@ -1003,6 +1043,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonTextures(GorgonGraphics graphics)
 		{
 			_graphics = graphics;
+			GorgonLogo = FromGDIBitmap("Gorgon.Logo", Properties.Resources.GorgonLogo3, GorgonTexture2DSettings.FromFile);
 		}
 		#endregion
 	}

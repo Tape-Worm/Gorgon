@@ -157,7 +157,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// <returns>TRUE to keep running, FALSE to exit.</returns>
 		private static bool Idle(GorgonFrameRate timing)
 		{
-			//_mainScreen.Clear(Color.Black, 1.0f, 0);
+			_mainScreen.Clear(Color.Black, 1.0f, 0);
 
 			// Draw background.
 			for (int y = 0; y < _mainScreen.Settings.Height; y += (int)_wall.Size.Y)
@@ -248,7 +248,6 @@ namespace GorgonLibrary.Graphics.Example
 				Color = Color.Blue
 			}, null);
 
-
 			//_line.Angle = _ballList[0].Rotation;
 			//_line.Color = _pt.Color;
 			//_line.LineThickness = new Vector2(4, 4);
@@ -285,12 +284,15 @@ namespace GorgonLibrary.Graphics.Example
 			//_rect.Anchor = new Vector2(50, 50);
 			//_rect.Angle = _ballList[0].Rotation;
 
-			_rect.LineThickness = new Vector2(3, 3);
+			//_rect.LineThickness = new Vector2(3, 3);
+			_rect.SetCornerColor(RectangleCorner.UpperLeft, Color.Red);
+			_rect.SetCornerColor(RectangleCorner.UpperRight, Color.Green);
+			_rect.SetCornerColor(RectangleCorner.LowerLeft, Color.Purple);
 			_rect.Position = new Vector2(30, 30);
 			_rect.Size = new Vector2(100, 100);
-			_rect.IsFilled = false;
+			_rect.IsFilled = true;
 			_rect.Texture = _ballTexture;
-			_rect.Color = Color.White;
+			//_rect.Color = Color.White;
 			_rect.TextureRegion = new RectangleF(67, 3, 58.0f, 58.0f);
 			_rect.Angle += 10.0f * timing.FrameDelta;
 			_rect.Draw();
@@ -352,6 +354,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create the 2D interface.
 			_2D = _graphics.Create2DRenderer(_mainScreen);
+			_2D.IsLogoVisible = true;
 
 			// Create the wall sprite.
 			_wall = _2D.Renderables.CreateSprite("Wall", 63, 63);
@@ -364,7 +367,7 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Texture = _ballTexture;
 			_ball.SmoothingMode = SmoothingMode.Smooth;
 
-			_rect = _2D.Renderables.CreateRectangle("Rectum", RectangleF.FromLTRB(20, 20, 84, 84), Color.Cyan, false);
+			_rect = _2D.Renderables.CreateRectangle("Rectum", RectangleF.FromLTRB(20, 20, 84, 84), Color.White, false);
 			//_rect.PenSize = new Vector2(1, 8);
 			//_rect.Color = Color.Purple;
 			//_rect.Texture = _ballTexture;

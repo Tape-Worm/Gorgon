@@ -174,7 +174,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="point1">First point in the triangle.</param>
 		/// <param name="point2">Second point in the triangle.</param>
 		/// <param name="point3">Third point in the triangle.</param>
-		/// <param name="color">Color of the triangle.</param>
 		/// <param name="thickness">Line thickness.</param>
 		/// <param name="texture">Texture to apply to the triangle.</param>
 		public void DrawTriangle(Vector2 position, GorgonTriangle.TrianglePoint point1, GorgonTriangle.TrianglePoint point2, GorgonTriangle.TrianglePoint point3, Vector2 thickness, GorgonTexture2D texture)
