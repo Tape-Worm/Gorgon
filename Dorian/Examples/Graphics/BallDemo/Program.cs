@@ -198,137 +198,12 @@ namespace GorgonLibrary.Graphics.Example
 				_ball.Draw();
 			}
 
-			for (int i = 0; i < 1000; i++)
-			{
-				_pt.Position = new Vector2((float)_rnd.NextDouble() * 400, (float)_rnd.NextDouble() * 400);
-				_pt.Color = new GorgonColor((float)_rnd.NextDouble(), (float)_rnd.NextDouble(), (float)_rnd.NextDouble(), 1.0f);
-				//_pt.Draw();
-			}
-
-			//_line.Angle = _ballList[0].Rotation;
-
-			_rect.Position = new Vector2(20, 20);
-			_rect.IsFilled = false;
-			_rect.Size = new Vector2(100, 100);
-			//_rect.Angle = _ballList[0].Rotation;
-			//_rect.Draw();
-			_rect.Position = new Vector2(140, 20);
-			_rect.IsFilled = true;
-			//_rect.Angle = 0;
-			_rect.Size = new Vector2(150, 150);
-			//_rect.Draw();
-
-			_ball.Scale = new Vector2(1);
-			_ball.Position = new Vector2(370, 300);
-			_ball.Angle = 0.0f;
-			_ball.TextureOffset = new Vector2(64, 0);
-			_ball.Color = Color.White;
-			_ball.Size = new Vector2(128, 128);
-			_ball.Draw();
-			_ball.Size = new Vector2(64, 64);
-			
-			_2D.Drawing.FilledRectangle(new RectangleF(0, 0, 640, 480), Color.Blue);
-			_2D.Drawing.DrawPoint(new Vector2(320, 240), Color.Yellow);
-			_2D.Drawing.DrawLine(new Vector2(10, 10), new Vector2(300, 220), Color.Green);
-			_2D.Drawing.FilledEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.White, 64, _ballTexture, new RectangleF(64, 0, 64.0f, 64.0f));
-			_2D.Drawing.DrawEllipse(new RectangleF(40.0f, 40.0f, 400.0f, 400.0f), Color.Red, 64);
-			_2D.Drawing.FilledTriangle(new Vector2(600, 300), new GorgonTriangle.TrianglePoint()
-			{
-				Position = new Vector2(0, 0),
-				Color = Color.Red
-			},
-			new GorgonTriangle.TrianglePoint()
-			{
-				Position = new Vector2(50, 50),
-				Color = Color.Green
-			},
-			new GorgonTriangle.TrianglePoint()
-			{
-				Position = new Vector2(-50, 50),
-				Color = Color.Blue
-			}, null);
-
-			//_line.Angle = _ballList[0].Rotation;
-			//_line.Color = _pt.Color;
-			//_line.LineThickness = new Vector2(4, 4);
-			//_line.EndPoint = new Vector2(0, 20);
-			//_line.Draw();
-
-			//_line.EndPoint = new Vector2(0, 0);
-			//_line.Draw();
-
-			//_line.EndPoint = new Vector2(20, 0);
-			//_line.Draw();
-
-			//_line.EndPoint = new Vector2(40, 0);
-			//_line.Draw();
-
-			//_line.EndPoint = new Vector2(40, 20);
-			//_line.Draw();
-			
-			//_line.EndPoint = new Vector2(40, 40);
-			//_line.Draw();
-
-			//_line.EndPoint = new Vector2(20, 40);
-			//_line.Draw();
-
-			//_line.EndPoint = new Vector2(0, 40);
-			//_line.Draw();
-
-			_wall.Color = Color.Blue;
-			_wall.Position = new Vector2(300, 300);
-			_wall.Size = new Vector2(100, 100);
-			_wall.Draw();
-			_wall.Size = new Vector2(63, 63);
-
-			//_rect.Anchor = new Vector2(50, 50);
-			//_rect.Angle = _ballList[0].Rotation;
-
-			//_rect.LineThickness = new Vector2(3, 3);
-			_rect.SetCornerColor(RectangleCorner.UpperLeft, Color.Red);
-			_rect.SetCornerColor(RectangleCorner.UpperRight, Color.Green);
-			_rect.SetCornerColor(RectangleCorner.LowerLeft, Color.Purple);
-			_rect.Position = new Vector2(30, 30);
-			_rect.Size = new Vector2(100, 100);
-			_rect.IsFilled = true;
-			_rect.Texture = _ballTexture;
-			//_rect.Color = Color.White;
-			_rect.TextureRegion = new RectangleF(67, 3, 58.0f, 58.0f);
-			_rect.Angle += 10.0f * timing.FrameDelta;
-			_rect.Draw();
-			
-			float rot = _ballList[0].Rotation / 360.0f;
-			//_ellipse.Angle = _ballList[0].Rotation;
-			//for (int i = 0; i < _ellipse.Quality; i++)
-			//    _ellipse.SetPointColor(i, new GorgonColor(rot * ((float)i / (float)_ellipse.Quality), 0, 0));
-			_ellipse.Angle = _ballList[0].Rotation;
-			_ellipse.Draw();
-
-			//_triangle.Angle = _ballList[0].Rotation;
-			_triangle.Draw();
-
-			_cam.Angle = -_ballList[0].Rotation;
-			_cam.Zoom = new Vector2(1.0f / _ballList[0].Scale, 1.0f / _ballList[0].Scale);
-			
-			if (_cam.Zoom.X < 1.0f)
-				_cam.Zoom = new Vector2(1.0f, 1.0f);
-			_cam.Anchor = new Vector2(640, 400);
-			_cam.Position = -_ballList[0].Position;
-			_cam.Draw();
-
 			_2D.Render();
 
 			_form.Text = "FPS: " + timing.AverageFPS.ToString("###0.0") + " DT:" + (timing.AverageFrameDelta * 1000).ToString("##0.0") + " msec.  Ball Count:" + _ballCount.ToString();
 			
 			return true;
-		}
-
-		private static GorgonOrthoCamera _cam = null;
-		private static GorgonRectangle _rect = null;
-		private static GorgonPoint _pt = null;
-		private static GorgonLine _line = null;
-		private static GorgonEllipse _ellipse = null;
-		private static GorgonTriangle _triangle = null;
+		}		
 
 		/// <summary>
 		/// Function to initialize the application.
@@ -337,8 +212,6 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			_form = new MainForm();
 			_form.Show();
-
-			_form.KeyDown += new KeyEventHandler(_form_KeyDown);
 
 			// Create the graphics interface.
 			_graphics = new GorgonGraphics();
@@ -377,61 +250,36 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Texture = _ballTexture;
 			_ball.SmoothingMode = SmoothingMode.Smooth;
 
-			_rect = _2D.Renderables.CreateRectangle("Rectum", RectangleF.FromLTRB(20, 20, 84, 84), Color.White, false);
-			//_rect.PenSize = new Vector2(1, 8);
-			//_rect.Color = Color.Purple;
-			//_rect.Texture = _ballTexture;
-			//_rect.TextureRegion = new RectangleF(64, 0, 64, 64);
-			//_rect.TextureOffset = new Vector2(64, 0);
-
-			_pt = _2D.Renderables.CreatePoint("Pointum", new Vector2(2, 2), Color.Cyan);
-			_pt.PointThickness = new Vector2(3, 3);
-
-			_line = _2D.Renderables.CreateLine("Lineum", new Vector2(20, 20), new Vector2(40, 20), Color.Cyan);
-//			_line.PenSize = new Vector2(4, 4);
-//			_line.Texture = _ballTexture;
-			_line.TextureStart = new Vector2(128, 64);
-			_line.TextureEnd = new Vector2(64, 0);
-			//_line.Angle = 45.0f;
-			//_line.Anchor = new Vector2(40, 40);
-			//_line.PenSize = new Vector2(16, 16);
-
-			_ellipse = _2D.Renderables.CreateEllipse("Ellipseum", new Vector2(300, 300), new Vector2(62, 62), Color.Cyan, false, 64);
-			_ellipse.LineThickness = new Vector2(2.0f, 2.0f);
-			_ellipse.Scale = new Vector2(2.5f, 2.5f);
-			_ellipse.Texture = _ballTexture;
-			//_ellipse.Anchor = new Vector2(31.5f, 31.5f);
-			_ellipse.TextureRegion = new RectangleF(67, 3, 58, 58);
-			//_ellipse.Size = new Vector2(198, 198);			
-
-			_triangle = _2D.Renderables.CreateTriangle("Triangleum", 
-				new GorgonTriangle.TrianglePoint 
-				{
-					Position = new Vector2(-50, 250),
-					Color = Color.Red,
-					TextureCoordinate = new Vector2(64, 64)
-				},
-				new GorgonTriangle.TrianglePoint
-				{
-					Position = new Vector2(0, 0),
-					Color = Color.Cyan,
-					TextureCoordinate = new Vector2(96, 0)
-				},
-				new GorgonTriangle.TrianglePoint
-				{
-					Position = new Vector2(50, 250),
-					Color = Color.Yellow,
-					TextureCoordinate = new Vector2(128, 64)
-				}
-				, true);
-			_triangle.Position = new Vector2(150, 450);
-			_triangle.LineThickness = new Vector2(4.0f, 4.0f);
-			_triangle.Texture = _ballTexture;
-
-			_cam = _2D.CreateCamera("OrthoCamera", RectangleF.Empty, 100.0f);
-
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);
+
+			// Assign event handlers.
+			_form.KeyDown += new KeyEventHandler(_form_KeyDown);
+			_form.Resize += new EventHandler(_form_Resize);
+		}
+
+		/// <summary>
+		/// Handles the ResizeEnd event of the _form control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private static void _form_Resize(object sender, EventArgs e)
+		{
+			// Fix any objects caught outside of the main target.
+			for (int i = 0; i < _ballCount; i++)
+			{
+				if (_ballList[i].Position.X < 0)
+					_ballList[i].Position.X = 0;
+
+				if (_ballList[i].Position.Y < 0)
+					_ballList[i].Position.Y = 0;
+
+				if (_ballList[i].Position.X > _mainScreen.Settings.Width)
+					_ballList[i].Position.X = _mainScreen.Settings.Width;
+
+				if (_ballList[i].Position.Y > _mainScreen.Settings.Height)
+					_ballList[i].Position.Y = _mainScreen.Settings.Height;
+			}
 		}
 
 		/// <summary>
@@ -471,48 +319,6 @@ namespace GorgonLibrary.Graphics.Example
 				case Keys.Enter:
 					if (e.Alt)
 						_mainScreen.UpdateSettings(!_mainScreen.Settings.IsWindowed);
-					break;
-				case Keys.A:
-					_2D.IsAlphaTestEnabled = !_2D.IsAlphaTestEnabled;
-					break;
-				case Keys.B:
-					_2D.IsBlendingEnabled = !_2D.IsBlendingEnabled;
-					break;
-				case Keys.M:
-					_2D.IsMultisamplingEnabled = !_2D.IsMultisamplingEnabled;
-					break;
-				case Keys.V:
-					if (_2D.Viewport == null)
-					{
-						_2D.Viewport = new GorgonViewport(10.0f, 10.0f, 800.0f, 600.0f, 0.0f, 1.0f);
-						_2D.Camera = _cam;
-						_cam.ViewDimensions = new RectangleF(10.0f, 10.0f, _form.ClientSize.Width, _form.ClientSize.Height);
-						//_2D.ProjectionMatrix = Matrix.OrthoOffCenterLH(10.0f, _form.ClientSize.Width, _form.ClientSize.Height, 10.0f, 0.0f, 100.0f);
-					}
-					else
-					{
-						_2D.Viewport = null;
-						_2D.Camera = null;
-					}					
-					break;
-				case Keys.C:
-					if (e.Control)
-					{
-						if (_2D.Camera != _cam)
-						{
-							_cam.ViewDimensions = new RectangleF(10.0f, 10.0f, _form.ClientSize.Width, _form.ClientSize.Height);
-							_2D.Camera = _cam;
-						}
-						else
-						{
-							_2D.Camera = null;
-						}
-						break;
-					}
-					if (_2D.ClipRegion == null)
-						_2D.ClipRegion = new Rectangle(-10, -10, 640, 480);
-					else
-						_2D.ClipRegion = null;
 					break;
 			}
 		}
