@@ -67,6 +67,11 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <param name="target">Target to use when updating.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
 		void UpdateFromTarget(GorgonSwapChain target);
+
+		/// <summary>
+		/// Function to draw the camera icon.
+		/// </summary>
+		void Draw();
 		#endregion
 	}
 }

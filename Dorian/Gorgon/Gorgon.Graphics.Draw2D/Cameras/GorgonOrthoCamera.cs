@@ -219,13 +219,19 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Function to draw a camera icon.
+		/// Function to draw the camera icon.
 		/// </summary>
 		public void Draw()
 		{
-			//_cameraIcon.Anchor = Anchor;
-			if ((_scale.X != 0.0f) && (_scale.Y != 0.0f) && (Gorgon2D.Camera == this))
+			if ((_scale.X != 0.0f) && (_scale.Y != 0.0f))
 				_cameraIcon.Scale = new Vector2(1.0f / _scale.X, 1.0f / _scale.Y);
+
+			// Highlight current camera.
+			if (Gorgon2D.Camera == this)
+				_cameraIcon.Color = Color.Green;
+			else
+				_cameraIcon.Color = Color.White;
+
 			_cameraIcon.Position = -Position;
 			_cameraIcon.Angle = -Angle;
 			_cameraIcon.Draw();
@@ -285,6 +291,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		public void CalculateProjectionMatrix()
 		{
 			Matrix.OrthoOffCenterLH(0, _viewDimensions.Width, _viewDimensions.Height, 0.0f, 0.0f, _maxDepth, out _projection);
+			UpdateViewMatrix();
 			UpdateShaders();
 		}
 

@@ -285,7 +285,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		private GorgonViewport? _viewPort = null;													// Viewport to use.
 		private Rectangle? _clip = null;															// Clipping rectangle.
 		private ICamera _camera = null;																// Current camera.
-		private ICamera _default = null;															// Default camera.
+		private GorgonOrthoCamera _default = null;													// Default camera.
 		#endregion
 
 		#region Properties.
@@ -565,6 +565,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			Graphics.Output.RenderTargets[0] = Target;
 
 			_default.UpdateFromTarget(Target);
+			_default.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
+			_default.Position = -_default.Anchor;
 
 			if (_viewPort == null)
 				Graphics.Rasterizer.SetViewport(Target.Viewport);
@@ -944,15 +946,16 @@ namespace GorgonLibrary.Graphics.Renderers
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			Graphics = target.Graphics;
 			_defaultTarget = target;
-			_default = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new RectangleF(0, 0, target.Settings.Width, target.Settings.Height), 100.0f);
 
 			Initialize();
+
+			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, GorgonTexture2DSettings.FromFile);
+			_default = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new RectangleF(0, 0, target.Settings.Width, target.Settings.Height), 100.0f);			
+
 			Begin2D();
 
 			Renderables = new GorgonRenderables(this);
 			Drawing = new GorgonDrawing(this);
-
-			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, GorgonTexture2DSettings.FromFile);
 		}
 		#endregion
 
