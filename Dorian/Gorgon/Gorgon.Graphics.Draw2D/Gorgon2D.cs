@@ -284,6 +284,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		private bool _multiSampleEnable = false;													// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort = null;													// Viewport to use.
 		private Rectangle? _clip = null;															// Clipping rectangle.
+		private ICamera _camera = null;																// Current camera.
+		private ICamera _default = null;															// Default camera.
 		#endregion
 
 		#region Properties.
@@ -477,44 +479,25 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the projection matrix.
+		/// Property to set or return the current camera.
 		/// </summary>
-		/// <remarks>The default matrix is an orthographic matrix, which allows to pixel accurate drawing (i.e. a sprite located at 100, 100 is located at the pixel coordinate of 100x100).
-		/// <para>When using a perspective matrix, such as 3D, the coordinate system changes to a relative unit system (-1.0f,1.0f).  This allows for depth to be introduced to the sprites.</para>
-		/// </remarks>
-		public Matrix? ProjectionMatrix
+		public ICamera Camera
 		{
 			get
 			{
-				if (_projection == null)
-					return _defaultProjection;
-				else
-					return _projection;
-			}
-			set
-			{
-				_projection = value;
-				Shaders.UpdateGorgonTransformation();
-			}
-		}
+				if (_camera == null)
+					return _default;
 
-		/// <summary>
-		/// Property to set or return the view matrix.
-		/// </summary>
-		/// <remarks>The view matrix is used to relocate the objects in a scene around a camera's position.</remarks>
-		public Matrix? ViewMatrix
-		{
-			get
-			{
-				if (_view == null)
-					return Matrix.Identity;
-				else
-					return _view;
+				return _camera;
 			}
 			set
 			{
-				_view = value;
-				Shaders.UpdateGorgonTransformation();
+				if (_camera != value)
+				{
+					_camera = value;
+					RenderObjects();
+					Shaders.UpdateGorgonTransformation();
+				}
 			}
 		}
 
@@ -578,15 +561,15 @@ namespace GorgonLibrary.Graphics.Renderers
 			// Remove any previous handler.
 			if (Target != null)
 				Target.Resized -= new EventHandler(target_Resized);
-
+						
 			Graphics.Output.RenderTargets[0] = Target;
-			Matrix.OrthoOffCenterLH(0, Target.Settings.Width, Target.Settings.Height, 0.0f, 0.0f, 100.0f, out _defaultProjection);
+
+			_default.UpdateFromTarget(Target);
+
 			if (_viewPort == null)
 				Graphics.Rasterizer.SetViewport(Target.Viewport);
 			else
 				Graphics.Rasterizer.SetViewport(_viewPort.Value);
-
-			Shaders.UpdateGorgonTransformation();
 
 			// Re-assign the event.
 			if (Target != null)
@@ -799,6 +782,18 @@ namespace GorgonLibrary.Graphics.Renderers
 		}
 
 		/// <summary>
+		/// Function to create a new orthographic camera object.
+		/// </summary>
+		/// <param name="name">Name of the camera.</param>
+		/// <param name="viewDimensions">Dimensions for the ortho camera.</param>
+		/// <param name="maxDepth">Maximum depth of the camera.</param>
+		/// <returns>A new orthographic camera.</returns>
+		public GorgonOrthoCamera CreateCamera(string name, RectangleF viewDimensions, float maxDepth)
+		{
+			return new GorgonOrthoCamera(this, name, viewDimensions, maxDepth);
+		}
+
+		/// <summary>
 		/// Function to start 2D rendering.
 		/// </summary>
 		/// <remarks>This is used to remember previous states, and set the default states for the 2D renderer.
@@ -843,7 +838,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			if (_stateManager == null)
 				_stateManager = new GorgonStateManager(this);
 
-			_stateManager.GetDefaults();
+			_stateManager.GetDefaults();			
 
 			UpdateTarget();
 		}
@@ -888,18 +883,15 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </remarks>
 		public void Render(bool flip)
 		{
-			Matrix? view = _view;
-			Matrix? projection = _projection;
+			ICamera camera = _camera;
 			GorgonViewport? previousViewport = _viewPort;
 			Rectangle? previousClip = _clip;
 
 			if ((flip) && (IsLogoVisible))
 			{
 				// Reset any view/projection/clip/viewport.
-				if (_view != null)
-					ViewMatrix = null;
-				if (_projection != null)
-					ProjectionMatrix = null;
+				if (_camera != null)
+					Camera = null;
 				if (_viewPort != null)
 					Viewport = null;
 				if (_clip != null)
@@ -916,10 +908,8 @@ namespace GorgonLibrary.Graphics.Renderers
 
 				if (IsLogoVisible)
 				{
-					if (view != null)
-						ViewMatrix = view;
-					if (projection != null)
-						ProjectionMatrix = projection;
+					if (camera != null)
+						Camera = camera;
 					if (previousViewport != null)
 						Viewport = previousViewport;
 					if (previousClip != null)
@@ -954,6 +944,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			Graphics = target.Graphics;
 			_defaultTarget = target;
+			_default = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new RectangleF(0, 0, target.Settings.Width, target.Settings.Height), 100.0f);
 
 			Initialize();
 			Begin2D();

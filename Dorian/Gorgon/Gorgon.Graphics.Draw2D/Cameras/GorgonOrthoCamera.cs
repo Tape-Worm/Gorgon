@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using SlimMath;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics.Renderers
 {
@@ -45,6 +46,10 @@ namespace GorgonLibrary.Graphics.Renderers
 		private RectangleF _viewDimensions = RectangleF.Empty;			// View dimensions.
 		private float _maxDepth = 0.0f;									// Maximum depth.
 		private GorgonSprite _cameraIcon = null;						// Camera icon.
+		private float _angle = 0.0f;									// Angle of rotation.
+		private Vector2 _scale = new Vector2(1.0f);						// Scale.
+		private Vector2 _position = Vector2.Zero;						// Position.
+		private Vector2 _anchor = Vector2.Zero;							// Target position.
 		#endregion
 
 		#region Properties.
@@ -90,15 +95,148 @@ namespace GorgonLibrary.Graphics.Renderers
 				CalculateProjectionMatrix();
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the angle of rotation in degrees.
+		/// </summary>
+		/// <remarks>An orthographic camera can only rotate around a Z-Axis.</remarks>
+		public float Angle
+		{
+			get
+			{
+				return _angle;
+			}
+			set
+			{
+				if (_angle != value)
+				{
+					_angle = value;
+					UpdateViewMatrix();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the camera position.
+		/// </summary>
+		public Vector2 Position
+		{
+			get
+			{
+				return _position;
+			}
+			set
+			{
+				if (value != _position)
+				{
+					_position = value;
+					UpdateViewMatrix();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the zoom for the camera.
+		/// </summary>
+		public Vector2 Zoom
+		{
+			get
+			{
+				return _scale;
+			}
+			set
+			{
+				if (value != _scale)
+				{
+					_scale = value;
+					UpdateViewMatrix();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return an anchor for rotation, scaling and positioning.
+		/// </summary>
+		public Vector2 Anchor
+		{
+			get
+			{
+				return _anchor;
+			}
+			set
+			{
+				if (_anchor != value)
+				{
+					_anchor = value;
+					UpdateViewMatrix();
+				}
+			}
+		}		
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to update the view matrix.
+		/// </summary>
+		private void UpdateViewMatrix()
+		{
+			Matrix center = Matrix.Identity;						// Centering matrix.
+			Matrix scale = Matrix.Identity;							// Scaling matrix.
+			Matrix rotation = Matrix.Identity;						// Rotation matrix.
+			Matrix translation = Matrix.Identity;					// Translation matrix.
+
+			// Anchor the view.
+			Matrix.Translation(_anchor.X, _anchor.Y, 0.0f, out center);
+
+			// Scale it.
+			if ((_scale.X != 1.0f) || (_scale.Y != 1.0f))
+			{
+				center.M11 = _scale.X;
+				center.M22 = _scale.Y;
+				center.M33 = 1.0f;
+			}
+						
+			if (_angle != 0.0f)
+			{
+				Matrix.RotationZ(GorgonMathUtility.Radians(_angle), out rotation);
+				Matrix.Multiply(ref rotation, ref center, out center);
+			}
+
+			Matrix.Translation(_position.X, _position.Y, 0.0f, out translation);
+			Matrix.Multiply(ref translation, ref center, out center);
+
+			_view = center;
+			UpdateShaders();
+		}
+
+		/// <summary>
+		/// Function to update the shaders.
+		/// </summary>
+		private void UpdateShaders()
+		{
+			if (Gorgon2D.Camera == this)
+				Gorgon2D.Shaders.UpdateGorgonTransformation();
+		}
+
+		/// <summary>
+		/// Function to draw a camera icon.
+		/// </summary>
+		public void Draw()
+		{
+			//_cameraIcon.Anchor = Anchor;
+			if ((_scale.X != 0.0f) && (_scale.Y != 0.0f) && (Gorgon2D.Camera == this))
+				_cameraIcon.Scale = new Vector2(1.0f / _scale.X, 1.0f / _scale.Y);
+			_cameraIcon.Position = -Position;
+			_cameraIcon.Angle = -Angle;
+			_cameraIcon.Draw();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonOrthoCamera"/> class.
 		/// </summary>
+		/// <param name="gorgon2D">The 2D interface that created this object.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="viewDimensions">The view dimensions.</param>
 		/// <param name="maximumDepth">The maximum depth.</param>
@@ -110,7 +248,8 @@ namespace GorgonLibrary.Graphics.Renderers
 			_viewDimensions = viewDimensions;
 			_cameraIcon = new GorgonSprite(gorgon2D, "GorgonCamera.OrthoIcon", 64, 50);
 			_cameraIcon.Texture = gorgon2D.Icons;
-			_cameraIcon.TextureRegion = new RectangleF(0, 0, 64, 50);
+			_cameraIcon.TextureRegion = new RectangleF(65, 0, 65, 50);
+			_cameraIcon.Anchor = new Vector2(32.5f, 25);
 		}
 		#endregion
 
@@ -146,6 +285,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		public void CalculateProjectionMatrix()
 		{
 			Matrix.OrthoOffCenterLH(0, _viewDimensions.Width, _viewDimensions.Height, 0.0f, 0.0f, _maxDepth, out _projection);
+			UpdateShaders();
 		}
 
 		/// <summary>
@@ -155,6 +295,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void UpdateFromTarget(GorgonSwapChain target)
 		{
+			_viewDimensions = new RectangleF(0, 0, target.Settings.Width, target.Settings.Height);
 			CalculateProjectionMatrix();
 		}
 		#endregion

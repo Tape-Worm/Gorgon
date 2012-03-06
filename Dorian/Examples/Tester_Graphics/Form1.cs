@@ -300,8 +300,8 @@ namespace Tester_Graphics
 				
 				_graphics2D = _graphics.Create2DRenderer(_swapChain);
 				float aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
-				_graphics2D.ProjectionMatrix = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), aspect, 0.01f, 10000.0f);
-				_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(-0.0f, -0.0f, 0.1f), new Vector3(0, 0, -0.1f), -Vector3.UnitY);
+				//_graphics2D.ProjectionMatrix = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), aspect, 0.01f, 10000.0f);
+				//_graphics2D.ViewMatrix = Matrix.LookAtLH(new Vector3(-0.0f, -0.0f, 0.1f), new Vector3(0, 0, -0.1f), -Vector3.UnitY);
 				_sprite = _graphics2D.Renderables.CreateSprite("Test", 100.0f, 100.0f);
 				_texture = _graphics.Textures.FromFile("Test", @"..\..\..\..\Resources\BallDemo\BallDemo.png", GorgonTexture2DSettings.FromFile);
 				_sprite.Texture = _texture;
@@ -373,7 +373,7 @@ namespace Tester_Graphics
 		void _swapChain_Resized(object sender, EventArgs e)
 		{
 			float aspect = (float)(_swapChain.Settings.VideoMode.Width) / (float)(_swapChain.Settings.VideoMode.Height);
-			_graphics2D.ProjectionMatrix = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), aspect, 0.01f, 10000.0f);
+			//_graphics2D.ProjectionMatrix = Matrix.PerspectiveFovLH(GorgonLibrary.Math.GorgonMathUtility.Radians(75.0f), aspect, 0.01f, 10000.0f);
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
