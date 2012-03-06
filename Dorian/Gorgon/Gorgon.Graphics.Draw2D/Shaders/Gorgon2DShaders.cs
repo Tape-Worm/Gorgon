@@ -167,7 +167,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		internal void UpdateGorgonTransformation()
 		{
-			Matrix viewProjection = Matrix.Multiply(_gorgon2D.ViewMatrix.Value, _gorgon2D.ProjectionMatrix.Value);
+			Matrix viewProjection = Matrix.Multiply(_gorgon2D.Camera.View, _gorgon2D.Camera.Projection);
 
 			_projViewData.Write(viewProjection);
 			_projViewData.Position = 0;

@@ -307,6 +307,15 @@ namespace GorgonLibrary.Graphics.Example
 			//_triangle.Angle = _ballList[0].Rotation;
 			_triangle.Draw();
 
+			_cam.Angle = -_ballList[0].Rotation;
+			_cam.Zoom = new Vector2(1.0f / _ballList[0].Scale, 1.0f / _ballList[0].Scale);
+			
+			if (_cam.Zoom.X < 1.0f)
+				_cam.Zoom = new Vector2(1.0f, 1.0f);
+			_cam.Anchor = new Vector2(640, 400);
+			_cam.Position = -_ballList[0].Position;
+			_cam.Draw();
+
 			_2D.Render();
 
 			_form.Text = "FPS: " + timing.AverageFPS.ToString("###0.0") + " DT:" + (timing.AverageFrameDelta * 1000).ToString("##0.0") + " msec.  Ball Count:" + _ballCount.ToString();
@@ -314,6 +323,7 @@ namespace GorgonLibrary.Graphics.Example
 			return true;
 		}
 
+		private static GorgonOrthoCamera _cam = null;
 		private static GorgonRectangle _rect = null;
 		private static GorgonPoint _pt = null;
 		private static GorgonLine _line = null;
@@ -418,6 +428,8 @@ namespace GorgonLibrary.Graphics.Example
 			_triangle.LineThickness = new Vector2(4.0f, 4.0f);
 			_triangle.Texture = _ballTexture;
 
+			_cam = _2D.CreateCamera("OrthoCamera", RectangleF.Empty, 100.0f);
+
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);
 		}
@@ -473,15 +485,30 @@ namespace GorgonLibrary.Graphics.Example
 					if (_2D.Viewport == null)
 					{
 						_2D.Viewport = new GorgonViewport(10.0f, 10.0f, 800.0f, 600.0f, 0.0f, 1.0f);
-						_2D.ProjectionMatrix = Matrix.OrthoOffCenterLH(10.0f, _form.ClientSize.Width, _form.ClientSize.Height, 10.0f, 0.0f, 100.0f);
+						_2D.Camera = _cam;
+						_cam.ViewDimensions = new RectangleF(10.0f, 10.0f, _form.ClientSize.Width, _form.ClientSize.Height);
+						//_2D.ProjectionMatrix = Matrix.OrthoOffCenterLH(10.0f, _form.ClientSize.Width, _form.ClientSize.Height, 10.0f, 0.0f, 100.0f);
 					}
 					else
 					{
 						_2D.Viewport = null;
-						_2D.ProjectionMatrix = null;
+						_2D.Camera = null;
 					}					
 					break;
 				case Keys.C:
+					if (e.Control)
+					{
+						if (_2D.Camera != _cam)
+						{
+							_cam.ViewDimensions = new RectangleF(10.0f, 10.0f, _form.ClientSize.Width, _form.ClientSize.Height);
+							_2D.Camera = _cam;
+						}
+						else
+						{
+							_2D.Camera = null;
+						}
+						break;
+					}
 					if (_2D.ClipRegion == null)
 						_2D.ClipRegion = new Rectangle(-10, -10, 640, 480);
 					else
