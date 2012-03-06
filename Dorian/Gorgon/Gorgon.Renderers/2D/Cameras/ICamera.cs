@@ -29,8 +29,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SlimMath;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {	
 	/// <summary>
 	/// A camera interface.

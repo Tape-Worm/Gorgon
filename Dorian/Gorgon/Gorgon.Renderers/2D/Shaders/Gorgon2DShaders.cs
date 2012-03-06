@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using SlimMath;
 using GorgonLibrary.Native;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// An interface for shader functionality.

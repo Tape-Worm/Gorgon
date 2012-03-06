@@ -31,8 +31,9 @@ using System.Text;
 using System.ComponentModel;
 using SlimMath;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// Renderable smoothing modes.
@@ -252,7 +253,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// <summary>
 			/// Property to set or return the blend factor.
 			/// </summary>
-			/// <remarks>This is only valid when the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.SourceBlend">SourceBlend</see> or the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.DestinationBlend">DestinationBlend</see> are set to BlendFactor.</remarks>
+			/// <remarks>This is only valid when the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.SourceBlend">SourceBlend</see> or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.DestinationBlend">DestinationBlend</see> are set to BlendFactor.</remarks>
 			public GorgonColor BlendFactor
 			{
 				get;
@@ -415,7 +416,7 @@ namespace GorgonLibrary.Graphics.Renderers
 			/// <summary>
 			/// Property to set or return whether this renderable can write to the depth buffer.
 			/// </summary>
-			/// <remarks>This value is only effective when <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.IsDepthBufferEnabled">IsDepthBufferEnabled</see> is TRUE.
+			/// <remarks>This value is only effective when <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsDepthBufferEnabled">IsDepthBufferEnabled</see> is TRUE.
 			/// <para>Note that the renderable will still take the depth buffer into account even when this is FALSE.  That is, it will read the depth buffer and mask 
 			/// depth areas that are less than the current depth value.</para>
 			/// </remarks>
@@ -601,8 +602,8 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return pre-defined smoothing states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter.">TextureFilter</see> 
-		/// property exposed by the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.TextureSampler.">TextureSampler</see> property.</remarks>
+		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter.">TextureFilter</see> 
+		/// property exposed by the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSampler.">TextureSampler</see> property.</remarks>
 		public virtual SmoothingMode SmoothingMode
 		{
 			get
@@ -644,9 +645,9 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return a pre-defined blending states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.BlendingState.SourceBlend">SourceBlend</see> 
-		/// or the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.Blending.DestinationBlend">DestinationBlend</see> property which are exposed by the 
-		/// <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
+		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendingState.SourceBlend">SourceBlend</see> 
+		/// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+		/// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
 		public virtual BlendingMode BlendingMode
 		{
 			get
@@ -708,7 +709,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Property to set or return the range of alpha values to reject on this renderable.
 		/// </summary>
 		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values and rejects the pixel if it is not.
-		/// <para>This value will not take effect until <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to TRUE.</para>
+		/// <para>This value will not take effect until <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to TRUE.</para>
 		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>
@@ -819,7 +820,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
-		/// drawn when <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
 		public virtual void Draw()
 		{

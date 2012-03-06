@@ -31,7 +31,7 @@ using System.Text;
 using System.Drawing;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// Defines a moveable and renderable object.
@@ -88,7 +88,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return the scale of the renderable.
 		/// </summary>
-		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonMoveable.Size">Size</see> property.
+		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Size">Size</see> property.
 		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
 		/// </remarks>
 		public virtual Vector2 Scale

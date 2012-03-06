@@ -29,13 +29,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Renderers;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// Extensions to the main graphics interface.
 	/// </summary>
-	public static class GorgonGraphicsExtensions
+	public static class GorgonGraphics2DExtensions
 	{
 		#region Methods.
 		/// <summary>

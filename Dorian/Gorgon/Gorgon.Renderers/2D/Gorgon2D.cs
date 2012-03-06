@@ -34,8 +34,9 @@ using SlimMath;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections.Specialized;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// A vertex for a renderable object.
@@ -79,7 +80,7 @@ namespace GorgonLibrary.Graphics.Renderers
 	/// That is, it respects the depth axis so that placing a 2 sprites, one at coordinates (0.1, 0.1, 0.1) and the other at (0.1, 0.1, 1.0), will make the 2nd appear 
 	/// smaller.
 	/// <para>A default render target is required to use this interface, however that render target can be a render target texture or <see cref="M:GorgonLibrary.Graphics.GorgonOutputMerger.CreateSwapChain">swap chain</see>.  
-	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.Target">Target</see> property.</para>
+	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Target">Target</see> property.</para>
 	/// </remarks>
 	public class Gorgon2D
 		: IDisposable
@@ -263,7 +264,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		#region Variables.
 		private int _baseVertex = 0;																// Base vertex.
 		private int _vertexSize = 0;																// Size, in bytes, of a vertex.
-		private Gorgon2DVertex[] _vertexCache = null;														// List of vertices to cache.
+		private Gorgon2DVertex[] _vertexCache = null;												// List of vertices to cache.
 		private int _cacheStart = 0;																// Starting cache vertex buffer index.
 		private int _renderIndexStart = 0;															// Starting index to render.
 		private int _renderIndexCount = 0;															// Number of indices to render.
@@ -274,8 +275,6 @@ namespace GorgonLibrary.Graphics.Renderers
 		private int _cacheSize = 32768;																// Number of vertices that we can stuff into a vertex buffer.
 		private Matrix _defaultProjection = Matrix.Identity;										// Default projection matrix.
 		private Matrix _defaultView = Matrix.Identity;												// Default view matrix.
-		private Matrix? _projection = null;															// Current projection matrix.
-		private Matrix? _view = null;																// Current view matrix.
 		private GorgonSwapChain _defaultTarget = null;												// Default render target.
 		private GorgonSwapChain _target = null;														// Current render target.	
 		private GorgonInputLayout _layout = null;													// Input layout.
@@ -379,7 +378,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <remarks>Changing this will constrain the view to the area passed in.  By defining a new viewport the display area will be stretched or shrunk to accomodate 
 		/// the size of the view and consequently all rendered data in the view will be scaled appropriately.
-		/// <para>This will not allow for clipping to a rectangle.  Use the <see cref="P:GorgonLibrary.Graphics.Renderers.Gorgon2D.ClipRegion">ClipRegion</see> property instead.</para>
+		/// <para>This will not allow for clipping to a rectangle.  Use the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.ClipRegion">ClipRegion</see> property instead.</para>
 		/// </remarks>
 		public GorgonViewport? Viewport
 		{
@@ -407,7 +406,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Property to set or return the clipping region.
 		/// </summary>
 		/// <remarks>Use this to clip a rectangular region on the target.  Pixels outside of the region do not get rendered.
-		/// <para>Clipping state is not restored when <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.End2D">End2D</see> is called, it is merely turned off and must be restored by the user.</para>
+		/// <para>Clipping state is not restored when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.End2D">End2D</see> is called, it is merely turned off and must be restored by the user.</para>
 		/// </remarks>
 		public Rectangle? ClipRegion
 		{
@@ -467,7 +466,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Property to set or return whether to use alpha testing for this renderable.
 		/// </summary>
-		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values in <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonRenderable.AlphaTestValues">AlphaTestValues</see> and rejects the pixel if it is not.
+		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values in <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.AlphaTestValues">AlphaTestValues</see> and rejects the pixel if it is not.
 		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>
@@ -799,7 +798,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Function to start 2D rendering.
 		/// </summary>
 		/// <remarks>This is used to remember previous states, and set the default states for the 2D renderer.
-		/// <para>The 2D renderer uses a LIFO stack to remember the last set of states, so calling this method multiple times and calling <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.End2D">End2D</see> will restore the last set of render states prior to the Begin2D call.</para>
+		/// <para>The 2D renderer uses a LIFO stack to remember the last set of states, so calling this method multiple times and calling <see cref="M:GorgonLibrary.Renderers.Gorgon2D.End2D">End2D</see> will restore the last set of render states prior to the Begin2D call.</para>
 		/// <para>This is implicitly called by the constructor and does not need to be called after creating an instance of the 2D interface.</para>
 		/// </remarks>
 		public void Begin2D()
@@ -848,7 +847,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// <summary>
 		/// Function to end 2D rendering.
 		/// </summary>
-		/// <remarks>This will restore the states to their original values before the 2D renderer was started, or to when the last <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.Begin2D">Begin2D</see> method called.
+		/// <remarks>This will restore the states to their original values before the 2D renderer was started, or to when the last <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Begin2D">Begin2D</see> method called.
 		/// <para>The 2D renderer uses a LIFO stack to remember the last set of states, so calling this method multiple times will rewind the stack for each Begin2D call.</para>
 		/// <para>When restoring, the viewport may not be reset when the initial render target is NULL (Nothing in VB.Net), and consequently will need to be set when a new render target is assigned to the <see cref="GorgonLibrary.Graphics.GorgonGraphics">Graphics</see> interface.</para>
 		/// </remarks>		

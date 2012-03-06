@@ -31,8 +31,9 @@ using System.Text;
 using System.Drawing;
 using SlimMath;
 using GorgonLibrary.Math;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// Points on the line.

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// A default pixel shader for diffuse only pixels with alpha testing.
