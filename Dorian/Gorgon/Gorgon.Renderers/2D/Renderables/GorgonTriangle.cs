@@ -32,8 +32,9 @@ using System.Drawing;
 using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// A renderable object for drawing a triangle on the target.

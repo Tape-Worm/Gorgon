@@ -30,8 +30,9 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using SlimMath;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// Interface for immediate drawing of renderables.

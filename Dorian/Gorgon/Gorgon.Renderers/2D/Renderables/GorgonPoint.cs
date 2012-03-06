@@ -32,8 +32,9 @@ using System.Drawing;
 using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// A renderable object for drawing a point on the screen.
@@ -443,7 +444,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
-		/// drawn when <see cref="M:GorgonLibrary.Graphics.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
 		public void Draw()
 		{

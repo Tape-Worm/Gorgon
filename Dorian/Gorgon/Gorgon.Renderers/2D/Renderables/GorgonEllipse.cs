@@ -33,8 +33,9 @@ using System.Linq;
 using System.Text;
 using SlimMath;
 using GorgonLibrary.Math;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// A renderable object for drawing an ellipse on the screen.
@@ -429,7 +430,7 @@ namespace GorgonLibrary.Graphics.Renderers
 		/// </summary>
 		/// <param name="pointIndex">Index of the point (0 - (Quality-1)).</param>
 		/// <param name="color">Color to set.</param>
-		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and <see cref="P:GorgonLibrary.Graphics.Renderers.GorgonEllipse.Quality">Quality - 1</see>.</remarks>
+		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and <see cref="P:GorgonLibrary.Renderers.GorgonEllipse.Quality">Quality - 1</see>.</remarks>
 		public void SetPointColor(int pointIndex, GorgonColor color)
 		{
 			_colors[pointIndex] = color;

@@ -30,8 +30,9 @@ using System.Linq;
 using System.Text;
 using SlimMath;
 using GorgonLibrary.Math;
+using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Graphics.Renderers
+namespace GorgonLibrary.Renderers
 {
 	/// <summary>
 	/// The corners of a rectangle.
