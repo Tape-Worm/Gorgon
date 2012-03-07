@@ -35,35 +35,8 @@ namespace GorgonLibrary.Graphics
 	/// Settings for a depth/stencil buffer.
 	/// </summary>
 	public class GorgonDepthStencilSettings
-		: ICommonTargetSettings
 	{
 		#region Methods.
-		/// <summary>
-		/// Property to set or return the format for the texture used by the depth/stencil buffer.
-		/// </summary>
-		/// <remarks>This is typically used for accessing the depth buffer through a shader.  The shader will require a typeless format, of which there is none for a depth buffer.  If this
-		/// value is set to Unknown, then this property will be ignored when creating/updating the depth/stencil buffer and will make the buffer inaccessible to a shader.
-		/// <para>The default value is Unknown.</para>
-		/// <para>Note that this only applies to the SM_4_1 and higher feature levels, other feature levels will ignore this setting.</para>
-		/// </remarks>
-		public BufferFormat TextureFormat
-		{
-			get;
-			set;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDepthStencilSettings"/> class.
-		/// </summary>
-		public GorgonDepthStencilSettings()
-		{
-			TextureFormat = BufferFormat.Unknown;
-		}
-		#endregion
-
-		#region ICommonTargetSettings Members
 		/// <summary>
 		/// Property to set or return the format for the depth/stencil buffer.
 		/// </summary>
@@ -101,6 +74,30 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the format for the texture used by the depth/stencil buffer.
+		/// </summary>
+		/// <remarks>This is typically used for accessing the depth buffer through a shader.  The shader will require a typeless format, of which there is none for a depth buffer.  If this
+		/// value is set to Unknown, then this property will be ignored when creating/updating the depth/stencil buffer and will make the buffer inaccessible to a shader.
+		/// <para>The default value is Unknown.</para>
+		/// <para>Note that this only applies to the SM_4_1 and higher feature levels, other feature levels will ignore this setting.</para>
+		/// </remarks>
+		public BufferFormat TextureFormat
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDepthStencilSettings"/> class.
+		/// </summary>
+		public GorgonDepthStencilSettings()
+		{
+			TextureFormat = BufferFormat.Unknown;
 		}
 		#endregion
 	}

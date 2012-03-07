@@ -301,7 +301,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="target">Target to use when updating.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void UpdateFromTarget(GorgonSwapChain target)
+		public void UpdateFromTarget(GorgonRenderTarget target)
 		{
 			_viewDimensions = new RectangleF(0, 0, target.Settings.Width, target.Settings.Height);
 			CalculateProjectionMatrix();

@@ -42,12 +42,11 @@ namespace GorgonLibrary.Graphics
 		/// A list of render targets to bind.
 		/// </summary>
 		public class GorgonRenderTargetList
-			: IList<GorgonSwapChain>
+			: IList<GorgonRenderTarget>
 		{
-			// TODO: Change GorgonSwapChain to something more generic.
 			#region Variables.
 			private GorgonGraphics _graphics = null;
-			private IList<GorgonSwapChain> _targets = null;
+			private IList<GorgonRenderTarget> _targets = null;
 			private D3D.RenderTargetView[] _views = null;
 			private GorgonDepthStencil _depthStencilBuffer = null;
 			#endregion
@@ -83,7 +82,7 @@ namespace GorgonLibrary.Graphics
 			/// Property to return a render target by name if bound.
 			/// </summary>
 			/// <remarks>This property is read-only.  To set a render target, use the default property that uses an index.</remarks>
-			public GorgonSwapChain this[string name]
+			public GorgonRenderTarget this[string name]
 			{
 				get
 				{
@@ -100,7 +99,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <remarks>This will set the depth/stencil buffer to the one that's assigned to the render target.  If there is a need to set a separate depth/stencil, then use then 
 			/// <see cref="M:GorgonLibrary.Graphics.GorgonOutputMerger.GorgonRenderTargetList.SetRenderTarget">SetRenderTarget</see> method.</remarks>
-			public GorgonSwapChain this[int index]
+			public GorgonRenderTarget this[int index]
 			{
 				get
 				{
@@ -194,7 +193,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="depthStencil">Depth/stencil buffer to bind.</param>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
 			/// <exception cref="GorgonLibrary.GorgonException">Thrown if the current video device is only SM 2.0 and the targets are not the same bit depth.</exception>
-			public void SetRenderTarget(int index, GorgonSwapChain target, GorgonDepthStencil depthStencil)
+			public void SetRenderTarget(int index, GorgonRenderTarget target, GorgonDepthStencil depthStencil)
 			{
 				GorgonDebug.AssertParamRange(index, 0, 8, true, false, "startIndex");
 
@@ -220,7 +219,7 @@ namespace GorgonLibrary.Graphics
 			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="targets"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
 			/// <exception cref="GorgonLibrary.GorgonException">Thrown if the current video device is SM 2.0 and the targets are not the same bit depth.</exception>
-			public void SetRenderTargetRange(IEnumerable<GorgonSwapChain> targets, GorgonDepthStencil depthStencil, int startIndex)
+			public void SetRenderTargetRange(IEnumerable<GorgonRenderTarget> targets, GorgonDepthStencil depthStencil, int startIndex)
 			{
 				int count = _targets.Count - startIndex;
 
@@ -228,7 +227,7 @@ namespace GorgonLibrary.Graphics
 
 				for (int i = 0; i < count; i++)
 				{
-					GorgonSwapChain target = null;
+					GorgonRenderTarget target = null;
 
 					if (targets != null)
 					{
@@ -254,7 +253,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="targets">Render targets to set.</param>
 			/// <param name="depthStencil">The depth/stencil buffer to use.</param>
 			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="targets"/> parameter will set the bindings to empty.</remarks>
-			public void SetRenderTargetRange(IEnumerable<GorgonSwapChain> targets, GorgonDepthStencil depthStencil)
+			public void SetRenderTargetRange(IEnumerable<GorgonRenderTarget> targets, GorgonDepthStencil depthStencil)
 			{
 				SetRenderTargetRange(targets, depthStencil, 0);
 			}
@@ -269,15 +268,15 @@ namespace GorgonLibrary.Graphics
 			{
 				_graphics = graphics;
 				if (graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-					_targets = new GorgonSwapChain[4];
+					_targets = new GorgonRenderTarget[4];
 				else
-					_targets = new GorgonSwapChain[8];
+					_targets = new GorgonRenderTarget[8];
 
 				_views = new D3D.RenderTargetView[_targets.Count];
 			}
 			#endregion
 
-			#region IList<GorgonSwapChain> Members
+			#region IList<GorgonRenderTarget> Members
 			/// <summary>
 			/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
 			/// </summary>
@@ -285,7 +284,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>
 			/// The index of item if found in the list; otherwise, -1.
 			/// </returns>
-			public int IndexOf(GorgonSwapChain item)
+			public int IndexOf(GorgonRenderTarget item)
 			{
 				return _targets.IndexOf(item);
 			}
@@ -298,7 +297,7 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
 			///   
 			/// <exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
-			void IList<GorgonSwapChain>.Insert(int index, GorgonSwapChain item)
+			void IList<GorgonRenderTarget>.Insert(int index, GorgonRenderTarget item)
 			{
 				throw new NotImplementedException();
 			}
@@ -310,19 +309,19 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
 			///   
 			/// <exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
-			void IList<GorgonSwapChain>.RemoveAt(int index)
+			void IList<GorgonRenderTarget>.RemoveAt(int index)
 			{
 				throw new NotImplementedException();
 			}
 			#endregion
 
-			#region ICollection<GorgonSwapChain> Members
+			#region ICollection<GorgonRenderTarget> Members
 			/// <summary>
 			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
 			/// </summary>
 			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
 			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
-			void ICollection<GorgonSwapChain>.Add(GorgonSwapChain item)
+			void ICollection<GorgonRenderTarget>.Add(GorgonRenderTarget item)
 			{
 				throw new NotImplementedException();
 			}
@@ -331,7 +330,7 @@ namespace GorgonLibrary.Graphics
 			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
 			/// </summary>
 			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only. </exception>
-			void ICollection<GorgonSwapChain>.Clear()
+			void ICollection<GorgonRenderTarget>.Clear()
 			{
 				throw new NotImplementedException();
 			}
@@ -343,7 +342,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>
 			/// true if item is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
 			/// </returns>
-			public bool Contains(GorgonSwapChain item)
+			public bool Contains(GorgonRenderTarget item)
 			{
 				return _targets.Contains(item);
 			}
@@ -353,7 +352,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="array">The array to receive the targets.</param>
 			/// <param name="arrayIndex">Index to start writing at.</param>
-			public void CopyTo(GorgonSwapChain[] array, int arrayIndex)
+			public void CopyTo(GorgonRenderTarget[] array, int arrayIndex)
 			{
 				_targets.CopyTo(array, arrayIndex);
 			}
@@ -378,20 +377,20 @@ namespace GorgonLibrary.Graphics
 			/// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
 			/// </returns>
 			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
-			bool ICollection<GorgonSwapChain>.Remove(GorgonSwapChain item)
+			bool ICollection<GorgonRenderTarget>.Remove(GorgonRenderTarget item)
 			{
 				throw new NotImplementedException();
 			}
 			#endregion
 
-			#region IEnumerable<GorgonSwapChain> Members
+			#region IEnumerable<GorgonRenderTarget> Members
 			/// <summary>
 			/// Returns an enumerator that iterates through the collection.
 			/// </summary>
 			/// <returns>
 			/// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
 			/// </returns>
-			public IEnumerator<GorgonSwapChain> GetEnumerator()
+			public IEnumerator<GorgonRenderTarget> GetEnumerator()
 			{
 				foreach (var item in _targets)
 					yield return item;
@@ -593,7 +592,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will create our output swap chains for display to a window or control.  All functionality for sending or retrieving data from the video device can be accessed through the swap chain.
 		/// <para>Passing default settings for the <see cref="GorgonLibrary.Graphics.GorgonSwapChainSettings">settings parameters</see> will make Gorgon choose the closest possible settings appropriate for the video device and output that the window is on.  For example, passing NULL (Nothing in VB.Net) to 
 		/// the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.VideoMode">GorgonSwapChainSettings.VideoMode</see> parameter will make Gorgon find the closest video mode available to the current window size and desktop format (for the output).</para>
-		/// <para>If the multisampling quality in the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
+		/// <para>If the multisampling quality in the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultiSample.Quality">GorgonSwapChainSettings.MultiSample.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
 		/// what the maximum quality for the sample count for the video device should be, call the <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
 		/// </remarks>
 		public GorgonSwapChain CreateSwapChain(string name, GorgonSwapChainSettings settings)
@@ -609,6 +608,43 @@ namespace GorgonLibrary.Graphics
 			swapChain.Initialize();
 
 			return swapChain;
+		}
+
+		/// <summary>
+		/// Function to create a render target.
+		/// </summary>
+		/// <param name="name">Name of the render target.</param>
+		/// <param name="settings">Settings for the render target.</param>
+		/// <returns>A new render target object.</returns>
+		/// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture2D">texture</see>.
+		/// <para>Unlike the <see cref="GorgonLibrary.Graphics.GorgonSwapChain">GorgonSwapChain</see> object (which is also a render target), no defaults will be set for the <paramref name="settings"/> except multisampling, and DepthFormat (defaults to Unknown).  
+		/// </para>
+		/// <para>If the multisampling quality in the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget.MultSample.Quality">GorgonRenderTarget.MultiSample.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
+		/// what the maximum quality for the sample count for the video device should be, call the <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetSettings.Width">Width</see> or <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetSettings.Width">Height</see> property is 0 or greater than the maximum size for a texture that a video device can support.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetSettings.Format">Format</see> property is unknown or is not a supported render target format.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is less than 0 or not less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
+		/// </exception>
+		public GorgonRenderTarget CreateRenderTarget(string name, GorgonRenderTargetSettings settings)
+		{
+			GorgonRenderTarget target = null;
+
+			GorgonDebug.AssertNull<GorgonRenderTargetSettings>(settings, "settings");
+
+			GorgonRenderTarget.ValidateRenderTargetSettings(_graphics, settings);
+
+			target = new GorgonRenderTarget(_graphics, name, settings);
+			_graphics.AddTrackedObject(target);
+			target.Initialize();
+
+			return target;
 		}
 		#endregion
 

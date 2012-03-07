@@ -70,6 +70,14 @@ namespace GorgonLibrary.Graphics
 			for (int i = 0; i < outputCount; i++)
 			{
 				GorgonVideoOutput output = new GorgonVideoOutput(_videoDevice, _videoDevice.GIAdapter.GetOutput(i));
+
+				GI.ModeDescription findMode = GorgonVideoMode.Convert(new GorgonVideoMode(output.OutputBounds.Width, output.OutputBounds.Height, BufferFormat.R8G8B8A8_UIntNormal, 60, 1));
+				GI.ModeDescription result = default(GI.ModeDescription);
+
+				// Get the default video mode.
+				output.GIOutput.GetClosestMatchingMode(device, findMode, out result);
+				output.DefaultVideoMode = GorgonVideoMode.Convert(result);
+
 				_outputs.Add(output);
 
 				Gorgon.Log.Print("Found output {0}.", Diagnostics.LoggingLevel.Simple, output.Name);

@@ -184,7 +184,7 @@ namespace GorgonLibrary.Renderers
 			/// <summary>
 			/// Default target.
 			/// </summary>
-			public GorgonSwapChain Target;
+			public GorgonRenderTarget Target;
 			/// <summary>
 			/// Index buffer.
 			/// </summary>
@@ -262,6 +262,7 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
+		private GorgonSwapChain _swapChain = null;													// Swap chain target.
 		private int _baseVertex = 0;																// Base vertex.
 		private int _vertexSize = 0;																// Size, in bytes, of a vertex.
 		private Gorgon2DVertex[] _vertexCache = null;												// List of vertices to cache.
@@ -275,8 +276,8 @@ namespace GorgonLibrary.Renderers
 		private int _cacheSize = 32768;																// Number of vertices that we can stuff into a vertex buffer.
 		private Matrix _defaultProjection = Matrix.Identity;										// Default projection matrix.
 		private Matrix _defaultView = Matrix.Identity;												// Default view matrix.
-		private GorgonSwapChain _defaultTarget = null;												// Default render target.
-		private GorgonSwapChain _target = null;														// Current render target.	
+		private GorgonRenderTarget _defaultTarget = null;											// Default render target.
+		private GorgonRenderTarget _target = null;													// Current render target.	
 		private GorgonInputLayout _layout = null;													// Input layout.
 		private Stack<PreviousStates> _stateRecall = null;											// State recall.
 		private GorgonStateManager _stateManager = null;											// State manager.
@@ -531,7 +532,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the active render target.
 		/// </summary>
-		public GorgonSwapChain Target
+		public GorgonRenderTarget Target
 		{
 			get
 			{
@@ -544,6 +545,8 @@ namespace GorgonLibrary.Renderers
 			{
 				if (_target != value)
 				{
+					RenderObjects();
+
 					_target = value;
 					UpdateTarget();
 				}
@@ -560,7 +563,10 @@ namespace GorgonLibrary.Renderers
 			// Remove any previous handler.
 			if (Target != null)
 				Target.Resized -= new EventHandler(target_Resized);
-						
+
+			// Find out if the target is a swap chain.
+			_swapChain = Target as GorgonSwapChain;
+
 			Graphics.Output.RenderTargets[0] = Target;
 
 			_default.UpdateFromTarget(Target);
@@ -905,7 +911,8 @@ namespace GorgonLibrary.Renderers
 
 			if (flip)
 			{
-				Target.Flip();
+				if (_swapChain != null)
+					_swapChain.Flip();
 
 				if (IsLogoVisible)
 				{
@@ -939,12 +946,13 @@ namespace GorgonLibrary.Renderers
 		/// Initializes a new instance of the <see cref="Gorgon2D"/> class.
 		/// </summary>
 		/// <param name="target">The primary render target to use.</param>		
-		internal Gorgon2D(GorgonSwapChain target)
+		internal Gorgon2D(GorgonRenderTarget target)
 		{			
 			_stateRecall = new Stack<PreviousStates>(16);
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			Graphics = target.Graphics;
 			_defaultTarget = target;
+			_swapChain = target as GorgonSwapChain;
 
 			Initialize();
 
