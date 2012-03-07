@@ -65,16 +65,16 @@ namespace Tester_Graphics
 						_target.Clear(Color.Black);
 
 						_2D.Target = _target;
-						_2D.Viewport = new GorgonViewport(0, 0, 800, 600, 0.0f, 1.0f);
+						//_2D.Viewport = new GorgonViewport(0, 0, 800, 600, 0.0f, 1.0f);
 						sprite.Position = new Vector2(0, 0);
-						sprite.Angle += 5.0f * timing.FrameDelta;
+						sprite.Angle += 15.0f * timing.FrameDelta;
 						sprite.Draw();
 
 						_2D.Target = null;
 
 						_2D.Drawing.FilledRectangle(new RectangleF(position, _target.Settings.Size), Color.White, _target.Texture);
 
-						position = new Vector2(position.X + 1.0f * timing.FrameDelta, position.Y + 1.0f * timing.FrameDelta);
+						position = new Vector2(position.X + 15.0f * timing.FrameDelta, position.Y + 15.0f * timing.FrameDelta);
 						
 						_2D.Render();
 						return true;
@@ -94,7 +94,8 @@ namespace Tester_Graphics
 				_graphics.Dispose();
 
 			_graphics = null;
-		}
+		}
+
 
 		public Form1()
 		{
