@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 using GI = SharpDX.DXGI;
 using GorgonLibrary.Diagnostics;
 
@@ -68,37 +69,79 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
-	/// Settings for defining a swap chain.
+	/// Settings for defining a render target.
 	/// </summary>
-	public class GorgonSwapChainSettings
-		: ICommonTargetSettings
+	public class GorgonRenderTargetSettings
 	{
 		#region Variables.
-		private int _backBufferCount = 2;									// Number of back buffers.
 		private GorgonVideoMode _mode = default(GorgonVideoMode);			// Gorgon video mode.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the width and height of the swap chain video mode.
+		/// Property to set or return the width and height of the target.
 		/// </summary>
-		public System.Drawing.Size Size
+		public Size Size
 		{
 			get
 			{
-				return VideoMode.Size;
+				return _mode.Size;
 			}
 			set
 			{
-				VideoMode.SetSize(value);
+				_mode.SetSize(value);
 			}
 		}
 
 		/// <summary>
-		/// Property to return the window that is bound with the swap chain.
+		/// Property to set or return the format of the back buffer for the target.
 		/// </summary>
-		/// <remarks>Leaving this value as NULL (Nothing in VB.Net) will use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon default application window.</see></remarks>
-		public Control Window
+		public BufferFormat Format
+		{
+			get
+			{
+				return _mode.Format;
+			}
+			set
+			{
+				_mode.Format = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the width of the target.
+		/// </summary>
+		public int Width
+		{
+			get
+			{
+				return _mode.Width;
+			}
+			set
+			{
+				_mode.SetSize(value, _mode.Height);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the height of the target.
+		/// </summary>
+		public int Height
+		{
+			get
+			{
+				return _mode.Height;
+			}
+			set
+			{
+				_mode.SetSize(_mode.Width, value);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the multisampling settings for the target.
+		/// </summary>
+		public GorgonMultiSampling MultiSample
 		{
 			get;
 			set;
@@ -107,7 +150,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the video mode to use.
 		/// </summary>
-		/// <remarks>Leaving the width, height or format undefined (i.e. 0, 0, or Unknown) will tell Gorgon to find the best video mode based on the window dimensions and desktop format.</remarks>
+		/// <remarks>For swap chains -ONLY-: leaving the width, height or format undefined (i.e. 0, 0, or Unknown) will tell Gorgon to find the best video mode based on the window dimensions and desktop format.</remarks>
 		public GorgonVideoMode VideoMode
 		{
 			get
@@ -118,6 +161,51 @@ namespace GorgonLibrary.Graphics
 			{
 				_mode = value;
 			}
+		}
+		
+		/// <summary>
+		/// Property to set or return the depth and/or stencil buffer format.
+		/// </summary>
+		/// <remarks>Setting this value to Unknown will create the target without a depth buffer.  The default value is Unknown.</remarks>
+		public BufferFormat DepthStencilFormat
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderTargetSettings"/> class.
+		/// </summary>
+		public GorgonRenderTargetSettings()
+		{
+			Format = BufferFormat.Unknown;
+			DepthStencilFormat = BufferFormat.Unknown;
+			MultiSample = new GorgonMultiSampling(1, 0);
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Settings for defining a swap chain.
+	/// </summary>
+	public class GorgonSwapChainSettings
+		: GorgonRenderTargetSettings
+	{
+		#region Variables.
+		private int _backBufferCount = 2;									// Number of back buffers.		
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the window that is bound with the swap chain.
+		/// </summary>
+		/// <remarks>Leaving this value as NULL (Nothing in VB.Net) will use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon default application window.</see></remarks>
+		public Control Window
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -168,16 +256,6 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Property to set or return the depth and/or stencil buffer format.
-		/// </summary>
-		/// <remarks>Setting this value to Unknown will create the swap chain without a depth buffer.  The default value is Unknown.</remarks>
-		public BufferFormat DepthStencilFormat
-		{
-			get;
-			set;
-		}
 		#endregion
 
 		#region Methods.
@@ -206,62 +284,6 @@ namespace GorgonLibrary.Graphics
 			SwapEffect = Graphics.SwapEffect.Discard;
 			MultiSample = new GorgonMultiSampling(1, 0);
 			DepthStencilFormat = BufferFormat.Unknown;			
-		}
-		#endregion
-
-		#region ICommonTargetSettings Members
-		/// <summary>
-		/// Property to set or return the format of the back buffer for the swap chain.
-		/// </summary>
-		public BufferFormat Format
-		{
-			get
-			{
-				return _mode.Format;
-			}
-			set
-			{
-				_mode.Format = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the multisampling settings for the swap chain.
-		/// </summary>
-		public GorgonMultiSampling MultiSample
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the width of the swap chain.
-		/// </summary>
-		public int Width
-		{
-			get
-			{
-				return _mode.Width;
-			}
-			set
-			{
-				_mode.SetSize(value, _mode.Height);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the height of the swap chain.
-		/// </summary>
-		public int Height
-		{
-			get
-			{
-				return _mode.Height;
-			}
-			set
-			{
-				_mode.SetSize(_mode.Width, value);
-			}
 		}
 		#endregion
 	}

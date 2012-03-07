@@ -88,14 +88,11 @@ namespace GorgonLibrary.Graphics
 	/// It is the responsibility of the developer to handle task switching in multi-monitor environments.</para>
 	/// </remarks>
 	public class GorgonSwapChain
-		: GorgonNamedObject, IDisposable
+		: GorgonRenderTarget
 	{
 		#region Variables.
 		private Form _parentForm = null;							// Parent form for our window.
-		private bool _disposed = false;								// Flag to indicate that the object was disposed.
 		private IEnumerable<GorgonSwapChain> _swapChains = null;	// A list of other full screen swap chains.
-		private GorgonDepthStencil _internalDepthStencil = null;	// Internal depth/stencil for the target.
-		private GorgonDepthStencil _depthBuffer = null;				// Depth/stencil buffer for the target.
 		#endregion
 
 		#region Events.
@@ -107,10 +104,6 @@ namespace GorgonLibrary.Graphics
 		/// Event called after the swap chain transiitons to full screen or windowed mode.
 		/// </summary>
 		public event EventHandler AfterStateTransition;
-		/// <summary>
-		/// Event called after the swap chain has been resized.
-		/// </summary>
-		public event EventHandler Resized;
 		#endregion
 
 		#region Properties.
@@ -118,49 +111,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the DXGI swap chain interface.
 		/// </summary>
 		internal GI.SwapChain GISwapChain
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the D3D render target interface.
-		/// </summary>
-		internal D3D.RenderTargetView D3DRenderTarget
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the depth/stencil for this swap chain.
-		/// </summary>
-		/// <remarks>
-		/// Setting this value to NULL will reset this value to the internal depth/stencil buffer if one was created when the swap chain was created.  Use <see cref="M:GorgonLibrary.GorgonGraphics.GorgonSwapChain.UpdateSettings">UpdateSettings</see> to 
-		/// change the internal depth/stencil buffer.
-		/// <para>Care should be taken with the lifetime of the depth/stencil that is attached to this swap chain.  If a user creates the swap chain with a depth buffer, its 
-		/// lifetime will be managed by the swap chain (i.e. it will be disposed when the swap chain is disposed).  If a user sets this value to an external swap chain (regardless of whether 
-		/// they create the depth buffer or not), then the swap chain will -NOT- manage the lifetime of the external depth/stencil.</para>
-		/// </remarks>
-		public GorgonDepthStencil DepthStencil
-		{
-			get
-			{
-				if (_depthBuffer == null)
-					return _internalDepthStencil;
-
-				return _depthBuffer;
-			}
-			set
-			{
-				_depthBuffer = value;				
-			}
-		}
-
-		/// <summary>
-		/// Property to return the texture for the first buffer in the swap chain.
-		/// </summary>
-		public GorgonTexture2D Texture
 		{
 			get;
 			private set;
@@ -212,28 +162,16 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the settings for this swap chain.
 		/// </summary>
-		public GorgonSwapChainSettings Settings
+		public new GorgonSwapChainSettings Settings
 		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the graphics interface that owns this object.
-		/// </summary>
-		public GorgonGraphics Graphics
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the default viewport associated with this swap chain.
-		/// </summary>
-		public GorgonViewport Viewport
-		{
-			get;
-			private set;
+			get
+			{
+				return (GorgonSwapChainSettings)base.Settings;
+			}
+			private set
+			{
+				base.Settings = value;
+			}
 		}
 		#endregion
 
@@ -289,11 +227,11 @@ namespace GorgonLibrary.Graphics
 			if (Texture != null)
 				Texture.Dispose();
 
-			if (_internalDepthStencil != null)
+			if (InternalDepthStencil != null)
 			{
 				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing internal depth stencil...", LoggingLevel.Verbose, Name);
-				_internalDepthStencil.Dispose();
-				_internalDepthStencil = null;
+				InternalDepthStencil.Dispose();
+				InternalDepthStencil = null;
 			}
 
 			if (D3DRenderTarget != null)
@@ -309,16 +247,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create any resources bound to the swap chain.
 		/// </summary>
-		private void CreateResources()
-		{			
+		protected override void CreateResources()
+		{
+			int targetIndex = Graphics.Output.RenderTargets.IndexOf(this);
+
 			if (D3DRenderTarget != null)
 				ReleaseResources();
 
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
-
-			Texture = new GorgonTexture2D(this);
-			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DTexture);
-			D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
 
 			// Create a depth buffer if we've requested one.
 			if (Settings.DepthStencilFormat != BufferFormat.Unknown)
@@ -335,12 +271,23 @@ namespace GorgonLibrary.Graphics
 
 				GorgonDepthStencil.ValidateSettings(Graphics, settings);
 
-				_internalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid().ToString(), settings);
-				_internalDepthStencil.UpdateSettings();
+				InternalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid().ToString(), settings);
+				InternalDepthStencil.UpdateSettings();
 			}
+
+			Texture = new GorgonTexture2D(this);
+			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DTexture);
+			D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
 
 			// Set up the default viewport.
 			Viewport = new GorgonViewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height, 0.0f, 1.0f);
+
+			// Re-seat the target.
+			if (targetIndex != -1)
+			{
+				Graphics.Output.RenderTargets[targetIndex] = null;
+				Graphics.Output.RenderTargets[targetIndex] = this;
+			}
 		}
 
 		/// <summary>
@@ -354,8 +301,7 @@ namespace GorgonLibrary.Graphics
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, (int)flags);
 			CreateResources();
 
-			if (Resized != null)
-				Resized(this, EventArgs.Empty);
+			OnTargetResize();
 		}
 
 		/// <summary>
@@ -436,7 +382,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to force clean up.
 		/// </summary>
-		private void CleanUp()
+		protected override void CleanUp()
 		{
 			_parentForm.Activated -= new EventHandler(_parentForm_Activated);
 			_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
@@ -505,7 +451,7 @@ namespace GorgonLibrary.Graphics
 			if (stagedMode.Width == 0)
 				stagedMode.Width = settings.Window.ClientSize.Width;
 			if (stagedMode.Height == 0)
-				stagedMode.Width = settings.Window.ClientSize.Height;
+				stagedMode.Height = settings.Window.ClientSize.Height;
 			if (stagedMode.Format == BufferFormat.Unknown)
 				stagedMode.Format = output.DefaultVideoMode.Format;
 			if ((stagedMode.RefreshRateDenominator == 0) || (stagedMode.RefreshRateNumerator == 0))
@@ -539,7 +485,7 @@ namespace GorgonLibrary.Graphics
 					
 			// Ensure that the selected video format can be used.
 			if (!graphics.VideoDevice.SupportsDisplayFormat(stagedMode.Format))
-				throw new ArgumentException("Cannot use the format '" + stagedMode.Format.ToString() + "' for display on the video device '" + graphics.VideoDevice.Name + "'.");
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot use the format '" + stagedMode.Format.ToString() + "' for display on the video device '" + graphics.VideoDevice.Name + "'.");
 
 			settings.VideoMode = stagedMode;
 
@@ -551,7 +497,7 @@ namespace GorgonLibrary.Graphics
 
 			// Ensure that the quality of the sampling does not exceed what the card can do.
 			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
-				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
+				throw new GorgonException(GorgonResult.CannotCreate, "Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
 
 			// Force 2 buffers for discard.
 			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
@@ -559,13 +505,13 @@ namespace GorgonLibrary.Graphics
 
 			// Perform window handling.
 			settings.Window.Visible = true;
-			settings.Window.Enabled = true;
+			settings.Window.Enabled = true;			
 		}
 
 		/// <summary>
 		/// Function to intialize the swap chain.
 		/// </summary>
-		internal void Initialize()
+		protected internal override void Initialize()
 		{
 			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
 			GI.SwapChainDescription d3dSettings = new GI.SwapChainDescription();
@@ -667,6 +613,20 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to update the settings for the render target.
+		/// </summary>
+		/// <param name="mode">New video mode to use.</param>
+		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonRenderTargetSettings.VideoMode.Format</see> property cannot be used by the render target.
+		///   <para>-or-</para>
+		///   <para>The width and height are not valid for the render target.</para>
+		///   </exception>
+		public override void UpdateSettings(GorgonVideoMode mode, BufferFormat depthStencilFormat)
+		{
+			UpdateSettings(mode, Settings.IsWindowed, depthStencilFormat, Settings.BufferCount);
+		}
+
+		/// <summary>
 		/// Function to update the settings for the swap chain.
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
@@ -674,13 +634,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
 		/// <param name="bufferCount">Number of back buffers.</param>
 		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -755,54 +711,6 @@ namespace GorgonLibrary.Graphics
 		{
 			Flip(0);
 		}
-
-		/// <summary>
-		/// Function to clear the swap chain and any depth buffer attached to it.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <remarks>This will only clear the swap chain.  Any attached depth/stencil buffer will remain untouched.</remarks>
-		public void Clear(GorgonColor color)
-		{
-			Graphics.Context.ClearRenderTargetView(D3DRenderTarget, color.ToColor());
-		}
-
-		/// <summary>
-		/// Function to clear the swap chain and an associated depth buffer.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <param name="depthValue">Value used to fill the depth buffer.</param>
-		/// <remarks>This will clear the swap chain and depth buffer, but depth buffers with a stencil component will remain untouched.</remarks>
-		public void Clear(GorgonColor color, float depthValue)
-		{
-			Clear(color);
-
-			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth))
-				DepthStencil.ClearDepth(depthValue);
-		}
-
-		/// <summary>
-		/// Function to clear the swap chain and an associated depth buffer with a stencil component.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <param name="depthValue">Value used to fill the depth buffer.</param>
-		/// <param name="stencilValue">Value used to fill the stencil component of the depth buffer.</param>
-		/// <remarks>This will clear the swap chain, depth buffer and stencil component of the depth buffer.</remarks>
-		public void Clear(GorgonColor color, float depthValue, int stencilValue)
-		{
-			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (!DepthStencil.FormatInformation.HasStencil))
-			{
-				Clear(color, depthValue);
-				return;
-			}
-
-			Clear(color);
-
-			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (DepthStencil.FormatInformation.HasStencil))
-			{
-				DepthStencil.Clear(depthValue, stencilValue);
-				return;
-			}
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -815,45 +723,10 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonSwapChain(GorgonGraphics graphics, string name, GorgonSwapChainSettings settings)
-			: base(name)
+			: base(graphics, name, settings)
 		{
-			Settings = settings;
-			Graphics = graphics;			
-
 			// Get the parent form for our window.
 			_parentForm = Gorgon.GetTopLevelForm(settings.Window);
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				int targetIndex = Graphics.Output.RenderTargets.IndexOf(this);
-				
-				if (targetIndex > -1)
-					Graphics.Output.RenderTargets[targetIndex] = null;
-
-				if (disposing)
-					CleanUp();
-
-				Graphics = null;
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

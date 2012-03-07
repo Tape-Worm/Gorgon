@@ -92,20 +92,11 @@ namespace GorgonLibrary.Graphics
 		public GorgonBufferFormatInfo.GorgonFormatData FormatInformation
 		{
 			get;
-			private set;
+			protected set;
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve information about the texture format.
-		/// </summary>
-		/// <param name="format">Format of the texture.</param>
-		protected void GetFormatInformation(BufferFormat format)
-		{
-			FormatInformation = GorgonBufferFormatInfo.GetInfo(format);
-		}
-
 		/// <summary>
 		/// Function to save the texture data to an array of bytes.
 		/// </summary>

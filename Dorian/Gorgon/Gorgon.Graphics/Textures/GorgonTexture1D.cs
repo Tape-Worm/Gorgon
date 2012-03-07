@@ -148,7 +148,7 @@ namespace GorgonLibrary.Graphics
 			View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
 			View.DebugName = "Gorgon 1D Texture '" + Name + "' resource view";
 
-			GetFormatInformation(Settings.Format);
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 		}
 
 		/// <summary>

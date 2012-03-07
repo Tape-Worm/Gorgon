@@ -178,7 +178,7 @@ namespace GorgonLibrary.Graphics
 			View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
 			View.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
 
-			GetFormatInformation(Settings.Format);
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 		}
 
 		/// <summary>
@@ -265,6 +265,9 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating 2D render target texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
+			
+			IsRenderTarget = true;
+			CreateResourceView();
 		}
 
 		/// <summary>
@@ -374,7 +377,6 @@ namespace GorgonLibrary.Graphics
 			D3DTexture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
 			D3DTexture.DebugName = "Gorgon swap chain texture '" + Name + "'";
 
-			IsRenderTarget = true;
 			RetrieveSettings();
 		}
 
@@ -385,7 +387,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name of the texture.</param>
 		/// <param name="settings">Settings to pass to the texture.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonTexture2D(GorgonGraphics graphics, string name, GorgonTexture2DSettings settings)
 			: base(graphics, name)
@@ -398,7 +399,7 @@ namespace GorgonLibrary.Graphics
 
 			if (settings.Multisampling.Count < 1)
 				settings.Multisampling = new GorgonMultiSampling(1, 0);
-					
+
 			Settings = settings;
 		}
 		#endregion

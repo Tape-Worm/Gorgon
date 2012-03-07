@@ -430,7 +430,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to determine if the specified format is supported for a 3D texture.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
+		/// <returns>TRUE if the format is supported for the texture, FALSE if not.</returns>
 		public bool Supports3DTextureFormat(BufferFormat format)
 		{
 			try
@@ -445,10 +445,32 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to determine if the specified format is supported for a render target.
+		/// </summary>
+		/// <param name="format">Format to check.</param>
+		/// <param name="isMultiSampled">TRUE if using a multisampled render target, FALSE if not.</param>
+		/// <returns>TRUE if the format is supported for the render target, FALSE if not.</returns>
+		public bool SupportsRenderTargetFormat(BufferFormat format, bool isMultiSampled)
+		{
+			try
+			{
+				GetDevice();
+				return (((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.RenderTarget) == D3D.FormatSupport.RenderTarget) && 
+					(((isMultiSampled) && 
+					(_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.MultisampleRendertarget) == D3D.FormatSupport.MultisampleRendertarget)) || 
+					(!isMultiSampled));
+			}
+			finally
+			{
+				ReleaseTempDevice();
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if the specified format is supported for a 2D texture.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
+		/// <returns>TRUE if the format is supported for the texture, FALSE if not.</returns>
 		public bool Supports2DTextureFormat(BufferFormat format)
 		{
 			try
@@ -466,7 +488,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to determine if the specified format is supported for a 1D texture.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
+		/// <returns>TRUE if the format is supported for the texture, FALSE if not.</returns>
 		public bool Supports1DTextureFormat(BufferFormat format)
 		{
 			try

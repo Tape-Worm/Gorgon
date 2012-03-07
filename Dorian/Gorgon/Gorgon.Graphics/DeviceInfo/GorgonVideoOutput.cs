@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using GI = SharpDX.DXGI;
+using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
@@ -182,9 +183,6 @@ namespace GorgonLibrary.Graphics
 			VideoModes = new GorgonVideoModeList(this);
 			VideoDevice = videoDevice;
 			GIOutput = output;
-
-			// Get the default video mode.
-			DefaultVideoMode = FindMode(new GorgonVideoMode(OutputBounds.Width, OutputBounds.Height, BufferFormat.R8G8B8A8_UIntNormal, 60, 1));
 		}
 		#endregion
 
