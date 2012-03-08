@@ -35,7 +35,10 @@ namespace Tester_Graphics
 			{
 				this.ClientSize = new Size(800, 600);
 
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
+				GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false);
+
+				_graphics = new GorgonGraphics(devices[devices.Count - 1], DeviceFeatureLevel.SM2_a_b);
+				//_graphics = new GorgonGraphics();
 				_swapChain = _graphics.Output.CreateSwapChain("My Swap Chain", new GorgonSwapChainSettings()
 				{
 					Window = this,
@@ -54,7 +57,13 @@ namespace Tester_Graphics
 				_2D = _graphics.Create2DRenderer(_swapChain);
 				_2D.IsLogoVisible = true;
 
-				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(256.0f, 256.0f), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
+				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(128.0f, 128.0f), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
+
+				_target.Texture.Copy(Properties.Resources.Haiku);
+				_texture.Copy(_target.Texture);
+
+				// TODO: Test this on the 6870, buggy ATI drivers seem to be choking on this, especially on SM2_a_b feature levels.
+				_texture.Save(@"x:\unpak\testfile.png", ImageFileFormat.PNG);
 
 				Vector2 position = Vector2.Zero;
 
@@ -62,11 +71,16 @@ namespace Tester_Graphics
 					{
 						_2D.Target = _target;
 						_2D.Clear(Color.Black);
+
+						sprite.Opacity = 0.5f;
 						sprite.Position = new Vector2(0, 0);
 						sprite.Angle += 90.0f * timing.FrameDelta;
 						sprite.Draw();
+
 						_2D.Render();
-						
+
+						//_target.Texture.Save(@"X:\unpak\testfile.png", ImageFileFormat.PNG);
+
 						_2D.Target = null;
 						_2D.Clear(Color.White);
 						_2D.Drawing.Blit(_target, position);

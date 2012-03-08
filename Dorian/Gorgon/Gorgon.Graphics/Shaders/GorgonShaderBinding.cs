@@ -77,6 +77,16 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to re-seat a texture after it's been altered.
+		/// </summary>
+		/// <param name="texture">Texture to re-seat.</param>
+		internal void Reseat(GorgonTexture texture)
+		{
+			PixelShader.Textures.ReSeat(texture);
+			VertexShader.Textures.ReSeat(texture);
+		}
+
+		/// <summary>
 		/// Function to create a constant buffer.
 		/// </summary>
 		/// <param name="size">Size of the buffer, in bytes.</param>

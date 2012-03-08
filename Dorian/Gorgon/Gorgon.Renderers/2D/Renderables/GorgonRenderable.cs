@@ -691,6 +691,10 @@ namespace GorgonLibrary.Renderers
 						Blending.SourceBlend = BlendType.One;
 						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
+					case Renderers.BlendingMode.None:
+						Blending.SourceBlend = BlendType.One;
+						Blending.DestinationBlend = BlendType.Zero;
+						break;
 				}
 			}
 		}

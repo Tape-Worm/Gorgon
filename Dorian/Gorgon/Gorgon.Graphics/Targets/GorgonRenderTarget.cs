@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics
 		}		
 		#endregion
 
-		#region Methods.	
+		#region Methods.		
 		/// <summary>
 		/// Function called when the target is resized.
 		/// </summary>
@@ -208,8 +208,7 @@ namespace GorgonLibrary.Graphics
 			Texture.InitializeRenderTarget();
 
 			Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
-			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DTexture);
-			D3DRenderTarget.DebugName = "RenderTarget '" + Name + "' Render Target View";
+			UpdateResourceView();
 
 			// Set default viewport.
 			Viewport = new GorgonViewport(0, 0, Settings.Width, Settings.Height, 0.0f, 1.0f);
@@ -221,6 +220,24 @@ namespace GorgonLibrary.Graphics
 		protected internal virtual void Initialize()
 		{
 			CreateResources();
+		}
+
+		/// <summary>
+		/// Function called by a texture to update the resource view.
+		/// </summary>
+		internal void UpdateResourceView()
+		{
+			if (D3DRenderTarget != null)
+			{
+				D3DRenderTarget.Dispose();
+				D3DRenderTarget = null;
+			}
+
+			// Modify the render target.
+			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DTexture);
+			D3DRenderTarget.DebugName = "RenderTarget '" + Name + "' Render Target View";
+
+			Graphics.Output.RenderTargets.ReSeat(this);
 		}
 
 		/// <summary>
@@ -253,7 +270,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.Format + "'");
 
 			// Ensure that the selected video format can be used.
-			if (!graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format, (settings.MultiSample.Quality > 0) && (settings.MultiSample.Count > 1)))
+			if (!graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format, (settings.MultiSample.Quality > 0) || (settings.MultiSample.Count > 1)))
 				throw new ArgumentException("Cannot use the format '" + settings.Format.ToString() + "' for a render target on the video device '" + graphics.VideoDevice.Name + "'.");
 		}
 
@@ -316,7 +333,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public virtual void UpdateSettings(GorgonVideoMode mode, BufferFormat depthStencilFormat)
 		{
-			int targetViewIndex = Graphics.Output.RenderTargets.IndexOf(this);
+			bool sizeChanged = (mode.Size != Settings.VideoMode.Size);
 
 			// Assign the new settings.	
 			Settings.VideoMode = mode;
@@ -330,11 +347,10 @@ namespace GorgonLibrary.Graphics
 			CreateResources();
 
 			// Re-seat our target.
-			if (targetViewIndex != -1)
-			{
-				Graphics.Output.RenderTargets[targetViewIndex] = null;
-				Graphics.Output.RenderTargets[targetViewIndex] = this;
-			}
+			Graphics.Output.RenderTargets.ReSeat(this);
+
+			if (sizeChanged)
+				OnTargetResize();
 		}
 		#endregion
 

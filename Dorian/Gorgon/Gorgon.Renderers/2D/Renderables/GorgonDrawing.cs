@@ -91,6 +91,8 @@ namespace GorgonLibrary.Renderers
 		public void Blit(GorgonTexture2D texture, Vector2 position, Vector2 scale)
 		{
 			Vector2 size = texture.Settings.Size;
+			BlendType sourceBlend = _rect.Blending.SourceBlend;
+			BlendType destBlend = _rect.Blending.DestinationBlend;
 
 			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
 
@@ -102,7 +104,12 @@ namespace GorgonLibrary.Renderers
 
 			Vector2.Modulate(ref size, ref scale, out size);
 
+			_rect.BlendingMode = BlendingMode.None;
+
 			FilledRectangle(new RectangleF(position, size), Color.White, texture, new RectangleF(0, 0, size.X / scale.X, size.Y / scale.Y));
+
+			_rect.Blending.SourceBlend = sourceBlend;
+			_rect.Blending.DestinationBlend = destBlend;
 		}
 
 		/// <summary>

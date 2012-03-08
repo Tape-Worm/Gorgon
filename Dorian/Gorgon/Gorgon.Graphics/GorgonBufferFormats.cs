@@ -718,6 +718,15 @@ namespace GorgonLibrary.Graphics
 
 			#region Properties.
 			/// <summary>
+			/// Property to return the group for the format.
+			/// </summary>
+			public string Group
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
 			/// Property to return the format.
 			/// </summary>
 			public BufferFormat Format
@@ -950,11 +959,62 @@ namespace GorgonLibrary.Graphics
 			{
 				Format = format;
 				Components = new FormatComponents();
+				Group = "No group";
 
 				if (format != BufferFormat.Unknown)
 				{
 					ParseFormat(format);
 					Components.AddNames();
+
+					Group = string.Empty;
+					foreach (var component in this.Components.Reverse())
+						Group += component.Name + component.BitDepth.ToString();
+
+					// Group compressed formats.
+					if (string.IsNullOrEmpty(Group))
+					{
+						switch (format)
+						{	
+							case BufferFormat.BC1:
+							case BufferFormat.BC1_UIntNormal:
+							case BufferFormat.BC1_UIntNormal_sRGB:
+								Group = "BC1";
+								break;
+							case BufferFormat.BC2:
+							case BufferFormat.BC2_UIntNormal:
+							case BufferFormat.BC2_UIntNormal_sRGB:
+								Group = "BC2";
+								break;
+							case BufferFormat.BC3:
+							case BufferFormat.BC3_UIntNormal:
+							case BufferFormat.BC3_UIntNormal_sRGB:
+								Group = "BC3";
+								break;
+							case BufferFormat.BC4:
+							case BufferFormat.BC4_IntNormal:
+							case BufferFormat.BC4_UIntNormal:
+								Group = "BC4";
+								break;
+							case BufferFormat.BC5:
+							case BufferFormat.BC5_IntNormal:
+							case BufferFormat.BC5_UIntNormal:
+								Group = "BC5";
+								break;
+							case BufferFormat.BC6H:
+							case BufferFormat.BC6H_SF16:
+							case BufferFormat.BC6H_UF16:
+								Group = "BC6";
+								break;
+							case BufferFormat.BC7:
+							case BufferFormat.BC7_UIntNormal:
+							case BufferFormat.BC7_UIntNormal_sRGB:
+								Group = "BC7";
+								break;
+							default:
+								Group = "No group";
+								break;
+						}
+					}
 				}
 			}
 			#endregion

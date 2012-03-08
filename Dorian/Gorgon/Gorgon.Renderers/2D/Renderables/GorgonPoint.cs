@@ -50,7 +50,7 @@ namespace GorgonLibrary.Renderers
 		private Vector2 _pointSize = new Vector2(1);										// Point size.
 		#endregion
 
-		#region Properties.	
+		#region Properties.
 		/// <summary>
 		/// Property to set or return the depth buffer depth for the point.
 		/// </summary>
@@ -345,6 +345,10 @@ namespace GorgonLibrary.Renderers
 					case Renderers.BlendingMode.PreMultiplied:
 						Blending.SourceBlend = BlendType.One;
 						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
+						break;
+					case Renderers.BlendingMode.None:
+						Blending.SourceBlend = BlendType.One;
+						Blending.DestinationBlend = BlendType.Zero;
 						break;
 				}
 			}
