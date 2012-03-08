@@ -320,15 +320,21 @@ namespace GorgonLibrary.Renderers
 		/// Initializes a new instance of the <see cref="GorgonSprite"/> class.
 		/// </summary>
 		/// <param name="gorgon2D">The interface that owns this object.</param>
-		/// <param name="name">The name of the sprite.</param>
-		/// <param name="width">The width of the sprite.</param>
-		/// <param name="height">The height of the sprite.</param>
-		internal GorgonSprite(Gorgon2D gorgon2D, string name, float width, float height)
+		/// <param name="name">Name of the sprite.</param>
+		/// <param name="settings">Settings for the sprite.</param>
+		internal GorgonSprite(Gorgon2D gorgon2D, string name, GorgonSpriteSettings settings)
 			: base(gorgon2D, name)
 		{
-			Size = new Vector2(width, height);
-			TextureRegion = new System.Drawing.RectangleF(0, 0, width, height);
 			InitializeVertices(4);
+
+			Size = settings.Size;
+			Color = settings.Color;
+			Angle = settings.InitialAngle;
+			Scale = settings.InitialScale;
+			Position = settings.InitialPosition;
+			Texture = settings.Texture;
+			TextureRegion = settings.TextureRegion;
+			Anchor = settings.Anchor;
 
 			_offsets = new [] { 
 				Vector2.Zero, 

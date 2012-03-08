@@ -78,6 +78,7 @@
     <Compile Include="Renderables\GorgonRenderables.cs" />
     <Compile Include="Renderables\GorgonRenderable.cs" />
     <Compile Include="Renderables\GorgonSprite.cs" />
+    <Compile Include="Renderables\GorgonSpriteSettings.cs" />
     <Compile Include="Renderables\GorgonTriangle.cs" />
     <Compile Include="Renderables\IDeferredTextureLoad.cs" />
     <Compile Include="Renderables\IRenderable.cs" />

@@ -389,7 +389,7 @@ namespace GorgonLibrary.Renderers
 			Size = new Vector2(rectangle.Width, rectangle.Height);
 			Position = new Vector2(rectangle.X, rectangle.Y);
 			IsFilled = filled;
-			_filled = new GorgonSprite(gorgon2D, "Rectangle.Sprite", Size.X, Size.Y);
+			_filled = gorgon2D.Renderables.CreateSprite("Rectangle.Sprite", Size, color);
 			_line = new GorgonLine(gorgon2D, "Rectangle.Line", Position, new Vector2(rectangle.Right, rectangle.Bottom), Color);
 
 			_line.Blending = _filled.Blending = this.Blending;

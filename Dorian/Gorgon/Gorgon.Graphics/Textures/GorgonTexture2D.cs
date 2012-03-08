@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Drawing;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
@@ -88,6 +89,22 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return the size of the texture.
+		/// </summary>
+		public Size Size
+		{
+			get
+			{
+				return new Size(Width, Height);
+			}
+			set
+			{
+				Width = value.Width;
+				Height = value.Height;
+			}
+		}
+
+		/// <summary>
 		/// Property to return whether the size of the texture is a power of 2 or not.
 		/// </summary>
 		public bool IsPowerOfTwo
@@ -122,12 +139,23 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the render target that this texture belongs to.
+		/// </summary>
+		public GorgonRenderTarget RenderTarget
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
 		/// Property to return whether this texture is for a render target.
 		/// </summary>
 		public bool IsRenderTarget
 		{
-			get;
-			private set;
+			get
+			{
+				return RenderTarget != null;
+			}
 		}
 
 		/// <summary>
@@ -214,6 +242,10 @@ namespace GorgonLibrary.Graphics
 			D3D.ImageLoadInformation imageInfo = new D3D.ImageLoadInformation();
 
 			imageInfo.BindFlags = D3D.BindFlags.ShaderResource;
+
+			if (RenderTarget != null)
+				imageInfo.BindFlags |= D3D.BindFlags.RenderTarget;
+
 			switch (Settings.Usage)
 			{
 				case BufferUsage.Staging:
@@ -266,7 +298,6 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating 2D render target texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
 			
-			IsRenderTarget = true;
 			CreateResourceView();
 		}
 
@@ -346,6 +377,154 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to copy a GDI bitmap to this image.
+		/// </summary>
+		/// <param name="image">Image to copy.</param>
+		/// <remarks>Use this to copy data from a GDI+ bitmap into the texture.
+		/// <para>This overload will preserve the <see cref="P:GorgonLibrary.Graphics.GorgonTexture2D.Settings">settings</see> of the texture and make the bitmap conform to those settings.</para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not supported.</para>
+		/// </exception>
+		public void Copy(Image image)
+		{
+			Copy(image, Settings, ImageFilters.None, ImageFilters.None);
+		}
+
+		/// <summary>
+		/// Function to copy a GDI bitmap to this image.
+		/// </summary>
+		/// <param name="image">Image to copy.</param>
+		/// <param name="settings">Settings for the image.</param>
+		/// <remarks>Use this to copy data from a GDI+ bitmap into the texture.</remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not supported.</para>
+		/// </exception>
+		public void Copy(Image image, GorgonTexture2DSettings settings)
+		{
+			Copy(image, settings, ImageFilters.None, ImageFilters.None);
+		}
+
+		/// <summary>
+		/// Function to copy a GDI bitmap to this image.
+		/// </summary>
+		/// <param name="image">Image to copy.</param>
+		/// <param name="settings">Settings for the image.</param>
+		/// <param name="filter">Filter to apply to the image.</param>
+		/// <param name="mipFilter">Filter to apply to the mip maps.</param>
+		/// <remarks>Use this to copy data from a GDI+ bitmap into the texture.</remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not supported.</para>
+		/// </exception>
+		public void Copy(Image image, GorgonTexture2DSettings settings, ImageFilters filter, ImageFilters mipFilter)
+		{
+			D3D.ImageInformation? info = null;
+			System.IO.MemoryStream stream = null;
+			byte[] imageData = null;
+			
+			try
+			{				
+				if ((image.Width <= 0) || (image.Width >= Graphics.Textures.MaxWidth))
+					throw new ArgumentException("The texture width must be at least 1 pixel, or less than " + Graphics.Textures.MaxWidth.ToString() + " pixels.", "image");
+
+				if ((image.Height <= 0) || (image.Height >= Graphics.Textures.MaxHeight))
+					throw new ArgumentException("The texture height must be at least 1 pixel, or less than " + Graphics.Textures.MaxHeight.ToString() + " pixels.", "image");
+
+				image.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+				imageData = stream.ToArray();
+
+				// Get the file information.
+				info = D3D.ImageInformation.FromMemory(imageData);
+
+				// Assign defaults.
+				if (info != null)
+				{
+					// Only load 2D textures.
+					if (info.Value.ResourceDimension != D3D.ResourceDimension.Texture2D)
+						throw new ArgumentException("The specified texture is not a 2D texture.", "stream");
+
+					if (settings.Format == BufferFormat.Unknown)
+						settings.Format = (BufferFormat)info.Value.Format;
+					if (settings.Width < 1)
+						settings.Width = info.Value.Width;
+					if (settings.Height < 1)
+						settings.Height = info.Value.Height;
+					if (settings.MipCount == 0)
+						settings.MipCount = 1;
+				}
+				settings.ArrayCount = 1;
+
+				// Validate the texture settings.
+				Graphics.Textures.ValidateTexture2D(ref settings, true);
+				
+				if (D3DTexture != null)
+				{
+					D3DTexture.Dispose();
+					D3DTexture = null;
+				}
+
+				Settings = settings;
+
+				Initialize(imageData, filter, mipFilter);
+
+				int textureIndex = -1;
+
+				// Find our texture in any shader and re-assign it.
+				textureIndex = Graphics.Shaders.PixelShader.Textures.IndexOf(this);
+				if (textureIndex > -1)
+				{
+					Graphics.Shaders.PixelShader.Textures[textureIndex] = null;
+					Graphics.Shaders.PixelShader.Textures[textureIndex] = this;
+				}
+
+				// Find our texture in any shader and re-assign it.
+				textureIndex = Graphics.Shaders.VertexShader.Textures.IndexOf(this);
+				if (textureIndex > -1)
+				{
+					Graphics.Shaders.VertexShader.Textures[textureIndex] = null;
+					Graphics.Shaders.VertexShader.Textures[textureIndex] = this;
+				}
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Dispose();
+				stream = null;
+			}
+		}
+
+		/// <summary>
+		/// Function to save this image to a GDI bitmap.
+		/// </summary>
+		/// <remarks>Use this to copy data from this texture into a GDI+ bitmap.</remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not supported.</para>
+		/// </exception>
+		public Image ToGDIBitmap()
+		{
+			MemoryStream stream = null;
+
+			try
+			{
+				stream = new MemoryStream();
+				this.Save(stream, ImageFileFormat.PNG);
+				stream.Position = 0;
+
+				return Image.FromStream(stream);
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Dispose();
+				stream = null;
+			}			
+		}
+
+		/// <summary>
 		/// Function to save the texture data to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write.</param>
@@ -378,6 +557,8 @@ namespace GorgonLibrary.Graphics
 			D3DTexture.DebugName = "Gorgon swap chain texture '" + Name + "'";
 
 			RetrieveSettings();
+
+			RenderTarget = swapChain;
 		}
 
 		/// <summary>

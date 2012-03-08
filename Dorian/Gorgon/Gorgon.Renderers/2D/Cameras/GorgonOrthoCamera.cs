@@ -253,10 +253,15 @@ namespace GorgonLibrary.Renderers
 			Gorgon2D = gorgon2D;
 			_maxDepth = maximumDepth;
 			_viewDimensions = viewDimensions;
-			_cameraIcon = new GorgonSprite(gorgon2D, "GorgonCamera.OrthoIcon", 64, 50);
-			_cameraIcon.Texture = gorgon2D.Icons;
-			_cameraIcon.TextureRegion = new RectangleF(65, 0, 65, 50);
-			_cameraIcon.Anchor = new Vector2(32.5f, 25);
+			_cameraIcon = new GorgonSprite(gorgon2D, "GorgonCamera.OrthoIcon", new GorgonSpriteSettings() 
+				{
+					Size = new Vector2(64, 50),
+					Texture = gorgon2D.Icons,
+					TextureRegion = new RectangleF(65, 0, 65, 50),
+					Anchor = new Vector2(32.5f, 25),
+					InitialScale = new Vector2(1.0f),
+					Color = Color.White
+				});
 		}
 		#endregion
 
