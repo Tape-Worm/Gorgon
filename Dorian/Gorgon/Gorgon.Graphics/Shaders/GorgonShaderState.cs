@@ -618,6 +618,21 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
+			/// Function to re-seat a texture after it's been altered.
+			/// </summary>
+			/// <param name="texture">Texture to re-seat.</param>
+			internal void ReSeat(GorgonTexture texture)
+			{
+				int index = IndexOf(texture);
+
+				if (index > -1)
+				{
+					this[index] = null;
+					this[index] = texture;
+				}
+			}
+
+			/// <summary>
 			/// Function to return the index of a texture in the list by name.
 			/// </summary>
 			/// <param name="name">Name of the texture to look up.</param>

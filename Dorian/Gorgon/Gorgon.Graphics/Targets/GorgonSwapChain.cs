@@ -249,8 +249,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CreateResources()
 		{
-			int targetIndex = Graphics.Output.RenderTargets.IndexOf(this);
-
 			if (D3DRenderTarget != null)
 				ReleaseResources();
 
@@ -283,11 +281,7 @@ namespace GorgonLibrary.Graphics
 			Viewport = new GorgonViewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height, 0.0f, 1.0f);
 
 			// Re-seat the target.
-			if (targetIndex != -1)
-			{
-				Graphics.Output.RenderTargets[targetIndex] = null;
-				Graphics.Output.RenderTargets[targetIndex] = this;
-			}
+			Graphics.Output.RenderTargets.ReSeat(this);
 		}
 
 		/// <summary>

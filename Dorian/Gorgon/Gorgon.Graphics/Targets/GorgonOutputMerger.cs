@@ -144,6 +144,21 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
+			/// Function to re-seat a render target after it's been altered.
+			/// </summary>
+			/// <param name="target">Target to re-seat.</param>
+			internal void ReSeat(GorgonRenderTarget target)
+			{
+				int index = IndexOf(target);
+
+				if (index > -1)
+				{
+					this[index] = null;
+					this[index] = target;
+				}
+			}
+
+			/// <summary>
 			/// Function to determine if a render target is bound by its name.
 			/// </summary>
 			/// <param name="name">Name of the render target.</param>
