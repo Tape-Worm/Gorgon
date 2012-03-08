@@ -246,6 +246,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Create the ball sprite.
 			_ball = _2D.Renderables.CreateSprite("Ball", new Vector2(64, 64), _ballTexture, new Vector2(32, 32));
 			_ball.SmoothingMode = SmoothingMode.Smooth;
+			_ball.Anchor = new Vector2(32, 32);
 
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);
