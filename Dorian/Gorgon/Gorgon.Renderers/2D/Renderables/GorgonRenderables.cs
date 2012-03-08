@@ -55,13 +55,77 @@ namespace GorgonLibrary.Renderers
 		/// Function to create a new sprite object.
 		/// </summary>
 		/// <param name="name">Name of the sprite.</param>
-		/// <param name="width">Width of the sprite.</param>
-		/// <param name="height">Height of the sprite.</param>
+		/// <param name="settings">Settings for the sprite.</param>
 		/// <returns>A new sprite.</returns>
-		public GorgonSprite CreateSprite(string name, float width, float height)
+		public GorgonSprite CreateSprite(string name, GorgonSpriteSettings settings)
 		{
-			return new GorgonSprite(_gorgon2D, name, width, height);
+			return new GorgonSprite(_gorgon2D, name, settings);
 		}
+
+		/// <summary>
+		/// Function to create a new sprite object.
+		/// </summary>
+		/// <param name="name">Name of the sprite.</param>
+		/// <param name="size">Size of the sprite.</param>
+		/// <param name="color">Color for the sprite.</param>
+		/// <returns>A new sprite.</returns>
+		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonColor color)
+		{
+			return CreateSprite(name, new GorgonSpriteSettings()
+			{
+				Color = color,
+				InitialScale = new Vector2(1.0f),
+				Size = size				
+			});
+		}
+
+		/// <summary>
+		/// Function to create a new sprite object.
+		/// </summary>
+		/// <param name="name">Name of the sprite.</param>
+		/// <param name="size">Size of the sprite.</param>
+		/// <param name="texture">Texture to apply to the sprite.</param>
+		/// <param name="textureRegion">Region of the texture to map to the sprite.</param>
+		/// <returns>A new sprite.</returns>
+		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture, RectangleF textureRegion)
+		{
+			if (texture == null)
+				return CreateSprite(name, size, Color.White);
+
+			return CreateSprite(name, new GorgonSpriteSettings()
+			{
+				Color = Color.White,
+				Size = size,
+				InitialScale = new Vector2(1.0f),
+				Texture = texture,
+				TextureRegion = textureRegion
+			});
+		}
+
+		/// <summary>
+		/// Function to create a new sprite object.
+		/// </summary>
+		/// <param name="name">Name of the sprite.</param>
+		/// <param name="size">Size of the sprite.</param>
+		/// <param name="texture">Texture to apply to the sprite.</param>
+		/// <param name="textureOffset">Offset into the texture to start mapping at.</param>
+		/// <returns>A new sprite.</returns>
+		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture, Vector2 textureOffset)
+		{
+			return CreateSprite(name, size, texture, new RectangleF(textureOffset.X, textureOffset.Y, size.X, size.Y));
+		}
+
+		/// <summary>
+		/// Function to create a new sprite object.
+		/// </summary>
+		/// <param name="name">Name of the sprite.</param>
+		/// <param name="size">Size of the sprite.</param>
+		/// <param name="texture">Texture to apply to the sprite.</param>
+		/// <returns>A new sprite.</returns>
+		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture)
+		{
+			return CreateSprite(name, size, texture, new RectangleF(0, 0, size.X, size.Y));
+		}		
 
 		/// <summary>
 		/// Function to create a new triangle object.

@@ -35,7 +35,7 @@ namespace Tester_Graphics
 			{
 				this.ClientSize = new Size(800, 600);
 
-				_graphics = new GorgonGraphics();
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
 				_swapChain = _graphics.Output.CreateSwapChain("My Swap Chain", new GorgonSwapChainSettings()
 				{
 					Window = this,
@@ -46,7 +46,7 @@ namespace Tester_Graphics
 				{
 					Width = 320,
 					Height = 240,
-					Format = BufferFormat.R8G8B8A8_UIntNormal					
+					Format = BufferFormat.B8G8R8X8_UIntNormal
 				});
 
 				_texture = _graphics.Textures.FromFile("File", @"..\..\..\..\Resources\Images\TextureTest.png", GorgonTexture2DSettings.FromFile);
@@ -54,25 +54,22 @@ namespace Tester_Graphics
 				_2D = _graphics.Create2DRenderer(_swapChain);
 				_2D.IsLogoVisible = true;
 
-				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", 64.0f, 64.0f);
-				sprite.Texture = _texture;
-				sprite.TextureRegion = new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height);
+				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(256.0f, 256.0f), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
 
 				Vector2 position = Vector2.Zero;
+
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
-						_swapChain.Clear(Color.White);
-						_target.Clear(Color.Black);
-
 						_2D.Target = _target;
-						//_2D.Viewport = new GorgonViewport(0, 0, 800, 600, 0.0f, 1.0f);
+						_2D.Clear(Color.Black);
 						sprite.Position = new Vector2(0, 0);
-						sprite.Angle += 15.0f * timing.FrameDelta;
+						sprite.Angle += 90.0f * timing.FrameDelta;
 						sprite.Draw();
-
+						_2D.Render();
+						
 						_2D.Target = null;
-
-						_2D.Drawing.FilledRectangle(new RectangleF(position, _target.Settings.Size), Color.White, _target.Texture);
+						_2D.Clear(Color.White);
+						_2D.Drawing.Blit(_target, position);
 
 						position = new Vector2(position.X + 15.0f * timing.FrameDelta, position.Y + 15.0f * timing.FrameDelta);
 						

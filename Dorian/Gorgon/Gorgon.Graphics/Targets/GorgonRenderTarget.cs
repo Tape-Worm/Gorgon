@@ -204,6 +204,7 @@ namespace GorgonLibrary.Graphics
 				Multisampling = Settings.MultiSample,
 				Usage = BufferUsage.Default
 			});
+			Texture.RenderTarget = this;
 			Texture.InitializeRenderTarget();
 
 			Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);

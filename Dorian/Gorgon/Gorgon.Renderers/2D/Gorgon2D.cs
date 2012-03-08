@@ -274,8 +274,6 @@ namespace GorgonLibrary.Renderers
 		private bool _useCache = true;																// Flag to indicate that we want to use the cache.
 		private bool _disposed = false;																// Flag to indicate that the object was disposed.
 		private int _cacheSize = 32768;																// Number of vertices that we can stuff into a vertex buffer.
-		private Matrix _defaultProjection = Matrix.Identity;										// Default projection matrix.
-		private Matrix _defaultView = Matrix.Identity;												// Default view matrix.
 		private GorgonRenderTarget _defaultTarget = null;											// Default render target.
 		private GorgonRenderTarget _target = null;													// Current render target.	
 		private GorgonInputLayout _layout = null;													// Input layout.
@@ -532,6 +530,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the active render target.
 		/// </summary>
+		/// <remarks>Changing the current render target will reset the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Viewport">Viewport</see> and the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.ClipRegion">ClipRegion</see>.</remarks>
 		public GorgonRenderTarget Target
 		{
 			get
@@ -572,6 +571,9 @@ namespace GorgonLibrary.Renderers
 			_default.UpdateFromTarget(Target);
 			_default.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
 			_default.Position = -_default.Anchor;
+
+			if (ClipRegion != null)
+				ClipRegion = null;
 
 			if (_viewPort == null)
 				Graphics.Rasterizer.SetViewport(Target.Viewport);
@@ -789,6 +791,51 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to clear the current target and its depth/stencil buffer.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <param name="depth">Depth value to clear with.</param>
+		/// <param name="stencil">Stencil value to clear with.</param>
+		/// <remarks>Unlike a render target <see cref="M:GorgonLibrary.Graphics.GorgonRenderTarget.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
+		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
+		public void Clear(GorgonColor color, float depth, int stencil)
+		{
+			if ((_clip == null) && (_viewPort == null))
+			{
+				Target.Clear(color, depth, stencil);
+				return;
+			}
+
+			if (Target.DepthStencil != null)
+				Target.DepthStencil.Clear(depth, stencil);
+
+			Drawing.FilledRectangle(new RectangleF(0, 0, Target.Settings.Width, Target.Settings.Height), color);
+		}
+
+		/// <summary>
+		/// Function to clear the current target and its depth/stencil buffer.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <param name="depth">Depth value to clear with.</param>
+		/// <remarks>Unlike a render target <see cref="M:GorgonLibrary.Graphics.GorgonRenderTarget.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
+		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
+		public void Clear(GorgonColor color, float depth)
+		{
+			Clear(color, depth, 0);
+		}
+
+		/// <summary>
+		/// Function to clear the current target and its depth/stencil buffer.
+		/// </summary>
+		/// <param name="color">Color to clear with.</param>
+		/// <remarks>Unlike a render target <see cref="M:GorgonLibrary.Graphics.GorgonRenderTarget.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
+		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
+		public void Clear(GorgonColor color)
+		{
+			Clear(color, 1.0f, 0);
+		}
+
+		/// <summary>
 		/// Function to create a new orthographic camera object.
 		/// </summary>
 		/// <param name="name">Name of the camera.</param>
@@ -894,7 +941,8 @@ namespace GorgonLibrary.Renderers
 			GorgonViewport? previousViewport = _viewPort;
 			Rectangle? previousClip = _clip;
 
-			if ((flip) && (IsLogoVisible))
+			// Only draw the logo when we're flipping, and we're on the default target and the default target is a swap chain.
+			if ((flip) && (IsLogoVisible) && (_swapChain != null) && (_swapChain == _defaultTarget))
 			{
 				// Reset any view/projection/clip/viewport.
 				if (_camera != null)

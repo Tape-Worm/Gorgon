@@ -240,14 +240,11 @@ namespace GorgonLibrary.Graphics.Example
 			_2D.IsLogoVisible = true;
 
 			// Create the wall sprite.
-			_wall = _2D.Renderables.CreateSprite("Wall", 63, 63);
-			_wall.Texture = _ballTexture;
+			_wall = _2D.Renderables.CreateSprite("Wall", new Vector2(63, 63), _ballTexture);
 			_wall.BlendingMode = BlendingMode.None;
 
 			// Create the ball sprite.
-			_ball = _2D.Renderables.CreateSprite("Ball", 64, 64);
-			_ball.Anchor = new Vector2(32, 32);
-			_ball.Texture = _ballTexture;
+			_ball = _2D.Renderables.CreateSprite("Ball", new Vector2(64, 64), _ballTexture, new Vector2(32, 32));
 			_ball.SmoothingMode = SmoothingMode.Smooth;
 
 			// Generate the ball list.
