@@ -37,8 +37,8 @@ namespace Tester_Graphics
 
 				GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false);
 
-				_graphics = new GorgonGraphics(devices[devices.Count - 1], DeviceFeatureLevel.SM2_a_b);
-				//_graphics = new GorgonGraphics();
+				//_graphics = new GorgonGraphics(devices[devices.Count - 1], DeviceFeatureLevel.SM2_a_b);
+				_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
 				_swapChain = _graphics.Output.CreateSwapChain("My Swap Chain", new GorgonSwapChainSettings()
 				{
 					Window = this,

@@ -389,7 +389,7 @@ namespace GorgonLibrary.Graphics
 
 			if (device == null)
 			{
-				enumerator = new GorgonVideoDeviceCollection(false, false);				
+				enumerator = new GorgonVideoDeviceCollection(false, false);
 				device = enumerator[0];
 			}
 
