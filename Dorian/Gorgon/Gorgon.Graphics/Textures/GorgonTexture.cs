@@ -29,7 +29,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Drawing;
 using D3D = SharpDX.Direct3D11;
+using SlimMath;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
@@ -102,8 +104,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="format">Image format to use.</param>
 		/// <returns>An array of bytes containing the image data.</returns>
-		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the format is anything other than DDS.</exception>
+		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.
+		/// <para>If the texture format is not compatiable with a file format, then an exception will be raised.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the format is anything other than DDS for a volume (3D) texture.
+		/// <para>-or-</para>
+		/// <para>Thrown when the file cannot be saved with the requested file <paramref name="format"/>.</para>
+		/// </exception>
 		public byte[] Save(ImageFileFormat format)
 		{
 			MemoryStream stream = new MemoryStream();
@@ -117,8 +124,15 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="stream">Stream to write.</param>
 		/// <param name="format">Image format to use.</param>
-		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the format is anything other than DDS.</exception>
+		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.
+		/// <para>If the texture format is not compatiable with a file format, then an exception will be raised.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">
+		/// Thrown when the format is anything other than DDS for a volume (3D) texture.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is anything other than DDS.</para>
+		/// </exception>
 		public abstract void Save(System.IO.Stream stream, ImageFileFormat format);
 
 		/// <summary>
@@ -130,8 +144,12 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the format is anything other than DDS for a volume (3D) texture.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the file cannot be saved with the requested file <paramref name="format"/>.</para>
 		/// </exception>
-		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.</remarks>
+		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 3D textures.
+		/// <para>If the texture format is not compatiable with a file format, then an exception will be raised.</para>
+		/// </remarks>
 		public void Save(string fileName, ImageFileFormat format)
 		{
 			GorgonDebug.AssertParamString(fileName, "fileName");

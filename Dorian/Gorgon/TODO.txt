@@ -1,0 +1,6 @@
+* Refactor the texture class into a better abstract class using D3DResources
+* Allow textures to have a different format for shader resource view (similar to how Depth/Stencil works).
+* Put in updatesubresource functionality for textures
+* Put in map functionality for textures
+* Write text output code
+
