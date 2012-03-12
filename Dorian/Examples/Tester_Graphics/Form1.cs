@@ -60,7 +60,7 @@ namespace Tester_Graphics
 					{
 						Width = 256,
 						Height = 256,
-						Format = BufferFormat.R32_Float,
+						Format = BufferFormat.R8G8B8A8_UIntNormal,
 						MipCount = 1,
 						ArrayCount = 1,
 						Multisampling = new GorgonMultiSampling(1, 0),
@@ -87,9 +87,9 @@ namespace Tester_Graphics
 				//    int data = stream.ReadByte();
 				//    fileSt.WriteByte((byte)data);
 				//}
-				//_target.Texture.Save(@"d:\unpak\testfile.png", ImageFileFormat.PNG);
-				_texture.Save(@"d:\unpak\testfile.png", ImageFileFormat.PNG);
-				_target.Texture.Save(@"d:\unpak\rt.png", ImageFileFormat.PNG);
+				//_target.Texture.Save(@".\testfile.png", ImageFileFormat.PNG);
+				_texture.Save(@".\testfile.png", ImageFileFormat.PNG);
+				_target.Texture.Save(@".\rt.png", ImageFileFormat.PNG);
 				//_texture.SaveSM2WorkAround();
 				//normalTexture.Save(@".\testfile.png", ImageFileFormat.PNG);
 				//fileSt.Close();

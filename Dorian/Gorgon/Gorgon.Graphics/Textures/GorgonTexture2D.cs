@@ -32,6 +32,7 @@ using System.IO;
 using System.Drawing;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using SlimMath;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
@@ -178,7 +179,7 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to retrieve the texture settings from an existing texture.
 		/// </summary>
@@ -610,21 +611,126 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to copy a texture subresource from another texture.
+		/// </summary>
+		/// <param name="texture">Source texture to copy.</param>
+		/// <param name="subResource">Sub resource in the source texture to copy.</param>
+		/// <param name="destSubResource">Sub resource in this texture to replace.</param>
+		/// <param name="sourceRegion">Region on the source texture to copy.</param>
+		/// <param name="destination">Destination point to copy to.</param>
+		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
+		/// <para>The <paramref name="sourceRegion"/> and ><paramref name="destination"/> must fit within the dimensions of this texture.  If they do not, then the copy will be clipped so that they fit.</para>
+		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters and the sourceRegion and destination parameters will be ignored.  The same is true for Depth/Stencil buffer textures.</para>
+		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
+		/// <para>-or-</para>
+		/// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
+		/// </exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
+		/// </exception>
+		public void Copy(GorgonTexture2D texture, int subResource, int destSubResource, Rectangle sourceRegion, Vector2 destination)
+		{
+			Rectangle destRegion = new Rectangle((Point)destination, sourceRegion.Size);
+			Rectangle textureRegion = new Rectangle(new Point(0, 0), Settings.Size);
+
+			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+
+			if (Settings.Usage == BufferUsage.Immutable)
+				throw new InvalidOperationException("Cannot copy to an immutable resource.");
+
+			if ((Settings.Multisampling.Count != texture.Settings.Multisampling.Count) || (Settings.Multisampling.Quality != texture.Settings.Multisampling.Quality))
+				throw new ArgumentException("Cannot copy textures with different multisampling parameters.");
+
+			// If the format is different, then check to see if the format group is the same.
+			if ((texture.Settings.Format != Settings.Format) && ((string.Compare(texture.FormatInformation.Group, FormatInformation.Group, true) != 0) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+				throw new ArgumentException("Cannot copy because these formats: '" + texture.Settings.Format.ToString() + "' and '" + Settings.Format.ToString() + "', cannot be converted.", "texture");
+
+			if ((this == texture) && (subResource == destSubResource))
+				throw new ArgumentException("Cannot copy to and from the same sub resource on the same texture.");
+
+			// Clip the regions.
+			if (!textureRegion.Contains(destRegion))				
+				destRegion = Rectangle.Intersect(textureRegion, destRegion);
+
+			if (!textureRegion.Contains(sourceRegion))
+				sourceRegion = Rectangle.Intersect(textureRegion, sourceRegion);
+
+			// If we've been clipped out of existence, then leave.
+			if ((destRegion.Width == 0) || (destRegion.Height == 0) || (sourceRegion.Width == 0) || (sourceRegion.Height == 0))
+				return;
+
+			// If we have multisampling enabled, then copy the entire sub resource.
+			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
+				Graphics.Context.CopySubresourceRegion(texture.D3DTexture, subResource, null, D3DTexture, destSubResource, 0, 0, 0);
+			else
+				Graphics.Context.CopySubresourceRegion(texture.D3DTexture, subResource, new D3D.ResourceRegion()
+				{
+					Back = 1,
+					Front = 0,
+					Top = sourceRegion.Top,
+					Left = sourceRegion.Left,
+					Right = sourceRegion.Right,
+					Bottom = sourceRegion.Bottom
+				}, D3DTexture, destSubResource, destRegion.Left, destRegion.Top, 0);
+		}
+
+		/// <summary>
+		/// Function to copy a texture sub resource from another texture.
+		/// </summary>
+		/// <param name="texture">Source texture to copy.</param>
+		/// <param name="subResource">Sub resource in the source texture to copy.</param>
+		/// <param name="destSubResource">Sub resource in this texture to replace.</param>
+		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
+		/// <para>The source texture must fit within the dimensions of this texture.  If it does not, then the copy will be clipped so that it fits.</para>
+		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters and the sourceRegion and destination parameters will be ignored.  The same is true for Depth/Stencil buffer textures.</para>
+		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
+		/// <para>-or-</para>
+		/// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
+		/// </exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
+		/// </exception>
+		public void Copy(GorgonTexture2D texture, int subResource, int destSubResource)
+		{
+			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+
+			Copy(texture, subResource, destSubResource, new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height), new Vector2(0, 0));
+		}
+
+		/// <summary>
 		/// Function to copy a texture from another texture.
 		/// </summary>
-		/// <param name="texture">Texture to copy.</param>
-		/// <remarks>This method will not perform stretching or filtering and will clip to the size of the destination texture.  If the current video device feature level is SM2_a_b or SM4, 
-		/// then format conversion will default to a slow copy operation to convert the format.</remarks>
+		/// <param name="texture">Source texture to copy.</param>
+		/// <remarks>
+		/// This overload will copy the -entire- texture, including mipmaps, array levels, etc...  Use the other Copy overloads to copy a portion of the texture.
+		/// <para>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.</para>
+		/// <para>The <paramref name="texture"/> dimensions must be have the same dimensions as this texture.  If they do not, an exception will be thrown.</para>
+		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters.</para>
+		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the this texture is an immutable texture.
+		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
 		/// <para>-or-</para>
-		/// <para>Thrown when the video device is a SM2_a_b device and an there is an attempt to convert between two different formats.</para>
+		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when this texture or the source texture have differing multisample values.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the size of the source texture and this texture are different and multisampling is enabled or either the source texture or this texture are depth/stencil buffers.</para>
+		/// <para>Thrown when the texure sizes are not the same.</para>
 		/// </exception>
-		public virtual void Copy(GorgonTexture2D texture)
+		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
+		/// </exception>
+		public void Copy(GorgonTexture2D texture)
 		{
 			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
 
@@ -635,38 +741,13 @@ namespace GorgonLibrary.Graphics
 				throw new InvalidOperationException("Cannot copy textures with different multisampling parameters.");
 
 			// If the format is different, then check to see if the format group is the same.
-			if (texture.Settings.Format != Settings.Format)
-			{
-				// We can't do a CopyResource to a different format when we're using SM2_a_b or SM4.
-				if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (string.Compare(texture.FormatInformation.Group, FormatInformation.Group, true) != 0))
-				{
-					SlowCopy(texture);
-					return;
-				}
-			}
+			if ((texture.Settings.Format != Settings.Format) && ((string.Compare(texture.FormatInformation.Group, FormatInformation.Group, true) != 0) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+				throw new ArgumentException("Cannot copy because these formats: '" + texture.Settings.Format.ToString() + "' and '" + Settings.Format.ToString() + "', cannot be converted.", "texture");
 
-			// If the width and height differ, then use a sub resource copy.
-			if ((texture.Settings.Width != Settings.Width) || (texture.Settings.Height != Settings.Height))
-			{
-				if ((texture.Settings.Multisampling.Count > 1) || (texture.Settings.Multisampling.Quality > 0) ||
-					(Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
-					throw new InvalidOperationException("A multisampled texture must be the same size as its destination.");
-
-				if ((texture.IsDepthStencil) || (this.IsDepthStencil))
-					throw new InvalidOperationException("A depth/stencil must be the same size as its destination.");
-
-				Graphics.Context.CopySubresourceRegion(texture.D3DTexture, 0, new D3D.ResourceRegion()
-				{
-					Back = 1,
-					Front = 0,
-					Left = 0,
-					Top = 0,
-					Right = texture.Settings.Width > Settings.Width ? Settings.Width : texture.Settings.Width,
-					Bottom = texture.Settings.Height > Settings.Height ? Settings.Height : texture.Settings.Height
-				}, D3DTexture, 0, 0, 0, 0);
-				return;
-			}
-
+			if ((texture.Settings.Width != Settings.Width) || (texture.Settings.Width != Settings.Height))
+				throw new ArgumentException("The texture sizes do not match.", "texture");
+			
+			// If we have multisampling enabled, then copy the entire sub resource.
 			Graphics.Context.CopyResource(texture.D3DTexture, D3DTexture);
 		}
 
