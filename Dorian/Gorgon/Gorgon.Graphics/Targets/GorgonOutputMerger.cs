@@ -220,6 +220,11 @@ namespace GorgonLibrary.Graphics
 				}
 #endif
 
+				// If we've got the target bound to a texture slot, then remove it before assigning it.
+				// Otherwise D3D11 will throw up a warning in the debug output.
+				if (target != null)
+				    _graphics.Shaders.Unbind(target.Texture);
+
 				_targets[index] = target;
 				_views[index] = target == null ? null : target.D3DRenderTarget;
 				SetDepthStencil(depthStencil);
@@ -247,13 +252,17 @@ namespace GorgonLibrary.Graphics
 					if (targets != null)
 					{
 						target = targets.ElementAt(i);
-#if DEBUG
 						if (target != null)
 						{
+#if DEBUG
 							if (!HasSameBitDepth(target.Settings.Format, i + startIndex))
 								throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the render target, targets must be of the same bit depth for SM_2_a_b video devices.");
-						}
 #endif
+
+							// If we've got the target bound to a texture slot, then remove it before assigning it.
+							// Otherwise D3D11 will throw up a warning in the debug output.
+							_graphics.Shaders.Unbind(target.Texture);
+						}
 					}
 					_targets[i + startIndex] = target;
 					_views[i + startIndex] = (target == null ? null : target.D3DRenderTarget);

@@ -123,7 +123,7 @@ namespace GorgonLibrary.Graphics
 
 			D3D.DepthStencilViewDescription viewDesc = new D3D.DepthStencilViewDescription();
 
-			Texture = new GorgonTexture2D(Graphics, "Depth buffer '" + Name + "' texture.", new GorgonTexture2DSettings()
+			Texture = GorgonTexture2D.CreateTexture(Graphics, "Depth buffer '" + Name + "' texture.", new GorgonTexture2DSettings()
 				{
 					Width = Settings.Width,
 					Height = Settings.Height,

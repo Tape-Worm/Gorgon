@@ -44,13 +44,15 @@ namespace GorgonLibrary.Renderers
 		#region Variables.
 		private Matrix _projection = Matrix.Identity;					// Projection matrix.
 		private Matrix _view = Matrix.Identity;							// View matrix.
-		private RectangleF _viewDimensions = RectangleF.Empty;			// View dimensions.
+		private Vector2 _viewDimensions = Vector2.Zero;					// View dimensions.
 		private float _maxDepth = 0.0f;									// Maximum depth.
 		private GorgonSprite _cameraIcon = null;						// Camera icon.
 		private float _angle = 0.0f;									// Angle of rotation.
 		private Vector2 _scale = new Vector2(1.0f);						// Scale.
 		private Vector2 _position = Vector2.Zero;						// Position.
 		private Vector2 _anchor = Vector2.Zero;							// Target position.
+		private bool _needsProjectionUpdate = true;						// Flag to indicate that the projection matrix needs updating.
+		private bool _needsViewUpdate = true;							// Flag to indicate that the view matrix needs updating.
 		#endregion
 
 		#region Properties.
@@ -66,7 +68,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the view dimensions for the camera.
 		/// </summary>
-		public RectangleF ViewDimensions
+		public Vector2 ViewDimensions
 		{
 			get
 			{
@@ -75,7 +77,7 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				_viewDimensions = value;
-				CalculateProjectionMatrix();
+				_needsProjectionUpdate = true;
 			}
 		}
 
@@ -93,7 +95,7 @@ namespace GorgonLibrary.Renderers
 				if (value < 1.0f)
 					value = 1.0f;
 				_maxDepth = value;
-				CalculateProjectionMatrix();
+				_needsProjectionUpdate = true;
 			}
 		}
 
@@ -112,7 +114,7 @@ namespace GorgonLibrary.Renderers
 				if (_angle != value)
 				{
 					_angle = value;
-					UpdateViewMatrix();
+					_needsViewUpdate = true;
 				}
 			}
 		}
@@ -131,7 +133,7 @@ namespace GorgonLibrary.Renderers
 				if (value != _position)
 				{
 					_position = value;
-					UpdateViewMatrix();
+					_needsViewUpdate = true;
 				}
 			}
 		}
@@ -150,7 +152,7 @@ namespace GorgonLibrary.Renderers
 				if (value != _scale)
 				{
 					_scale = value;
-					UpdateViewMatrix();
+					_needsViewUpdate = true;
 				}
 			}
 		}
@@ -169,7 +171,7 @@ namespace GorgonLibrary.Renderers
 				if (_anchor != value)
 				{
 					_anchor = value;
-					UpdateViewMatrix();
+					_needsViewUpdate = true;
 				}
 			}
 		}		
@@ -207,16 +209,23 @@ namespace GorgonLibrary.Renderers
 			Matrix.Multiply(ref translation, ref center, out center);
 
 			_view = center;
-			UpdateShaders();
 		}
 
 		/// <summary>
-		/// Function to update the shaders.
+		/// Function to update the camera if necessary.
 		/// </summary>
-		private void UpdateShaders()
+		public void Update()
 		{
-			if (Gorgon2D.Camera == this)
-				Gorgon2D.Shaders.UpdateGorgonTransformation();
+			if (_needsProjectionUpdate)
+				CalculateProjectionMatrix();
+			else
+			{
+				if (_needsViewUpdate)
+					UpdateViewMatrix();
+			}
+
+			_needsProjectionUpdate = false;
+			_needsViewUpdate = false;
 		}
 
 		/// <summary>
@@ -247,7 +256,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="name">The name.</param>
 		/// <param name="viewDimensions">The view dimensions.</param>
 		/// <param name="maximumDepth">The maximum depth.</param>
-		internal GorgonOrthoCamera(Gorgon2D gorgon2D, string name, RectangleF viewDimensions, float maximumDepth)
+		internal GorgonOrthoCamera(Gorgon2D gorgon2D, string name, Vector2 viewDimensions, float maximumDepth)
 			: base(name)
 		{
 			Gorgon2D = gorgon2D;
@@ -267,6 +276,28 @@ namespace GorgonLibrary.Renderers
 
 		#region ICamera Members
 		#region Properties.
+		/// <summary>
+		/// Property to return whether the view matrix needs updating.
+		/// </summary>
+		public bool NeedsViewUpdate
+		{
+			get
+			{
+				return _needsViewUpdate;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the projection matrix needs updating.
+		/// </summary>
+		public bool NeedsProjectionUpdate
+		{
+			get
+			{
+				return _needsProjectionUpdate;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the projection matrix for the camera.
 		/// </summary>
@@ -296,9 +327,9 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public void CalculateProjectionMatrix()
 		{
-			Matrix.OrthoOffCenterLH(0, _viewDimensions.Width, _viewDimensions.Height, 0.0f, 0.0f, _maxDepth, out _projection);
-			UpdateViewMatrix();
-			UpdateShaders();
+			Matrix.OrthoOffCenterLH(0.0f, _viewDimensions.X, _viewDimensions.Y, 0.0f, 0.0f, _maxDepth, out _projection);
+			if (_needsViewUpdate)
+				UpdateViewMatrix();
 		}
 
 		/// <summary>
@@ -308,8 +339,9 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void UpdateFromTarget(GorgonRenderTarget target)
 		{
-			_viewDimensions = new RectangleF(0, 0, target.Settings.Width, target.Settings.Height);
-			CalculateProjectionMatrix();
+			_viewDimensions = new Vector2(target.Settings.Width, target.Settings.Height);
+			_needsProjectionUpdate = true;
+			_needsViewUpdate = true;
 		}
 		#endregion
 		#endregion

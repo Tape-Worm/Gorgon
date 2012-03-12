@@ -506,7 +506,7 @@ namespace GorgonLibrary.Graphics
 
 			ValidateTexture2D(ref settings, true);
 
-			result = new GorgonTexture2D(_graphics, name, settings);
+			result = GorgonTexture2D.CreateTexture(_graphics, name, settings);
 			result.Initialize(imageData, filter, mipFilter);
 
 			_graphics.AddTrackedObject(result);
@@ -1069,7 +1069,7 @@ namespace GorgonLibrary.Graphics
 			
 			ValidateTexture2D(ref settings, false);
 
-			texture = new GorgonTexture2D(_graphics, name, settings);
+			texture = GorgonTexture2D.CreateTexture(_graphics, name, settings);
 			texture.Initialize(data);
 
 			_graphics.AddTrackedObject(texture);

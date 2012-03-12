@@ -269,6 +269,9 @@ namespace GorgonLibrary.Renderers
 			_line.LineThickness = LineThickness;
 			_line.CullingMode = CullingMode;
 			_line.Depth = Depth;
+			_line.Blending = Blending;
+			_line.DepthStencil = DepthStencil;
+			_line.TextureSampler = TextureSampler;
 
 			_line.TextureStart = TextureRegion.Location;
 			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Top + texOffset.Y);
@@ -321,6 +324,9 @@ namespace GorgonLibrary.Renderers
 			_filled.Size = Rectangle.Size;
 			_filled.Texture = Texture;
 			_filled.TextureRegion = TextureRegion;
+			_filled.Blending = Blending;
+			_filled.DepthStencil = DepthStencil;
+			_filled.TextureSampler = TextureSampler;
 
 			_filled.Draw();
 		}
