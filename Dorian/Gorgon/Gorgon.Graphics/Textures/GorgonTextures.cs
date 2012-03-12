@@ -304,6 +304,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isReading">TRUE if reading from a stream, FALSE if not.</param>
 		private void ValidateTexture1D(ref GorgonTexture1DSettings settings, bool isReading)
 		{
+			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				throw new GorgonException(GorgonResult.CannotCreate, "1 dimensional textures are not supported on SM2_a_b devices.");
+
 			if (settings.ArrayCount < 1)
 				settings.ArrayCount = 1;
 

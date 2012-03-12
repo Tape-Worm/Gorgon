@@ -39,7 +39,7 @@ namespace Tester_Graphics
 				using (GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false))
 				{
 					//_graphics = new GorgonGraphics(_devices[_devices.Count - 1], DeviceFeatureLevel.SM4);
-					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
+					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM4);
 				}
 
 				//_graphics = new GorgonGraphics();
@@ -55,6 +55,18 @@ namespace Tester_Graphics
 					Height = 240,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
+
+				using (GorgonTexture1D _1D = _graphics.Textures.CreateTexture("Test", new GorgonTexture1DSettings()
+				{
+					Width = 512,
+					ArrayCount = 1,
+					MipCount = 1,
+					Format = BufferFormat.A8_UIntNormal,
+					Usage = BufferUsage.Default
+				}, null))
+				{
+					byte[] data = _1D.Save(ImageFileFormat.DDS);
+				}
 
 				_texture = _graphics.Textures.FromFile("File", @".\TextureTest.png", new GorgonTexture2DSettings()
 					{
@@ -73,8 +85,8 @@ namespace Tester_Graphics
 				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(128.0f, 128.0f), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
 
 				_target.Texture.Copy(Properties.Resources.Haiku);
-				_texture.Copy(_target.Texture);
-				_target.Texture.Copy(_texture);
+				_texture.CopySubresource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
+				_target.Texture.CopySubresource(_texture, new Rectangle(0, 0, 256, 240), Vector2.Zero);
 
 				// TODO: Test this on the 6870, buggy ATI drivers seem to be choking on this, especially on SM2_a_b feature levels.
 				//GorgonTexture2D normalTexture = _target.Texture.ConvertToNormalized32Bit();
