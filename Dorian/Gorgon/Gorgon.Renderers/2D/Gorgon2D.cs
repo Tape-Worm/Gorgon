@@ -283,7 +283,8 @@ namespace GorgonLibrary.Renderers
 		private GorgonViewport? _viewPort = null;													// Viewport to use.
 		private Rectangle? _clip = null;															// Clipping rectangle.
 		private ICamera _camera = null;																// Current camera.
-		private GorgonOrthoCamera _default = null;													// Default camera.
+		private GorgonOrthoCamera _defaultCamera = null;											// Default camera.
+		private GorgonSprite _logoSprite = null;													// Logo sprite.
 		#endregion
 
 		#region Properties.
@@ -321,6 +322,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to return the currently active camera.
+		/// </summary>
+		internal ICamera CurrentCamera
+		{
+			get
+			{
+				return (_camera == null ? _defaultCamera : _camera);
+			}
 		}
 
 		/// <summary>
@@ -483,17 +495,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if (_camera == null)
-					return _default;
-
 				return _camera;
 			}
 			set
 			{
 				if (_camera != value)
 				{
-					_camera = value;
 					RenderObjects();
+					_camera = value;
+
+					// Force an update.
+					CurrentCamera.Update();
 					Shaders.UpdateGorgonTransformation();
 				}
 			}
@@ -568,9 +580,14 @@ namespace GorgonLibrary.Renderers
 
 			Graphics.Output.RenderTargets[0] = Target;
 
-			_default.UpdateFromTarget(Target);
-			_default.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
-			_default.Position = -_default.Anchor;
+			// Update our default camera.
+			// User cameras will need to be updated by the user on a resize or target change.
+			if (_camera == null)
+			{
+				_defaultCamera.UpdateFromTarget(Target);
+				_defaultCamera.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
+				_defaultCamera.Position = -_defaultCamera.Anchor;
+			}
 
 			if (ClipRegion != null)
 				ClipRegion = null;
@@ -661,11 +678,20 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void RenderObjects()
 		{
+			ICamera currentCamera = (_camera == null ? _defaultCamera : _camera);
 			BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
 			GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
 
 			if (_cacheWritten == 0)
 				return;
+
+			if ((currentCamera.NeedsProjectionUpdate) || (currentCamera.NeedsViewUpdate))
+			{
+				currentCamera.Update();
+
+				// Send projection/view to the shader.
+				Shaders.UpdateGorgonTransformation();
+			}
 
 			if (_cacheStart > 0)
 				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
@@ -842,7 +868,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="viewDimensions">Dimensions for the ortho camera.</param>
 		/// <param name="maxDepth">Maximum depth of the camera.</param>
 		/// <returns>A new orthographic camera.</returns>
-		public GorgonOrthoCamera CreateCamera(string name, RectangleF viewDimensions, float maxDepth)
+		public GorgonOrthoCamera CreateCamera(string name, Vector2 viewDimensions, float maxDepth)
 		{
 			return new GorgonOrthoCamera(this, name, viewDimensions, maxDepth);
 		}
@@ -918,11 +944,8 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void DrawLogo()
 		{
-			Drawing.FilledRectangle(
-				new RectangleF(Target.Settings.Width - Graphics.Textures.GorgonLogo.Settings.Width, Target.Settings.Height - Graphics.Textures.GorgonLogo.Settings.Height, Graphics.Textures.GorgonLogo.Settings.Width, Graphics.Textures.GorgonLogo.Settings.Height),
-				Color.White,
-				Graphics.Textures.GorgonLogo,
-				new RectangleF(0, 0, 200.0f, 56.0f));			
+			_logoSprite.Position = new Vector2(Target.Settings.Width, Target.Settings.Height);
+			_logoSprite.Draw();
 		}
 
 		/// <summary>
@@ -1005,7 +1028,15 @@ namespace GorgonLibrary.Renderers
 			Initialize();
 
 			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, GorgonTexture2DSettings.FromFile);
-			_default = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new RectangleF(0, 0, target.Settings.Width, target.Settings.Height), 100.0f);			
+			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings()
+			{
+				Anchor = new Vector2(200, 56),
+				Texture = Graphics.Textures.GorgonLogo,
+				TextureRegion = new RectangleF(0, 0, 200, 56),
+				Color = Color.White,
+				Size = new Vector2(200, 56)
+			});
+			_defaultCamera = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new Vector2(target.Settings.Width, target.Settings.Height), 100.0f);			
 
 			Begin2D();
 

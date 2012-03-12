@@ -178,34 +178,77 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.
+		#region Methods.		
+		/// <summary>
+		/// Function to retrieve the texture settings from an existing texture.
+		/// </summary>
+		private void RetrieveSettings()
+		{
+			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
+
+			settings.ArrayCount = D3DTexture.Description.ArraySize;
+			settings.Format = (BufferFormat)D3DTexture.Description.Format;
+			settings.Height = D3DTexture.Description.Height;
+			settings.MipCount = D3DTexture.Description.MipLevels;
+			settings.Multisampling = new GorgonMultiSampling(D3DTexture.Description.SampleDescription.Count, D3DTexture.Description.SampleDescription.Quality);
+			settings.Usage = (BufferUsage)D3DTexture.Description.Usage;
+			settings.Width = D3DTexture.Description.Width;
+
+			Settings = settings;
+		}
+
+		/// <summary>
+		/// Function to create the resource view for the texture.
+		/// </summary>
+		private void CreateResourceView()
+		{
+			if (Settings.Usage != BufferUsage.Staging)
+			{
+				Gorgon.Log.Print("Gorgon 2D texture {0}: Creating D3D11 resource view...", Diagnostics.LoggingLevel.Verbose, Name);
+				D3DTexture.DebugName = "Gorgon 2D Texture '" + Name + "'";
+				View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
+				View.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
+			}
+
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+		}
+
 		/// <summary>
 		/// Function to convert this format to RGBA 32 bit normalized unsigned int.
 		/// </summary>
-		/// <returns></returns>
-		private GorgonTexture2D ConvertToNormalized32Bit()
+		/// <returns>The converted texture.</returns>
+		protected virtual GorgonTexture2D ConvertToNormalized32Bit()
 		{
 			GorgonTexture2D tempTexture = null;
 			GorgonTexture2DSettings settings = Settings;
 
-			// Convert to RGBA 32bit format.
-			if ((Settings.Format != BufferFormat.R8G8B8A8_UIntNormal) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB))
+			try
 			{
-				settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
-				tempTexture = new GorgonTexture2D(Graphics, Name + ".TempTexture", settings);
-				tempTexture.Initialize(null);
-				tempTexture.Copy(this);
+				// Convert to RGBA 32bit format.
+				if ((Settings.Format != BufferFormat.R8G8B8A8_UIntNormal) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB))
+				{
+					settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+					tempTexture = new GorgonTexture2D(Graphics, Name + ".TempTexture", settings);
+					tempTexture.Initialize(null);
+					tempTexture.Copy(this);
+				}
+				else
+					tempTexture = this;
 			}
-			else
-				tempTexture = this;
+			catch
+			{
+				if ((tempTexture != null) && (tempTexture != this))
+					tempTexture.Dispose();
+				throw;
+			}
 
 			return tempTexture;
 		}
-		
+
 		/// <summary>
 		/// Function to copy a texture to this texture using a slow (but accurate) procedure.
 		/// </summary>
-		private void SlowCopy(GorgonTexture2D texture)
+		protected void SlowCopy(GorgonTexture2D texture)
 		{
 			System.IO.MemoryStream stream = null;
 			byte[] imageData = null;
@@ -244,37 +287,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to retrieve the texture settings from an existing texture.
-		/// </summary>
-		private void RetrieveSettings()
-		{
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
-
-			settings.ArrayCount = D3DTexture.Description.ArraySize;
-			settings.Format = (BufferFormat)D3DTexture.Description.Format;
-			settings.Height = D3DTexture.Description.Height;
-			settings.MipCount = D3DTexture.Description.MipLevels;
-			settings.Multisampling = new GorgonMultiSampling(D3DTexture.Description.SampleDescription.Count, D3DTexture.Description.SampleDescription.Quality);
-			settings.Usage = (BufferUsage)D3DTexture.Description.Usage;
-			settings.Width = D3DTexture.Description.Width;
-
-			Settings = settings;
-		}
-
-		/// <summary>
-		/// Function to create the resource view for the texture.
-		/// </summary>
-		private void CreateResourceView()
-		{
-			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating D3D11 resource view...", Diagnostics.LoggingLevel.Verbose, Name);
-			D3DTexture.DebugName = "Gorgon 2D Texture '" + Name + "'";
-			View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
-			View.DebugName = "Gorgon 2D Texture '" + Name + "' resource view";
-
-			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-		}
-
-		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -297,6 +309,42 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create the texture.
+		/// </summary>
+		/// <param name="graphics">Graphics interface that created this object.</param>
+		/// <param name="name">Name of the object.</param>
+		/// <param name="settings">Settings for the object.</param>
+		/// <returns>The new 2D texture.</returns>
+		internal static GorgonTexture2D CreateTexture(GorgonGraphics graphics, string name, GorgonTexture2DSettings settings)
+		{
+			GorgonTexture2D texture = null;
+
+			if (graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
+				texture = new GorgonTexture2D(graphics, name, settings);
+			else
+				texture = new GorgonTexture2DSM2(graphics, name, settings);
+
+			return texture;
+		}
+
+		/// <summary>
+		/// Function to create the texture.
+		/// </summary>
+		/// <param name="swapChain">Swap chain to retrieve texture from.</param>
+		/// <returns>The texture for the swap chain.</returns>
+		internal static GorgonTexture2D CreateTexture(GorgonSwapChain swapChain)
+		{
+			GorgonTexture2D texture = null;
+
+			if (swapChain.Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
+				texture = new GorgonTexture2D(swapChain);
+			else
+				texture = new GorgonTexture2DSM2(swapChain);
+
+			return texture;
+		}
+
+		/// <summary>
 		/// Function to read image data from an array of bytes.
 		/// </summary>
 		/// <param name="imageData">Array of bytes holding the image data.</param>
@@ -306,7 +354,10 @@ namespace GorgonLibrary.Graphics
 		{
 			D3D.ImageLoadInformation imageInfo = new D3D.ImageLoadInformation();
 
-			imageInfo.BindFlags = D3D.BindFlags.ShaderResource;
+			if (Settings.Usage != BufferUsage.Staging)
+				imageInfo.BindFlags = D3D.BindFlags.ShaderResource;
+			else
+				imageInfo.BindFlags = D3D.BindFlags.None;
 
 			if (RenderTarget != null)
 				imageInfo.BindFlags |= D3D.BindFlags.RenderTarget;
@@ -406,7 +457,10 @@ namespace GorgonLibrary.Graphics
 			desc.Width = Settings.Width;
 			desc.Height = Settings.Height;
 			desc.MipLevels = Settings.MipCount;
-			desc.BindFlags = D3D.BindFlags.ShaderResource;
+			if (Settings.Usage != BufferUsage.Staging)
+				desc.BindFlags = D3D.BindFlags.ShaderResource;
+			else
+				desc.BindFlags = D3D.BindFlags.None;
 			desc.Usage = (D3D.ResourceUsage)Settings.Usage;
 			switch(Settings.Usage)
 			{
@@ -562,18 +616,20 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This method will not perform stretching or filtering and will clip to the size of the destination texture.  If the current video device feature level is SM2_a_b or SM4, 
 		/// then format conversion will default to a slow copy operation to convert the format.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the source or destination is an immutable texture.
+		/// <exception cref="System.InvalidOperationException">Thrown when the this texture is an immutable texture.
 		/// <para>-or-</para>
 		/// <para>Thrown when the video device is a SM2_a_b device and an there is an attempt to convert between two different formats.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture or the source texture have differing multisample values.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the size of the source texture and this texture are different and multisampling is enabled or either the source texture or this texture are depth/stencil buffers.</para>
 		/// </exception>
-		public void Copy(GorgonTexture2D texture)
+		public virtual void Copy(GorgonTexture2D texture)
 		{
 			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
 
-			if ((Settings.Usage == BufferUsage.Immutable) || (texture.Settings.Usage == BufferUsage.Immutable))
-				throw new InvalidOperationException("Cannot copy to or from an immutable resource.");
+			if (Settings.Usage == BufferUsage.Immutable)
+				throw new InvalidOperationException("Cannot copy to an immutable resource.");
 
 			if ((Settings.Multisampling.Count != texture.Settings.Multisampling.Count) || (Settings.Multisampling.Quality != texture.Settings.Multisampling.Quality))
 				throw new InvalidOperationException("Cannot copy textures with different multisampling parameters.");
@@ -582,16 +638,23 @@ namespace GorgonLibrary.Graphics
 			if (texture.Settings.Format != Settings.Format)
 			{
 				// We can't do a CopyResource to a different format when we're using SM2_a_b or SM4.
-				if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4) || (string.Compare(texture.FormatInformation.Group, FormatInformation.Group, true) != 0))
+				if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (string.Compare(texture.FormatInformation.Group, FormatInformation.Group, true) != 0))
 				{
 					SlowCopy(texture);
 					return;
 				}
-			}			
+			}
 
 			// If the width and height differ, then use a sub resource copy.
 			if ((texture.Settings.Width != Settings.Width) || (texture.Settings.Height != Settings.Height))
 			{
+				if ((texture.Settings.Multisampling.Count > 1) || (texture.Settings.Multisampling.Quality > 0) ||
+					(Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
+					throw new InvalidOperationException("A multisampled texture must be the same size as its destination.");
+
+				if ((texture.IsDepthStencil) || (this.IsDepthStencil))
+					throw new InvalidOperationException("A depth/stencil must be the same size as its destination.");
+
 				Graphics.Context.CopySubresourceRegion(texture.D3DTexture, 0, new D3D.ResourceRegion()
 				{
 					Back = 1,
@@ -641,6 +704,7 @@ namespace GorgonLibrary.Graphics
 			}			
 		}
 
+
 		/// <summary>
 		/// Function to save the texture data to a stream.
 		/// </summary>
@@ -653,21 +717,19 @@ namespace GorgonLibrary.Graphics
 		{
 			D3D.ImageFileFormat fileFormat = (D3D.ImageFileFormat)format;
 			GorgonTexture2D tempTexture = null;
-			long position = stream.Position;
 
 			if (IsDepthStencil)
 				throw new GorgonException(GorgonResult.CannotWrite, "Cannot save a depth/stencil buffer texture.");
 
 			try
-			{
+			{				
 				// We can only save to 32 bit RGBA uint normalized formats if we're not using DDS, so we have to convert.
-				//if (format != ImageFileFormat.DDS)
-				//    tempTexture = ConvertToNormalized32Bit();
-				//else
+				if (format != ImageFileFormat.DDS)
+				    tempTexture = ConvertToNormalized32Bit();
+				else
 				    tempTexture = this;
-
+					
 				D3D.Texture2D.ToStream<D3D.Texture2D>(Graphics.Context, tempTexture.D3DTexture, fileFormat, stream);
-				stream.Position = position;
 			}
 			finally
 			{
@@ -682,7 +744,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
 		/// </summary>
 		/// <param name="swapChain">The swap chain to get texture information from.</param>
-		internal GorgonTexture2D(GorgonSwapChain swapChain)
+		protected GorgonTexture2D(GorgonSwapChain swapChain)
 			: base(swapChain.Graphics, swapChain.Name + "_Internal_Texture_" + Guid.NewGuid().ToString())
 		{
 			D3DTexture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
@@ -701,7 +763,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Settings to pass to the texture.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		internal GorgonTexture2D(GorgonGraphics graphics, string name, GorgonTexture2DSettings settings)
+		protected GorgonTexture2D(GorgonGraphics graphics, string name, GorgonTexture2DSettings settings)
 			: base(graphics, name)
 		{
 			if (settings.MipCount < 0)

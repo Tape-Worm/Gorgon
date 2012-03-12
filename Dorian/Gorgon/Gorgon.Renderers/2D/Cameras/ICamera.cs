@@ -54,6 +54,22 @@ namespace GorgonLibrary.Renderers
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Property to return whether the projection matrix needs updating.
+		/// </summary>
+		bool NeedsProjectionUpdate
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return whether the view matrix needs updating.
+		/// </summary>
+		bool NeedsViewUpdate
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.
@@ -68,6 +84,11 @@ namespace GorgonLibrary.Renderers
 		/// <param name="target">Target to use when updating.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
 		void UpdateFromTarget(GorgonRenderTarget target);
+
+		/// <summary>
+		/// Function to update the camera if necessary.
+		/// </summary>
+		void Update();
 
 		/// <summary>
 		/// Function to draw the camera icon.

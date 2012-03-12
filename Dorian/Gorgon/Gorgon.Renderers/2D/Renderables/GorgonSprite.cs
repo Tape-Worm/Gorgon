@@ -330,6 +330,11 @@ namespace GorgonLibrary.Renderers
 			Size = settings.Size;
 			Color = settings.Color;
 			Angle = settings.InitialAngle;
+			// Ensure scale is not set to 0.
+			if (settings.InitialScale.X == 0.0f)
+				settings.InitialScale.X = 1.0f;
+			if (settings.InitialScale.Y == 0.0f)
+				settings.InitialScale.Y = 1.0f;
 			Scale = settings.InitialScale;
 			Position = settings.InitialPosition;
 			Texture = settings.Texture;

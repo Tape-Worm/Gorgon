@@ -87,6 +87,16 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to unbind a texture from all shaders.
+		/// </summary>
+		/// <param name="texture">Texture to unbind.</param>
+		internal void Unbind(GorgonTexture texture)
+		{
+			PixelShader.Textures.Unbind(texture);
+			VertexShader.Textures.Unbind(texture);
+		}
+
+		/// <summary>
 		/// Function to create a constant buffer.
 		/// </summary>
 		/// <param name="size">Size of the buffer, in bytes.</param>

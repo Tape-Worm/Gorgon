@@ -194,7 +194,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Create the render target texture.
-			Texture = new GorgonTexture2D(Graphics, Name + "_Internal_Texture_" + Guid.NewGuid().ToString(), new GorgonTexture2DSettings()
+			Texture = GorgonTexture2D.CreateTexture(Graphics, Name + "_Internal_Texture_" + Guid.NewGuid().ToString(), new GorgonTexture2DSettings()
 			{
 				ArrayCount = 1,
 				Format = Settings.Format,

@@ -454,6 +454,10 @@ namespace GorgonLibrary.Renderers
 				NeedsVertexUpdate = false;
 			}
 
+			_line.Blending = Blending;
+			_line.DepthStencil = DepthStencil;
+			_line.TextureSampler = TextureSampler;
+
 			for (int i = 0; i < _points.Length; i++)
 			{
 				int endPointIndex = i + 1;

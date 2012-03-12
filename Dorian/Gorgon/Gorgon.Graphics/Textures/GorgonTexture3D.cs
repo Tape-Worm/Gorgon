@@ -149,10 +149,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateResourceView()
 		{
-			Gorgon.Log.Print("Gorgon 3D texture {0}: Creating D3D11 resource view...", Diagnostics.LoggingLevel.Verbose, Name);
-			D3DTexture.DebugName = "Gorgon 3D Texture '" + Name + "'";
-			View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
-			View.DebugName = "Gorgon 3D Texture '" + Name + "' resource view";
+			if (Settings.Usage != BufferUsage.Staging)
+			{
+				Gorgon.Log.Print("Gorgon 3D texture {0}: Creating D3D11 resource view...", Diagnostics.LoggingLevel.Verbose, Name);
+				D3DTexture.DebugName = "Gorgon 3D Texture '" + Name + "'";
+				View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
+				View.DebugName = "Gorgon 3D Texture '" + Name + "' resource view";
+			}
 
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 		}
@@ -189,7 +192,10 @@ namespace GorgonLibrary.Graphics
 		{
 			D3D.ImageLoadInformation imageInfo = new D3D.ImageLoadInformation();
 
-			imageInfo.BindFlags = D3D.BindFlags.ShaderResource;
+			if (Settings.Usage != BufferUsage.Staging)
+				imageInfo.BindFlags = D3D.BindFlags.ShaderResource;
+			else
+				imageInfo.BindFlags = D3D.BindFlags.None;
 			switch (Settings.Usage)
 			{
 				case BufferUsage.Staging:
@@ -235,7 +241,10 @@ namespace GorgonLibrary.Graphics
 			desc.Height = Settings.Height;
 			desc.Depth = Settings.Depth;
 			desc.MipLevels = Settings.MipCount;
-			desc.BindFlags = D3D.BindFlags.ShaderResource;
+			if (Settings.Usage != BufferUsage.Staging)
+				desc.BindFlags = D3D.BindFlags.ShaderResource;
+			else
+				desc.BindFlags = D3D.BindFlags.None;
 			desc.Usage = (D3D.ResourceUsage)Settings.Usage;
 			switch(Settings.Usage)
 			{
