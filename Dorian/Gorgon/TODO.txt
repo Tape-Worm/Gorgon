@@ -1,6 +1,38 @@
-* Refactor the texture class into a better abstract class using D3DResources
-* Allow textures to have a different format for shader resource view (similar to how Depth/Stencil works).
-* Put in updatesubresource functionality for textures
-* Put in map functionality for textures
-* Write text output code
+This list is not in order.  Please don't get excited.
 
+* Refactor the texture class into a better abstract class using D3DResources
+	+ Put in updatesubresource functionality for textures
+	+ Put in map functionality for textures
+	+ Allow textures to have a different format for shader resource view (similar to how Depth/Stencil works).
+* Add buffers
+	+ Basic GPU/CPU buffer (this would allow for structured buffers to be sent to the shader).
+	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders.
+	+ Need better understanding of how textures map to structured buffers and other shader types.	
+* Finish shader objects in base graphics library.
+	+ Add ability to load/save shaders from text file and compiled form.
+	+ Maybe consider putting in shader reflection.
+	+ Add compute, domain, hull and geometry shaders (do this ASAP)
+	+ Add #include support - This is necessary especially when pulling stuff from a virtual file system.
+* Add multi-threaded support for D3D 11 device contexts.
+* Maybe update Gorgon2D to create a swap chain in its Create2DRenderer method in addition to passing one in.
+* Update 2D shader code
+	+ Load/Save binary/text formats.
+	+ Parse and put in Gorgon 2D specific shader code with required instruction.
+* Add font management code.
+	+ Add code for generating and loading/saving bitmap fonts (for use in the editor, but will be public).
+* Add text output code.
+* Add horizontal/vertical flip to sprites.
+* Add animation to renderable objects.
+* Add more primitives:
+	+ Line polygon
+	+ Filled polygon (may need to be a separate object because it works quite differently).
+* Add a batch renderable using a static vertex buffer (possible with dynamic, may be worth looking into)
+* Add perspective camera
+* Add perspective sprites
+* Add user definable shaders for 2D library.
+* Write editor for creating/editing sprites, fonts, shaders (maybe), textures (maybe)
+	+ This time make it one large program that uses a project so everything can be integrated.
+	+ Maybe allow for pack file support like zip, previous gorgon bzip stuff.
+* Consider dropping feature level 9 support, it's really painful and limits what we can do.
+* Maybe add higher level code for GUI, scenegraph, collisions, etc... once base library is working and relatively bug free
+* Way in the future... maybe write a 3D component for Gorgon.  A lot of work though, very lazy.
