@@ -1,9 +1,8 @@
 This list is not in order.  Please don't get excited.
 
-* Refactor the texture class into a better abstract class using D3DResources
+* Refactor the texture class into a better abstract class using D3DResources (Done)
 	+ Put in updatesubresource functionality for textures
-	+ Put in map functionality for textures
-	+ Allow textures to have a different format for shader resource view (similar to how Depth/Stencil works).
+	+ Put in map functionality for textures	
 	+ Add GetSubResourceIndex1/2/3D to the Textures interface.
 * Add buffers
 	+ Basic GPU/CPU buffer (this would allow for structured buffers to be sent to the shader).

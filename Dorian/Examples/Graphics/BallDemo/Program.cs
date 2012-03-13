@@ -233,7 +233,7 @@ namespace GorgonLibrary.Graphics.Example
 			}
 
 			// Load the ball texture.
-			_ballTexture = _graphics.Textures.FromFile("BallTexture", @"..\..\..\..\Resources\Images\BallDemo.png", GorgonTexture2DSettings.FromFile);
+			_ballTexture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", @"..\..\..\..\Resources\Images\BallDemo.png", GorgonTexture2DSettings.FromFile);
 
 			// Create the 2D interface.
 			_2D = _graphics.Create2DRenderer(_mainScreen);

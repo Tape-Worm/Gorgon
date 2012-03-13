@@ -39,7 +39,7 @@ namespace Tester_Graphics
 				using (GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false))
 				{
 					//_graphics = new GorgonGraphics(_devices[_devices.Count - 1], DeviceFeatureLevel.SM4);
-					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM4);
+					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
 				}
 
 				//_graphics = new GorgonGraphics();
@@ -56,23 +56,23 @@ namespace Tester_Graphics
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-				using (GorgonTexture1D _1D = _graphics.Textures.CreateTexture("Test", new GorgonTexture1DSettings()
-				{
-					Width = 512,
-					ArrayCount = 1,
-					MipCount = 1,
-					Format = BufferFormat.A8_UIntNormal,
-					Usage = BufferUsage.Default
-				}, null))
-				{
-					byte[] data = _1D.Save(ImageFileFormat.DDS);
-				}
+				//using (GorgonTexture1D _1D = _graphics.Textures.CreateTexture<GorgonTexture1D>("Test", new GorgonTexture1DSettings()
+				//{
+				//    Width = 512,
+				//    ArrayCount = 1,
+				//    MipCount = 1,
+				//    Format = BufferFormat.A8_UIntNormal,
+				//    Usage = BufferUsage.Default
+				//}, null))
+				//{
+				//    byte[] data = _1D.Save(ImageFileFormat.DDS);
+				//}
 
-				_texture = _graphics.Textures.FromFile("File", @".\TextureTest.png", new GorgonTexture2DSettings()
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @".\TextureTest.png", new GorgonTexture2DSettings()
 					{
 						Width = 256,
 						Height = 256,
-						Format = BufferFormat.R8G8B8A8_UIntNormal,
+						Format = BufferFormat.R8G8B8A8_UIntNormal,						
 						MipCount = 1,
 						ArrayCount = 1,
 						Multisampling = new GorgonMultisampling(1, 0),
