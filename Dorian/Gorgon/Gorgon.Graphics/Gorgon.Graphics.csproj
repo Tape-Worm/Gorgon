@@ -80,6 +80,7 @@
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
+    <Compile Include="ISubResourceData.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -127,6 +128,7 @@
     <Compile Include="Textures\GorgonTextures.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Textures\GorgonTextureSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />

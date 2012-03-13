@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GorgonLibrary.Diagnostics;
+using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -47,13 +48,12 @@ namespace GorgonLibrary.Graphics
 		/// Function to destroy a shim texture.
 		/// </summary>
 		/// <param name="shim">Shim texture.</param>
-		private void DestroyShim(D3D.Texture2D shim)
+		private void DestroyShim(GorgonTexture2D shim)
 		{
 			if (shim == null)
 				return;
 
-			if (shim != D3DTexture)
-				shim.Dispose();
+			shim.Dispose();
 		}
 
 		/// <summary>
@@ -61,17 +61,24 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="texture">Texture to create a shim for.</param>
 		/// <returns>A new shim resource.</returns>
-		private D3D.Texture2D CreateShim(D3D.Texture2D texture)
+		private GorgonTexture2D CreateShim(GorgonTexture texture)
 		{
-			D3D.Texture2DDescription desc = texture.Description;
+			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
 			D3D.Texture2D shim = null;
 
-			if (desc.BindFlags != D3D.BindFlags.ShaderResource)
+			// Render targets and staging textures don't need a shim.
+			if ((texture.IsRenderTarget) || (texture.Settings.Usage == BufferUsage.Staging))
 				return null;
 
 			if (!Graphics.VideoDevice.SupportsRenderTargetFormat(Settings.Format, Settings.Multisampling.Count > 1 || Settings.Multisampling.Quality > 0))
 				throw new GorgonException(GorgonResult.CannotWrite, "Cannot save this texture.  There are restrictions in place for SM2_a_b video devices that limit the formats that can be saved.  The format '" + Settings.Format.ToString() + "' cannot be persisted to a stream or file.");
-									
+
+			desc.ArraySize = texture.Settings.ArrayCount;
+			desc.Format = (GI.Format)texture.Settings.Format;
+			desc.Height = texture.Settings.Height;
+			desc.MipLevels = texture.Settings.MipCount;
+			desc.SampleDescription = GorgonMultisampling.Convert(texture.Settings.Multisampling);
+			desc.Width = texture.Settings.Width;
 			desc.BindFlags = D3D.BindFlags.RenderTarget | D3D.BindFlags.ShaderResource;
 			desc.Usage = D3D.ResourceUsage.Default;
 			desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
@@ -84,7 +91,7 @@ namespace GorgonLibrary.Graphics
 				// Copy the texture to the temporary texture.
 				Graphics.Context.CopyResource(D3DTexture, shim);
 
-				return shim;
+				return new GorgonTexture2D(Graphics, shim.DebugName, shim);
 			}
 			catch
 			{
@@ -99,9 +106,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="source">Resource to copy.</param>
 		/// <param name="destination">Destination resource.</param>
-		internal override void CopyResourceProxy(D3D.Texture2D source, D3D.Texture2D destination)
+		internal override void CopyResourceProxy(GorgonTexture source, GorgonTexture destination)
 		{
-			D3D.Texture2D shim = null;
+			GorgonTexture2D shim = null;
 
 			try
 			{
@@ -123,16 +130,18 @@ namespace GorgonLibrary.Graphics
 		/// <param name="srcSubresourceIndex">Index of the source subresource.</param>
 		/// <param name="destSubresourceIndex">Index of the destination subresource.</param>
 		/// <param name="sourceRegion">The source region to copy.</param>
-		/// <param name="destinationPosition">Destination position.</param>
-		internal override void CopySubresourceProxy(D3D.Texture2D source, D3D.Texture2D destination, int srcSubresourceIndex, int destSubresourceIndex, D3D.ResourceRegion? sourceRegion, SlimMath.Vector3 destinationPosition)
+		/// <param name="x">Destination horizontal coordindate.</param>
+		/// <param name="y">Destination vertical coordinate.</param>
+		/// <param name="z">Destination depth coordinate.</param>
+		internal override void CopySubresourceProxy(GorgonTexture source, GorgonTexture destination, int srcSubresourceIndex, int destSubresourceIndex, D3D.ResourceRegion? sourceRegion, int x, int y, int z)
 		{
-			D3D.Texture2D shim = null;
+			GorgonTexture2D shim = null;
 
 			try
 			{
 				if (this.Settings.Usage == BufferUsage.Staging)
 					shim = CreateShim(source);
-				base.CopySubresourceProxy(shim != null ? shim : source, destination, srcSubresourceIndex, destSubresourceIndex, sourceRegion, destinationPosition);
+				base.CopySubresourceProxy(shim != null ? shim : source, destination, srcSubresourceIndex, destSubresourceIndex, sourceRegion, x, y, z);
 			}
 			finally
 			{
@@ -155,7 +164,7 @@ namespace GorgonLibrary.Graphics
 		public override void Save(System.IO.Stream stream, ImageFileFormat format)
 		{
 			D3D.ImageFileFormat fileFormat = (D3D.ImageFileFormat)format;
-			D3D.Texture2D shim = null;
+			GorgonTexture2D shim = null;
 
 			if (IsDepthStencil)
 				throw new GorgonException(GorgonResult.CannotWrite, "Cannot save a depth/stencil buffer texture.");
@@ -166,8 +175,8 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				shim = CreateShim(D3DTexture);
-				D3D.Texture2D.ToStream<D3D.Texture2D>(Graphics.Context, shim != null ? shim : D3DTexture, fileFormat, stream);
+				shim = CreateShim(this);
+				D3D.Resource.ToStream<D3D.Resource>(Graphics.Context, shim != null ? shim.D3DTexture : this.D3DTexture, fileFormat, stream);
 			}
 			finally
 			{
@@ -183,7 +192,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that created this object.</param>
 		/// <param name="name">The name of the texture.</param>
 		/// <param name="settings">The settings for the texture.</param>
-		internal GorgonTexture2DSM2(GorgonGraphics graphics, string name, GorgonTexture2DSettings settings)
+		internal GorgonTexture2DSM2(GorgonGraphics graphics, string name, ITextureSettings settings)
 			: base(graphics, name, settings)
 		{
 		}

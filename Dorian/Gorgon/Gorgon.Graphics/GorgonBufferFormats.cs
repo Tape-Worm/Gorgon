@@ -736,6 +736,49 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
+			/// Property to return whether the format is typeless or not.
+			/// </summary>
+			public bool IsTypeless
+			{
+				get
+				{
+					switch (Format)
+					{
+						case BufferFormat.B8G8R8A8:
+						case BufferFormat.B8G8R8X8:
+						case BufferFormat.BC1:
+						case BufferFormat.BC2:
+						case BufferFormat.BC3:
+						case BufferFormat.BC4:
+						case BufferFormat.BC5:
+						case BufferFormat.BC6H:
+						case BufferFormat.BC7:
+						case BufferFormat.R10G10B10A2:
+						case BufferFormat.R16:
+						case BufferFormat.R16G16:
+						case BufferFormat.R16G16B16A16:
+						case BufferFormat.R24G8:
+						case BufferFormat.R24_UIntNormal_X8:
+						case BufferFormat.R32:
+						case BufferFormat.R32_Float_X8X24:
+						case BufferFormat.R32G32:
+						case BufferFormat.R32G32B32:
+						case BufferFormat.R32G32B32A32:
+						case BufferFormat.R32G8X24:
+						case BufferFormat.R8:
+						case BufferFormat.R8G8:
+						case BufferFormat.R8G8B8A8:
+						case BufferFormat.X24_G8_UInt:
+						case BufferFormat.X32_G8X24_UInt:
+						case BufferFormat.Unknown:
+							return true;
+						default:
+							return false;
+					}
+				}
+			}
+
+			/// <summary>
 			/// Property to return information about the components in the format.
 			/// </summary>
 			public FormatComponents Components
