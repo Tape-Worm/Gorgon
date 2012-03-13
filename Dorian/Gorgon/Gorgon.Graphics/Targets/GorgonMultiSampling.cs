@@ -36,8 +36,8 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Values to define the number and quality of multisampling.
 	/// </summary>
-	/// <remarks>Setting the <see cref="GorgonLibrary.Graphics.GorgonMultiSampling.Count">count</see> and <see cref="GorgonLibrary.Graphics.GorgonMultiSampling.Quality">quality</see> values to 1 and 0 respectively, will disable multisampling.</remarks>
-	public struct GorgonMultiSampling
+	/// <remarks>Setting the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Count">count</see> and <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">quality</see> values to 1 and 0 respectively, will disable multisampling.</remarks>
+	public struct GorgonMultisampling
 	{
 		#region Variables.
 		private int _count;
@@ -80,7 +80,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="sampling">Sampling value to convert.</param>
 		/// <returns>The D3D sample description.</returns>
-		internal static GI.SampleDescription Convert(GorgonMultiSampling sampling)
+		internal static GI.SampleDescription Convert(GorgonMultisampling sampling)
 		{
 			return new GI.SampleDescription(sampling.Count, sampling.Quality);
 		}
@@ -88,11 +88,11 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMultiSampling"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonMultisampling"/> struct.
 		/// </summary>
 		/// <param name="count">The number of multisamples per pixel.</param>
 		/// <param name="quality">Image quality.</param>
-		public GorgonMultiSampling(int count, int quality)
+		public GorgonMultisampling(int count, int quality)
 		{
 			if (count < 1)
 				count = 1;

@@ -108,13 +108,25 @@
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonRenderTargetSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />
-    <Compile Include="Textures\GorgonTexture2DSM2.cs" />
-    <Compile Include="Textures\GorgonTexture3D.cs" />
-    <Compile Include="Textures\GorgonTexture1D.cs" />
-    <Compile Include="Textures\GorgonTexture2D.cs" />
-    <Compile Include="Textures\GorgonTextureData.cs" />
-    <Compile Include="Textures\GorgonTextures.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
+    <Compile Include="Textures\GorgonTexture1D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Textures\GorgonTexture2D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Textures\GorgonTexture2DSM2.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Textures\GorgonTexture3D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Textures\GorgonTextureData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Textures\GorgonTextures.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />

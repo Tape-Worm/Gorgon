@@ -485,7 +485,7 @@ namespace GorgonLibrary.Graphics
 
 			// Check multi sampling levels.
 			if (settings.SwapEffect == SwapEffect.Sequential)
-				settings.MultiSample = new GorgonMultiSampling(1, 0);
+				settings.MultiSample = new GorgonMultisampling(1, 0);
 			
 			int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Format, settings.MultiSample.Count);
 
@@ -522,7 +522,7 @@ namespace GorgonLibrary.Graphics
 			d3dSettings.IsWindowed = true;
 			d3dSettings.ModeDescription = GorgonVideoMode.Convert(Settings.VideoMode);
 			d3dSettings.OutputHandle = Settings.Window.Handle;
-			d3dSettings.SampleDescription = GorgonMultiSampling.Convert(Settings.MultiSample);
+			d3dSettings.SampleDescription = GorgonMultisampling.Convert(Settings.MultiSample);
 			d3dSettings.SwapEffect = GorgonSwapChainSettings.Convert(Settings.SwapEffect);
 
 			if ((Settings.Flags & SwapChainUsageFlags.RenderTarget) == SwapChainUsageFlags.RenderTarget)

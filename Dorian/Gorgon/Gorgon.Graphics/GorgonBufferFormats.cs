@@ -810,6 +810,24 @@ namespace GorgonLibrary.Graphics
 					return Components.HasComponent("A");
 				}
 			}
+
+			/// <summary>
+			/// Property to return whether the pixel format is packed or not.
+			/// </summary>
+			public bool IsPacked
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return whether the pixel format is compressed or not.
+			/// </summary>
+			public bool IsCompressed
+			{
+				get;
+				private set;
+			}
 			#endregion
 
 			#region Methods.
@@ -880,7 +898,13 @@ namespace GorgonLibrary.Graphics
 
 				// Don't process the compression formats.
 				if (formatString.StartsWith("BC", StringComparison.CurrentCultureIgnoreCase))
+				{
+					IsCompressed = true;
 					return;
+				}
+
+				IsCompressed = false;
+				IsPacked = (format == BufferFormat.R8G8_B8G8_UIntNormal) || (format == BufferFormat.G8R8_G8B8_UIntNormal);
 
 				// Split out the major component types.
 				while (formatString.Length > 0)
@@ -979,36 +1003,50 @@ namespace GorgonLibrary.Graphics
 							case BufferFormat.BC1_UIntNormal:
 							case BufferFormat.BC1_UIntNormal_sRGB:
 								Group = "BC1";
+								_bitDepth = 4;
+								_sizeInBytes = 8;
 								break;
 							case BufferFormat.BC2:
 							case BufferFormat.BC2_UIntNormal:
 							case BufferFormat.BC2_UIntNormal_sRGB:
 								Group = "BC2";
+								_bitDepth = 8;
+								_sizeInBytes = 16;
 								break;
 							case BufferFormat.BC3:
 							case BufferFormat.BC3_UIntNormal:
 							case BufferFormat.BC3_UIntNormal_sRGB:
 								Group = "BC3";
+								_bitDepth = 8;
+								_sizeInBytes = 16;
 								break;
 							case BufferFormat.BC4:
 							case BufferFormat.BC4_IntNormal:
 							case BufferFormat.BC4_UIntNormal:
 								Group = "BC4";
+								_bitDepth = 4;
+								_sizeInBytes = 8;
 								break;
 							case BufferFormat.BC5:
 							case BufferFormat.BC5_IntNormal:
 							case BufferFormat.BC5_UIntNormal:
 								Group = "BC5";
+								_bitDepth = 8;
+								_sizeInBytes = 16;
 								break;
 							case BufferFormat.BC6H:
 							case BufferFormat.BC6H_SF16:
 							case BufferFormat.BC6H_UF16:
 								Group = "BC6";
+								_bitDepth = 8;
+								_sizeInBytes = 16;
 								break;
 							case BufferFormat.BC7:
 							case BufferFormat.BC7_UIntNormal:
 							case BufferFormat.BC7_UIntNormal_sRGB:
 								Group = "BC7";
+								_bitDepth = 8;
+								_sizeInBytes = 16;
 								break;
 							default:
 								Group = "No group";

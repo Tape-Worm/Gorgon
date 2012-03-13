@@ -256,11 +256,23 @@ namespace GorgonLibrary.Graphics
 			if (settings.ArrayCount < 1)
 				settings.ArrayCount = 1;
 
+			if (settings.ArrayCount > 2048)
+				settings.ArrayCount = 2048;
+
+			if (settings.IsTextureCube)
+			{
+				if ((settings.ArrayCount != 6) && ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture cube array.  SM2_a_b and SM4 devices require a maximum of 6 faces.");
+
+				if ((settings.ArrayCount % 6) != 0)
+					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture cube array.  The array count is not a multiple of 6.");
+			}
+
 			if (settings.MipCount < 0)
 				settings.MipCount = 0;
 
 			if (settings.Multisampling.Count == 0)
-				settings.Multisampling = new GorgonMultiSampling(1, 0);
+				settings.Multisampling = new GorgonMultisampling(1, 0);
 
 			if (settings.Format == BufferFormat.Unknown)
 				settings.Format = BufferFormat.R8G8B8A8_IntNormal;
@@ -974,7 +986,7 @@ namespace GorgonLibrary.Graphics
 				Format = format,
 				MipCount = 1,
 				ArrayCount = 1,
-				Multisampling = new GorgonMultiSampling(1, 0),
+				Multisampling = new GorgonMultisampling(1, 0),
 				Usage = usage
 			}, null);
 		}

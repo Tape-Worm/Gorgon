@@ -75,7 +75,7 @@ namespace Tester_Graphics
 						Format = BufferFormat.R8G8B8A8_UIntNormal,
 						MipCount = 1,
 						ArrayCount = 1,
-						Multisampling = new GorgonMultiSampling(1, 0),
+						Multisampling = new GorgonMultisampling(1, 0),
 						Usage = BufferUsage.Default
 					});
 

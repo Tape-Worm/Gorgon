@@ -50,7 +50,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the multi sampling settings for the depth/stencil buffer.
 		/// </summary>
 		/// <remarks>Ensure that these settings match the render target that the depth buffer will be paired with.</remarks>
-		public GorgonMultiSampling MultiSample
+		public GorgonMultisampling MultiSample
 		{
 			get;
 			set;
