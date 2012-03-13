@@ -40,54 +40,16 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings for a 2D texture.
 	/// </summary>
-	public struct GorgonTexture2DSettings
+	public class GorgonTexture2DSettings
+		: ITextureSettings
 	{
 		#region Variables.
 		/// <summary>
 		/// Default settings for the texture.
 		/// </summary>
 		/// <remarks>This should be used when loading a texture from memory, a stream or a file.</remarks>
-		public static readonly GorgonTexture2DSettings FromFile = new GorgonTexture2DSettings()
-		{
-			Width = 0,
-			Height = 0,
-			Format = BufferFormat.Unknown,
-			MipCount = 1,
-			ArrayCount = 1,
-			Usage = BufferUsage.Default,
-			Multisampling = new GorgonMultiSampling(1, 0)
-		};
-
-		/// <summary>
-		/// Width of the texture.
-		/// </summary>
-		public int Width;
-		/// <summary>
-		/// Height of the texture.
-		/// </summary>
-		public int Height;
-		/// <summary>
-		/// Format of the texture.
-		/// </summary>
-		public BufferFormat Format;
-		/// <summary>
-		/// Number of mip map levels.
-		/// </summary>
-		public int MipCount;
-		/// <summary>
-		/// Number of textures in a texture array.
-		/// </summary>
-		/// <remarks>This is not used for loading files.</remarks>
-		public int ArrayCount;
-		/// <summary>
-		/// Usage levels for the texture.
-		/// </summary>
-		public BufferUsage Usage;
-		/// <summary>
-		/// Multisampling settings for the texture.
-		/// </summary>
-		public GorgonMultiSampling Multisampling;
-		#endregion
+		public static readonly GorgonTexture2DSettings FromFile = new GorgonTexture2DSettings();
+		#endregion 
 
 		#region Properties.
 		/// <summary>
@@ -105,6 +67,149 @@ namespace GorgonLibrary.Graphics
 				Height = value.Height;
 			}
 		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonTexture2DSettings"/> class.
+		/// </summary>
+		public GorgonTexture2DSettings()
+		{
+			Width = 0;
+			Height = 0;
+			Format = BufferFormat.Unknown;
+			MipCount = 1;
+			ArrayCount = 1;
+			Multisampling = new GorgonMultisampling(1, 0);			
+			ViewFormat = BufferFormat.Unknown;
+			Usage = BufferUsage.Default;
+		}
+		#endregion
+
+		#region ITextureSettings Members
+		/// <summary>
+		/// Property to set or return whether this is a cube texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>When setting this value to TRUE, ensure that the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
+		public bool IsTextureCube
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the width of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>When loading a file, leave as 0 to use the width from the file source.</remarks>
+		public int Width
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// When loading a file, leave as 0 to use the height from the file source.
+		/// <para>This applies to 2D and 3D textures only.</para></remarks>
+		public int Height
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the depth of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// When loading a file, leave as 0 to use the width from the depth source.
+		/// <para>This applies to 3D textures only.</para></remarks>
+		int ITextureSettings.Depth
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{				
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the format of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
+		/// <para>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ViewFormat">ViewFormat</see> property to anything other than Unknown.</para></remarks>
+		public BufferFormat Format
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the shader view format.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This changes how the texture is sampled/viewed in a shader.  The default value is Unknown.</remarks>
+		public BufferFormat ViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the number of textures there are in a texture array.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
+		public int ArrayCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the number of mip maps in a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>To have the system generate mipmaps for you, set this value to 0.  The default value for this setting is 1.</remarks>
+		public int MipCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the multisampling count/quality for the texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).
+		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.MipCount">MipCount</see> should be set to 1.</para>
+		/// </remarks>
+		public GorgonMultisampling Multisampling
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the usage for the texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>The default value is Default.</remarks>
+		public BufferUsage Usage
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Property to return whether the size of the texture is a power of 2 or not.
@@ -113,7 +218,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return ((Width == 0) || (Width & (Width - 1)) == 0) && 
+				return ((Width == 0) || (Width & (Width - 1)) == 0) &&
 						((Height == 0) || (Height & (Height - 1)) == 0);
 			}
 		}
@@ -191,7 +296,7 @@ namespace GorgonLibrary.Graphics
 			settings.Format = (BufferFormat)D3DTexture.Description.Format;
 			settings.Height = D3DTexture.Description.Height;
 			settings.MipCount = D3DTexture.Description.MipLevels;
-			settings.Multisampling = new GorgonMultiSampling(D3DTexture.Description.SampleDescription.Count, D3DTexture.Description.SampleDescription.Quality);
+			settings.Multisampling = new GorgonMultisampling(D3DTexture.Description.SampleDescription.Count, D3DTexture.Description.SampleDescription.Quality);
 			settings.Usage = (BufferUsage)D3DTexture.Description.Usage;
 			settings.Width = D3DTexture.Description.Width;
 
@@ -402,7 +507,7 @@ namespace GorgonLibrary.Graphics
 			desc.Usage = D3D.ResourceUsage.Default;
 			desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultiSampling.Convert(Settings.Multisampling);
+			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
 
 			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating 2D render target texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
@@ -429,7 +534,7 @@ namespace GorgonLibrary.Graphics
 			desc.Usage = D3D.ResourceUsage.Default;
 			desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultiSampling.Convert(Settings.Multisampling);
+			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
 
 			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating 2D depth/stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
@@ -468,7 +573,7 @@ namespace GorgonLibrary.Graphics
 					break;				
 			}
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultiSampling.Convert(Settings.Multisampling);
+			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
 
 			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating D3D11 2D texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			if (data != null)
@@ -879,7 +984,7 @@ namespace GorgonLibrary.Graphics
 				settings.ArrayCount = 1;
 
 			if (settings.Multisampling.Count < 1)
-				settings.Multisampling = new GorgonMultiSampling(1, 0);
+				settings.Multisampling = new GorgonMultisampling(1, 0);
 
 			Settings = settings;
 		}

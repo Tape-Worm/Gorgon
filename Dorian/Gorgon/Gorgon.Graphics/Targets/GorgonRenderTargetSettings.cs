@@ -141,7 +141,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the multisampling settings for the target.
 		/// </summary>
-		public GorgonMultiSampling MultiSample
+		public GorgonMultisampling MultiSample
 		{
 			get;
 			set;
@@ -182,7 +182,7 @@ namespace GorgonLibrary.Graphics
 		{
 			Format = BufferFormat.Unknown;
 			DepthStencilFormat = BufferFormat.Unknown;
-			MultiSample = new GorgonMultiSampling(1, 0);
+			MultiSample = new GorgonMultisampling(1, 0);
 		}
 		#endregion
 	}
@@ -282,7 +282,7 @@ namespace GorgonLibrary.Graphics
 			IsWindowed = true;			
 			Flags = SwapChainUsageFlags.RenderTarget;
 			SwapEffect = Graphics.SwapEffect.Discard;
-			MultiSample = new GorgonMultiSampling(1, 0);
+			MultiSample = new GorgonMultisampling(1, 0);
 			DepthStencilFormat = BufferFormat.Unknown;			
 		}
 		#endregion

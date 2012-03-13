@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using GI = SharpDX.DXGI;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
@@ -37,46 +38,163 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings for a 1D texture.
 	/// </summary>
-	public struct GorgonTexture1DSettings
+	public class GorgonTexture1DSettings
+		: ITextureSettings
 	{
 		#region Variables.
 		/// <summary>
 		/// Default settings for the texture.
 		/// </summary>
 		/// <remarks>This should be used when loading a texture from memory, a stream or a file.</remarks>
-		public static readonly GorgonTexture1DSettings FromFile = new GorgonTexture1DSettings()
-		{
-			Width = 0,
-			Format = BufferFormat.Unknown,
-			MipCount = 1,
-			ArrayCount = 1,
-			Usage = BufferUsage.Default
-		};
-
-		/// <summary>
-		/// Width of the texture.
-		/// </summary>
-		public int Width;
-		/// <summary>
-		/// Format of the texture.
-		/// </summary>
-		public BufferFormat Format;
-		/// <summary>
-		/// Number of mip map levels.
-		/// </summary>
-		public int MipCount;
-		/// <summary>
-		/// Number of textures in a texture array.
-		/// </summary>
-		/// <remarks>This is not used for loading files.</remarks>
-		public int ArrayCount;
-		/// <summary>
-		/// Usage levels for the texture.
-		/// </summary>
-		public BufferUsage Usage;
+		public static readonly GorgonTexture1DSettings FromFile = new GorgonTexture1DSettings();
 		#endregion
 
-		#region Properties.
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonTexture1DSettings"/> class.
+		/// </summary>
+		public GorgonTexture1DSettings()
+		{
+			Width = 0;
+			Format = BufferFormat.Unknown;
+			ArrayCount = 1;
+			MipCount = 1;
+			ViewFormat = BufferFormat.Unknown;
+			Usage = BufferUsage.Default;
+		}
+		#endregion
+
+		#region ITextureSettings Members
+		/// <summary>
+		/// Property to set or return whether this is a cube texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>When setting this value to TRUE, ensure that the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
+		bool ITextureSettings.IsTextureCube
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the width of a texture.
+		/// </summary>
+		/// <value></value>
+		public int Width
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This applies to 2D and 3D textures only.</remarks>
+		int ITextureSettings.Height
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{				
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This applies to 3D textures only.</remarks>
+		int ITextureSettings.Depth
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{				
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the format of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ViewFormat">ViewFormat</see> property to anything other than Unknown.</remarks>
+		public BufferFormat Format
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the shader view format.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This changes how the texture is sampled/viewed in a shader.  The default value is Unknown.</remarks>
+		public BufferFormat ViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the number of textures there are in a texture array.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
+		public int ArrayCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the number of mip maps in a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>The default value for this setting is 1.</remarks>
+		public int MipCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the multisampling count/quality for the texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).</remarks>
+		GorgonMultisampling ITextureSettings.Multisampling
+		{
+			get
+			{
+				return new GorgonMultisampling(1, 0);
+			}
+			set
+			{				
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the usage for the texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>The default value is Default.</remarks>
+		public BufferUsage Usage
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to return whether the size of the texture is a power of 2 or not.
 		/// </summary>
@@ -93,6 +211,8 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// A 1 dimension texture object.
 	/// </summary>
+	/// <remarks>A 1 dimensional texture only has a width.  This is useful as a buffer of linear data in texture format.
+	/// <para>This texture type cannot be created by SM2_a_b video devices.</para></remarks>
 	public class GorgonTexture1D
 		: GorgonTexture
 	{
@@ -102,58 +222,22 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the D3D texture object.
-		/// </summary>
-		internal D3D.Texture1D D3DTexture
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the settings for this texture.
 		/// </summary>
-		public GorgonTexture1DSettings Settings
+		public new GorgonTexture1DSettings Settings
 		{
-			get;
-			private set;
+			get
+			{
+				return (GorgonTexture1DSettings)base.Settings;
+			}
+			private set
+			{
+				base.Settings = value;
+			}
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve the texture settings from an existing texture.
-		/// </summary>
-		private void RetrieveSettings()
-		{
-			GorgonTexture1DSettings settings = new GorgonTexture1DSettings();
-
-			settings.ArrayCount = D3DTexture.Description.ArraySize;
-			settings.Format = (BufferFormat)D3DTexture.Description.Format;
-			settings.MipCount = D3DTexture.Description.MipLevels;
-			settings.Usage = (BufferUsage)D3DTexture.Description.Usage;
-			settings.Width = D3DTexture.Description.Width;
-
-			Settings = settings;
-		}
-
-		/// <summary>
-		/// Function to create the resource view for the texture.
-		/// </summary>
-		private void CreateResourceView()
-		{
-			if (Settings.Usage != BufferUsage.Staging)
-			{
-				Gorgon.Log.Print("Gorgon 1D texture {0}: Creating D3D11 resource view...", Diagnostics.LoggingLevel.Verbose, Name);
-
-				D3DTexture.DebugName = "Gorgon 1D Texture '" + Name + "'";
-				View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
-				View.DebugName = "Gorgon 1D Texture '" + Name + "' resource view";
-			}
-
-			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-		}
-
 		/// <summary>
 		/// Function to read image data from a stream.
 		/// </summary>
@@ -194,30 +278,10 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("Gorgon 2D texture {0}: Loading D3D11 1D texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			D3DTexture = D3D.Texture1D.FromMemory<D3D.Texture1D>(Graphics.D3DDevice, imageData, imageInfo);
-			
-			RetrieveSettings();
+			D3DTexture.DebugName = "Gorgon 1D Texture '" + Name + "'";
+
+			Settings = GetTextureInformation() as GorgonTexture1DSettings;
 			CreateResourceView();
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (D3DTexture != null)
-						D3DTexture.Dispose();
-					Gorgon.Log.Print("Gorgon 1D texture {0}: D3D 11 Texture destroyed", Diagnostics.LoggingLevel.Verbose, Name);
-				}
-
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
 		}
 
 		/// <summary>
@@ -253,7 +317,7 @@ namespace GorgonLibrary.Graphics
 			}			
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
 
-			Gorgon.Log.Print("Gorgon 2D texture {0}: Creating D3D11 1D texture...", Diagnostics.LoggingLevel.Verbose, Name);
+			Gorgon.Log.Print("Gorgon 1D texture {0}: Creating D3D11 1D texture...", Diagnostics.LoggingLevel.Verbose, Name);
 			if (data != null)
 			{
 				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - data.Position, true, true))
@@ -261,6 +325,7 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 				D3DTexture = new D3D.Texture1D(Graphics.D3DDevice, desc);
+			D3DTexture.DebugName = "Gorgon 1D Texture '" + Name + "'";
 
 			CreateResourceView();			
 		}
@@ -270,11 +335,16 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="stream">Stream to write.</param>
 		/// <param name="format">Image format to use.</param>
+		/// <remarks>A 1D dimensional texture can only be saved to DDS format.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the format is not DDS.</exception>
 		public override void Save(System.IO.Stream stream, ImageFileFormat format)
 		{
+			if (format != ImageFileFormat.DDS)
+				throw new ArgumentException("The file format for a 1D texture can only be DDS.", "format");
+
 			D3D.ImageFileFormat fileFormat = (D3D.ImageFileFormat)format;
 			long position = stream.Position;
-			D3D.Texture1D.ToStream<D3D.Texture1D>(Graphics.Context, D3DTexture, fileFormat, stream);
+			D3D.Resource.ToStream<D3D.Resource>(Graphics.Context, D3DTexture, fileFormat, stream);
 			stream.Position = position;
 		}
 		#endregion

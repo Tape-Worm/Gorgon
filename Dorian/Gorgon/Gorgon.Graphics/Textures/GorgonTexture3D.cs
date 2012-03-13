@@ -37,50 +37,164 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings for a 3D texture.
 	/// </summary>
-	public struct GorgonTexture3DSettings
+	public class GorgonTexture3DSettings
+		: ITextureSettings
 	{
 		#region Variables.
 		/// <summary>
 		/// Default settings for the texture.
 		/// </summary>
 		/// <remarks>This should be used when loading a texture from memory, a stream or a file.</remarks>
-		public static readonly GorgonTexture3DSettings FromFile = new GorgonTexture3DSettings()
-		{
-			Width = 0,
-			Height = 0,
-			Depth = 0,
-			MipCount = 1,
-			Format = BufferFormat.Unknown,
-			Usage = BufferUsage.Default,
-		};
-
-		/// <summary>
-		/// Width of the texture.
-		/// </summary>
-		public int Width;
-		/// <summary>
-		/// Height of the texture.
-		/// </summary>
-		public int Height;
-		/// <summary>
-		/// Depth of the texture.
-		/// </summary>
-		public int Depth;
-		/// <summary>
-		/// Number of mip levels.
-		/// </summary>
-		public int MipCount;
-		/// <summary>
-		/// Format of the texture.
-		/// </summary>
-		public BufferFormat Format;
-		/// <summary>
-		/// Usage levels for the texture.
-		/// </summary>
-		public BufferUsage Usage;
+		public static readonly GorgonTexture3DSettings FromFile = new GorgonTexture3DSettings();
 		#endregion
 
-		#region Properties.
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonTexture3DSettings"/> class.
+		/// </summary>
+		public GorgonTexture3DSettings()
+		{
+			MipCount = 1;
+			ViewFormat = BufferFormat.Unknown;
+			Usage = BufferUsage.Default;
+		}
+		#endregion
+
+		#region ITextureSettings Members
+		/// <summary>
+		/// Property to set or return whether this is a cube texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>When setting this value to TRUE, ensure that the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
+		bool ITextureSettings.IsTextureCube
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the width of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>When loading a file, leave as 0 to use the width from the file source.</remarks>
+		public int Width
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// When loading a file, leave as 0 to use the height from the file source.
+		/// <para>This applies to 2D and 3D textures only.</para></remarks>
+		public int Height
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the depth of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// When loading a file, leave as 0 to use the width from the depth source.
+		/// <para>This applies to 3D textures only.</para></remarks>
+		public int Depth
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the format of a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
+		/// <para>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ViewFormat">ViewFormat</see> property to anything other than Unknown.</para></remarks>
+		public BufferFormat Format
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the shader view format.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This changes how the texture is sampled/viewed in a shader.  The default value is Unknown.</remarks>
+		public BufferFormat ViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the number of textures there are in a texture array.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
+		int ITextureSettings.ArrayCount
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{				
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the number of mip maps in a texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>To have the system generate mipmaps for you, set this value to 0.  The default value for this setting is 1.</remarks>
+		public int MipCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the multisampling count/quality for the texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).
+		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.MipCount">MipCount</see> should be set to 1.</para>
+		/// </remarks>
+		GorgonMultisampling ITextureSettings.Multisampling
+		{
+			get
+			{
+				return new GorgonMultisampling(1, 0);
+			}
+			set
+			{				
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the usage for the texture.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>The default value is Default.</remarks>
+		public BufferUsage Usage
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to return whether the size of the texture is a power of 2 or not.
 		/// </summary>
@@ -88,7 +202,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return ((Width == 0) || (Width & (Width - 1)) == 0) && 
+				return ((Width == 0) || (Width & (Width - 1)) == 0) &&
 						((Height == 0) || (Height & (Height - 1)) == 0) &&
 						((Depth == 0) || (Depth & (Depth - 1)) == 0);
 			}
