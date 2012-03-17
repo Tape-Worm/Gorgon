@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Drawing;
+using DX = SharpDX;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 using SlimMath;
@@ -50,6 +51,7 @@ namespace GorgonLibrary.Graphics
 		private GorgonTexture1D _texture1D = null;			// 1D representation of this texture.
 		private GorgonTexture2D _texture2D = null;			// 2D representation of this texture.
 		private GorgonTexture3D _texture3D = null;			// 3D representation of this texture.
+		private IList<DX.DataStream> _lock = null;			// Locks for the texture.
 		#endregion
 
 		#region Properties.
@@ -733,6 +735,128 @@ namespace GorgonLibrary.Graphics
 		{
 			UpdateSubResource(data, 0);
 		}
+
+		/// <summary>
+		/// Function to return whether a texture sub resource is locked or not.
+		/// </summary>
+		/// <param name="subResource">Sub resource to check.</param>
+		/// <returns>TRUE if it's locked, FALSE if not.</returns>
+		public bool IsLocked(int subResource)
+		{
+			if (subResource >= _lock.Count)
+				return false;
+
+			return _lock[subResource] != null;
+		}
+
+		/// <summary>
+		/// Function to lock the texture for reading/writing.
+		/// </summary>
+		/// <param name="lockFlags">Flags used to lock.</param>
+		/// <remarks>When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
+		/// <para>This overload locks the first sub resource (index 0) only.</para>
+		/// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
+		/// <para>The NoOverwrite flag is not valid with texture locking and will be ignored.</para>
+		/// <para>If the texture is not a staging texture and Read is specified, then an exception will be raised.</para>
+		/// <para>Discard only applied to dynamic textures.  If the texture is not dynamic, then an exception will be raised.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
+		/// <para>-or-</para>
+		/// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
+		/// </exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the texture sub resource is already locked.</exception>
+		public GorgonDataStream Lock(BufferLockFlags lockFlags)
+		{
+			return Lock(0, lockFlags);
+		}
+
+		/// <summary>
+		/// Function to lock a CPU accessible texture sub resource for reading/writing.
+		/// </summary>
+		/// <param name="subResource">Sub resource to lock.</param>
+		/// <param name="lockFlags">Flags used to lock.</param>
+		/// <returns>A stream used to write to the texture.</returns>
+		/// <remarks>When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
+		/// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
+		/// <para>The NoOverwrite flag is not valid with texture locking and will be ignored.</para>
+		/// <para>If the texture is not a staging texture and Read is specified, then an exception will be raised.</para>
+		/// <para>Discard only applied to dynamic textures.  If the texture is not dynamic, then an exception will be raised.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
+		/// <para>-or-</para>
+		/// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
+		/// </exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the texture sub resource is already locked.</exception>
+		public GorgonDataStream Lock(int subResource, BufferLockFlags lockFlags)
+		{
+			D3D.MapMode mapMode = D3D.MapMode.Write;
+			DX.DataStream lockStream = null;
+
+			if (IsLocked(subResource))
+				throw new InvalidOperationException("This texture is already locked.");
+
+			// NoOverwrite is not valid for textures, so just remove it.
+			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
+				lockFlags &= ~BufferLockFlags.NoOverwrite;
+
+#if DEBUG
+			if ((Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Dynamic))
+				throw new ArgumentException("Only dynamic or staging textures may be locked.", "lockFlags");
+
+			if ((Settings.Usage != BufferUsage.Staging) && (((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read) || (lockFlags == BufferLockFlags.Write)))
+				throw new ArgumentException("Cannot use Read or Write (without Discard) unless the texture is a staging texture.", "lockFlags");
+
+			if (((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard) && (Settings.Usage != BufferUsage.Dynamic))
+				throw new ArgumentException("Cannot use discard unless the texture has dynamic usage.", "lockFlags");
+#endif
+
+			if (((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read) && (lockFlags & BufferLockFlags.Write) == BufferLockFlags.Write)
+				mapMode = D3D.MapMode.ReadWrite;
+			else
+			{
+				if ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read)
+					mapMode = D3D.MapMode.Read;
+				if ((lockFlags & BufferLockFlags.Write) == BufferLockFlags.Write)
+					mapMode = D3D.MapMode.Write;
+			}
+
+			if ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
+				mapMode = D3D.MapMode.WriteDiscard;
+
+			Graphics.Context.MapSubresource(D3DTexture, subResource, mapMode, D3D.MapFlags.None, out lockStream);
+
+			if (subResource >= _lock.Count)
+				_lock.Add(lockStream);
+			else
+				_lock[subResource] = lockStream;
+
+			return new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length); ;
+		}
+
+		/// <summary>
+		/// Function to unlock a locked texture.
+		/// </summary>
+		public void Unlock()
+		{
+			Unlock(0);
+		}
+
+		/// <summary>
+		/// Function to unlock a locked texture sub resource.
+		/// </summary>
+		public void Unlock(int subResource)
+		{
+			if (!IsLocked(subResource))
+				return;
+
+			Graphics.Context.UnmapSubresource(D3DTexture, subResource);
+			_lock[subResource].Dispose();
+			_lock[subResource] = null;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -745,6 +869,7 @@ namespace GorgonLibrary.Graphics
 		protected GorgonTexture(GorgonGraphics graphics, string name, ITextureSettings settings)
 			: base(name)
 		{
+			_lock = new List<DX.DataStream>(16);
 			Settings = settings;
 			Graphics = graphics;
 			_texture1D = this as GorgonTexture1D;

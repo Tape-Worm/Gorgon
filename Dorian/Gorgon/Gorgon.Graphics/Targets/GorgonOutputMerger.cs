@@ -548,9 +548,18 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffer">Buffer holding the GPU generated data.</param>
 		/// <param name="alignedAyteOffset">Number of bytes to start at within the buffer.</param>
 		/// <param name="isIndexed">TRUE if the data is indexed, FALSE if not.</param>
+		/// <remarks>This method is not supported by SM2_a_b or SM_4.x video devices.</remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown if the current video device is a SM2_a_b or SM4_x device.</exception>
 		public void DrawInstancedIndirect(GorgonBaseBuffer buffer, int alignedAyteOffset, bool isIndexed)
 		{
 			GorgonDebug.AssertNull<GorgonBaseBuffer>(buffer, "buffer");
+
+#if DEBUG
+			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) ||
+				(_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4) ||
+				(_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1))
+				throw new InvalidOperationException("Cannot call DrawInstancedIndirect without a SM5 or better video device.");
+#endif
 
 			if (isIndexed)
 				_graphics.Context.DrawIndexedInstancedIndirect(buffer.D3DBuffer, alignedAyteOffset);
