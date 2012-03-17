@@ -300,12 +300,19 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will clip/scale the output to the the constraints in the viewport(s).
 		/// <para>Viewports must have a width and height greater than 0.</para>
 		/// <para>Which viewport to use is determined by the SV_ViewportArrayIndex semantic output by a geometry shader; if a geometry shader does not specify the semantic, then the first viewport in the list will be used.</para>
+		/// <para>On SM2_a_b devices only the first viewport will be used.</para>
 		/// </remarks>
 		public void SetViewport(IEnumerable<GorgonViewport> viewPorts)
 		{
 			if (viewPorts == null)
 			{
 				Graphics.Context.Rasterizer.SetViewport(0, 0, 1.0f, 1.0f, 0, 1.0f);
+				return;
+			}
+
+			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			{
+				SetViewport(viewPorts.ElementAt(0));
 				return;
 			}
 
@@ -340,13 +347,23 @@ namespace GorgonLibrary.Graphics
 		/// Function to set a list of scissor rectangle clipping regions.
 		/// </summary>
 		/// <param name="regions">Regions to set.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="regions"/> parameter will use the width/height of the current <see cref="P:GorgonLibrary.Graphics.OutputMerger.RenderTargets">render target</see>.</remarks>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="regions"/> parameter will use the width/height of the current <see cref="P:GorgonLibrary.Graphics.OutputMerger.RenderTargets">render target</see>.
+		/// <para>On SM2_a_b devices only the first clip rectangle will be used.</para>
+		/// </remarks>
 		public void SetClip(IEnumerable<System.Drawing.Rectangle> regions)
 		{
 			if (regions == null)
 			{
 				if (Graphics.Output.RenderTargets[0] != null)
 					SetClip(new System.Drawing.Rectangle(0, 0, Graphics.Output.RenderTargets[0].Settings.Width, Graphics.Output.RenderTargets[0].Settings.Height));
+				return;
+			}
+
+
+			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			{
+				if (Graphics.Output.RenderTargets[0] != null)
+					SetClip(regions.ElementAt(0));
 				return;
 			}
 

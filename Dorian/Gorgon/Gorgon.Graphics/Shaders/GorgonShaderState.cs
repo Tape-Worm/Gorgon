@@ -189,7 +189,10 @@ namespace GorgonLibrary.Graphics
 				: base(shaderState.Graphics, 4096, Int32.MaxValue)
 			{
 				_shader = shaderState;
-				_textureStates = new GorgonTextureSamplerStates[D3D.CommonShaderStage.SamplerSlotCount];
+				if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+					_textureStates = new GorgonTextureSamplerStates[16];
+				else
+					_textureStates = new GorgonTextureSamplerStates[D3D.CommonShaderStage.SamplerSlotCount];
 				_states = new D3D.SamplerState[_textureStates.Count];
 			}
 			#endregion
@@ -925,6 +928,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the sampler states.
 		/// </summary>
+		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a sampler will raise an exception.</remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
 		public TextureSamplerState TextureSamplers
 		{
 			get;
@@ -934,6 +939,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the list of textures for the shaders.
 		/// </summary>
+		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
 		public ShaderTextures Textures
 		{
 			get;
@@ -1002,7 +1009,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		protected GorgonShaderState(GorgonGraphics graphics)
 		{
-			_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
+			if (graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				_views = new D3D.ShaderResourceView[8];
+			else
+				_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
+
 			_resources = new IShaderResource[_views.Length];
 
 			Graphics = graphics;			
@@ -1112,8 +1123,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="resources">Resources to update.</param>
+		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
 		protected override void SetResources(int slot, int count, D3D.ShaderResourceView[] resources)
 		{
+#if DEBUG
+			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				throw new InvalidOperationException("Cannot set resources on a SM2_a_b device.");
+#endif
 			if (count == 1)
 				Graphics.Context.VertexShader.SetShaderResource(slot, resources[0]);
 			else
@@ -1126,8 +1142,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
+		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
 		internal override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
 		{
+#if DEBUG
+			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				throw new InvalidOperationException("Cannot set resources on a SM2_a_b device.");
+#endif
 			if (count == 1)
 				Graphics.Context.VertexShader.SetSampler(slot, samplers[0]);
 			else

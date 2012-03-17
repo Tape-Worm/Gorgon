@@ -77,7 +77,7 @@ namespace Tester_Graphics
 						MipCount = 1,
 						ArrayCount = 1,
 						Multisampling = new GorgonMultisampling(1, 0),
-						Usage = BufferUsage.Default
+						Usage = BufferUsage.Dynamic
 					});
 
 				_2D = _graphics.Create2DRenderer(_swapChain);
@@ -111,10 +111,10 @@ namespace Tester_Graphics
 				}
 
 				
-				using (GorgonDataStream stream = new GorgonDataStream(data))
+/*				using (GorgonDataStream stream = new GorgonDataStream(data))
 				{
 					_texture.UpdateSubResource(new GorgonTexture2DData(stream, 1024), 0);
-				}
+				}*/
 
 				data = new byte[64 * 4 * 64];
 				//_rnd.NextBytes(data);
@@ -126,12 +126,21 @@ namespace Tester_Graphics
 					data[i + 2] = (byte)((16384 - i) / 64);
 					data[i + 3] = 255;
 				}
-				using (GorgonDataStream stream = new GorgonDataStream(data))
+/*				using (GorgonDataStream stream = new GorgonDataStream(data))
 				{
 					_target.Texture.UpdateSubResource(new GorgonTexture2DData(stream, 256), 0, new Rectangle(128, 128, 64, 64));
+				}*/
+
+				using (GorgonDataStream stream = _texture.Lock(0, BufferLockFlags.Write | BufferLockFlags.Discard))
+				{
+					for (int y = 128; y < 128 + 64; y++)
+					{
+						stream.Position = ((256 * 4) * y) + (128 * 4);
+						stream.Write(data, (y - 128) * 256, 256);
+					}
 				}
-
-
+				_texture.Unlock();
+								
 				//_target.Texture.CopySubResource(_texture, new Rectangle(0, 0, 256, 240), Vector2.Zero);
 
 				// TODO: Test this on the 6870, buggy ATI drivers seem to be choking on this, especially on SM2_a_b feature levels.
@@ -163,12 +172,12 @@ namespace Tester_Graphics
 						_2D.Target = _target;
 						//_2D.Clear(Color.Black);
 
-						//sprite.Opacity = 1.0f;
-						//sprite.Position = new Vector2(40, 40);
+						sprite.Opacity = 1.0f;
+						sprite.Position = new Vector2(40, 40);
 						//sprite.Angle += 90.0f * timing.FrameDelta;
-						//sprite.Draw();
+						sprite.Draw();
 
-						//_2D.Render();
+						_2D.Render();
 
 						//_target.Texture.Save(@"X:\unpak\testfile.png", ImageFileFormat.PNG);
 
