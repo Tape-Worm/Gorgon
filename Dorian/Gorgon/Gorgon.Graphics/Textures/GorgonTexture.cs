@@ -201,23 +201,19 @@ namespace GorgonLibrary.Graphics
 					int slicePitch = 0;
 
 					if (isCompressed)
-						slicePitch = GorgonMathUtility.Max(1, ((mipHeight + 3) / 4) * bytes) * GorgonMathUtility.Max(1, ((mipWidth + 3) / 4) * bytes);
+						slicePitch = GorgonMathUtility.Max(1, ((mipHeight + 3) / 4)) * (GorgonMathUtility.Max(1, ((mipWidth + 3) / 4)) * bytes);
 					else
-						slicePitch = ((mipWidth + bytes - 1) / bytes) * mipHeight;
+						slicePitch = (mipWidth * bytes) * mipHeight;
 						
 					for (int slice = 0; slice < depth; slice++)
 						result += slicePitch;
 
-					mipWidth >>= mipIndex;
-					mipHeight >>= mipIndex;
-					depth >>= mipIndex;
-
-					if (mipWidth < 1)
-						mipWidth = 1;
-					if (mipHeight < 1)
-						mipHeight = 1;
-					if (depth < 1)
-						depth = 1;
+					if (mipWidth > 1)
+						mipWidth >>= 1;
+					if (mipHeight > 1)
+						mipHeight >>= 1;
+					if (depth > 1)
+						depth >>= 1;
 				}
 			}
 
@@ -439,15 +435,15 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="source">The source resource.</param>
 		/// <param name="destination">The destination resource.</param>
-		/// <param name="srcSubresourceIndex">Index of the source subresource.</param>
-		/// <param name="destSubresourceIndex">Index of the destination subresource.</param>
+		/// <param name="srcSubResourceIndex">Index of the source subresource.</param>
+		/// <param name="destSubResourceIndex">Index of the destination subresource.</param>
 		/// <param name="sourceRegion">The source region to copy.</param>
 		/// <param name="x">Destination horizontal coordindate.</param>
 		/// <param name="y">Destination vertical coordinate.</param>
 		/// <param name="z">Destination depth coordinate.</param>
-		internal virtual void CopySubresourceProxy(GorgonTexture source, GorgonTexture destination, int srcSubresourceIndex, int destSubresourceIndex, D3D.ResourceRegion? sourceRegion, int x, int y, int z)
+		internal virtual void CopySubResourceProxy(GorgonTexture source, GorgonTexture destination, int srcSubResourceIndex, int destSubResourceIndex, D3D.ResourceRegion? sourceRegion, int x, int y, int z)
 		{
-			Graphics.Context.CopySubresourceRegion(source.D3DTexture, srcSubresourceIndex, sourceRegion, destination.D3DTexture, destSubresourceIndex, z, y, z);
+			Graphics.Context.CopySubresourceRegion(source.D3DTexture, srcSubResourceIndex, sourceRegion, destination.D3DTexture, destSubResourceIndex, z, y, z);
 		}
 
 		/// <summary>
@@ -606,7 +602,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="texture">Source texture to copy.</param>
 		/// <remarks>
-		/// This overload will copy the -entire- texture, including mipmaps, array levels, etc...  Use <see cref="M:GorgonLibrary.Graphics.GorgonTexture.CopySubresource(GorgonTexture2D, int, int, System.Drawing.Rectangle, SlimMath.Vector2)">CopySubresource</see> to copy a portion of the texture.
+		/// This overload will copy the -entire- texture, including mipmaps, array levels, etc...  Use <see cref="M:GorgonLibrary.Graphics.GorgonTexture.CopySubResource(GorgonTexture2D, int, int, System.Drawing.Rectangle, SlimMath.Vector2)">CopySubResource</see> to copy a portion of the texture.
 		/// <para>This method will -not- perform stretching, filtering or clipping.</para>
 		/// <para>The <paramref name="texture"/> dimensions must be have the same dimensions as this texture.  If they do not, an exception will be thrown.</para>
 		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters.</para>
@@ -655,6 +651,87 @@ namespace GorgonLibrary.Graphics
 
 			// If we have multisampling enabled, then copy the entire sub resource.
 			Graphics.Context.CopyResource(texture.D3DTexture, D3DTexture);
+		}
+
+		/// <summary>
+		/// Function to copy data from the CPU to a texture.
+		/// </summary>
+		/// <param name="data">Data to copy to the texture.</param>
+		/// <param name="subResource">Sub resource index to use.</param>
+		/// <remarks>Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.</remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
+		/// <para>-or-</para>
+		/// <para>Thrown when this texture has multisampling applied.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown if this texture is a depth/stencil buffer texture.</para>
+		/// </exception>
+		public void UpdateSubResource(ISubResourceData data, int subResource)
+		{
+#if DEBUG
+			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
+				throw new InvalidOperationException("Cannot update a texture that is Dynamic or Immutable");
+
+			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
+				throw new InvalidOperationException("Cannot update a texture that is multisampled.");
+
+			if ((_texture2D != null) && (_texture2D.IsDepthStencil))
+				throw new InvalidOperationException("Cannot update a texture used as a depth/stencil buffer.");
+#endif
+
+			SharpDX.DataBox box = new SharpDX.DataBox()
+			{
+				DataPointer = data.Data.PositionPointer,
+				RowPitch = data.RowPitch,
+				SlicePitch = data.SlicePitch
+			};
+
+			D3D.ResourceRegion region = new D3D.ResourceRegion();
+
+			if (_texture1D != null)
+			{
+				region.Front = 0;
+				region.Back = 1;
+				region.Left = 0;
+				region.Right = Settings.Width;
+				region.Top = 0;
+				region.Bottom = 1;
+			}
+			else if (_texture2D != null)
+			{
+				region.Front = 0;
+				region.Back = 1;
+				region.Left = 0;
+				region.Right = Settings.Width;
+				region.Top = 0;
+				region.Bottom = Settings.Height;
+			} 
+			else if (_texture3D != null)
+			{
+				region.Front = 0;
+				region.Back = Settings.Depth;
+				region.Left = 0;
+				region.Right = Settings.Width;
+				region.Top = 0;
+				region.Bottom = Settings.Height;
+			}
+
+			Graphics.Context.UpdateSubresource(box, D3DTexture, subResource, region);
+		}
+
+		/// <summary>
+		/// Function to copy data from the CPU to a texture.
+		/// </summary>
+		/// <param name="data">Data to copy to the texture.</param>
+		/// <remarks>Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.</remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
+		/// <para>-or-</para>
+		/// <para>Thrown when this texture has multisampling applied.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown if this texture is a depth/stencil buffer texture.</para>
+		/// </exception>
+		public void UpdateSubResource(ISubResourceData data)
+		{
+			UpdateSubResource(data, 0);
 		}
 		#endregion
 

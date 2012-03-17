@@ -21,6 +21,7 @@ namespace Tester_Graphics
 {	
 	public partial class Form1 : Form
 	{
+		private Random _rnd = new Random();
 		private GorgonGraphics _graphics = null;
 		private GorgonSwapChain _swapChain = null;
 		private Gorgon2D _2D = null;
@@ -82,11 +83,56 @@ namespace Tester_Graphics
 				_2D = _graphics.Create2DRenderer(_swapChain);
 				_2D.IsLogoVisible = true;
 
-				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(128.0f, 128.0f), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
+				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(256.0f, 256.0f), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
 
 				_target.Texture.Copy(Properties.Resources.Haiku);
-				_texture.CopySubresource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
-				_target.Texture.CopySubresource(_texture, new Rectangle(0, 0, 256, 240), Vector2.Zero);
+				_texture.CopySubResource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
+
+				byte[] data = new byte[_texture.SizeInBytes];
+
+				//_rnd.NextBytes(data);
+				for (int i = 0; i < data.Length; i+=4)
+				{
+					data[i] = 255;
+					data[i + 1] = 0;
+					data[i + 2] = 0;
+					data[i + 3] = 255;
+				}
+
+				int dataposition = ((256 * 4) * 128) + (128 * 4);
+
+				for (int i = 0; i < 8; i++)
+				{
+					data[dataposition] = 255;
+					data[dataposition + 1] = 255;
+					data[dataposition + 2] = 255;
+					data[dataposition + 3] = 255;
+					dataposition += 4;
+				}
+
+				
+				using (GorgonDataStream stream = new GorgonDataStream(data))
+				{
+					_texture.UpdateSubResource(new GorgonTexture2DData(stream, 1024), 0);
+				}
+
+				data = new byte[64 * 4 * 64];
+				//_rnd.NextBytes(data);
+
+				for (int i = 0; i < data.Length; i += 4)
+				{
+					data[i] = 64;
+					data[i + 1] = 128;
+					data[i + 2] = (byte)((16384 - i) / 64);
+					data[i + 3] = 255;
+				}
+				using (GorgonDataStream stream = new GorgonDataStream(data))
+				{
+					_target.Texture.UpdateSubResource(new GorgonTexture2DData(stream, 256), 0, new Rectangle(128, 128, 64, 64));
+				}
+
+
+				//_target.Texture.CopySubResource(_texture, new Rectangle(0, 0, 256, 240), Vector2.Zero);
 
 				// TODO: Test this on the 6870, buggy ATI drivers seem to be choking on this, especially on SM2_a_b feature levels.
 				//GorgonTexture2D normalTexture = _target.Texture.ConvertToNormalized32Bit();
@@ -115,14 +161,14 @@ namespace Tester_Graphics
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 						_2D.Target = _target;
-						_2D.Clear(Color.Black);
+						//_2D.Clear(Color.Black);
 
-						sprite.Opacity = 0.5f;
-						sprite.Position = new Vector2(0, 0);
-						sprite.Angle += 90.0f * timing.FrameDelta;
-						sprite.Draw();
+						//sprite.Opacity = 1.0f;
+						//sprite.Position = new Vector2(40, 40);
+						//sprite.Angle += 90.0f * timing.FrameDelta;
+						//sprite.Draw();
 
-						_2D.Render();
+						//_2D.Render();
 
 						//_target.Texture.Save(@"X:\unpak\testfile.png", ImageFileFormat.PNG);
 

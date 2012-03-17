@@ -127,13 +127,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="source">The source resource.</param>
 		/// <param name="destination">The destination resource.</param>
-		/// <param name="srcSubresourceIndex">Index of the source subresource.</param>
-		/// <param name="destSubresourceIndex">Index of the destination subresource.</param>
+		/// <param name="srcSubResourceIndex">Index of the source subresource.</param>
+		/// <param name="destSubResourceIndex">Index of the destination subresource.</param>
 		/// <param name="sourceRegion">The source region to copy.</param>
 		/// <param name="x">Destination horizontal coordindate.</param>
 		/// <param name="y">Destination vertical coordinate.</param>
 		/// <param name="z">Destination depth coordinate.</param>
-		internal override void CopySubresourceProxy(GorgonTexture source, GorgonTexture destination, int srcSubresourceIndex, int destSubresourceIndex, D3D.ResourceRegion? sourceRegion, int x, int y, int z)
+		internal override void CopySubResourceProxy(GorgonTexture source, GorgonTexture destination, int srcSubResourceIndex, int destSubResourceIndex, D3D.ResourceRegion? sourceRegion, int x, int y, int z)
 		{
 			GorgonTexture2D shim = null;
 
@@ -141,7 +141,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (this.Settings.Usage == BufferUsage.Staging)
 					shim = CreateShim(source);
-				base.CopySubresourceProxy(shim != null ? shim : source, destination, srcSubresourceIndex, destSubresourceIndex, sourceRegion, x, y, z);
+				base.CopySubResourceProxy(shim != null ? shim : source, destination, srcSubResourceIndex, destSubResourceIndex, sourceRegion, x, y, z);
 			}
 			finally
 			{
