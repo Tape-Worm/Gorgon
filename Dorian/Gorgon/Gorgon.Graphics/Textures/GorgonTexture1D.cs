@@ -123,6 +123,34 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to return the index of a sub resource (mip level, array item, etc...) in a texture.
+		/// </summary>
+		/// <param name="mipLevel">Mip level to look up.</param>
+		/// <param name="arrayIndex">Array index to look up.</param>
+		/// <param name="mipCount">Number of mip map levels in the texture.</param>
+		/// <param name="arrayCount">Number of array indices in the texture.</param>
+		/// <returns>The sub resource index.</returns>
+		public static int GetSubResourceIndex(int mipLevel, int arrayIndex, int mipCount, int arrayCount)
+		{
+			if (arrayCount < 1)
+				arrayCount = 1;
+			if (arrayCount >= 2048)
+				arrayCount = 2048;
+
+			// Constrain to settings.
+			if (mipLevel < 0)
+				mipLevel = 0;
+			if (arrayIndex < 0)
+				arrayIndex = 0;
+			if (mipLevel >= mipCount)
+				mipLevel = mipCount - 1;
+			if (arrayIndex >= arrayCount)
+				arrayIndex = arrayCount - 1;
+
+			return D3D.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, mipCount);
+		}
+
+		/// <summary>
 		/// Function to save the texture data to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write.</param>
@@ -147,9 +175,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="destination">Width of the destination area.</param>
 		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
 		/// <para>The <paramref name="sourceRange"/> and ><paramref name="destination"/> must fit within the dimensions of this texture.  If they do not, then the copy will be clipped so that they fit.</para>
+		/// <para>The sourceRange uses absolute coorindates.  That is, Minimum is the Left coordinate, and Maximum is the Right coordinate.</para>
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
+		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture1D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
 		/// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
@@ -159,7 +189,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
-		public void CopySubresource(GorgonTexture1D texture, int subResource, int destSubResource, GorgonMinMax? sourceRange, int destination)
+		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource, GorgonMinMax? sourceRange, int destination)
 		{
 			GorgonDebug.AssertNull<GorgonTexture1D>(texture, "texture");
 
@@ -176,7 +206,7 @@ namespace GorgonLibrary.Graphics
 #endif
 
 			// If we have multisampling enabled, then copy the entire sub resource.
-			CopySubresourceProxy(texture, this, subResource, destSubResource, new D3D.ResourceRegion()
+			CopySubResourceProxy(texture, this, subResource, destSubResource, new D3D.ResourceRegion()
 			{
 				Back = 1,
 				Front = 0,
@@ -195,6 +225,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="destination">Destination point to copy to.</param>
 		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
 		/// <para>The <paramref name="sourceRange"/> and ><paramref name="destination"/> must fit within the dimensions of this texture.  If they do not, then the copy will be clipped so that they fit.</para>
+		/// <para>The sourceRange uses absolute coorindates.  That is, Minimum is the Left coordinate, and Maximum is the Right coordinate.</para>
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// </remarks>
@@ -205,14 +236,14 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
-		public void CopySubresource(GorgonTexture1D texture, GorgonMinMax sourceRange, int destination)
+		public void CopySubResource(GorgonTexture1D texture, GorgonMinMax sourceRange, int destination)
 		{
 #if DEBUG
 			if (texture == this)
 				throw new ArgumentException("The source texture and this texture are the same.  Cannot copy.", "texture");
 #endif
 
-			CopySubresource(texture, 0, 0, sourceRange, destination);
+			CopySubResource(texture, 0, 0, sourceRange, destination);
 		}
 
 		/// <summary>
@@ -232,14 +263,14 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
-		public void CopySubresource(GorgonTexture1D texture)
+		public void CopySubResource(GorgonTexture1D texture)
 		{
 #if DEBUG
 			if (texture == this)
 				throw new ArgumentException("The source texture and this texture are the same.  Cannot copy.", "texture");
 #endif
 
-			CopySubresource(texture, 0, 0, null, 0);
+			CopySubResource(texture, 0, 0, null, 0);
 		}
 
 		/// <summary>
@@ -253,6 +284,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
+		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture1D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -261,9 +293,56 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
-		public void CopySubresource(GorgonTexture1D texture, int subResource, int destSubResource)
+		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource)
 		{
-			CopySubresource(texture, subResource, destSubResource, null, 0);
+			CopySubResource(texture, subResource, destSubResource, null, 0);
+		}
+
+		/// <summary>
+		/// Function to copy data from the CPU to a texture.
+		/// </summary>
+		/// <param name="data">Data to copy to the texture.</param>
+		/// <param name="subResource">Sub resource index to use.</param>
+		/// <param name="destRange">The destination range to write into.</param>
+		/// <remarks>Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.
+		/// <para>The destRange uses absolute coorindates.  That is, Minimum is the Left coordinate, and Maximum is the Right coordinate.</para>
+		/// </remarks>
+		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
+		/// </exception>
+		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonMinMax destRange)
+		{
+#if DEBUG
+			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
+				throw new InvalidOperationException("Cannot update a texture that is Dynamic or Immutable");
+#endif
+
+			if (destRange.Minimum < 0)
+				destRange.Minimum = 0;
+			if (destRange.Minimum >= Settings.Width) 
+				destRange.Minimum = Settings.Width - 1;
+			if (destRange.Maximum < 0)
+				destRange.Maximum = 0;
+			if (destRange.Maximum >= Settings.Width)
+				destRange.Maximum = Settings.Width -1;
+
+			SharpDX.DataBox box = new SharpDX.DataBox()
+			{
+				DataPointer = data.Data.PositionPointer,
+				RowPitch = data.RowPitch,
+				SlicePitch = data.SlicePitch
+			};
+
+			D3D.ResourceRegion region = new D3D.ResourceRegion()
+			{
+				Front = 0,
+				Back = 1,
+				Top = 0,
+				Bottom = 1,
+				Left = destRange.Minimum,
+				Right = destRange.Maximum
+			};
+
+			Graphics.Context.UpdateSubresource(box, D3DTexture, subResource, region);
 		}
 		#endregion
 

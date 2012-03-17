@@ -3,7 +3,7 @@ This list is not in order.  Please don't get excited.
 * Refactor the texture class into a better abstract class using D3DResources (Done)
 	+ Put in updatesubresource functionality for textures
 	+ Put in map functionality for textures	
-	+ Add GetSubResourceIndex1/2/3D to the Textures interface.
+	+ Add GetSubResourceIndex1/2/3D to the Textures interface (Done, added to texture objects as static member).
 * Add buffers
 	+ Basic GPU/CPU buffer (this would allow for structured buffers to be sent to the shader).
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders.
