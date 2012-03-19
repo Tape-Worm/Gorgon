@@ -188,11 +188,18 @@ namespace GorgonLibrary.Graphics
 			internal TextureSamplerState(GorgonShaderState<T> shaderState)
 				: base(shaderState.Graphics, 4096, Int32.MaxValue)
 			{
+				int count = D3D.CommonShaderStage.SamplerSlotCount;
+
 				_shader = shaderState;
 				if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-					_textureStates = new GorgonTextureSamplerStates[16];
-				else
-					_textureStates = new GorgonTextureSamplerStates[D3D.CommonShaderStage.SamplerSlotCount];
+				{
+					if (shaderState is GorgonVertexShaderState)
+						count = 0;
+					else
+						count = 16;
+				}
+
+				_textureStates = new GorgonTextureSamplerStates[count];
 				_states = new D3D.SamplerState[_textureStates.Count];
 			}
 			#endregion
@@ -900,7 +907,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the current shader.
 		/// </summary>
-		public T Current
+		public virtual T Current
 		{
 			get
 			{
@@ -933,7 +940,7 @@ namespace GorgonLibrary.Graphics
 		public TextureSamplerState TextureSamplers
 		{
 			get;
-			private set;
+			protected set;
 		}
 
 		/// <summary>
@@ -944,7 +951,7 @@ namespace GorgonLibrary.Graphics
 		public ShaderTextures Textures
 		{
 			get;
-			private set;
+			protected set;
 		}
 		#endregion
 
@@ -1009,15 +1016,21 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		protected GorgonShaderState(GorgonGraphics graphics)
 		{
-			if (graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				_views = new D3D.ShaderResourceView[8];
-			else
-				_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
+			int count = D3D.CommonShaderStage.InputResourceSlotCount;
 
+			if (graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			{
+				if (this is GorgonVertexShaderState)
+					count = 0;
+				else
+					count = 8;
+			}
+
+			_views = new D3D.ShaderResourceView[count];
 			_resources = new IShaderResource[_views.Length];
 
 			Graphics = graphics;			
-			ConstantBuffers = new ShaderConstantBuffers(this);			
+			ConstantBuffers = new ShaderConstantBuffers(this);
 			TextureSamplers = new TextureSamplerState(this);
 			Textures = new ShaderTextures(this);
 		}
@@ -1090,7 +1103,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonPixelShaderState"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
-		internal GorgonPixelShaderState(GorgonGraphics graphics)
+		protected internal GorgonPixelShaderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
 			for (int i = 0; i < TextureSamplers.Count; i++)
@@ -1175,7 +1188,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonVertexShaderState"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
-		internal GorgonVertexShaderState(GorgonGraphics graphics)
+		protected internal GorgonVertexShaderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
 			for (int i = 0; i < TextureSamplers.Count; i++)

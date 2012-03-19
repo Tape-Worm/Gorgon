@@ -23,7 +23,6 @@ namespace Tester_Graphics
 	{
 		private Random _rnd = new Random();
 		private GorgonGraphics _graphics = null;
-		private GorgonSwapChain _swapChain = null;
 		private Gorgon2D _2D = null;
 		private GorgonRenderTarget _target = null;
 		private GorgonTexture2D _texture = null;
@@ -35,6 +34,7 @@ namespace Tester_Graphics
 
 			try
 			{
+
 				this.ClientSize = new Size(800, 600);
 
 				using (GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false))
@@ -42,13 +42,6 @@ namespace Tester_Graphics
 					//_graphics = new GorgonGraphics(_devices[_devices.Count - 1], DeviceFeatureLevel.SM4);
 					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
 				}
-
-				//_graphics = new GorgonGraphics();
-				_swapChain = _graphics.Output.CreateSwapChain("My Swap Chain", new GorgonSwapChainSettings()
-				{
-					Window = this,
-					IsWindowed = true
-				});
 
 				_target = _graphics.Output.CreateRenderTarget("My target", new GorgonRenderTargetSettings()
 				{
@@ -69,18 +62,9 @@ namespace Tester_Graphics
 				//    byte[] data = _1D.Save(ImageFileFormat.DDS);
 				//}
 
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @".\TextureTest.png", new GorgonTexture2DSettings()
-					{
-						Width = 256,
-						Height = 256,
-						Format = BufferFormat.R8G8B8A8_UIntNormal,						
-						MipCount = 1,
-						ArrayCount = 1,
-						Multisampling = new GorgonMultisampling(1, 0),
-						Usage = BufferUsage.Dynamic
-					});
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @".\TextureTest.png", GorgonTexture2DSettings.FromFile);
 
-				_2D = _graphics.Create2DRenderer(_swapChain);
+				_2D = _graphics.Create2DRenderer(this);
 				_2D.IsLogoVisible = true;
 
 				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(256.0f, 256.0f), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
@@ -131,15 +115,15 @@ namespace Tester_Graphics
 					_target.Texture.UpdateSubResource(new GorgonTexture2DData(stream, 256), 0, new Rectangle(128, 128, 64, 64));
 				}*/
 
-				using (GorgonDataStream stream = _texture.Lock(0, BufferLockFlags.Write | BufferLockFlags.Discard))
-				{
-					for (int y = 128; y < 128 + 64; y++)
-					{
-						stream.Position = ((256 * 4) * y) + (128 * 4);
-						stream.Write(data, (y - 128) * 256, 256);
-					}
-				}
-				_texture.Unlock();
+				//using (GorgonDataStream stream = _texture.Lock(0, BufferLockFlags.Write | BufferLockFlags.Discard))
+				//{
+				//    for (int y = 128; y < 128 + 64; y++)
+				//    {
+				//        stream.Position = ((256 * 4) * y) + (128 * 4);
+				//        stream.Write(data, (y - 128) * 256, 256);
+				//    }
+				//}
+				//_texture.Unlock();
 								
 				//_target.Texture.CopySubResource(_texture, new Rectangle(0, 0, 256, 240), Vector2.Zero);
 

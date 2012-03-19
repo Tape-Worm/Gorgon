@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using D3D = SharpDX.Direct3D11;
 using Shaders = SharpDX.D3DCompiler;
 using GorgonLibrary.Diagnostics;
@@ -98,6 +99,8 @@ namespace GorgonLibrary.Graphics
 		private bool _disposed = false;								// Flag to indicate that the object was disposed.
 		private string _source = null;								// Shader source code.
 		private ShaderVersion _version = ShaderVersion.Version2a_b;	// Shader model version.
+		private bool _isDebug = false;								// Flag to indicate that debug information is included.
+		private Shaders.ShaderBytecode _byteCode = null;			// Byte code for the shader.
 		#endregion
 
 		#region Properties.
@@ -106,17 +109,52 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal Shaders.ShaderBytecode D3DByteCode
 		{
-			get;
-			private set;
+			get
+			{
+				return _byteCode;
+			}
+			set
+			{
+				if (_byteCode != value)
+				{
+					_byteCode = value;
+					HasChanged = true;
+				}
+			}
 		}
 
 		/// <summary>
-		/// Property to return whether to include debug information in the shader or not.
+		/// Property to return whether the shader is a binary object or not.
 		/// </summary>
+		public bool IsBinary
+		{
+			get
+			{
+				return (string.IsNullOrEmpty(SourceCode)) && (D3DByteCode != null);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to include debug information in the shader or not.
+		/// </summary>
+		/// <remarks>
+		/// This property has no effect when the shader is a <see cref="P:GorgonLibrary.Graphics.GorgonShader.IsBinary">binary shader</see> (i.e. no source code).
+		/// <para>After changing this property, use the <see cref="M:GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
+		/// </remarks>
 		public bool IsDebug
 		{
-			get;
-			private set;
+			get
+			{
+				return _isDebug;
+			}
+			set
+			{
+				if (_isDebug != value)
+				{
+					_isDebug = value;
+					HasChanged = true;
+				}
+			}
 		}
 
 		/// <summary>
@@ -149,7 +187,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the shader model version number for this shader.
 		/// </summary>
-		/// <remarks>It is not recommended to set this value manually.  Gorgon will attempt to find the best version for the supported feature level.</remarks>
+		/// <remarks>It is not recommended to set this value manually.  Gorgon will attempt to find the best version for the supported feature level.
+		/// <para>After changing this property, use the <see cref="M:GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
+		/// </remarks>
 		public ShaderVersion Version
 		{
 			get
@@ -169,7 +209,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the source code for the shader.
 		/// </summary>
-		/// <remarks>This value will be NULL (Nothing in VB.Net) if the shader has no source code (i.e. it's loaded from a binary shader).</remarks>
+		/// <remarks>This value will be empty or NULL (Nothing in VB.Net) if the shader has no source code (i.e. it's loaded from a binary shader).
+		/// <para>After changing this property, use the <see cref="M:GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
+		/// </remarks>
 		public string SourceCode
 		{
 			get
@@ -255,27 +297,21 @@ namespace GorgonLibrary.Graphics
 
 			return prefix + "_" + version;
 		}
-
-		/// <summary>
-		/// Function to compile the shader.
-		/// </summary>
-		/// <param name="byteCode">Byte code for the shader.</param>
-		protected abstract void CompileImpl(Shaders.ShaderBytecode byteCode);
-
+		
 		/// <summary>
 		/// Function to compile the shader.
 		/// </summary>
 		/// <param name="includeDebugInfo">TRUE to include debug information, FALSE to exclude it.</param>
-		/// <exception cref="System.NotSupportedException">Thrown when the shader is not supported by the current supported feature level for the video hardware.</exception>
-		public void Compile(bool includeDebugInfo)
+		/// <returns>The compiled shader byte code.</returns>
+		private Shaders.ShaderBytecode CompileFromSource(bool includeDebugInfo)
 		{
-			Shaders.ShaderFlags flags = Shaders.ShaderFlags.OptimizationLevel3;			
-
-			if ((!HasChanged) || (string.IsNullOrEmpty(SourceCode)))
-				return;
+			Shaders.ShaderFlags flags = Shaders.ShaderFlags.OptimizationLevel3;
+			string parsedCode = string.Empty;
 
 			try
 			{
+				parsedCode = Graphics.Shaders.IncludeFiles.ProcessSource(SourceCode);
+								
 				IsDebug = includeDebugInfo;
 
 				if (IsDebug)
@@ -284,20 +320,130 @@ namespace GorgonLibrary.Graphics
 				if (Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
 					flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 
-				D3DByteCode = Shaders.ShaderBytecode.Compile(SourceCode, EntryPoint, GetD3DVersion(), flags, Shaders.EffectFlags.None, null, null);
-
-				CompileImpl(D3DByteCode);
-				HasChanged = false;
+				return Shaders.ShaderBytecode.Compile(parsedCode, EntryPoint, GetD3DVersion(), flags, Shaders.EffectFlags.None, null, null);
 			}
 			catch (SharpDX.CompilationException cex)
-			{				
+			{
 				Errors = cex.Message;
 				throw GorgonException.Catch(cex);
 			}
 		}
+
+		/// <summary>
+		/// Function to create the shader.
+		/// </summary>
+		/// <param name="byteCode">Byte code for the shader.</param>
+		protected abstract void CreateShader(Shaders.ShaderBytecode byteCode);
+
+		/// <summary>
+		/// Function to load a shader from preexisting byte code.
+		/// </summary>
+		internal void LoadShader()
+		{
+			if (D3DByteCode != null)
+				CreateShader(D3DByteCode);
+			Graphics.Shaders.Reseat(this);
+			HasChanged = false;
+		}
+
+		/// <summary>
+		/// Function to compile the shader.
+		/// </summary>
+		/// <remarks>Whenever a shader is changed (i.e. its <see cref="GorgonLibrary.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is modified), this method should be called to build the shader.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when the shader is not supported by the current supported feature level for the video hardware.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader fails to compile.</exception>
+		public void Compile()
+		{
+			if (!HasChanged)
+				return;
+
+			if (D3DByteCode != null)
+			{
+				D3DByteCode.Dispose();
+				D3DByteCode = null;
+			}
+
+			if (!string.IsNullOrEmpty(SourceCode))
+				D3DByteCode = CompileFromSource(IsDebug);
+
+			LoadShader();
+		}
+
+		/// <summary>
+		/// Function to save the shader to a stream.
+		/// </summary>
+		/// <param name="stream">Stream to write into.</param>
+		/// <param name="binary">TRUE to save the binary version of the shader, FALSE to save the source.</param>
+		/// <param name="saveDebug">TRUE to save the debug information, FALSE to exclude it.</param>
+		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to TRUE.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="GorgonLibrary.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (Nothing in VB.Net) or empty.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader fails to compile.</exception>
+		public void Save(Stream stream, bool binary, bool saveDebug)
+		{
+			Shaders.ShaderBytecode compiledShader = null;
+			GorgonDebug.AssertNull<Stream>(stream, "stream");
+
+			if ((!binary) && (string.IsNullOrEmpty(SourceCode)))
+				throw new ArgumentException("Cannot save the shader source, no source code was found for the shader.", "compiled");
+
+			if (!binary)
+			{
+				byte[] shaderSource = Encoding.UTF8.GetBytes(SourceCode);
+				stream.Write(shaderSource, 0, shaderSource.Length);
+			}
+			else
+			{
+				try
+				{
+					compiledShader = CompileFromSource(saveDebug);
+					byte[] header = Encoding.UTF8.GetBytes(GorgonShaderBinding.BinaryShaderHeader);
+					stream.Write(header, 0, header.Length);
+					compiledShader.Save(stream);
+				}
+				finally
+				{
+					if (compiledShader != null)
+						compiledShader.Dispose();
+					compiledShader = null;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to save the shader to a file.
+		/// </summary>
+		/// <param name="fileName">File name and path for the shader file.</param>
+		/// <param name="binary">TRUE if saving as a binary version of the shader, FALSE if not.</param>
+		/// <param name="saveDebug">TRUE to save debug information with the shader, FALSE to exclude it.</param>
+		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to TRUE.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown is the fileName parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the shader is being saved as source code and the <see cref="GorgonLibrary.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (Nothing in VB.Net) or empty.</para>
+		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader fails to compile.</exception>
+		public void Save(string fileName, bool binary, bool saveDebug)
+		{
+			FileStream stream = null;
+
+			GorgonDebug.AssertParamString(fileName, "fileName");
+
+			try
+			{
+				stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+				Save(stream, binary, saveDebug);
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Dispose();
+				stream = null;
+			}
+		}
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Constructor/Destructor.		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonShader"/> class.
 		/// </summary>

@@ -15,8 +15,8 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Variables.
 		private Gorgon2D _gorgon2D = null;								// 2D interface that owns this object.
-		private Gorgon2DVertexShader _vertexShader = null;				// Current vertex shader.
-		private Gorgon2DPixelShader _pixelShader = null;				// Current pixel shader.
+		private GorgonVertexShader _vertexShader = null;				// Current vertex shader.
+		private GorgonPixelShader _pixelShader = null;					// Current pixel shader.
 		private GorgonConstantBuffer _viewProjection = null;			// Constant buffer for handling the view/projection matrix upload to the video device.
 		private GorgonConstantBuffer _alphaTest = null;					// Alpha testing data for the shader.
 		private GorgonMinMaxF _alphaTestValue = GorgonMinMaxF.Empty;	// Alpha test value.
@@ -29,7 +29,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the default verte shader.
 		/// </summary>
-		internal GorgonDefaultVertexShader DefaultVertexShader
+		internal GorgonVertexShader DefaultVertexShader
 		{
 			get;
 			private set;
@@ -38,7 +38,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the default diffuse pixel shader with alpha testing.
 		/// </summary>
-		internal GorgonDefaultPixelShaderDiffuse DefaultPixelShaderDiffuse
+		internal GorgonPixelShader DefaultPixelShaderDiffuse
 		{
 			get;
 			private set;
@@ -47,7 +47,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the default textured pixel shader with alpha testing.
 		/// </summary>
-		internal GorgonDefaultPixelShaderTextured DefaultPixelShaderTextured
+		internal GorgonPixelShader DefaultPixelShaderTextured
 		{
 			get;
 			private set;
@@ -106,7 +106,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the current vertex shader.
 		/// </summary>
-		public Gorgon2DVertexShader VertexShader
+		public GorgonVertexShader VertexShader
 		{
 			get
 			{
@@ -122,9 +122,9 @@ namespace GorgonLibrary.Renderers
 						_vertexShader = value;
 
 					if (value != null)
-						_gorgon2D.Graphics.Shaders.VertexShader.Current = _vertexShader.Shader;
+						_gorgon2D.Graphics.Shaders.VertexShader.Current = _vertexShader;
 					else
-						_gorgon2D.Graphics.Shaders.VertexShader.Current = DefaultVertexShader.Shader;
+						_gorgon2D.Graphics.Shaders.VertexShader.Current = DefaultVertexShader;
 
 					_gorgon2D.Graphics.Shaders.VertexShader.ConstantBuffers[0] = _viewProjection;
 				}
@@ -134,7 +134,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the current pixel shader.
 		/// </summary>
-		public Gorgon2DPixelShader PixelShader
+		public GorgonPixelShader PixelShader
 		{
 			get
 			{
@@ -155,7 +155,7 @@ namespace GorgonLibrary.Renderers
 					else
 						_pixelShader = value;
 					
-					_gorgon2D.Graphics.Shaders.PixelShader.Current = _pixelShader.Shader;
+					_gorgon2D.Graphics.Shaders.PixelShader.Current = _pixelShader;
 					_gorgon2D.Graphics.Shaders.PixelShader.ConstantBuffers[0] = _viewProjection;
 				}
 			}
@@ -211,11 +211,19 @@ namespace GorgonLibrary.Renderers
 		/// <param name="gorgon2D">The gorgon 2D interface that owns this object.</param>
 		internal Gorgon2DShaders(Gorgon2D gorgon2D)
 		{
+			string shaderSource = "#GorgonInclude \"Gorgon2DShaders\"";
+
 			_gorgon2D = gorgon2D;
 			
-			DefaultVertexShader = new GorgonDefaultVertexShader(gorgon2D);
-			DefaultPixelShaderDiffuse = new GorgonDefaultPixelShaderDiffuse(gorgon2D);
-			DefaultPixelShaderTextured = new GorgonDefaultPixelShaderTextured(gorgon2D);			
+#if DEBUG
+			DefaultPixelShaderDiffuse = gorgon2D.Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_No_Texture_AlphaTest", "GorgonPixelShaderNoTextureAlphaTest", shaderSource, true);
+			DefaultPixelShaderTextured = gorgon2D.Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture_AlphaTest", "GorgonPixelShaderTextureAlphaTest", shaderSource, true);
+			DefaultVertexShader = gorgon2D.Graphics.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", shaderSource, true);
+#else
+			DefaultPixelShaderDiffuse = gorgon2D.Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_No_Texture", "GorgonPixelShaderNoTextureAlphaTest", shaderSource, false);
+			DefaultPixelShaderTextured = gorgon2D.Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture_AlphaTest", "GorgonPixelShaderTextureAlphaTest", shaderSource, false);
+			DefaultVertexShader = gorgon2D.Graphics.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", shaderSource, false);
+#endif
 
 			_alphaTestData = new GorgonDataStream(32);
 			_projViewData = new GorgonDataStream(DirectAccess.SizeOf<Matrix>());
