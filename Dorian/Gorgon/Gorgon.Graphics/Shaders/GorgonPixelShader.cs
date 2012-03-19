@@ -82,13 +82,13 @@ namespace GorgonLibrary.Graphics
 		/// Function to compile the shader.
 		/// </summary>
 		/// <param name="byteCode">Byte code for the shader.</param>
-		protected override void CompileImpl(SharpDX.D3DCompiler.ShaderBytecode byteCode)
+		protected override void CreateShader(SharpDX.D3DCompiler.ShaderBytecode byteCode)
 		{
 			if (D3DShader != null)
 				D3DShader.Dispose();
 
 			D3DShader = new D3D.PixelShader(Graphics.D3DDevice, byteCode, null);
-			D3DShader.DebugName = "Gorgon Pixel Shader '" + Name + "'";			
+			D3DShader.DebugName = "Gorgon Pixel Shader '" + Name + "'";
 		}
 		#endregion
 

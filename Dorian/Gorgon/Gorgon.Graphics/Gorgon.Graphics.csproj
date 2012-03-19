@@ -90,6 +90,8 @@
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
     <Compile Include="Shaders\GorgonShaderBinding.cs" />
+    <Compile Include="Shaders\GorgonShaderInclude.cs" />
+    <Compile Include="Shaders\GorgonShaderIncludeCollection.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
     <Compile Include="Shaders\IShaderResource.cs" />

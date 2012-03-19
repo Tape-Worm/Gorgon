@@ -9,12 +9,12 @@ This list is not in order.  Please don't get excited.
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders.
 	+ Need better understanding of how textures map to structured buffers and other shader types.	
 * Finish shader objects in base graphics library.
-	+ Add ability to load/save shaders from text file and compiled form.
+	+ Add ability to load/save shaders from text file and compiled form. (Done)
 	+ Maybe consider putting in shader reflection.
 	+ Add compute, domain, hull and geometry shaders (do this ASAP)
-	+ Add #include support - This is necessary especially when pulling stuff from a virtual file system.
+	+ Add #include support - This is necessary especially when pulling stuff from a virtual file system. (Done)
 * Add multi-threaded support for D3D 11 device contexts.
-* Maybe update Gorgon2D to create a swap chain in its Create2DRenderer method in addition to passing one in.
+* Maybe update Gorgon2D to create a swap chain in its Create2DRenderer method in addition to passing one in. (Done)
 * Update 2D shader code
 	+ Load/Save binary/text formats.
 	+ Parse and put in Gorgon 2D specific shader code with required instruction.

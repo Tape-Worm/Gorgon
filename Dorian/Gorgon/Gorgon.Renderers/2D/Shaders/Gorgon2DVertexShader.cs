@@ -71,10 +71,6 @@ namespace GorgonLibrary.Renderers
 		}
 		#endregion
 
-		#region Methods.
-
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DVertexShader"/> class.
@@ -85,7 +81,7 @@ namespace GorgonLibrary.Renderers
 			: base(name)
 		{
 			Gorgon2D = gorgon2D;
-			
+
 			ConstantBuffers = Gorgon2D.Graphics.Shaders.VertexShader.ConstantBuffers;
 		}
 		#endregion
@@ -114,7 +110,7 @@ namespace GorgonLibrary.Renderers
 		public void Dispose()
 		{
 			Dispose(true);
-			GC.SuppressFinalize(this);	
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

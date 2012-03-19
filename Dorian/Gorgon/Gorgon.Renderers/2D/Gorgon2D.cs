@@ -616,10 +616,14 @@ namespace GorgonLibrary.Renderers
 			if (Shaders == null)
 				Shaders = new Gorgon2DShaders(this);
 
+			// Add shader includes.
+			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
+				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
+
 			// Create layout information so we can bind our vertices to the shader.
 			if (_layout == null)
 			{
-				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Gorgon2DVertex), Shaders.DefaultVertexShader.Shader);
+				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Gorgon2DVertex), Shaders.DefaultVertexShader);
 				_vertexSize = _layout.GetSlotSize(0);
 			}
 
@@ -901,12 +905,16 @@ namespace GorgonLibrary.Renderers
 			IsBlendingEnabled = true;
 			IsAlphaTestEnabled = true;
 
+			// Add shader includes if they're gone.
+			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
+				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
+
 			if (Shaders.PixelShader != null)
 			{
 				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.DefaultStates;
-				sampler.TextureFilter = TextureFilter.Point;
-				Shaders.PixelShader.Samplers[0] = sampler;
-				Shaders.PixelShader.Textures[0] = null;
+				sampler.TextureFilter = TextureFilter.Point;				
+				Graphics.Shaders.PixelShader.TextureSamplers[0] = sampler;
+				Graphics.Shaders.PixelShader.Textures[0] = null;
 			}
 
 			Graphics.Rasterizer.SetViewport(Target.Viewport);
