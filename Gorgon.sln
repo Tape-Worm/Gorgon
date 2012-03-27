@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonFramework", "Tools\Go
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonZipFileSystem", "PlugIns\GorgonZipFileSystem\GorgonZipFileSystem.csproj", "{95B2A3B4-AB25-4DA4-88C0-903B811CD944}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSound", "Tools\GSound\GSound\GSound.csproj", "{A1C483C6-D635-4727-9C4E-BB2CAEF1F2DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +74,10 @@ Global
 		{95B2A3B4-AB25-4DA4-88C0-903B811CD944}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95B2A3B4-AB25-4DA4-88C0-903B811CD944}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95B2A3B4-AB25-4DA4-88C0-903B811CD944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1C483C6-D635-4727-9C4E-BB2CAEF1F2DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1C483C6-D635-4727-9C4E-BB2CAEF1F2DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1C483C6-D635-4727-9C4E-BB2CAEF1F2DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1C483C6-D635-4727-9C4E-BB2CAEF1F2DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
