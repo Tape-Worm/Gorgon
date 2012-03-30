@@ -66,6 +66,11 @@ namespace GorgonLibrary.Example
         /// </summary>
         Boolean PitchGoingUp = true;
 
+        /// <summary>
+        /// If true the sound position is going to the left
+        /// </summary>
+        Boolean SoundGoingLeft = true;
+
         public formMain()
         {
             InitializeComponent();
@@ -87,17 +92,31 @@ namespace GorgonLibrary.Example
 
             Context.SetListener(
                 //Set the position of the listener to the center screen
-                new Vector3D(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2, 0f), 
+                //Because Gorgon is 2D and GSound/OpenAL is 3D the best idea is to set the camera Z back a bit from the world
+                new Vector3D(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2, 100f), 
                 //Set the velocity of the listener to 0
                 Vector3D.Zero, 
                 //Set the direction of the listener to be looking in to the screen
                 new Vector3D(0f, 0f, 1f));
 
-            //EngineSound = new SoundBuffer(@"HT1Engine.wav", SoundType.Wav);
+            Context.DistanceModel = DistanceModel.INVERSE_DISTANCE;
+
+            
+
+            //Create the sound buffer from the wave file
             EngineSound = new SoundBuffer(@"HT1Engine.wav", SoundType.Wav);
+
 
             //Create a source using the engine sound
             EngineSource = new SoundSource(EngineSound);
+
+            //Because our camera is 100 back out of the screen, we'll set the reference distance a little more then 100
+            //The reference distance is how big our ear is... if you know what I mean
+            EngineSource.ReferenceDistance = 110f;
+
+            //The max distance of the sound to be heard, if the the sound is smaller then this distance, it'll play at the lowest volume
+            EngineSource.MaxRange = Gorgon.Screen.Width / 4;           
+
 
             //Set the sound to center screen
             EngineSource.Position = new Vector3D(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2, 0f);
@@ -107,6 +126,7 @@ namespace GorgonLibrary.Example
             
             
             //Create the music buffer from an OGG File
+            //DST-Xend is from http://www.nosoapradio.us/
             MusicSound = new SoundBuffer(@"DST-Xend.ogg", SoundType.OGG);
 
             MusicSource = new SoundSource(MusicSound);
@@ -123,6 +143,7 @@ namespace GorgonLibrary.Example
         {
             Gorgon.Screen.Clear(Color.Black);
 
+            //Modify the pitch of the engine sound
             if (PitchGoingUp)
             {
                 EngineSource.Pitch += 0.1f * e.FrameDeltaTime;
@@ -135,6 +156,25 @@ namespace GorgonLibrary.Example
                 if (EngineSource.Pitch < 0.25f)
                     PitchGoingUp = true;
             }
+
+            //The sound moves around based on the pitch of the engine
+            float SoundSpeed = 100 * EngineSource.Pitch;
+
+            //Modify the position of the engine sound
+            //Note: your sound MUST be mono, otherwise positioning will not apply to it.
+            if (SoundGoingLeft)
+            {//Move the sound left
+                EngineSource.Position -= (Vector3D.UnitX * SoundSpeed) * e.FrameDeltaTime;
+                if (EngineSource.Position.X <= 0f)
+                    SoundGoingLeft = false;
+            }
+            else
+            {//Move the sound right
+                EngineSource.Position += (Vector3D.UnitX * SoundSpeed) * e.FrameDeltaTime;
+                if (EngineSource.Position.X >= Gorgon.Screen.Width)
+                    SoundGoingLeft = true;
+            }
+
         }
     }
 }
