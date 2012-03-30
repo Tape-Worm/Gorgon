@@ -94,6 +94,7 @@ namespace GorgonLibrary.Sound
         private SoundBuffer _Buffer;
         private bool _disposed;
 
+
         #endregion
 
         #region Properties
@@ -274,6 +275,57 @@ namespace GorgonLibrary.Sound
             {
                 _Buffer = value;
                 al.Sourcei(Source, al.BUFFER, value.GetBufferID());
+            }
+        }
+
+        /// <summary>
+        /// How quiet it is at max distance
+        /// </summary>
+        public float MinGain
+        {
+            get
+            {
+                float[] Result = new float[1];
+                al.GetSourcef(Source, al.MIN_GAIN, Result);
+                return Result[0];
+            }
+            set
+            {
+                al.Sourcef(Source, al.MIN_GAIN, value);
+            }
+        }
+
+        /// <summary>
+        /// How loud it is at closest distance
+        /// </summary>
+        public float MaxGain
+        {
+            get
+            {
+                float[] Result = new float[1];
+                al.GetSourcef(Source, al.MAX_GAIN, Result);
+                return Result[0];
+            }
+            set
+            {
+                al.Sourcef(Source, al.MAX_GAIN, value);
+            }
+        }
+
+        /// <summary>
+        /// rolloffFactor is used for distance attenuation calculations based on inverse distance with rolloff. For distances smaller than maxDistance (and, depending on the distance model, larger than referenceDistance), this will scale the distance attenuation over the applicable range. See Sound.OpenAL.AL.Attenuation for details how the attenuation is computed as a function of the distance. The initial value is 1.
+        /// </summary>
+        public float RolloffFactor
+        {
+            get
+            {
+                float[] Result = new float[1];
+                al.GetSourcef(Source, al.ROLLOFF_FACTOR, Result);
+                return Result[0];
+            }
+            set
+            {
+                al.Sourcef(Source, al.ROLLOFF_FACTOR, value);
             }
         }
 
