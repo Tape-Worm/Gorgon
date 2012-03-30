@@ -40,6 +40,14 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the pre-multiplied projection/view matrix.
+		/// </summary>
+		Matrix ViewProjection
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return the projection matrix for the camera.
 		/// </summary>
 		Matrix Projection

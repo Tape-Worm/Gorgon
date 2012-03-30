@@ -443,7 +443,7 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Constructor/Destructor.		
+		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonShader"/> class.
 		/// </summary>

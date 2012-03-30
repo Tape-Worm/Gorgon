@@ -285,9 +285,58 @@ namespace GorgonLibrary.Renderers
 		private ICamera _camera = null;																// Current camera.
 		private GorgonOrthoCamera _defaultCamera = null;											// Default camera.
 		private GorgonSprite _logoSprite = null;													// Logo sprite.
+		private GorgonConstantBuffer _projectionViewBuffer = null;									// Buffer for the projection/view matrix.
+		private GorgonDataStream _projectionViewStream = null;										// Stream used to write to the projection/view matrix buffer.
+		private GorgonVertexShader _vertexShader = null;											// Current vertex shader.
+		private GorgonPixelShader _pixelShader = null;												// Current pixel shader.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the alpha test constant buffer.
+		/// </summary>
+		internal GorgonConstantBuffer AlphaTestBuffer
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the stream to the alpha test buffer.
+		/// </summary>
+		internal GorgonDataStream AlphaTestStream
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the default verte shader.
+		/// </summary>
+		internal GorgonVertexShader DefaultVertexShader
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the default diffuse pixel shader with alpha testing.
+		/// </summary>
+		internal GorgonPixelShader DefaultPixelShaderDiffuse
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the default textured pixel shader with alpha testing.
+		/// </summary>
+		internal GorgonPixelShader DefaultPixelShaderTextured
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the icons used for specific renderable items.
 		/// </summary>
@@ -439,15 +488,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to return the shader interface.
-		/// </summary>
-		public Gorgon2DShaders Shaders
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to set or return whether the depth buffer should be enabled.
 		/// </summary>
 		public bool IsDepthBufferEnabled
@@ -506,7 +546,7 @@ namespace GorgonLibrary.Renderers
 
 					// Force an update.
 					CurrentCamera.Update();
-					Shaders.UpdateGorgonTransformation();
+					UpdateProjectionViewMatrix(CurrentCamera);
 				}
 			}
 		}
@@ -563,9 +603,91 @@ namespace GorgonLibrary.Renderers
 				}
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the current vertex shader.
+		/// </summary>
+		public GorgonVertexShader VertexShader
+		{
+			get
+			{
+				if (_vertexShader == DefaultVertexShader)
+					return null;
+
+				return _vertexShader;
+			}
+			set
+			{
+				if ((_vertexShader != value) || ((value == null) && (_vertexShader != DefaultVertexShader)))
+				{
+					RenderObjects();
+
+					if (value == null)
+						_vertexShader = DefaultVertexShader;
+					else
+						_vertexShader = value;
+
+					if (value != null)
+						Graphics.Shaders.VertexShader.Current = _vertexShader;
+					else
+						Graphics.Shaders.VertexShader.Current = DefaultVertexShader;
+
+					Graphics.Shaders.VertexShader.ConstantBuffers[0] = _projectionViewBuffer;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the current pixel shader.
+		/// </summary>
+		public GorgonPixelShader PixelShader
+		{
+			get
+			{
+				if ((_pixelShader == DefaultPixelShaderTextured) || (_pixelShader == DefaultPixelShaderDiffuse))
+					return null;
+
+				return _pixelShader;
+			}
+			set
+			{
+				if ((_pixelShader != value) || ((value == null) && (_pixelShader != DefaultPixelShaderTextured) && (_pixelShader != DefaultPixelShaderDiffuse) && (_pixelShader != DefaultPixelShaderDiffuse) && (_pixelShader != DefaultPixelShaderTextured)))
+				{
+					RenderObjects();
+
+					if (value == null)
+					{
+						// If we have a texture in the first slot, then set the proper shader.
+						if (Graphics.Shaders.PixelShader.Textures[0] == null)
+							_pixelShader = DefaultPixelShaderDiffuse;
+						else
+							_pixelShader = DefaultPixelShaderTextured;
+					}
+					else
+						_pixelShader = value;
+
+					// Assign buffers.
+					Graphics.Shaders.PixelShader.Current = _pixelShader;
+					Graphics.Shaders.PixelShader.ConstantBuffers[0] = _projectionViewBuffer;
+					Graphics.Shaders.PixelShader.ConstantBuffers[1] = (IsAlphaTestEnabled ? AlphaTestBuffer : null);
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to update the projection view matrix.
+		/// </summary>
+		/// <param name="currentCamera">The currently active camera.</param>
+		private void UpdateProjectionViewMatrix(ICamera currentCamera)
+		{
+			_projectionViewStream.Position = 0;
+			_projectionViewStream.Write(currentCamera.ViewProjection);
+			_projectionViewStream.Position = 0;
+			_projectionViewBuffer.Update(_projectionViewStream);
+		}
+
 		/// <summary>
 		/// Function to update the current render target.
 		/// </summary>
@@ -612,18 +734,58 @@ namespace GorgonLibrary.Renderers
 			// Create the default projection matrix.
 			Target.Resized -= new EventHandler(target_Resized);
 
-			// Create shaders.
-			if (Shaders == null)
-				Shaders = new Gorgon2DShaders(this);
+			// Create constant buffers.
+			if (_projectionViewBuffer == null)
+			{
+				_projectionViewBuffer = Graphics.Shaders.CreateConstantBuffer(Matrix.SizeInBytes, false);
+				_projectionViewStream = new GorgonDataStream(_projectionViewBuffer.Size);
+			}
+
+			if (AlphaTestBuffer == null)
+			{
+				AlphaTestBuffer = Graphics.Shaders.CreateConstantBuffer(32, false);
+				AlphaTestStream = new GorgonDataStream(AlphaTestBuffer.Size);
+				AlphaTestStream.Write(new byte[AlphaTestBuffer.Size], 0, AlphaTestBuffer.Size);
+				AlphaTestStream.Position = 0;
+				AlphaTestBuffer.Update(AlphaTestStream);
+			}
 
 			// Add shader includes.
 			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
 				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
 
+			// Create default shaders.
+			if (DefaultVertexShader == null)
+			{
+#if DEBUG
+				DefaultVertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
+#else
+				DefaultVertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
+#endif
+			}
+
+			if (DefaultPixelShaderDiffuse == null)
+			{
+#if DEBUG
+				DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_No_Texture_AlphaTest", "GorgonPixelShaderNoTextureAlphaTest", "#GorgonInclude \"Gorgon2DShaders\"", true);
+#else
+				DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_No_Texture_AlphaTest", "GorgonPixelShaderNoTextureAlphaTest", "#GorgonInclude \"Gorgon2DShaders\"", false);
+#endif
+			}
+
+			if (DefaultPixelShaderTextured == null)
+			{
+#if DEBUG
+				DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture_AlphaTest", "GorgonPixelShaderTextureAlphaTest", "#GorgonInclude \"Gorgon2DShaders\"", true);
+#else
+				DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture_AlphaTest", "GorgonPixelShaderTextureAlphaTest", "#GorgonInclude \"Gorgon2DShaders\"", false);
+#endif
+			}
+
 			// Create layout information so we can bind our vertices to the shader.
 			if (_layout == null)
 			{
-				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Gorgon2DVertex), Shaders.DefaultVertexShader);
+				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Gorgon2DVertex), DefaultVertexShader);
 				_vertexSize = _layout.GetSlotSize(0);
 			}
 
@@ -694,7 +856,7 @@ namespace GorgonLibrary.Renderers
 				currentCamera.Update();
 
 				// Send projection/view to the shader.
-				Shaders.UpdateGorgonTransformation();
+				UpdateProjectionViewMatrix(currentCamera);
 			}
 
 			if (_cacheStart > 0)
@@ -770,6 +932,18 @@ namespace GorgonLibrary.Renderers
 					RenderObjects();
 					hasRendered = true;
 				}
+
+				if ((stateChange & StateChange.Texture) == StateChange.Texture)
+				{
+					// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader.
+					if ((renderable.Texture != null) && (_pixelShader == DefaultPixelShaderDiffuse))
+						PixelShader = DefaultPixelShaderTextured;						
+
+					// If we have a texture change, and we have the default textured shader loaded, then switch to the diffuse shader.
+					if ((renderable.Texture == null) && (_pixelShader == DefaultPixelShaderTextured))
+						PixelShader = DefaultPixelShaderDiffuse;
+				}
+
 				_stateManager.ApplyState(renderable, stateChange);
 
 				// If we switch vertex buffers, then reset the cache.
@@ -889,8 +1063,8 @@ namespace GorgonLibrary.Renderers
 			_stateRecall.Push(new PreviousStates(Graphics));
 
 			// Set our default shaders.
-			Shaders.VertexShader = Shaders.DefaultVertexShader;
-			Shaders.PixelShader = Shaders.DefaultPixelShaderDiffuse;
+			VertexShader = DefaultVertexShader;
+			PixelShader = DefaultPixelShaderDiffuse;
 			Graphics.Input.IndexBuffer = DefaultIndexBuffer;
 			Graphics.Input.VertexBuffers[0] = DefaultVertexBufferBinding;
 			Graphics.Input.Layout = _layout;
@@ -909,7 +1083,7 @@ namespace GorgonLibrary.Renderers
 			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
 				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
 
-			if (Shaders.PixelShader != null)
+			if (PixelShader != null)
 			{
 				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.DefaultStates;
 				sampler.TextureFilter = TextureFilter.Point;				
@@ -1071,18 +1245,32 @@ namespace GorgonLibrary.Renderers
 
 					TrackedObjects.ReleaseAll();
 
-					if (Shaders != null)
-						Shaders.CleanUp();
-
 					if (Target != null)
 						Target.Resized -= new EventHandler(target_Resized);
 
 					if (_layout != null)
 						_layout.Dispose();
+
+					if (DefaultPixelShaderDiffuse != null)
+						DefaultPixelShaderDiffuse.Dispose();
+					if (DefaultPixelShaderTextured != null)
+						DefaultPixelShaderTextured.Dispose();
+					if (DefaultPixelShaderDiffuse != null)
+						DefaultPixelShaderDiffuse.Dispose();
+
 					if (DefaultVertexBufferBinding != null)
 						DefaultVertexBufferBinding.VertexBuffer.Dispose();
 					if (DefaultIndexBuffer != null)
 						DefaultIndexBuffer.Dispose();
+
+					if (_projectionViewBuffer != null)
+						_projectionViewBuffer.Dispose();
+					if (_projectionViewStream != null)
+						_projectionViewStream.Dispose();
+					if (AlphaTestBuffer != null)
+						AlphaTestBuffer.Dispose();
+					if (AlphaTestStream != null)
+						AlphaTestStream.Dispose();
 
 					Graphics.RemoveTrackedObject(this);
 				}

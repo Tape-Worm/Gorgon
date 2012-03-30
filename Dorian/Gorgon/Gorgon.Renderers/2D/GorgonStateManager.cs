@@ -68,41 +68,37 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		IndexBuffer = 32,
 		/// <summary>
-		/// Alpha testing value changed.
-		/// </summary>
-		AlphaTestValue = 64,
-		/// <summary>
 		/// Sampler state changed.
 		/// </summary>
-		Sampler = 128,
+		Sampler = 64,
 		/// <summary>
 		/// Blending factor.
 		/// </summary>
-		BlendFactor = 256,
+		BlendFactor = 128,
 		/// <summary>
 		/// Rasterizer state changed.
 		/// </summary>
-		Raster = 512,
+		Raster = 256,
 		/// <summary>
 		/// Depth/stencil state changed.
 		/// </summary>
-		DepthStencil = 1024,
+		DepthStencil = 512,
 		/// <summary>
-		/// Alpha test enabled state changed.
+		/// Alpha test state changed.
 		/// </summary>
-		AlphaTestEnable = 2048,
+		AlphaTest = 1024,
 		/// <summary>
 		/// Blending enable state changed.
 		/// </summary>
-		BlendEnable = 4096,
+		BlendEnable = 2048,
 		/// <summary>
 		/// Clipping enable state changed.
 		/// </summary>
-		ClipEnable = 8192,
+		ClipEnable = 4096,
 		/// <summary>
 		/// Depth stencil reference changed.
 		/// </summary>
-		DepthStencilReference = 16384
+		DepthStencilReference = 8192
 	}
 
 	/// <summary>
@@ -119,7 +115,8 @@ namespace GorgonLibrary.Renderers
 		private GorgonVertexBufferBinding _vertexBuffer = default(GorgonVertexBufferBinding);
 		private GorgonDepthStencilStates _depthState = GorgonDepthStencilStates.DefaultStates;
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
-		private Gorgon2DShaders _shaders = null;
+		private GorgonMinMaxF _alphaTestValue = GorgonMinMaxF.Empty;
+		private bool _alphaTestEnabled = false;
 		private GorgonTexture _texture = null;
 		#endregion
 
@@ -128,6 +125,28 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to update the alpha testing state.
+		/// </summary>
+		/// <param name="enabled">TRUE to enable the alpha test, FALSE to disable it.</param>
+		/// <param name="range">Range of values to include.</param>
+		private void UpdateAlphaTest(bool enabled, GorgonMinMaxF range)
+		{
+			_alphaTestEnabled = enabled;
+			_alphaTestValue = range;
+
+			_gorgon2D.AlphaTestStream.Position = 0;
+			_gorgon2D.AlphaTestStream.Write(_alphaTestEnabled);
+			// Pad to 4 bytes, bool is 1 byte in .NET.
+			_gorgon2D.AlphaTestStream.Write<byte>(0);
+			_gorgon2D.AlphaTestStream.Write<byte>(0);
+			_gorgon2D.AlphaTestStream.Write<byte>(0);
+			_gorgon2D.AlphaTestStream.Write<float>(_alphaTestValue.Minimum);
+			_gorgon2D.AlphaTestStream.Write<float>(_alphaTestValue.Maximum);
+			_gorgon2D.AlphaTestStream.Position = 0;
+			_gorgon2D.AlphaTestBuffer.Update(_gorgon2D.AlphaTestStream);
+		}
+
 		/// <summary>
 		/// Function to check to see if there are any state changes.
 		/// </summary>
@@ -141,13 +160,7 @@ namespace GorgonLibrary.Renderers
 			GorgonRenderable.TextureSamplerState sampler = renderable.TextureSampler;
 
 			if (renderable.Texture != _texture)
-			{
 				result |= StateChange.Texture;
-
-				if (((_shaders.PixelShader == _shaders.DefaultPixelShaderDiffuse) && (renderable.Texture != null)) ||
-					(_shaders.PixelShader ==_shaders.DefaultPixelShaderTextured) && (renderable.Texture == null))
-					result |= StateChange.Shader;
-			}
 
 			if (_gorgon2D.IsBlendingEnabled != _blendState.RenderTarget0.IsBlendingEnabled)
 				result |= StateChange.BlendEnable;
@@ -188,11 +201,8 @@ namespace GorgonLibrary.Renderers
 			if (!renderable.VertexBufferBinding.Equals(_vertexBuffer))
 				result |= StateChange.VertexBuffer;
 
-			if (_gorgon2D.IsAlphaTestEnabled != _shaders.IsAlphaTestEnabled)
-				result |= StateChange.AlphaTestEnable;
-
-			if ((_gorgon2D.IsAlphaTestEnabled) && (renderable.AlphaTestValues != _shaders.AlphaTestValue))
-				result |= StateChange.AlphaTestValue;
+			if ((_gorgon2D.IsAlphaTestEnabled != _alphaTestEnabled) || (((_gorgon2D.IsAlphaTestEnabled) && (!renderable.AlphaTestValues.Equals(_alphaTestValue)))))
+				result |= StateChange.AlphaTest;
 
 			if ((_gorgon2D.IsDepthBufferEnabled != _depthState.IsDepthEnabled) 
 				|| (_gorgon2D.IsStencilEnabled != _depthState.IsStencilEnabled))
@@ -236,17 +246,8 @@ namespace GorgonLibrary.Renderers
 			GorgonRenderable.TextureSamplerState sampler = renderable.TextureSampler;
 
 			if ((state & StateChange.Texture) == StateChange.Texture)
-				_texture = _shaders.PixelShader.Textures[0] = renderable.Texture;
+				_texture = _graphics.Shaders.PixelShader.Textures[0] = renderable.Texture;
 			
-			if ((state & StateChange.Shader) == StateChange.Shader)
-			{
-				// If we're using the default shader, switch between the default no texture or textured pixel shader depending on our state.
-				if (renderable.Texture != null)
-					_shaders.PixelShader = _shaders.DefaultPixelShaderTextured;
-				else
-					_shaders.PixelShader = _shaders.DefaultPixelShaderDiffuse;
-			}
-
 			if ((state & StateChange.BlendEnable) == StateChange.BlendEnable)
 			{
 				_blendState.RenderTarget0.IsBlendingEnabled = _gorgon2D.IsBlendingEnabled;
@@ -277,7 +278,7 @@ namespace GorgonLibrary.Renderers
 				_samplerState.VerticalAddressing = sampler.VerticalWrapping;
 				_samplerState.BorderColor = sampler.BorderColor;
 				_samplerState.TextureFilter = sampler.TextureFilter;
-				_shaders.PixelShader.Samplers[0] = _samplerState;
+				_graphics.Shaders.PixelShader.TextureSamplers[0] = _samplerState;
 			}
 
 			if ((state & StateChange.Raster) == StateChange.Raster)
@@ -301,11 +302,8 @@ namespace GorgonLibrary.Renderers
 				_graphics.Input.VertexBuffers[0] = renderable.VertexBufferBinding;
 			}
 
-			if ((state & StateChange.AlphaTestEnable) == StateChange.AlphaTestEnable)
-				_shaders.IsAlphaTestEnabled = _gorgon2D.IsAlphaTestEnabled;
-
-			if ((state & StateChange.AlphaTestValue) == StateChange.AlphaTestValue)
-				_shaders.AlphaTestValue = renderable.AlphaTestValues;
+			if ((state & StateChange.AlphaTest) == StateChange.AlphaTest)
+				UpdateAlphaTest(_gorgon2D.IsAlphaTestEnabled, renderable.AlphaTestValues);
 
 			if ((state & StateChange.DepthStencilReference) == StateChange.DepthStencilReference)
 				_graphics.Output.DepthStencilState.DepthStencilReference = depthStencil.DepthStencilReference;
@@ -341,7 +339,7 @@ namespace GorgonLibrary.Renderers
 			_rasterState = _graphics.Rasterizer.States;
 			_samplerState = _graphics.Shaders.PixelShader.TextureSamplers[0];
 			_depthState = _graphics.Output.DepthStencilState.States;
-			_texture = _shaders.PixelShader.Textures[0];
+			_texture = _graphics.Shaders.PixelShader.Textures[0];
 		}
 		#endregion
 
@@ -354,7 +352,6 @@ namespace GorgonLibrary.Renderers
 		{
 			_gorgon2D = gorgon2D;
 			_graphics = _gorgon2D.Graphics;
-			_shaders = _gorgon2D.Shaders;
 		}
 		#endregion
 	}
