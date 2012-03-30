@@ -33,6 +33,21 @@ using System.IO;
 namespace GorgonLibrary.Sound
 {
     /// <summary>
+    /// Distance model that a context can use
+    /// </summary>
+    public enum DistanceModel : int
+    {
+        /// <summary>
+        /// Inverse Distance, unclamped.
+        /// </summary>
+        INVERSE_DISTANCE = 0xD001,
+        /// <summary>
+        /// Inverse distance, clamped.
+        /// </summary>
+        INVERSE_DISTANCE_CLAMPED = 0xD002
+    }
+
+    /// <summary>
     /// This is the sound context. Set listener information in here
     /// </summary>
     public class GSContext : object, IDisposable
@@ -57,6 +72,21 @@ namespace GorgonLibrary.Sound
         /// The direction that is up.
         /// </summary>
         public Vector3D Up = new Vector3D(0f, 1f, 0f);
+
+        /// <summary>
+        /// How OpenAL behaves at different distances
+        /// </summary>
+        public DistanceModel DistanceModel
+        {
+            get
+            {
+                return (DistanceModel)al.GetInteger(al.DISTANCE_MODEL);
+            }
+            set
+            {
+                al.DistanceModel((int)value);
+            }
+        }
 
         #endregion
 
