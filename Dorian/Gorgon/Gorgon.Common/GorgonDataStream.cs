@@ -1452,9 +1452,6 @@ namespace GorgonLibrary
 
 			_pointerOffset.MarshalFrom(data, deleteContents);
 
-			// TODO: Remove this.
-			T result = _pointerOffset.MarshalTo<T>();
-			
 			Position += dataSize;
 		}
 

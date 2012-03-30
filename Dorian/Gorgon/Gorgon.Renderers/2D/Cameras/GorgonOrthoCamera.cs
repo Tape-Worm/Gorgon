@@ -53,6 +53,7 @@ namespace GorgonLibrary.Renderers
 		private Vector2 _anchor = Vector2.Zero;							// Target position.
 		private bool _needsProjectionUpdate = true;						// Flag to indicate that the projection matrix needs updating.
 		private bool _needsViewUpdate = true;							// Flag to indicate that the view matrix needs updating.
+		private Matrix _viewProjection = Matrix.Identity;				// View/projection matrix.
 		#endregion
 
 		#region Properties.
@@ -224,6 +225,9 @@ namespace GorgonLibrary.Renderers
 					UpdateViewMatrix();
 			}
 
+			if ((_needsProjectionUpdate) || (_needsViewUpdate))
+				Matrix.Multiply(ref _view, ref _projection, out _viewProjection);
+
 			_needsProjectionUpdate = false;
 			_needsViewUpdate = false;
 		}
@@ -276,6 +280,17 @@ namespace GorgonLibrary.Renderers
 
 		#region ICamera Members
 		#region Properties.
+		/// <summary>
+		/// Property to return the pre-multiplied projection/view matrix.
+		/// </summary>
+		public Matrix ViewProjection
+		{
+			get
+			{
+				return _viewProjection;
+			}
+		}
+
 		/// <summary>
 		/// Property to return whether the view matrix needs updating.
 		/// </summary>

@@ -83,10 +83,6 @@
     <Compile Include="Renderables\GorgonTriangle.cs" />
     <Compile Include="Renderables\IDeferredTextureLoad.cs" />
     <Compile Include="Renderables\IRenderable.cs" />
-    <Compile Include="Shaders\Gorgon2DVertexShader.cs" />
-    <Compile Include="Shaders\GorgonDefaultShaders.cs" />
-    <Compile Include="Shaders\Gorgon2DPixelShader.cs" />
-    <Compile Include="Shaders\Gorgon2DShaders.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />

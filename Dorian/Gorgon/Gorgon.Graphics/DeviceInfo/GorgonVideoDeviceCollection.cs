@@ -271,10 +271,6 @@ namespace GorgonLibrary.Graphics
 				{
 					ClearItems();
 
-					// TODO: This pattern does not work for this, if we destroy the factory before creating the device it may cause issues?
-					// Check the GorgonGraphics constructor to see how the pattern is incorrectly executed.
-					// Could this be why our code is failing when saving textures?  Doubtful.
-					// The simplest solution is to pass to the user to make sure the enumerator has the same lifetime as the graphics object.
 					if (_factory != null)
 						_factory.Dispose();
 				}
