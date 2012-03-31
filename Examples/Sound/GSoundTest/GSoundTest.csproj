@@ -74,9 +74,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Gorgon\bin\Release\Gorgon.dll</HintPath>
     </Reference>
-    <Reference Include="GSound, Version=1.0.4469.15397, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GSound, Version=1.0.4473.16369, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Tools\GSound\GSound\bin\Release\GSound.dll</HintPath>
+      <HintPath>..\..\..\Tools\GSound\bin\Release\GSound.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
