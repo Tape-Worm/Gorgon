@@ -25,8 +25,11 @@ namespace Tester_Graphics
 		private GorgonGraphics _graphics = null;
 		private Gorgon2D _2D = null;
 		private GorgonRenderTarget _target = null;
+		private GorgonRenderTarget _target2 = null;
 		private GorgonTexture2D _texture = null;
 		private GorgonOrthoCamera _cam1 = null;
+		private GorgonConstantBuffer _waveEffectBuffer = null;
+		private GorgonDataStream _waveEffectStream = null;
 		
 		protected override void OnLoad(EventArgs e)
 		{
@@ -44,6 +47,13 @@ namespace Tester_Graphics
 				}
 
 				_target = _graphics.Output.CreateRenderTarget("My target", new GorgonRenderTargetSettings()
+				{
+					Width = 320,
+					Height = 240,
+					Format = BufferFormat.R8G8B8A8_UIntNormal
+				});
+
+				_target2 = _graphics.Output.CreateRenderTarget("My target 2", new GorgonRenderTargetSettings()
 				{
 					Width = 320,
 					Height = 240,
@@ -150,9 +160,51 @@ namespace Tester_Graphics
 				sprite.Texture = _texture;*/
 
 				Vector2 position = Vector2.Zero;
+				string shaderSource = "#GorgonInclude \"Gorgon2DShaders\"";
+				//    "float4 PixEntry(GorgonSpriteVertex vertex) : SV_Target\n" +
+				//    "{\n" +
+				//    "return GorgonPixelShaderTextured(vertex);\n" +
+				//    "float grey = color.r * 0.3f + color.g * 0.59f + color.b * 0.11f;\n" +
+				//    "return float4(grey, grey, grey, color.a);\n" +
+				//    "}";
 
+				GorgonPixelShader tempShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("TempShader", "GorgonPixelShaderQuickBlur", shaderSource, true);
+
+				_2D.PixelShader = tempShader;
+
+				_waveEffectBuffer = _graphics.Shaders.CreateConstantBuffer(16, false);
+				_waveEffectStream = new GorgonDataStream(16);
+				_graphics.Shaders.PixelShader.ConstantBuffers[2] = _waveEffectBuffer;
+
+				float angle = 0.0f;
+				float offset = 0.0f;
+				bool backForth = false;
+				int blurPasses = 128;
+
+				GorgonTimer timer = new GorgonTimer();
+				
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
+						//if (!backForth)
+						//    angle += 0.125f * timing.FrameDelta;
+						//else
+						//    angle -= 0.125f * timing.FrameDelta;
+
+						//if ((angle > 0.05f) || (angle < -0.05f))
+						//    backForth = !backForth;
+							
+						_waveEffectStream.Position = 0;
+						_waveEffectStream.Write(1.0f / _target.Settings.Width);
+						_waveEffectStream.Write(1.0f / _target.Settings.Height);
+						//_waveEffectStream.Write(0.2f);
+						//_waveEffectStream.Write(0.8f); //(angle + 0.05f) * 2000.0f);
+						//_waveEffectStream.Write(1.0f);
+						//_waveEffectStream.Write(1.0f / _target.Settings.Height); //(angle + 0.05f) * 2000.0f);
+						offset += (10.0f * timing.FrameDelta) / sprite.Size.Y;
+						//_waveEffectStream.Write(offset);						
+						_waveEffectStream.Position = 0;
+						_waveEffectBuffer.Update(_waveEffectStream);
+
 						_2D.Target = _target;
 						//_2D.Clear(Color.Black);
 
@@ -161,18 +213,52 @@ namespace Tester_Graphics
 						//sprite.Angle += 90.0f * timing.FrameDelta;
 						sprite.Draw();
 
-						_2D.Render();
+//						_2D.Render();
 
 						//_target.Texture.Save(@"X:\unpak\testfile.png", ImageFileFormat.PNG);
+						
+
+						_2D.PixelShader = tempShader;
+						for (int i = 0; i < blurPasses; i++)
+						{
+							if ((i % 2) == 0)
+							{
+								_2D.Target = _target2;
+								_2D.Drawing.Blit(_target, Vector2.Zero);
+							}
+							else
+							{
+								_2D.Target = _target;
+								_2D.Drawing.Blit(_target2, Vector2.Zero);
+							}
+						}
+
+						if (timer.Milliseconds > 100)
+						{
+							timer.Reset();
+							if (!backForth)
+								blurPasses--;
+							else
+								blurPasses++;
+
+							if ((blurPasses == 0) || (blurPasses == 128))
+								backForth = !backForth;
+						}
+
+						if ((_2D.Target != _target) && (blurPasses > 0))
+						{
+							_2D.Target = _target;
+							_2D.Drawing.Blit(_target2, Vector2.Zero);
+						}
 
 						_2D.Target = null;
+						_2D.PixelShader = null;						
 
 						_2D.Clear(Color.White);
 						_2D.Drawing.BlendingMode = BlendingMode.None;
 						_2D.Drawing.Blit(_target, position);
 
 						position = new Vector2(position.X + 15.0f * timing.FrameDelta, position.Y + 15.0f * timing.FrameDelta);
-
 						_2D.Render();
 						return true;
 					};
@@ -203,6 +289,9 @@ namespace Tester_Graphics
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
+
+			if (_waveEffectStream != null)
+				_waveEffectStream.Dispose();
 
 			if (_graphics != null)
 				_graphics.Dispose();

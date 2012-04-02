@@ -767,18 +767,18 @@ namespace GorgonLibrary.Renderers
 			if (DefaultPixelShaderDiffuse == null)
 			{
 #if DEBUG
-				DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_No_Texture_AlphaTest", "GorgonPixelShaderNoTextureAlphaTest", "#GorgonInclude \"Gorgon2DShaders\"", true);
+				DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse", "GorgonPixelShaderDiffuse", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-				DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_No_Texture_AlphaTest", "GorgonPixelShaderNoTextureAlphaTest", "#GorgonInclude \"Gorgon2DShaders\"", false);
+				DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse", "GorgonPixelShaderDiffuse", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 			}
 
 			if (DefaultPixelShaderTextured == null)
 			{
 #if DEBUG
-				DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture_AlphaTest", "GorgonPixelShaderTextureAlphaTest", "#GorgonInclude \"Gorgon2DShaders\"", true);
+				DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextured", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-				DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture_AlphaTest", "GorgonPixelShaderTextureAlphaTest", "#GorgonInclude \"Gorgon2DShaders\"", false);
+				DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextured", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 			}
 

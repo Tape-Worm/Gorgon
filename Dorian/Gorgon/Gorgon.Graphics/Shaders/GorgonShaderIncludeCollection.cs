@@ -280,7 +280,7 @@ namespace GorgonLibrary.Graphics
 		internal string ProcessSource(string sourceCode)
 		{
 			StringBuilder result = new StringBuilder();
-			IList<string> lines = sourceCode.Replace("\n", string.Empty).Split(new char[] { '\r' });
+			IList<string> lines = sourceCode.Replace("\r\n", "\n").Replace("\n\r", "\n").Split(new char[] { '\n' });
 			int i = 0;
 
 			while (i < lines.Count)
