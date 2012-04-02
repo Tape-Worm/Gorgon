@@ -30,7 +30,7 @@ This list is not in order.  Please don't get excited.
 * Add a batch renderable using a static vertex buffer (possible with dynamic, may be worth looking into)
 * Add perspective camera
 * Add perspective sprites
-* Add user definable shaders for 2D library.
+* Add user definable shaders for 2D library. (Done)
 * Write editor for creating/editing sprites, fonts, shaders (maybe), textures (maybe)
 	+ This time make it one large program that uses a project so everything can be integrated.
 	+ Maybe allow for pack file support like zip, previous gorgon bzip stuff.
