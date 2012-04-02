@@ -4,6 +4,28 @@
     <name>SharpDX</name>
   </assembly>
   <members>
+    <member name="T:SharpDX.D3DCompiler.CompilationResult">
+      <summary>
+            Shader compilation results.
+            </summary>
+    </member>
+    <member name="M:SharpDX.D3DCompiler.CompilationResult.#ctor(SharpDX.D3DCompiler.ShaderBytecode,SharpDX.Result,System.String)">
+      <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.D3DCompiler.CompilationResult" /> class.
+            </summary>
+      <param name="bytecode">The bytecode.</param>
+      <param name="resultCode">The result code.</param>
+      <param name="message">The message.</param>
+    </member>
+    <member name="M:SharpDX.D3DCompiler.CompilationResult.op_Implicit(SharpDX.D3DCompiler.CompilationResult)~SharpDX.D3DCompiler.ShaderBytecode">
+      <summary>
+            Performs an implicit conversion from <see cref="T:SharpDX.D3DCompiler.CompilationResult" /> to <see cref="T:SharpDX.D3DCompiler.ShaderBytecode" />.
+            </summary>
+      <param name="input">The input.</param>
+      <returns>
+            The result of the conversion.
+            </returns>
+    </member>
     <member name="T:SharpDX.D3DCompiler.D3D">
       <summary>
             Warming, the following code is manually copied from generated code from Direct3D10 compiler.
@@ -8513,7 +8535,7 @@
             Sends queued-up commands in the command buffer to the graphics processing unit (GPU).	
             </summary>
       <remarks>	
-            Most applications don't need to call this method. If an application calls this method when not necessary, it incurs a performance penalty.  Each call to Flush incurs a significant amount of overhead.When Microsoft Direct3D state-setting, present, or draw commands are called by an application, those commands are queued into an internal command buffer.  Flush sends those commands to the GPU for processing. Typically, the Direct3D runtime sends these commands to the GPU automatically whenever the runtime determines that  they need to be sent, such as when the command buffer is full or when an application maps a resource. Flush sends the commands manually.We recommend that you use Flush when the CPU waits for an arbitrary amount of time (such as when  you call the Sleep function).Because Flush operates asynchronously,  it can return either before or after the GPU finishes executing the queued graphics commands. However, the graphics commands eventually always complete. You can call the <see cref="M:SharpDX.Direct3D11.Device.CreateQuery(SharpDX.Direct3D11.QueryDescription,SharpDX.Direct3D11.Query)" /> method with the <see cref="F:SharpDX.Direct3D11.QueryType.Event" /> value to create an event query; you can then use that event query in a call to the <see cref="M:SharpDX.Direct3D11.DeviceContext.GetDataInternal(SharpDX.Direct3D11.Asynchronous,System.IntPtr,System.Int32,SharpDX.Direct3D11.AsynchronousFlags)" /> method to determine when the GPU is finished processing the graphics commands.Microsoft Direct3D?11 defers the destruction of objects. Therefore, an application can't rely upon objects immediately being destroyed. By calling Flush, you destroy any  objects whose destruction was deferred.  If an application requires synchronous destruction of an object, we recommend that the application release all its references, call <see cref="M:SharpDX.Direct3D11.DeviceContext.ClearState" />, and then call Flush.Deferred Destruction Issues with Flip Presentation Swap ChainsDirect3D?11 defers the destruction of objects like views and resources until it can efficiently destroy them. This deferred destruction can cause problems with flip presentation model swap chains. Flip presentation model swap chains have the DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL flag set. When you create a flip presentation model swap chain, you can associate only one swap chain at a time with an <see cref="T:System.IntPtr" />, IWindow, or composition surface. If an application attempts to destroy a flip presentation model swap chain and replace it with another swap chain, the original swap chain is not destroyed when the application immediately frees all of the original swap chain's references.Most applications typically use the <see cref="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,System.Int32)" /> method for the majority of scenarios where they replace new swap chain buffers for old swap chain buffers. However, if an application must actually destroy an old swap chain and create a new swap chain, the application must force the destruction of all objects that the application freed. To force the destruction, call <see cref="M:SharpDX.Direct3D11.DeviceContext.ClearState" /> (or otherwise ensure no views are bound to pipeline state), and then call Flush on the immediate context. You must force destruction before you call IDXGIFactory2::CreateSwapChainForHwnd, IDXGIFactory2::CreateSwapChainForImmersiveWindow, or IDXGIFactory2::CreateSwapChainForCompositionSurface again to create a new swap chain.	
+            Most applications don't need to call this method. If an application calls this method when not necessary, it incurs a performance penalty.  Each call to Flush incurs a significant amount of overhead.When Microsoft Direct3D state-setting, present, or draw commands are called by an application, those commands are queued into an internal command buffer.  Flush sends those commands to the GPU for processing. Typically, the Direct3D runtime sends these commands to the GPU automatically whenever the runtime determines that  they need to be sent, such as when the command buffer is full or when an application maps a resource. Flush sends the commands manually.We recommend that you use Flush when the CPU waits for an arbitrary amount of time (such as when  you call the Sleep function).Because Flush operates asynchronously,  it can return either before or after the GPU finishes executing the queued graphics commands. However, the graphics commands eventually always complete. You can call the <see cref="M:SharpDX.Direct3D11.Device.CreateQuery(SharpDX.Direct3D11.QueryDescription,SharpDX.Direct3D11.Query)" /> method with the <see cref="F:SharpDX.Direct3D11.QueryType.Event" /> value to create an event query; you can then use that event query in a call to the <see cref="M:SharpDX.Direct3D11.DeviceContext.GetDataInternal(SharpDX.Direct3D11.Asynchronous,System.IntPtr,System.Int32,SharpDX.Direct3D11.AsynchronousFlags)" /> method to determine when the GPU is finished processing the graphics commands.Microsoft Direct3D?11 defers the destruction of objects. Therefore, an application can't rely upon objects immediately being destroyed. By calling Flush, you destroy any  objects whose destruction was deferred.  If an application requires synchronous destruction of an object, we recommend that the application release all its references, call <see cref="M:SharpDX.Direct3D11.DeviceContext.ClearState" />, and then call Flush.Deferred Destruction Issues with Flip Presentation Swap ChainsDirect3D?11 defers the destruction of objects like views and resources until it can efficiently destroy them. This deferred destruction can cause problems with flip presentation model swap chains. Flip presentation model swap chains have the DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL flag set. When you create a flip presentation model swap chain, you can associate only one swap chain at a time with an <see cref="T:System.IntPtr" />, IWindow, or composition surface. If an application attempts to destroy a flip presentation model swap chain and replace it with another swap chain, the original swap chain is not destroyed when the application immediately frees all of the original swap chain's references.Most applications typically use the <see cref="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,SharpDX.DXGI.SwapChainFlags)" /> method for the majority of scenarios where they replace new swap chain buffers for old swap chain buffers. However, if an application must actually destroy an old swap chain and create a new swap chain, the application must force the destruction of all objects that the application freed. To force the destruction, call <see cref="M:SharpDX.Direct3D11.DeviceContext.ClearState" /> (or otherwise ensure no views are bound to pipeline state), and then call Flush on the immediate context. You must force destruction before you call IDXGIFactory2::CreateSwapChainForHwnd, IDXGIFactory2::CreateSwapChainForImmersiveWindow, or IDXGIFactory2::CreateSwapChainForCompositionSurface again to create a new swap chain.	
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3D11DeviceContext::Flush']/*" />
@@ -9949,6 +9971,13 @@
       <returns>A reference to a <see cref="T:SharpDX.Direct3D11.EffectClassInstanceVariable" />. </returns>
       <unmanaged>ID3D11EffectClassInstanceVariable* ID3D11EffectVariable::AsClassInstance()</unmanaged>
     </member>
+    <member name="M:SharpDX.Direct3D11.EffectVariable.AsInterface">
+      <summary>	
+            Get an interface variable.
+            </summary>
+      <returns>A reference to a <see cref="T:SharpDX.Direct3D11.EffectInterfaceVariable" />. </returns>
+      <unmanaged>ID3D11EffectClassInstanceVariable* ID3D11EffectVariable::AsInterface()</unmanaged>
+    </member>
     <member name="M:SharpDX.Direct3D11.EffectVariable.AsUnorderedAccessView">
       <summary>	
             Get an unordered access view variable.
@@ -10770,49 +10799,81 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectMatrixVariable']/*" />
       <unmanaged>ID3DX11EffectMatrixVariable</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrix(SharpDX.Matrix)">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrix``1(``0)">
       <summary>	
             Set a floating-point matrix.	
             </summary>
-      <param name="dataRef"> A pointer to the first element in the matrix. </param>
+      <param name="matrix"> A pointer to the first element in the matrix. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::SetMatrix([In] float* pData)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::SetMatrix([In] float* pData)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrix(SharpDX.Matrix[])">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrix``1">
+      <summary>	
+            Get a matrix.	
+            </summary>
+      <returns>
+        <para>A reference to the first element in a matrix.</para>
+      </returns>
+      <remarks>	
+            Note??The DirectX SDK does not supply any compiled binaries for effects. You must use Effects 11 source to build  your effects-type application. For more information about using Effects 11 source, see Differences Between Effects 10 and Effects 11.	
+            </remarks>
+      <unmanaged>HRESULT ID3DX11EffectMatrixVariable::GetMatrix([Out] SHARPDX_MATRIX* pData)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrix">
+      <summary>	
+            Get a matrix.	
+            </summary>
+      <returns>
+        <para>A reference to the first element in a matrix.</para>
+      </returns>
+      <remarks>	
+            Note??The DirectX SDK does not supply any compiled binaries for effects. You must use Effects 11 source to build  your effects-type application. For more information about using Effects 11 source, see Differences Between Effects 10 and Effects 11.	
+            </remarks>
+      <unmanaged>HRESULT ID3DX11EffectMatrixVariable::GetMatrix([Out] SHARPDX_MATRIX* pData)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrix``1(``0@)">
+      <summary>	
+            Set a floating-point matrix.	
+            </summary>
+      <param name="matrix"> A pointer to the first element in the matrix. </param>
+      <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::SetMatrix([In] float* pData)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrix``1(``0[])">
       <summary>	
             Set an array of floating-point matrices.	
             </summary>
       <param name="matrixArray"> A pointer to the first matrix. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::SetMatrixArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::SetMatrixArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrix(SharpDX.Matrix[],System.Int32)">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrix``1(``0[],System.Int32)">
       <summary>	
             Set an array of floating-point matrices.	
             </summary>
       <param name="matrixArray"> A pointer to the first matrix. </param>
       <param name="offset"> The number of matrix elements to skip from the start of the array. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::SetMatrixArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::SetMatrixArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixArray(System.Int32)">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixArray``1(System.Int32)">
       <summary>	
             Get an array of matrices.	
             </summary>
       <param name="count"> The number of matrices in the returned array. </param>
       <returns>Returns an array of matrix. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::GetMatrixArray([Out, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::GetMatrixArray([Out, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixArray(System.Int32,System.Int32)">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixArray``1(System.Int32,System.Int32)">
       <summary>	
             Get an array of matrices.	
             </summary>
       <param name="offset"> The offset (in number of matrices) between the start of the array and the first matrix returned. </param>
       <param name="count"> The number of matrices in the returned array. </param>
       <returns>Returns an array of matrix. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::GetMatrixArray([Out, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::GetMatrixArray([Out, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrixTranspose(SharpDX.Matrix)">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrixTranspose``1(``0)">
       <summary>	
             Transpose and set a floating-point matrix.	
             </summary>
@@ -10821,9 +10882,20 @@
             </remarks>
       <param name="matrix"> A pointer to the first element of a matrix. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::SetMatrixTranspose([In] float* pData)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::SetMatrixTranspose([In] float* pData)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrixTranspose(SharpDX.Matrix[])">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrixTranspose``1(``0@)">
+      <summary>	
+            Transpose and set a floating-point matrix.	
+            </summary>
+      <remarks>	
+             Transposing a matrix will rearrange the data order from row-column order to column-row order (or vice versa). 	
+            </remarks>
+      <param name="matrix"> A pointer to the first element of a matrix. </param>
+      <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::SetMatrixTranspose([In] float* pData)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrixTranspose``1(``0[])">
       <summary>	
             Transpose and set an array of floating-point matrices.	
             </summary>
@@ -10832,9 +10904,9 @@
             </remarks>
       <param name="matrixArray"> A pointer to an array of matrices. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::SetMatrixTransposeArray([In] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::SetMatrixTransposeArray([In] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrixTranspose(SharpDX.Matrix[],System.Int32)">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.SetMatrixTranspose``1(``0[],System.Int32)">
       <summary>	
             Transpose and set an array of floating-point matrices.	
             </summary>
@@ -10844,9 +10916,29 @@
       <param name="matrixArray"> A pointer to an array of matrices. </param>
       <param name="offset"> The offset (in number of matrices) between the start of the array and the first matrix to set. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::SetMatrixTransposeArray([In] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::SetMatrixTransposeArray([In] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixTransposeArray(System.Int32)">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixTranspose``1">
+      <summary>	
+            Transpose and get a floating-point matrix.	
+            </summary>
+      <returns>The transposed matrix.</returns>
+      <remarks>	
+            Transposing a matrix will rearrange the data order from row-column order to column-row order (or vice versa).Note??The DirectX SDK does not supply any compiled binaries for effects. You must use Effects 11 source to build  your effects-type application. For more information about using Effects 11 source, see Differences Between Effects 10 and Effects 11.	
+            </remarks>
+      <unmanaged>HRESULT ID3DX11EffectMatrixVariable::GetMatrixTranspose([Out] SHARPDX_MATRIX* pData)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixTranspose">
+      <summary>	
+            Transpose and get a floating-point matrix.	
+            </summary>
+      <returns>The transposed matrix.</returns>
+      <remarks>	
+            Transposing a matrix will rearrange the data order from row-column order to column-row order (or vice versa).Note??The DirectX SDK does not supply any compiled binaries for effects. You must use Effects 11 source to build  your effects-type application. For more information about using Effects 11 source, see Differences Between Effects 10 and Effects 11.	
+            </remarks>
+      <unmanaged>HRESULT ID3DX11EffectMatrixVariable::GetMatrixTranspose([Out] SHARPDX_MATRIX* pData)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixTransposeArray``1(System.Int32)">
       <summary>	
             Transpose and get an array of floating-point matrices.	
             </summary>
@@ -10855,9 +10947,9 @@
             </remarks>
       <param name="count"> The number of matrices in the array to get. </param>
       <returns>Returns an array of transposed <see cref="T:SharpDX.Matrix" />. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::GetMatrixTransposeArray([Out, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::GetMatrixTransposeArray([Out, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixTransposeArray(System.Int32,System.Int32)">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixTransposeArray``1(System.Int32,System.Int32)">
       <summary>	
             Transpose and get an array of floating-point matrices.	
             </summary>
@@ -10867,7 +10959,7 @@
       <param name="offset"> The offset (in number of matrices) between the start of the array and the first matrix to get. </param>
       <param name="count"> The number of matrices in the array to get. </param>
       <returns>Returns an array of transposed <see cref="T:SharpDX.Matrix" />. </returns>
-      <unmanaged>HRESULT ID3D10EffectMatrixVariable::GetMatrixTransposeArray([Out, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectMatrixVariable::GetMatrixTransposeArray([Out, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.#ctor(System.IntPtr)">
       <summary>
@@ -10890,13 +10982,14 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectMatrixVariable::SetMatrix']/*" />
       <unmanaged>HRESULT ID3DX11EffectMatrixVariable::SetMatrix([In] const SHARPDX_MATRIX* pData)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrix">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrix(SharpDX.Matrix@)">
       <summary>	
             Get a matrix.	
             </summary>
-      <returns>
+      <param name="dataRef">
         <para>A reference to the first element in a matrix.</para>
-      </returns>
+      </param>
+      <returns>Returns one of the following Direct3D 11 Return Codes.</returns>
       <remarks>	
             Note??The DirectX SDK does not supply any compiled binaries for effects. You must use Effects 11 source to build  your effects-type application. For more information about using Effects 11 source, see Differences Between Effects 10 and Effects 11.	
             </remarks>
@@ -10961,13 +11054,14 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectMatrixVariable::SetMatrixTranspose']/*" />
       <unmanaged>HRESULT ID3DX11EffectMatrixVariable::SetMatrixTranspose([In] const SHARPDX_MATRIX* pData)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixTranspose">
+    <member name="M:SharpDX.Direct3D11.EffectMatrixVariable.GetMatrixTranspose(SharpDX.Matrix@)">
       <summary>	
             Transpose and get a floating-point matrix.	
             </summary>
-      <returns>
+      <param name="dataRef">
         <para>A reference to the first element of a transposed matrix.</para>
-      </returns>
+      </param>
+      <returns>Returns one of the following Direct3D 11 Return Codes.</returns>
       <remarks>	
             Transposing a matrix will rearrange the data order from row-column order to column-row order (or vice versa).Note??The DirectX SDK does not supply any compiled binaries for effects. You must use Effects 11 source to build  your effects-type application. For more information about using Effects 11 source, see Differences Between Effects 10 and Effects 11.	
             </remarks>
@@ -12506,21 +12600,29 @@
             Get a four-component vector that contains integer data.	
             </summary>
       <returns>Returns a four-component vector that contains integer data </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::GetIntVector([Out] int* pData)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::GetIntVector([Out] int* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetFloatVector">
       <summary>	
             Get a four-component vector that contains floating-point data.	
             </summary>
       <returns>Returns a four-component vector that contains floating-point data.</returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::GetFloatVector([Out] float* pData)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::GetFloatVector([Out] float* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetBoolVector">
       <summary>	
             Get a four-component vector that contains boolean data.	
             </summary>
       <returns>a four-component vector that contains boolean data. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::GetBoolVector([Out, Buffer] BOOL* pData)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::GetBoolVector([Out, Buffer] BOOL* pData)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetVector``1">
+      <summary>	
+            Get a four-component vector.	
+            </summary>
+      <typeparam name="T">Type of the four-component vector</typeparam>
+      <returns>a four-component vector. </returns>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::GetFloatVector([Out, Buffer] BOOL* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Int4[])">
       <summary>	
@@ -12528,7 +12630,7 @@
             </summary>
       <param name="array">A reference to the start of the data to set. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::SetIntVectorArray([In, Buffer] int* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetIntVectorArray([In, Buffer] int* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Vector4[])">
       <summary>	
@@ -12536,7 +12638,34 @@
             </summary>
       <param name="array">A reference to the start of the data to set. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::SetFloatVectorArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetFloatVectorArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set``1(``0[])">
+      <summary>
+            Set an array of four-component vectors that contain floating-point data.
+            </summary>
+      <typeparam name="T">Type of the four-component vector</typeparam>
+      <param name="array">A reference to the start of the data to set.</param>
+      <returns>
+            Returns one of the following {{Direct3D 10 Return Codes}}.
+            </returns>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetFloatVectorArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set``1(``0)">
+      <summary>	
+            Set a x-component vector.	
+            </summary>
+      <param name="value">A reference to the first component. </param>
+      <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetFloatVector([In] float* pData)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set``1(``0@)">
+      <summary>	
+            Set a x-component vector.	
+            </summary>
+      <param name="value">A reference to the first component. </param>
+      <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetFloatVector([In] float* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Vector2)">
       <summary>	
@@ -12544,7 +12673,7 @@
             </summary>
       <param name="value">A reference to the first component. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::SetFloatVector([In] float* pData)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetFloatVector([In] float* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Vector3)">
       <summary>	
@@ -12552,7 +12681,7 @@
             </summary>
       <param name="value">A reference to the first component. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::SetFloatVector([In] float* pData)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetFloatVector([In] float* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Color4)">
       <summary>	
@@ -12560,7 +12689,7 @@
             </summary>
       <param name="value">A reference to the first component. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::SetFloatVector([In] float* pData)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetFloatVector([In] float* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Color4[])">
       <summary>	
@@ -12568,15 +12697,7 @@
             </summary>
       <param name="array">A reference to the start of the data to set. </param>
       <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::SetFloatVectorArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
-    </member>
-    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(System.Boolean[])">
-      <summary>	
-            Set an array of four-component vectors that contain boolean data.	
-            </summary>
-      <param name="array">A reference to the start of the data to set. </param>
-      <returns>Returns one of the following {{Direct3D 10 Return Codes}}. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::SetBoolVectorArray([In, Buffer] BOOL* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::SetFloatVectorArray([In, Buffer] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetIntVectorArray(System.Int32)">
       <summary>	
@@ -12584,7 +12705,7 @@
             </summary>
       <param name="count">The number of array elements to set. </param>
       <returns>Returns an array of four-component vectors that contain integer data. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::GetIntVectorArray([Out, Buffer] int* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::GetIntVectorArray([Out, Buffer] int* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetFloatVectorArray(System.Int32)">
       <summary>	
@@ -12592,7 +12713,7 @@
             </summary>
       <param name="count">The number of array elements to set. </param>
       <returns>Returns an array of four-component vectors that contain floating-point data. </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::GetFloatVectorArray([None] float* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::GetFloatVectorArray([None] float* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetBoolVectorArray(System.Int32)">
       <summary>	
@@ -12600,7 +12721,15 @@
             </summary>
       <param name="count">The number of array elements to set. </param>
       <returns>an array of four-component vectors that contain boolean data.	 </returns>
-      <unmanaged>HRESULT ID3D10EffectVectorVariable::GetBoolVectorArray([Out, Buffer] BOOL* pData,[None] int Offset,[None] int Count)</unmanaged>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::GetBoolVectorArray([Out, Buffer] BOOL* pData,[None] int Offset,[None] int Count)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetVectorArray``1(System.Int32)">
+      <summary>	
+            Get an array of four-component vectors that contain boolean data.	
+            </summary>
+      <param name="count">The number of array elements to set. </param>
+      <returns>an array of four-component vectors that contain boolean data.	 </returns>
+      <unmanaged>HRESULT ID3D11EffectVectorVariable::GetBoolVectorArray([Out, Buffer] BOOL* pData,[None] int Offset,[None] int Count)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.#ctor(System.IntPtr)">
       <summary>
@@ -12608,7 +12737,7 @@
             </summary>
       <param name="nativePtr">The native pointer.</param>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(System.Int32[])">
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Bool4)">
       <summary>	
             Set a four-component vector that contains boolean data.	
             </summary>
@@ -12621,7 +12750,7 @@
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectVectorVariable::SetBoolVector']/*" />
-      <unmanaged>HRESULT ID3DX11EffectVectorVariable::SetBoolVector([In, Buffer] const BOOL* pData)</unmanaged>
+      <unmanaged>HRESULT ID3DX11EffectVectorVariable::SetBoolVector([In] const SHARPDX_BOOL4* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Int4)">
       <summary>	
@@ -12638,7 +12767,7 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectVectorVariable::SetIntVector']/*" />
       <unmanaged>HRESULT ID3DX11EffectVectorVariable::SetIntVector([In] const SHARPDX_INT4* pData)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Vector4)">
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(System.Single)">
       <summary>	
             Set a four-component vector that contains floating-point data.	
             </summary>
@@ -12651,9 +12780,9 @@
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectVectorVariable::SetFloatVector']/*" />
-      <unmanaged>HRESULT ID3DX11EffectVectorVariable::SetFloatVector([In] const SHARPDX_VECTOR4* pData)</unmanaged>
+      <unmanaged>HRESULT ID3DX11EffectVectorVariable::SetFloatVector([In] const float* pData)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetBoolVector(System.Int32[])">
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetBoolVector(SharpDX.Bool4@)">
       <summary>	
             Get a four-component vector that contains boolean data.	
             </summary>
@@ -12666,7 +12795,7 @@
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectVectorVariable::GetBoolVector']/*" />
-      <unmanaged>HRESULT ID3DX11EffectVectorVariable::GetBoolVector([Out, Buffer] BOOL* pData)</unmanaged>
+      <unmanaged>HRESULT ID3DX11EffectVectorVariable::GetBoolVector([Out] SHARPDX_BOOL4* pData)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetIntVector(SharpDX.Int4@)">
       <summary>	
@@ -12698,7 +12827,7 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectVectorVariable::GetFloatVector']/*" />
       <unmanaged>HRESULT ID3DX11EffectVectorVariable::GetFloatVector([Out] SHARPDX_VECTOR4* pData)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(System.Int32[],System.Int32,System.Int32)">
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Bool4[],System.Int32,System.Int32)">
       <summary>	
             Set an array of four-component vectors that contain boolean data.	
             </summary>
@@ -12717,7 +12846,7 @@
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectVectorVariable::SetBoolVectorArray']/*" />
-      <unmanaged>HRESULT ID3DX11EffectVectorVariable::SetBoolVectorArray([In, Buffer] const BOOL* pData,[In] unsigned int Offset,[In] unsigned int Count)</unmanaged>
+      <unmanaged>HRESULT ID3DX11EffectVectorVariable::SetBoolVectorArray([In, Buffer] const SHARPDX_BOOL4* pData,[In] unsigned int Offset,[In] unsigned int Count)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.Set(SharpDX.Int4[],System.Int32,System.Int32)">
       <summary>	
@@ -12761,7 +12890,7 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectVectorVariable::SetFloatVectorArray']/*" />
       <unmanaged>HRESULT ID3DX11EffectVectorVariable::SetFloatVectorArray([In, Buffer] const SHARPDX_VECTOR4* pData,[In] unsigned int Offset,[In] unsigned int Count)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetBoolVectorArray(System.Int32[],System.Int32,System.Int32)">
+    <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetBoolVectorArray(SharpDX.Bool4[],System.Int32,System.Int32)">
       <summary>	
             Get an array of four-component vectors that contain boolean data.	
             </summary>
@@ -12780,7 +12909,7 @@
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11EffectVectorVariable::GetBoolVectorArray']/*" />
-      <unmanaged>HRESULT ID3DX11EffectVectorVariable::GetBoolVectorArray([Out, Buffer] BOOL* pData,[In] unsigned int Offset,[In] unsigned int Count)</unmanaged>
+      <unmanaged>HRESULT ID3DX11EffectVectorVariable::GetBoolVectorArray([Out, Buffer] SHARPDX_BOOL4* pData,[In] unsigned int Offset,[In] unsigned int Count)</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D11.EffectVectorVariable.GetIntVectorArray(SharpDX.Int4[],System.Int32,System.Int32)">
       <summary>	
@@ -12985,6 +13114,58 @@
       <returns>an <see cref="T:SharpDX.Direct3D11.FastFourierTransform" /> interface reference.</returns>
       <unmanaged>HRESULT D3DX11CreateFFT1DReal([None] ID3D11DeviceContext* pDeviceContext,[None] int X,[None] int Flags,[Out] D3DX11_FFT_BUFFER_INFO* pBufferInfo,[Out] ID3DX11FFT** ppFFT)</unmanaged>
     </member>
+    <member name="M:SharpDX.Direct3D11.FastFourierTransform.ForwardTransform(SharpDX.Direct3D11.UnorderedAccessView)">
+      <summary>
+            Performs a forward FFT.
+            </summary>
+      <param name="inputBufferRef">Pointer to <see cref="T:SharpDX.Direct3D11.UnorderedAccessView" /> onto the input buffer.</param>
+      <returns>
+            Returns the computation in a temp buffers; in addition, the last buffer written to is returned.
+            </returns>
+      <unmanaged>HRESULT ID3DX11FFT::ForwardTransform([In] const ID3D11UnorderedAccessView* pInputBuffer,[InOut] void** ppOutputBuffer)</unmanaged>
+      <remarks>
+            ForwardTransform can be called after buffers have been attached to the context using <see cref="M:SharpDX.Direct3D11.FastFourierTransform.AttachBuffersAndPrecompute(SharpDX.Direct3D11.UnorderedAccessView[],SharpDX.Direct3D11.UnorderedAccessView[])" />. The combination of pInputBuffer and *ppOuputBuffer can be one of the temp buffers.The format of complex data is interleaved components (for example, (Real0, Imag0),  (Real1, Imag1) ... , and so on). Data is stored in row major order.
+            </remarks>
+    </member>
+    <member name="M:SharpDX.Direct3D11.FastFourierTransform.InverseTransform(SharpDX.Direct3D11.UnorderedAccessView)">
+      <summary>	
+            Performs an inverse FFT.	
+            </summary>
+      <param name="inputBufferRef">
+        <para>Pointer to <see cref="T:SharpDX.Direct3D11.UnorderedAccessView" /> onto the input buffer.</para>
+      </param>
+      <returns>
+            Returns the computation in a temp buffers; in addition, the last buffer written to is returned.
+            </returns>
+      <unmanaged>HRESULT ID3DX11FFT::InverseTransform([In] const ID3D11UnorderedAccessView* pInputBuffer,[InOut] void** ppOutputBuffer)</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D11.FastFourierTransform.ForwardTransform(SharpDX.Direct3D11.UnorderedAccessView,SharpDX.Direct3D11.UnorderedAccessView)">
+      <summary>
+            Performs a forward FFT.
+            </summary>
+      <param name="inputBufferRef">Pointer to <see cref="T:SharpDX.Direct3D11.UnorderedAccessView" /> onto the input buffer.</param>
+      <param name="outputBufferView">
+        <para>Buffer <see cref="T:SharpDX.Direct3D11.UnorderedAccessView" /> reference used as the output buffer.</para>
+      </param>
+      <returns>Returns one of the return codes described in the topic Direct3D 11 Return Codes.</returns>
+      <unmanaged>HRESULT ID3DX11FFT::ForwardTransform([In] const ID3D11UnorderedAccessView* pInputBuffer,[InOut] void** ppOutputBuffer)</unmanaged>
+      <remarks>
+            ForwardTransform can be called after buffers have been attached to the context using <see cref="M:SharpDX.Direct3D11.FastFourierTransform.AttachBuffersAndPrecompute(SharpDX.Direct3D11.UnorderedAccessView[],SharpDX.Direct3D11.UnorderedAccessView[])" />. The combination of pInputBuffer and *ppOuputBuffer can be one of the temp buffers.The format of complex data is interleaved components (for example, (Real0, Imag0),  (Real1, Imag1) ... , and so on). Data is stored in row major order.
+            </remarks>
+    </member>
+    <member name="M:SharpDX.Direct3D11.FastFourierTransform.InverseTransform(SharpDX.Direct3D11.UnorderedAccessView,SharpDX.Direct3D11.UnorderedAccessView)">
+      <summary>	
+            Performs an inverse FFT.	
+            </summary>
+      <param name="inputBufferRef">
+        <para>Pointer to <see cref="T:SharpDX.Direct3D11.UnorderedAccessView" /> onto the input buffer.</para>
+      </param>
+      <param name="outputBufferView">
+        <para>Buffer <see cref="T:SharpDX.Direct3D11.UnorderedAccessView" /> reference used as the output buffer.</para>
+      </param>
+      <returns>Returns one of the return codes described in the topic Direct3D 11 Return Codes.</returns>
+      <unmanaged>HRESULT ID3DX11FFT::InverseTransform([In] const ID3D11UnorderedAccessView* pInputBuffer,[InOut] void** ppOutputBuffer)</unmanaged>
+    </member>
     <member name="M:SharpDX.Direct3D11.FastFourierTransform.#ctor(System.IntPtr)">
       <summary>
             Initializes a new instance of the <see cref="T:SharpDX.Direct3D11.FastFourierTransform" /> class.
@@ -13000,7 +13181,7 @@
       </param>
       <returns>Returns one of the return codes described in the topic Direct3D 11 Return Codes.</returns>
       <remarks>	
-            SetForwardScale sets the scale used by <see cref="M:SharpDX.Direct3D11.FastFourierTransform.ForwardTransform(SharpDX.Direct3D11.UnorderedAccessView,SharpDX.Direct3D11.UnorderedAccessView)" />.	
+            SetForwardScale sets the scale used by <see cref="M:SharpDX.Direct3D11.FastFourierTransform.ForwardTransform(SharpDX.Direct3D11.UnorderedAccessView)" />.	
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11FFT::SetForwardScale']/*" />
@@ -13024,7 +13205,7 @@
       </param>
       <returns>Returns one of the return codes described in the topic Direct3D 11 Return Codes.</returns>
       <remarks>	
-            SetInverseScale sets the scale used by <see cref="M:SharpDX.Direct3D11.FastFourierTransform.InverseTransform(SharpDX.Direct3D11.UnorderedAccessView,SharpDX.Direct3D11.UnorderedAccessView)" />.	
+            SetInverseScale sets the scale used by <see cref="M:SharpDX.Direct3D11.FastFourierTransform.InverseTransform(SharpDX.Direct3D11.UnorderedAccessView)" />.	
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11FFT::SetInverseScale']/*" />
@@ -13087,7 +13268,7 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11FFT::AttachBuffersAndPrecompute']/*" />
       <unmanaged>HRESULT ID3DX11FFT::AttachBuffersAndPrecompute([In] unsigned int NumTempBuffers,[In, Buffer] const ID3D11UnorderedAccessView** ppTempBuffers,[In] unsigned int NumPrecomputeBuffers,[In, Buffer] const ID3D11UnorderedAccessView** ppPrecomputeBufferSizes)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.FastFourierTransform.ForwardTransform(SharpDX.Direct3D11.UnorderedAccessView,SharpDX.Direct3D11.UnorderedAccessView)">
+    <member name="M:SharpDX.Direct3D11.FastFourierTransform.ForwardTransform(SharpDX.Direct3D11.UnorderedAccessView,System.IntPtr@)">
       <summary>	
             Performs a forward FFT.	
             </summary>
@@ -13103,9 +13284,9 @@
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11FFT::ForwardTransform']/*" />
-      <unmanaged>HRESULT ID3DX11FFT::ForwardTransform([In] const ID3D11UnorderedAccessView* pInputBuffer,[InOut] ID3D11UnorderedAccessView** ppOutputBuffer)</unmanaged>
+      <unmanaged>HRESULT ID3DX11FFT::ForwardTransform([In] const ID3D11UnorderedAccessView* pInputBuffer,[InOut] void** ppOutputBuffer)</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D11.FastFourierTransform.InverseTransform(SharpDX.Direct3D11.UnorderedAccessView,SharpDX.Direct3D11.UnorderedAccessView)">
+    <member name="M:SharpDX.Direct3D11.FastFourierTransform.InverseTransform(SharpDX.Direct3D11.UnorderedAccessView,System.IntPtr@)">
       <summary>	
             Performs an inverse FFT.	
             </summary>
@@ -13118,7 +13299,7 @@
       <returns>Returns one of the return codes described in the topic Direct3D 11 Return Codes.</returns>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID3DX11FFT::InverseTransform']/*" />
-      <unmanaged>HRESULT ID3DX11FFT::InverseTransform([In] const ID3D11UnorderedAccessView* pInputBuffer,[InOut] ID3D11UnorderedAccessView** ppOutputBuffer)</unmanaged>
+      <unmanaged>HRESULT ID3DX11FFT::InverseTransform([In] const ID3D11UnorderedAccessView* pInputBuffer,[InOut] void** ppOutputBuffer)</unmanaged>
     </member>
     <member name="P:SharpDX.Direct3D11.FastFourierTransform.BufferRequirements">
       <summary>
@@ -25919,6 +26100,22 @@
       <param name="amplitude">Constant value multiplier that increases (or decreases) the values in the normal map. Higher values usually make bumps more visible, lower values usually make bumps less visible.</param>
       <returns>A <see cref="T:SharpDX.Result" /> object describing the result of the operation.</returns>
     </member>
+    <member name="M:SharpDX.Direct3D11.Texture2D.SHProjectCubeMap(SharpDX.Direct3D11.DeviceContext,SharpDX.Direct3D11.Texture2D,System.Int32)">
+      <summary>	
+            Projects a function represented in a cube map into spherical harmonics.	
+            </summary>
+      <param name="context">
+        <para>A reference to an <see cref="T:SharpDX.Direct3D11.DeviceContext" /> object.</para>
+      </param>
+      <param name="cubeMap">
+        <para>A reference to an <see cref="T:SharpDX.Direct3D11.Texture2D" /> that represents a cubemap that is going to be projected into spherical harmonics.</para>
+      </param>
+      <param name="order">
+        <para>Order of the SH evaluation, generates Order^2 coefficients whose degree is Order-1. Valid range is between 2 and 6.</para>
+      </param>
+      <returns>An array of SH Vector for red, green and blue components with a length Order^2.</returns>
+      <unmanaged>HRESULT D3DX11SHProjectCubeMap([In] ID3D11DeviceContext* pContext,[In] unsigned int Order,[In] ID3D11Texture2D* pCubeMap,[Out, Buffer] float* pROut,[Out, Buffer, Optional] float* pGOut,[Out, Buffer, Optional] float* pBOut)</unmanaged>
+    </member>
     <member name="P:SharpDX.Direct3D11.Texture2D.Description">
       <summary>	
             Get the properties of the texture resource.	
@@ -30566,6 +30763,11 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
     </member>
+    <member name="M:SharpDX.DisposeBase.CheckAndDispose(System.Boolean)">
+      <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+    </member>
     <member name="M:SharpDX.DisposeBase.Dispose(System.Boolean)">
       <summary>
             Releases unmanaged and - optionally - managed resources
@@ -30685,6 +30887,238 @@
       <summary>
             Gets or sets the <see cref="!:T" /> with the specified i.
             </summary>
+    </member>
+    <member name="T:SharpDX.CompilationResultBase`1">
+      <summary>
+            Generic class to hold a shader compilation results.
+            </summary>
+      <typeparam name="T">Type of the class containing the generated bytecode.</typeparam>
+    </member>
+    <member name="M:SharpDX.CompilationResultBase`1.#ctor(`0,SharpDX.Result,System.String)">
+      <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.CompilationResultBase`1" /> class.
+            </summary>
+      <param name="bytecode">The bytecode.</param>
+      <param name="resultCode">Result code from compilation.</param>
+      <param name="message">The message.</param>
+    </member>
+    <member name="M:SharpDX.CompilationResultBase`1.Dispose(System.Boolean)">
+      <inheritdoc />
+    </member>
+    <member name="P:SharpDX.CompilationResultBase`1.Bytecode">
+      <summary>
+            Gets the Shader bytecode.
+            </summary>
+    </member>
+    <member name="P:SharpDX.CompilationResultBase`1.ResultCode">
+      <summary>
+            Gets the result code from the compilation.
+            </summary>
+    </member>
+    <member name="P:SharpDX.CompilationResultBase`1.HasErrors">
+      <summary>
+            Gets a value indicating whether this instance has errors.
+            </summary>
+      <value>
+        <c>true</c> if this instance has errors; otherwise, <c>false</c>.
+            </value>
+    </member>
+    <member name="P:SharpDX.CompilationResultBase`1.Message">
+      <summary>
+            Gets the message.
+            </summary>
+      <remarks>
+            Message are warning or error messages.
+            </remarks>
+    </member>
+    <member name="T:SharpDX.Bool4">
+      <summary>
+              Represents a four dimensional mathematical vector of bool.
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.SizeInBytes">
+      <summary>
+              The size of the <see cref="T:SharpDX.Bool4" /> type, in bytes.
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.False">
+      <summary>
+              A <see cref="T:SharpDX.Bool4" /> with all of its components set to false.
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.UnitX">
+      <summary>
+              The X unit <see cref="T:SharpDX.Bool4" /> (true, 0, 0, 0).
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.UnitY">
+      <summary>
+              The Y unit <see cref="T:SharpDX.Bool4" /> (0, true, 0, 0).
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.UnitZ">
+      <summary>
+              The Z unit <see cref="T:SharpDX.Bool4" /> (0, 0, true, 0).
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.UnitW">
+      <summary>
+              The W unit <see cref="T:SharpDX.Bool4" /> (0, 0, 0, true).
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.One">
+      <summary>
+              A <see cref="T:SharpDX.Bool4" /> with all of its components set to true.
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.iY">
+      <summary>
+              The Y component of the vector.
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.iZ">
+      <summary>
+              The Z component of the vector.
+            </summary>
+    </member>
+    <member name="F:SharpDX.Bool4.iW">
+      <summary>
+              The W component of the vector.
+            </summary>
+    </member>
+    <member name="M:SharpDX.Bool4.#ctor(System.Boolean)">
+      <summary>
+              Initializes a new instance of the <see cref="T:SharpDX.Bool4" /> struct.
+            </summary>
+      <param name="value">The value that will be assigned to all components.</param>
+    </member>
+    <member name="M:SharpDX.Bool4.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+      <summary>
+              Initializes a new instance of the <see cref="T:SharpDX.Bool4" /> struct.
+            </summary>
+      <param name="x">Initial value for the X component of the vector.</param>
+      <param name="y">Initial value for the Y component of the vector.</param>
+      <param name="z">Initial value for the Z component of the vector.</param>
+      <param name="w">Initial value for the W component of the vector.</param>
+    </member>
+    <member name="M:SharpDX.Bool4.#ctor(System.Boolean[])">
+      <summary>
+              Initializes a new instance of the <see cref="T:SharpDX.Bool4" /> struct.
+            </summary>
+      <param name="values">The values to assign to the X, Y, Z, and W components of the vector. This must be an array with four elements.</param>
+      <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="values" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="values" /> contains more or less than four elements.</exception>
+    </member>
+    <member name="M:SharpDX.Bool4.ToArray">
+      <summary>
+              Creates an array containing the elements of the vector.
+            </summary>
+      <returns>A four-element array containing the components of the vector.</returns>
+    </member>
+    <member name="M:SharpDX.Bool4.op_Equality(SharpDX.Bool4,SharpDX.Bool4)">
+      <summary>
+              Tests for equality between two objects.
+            </summary>
+      <param name="left">The first value to compare.</param>
+      <param name="right">The second value to compare.</param>
+      <returns>
+        <c>true</c> if <paramref name="left" /> has the same value as <paramref name="right" />; otherwise, <c>false</c>.</returns>
+    </member>
+    <member name="M:SharpDX.Bool4.op_Inequality(SharpDX.Bool4,SharpDX.Bool4)">
+      <summary>
+              Tests for inequality between two objects.
+            </summary>
+      <param name="left">The first value to compare.</param>
+      <param name="right">The second value to compare.</param>
+      <returns>
+        <c>true</c> if <paramref name="left" /> has a different value than <paramref name="right" />; otherwise, <c>false</c>.</returns>
+    </member>
+    <member name="M:SharpDX.Bool4.ToString">
+      <summary>
+              Returns a <see cref="T:System.String" /> that represents this instance.
+            </summary>
+      <returns>
+              A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+    </member>
+    <member name="M:SharpDX.Bool4.ToString(System.String,System.IFormatProvider)">
+      <summary>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </summary>
+      <param name="format">The format.</param>
+      <param name="formatProvider">The format provider.</param>
+      <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+    </member>
+    <member name="M:SharpDX.Bool4.GetHashCode">
+      <summary>
+              Returns a hash code for this instance.
+            </summary>
+      <returns>
+              A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+    </member>
+    <member name="M:SharpDX.Bool4.Equals(SharpDX.Bool4)">
+      <summary>
+              Determines whether the specified <see cref="T:SharpDX.Bool4" /> is equal to this instance.
+            </summary>
+      <param name="other">The <see cref="T:SharpDX.Bool4" /> to compare with this instance.</param>
+      <returns>
+        <c>true</c> if the specified <see cref="T:SharpDX.Bool4" /> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+    </member>
+    <member name="M:SharpDX.Bool4.Equals(System.Object)">
+      <summary>
+              Determines whether the specified <see cref="T:System.Object" /> is equal to this instance.
+            </summary>
+      <param name="value">The <see cref="T:System.Object" /> to compare with this instance.</param>
+      <returns>
+        <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+    </member>
+    <member name="M:SharpDX.Bool4.op_Implicit(System.Boolean[])~SharpDX.Bool4">
+      <summary>
+            Performs an implicit conversion from <see cref="T:System.Int32" /> array to <see cref="T:SharpDX.Bool4" />.
+            </summary>
+      <param name="input">The input.</param>
+      <returns>The result of the conversion.</returns>
+    </member>
+    <member name="M:SharpDX.Bool4.op_Implicit(SharpDX.Bool4)~System.Boolean[]">
+      <summary>
+            Performs an implicit conversion from <see cref="T:SharpDX.Bool4" /> to <see cref="T:System.Int32" /> array.
+            </summary>
+      <param name="input">The input.</param>
+      <returns>The result of the conversion.</returns>
+    </member>
+    <member name="P:SharpDX.Bool4.X">
+      <summary>
+              The X component of the vector.
+            </summary>
+    </member>
+    <member name="P:SharpDX.Bool4.Y">
+      <summary>
+              The Y component of the vector.
+            </summary>
+    </member>
+    <member name="P:SharpDX.Bool4.Z">
+      <summary>
+              The Z component of the vector.
+            </summary>
+    </member>
+    <member name="P:SharpDX.Bool4.W">
+      <summary>
+              The W component of the vector.
+            </summary>
+    </member>
+    <member name="P:SharpDX.Bool4.Item(System.Int32)">
+      <summary>
+              Gets or sets the component at the specified index.
+            </summary>
+      <value>The value of the X, Y, Z, or W component, depending on the index.</value>
+      <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component, 2 for the Z component, and 3 for the W component.</param>
+      <returns>The value of the component at the specified index.</returns>
+      <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the <paramref name="index" /> is out of the range [0, 3].</exception>
     </member>
     <member name="T:SharpDX.DrawingSizeF">
       <summary>
@@ -31077,12 +31511,22 @@
             Helper class for PIX.
             </summary>
     </member>
-    <member name="M:SharpDX.Direct3D.PixHelper.BeginEvent(System.String,System.Object[])">
+    <member name="M:SharpDX.Direct3D.PixHelper.BeginEvent(System.Drawing.Color,System.String)">
       <summary>
             Marks the beginning of a user-defined event. PIX can use this event to trigger an action.
             </summary>
+      <param name="color">The Event color.</param>
       <param name="name">The Event Name.</param>
-      <param name="stringParameters">The string parameters.</param>
+      <returns>The zero-based level of the hierarchy that this event is starting in. If an error occurs, the return value will be negative.</returns>
+      <unmanaged>D3DPERF_BeginEvent</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D.PixHelper.BeginEvent(System.Drawing.Color,System.String,System.Object[])">
+      <summary>
+            Marks the beginning of a user-defined event. PIX can use this event to trigger an action.
+            </summary>
+      <param name="color">The Event color.</param>
+      <param name="name">The Event formatted Name.</param>
+      <param name="parameters">The parameters to use for the formatted name.</param>
       <returns>
             The zero-based level of the hierarchy that this event is starting in. If an error occurs, the return value will be negative.
             </returns>
@@ -31095,12 +31539,21 @@
       <returns>The level of the hierarchy in which the event is ending. If an error occurs, this value is negative.</returns>
       <unmanaged>D3DPERF_EndEvent</unmanaged>
     </member>
-    <member name="M:SharpDX.Direct3D.PixHelper.SetMarker(System.String,System.Object[])">
+    <member name="M:SharpDX.Direct3D.PixHelper.SetMarker(System.Drawing.Color,System.String)">
       <summary>
             Mark an instantaneous event. PIX can use this event to trigger an action.
             </summary>
+      <param name="color">The color.</param>
       <param name="name">The name.</param>
-      <param name="stringParameters">The string parameters.</param>
+      <unmanaged>D3DPERF_SetMarker</unmanaged>
+    </member>
+    <member name="M:SharpDX.Direct3D.PixHelper.SetMarker(System.Drawing.Color,System.String,System.Object[])">
+      <summary>
+            Mark an instantaneous event. PIX can use this event to trigger an action.
+            </summary>
+      <param name="color">The color.</param>
+      <param name="name">The name to format.</param>
+      <param name="parameters">The parameters to use to format the name.</param>
       <unmanaged>D3DPERF_SetMarker</unmanaged>
     </member>
     <member name="M:SharpDX.Direct3D.PixHelper.AllowProfiling(System.Boolean)">
@@ -33066,6 +33519,12 @@
             </summary>
       <param name="pointer">Pointer to Cpp Object</param>
     </member>
+    <member name="M:SharpDX.ComObject.#ctor(System.Object)">
+      <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.ComObject" /> class from a IUnknown object.
+            </summary>
+      <param name="iunknowObject">Reference to a IUnknown object</param>
+    </member>
     <member name="M:SharpDX.ComObject.#ctor">
       <summary>
             Initializes a new instance of the <see cref="T:SharpDX.ComObject" /> class.
@@ -33073,7 +33532,7 @@
     </member>
     <member name="M:SharpDX.ComObject.QueryInterface(System.Guid,System.IntPtr@)">
       <summary>
-              Query Interface for a particular GUID.
+            Query this instance for a particular COM GUID/interface support.
             </summary>
       <param name="guid">GUID query interface</param>
       <param name="outPtr">output object associated with this GUID, IntPtr.Zero in interface is not supported</param>
@@ -33081,19 +33540,44 @@
     </member>
     <member name="M:SharpDX.ComObject.QueryInterfaceOrNull(System.Guid)">
       <summary>
-              Query Interface for a particular GUID.
+              Query instance for a particular COM GUID/interface support.
             </summary>
       <param name="guid">GUID query interface</param>
       <exception cref="T:SharpDX.SharpDXException">If this object doesn't support the interface</exception>
     </member>
     <member name="M:SharpDX.ComObject.QueryInterface``1">
       <summary>
-             Query Interface for a particular interface support.
+             Query this instance for a particular COM interface support.
             </summary>
-      <typeparam name="T">
-      </typeparam>
+      <typeparam name="T">The type of the COM interface to query</typeparam>
       <returns>An instance of the queried interface</returns>
       <exception cref="T:SharpDX.SharpDXException">If this object doesn't support the interface</exception>
+    </member>
+    <member name="M:SharpDX.ComObject.As``1(System.Object)">
+      <summary>
+             Queries a managed object for a particular COM interface support.
+             </summary>
+      <typeparam name="T">The type of the COM interface to query</typeparam>
+      <param name="comObject">The managed COM object.</param>
+      <returns>An instance of the queried interface</returns>
+    </member>
+    <member name="M:SharpDX.ComObject.Dispose``1(``0@)">
+      <summary>
+             Safely dispose a referencem if not null, and set it to null after dispose.
+             </summary>
+      <typeparam name="T">The type of COM interface to dispose</typeparam>
+      <param name="comObject">Object to dispose</param>
+      <remarks>
+             The reference will be set to null after dispose.
+             </remarks>
+    </member>
+    <member name="M:SharpDX.ComObject.QueryInterface``1(System.Object)">
+      <summary>
+             Queries a managed object for a particular COM interface support.
+             </summary>
+      <typeparam name="T">The type of the COM interface to query</typeparam>
+      <param name="comObject">The managed COM object.</param>
+      <returns>An instance of the queried interface</returns>
     </member>
     <member name="M:SharpDX.ComObject.QueryInterfaceOrNull``1">
       <summary>
@@ -33330,7 +33814,13 @@
             </summary>
       <param name="toDisposeArg">To dispose.</param>
     </member>
-    <member name="M:SharpDX.Component.RemoveDispose``1(``0)">
+    <member name="M:SharpDX.Component.SafeDispose``1(``0@)">
+      <summary>
+            Dispose a disposable object and set the reference to null. Removes this object from the ToDispose list.
+            </summary>
+      <param name="objectToDispose">Object to dispose.</param>
+    </member>
+    <member name="M:SharpDX.Component.RemoveToDispose``1(``0)">
       <summary>
             Removes a disposable object to the list of the objects to dispose.
             </summary>
@@ -49923,7 +50413,7 @@
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file="..\..\Documentation\CodeComments.xml" path="/comments/comment[@id='IStream::CopyTo']/*" />
-      <unmanaged>HRESULT IStream::CopyTo([In] IStream* pstm,[In] ULARGE_INTEGER cb,[Out, Optional] ULARGE_INTEGER* pcbRead,[Out, Optional] ULARGE_INTEGER* pcbWritten)</unmanaged>
+      <unmanaged>HRESULT IStream::CopyTo([In] IStream* pstm,[In] ULARGE_INTEGER cb,[Out] ULARGE_INTEGER* pcbRead,[Out] ULARGE_INTEGER* pcbWritten)</unmanaged>
     </member>
     <member name="M:SharpDX.Win32.ComStream.Commit(SharpDX.Win32.CommitFlags)">
       <summary>	
@@ -55045,7 +55535,7 @@
       <returns>
       </returns>
     </member>
-    <member name="M:SharpDX.Utilities.ClearMemory(System.IntPtr,System.Int32,System.Int32)">
+    <member name="M:SharpDX.Utilities.ClearMemory(System.IntPtr,System.Byte,System.Int32)">
       <summary>
             Clears the memory.
             </summary>
@@ -55658,7 +56148,7 @@
     </member>
     <member name="M:SharpDX.Vector2.Max(SharpDX.Vector2@,SharpDX.Vector2@,SharpDX.Vector2@)">
       <summary>
-            Returns a vector containing the smallest components of the specified vectors.
+            Returns a vector containing the largest components of the specified vectors.
             </summary>
       <param name="left">The first source vector.</param>
       <param name="right">The second source vector.</param>
@@ -56491,7 +56981,7 @@
     </member>
     <member name="M:SharpDX.Vector3.Max(SharpDX.Vector3@,SharpDX.Vector3@,SharpDX.Vector3@)">
       <summary>
-            Returns a vector containing the smallest components of the specified vectors.
+            Returns a vector containing the largest components of the specified vectors.
             </summary>
       <param name="left">The first source vector.</param>
       <param name="right">The second source vector.</param>
@@ -57383,7 +57873,7 @@
     </member>
     <member name="M:SharpDX.Vector4.Max(SharpDX.Vector4@,SharpDX.Vector4@,SharpDX.Vector4@)">
       <summary>
-            Returns a vector containing the smallest components of the specified vectors.
+            Returns a vector containing the largest components of the specified vectors.
             </summary>
       <param name="left">The first source vector.</param>
       <param name="right">The second source vector.</param>
@@ -59298,11 +59788,25 @@
       <returns>A reference to an adapter (see <see cref="T:SharpDX.DXGI.Adapter" />). </returns>
       <unmanaged>HRESULT IDXGIFactory::CreateSoftwareAdapter([None] void* Module,[Out] IDXGIAdapter** ppAdapter)</unmanaged>
     </member>
+    <member name="M:SharpDX.DXGI.Factory.GetAdapter1(System.Int32)">
+      <summary>	
+            Gets both adapters (video cards) with or without outputs.	
+            </summary>
+      <param name="adapter">
+        <para>The index of the adapter to enumerate.</para>
+      </param>
+      <returns>a reference to an <see cref="T:SharpDX.DXGI.Adapter" /> interface at the position specified by the Adapter parameter</returns>
+      <remarks>	
+            When you create a factory, the factory enumerates the set of adapters that are available in the system. Therefore, if you change the adapters in a system, you must destroy  and recreate the <see cref="T:SharpDX.DXGI.Factory" /> object. The number of adapters in a system changes when you add or remove a display card, or dock or undock a laptop.When the EnumAdapters method succeeds and fills the ppAdapter parameter with the address of the reference to the adapter interface, EnumAdapters increments the adapter interface's reference count. When you finish using the  adapter interface, call the Release method to decrement the reference count before you destroy the reference.EnumAdapters first returns the local adapter with the output on which the desktop primary is displayed. This adapter corresponds with an index of zero. EnumAdapters then returns other adapters with outputs.	
+            </remarks>
+      <unmanaged>HRESULT IDXGIFactory::EnumAdapters([In] unsigned int Adapter,[Out] IDXGIAdapter** ppAdapter)</unmanaged>
+    </member>
     <member name="M:SharpDX.DXGI.Factory.GetAdapterCount">
       <summary>
               Return the number of available adapters from this factory.
             </summary>
       <returns>The number of adapters</returns>
+      <unmanaged>HRESULT IDXGIFactory::EnumAdapters([In] unsigned int Adapter,[Out] IDXGIAdapter** ppAdapter)</unmanaged>
     </member>
     <member name="M:SharpDX.DXGI.Factory.#ctor(System.IntPtr)">
       <summary>
@@ -59310,16 +59814,17 @@
             </summary>
       <param name="nativePtr">The native pointer.</param>
     </member>
-    <member name="M:SharpDX.DXGI.Factory.GetAdapter(System.Int32)">
+    <member name="M:SharpDX.DXGI.Factory.GetAdapter(System.Int32,SharpDX.DXGI.Adapter@)">
       <summary>	
             Enumerates the adapters (video cards).	
             </summary>
       <param name="adapter">
         <para>The index of the adapter to enumerate.</para>
       </param>
-      <returns>
+      <param name="adapterOut">
         <para>The address of a reference to an <see cref="T:SharpDX.DXGI.Adapter" /> interface at the position specified by the Adapter parameter.  This parameter must not be <c>null</c>.</para>
-      </returns>
+      </param>
+      <returns>Returns <see cref="F:SharpDX.Result.Ok" /> if successful; otherwise, returns <see cref="F:SharpDX.DXGI.DXGIError.NotFound" /> if the index is greater than or equal to the number of adapters in the local system, or <see cref="F:SharpDX.DXGI.DXGIError.InvalidCall" /> if ppAdapter parameter is <c>null</c>.</returns>
       <remarks>	
             When you create a factory, the factory enumerates the set of adapters that are available in the system. Therefore, if you change the adapters in a system, you must destroy  and recreate the <see cref="T:SharpDX.DXGI.Factory" /> object. The number of adapters in a system changes when you add or remove a display card, or dock or undock a laptop.When the EnumAdapters method succeeds and fills the ppAdapter parameter with the address of the reference to the adapter interface, EnumAdapters increments the adapter interface's reference count. When you finish using the  adapter interface, call the Release method to decrement the reference count before you destroy the reference.EnumAdapters first returns the local adapter with the output on which the desktop primary is displayed. This adapter corresponds with an index of zero. EnumAdapters then returns other adapters with outputs.	
             </remarks>
@@ -59339,7 +59844,7 @@
         <see cref="F:SharpDX.DXGI.WindowAssociationFlags.IgnoreAll" /> - Prevent DXGI from monitoring an applications message queue; this makes DXGI unable to respond to mode changes. <see cref="F:SharpDX.DXGI.WindowAssociationFlags.IgnoreAltEnter" /> - Prevent DXGI from responding to an alt-enter sequence. <see cref="F:SharpDX.DXGI.WindowAssociationFlags.IgnorePrintScreen" /> - Prevent DXGI from responding to a print-screen key.</param>
       <returns>if WindowHandle is invalid, or E_OUTOFMEMORY.</returns>
       <remarks>	
-            The combination of WindowHandle and Flags informs DXGI to stop monitoring window messages for the previously-associated window.If the application switches to full-screen mode, DXGI will choose a full-screen resolution to be the smallest supported resolution that is larger or the same size as the current back buffer size.Applications can make some changes to make the transition from windowed to full screen more efficient. For example, on a WM_SIZE message, the application should release any outstanding swap-chain back buffers, call <see cref="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,System.Int32)" />, then re-acquire the back buffers from the swap chain(s). This gives the swap chain(s) an opportunity to resize the back buffers, and/or recreate them to enable full-screen flipping operation. If the application does not perform this sequence, DXGI will still make the full-screen/windowed transition, but may be forced to use a stretch operation (since the back buffers may not be the correct size), which may be less efficient. Even if a stretch is not required, presentation may not be optimal because the back buffers might not be directly interchangeable with the front buffer. Thus, a call to ResizeBuffers on WM_SIZE is always recommended, since WM_SIZE is always sent during a fullscreen transition.While windowed, the application can, if it chooses, restrict the size of its window's client area to sizes to which it is comfortable rendering. A fully flexible application would make no such restriction, but UI elements or other design considerations can, of course, make this flexibility untenable. If the application further chooses to restrict its window's client area to just those that match supported full-screen resolutions, the application can field WM_SIZING, then check against <see cref="M:SharpDX.DXGI.Output.FindClosestMatchingMode(SharpDX.DXGI.ModeDescription@,SharpDX.DXGI.ModeDescription@,SharpDX.ComObject)" />. If a matching mode is found, allow the resize. (The <see cref="T:SharpDX.DXGI.Output" /> can be retrieved from <see cref="M:SharpDX.DXGI.SwapChain.GetContainingOutput(SharpDX.DXGI.Output@)" />. Absent subsequent changes to desktop topology, this will be the same output that will be chosen when alt-enter is fielded and fullscreen mode is begun for that swap chain.)Applications that want to handle mode changes or Alt+Enter themselves should call MakeWindowAssociation with the <see cref="F:SharpDX.DXGI.WindowAssociationFlags.IgnoreAll" /> flag after swap chain creation. The WindowHandle argument, if non-<c>null</c>, specifies that the application message queues will not be handled by the DXGI runtime for all swap chains of a particular target <see cref="T:System.IntPtr" />.  Calling MakeWindowAssociation with the <see cref="F:SharpDX.DXGI.WindowAssociationFlags.IgnoreAll" /> flag after swapchain creation ensures that DXGI will not interfere with application's handling of window mode changes or Alt+Enter.Notes for Metro style appsIf a Metro style app calls MakeWindowAssociation, it fails with <see cref="F:SharpDX.DXGI.DXGIError.NotCurrentlyAvailable" />.A Microsoft Win32 application can use MakeWindowAssociation to control full-screen transitions through the Alt+Enter key combination and print screen behavior for full screen.  For Metro style apps, because DXGI cannot perform full-screen transitions, Metro style app have no way to control full-screen transitions.	
+            The combination of WindowHandle and Flags informs DXGI to stop monitoring window messages for the previously-associated window.If the application switches to full-screen mode, DXGI will choose a full-screen resolution to be the smallest supported resolution that is larger or the same size as the current back buffer size.Applications can make some changes to make the transition from windowed to full screen more efficient. For example, on a WM_SIZE message, the application should release any outstanding swap-chain back buffers, call <see cref="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,SharpDX.DXGI.SwapChainFlags)" />, then re-acquire the back buffers from the swap chain(s). This gives the swap chain(s) an opportunity to resize the back buffers, and/or recreate them to enable full-screen flipping operation. If the application does not perform this sequence, DXGI will still make the full-screen/windowed transition, but may be forced to use a stretch operation (since the back buffers may not be the correct size), which may be less efficient. Even if a stretch is not required, presentation may not be optimal because the back buffers might not be directly interchangeable with the front buffer. Thus, a call to ResizeBuffers on WM_SIZE is always recommended, since WM_SIZE is always sent during a fullscreen transition.While windowed, the application can, if it chooses, restrict the size of its window's client area to sizes to which it is comfortable rendering. A fully flexible application would make no such restriction, but UI elements or other design considerations can, of course, make this flexibility untenable. If the application further chooses to restrict its window's client area to just those that match supported full-screen resolutions, the application can field WM_SIZING, then check against <see cref="M:SharpDX.DXGI.Output.FindClosestMatchingMode(SharpDX.DXGI.ModeDescription@,SharpDX.DXGI.ModeDescription@,SharpDX.ComObject)" />. If a matching mode is found, allow the resize. (The <see cref="T:SharpDX.DXGI.Output" /> can be retrieved from <see cref="M:SharpDX.DXGI.SwapChain.GetContainingOutput(SharpDX.DXGI.Output@)" />. Absent subsequent changes to desktop topology, this will be the same output that will be chosen when alt-enter is fielded and fullscreen mode is begun for that swap chain.)Applications that want to handle mode changes or Alt+Enter themselves should call MakeWindowAssociation with the <see cref="F:SharpDX.DXGI.WindowAssociationFlags.IgnoreAll" /> flag after swap chain creation. The WindowHandle argument, if non-<c>null</c>, specifies that the application message queues will not be handled by the DXGI runtime for all swap chains of a particular target <see cref="T:System.IntPtr" />.  Calling MakeWindowAssociation with the <see cref="F:SharpDX.DXGI.WindowAssociationFlags.IgnoreAll" /> flag after swapchain creation ensures that DXGI will not interfere with application's handling of window mode changes or Alt+Enter.Notes for Metro style appsIf a Metro style app calls MakeWindowAssociation, it fails with <see cref="F:SharpDX.DXGI.DXGIError.NotCurrentlyAvailable" />.A Microsoft Win32 application can use MakeWindowAssociation to control full-screen transitions through the Alt+Enter key combination and print screen behavior for full screen.  For Metro style apps, because DXGI cannot perform full-screen transitions, Metro style app have no way to control full-screen transitions.	
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='IDXGIFactory::MakeWindowAssociation']/*" />
@@ -59368,7 +59873,7 @@
       <param name="swapChainOut">No documentation.</param>
       <returns>if pDesc or ppSwapChain is <c>null</c>, <see cref="F:SharpDX.DXGI.DXGIStatus.Occluded" /> if you request full-screen mode and it is unavailable, or E_OUTOFMEMORY. Other error codes defined by the type of device passed in may also be returned.</returns>
       <remarks>	
-            If you attempt to create a swap chain in full-screen mode, and full-screen mode is unavailable, the swap chain will be created in windowed mode and <see cref="F:SharpDX.DXGI.DXGIStatus.Occluded" /> will be returned.If the buffer width or the buffer height is zero, the sizes will be inferred from the output window size in the swap-chain description.Because the target output cannot be chosen explicitly when the swap-chain is created, you should not create a full-screen swap chain. This can reduce presentation performance if the swap chain size and the output window size do not match. Here are two ways to ensure that the sizes match:Create a windowed swap chain and then set it full-screen using <see cref="M:SharpDX.DXGI.SwapChain.SetFullscreenState(System.Boolean,SharpDX.DXGI.Output)" />. Save a reference to the swap chain immediately after creation, and use it to get the output window size during a WM_SIZE event. Then resize the swap chain buffers (with <see cref="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,System.Int32)" />) during the transition from windowed to full-screen.If the swap chain is in full-screen mode, before you release it you must use SetFullscreenState to switch it to windowed mode. For more information about releasing a swap chain, see the "Destroying a Swap Chain" section of DXGI Overview.You can specify <see cref="T:SharpDX.DXGI.SwapEffect" /> and <see cref="T:SharpDX.DXGI.SwapChainFlags" /> values in the swap-chain description that pDesc points to. These values allow you to use features like flip-model presentation and content protection by using pre-Windows Developer Preview APIs.However, to use stereo presentation and to change resize behavior for the flip model, applications must use the IDXGIFactory2::CreateSwapChainForHwnd method. Otherwise, the back-buffer contents implicitly scale to fit the presentation target size; that is, you can't turn off scaling.Notes for Metro style appsIf a Metro style app calls CreateSwapChain with full screen specified, CreateSwapChain fails.Metro style apps call the  IDXGIFactory2::CreateSwapChainForImmersiveWindow method to create a swap chain.	
+            If you attempt to create a swap chain in full-screen mode, and full-screen mode is unavailable, the swap chain will be created in windowed mode and <see cref="F:SharpDX.DXGI.DXGIStatus.Occluded" /> will be returned.If the buffer width or the buffer height is zero, the sizes will be inferred from the output window size in the swap-chain description.Because the target output cannot be chosen explicitly when the swap-chain is created, you should not create a full-screen swap chain. This can reduce presentation performance if the swap chain size and the output window size do not match. Here are two ways to ensure that the sizes match:Create a windowed swap chain and then set it full-screen using <see cref="M:SharpDX.DXGI.SwapChain.SetFullscreenState(System.Boolean,SharpDX.DXGI.Output)" />. Save a reference to the swap chain immediately after creation, and use it to get the output window size during a WM_SIZE event. Then resize the swap chain buffers (with <see cref="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,SharpDX.DXGI.SwapChainFlags)" />) during the transition from windowed to full-screen.If the swap chain is in full-screen mode, before you release it you must use SetFullscreenState to switch it to windowed mode. For more information about releasing a swap chain, see the "Destroying a Swap Chain" section of DXGI Overview.You can specify <see cref="T:SharpDX.DXGI.SwapEffect" /> and <see cref="T:SharpDX.DXGI.SwapChainFlags" /> values in the swap-chain description that pDesc points to. These values allow you to use features like flip-model presentation and content protection by using pre-Windows Developer Preview APIs.However, to use stereo presentation and to change resize behavior for the flip model, applications must use the IDXGIFactory2::CreateSwapChainForHwnd method. Otherwise, the back-buffer contents implicitly scale to fit the presentation target size; that is, you can't turn off scaling.Notes for Metro style appsIf a Metro style app calls CreateSwapChain with full screen specified, CreateSwapChain fails.Metro style apps call the  IDXGIFactory2::CreateSwapChainForImmersiveWindow method to create a swap chain.	
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='IDXGIFactory::CreateSwapChain']/*" />
@@ -59391,6 +59896,12 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='IDXGIFactory::CreateSoftwareAdapter']/*" />
       <unmanaged>HRESULT IDXGIFactory::CreateSoftwareAdapter([In] HINSTANCE Module,[Out] IDXGIAdapter** ppAdapter)</unmanaged>
     </member>
+    <member name="P:SharpDX.DXGI.Factory.Adapters">
+      <summary>
+            Return an array of <see cref="T:SharpDX.DXGI.Adapter" /> available from this factory.
+            </summary>
+      <unmanaged>HRESULT IDXGIFactory::EnumAdapters([In] unsigned int Adapter,[Out] IDXGIAdapter** ppAdapter)</unmanaged>
+    </member>
     <member name="T:SharpDX.DXGI.Factory1">
       <summary>	
             The <see cref="T:SharpDX.DXGI.Factory1" /> interface implements methods for generating DXGI objects.	
@@ -59404,11 +59915,25 @@
               Default Constructor for Factory1.
             </summary>
     </member>
+    <member name="M:SharpDX.DXGI.Factory1.GetAdapter1(System.Int32)">
+      <summary>	
+            Gets both adapters (video cards) with or without outputs.	
+            </summary>
+      <param name="adapter">
+        <para>The index of the adapter to enumerate.</para>
+      </param>
+      <returns>a reference to an <see cref="T:SharpDX.DXGI.Adapter1" /> interface at the position specified by the Adapter parameter</returns>
+      <remarks>	
+            This method is not supported by DXGI 1.0, which shipped in Windows?Vista and Windows Server?2008. DXGI 1.1 support is required, which is available on  Windows?7, Windows Server?2008?R2, and as an update to Windows?Vista with Service Pack?2 (SP2) (KB 971644) and Windows Server?2008 (KB 971512).When you create a factory, the factory enumerates the set of adapters that are available in the system. Therefore, if you change the adapters in a system, you must destroy  and recreate the <see cref="T:SharpDX.DXGI.Factory1" /> object. The number of adapters in a system changes when you add or remove a display card, or dock or undock a laptop.When the EnumAdapters1 method succeeds and fills the ppAdapter parameter with the address of the reference to the adapter interface, EnumAdapters1 increments the adapter interface's reference count. When you finish using the  adapter interface, call the Release method to decrement the reference count before you destroy the reference.EnumAdapters1 first returns the local adapter with the output on which the desktop primary is displayed. This adapter corresponds with an index of zero. EnumAdapters1 next returns other adapters with outputs. EnumAdapters1 finally returns adapters without outputs.	
+            </remarks>
+      <unmanaged>HRESULT IDXGIFactory1::EnumAdapters1([In] unsigned int Adapter,[Out] IDXGIAdapter1** ppAdapter)</unmanaged>
+    </member>
     <member name="M:SharpDX.DXGI.Factory1.GetAdapterCount1">
       <summary>
               Return the number of available adapters from this factory.
             </summary>
       <returns>The number of adapters</returns>
+      <unmanaged>HRESULT IDXGIFactory1::EnumAdapters1([In] unsigned int Adapter,[Out] IDXGIAdapter1** ppAdapter)</unmanaged>
     </member>
     <member name="M:SharpDX.DXGI.Factory1.#ctor(System.IntPtr)">
       <summary>
@@ -59416,16 +59941,17 @@
             </summary>
       <param name="nativePtr">The native pointer.</param>
     </member>
-    <member name="M:SharpDX.DXGI.Factory1.GetAdapter1(System.Int32)">
+    <member name="M:SharpDX.DXGI.Factory1.GetAdapter1(System.Int32,SharpDX.DXGI.Adapter1@)">
       <summary>	
             Enumerates both adapters (video cards) with or without outputs.	
             </summary>
       <param name="adapter">
         <para>The index of the adapter to enumerate.</para>
       </param>
-      <returns>
+      <param name="adapterOut">
         <para>The address of a reference to an <see cref="T:SharpDX.DXGI.Adapter1" /> interface at the position specified by the Adapter parameter.   This parameter must not be <c>null</c>.</para>
-      </returns>
+      </param>
+      <returns>Returns <see cref="F:SharpDX.Result.Ok" /> if successful; otherwise, returns <see cref="F:SharpDX.DXGI.DXGIError.NotFound" /> if the index is greater than or equal to the number of adapters in the local  system, or <see cref="F:SharpDX.DXGI.DXGIError.InvalidCall" /> if ppAdapter parameter is <c>null</c>.</returns>
       <remarks>	
             This method is not supported by DXGI 1.0, which shipped in Windows?Vista and Windows Server?2008. DXGI 1.1 support is required, which is available on  Windows?7, Windows Server?2008?R2, and as an update to Windows?Vista with Service Pack?2 (SP2) (KB 971644) and Windows Server?2008 (KB 971512).When you create a factory, the factory enumerates the set of adapters that are available in the system. Therefore, if you change the adapters in a system, you must destroy  and recreate the <see cref="T:SharpDX.DXGI.Factory1" /> object. The number of adapters in a system changes when you add or remove a display card, or dock or undock a laptop.When the EnumAdapters1 method succeeds and fills the ppAdapter parameter with the address of the reference to the adapter interface, EnumAdapters1 increments the adapter interface's reference count. When you finish using the  adapter interface, call the Release method to decrement the reference count before you destroy the reference.EnumAdapters1 first returns the local adapter with the output on which the desktop primary is displayed. This adapter corresponds with an index of zero. EnumAdapters1 next returns other adapters with outputs. EnumAdapters1 finally returns adapters without outputs.	
             </remarks>
@@ -59444,6 +59970,12 @@
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='IDXGIFactory1::IsCurrent']/*" />
       <unmanaged>BOOL IDXGIFactory1::IsCurrent()</unmanaged>
+    </member>
+    <member name="P:SharpDX.DXGI.Factory1.Adapters1">
+      <summary>
+            Return an array of <see cref="T:SharpDX.DXGI.Adapter1" /> available from this factory.
+            </summary>
+      <unmanaged>HRESULT IDXGIFactory1::EnumAdapters1([In] unsigned int Adapter,[Out] IDXGIAdapter1** ppAdapter)</unmanaged>
     </member>
     <member name="P:SharpDX.DXGI.Factory1.IsCurrent">
       <summary>	
@@ -61711,7 +62243,7 @@
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='IDXGISwapChain::GetDesc']/*" />
       <unmanaged>HRESULT IDXGISwapChain::GetDesc([Out] DXGI_SWAP_CHAIN_DESC* pDesc)</unmanaged>
     </member>
-    <member name="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,System.Int32)">
+    <member name="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,SharpDX.DXGI.SwapChainFlags)">
       <summary>	
             Changes the swap chain's back buffer size, format, and number of buffers. This should be called when the application window is resized.	
             </summary>
@@ -61736,7 +62268,7 @@
             </remarks>
       <!-- No matching elements were found for the following include tag -->
       <include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='IDXGISwapChain::ResizeBuffers']/*" />
-      <unmanaged>HRESULT IDXGISwapChain::ResizeBuffers([In] unsigned int BufferCount,[In] unsigned int Width,[In] unsigned int Height,[In] DXGI_FORMAT NewFormat,[In] unsigned int SwapChainFlags)</unmanaged>
+      <unmanaged>HRESULT IDXGISwapChain::ResizeBuffers([In] unsigned int BufferCount,[In] unsigned int Width,[In] unsigned int Height,[In] DXGI_FORMAT NewFormat,[In] DXGI_SWAP_CHAIN_FLAG SwapChainFlags)</unmanaged>
     </member>
     <member name="M:SharpDX.DXGI.SwapChain.ResizeTarget(SharpDX.DXGI.ModeDescription@)">
       <summary>	
@@ -61801,7 +62333,7 @@
             Creates a swap chain.	
             </summary>
       <remarks>	
-            If you attempt to create a swap chain in full-screen mode, and full-screen mode is unavailable, the swap chain will be created in windowed mode and DXGI_STATUS_OCCLUDED will be returned. If the buffer width or the buffer height are zero, the sizes will be inferred from the output window size in the swap-chain description. Since the target output cannot be chosen explicitly when the swap-chain is created, you should not create a full-screen swap chain. This can reduce presentation performance if the swap chain size and the output window size do not match. Here are two ways to ensure the sizes match:  Create a windowed swap chain and then set it full-screen using <see cref="M:SharpDX.DXGI.SwapChain.SetFullscreenState(System.Boolean,SharpDX.DXGI.Output)" />. Save a reference to the swap-chain immediately after creation, and use it to get the output window size during a WM_SIZE event. Then resize the swap chain buffers (with <see cref="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,System.Int32)" />) during the transition from windowed to full-screen.  If the swap chain is in full-screen mode, before you release it, you must use {{SetFullscreenState}} to switch it to windowed mode. For more information about releasing a swap chain, see the Destroying a Swap Chain section of {{DXGI Overview}}. 	
+            If you attempt to create a swap chain in full-screen mode, and full-screen mode is unavailable, the swap chain will be created in windowed mode and DXGI_STATUS_OCCLUDED will be returned. If the buffer width or the buffer height are zero, the sizes will be inferred from the output window size in the swap-chain description. Since the target output cannot be chosen explicitly when the swap-chain is created, you should not create a full-screen swap chain. This can reduce presentation performance if the swap chain size and the output window size do not match. Here are two ways to ensure the sizes match:  Create a windowed swap chain and then set it full-screen using <see cref="M:SharpDX.DXGI.SwapChain.SetFullscreenState(System.Boolean,SharpDX.DXGI.Output)" />. Save a reference to the swap-chain immediately after creation, and use it to get the output window size during a WM_SIZE event. Then resize the swap chain buffers (with <see cref="M:SharpDX.DXGI.SwapChain.ResizeBuffers(System.Int32,System.Int32,System.Int32,SharpDX.DXGI.Format,SharpDX.DXGI.SwapChainFlags)" />) during the transition from windowed to full-screen.  If the swap chain is in full-screen mode, before you release it, you must use {{SetFullscreenState}} to switch it to windowed mode. For more information about releasing a swap chain, see the Destroying a Swap Chain section of {{DXGI Overview}}. 	
             </remarks>
       <param name="factory">a reference to a <see cref="T:SharpDX.DXGI.Factory" />.</param>
       <param name="device">A reference to the device that will write 2D images to the swap chain. </param>
