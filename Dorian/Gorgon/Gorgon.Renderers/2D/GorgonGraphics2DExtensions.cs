@@ -160,5 +160,5 @@ namespace GorgonLibrary.Graphics
 			return result;
 		}
 		#endregion
-	}
+	}	
 }
