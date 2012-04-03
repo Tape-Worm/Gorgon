@@ -246,7 +246,13 @@ namespace GorgonLibrary.Renderers
 			GorgonRenderable.TextureSamplerState sampler = renderable.TextureSampler;
 
 			if ((state & StateChange.Texture) == StateChange.Texture)
+			{
 				_texture = _graphics.Shaders.PixelShader.Textures[0] = renderable.Texture;
+
+				// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader, otherwise 
+				// switch to the diffuse shader.
+				_gorgon2D.PixelShader.TextureSwitch(renderable.Texture);
+			}
 			
 			if ((state & StateChange.BlendEnable) == StateChange.BlendEnable)
 			{

@@ -898,7 +898,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the graphics interface that owns this object.
 		/// </summary>
-		public GorgonGraphics Graphics
+		protected GorgonGraphics Graphics
 		{
 			get;
 			private set;
@@ -926,7 +926,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the list of constant buffers for the shaders.
 		/// </summary>
-		public ShaderConstantBuffers ConstantBuffers
+		public virtual ShaderConstantBuffers ConstantBuffers
 		{
 			get;
 			private set;
@@ -937,10 +937,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a sampler will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public TextureSamplerState TextureSamplers
+		public virtual TextureSamplerState TextureSamplers
 		{
 			get;
-			protected set;
+			private set;
 		}
 
 		/// <summary>
@@ -948,10 +948,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public ShaderTextures Textures
+		public virtual ShaderTextures Textures
 		{
 			get;
-			protected set;
+			private set;
 		}
 		#endregion
 

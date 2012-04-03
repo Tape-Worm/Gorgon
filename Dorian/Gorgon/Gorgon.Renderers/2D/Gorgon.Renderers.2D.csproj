@@ -83,6 +83,14 @@
     <Compile Include="Renderables\GorgonTriangle.cs" />
     <Compile Include="Renderables\IDeferredTextureLoad.cs" />
     <Compile Include="Renderables\IRenderable.cs" />
+    <Compile Include="Shaders\Gorgon2DSharpenEmbossEffect.cs" />
+    <Compile Include="Shaders\Gorgon2D1BitEffect.cs" />
+    <Compile Include="Shaders\Gorgon2DWaveEffect.cs" />
+    <Compile Include="Shaders\Gorgon2DEffect.cs" />
+    <Compile Include="Shaders\Gorgon2DEffects.cs" />
+    <Compile Include="Shaders\Gorgon2DVertexShader.cs" />
+    <Compile Include="Shaders\Gorgon2DPixelShader.cs" />
+    <Compile Include="Shaders\Gorgon2DGrayScaleEffect.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GorIcon.ico" />
@@ -107,6 +115,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

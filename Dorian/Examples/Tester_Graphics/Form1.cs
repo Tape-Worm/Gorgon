@@ -42,8 +42,8 @@ namespace Tester_Graphics
 
 				using (GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false))
 				{
-					//_graphics = new GorgonGraphics(_devices[_devices.Count - 1], DeviceFeatureLevel.SM4);
-					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
+					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM4);
+					//_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
 				}
 
 				_target = _graphics.Output.CreateRenderTarget("My target", new GorgonRenderTargetSettings()
@@ -82,27 +82,27 @@ namespace Tester_Graphics
 				_target.Texture.Copy(Properties.Resources.Haiku);
 				_texture.CopySubResource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
 
-				byte[] data = new byte[_texture.SizeInBytes];
+				//byte[] data = new byte[_texture.SizeInBytes];
 
-				//_rnd.NextBytes(data);
-				for (int i = 0; i < data.Length; i+=4)
-				{
-					data[i] = 255;
-					data[i + 1] = 0;
-					data[i + 2] = 0;
-					data[i + 3] = 255;
-				}
+				////_rnd.NextBytes(data);
+				//for (int i = 0; i < data.Length; i+=4)
+				//{
+				//    data[i] = 255;
+				//    data[i + 1] = 0;
+				//    data[i + 2] = 0;
+				//    data[i + 3] = 255;
+				//}
 
-				int dataposition = ((256 * 4) * 128) + (128 * 4);
+				//int dataposition = ((256 * 4) * 128) + (128 * 4);
 
-				for (int i = 0; i < 8; i++)
-				{
-					data[dataposition] = 255;
-					data[dataposition + 1] = 255;
-					data[dataposition + 2] = 255;
-					data[dataposition + 3] = 255;
-					dataposition += 4;
-				}
+				//for (int i = 0; i < 8; i++)
+				//{
+				//    data[dataposition] = 255;
+				//    data[dataposition + 1] = 255;
+				//    data[dataposition + 2] = 255;
+				//    data[dataposition + 3] = 255;
+				//    dataposition += 4;
+				//}
 
 				
 /*				using (GorgonDataStream stream = new GorgonDataStream(data))
@@ -110,16 +110,16 @@ namespace Tester_Graphics
 					_texture.UpdateSubResource(new GorgonTexture2DData(stream, 1024), 0);
 				}*/
 
-				data = new byte[64 * 4 * 64];
-				//_rnd.NextBytes(data);
+				//data = new byte[64 * 4 * 64];
+				////_rnd.NextBytes(data);
 
-				for (int i = 0; i < data.Length; i += 4)
-				{
-					data[i] = 64;
-					data[i + 1] = 128;
-					data[i + 2] = (byte)((16384 - i) / 64);
-					data[i + 3] = 255;
-				}
+				//for (int i = 0; i < data.Length; i += 4)
+				//{
+				//    data[i] = 64;
+				//    data[i + 1] = 128;
+				//    data[i + 2] = (byte)((16384 - i) / 64);
+				//    data[i + 3] = 255;
+				//}
 /*				using (GorgonDataStream stream = new GorgonDataStream(data))
 				{
 					_target.Texture.UpdateSubResource(new GorgonTexture2DData(stream, 256), 0, new Rectangle(128, 128, 64, 64));
@@ -149,8 +149,8 @@ namespace Tester_Graphics
 				//    fileSt.WriteByte((byte)data);
 				//}
 				//_target.Texture.Save(@".\testfile.png", ImageFileFormat.PNG);
-				_texture.Save(@".\testfile.png", ImageFileFormat.PNG);
-				_target.Texture.Save(@".\rt.png", ImageFileFormat.PNG);
+				//_texture.Save(@".\testfile.png", ImageFileFormat.PNG);
+				//_target.Texture.Save(@".\rt.png", ImageFileFormat.PNG);
 				//_texture.SaveSM2WorkAround();
 				//normalTexture.Save(@".\testfile.png", ImageFileFormat.PNG);
 				//fileSt.Close();
@@ -160,7 +160,7 @@ namespace Tester_Graphics
 				sprite.Texture = _texture;*/
 
 				Vector2 position = Vector2.Zero;
-				string shaderSource = "#GorgonInclude \"Gorgon2DShaders\"";
+				//string shaderSource = "#GorgonInclude \"Gorgon2DShaders\"";
 				//    "float4 PixEntry(GorgonSpriteVertex vertex) : SV_Target\n" +
 				//    "{\n" +
 				//    "return GorgonPixelShaderTextured(vertex);\n" +
@@ -168,13 +168,13 @@ namespace Tester_Graphics
 				//    "return float4(grey, grey, grey, color.a);\n" +
 				//    "}";
 
-				GorgonPixelShader tempShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("TempShader", "GorgonPixelShaderQuickBlur", shaderSource, true);
+				//GorgonPixelShader tempShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("TempShader", "GorgonPixelShaderQuickBlur", shaderSource, true);
 
-				_2D.PixelShader = tempShader;
+				////_2D.PixelShader.Current = tempShader;
 
-				_waveEffectBuffer = _graphics.Shaders.CreateConstantBuffer(16, false);
-				_waveEffectStream = new GorgonDataStream(16);
-				_graphics.Shaders.PixelShader.ConstantBuffers[2] = _waveEffectBuffer;
+				//_waveEffectBuffer = _graphics.Shaders.CreateConstantBuffer(16, false);
+				//_waveEffectStream = new GorgonDataStream(16);
+				//_graphics.Shaders.PixelShader.ConstantBuffers[2] = _waveEffectBuffer;
 
 				float angle = 0.0f;
 				float offset = 0.0f;
@@ -185,25 +185,25 @@ namespace Tester_Graphics
 				
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
-						//if (!backForth)
-						//    angle += 0.125f * timing.FrameDelta;
-						//else
-						//    angle -= 0.125f * timing.FrameDelta;
+/*						if (!backForth)
+						    angle += 0.125f * timing.FrameDelta;
+						else
+						    angle -= 0.125f * timing.FrameDelta;
 
-						//if ((angle > 0.05f) || (angle < -0.05f))
-						//    backForth = !backForth;
+						if ((angle > 0.05f) || (angle < -0.05f))
+						    backForth = !backForth;*/
 							
-						_waveEffectStream.Position = 0;
-						_waveEffectStream.Write(1.0f / _target.Settings.Width);
-						_waveEffectStream.Write(1.0f / _target.Settings.Height);
-						//_waveEffectStream.Write(0.2f);
-						//_waveEffectStream.Write(0.8f); //(angle + 0.05f) * 2000.0f);
-						//_waveEffectStream.Write(1.0f);
-						//_waveEffectStream.Write(1.0f / _target.Settings.Height); //(angle + 0.05f) * 2000.0f);
-						offset += (10.0f * timing.FrameDelta) / sprite.Size.Y;
-						//_waveEffectStream.Write(offset);						
-						_waveEffectStream.Position = 0;
-						_waveEffectBuffer.Update(_waveEffectStream);
+						//_waveEffectStream.Position = 0;
+						//_waveEffectStream.Write(1.0f / _target.Settings.Width);
+						//_waveEffectStream.Write(1.0f / _target.Settings.Height);
+						////_waveEffectStream.Write(0.2f);
+						////_waveEffectStream.Write(0.8f); //(angle + 0.05f) * 2000.0f);
+						////_waveEffectStream.Write(1.0f);
+						////_waveEffectStream.Write(1.0f / _target.Settings.Height); //(angle + 0.05f) * 2000.0f);
+						//offset += (10.0f * timing.FrameDelta) / sprite.Size.Y;
+						////_waveEffectStream.Write(offset);						
+						//_waveEffectStream.Position = 0;
+						//_waveEffectBuffer.Update(_waveEffectStream);
 
 						_2D.Target = _target;
 						//_2D.Clear(Color.Black);
@@ -218,7 +218,8 @@ namespace Tester_Graphics
 						//_target.Texture.Save(@"X:\unpak\testfile.png", ImageFileFormat.PNG);
 						
 
-						_2D.PixelShader = tempShader;
+						//_2D.PixelShader.Current = tempShader;					
+/*							
 						for (int i = 0; i < blurPasses; i++)
 						{
 							if ((i % 2) == 0)
@@ -249,16 +250,36 @@ namespace Tester_Graphics
 						{
 							_2D.Target = _target;
 							_2D.Drawing.Blit(_target2, Vector2.Zero);
-						}
+						}*/
 
 						_2D.Target = null;
-						_2D.PixelShader = null;						
+						//_2D.PixelShader.Current = null;						
 
 						_2D.Clear(Color.White);
 						_2D.Drawing.BlendingMode = BlendingMode.None;
-						_2D.Drawing.Blit(_target, position);
+
+						_2D.Target = _target2;
+						_2D.Effects.Wave.Amplitude = 0.01f;
+						_2D.Effects.Wave.Period += (50.0f / _target.Settings.Height) * timing.FrameDelta;
+						_2D.Effects.Wave.Length = 50.0f;
+						_2D.Effects.Wave.WaveType = WaveType.Both;
+						_2D.Effects.Wave.Render((int index) =>
+							{
+								_2D.Drawing.Blit(_target, Vector2.Zero);
+								_2D.Target = null;
+								_2D.Effects.SharpenEmboss.Amount = 2.0f;
+								_2D.Effects.SharpenEmboss.Area = _target.Settings.Size;
+								_2D.Effects.SharpenEmboss.UseEmbossing = true;
+								_2D.Effects.SharpenEmboss.Render((int innerIndex) =>
+								{
+									_2D.Drawing.Blit(_target2, position);
+								});
+							}
+						);
+
 
 						position = new Vector2(position.X + 15.0f * timing.FrameDelta, position.Y + 15.0f * timing.FrameDelta);
+						
 						_2D.Render();
 						return true;
 					};

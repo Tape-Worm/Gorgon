@@ -140,6 +140,27 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create an effect object.
+		/// </summary>
+		/// <typeparam name="T">Type of effect to create.</typeparam>
+		/// <param name="name">Name of the effect.</param>
+		/// <param name="passCount">Number of passes in the effect.</param>
+		/// <returns>The new effect object.</returns>
+		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="passCount"/> parameter is less than 0.</exception>
+		public T CreateEffect<T>(string name, int passCount)
+			where T : GorgonEffect
+		{
+			T effect = (T)Activator.CreateInstance(typeof(T), new object[] {_graphics, name, passCount});
+
+			_graphics.AddTrackedObject(effect);
+
+			return effect;
+		}
+
+		/// <summary>
 		/// Function to create a constant buffer.
 		/// </summary>
 		/// <param name="size">Size of the buffer, in bytes.</param>

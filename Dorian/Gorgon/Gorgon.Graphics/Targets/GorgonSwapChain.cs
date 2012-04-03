@@ -292,7 +292,7 @@ namespace GorgonLibrary.Graphics
 			ReleaseResources();
 			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
 
-			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, (int)flags);
+			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
 			CreateResources();
 
 			OnTargetResize();

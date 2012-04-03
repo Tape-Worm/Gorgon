@@ -31,15 +31,17 @@ cbuffer GorgonAlphaTest : register(b1)
 cbuffer GorgonWaveEffect
 {
 	float waveAmplitude = 0.0f;
-	float waveLength = 20.0f;
+	float waveLength = 0.0f;
 	float wavePeriod = 0.0f;
+	int waveType = 0;
 }
 
 // Sharpen/emboss effect variables.
 cbuffer GorgonSharpenEmbossEffect
 {
-	float sharpEmbossAmount = 10.0f;
 	float2 sharpEmbossTexelDistance = 0.0f;
+	float sharpEmbossAmount = 10.0f;
+	bool useEmboss = false;
 }
 
 // 1 bit color effect.
@@ -47,6 +49,7 @@ cbuffer Gorgon1BitEffect
 {	
 	float2 oneBitRange = float2(0.2f, 0.8f);
 	bool oneBitUseAverage = false;
+	bool oneBitInvert = false;
 }
 
 // Quick blur effect.
@@ -98,26 +101,23 @@ float4 GorgonPixelShaderGrayScale(GorgonSpriteVertex vertex) : SV_Target
 }
 
 // A vertical wave effect pixel shader.
-float4 GorgonPixelShaderVWaveEffect(GorgonSpriteVertex vertex) : SV_Target
+float4 GorgonPixelShaderWaveEffect(GorgonSpriteVertex vertex) : SV_Target
 {
 	float2 uv = vertex.uv;
 	float4 color;
 	
-	uv.x += sin((uv.y + wavePeriod) * waveLength) * waveAmplitude;
-		
-	color = _gorgonTexture.Sample(_gorgonSampler, uv) * vertex.color;
-	REJECT_ALPHA(color.a);
-	return color;
-}
+	if (waveType == 0.0f)
+		uv.x += sin((uv.y + wavePeriod) * waveLength) * waveAmplitude;
 
-// A horizontal wave effect pixel shader.
-float4 GorgonPixelShaderHWaveEffect(GorgonSpriteVertex vertex) : SV_Target
-{
-	float2 uv = vertex.uv;
-	float4 color;
-	
-	uv.y += cos((uv.x + wavePeriod) * waveLength) * waveAmplitude;
-		
+	if (waveType == 1.0f)
+		uv.y += cos((uv.x + wavePeriod) * waveLength) * waveAmplitude;
+
+	if (waveType == 2.0f)
+	{
+		uv.x += sin((uv.y + wavePeriod) * waveLength) * waveAmplitude;
+		uv.y += cos((uv.x + wavePeriod) * waveLength) * waveAmplitude;
+	}
+			
 	color = _gorgonTexture.Sample(_gorgonSampler, uv) * vertex.color;
 	REJECT_ALPHA(color.a);
 	return color;
@@ -134,7 +134,7 @@ float4 GorgonPixelShaderInvert(GorgonSpriteVertex vertex) : SV_Target
 }
 
 // A pixel shader to sharpen the color on a texture.
-float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
+float4 GorgonPixelShaderSharpenEmboss(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 	float alpha = color.a * vertex.color.a;
@@ -146,27 +146,11 @@ float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
 	color -= (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * sharpEmbossAmount);
 	texelPosition = vertex.uv - sharpEmbossTexelDistance;
 	color += (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * sharpEmbossAmount);
+
+	if (useEmboss)
+		color.rgb = (color.r + color.g + color.b) / 3.0f;
+
 	color.a = alpha;
-	return alpha;
-}
-
-// A pixel shader to sharpen the color on a texture.
-float4 GorgonPixelShaderEmboss(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = 0.5f;
-	float alpha = _gorgonTexture.Sample(_gorgonSampler, vertex.uv).a * vertex.color.a;
-	float2 texelPosition;
-			
-	REJECT_ALPHA(alpha);
-	
-	texelPosition = vertex.uv + sharpEmbossTexelDistance;
-	color -= (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * sharpEmbossAmount);
-	texelPosition = vertex.uv - sharpEmbossTexelDistance;
-	color += (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * sharpEmbossAmount);
-
-	color.rgb = (color.r + color.g + color.b) / 3.0f;
-	color.a = alpha;
-
 	return color;
 }
 
@@ -182,6 +166,9 @@ float4 GorgonPixelShader1Bit(GorgonSpriteVertex vertex) : SV_Target
 	color.r = RANGE_BW(color.r);
 	color.g = RANGE_BW(color.g);
 	color.b = RANGE_BW(color.b);
+
+	if (oneBitInvert)
+		color.rgb = 1.0f - color;
 
 	return color;
 }
