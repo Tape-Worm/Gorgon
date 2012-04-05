@@ -83,6 +83,8 @@
     <Compile Include="Renderables\GorgonTriangle.cs" />
     <Compile Include="Renderables\IDeferredTextureLoad.cs" />
     <Compile Include="Renderables\IRenderable.cs" />
+    <Compile Include="Shaders\Gorgon2DGaussianBlurEffect.cs" />
+    <Compile Include="Shaders\Gorgon2DInvertEffect.cs" />
     <Compile Include="Shaders\Gorgon2DSharpenEmbossEffect.cs" />
     <Compile Include="Shaders\Gorgon2D1BitEffect.cs" />
     <Compile Include="Shaders\Gorgon2DWaveEffect.cs" />

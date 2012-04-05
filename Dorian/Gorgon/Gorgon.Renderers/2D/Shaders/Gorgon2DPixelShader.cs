@@ -75,7 +75,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if ((Graphics.Shaders.PixelShader.Current != value) || ((value == null) && (Graphics.Shaders.PixelShader.Current != DefaultPixelShaderTextured) && (Graphics.Shaders.PixelShader.Current != DefaultPixelShaderDiffuse)))
+				if (((Graphics.Shaders.PixelShader.Current != value) && (value != null)) || ((value == null) && (Graphics.Shaders.PixelShader.Current != DefaultPixelShaderTextured) && (Graphics.Shaders.PixelShader.Current != DefaultPixelShaderDiffuse)))
 				{
 					_gorgon2D.RenderObjects();
 

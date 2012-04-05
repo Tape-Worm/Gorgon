@@ -66,7 +66,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if ((Graphics.Shaders.VertexShader.Current != value) || ((value == null) && (Graphics.Shaders.VertexShader.Current != DefaultVertexShader)))
+				if (((Graphics.Shaders.VertexShader.Current != value) && (value != null)) || ((value == null) && (Graphics.Shaders.VertexShader.Current != DefaultVertexShader)))
 				{
 					_gorgon2D.RenderObjects();
 

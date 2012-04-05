@@ -37,26 +37,6 @@ namespace GorgonLibrary
 	{
 		#region Methods.
 		/// <summary>
-		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
-		/// </summary>
-		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
-		/// <returns>
-		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
-		/// </returns>
-		/// <exception cref="T:System.NullReferenceException">
-		/// The <paramref name="obj"/> parameter is null.
-		/// </exception>
-		public override bool Equals(object obj)
-		{
-			GorgonNamedObject nameObj = obj as GorgonNamedObject;
-
-			if (nameObj != null)
-				return nameObj.Name == Name;
-
-			return false;
-		}
-
-		/// <summary>
 		/// Serves as a hash method for a particular type.
 		/// </summary>
 		/// <returns>
@@ -64,7 +44,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Name.GetHashCode() ^ this.GetHashCode();
+			return Name.GetHashCode().GenerateHash(this);
 		}
 
 		/// <summary>

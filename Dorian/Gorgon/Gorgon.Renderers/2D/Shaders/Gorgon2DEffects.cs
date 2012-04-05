@@ -76,6 +76,24 @@ namespace GorgonLibrary.Renderers
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the invert effect.
+		/// </summary>
+		public Gorgon2DInvertEffect Invert
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the Gaussian blur effect.
+		/// </summary>
+		public Gorgon2DGaussianBlurEffect GaussianBlur
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -96,6 +114,13 @@ namespace GorgonLibrary.Renderers
 			if (SharpenEmboss != null)
 				SharpenEmboss.Dispose();
 
+			if (Invert != null)
+				Invert.Dispose();
+
+			if (GaussianBlur != null)
+				GaussianBlur.Dispose();
+
+			Invert = null;
 			SharpenEmboss = null;
 			OneBit = null;
 			Wave = null;
@@ -115,6 +140,8 @@ namespace GorgonLibrary.Renderers
 			Wave = new Gorgon2DWaveEffect(_gorgon2D);
 			OneBit = new Gorgon2D1BitEffect(_gorgon2D);
 			SharpenEmboss = new Gorgon2DSharpenEmbossEffect(_gorgon2D);
+			Invert = new Gorgon2DInvertEffect(_gorgon2D);
+			GaussianBlur = new Gorgon2DGaussianBlurEffect(_gorgon2D);
 		}
 		#endregion
 	}

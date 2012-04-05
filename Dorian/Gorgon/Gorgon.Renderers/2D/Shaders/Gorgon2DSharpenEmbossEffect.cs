@@ -131,14 +131,12 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Function called before rendering begins.
+		/// Function called when a pass is about to start rendering.
 		/// </summary>
-		/// <returns>
-		/// TRUE to continue rendering, FALSE to exit.
-		/// </returns>
-		protected override bool OnBeforeRender()
+		/// <param name="passIndex">Index of the pass being rendered.</param>
+		protected override void OnBeforeRenderPass(int passIndex)
 		{
-			base.OnBeforeRender();
+			base.OnBeforeRenderPass(passIndex);
 
 			if (_isUpdated)
 				SetValues();
@@ -146,7 +144,6 @@ namespace GorgonLibrary.Renderers
 			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _sharpenEmbossBuffer)
 				Gorgon2D.PixelShader.ConstantBuffers[2] = _sharpenEmbossBuffer;
 
-			return true;
 		}
 
 		/// <summary>
@@ -159,12 +156,16 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
+					if (PixelShader != null)
+						PixelShader.Dispose();
+
 					if (_sharpenEmbossBuffer != null)
 						_sharpenEmbossBuffer.Dispose();
 					if (_sharpenEmbossStream != null)
 						_sharpenEmbossStream.Dispose();
 				}
 
+				PixelShader = null; 
 				_disposed = true;
 			}
 
