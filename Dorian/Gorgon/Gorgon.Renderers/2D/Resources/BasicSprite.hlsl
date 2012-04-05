@@ -1,5 +1,6 @@
 #define REJECT_ALPHA(alpha) if (alphaTestEnabled) clip((alpha <= alphaTestValueHi && alpha >= alphaTestValueLow) ? -1 : 1);
 #define RANGE_BW(colorValue) (colorValue < oneBitRange.x || colorValue > oneBitRange.y) ? 0.0f : 1.0f;
+#define MAX_KERNEL_SIZE 13
 
 // Our default texture and sampler.
 Texture2D _gorgonTexture : register(t0);
@@ -36,6 +37,17 @@ cbuffer GorgonWaveEffect
 	int waveType = 0;
 }
 
+cbuffer GorgonGaussBlurStatic
+{
+	int blurRadius = 7;
+	float _weights[MAX_KERNEL_SIZE];
+}
+
+cbuffer GorgonGaussBlur
+{
+	float2 _offsets[MAX_KERNEL_SIZE];
+}
+
 // Sharpen/emboss effect variables.
 cbuffer GorgonSharpenEmbossEffect
 {
@@ -50,12 +62,6 @@ cbuffer Gorgon1BitEffect
 	float2 oneBitRange = float2(0.2f, 0.8f);
 	bool oneBitUseAverage = false;
 	bool oneBitInvert = false;
-}
-
-// Quick blur effect.
-cbuffer GorgonQuickBlurEffect
-{
-	float2 quickBlurTexelDistance = 0.0f;
 }
 
 // Our default vertex shader.
@@ -173,35 +179,15 @@ float4 GorgonPixelShader1Bit(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 
-// A pixel shader to perform a quick blur on an image.
-float4 GorgonPixelShaderQuickBlur(GorgonSpriteVertex vertex) : SV_Target
+// Function to gather the a single pass of the separable gaussian blur.
+float4 GorgonGaussBlur(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);
-	float2 texelDistance = 0.0f;
-	float alpha = color.a * vertex.color.a;
-			
-	REJECT_ALPHA(alpha);
-		
-	texelDistance = vertex.uv - quickBlurTexelDistance;
-	color += _gorgonTexture.Sample(_gorgonSampler, texelDistance);
-	texelDistance = float2(vertex.uv.x - quickBlurTexelDistance.x, vertex.uv.y);
-	color += _gorgonTexture.Sample(_gorgonSampler, texelDistance);
-	texelDistance = float2(vertex.uv.x - quickBlurTexelDistance.x, vertex.uv.y - quickBlurTexelDistance.y);
-	color += _gorgonTexture.Sample(_gorgonSampler, texelDistance);
+	float4 sample = 0.0f;
+	int kernelSize = (blurRadius * 2) + 1;
 
-	texelDistance = float2(vertex.uv.x, vertex.uv.y - quickBlurTexelDistance.y);
-	color += _gorgonTexture.Sample(_gorgonSampler, texelDistance);
-	texelDistance = float2(vertex.uv.x + quickBlurTexelDistance.x, vertex.uv.y - quickBlurTexelDistance.y);
-	color += _gorgonTexture.Sample(_gorgonSampler, texelDistance);
+	[unroll]	
+	for (int i = 0; i < kernelSize; i++)
+		sample += _gorgonTexture.Sample(_gorgonSampler, vertex.uv + _offsets[i]) * vertex.color * _weights[i];
 
-	texelDistance = vertex.uv + quickBlurTexelDistance;
-	color += _gorgonTexture.Sample(_gorgonSampler, texelDistance);
-	texelDistance = float2(vertex.uv.x, vertex.uv.y + quickBlurTexelDistance.y);
-	color += _gorgonTexture.Sample(_gorgonSampler, texelDistance);
-	texelDistance = float2(vertex.uv.x + quickBlurTexelDistance.x, vertex.uv.y);
-	color += _gorgonTexture.Sample(_gorgonSampler, texelDistance);
-
-	color = (color * vertex.color) / 9.0f;
-
-	return float4(color.rgb, alpha);
+	return sample;
 }

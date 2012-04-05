@@ -35,7 +35,6 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// An abstract effect used for applying shaders to rendering.
 	/// </summary>
-	/// <typeparam name="T">Type of user specific context data to pass to the rendering.</typeparam>
 	/// <remarks>Users may use this to implement custom shading for objects.</remarks>
 	public abstract class GorgonEffect
 		: GorgonNamedObject, IDisposable
@@ -102,7 +101,6 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function called when a pass is about to start rendering.
 		/// </summary>
-		/// <param name="context">Data providing context to the renderer.</param>
 		/// <param name="passIndex">Index of the pass being rendered.</param>
 		protected virtual void OnBeforeRenderPass(int passIndex)
 		{
@@ -111,10 +109,34 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function called after a pass has rendered.
 		/// </summary>
-		/// <param name="context">Data providing context to the renderer.</param>
 		/// <param name="passIndex">Index of the pass being rendered.</param>
 		protected virtual void OnAfterRenderPass(int passIndex)
 		{
+		}
+
+		/// <summary>
+		/// Function to render a specific pass while using this effect.
+		/// </summary>
+		/// <param name="renderMethod">Method to use to render the data.</param>
+		/// <param name="passIndex">Index of the pass to render.</param>
+		/// <remarks>The <paramref name="renderMethod"/> is an action delegate that must be defined with an integer value.  The parameter indicates which pass the rendering is currently on.</remarks>
+		protected virtual void RenderImpl(Action<int> renderMethod, int passIndex)
+		{
+			if (renderMethod != null)
+				renderMethod(passIndex);
+		}
+
+		/// <summary>
+		/// Function to render a specific pass while using this effect.
+		/// </summary>
+		/// <param name="renderMethod">Method to use to render the data.</param>
+		/// <param name="passIndex">Index of the pass to render.</param>
+		/// <remarks>The <paramref name="renderMethod"/> is an action delegate that must be defined with an integer value.  The parameter indicates which pass the rendering is currently on.</remarks>
+		public void RenderPass(Action<int> renderMethod, int passIndex)
+		{
+			OnBeforeRenderPass(passIndex);
+			RenderImpl(renderMethod, passIndex);
+			OnAfterRenderPass(passIndex);
 		}
 
 		/// <summary>
@@ -128,12 +150,7 @@ namespace GorgonLibrary.Graphics
 				return;
 
 			for (int i = 0; i < PassCount; i++)
-			{
-				OnBeforeRenderPass(i);
-				if (renderMethod != null)
-					renderMethod(i);
-				OnAfterRenderPass(i);
-			}
+				RenderPass(renderMethod, i);
 
 			OnAfterRender();
 		}

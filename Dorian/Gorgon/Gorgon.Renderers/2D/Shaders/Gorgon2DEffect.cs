@@ -57,24 +57,23 @@ namespace GorgonLibrary.Renderers
 
 		#region Methods.
 		/// <summary>
-		/// Function called before rendering begins.
+		/// Function called when a pass is about to start rendering.
 		/// </summary>
-		/// <returns>
-		/// TRUE to continue rendering, FALSE to exit.
-		/// </returns>
-		protected override bool OnBeforeRender()
+		/// <param name="passIndex">Index of the pass being rendered.</param>
+		protected override void OnBeforeRenderPass(int passIndex)
 		{
+			base.OnBeforeRenderPass(passIndex);
 			_lastPixelShader = Gorgon2D.PixelShader.Current;
 			_lastVertexShader = Gorgon2D.VertexShader.Current;
 			Gorgon2D.PixelShader.Current = PixelShader;
 			Gorgon2D.VertexShader.Current = VertexShader;
-			return true;
 		}
 
 		/// <summary>
-		/// Function called after rendering ends.
+		/// Function called after a pass has rendered.
 		/// </summary>
-		protected override void OnAfterRender()
+		/// <param name="passIndex">Index of the pass being rendered.</param>
+		protected override void OnAfterRenderPass(int passIndex)
 		{
 			Gorgon2D.PixelShader.Current = _lastPixelShader;
 			Gorgon2D.VertexShader.Current = _lastVertexShader;
@@ -90,13 +89,10 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
+					Gorgon2D.TrackedObjects.Remove(this);
+
 					Gorgon2D.PixelShader.Current = _lastPixelShader;
 					Gorgon2D.VertexShader.Current = _lastVertexShader;
-
-					if (PixelShader != null)
-						PixelShader.Dispose();
-					if (VertexShader != null)
-						VertexShader.Dispose();
 				}
 				
 				_isDisposed = true;

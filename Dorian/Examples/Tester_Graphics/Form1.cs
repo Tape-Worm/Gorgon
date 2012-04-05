@@ -26,6 +26,7 @@ namespace Tester_Graphics
 		private Gorgon2D _2D = null;
 		private GorgonRenderTarget _target = null;
 		private GorgonRenderTarget _target2 = null;
+		private GorgonRenderTarget _target3 = null;
 		private GorgonTexture2D _texture = null;
 		private GorgonOrthoCamera _cam1 = null;
 		private GorgonConstantBuffer _waveEffectBuffer = null;
@@ -59,6 +60,8 @@ namespace Tester_Graphics
 					Height = 240,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
+
+				_target3 = _graphics.Output.CreateRenderTarget("My Target 3", _target2.Settings);
 
 				//using (GorgonTexture1D _1D = _graphics.Textures.CreateTexture<GorgonTexture1D>("Test", new GorgonTexture1DSettings()
 				//{
@@ -182,7 +185,9 @@ namespace Tester_Graphics
 				int blurPasses = 128;
 
 				GorgonTimer timer = new GorgonTimer();
-				
+
+				_2D.Effects.GaussianBlur.BlurAmount = 2.0f;
+				GorgonOrthoCamera camera =_2D.CreateCamera("My Camera", new Vector2(640, 480), 1000.0f);
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 /*						if (!backForth)
@@ -206,10 +211,12 @@ namespace Tester_Graphics
 						//_waveEffectBuffer.Update(_waveEffectStream);
 
 						_2D.Target = _target;
-						//_2D.Clear(Color.Black);
+						_2D.Clear(Color.Black);
+						_2D.Camera = camera;
+						_2D.Viewport = new GorgonViewport(0, 0, 160.0f, 120.0f, 0, 1);						
 
 						sprite.Opacity = 1.0f;
-						sprite.Position = new Vector2(40, 40);
+						sprite.Position = new Vector2(160, 120);
 						//sprite.Angle += 90.0f * timing.FrameDelta;
 						sprite.Draw();
 
@@ -252,11 +259,30 @@ namespace Tester_Graphics
 							_2D.Drawing.Blit(_target2, Vector2.Zero);
 						}*/
 
+						_2D.Camera = null;
 						_2D.Target = null;
+						_2D.Viewport = null;
 						//_2D.PixelShader.Current = null;						
 
 						_2D.Clear(Color.White);
 						_2D.Drawing.BlendingMode = BlendingMode.None;
+
+						//_2D.Effects.Invert.Render((int passInvertIndex) =>
+						//    {
+						//        testEffect.OutputTarget = _target3;
+						//        testEffect.FrameDelta = timing.FrameDelta;
+						//        testEffect.WaveTarget = _target2;
+						//        testEffect.Render((int passIndex) =>
+						//            {
+						//                if (passIndex == 0)
+						//                    _2D.Drawing.Blit(_target, Vector2.Zero);
+						//                else
+						//                    _2D.Drawing.Blit(_target2, Vector2.Zero);
+						//            });
+
+						//        _2D.Target = null;
+						//        _2D.Drawing.Blit(_target3, position);
+						//    });
 
 						_2D.Target = _target2;
 						_2D.Effects.Wave.Amplitude = 0.01f;
@@ -266,14 +292,30 @@ namespace Tester_Graphics
 						_2D.Effects.Wave.Render((int index) =>
 							{
 								_2D.Drawing.Blit(_target, Vector2.Zero);
-								_2D.Target = null;
+								if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
+									_2D.Target = _target3;
+								else
+									_2D.Target = null;
 								_2D.Effects.SharpenEmboss.Amount = 2.0f;
 								_2D.Effects.SharpenEmboss.Area = _target.Settings.Size;
 								_2D.Effects.SharpenEmboss.UseEmbossing = true;
 								_2D.Effects.SharpenEmboss.Render((int innerIndex) =>
 								{
-									_2D.Drawing.Blit(_target2, position);
+									if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
+										_2D.Drawing.Blit(_target2, Vector2.Zero);
+									else
+										_2D.Drawing.Blit(_target2, position);
 								});
+
+								if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
+								{
+									_2D.Effects.GaussianBlur.BlurAmount += 0.5f * timing.FrameDelta;
+									if (_2D.Effects.GaussianBlur.BlurAmount > 10.0f)
+										_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
+
+									_2D.Effects.GaussianBlur.SourceTexture = _target3.Texture;
+									_2D.Effects.GaussianBlur.Render(position);
+								}
 							}
 						);
 

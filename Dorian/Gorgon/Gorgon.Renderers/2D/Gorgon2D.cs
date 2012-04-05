@@ -523,6 +523,14 @@ namespace GorgonLibrary.Renderers
 					RenderObjects();
 					_camera = value;
 
+					// Refresh our camera information if we're jumping back to the default camera.
+					if (value == null)
+					{
+						_defaultCamera.UpdateFromTarget(Target);
+						_defaultCamera.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
+						_defaultCamera.Position = -_defaultCamera.Anchor;
+					}
+
 					// Force an update.
 					CurrentCamera.Update();
 					UpdateProjectionViewMatrix(CurrentCamera);
@@ -908,6 +916,27 @@ namespace GorgonLibrary.Renderers
 
 			// We need to shift the vertices for those items that change the index buffer.
 			_baseVertex += renderable.BaseVertexCount;
+		}
+
+		/// <summary>
+		/// Function to create an 2D specific effect object.
+		/// </summary>
+		/// <typeparam name="T">Type of effect to create.</typeparam>
+		/// <param name="name">Name of the effect.</param>
+		/// <param name="passCount">Number of passes in the effect.</param>
+		/// <returns>The new effect object.</returns>
+		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="passCount"/> parameter is less than 0.</exception>
+		public T Create2DEffect<T>(string name, int passCount)
+			where T : Gorgon2DEffect
+		{
+			T effect = (T)Activator.CreateInstance(typeof(T), new object[] { this, name, passCount });
+
+			TrackedObjects.Add(effect);
+
+			return effect;
 		}
 
 		/// <summary>

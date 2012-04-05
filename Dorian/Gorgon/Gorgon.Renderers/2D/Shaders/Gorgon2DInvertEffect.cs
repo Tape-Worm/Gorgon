@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, April 02, 2012 1:41:47 PM
+// Created: Wednesday, April 04, 2012 12:35:23 PM
 // 
 #endregion
 
@@ -33,9 +33,9 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// An effect that renders images as gray scale.
+	/// An effect that renders an inverted image.
 	/// </summary>
-	public class Gorgon2DGrayScaleEffect
+	public class Gorgon2DInvertEffect
 		: Gorgon2DEffect
 	{
 		#region Variables.
@@ -70,17 +70,17 @@ namespace GorgonLibrary.Renderers
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DGrayScaleEffect"/> class.
+		/// Initializes a new instance of the <see cref="Gorgon2DInvertEffect"/> class.
 		/// </summary>
 		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal Gorgon2DGrayScaleEffect(Gorgon2D gorgon2D)
+		internal Gorgon2DInvertEffect(Gorgon2D gorgon2D)
 			: base(gorgon2D, "Effect.2D.GrayScale", 1)
 		{
 			
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Invert.PS", "GorgonPixelShaderInvert", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Invert.PS", "GorgonPixelShaderInvert", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 		}
 		#endregion

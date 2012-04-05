@@ -53,6 +53,9 @@ namespace GorgonLibrary.Graphics.Example
 		private static float _accumulator = 0;																// Our accumulator for running at a fixed frame rate.
 		private static float _maxSimulationFPS = (float)GorgonFrameRate.FpsToMilliseconds(60) / 1000.0f;	// Maximum FPS for our ball simulation.
 
+		private static GorgonRenderTarget _ballTarget = null;												// Render target for the balls.
+		private static GorgonOrthoCamera _camera = null;													// Camera.
+
 		/// <summary>
 		/// Function to generate the balls.
 		/// </summary>
@@ -182,9 +185,15 @@ namespace GorgonLibrary.Graphics.Example
 				_accumulator -= _maxSimulationFPS;
 			}
 
+			_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
+			
+			_2D.Target = _ballTarget;
+			_2D.Target.Clear(Color.Transparent);
+			_2D.Camera = _camera;
 			// Draw balls.
 			for (int i = 0; i < _ballCount; i++)
 			{
+				_ball.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;					
 				_ball.Angle = _ballList[i].Rotation;
 				_ball.Position = _ballList[i].Position;
 				_ball.Color = _ballList[i].Color;
@@ -197,6 +206,13 @@ namespace GorgonLibrary.Graphics.Example
 					_ball.TextureOffset = new Vector2(0, 64);
 				_ball.Draw();
 			}
+			_2D.Target = null;
+			_2D.Camera = null;
+
+			_2D.Drawing.Blending.DestinationAlphaBlend = BlendType.Zero;
+			_2D.Effects.GaussianBlur.SourceTexture = _ballTarget.Texture;
+			_2D.Effects.GaussianBlur.OutputTarget = null;
+			_2D.Effects.GaussianBlur.Render();
 
 			_2D.Render();
 
@@ -247,6 +263,18 @@ namespace GorgonLibrary.Graphics.Example
 			_ball = _2D.Renderables.CreateSprite("Ball", new Vector2(64, 64), _ballTexture, new Vector2(32, 32));
 			_ball.SmoothingMode = SmoothingMode.Smooth;
 			_ball.Anchor = new Vector2(32, 32);
+
+			// Create the ball render target.
+			_ballTarget = _graphics.Output.CreateRenderTarget("BallTarget", new GorgonRenderTargetSettings()
+			{
+				DepthStencilFormat = BufferFormat.Unknown,
+				Width = 512,
+				Height = 512,
+				Format = BufferFormat.R8G8B8A8_UIntNormal,
+				MultiSample = new GorgonMultisampling(1, 0)				
+			});
+
+			_camera = _2D.CreateCamera("Camera", new Vector2(Properties.Settings.Default.ScreenWidth, Properties.Settings.Default.ScreenHeight), 1000.0f);
 
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);
@@ -317,6 +345,16 @@ namespace GorgonLibrary.Graphics.Example
 				case Keys.Enter:
 					if (e.Alt)
 						_mainScreen.UpdateSettings(!_mainScreen.Settings.IsWindowed);
+					break;
+				case Keys.Oemplus:
+					_2D.Effects.GaussianBlur.BlurAmount += 1;
+					if (_2D.Effects.GaussianBlur.BlurAmount > 10)
+						_2D.Effects.GaussianBlur.BlurAmount = 10;
+					break;
+				case Keys.OemMinus:
+					_2D.Effects.GaussianBlur.BlurAmount -= 1;
+					if (_2D.Effects.GaussianBlur.BlurAmount < 2)
+						_2D.Effects.GaussianBlur.BlurAmount = 2;
 					break;
 			}
 		}
