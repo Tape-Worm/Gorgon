@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
@@ -42,19 +43,23 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;										// Flag to indicate that the object was disposed.
-		private Vector4[] _xOffsets = null;									// Calculated offsets.
-		private Vector4[] _yOffsets = null;									// Calculated offsets.
-		private Vector4[] _kernel = null;									// Blur kernel.
-		private int _blurRadius = 6;										// Radius for the blur.
-		private float _blurAmount = 3.0f;									// Amount to blur.
-		private GorgonConstantBuffer _blurBuffer = null;					// Buffer for blur data.
-		private GorgonConstantBuffer _blurStaticBuffer = null;				// Buffer for blur data that does not change very often.
-		private GorgonDataStream _blurStream = null;						// Stream for the buffer.
-		private GorgonRenderTarget _hTarget = null;							// Horizontal blur render target.
-		private GorgonRenderTarget _vTarget = null;							// Vertical blur render target.
-		private GorgonTexture2D _sourceTexture = null;						// Source texture to blur.
-		private Vector2 _outputLocation = Vector2.Zero;						// Output location.
+		private bool _disposed = false;												// Flag to indicate that the object was disposed.
+		private Vector4[] _xOffsets = null;											// Calculated offsets.
+		private Vector4[] _yOffsets = null;											// Calculated offsets.
+		private Vector4[] _kernel = null;											// Blur kernel.
+		private int _blurRadius = 6;												// Radius for the blur.
+		private float _blurAmount = 3.0f;											// Amount to blur.
+		private GorgonConstantBuffer _blurBuffer = null;							// Buffer for blur data.
+		private GorgonConstantBuffer _blurStaticBuffer = null;						// Buffer for blur data that does not change very often.
+		private GorgonDataStream _blurStream = null;								// Stream for the buffer.
+		private GorgonRenderTarget _hTarget = null;									// Horizontal blur render target.
+		private GorgonRenderTarget _vTarget = null;									// Vertical blur render target.
+		private Vector2 _outputLocation = Vector2.Zero;								// Output location.
+		private Vector2 _outputScale = new Vector2(1.0f);							// Scaling to apply to the output image.
+		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
+		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
+		private Vector2 _sourceScale = new Vector2(1.0f);							// Scaling to apply to the source texture.
+		private GorgonTexture2D _sourceTexture = null;								// Source texture to that will receive blurring.
 		#endregion
 
 		#region Properties.
@@ -119,10 +124,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != _sourceTexture)
+				if (_sourceTexture != value)
 				{
 					_sourceTexture = value;
-					UpdateRenderTarget();
+					if (_sourceTexture != null)
+						_sourceScale = new Vector2((float)BlurTargetSize.Width / (float)_sourceTexture.Settings.Width, (float)BlurTargetSize.Height / (float)SourceTexture.Settings.Height);
+					else
+						_sourceScale = new Vector2(1.0f);
 				}
 			}
 		}
@@ -135,6 +143,54 @@ namespace GorgonLibrary.Renderers
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the format of the internal render targets used for blurring.
+		/// </summary>
+		public BufferFormat BlurTargetFormat
+		{
+			get
+			{
+				return _blurTargetFormat;
+			}
+			set
+			{
+				if (_blurTargetFormat != value)
+				{
+					_blurTargetFormat = value;
+					UpdateRenderTarget();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the size of the internal render targets used for blurring.
+		/// </summary>
+		public Size BlurTargetSize
+		{
+			get
+			{
+				return _blurTargetSize;
+			}
+			set
+			{
+				// Constrain the size.
+				if (value.Width < 1)
+					value.Width = 1;
+				if (value.Height < 1)
+					value.Height = 1;
+				if (value.Width >= Graphics.Textures.MaxWidth)
+					value.Width = Graphics.Textures.MaxWidth - 1;
+				if (value.Height >= Graphics.Textures.MaxHeight)
+					value.Height = Graphics.Textures.MaxHeight - 1;
+
+				if (_blurTargetSize != value)
+				{
+					_blurTargetSize = value;
+					UpdateRenderTarget();
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -143,37 +199,30 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void UpdateRenderTarget()
 		{
-			if (_sourceTexture == null)
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create blurred effect.  No source texture is present.");
-
-			if ((_vTarget == null) ||
-				(_vTarget.Settings.Width != _sourceTexture.Settings.Width) ||
-				(_vTarget.Settings.Height != _sourceTexture.Settings.Height) ||
-				(_vTarget.Settings.Format != _sourceTexture.Settings.Format) ||
-				(_hTarget.Settings.Width != _sourceTexture.Settings.Width) ||
-				(_hTarget.Settings.Height != _sourceTexture.Settings.Height) ||
-				(_hTarget.Settings.Format != _sourceTexture.Settings.Format))
+			if (_vTarget != null)
 			{
-				if (_vTarget != null)
-					_vTarget.Dispose();
-				if (_hTarget != null)
-					_hTarget.Dispose();
-				
-				_vTarget = Graphics.Output.CreateRenderTarget("Effect.Blur.Target_Vertical", new GorgonRenderTargetSettings()
-				{
-					Width = _sourceTexture.Settings.Width,
-					Height = _sourceTexture.Settings.Height,
-					Format = _sourceTexture.Settings.Format,
-					DepthStencilFormat = BufferFormat.Unknown,
-					MultiSample = _sourceTexture.Settings.Multisampling
-				});
-
-				_hTarget = Graphics.Output.CreateRenderTarget("Effect.Blur.Target_Horizontal", _vTarget.Settings);
-
-				_vTarget.Clear(System.Drawing.Color.Transparent);
-				_hTarget.Clear(System.Drawing.Color.Transparent);
-				UpdateOffsets();
+				_vTarget.Dispose();
+				_vTarget = null;
 			}
+
+			if (_hTarget != null)
+			{
+				_hTarget.Dispose();
+				_hTarget = null;
+			}
+
+			GorgonRenderTargetSettings settings = new GorgonRenderTargetSettings()
+			{
+				Width = BlurTargetSize.Width,
+				Height = BlurTargetSize.Height,
+				Format = BlurTargetFormat,
+				DepthStencilFormat = BufferFormat.Unknown,
+				MultiSample = new GorgonMultisampling(1, 0)
+			};
+
+			_hTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Horizontal", settings);
+			_vTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Vertical", settings);
+			UpdateOffsets();
 		}
 
 		/// <summary>
@@ -185,8 +234,8 @@ namespace GorgonLibrary.Renderers
 
 			for (int i = -_blurRadius; i <= _blurRadius; i++)
 			{
-				_xOffsets[index] = new Vector4((1.0f / _sourceTexture.Settings.Width) * (float)i, 0, 0, 0);
-				_yOffsets[index] = new Vector4(0, (1.0f / _sourceTexture.Settings.Height) * (float)i, 0, 0);
+				_xOffsets[index] = new Vector4((1.0f / _vTarget.Settings.Width) * (float)i, 0, 0, 0);
+				_yOffsets[index] = new Vector4(0, (1.0f / _vTarget.Settings.Height) * (float)i, 0, 0);
 				index++;
 			}
 		}
@@ -262,14 +311,14 @@ namespace GorgonLibrary.Renderers
 			if (passIndex == 0)
 			{
 				Gorgon2D.Target = _hTarget;
-				Gorgon2D.Drawing.Blit(SourceTexture, Vector2.Zero, new Vector2((float)SourceTexture.Settings.Width / (float)_vTarget.Settings.Width, (float)SourceTexture.Settings.Height / (float)_vTarget.Settings.Height));			
+				Gorgon2D.Drawing.Blit(SourceTexture, Vector2.Zero, _sourceScale);			
 			}
 			else			
 			{
 				Gorgon2D.Target = _vTarget;
 				Gorgon2D.Drawing.Blit(_hTarget, Vector2.Zero);
 				Gorgon2D.Target = OutputTarget;				
-				Gorgon2D.Drawing.Blit(_vTarget, _outputLocation, new Vector2((float)Gorgon2D.Target.Settings.Width / (float)_vTarget.Settings.Width, (float)Gorgon2D.Target.Settings.Height / (float)_vTarget.Settings.Height));
+				Gorgon2D.Drawing.Blit(_vTarget, _outputLocation, _outputScale);
 			}
 			Gorgon2D.Drawing.SmoothingMode = previousMode;
 		}
@@ -277,12 +326,33 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to render the blurred image at the specified location.
 		/// </summary>
-		/// <param name="position">Position to place the image.</param>
-		public void Render(Vector2 position)
+		/// <param name="position">Position to place the output image.</param>
+		/// <param name="size">Size of the output image.</param>
+		/// <remarks>The <paramref name="size"/> parameter is an absolute size in width and height, not a scaling value.</remarks>
+		public void Render(Vector2 position, Vector2 size)
 		{
+			if (size.X < 1e-6f)
+				size.X = 1e-6f;
+			if (size.Y < 1e-6f)
+				size.Y = 1e-6f;
+
 			_outputLocation = position;
+			_outputScale = new Vector2(size.X / _vTarget.Settings.Width, size.Y / _vTarget.Settings.Height);
 			Render();
 			_outputLocation = Vector2.Zero;
+			_outputScale = new Vector2(1.0f);
+		}
+
+		/// <summary>
+		/// Function to render the blurred image at the specified location.
+		/// </summary>
+		/// <param name="position">Position to place the output image.</param>
+		public void Render(Vector2 position)
+		{
+			if (SourceTexture == null)
+				throw new GorgonException(GorgonResult.CannotWrite, "Cannot create the blurred image.  No source texture was bound.");
+
+			Render(position, SourceTexture.Settings.Size);
 		}
 
 		/// <summary>
@@ -341,10 +411,11 @@ namespace GorgonLibrary.Renderers
 			_blurStaticBuffer = Graphics.Shaders.CreateConstantBuffer(256, false);
 			_blurStream = new GorgonDataStream(256);
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #endif
+			UpdateRenderTarget();
 			UpdateKernel();
 		}
 		#endregion

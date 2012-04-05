@@ -186,14 +186,20 @@ namespace GorgonLibrary.Graphics.Example
 			}
 
 			_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
-			
-			_2D.Target = _ballTarget;
-			_2D.Target.Clear(Color.Transparent);
-			_2D.Camera = _camera;
+
+			if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
+			{
+				_2D.Target = _ballTarget;
+				_2D.Target.Clear(Color.Transparent);
+				_2D.Camera = _camera;
+				_ball.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;					
+			}
+			else
+				_ball.Blending.DestinationAlphaBlend = BlendType.Zero;
+
 			// Draw balls.
 			for (int i = 0; i < _ballCount; i++)
 			{
-				_ball.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;					
 				_ball.Angle = _ballList[i].Rotation;
 				_ball.Position = _ballList[i].Position;
 				_ball.Color = _ballList[i].Color;
@@ -204,15 +210,19 @@ namespace GorgonLibrary.Graphics.Example
 					_ball.TextureOffset = new Vector2(64, 0);
 				else
 					_ball.TextureOffset = new Vector2(0, 64);
+
 				_ball.Draw();
 			}
-			_2D.Target = null;
-			_2D.Camera = null;
 
-			_2D.Drawing.Blending.DestinationAlphaBlend = BlendType.Zero;
-			_2D.Effects.GaussianBlur.SourceTexture = _ballTarget.Texture;
-			_2D.Effects.GaussianBlur.OutputTarget = null;
-			_2D.Effects.GaussianBlur.Render();
+			if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
+			{
+				_2D.Target = null;
+				_2D.Camera = null;
+
+				_2D.Effects.GaussianBlur.SourceTexture = _ballTarget.Texture;
+				_2D.Effects.GaussianBlur.OutputTarget = null;
+				_2D.Effects.GaussianBlur.Render(Vector2.Zero, _mainScreen.Settings.Size);
+			}
 
 			_2D.Render();
 
@@ -273,6 +283,7 @@ namespace GorgonLibrary.Graphics.Example
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
 				MultiSample = new GorgonMultisampling(1, 0)				
 			});
+			_2D.Effects.GaussianBlur.BlurTargetSize = _ballTarget.Settings.Size;
 
 			_camera = _2D.CreateCamera("Camera", new Vector2(Properties.Settings.Default.ScreenWidth, Properties.Settings.Default.ScreenHeight), 1000.0f);
 
@@ -347,12 +358,12 @@ namespace GorgonLibrary.Graphics.Example
 						_mainScreen.UpdateSettings(!_mainScreen.Settings.IsWindowed);
 					break;
 				case Keys.Oemplus:
-					_2D.Effects.GaussianBlur.BlurAmount += 1;
+					_2D.Effects.GaussianBlur.BlurAmount += 0.25f;
 					if (_2D.Effects.GaussianBlur.BlurAmount > 10)
 						_2D.Effects.GaussianBlur.BlurAmount = 10;
 					break;
 				case Keys.OemMinus:
-					_2D.Effects.GaussianBlur.BlurAmount -= 1;
+					_2D.Effects.GaussianBlur.BlurAmount -= 0.25f;
 					if (_2D.Effects.GaussianBlur.BlurAmount < 2)
 						_2D.Effects.GaussianBlur.BlurAmount = 2;
 					break;
