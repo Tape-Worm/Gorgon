@@ -364,6 +364,18 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Property to return the default render target.
+		/// </summary>
+		/// <remarks>This is the inital target that the Gorgon2D interface was created with, or the one internally generated depending on the constructor being used.</remarks>
+		public GorgonRenderTarget DefaultTarget
+		{
+			get
+			{
+				return _defaultTarget;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the renderables interface.
 		/// </summary>
 		/// <remarks>This is used to create renderable objects (sprites, ellipses, lines, rectangles, etc...) or draw them directly.</remarks>

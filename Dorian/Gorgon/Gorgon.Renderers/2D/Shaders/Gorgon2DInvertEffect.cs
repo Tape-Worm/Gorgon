@@ -39,10 +39,54 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;				// Flag to indicate that the object was disposed.
+		private bool _disposed = false;								// Flag to indicate that the object was disposed.
+		private GorgonConstantBuffer _invertBuffer = null;			// Buffer for the inversion effect.
+		private GorgonDataStream _invertStream = null;				// Stream for the invert effect.
+		private bool _invertAlpha = false;							// Flag to invert the alpha channel.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to set or return whether to invert the alpha channel.
+		/// </summary>
+		public bool InvertAlpha
+		{
+			get
+			{
+				return _invertAlpha;
+			}
+			set
+			{
+				if (_invertAlpha != value)
+				{
+					_invertAlpha = value;
+					_invertStream.Position = 0;
+					_invertStream.Write(value);
+					_invertStream.Write<byte>(0);
+					_invertStream.Write<byte>(0);
+					_invertStream.Write<byte>(0);
+					_invertStream.Position = 0;
+					_invertBuffer.Update(_invertStream);
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to render a specific pass while using this effect.
+		/// </summary>
+		/// <param name="renderMethod">Method to use to render the data.</param>
+		/// <param name="passIndex">Index of the pass to render.</param>
+		/// <remarks>The <paramref name="renderMethod"/> is an action delegate that must be defined with an integer value.  The parameter indicates which pass the rendering is currently on.</remarks>
+		protected override void RenderImpl(Action<int> renderMethod, int passIndex)
+		{
+			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _invertBuffer)
+				Gorgon2D.PixelShader.ConstantBuffers[2] = _invertBuffer;
+
+			base.RenderImpl(renderMethod, passIndex);
+		}
+
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
@@ -53,6 +97,11 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
+					if (_invertBuffer != null)
+						_invertBuffer.Dispose();
+					if (_invertStream != null)
+						_invertStream.Dispose();
+
 					if (disposing)
 					{
 						if (PixelShader != null)
@@ -82,6 +131,8 @@ namespace GorgonLibrary.Renderers
 #else
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Invert.PS", "GorgonPixelShaderInvert", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
+			_invertBuffer = Graphics.Shaders.CreateConstantBuffer(16, false);
+			_invertStream = new GorgonDataStream(16);
 		}
 		#endregion
 	}

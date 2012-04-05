@@ -94,6 +94,24 @@ namespace GorgonLibrary.Renderers
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the posterize effect.
+		/// </summary>
+		public Gorgon2DPosterizedEffect Posterize
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the Sobel edge detection effect.
+		/// </summary>
+		public Gorgon2DSobelEdgeDetectEffect SobelEdgeDetection
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -102,6 +120,9 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		internal void CleanUp()
 		{
+			if (Posterize != null)
+				Posterize.Dispose();
+
 			if (GrayScale != null)
 				GrayScale.Dispose();
 
@@ -120,11 +141,16 @@ namespace GorgonLibrary.Renderers
 			if (GaussianBlur != null)
 				GaussianBlur.Dispose();
 
+			if (SobelEdgeDetection != null)
+				SobelEdgeDetection.Dispose();
+
+			SobelEdgeDetection = null;
 			Invert = null;
 			SharpenEmboss = null;
 			OneBit = null;
 			Wave = null;
 			GrayScale = null;
+			Posterize = null;
 		}
 		#endregion
 
@@ -142,6 +168,8 @@ namespace GorgonLibrary.Renderers
 			SharpenEmboss = new Gorgon2DSharpenEmbossEffect(_gorgon2D);
 			Invert = new Gorgon2DInvertEffect(_gorgon2D);
 			GaussianBlur = new Gorgon2DGaussianBlurEffect(_gorgon2D);
+			Posterize = new Gorgon2DPosterizedEffect(_gorgon2D);
+			SobelEdgeDetection = new Gorgon2DSobelEdgeDetectEffect(_gorgon2D);
 		}
 		#endregion
 	}
