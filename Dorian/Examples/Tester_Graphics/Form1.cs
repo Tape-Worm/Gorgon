@@ -75,15 +75,16 @@ namespace Tester_Graphics
 				//    byte[] data = _1D.Save(ImageFileFormat.DDS);
 				//}
 
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @".\TextureTest.png", GorgonTexture2DSettings.FromFile);
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png", GorgonTexture2DSettings.FromFile);
 
 				_2D = _graphics.Create2DRenderer(this);
 				_2D.IsLogoVisible = true;
 
-				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(256.0f, 256.0f), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
+				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(178, 207), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
 
 				_target.Texture.Copy(Properties.Resources.Haiku);
-				_texture.CopySubResource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
+				_target2.Texture.Copy(Properties.Resources.Haiku);
+				//_texture.CopySubResource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
 
 				//byte[] data = new byte[_texture.SizeInBytes];
 
@@ -190,13 +191,16 @@ namespace Tester_Graphics
 				GorgonOrthoCamera camera =_2D.CreateCamera("My Camera", new Vector2(640, 480), 1000.0f);
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
-/*						if (!backForth)
-						    angle += 0.125f * timing.FrameDelta;
-						else
-						    angle -= 0.125f * timing.FrameDelta;
+						_2D.Clear(Color.White);
+						_2D.Drawing.BlendingMode = BlendingMode.None;
+						
+						/*						if (!backForth)
+													angle += 0.125f * timing.FrameDelta;
+												else
+													angle -= 0.125f * timing.FrameDelta;
 
-						if ((angle > 0.05f) || (angle < -0.05f))
-						    backForth = !backForth;*/
+												if ((angle > 0.05f) || (angle < -0.05f))
+													backForth = !backForth;*/
 							
 						//_waveEffectStream.Position = 0;
 						//_waveEffectStream.Write(1.0f / _target.Settings.Width);
@@ -211,16 +215,23 @@ namespace Tester_Graphics
 						//_waveEffectBuffer.Update(_waveEffectStream);
 
 						_2D.Target = _target;
-						_2D.Clear(Color.Black);
-						_2D.Camera = camera;
-						_2D.Viewport = new GorgonViewport(0, 0, 160.0f, 120.0f, 0, 1);						
+						_2D.Drawing.Blit(_target2, Vector2.Zero);
+						//_2D.Clear(Color.Black);
+						//_2D.Camera = camera;
 
 						sprite.Opacity = 1.0f;
-						sprite.Position = new Vector2(160, 120);
+						sprite.Position = new Vector2(20, 0);
+						sprite.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 						//sprite.Angle += 90.0f * timing.FrameDelta;
-						sprite.Draw();
+						_2D.Effects.Displacement.DisplacementTargetSize = _target.Settings.Size;
+						_2D.Effects.Displacement.Render((int pass) =>
+							{
+								sprite.BlendingMode = BlendingMode.Additive;
+								sprite.Draw();
+							});
 
 //						_2D.Render();
+
 
 						//_target.Texture.Save(@"X:\unpak\testfile.png", ImageFileFormat.PNG);
 						
@@ -264,8 +275,7 @@ namespace Tester_Graphics
 						_2D.Viewport = null;
 						//_2D.PixelShader.Current = null;						
 
-						_2D.Clear(Color.White);
-						_2D.Drawing.BlendingMode = BlendingMode.None;
+						_2D.Drawing.Blit(_target, position);
 
 						//_2D.Effects.Invert.Render((int passInvertIndex) =>
 						//    {
@@ -284,12 +294,12 @@ namespace Tester_Graphics
 						//        _2D.Drawing.Blit(_target3, position);
 						//    });
 
-						_2D.Effects.BurnDodge.UseDodge = false;
+						/*_2D.Effects.BurnDodge.UseDodge = false;
 						_2D.Effects.BurnDodge.UseLinear = true;
 						_2D.Effects.BurnDodge.Render((int pass) =>
 							{
 								_2D.Drawing.Blit(_target, position);
-							});
+							});*/
 
 						//_2D.Target = _target2;
 						//_2D.Effects.Wave.Amplitude = 0.01f;

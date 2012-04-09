@@ -6,6 +6,10 @@
 Texture2D _gorgonTexture : register(t0);
 SamplerState _gorgonSampler : register(s0);
 
+// Additional effect texture buffer.
+Texture2D _gorgonEffectTexture : register(t1);
+SamplerState _gorgonEffectSampler : register(s1);
+
 // Our default sprite vertex.
 struct GorgonSpriteVertex
 {
@@ -315,5 +319,25 @@ float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 
 	REJECT_ALPHA(color.a);
 	
+	return color;
+}
+
+// The displacement shader encoder.
+float4 GorgonPixelShaderDisplacementEncoder(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);
+	
+	float4 basisX = color.r >= 0.5f ? float4(1.0f, 0.0f, 0.0f, 0.0f) : float4(0.0f, 0.0f, -1.0f, 0.0f);
+	float4 basisY = color.g >= 0.5f ? float4(0.0f, 1.0f, 0.0f, 0.0f) : float4(0.0f, 0.0f, 0.0f, -1.0f);
+	float4 output = color.r * basisX;
+
+	return output + (color.g * basisY);
+}
+
+// The displacement shader decoder.
+float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Target
+{	
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);
+	color.a = 1;
 	return color;
 }
