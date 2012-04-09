@@ -112,6 +112,15 @@ namespace GorgonLibrary.Renderers
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the burn/dodge effect.
+		/// </summary>
+		public Gorgon2DBurnDodgeEffect BurnDodge
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -144,6 +153,10 @@ namespace GorgonLibrary.Renderers
 			if (SobelEdgeDetection != null)
 				SobelEdgeDetection.Dispose();
 
+			if (BurnDodge != null)
+				BurnDodge.Dispose();
+
+			BurnDodge = null;
 			SobelEdgeDetection = null;
 			Invert = null;
 			SharpenEmboss = null;
@@ -170,6 +183,7 @@ namespace GorgonLibrary.Renderers
 			GaussianBlur = new Gorgon2DGaussianBlurEffect(_gorgon2D);
 			Posterize = new Gorgon2DPosterizedEffect(_gorgon2D);
 			SobelEdgeDetection = new Gorgon2DSobelEdgeDetectEffect(_gorgon2D);
+			BurnDodge = new Gorgon2DBurnDodgeEffect(_gorgon2D);
 		}
 		#endregion
 	}

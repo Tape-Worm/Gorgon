@@ -89,6 +89,13 @@ cbuffer GorgonSobelEdgeDetectEffect
 	bool sobelUseLineColor = true;
 }
 
+// Burn/dodge effect.
+cbuffer GorgonBurnDodgeEffect
+{
+	bool burnDodgeUseDodge = false;
+	bool burnDodgeLinear = false;
+}
+
 // Our default vertex shader.
 GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
@@ -283,5 +290,30 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 
 	REJECT_ALPHA(color.a);
 
+	return color;
+}
+
+// Function to perform an image burn/dodge.
+float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	
+	if (!burnDodgeLinear)
+	{
+		if (burnDodgeUseDodge)
+			color.rgb = color.rgb / (1.0f - color.rgb);
+		else
+			color.rgb = 1.0f - (1.0f - color.rgb) / color.rgb;
+	}
+	else
+	{
+		color.rgb *= 2;
+
+		if (!burnDodgeUseDodge)
+			color.rgb = color.rgb - 1;
+	}
+
+	REJECT_ALPHA(color.a);
+	
 	return color;
 }

@@ -190,9 +190,9 @@ namespace GorgonLibrary.Graphics.Example
 			if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
 			{
 				_2D.Target = _ballTarget;
-				_2D.Target.Clear(Color.Transparent);
+				_2D.Target.Clear(Color.FromArgb(0, 0, 0, 0));
 				_2D.Camera = _camera;
-				_ball.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;					
+				_ball.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 			}
 			else
 				_ball.Blending.DestinationAlphaBlend = BlendType.Zero;
@@ -317,6 +317,8 @@ namespace GorgonLibrary.Graphics.Example
 				if (_ballList[i].Position.Y > _mainScreen.Settings.Height)
 					_ballList[i].Position.Y = _mainScreen.Settings.Height;
 			}
+
+			_camera.ViewDimensions = new Vector2(_mainScreen.Settings.Width, _mainScreen.Settings.Height);
 		}
 
 		/// <summary>
@@ -366,6 +368,10 @@ namespace GorgonLibrary.Graphics.Example
 					_2D.Effects.GaussianBlur.BlurAmount -= 0.25f;
 					if (_2D.Effects.GaussianBlur.BlurAmount < 2)
 						_2D.Effects.GaussianBlur.BlurAmount = 2;
+					break;
+				case Keys.S:
+					if (e.Control)
+						_ballTarget.Texture.Save(@"d:\unpak\testSave.png", ImageFileFormat.PNG);
 					break;
 			}
 		}
