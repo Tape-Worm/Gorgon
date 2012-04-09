@@ -121,6 +121,15 @@ namespace GorgonLibrary.Renderers
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the displacement effect.
+		/// </summary>
+		public Gorgon2DDisplacementEffect Displacement
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -156,6 +165,10 @@ namespace GorgonLibrary.Renderers
 			if (BurnDodge != null)
 				BurnDodge.Dispose();
 
+			if (Displacement != null)
+				Displacement.Dispose();
+
+			Displacement = null;
 			BurnDodge = null;
 			SobelEdgeDetection = null;
 			Invert = null;
@@ -184,6 +197,7 @@ namespace GorgonLibrary.Renderers
 			Posterize = new Gorgon2DPosterizedEffect(_gorgon2D);
 			SobelEdgeDetection = new Gorgon2DSobelEdgeDetectEffect(_gorgon2D);
 			BurnDodge = new Gorgon2DBurnDodgeEffect(_gorgon2D);
+			Displacement = new Gorgon2DDisplacementEffect(_gorgon2D);
 		}
 		#endregion
 	}
