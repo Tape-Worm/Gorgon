@@ -284,40 +284,31 @@ namespace Tester_Graphics
 						//        _2D.Drawing.Blit(_target3, position);
 						//    });
 
-						_2D.Target = _target2;
-						_2D.Effects.Wave.Amplitude = 0.01f;
-						_2D.Effects.Wave.Period += (50.0f / _target.Settings.Height) * timing.FrameDelta;
-						_2D.Effects.Wave.Length = 50.0f;
-						_2D.Effects.Wave.WaveType = WaveType.Both;
-						_2D.Effects.Wave.Render((int index) =>
+						_2D.Effects.BurnDodge.UseDodge = false;
+						_2D.Effects.BurnDodge.UseLinear = true;
+						_2D.Effects.BurnDodge.Render((int pass) =>
 							{
-								_2D.Drawing.Blit(_target, Vector2.Zero);
-								if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
-									_2D.Target = _target3;
-								else
-									_2D.Target = null;
-								_2D.Effects.SharpenEmboss.Amount = 2.0f;
-								_2D.Effects.SharpenEmboss.Area = _target.Settings.Size;
-								_2D.Effects.SharpenEmboss.UseEmbossing = true;
-								_2D.Effects.SharpenEmboss.Render((int innerIndex) =>
-								{
-									if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
-										_2D.Drawing.Blit(_target2, Vector2.Zero);
-									else
-										_2D.Drawing.Blit(_target2, position);
-								});
+								_2D.Drawing.Blit(_target, position);
+							});
 
-								if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
-								{
-									_2D.Effects.GaussianBlur.BlurAmount += 0.5f * timing.FrameDelta;
-									if (_2D.Effects.GaussianBlur.BlurAmount > 10.0f)
-										_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
-
-									_2D.Effects.GaussianBlur.SourceTexture = _target3.Texture;
-									_2D.Effects.GaussianBlur.Render(position);
-								}
-							}
-						);
+						//_2D.Target = _target2;
+						//_2D.Effects.Wave.Amplitude = 0.01f;
+						//_2D.Effects.Wave.Period += (50.0f / _target.Settings.Height) * timing.FrameDelta;
+						//_2D.Effects.Wave.Length = 50.0f;
+						//_2D.Effects.Wave.WaveType = WaveType.Both;
+						//_2D.Effects.Wave.Render((int index) =>
+						//    {
+						//        _2D.Drawing.Blit(_target, Vector2.Zero);
+						//        _2D.Target = null;
+						//        _2D.Effects.SharpenEmboss.Amount = 2.0f;
+						//        _2D.Effects.SharpenEmboss.Area = _target.Settings.Size;
+						//        _2D.Effects.SharpenEmboss.UseEmbossing = true;
+						//        _2D.Effects.SharpenEmboss.Render((int innerIndex) =>
+						//        {
+						//            _2D.Drawing.Blit(_target2, position);
+						//        });
+						//    }
+						//);
 
 
 						position = new Vector2(position.X + 15.0f * timing.FrameDelta, position.Y + 15.0f * timing.FrameDelta);
