@@ -28,6 +28,7 @@ namespace Tester_Graphics
 		private GorgonRenderTarget _target2 = null;
 		private GorgonRenderTarget _target3 = null;
 		private GorgonTexture2D _texture = null;
+		private GorgonTexture2D _textureNM = null;
 		private GorgonOrthoCamera _cam1 = null;
 		private GorgonConstantBuffer _waveEffectBuffer = null;
 		private GorgonDataStream _waveEffectStream = null;
@@ -43,8 +44,8 @@ namespace Tester_Graphics
 
 				using (GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false))
 				{
-					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM4);
-					//_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
+					//_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM4);
+					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
 				}
 
 				_target = _graphics.Output.CreateRenderTarget("My target", new GorgonRenderTargetSettings()
@@ -76,6 +77,7 @@ namespace Tester_Graphics
 				//}
 
 				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png", GorgonTexture2DSettings.FromFile);
+				_textureNM = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship_DISP.png", GorgonTexture2DSettings.FromFile);
 
 				_2D = _graphics.Create2DRenderer(this);
 				_2D.IsLogoVisible = true;
@@ -220,15 +222,31 @@ namespace Tester_Graphics
 						//_2D.Camera = camera;
 
 						sprite.Opacity = 1.0f;
-						sprite.Position = new Vector2(20, 0);
+						sprite.Position = new Vector2(109, 103);
 						sprite.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
+						sprite.Anchor = new Vector2(89, 103);
 						//sprite.Angle += 90.0f * timing.FrameDelta;
+						angle += 94.0f * timing.FrameDelta;
+						sprite.Angle = 0.0f;//angle;
+						sprite.BlendingMode = BlendingMode.Modulate;
+						sprite.Opacity = 0.26f;
+						sprite.Texture = _texture;
+						sprite.SmoothingMode = SmoothingMode.Smooth;
+						sprite.Draw();
+						_2D.Target = null;
+						_2D.Effects.Displacement.Background = _target.Texture;
 						_2D.Effects.Displacement.DisplacementTargetSize = _target.Settings.Size;
 						_2D.Effects.Displacement.Render((int pass) =>
 							{
+								sprite.Texture = _textureNM;
+								sprite.Opacity = 1.0f;
 								sprite.BlendingMode = BlendingMode.Additive;
 								sprite.Draw();
+								sprite.Position = new Vector2(150, 103);
+								sprite.Angle = -angle;
+								sprite.Draw();
 							});
+
 
 //						_2D.Render();
 

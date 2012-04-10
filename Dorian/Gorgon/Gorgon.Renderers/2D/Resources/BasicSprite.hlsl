@@ -7,7 +7,7 @@ Texture2D _gorgonTexture : register(t0);
 SamplerState _gorgonSampler : register(s0);
 
 // Additional effect texture buffer.
-Texture2D _gorgonEffectTexture : register(t1);
+Texture2D<float4> _gorgonEffectTexture : register(t1);
 SamplerState _gorgonEffectSampler : register(s1);
 
 // Our default sprite vertex.
@@ -323,21 +323,24 @@ float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 }
 
 // The displacement shader encoder.
-float4 GorgonPixelShaderDisplacementEncoder(GorgonSpriteVertex vertex) : SV_Target
+float4 GorgonPixelShaderDisplacementEncoder(float2 uv)
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);
-	
-	float4 basisX = color.r >= 0.5f ? float4(1.0f, 0.0f, 0.0f, 0.0f) : float4(0.0f, 0.0f, -1.0f, 0.0f);
-	float4 basisY = color.g >= 0.5f ? float4(0.0f, 1.0f, 0.0f, 0.0f) : float4(0.0f, 0.0f, 0.0f, -1.0f);
-	float4 output = color.r * basisX;
+	float4 offset = _gorgonEffectTexture.Sample(_gorgonEffectSampler, uv);
 
-	return output + (color.g * basisY);
+	float4 basisX = offset.x >= 0.0f ? float4(offset.x * 1.7, 0.0f, 0.0f, 0) : float4(0.0f, 0.0f, -offset.x * 1.7, 0.0f);
+	float4 basisY = offset.y >= 0.0f ? float4(0.0f, offset.y * 1.7, 0.0f, 0) : float4(0.0f, 0.0f, 0.0f, -offset.y * 1.7);
+	
+	return basisX + basisY;
 }
 
 // The displacement shader decoder.
 float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Target
 {	
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);
-	color.a = 1;
+	float4 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv);		
+	float2 realOffset = (((offset.xy + offset.zw) * 2.0f) - 0.5f) * float2(1/320.0f, 1/240.0f);
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + realOffset) * vertex.color;
+
+	REJECT_ALPHA(color.a);
+
 	return color;
 }
