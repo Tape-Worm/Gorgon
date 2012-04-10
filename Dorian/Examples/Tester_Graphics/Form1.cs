@@ -77,7 +77,7 @@ namespace Tester_Graphics
 				//}
 
 				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png", GorgonTexture2DSettings.FromFile);
-				_textureNM = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship_DISP.png", GorgonTexture2DSettings.FromFile);
+				//_textureNM = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship_DISP.png", GorgonTexture2DSettings.FromFile);
 
 				_2D = _graphics.Create2DRenderer(this);
 				_2D.IsLogoVisible = true;
@@ -235,10 +235,10 @@ namespace Tester_Graphics
 						sprite.Draw();
 						_2D.Target = null;
 						_2D.Effects.Displacement.Background = _target.Texture;
-						_2D.Effects.Displacement.DisplacementTargetSize = _target.Settings.Size;
+						_2D.Effects.Displacement.Strength = 1.0f;
 						_2D.Effects.Displacement.Render((int pass) =>
 							{
-								sprite.Texture = _textureNM;
+								//sprite.Texture = _textureNM;
 								sprite.Opacity = 1.0f;
 								sprite.BlendingMode = BlendingMode.Additive;
 								sprite.Draw();

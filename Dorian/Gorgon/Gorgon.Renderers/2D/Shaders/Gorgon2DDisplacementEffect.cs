@@ -44,24 +44,33 @@ namespace GorgonLibrary.Renderers
 		private bool _disposed = false;								// Flag to indicate that the object was disposed.
 		private GorgonRenderTarget _displacementTarget = null;		// Displacement buffer target.
 		private Size _targetSize = Size.Empty;						// Displacement target size.
+		private GorgonConstantBuffer _displacementBuffer = null;	// Buffer used to send displacement data.
+		private GorgonDataStream _displacementStream = null;		// Stream used to update the displacement buffer.
+		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.
+		private GorgonTexture2D _background = null;					// The texture being used as the background to displace.
+		private float _displacementStrength = 1.0f;					// Strength of the displacement map.
+		private SmoothingMode _lastSmoothMode = SmoothingMode.None;	// Last global smoothing state.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the size of the displacement map target.
+		/// Property to set or return the strength of the displacement map.
 		/// </summary>
-		public Size DisplacementTargetSize
+		public float Strength
 		{
 			get
 			{
-				return _displacementTarget.Settings.Size;
+				return _displacementStrength;
 			}
 			set
 			{
-				if (_targetSize != value)
+				if (value < 0.0f)
+					value = 0.0f;
+
+				if (_displacementStrength != value)
 				{
-					_targetSize = value;
-					UpdateDisplacementMap();
+					_displacementStrength = value;
+					_isUpdated = true;
 				}
 			}
 		}
@@ -71,8 +80,35 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public GorgonTexture2D Background
 		{
-			get;
+			get
+			{
+				return _background;
+			}
+			set
+			{
+				if (_background != value)
+				{
+					_background = value;
+
+					if (value == null)
+						_targetSize = Size.Empty;
+
+					if ((_background == null) || (_background.Settings.Size != _targetSize))
+					{					
+						UpdateDisplacementMap(_background.Settings.Size);
+						_isUpdated = true;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the output target.
+		/// </summary>
+		public GorgonRenderTarget Output
+		{
 			set;
+			get;
 		}
 		#endregion
 
@@ -80,24 +116,41 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to update the displacement map render target.
 		/// </summary>
-		private void UpdateDisplacementMap()
+		/// <param name="newSize">New size for the target.</param>
+		private void UpdateDisplacementMap(Size newSize)
 		{
 			if (_displacementTarget != null)
 				_displacementTarget.Dispose();
 
 			_displacementTarget = null;
 
-			if ((_targetSize.Width <= 0) || (_targetSize.Height <= 0))
+			if ((newSize.Width <= 0) || (newSize.Height <= 0))
 				return;
 
 			_displacementTarget = Graphics.Output.CreateRenderTarget("Effect.Displacement.RT", new GorgonRenderTargetSettings()
 			{
-				Width = _targetSize.Width,
-				Height = _targetSize.Height,
+				Width = newSize.Width,
+				Height = newSize.Height,
 				DepthStencilFormat = BufferFormat.Unknown,
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
 				MultiSample = new GorgonMultisampling(1, 0)				
 			});
+
+			_targetSize = newSize;
+		}
+
+		/// <summary>
+		/// Function called before rendering begins.
+		/// </summary>
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
+		{
+			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _displacementBuffer)
+				Gorgon2D.PixelShader.ConstantBuffers[2] = _displacementBuffer;
+
+			return base.OnBeforeRender();
 		}
 
 		/// <summary>
@@ -108,6 +161,18 @@ namespace GorgonLibrary.Renderers
 		{
 			base.OnBeforeRenderPass(passIndex);
 
+			if (_background == null)
+				throw new GorgonException(GorgonResult.CannotWrite, "Cannot displace the texture.  No background texture was provided.");
+
+			if (_isUpdated)
+			{
+				_displacementStream.Position = 0;
+				_displacementStream.Write(new Vector4(1.0f / _targetSize.Width, 1.0f / _targetSize.Height, _displacementStrength, 0));
+				_displacementStream.Position = 0;
+				_displacementBuffer.Update(_displacementStream);
+				_isUpdated = false;
+			}
+
 			if (passIndex == 0)
 			{
 				_displacementTarget.Clear(new GorgonColor(0, 0, 0, 0));
@@ -116,10 +181,14 @@ namespace GorgonLibrary.Renderers
 			}
 			else
 			{
+				_lastSmoothMode = Gorgon2D.Drawing.SmoothingMode;
 				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
+
 				Gorgon2D.Target = null;
 				Gorgon2D.PixelShader.Current = null;
 				Gorgon2D.Drawing.Blit(_displacementTarget, new Vector2(0, 400));
+
+				Gorgon2D.Target = Output;
 				Gorgon2D.PixelShader.Current = PixelShader;
 				if (Gorgon2D.PixelShader.Textures[1] != _displacementTarget.Texture)
 					Gorgon2D.PixelShader.Textures[1] = _displacementTarget.Texture;
@@ -138,8 +207,32 @@ namespace GorgonLibrary.Renderers
 				base.RenderImpl(renderMethod, passIndex);
 			else
 			{
-				Gorgon2D.Drawing.Blit(Background, Vector2.Zero);
+				if (Gorgon2D.Target.Settings.Size != _background.Settings.Size)
+					Gorgon2D.Drawing.Blit(Background, Vector2.Zero, new Vector2((float)Gorgon2D.Target.Settings.Width / (float)_background.Settings.Size.Width, (float)Gorgon2D.Target.Settings.Height) / (float)_background.Settings.Height);
+				else
+					Gorgon2D.Drawing.Blit(Background, Vector2.Zero);
 			}
+		}
+
+		/// <summary>
+		/// Function called after a pass has rendered.
+		/// </summary>
+		/// <param name="passIndex">Index of the pass being rendered.</param>
+		protected override void OnAfterRenderPass(int passIndex)
+		{
+			base.OnAfterRenderPass(passIndex);
+			if ((passIndex == 1) && (Gorgon2D.Drawing.SmoothingMode != _lastSmoothMode))
+				Gorgon2D.Drawing.SmoothingMode = _lastSmoothMode;
+		}
+
+		/// <summary>
+		/// Function called after rendering ends.
+		/// </summary>
+		protected override void OnAfterRender()
+		{
+			base.OnAfterRender();
+
+			Gorgon2D.Target = null;
 		}
 
 		/// <summary>
@@ -184,6 +277,9 @@ namespace GorgonLibrary.Renderers
 #else
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
+
+			_displacementBuffer = Graphics.Shaders.CreateConstantBuffer(16, false);
+			_displacementStream = new GorgonDataStream(16);
 		}
 		#endregion
 	}
