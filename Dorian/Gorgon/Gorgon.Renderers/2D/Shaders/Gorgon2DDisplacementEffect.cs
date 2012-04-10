@@ -41,7 +41,6 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private GorgonPixelShader _encoder = null;					// Encoder for the displacement map.
 		private bool _disposed = false;								// Flag to indicate that the object was disposed.
 		private GorgonRenderTarget _displacementTarget = null;		// Displacement buffer target.
 		private Size _targetSize = Size.Empty;						// Displacement target size.
@@ -65,6 +64,15 @@ namespace GorgonLibrary.Renderers
 					UpdateDisplacementMap();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return the background image to displace.
+		/// </summary>
+		public GorgonTexture2D Background
+		{
+			get;
+			set;
 		}
 		#endregion
 
@@ -103,13 +111,18 @@ namespace GorgonLibrary.Renderers
 			if (passIndex == 0)
 			{
 				_displacementTarget.Clear(new GorgonColor(0, 0, 0, 0));
+				Gorgon2D.PixelShader.Current = null;
 				Gorgon2D.Target = _displacementTarget;
-				Gorgon2D.PixelShader.Current = _encoder;
 			}
 			else
 			{
-				Gorgon2D.PixelShader.Current = PixelShader;
+				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 				Gorgon2D.Target = null;
+				Gorgon2D.PixelShader.Current = null;
+				Gorgon2D.Drawing.Blit(_displacementTarget, new Vector2(0, 400));
+				Gorgon2D.PixelShader.Current = PixelShader;
+				if (Gorgon2D.PixelShader.Textures[1] != _displacementTarget.Texture)
+					Gorgon2D.PixelShader.Textures[1] = _displacementTarget.Texture;
 			}				
 		}
 
@@ -125,7 +138,7 @@ namespace GorgonLibrary.Renderers
 				base.RenderImpl(renderMethod, passIndex);
 			else
 			{
-				Gorgon2D.Drawing.Blit(_displacementTarget, Vector2.Zero);				
+				Gorgon2D.Drawing.Blit(Background, Vector2.Zero);
 			}
 		}
 
@@ -141,9 +154,6 @@ namespace GorgonLibrary.Renderers
 				{
 					if (disposing)
 					{
-						if (_encoder != null)
-							_encoder.Dispose();
-
 						if (_displacementTarget != null)
 							_displacementTarget.Dispose();
 
@@ -171,10 +181,8 @@ namespace GorgonLibrary.Renderers
 			
 #if DEBUG
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"", true);
-			_encoder = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementEncoder.PS", "GorgonPixelShaderDisplacementEncoder", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"", false);
-			_encoder = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementEncoder.PS", "GorgonPixelShaderDisplacementEncoder", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 		}
 		#endregion
