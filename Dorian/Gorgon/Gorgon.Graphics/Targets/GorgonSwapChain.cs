@@ -411,6 +411,9 @@ namespace GorgonLibrary.Graphics
 			if (graphics.VideoDevice == null)
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the swap chain, no video device was selected.");
 
+			if ((graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (settings.Flags != SwapChainUsageFlags.RenderTarget))
+				throw new GorgonException(GorgonResult.CannotCreate, "SM2_a_b video devices can only use RenderTarget as a flag.");
+
 			// Default to using the default Gorgon application window.
 			if (settings.Window == null)
 			{

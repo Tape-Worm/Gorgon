@@ -219,7 +219,7 @@ namespace GorgonLibrary.Graphics
 						throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the render target, targets must be of the same bit depth for SM_2_a_b video devices.");
 				}
 #endif
-
+				
 				// If we've got the target bound to a texture slot, then remove it before assigning it.
 				// Otherwise D3D11 will throw up a warning in the debug output.
 				if (target != null)
@@ -621,6 +621,8 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown if the current video device is a SM2_a_b video device and the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Flags">Flags</see> property is not equal to RenderTarget.</para>
 		/// </exception>
 		/// <remarks>This will create our output swap chains for display to a window or control.  All functionality for sending or retrieving data from the video device can be accessed through the swap chain.
 		/// <para>Passing default settings for the <see cref="GorgonLibrary.Graphics.GorgonSwapChainSettings">settings parameters</see> will make Gorgon choose the closest possible settings appropriate for the video device and output that the window is on.  For example, passing NULL (Nothing in VB.Net) to 

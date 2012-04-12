@@ -47,9 +47,9 @@ namespace GorgonLibrary.Renderers
 		private GorgonConstantBuffer _displacementBuffer = null;	// Buffer used to send displacement data.
 		private GorgonDataStream _displacementStream = null;		// Stream used to update the displacement buffer.
 		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.
-		private GorgonTexture2D _background = null;					// The texture being used as the background to displace.
 		private float _displacementStrength = 1.0f;					// Strength of the displacement map.
 		private SmoothingMode _lastSmoothMode = SmoothingMode.None;	// Last global smoothing state.
+		private GorgonRenderTarget _currentTarget = null;			// Current render target.
 		#endregion
 
 		#region Properties.
@@ -73,42 +73,6 @@ namespace GorgonLibrary.Renderers
 					_isUpdated = true;
 				}
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return the background image to displace.
-		/// </summary>
-		public GorgonTexture2D Background
-		{
-			get
-			{
-				return _background;
-			}
-			set
-			{
-				if (_background != value)
-				{
-					_background = value;
-
-					if (value == null)
-						_targetSize = Size.Empty;
-
-					if ((_background == null) || (_background.Settings.Size != _targetSize))
-					{					
-						UpdateDisplacementMap(_background.Settings.Size);
-						_isUpdated = true;
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the output target.
-		/// </summary>
-		public GorgonRenderTarget Output
-		{
-			set;
-			get;
 		}
 		#endregion
 
@@ -147,8 +111,17 @@ namespace GorgonLibrary.Renderers
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
+			_currentTarget = Gorgon2D.Target;
+
 			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _displacementBuffer)
 				Gorgon2D.PixelShader.ConstantBuffers[2] = _displacementBuffer;
+
+			// TODO: This is not good, allow the displacement map size and format to be set manually or something.
+			if ((_displacementTarget == null) || (_currentTarget.Settings.Size != _displacementTarget.Settings.Size))
+			{
+				UpdateDisplacementMap(_currentTarget.Settings.Size);
+				_isUpdated = true;
+			}
 
 			return base.OnBeforeRender();
 		}
@@ -161,9 +134,6 @@ namespace GorgonLibrary.Renderers
 		{
 			base.OnBeforeRenderPass(passIndex);
 
-			if (_background == null)
-				throw new GorgonException(GorgonResult.CannotWrite, "Cannot displace the texture.  No background texture was provided.");
-
 			if (_isUpdated)
 			{
 				_displacementStream.Position = 0;
@@ -175,7 +145,7 @@ namespace GorgonLibrary.Renderers
 
 			if (passIndex == 0)
 			{
-				_displacementTarget.Clear(new GorgonColor(0, 0, 0, 0));
+				_displacementTarget.Clear(GorgonColor.Transparent);
 				Gorgon2D.PixelShader.Current = null;
 				Gorgon2D.Target = _displacementTarget;
 			}
@@ -183,35 +153,10 @@ namespace GorgonLibrary.Renderers
 			{
 				_lastSmoothMode = Gorgon2D.Drawing.SmoothingMode;
 				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
-
-				Gorgon2D.Target = null;
-				Gorgon2D.PixelShader.Current = null;
-				Gorgon2D.Drawing.Blit(_displacementTarget, new Vector2(0, 400));
-
-				Gorgon2D.Target = Output;
 				Gorgon2D.PixelShader.Current = PixelShader;
 				if (Gorgon2D.PixelShader.Textures[1] != _displacementTarget.Texture)
 					Gorgon2D.PixelShader.Textures[1] = _displacementTarget.Texture;
 			}				
-		}
-
-		/// <summary>
-		/// Function to render a specific pass while using this effect.
-		/// </summary>
-		/// <param name="renderMethod">Method to use to render the data.</param>
-		/// <param name="passIndex">Index of the pass to render.</param>
-		/// <remarks>The <paramref name="renderMethod"/> is an action delegate that must be defined with an integer value.  The parameter indicates which pass the rendering is currently on.</remarks>
-		protected override void RenderImpl(Action<int> renderMethod, int passIndex)
-		{
-			if (passIndex == 0)
-				base.RenderImpl(renderMethod, passIndex);
-			else
-			{
-				if (Gorgon2D.Target.Settings.Size != _background.Settings.Size)
-					Gorgon2D.Drawing.Blit(Background, Vector2.Zero, new Vector2((float)Gorgon2D.Target.Settings.Width / (float)_background.Settings.Size.Width, (float)Gorgon2D.Target.Settings.Height) / (float)_background.Settings.Height);
-				else
-					Gorgon2D.Drawing.Blit(Background, Vector2.Zero);
-			}
 		}
 
 		/// <summary>
@@ -223,16 +168,6 @@ namespace GorgonLibrary.Renderers
 			base.OnAfterRenderPass(passIndex);
 			if ((passIndex == 1) && (Gorgon2D.Drawing.SmoothingMode != _lastSmoothMode))
 				Gorgon2D.Drawing.SmoothingMode = _lastSmoothMode;
-		}
-
-		/// <summary>
-		/// Function called after rendering ends.
-		/// </summary>
-		protected override void OnAfterRender()
-		{
-			base.OnAfterRender();
-
-			Gorgon2D.Target = null;
 		}
 
 		/// <summary>

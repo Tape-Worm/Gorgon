@@ -190,7 +190,7 @@ namespace GorgonLibrary.Graphics.Example
 			if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
 			{
 				_2D.Target = _ballTarget;
-				_2D.Target.Clear(Color.FromArgb(0, 0, 0, 0));
+				_2D.Target.Clear(GorgonColor.Transparent);
 				_2D.Camera = _camera;
 				_ball.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 			}
@@ -219,9 +219,19 @@ namespace GorgonLibrary.Graphics.Example
 				_2D.Target = null;
 				_2D.Camera = null;
 
-				_2D.Effects.GaussianBlur.SourceTexture = _ballTarget.Texture;
-				_2D.Effects.GaussianBlur.OutputTarget = null;
-				_2D.Effects.GaussianBlur.Render(Vector2.Zero, _mainScreen.Settings.Size);
+				_2D.Effects.GaussianBlur.Render((int passIndex) =>
+					{
+						if (passIndex == 0)
+						{
+							// Draw using the blur effect.
+							_2D.Drawing.Blit(_ballTarget, Vector2.Zero);
+						}
+						else
+						{
+							// Copy the blurred output.
+							_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, Vector2.Zero, new Vector2((float)_mainScreen.Settings.Width / (float)_ballTarget.Settings.Width, (float)_mainScreen.Settings.Height / (float)_ballTarget.Settings.Height));
+						}
+					});
 			}
 
 			_2D.Render();
@@ -283,7 +293,7 @@ namespace GorgonLibrary.Graphics.Example
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
 				MultiSample = new GorgonMultisampling(1, 0)				
 			});
-			_2D.Effects.GaussianBlur.BlurTargetSize = _ballTarget.Settings.Size;
+			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = _ballTarget.Settings.Size;
 
 			_camera = _2D.CreateCamera("Camera", new Vector2(Properties.Settings.Default.ScreenWidth, Properties.Settings.Default.ScreenHeight), 1000.0f);
 

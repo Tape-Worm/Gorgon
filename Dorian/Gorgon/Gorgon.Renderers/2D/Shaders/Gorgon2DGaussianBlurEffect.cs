@@ -54,12 +54,10 @@ namespace GorgonLibrary.Renderers
 		private GorgonDataStream _blurStream = null;								// Stream for the buffer.
 		private GorgonRenderTarget _hTarget = null;									// Horizontal blur render target.
 		private GorgonRenderTarget _vTarget = null;									// Vertical blur render target.
-		private Vector2 _outputLocation = Vector2.Zero;								// Output location.
-		private Vector2 _outputScale = new Vector2(1.0f);							// Scaling to apply to the output image.
 		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
 		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
-		private Vector2 _sourceScale = new Vector2(1.0f);							// Scaling to apply to the source texture.
-		private GorgonTexture2D _sourceTexture = null;								// Source texture to that will receive blurring.
+		private GorgonRenderTarget _currentTarget = null;							// Current render target.
+		private SmoothingMode _lastSmoothMode = SmoothingMode.None;					// Last smoothing mode.
 		#endregion
 
 		#region Properties.
@@ -114,37 +112,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the texture that is to be blurred.
-		/// </summary>
-		public GorgonTexture2D SourceTexture
-		{
-			get
-			{
-				return _sourceTexture;
-			}
-			set
-			{
-				if (_sourceTexture != value)
-				{
-					_sourceTexture = value;
-					if (_sourceTexture != null)
-						_sourceScale = new Vector2((float)BlurTargetSize.Width / (float)_sourceTexture.Settings.Width, (float)BlurTargetSize.Height / (float)SourceTexture.Settings.Height);
-					else
-						_sourceScale = new Vector2(1.0f);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the target write to.
-		/// </summary>
-		public GorgonRenderTarget OutputTarget
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the format of the internal render targets used for blurring.
 		/// </summary>
 		public BufferFormat BlurTargetFormat
@@ -166,7 +133,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the size of the internal render targets used for blurring.
 		/// </summary>
-		public Size BlurTargetSize
+		public Size BlurRenderTargetsSize
 		{
 			get
 			{
@@ -191,6 +158,20 @@ namespace GorgonLibrary.Renderers
 				}
 			}
 		}
+
+		/// <summary>
+		/// Property to return the resulting blurred image data as a texture.
+		/// </summary>
+		public GorgonTexture2D BlurredTexture
+		{
+			get
+			{
+				if (_vTarget == null)
+					return null;
+
+				return _vTarget.Texture;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -213,8 +194,8 @@ namespace GorgonLibrary.Renderers
 
 			GorgonRenderTargetSettings settings = new GorgonRenderTargetSettings()
 			{
-				Width = BlurTargetSize.Width,
-				Height = BlurTargetSize.Height,
+				Width = BlurRenderTargetsSize.Width,
+				Height = BlurRenderTargetsSize.Height,
 				Format = BlurTargetFormat,
 				DepthStencilFormat = BufferFormat.Unknown,
 				MultiSample = new GorgonMultisampling(1, 0)
@@ -282,14 +263,22 @@ namespace GorgonLibrary.Renderers
 		{
 			base.OnBeforeRenderPass(passIndex);
 
-			if (SourceTexture == null)
-				throw new GorgonException(GorgonResult.CannotWrite, "Cannot create the blurred image.  No source texture was bound.");
-
 			_blurStream.Position = 0;
 			if (passIndex == 0)
+			{
+				// Get the current target.
+				_currentTarget = Gorgon2D.Target;
+
+				_hTarget.Clear(GorgonColor.Transparent);
+				Gorgon2D.Target = _hTarget;
 				_blurStream.WriteRange(_xOffsets);
+			}
 			else
+			{
+				Gorgon2D.Target = _vTarget;
 				_blurStream.WriteRange(_yOffsets);
+			}
+
 			_blurStream.Position = 0;
 			_blurBuffer.Update(_blurStream);
 
@@ -306,53 +295,18 @@ namespace GorgonLibrary.Renderers
 		/// <param name="passIndex">Index of the pass to render.</param>
 		protected override void RenderImpl(Action<int> renderMethod, int passIndex)
 		{
-			SmoothingMode previousMode = Gorgon2D.Drawing.SmoothingMode;
-			Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 			if (passIndex == 0)
-			{
 				Gorgon2D.Target = _hTarget;
-				Gorgon2D.Drawing.Blit(SourceTexture, Vector2.Zero, _sourceScale);			
-			}
 			else			
 			{
-				Gorgon2D.Target = _vTarget;
+				// Copy the horizontal pass to the vertical pass target and blur the result.
+				_lastSmoothMode = Gorgon2D.Drawing.SmoothingMode;
+				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 				Gorgon2D.Drawing.Blit(_hTarget, Vector2.Zero);
-				Gorgon2D.Target = OutputTarget;				
-				Gorgon2D.Drawing.Blit(_vTarget, _outputLocation, _outputScale);
+				Gorgon2D.Target = _currentTarget;
 			}
-			Gorgon2D.Drawing.SmoothingMode = previousMode;
-		}
 
-		/// <summary>
-		/// Function to render the blurred image at the specified location.
-		/// </summary>
-		/// <param name="position">Position to place the output image.</param>
-		/// <param name="size">Size of the output image.</param>
-		/// <remarks>The <paramref name="size"/> parameter is an absolute size in width and height, not a scaling value.</remarks>
-		public void Render(Vector2 position, Vector2 size)
-		{
-			if (size.X < 1e-6f)
-				size.X = 1e-6f;
-			if (size.Y < 1e-6f)
-				size.Y = 1e-6f;
-
-			_outputLocation = position;
-			_outputScale = new Vector2(size.X / _vTarget.Settings.Width, size.Y / _vTarget.Settings.Height);
-			Render();
-			_outputLocation = Vector2.Zero;
-			_outputScale = new Vector2(1.0f);
-		}
-
-		/// <summary>
-		/// Function to render the blurred image at the specified location.
-		/// </summary>
-		/// <param name="position">Position to place the output image.</param>
-		public void Render(Vector2 position)
-		{
-			if (SourceTexture == null)
-				throw new GorgonException(GorgonResult.CannotWrite, "Cannot create the blurred image.  No source texture was bound.");
-
-			Render(position, SourceTexture.Settings.Size);
+			base.RenderImpl(renderMethod, passIndex);
 		}
 
 		/// <summary>
@@ -362,6 +316,9 @@ namespace GorgonLibrary.Renderers
 		protected override void OnAfterRenderPass(int passIndex)
 		{
 			base.OnAfterRenderPass(passIndex);
+
+			if (passIndex == 1)
+				Gorgon2D.Drawing.SmoothingMode = _lastSmoothMode;
 		}
 
 		/// <summary>

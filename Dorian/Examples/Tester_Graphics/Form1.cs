@@ -24,6 +24,7 @@ namespace Tester_Graphics
 		private Random _rnd = new Random();
 		private GorgonGraphics _graphics = null;
 		private Gorgon2D _2D = null;
+		private GorgonSwapChain _mainScreen = null;
 		private GorgonRenderTarget _target = null;
 		private GorgonRenderTarget _target2 = null;
 		private GorgonRenderTarget _target3 = null;
@@ -44,8 +45,8 @@ namespace Tester_Graphics
 
 				using (GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false))
 				{
-					//_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM4);
-					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
+					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM4);
+					//_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
 				}
 
 				_target = _graphics.Output.CreateRenderTarget("My target", new GorgonRenderTargetSettings()
@@ -79,7 +80,13 @@ namespace Tester_Graphics
 				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png", GorgonTexture2DSettings.FromFile);
 				//_textureNM = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship_DISP.png", GorgonTexture2DSettings.FromFile);
 
-				_2D = _graphics.Create2DRenderer(this);
+				_mainScreen = _graphics.Output.CreateSwapChain("Test", new GorgonSwapChainSettings()
+				{
+					IsWindowed = true,
+					Window = this,
+					Flags = SwapChainUsageFlags.RenderTarget | SwapChainUsageFlags.ShaderInput
+				});
+				_2D = _graphics.Create2DRenderer(_mainScreen);
 				_2D.IsLogoVisible = true;
 
 				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(178, 207), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
@@ -233,18 +240,26 @@ namespace Tester_Graphics
 						sprite.Texture = _texture;
 						sprite.SmoothingMode = SmoothingMode.Smooth;
 						sprite.Draw();
-						_2D.Target = null;
-						_2D.Effects.Displacement.Background = _target.Texture;
-						_2D.Effects.Displacement.Strength = 1.0f;
+						_2D.Target = _target;
+						sprite.Draw();
+						_2D.Effects.Displacement.Strength = 1.5f;
 						_2D.Effects.Displacement.Render((int pass) =>
 							{
 								//sprite.Texture = _textureNM;
-								sprite.Opacity = 1.0f;
-								sprite.BlendingMode = BlendingMode.Additive;
-								sprite.Draw();
-								sprite.Position = new Vector2(150, 103);
-								sprite.Angle = -angle;
-								sprite.Draw();
+								if (pass == 0)
+								{
+									sprite.Opacity = 1.0f;
+									sprite.BlendingMode = BlendingMode.Additive;
+									sprite.Draw();
+									sprite.Position = new Vector2(150, 103);
+									sprite.Angle = -angle;
+									sprite.Draw();
+								}
+								else
+								{
+									_2D.Target = null;
+									_2D.Drawing.Blit(_target, Vector2.Zero);
+								}
 							});
 
 
