@@ -220,7 +220,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return usage flags for the swap chain.
 		/// </summary>
-		/// <remarks>This will default to SwapChainUsageFlags.RenderTarget if not defined.</remarks>
+		/// <remarks>This will default to SwapChainUsageFlags.RenderTarget if not defined.
+		/// <para>If the current video device is a SM2_a_b video device, then this can only be set to RenderTarget, any other combination will not work and will throw an exception upon creation.</para>
+		/// </remarks>
 		public SwapChainUsageFlags Flags
 		{
 			get;

@@ -639,6 +639,9 @@ namespace GorgonLibrary.Graphics
 			base.Settings = GetTextureInformation();
 
 			RenderTarget = swapChain;
+
+			if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
+				CreateResourceView();
 		}
 
 		/// <summary>
