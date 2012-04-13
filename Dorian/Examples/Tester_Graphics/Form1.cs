@@ -103,7 +103,7 @@ namespace Tester_Graphics
 				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png", GorgonTexture2DSettings.FromFile);
 				//_textureNM = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship_DISP.png", GorgonTexture2DSettings.FromFile);
 
-				_mainScreen = _graphics.Output.CreateSwapChain("Test", new GorgonSwapChainSettings()
+				_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings()
 				{
 					IsWindowed = true,
 					Window = this,
@@ -231,8 +231,18 @@ namespace Tester_Graphics
 				});
 
 				GorgonSprite window = _2D.Renderables.CreateSprite("Window", new Vector2(800, 600), _mainScreen.Texture);
+				_2D.Effects.GaussianBlur.BlurAmount = 3.0f;
+
+				_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new System.Drawing.Size(256, 256);
+				window.Texture = _outputTarget.Texture;
+				window.BlendingMode = BlendingMode.None;
+				window.Angle = 0.0f;
+				window.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
+				
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
+						Text = _2D.Effects.GaussianBlur.BlurAmount.ToString("0.0000") + " " + timing.AverageFPS.ToString("0.0");
+
 						_2D.Clear(Color.White);
 						_2D.Drawing.BlendingMode = BlendingMode.None;
 						
@@ -276,8 +286,16 @@ namespace Tester_Graphics
 						_2D.Target = _outputTarget;
 						_2D.Target.Clear(Color.White);
 						sprite.Draw();
+						//_2D.Effects.Wave.Amplitude = 5.0f / _target.Settings.Width;
+						//_2D.Effects.Wave.Period += 0.125f * timing.FrameDelta;
+						//_2D.Effects.Wave.Length = 45.0f;
+						//_2D.Effects.Wave.Render((int passIndex) =>
+						//{
+						//    _2D.Drawing.Blit(_target, position);
+						//});
 						_2D.Drawing.Blit(_target, position);
 						_2D.Target = null;
+
 						_2D.Effects.Displacement.DisplacementRenderTargetSize = _outputTarget.Settings.Size;
 						_2D.Effects.Displacement.Strength = 3.5f;
 						_2D.Effects.Displacement.Render((int pass) =>
@@ -295,61 +313,48 @@ namespace Tester_Graphics
 								else
 								{
 									_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
+
+									_2D.Target = _outputTarget;
+									_2D.Effects.SobelEdgeDetection.LineThickness = 2.0f / _mainScreen.Settings.Width;
+									_2D.Effects.SobelEdgeDetection.EdgeThreshold = 0.85f;
+									_2D.Effects.SobelEdgeDetection.Render((int passIndex) =>
+									{
+										_2D.Drawing.Blit(_mainScreen, Vector2.Zero);
+
+										_2D.Target = null;
+										_2D.Effects.Posterize.Bits = 15;
+										_2D.Effects.Posterize.Render((int posPass) =>
+										{
+											_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
+										});
+									});
 								}
 							});
 
-						_2D.Target = _outputTarget;
-						_2D.Effects.SobelEdgeDetection.LineThickness = 2.0f / _mainScreen.Settings.Width;
-						_2D.Effects.SobelEdgeDetection.EdgeThreshold = 0.85f;
-						_2D.Effects.SobelEdgeDetection.Render((int passIndex) =>
-						{
-							_2D.Drawing.Blit(_mainScreen, Vector2.Zero);
-						});
-						_2D.Target = null;
-						_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
 
-						_2D.Target = _outputTarget;
-						_2D.Effects.Wave.Amplitude = 0.0025f;
-						_2D.Effects.Wave.Period = 240.0f;
-						_2D.Effects.Wave.Length = 240.0f;
-						_2D.Effects.Wave.Render((int passIndex) =>
-							{
-								_2D.Drawing.Blit(_mainScreen, Vector2.Zero);
-							});
-						_2D.Target = null;
-						_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
-
-						_2D.Target = _outputTarget;
-						_2D.Effects.Posterize.Render((int passIndex) =>
-						{
-							_2D.Drawing.Blit(_mainScreen, Vector2.Zero);
-						});
-						_2D.Target = null;
-						_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
-
-						_2D.Target = _outputTarget;
-						Text = _2D.Effects.GaussianBlur.BlurAmount.ToString("0.0000");
-						window.Texture = _mainScreen.Texture;
-						window.BlendingMode = BlendingMode.None;
 						window.Size = new Vector2(_mainScreen.Settings.Width / 2.0f, _mainScreen.Settings.Height / 2.0f);
-						window.Angle = 0.0f;
-						window.Scale = new Vector2(1024.0f / _mainScreen.Settings.Width, 1024.0f / _mainScreen.Settings.Height);
+						window.Scale = new Vector2((_2D.Effects.GaussianBlur.BlurRenderTargetsSize.Width * 2.0f) / _mainScreen.Settings.Width, (_2D.Effects.GaussianBlur.BlurRenderTargetsSize.Height * 2.0f) / _mainScreen.Settings.Height);
 						window.TextureOffset = _mousePosition - new Vector2(_mainScreen.Settings.Width / 4.0f, _mainScreen.Settings.Height / 4.0f); ;
 						window.TextureSize = window.Size;
-						window.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
-						_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new System.Drawing.Size(512, 512);
-						_2D.Effects.GaussianBlur.Render((int passIndex) =>
+						for (int i = 0; i < (int)((10.0f - _2D.Effects.GaussianBlur.BlurAmount) * 2); i++)
 						{
-							if (passIndex == 0)
-								window.Draw();
-								//_2D.Drawing.Blit(_mainScreen, Vector2.Zero, new Vector2(512.0f / _mainScreen.Settings.Width, 512.0f / _mainScreen.Settings.Height));
-							else
+							_2D.Target = null;
+							_2D.Effects.GaussianBlur.Render((int passIndex) =>
 							{
-								_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, window.TextureOffset, new Vector2(_mainScreen.Settings.Width / 1024.0f, _mainScreen.Settings.Height / 1024.0f));
-							}
-						});
+								if (passIndex == 0)
+									window.Draw();
+								//_2D.Drawing.Blit(_mainScreen, Vector2.Zero, new Vector2(512.0f / _mainScreen.Settings.Width, 512.0f / _mainScreen.Settings.Height));
+								else
+								{
+									_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, window.TextureOffset, new Vector2(1.0f / window.Scale.X, 1.0f / window.Scale.Y));
+								}
+							});
+							_2D.Target = _outputTarget;
+							_2D.Drawing.Blit(_mainScreen, Vector2.Zero);
+						}
 						_2D.Target = null;
 						_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
+						_2D.Drawing.DrawRectangle(new RectangleF(window.TextureOffset.X, window.TextureOffset.Y, window.Size.X, window.Size.Y), Color.Black);
 
 
 //						_2D.Render();
