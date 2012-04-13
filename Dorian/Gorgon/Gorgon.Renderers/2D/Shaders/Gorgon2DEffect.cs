@@ -99,6 +99,15 @@ namespace GorgonLibrary.Renderers
 			}
 			base.Dispose(disposing);
 		}
+
+		/// <summary>
+		/// Function to force pass settings to be applied.
+		/// </summary>
+		/// <param name="passIndex">Index of the pass to apply.</param>
+		public void ApplyPass(int passIndex)
+		{
+			OnBeforeRenderPass(passIndex);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
