@@ -41,15 +41,16 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;								// Flag to indicate that the object was disposed.
-		private GorgonRenderTarget _displacementTarget = null;		// Displacement buffer target.
-		private Size _targetSize = Size.Empty;						// Displacement target size.
-		private GorgonConstantBuffer _displacementBuffer = null;	// Buffer used to send displacement data.
-		private GorgonDataStream _displacementStream = null;		// Stream used to update the displacement buffer.
-		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.
-		private float _displacementStrength = 1.0f;					// Strength of the displacement map.
-		private SmoothingMode _lastSmoothMode = SmoothingMode.None;	// Last global smoothing state.
-		private GorgonRenderTarget _currentTarget = null;			// Current render target.
+		private bool _disposed = false;											// Flag to indicate that the object was disposed.
+		private GorgonRenderTarget _displacementTarget = null;					// Displacement buffer target.
+		private Size _targetSize = new Size(512, 512);							// Displacement target size.
+		private BufferFormat _targetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format for the displacement target.
+		private GorgonConstantBuffer _displacementBuffer = null;				// Buffer used to send displacement data.
+		private GorgonDataStream _displacementStream = null;					// Stream used to update the displacement buffer.
+		private bool _isUpdated = true;											// Flag to indicate that the parameters have been updated.
+		private float _displacementStrength = 1.0f;								// Strength of the displacement map.
+		private SmoothingMode _lastSmoothMode = SmoothingMode.None;				// Last global smoothing state.
+		private GorgonRenderTarget _currentTarget = null;						// Current render target.
 		#endregion
 
 		#region Properties.
@@ -74,6 +75,38 @@ namespace GorgonLibrary.Renderers
 				}
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the displacement render target size.
+		/// </summary>
+		public Size DisplacementRenderTargetSize
+		{
+			get
+			{
+				return _targetSize;
+			}
+			set
+			{
+				if (_targetSize != value)
+					UpdateDisplacementMap(value, _targetFormat);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the format of the displacement render target.
+		/// </summary>
+		public BufferFormat Format
+		{
+			get
+			{
+				return _targetFormat;
+			}
+			set
+			{
+				if (_targetFormat != value)
+					UpdateDisplacementMap(_targetSize, value);
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -81,7 +114,8 @@ namespace GorgonLibrary.Renderers
 		/// Function to update the displacement map render target.
 		/// </summary>
 		/// <param name="newSize">New size for the target.</param>
-		private void UpdateDisplacementMap(Size newSize)
+		/// <param name="format">Format to use for the displacement target.</param>
+		private void UpdateDisplacementMap(Size newSize, BufferFormat format)
 		{
 			if (_displacementTarget != null)
 				_displacementTarget.Dispose();
@@ -96,11 +130,13 @@ namespace GorgonLibrary.Renderers
 				Width = newSize.Width,
 				Height = newSize.Height,
 				DepthStencilFormat = BufferFormat.Unknown,
-				Format = BufferFormat.R8G8B8A8_UIntNormal,
+				Format = format,
 				MultiSample = new GorgonMultisampling(1, 0)				
 			});
 
+			_targetFormat = format;
 			_targetSize = newSize;
+			_isUpdated = true;
 		}
 
 		/// <summary>
@@ -111,17 +147,18 @@ namespace GorgonLibrary.Renderers
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
+			if (_displacementTarget == null)
+				UpdateDisplacementMap(_targetSize, _targetFormat);
+
+#if DEBUG
+			if (_displacementTarget == null)
+				throw new GorgonException(GorgonResult.CannotWrite, "No displacement target size was set.");
+#endif
+
 			_currentTarget = Gorgon2D.Target;
 
 			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _displacementBuffer)
 				Gorgon2D.PixelShader.ConstantBuffers[2] = _displacementBuffer;
-
-			// TODO: This is not good, allow the displacement map size and format to be set manually or something.
-			if ((_displacementTarget == null) || (_currentTarget.Settings.Size != _displacementTarget.Settings.Size))
-			{
-				UpdateDisplacementMap(_currentTarget.Settings.Size);
-				_isUpdated = true;
-			}
 
 			return base.OnBeforeRender();
 		}
@@ -154,6 +191,7 @@ namespace GorgonLibrary.Renderers
 				_lastSmoothMode = Gorgon2D.Drawing.SmoothingMode;
 				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 				Gorgon2D.PixelShader.Current = PixelShader;
+				Gorgon2D.Target = _currentTarget;
 				if (Gorgon2D.PixelShader.Textures[1] != _displacementTarget.Texture)
 					Gorgon2D.PixelShader.Textures[1] = _displacementTarget.Texture;
 			}				

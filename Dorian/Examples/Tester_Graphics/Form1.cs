@@ -33,6 +33,29 @@ namespace Tester_Graphics
 		private GorgonOrthoCamera _cam1 = null;
 		private GorgonConstantBuffer _waveEffectBuffer = null;
 		private GorgonDataStream _waveEffectStream = null;
+		private GorgonRenderTarget _outputTarget = null;
+		private Vector2 _mousePosition = Vector2.Zero;
+
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			_mousePosition = e.Location;
+		}
+
+		protected override void OnMouseWheel(MouseEventArgs e)
+		{
+			base.OnMouseWheel(e);
+
+			if (e.Delta < 0)
+				_2D.Effects.GaussianBlur.BlurAmount -= 0.125f;
+			else
+				_2D.Effects.GaussianBlur.BlurAmount += 0.125f;
+
+			if (_2D.Effects.GaussianBlur.BlurAmount < 2.0f)
+				_2D.Effects.GaussianBlur.BlurAmount = 2.0f;
+			if (_2D.Effects.GaussianBlur.BlurAmount > 10.0f)
+				_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
+		}
 		
 		protected override void OnLoad(EventArgs e)
 		{
@@ -198,6 +221,16 @@ namespace Tester_Graphics
 
 				_2D.Effects.GaussianBlur.BlurAmount = 2.0f;
 				GorgonOrthoCamera camera =_2D.CreateCamera("My Camera", new Vector2(640, 480), 1000.0f);
+				_outputTarget = _graphics.Output.CreateRenderTarget("Output", new GorgonRenderTargetSettings()
+				{
+					Width = 800,
+					Height = 600,
+					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					DepthStencilFormat = BufferFormat.Unknown,
+					MultiSample = new GorgonMultisampling(1, 0),
+				});
+
+				GorgonSprite window = _2D.Renderables.CreateSprite("Window", new Vector2(800, 600), _mainScreen.Texture);
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 						_2D.Clear(Color.White);
@@ -229,7 +262,7 @@ namespace Tester_Graphics
 						//_2D.Camera = camera;
 
 						sprite.Opacity = 1.0f;
-						sprite.Position = new Vector2(109, 103);
+						sprite.Position = new Vector2(_mainScreen.Settings.Width - 128, _mainScreen.Settings.Height - 128);
 						sprite.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 						sprite.Anchor = new Vector2(89, 103);
 						//sprite.Angle += 90.0f * timing.FrameDelta;
@@ -240,9 +273,13 @@ namespace Tester_Graphics
 						sprite.Texture = _texture;
 						sprite.SmoothingMode = SmoothingMode.Smooth;
 						sprite.Draw();
-						_2D.Target = _target;
+						_2D.Target = _outputTarget;
+						_2D.Target.Clear(Color.White);
 						sprite.Draw();
-						_2D.Effects.Displacement.Strength = 1.5f;
+						_2D.Drawing.Blit(_target, position);
+						_2D.Target = null;
+						_2D.Effects.Displacement.DisplacementRenderTargetSize = _outputTarget.Settings.Size;
+						_2D.Effects.Displacement.Strength = 3.5f;
 						_2D.Effects.Displacement.Render((int pass) =>
 							{
 								//sprite.Texture = _textureNM;
@@ -251,16 +288,68 @@ namespace Tester_Graphics
 									sprite.Opacity = 1.0f;
 									sprite.BlendingMode = BlendingMode.Additive;
 									sprite.Draw();
-									sprite.Position = new Vector2(150, 103);
+									sprite.Position = sprite.Position + new Vector2(50, 0);
 									sprite.Angle = -angle;
 									sprite.Draw();
 								}
 								else
 								{
-									_2D.Target = null;
-									_2D.Drawing.Blit(_target, Vector2.Zero);
+									_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
 								}
 							});
+
+						_2D.Target = _outputTarget;
+						_2D.Effects.SobelEdgeDetection.LineThickness = 2.0f / _mainScreen.Settings.Width;
+						_2D.Effects.SobelEdgeDetection.EdgeThreshold = 0.85f;
+						_2D.Effects.SobelEdgeDetection.Render((int passIndex) =>
+						{
+							_2D.Drawing.Blit(_mainScreen, Vector2.Zero);
+						});
+						_2D.Target = null;
+						_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
+
+						_2D.Target = _outputTarget;
+						_2D.Effects.Wave.Amplitude = 0.0025f;
+						_2D.Effects.Wave.Period = 240.0f;
+						_2D.Effects.Wave.Length = 240.0f;
+						_2D.Effects.Wave.Render((int passIndex) =>
+							{
+								_2D.Drawing.Blit(_mainScreen, Vector2.Zero);
+							});
+						_2D.Target = null;
+						_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
+
+						_2D.Target = _outputTarget;
+						_2D.Effects.Posterize.Render((int passIndex) =>
+						{
+							_2D.Drawing.Blit(_mainScreen, Vector2.Zero);
+						});
+						_2D.Target = null;
+						_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
+
+						_2D.Target = _outputTarget;
+						Text = _2D.Effects.GaussianBlur.BlurAmount.ToString("0.0000");
+						window.Texture = _mainScreen.Texture;
+						window.BlendingMode = BlendingMode.None;
+						window.Size = new Vector2(_mainScreen.Settings.Width / 2.0f, _mainScreen.Settings.Height / 2.0f);
+						window.Angle = 0.0f;
+						window.Scale = new Vector2(1024.0f / _mainScreen.Settings.Width, 1024.0f / _mainScreen.Settings.Height);
+						window.TextureOffset = _mousePosition - new Vector2(_mainScreen.Settings.Width / 4.0f, _mainScreen.Settings.Height / 4.0f); ;
+						window.TextureSize = window.Size;
+						window.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
+						_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new System.Drawing.Size(512, 512);
+						_2D.Effects.GaussianBlur.Render((int passIndex) =>
+						{
+							if (passIndex == 0)
+								window.Draw();
+								//_2D.Drawing.Blit(_mainScreen, Vector2.Zero, new Vector2(512.0f / _mainScreen.Settings.Width, 512.0f / _mainScreen.Settings.Height));
+							else
+							{
+								_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, window.TextureOffset, new Vector2(_mainScreen.Settings.Width / 1024.0f, _mainScreen.Settings.Height / 1024.0f));
+							}
+						});
+						_2D.Target = null;
+						_2D.Drawing.Blit(_outputTarget, Vector2.Zero);
 
 
 //						_2D.Render();
@@ -308,7 +397,6 @@ namespace Tester_Graphics
 						_2D.Viewport = null;
 						//_2D.PixelShader.Current = null;						
 
-						_2D.Drawing.Blit(_target, position);
 
 						//_2D.Effects.Invert.Render((int passInvertIndex) =>
 						//    {
@@ -400,6 +488,26 @@ namespace Tester_Graphics
 		public Form1()
 		{
 			InitializeComponent();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.SizeChanged"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+
+			if (_graphics == null)
+				return;
+
+			if (_outputTarget != null)
+				_outputTarget.Dispose();
+			_outputTarget = _graphics.Output.CreateRenderTarget("Output", new GorgonRenderTargetSettings()
+							{
+								Size = ClientSize,
+								Format = BufferFormat.R8G8B8A8_UIntNormal
+							});
 		}
 	}
 }
