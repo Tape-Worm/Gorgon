@@ -475,7 +475,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to read image data from an array of bytes.
 		/// </summary>
 		/// <param name="imageData">Array of bytes holding the image data.</param>
-		internal void Initialize(byte[] imageData)
+		internal void InitializeFileData(byte[] imageData)
 		{
 			try
 			{

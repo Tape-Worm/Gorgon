@@ -104,6 +104,43 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to convert a ABGR (GDI+) color into a GorgonColor.
+		/// </summary>
+		/// <param name="abgrColor">GDI+ ABGR packed pixel format.</param>
+		/// <returns>The GorgonColor representation.</returns>
+		public static GorgonColor FromABGR(int abgrColor)
+		{
+			GorgonColor channels = abgrColor;
+
+			return new GorgonColor(channels.Blue, channels.Green, channels.Red, channels.Alpha);
+		}
+
+		/// <summary>
+		/// Function to convert a BGRA (GDI+) color into a GorgonColor.
+		/// </summary>
+		/// <param name="bgraColor">GDI+ BGRA packed pixel format.</param>
+		/// <returns>The GorgonColor representation.</returns>
+		public static GorgonColor FromBGRA(int bgraColor)
+		{
+			GorgonColor channels = bgraColor;
+
+			return new GorgonColor(channels.Alpha, channels.Red, channels.Green, channels.Blue);
+		}
+
+		/// <summary>
+		/// Function to convert a RGBA color into a GorgonColor.
+		/// </summary>
+		/// <param name="rgbaColor">RGBA packed pixel format.</param>
+		/// <returns>The GorgonColor representation.</returns>
+		/// <remarks>By default, GorgonColor considers a packed int as ARGB.</remarks>
+		public static GorgonColor FromRGBA(int rgbaColor)
+		{
+			GorgonColor channels = rgbaColor;
+
+			return new GorgonColor(channels.Alpha, channels.Red, channels.Green, channels.Blue);
+		}		
+
+		/// <summary>
 		/// Function to compare two colors for equality.
 		/// </summary>
 		/// <param name="left">Left color to compare.</param>
@@ -227,6 +264,26 @@ namespace GorgonLibrary.Graphics
 		public int ToRGBA()
 		{
 			uint result = (((uint)(Red * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 | (((uint)(Blue * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
+			return (int)result;
+		}
+
+		/// <summary>
+		/// Function to return a packed color value in BGRA (GDI+) packed pixel format.
+		/// </summary>
+		/// <returns>The packed color value.</returns>
+		public int ToBGRA()
+		{
+			uint result = (((uint)(Blue * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 | (((uint)(Red * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
+			return (int)result;
+		}
+
+		/// <summary>
+		/// Function to return a packed color value in ABGR (GDI+) packed pixel format.
+		/// </summary>
+		/// <returns>The packed color value.</returns>
+		public int ToABGR()
+		{
+			uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Blue * 255.0f)) & 0xff) << 16 | (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Red * 255.0f)) & 0xff;
 			return (int)result;
 		}
 
@@ -471,13 +528,13 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
-		/// <param name="rgba">Packed color components..</param>
-		public GorgonColor(int rgba)			
+		/// <param name="argb">Packed color components..</param>
+		public GorgonColor(int argb)			
 		{
-			Red = ((float)((rgba >> 24) & 0xff)) / 255.0f;
-			Green = ((float)((rgba >> 16) & 0xff)) / 255.0f;
-			Blue = ((float)((rgba >> 8) & 0xff)) / 255.0f;
-			Alpha = ((float)(rgba & 0xff)) / 255.0f; 
+			Alpha = ((float)((argb >> 24) & 0xff)) / 255.0f;
+			Red = ((float)((argb >> 16) & 0xff)) / 255.0f;
+			Green = ((float)((argb >> 8) & 0xff)) / 255.0f;
+			Blue = ((float)(argb & 0xff)) / 255.0f;
 		}
 
 		/// <summary>

@@ -486,7 +486,7 @@ namespace GorgonLibrary.Graphics
 				
 			}		
 
-			result.Initialize(imageData);
+			result.InitializeFileData(imageData);
 
 			_graphics.AddTrackedObject(result);
 

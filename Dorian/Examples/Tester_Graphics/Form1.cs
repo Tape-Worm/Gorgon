@@ -34,6 +34,7 @@ namespace Tester_Graphics
 		private GorgonConstantBuffer _waveEffectBuffer = null;
 		private GorgonDataStream _waveEffectStream = null;
 		private GorgonRenderTarget _outputTarget = null;
+		private GorgonFont font = null;
 		private Vector2 _mousePosition = Vector2.Zero;
 
 		protected override void OnMouseMove(MouseEventArgs e)
@@ -238,12 +239,25 @@ namespace Tester_Graphics
 				window.BlendingMode = BlendingMode.None;
 				window.Angle = 0.0f;
 				window.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
+
+				font = new GorgonFont(_graphics, "Fuck", new GorgonFontSettings()
+					{
+						TextureSize = new System.Drawing.Size(128, 128),
+						FontFamilyName = "Arial",
+						FontStyle = System.Drawing.FontStyle.Regular,
+						PointSize = 16.0f,
+						TextContrast = 0,
+						AntiAliasingMode = FontAntiAliasMode.None,
+						PackingSpacing = 0,
+						OutlineSize = 0
+					});
+				font.Generate(font.Settings);
 				
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 						Text = _2D.Effects.GaussianBlur.BlurAmount.ToString("0.0000") + " " + timing.AverageFPS.ToString("0.0");
 
-						_2D.Clear(Color.White);
+						_2D.Clear(Color.White);						
 						_2D.Drawing.BlendingMode = BlendingMode.None;
 						
 						/*						if (!backForth)
@@ -448,7 +462,22 @@ namespace Tester_Graphics
 
 
 						position = new Vector2(position.X + 15.0f * timing.FrameDelta, position.Y + 15.0f * timing.FrameDelta);
-						
+						float y = 0;
+						Vector2 pos = Vector2.Zero;
+						for (int i = 0; i < font.Textures.Count; i++)
+						{
+							_2D.Drawing.FilledRectangle(new RectangleF(pos.X, pos.Y, font.Textures[i].Settings.Width * 2, font.Textures[i].Settings.Height * 2), Color.DarkBlue);
+							_2D.Drawing.Blit(font.Textures[i], pos, new Vector2(2, 2));
+
+							if ((int)(pos.X + font.Textures[i].Settings.Width * 2 + 1) > _mainScreen.Settings.Width)
+							{
+								pos.X = 0;
+								pos.Y += font.Textures[i].Settings.Height * 2 + 1;
+							}
+							else
+								pos.X += font.Textures[i].Settings.Width * 2 + 1;
+
+						}
 						_2D.Render();
 						return true;
 					};

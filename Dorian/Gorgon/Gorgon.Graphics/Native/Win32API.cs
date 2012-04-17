@@ -31,6 +31,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using Drawing = System.Drawing;
 
 namespace GorgonLibrary.Native
 {
@@ -38,8 +39,64 @@ namespace GorgonLibrary.Native
 	/// Win 32 API function calls.
 	/// </summary>
 	[System.Security.SuppressUnmanagedCodeSecurity()]
-	static class Win32API
+	unsafe static class Win32API
 	{
+		#region Variables.
+		private static IntPtr _lasthObj = IntPtr.Zero;				// Last active object handle.
+		private static IntPtr _hdc = IntPtr.Zero;					// Current device context.
+		private static IntPtr _hFont = IntPtr.Zero;					// Font handle.
+		private static Drawing.Graphics _lastGraphics = null;		// Last used graphics interface.
+		private static Drawing.Font _tempFont = null;				// Temporary font.
+		#endregion
+
+		#region Win32 Methods.
+		/// <summary>
+		/// The SelectObject function selects an object into the specified device context (DC). The new object replaces the previous object of the same type.
+		/// </summary>
+		/// <param name="hDC">A handle to the DC.</param>
+		/// <param name="hObj">A handle to the object to be selected.</param>
+		/// <returns>If the selected object is not a region and the function succeeds, the return value is a handle to the object being replaced</returns>
+		[DllImport("gdi32.dll", ExactSpelling = true)]
+		private static extern IntPtr SelectObject(IntPtr hDC, IntPtr hObj);
+
+		/// <summary>
+		/// The DeleteDC function deletes the specified device context (DC).
+		/// </summary>
+		/// <param name="hObj">A handle to the device context.</param>
+		/// <returns>If the function succeeds, the return value is nonzero.  If the function fails, the return value is zero.</returns>
+		[DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
+		private static extern int DeleteObject(IntPtr hObj);
+
+		/// <summary>
+		/// The GetCharABCWidths function retrieves the widths, in logical units, of consecutive characters in a specified range from the current TrueType font. This function succeeds only with TrueType fonts.
+		/// </summary>
+		/// <param name="HDC">A handle to the device context.</param>
+		/// <param name="uFirstChar">The first character in the group of consecutive characters from the current font.</param>
+		/// <param name="uLastChar">The last character in the group of consecutive characters from the current font.</param>
+		/// <param name="lpABC">A pointer to an array of ABC structures that receives the character widths, in logical units. This array must contain at least as many ABC structures as there are characters in the range specified by the uFirstChar and uLastChar parameters.</param>
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		[DllImport("gdi32.dll", EntryPoint = "GetCharABCWidthsW", CharSet = CharSet.Unicode)]
+		private static extern bool GetCharABCWidthsW(IntPtr HDC, uint uFirstChar, uint uLastChar, ABC* lpABC);
+
+		/// <summary>
+		/// The GetKerningPairs function retrieves the character-kerning pairs for the currently selected font for the specified device context.
+		/// </summary>
+		/// <param name="HDC">A handle to the device context.</param>
+		/// <param name="numberOfPairs">The number of pairs in the keyPairs array. If the font has more than nNumPairs kerning pairs, the function returns an error.</param>
+		/// <param name="kernPairs">A pointer to an array of KERNINGPAIR structures that receives the kerning pairs. The array must contain at least as many structures as specified by the nNumPairs parameter. If this parameter is NULL, the function returns the total number of kerning pairs for the font.</param>
+		/// <returns>If the function succeeds, the return value is the number of kerning pairs returned.  If the function fails, the return value is zero.</returns>
+		[DllImport("gdi32.dll", EntryPoint = "GetKerningPairsW", CharSet = CharSet.Unicode)]
+		private static extern uint GetKerningPairsW(IntPtr HDC, uint numberOfPairs, KERNINGPAIR* kernPairs);
+
+		/// <summary>
+		/// The SetMapMode function sets the mapping mode of the specified device context. The mapping mode defines the unit of measure used to transform page-space units into device-space units, and also defines the orientation of the device's x and y axes.
+		/// </summary>
+		/// <param name="HDC">A handle to the device context.</param>
+		/// <param name="fnMapMode">The new mapping mode.</param>
+		/// <returns>If the function succeeds, the return value identifies the previous mapping mode.  If the function fails, the return value is zero.</returns>
+		[DllImport("gdi32.dll", EntryPoint = "SetMapMode", CharSet = CharSet.Auto)]
+		private static extern MapModes SetMapMode(IntPtr HDC, MapModes fnMapMode);
+
 		/// <summary>
 		/// Function to retrieve the nearest monitor to the window.
 		/// </summary>
@@ -64,7 +121,9 @@ namespace GorgonLibrary.Native
 		/// <returns></returns>
 		[DllImport("dwmapi.dll")]
 		public static extern int DwmIsCompositionEnabled(out bool pfEnabled);
+		#endregion
 
+		#region Methods.
 		/// <summary>
 		/// Function to retrieve the monitor with the largest portion of the window inside of it.
 		/// </summary>
@@ -74,5 +133,124 @@ namespace GorgonLibrary.Native
 		{
 			return MonitorFromWindow(window.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
 		}
+
+		/// <summary>
+		/// Function to set the active font.
+		/// </summary>
+		/// <param name="graphics">Graphics interface to use.</param>
+		/// <param name="font">Font to set.</param>
+		public static void SetActiveFont(Drawing.Graphics graphics, Drawing.Font font)
+		{
+			if ((_lasthObj != IntPtr.Zero) || (_hdc != IntPtr.Zero) || (_hFont != IntPtr.Zero))
+				return;
+
+			try
+			{
+				_lastGraphics = graphics;
+				_tempFont = (Drawing.Font)font.Clone();
+				_hdc = graphics.GetHdc();
+				_hFont = _tempFont.ToHfont();
+
+				_lasthObj = SelectObject(_hdc, _hFont);
+			}
+			catch
+			{
+				// Restore everything in case of an exception.
+				RestoreActiveObject();
+
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// Function to restore the last known active object.
+		/// </summary>
+		public static void RestoreActiveObject()
+		{
+			if (_lasthObj != IntPtr.Zero)
+				SelectObject(_hdc, _lasthObj);
+
+			if ((_hdc != IntPtr.Zero) && (_lastGraphics != null))
+				_lastGraphics.ReleaseHdc();
+
+			if (_hFont != IntPtr.Zero)
+				DeleteObject(_hFont);
+
+			if (_tempFont != null)
+				_tempFont.Dispose();
+
+			_tempFont = null;
+			_hFont = IntPtr.Zero;
+			_lasthObj = IntPtr.Zero;
+			_hdc = IntPtr.Zero;
+			_lastGraphics = null;
+		}
+
+		/// <summary>
+		/// Function to get the kerning pairs for a font.
+		/// </summary>
+		/// <returns>A list of kerning pair values for the active font.</returns>
+		public static IList<KERNINGPAIR> GetKerningPairs()
+		{
+			int size = 0;
+			KERNINGPAIR[] pairs = null;			
+			MapModes lastMapMode = MapModes.MM_TEXT;
+
+#if DEBUG
+			if (_hdc == IntPtr.Zero)
+				throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot retrieve kerning pairs.  No device context.");
+#endif
+
+			lastMapMode = SetMapMode(_hdc, MapModes.MM_TEXT);
+
+			// Get the number of pairs.
+			size = (int)GetKerningPairsW(_hdc, 0, null);
+
+			// If we have no pairs, then leave here.
+			if (size == 0)
+				return new KERNINGPAIR[0];
+
+			pairs = new KERNINGPAIR[size];
+			KERNINGPAIR* pairPtr = stackalloc KERNINGPAIR[size];
+
+			if (GetKerningPairsW(_hdc, (uint)size, pairPtr) == 0)
+				throw new InvalidOperationException("Could not retrieve character kerning pairs.");
+
+			for(int i = 0; i < size; i++)
+				pairs[i] = pairPtr[i];
+
+			return pairs;
+		}
+
+		/// <summary>
+		/// Function to get the ABC kerning widths for the active font object.
+		/// </summary>
+		/// <param name="firstCharacter">First character to return.</param>
+		/// <param name="lastCharacter">Last character to return.</param>
+		/// <returns>A list of font ABC values.</returns>
+		public static IList<ABC> GetCharABCWidths(char firstCharacter, char lastCharacter)
+		{
+			uint firstCharIndex = Convert.ToUInt32(firstCharacter);
+			uint lastCharIndex = Convert.ToUInt32(lastCharacter);
+			int size = (int)(lastCharIndex - firstCharIndex) + 1;
+			ABC[] result = new ABC[size];
+
+#if DEBUG
+			if (_hdc == IntPtr.Zero)
+				throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot retrieve ABC widths.  No device context.");
+#endif
+
+			ABC* abcData = stackalloc ABC[size];				
+
+			if (!GetCharABCWidthsW(_hdc, firstCharIndex, lastCharIndex, abcData))
+				throw new InvalidOperationException("Could not retrieve character widths for the specified characters.");
+
+			// Copy to our result.
+			for (int i = 0; i < result.Length; i++)
+				result[i] = abcData[i];
+
+			return result;
+		}
+		#endregion
 	}
 }

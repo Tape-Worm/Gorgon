@@ -159,8 +159,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="character">The character that the glyph represents.</param>
 		/// <param name="texture">The texture that the glyph can be found on.</param>
-		/// <param name="texturePosition">The location on the texture where the glyph starts at.</param>
-		/// <param name="glyphSize">Size of the glyph.</param>
+		/// <param name="glyphCoordinates">Coordinates on the texture to indicate where the glyph is stored.</param>
 		/// <remarks>The <paramref name="glyphCoordinates"/> parameter must be in texel coordinates (i.e. 0.0f .. 1.0f).</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="character"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
