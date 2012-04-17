@@ -327,7 +327,7 @@ namespace GorgonLibrary.Graphics
 
 				base.Settings = iSettings;
 
-				Initialize(imageData);
+				InitializeFileData(imageData);
 
 				if (RenderTarget != null)
 					RenderTarget.UpdateResourceView();

@@ -165,6 +165,19 @@ namespace GorgonLibrary.Collections
 		}
 
 		/// <summary>
+		/// Property to return the index of an item by its name.
+		/// </summary>
+		/// <param name="name">Name of the object to find.</param>
+		/// <returns>The index of the object, or -1 if not found.</returns>
+		public int IndexOf(string name)
+		{
+			if (!Contains(name))
+				return -1;
+
+			return IndexOf(GetItem(name));
+		}
+
+		/// <summary>
 		/// Function to return whether an item with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
