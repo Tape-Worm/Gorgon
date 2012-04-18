@@ -243,18 +243,19 @@ namespace Tester_Graphics
 				window.Angle = 0.0f;
 				window.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 
-				font = new GorgonFont(_graphics, "Bradley Hand ITC Regular", new GorgonFontSettings()
+				font = _graphics.Textures.CreateFont("Bradley Hand ITC Regular", new GorgonFontSettings()
 					{
 						TextureSize = new System.Drawing.Size(256, 256),
-						FontFamilyName = "Blackadder ITC",
+						FontFamilyName = "Times New Roman",
 						FontStyle = FontStyle.Regular,
-						PointSize = 72,
+						PointSize = 48,
 						TextContrast = 0,
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 						PackingSpacing = 0,
-						OutlineSize = 2
+						OutlineSize = 1,
+						BaseColors = new[] { new GorgonColor(1.0f, 1.0f, 1.0f), new GorgonColor(0.8f, 0.8f, 0.8f), new GorgonColor(0.0f, 0.0f, 0.0f), new GorgonColor(0.75f, 0.75f, 0.75f) }
 					});
-				font.Generate(font.Settings);
+
 				letter = _2D.Renderables.CreateSprite("Letter", new Vector2(1, 1), null, new RectangleF(0, 0, 1, 1));
 				letter.Color = Color.White;
 				letter.Angle = 0.0f;
@@ -263,8 +264,7 @@ namespace Tester_Graphics
 						//Text = timing.AverageFPS.ToString("0.0");
 						fps = timing.AverageFPS.ToString("0.0");
 
-						_2D.Clear(Color.White);						
-						
+						_2D.Clear(Color.White);
 //                        /*						if (!backForth)
 //                                                    angle += 0.125f * timing.FrameDelta;
 //                                                else

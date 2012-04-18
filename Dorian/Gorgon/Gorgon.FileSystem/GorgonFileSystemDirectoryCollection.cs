@@ -71,16 +71,6 @@ namespace GorgonLibrary.FileSystem
 		}
 
 		/// <summary>
-		/// Function to return the index of a file entry name.
-		/// </summary>
-		/// <param name="directoryName">Name of the file to return an index for.</param>
-		/// <returns>The index of the directory or -1 if it could not be found.</returns>
-		public int IndexOf(string directoryName)
-		{
-			return IndexOf(this[directoryName]);
-		}
-
-		/// <summary>
 		/// Function to remove a directory from this list.
 		/// </summary>
 		/// <param name="directory">Directory to remove.</param>

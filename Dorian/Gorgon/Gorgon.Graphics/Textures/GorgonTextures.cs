@@ -376,6 +376,132 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create a new font texture object from a GDI+ font.
+		/// </summary>
+		/// <param name="fontName">Name of the font texture object.</param>
+		/// <param name="fontFamily">Font family to use.</param>
+		/// <param name="pointSize">Point size for the font.</param>
+		/// <param name="antiAliasMode">Anti-aliasing mode.</param>
+		/// <param name="textureSize">Size of the textures to generate.</param>
+		/// <returns>The new font texture object.</returns>
+		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
+		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <paramref name="fontFamily"/> parameter.</para></remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or fontFamily parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fontName or fontFamily parameters are empty strings.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
+		/// </exception>
+		public GorgonFont CreateFont(string fontName, string fontFamily, float pointSize, FontAntiAliasMode antiAliasMode, Size textureSize)
+		{
+			return CreateFont(fontName, fontFamily, pointSize, FontStyle.Regular, antiAliasMode, textureSize);
+		}
+
+		/// <summary>
+		/// Function to create a new font texture object from a GDI+ font.
+		/// </summary>
+		/// <param name="fontName">Name of the font texture object.</param>
+		/// <param name="fontFamily">Font family to use.</param>
+		/// <param name="pointSize">Point size for the font.</param>
+		/// <param name="style">Style to apply to the font.</param>
+		/// <param name="antiAliasMode">Anti-aliasing mode.</param>
+		/// <param name="textureSize">Size of the textures to generate.</param>
+		/// <returns>The new font texture object.</returns>
+		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
+		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <paramref name="fontFamily"/> parameter.</para></remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or fontFamily parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fontName or fontFamily parameters are empty strings.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
+		/// </exception>
+		public GorgonFont CreateFont(string fontName, string fontFamily, float pointSize, FontStyle style, FontAntiAliasMode antiAliasMode, Size textureSize)
+		{
+			GorgonDebug.AssertParamString(fontName, "fontName");
+			GorgonDebug.AssertParamString(fontFamily, "fontFamily");
+
+			if (pointSize < 1e-6f)
+				pointSize = 1e-6f;
+
+			GorgonFontSettings settings = new GorgonFontSettings()
+			{
+				AntiAliasingMode = antiAliasMode,
+				BaseColors = new GorgonColor[] {Color.White},
+				Brush = null,
+				FontFamilyName = fontFamily,
+				FontStyle = style,
+				PointSize = pointSize,
+				TextureSize = textureSize
+			};
+
+			return CreateFont(fontName, settings);
+		}
+
+		/// <summary>
+		/// Function to create a new font texture object from a GDI+ font.
+		/// </summary>
+		/// <param name="fontName">Name of the font texture object.</param>
+		/// <param name="font">GDI+ font to use.</param>
+		/// <param name="antiAliasMode">Anti-aliasing mode.</param>
+		/// <param name="textureSize">Size of the textures to generate.</param>
+		/// <returns>The new font texture object.</returns>
+		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
+		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the font family name in the <paramref name="font"/> parameter.</para></remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or <paramref name="font"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
+		/// </exception>
+		public GorgonFont CreateFont(string fontName, Font font, FontAntiAliasMode antiAliasMode, Size textureSize)
+		{
+			GorgonDebug.AssertParamString(fontName, "fontName");
+			GorgonDebug.AssertNull<Font>(font, "font");
+
+			GorgonFontSettings settings = new GorgonFontSettings()
+			{
+				AntiAliasingMode = antiAliasMode,
+				BaseColors = null,
+				Brush = null,
+				FontFamilyName = font.FontFamily.Name,
+				FontStyle = font.Style,
+				PointSize = font.SizeInPoints,
+				TextureSize = textureSize
+			};
+
+			return CreateFont(fontName, settings);
+		}
+
+		/// <summary>
+		/// Function to create a new font texture object.
+		/// </summary>
+		/// <param name="fontName">Name of the font texture object.</param>
+		/// <param name="settings">Settings for the font.</param>
+		/// <returns>The new font texture object.</returns>
+		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
+		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.FontFamilyName">FontFamilyName</see> in the <paramref name="settings"/> parameter.</para></remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or settings parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.TextureSize">settings.TextureSize</see> width or height is larger than can be handled by the current feature level.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.DefaultCharacter">settings.DefaultCharacter</see> cannot be located in the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.Characters">settings.Characters</see> list.</para>
+		/// </exception>
+		public GorgonFont CreateFont(string fontName, GorgonFontSettings settings)
+		{
+			GorgonDebug.AssertParamString(fontName, "fontName");
+			GorgonDebug.AssertNull<GorgonFontSettings>(settings, "settings");
+			GorgonFont result = new GorgonFont(_graphics, fontName, settings);
+
+			result.Update(settings);
+
+			_graphics.AddTrackedObject(result);
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to load a texture from a GDI+ bitmap object.
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
