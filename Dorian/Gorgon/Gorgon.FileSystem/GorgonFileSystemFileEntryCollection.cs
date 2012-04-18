@@ -116,17 +116,6 @@ namespace GorgonLibrary.FileSystem
 		{
 			return base.Contains(name.RemoveIllegalFilenameChars());
 		}
-
-		/// <summary>
-		/// Function to return the index of a file entry name.
-		/// </summary>
-		/// <param name="fileName">Name of the file to return an index for.</param>
-		/// <returns>The index of the directory or -1 if it could not be found.</returns>
-		public int IndexOf(string fileName)
-		{
-			fileName = fileName.RemoveIllegalFilenameChars();
-			return IndexOf(this[fileName]);
-		}
 		#endregion
 
 		#region Constructor/Destructor.

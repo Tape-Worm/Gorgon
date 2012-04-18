@@ -506,7 +506,26 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				brush = new SolidBrush(Settings.BaseColor);
+				if (Settings.BaseColors.Count < 2)
+					brush = new SolidBrush(Settings.BaseColors[0]);
+				else
+				{
+					LinearGradientBrush gradBrush = null;
+
+					gradBrush = new LinearGradientBrush(position, Settings.BaseColors[0], Settings.BaseColors[Settings.BaseColors.Count - 1], LinearGradientMode.Vertical);
+
+					ColorBlend blends = new ColorBlend(Settings.BaseColors.Count);
+					blends.Positions = new float[Settings.BaseColors.Count];
+					blends.Colors = (from colors in Settings.BaseColors
+									select colors.ToColor()).ToArray();					
+
+					for (int i = 0; i < Settings.BaseColors.Count; i++)
+					{
+						blends.Positions[i] = (float)i / (Settings.BaseColors.Count - 1);
+					}
+					gradBrush.InterpolationColors = blends;
+					brush = gradBrush;
+				}
 
 				if ((Settings.OutlineSize > 0) && (Settings.OutlineColor.Alpha > 0.0f))
 				{
@@ -532,8 +551,12 @@ namespace GorgonLibrary.Graphics
 			finally
 			{
 				graphics.SmoothingMode = smoothMode;
+				if (outlineBrush != null)
+					outlineBrush.Dispose();
 				if (brush != null)
 					brush.Dispose();
+
+				outlineBrush = null;
 				brush = null;
 			}
 		}
@@ -758,7 +781,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create or update a font.
+		/// Function to create or update the font.
 		/// </summary>
 		/// <param name="settings">Font settings to use.</param>
 		/// <remarks>
@@ -772,7 +795,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the font family name is NULL or Empty.</para>
 		/// </exception>
-		public void Generate(GorgonFontSettings settings)
+		public void Update(GorgonFontSettings settings)
 		{
 			Font newFont = null;
 			FontFamily family = null;
@@ -949,6 +972,8 @@ namespace GorgonLibrary.Graphics
 					//tempBitmap.Save(@"c:\users\mike\desktop\image" + Textures.Count.ToString() + ".png", ImageFormat.Png);
 					CopyBitmap(tempBitmap, currentTexture);
 					Textures.Add(currentTexture);
+					// Add to internal texture list.
+					_textures.Add(currentTexture);
 				}
 			}
 			finally
@@ -976,7 +1001,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that created this object.</param>
 		/// <param name="name">The name of the font.</param>
 		/// <param name="settings">Settings to apply to the font.</param>
-		public GorgonFont(GorgonGraphics graphics, string name, GorgonFontSettings settings)
+		internal GorgonFont(GorgonGraphics graphics, string name, GorgonFontSettings settings)
 			: base(name)
 		{
 			Graphics = graphics;
@@ -1011,6 +1036,8 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
+					Graphics.RemoveTrackedObject(this);
+
 					if (Glyphs != null)
 						Glyphs.Clear();
 					if (Textures != null)

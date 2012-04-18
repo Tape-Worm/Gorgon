@@ -61,6 +61,7 @@ namespace GorgonLibrary.Graphics
 		private IEnumerable<char> _characters = string.Empty;				// The list of characters supported by the font.
 		private int _contrast = 4;											// Text contrasting.
 		private int _packSpace = 1;											// Packing spacing.
+		private IList<GorgonColor> _baseColors = null;						// Base colors.
 		#endregion
 
 		#region Properties.
@@ -165,13 +166,22 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the base color for the font data on the textures.
+		/// Property to set or return a list of colors to use for filling the glyph with a gradient fill.
 		/// </summary>
-		/// <remarks>The default value is White (A=1.0f, R=1.0f, G=1.0f, B=1.0f).</remarks>
-		public GorgonColor BaseColor
+		/// <remarks>The default value is a single color of White (A=1.0f, R=1.0f, G=1.0f, B=1.0f).</remarks>
+		public IList<GorgonColor> BaseColors
 		{
-			get;
-			set;
+			get
+			{
+				return _baseColors;
+			}
+			set
+			{
+				if (value == null)
+					_baseColors = new[] { new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f) };
+				else
+					_baseColors = value;
+			}
 		}
 
 		/// <summary>
@@ -263,7 +273,7 @@ namespace GorgonLibrary.Graphics
 
 			OutlineColor = Color.Black;
 			OutlineSize = 0;
-			BaseColor = Color.White;			
+			_baseColors = new [] { new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f) };
 			FontStyle = FontStyle.Regular;
 			DefaultCharacter = ' ';
 			AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ;
