@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Drawing;
@@ -60,6 +61,21 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Property to set or return a glyph in the collection by its character representation.
 			/// </summary>
+			public GorgonGlyph this[char character]
+			{
+				get
+				{
+					return this[character.ToString()];
+				}
+				set
+				{
+					this[character.ToString()] = value;
+				}
+			}
+
+			/// <summary>
+			/// Property to set or return a glyph in the collection by its character representation.
+			/// </summary>
 			public GorgonGlyph this[string character]
 			{
 				get
@@ -68,11 +84,12 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
-					if (string.IsNullOrEmpty(value.Character))
-						throw new ArgumentException("There is no character associated with the glyph.");
-
-					if (value.Texture == null)
-						throw new ArgumentException("The glyph does not have a texture assigned to it.", "glyph");
+					if (value == null)
+					{
+						if (Contains(character))
+							Remove(character);
+						return;
+					}
 
 					if (Contains(character))
 						SetItem(character, value);
@@ -99,12 +116,9 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="character">Character to return the index of.</param>
 			/// <returns>The index of the glyph character if found, -1 if not.</returns>
-			public int IndexOf(string character)
+			public int IndexOf(char character)			
 			{
-				if (Contains(character))
-					return IndexOf(this[character]);
-
-				return -1;
+				return IndexOf(character.ToString());
 			}
 
 			/// <summary>
@@ -114,19 +128,12 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="glyph"/> parameter already exists in this collection.</exception>
 			public void Add(GorgonGlyph glyph)
 			{
-				if (string.IsNullOrEmpty(glyph.Character))
-					throw new ArgumentException("There is no character associated with the glyph.");
-
 				if (Contains(glyph))
 					throw new ArgumentException("The glyph for character '" + glyph.Character + "' already exists in this collection.", "glyph");
 
 				if (glyph.Texture == null)
 					throw new ArgumentException("The glyph does not have a texture assigned to it.", "glyph");
 
-				// Add the texture automatically if it does not exist in the collection.
-				if (!_font.Textures.Contains(glyph.Texture.Name))
-					_font.Textures.Add(glyph.Texture);
-				
 				AddItem(glyph);
 			}
 
@@ -141,6 +148,18 @@ namespace GorgonLibrary.Graphics
 					throw new KeyNotFoundException("The glyph for character '" + glyph.Character + "' does not exist in this collection.");
 
 				RemoveItem(glyph);
+			}
+
+			/// <summary>
+			/// Function to remove a glyph from the list.
+			/// </summary>
+			/// <param name="character">Character represented by the glyph to remove.</param>
+			/// <exception cref="System.ArgumentNullException">Thrown when then <paramref name="character"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+			/// <exception cref="System.Collections.Generic.KeyNotFoundException">The character glyph does not exist in the collection.</exception>
+			public void Remove(char character)
+			{
+				Remove(character.ToString());
 			}
 
 			/// <summary>
@@ -382,6 +401,15 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
+		/// Property to return a list of kerning pairs.
+		/// </summary>
+		public IDictionary<GorgonKerningPair, int> KerningPairs
+		{
+			get;
+			private set;
+		}
+		
+		/// <summary>
 		/// Property to return the font settings.
 		/// </summary>
 		public GorgonFontSettings Settings
@@ -416,6 +444,43 @@ namespace GorgonLibrary.Graphics
 		/// will allow mapping of symbols to a character representation.</para>
 		/// </remarks>
 		public GlyphCollection Glyphs
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the ascent for the font, in pixels.
+		/// </summary>
+		public float Ascent
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the descent for the font, in pixels.
+		/// </summary>
+		public float Descent
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the line height, in pixels, for the font.
+		/// </summary>
+		public float LineHeight
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the font height, in pixels.
+		/// </summary>
+		/// <remarks>This is not the same as line height, the line height is a combination of ascent, descent and internal/external leading space.</remarks>
+		public float FontHeight
 		{
 			get;
 			private set;
@@ -488,6 +553,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (((*pixel >> 24) & 0xff) != 0)
 					return false;
+
 				pixel += pixels.Width;
 			}
 
@@ -522,8 +588,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="font">Font to apply.</param>
 		/// <param name="format">Format for the font.</param>
 		/// <param name="c">Character to evaluate.</param>
-		/// <returns>A rectangle for the bounding box of the character.</returns>
-		private Tuple<Rectangle, char> GetCharRect(System.Drawing.Graphics g, Font font, StringFormat format, char c)
+		/// <returns>A rectangle for the bounding box and offset of the character.</returns>
+		private Tuple<Rectangle, Vector2, char> GetCharRect(System.Drawing.Graphics g, Font font, StringFormat format, char c)
 		{
 			Region[] size = null;
 			Region[] defaultSize = null;
@@ -539,7 +605,7 @@ namespace GorgonLibrary.Graphics
 
 				// If the character doesn't exist, then return an empty value.
 				if ((size.Length == 0) && (defaultSize.Length == 0))
-					return new Tuple<Rectangle, char>(Rectangle.Empty, currentCharacter);
+					return new Tuple<Rectangle, Vector2, char>(Rectangle.Empty, Vector2.Zero, currentCharacter);
 
 				// If we didn't get a size, but we have a default, then use that.
 				if ((size.Length == 0) && (defaultSize.Length > 0))
@@ -561,7 +627,7 @@ namespace GorgonLibrary.Graphics
 					size = null;
 
 					if ((result.Width < 0.1f) || (result.Height < 0.1f))
-						return new Tuple<Rectangle, char>(Rectangle.Empty, c);
+						return new Tuple<Rectangle, Vector2, char>(Rectangle.Empty, Vector2.Zero, c);
 				}
 
 				// Don't apply outline padding to whitespace.
@@ -583,11 +649,11 @@ namespace GorgonLibrary.Graphics
 				if ((result.Width > _charBitmap.Width) || (result.Height > _charBitmap.Height))
 				{
 					_charBitmap.Dispose();
-					_charBitmap = new Bitmap((int)result.Width, (int)result.Height, PixelFormat.Format32bppArgb);
+					_charBitmap = new Bitmap((int)result.Width, (int)result.Height, PixelFormat.Format32bppArgb);					
 				}
 
 				Point cropTL = new Point(0, 0);
-				Point cropRB = new Point((int)result.Width - 1, (int)result.Height - 1);
+				Point cropRB = new Point(_charBitmap.Width - 1, _charBitmap.Height - 1);
 
 				// Perform cropping.
 				using (System.Drawing.Graphics charGraphics = System.Drawing.Graphics.FromImage(_charBitmap))
@@ -631,8 +697,8 @@ namespace GorgonLibrary.Graphics
 						cropRB.Y = (int)result.Height - 1;
 					}
 				}
-												
-				return new Tuple<Rectangle, char>(Rectangle.FromLTRB(cropTL.X, cropTL.Y, cropRB.X, cropRB.Y), currentCharacter);
+
+				return new Tuple<Rectangle, Vector2, char>(Rectangle.FromLTRB(cropTL.X, cropTL.Y, cropRB.X, cropRB.Y), cropTL, currentCharacter);
 			}
 			finally
 			{
@@ -709,10 +775,11 @@ namespace GorgonLibrary.Graphics
 		public void Generate(GorgonFontSettings settings)
 		{
 			Font newFont = null;
+			FontFamily family = null;
 			Bitmap tempBitmap = null;
 			StringFormat stringFormat = null;
 			System.Drawing.Graphics graphics = null;
-			IList<ABC> charABC = null;
+			IDictionary<char, ABC> charABC = null;
 			IList<KERNINGPAIR> kernPairs = null;
 			List<char> availableCharacters = null;
 			CharacterRange[] range = new[] { new CharacterRange(0, 1) };
@@ -738,7 +805,9 @@ namespace GorgonLibrary.Graphics
 				// Remove all previous textures.
 				Textures.Clear();
 				// Remove all previous glyphs.
-				Glyphs.Clear();			
+				Glyphs.Clear();
+				// Remove all kerning pairs.
+				KerningPairs.Clear();
 
 				// Create the font and the rasterizing surface.				
 				tempBitmap = new Bitmap(Settings.TextureSize.Width, Settings.TextureSize.Height, PixelFormat.Format32bppArgb);
@@ -761,6 +830,13 @@ namespace GorgonLibrary.Graphics
 
 				
 				newFont = new Font(Settings.FontFamilyName, (Settings.PointSize * graphics.DpiY) / 72.0f, Settings.FontStyle, GraphicsUnit.Pixel);
+				FontHeight = newFont.GetHeight(graphics);
+				family = newFont.FontFamily;
+
+				// Get font metrics.
+				LineHeight = (FontHeight * family.GetLineSpacing(newFont.Style)) / family.GetEmHeight(newFont.Style);
+				Ascent = (FontHeight * family.GetCellAscent(newFont.Style)) / family.GetEmHeight(newFont.Style);
+				Descent = (FontHeight * family.GetCellDescent(newFont.Style)) / family.GetEmHeight(newFont.Style);
 
 				stringFormat = new StringFormat(StringFormat.GenericTypographic);
 				stringFormat.FormatFlags = StringFormatFlags.NoFontFallback | StringFormatFlags.MeasureTrailingSpaces;
@@ -776,16 +852,30 @@ namespace GorgonLibrary.Graphics
 				Win32API.SetActiveFont(graphics, newFont);
 				charABC = Win32API.GetCharABCWidths(availableCharacters.First(), availableCharacters.Last());
 				kernPairs = Win32API.GetKerningPairs();
+
+				// Add our kerning pairs.
+				if (kernPairs.Count > 0)
+				{
+					foreach (KERNINGPAIR pair in kernPairs)
+					{
+						char first = Convert.ToChar(pair.First);
+						char second = Convert.ToChar(pair.Second);
+
+						if (((availableCharacters.Contains(first)) || (availableCharacters.Contains(second))) && (pair.KernAmount != 0))
+							KerningPairs.Add(new GorgonKerningPair(Convert.ToChar(first), Convert.ToChar(second)), pair.KernAmount);
+					}
+				}
+
 				Win32API.RestoreActiveObject();
 
 				// Default to the line height size.
-				_charBitmap = new Bitmap((int)(System.Math.Ceiling(newFont.GetHeight(graphics))), (int)(System.Math.Ceiling(newFont.GetHeight(graphics))));
+				_charBitmap = new Bitmap((int)(System.Math.Ceiling(LineHeight)), (int)(System.Math.Ceiling(LineHeight)));
 
 				// Sort by size.
 				List<Tuple<char, int>> charsizes = new List<Tuple<char,int>>();
 				foreach (char c in availableCharacters)
 				{
-					Tuple<Rectangle, char> charBounds = GetCharRect(graphics, newFont, stringFormat, c);
+					Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, stringFormat, c);
 					charsizes.Add(new Tuple<char, int>(c, charBounds.Item1.Width * charBounds.Item1.Height));
 				}
 				
@@ -813,7 +903,7 @@ namespace GorgonLibrary.Graphics
 					// Begin rasterization.
 					foreach (char c in characters)
 					{
-						Tuple<Rectangle, char> charBounds = GetCharRect(graphics, newFont, stringFormat,  c);
+						Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, stringFormat,  c);
 						Rectangle? placement = null;
 						int packingSpace = Settings.PackingSpacing > 0 ? Settings.PackingSpacing * 2 : 1;
 
@@ -828,7 +918,7 @@ namespace GorgonLibrary.Graphics
 						size.Height += 1;
 
 						// Don't add whitespace, we can auto calculate that.
-						if (!Char.IsWhiteSpace(charBounds.Item2))
+						if (!Char.IsWhiteSpace(charBounds.Item3))
 						{
 							placement = GorgonGlyphPacker.Add(new Size(charBounds.Item1.Size.Width + packingSpace, charBounds.Item1.Size.Height + packingSpace));
 							if (placement != null)
@@ -838,19 +928,25 @@ namespace GorgonLibrary.Graphics
 								location.X += Settings.PackingSpacing;
 								location.Y += Settings.PackingSpacing;
 								availableCharacters.Remove(c);
-								/*graphics.FillRectangle(Brushes.DarkCyan, new Rectangle(location, size));
-								graphics.DrawRectangle(Pens.Yellow, new Rectangle(location, charBounds.Item1.Size));*/
+								//graphics.FillRectangle(Brushes.DarkCyan, new Rectangle(location, size));
+								//graphics.DrawRectangle(Pens.Yellow, new Rectangle(location, charBounds.Item1.Size));
 								graphics.DrawImage(_charBitmap, new Rectangle(location, size), new Rectangle(charBounds.Item1.Location, size), GraphicsUnit.Pixel);
+								ABC advanceData = default(ABC);
+								if (charABC.ContainsKey(charBounds.Item3))
+									advanceData = charABC[charBounds.Item3];
+								Glyphs.Add(new GorgonGlyph(charBounds.Item3, currentTexture, new Rectangle(location, size), charBounds.Item2, new Vector3(advanceData.A, advanceData.B, advanceData.C)));								
 							}
 						}
 						else
 						{
-							// TODO: Add whitespace glyph.
+							// Add whitespace glyph, this will never be rendered, but we need the size in order to determine how much space is required.
 							availableCharacters.Remove(c);
+							Glyphs.Add(new GorgonGlyph(' ', currentTexture, new Rectangle(0, 0, size.Width, size.Height), Vector2.Zero, Vector3.Zero));
 						}
 					}
 
 					// Copy the data to the texture.
+					//tempBitmap.Save(@"c:\users\mike\desktop\image" + Textures.Count.ToString() + ".png", ImageFormat.Png);
 					CopyBitmap(tempBitmap, currentTexture);
 					Textures.Add(currentTexture);
 				}
@@ -900,6 +996,7 @@ namespace GorgonLibrary.Graphics
 				Usage = BufferUsage.Default,
 				ViewFormat = BufferFormat.Unknown
 			};
+			KerningPairs = new Dictionary<GorgonKerningPair, int>();
 		}
 		#endregion
 

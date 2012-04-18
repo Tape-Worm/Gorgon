@@ -77,6 +77,7 @@
     <Compile Include="Fonts\GorgonFontSettings.cs" />
     <Compile Include="Fonts\GorgonGlyph.cs" />
     <Compile Include="Fonts\GorgonGlyphPacker.cs" />
+    <Compile Include="Fonts\GorgonKerningPair.cs" />
     <Compile Include="Geometry\GorgonInputGeometry.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />
     <Compile Include="Geometry\GorgonInputLayout.cs" />

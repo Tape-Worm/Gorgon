@@ -37,25 +37,17 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// A glyph used to define a character in the font.
 	/// </summary>
-	public struct GorgonGlyph
-		: INamedObject, IEquatable<GorgonGlyph>
+	public class GorgonGlyph
+		: INamedObject
 	{
-		#region Variables.
-		private string _character;
-		private GorgonTexture2D _texture;
-		private RectangleF _glyphCoordinates;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the character that this glyph represents.
 		/// </summary>
-		public string Character
+		public char Character
 		{
-			get
-			{
-				return _character;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -63,21 +55,45 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonTexture2D Texture
 		{
-			get
-			{
-				return _texture;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
-		/// Property to return the coordinates, in texel space, of the glyph.
+		/// Property to return the coordinates, in pixel space, of the glyph.
 		/// </summary>
-		public RectangleF GlyphCoordinates
+		public Rectangle GlyphCoordinates
 		{
-			get
-			{
-				return _glyphCoordinates;
-			}
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the texture coordinates for the glyph.
+		/// </summary>
+		public RectangleF TextureCoordinates
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the ABC kerning advance for the glyph.
+		/// </summary>
+		/// <remarks>The A part is the distance added to the current position before placing the glyph, the B part is the width of the glyph and the C part is the distance added to the current position (this is white space on the right of the glyph).</remarks>
+		public Vector3 Advance
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the horizontal and vertical offset of the glyph.
+		/// </summary>
+		public Vector2 Offset
+		{
+			get;
+			private set;
 		}
 		#endregion
 
@@ -90,33 +106,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return _character.GetHashCode();
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
-		/// </returns>
-		public override bool Equals(object obj)
-		{
-			if (obj is GorgonGlyph)
-				return GorgonGlyph.Equals(this, (GorgonGlyph)obj);
-			else
-				return false;
-		}
-
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">Left value to compare.</param>
-		/// <param name="right">Right value to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool Equals(GorgonGlyph left, GorgonGlyph right)
-		{
-			return string.Compare(left._character, right._character, false) == 0;
+			return Character.GetHashCode();
 		}
 
 		/// <summary>
@@ -127,29 +117,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return "Gorgon Font Glyph: " + _character;
-		}
-
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonGlyph left, GorgonGlyph right)
-		{
-			return GorgonGlyph.Equals(left, right);
-		}
-
-		/// <summary>
-		/// Implements the operator !=.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonGlyph left, GorgonGlyph right)
-		{
-			return !GorgonGlyph.Equals(left, right);
+			return "Gorgon Font Glyph: " + Character;
 		}
 		#endregion
 
@@ -160,26 +128,24 @@ namespace GorgonLibrary.Graphics
 		/// <param name="character">The character that the glyph represents.</param>
 		/// <param name="texture">The texture that the glyph can be found on.</param>
 		/// <param name="glyphCoordinates">Coordinates on the texture to indicate where the glyph is stored.</param>
-		/// <remarks>The <paramref name="glyphCoordinates"/> parameter must be in texel coordinates (i.e. 0.0f .. 1.0f).</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="character"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="texture"/> parameter is NULL.</para>
+		/// <param name="glyphOffset">Vertical offset of the glyph.</param>
+		/// <param name="glyphAdvancing">Advancement kerning data for the glyph.</param>
+		/// <remarks>The <paramref name="glyphCoordinates"/> parameter is in pixel coordinates (i.e. 0 .. Width/Height).</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).
 		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the character parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the character length is not exactly 1 character.</para>
-		/// </exception>
-		public GorgonGlyph(string character, GorgonTexture2D texture, RectangleF glyphCoordinates)
+		public GorgonGlyph(char character, GorgonTexture2D texture, Rectangle glyphCoordinates, Vector2 glyphOffset, Vector3 glyphAdvancing)
 		{
-			GorgonDebug.AssertParamString(character, "character");
 			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
 
-			if (character.Length != 1)
-				throw new ArgumentException("The character '" + character + "' must only have a length of 1.", "character");
-
-			_character = character;
-			_glyphCoordinates = glyphCoordinates;
-			_texture = texture;
+			Character = character;
+			GlyphCoordinates = glyphCoordinates;
+			TextureCoordinates = RectangleF.FromLTRB((float)glyphCoordinates.Left / (float)texture.Settings.Width,
+												(float)glyphCoordinates.Bottom / (float)texture.Settings.Height,
+												(float)glyphCoordinates.Right / (float)texture.Settings.Width,
+												(float)glyphCoordinates.Bottom / (float)texture.Settings.Height);
+			Texture = texture;
+			Offset = glyphOffset;
+			Advance = glyphAdvancing;
 		}
 		#endregion
 
@@ -192,20 +158,8 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				return Character;
+				return Character.ToString();
 			}
-		}
-		#endregion
-
-		#region IEquatable<GorgonGlyph> Members
-		/// <summary>
-		/// Function to determine if this instance and another are equal.
-		/// </summary>
-		/// <param name="other">The other instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public bool Equals(GorgonGlyph other)
-		{
-			return GorgonGlyph.Equals(this, other);
 		}
 		#endregion
 	}

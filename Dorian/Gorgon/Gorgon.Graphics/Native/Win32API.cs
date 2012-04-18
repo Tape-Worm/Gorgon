@@ -228,12 +228,12 @@ namespace GorgonLibrary.Native
 		/// <param name="firstCharacter">First character to return.</param>
 		/// <param name="lastCharacter">Last character to return.</param>
 		/// <returns>A list of font ABC values.</returns>
-		public static IList<ABC> GetCharABCWidths(char firstCharacter, char lastCharacter)
+		public static IDictionary<char, ABC> GetCharABCWidths(char firstCharacter, char lastCharacter)
 		{
 			uint firstCharIndex = Convert.ToUInt32(firstCharacter);
 			uint lastCharIndex = Convert.ToUInt32(lastCharacter);
 			int size = (int)(lastCharIndex - firstCharIndex) + 1;
-			ABC[] result = new ABC[size];
+			SortedDictionary<char, ABC> result = new SortedDictionary<char, ABC>();
 
 #if DEBUG
 			if (_hdc == IntPtr.Zero)
@@ -246,8 +246,8 @@ namespace GorgonLibrary.Native
 				throw new InvalidOperationException("Could not retrieve character widths for the specified characters.");
 
 			// Copy to our result.
-			for (int i = 0; i < result.Length; i++)
-				result[i] = abcData[i];
+			for (int i = 0; i < size; i++)
+				result.Add(Convert.ToChar(i + Convert.ToInt32(firstCharacter)), abcData[i]);
 
 			return result;
 		}
