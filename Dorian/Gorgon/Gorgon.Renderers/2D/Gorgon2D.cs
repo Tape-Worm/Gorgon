@@ -858,16 +858,54 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to add vertices to the vertex cache without any state checking.
+		/// </summary>
+		/// <param name="vertices">Vertices to add.</param>
+		/// <param name="baseVertex">Base vertex to start rendering with.</param>
+		/// <param name="indicesPerPrimitive">Number of indices per primitive object.</param>
+		internal void AddVertices(IList<Gorgon2DVertex> vertices, int baseVertex, int indicesPerPrimitive)
+		{
+			int cacheIndex = 0;
+			int verticesCount = vertices.Count;
+
+			// Do nothing if there aren't any vertices.
+			if (vertices.Count == 0)
+				return;
+
+			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
+			if (verticesCount + _cacheEnd > _cacheSize)
+			{
+				// Ensure that we don't render the same scene twice.
+				if (_cacheWritten > 0)
+					RenderObjects();
+
+				_baseVertex = 0;
+				_cacheStart = 0;
+				_cacheEnd = 0;
+				_renderIndexStart = 0;
+			}
+
+			for (int i = 0; i < verticesCount; i++)
+			{
+				cacheIndex = _cacheEnd + i;
+				_vertexCache[cacheIndex] = vertices[i];
+			}
+
+			_renderIndexCount += indicesPerPrimitive;
+			_cacheEnd += verticesCount;
+			_cacheWritten = _cacheEnd - _cacheStart;
+
+			// We need to shift the vertices for those items that change the index buffer.
+			_baseVertex += baseVertex;
+		}
+
+		/// <summary>
 		/// Function to add a renderable object to the vertex buffer.
 		/// </summary>
 		/// <param name="renderable">Renderable object to add.</param>
 		internal void AddRenderable(IRenderable renderable)
 		{
-			int cacheIndex = 0;
-			int verticesCount = renderable.VertexCount;
-			int cacheEnd = verticesCount + _cacheEnd;
 			StateChange stateChange = StateChange.None;
-			bool hasRendered = false;
 
 			// Check for state changes.
 			stateChange = _stateManager.CheckState(renderable);
@@ -875,10 +913,7 @@ namespace GorgonLibrary.Renderers
 			if (stateChange != StateChange.None)
 			{
 				if (_cacheWritten > 0)
-				{
 					RenderObjects();
-					hasRendered = true;
-				}
 
 				_stateManager.ApplyState(renderable, stateChange);
 
@@ -890,44 +925,19 @@ namespace GorgonLibrary.Renderers
 					_cacheEnd = 0;
 					_renderIndexCount = 0;
 					_renderIndexStart = 0;
-					cacheEnd = 0;
+					_cacheWritten = 0;
 					_useCache = Graphics.Input.VertexBuffers[0].Equals(DefaultVertexBufferBinding);
 
+					// We skip the cache for objects that have their own vertex buffers.
 					if (!_useCache)
 					{
-						// We skip the cache for objects that have their own vertex buffers.
-						_cacheEnd = verticesCount;
+						_cacheEnd = renderable.VertexCount;
 						return;
 					}
 				}
 			}
 
-			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
-			if (cacheEnd > _cacheSize)
-			{
-				// Ensure that we don't render the same scene twice.
-				if ((!hasRendered) && (_cacheWritten > 0))
-					RenderObjects();
-
-				_baseVertex = 0;
-				_cacheStart = 0;
-				_cacheEnd = 0;
-				_renderIndexStart = 0;
-				cacheEnd = 0;
-			}
-
-			for (int i = 0; i < verticesCount; i++)
-			{
-				cacheIndex = _cacheEnd + i;
-				_vertexCache[cacheIndex] = renderable.Vertices[i];
-			}
-
-			_renderIndexCount += renderable.IndexCount;
-			_cacheEnd += verticesCount;
-			_cacheWritten = _cacheEnd - _cacheStart;
-
-			// We need to shift the vertices for those items that change the index buffer.
-			_baseVertex += renderable.BaseVertexCount;
+			AddVertices(renderable.Vertices, renderable.BaseVertexCount, renderable.IndexCount);
 		}
 
 		/// <summary>
