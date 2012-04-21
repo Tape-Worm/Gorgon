@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
@@ -42,15 +43,57 @@ namespace GorgonLibrary.Renderers
 		: GorgonNamedObject, IRenderable
 	{
 		#region Variables.
+		private RectangleF? _clipRect = null;											// Clipping rectangle.
 		private int _vertexCount = 0;													// Number of vertices.
 		private Gorgon2DVertex[] _vertices = null;										// Vertices.
 		private GorgonFont _font = null;												// Font to apply to the text.
 		private StringBuilder _text = null;												// Original text.
-		private bool _isTextUpdated = false;											// Flag to indicate that the text was updated.
-		private IDictionary<char, GorgonGlyph> _groupedGlyphs = null;					// A list of glyphs sorted by texture.
+		private GorgonColor[] _colors = null;											// Vertex colors.
+		private GorgonRenderable.DepthStencilStates _depthStencil = null;				// Depth/stencil states.
+		private GorgonRenderable.BlendState _blend = null;								// Blending states.
+		private GorgonRenderable.TextureSamplerState _sampler = null;					// Texture sampler states.
+		private GorgonTexture2D _currentTexture = null;									// Currently active texture.
+		private bool _needsVertexUpdate = true;											// Flag to indicate that we need a vertex update.
+		private bool _needsColorUpdate = true;											// Flag to indicate that the color needs updating.
+		private StringBuilder _formattedText = null;									// Formatted text.
+		private List<string> _lines = null;												// Lines in the text.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the real clipping bounds.
+		/// </summary>
+		private RectangleF ClipBounds
+		{
+			get
+			{
+				if (_clipRect == null)
+					return Gorgon2D.Target.Viewport.Region;
+				else
+					return _clipRect.Value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the clipping rectangle for the text.
+		/// </summary>
+		public RectangleF? ClippingRectangle
+		{
+			get
+			{
+				return _clipRect;
+			}
+			set
+			{
+				if (_clipRect != value)
+				{
+					_clipRect = value;
+					_needsVertexUpdate = true;
+					FormatText();
+				}
+			}
+		}
+
 		/// <summary>
 		/// Property to return the 2D interface that created this object.
 		/// </summary>
@@ -85,21 +128,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to return the texture being used by the renderable.
-		/// </summary>
-		[System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
-		public override GorgonTexture2D Texture
-		{
-			get
-			{
-				return null;
-			}
-			set
-			{				
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return the font to be applied to the text.
 		/// </summary>
 		/// <remarks>This property will ignore requests to set it to NULL (Nothing in VB.Net).</remarks>
@@ -117,36 +145,14 @@ namespace GorgonLibrary.Renderers
 				if (value != _font)
 				{
 					_font = value;
-					UpdateGlyphSorting();
+					UpdateText();
+					_needsVertexUpdate = true;
 				}
 			}
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to update the glyph sorting.
-		/// </summary>
-		private void UpdateGlyphSorting()
-		{
-			if (_font.Textures.Count > 1)
-			{
-				// Sort all the glyphs for the font.
-				var groupedGlyphs = (from glyph in _font.Glyphs
-									 group glyph by glyph.Texture into groupedGlyph
-									 select groupedGlyph);
-
-				_groupedGlyphs = new Dictionary<char, GorgonGlyph>();
-				foreach (var glyphGroup in groupedGlyphs)
-				{
-					foreach (var glyph in glyphGroup)
-						_groupedGlyphs.Add(glyph.Character, glyph);
-				}
-			}
-			else
-				_groupedGlyphs = _font.Glyphs.ToDictionary(item => item.Character);
-		}
-
 		/// <summary>
 		/// Function to perform an update on the text object.
 		/// </summary>
@@ -158,34 +164,148 @@ namespace GorgonLibrary.Renderers
 			{
 				_vertexCount = 0;
 				_vertices = new Gorgon2DVertex[1024];
+				for (int i = 0; i < _vertices.Length - 1; i++)
+				{
+					_vertices[i].Color = new GorgonColor(1, 1, 1, 1);
+					_vertices[i].Position = new Vector4(0, 0, 0, 1);
+					_vertices[i].UV = new Vector2(0, 0);
+				}
+
+				_currentTexture = null;
 				return;
 			}
 
 			// Allocate the number of vertices, if the vertex count is less than the required amount.
 			vertexCount = _text.Length * 4;
+			// TODO: When shadowing, make this length * 8.
 
 			if (vertexCount > _vertexCount)
 			{
 				_vertices = new Gorgon2DVertex[vertexCount];
 				for (int i = 0; i < _vertices.Length - 1; i++)
 				{
-					_vertices[i].Color = Color;
+					_vertices[i].Color = new GorgonColor(1, 1, 1, 1);
 					_vertices[i].Position = new Vector4(0, 0, 0, 1);
 					_vertices[i].UV = new Vector2(0, 0);
 				}
 			}
 
 			// Update the vertex count.
-			_vertexCount = vertexCount;						
+			_vertexCount = vertexCount;
+
+			// Get the first texture.
+			for (int i = 0; i < _text.Length; i++)
+			{
+				if (_font.Glyphs.Contains(_text[i]))
+				{
+					_currentTexture = _font.Glyphs[_text[i]].Texture;
+					break;
+				}
+			}
+
+			_needsVertexUpdate = true;
+			FormatText();
 		}
 
 		/// <summary>
-		/// Function to set up any additional information for the renderable.
+		/// Function to perform a vertex update for the text.
 		/// </summary>
-		protected override void InitializeCustomVertexInformation()
+		private void UpdateVertices()
 		{
+			int vertexIndex = 0;
+			Vector2 pos = Vector2.Zero;
+			Vector2 outlineOffset = Vector2.Zero;
+			GorgonGlyph glyph = null;
+
+			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
+				outlineOffset = new Vector2(_font.Settings.OutlineSize, _font.Settings.OutlineSize);
+
+			for (int i = 0; i < _formattedText.Length; i++)
+			{
+				char c = _text[i];
 			
-		}		
+				switch (c)
+				{
+					case ' ':
+						glyph = _font.Glyphs[_text[i]];
+						pos.X += glyph.GlyphCoordinates.Width - 1;
+						continue;
+					case '\t':
+						// TODO:  Allow variable tab length.
+						glyph = _font.Glyphs[_text[i]];
+						pos.X += (glyph.GlyphCoordinates.Width - 1) * 3;
+						continue;
+					case '\n':
+						pos.Y += _font.FontHeight + outlineOffset.Y;
+						continue;
+					case '\r':						
+						// TODO: Reset to our anchor X position.
+						pos.X = 0;
+						continue;
+				}
+
+				if (_font.Glyphs.Contains(c))
+					glyph = _font.Glyphs[c];
+				else
+					glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+
+				_vertices[vertexIndex].Position = new Vector4(pos.X + glyph.Offset.X, pos.Y + glyph.Offset.Y, 0, 1.0f);
+				_vertices[vertexIndex].Color = _colors[0];
+				_vertices[vertexIndex].UV = glyph.TextureCoordinates.Location;
+
+				_vertices[vertexIndex + 1].Position = new Vector4(pos.X + glyph.GlyphCoordinates.Width + glyph.Offset.X, pos.Y + glyph.Offset.Y, 0, 1.0f);
+				_vertices[vertexIndex + 1].Color = _colors[1];
+				_vertices[vertexIndex + 1].UV = new Vector2(glyph.TextureCoordinates.Right, glyph.TextureCoordinates.Top);
+
+				_vertices[vertexIndex + 2].Position = new Vector4(pos.X + glyph.Offset.X, pos.Y + glyph.GlyphCoordinates.Height + glyph.Offset.Y, 0, 1.0f);
+				_vertices[vertexIndex + 2].Color = _colors[2];
+				_vertices[vertexIndex + 2].UV = new Vector2(glyph.TextureCoordinates.Left, glyph.TextureCoordinates.Bottom);
+
+				_vertices[vertexIndex + 3].Position = new Vector4(pos.X + glyph.GlyphCoordinates.Width + glyph.Offset.X, pos.Y + glyph.GlyphCoordinates.Height + glyph.Offset.Y, 0, 1.0f);
+				_vertices[vertexIndex + 3].Color = _colors[3];
+				_vertices[vertexIndex + 3].UV = new Vector2(glyph.TextureCoordinates.Right, glyph.TextureCoordinates.Bottom);
+
+				vertexIndex += 4;
+
+				pos.X += glyph.Advance.X + glyph.Advance.Y + outlineOffset.X;
+
+				if (i < _text.Length - 1)
+				{
+					GorgonKerningPair kerning = new GorgonKerningPair(_text[i], _text[i + 1]);
+					if (_font.KerningPairs.ContainsKey(kerning))
+						pos.X += _font.KerningPairs[kerning];
+					else
+						pos.X += glyph.Advance.Z;					
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to update the colors.
+		/// </summary>
+		private void UpdateColors()
+		{
+			for (int i = 0; i < _vertices.Length; i+=4)
+			{
+				_vertices[i].Color = _colors[0];
+				_vertices[i + 1].Color = _colors[1];
+				_vertices[i + 2].Color = _colors[2];
+				_vertices[i + 3].Color = _colors[3];
+			}
+		}
+
+		/// <summary>
+		/// Function to format the text for measuring and clipping.
+		/// </summary>
+		private void FormatText()
+		{
+			_formattedText.Length = 0;
+			// TODO: Do word wrapping.
+			_formattedText.Append(_text);
+			_formattedText.Replace("\n\r", "\r\n");
+			_lines.Clear();
+			_lines.AddRange(_formattedText.ToString().Split('\n'));
+		}
 
 		/// <summary>
 		/// Function to draw the object.
@@ -193,9 +313,57 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be
 		/// drawn when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
-		public override void Draw()
+		public void Draw()
 		{
-			
+			StateChange states = StateChange.None;
+			int vertexIndex = 0;
+
+			// We don't need to draw anything.
+			if (_text.Length == 0)
+				return;
+
+			states = Gorgon2D.StateManager.CheckState(this);
+			if (states != StateChange.None)
+			{
+				Gorgon2D.RenderObjects();
+				Gorgon2D.StateManager.ApplyState(this, states);
+			}
+
+			if (_needsVertexUpdate)
+			{
+				UpdateVertices();
+				_needsVertexUpdate = false;
+			}
+
+			if (_needsColorUpdate)
+			{
+				UpdateColors();
+				_needsColorUpdate = false;
+			}
+
+			for (int i = 0; i < _formattedText.Length; i++)
+			{
+				char c = _text[i];
+				if ((c != '\r') && (c != '\n') && (c != '\t') && (c != ' '))
+				{
+					GorgonGlyph glyph = null;
+
+					if (_font.Glyphs.Contains(c))
+						glyph = _font.Glyphs[c];
+					else
+						glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+						
+					// Change to the current texture.
+					if (Gorgon2D.PixelShader.Textures[0] != glyph.Texture)
+					{
+						Gorgon2D.RenderObjects();
+						Gorgon2D.PixelShader.Textures[0] = glyph.Texture;
+					}
+
+					Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
+					vertexIndex += 4;
+				}
+			}
 		}
 		#endregion
 
@@ -205,18 +373,42 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="gorgon2D">2D interface that created this object.</param>
 		/// <param name="name">Name of the text object.</param>
-		/// <param name="text">The text to display.</param>
 		/// <param name="font">The font to use.</param>
 		public GorgonText(Gorgon2D gorgon2D, string name, GorgonFont font)
 			: base(name)
 		{
+			Gorgon2D = gorgon2D;
+
 			_text = new StringBuilder(256);
+			_formattedText = new StringBuilder(256);
+			_lines = new List<string>();
 			_font = font;
+			_colors = new GorgonColor[4];
+
+			_depthStencil = new GorgonRenderable.DepthStencilStates();
+			_blend = new GorgonRenderable.BlendState();
+			_sampler = new GorgonRenderable.TextureSamplerState();
+			Color = new GorgonColor(1, 1, 1, 1);
+			CullingMode = Graphics.CullingMode.Back;
+			AlphaTestValues = GorgonMinMaxF.Empty;
+			BlendingMode = BlendingMode.Modulate;
+
 			UpdateText();
 		}
 		#endregion
 
 		#region IRenderable Members
+		/// <summary>
+		/// Property to return the number of vertices for the renderable.
+		/// </summary>
+		int IRenderable.VertexCount
+		{
+			get
+			{
+				return _vertexCount;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
@@ -290,111 +482,224 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
-		public GorgonRenderable.DepthStencilStates DepthStencil
+		/// <summary>
+		/// Property to set or return depth/stencil buffer states for this renderable.
+		/// </summary>
+		public virtual GorgonRenderable.DepthStencilStates DepthStencil
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return _depthStencil;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				if (value == null)
+					return;
+
+				_depthStencil = value;
 			}
 		}
 
-		public GorgonRenderable.BlendState Blending
+		/// <summary>
+		/// Property to set or return advanced blending states for this renderable.
+		/// </summary>
+		public virtual GorgonRenderable.BlendState Blending
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return _blend;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				if (value == null)
+					return;
+
+				_blend = value;
 			}
 		}
 
-		public GorgonRenderable.TextureSamplerState TextureSampler
+		/// <summary>
+		/// Property to set or return advanded texture sampler states for this renderable.
+		/// </summary>
+		public virtual GorgonRenderable.TextureSamplerState TextureSampler
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return _sampler;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				if (value == null)
+					return;
+
+				_sampler = value;
 			}
 		}
 
-		public SmoothingMode SmoothingMode
+		/// <summary>
+		/// Property to set or return pre-defined smoothing states for the renderable.
+		/// </summary>
+		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter.">TextureFilter</see> 
+		/// property exposed by the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSampler.">TextureSampler</see> property.</remarks>
+		public virtual SmoothingMode SmoothingMode
 		{
 			get
 			{
-				throw new NotImplementedException();
+				switch (TextureSampler.TextureFilter)
+				{
+					case TextureFilter.Point:
+						return SmoothingMode.None;
+					case TextureFilter.Linear:
+						return SmoothingMode.Smooth;
+					case TextureFilter.MinLinear | TextureFilter.MipLinear:
+						return SmoothingMode.SmoothMinify;
+					case TextureFilter.MagLinear | TextureFilter.MipLinear:
+						return SmoothingMode.SmoothMagnify;
+					default:
+						return SmoothingMode.Custom;
+				}
 			}
 			set
 			{
-				throw new NotImplementedException();
+				switch (value)
+				{
+					case SmoothingMode.None:
+						TextureSampler.TextureFilter = TextureFilter.Point;
+						break;
+					case SmoothingMode.Smooth:
+						TextureSampler.TextureFilter = TextureFilter.Linear;
+						break;
+					case SmoothingMode.SmoothMinify:
+						TextureSampler.TextureFilter = TextureFilter.MinLinear | TextureFilter.MipLinear;
+						break;
+					case SmoothingMode.SmoothMagnify:
+						TextureSampler.TextureFilter = TextureFilter.MagLinear | TextureFilter.MipLinear;
+						break;
+				}
 			}
 		}
 
-		public BlendingMode BlendingMode
+		/// <summary>
+		/// Property to set or return a pre-defined blending states for the renderable.
+		/// </summary>
+		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendingState.SourceBlend">SourceBlend</see> 
+		/// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+		/// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
+		public virtual BlendingMode BlendingMode
 		{
 			get
 			{
-				throw new NotImplementedException();
+				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.Zero))
+					return Renderers.BlendingMode.None;
+
+				if (Blending.SourceBlend == BlendType.SourceAlpha)
+				{
+					if (Blending.DestinationBlend == BlendType.InverseSourceAlpha)
+						return Renderers.BlendingMode.Modulate;
+					if (Blending.DestinationBlend == BlendType.One)
+						return Renderers.BlendingMode.Additive;
+				}
+
+				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.InverseSourceAlpha))
+					return Renderers.BlendingMode.PreMultiplied;
+
+				if ((Blending.SourceBlend == BlendType.InverseDestinationColor) && (Blending.DestinationBlend == BlendType.InverseSourceColor))
+					return Renderers.BlendingMode.Inverted;
+
+				return Renderers.BlendingMode.Custom;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				switch (value)
+				{
+					case Renderers.BlendingMode.Additive:
+						Blending.SourceBlend = BlendType.SourceAlpha;
+						Blending.DestinationBlend = BlendType.One;
+						break;
+					case Renderers.BlendingMode.Inverted:
+						Blending.SourceBlend = BlendType.InverseDestinationColor;
+						Blending.DestinationBlend = BlendType.InverseSourceColor;
+						break;
+					case Renderers.BlendingMode.Modulate:
+						Blending.SourceBlend = BlendType.SourceAlpha;
+						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
+						break;
+					case Renderers.BlendingMode.PreMultiplied:
+						Blending.SourceBlend = BlendType.One;
+						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
+						break;
+					case Renderers.BlendingMode.None:
+						Blending.SourceBlend = BlendType.One;
+						Blending.DestinationBlend = BlendType.Zero;
+						break;
+				}
 			}
 		}
 
+		/// <summary>
+		/// Property to set or return the culling mode.
+		/// </summary>
 		public CullingMode CullingMode
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
+		/// <summary>
+		/// Property to set or return the range of alpha values to reject on this renderable.
+		/// </summary>
 		public GorgonMinMaxF AlphaTestValues
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
+		/// <summary>
+		/// Property to set or return the opacity (Alpha channel) of the renderable object.
+		/// </summary>
 		public float Opacity
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return Color.Alpha;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				if (value != Color.Alpha)
+					Color = new GorgonColor(Color.Red, Color.Green, Color.Blue, value);
 			}
 		}
 
+		/// <summary>
+		/// Property to set or return the color for a renderable object.
+		/// </summary>
 		public GorgonColor Color
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return _colors[0];
 			}
 			set
 			{
-				throw new NotImplementedException();
+				if (value != _colors[0])
+				{
+					_colors[3] = _colors[2] = _colors[1] = _colors[0] = value;
+					_needsColorUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return the texture being used by the renderable.
+		/// </summary>
+		GorgonTexture2D IRenderable.Texture
+		{
+			get
+			{
+				return _currentTexture;
+			}
+			set
+			{
 			}
 		}
 		#endregion

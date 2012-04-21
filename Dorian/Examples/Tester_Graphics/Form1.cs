@@ -37,7 +37,8 @@ namespace Tester_Graphics
 		private GorgonFont font = null;
 		private Vector2 _mousePosition = Vector2.Zero;
 		private GorgonSprite letter = null;
-		private string test = "the quick brown fox jumps over the lazy dog.  THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG.  The Quick Brown Fox Jumps Over The Lazy Dog.";
+		private GorgonText _text = null;
+		private string test = "the quick brown fox jumps over the lazy dog.\r\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG.\r\nThe Quick Brown Fox Jumps Over The Lazy Dog.";
 
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
@@ -259,6 +260,8 @@ namespace Tester_Graphics
 				letter = _2D.Renderables.CreateSprite("Letter", new Vector2(1, 1), null, new RectangleF(0, 0, 1, 1));
 				letter.Color = Color.White;
 				letter.Angle = 0.0f;
+				_text = new GorgonText(_2D, "Text", font);
+				_text.Text = test;
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 						//Text = timing.AverageFPS.ToString("0.0");
@@ -484,120 +487,128 @@ namespace Tester_Graphics
 
 						//}
 						//test = "FPS: " + timing.AverageFPS.ToString("0.0");
-						pos = new Vector2(0, _mainScreen.Settings.Height / 2.0f);
-						//letter.Angle += 2.0f * timing.FrameDelta;
-						for (int i = 0; i < test.Length; i++)
-						{
-							GorgonGlyph glyph = font.Glyphs[test[i]];
+						//pos = new Vector2(0, _mainScreen.Settings.Height / 2.0f);
+						////letter.Angle += 2.0f * timing.FrameDelta;
+						//for (int i = 0; i < test.Length; i++)
+						//{
+						//    GorgonGlyph glyph = font.Glyphs[test[i]];
 
-							if (test[i] != ' ')
-							{
-								/*if (i > 0)
-								{
-									GorgonKerningPair kernPair = new GorgonKerningPair(test[i - 1], test[i]);
+						//    if (test[i] != ' ')
+						//    {
+						//        /*if (i > 0)
+						//        {
+						//            GorgonKerningPair kernPair = new GorgonKerningPair(test[i - 1], test[i]);
 
-									if (font.KerningPairs.ContainsKey(kernPair))
-										pos.X -= font.KerningPairs[kernPair];
-								}*/
+						//            if (font.KerningPairs.ContainsKey(kernPair))
+						//                pos.X -= font.KerningPairs[kernPair];
+						//        }*/
 
-								letter.Texture = glyph.Texture;
-								letter.TextureRegion = glyph.GlyphCoordinates;
-								letter.Size = glyph.GlyphCoordinates.Size;
-								//letter.Anchor = -(new Vector2(pos.X + glyph.Offset.X, glyph.Offset.Y)) + new Vector2(400, 28);								
-								letter.Position = new Vector2(pos.X + glyph.Offset.X, glyph.Offset.Y + (_mainScreen.Settings.Height / 2.0f));
-								letter.Draw();
-								pos.X += glyph.Advance.X + glyph.Advance.Y;// +glyph.Advance.Z;
-								if (i < test.Length - 1)
-								{
-									GorgonKerningPair kernPair = new GorgonKerningPair(test[i], test[i + 1]);
+						//        letter.Texture = glyph.Texture;
+						//        letter.TextureRegion = glyph.GlyphCoordinates;
+						//        letter.Size = glyph.GlyphCoordinates.Size;
+						//        //letter.Anchor = -(new Vector2(pos.X + glyph.Offset.X, glyph.Offset.Y)) + new Vector2(400, 28);								
+						//        letter.Position = new Vector2(pos.X + glyph.Offset.X, glyph.Offset.Y + (_mainScreen.Settings.Height / 2.0f));
+						//        letter.Draw();
+						//        pos.X += glyph.Advance.X + glyph.Advance.Y;// +glyph.Advance.Z;
+						//        if (i < test.Length - 1)
+						//        {
+						//            GorgonKerningPair kernPair = new GorgonKerningPair(test[i], test[i + 1]);
 
-									if (font.KerningPairs.ContainsKey(kernPair))
-										pos.X += font.KerningPairs[kernPair];
-									else
-										pos.X += glyph.Advance.Z;
+						//            if (font.KerningPairs.ContainsKey(kernPair))
+						//                pos.X += font.KerningPairs[kernPair];
+						//            else
+						//                pos.X += glyph.Advance.Z;
 
-									pos.X += font.Settings.OutlineSize;// / 2.0f;								
-								}
-								if (pos.X > _mainScreen.Settings.Width)
-									break;
-							}
-							else
-								pos.X += font.Glyphs[test[i]].GlyphCoordinates.Width - 1;
+						//            pos.X += font.Settings.OutlineSize;// / 2.0f;								
+						//        }
+						//        if (pos.X > _mainScreen.Settings.Width)
+						//            break;
+						//    }
+						//    else
+						//        pos.X += font.Glyphs[test[i]].GlyphCoordinates.Width - 1;
 							
-						}
+						//}
 
-						pos = new Vector2(0, (_mainScreen.Settings.Height / 2.0f) + font.FontHeight + font.Settings.OutlineSize);
-						for (int i = 0; i < test.Length; i++)
-						{
-							GorgonGlyph glyph = font.Glyphs[test[i]];
+						//pos = new Vector2(0, (_mainScreen.Settings.Height / 2.0f) + font.FontHeight + font.Settings.OutlineSize);
+						//for (int i = 0; i < test.Length; i++)
+						//{
+						//    GorgonGlyph glyph = font.Glyphs[test[i]];
 
-							if (test[i] != ' ')
-							{
-								y = pos.Y + glyph.Offset.Y;
-								letter.Texture = glyph.Texture;
-								letter.TextureRegion = glyph.GlyphCoordinates;
-								letter.Size = glyph.GlyphCoordinates.Size;
-								letter.Anchor = Vector2.Zero;
-								letter.Position = new Vector2(pos.X + glyph.Offset.X, y);
-								letter.Draw();
-								pos.X += glyph.GlyphCoordinates.Width;
-								/*pos.X += glyph.Advance.X + glyph.Advance.Y;// +glyph.Advance.Z;
-								if (i < test.Length - 1)
-								{
-									GorgonKerningPair kernPair = new GorgonKerningPair(test[i], test[i + 1]);
+						//    if (test[i] != ' ')
+						//    {
+						//        y = pos.Y + glyph.Offset.Y;
+						//        letter.Texture = glyph.Texture;
+						//        letter.TextureRegion = glyph.GlyphCoordinates;
+						//        letter.Size = glyph.GlyphCoordinates.Size;
+						//        letter.Anchor = Vector2.Zero;
+						//        letter.Position = new Vector2(pos.X + glyph.Offset.X, y);
+						//        letter.Draw();
+						//        pos.X += glyph.GlyphCoordinates.Width;
+						//        /*pos.X += glyph.Advance.X + glyph.Advance.Y;// +glyph.Advance.Z;
+						//        if (i < test.Length - 1)
+						//        {
+						//            GorgonKerningPair kernPair = new GorgonKerningPair(test[i], test[i + 1]);
 
-									if (font.KerningPairs.ContainsKey(kernPair))
-										pos.X += font.KerningPairs[kernPair];
-									else
-										pos.X += glyph.Advance.Z;
-								}*/
-								if (pos.X > _mainScreen.Settings.Width)
-									break;
-							}
-							else
-								pos.X += font.Glyphs[test[i]].GlyphCoordinates.Width - 1;
+						//            if (font.KerningPairs.ContainsKey(kernPair))
+						//                pos.X += font.KerningPairs[kernPair];
+						//            else
+						//                pos.X += glyph.Advance.Z;
+						//        }*/
+						//        if (pos.X > _mainScreen.Settings.Width)
+						//            break;
+						//    }
+						//    else
+						//        pos.X += font.Glyphs[test[i]].GlyphCoordinates.Width - 1;
 
-						}
+						//}
 
-						pos = new Vector2(0, 0);
-						//letter.Angle += 2.0f * timing.FrameDelta;
-						for (int i = 0; i < fps.Length; i++)
-						{
-							GorgonGlyph glyph = font.Glyphs[fps[i]];
+						//pos = new Vector2(0, 0);
+						////letter.Angle += 2.0f * timing.FrameDelta;
+						//for (int i = 0; i < fps.Length; i++)
+						//{
+						//    GorgonGlyph glyph = font.Glyphs[fps[i]];
 
-							if (fps[i] != ' ')
-							{
-								/*if (i > 0)
-								{
-									GorgonKerningPair kernPair = new GorgonKerningPair(fps[i - 1], fps[i]);
+						//    if (fps[i] != ' ')
+						//    {
+						//        /*if (i > 0)
+						//        {
+						//            GorgonKerningPair kernPair = new GorgonKerningPair(fps[i - 1], fps[i]);
 
-									if (font.KerningPairs.ContainsKey(kernPair))
-										pos.X -= font.KerningPairs[kernPair];
-								}*/
+						//            if (font.KerningPairs.ContainsKey(kernPair))
+						//                pos.X -= font.KerningPairs[kernPair];
+						//        }*/
 
-								letter.Texture = glyph.Texture;
-								letter.TextureRegion = glyph.GlyphCoordinates;
-								letter.Size = glyph.GlyphCoordinates.Size;
-								//letter.Anchor = -(new Vector2(pos.X + glyph.Offset.X, glyph.Offset.Y)) + new Vector2(400, 28);								
-								letter.Position = new Vector2(pos.X + glyph.Offset.X, glyph.Offset.Y);
-								letter.Draw();
-								pos.X += glyph.Advance.X + glyph.Advance.Y;// +glyph.Advance.Z;
-								if (i < fps.Length - 1)
-								{
-									GorgonKerningPair kernPair = new GorgonKerningPair(fps[i], fps[i + 1]);
+						//        letter.Texture = glyph.Texture;
+						//        letter.TextureRegion = glyph.GlyphCoordinates;
+						//        letter.Size = glyph.GlyphCoordinates.Size;
+						//        //letter.Anchor = -(new Vector2(pos.X + glyph.Offset.X, glyph.Offset.Y)) + new Vector2(400, 28);								
+						//        letter.Position = new Vector2(pos.X + glyph.Offset.X, glyph.Offset.Y);
+						//        letter.Draw();
+						//        pos.X += glyph.Advance.X + glyph.Advance.Y;// +glyph.Advance.Z;
+						//        if (i < fps.Length - 1)
+						//        {
+						//            GorgonKerningPair kernPair = new GorgonKerningPair(fps[i], fps[i + 1]);
 
-									if (font.KerningPairs.ContainsKey(kernPair))
-										pos.X += font.KerningPairs[kernPair];
-									else
-										pos.X += glyph.Advance.Z;
+						//            if (font.KerningPairs.ContainsKey(kernPair))
+						//                pos.X += font.KerningPairs[kernPair];
+						//            else
+						//                pos.X += glyph.Advance.Z;
 
-									pos.X += font.Settings.OutlineSize;// / 2.0f;
-								}
-							}
-							else
-								pos.X += font.Glyphs[fps[i]].GlyphCoordinates.Width - 1;
+						//            pos.X += font.Settings.OutlineSize;// / 2.0f;
+						//        }
+						//    }
+						//    else
+						//        pos.X += font.Glyphs[fps[i]].GlyphCoordinates.Width - 1;
 
-						}
+						//}
+
+						//_2D.Drawing.Blit(font.Textures[0], Vector2.Zero);
+						_text.Color = Color.White;
+						_text.Text = test;
+						_text.Draw();
+						_text.Color = Color.Purple;
+						_text.Text = timing.AverageFPS.ToString("0.0");
+						_text.Draw();
 
 						_2D.Render();
 						return true;
