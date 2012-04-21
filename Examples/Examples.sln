@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Initializing", "Graphics\Initialization\Initializing.csproj", "{78D63370-CB64-4B1E-A522-EE06F80CE722}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunWithShapes", "Graphics\FunWithShapes\FunWithShapes.csproj", "{2DA7F9A5-B95A-4EB0-89B0-F752833B4ED3}"

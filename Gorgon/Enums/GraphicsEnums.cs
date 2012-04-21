@@ -337,9 +337,9 @@ namespace GorgonLibrary.Graphics
     /// <summary>
     /// Enumeration containing the types of images we can create.
     /// </summary>
-	/// <remarks>The <typeparamref name="RenderTarget"/> value is used internally by Gorgon and should not be used when creating an image, however it can be used when validating an image format with 
+	/// <remarks>The RenderTarget value is used internally by Gorgon and should not be used when creating an image, however it can be used when validating an image format with 
 	/// <see cref="M:GorgonLibrary.Driver.ValidImageFormat">Driver.ValidImageFormat</see> or <see cref="M:GorgonLibrary.Graphics.Image.ValidateFormat">Image.ValidateFormat</see>.
-	/// <para>The <typeparamref name="Dynamic"/> value will ensure the image is dynamic whether the <see cref="P:GorgonLibrary.Driver.SupportDynamicTextures">Driver.SupportDynamicTextures</see> property is TRUE or FALSE.  
+	/// <para>The Dynamic value will ensure the image is dynamic whether the <see cref="P:GorgonLibrary.Driver.SupportDynamicTextures">Driver.SupportDynamicTextures</see> property is TRUE or FALSE.  
 	/// If the hardware supports dynamic textures then Gorgon will make use of it, otherwise the image will be a normal image placed in the default pool.</para>
 	/// </remarks>
     public enum ImageType
