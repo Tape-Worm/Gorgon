@@ -112,6 +112,16 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
+			/// Function to return whether the character exists in this collection.
+			/// </summary>
+			/// <param name="character">The character to find.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			public bool Contains(char character)
+			{
+				return Contains(character.ToString());
+			}
+
+			/// <summary>
 			/// Function to return the index of a glyph character in the collection.
 			/// </summary>
 			/// <param name="character">Character to return the index of.</param>
@@ -964,7 +974,8 @@ namespace GorgonLibrary.Graphics
 						{
 							// Add whitespace glyph, this will never be rendered, but we need the size in order to determine how much space is required.
 							availableCharacters.Remove(c);
-							Glyphs.Add(new GorgonGlyph(' ', currentTexture, new Rectangle(0, 0, size.Width, size.Height), Vector2.Zero, Vector3.Zero));
+							if (!Glyphs.Contains(" "))
+								Glyphs.Add(new GorgonGlyph(' ', currentTexture, new Rectangle(0, 0, size.Width, size.Height), Vector2.Zero, Vector3.Zero));
 						}
 					}
 

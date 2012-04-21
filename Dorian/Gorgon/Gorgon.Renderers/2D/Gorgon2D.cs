@@ -277,8 +277,7 @@ namespace GorgonLibrary.Renderers
 		private GorgonRenderTarget _defaultTarget = null;											// Default render target.
 		private GorgonRenderTarget _target = null;													// Current render target.	
 		private GorgonInputLayout _layout = null;													// Input layout.
-		private Stack<PreviousStates> _stateRecall = null;											// State recall.
-		private GorgonStateManager _stateManager = null;											// State manager.
+		private Stack<PreviousStates> _stateRecall = null;											// State recall.		
 		private bool _multiSampleEnable = false;													// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort = null;													// Viewport to use.
 		private Rectangle? _clip = null;															// Clipping rectangle.
@@ -289,6 +288,15 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the global state manager.
+		/// </summary>
+		internal GorgonStateManager StateManager
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the buffer for the projection/view matrix.
 		/// </summary>
@@ -863,17 +871,20 @@ namespace GorgonLibrary.Renderers
 		/// <param name="vertices">Vertices to add.</param>
 		/// <param name="baseVertex">Base vertex to start rendering with.</param>
 		/// <param name="indicesPerPrimitive">Number of indices per primitive object.</param>
-		internal void AddVertices(IList<Gorgon2DVertex> vertices, int baseVertex, int indicesPerPrimitive)
+		/// <param name="vertexStart">Starting vertex to add.</param>
+		/// <param name="vertexCount">Number of vertices to add.</param>
+		/// <returns>The number of remaining vertices in the cache.</returns>
+		internal void AddVertices(IList<Gorgon2DVertex> vertices, int baseVertex, int indicesPerPrimitive, int vertexStart, int vertexCount)
 		{
 			int cacheIndex = 0;
-			int verticesCount = vertices.Count;
+			int vertexIndex = 0;
 
 			// Do nothing if there aren't any vertices.
 			if (vertices.Count == 0)
 				return;
 
 			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
-			if (verticesCount + _cacheEnd > _cacheSize)
+			if (vertexCount + _cacheEnd > _cacheSize)
 			{
 				// Ensure that we don't render the same scene twice.
 				if (_cacheWritten > 0)
@@ -885,14 +896,15 @@ namespace GorgonLibrary.Renderers
 				_renderIndexStart = 0;
 			}
 
-			for (int i = 0; i < verticesCount; i++)
+			for (int i = 0; i < vertexCount; i++)
 			{
 				cacheIndex = _cacheEnd + i;
-				_vertexCache[cacheIndex] = vertices[i];
+				vertexIndex = i + vertexStart;
+				_vertexCache[cacheIndex] = vertices[vertexIndex];
 			}
 
 			_renderIndexCount += indicesPerPrimitive;
-			_cacheEnd += verticesCount;
+			_cacheEnd += vertexCount;
 			_cacheWritten = _cacheEnd - _cacheStart;
 
 			// We need to shift the vertices for those items that change the index buffer.
@@ -908,14 +920,14 @@ namespace GorgonLibrary.Renderers
 			StateChange stateChange = StateChange.None;
 
 			// Check for state changes.
-			stateChange = _stateManager.CheckState(renderable);
+			stateChange = StateManager.CheckState(renderable);
 
 			if (stateChange != StateChange.None)
 			{
 				if (_cacheWritten > 0)
 					RenderObjects();
 
-				_stateManager.ApplyState(renderable, stateChange);
+				StateManager.ApplyState(renderable, stateChange);
 
 				// If we switch vertex buffers, then reset the cache.
 				if ((stateChange & StateChange.VertexBuffer) == StateChange.VertexBuffer)
@@ -937,7 +949,7 @@ namespace GorgonLibrary.Renderers
 				}
 			}
 
-			AddVertices(renderable.Vertices, renderable.BaseVertexCount, renderable.IndexCount);
+			AddVertices(renderable.Vertices, renderable.BaseVertexCount, renderable.IndexCount, 0, renderable.VertexCount);
 		}
 
 		/// <summary>
@@ -1064,10 +1076,10 @@ namespace GorgonLibrary.Renderers
 			Graphics.Output.DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
 			Graphics.Output.DepthStencilState.DepthStencilReference = 0;
 
-			if (_stateManager == null)
-				_stateManager = new GorgonStateManager(this);
+			if (StateManager == null)
+				StateManager = new GorgonStateManager(this);
 
-			_stateManager.GetDefaults();			
+			StateManager.GetDefaults();			
 
 			UpdateTarget();
 		}
