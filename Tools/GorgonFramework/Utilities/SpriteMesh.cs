@@ -448,6 +448,7 @@ namespace GorgonLibrary.Graphics.Utilities
 			result.DepthTestFunction = sprite.DepthTestFunction;
 			result.DepthWriteEnabled = sprite.DepthWriteEnabled;
 			result.DestinationBlend = sprite.DestinationBlend;
+            result.DestinationBlendAlpha = sprite.DestinationBlendAlpha;
 			result.HorizontalWrapMode = sprite.HorizontalWrapMode;
 			result.Opacity = sprite.Opacity;
 			result.Position = sprite.Position;
@@ -455,6 +456,7 @@ namespace GorgonLibrary.Graphics.Utilities
 			result.Scale = sprite.Scale;
 			result.Smoothing = sprite.Smoothing;
 			result.SourceBlend = sprite.SourceBlend;
+            result.SourceBlendAlpha = sprite.SourceBlendAlpha;
 			result.StencilCompare = sprite.StencilCompare;
 			result.StencilEnabled = sprite.StencilEnabled;
 			result.StencilFailOperation = sprite.StencilFailOperation;
@@ -731,6 +733,10 @@ namespace GorgonLibrary.Graphics.Utilities
 				clone.SourceBlend = SourceBlend;
 				clone.DestinationBlend = DestinationBlend;
 			}
+
+            clone.SourceBlendAlpha = SourceBlendAlpha;
+            clone.DestinationBlendAlpha = DestinationBlendAlpha;
+
 			clone.Depth = Depth;
 			if (!InheritDepthBias)
 				clone.DepthBufferBias = DepthBufferBias;

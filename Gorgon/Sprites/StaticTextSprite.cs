@@ -581,6 +581,23 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Property to set or return the destination alpha blending operation.
+        /// </summary>
+        /// <value></value>
+        public override AlphaBlendOperation DestinationBlendAlpha
+        {
+            get
+            {
+                return _displaySprite.DestinationBlendAlpha;
+            }
+            set
+            {
+                if (_displaySprite.DestinationBlendAlpha != value)
+                    _displaySprite.DestinationBlendAlpha = value;
+            }
+        }
+
 		/// <summary>
 		/// Property to set or return the horizontal wrapping mode to use.
 		/// </summary>
@@ -839,6 +856,23 @@ namespace GorgonLibrary.Graphics
 					_displaySprite.SourceBlend = value;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return the source alpha blending operation.
+        /// </summary>
+        /// <value></value>
+        public override AlphaBlendOperation SourceBlendAlpha
+        {
+            get
+            {
+                return _displaySprite.SourceBlendAlpha;
+            }
+            set
+            {
+                if (_displaySprite.SourceBlendAlpha != value)
+                    _displaySprite.SourceBlendAlpha = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return the stencil comparison function.

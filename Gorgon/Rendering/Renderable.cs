@@ -42,6 +42,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private bool _inheritSmoothing;						// Flag to indicate that we inherit smoothing settings from the layer.
 		private bool _inheritBlending;						// Flag to indicate that we inherit blending settings from the layer.
+        private bool _inheritAlphaBlending;					// Flag to indicate that we inherit alpha blending settings from the layer.
 		private bool _inheritMaskFunction;					// Flag to indicate that we inherit the alpha mask settings from the layer.
 		private bool _inheritMaskValue;						// Flag to indicate that we inherit the alpha mask value settings from the layer.
 		private bool _inheritHorizontalWrap;				// Flag to indicate that we inherit the horizontal wrap settings from the layer.
@@ -64,6 +65,8 @@ namespace GorgonLibrary.Graphics
 		private BlendingModes _blending;					// Blending mode.
 		private AlphaBlendOperation _sourceBlend;			// Source blending operation.
 		private AlphaBlendOperation _destBlend;				// Destination blending operation.
+        private AlphaBlendOperation _sourceAlphaBlend;	    // Source blending operation.
+        private AlphaBlendOperation _destAlphaBlend;		// Destination blending operation.
 		private CompareFunctions _maskFunction;				// Alpha mask function.
 		private int _maskValue;								// Alpha value to mask for.
 		private Smoothing _smoothing;						// Smoothing operation.
@@ -393,6 +396,44 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Property to set or return the source blending operation.
+        /// </summary>
+        public virtual AlphaBlendOperation SourceBlendAlpha
+        {
+            get
+            {
+                if (_inheritAlphaBlending)
+                    return Gorgon.GlobalStateSettings.GlobalAlphaSourceBlend;
+                else
+                    return _sourceAlphaBlend;
+            }
+            set
+            {
+                _sourceAlphaBlend = value;
+                _inheritAlphaBlending = false;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the destination blending operation.
+        /// </summary>
+        public virtual AlphaBlendOperation DestinationBlendAlpha
+        {
+            get
+            {
+                if (_inheritAlphaBlending)
+                    return Gorgon.GlobalStateSettings.GlobalAlphaDestinationBlend;
+                else
+                    return _destAlphaBlend;
+            }
+            set
+            {
+                _destAlphaBlend = value;
+                _inheritAlphaBlending = false;
+            }
+        }
+
 		/// <summary>
 		/// Property to set or return the wrapping mode to use.
 		/// </summary>
@@ -521,6 +562,21 @@ namespace GorgonLibrary.Graphics
 				_inheritBlending = value;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return whether we inherit alpha blending from the layer.
+        /// </summary>
+        public virtual bool InheritAlphaBlending
+        {
+            get
+            {
+                return _inheritAlphaBlending;
+            }
+            set
+            {
+                _inheritAlphaBlending = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return whether we inherit the alpha mask function from the layer.
@@ -1633,6 +1689,7 @@ namespace GorgonLibrary.Graphics
 			_maskFunction = CompareFunctions.GreaterThan;
 			_smoothing = Smoothing.None;
 			_inheritBlending = true;
+            _inheritAlphaBlending = true;
 			_inheritMaskFunction = true;
 			_inheritMaskValue = true;
 			_inheritSmoothing = true;
@@ -1666,6 +1723,11 @@ namespace GorgonLibrary.Graphics
             _parent = null;
             _children = new RenderableChildren(this);
 			_animations = new AnimationList(this);
+
+            //Couldn't find where to put these, so this should work in the mean-time.
+            //feel free to change or remove this comment if this is the correct place.
+            _sourceAlphaBlend = AlphaBlendOperation.One;
+            _destAlphaBlend = AlphaBlendOperation.Zero;
 			
 			_axis = Vector2D.Zero;
 			_AABB = new Drawing.RectangleF(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);

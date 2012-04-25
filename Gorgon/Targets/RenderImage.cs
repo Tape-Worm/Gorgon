@@ -355,6 +355,10 @@ namespace GorgonLibrary.Graphics
 				_blitter.SourceBlend = SourceBlend;
 			if (_blitter.DestinationBlend != DestinationBlend)
 				_blitter.DestinationBlend = DestinationBlend;
+            if (_blitter.SourceBlendAlpha != SourceBlendAlpha)
+                _blitter.SourceBlendAlpha = SourceBlendAlpha;
+            if (_blitter.DestinationBlendAlpha != DestinationBlendAlpha)
+                _blitter.DestinationBlendAlpha = DestinationBlendAlpha;
 			if (_blitter.HorizontalWrapMode != HorizontalWrapMode)
 				_blitter.HorizontalWrapMode = HorizontalWrapMode;
 			if (_blitter.VerticalWrapMode != VerticalWrapMode)

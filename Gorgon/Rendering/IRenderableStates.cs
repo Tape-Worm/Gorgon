@@ -118,6 +118,24 @@ namespace GorgonLibrary.Graphics
 			set;
 		}
 
+        /// <summary>
+        /// Property to set or return the source blend alpha
+        /// </summary>
+        AlphaBlendOperation SourceBlendAlpha
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the destination blend alpha
+        /// </summary>
+        AlphaBlendOperation DestinationBlendAlpha
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to set or return whether to enable the use of the stencil buffer or not.
 		/// </summary>
@@ -241,5 +259,7 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
+
+        
 	}
 }
