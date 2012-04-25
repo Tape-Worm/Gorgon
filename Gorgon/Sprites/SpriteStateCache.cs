@@ -44,7 +44,9 @@ namespace GorgonLibrary.Graphics
 		private CompareFunctions _globalMaskFunction;								// Global mask function.
 		private Smoothing _globalSmoothing;											// Global smoothing function.
 		private AlphaBlendOperation _globalSourceBlend;								// Global source blending mode for sprites.		
-		private AlphaBlendOperation _globalDestBlend;								// Global destination blending mode for sprites.		
+		private AlphaBlendOperation _globalDestBlend;								// Global destination blending mode for sprites.
+        private AlphaBlendOperation _globalAlphaSourceBlend;						// Global source blending mode for sprites.		
+        private AlphaBlendOperation _globalAlphaDestBlend;							// Global destination blending mode for sprites.
 		private ImageAddressing _globalWrapHMode;									// Horizontal image wrapping mode.
 		private ImageAddressing _globalWrapVMode;									// Horizontal image wrapping mode.
 		private StencilOperations _globalStencilPassOperation;						// Stencil pass operation.
@@ -151,6 +153,21 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Property to set or return the source blending operation for the alpha channel.
+        /// </summary>
+        public AlphaBlendOperation GlobalAlphaSourceBlend
+        {
+            get
+            {
+                return _globalAlphaSourceBlend;
+            }
+            set
+            {
+                _globalAlphaSourceBlend = value;
+            }
+        }
+
 		/// <summary>
 		/// Property to set or return whether the depth buffer writing (if applicable) is enabled or not.
 		/// </summary>
@@ -210,6 +227,21 @@ namespace GorgonLibrary.Graphics
 				_globalDestBlend = value;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return the destination blending operation for the alpha channel.
+        /// </summary>
+        public AlphaBlendOperation GlobalAlphaDestinationBlend
+        {
+            get
+            {
+                return _globalAlphaDestBlend;
+            }
+            set
+            {
+                _globalAlphaDestBlend = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return the global sprite alpha mask value.
@@ -432,6 +464,45 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Function to set the blending modes for the alpha channel.
+        /// </summary>
+        /// <param name="value">Blending value.</param>
+        protected void SetAlphaBlendMode(BlendingModes value)
+        {
+            switch (value)
+            {
+                case BlendingModes.Additive:
+                    _globalAlphaSourceBlend = AlphaBlendOperation.SourceAlpha;
+                    _globalAlphaDestBlend = AlphaBlendOperation.One;
+                    break;
+                case BlendingModes.Color:
+                    _globalAlphaSourceBlend = AlphaBlendOperation.SourceColor;
+                    _globalAlphaDestBlend = AlphaBlendOperation.DestinationColor;
+                    break;
+                case BlendingModes.ModulatedInverse:
+                    _globalAlphaSourceBlend = AlphaBlendOperation.InverseSourceAlpha;
+                    _globalAlphaDestBlend = AlphaBlendOperation.SourceAlpha;
+                    break;
+                case BlendingModes.None:
+                    _globalAlphaSourceBlend = AlphaBlendOperation.One;
+                    _globalAlphaDestBlend = AlphaBlendOperation.Zero;
+                    break;
+                case BlendingModes.Modulated:
+                    _globalAlphaSourceBlend = AlphaBlendOperation.SourceAlpha;
+                    _globalAlphaDestBlend = AlphaBlendOperation.InverseSourceAlpha;
+                    break;
+                case BlendingModes.Inverted:
+                    _globalAlphaSourceBlend = AlphaBlendOperation.InverseDestinationColor;
+                    _globalAlphaDestBlend = AlphaBlendOperation.InverseSourceColor;
+                    break;
+                case BlendingModes.PreMultiplied:
+                    _globalAlphaSourceBlend = AlphaBlendOperation.One;
+                    _globalAlphaDestBlend = AlphaBlendOperation.InverseSourceAlpha;
+                    break;
+            }
+        }
+
 		/// <summary>
 		/// Function to set specific render states per sprite.
 		/// </summary>
@@ -460,6 +531,11 @@ namespace GorgonLibrary.Graphics
 
 			_renderStates.SourceAlphaBlendOperation = renderObject.SourceBlend;
 			_renderStates.DestinationAlphaBlendOperation = renderObject.DestinationBlend;
+            
+            //Alpha channel blending values
+            _renderStates.SourceAlphaOperation = renderObject.SourceBlendAlpha;
+            _renderStates.DestinationAlphaOperation = renderObject.DestinationBlendAlpha;
+            
 
 			// We can combine color additive to the other values.
 			if ((renderObject.BlendingMode & BlendingModes.ColorAdditive) != 0)
@@ -582,6 +658,12 @@ namespace GorgonLibrary.Graphics
 			if (renderObject.DestinationBlend != states.DestinationAlphaBlendOperation)
 				return true;
 
+            if (renderObject.SourceBlendAlpha != states.SourceAlphaOperation)
+                return true;
+
+            if (renderObject.DestinationBlendAlpha != states.DestinationAlphaOperation)
+                return true;
+
 			if (renderObject.HorizontalWrapMode != _imageStates.HorizontalAddressing)
 				return true;
 
@@ -635,6 +717,8 @@ namespace GorgonLibrary.Graphics
 			_globalSmoothing = Smoothing.None;
 			_globalSourceBlend = AlphaBlendOperation.SourceAlpha;
 			_globalDestBlend = AlphaBlendOperation.InverseSourceAlpha;
+            _globalAlphaSourceBlend = AlphaBlendOperation.One;
+            _globalAlphaDestBlend = AlphaBlendOperation.Zero;
 			_globalWrapHMode = ImageAddressing.Clamp;
 			_globalWrapVMode = ImageAddressing.Clamp;
 			_globalStencilCompare = CompareFunctions.Always;

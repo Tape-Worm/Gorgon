@@ -496,6 +496,8 @@ namespace GorgonLibrary.Graphics
 		private Smoothing _smoothing;									// Smoothing mode.
 		private AlphaBlendOperation _sourceBlendOp;						// Alphablend source operation.
 		private AlphaBlendOperation _destBlendOp;						// Alphablend destination operation.
+        private AlphaBlendOperation _sourceAlphaBlendOp;			    // Alphablend source operation for the alpha.
+        private AlphaBlendOperation _destAlphaBlendOp;					// Alphablend destination operation for the alpha.
 		private BlendingModes _blendMode;								// Alpha blending preset mode.
 		private ImageAddressing _hwrapMode;								// Horizontal wrapping mode.
 		private ImageAddressing _vwrapMode;								// Vertical wrapping mode.
@@ -1073,9 +1075,11 @@ namespace GorgonLibrary.Graphics
 			clone.DepthTestFunction = DepthTestFunction;
 			clone.DepthWriteEnabled = DepthWriteEnabled;
 			clone.DestinationBlend = DestinationBlend;
+            clone.DestinationBlendAlpha = DestinationBlendAlpha;
 			clone.PrimitiveStyle = PrimitiveStyle;
 			clone.Smoothing = Smoothing;
 			clone.SourceBlend = SourceBlend;
+            clone.SourceBlendAlpha = SourceBlendAlpha;
 			clone.StencilCompare = StencilCompare;
 			clone.StencilEnabled = StencilEnabled;
 			clone.StencilFailOperation = StencilFailOperation;
@@ -1413,6 +1417,38 @@ namespace GorgonLibrary.Graphics
 				InheritBlending = false;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return the source alpha blending operation.
+        /// </summary>
+        /// <value></value>
+        public AlphaBlendOperation SourceBlendAlpha
+        {
+            get
+            {
+                return _sourceAlphaBlendOp;
+            }
+            set
+            {
+                _sourceAlphaBlendOp = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the destination alpha blending operation.
+        /// </summary>
+        /// <value></value>
+        public AlphaBlendOperation DestinationBlendAlpha
+        {
+            get
+            {
+                return _destAlphaBlendOp;
+            }
+            set
+            {
+                _destAlphaBlendOp = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return whether to enable the use of the stencil buffer or not.
