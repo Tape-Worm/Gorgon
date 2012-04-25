@@ -1194,6 +1194,12 @@ namespace GorgonLibrary.Graphics
 				clone.SourceBlend = SourceBlend;
 				clone.DestinationBlend = DestinationBlend;
 			}
+            if (!InheritAlphaBlending)
+            {
+                clone.SourceBlendAlpha = SourceBlendAlpha;
+                clone.DestinationBlendAlpha = DestinationBlendAlpha;
+            }
+
 			clone.Depth = Depth;
 			if (!InheritDepthBias)
 				clone.DepthBufferBias = DepthBufferBias;
@@ -1700,7 +1706,7 @@ namespace GorgonLibrary.Graphics
 
 			// Write header.
 			writer.WriteGroupBegin("Header");
-			writer.Write("HeaderValue", "GORSPR1.1");
+			writer.Write("HeaderValue", "GORSPR1.2");
 			writer.WriteGroupEnd();
 
 			// Write meta data.
@@ -1799,6 +1805,8 @@ namespace GorgonLibrary.Graphics
 				writer.Write("SourceBlend", (int)SourceBlend);
 				writer.Write("BlendingMode", (int)BlendingMode);
 			}
+            writer.Write("DestinationAlphaBlend", (int)DestinationBlendAlpha);
+            writer.Write("SourceAlphaBlend", (int)SourceBlendAlpha);
 			if (!InheritHorizontalWrapping)
 				writer.Write("HorizontalWrapping", (int)HorizontalWrapMode);
 			if (!InheritSmoothing)
@@ -1878,6 +1886,9 @@ namespace GorgonLibrary.Graphics
 				case "gorspr1.1":
 					spriteVersion = new Version(1, 1);
 					break;
+                case "gorspr1.2"://1.2 adds support for sourceAlphaBlend, and DestinationAlphaBlend
+                    spriteVersion = new Version(1, 2);
+                    break;
 				default:
 					throw new GorgonException(GorgonErrors.CannotLoad, "Sprite file type is unknown or corrupted.");
 			}
@@ -1955,7 +1966,7 @@ namespace GorgonLibrary.Graphics
 			InheritStencilZFailOperation = reader.ReadBool("StencilZFailOperation");
 			InheritVerticalWrapping = reader.ReadBool("VerticalWrapping");
 			// Get version 1.1 fields.
-			if (spriteVersion == new Version(1, 1))
+			if (spriteVersion == new Version(1, 1) || spriteVersion == new Version(1, 2))
 			{
 				InheritDepthBias = reader.ReadBool("DepthBias");
 				InheritDepthTestFunction = reader.ReadBool("DepthFunction");
@@ -2013,6 +2024,12 @@ namespace GorgonLibrary.Graphics
 				DestinationBlend = destBlend;
 				SourceBlend = sourceBlend;
 			}
+            //Load the Alpha blend values
+            if (spriteVersion == new Version(1, 2))
+            {
+                DestinationBlendAlpha = (AlphaBlendOperation)reader.ReadInt32("DestinationAlphaBlend");
+                SourceBlendAlpha = (AlphaBlendOperation)reader.ReadInt32("SourceAlphaBlend");
+            }
 			if (!InheritHorizontalWrapping)
 				HorizontalWrapMode = (ImageAddressing)reader.ReadInt32("HorizontalWrapping");
 			if (!InheritSmoothing)
@@ -2035,7 +2052,7 @@ namespace GorgonLibrary.Graphics
 				VerticalWrapMode = (ImageAddressing)reader.ReadInt32("VerticalWrapping");
 
 			// Get version 1.1 fields.
-			if (spriteVersion == new Version(1, 1))
+			if (spriteVersion == new Version(1, 1) || spriteVersion == new Version(1, 2))
 			{
 				if (!InheritDepthBias)
 					DepthBufferBias = reader.ReadSingle("DepthBias");
@@ -2062,7 +2079,7 @@ namespace GorgonLibrary.Graphics
                 {					
                     Animation animation = new Animation("@EmptyAnimation", 0.0f);
 					animation.SetOwner(this);
-					if (spriteVersion == new Version(1, 1))
+					if (spriteVersion == new Version(1, 1) || spriteVersion == new Version(1, 2))
 						((ISerializable)animation).ReadData(reader);
 					else
 						animation.ReadVersion1Animation(reader);		// Import the old animation format.

@@ -262,6 +262,17 @@ namespace GorgonLibrary
 			}
 		}
 
+        /// <summary>
+        /// Property to return whether the device supports separate blending for alpha and color channels.
+        /// </summary>
+        public bool SupportSeparableAlphaBlend
+        {
+            get
+            {
+                return (_caps.PrimitiveMiscCaps & D3D9.PrimitiveMiscCaps.SeparateAlphaBlend) == D3D9.PrimitiveMiscCaps.SeparateAlphaBlend;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the maximum number of simultaneous render targets.
 		/// </summary>

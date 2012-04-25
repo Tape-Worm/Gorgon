@@ -1683,6 +1683,10 @@ namespace GorgonLibrary.Graphics
 				_blitter.SourceBlend = Gorgon.CurrentRenderTarget.SourceBlend;
 			if (_blitter.DestinationBlend != Gorgon.CurrentRenderTarget.DestinationBlend)
 				_blitter.DestinationBlend = Gorgon.CurrentRenderTarget.DestinationBlend;
+            if (_blitter.SourceBlendAlpha != Gorgon.CurrentRenderTarget.SourceBlendAlpha)
+                _blitter.SourceBlendAlpha = Gorgon.CurrentRenderTarget.SourceBlendAlpha;
+            if (_blitter.DestinationBlendAlpha != Gorgon.CurrentRenderTarget.DestinationBlendAlpha)
+                _blitter.DestinationBlendAlpha = Gorgon.CurrentRenderTarget.DestinationBlendAlpha;
 			if (_blitter.HorizontalWrapMode != Gorgon.CurrentRenderTarget.HorizontalWrapMode)
 				_blitter.HorizontalWrapMode = Gorgon.CurrentRenderTarget.HorizontalWrapMode;
 			if (_blitter.VerticalWrapMode != Gorgon.CurrentRenderTarget.VerticalWrapMode)

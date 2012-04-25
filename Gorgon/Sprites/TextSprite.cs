@@ -1500,6 +1500,12 @@ namespace GorgonLibrary.Graphics
 				clone.SourceBlend = SourceBlend;
 				clone.DestinationBlend = DestinationBlend;
 			}
+            if (!InheritAlphaBlending)
+            {
+                clone.SourceBlendAlpha = SourceBlendAlpha;
+                clone.DestinationBlendAlpha = DestinationBlendAlpha;
+            }
+
 			if (!InheritAlphaMaskFunction)
 				clone.AlphaMaskFunction = AlphaMaskFunction;
 			if (!InheritAlphaMaskValue)
