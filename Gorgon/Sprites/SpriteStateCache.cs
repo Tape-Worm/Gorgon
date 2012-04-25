@@ -717,8 +717,8 @@ namespace GorgonLibrary.Graphics
 			_globalSmoothing = Smoothing.None;
 			_globalSourceBlend = AlphaBlendOperation.SourceAlpha;
 			_globalDestBlend = AlphaBlendOperation.InverseSourceAlpha;
-            _globalAlphaSourceBlend = AlphaBlendOperation.One;
-            _globalAlphaDestBlend = AlphaBlendOperation.Zero;
+            _globalAlphaSourceBlend = AlphaBlendOperation.SourceAlpha;
+            _globalAlphaDestBlend = AlphaBlendOperation.InverseSourceAlpha;
 			_globalWrapHMode = ImageAddressing.Clamp;
 			_globalWrapVMode = ImageAddressing.Clamp;
 			_globalStencilCompare = CompareFunctions.Always;
