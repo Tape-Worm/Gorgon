@@ -1726,8 +1726,8 @@ namespace GorgonLibrary.Graphics
 
             //Couldn't find where to put these, so this should work in the mean-time.
             //feel free to change or remove this comment if this is the correct place.
-            _sourceAlphaBlend = AlphaBlendOperation.One;
-            _destAlphaBlend = AlphaBlendOperation.Zero;
+            _sourceAlphaBlend = AlphaBlendOperation.SourceAlpha;
+            _destAlphaBlend = AlphaBlendOperation.InverseSourceAlpha;
 			
 			_axis = Vector2D.Zero;
 			_AABB = new Drawing.RectangleF(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
