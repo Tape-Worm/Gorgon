@@ -60,6 +60,8 @@ namespace GorgonLibrary.Graphics
 		private ImageAddressing _wrapVMode;					// Horizontal image wrapping mode.
 		private AlphaBlendOperation _sourceBlend;			// Source blending operation.
 		private AlphaBlendOperation _destBlend;				// Destination blending operation.
+        private AlphaBlendOperation _sourceAlphaBlend;	    // Source alpha blending operation.
+        private AlphaBlendOperation _destAlphaBlend;		// Destination alpha blending operation.
 		private StencilOperations _stencilPassOperation;	// Stencil pass operation.
 		private StencilOperations _stencilFailOperation;	// Stencil fail operation.
 		private StencilOperations _stencilZFailOperation;	// Stencil Z fail operation.
@@ -478,6 +480,49 @@ namespace GorgonLibrary.Graphics
 					break;
 			}
 		}
+
+
+        /// <summary>
+        /// Function to set the blending modes for the alpha value
+        /// </summary>
+        /// <param name="value">Blending value.</param>
+        protected virtual void SetAlphaBlendMode(BlendingModes value)
+        {
+            if (value == BlendingModes.PreMultiplied)
+                return;
+
+            switch (value)
+            {
+                case BlendingModes.Additive:
+                    _sourceAlphaBlend = AlphaBlendOperation.SourceAlpha;
+                    _destAlphaBlend = AlphaBlendOperation.One;
+                    break;
+                case BlendingModes.Color:
+                    _sourceAlphaBlend = AlphaBlendOperation.SourceColor;
+                    _destAlphaBlend = AlphaBlendOperation.DestinationColor;
+                    break;
+                case BlendingModes.ModulatedInverse:
+                    _sourceAlphaBlend = AlphaBlendOperation.InverseSourceAlpha;
+                    _destAlphaBlend = AlphaBlendOperation.SourceAlpha;
+                    break;
+                case BlendingModes.None:
+                    _sourceAlphaBlend = AlphaBlendOperation.One;
+                    _destAlphaBlend = AlphaBlendOperation.Zero;
+                    break;
+                case BlendingModes.Modulated:
+                    _sourceAlphaBlend = AlphaBlendOperation.SourceAlpha;
+                    _destAlphaBlend = AlphaBlendOperation.InverseSourceAlpha;
+                    break;
+                case BlendingModes.PreMultiplied:
+                    _sourceAlphaBlend = AlphaBlendOperation.One;
+                    _destAlphaBlend = AlphaBlendOperation.InverseSourceAlpha;
+                    break;
+                case BlendingModes.Inverted:
+                    _sourceAlphaBlend = AlphaBlendOperation.InverseDestinationColor;
+                    _destAlphaBlend = AlphaBlendOperation.InverseSourceColor;
+                    break;
+            }
+        }
 
 		/// <summary>
 		/// Function to return a viable stencil/depth buffer.
@@ -1628,6 +1673,8 @@ namespace GorgonLibrary.Graphics
 			_wrapVMode = ImageAddressing.Clamp;
 			_sourceBlend = AlphaBlendOperation.One;
 			_destBlend = AlphaBlendOperation.Zero;
+            _sourceAlphaBlend = AlphaBlendOperation.One;
+            _destAlphaBlend = AlphaBlendOperation.Zero;
 			_depthBias = 0.0f;
 			_depthCompare = CompareFunctions.LessThanOrEqual;
 			_depthWriteEnabled = true;
@@ -1885,6 +1932,36 @@ namespace GorgonLibrary.Graphics
 				_destBlend = value;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return the source blending operation.
+        /// </summary>
+        public AlphaBlendOperation SourceBlendAlpha
+        {
+            get
+            {
+                return _sourceAlphaBlend;
+            }
+            set
+            {
+                _sourceAlphaBlend = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the destination blending operation.
+        /// </summary>
+        public AlphaBlendOperation DestinationBlendAlpha
+        {
+            get
+            {
+                return _destAlphaBlend;
+            }
+            set
+            {
+                _destAlphaBlend = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return whether to enable the use of the stencil buffer or not.

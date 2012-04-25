@@ -45,8 +45,10 @@ namespace GorgonLibrary.Internal
 		private bool _normalize;								// Renormalize flag.		
 		private bool _depthBufferEnabled;						// Flag to indicate that the depth buffer is enabled or not.		
 		private ShadingMode _shadingMode;						// Shading mode.	
-		private AlphaBlendOperation _sourceAlphaOperation;		// Source alpha operation mode.
-		private AlphaBlendOperation _destinationAlphaOperation;	// Destination alpha operation mode.
+		private AlphaBlendOperation _sourceBlendOperation;		// Source alpha operation mode.
+		private AlphaBlendOperation _destinationBlendOperation;	// Destination alpha operation mode.
+        private AlphaBlendOperation _sourceAlphaOperation;		// Source alpha operation mode. For the alpha
+        private AlphaBlendOperation _destinationAlphaOperation;	// Destination alpha operation mode. For the alpha
 		private bool _depthBufferWriteEnabled;					// Flag to indicate that depth buffer writing is enabled or not.		
 		private float _depthBufferBias;							// Depth buffer biasing.		
 		private bool _lightingEnabled;							// Flag to indicate that lighting is enabled.		
@@ -561,14 +563,14 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return _sourceAlphaOperation;
+				return _sourceBlendOperation;
 			}
 			set
 			{
-				if (_sourceAlphaOperation == value)
+				if (_sourceBlendOperation == value)
 					return;
-				SetSourceAlphaOperation(value);
-				_sourceAlphaOperation = value;
+				SetSourceBlendOperation(value);
+				_sourceBlendOperation = value;
 			}
 		}
 
@@ -579,16 +581,52 @@ namespace GorgonLibrary.Internal
 		{
 			get
 			{
-				return _destinationAlphaOperation;
+				return _destinationBlendOperation;
 			}
 			set
 			{
-				if (_destinationAlphaOperation == value)
+				if (_destinationBlendOperation == value)
 					return;
-				SetDestinationAlphaOperation(value);
-				_destinationAlphaOperation = value;
+				SetDestinationBlendOperation(value);
+				_destinationBlendOperation = value;
 			}
 		}
+
+        /// <summary>
+        /// Property to set the source alpha blending operation for the alpha channel.
+        /// </summary>
+        public AlphaBlendOperation SourceAlphaOperation
+        {
+            get
+            {
+                return _sourceAlphaOperation;
+            }
+            set
+            {
+                if (_sourceAlphaOperation == value)
+                    return;
+                SetSourceAlphaOperation(value);
+                _sourceAlphaOperation = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to set the destination alpha blending operation for the alpha channel.
+        /// </summary>
+        public AlphaBlendOperation DestinationAlphaOperation
+        {
+            get
+            {
+                return _destinationAlphaOperation;
+            }
+            set
+            {
+                if (_destinationAlphaOperation == value)
+                    return;
+                SetDestinationAlphaOperation(value);
+                _destinationAlphaOperation = value;
+            }
+        }
 
 		/// <summary>
 		/// Property to set or return the function used for alpha testing.
@@ -735,7 +773,7 @@ namespace GorgonLibrary.Internal
 		/// Function to set the source alpha blending operation.
 		/// </summary>
 		/// <param name="value">Blend operation for the source.</param>
-		private void SetSourceAlphaOperation(AlphaBlendOperation value)
+		private void SetSourceBlendOperation(AlphaBlendOperation value)
 		{
 			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
@@ -747,7 +785,7 @@ namespace GorgonLibrary.Internal
 		/// Function to set the destination alpha blending operation.
 		/// </summary>
 		/// <param name="value">Blend operation for the destination.</param>
-		private void SetDestinationAlphaOperation(AlphaBlendOperation value)
+		private void SetDestinationBlendOperation(AlphaBlendOperation value)
 		{
 			DX.Configuration.ThrowOnError = false;
 			if (DeviceReady)
@@ -755,17 +793,45 @@ namespace GorgonLibrary.Internal
 			DX.Configuration.ThrowOnError = true;
 		}
 
-		/// <summary>
-		/// Function to set whether alpha blending is enabled or not.
-		/// </summary>
-		/// <param name="value">TRUE to enable, FALSE to disable.</param>
-		private void SetAlphaBlendEnabled(bool value)
-		{
-			DX.Configuration.ThrowOnError = false;
-			if (DeviceReady)
-				Device.SetRenderState(D3D9.RenderState.AlphaBlendEnable, value);
-			DX.Configuration.ThrowOnError = true;
-		}
+        /// <summary>
+        /// Function to set the source alpha blending operation.
+        /// </summary>
+        /// <param name="value">Blend operation for the source.</param>
+        private void SetSourceAlphaOperation(AlphaBlendOperation value)
+        {
+            DX.Configuration.ThrowOnError = false;
+            if (DeviceReady)
+                Device.SetRenderState<D3D9.Blend>(D3D9.RenderState.SourceBlendAlpha, Converter.Convert(value));
+            DX.Configuration.ThrowOnError = true;
+        }
+
+        /// <summary>
+        /// Function to set the destination alpha blending operation.
+        /// </summary>
+        /// <param name="value">Blend operation for the destination.</param>
+        private void SetDestinationAlphaOperation(AlphaBlendOperation value)
+        {
+            DX.Configuration.ThrowOnError = false;
+            if (DeviceReady)
+                Device.SetRenderState<D3D9.Blend>(D3D9.RenderState.DestinationBlendAlpha, Converter.Convert(value));
+            DX.Configuration.ThrowOnError = true;
+        }
+
+        /// <summary>
+        /// Function to set whether alpha blending is enabled or not.
+        /// </summary>
+        /// <param name="value">TRUE to enable, FALSE to disable.</param>
+        private void SetAlphaBlendEnabled(bool value)
+        {
+            DX.Configuration.ThrowOnError = false;
+            if (DeviceReady)
+            {
+                Device.SetRenderState(D3D9.RenderState.AlphaBlendEnable, value);
+                if (Gorgon.CurrentDriver.SupportSeparableAlphaBlend)
+                    Device.SetRenderState(D3D9.RenderState.SeparateAlphaBlendEnable, value);
+            }
+            DX.Configuration.ThrowOnError = true;
+        }
 
 		/// <summary>
 		/// Function to set the culling mode.
@@ -1031,7 +1097,9 @@ namespace GorgonLibrary.Internal
             AlphaBlendEnabled = copy.AlphaBlendEnabled;
             LightingEnabled = copy.LightingEnabled;
             SourceAlphaBlendOperation = copy.SourceAlphaBlendOperation;
+            SourceAlphaOperation = copy.SourceAlphaOperation;
             DestinationAlphaBlendOperation = copy.DestinationAlphaBlendOperation;
+            DestinationAlphaOperation = copy.DestinationAlphaOperation;
             AlphaTestEnabled = copy.AlphaTestEnabled;
             AlphaTestFunction = copy.AlphaTestFunction;
             AlphaTestValue = copy.AlphaTestValue;
@@ -1065,8 +1133,10 @@ namespace GorgonLibrary.Internal
 			SetShadingMode(_shadingMode);
 			SetDrawingMode(_drawingMode);
 			SetAlphaBlendEnabled(_alphaBlendEnabled);
-			SetSourceAlphaOperation(_sourceAlphaOperation);
-			SetDestinationAlphaOperation(_destinationAlphaOperation);
+            SetSourceAlphaOperation(_sourceAlphaOperation);
+            SetDestinationAlphaOperation(_destinationAlphaOperation);
+			SetSourceBlendOperation(_sourceBlendOperation);
+			SetDestinationBlendOperation(_destinationBlendOperation);
 			SetAlphaTestEnabled(_alphaTestEnabled);
 			SetAlphaTestFunction(_alphaTestFunction);
 			SetAlphaTestValue(_alphaTestValue);
@@ -1096,8 +1166,10 @@ namespace GorgonLibrary.Internal
 			_depthBufferWriteEnabled = true;
 			_lightingEnabled = true;
 			_depthTestFunction = CompareFunctions.LessThanOrEqual;
-			_sourceAlphaOperation = AlphaBlendOperation.One;
-			_destinationAlphaOperation = AlphaBlendOperation.Zero;
+			_sourceBlendOperation = AlphaBlendOperation.One;
+			_destinationBlendOperation = AlphaBlendOperation.Zero;
+            _sourceAlphaOperation = AlphaBlendOperation.One;
+            _destinationAlphaOperation = AlphaBlendOperation.Zero;
 			_shadingMode = ShadingMode.Gouraud;
 			_drawingMode = DrawingMode.Solid;
 			_alphaTestFunction = CompareFunctions.Always;
