@@ -247,26 +247,26 @@ namespace Tester_Graphics
 				font = _graphics.Textures.CreateFont("Bradley Hand ITC Regular", new GorgonFontSettings()
 					{
 						TextureSize = new System.Drawing.Size(256, 256),
-						FontFamilyName = "Times New Roman",
-						FontStyle = FontStyle.Regular,
-						PointSize = 48,
+						FontFamilyName = "Arial",
+						FontStyle = FontStyle.Bold,
+						PointSize = 24,
 						TextContrast = 0,
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-						PackingSpacing = 0,
-						OutlineSize = 1,
-						BaseColors = new[] { new GorgonColor(1.0f, 1.0f, 1.0f), new GorgonColor(0.8f, 0.8f, 0.8f), new GorgonColor(0.0f, 0.0f, 0.0f), new GorgonColor(0.75f, 0.75f, 0.75f) }
+						PackingSpacing = 1,
+						OutlineSize = 0
 					});
 
 				letter = _2D.Renderables.CreateSprite("Letter", new Vector2(1, 1), null, new RectangleF(0, 0, 1, 1));
-				letter.Color = Color.White;
+				letter.Color = Color.Black;
 				letter.Angle = 0.0f;
 				_text = new GorgonText(_2D, "Text", font);
-				_text.Text = test;
+				_text.Text = test;				
+				_text.TextRectangle = new RectangleF(0, 0, 50, 25);
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 						//Text = timing.AverageFPS.ToString("0.0");
 						fps = timing.AverageFPS.ToString("0.0");
-
+						angle += 5.0f * timing.FrameDelta;
 						_2D.Clear(Color.White);
 //                        /*						if (!backForth)
 //                                                    angle += 0.125f * timing.FrameDelta;
@@ -603,11 +603,21 @@ namespace Tester_Graphics
 						//}
 
 						//_2D.Drawing.Blit(font.Textures[0], Vector2.Zero);
-						_text.Color = Color.White;
+						_text.Color = Color.Black;
+						_text.SmoothingMode = SmoothingMode.Smooth;
 						_text.Text = test;
+						_text.Position = new Vector2(300, 300);
+						_text.Anchor = new Vector2(160, 25);
+						//_text.Angle = angle;
+						_2D.Drawing.DrawRectangle(new RectangleF(_text.Position - _text.Anchor, _text.Size), Color.Blue);
+						//_text.ClipToRectangle = true;
 						_text.Draw();
+						_text.Anchor = Vector2.Zero;
+						_text.Angle = 0.0f;
 						_text.Color = Color.Purple;
 						_text.Text = timing.AverageFPS.ToString("0.0");
+						_text.Position = new Vector2(0, 50);
+						//_text.ClipToRectangle = false;
 						_text.Draw();
 
 						_2D.Render();
