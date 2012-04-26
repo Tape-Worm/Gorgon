@@ -40,7 +40,7 @@ namespace GorgonLibrary.Renderers
 	/// A renderable object for drawing a point on the screen.
 	/// </summary>
 	public class GorgonPoint
-		: GorgonNamedObject, IRenderable
+		: GorgonNamedObject, IRenderable, IMoveable
 	{
 		#region Variables.
 		private GorgonRenderable.BlendState _blendState = null;								// Blending state.
@@ -51,24 +51,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the depth buffer depth for the point.
-		/// </summary>
-		public float Depth
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the position of the point.
-		/// </summary>
-		public Vector2 Position
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to return the interface that created this point.
 		/// </summary>
@@ -454,6 +436,130 @@ namespace GorgonLibrary.Renderers
 		{
 			TransformVertices();
 			Gorgon2D.AddRenderable(this);
+		}
+		#endregion
+
+		#region IMoveable Members
+		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		RectangleF IMoveable.TextureRegion
+		{
+			get
+			{
+				return RectangleF.Empty;
+			}
+			set
+			{				
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the angle of rotation (in degrees) for a renderable.
+		/// </summary>
+		float IMoveable.Angle
+		{
+			get
+			{
+				return 0;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scale of the renderable.
+		/// </summary>
+		Vector2 IMoveable.Scale
+		{
+			get
+			{
+				return new Vector2(1);
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the anchor point of the renderable.
+		/// </summary>
+		Vector2 IMoveable.Anchor
+		{
+			get
+			{
+				return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		Vector2 IMoveable.TextureOffset
+		{
+			get
+			{
+				return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		Vector2 IMoveable.TextureSize
+		{
+			get
+			{
+				return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the size of the renderable.
+		/// </summary>
+		Vector2 IMoveable.Size
+		{
+			get
+			{
+				return PointThickness;
+			}
+			set
+			{
+				PointThickness = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth buffer depth for the point.
+		/// </summary>
+		public float Depth
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the position of the point.
+		/// </summary>
+		public Vector2 Position
+		{
+			get;
+			set;
 		}
 		#endregion
 	}

@@ -40,7 +40,7 @@ namespace GorgonLibrary.Renderers
 	/// A renderable object for drawing a triangle on the target.
 	/// </summary>
 	public class GorgonTriangle
-		: GorgonRenderable
+		: GorgonRenderable, IMoveable
 	{
 		#region Value Types.
 		/// <summary>
@@ -178,64 +178,6 @@ namespace GorgonLibrary.Renderers
 			{
 				_line.LineThickness = value;
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return the anchor point for the triangle.
-		/// </summary>
-		public Vector2 Anchor
-		{
-			get
-			{
-				return _anchor;
-			}
-			set
-			{
-				if (_anchor != value)
-				{
-					_anchor = value;
-					NeedsVertexUpdate = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the angle of rotation (in degrees) for the triangle.
-		/// </summary>
-		public float Angle
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the position of the triangle.
-		/// </summary>
-		public Vector2 Position
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the relative scale of the triangle.
-		/// </summary>
-		/// <remarks>This property uses scalar values to provide a relative scale. 
-		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
-		/// </remarks>
-		public Vector2 Scale
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the "depth" of the renderable in a depth buffer.
-		/// </summary>
-		public float Depth
-		{
-			get;
-			set;
 		}
 		#endregion
 
@@ -462,6 +404,148 @@ namespace GorgonLibrary.Renderers
 				};
 
 			_line = new GorgonLine(gorgon2D, "Triangle.Line", Vector2.Zero, Vector2.Zero, point1.Color);
+		}
+		#endregion
+
+		#region IMoveable Members
+		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		RectangleF IMoveable.TextureRegion
+		{
+			get
+			{
+				Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
+				Vector2 max = new Vector2(float.MinValue, float.MinValue);
+
+				for (int i = 0; i < _points.Length; i++)
+				{
+					min.X = GorgonMathUtility.Min(_points[i].TextureCoordinate.X, min.X);
+					min.Y = GorgonMathUtility.Min(_points[i].TextureCoordinate.Y, min.Y);
+					max.X = GorgonMathUtility.Max(_points[i].TextureCoordinate.X, max.X);
+					max.Y = GorgonMathUtility.Max(_points[i].TextureCoordinate.Y, min.Y);
+				}
+
+				return RectangleF.FromLTRB(min.X, min.Y, max.X, max.Y);
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		Vector2 IMoveable.TextureOffset
+		{
+			get
+			{
+				return ((IMoveable)this).TextureRegion.Location;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		Vector2 IMoveable.TextureSize
+		{
+			get
+			{
+				return ((IMoveable)this).TextureRegion.Size;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the size of the renderable.
+		/// </summary>
+		Vector2 IMoveable.Size
+		{
+			get
+			{
+				Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
+				Vector2 max = new Vector2(float.MinValue, float.MinValue);
+
+				for (int i = 0; i < _points.Length; i++)
+				{
+					min.X = GorgonMathUtility.Min(_points[i].Position.X, min.X);
+					min.Y = GorgonMathUtility.Min(_points[i].Position.Y, min.Y);
+					max.X = GorgonMathUtility.Max(_points[i].Position.X, max.X);
+					max.Y = GorgonMathUtility.Max(_points[i].Position.Y, min.Y);
+				}
+
+				return Vector2.Subtract(max, min);
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the anchor point for the triangle.
+		/// </summary>
+		public Vector2 Anchor
+		{
+			get
+			{
+				return _anchor;
+			}
+			set
+			{
+				if (_anchor != value)
+				{
+					_anchor = value;
+					NeedsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the angle of rotation (in degrees) for the triangle.
+		/// </summary>
+		public float Angle
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the position of the triangle.
+		/// </summary>
+		public Vector2 Position
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the relative scale of the triangle.
+		/// </summary>
+		/// <remarks>This property uses scalar values to provide a relative scale. 
+		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
+		/// </remarks>
+		public Vector2 Scale
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the "depth" of the renderable in a depth buffer.
+		/// </summary>
+		public float Depth
+		{
+			get;
+			set;
 		}
 		#endregion
 	}

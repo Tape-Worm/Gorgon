@@ -40,10 +40,10 @@ namespace GorgonLibrary.Renderers
 	/// A renderable object that renders a block of text.
 	/// </summary>
 	public class GorgonText
-		: GorgonNamedObject, IRenderable
+		: GorgonNamedObject, IRenderable, IMoveable
 	{
 		#region Variables.
-		private RectangleF? _clipRect = null;											// Clipping rectangle.
+		private RectangleF? _textRect = null;											// Text rectangle.
 		private int _vertexCount = 0;													// Number of vertices.
 		private Gorgon2DVertex[] _vertices = null;										// Vertices.
 		private GorgonFont _font = null;												// Font to apply to the text.
@@ -57,41 +57,77 @@ namespace GorgonLibrary.Renderers
 		private bool _needsColorUpdate = true;											// Flag to indicate that the color needs updating.
 		private StringBuilder _formattedText = null;									// Formatted text.
 		private List<string> _lines = null;												// Lines in the text.
+		private Vector2 _size = Vector2.Zero;											// Size of the text block.
+		private Vector2 _position = Vector2.Zero;										// Position of the text.
+		private Vector2 _scale = new Vector2(1);										// Scale for the text.
+		private float _angle = 0;														// Angle of rotation for the text.
+		private Vector2 _anchor = Vector2.Zero;											// Anchor point for the text.
+		private float _depth = 0;														// Depth value.
+		private int _tabSpace = 3;														// Tab spaces.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the real clipping bounds.
+		/// Property to return the clipping region.
 		/// </summary>
-		private RectangleF ClipBounds
+		private RectangleF ClipRegion
 		{
 			get
 			{
-				if (_clipRect == null)
+				if (_textRect == null)
 					return Gorgon2D.Target.Viewport.Region;
 				else
-					return _clipRect.Value;
+					return _textRect.Value;
 			}
 		}
 
 		/// <summary>
-		/// Property to set or return the clipping rectangle for the text.
+		/// Property to set or return the number of spaces to use for a tab character.
 		/// </summary>
-		public RectangleF? ClippingRectangle
+		/// <remarks>The default value is 3.</remarks>
+		public int TabSpaces
 		{
 			get
 			{
-				return _clipRect;
+				return _tabSpace;
 			}
 			set
 			{
-				if (_clipRect != value)
+				if (value < 1)
+					value = 1;
+
+				_tabSpace = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the rectangle used for clipping and/or alignment for the text.
+		/// </summary>
+		/// <remarks>This property will clip the text to the rectangle if the <see cref="GorgonLibrary.Renderers.GorgonText.ClipToRectangle">ClipToRectangle</see> property is set to TRUE.</remarks>
+		public RectangleF? TextRectangle
+		{
+			get
+			{
+				return _textRect;
+			}
+			set
+			{
+				if (_textRect != value)
 				{
-					_clipRect = value;
-					_needsVertexUpdate = true;
+					_textRect = value;
+					_needsVertexUpdate = true;					
 					FormatText();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to clip the text to the <see cref="P:GorgonLibrary.Renderers.GorgonText.TextRectangle">TextRectangle</see>.
+		/// </summary>
+		public bool ClipToRectangle
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -146,7 +182,6 @@ namespace GorgonLibrary.Renderers
 				{
 					_font = value;
 					UpdateText();
-					_needsVertexUpdate = true;
 				}
 			}
 		}
@@ -163,7 +198,8 @@ namespace GorgonLibrary.Renderers
 			if (_text.Length == 0)
 			{
 				_vertexCount = 0;
-				_vertices = new Gorgon2DVertex[1024];
+				if (_vertices == null)
+					_vertices = new Gorgon2DVertex[1024];
 				for (int i = 0; i < _vertices.Length - 1; i++)
 				{
 					_vertices[i].Color = new GorgonColor(1, 1, 1, 1);
@@ -172,6 +208,7 @@ namespace GorgonLibrary.Renderers
 				}
 
 				_currentTexture = null;
+				_needsVertexUpdate = true;
 				return;
 			}
 
@@ -208,6 +245,77 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to update the transformation for the text.
+		/// </summary>
+		/// <param name="glyph">Glyph to transform.</param>
+		/// <param name="vertexIndex">Index of the vertex to modify.</param>
+		/// <param name="textOffset">Offset of the glyph within the text.</param>
+		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, Vector2 textOffset)
+		{
+			Vector2 ltCorner = Vector2.Subtract(textOffset, Anchor);
+			Vector2 rbCorner = Vector2.Add(ltCorner, glyph.GlyphCoordinates.Size);
+
+			// Scale.
+			if (_scale.X != 1.0f)
+			{
+				ltCorner.X *= Scale.X;
+				rbCorner.X *= Scale.X;
+			}
+
+			if (_scale.Y != 1.0f)
+			{
+				ltCorner.Y *= Scale.Y;
+				rbCorner.Y *= Scale.Y;
+			}
+
+			if (Angle != 0.0f)
+			{
+				float angle = GorgonMathUtility.Radians(_angle);	// Angle in radians.
+				float cosVal = GorgonMathUtility.Cos(angle);		// Cached cosine.
+				float sinVal = GorgonMathUtility.Sin(angle);		// Cached sine.
+
+				// Rotate the vertices.
+				_vertices[vertexIndex].Position.X = (ltCorner.X * cosVal - ltCorner.Y * sinVal);
+				_vertices[vertexIndex].Position.Y = (ltCorner.X * sinVal + ltCorner.Y * cosVal);
+				_vertices[vertexIndex + 1].Position.X = (rbCorner.X * cosVal - ltCorner.Y * sinVal);
+				_vertices[vertexIndex + 1].Position.Y = (rbCorner.X * sinVal + ltCorner.Y * cosVal);
+				_vertices[vertexIndex + 2].Position.X = (ltCorner.X * cosVal - rbCorner.Y * sinVal);
+				_vertices[vertexIndex + 2].Position.Y = (ltCorner.X * sinVal + rbCorner.Y * cosVal);
+				_vertices[vertexIndex + 3].Position.X = (rbCorner.X * cosVal - rbCorner.Y * sinVal);
+				_vertices[vertexIndex + 3].Position.Y = (rbCorner.X * sinVal + rbCorner.Y * cosVal);
+			}
+			else
+			{
+				// Else just keep the positions.
+				_vertices[vertexIndex].Position = new Vector4(ltCorner, 0, 1);
+				_vertices[vertexIndex + 1].Position = new Vector4(rbCorner.X, ltCorner.Y, 0, 1);
+				_vertices[vertexIndex + 2].Position = new Vector4(ltCorner.X, rbCorner.Y, 0, 1);
+				_vertices[vertexIndex + 3].Position = new Vector4(rbCorner, 0, 1);
+			}
+
+			// Translate.
+			_vertices[vertexIndex].Position.X += _position.X;
+			_vertices[vertexIndex + 1].Position.X += _position.X;
+			_vertices[vertexIndex + 2].Position.X += _position.X;
+			_vertices[vertexIndex + 3].Position.X += _position.X;
+
+			_vertices[vertexIndex].Position.Y += _position.Y;
+			_vertices[vertexIndex + 1].Position.Y += _position.Y;
+			_vertices[vertexIndex + 2].Position.Y += _position.Y;
+			_vertices[vertexIndex + 3].Position.Y += _position.Y;
+
+			// Update texture coordinates.
+			_vertices[vertexIndex].UV = glyph.TextureCoordinates.Location;
+			_vertices[vertexIndex + 1].UV = new Vector2(glyph.TextureCoordinates.Right, glyph.TextureCoordinates.Top);
+			_vertices[vertexIndex + 2].UV = new Vector2(glyph.TextureCoordinates.Left, glyph.TextureCoordinates.Bottom);
+			_vertices[vertexIndex + 3].UV = new Vector2(glyph.TextureCoordinates.Right, glyph.TextureCoordinates.Bottom);
+
+			// Set depth.
+			if (_depth != 0.0f)
+				_vertices[vertexIndex + 3].Position.Z = _vertices[vertexIndex + 2].Position.Z = _vertices[vertexIndex + 1].Position.Z = _vertices[vertexIndex].Position.Z = -Depth;
+		}
+
+		/// <summary>
 		/// Function to perform a vertex update for the text.
 		/// </summary>
 		private void UpdateVertices()
@@ -220,63 +328,52 @@ namespace GorgonLibrary.Renderers
 			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
 				outlineOffset = new Vector2(_font.Settings.OutlineSize, _font.Settings.OutlineSize);
 
-			for (int i = 0; i < _formattedText.Length; i++)
+			for (int line = 0; line < _lines.Count; line++)
 			{
-				char c = _text[i];
-			
-				switch (c)
+				for (int i = 0; i < _lines[line].Length; i++)
 				{
-					case ' ':
-						glyph = _font.Glyphs[_text[i]];
-						pos.X += glyph.GlyphCoordinates.Width - 1;
-						continue;
-					case '\t':
-						// TODO:  Allow variable tab length.
-						glyph = _font.Glyphs[_text[i]];
-						pos.X += (glyph.GlyphCoordinates.Width - 1) * 3;
-						continue;
-					case '\n':
-						pos.Y += _font.FontHeight + outlineOffset.Y;
-						continue;
-					case '\r':						
-						// TODO: Reset to our anchor X position.
-						pos.X = 0;
-						continue;
-				}
+					char c = _lines[line][i];
 
-				if (_font.Glyphs.Contains(c))
-					glyph = _font.Glyphs[c];
-				else
-					glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+					switch (c)
+					{
+						case ' ':
+							glyph = _font.Glyphs[c];
+							pos.X += glyph.GlyphCoordinates.Width - 1;
+							continue;
+						case '\t':
+							glyph = _font.Glyphs[' '];
+							pos.X += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
+							continue;
+						case '\r':
+							pos.X = 0;
+							continue;
+					}
 
-				_vertices[vertexIndex].Position = new Vector4(pos.X + glyph.Offset.X, pos.Y + glyph.Offset.Y, 0, 1.0f);
-				_vertices[vertexIndex].Color = _colors[0];
-				_vertices[vertexIndex].UV = glyph.TextureCoordinates.Location;
-
-				_vertices[vertexIndex + 1].Position = new Vector4(pos.X + glyph.GlyphCoordinates.Width + glyph.Offset.X, pos.Y + glyph.Offset.Y, 0, 1.0f);
-				_vertices[vertexIndex + 1].Color = _colors[1];
-				_vertices[vertexIndex + 1].UV = new Vector2(glyph.TextureCoordinates.Right, glyph.TextureCoordinates.Top);
-
-				_vertices[vertexIndex + 2].Position = new Vector4(pos.X + glyph.Offset.X, pos.Y + glyph.GlyphCoordinates.Height + glyph.Offset.Y, 0, 1.0f);
-				_vertices[vertexIndex + 2].Color = _colors[2];
-				_vertices[vertexIndex + 2].UV = new Vector2(glyph.TextureCoordinates.Left, glyph.TextureCoordinates.Bottom);
-
-				_vertices[vertexIndex + 3].Position = new Vector4(pos.X + glyph.GlyphCoordinates.Width + glyph.Offset.X, pos.Y + glyph.GlyphCoordinates.Height + glyph.Offset.Y, 0, 1.0f);
-				_vertices[vertexIndex + 3].Color = _colors[3];
-				_vertices[vertexIndex + 3].UV = new Vector2(glyph.TextureCoordinates.Right, glyph.TextureCoordinates.Bottom);
-
-				vertexIndex += 4;
-
-				pos.X += glyph.Advance.X + glyph.Advance.Y + outlineOffset.X;
-
-				if (i < _text.Length - 1)
-				{
-					GorgonKerningPair kerning = new GorgonKerningPair(_text[i], _text[i + 1]);
-					if (_font.KerningPairs.ContainsKey(kerning))
-						pos.X += _font.KerningPairs[kerning];
+					if (_font.Glyphs.Contains(c))
+						glyph = _font.Glyphs[c];
 					else
-						pos.X += glyph.Advance.Z;					
+						glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+
+					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset));
+
+					vertexIndex += 4;
+
+					pos.X += glyph.Advance.X + glyph.Advance.Y + outlineOffset.X;
+
+					// Apply kerning pairs.
+					if ((i < _text.Length - 1) && (_font.KerningPairs.Count > 0))
+					{
+						GorgonKerningPair kerning = new GorgonKerningPair(c, _text[i + 1]);
+						if (_font.KerningPairs.ContainsKey(kerning))
+							pos.X += _font.KerningPairs[kerning];
+						else
+							pos.X += glyph.Advance.Z;
+					}
+					else
+						pos.X += glyph.Advance.Z;
 				}
+
+				pos.Y += _font.FontHeight + outlineOffset.Y;
 			}
 		}
 
@@ -292,19 +389,93 @@ namespace GorgonLibrary.Renderers
 				_vertices[i + 2].Color = _colors[2];
 				_vertices[i + 3].Color = _colors[3];
 			}
-		}
+		}		
 
 		/// <summary>
 		/// Function to format the text for measuring and clipping.
 		/// </summary>
 		private void FormatText()
-		{
+		{			
 			_formattedText.Length = 0;
 			// TODO: Do word wrapping.
 			_formattedText.Append(_text);
 			_formattedText.Replace("\n\r", "\r\n");
 			_lines.Clear();
 			_lines.AddRange(_formattedText.ToString().Split('\n'));
+			_size = MeasureText();
+		}
+
+		/// <summary>
+		/// Function to measure the width of a single line of text 
+		/// </summary>
+		/// <param name="line">Line to measure.</param>
+		/// <param name="outlineOffset">Outline offset.</param>
+		/// <returns>The width, pixels, of a single line of text.</returns>
+		private float LineMeasure(string line, float outlineOffset)
+		{
+			float size = 0;
+
+			for (int i = 0; i < line.Length; i++)
+			{
+				GorgonGlyph glyph = null;
+				char c = line[i];
+
+				if (_font.Glyphs.Contains(c))
+					glyph = _font.Glyphs[c];
+				else
+					glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+				
+				switch (c)
+				{
+					case ' ':
+						size += glyph.GlyphCoordinates.Width - 1;
+						continue;
+					case '\t':
+						size += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
+						continue;
+					case '\r':
+					case '\n':
+						continue;
+				}
+
+				size += glyph.Advance.X + glyph.Advance.Y + outlineOffset;
+
+				if ((i < line.Length - 1) && (_font.KerningPairs.Count > 0))
+				{
+					GorgonKerningPair kernPair = new GorgonKerningPair(c, line[i + 1]);
+
+					if (_font.KerningPairs.ContainsKey(kernPair))
+						size += _font.KerningPairs[kernPair];
+					else
+						size += glyph.Advance.Z;
+				}
+				else
+					size += glyph.Advance.Z;
+			}
+			return size;
+		}
+
+		/// <summary>
+		/// Function to measure the bounds of the text in the text object.
+		/// </summary>
+		/// <returns>The bounding rectangle for the text.</returns>
+		private SizeF MeasureText()
+		{
+			SizeF result = SizeF.Empty;
+			float outlineSize = 0;
+
+			if ((_text.Length == 0) || (_formattedText.Length == 0) || (_lines.Count == 0))
+				return result;
+
+			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
+				outlineSize = _font.Settings.OutlineSize;
+
+			result.Height = _lines.Count * (_font.FontHeight + outlineSize);
+
+			for (int i = 0; i < _lines.Count; i++)
+				result.Width = GorgonMathUtility.Max(result.Width, LineMeasure(_lines[i], outlineSize));
+
+			return result;
 		}
 
 		/// <summary>
@@ -315,17 +486,22 @@ namespace GorgonLibrary.Renderers
 		/// </remarks>
 		public void Draw()
 		{
+			Rectangle clipRegion = Rectangle.Round(ClipRegion);
+			Rectangle? lastClip = Gorgon2D.ClipRegion;
 			StateChange states = StateChange.None;
 			int vertexIndex = 0;
 
 			// We don't need to draw anything.
 			if (_text.Length == 0)
 				return;
+			
+			if ((ClipToRectangle) && (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
+				Gorgon2D.ClipRegion = clipRegion;
 
 			states = Gorgon2D.StateManager.CheckState(this);
 			if (states != StateChange.None)
 			{
-				Gorgon2D.RenderObjects();
+				Gorgon2D.RenderObjects();				
 				Gorgon2D.StateManager.ApplyState(this, states);
 			}
 
@@ -340,7 +516,7 @@ namespace GorgonLibrary.Renderers
 				UpdateColors();
 				_needsColorUpdate = false;
 			}
-
+						
 			for (int i = 0; i < _formattedText.Length; i++)
 			{
 				char c = _text[i];
@@ -364,6 +540,9 @@ namespace GorgonLibrary.Renderers
 					vertexIndex += 4;
 				}
 			}
+
+			if (ClipToRectangle)
+				Gorgon2D.ClipRegion = lastClip;
 		}
 		#endregion
 
@@ -700,6 +879,174 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+			}
+		}
+		#endregion
+
+		#region IMoveable Members
+		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		RectangleF IMoveable.TextureRegion
+		{
+			get
+			{
+				if (_currentTexture == null)
+					return RectangleF.Empty;
+
+				return new RectangleF(Vector2.Zero, _currentTexture.Settings.Size);
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the position of the renderable.
+		/// </summary>
+		public Vector2 Position
+		{
+			get
+			{
+				return _position;
+			}
+			set
+			{
+				if (_position != value)
+				{
+					_position = value;
+					_needsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the angle of rotation (in degrees) for a renderable.
+		/// </summary>
+		public float Angle
+		{
+			get
+			{
+				return _angle;
+			}
+			set
+			{
+				if (_angle != value)
+				{
+					_angle = value;
+					_needsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scale of the renderable.
+		/// </summary>
+		public Vector2 Scale
+		{
+			get
+			{
+				return _scale;
+			}
+			set
+			{
+				if (_scale != value)
+				{
+					_scale = value;
+					_needsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the anchor point of the renderable.
+		/// </summary>
+		public Vector2 Anchor
+		{
+			get
+			{
+				return _anchor;
+			}
+			set
+			{
+				if (_anchor != value)
+				{
+					_anchor = value;
+					_needsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the "depth" of the renderable in a depth buffer.
+		/// </summary>
+		public float Depth
+		{
+			get
+			{
+				return _depth;
+			}
+			set
+			{
+				if (_depth != value) 
+				{
+					if (_vertices != null)
+					{
+						for (int i = 0; i < _vertices.Length; i++)
+							_vertices[i].Position.Z = value;
+					}
+
+					_depth = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		Vector2 IMoveable.TextureOffset
+		{
+			get
+			{
+				return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		Vector2 IMoveable.TextureSize
+		{
+			get
+			{
+				if (_currentTexture != null)
+					return _currentTexture.Settings.Size;
+				else
+					return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the size of the renderable.
+		/// </summary>
+		public Vector2 Size
+		{
+			get
+			{
+				return _size;
+			}
+			set
+			{
+				throw new NotSupportedException();
 			}
 		}
 		#endregion

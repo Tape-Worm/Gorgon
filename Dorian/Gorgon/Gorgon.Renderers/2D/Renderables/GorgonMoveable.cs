@@ -37,14 +37,13 @@ namespace GorgonLibrary.Renderers
 	/// Defines a moveable and renderable object.
 	/// </summary>
 	public abstract class GorgonMoveable
-		: GorgonRenderable
+		: GorgonRenderable, IMoveable
 	{
 		#region Variables.
 		private string _textureName = string.Empty;															// Name of the texture for deferred loading.
 		private Vector2 _size = Vector2.Zero;																// Size of the renderable.
-		private Vector2 _anchor = Vector2.Zero;																// Anchor point.
-		private Vector2 _scale = Vector2.Zero;																// Relative scale for the moveable object.
 		private RectangleF _textureRegion = RectangleF.Empty;												// Texture region.
+		private Vector2 _anchor = Vector2.Zero;																// Anchor.
 		#endregion
 
 		#region Properties.
@@ -93,14 +92,8 @@ namespace GorgonLibrary.Renderers
 		/// </remarks>
 		public virtual Vector2 Scale
 		{
-			get
-			{
-				return _scale;
-			}
-			set
-			{
-				_scale = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>

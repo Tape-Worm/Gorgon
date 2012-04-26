@@ -54,7 +54,7 @@ namespace GorgonLibrary.Renderers
 	/// A renderable object for drawing a line on the screen.
 	/// </summary>
 	public class GorgonLine
-		: GorgonRenderable
+		: GorgonRenderable, IMoveable
 	{
 		#region Variables.
 		private float[] _corners = null;												// Corners for the line.
@@ -169,25 +169,6 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				Vertices[3].Color = Vertices[1].Color = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the anchor point of the line.
-		/// </summary>
-		public Vector2 Anchor
-		{
-			get
-			{
-				return _anchor;
-			}
-			set
-			{
-				if (_anchor != value)
-				{
-					_anchor = value;
-					NeedsVertexUpdate = true;
-				}
 			}
 		}
 
@@ -603,6 +584,103 @@ namespace GorgonLibrary.Renderers
 			InitializeVertices(4);
 			LineThickness = new Vector2(1);
 			Color = color;
+		}
+		#endregion
+
+		#region IMoveable Members
+		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		public RectangleF TextureRegion
+		{
+			get
+			{
+				return RectangleF.FromLTRB(_textureStart.X, _textureStart.Y, _textureEnd.X, _textureEnd.Y);
+			}
+			set
+			{
+				_textureStart = value.Location;
+				_textureEnd = new Vector2(value.Right, value.Bottom);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the position of the renderable.
+		/// </summary>
+		Vector2 IMoveable.Position
+		{
+			get
+			{
+				return _line.Location;
+			}
+			set
+			{
+				_line.Location = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scale of the renderable.
+		/// </summary>
+		Vector2 IMoveable.Scale
+		{
+			get
+			{
+				return new Vector2(1);
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		Vector2 IMoveable.TextureOffset
+		{
+			get
+			{
+				return _textureStart;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		Vector2 IMoveable.TextureSize
+		{
+			get
+			{
+				return Vector2.Subtract(_textureEnd, _textureStart);
+			}
+			set
+			{
+				_textureEnd = Vector2.Add(_textureStart, _textureEnd);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the anchor point of the line.
+		/// </summary>
+		public Vector2 Anchor
+		{
+			get
+			{
+				return _anchor;
+			}
+			set
+			{
+				if (_anchor != value)
+				{
+					_anchor = value;
+					NeedsVertexUpdate = true;
+				}
+			}
 		}
 		#endregion
 	}
