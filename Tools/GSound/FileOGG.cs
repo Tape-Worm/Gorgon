@@ -78,5 +78,24 @@ namespace GorgonLibrary.Sound
             Stream.Close();
             return Result;
         }
+
+        /// <summary>
+        /// Load an OGG vorbis buffer from a stream.
+        /// </summary>
+        /// <param name="Filename"></param>
+        /// <returns></returns>
+        public static int LoadFromStream(Stream Stream)
+        {
+            //This is pretty much the same as "LoadFromFile" but it doesn't open the stream automagically
+            OggDecodeStream OggStream = new OggDecodeStream(Stream, true);
+
+
+
+            Stream.Position = 0;
+            int Result = GenerateSoundBuffer(OggStream);
+
+            OggStream.Close();
+            return Result;
+        }
     }
 }
