@@ -126,6 +126,9 @@ namespace GorgonLibrary.Sound
                 case SoundType.Wav:
                     BufferID = FileWAV.LoadFromStream(Stream);
                     break;
+                case SoundType.OGG:
+                    BufferID = FileOGG.LoadFromStream(Stream);
+                    break;
             }
         }
 
