@@ -44,7 +44,7 @@ namespace GorgonLibrary.Graphics
 	/// Provides functionality for creating, reading, and saving bitmap fonts.
 	/// </summary>
 	public sealed class GorgonFont
-		: GorgonNamedObject, IDisposable
+		: GorgonNamedObject, IDisposable, INotifier
 	{
 		#region Classes.
 		/// <summary>
@@ -986,6 +986,8 @@ namespace GorgonLibrary.Graphics
 					// Add to internal texture list.
 					_textures.Add(currentTexture);
 				}
+
+				HasChanged = true;
 			}
 			finally
 			{
@@ -1066,6 +1068,18 @@ namespace GorgonLibrary.Graphics
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+		#endregion
+
+		#region INotifier Members
+		/// <summary>
+		/// Property to set or return whether an object has been updated.
+		/// </summary>
+		/// <value></value>
+		public bool HasChanged
+		{
+			get;
+			set;
 		}
 		#endregion
 	}

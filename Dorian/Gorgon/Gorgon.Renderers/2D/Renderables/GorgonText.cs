@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using SlimMath;
+using GorgonLibrary.UI;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
@@ -64,6 +65,9 @@ namespace GorgonLibrary.Renderers
 		private Vector2 _anchor = Vector2.Zero;											// Anchor point for the text.
 		private float _depth = 0;														// Depth value.
 		private int _tabSpace = 3;														// Tab spaces.
+		private bool _wordWrap = false;													// Flag to indicate that the text should word wrap.
+		private Alignment _alignment = Alignment.UpperLeft;								// Text alignment.
+		private float _lineSpace = 1.0f;												// Line spacing.
 		#endregion
 
 		#region Properties.
@@ -78,6 +82,72 @@ namespace GorgonLibrary.Renderers
 					return Gorgon2D.Target.Viewport.Region;
 				else
 					return _textRect.Value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the spacing for the lines.
+		/// </summary>
+		public float LineSpacing
+		{
+			get
+			{
+				return _lineSpace;
+			}
+			set
+			{
+				if (_lineSpace != value)
+				{
+					_lineSpace = value;
+					_needsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the alignment of the text within the <see cref="P:GorgonLibrary.Renderers.GorgonText.TextRectangle">TextRectangle.</see>/.
+		/// </summary>
+		/// <remarks>If the TextRectangle property is NULL (Nothing in VB.Net), then this value has no effect.</remarks>
+		public Alignment Alignment
+		{
+			get
+			{
+				return _alignment;
+			}
+			set
+			{
+				if (_alignment != value)
+				{
+					_alignment = value;
+					FormatText();
+					_needsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether word wrapping is enabled.
+		/// </summary>
+		/// <remarks>
+		/// This uses the <see cref="P:GorgonLibrary.Renderers.GorgonText.TextRectangle">TextRectangle</see> to determine where the cutoff boundary is for word wrapping.  
+		/// If a character is positioned outside of the region, then the previous space character is located and the region is broken at that point.  Note that the left position 
+		/// of the rectangle is not taken into consideration when performing a word wrap, and consequently the user will be responsible for calculating the word wrap boundary.
+		/// <para>Only the space character is considered when performing word wrapping.  Other whitespace or control characters are not considered break points in the string.</para>
+		/// <para>If the TextRectangle property is NULL (Nothing in VB.Net), then this value has no effect.</para></remarks>
+		public bool WordWrap
+		{
+			get
+			{
+				return _wordWrap;
+			}
+			set
+			{
+				if (value != _wordWrap)
+				{					
+					_wordWrap = value;
+					FormatText();
+					_needsVertexUpdate = true;
+				}
 			}
 		}
 
@@ -103,7 +173,13 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the rectangle used for clipping and/or alignment for the text.
 		/// </summary>
-		/// <remarks>This property will clip the text to the rectangle if the <see cref="GorgonLibrary.Renderers.GorgonText.ClipToRectangle">ClipToRectangle</see> property is set to TRUE.</remarks>
+		/// <remarks>
+		/// This defines the range used when aligning text horizontally and/or vertically.  For example, if the alignment is set to center horizontally, then the width of this rectangle is 
+		/// used to determine the horizontal center point.  Likewise for vertically aligned text.
+		/// <para>If <see cref="P:GorgonLibrary.Renderers.GorgonText.WordWrap">WordWrap</see> is set to TRUE, then this determines how far, in pixels, a line of text can go before it will be wrapped.</para>
+		/// <para>This property will clip the text to the rectangle if the <see cref="P:GorgonLibrary.Renderers.GorgonText.ClipToRectangle">ClipToRectangle</see> property is set to TRUE.</para>
+		/// <para>Setting this value to NULL (Nothing in VB.Net) will disable alignment, word wrapping and clipping.</para>
+		/// </remarks>
 		public RectangleF? TextRectangle
 		{
 			get
@@ -124,6 +200,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return whether to clip the text to the <see cref="P:GorgonLibrary.Renderers.GorgonText.TextRectangle">TextRectangle</see>.
 		/// </summary>
+		/// <remarks>If the TextRectangle property is NULL (Nothing in VB.Net), this value will have no effect.</remarks>
 		public bool ClipToRectangle
 		{
 			get;
@@ -245,15 +322,90 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to update the transform coordinates by the alignment settings.
+		/// </summary>
+		/// <param name="leftTop">Left and top coordinates.</param>
+		/// <param name="rightBottom">Right and bottom coordinates.</param>
+		/// <param name="lineLength">Length of the line, in pixels.</param>
+		private void GetAlignmentExtents(ref Vector2 leftTop, ref Vector2 rightBottom, float lineLength)
+		{
+			int outlineOffset = 0;
+			int calc = 0;
+
+			if (_font.Settings.OutlineColor.Alpha > 0)
+				outlineOffset = _font.Settings.OutlineSize;
+
+			switch (_alignment)
+			{
+				case UI.Alignment.UpperCenter:
+					calc = (int)((ClipRegion.Width / 2.0f) - (lineLength / 2.0f));
+					leftTop.X += calc;
+					rightBottom.X += calc;
+					break;
+				case UI.Alignment.UpperRight:
+					calc = (int)(ClipRegion.Width - lineLength);
+					leftTop.X += calc;
+					rightBottom.X += calc;
+					break;
+				case UI.Alignment.CenterLeft:					
+					calc = (int)(ClipRegion.Height / 2.0f - _size.Y / 2.0f);
+					leftTop.Y += calc;
+					rightBottom.Y += calc;
+					break;
+				case UI.Alignment.Center:
+					calc = (int)((ClipRegion.Width / 2.0f) - (lineLength / 2.0f));
+					leftTop.X += calc;
+					rightBottom.X += calc;
+					calc = (int)(ClipRegion.Height / 2.0f - _size.Y / 2.0f);
+					leftTop.Y += calc;
+					rightBottom.Y += calc;
+					break;
+				case UI.Alignment.CenterRight:
+					calc = (int)(ClipRegion.Width - lineLength);
+					leftTop.X += calc;
+					rightBottom.X += calc;
+					calc = (int)(ClipRegion.Height / 2.0f - _size.Y / 2.0f);
+					leftTop.Y += calc;
+					rightBottom.Y += calc;
+					break;
+				case UI.Alignment.LowerLeft:
+					calc = (int)(ClipRegion.Height  - _size.Y);
+					leftTop.Y += calc;
+					rightBottom.Y += calc;
+					break;
+				case UI.Alignment.LowerCenter:
+					calc = (int)((ClipRegion.Width / 2.0f) - (lineLength / 2.0f));
+					leftTop.X += calc;
+					rightBottom.X += calc;
+					calc = (int)(ClipRegion.Height  - _size.Y);
+					leftTop.Y += calc;
+					rightBottom.Y += calc;
+					break;
+				case UI.Alignment.LowerRight:
+					calc = (int)(ClipRegion.Width - lineLength);
+					leftTop.X += calc;
+					rightBottom.X += calc;
+					calc = (int)(ClipRegion.Height  - _size.Y);
+					leftTop.Y += calc;
+					rightBottom.Y += calc;
+					break;
+			}
+		}
+
+		/// <summary>
 		/// Function to update the transformation for the text.
 		/// </summary>
 		/// <param name="glyph">Glyph to transform.</param>
 		/// <param name="vertexIndex">Index of the vertex to modify.</param>
 		/// <param name="textOffset">Offset of the glyph within the text.</param>
-		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, Vector2 textOffset)
+		/// <param name="lineLength">The length of the line of text when alignment is active.</param>
+		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, Vector2 textOffset, float lineLength)
 		{
 			Vector2 ltCorner = Vector2.Subtract(textOffset, Anchor);
 			Vector2 rbCorner = Vector2.Add(ltCorner, glyph.GlyphCoordinates.Size);
+
+			if ((_alignment != Alignment.UpperLeft) && (_textRect != null))
+				GetAlignmentExtents(ref ltCorner, ref rbCorner, lineLength);
 
 			// Scale.
 			if (_scale.X != 1.0f)
@@ -330,6 +482,11 @@ namespace GorgonLibrary.Renderers
 
 			for (int line = 0; line < _lines.Count; line++)
 			{
+				float lineLength = 0;
+
+				if ((_textRect != null) && (_alignment != UI.Alignment.UpperLeft))
+					lineLength = LineMeasure(_lines[line], outlineOffset.X);
+
 				for (int i = 0; i < _lines[line].Length; i++)
 				{
 					char c = _lines[line][i];
@@ -344,9 +501,6 @@ namespace GorgonLibrary.Renderers
 							glyph = _font.Glyphs[' '];
 							pos.X += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
 							continue;
-						case '\r':
-							pos.X = 0;
-							continue;
 					}
 
 					if (_font.Glyphs.Contains(c))
@@ -354,7 +508,7 @@ namespace GorgonLibrary.Renderers
 					else
 						glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
 
-					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset));
+					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset), lineLength);
 
 					vertexIndex += 4;
 
@@ -373,7 +527,13 @@ namespace GorgonLibrary.Renderers
 						pos.X += glyph.Advance.Z;
 				}
 
-				pos.Y += _font.FontHeight + outlineOffset.Y;
+				// TODO: Ensure that this is documented somewhere.				
+				// If we have texture filtering on, this is going to look weird because it's a sub-pixel.
+				// In order to get the font to look right on a second line, we need to use point filtering.
+				// We -could- use a Floor here, but then movement becomes very jerky.  We're better off turning
+				// off texture filtering even just for an increase in speed.
+				pos.Y += (_font.LineHeight + outlineOffset.Y) * _lineSpace;
+				pos.X = 0;
 			}
 		}
 
@@ -389,7 +549,103 @@ namespace GorgonLibrary.Renderers
 				_vertices[i + 2].Color = _colors[2];
 				_vertices[i + 3].Color = _colors[3];
 			}
-		}		
+		}
+
+		/// <summary>
+		/// Function to word wrap at the text region border.
+		/// </summary>
+		private void WordWrapText()
+		{
+			int i = 0;
+			char character = ' ';
+			GorgonGlyph glyph = null;
+			float pos = 0;
+			int outlineSize = 0;
+
+			if (_font.Settings.OutlineColor.Alpha > 0)
+				outlineSize = _font.Settings.OutlineSize;
+
+			if (pos >= _textRect.Value.Width)
+				return;
+
+			_formattedText.Append(_text);
+
+			while (i < _formattedText.Length)
+			{
+				character = _formattedText[i];
+
+				if (_font.Glyphs.Contains(character))
+					glyph = _font.Glyphs[character];
+				else
+					glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+
+				// If we can't fit a single glyph into the boundaries, then just leave.  Else we'll have an infinite loop on our hands.
+				if (glyph.GlyphCoordinates.Width > _textRect.Value.Width)
+					return;
+
+				if (character == '\n')
+				{
+					pos = _textRect.Value.Left;
+					i++;
+					continue;
+				}
+
+				switch (character)
+				{
+					case ' ':
+						pos += glyph.GlyphCoordinates.Width;
+						break;
+					case '\t':
+						pos += glyph.GlyphCoordinates.Width * TabSpaces;
+						break;
+					default:
+						float kernValue = glyph.Advance.Z;
+
+						if ((i < _formattedText.Length - 1) && (_font.KerningPairs.Count > 0))
+						{
+							GorgonKerningPair kernPair = new GorgonKerningPair(character, _formattedText[i + 1]);
+							if (_font.KerningPairs.ContainsKey(kernPair))
+								kernValue = _font.KerningPairs[kernPair];
+						}
+
+						pos += glyph.Advance.X + glyph.Advance.Y + kernValue + outlineSize;
+						break;
+				}
+
+				if (pos > ClipRegion.Right)
+				{
+					int j = i;
+
+					// Try to find the previous space and replace it with a new line.
+					// Otherwise just insert it at the previous character.
+					while(j >= 0)
+					{
+						if ((_formattedText[j] == '\n') || (_formattedText[j] == '\r'))
+						{
+							j = -1;
+							break;
+						}
+
+						if ((_formattedText[j] == ' ') || (_formattedText[j] == '\t'))
+						{
+							_formattedText[j] = '\n';
+							i = j;
+							break;
+						}
+
+						j--;
+					}
+
+					// If we reach end of line without finding a line break, add a line break.
+					if ((i > 0) && (j < 0))
+						_formattedText.Insert(i, "\n");
+
+					pos = 0;
+				}
+
+				i++;
+			}
+		}
 
 		/// <summary>
 		/// Function to format the text for measuring and clipping.
@@ -397,9 +653,13 @@ namespace GorgonLibrary.Renderers
 		private void FormatText()
 		{			
 			_formattedText.Length = 0;
-			// TODO: Do word wrapping.
-			_formattedText.Append(_text);
+			if ((!_wordWrap) || (TextRectangle == null))
+				_formattedText.Append(_text);
+			else
+				WordWrapText();
+
 			_formattedText.Replace("\n\r", "\r\n");
+			_formattedText.Replace("\r\n", "\n");
 			_lines.Clear();
 			_lines.AddRange(_formattedText.ToString().Split('\n'));
 			_size = MeasureText();
@@ -438,19 +698,24 @@ namespace GorgonLibrary.Renderers
 						continue;
 				}
 
-				size += glyph.Advance.X + glyph.Advance.Y + outlineOffset;
-
-				if ((i < line.Length - 1) && (_font.KerningPairs.Count > 0))
+				if (i < line.Length - 1)
 				{
-					GorgonKerningPair kernPair = new GorgonKerningPair(c, line[i + 1]);
+					size += glyph.Advance.X + glyph.Advance.Y + outlineOffset;
 
-					if (_font.KerningPairs.ContainsKey(kernPair))
-						size += _font.KerningPairs[kernPair];
+					if (_font.KerningPairs.Count > 0)
+					{
+						GorgonKerningPair kernPair = new GorgonKerningPair(c, line[i + 1]);
+
+						if (_font.KerningPairs.ContainsKey(kernPair))
+							size += _font.KerningPairs[kernPair];
+						else
+							size += glyph.Advance.Z;
+					}
 					else
 						size += glyph.Advance.Z;
 				}
 				else
-					size += glyph.Advance.Z;
+					size += glyph.GlyphCoordinates.Width;
 			}
 			return size;
 		}
@@ -459,23 +724,68 @@ namespace GorgonLibrary.Renderers
 		/// Function to measure the bounds of the text in the text object.
 		/// </summary>
 		/// <returns>The bounding rectangle for the text.</returns>
-		private SizeF MeasureText()
+		private Vector2 MeasureText()
 		{
-			SizeF result = SizeF.Empty;
+			Vector2 result = Vector2.Zero;
 			float outlineSize = 0;
 
 			if ((_text.Length == 0) || (_formattedText.Length == 0) || (_lines.Count == 0))
 				return result;
 
-			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
+			if (_font.Settings.OutlineColor.Alpha > 0)
 				outlineSize = _font.Settings.OutlineSize;
 
-			result.Height = _lines.Count * (_font.FontHeight + outlineSize);
+			if (_lineSpace != 1.0)
+				result.Y = (_lines.Count - 1) * (((_font.LineHeight + outlineSize) * _lineSpace)) + (_font.LineHeight + outlineSize);
+			else
+				result.Y = (_lines.Count * (((_font.LineHeight + outlineSize) * _lineSpace)));
 
 			for (int i = 0; i < _lines.Count; i++)
-				result.Width = GorgonMathUtility.Max(result.Width, LineMeasure(_lines[i], outlineSize));
+				result.X = GorgonMathUtility.Max(result.X, LineMeasure(_lines[i], outlineSize));
 
 			return result;
+		}
+
+		/// <summary>
+		/// Function to return the size, in pixels, of a string.
+		/// </summary>
+		/// <param name="text">Text to measure.</param>
+		/// <param name="useWordWrap">TRUE to use word wrapping.</param>
+		/// <param name="wrapBoundaryWidth">The boundary to word wrap on.</param>
+		/// <returns>The size of the text, in pixels.</returns>
+		/// <remarks>If the <paramref name="useWordWrap"/> is TRUE and the <paramref name="wrapBoundaryWidth"/> is 0 or less, then word wrapping is disabled.</remarks>
+		public Vector2 MeasureText(string text, bool useWordWrap, float wrapBoundaryWidth)
+		{
+			string previousString = Text;
+			bool lastWordWrap = _wordWrap;
+			RectangleF? lastRect = _textRect;
+
+			try
+			{
+				if (string.IsNullOrEmpty(text))
+					return Vector2.Zero;
+
+				if (wrapBoundaryWidth <= 0.0f)
+					useWordWrap = false;
+
+				WordWrap = useWordWrap;
+				if (WordWrap)
+					TextRectangle = new RectangleF(0, 0, wrapBoundaryWidth, 0);
+
+				// If the string is not the same as what we've stored, then temporarily
+				// replace that string with the one being passed in and use that to
+				// gauge size.  Otherwise, use the original size.
+				if (string.Compare(text, Text, false) != 0)
+					Text = text;
+				
+				return Size;
+			}
+			finally
+			{
+				_wordWrap = lastWordWrap;
+				_textRect = lastRect;
+				Text = previousString;
+			}
 		}
 
 		/// <summary>
@@ -494,9 +804,13 @@ namespace GorgonLibrary.Renderers
 			// We don't need to draw anything.
 			if (_text.Length == 0)
 				return;
-			
-			if ((ClipToRectangle) && (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
-				Gorgon2D.ClipRegion = clipRegion;
+
+			// If we've updated the font, then we need to update.
+			if (_font.HasChanged)
+			{
+				UpdateText();
+				_font.HasChanged = false;
+			}
 
 			states = Gorgon2D.StateManager.CheckState(this);
 			if (states != StateChange.None)
@@ -504,6 +818,9 @@ namespace GorgonLibrary.Renderers
 				Gorgon2D.RenderObjects();				
 				Gorgon2D.StateManager.ApplyState(this, states);
 			}
+
+			if ((ClipToRectangle) && (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
+				Gorgon2D.ClipRegion = clipRegion;
 
 			if (_needsVertexUpdate)
 			{
@@ -519,8 +836,9 @@ namespace GorgonLibrary.Renderers
 						
 			for (int i = 0; i < _formattedText.Length; i++)
 			{
-				char c = _text[i];
-				if ((c != '\r') && (c != '\n') && (c != '\t') && (c != ' '))
+				char c = _formattedText[i];
+
+				if ((c != '\n') && (c != '\t') && (c != ' '))
 				{
 					GorgonGlyph glyph = null;
 
