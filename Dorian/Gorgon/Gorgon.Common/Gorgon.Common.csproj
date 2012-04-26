@@ -189,6 +189,7 @@
     <Compile Include="UI\ErrorDialog.designer.cs">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\GorgonAlignment.cs" />
     <Compile Include="UI\GorgonDialogs.cs" />
     <Compile Include="GorgonException.cs">
       <SubType>Code</SubType>

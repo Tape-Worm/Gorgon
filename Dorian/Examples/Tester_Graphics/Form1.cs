@@ -38,7 +38,8 @@ namespace Tester_Graphics
 		private Vector2 _mousePosition = Vector2.Zero;
 		private GorgonSprite letter = null;
 		private GorgonText _text = null;
-		private string test = "the quick brown fox jumps over the lazy dog.\r\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG.\r\nThe Quick Brown Fox Jumps Over The Lazy Dog.";
+		private string test = "the quick brown fox jumps over the lazy dog.\r\nTHE QUICK BROWN FOX JUMPS OVER ÃHE LAZY DOG.\r\nThe Quick Brown Fox Jumps Over The Lazy Dog.";
+			//"~!@#$%^&*()_+`1234567890-=[]\\{}|,.<>/?abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";//
 
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
@@ -114,7 +115,7 @@ namespace Tester_Graphics
 					Flags = SwapChainUsageFlags.RenderTarget | SwapChainUsageFlags.ShaderInput
 				});
 				_2D = _graphics.Create2DRenderer(_mainScreen);
-				_2D.IsLogoVisible = true;
+				//_2D.IsLogoVisible = true;
 
 				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(178, 207), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
 
@@ -247,26 +248,28 @@ namespace Tester_Graphics
 				font = _graphics.Textures.CreateFont("Bradley Hand ITC Regular", new GorgonFontSettings()
 					{
 						TextureSize = new System.Drawing.Size(256, 256),
-						FontFamilyName = "Arial",
+						FontFamilyName = "Bradley Hand ITC",
 						FontStyle = FontStyle.Bold,
-						PointSize = 24,
+						PointSize = 16,
 						TextContrast = 0,
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 						PackingSpacing = 1,
-						OutlineSize = 0
+						OutlineSize = 1
 					});
 
 				letter = _2D.Renderables.CreateSprite("Letter", new Vector2(1, 1), null, new RectangleF(0, 0, 1, 1));
 				letter.Color = Color.Black;
 				letter.Angle = 0.0f;
 				_text = new GorgonText(_2D, "Text", font);
-				_text.Text = test;				
-				_text.TextRectangle = new RectangleF(0, 0, 50, 25);
+				_text.Text = test;
+				_text.WordWrap = true;
+				_text.LineSpacing = -1.0f;
+				//_text.Alignment = Alignment.Center;				
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 						//Text = timing.AverageFPS.ToString("0.0");
 						fps = timing.AverageFPS.ToString("0.0");
-						angle += 5.0f * timing.FrameDelta;
+						angle += 1.0f * timing.FrameDelta;
 						_2D.Clear(Color.White);
 //                        /*						if (!backForth)
 //                                                    angle += 0.125f * timing.FrameDelta;
@@ -603,22 +606,35 @@ namespace Tester_Graphics
 						//}
 
 						//_2D.Drawing.Blit(font.Textures[0], Vector2.Zero);
-						_text.Color = Color.Black;
+						_text.Color = Color.FromArgb(96, 0, 0, 0);
 						_text.SmoothingMode = SmoothingMode.Smooth;
 						_text.Text = test;
-						_text.Position = new Vector2(300, 300);
-						_text.Anchor = new Vector2(160, 25);
-						//_text.Angle = angle;
-						_2D.Drawing.DrawRectangle(new RectangleF(_text.Position - _text.Anchor, _text.Size), Color.Blue);
+						_text.Position = new Vector2(45, 45);
+						_text.Anchor = new Vector2(-1, -1);
+						_text.Scale = new Vector2(2, 2);
+						_text.LineSpacing += ((float)Math.Sin(angle * Math.PI) / 180.0f);
+						_text.TextRectangle = new RectangleF(0, 0, _2D.Target.Viewport.Region.Width - _text.Position.X + _text.Anchor.X, _2D.Target.Viewport.Region.Height - _text.Position.Y + _text.Anchor.Y);
+						_2D.Drawing.DrawRectangle(new RectangleF(Vector2.Zero, _text.Size), Color.Blue);
+						_text.Angle = angle * 5.0f;
 						//_text.ClipToRectangle = true;
+						_text.Draw();
+						_text.Color = Color.LightGreen;
+						_text.Anchor = Vector2.Zero;
+						_text.Position = new Vector2(45, 45);
 						_text.Draw();
 						_text.Anchor = Vector2.Zero;
 						_text.Angle = 0.0f;
-						_text.Color = Color.Purple;
-						_text.Text = timing.AverageFPS.ToString("0.0");
-						_text.Position = new Vector2(0, 50);
+						_text.Color = Color.FromArgb(96, 0, 0, 0);
+						_text.Text = timing.AverageFPS.ToString("0.0#");
+						_text.Position = new Vector2(_2D.Target.Settings.Width / 2 - (_text.Size.X / 2.0f), _2D.Target.Settings.Height / 2 - (_text.Size.Y / 2.0f));
+						_text.Position = new Vector2((float)System.Math.Ceiling(_text.Position.X), (float)System.Math.Ceiling(_text.Position.Y));
+						_text.Position = Vector2.Add(_text.Position, new Vector2(2, 2));
 						//_text.ClipToRectangle = false;
 						_text.Draw();
+						_text.Color = Color.White;
+						_text.Position = Vector2.Subtract(_text.Position, new Vector2(2, 2));
+						_text.Draw();
+
 
 						_2D.Render();
 						return true;

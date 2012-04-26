@@ -263,6 +263,12 @@ namespace GorgonLibrary.Renderers
 
 			TransformVertices();
 
+			for (int i = 0; i < _corners.Length; i++)
+			{
+				_corners[i].X = (float)System.Math.Ceiling(_corners[i].X);
+				_corners[i].Y = (float)System.Math.Ceiling(_corners[i].Y) + 1;
+			}
+
 			// Set global line state.
 			_line.AlphaTestValues = AlphaTestValues;
 			_line.Texture = Texture;

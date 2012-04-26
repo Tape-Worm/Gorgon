@@ -21,8 +21,14 @@ This list is not in order.  Please don't get excited.
 * Update 2D shader code (Not necessary, 2D specific shader types are now gone and integrated via #GorgonInclude in the shader).
 * Add bounding box/circle for renderable objects.
 * Add font management code.
-	+ Add code for generating and loading/saving bitmap fonts (for use in the editor, but will be public).
+	+ Code for generating (for use in the editor, but will be public) (Done).	
+	+ Loading/saving bitmap fonts.
 * Add text output code.
+	+ Add text sprite.  (Done)
+	+ Add alignment (Done)
+	+ Add word wrap (Done)
+	+ Add shadowing
+	+ Add global "DrawText" to Drawing property.
 * Add horizontal/vertical flip to sprites.
 * Add animation to renderable objects.
 * Add more primitives:
@@ -32,7 +38,7 @@ This list is not in order.  Please don't get excited.
 * Add perspective camera
 * Add perspective sprites
 * Add user definable shaders for 2D library. (Done)
-* Write editor for creating/editing sprites, fonts, shaders (maybe), textures (maybe)
+* Write editor for creating/editing sprites, fonts, shaders (maybe), textures (maybe, probably not)
 	+ This time make it one large program that uses a project so everything can be integrated.
 	+ Maybe allow for pack file support like zip, previous gorgon bzip stuff.
 * Consider dropping feature level 9 support, it's really painful and limits what we can do.
