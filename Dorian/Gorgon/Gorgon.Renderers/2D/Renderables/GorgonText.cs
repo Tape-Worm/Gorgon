@@ -48,7 +48,7 @@ namespace GorgonLibrary.Renderers
 		private int _vertexCount = 0;													// Number of vertices.
 		private Gorgon2DVertex[] _vertices = null;										// Vertices.
 		private GorgonFont _font = null;												// Font to apply to the text.
-		private StringBuilder _text = null;												// Original text.
+		private string _text = null;													// Original text.
 		private GorgonColor[] _colors = null;											// Vertex colors.
 		private GorgonRenderable.DepthStencilStates _depthStencil = null;				// Depth/stencil states.
 		private GorgonRenderable.BlendState _blend = null;								// Blending states.
@@ -223,18 +223,16 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _text.ToString();
+				return _text;
 			}
 			set
 			{
 				if (value == null)
 					value = string.Empty;
 
-				if (string.Compare(value, _text.ToString(), false) != 0)
+				if (string.Compare(value, _text, false) != 0)
 				{
-					_text.Length = 0;
-					if (value.Length > 0)
-						_text.Append(value);
+					_text = value;
 					UpdateText();
 				}
 			}
@@ -258,6 +256,7 @@ namespace GorgonLibrary.Renderers
 				if (value != _font)
 				{
 					_font = value;
+					_font.HasChanged = false;
 					UpdateText();
 				}
 			}
@@ -286,6 +285,7 @@ namespace GorgonLibrary.Renderers
 
 				_currentTexture = null;
 				_needsVertexUpdate = true;
+				_needsColorUpdate = true;
 				return;
 			}
 
@@ -302,6 +302,8 @@ namespace GorgonLibrary.Renderers
 					_vertices[i].Position = new Vector4(0, 0, 0, 1);
 					_vertices[i].UV = new Vector2(0, 0);
 				}
+
+				_needsColorUpdate = true;
 			}
 
 			// Update the vertex count.
@@ -484,29 +486,27 @@ namespace GorgonLibrary.Renderers
 			{
 				float lineLength = 0;
 
-				if ((_textRect != null) && (_alignment != UI.Alignment.UpperLeft))
+				if ((_alignment != UI.Alignment.UpperLeft) && (_textRect.HasValue))
 					lineLength = LineMeasure(_lines[line], outlineOffset.X);
 
 				for (int i = 0; i < _lines[line].Length; i++)
 				{
 					char c = _lines[line][i];
 
-					switch (c)
-					{
-						case ' ':
-							glyph = _font.Glyphs[c];
-							pos.X += glyph.GlyphCoordinates.Width - 1;
-							continue;
-						case '\t':
-							glyph = _font.Glyphs[' '];
-							pos.X += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
-							continue;
-					}
-
 					if (_font.Glyphs.Contains(c))
 						glyph = _font.Glyphs[c];
 					else
 						glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+
+					switch (c)
+					{
+						case ' ':
+							pos.X += glyph.GlyphCoordinates.Width - 1;
+							continue;
+						case '\t':
+							pos.X += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
+							continue;
+					}
 
 					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset), lineLength);
 
@@ -519,7 +519,7 @@ namespace GorgonLibrary.Renderers
 					{
 						GorgonKerningPair kerning = new GorgonKerningPair(c, _text[i + 1]);
 						if (_font.KerningPairs.ContainsKey(kerning))
-							pos.X += _font.KerningPairs[kerning];
+						    pos.X += _font.KerningPairs[kerning];
 						else
 							pos.X += glyph.Advance.Z;
 					}
@@ -653,13 +653,14 @@ namespace GorgonLibrary.Renderers
 		private void FormatText()
 		{			
 			_formattedText.Length = 0;
-			if ((!_wordWrap) || (TextRectangle == null))
+			if ((!_textRect.HasValue) || (!_wordWrap))
 				_formattedText.Append(_text);
 			else
 				WordWrapText();
 
-			_formattedText.Replace("\n\r", "\r\n");
+			_formattedText.Replace("\n\r", "\n");
 			_formattedText.Replace("\r\n", "\n");
+			_formattedText.Replace("\r", "\n");
 			_lines.Clear();
 			_lines.AddRange(_formattedText.ToString().Split('\n'));
 			_size = MeasureText();
@@ -707,7 +708,7 @@ namespace GorgonLibrary.Renderers
 						GorgonKerningPair kernPair = new GorgonKerningPair(c, line[i + 1]);
 
 						if (_font.KerningPairs.ContainsKey(kernPair))
-							size += _font.KerningPairs[kernPair];
+						    size += _font.KerningPairs[kernPair];
 						else
 							size += glyph.Advance.Z;
 					}
@@ -805,10 +806,13 @@ namespace GorgonLibrary.Renderers
 			if (_text.Length == 0)
 				return;
 
-			// If we've updated the font, then we need to update.
+			// If we've updated the font, then we need to update the text display.
 			if (_font.HasChanged)
 			{
 				UpdateText();
+
+				_needsColorUpdate = true;
+				_needsVertexUpdate = true;
 				_font.HasChanged = false;
 			}
 
@@ -834,9 +838,9 @@ namespace GorgonLibrary.Renderers
 				_needsColorUpdate = false;
 			}
 						
-			for (int i = 0; i < _formattedText.Length; i++)
+			for (int i = 0; i < _text.Length; i++)
 			{
-				char c = _formattedText[i];
+				char c = _text[i];
 
 				if ((c != '\n') && (c != '\t') && (c != ' '))
 				{
@@ -855,6 +859,7 @@ namespace GorgonLibrary.Renderers
 					}
 
 					Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
+
 					vertexIndex += 4;
 				}
 			}
@@ -876,10 +881,11 @@ namespace GorgonLibrary.Renderers
 		{
 			Gorgon2D = gorgon2D;
 
-			_text = new StringBuilder(256);
+			_text = string.Empty;
 			_formattedText = new StringBuilder(256);
 			_lines = new List<string>();
 			_font = font;
+			_font.HasChanged = false;
 			_colors = new GorgonColor[4];
 
 			_depthStencil = new GorgonRenderable.DepthStencilStates();
@@ -1309,13 +1315,8 @@ namespace GorgonLibrary.Renderers
 			{
 				if (_depth != value) 
 				{
-					if (_vertices != null)
-					{
-						for (int i = 0; i < _vertices.Length; i++)
-							_vertices[i].Position.Z = value;
-					}
-
 					_depth = value;
+					_needsVertexUpdate = true;
 				}
 			}
 		}
