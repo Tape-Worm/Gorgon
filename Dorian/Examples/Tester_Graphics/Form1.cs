@@ -250,9 +250,9 @@ namespace Tester_Graphics
 				font = _graphics.Textures.CreateFont("Bradley Hand ITC Regular", new GorgonFontSettings()
 					{
 						TextureSize = new System.Drawing.Size(512, 512),
-						FontFamilyName = "GiGi",
-						FontStyle = FontStyle.Regular,
-						PointSize = 24,
+						FontFamilyName = "Arial",
+						FontStyle = FontStyle.Bold,
+						PointSize = 10,
 						TextContrast = 0,
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 						PackingSpacing = 1,
@@ -262,7 +262,7 @@ namespace Tester_Graphics
 				System.IO.StreamReader reader = null;
 				try
 				{
-					reader = new System.IO.StreamReader(@"D:\Code\Archived\Other\Docs\SomeText.TXT");
+					reader = new System.IO.StreamReader(@"D:\Code\Archived\Other\Docs\LZWEXP.TXT");
 					test = reader.ReadToEnd();
 				}
 				finally
@@ -280,7 +280,7 @@ namespace Tester_Graphics
 				//_text.WordWrap = true;
 				_fps = new GorgonText(_2D, "FPS", font);
 				_fps.Color = Color.LightBlue;
-				//_text.LineSpacing = -1.0f;
+				_text.LineSpacing = -1.0f;
 				//_text.Alignment = Alignment.Center;				
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
@@ -628,9 +628,9 @@ namespace Tester_Graphics
 						//_text.Text = test;
 						//_text.Color = Color.LightGreen;
 						_text.Position = new Vector2(45, 45);
-						_text.Anchor = new Vector2(-3, -5);
+						_text.Anchor = new Vector2(-1, -1);
 						//_text.Scale = new Vector2(2, 2);
-						//_text.LineSpacing += ((float)Math.Sin(angle * Math.PI) / 180.0f);
+						_text.LineSpacing += ((float)Math.Sin(angle * Math.PI) / 180.0f);
 						//_text.TextRectangle = new RectangleF(0, 0, _2D.Target.Viewport.Region.Width - _text.Position.X + _text.Anchor.X, _2D.Target.Viewport.Region.Height - _text.Position.Y + _text.Anchor.Y);
 						//_2D.Drawing.DrawRectangle(new RectangleF(Vector2.Zero, _text.Size), Color.Blue);
 						_text.Angle = angle * 5.0f;
