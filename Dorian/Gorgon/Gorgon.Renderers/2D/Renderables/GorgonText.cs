@@ -49,13 +49,14 @@ namespace GorgonLibrary.Renderers
 		private Gorgon2DVertex[] _vertices = null;										// Vertices.
 		private GorgonFont _font = null;												// Font to apply to the text.
 		private string _text = null;													// Original text.
-		private GorgonColor[] _colors = null;											// Vertex colors.
+		private GorgonColor[] _colors = new GorgonColor[4];								// Vertex colors.
 		private GorgonRenderable.DepthStencilStates _depthStencil = null;				// Depth/stencil states.
 		private GorgonRenderable.BlendState _blend = null;								// Blending states.
 		private GorgonRenderable.TextureSamplerState _sampler = null;					// Texture sampler states.
 		private GorgonTexture2D _currentTexture = null;									// Currently active texture.
 		private bool _needsVertexUpdate = true;											// Flag to indicate that we need a vertex update.
 		private bool _needsColorUpdate = true;											// Flag to indicate that the color needs updating.
+		private bool _needsShadowUpdate = true;											// Flag to indicate that the shadow alpha needs updating.
 		private StringBuilder _formattedText = null;									// Formatted text.
 		private List<string> _lines = null;												// Lines in the text.
 		private Vector2 _size = Vector2.Zero;											// Size of the text block.
@@ -68,6 +69,10 @@ namespace GorgonLibrary.Renderers
 		private bool _wordWrap = false;													// Flag to indicate that the text should word wrap.
 		private Alignment _alignment = Alignment.UpperLeft;								// Text alignment.
 		private float _lineSpace = 1.0f;												// Line spacing.
+		private float[] _shadowAlpha = new float[4];									// Shadow vertex opacity.
+		private Vector2 _shadowOffset = new Vector2(1);									// Shadow offset.
+		private bool _shadowEnabled = false;											// Flag to indicate whether shadowing is enabled or not.
+		private bool _useKerning = true;												// Flag to indicate that kerning should be used.
 		#endregion
 
 		#region Properties.
@@ -82,6 +87,85 @@ namespace GorgonLibrary.Renderers
 					return Gorgon2D.Target.Viewport.Region;
 				else
 					return _textRect.Value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether kerning should be used.
+		/// </summary>
+		public bool UseKerning
+		{
+			get
+			{
+				return _useKerning;
+			}
+			set
+			{
+				if (value != _useKerning)
+				{
+					_useKerning = value;
+					_needsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the offset for the shadow.
+		/// </summary>
+		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is TRUE.</remarks>
+		public Vector2 ShadowOffset
+		{
+			get
+			{
+				return _shadowOffset;
+			}
+			set
+			{
+				if (_shadowOffset != value)
+				{
+					_shadowOffset = value;
+					_needsVertexUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether shadowing is enabled or not.
+		/// </summary>
+		public bool ShadowEnabled
+		{
+			get
+			{
+				return _shadowEnabled;
+			}
+			set
+			{
+				if (_shadowEnabled != value)
+				{
+					_shadowEnabled = value;					
+					_needsShadowUpdate = value;
+					_needsVertexUpdate = true;
+					_needsColorUpdate = true;
+					UpdateText();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the shadow opacity.
+		/// </summary>
+		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is TRUE.</remarks>
+		public float ShadowOpacity
+		{
+			get
+			{
+				return _shadowAlpha[0];
+			}
+			set
+			{
+				for (int i = 0; i < 4; i++)
+					_shadowAlpha[i] = value;
+				_needsShadowUpdate = true;
 			}
 		}
 
@@ -269,8 +353,6 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void UpdateText()
 		{
-			int vertexCount = 0;
-
 			if (_text.Length == 0)
 			{
 				_vertexCount = 0;
@@ -284,18 +366,19 @@ namespace GorgonLibrary.Renderers
 				}
 
 				_currentTexture = null;
+				_needsShadowUpdate = true;
 				_needsVertexUpdate = true;
 				_needsColorUpdate = true;
 				return;
 			}
 
-			// Allocate the number of vertices, if the vertex count is less than the required amount.
-			vertexCount = _text.Length * 4;
-			// TODO: When shadowing, make this length * 8.
+			// Find out how many vertices we have.
+			_vertexCount = _text.Length * (_shadowEnabled ? 8 : 4);
 
-			if (vertexCount > _vertexCount)
+			// Allocate the number of vertices if the vertex count is less than the required amount.
+			if (_vertexCount > _vertices.Length)
 			{
-				_vertices = new Gorgon2DVertex[vertexCount];
+				_vertices = new Gorgon2DVertex[_vertexCount * 2];
 				for (int i = 0; i < _vertices.Length - 1; i++)
 				{
 					_vertices[i].Color = new GorgonColor(1, 1, 1, 1);
@@ -303,11 +386,9 @@ namespace GorgonLibrary.Renderers
 					_vertices[i].UV = new Vector2(0, 0);
 				}
 
+				_needsShadowUpdate = true;
 				_needsColorUpdate = true;
 			}
-
-			// Update the vertex count.
-			_vertexCount = vertexCount;
 
 			// Get the first texture.
 			for (int i = 0; i < _text.Length; i++)
@@ -401,7 +482,9 @@ namespace GorgonLibrary.Renderers
 		/// <param name="vertexIndex">Index of the vertex to modify.</param>
 		/// <param name="textOffset">Offset of the glyph within the text.</param>
 		/// <param name="lineLength">The length of the line of text when alignment is active.</param>
-		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, Vector2 textOffset, float lineLength)
+		/// <param name="cosValue">Cosine value for rotation.</param>
+		/// <param name="sinValue">Sin value for rotation.</param>
+		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, Vector2 textOffset, float lineLength, float cosValue, float sinValue)
 		{
 			Vector2 ltCorner = Vector2.Subtract(textOffset, Anchor);
 			Vector2 rbCorner = Vector2.Add(ltCorner, glyph.GlyphCoordinates.Size);
@@ -424,19 +507,15 @@ namespace GorgonLibrary.Renderers
 
 			if (Angle != 0.0f)
 			{
-				float angle = GorgonMathUtility.Radians(_angle);	// Angle in radians.
-				float cosVal = GorgonMathUtility.Cos(angle);		// Cached cosine.
-				float sinVal = GorgonMathUtility.Sin(angle);		// Cached sine.
-
 				// Rotate the vertices.
-				_vertices[vertexIndex].Position.X = (ltCorner.X * cosVal - ltCorner.Y * sinVal);
-				_vertices[vertexIndex].Position.Y = (ltCorner.X * sinVal + ltCorner.Y * cosVal);
-				_vertices[vertexIndex + 1].Position.X = (rbCorner.X * cosVal - ltCorner.Y * sinVal);
-				_vertices[vertexIndex + 1].Position.Y = (rbCorner.X * sinVal + ltCorner.Y * cosVal);
-				_vertices[vertexIndex + 2].Position.X = (ltCorner.X * cosVal - rbCorner.Y * sinVal);
-				_vertices[vertexIndex + 2].Position.Y = (ltCorner.X * sinVal + rbCorner.Y * cosVal);
-				_vertices[vertexIndex + 3].Position.X = (rbCorner.X * cosVal - rbCorner.Y * sinVal);
-				_vertices[vertexIndex + 3].Position.Y = (rbCorner.X * sinVal + rbCorner.Y * cosVal);
+				_vertices[vertexIndex].Position.X = (ltCorner.X * cosValue - ltCorner.Y * sinValue);
+				_vertices[vertexIndex].Position.Y = (ltCorner.X * sinValue + ltCorner.Y * cosValue);
+				_vertices[vertexIndex + 1].Position.X = (rbCorner.X * cosValue - ltCorner.Y * sinValue);
+				_vertices[vertexIndex + 1].Position.Y = (rbCorner.X * sinValue + ltCorner.Y * cosValue);
+				_vertices[vertexIndex + 2].Position.X = (ltCorner.X * cosValue - rbCorner.Y * sinValue);
+				_vertices[vertexIndex + 2].Position.Y = (ltCorner.X * sinValue + rbCorner.Y * cosValue);
+				_vertices[vertexIndex + 3].Position.X = (rbCorner.X * cosValue - rbCorner.Y * sinValue);
+				_vertices[vertexIndex + 3].Position.Y = (rbCorner.X * sinValue + rbCorner.Y * cosValue);
 			}
 			else
 			{
@@ -478,7 +557,10 @@ namespace GorgonLibrary.Renderers
 			Vector2 pos = Vector2.Zero;
 			Vector2 outlineOffset = Vector2.Zero;
 			GorgonGlyph glyph = null;
-
+			float angle = GorgonMathUtility.Radians(_angle);	// Angle in radians.
+			float cosVal = GorgonMathUtility.Cos(angle);		// Cached cosine.
+			float sinVal = GorgonMathUtility.Sin(angle);		// Cached sine.
+			
 			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
 				outlineOffset = new Vector2(_font.Settings.OutlineSize, _font.Settings.OutlineSize);
 
@@ -507,24 +589,37 @@ namespace GorgonLibrary.Renderers
 							pos.X += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
 							continue;
 					}
+					
+					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset), lineLength, cosVal, sinVal);
 
-					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset), lineLength);
+					// Add shadow character.
+					if (_shadowEnabled)
+					{
+						UpdateTransform(glyph, vertexIndex, Vector2.Add(Vector2.Add(pos, glyph.Offset), _shadowOffset), lineLength, cosVal, sinVal);
+						vertexIndex += 4;
+					}
 
+					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset), lineLength, cosVal, sinVal);
 					vertexIndex += 4;
 
-					pos.X += glyph.Advance.X + glyph.Advance.Y + outlineOffset.X;
-
 					// Apply kerning pairs.
-					if ((i < _text.Length - 1) && (_font.KerningPairs.Count > 0))
+					if (_useKerning)
 					{
-						GorgonKerningPair kerning = new GorgonKerningPair(c, _text[i + 1]);
-						if (_font.KerningPairs.ContainsKey(kerning))
-						    pos.X += _font.KerningPairs[kerning];
+						pos.X += glyph.Advance.X + glyph.Advance.Y + outlineOffset.X;
+
+						if ((i < _text.Length - 1) && (_font.KerningPairs.Count > 0))
+						{
+							GorgonKerningPair kerning = new GorgonKerningPair(c, _text[i + 1]);
+							if (_font.KerningPairs.ContainsKey(kerning))
+								pos.X += _font.KerningPairs[kerning];
+							else
+								pos.X += glyph.Advance.Z;
+						}
 						else
 							pos.X += glyph.Advance.Z;
 					}
 					else
-						pos.X += glyph.Advance.Z;
+						pos.X += glyph.GlyphCoordinates.Width;
 				}
 
 				// TODO: Ensure that this is documented somewhere.				
@@ -538,16 +633,43 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to update shadow alpha.
+		/// </summary>
+		private void UpdateShadowAlpha()
+		{
+			for (int i = 0; i < _vertexCount; i += 8)
+			{
+				_vertices[i].Color = new GorgonColor(0, 0, 0, _shadowAlpha[0]);
+				_vertices[i + 1].Color = new GorgonColor(0, 0, 0, _shadowAlpha[1]);
+				_vertices[i + 2].Color = new GorgonColor(0, 0, 0, _shadowAlpha[2]);
+				_vertices[i + 3].Color = new GorgonColor(0, 0, 0, _shadowAlpha[3]);
+			}
+		}
+
+		/// <summary>
 		/// Function to update the colors.
 		/// </summary>
 		private void UpdateColors()
 		{
-			for (int i = 0; i < _vertices.Length; i+=4)
+			if (!_shadowEnabled)
 			{
-				_vertices[i].Color = _colors[0];
-				_vertices[i + 1].Color = _colors[1];
-				_vertices[i + 2].Color = _colors[2];
-				_vertices[i + 3].Color = _colors[3];
+				for (int i = 0; i < _vertexCount; i += 4)
+				{
+					_vertices[i].Color = _colors[0];
+					_vertices[i + 1].Color = _colors[1];
+					_vertices[i + 2].Color = _colors[2];
+					_vertices[i + 3].Color = _colors[3];
+				}
+			}
+			else
+			{
+				for (int i = 4; i < _vertexCount; i += 8)
+				{
+					_vertices[i].Color = _colors[0];
+					_vertices[i + 1].Color = _colors[1];
+					_vertices[i + 2].Color = _colors[2];
+					_vertices[i + 3].Color = _colors[3];
+				}
 			}
 		}
 
@@ -601,14 +723,20 @@ namespace GorgonLibrary.Renderers
 					default:
 						float kernValue = glyph.Advance.Z;
 
-						if ((i < _formattedText.Length - 1) && (_font.KerningPairs.Count > 0))
+						if (_useKerning)
 						{
-							GorgonKerningPair kernPair = new GorgonKerningPair(character, _formattedText[i + 1]);
-							if (_font.KerningPairs.ContainsKey(kernPair))
-								kernValue = _font.KerningPairs[kernPair];
-						}
+							if ((i < _formattedText.Length - 1) && (_font.KerningPairs.Count > 0))
+							{
+								GorgonKerningPair kernPair = new GorgonKerningPair(character, _formattedText[i + 1]);
+								if (_font.KerningPairs.ContainsKey(kernPair))
+									kernValue = _font.KerningPairs[kernPair];
+							}
 
-						pos += glyph.Advance.X + glyph.Advance.Y + kernValue + outlineSize;
+							pos += glyph.Advance.X + glyph.Advance.Y + kernValue + outlineSize;
+						}
+						else
+							pos += glyph.GlyphCoordinates.Width + outlineSize;
+
 						break;
 				}
 
@@ -699,24 +827,29 @@ namespace GorgonLibrary.Renderers
 						continue;
 				}
 
-				if (i < line.Length - 1)
+				if (_useKerning)
 				{
-					size += glyph.Advance.X + glyph.Advance.Y + outlineOffset;
-
-					if (_font.KerningPairs.Count > 0)
+					if (i < line.Length - 1)
 					{
-						GorgonKerningPair kernPair = new GorgonKerningPair(c, line[i + 1]);
+						size += glyph.Advance.X + glyph.Advance.Y + outlineOffset;
 
-						if (_font.KerningPairs.ContainsKey(kernPair))
-						    size += _font.KerningPairs[kernPair];
+						if (_font.KerningPairs.Count > 0)
+						{
+							GorgonKerningPair kernPair = new GorgonKerningPair(c, line[i + 1]);
+
+							if (_font.KerningPairs.ContainsKey(kernPair))
+								size += _font.KerningPairs[kernPair];
+							else
+								size += glyph.Advance.Z;
+						}
 						else
 							size += glyph.Advance.Z;
 					}
 					else
-						size += glyph.Advance.Z;
+						size += glyph.GlyphCoordinates.Width;
 				}
 				else
-					size += glyph.GlyphCoordinates.Width;
+					size += glyph.GlyphCoordinates.Width + outlineOffset;
 			}
 			return size;
 		}
@@ -837,6 +970,43 @@ namespace GorgonLibrary.Renderers
 				UpdateColors();
 				_needsColorUpdate = false;
 			}
+
+			if ((_shadowEnabled) && (_needsShadowUpdate))
+			{
+				UpdateShadowAlpha();
+				_needsShadowUpdate = false;
+			}
+
+			if (_shadowEnabled)
+			{
+				for (int i = 0; i < _text.Length; i++)
+				{
+					char c = _text[i];
+
+					if ((c != '\n') && (c != '\t') && (c != ' '))
+					{
+						GorgonGlyph glyph = null;
+
+						if (_font.Glyphs.Contains(c))
+							glyph = _font.Glyphs[c];
+						else
+							glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+
+						// Change to the current texture.
+						if (Gorgon2D.PixelShader.Textures[0] != glyph.Texture)
+						{
+							Gorgon2D.RenderObjects();
+							Gorgon2D.PixelShader.Textures[0] = glyph.Texture;
+						}
+
+						// Add shadowed characters.
+						Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
+						vertexIndex += 8;
+					}
+				}
+
+				vertexIndex = 4;
+			}
 						
 			for (int i = 0; i < _text.Length; i++)
 			{
@@ -859,8 +1029,7 @@ namespace GorgonLibrary.Renderers
 					}
 
 					Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
-
-					vertexIndex += 4;
+					vertexIndex += _shadowEnabled ? 8 : 4;
 				}
 			}
 
@@ -886,7 +1055,7 @@ namespace GorgonLibrary.Renderers
 			_lines = new List<string>();
 			_font = font;
 			_font.HasChanged = false;
-			_colors = new GorgonColor[4];
+			_shadowAlpha[3] = _shadowAlpha[2] = _shadowAlpha[1] = _shadowAlpha[0] = 0.25f;
 
 			_depthStencil = new GorgonRenderable.DepthStencilStates();
 			_blend = new GorgonRenderable.BlendState();

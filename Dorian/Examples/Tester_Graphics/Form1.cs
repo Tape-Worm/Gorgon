@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary;
+using GorgonLibrary.Math;
 using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
@@ -256,13 +257,13 @@ namespace Tester_Graphics
 						TextContrast = 0,
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 						PackingSpacing = 1,
-						OutlineSize = 0
+						OutlineSize = 1
 					});
 
 				System.IO.StreamReader reader = null;
 				try
 				{
-					reader = new System.IO.StreamReader(@"D:\Code\Archived\Other\Docs\LZWEXP.TXT");
+					reader = new System.IO.StreamReader(@"X:\Unpak\LZWEXP.TXT");
 					test = reader.ReadToEnd();
 				}
 				finally
@@ -279,14 +280,17 @@ namespace Tester_Graphics
 				//_text.ClipToRectangle = true;
 				//_text.WordWrap = true;
 				_fps = new GorgonText(_2D, "FPS", font);
+				_fps.ShadowEnabled = true;
 				_fps.Color = Color.LightBlue;
 				_text.LineSpacing = -1.0f;
+				//_text.ShadowEnabled = true;
+				//_text.UseKerning = false;
 				//_text.Alignment = Alignment.Center;				
+				float lineSpaceAngle = 90;
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 						//Text = timing.AverageFPS.ToString("0.0");
 						fps = timing.AverageFPS.ToString("0.0");
-						angle += 1.0f * timing.FrameDelta;
 						_2D.Clear(Color.White);
 //                        /*						if (!backForth)
 //                                                    angle += 0.125f * timing.FrameDelta;
@@ -623,28 +627,33 @@ namespace Tester_Graphics
 						//}
 
 						//_2D.Drawing.Blit(font.Textures[0], Vector2.Zero);
-						_text.Color = Color.FromArgb(96, 0, 0, 0);
-						//_text.SmoothingMode = SmoothingMode.Smooth;
+						//_text.Color = Color.FromArgb(96, 0, 0, 0);
+						float rads = GorgonMathUtility.Radians(angle * 90.0f);
+						float cos = GorgonMathUtility.Cos(rads);
+						float sin = GorgonMathUtility.Sin(rads);
+
+						_text.ShadowOffset = new Vector2(2 * cos - 2 * sin, 2 * sin + 2 * cos);
+						_text.SmoothingMode = SmoothingMode.Smooth;
 						//_text.Text = test;
 						//_text.Color = Color.LightGreen;
 						_text.Position = new Vector2(45, 45);
-						_text.Anchor = new Vector2(-1, -1);
+						//_text.Anchor = new Vector2(-1, -1);
 						//_text.Scale = new Vector2(2, 2);
-						_text.LineSpacing += ((float)Math.Sin(angle * Math.PI) / 180.0f);
+						_text.LineSpacing = -(((float)Math.Sin(GorgonMathUtility.Radians(lineSpaceAngle)) + 0.95f) * (1 / 1.95f));
 						//_text.TextRectangle = new RectangleF(0, 0, _2D.Target.Viewport.Region.Width - _text.Position.X + _text.Anchor.X, _2D.Target.Viewport.Region.Height - _text.Position.Y + _text.Anchor.Y);
 						//_2D.Drawing.DrawRectangle(new RectangleF(Vector2.Zero, _text.Size), Color.Blue);
 						_text.Angle = angle * 5.0f;
 						//_text.ClipToRectangle = true;
-						_text.Draw();						
+						//_text.Draw();						
 						_text.Color = Color.LightGreen;
-						_text.Anchor = Vector2.Zero;
-						_text.Position = new Vector2(45, 45);
+						//_text.Anchor = Vector2.Zero;
+						//_text.Position = new Vector2(45, 45);
 						_text.Draw();
-						_fps.Color = Color.FromArgb(96, 0, 0, 0);						
-						_fps.Anchor = new Vector2(-1, -1);
-						_fps.Text = timing.AverageFPS.ToString("0.0#");
+						//_fps.Color = Color.FromArgb(96, 0, 0, 0);
+						//_fps.Anchor = new Vector2(-1, -1);
+						_fps.Text = timing.AverageFPS.ToString("0.0#") + " DT: " + (timing.AverageFrameDelta * 1000.0f).ToString("0.000") + " ms";
 						_fps.Position = Vector2.Zero;
-						_fps.Draw();
+						//_fps.Draw();
 						_fps.Color = Color.LightBlue;
 						_fps.Anchor = Vector2.Zero;
 						_fps.Draw();
@@ -654,6 +663,15 @@ namespace Tester_Graphics
 
 						//Text = timing.AverageFPS.ToString("0.0#");
 						_2D.Render();
+
+						lineSpaceAngle += 180.0f * timing.FrameDelta;
+						if (lineSpaceAngle > 360.0f)
+							lineSpaceAngle = 360.0f - lineSpaceAngle;
+
+						angle += 1.0f * timing.FrameDelta;
+						if (angle > 360.0f)
+							angle = 360.0f - angle;
+
 						return true;
 					};
 
