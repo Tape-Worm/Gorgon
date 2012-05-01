@@ -41,7 +41,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>GorIcon.ico</ApplicationIcon>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -73,7 +73,7 @@
     <Compile Include="Devices\XInput.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GorIcon.ico" />
+    <Content Include="Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
