@@ -216,16 +216,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\GorIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <None Include="Resources\information.png" />
-    <None Include="Resources\Default.png" />
-    <None Include="Resources\OK.png" />
-    <None Include="Resources\Error.png" />
-    <None Include="Resources\Confirmation.png" />
-    <None Include="Resources\cancel.png" />
+    <None Include="Resources\Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

@@ -31,97 +31,67 @@ using System.Windows.Forms;
 
 namespace GorgonLibrary.UI
 {
-    /// <summary>
-    /// Base form for common dialogs.
-    /// </summary>
-    internal partial class BaseDialog : Form
-    {
-        #region Variables.
-        private string _message = string.Empty;             // Message to be displayed.
-        private Point _textPosition = new Point(72, 2);     // Text position.
-        private Size _maxTextSize = new Size(327, 152);     // Maximum text size.
-        #endregion
+	/// <summary>
+	/// Base form for common dialogs.
+	/// </summary>
+	internal partial class BaseDialog : Form
+	{
+		#region Variables.
+		private string _message = string.Empty;             // Message to be displayed.
+		private Point _textPosition = new Point(2, 2);		// Text position.
+		private Size _maxTextSize = new Size(397, 152);     // Maximum text size.
+		#endregion
 
-        #region Properties
-        /// <summary>
-        /// Property to set or return the horizontal position of the text.
-        /// </summary>
-        protected int MessageLeft
-        {
-            get
-            {
-                return _textPosition.X;
-            }
-            set
-            {
-                _textPosition.X = value;                
-            }
-        }
+		#region Properties
+		/// <summary>
+		/// Property to set or return the maximum width of the text.
+		/// </summary>
+		protected int MessageWidth
+		{
+			get
+			{
+				return _maxTextSize.Width;
+			}
+			set
+			{
+				_maxTextSize.Width = value;
+			}
+		}
 
-        /// <summary>
-        /// Property to set or return the vertical position of the text.
-        /// </summary>
-        protected int MessageTop
-        {
-            get
-            {
-                return _textPosition.Y;
-            }
-            set
-            {
-                _textPosition.Y = value;
-            }
-        }
+		/// <summary>
+		/// Property to set or return the maximum height of the text.
+		/// </summary>
+		protected int MessageHeight
+		{
+			get
+			{ 
+				return _maxTextSize.Height;
+			}
+			set
+			{
+				_maxTextSize.Height = value;
+			}
+		}
 
-        /// <summary>
-        /// Property to set or return the maximum width of the text.
-        /// </summary>
-        protected int MessageWidth
-        {
-            get
-            {
-                return _maxTextSize.Width;
-            }
-            set
-            {
-                _maxTextSize.Width = value;
-            }
-        }
+		/// <summary>
+		/// Property to set or return the message for the dialog.
+		/// </summary>
+		[Browsable(false)]
+		public virtual string Message
+		{
+			get
+			{
+				return _message;
+			}
+			set
+			{
+				_message = value;
+				ValidateFunctions();
+			}
+		}
+		#endregion
 
-        /// <summary>
-        /// Property to set or return the maximum height of the text.
-        /// </summary>
-        protected int MessageHeight
-        {
-            get
-            { 
-                return _maxTextSize.Height;
-            }
-            set
-            {
-                _maxTextSize.Height = value;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the message for the dialog.
-        /// </summary>
-        [Browsable(false)]
-        public virtual string Message
-        {
-            get
-            {
-                return _message;
-            }
-            set
-            {
-                _message = value;
-                ValidateFunctions();
-            }
-        }
-        #endregion
-
-        #region Methods.
+		#region Methods.
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown"></see> event.
 		/// </summary>
@@ -135,29 +105,29 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-        /// Function to validate the various functions bound to the form.
-        /// </summary>
-        protected virtual void ValidateFunctions()
-        {
-        }
+		/// Function to validate the various functions bound to the form.
+		/// </summary>
+		protected virtual void ValidateFunctions()
+		{
+		}
 
-        /// <summary>
-        /// Form load event.
-        /// </summary>
-        /// <param name="e">Event arguments.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            if (!DesignMode)
-            {
-                // Inherit the parent icon.
-                if (Owner != null)
-                    Icon = Owner.Icon;
+		/// <summary>
+		/// Form load event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			if (!DesignMode)
+			{
+				// Inherit the parent icon.
+				if (Owner != null)
+					Icon = Owner.Icon;
 
-                ValidateFunctions();
-                OnSizeChanged(EventArgs.Empty);
-                Visible = true;
-            }
-        }
+				ValidateFunctions();
+				OnSizeChanged(EventArgs.Empty);
+				Visible = true;
+			}
+		}
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Shown"></see> event.
@@ -175,87 +145,85 @@ namespace GorgonLibrary.UI
 		/// Function to perform the actual drawing of the dialog.
 		/// </summary>
 		/// <param name="g">Graphics object to use.</param>
-        protected virtual void DrawDialog(System.Drawing.Graphics g)
+		protected virtual void DrawDialog(System.Drawing.Graphics g)
 		{
 		}
 
-        /// <summary>
-        /// Function to adjust the size of the form based on the details.
-        /// </summary>
-        /// <param name="g">Graphics interface.</param>
+		/// <summary>
+		/// Function to adjust the size of the form based on the details.
+		/// </summary>
+		/// <param name="g">Graphics interface.</param>
 		/// <param name="margin">Places a margin at the bottom of the form.</param>
-        /// <returns>The new maximum height of the client area.</returns>
-        protected float AdjustSize(System.Drawing.Graphics g, int margin) 
-        {
-            SizeF textDimensions = SizeF.Empty;                     // Text dimensions
-            float maxTextHeight;                                    // Maximum text height
-            Size newClientSize = Size.Empty;                        // New client size.
-            
-            g.PageUnit = GraphicsUnit.Pixel;
-            textDimensions = g.MeasureString(_message, Font, _maxTextSize.Width);
-
-            // Resize the form if needed.
-            newClientSize = ClientSize;
-
-            if (textDimensions.Width + _textPosition.X > newClientSize.Width)
-                newClientSize.Width = (int)textDimensions.Width + _textPosition.X + 8;
-            
-            maxTextHeight = textDimensions.Height;
-            if (maxTextHeight > _maxTextSize.Height) 
-                maxTextHeight = _maxTextSize.Height;
-
-            if (maxTextHeight + 2 > newClientSize.Height - OKButton.Height - (10 + margin))
-                newClientSize.Height = ((int)maxTextHeight) + 2 + OKButton.Height + 10 + margin;
+		/// <returns>The new maximum height of the client area.</returns>
+		protected float AdjustSize(System.Drawing.Graphics g, int margin) 
+		{
+			SizeF textDimensions = SizeF.Empty;                     // Text dimensions
+			float maxTextHeight;                                    // Maximum text height
+			Size newClientSize = Size.Empty;                        // New client size.
 			
-            
-            if ((ClientSize.Width != newClientSize.Width) || (ClientSize.Height != newClientSize.Height))
-                ClientSize = newClientSize;
+			g.PageUnit = GraphicsUnit.Pixel;
+			textDimensions = g.MeasureString(_message, Font, _maxTextSize.Width);
 
-            return maxTextHeight;
-        }
+			// Resize the form if needed.
+			newClientSize = ClientSize;
 
-        /// <summary>
-        /// Function to draw the dialog box message.
-        /// </summary>    /// 
-        /// <param name="g">Graphics interface.</param>
-        /// <param name="maxTextHeight">Maximum height that the text will fit into.</param>
-        protected void DrawMessage(System.Drawing.Graphics g, float maxTextHeight)
-        {
-            SizeF textDimensions = SizeF.Empty;         // Text dimensions
-            Brush backBrush;                            // Brush
+			if (textDimensions.Width + _textPosition.X > newClientSize.Width)
+				newClientSize.Width = (int)textDimensions.Width + _textPosition.X + 8;
+			
+			maxTextHeight = textDimensions.Height;
+			if (maxTextHeight > _maxTextSize.Height) 
+				maxTextHeight = _maxTextSize.Height;
 
-            backBrush = new SolidBrush(BackColor);
-			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            textDimensions = g.MeasureString(_message, Font, new SizeF(ClientSize.Width - MessageLeft, maxTextHeight));
-            g.FillRectangle(backBrush, MessageLeft, MessageTop, textDimensions.Width, maxTextHeight);
-            g.DrawString(_message, Font, Brushes.Black, new RectangleF(MessageLeft, MessageTop, textDimensions.Width, maxTextHeight));
+			if (maxTextHeight + 2 > newClientSize.Height - buttonOK.Height - (10 + margin))
+				newClientSize.Height = ((int)maxTextHeight) + 2 + buttonOK.Height + 10 + margin;
+			
+			
+			if ((ClientSize.Width != newClientSize.Width) || (ClientSize.Height != newClientSize.Height))
+				ClientSize = newClientSize;
 
-            backBrush.Dispose();
-        }
+			return maxTextHeight;
+		}
 
-        /// <summary>
-        /// Size changed event.
-        /// </summary>
-        /// <param name="e">Event arguments.</param>
-        protected override void OnSizeChanged(EventArgs e)
-        {
-            if (!DesignMode) 
-            {
-                // Reposition.
-                if ((StartPosition == FormStartPosition.CenterScreen) || (StartPosition == FormStartPosition.CenterParent)) 
-                {
-                    if (Parent == null) 
-                    {
-                        Left = (Screen.FromControl(this).WorkingArea.Width / 2) - (Width / 2);
-                        Top = (Screen.FromControl(this).WorkingArea.Height / 2) - (Height / 2);
-                    } else
-                    {
-                        Left = (Parent.Width / 2) - (Width / 2);
-                        Top = (Parent.Height / 2) - (Height / 2);
-                    }
-                }
-            }
-        }
+		/// <summary>
+		/// Function to draw the dialog box message.
+		/// </summary>    /// 
+		/// <param name="g">Graphics interface.</param>
+		/// <param name="maxTextHeight">Maximum height that the text will fit into.</param>
+		protected void DrawMessage(System.Drawing.Graphics g, float maxTextHeight)
+		{
+			SizeF textDimensions = SizeF.Empty;         // Text dimensions
+			int borderHeight = buttonOK.Top - 5;
+
+			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+			textDimensions = g.MeasureString(_message, Font, new SizeF(ClientSize.Width - 2, maxTextHeight));
+			g.FillRectangle(Brushes.White, 0, 0, Size.Width, borderHeight);
+			g.DrawLine(Pens.Black, new Point(0, borderHeight), new Point(Size.Width, borderHeight));
+			g.DrawString(_message, Font, Brushes.Black, new RectangleF(2, 2, textDimensions.Width, maxTextHeight));
+		}
+
+		/// <summary>
+		/// Size changed event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			if (!DesignMode) 
+			{
+				// Reposition.
+				if ((StartPosition == FormStartPosition.CenterScreen) || (StartPosition == FormStartPosition.CenterParent)) 
+				{
+					if (Parent == null) 
+					{
+						Left = (Screen.FromControl(this).WorkingArea.Width / 2) - (Width / 2);
+						Top = (Screen.FromControl(this).WorkingArea.Height / 2) - (Height / 2);
+					} else
+					{
+						Left = (Parent.Width / 2) - (Width / 2);
+						Top = (Parent.Height / 2) - (Height / 2);
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Raises the <see cref="E:Paint"/> event.
@@ -268,16 +236,16 @@ namespace GorgonLibrary.UI
 			if (!DesignMode)
 				DrawDialog(e.Graphics);
 		}
-        #endregion
+		#endregion
 
-        #region Constructor
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public BaseDialog()
-        {
-            InitializeComponent();
-        }
-        #endregion
-    }
+		#region Constructor
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public BaseDialog()
+		{
+			InitializeComponent();
+		}
+		#endregion
+	}
 }

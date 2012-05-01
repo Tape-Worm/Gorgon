@@ -84,15 +84,15 @@ namespace GorgonLibrary.UI
 			{
 				buttonCancel.Left = ClientSize.Width - buttonCancel.Width - 8;
 				buttonNo.Left = buttonCancel.Left - buttonNo.Width - 8;
-				OKButton.Left = buttonNo.Left - OKButton.Width - 8;
+				buttonOK.Left = buttonNo.Left - buttonOK.Width - 8;
 			}
 			else
 			{
 				buttonNo.Left = ClientSize.Width - buttonNo.Width - 8;
-				OKButton.Left = buttonNo.Left - OKButton.Width - 8;
+				buttonOK.Left = buttonNo.Left - buttonOK.Width - 8;
 			}
 
-			buttonNo.Top = buttonCancel.Top = OKButton.Top = checkToAll.Top - OKButton.Height - 4;
+			buttonNo.Top = buttonCancel.Top = buttonOK.Top = checkToAll.Top - buttonOK.Height - 4;
 			checkToAll.Top = ClientSize.Height - 4 - checkToAll.Height;
 
 			DrawMessage(g, maxTextHeight);			

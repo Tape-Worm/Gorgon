@@ -1087,7 +1087,12 @@ namespace GorgonLibrary.Graphics
 				}
 
 				
-				newFont = new Font(Settings.FontFamilyName, (Settings.PointSize * graphics.DpiY) / 72.0f, Settings.FontStyle, GraphicsUnit.Pixel);
+				// Scale the font appropriately.
+				if (Settings.FontHeightMode == FontHeightMode.Points)
+					newFont = new Font(Settings.FontFamilyName, (Settings.Size * graphics.DpiY) / 72.0f, Settings.FontStyle, GraphicsUnit.Pixel);
+				else
+					newFont = new Font(Settings.FontFamilyName, Settings.Size, Settings.FontStyle, GraphicsUnit.Pixel);
+
 				FontHeight = newFont.GetHeight(graphics);
 				family = newFont.FontFamily;
 

@@ -430,7 +430,7 @@ namespace GorgonLibrary.Graphics
 				Brush = null,
 				FontFamilyName = fontFamily,
 				FontStyle = style,
-				PointSize = pointSize,
+				Size = pointSize,
 				TextureSize = textureSize
 			};
 
@@ -465,7 +465,7 @@ namespace GorgonLibrary.Graphics
 				Brush = null,
 				FontFamilyName = font.FontFamily.Name,
 				FontStyle = font.Style,
-				PointSize = font.SizeInPoints,
+				Size = font.SizeInPoints,
 				TextureSize = textureSize
 			};
 

@@ -1012,7 +1012,7 @@ namespace GorgonLibrary.Renderers
 			{
 				char c = _text[i];
 
-				if ((c != '\n') && (c != '\t') && (c != ' '))
+				if ((c != '\n') && (c != '\t') && (c != ' ') && (c != '\r'))
 				{
 					GorgonGlyph glyph = null;
 

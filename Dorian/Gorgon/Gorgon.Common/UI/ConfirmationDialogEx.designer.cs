@@ -55,7 +55,6 @@ namespace GorgonLibrary.UI
 		private void InitializeComponent()
 		{
 			this.checkToAll = new System.Windows.Forms.CheckBox();
-			((System.ComponentModel.ISupportInitialize)(this.imageIcon)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// buttonNo
@@ -70,21 +69,23 @@ namespace GorgonLibrary.UI
 			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			// 
-			// OKButton
+			// buttonOK
 			// 
-			this.OKButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.OKButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
-			this.OKButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.OKButton.Location = new System.Drawing.Point(11, 78);
+			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
+			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.buttonOK.Location = new System.Drawing.Point(11, 78);
 			// 
 			// checkToAll
 			// 
 			this.checkToAll.AutoSize = true;
-			this.checkToAll.Location = new System.Drawing.Point(12, 107);
+			this.checkToAll.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkToAll.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.checkToAll.Location = new System.Drawing.Point(54, 107);
 			this.checkToAll.Name = "checkToAll";
-			this.checkToAll.Size = new System.Drawing.Size(165, 17);
+			this.checkToAll.Size = new System.Drawing.Size(171, 20);
 			this.checkToAll.TabIndex = 12;
-			this.checkToAll.Text = "&Apply the answer to all items?";
+			this.checkToAll.Text = "&Apply selection to all items?";
 			this.checkToAll.UseVisualStyleBackColor = true;
 			// 
 			// ConfirmationDialogEx
@@ -98,9 +99,7 @@ namespace GorgonLibrary.UI
 			this.Controls.SetChildIndex(this.buttonCancel, 0);
 			this.Controls.SetChildIndex(this.buttonNo, 0);
 			this.Controls.SetChildIndex(this.checkToAll, 0);
-			this.Controls.SetChildIndex(this.OKButton, 0);
-			this.Controls.SetChildIndex(this.imageIcon, 0);
-			((System.ComponentModel.ISupportInitialize)(this.imageIcon)).EndInit();
+			this.Controls.SetChildIndex(this.buttonOK, 0);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

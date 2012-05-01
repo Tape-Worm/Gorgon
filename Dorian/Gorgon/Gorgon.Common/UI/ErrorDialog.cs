@@ -32,10 +32,10 @@ namespace GorgonLibrary.UI
 	/// Dialog for error messages.
 	/// </summary>
 	internal partial class ErrorDialog 
-        : BaseDialog
+		: BaseDialog
 	{
 		#region Variables.
-        private int _lastWidth;                 // Last used width.
+		private int _lastWidth;                 // Last used width.
 		private string _errorDetails;			// Error details.
 		#endregion
 
@@ -87,6 +87,7 @@ namespace GorgonLibrary.UI
 			}
 
 			this.Refresh();
+			this.Invalidate();
 		}
 
 		/// <summary>
@@ -100,10 +101,10 @@ namespace GorgonLibrary.UI
 		}
 		
 		/// <summary>
-        /// Function to validate the buttons.
-        /// </summary>
-        protected override void ValidateFunctions()
-        {
+		/// Function to validate the buttons.
+		/// </summary>
+		protected override void ValidateFunctions()
+		{
 			if (_errorDetails == string.Empty)
 				detailsButton.Enabled = false;
 			else
@@ -118,9 +119,9 @@ namespace GorgonLibrary.UI
 		{
 			base.OnLoad(e);
 
-            MessageHeight = 256;
-            _lastWidth = Width;
-			OKButton.Focus();
+			MessageHeight = 256;
+			_lastWidth = Width;
+			buttonOK.Focus();
 			ValidateFunctions();
 		}
 
@@ -128,7 +129,7 @@ namespace GorgonLibrary.UI
 		/// Function to perform the actual drawing of the message.
 		/// </summary>
 		/// <param name="g">Graphics object to use.</param>
-        protected override void DrawDialog(System.Drawing.Graphics g)
+		protected override void DrawDialog(System.Drawing.Graphics g)
 		{
 			float maxTextHeight;                // Maximum text height.
 
@@ -136,26 +137,26 @@ namespace GorgonLibrary.UI
 			maxTextHeight = AdjustSize(g,0);
 
 			// Relocate buttons.
-			OKButton.Left = ClientSize.Width - OKButton.Width - 8;
+			buttonOK.Left = ClientSize.Width - buttonOK.Width - 8;
 
 			// Adjust for detail window.
 			if (detailsButton.Checked)
 			{
 				detailsButton.Top = errorDetails.Top - 6 - detailsButton.Height;
-				OKButton.Top = errorDetails.Top - 6 - OKButton.Height;
+				buttonOK.Top = errorDetails.Top - 6 - buttonOK.Height;
 			}
 			else
 			{
 				detailsButton.Top = ClientSize.Height - 6 - detailsButton.Height;
-				OKButton.Top = ClientSize.Height - 6 - OKButton.Height;
+				buttonOK.Top = ClientSize.Height - 6 - buttonOK.Height;
 			}
 
 			// Adjust the position of the details box.
 			errorDetails.Top = ClientSize.Height - 8 - errorDetails.Height;
 
-			DrawMessage(g, maxTextHeight);			
+			DrawMessage(g, maxTextHeight);
 		}
-        #endregion
+		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

@@ -680,7 +680,7 @@ namespace Tester_Graphics
 			}
 			catch (Exception ex)
 			{
-				GorgonDialogs.ErrorBox(this, ex);
+				GorgonDialogs.ErrorBox(null, ex);
 			}
 		}		
 
