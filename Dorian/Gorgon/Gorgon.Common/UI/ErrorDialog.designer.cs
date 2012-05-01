@@ -58,23 +58,15 @@ namespace GorgonLibrary.UI
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorDialog));
 			this.errorDetails = new System.Windows.Forms.TextBox();
 			this.detailsButton = new System.Windows.Forms.CheckBox();
-			((System.ComponentModel.ISupportInitialize)(this.imageIcon)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// imageIcon
+			// buttonOK
 			// 
-			this.imageIcon.Image = global::GorgonLibrary.Properties.Resources.Error;
-			this.imageIcon.Visible = true;
-			// 
-			// OKButton
-			// 
-			this.OKButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.OKButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
-			this.OKButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.OKButton.Image = global::GorgonLibrary.Properties.Resources.OK;
-			this.OKButton.TabIndex = 0;
-			this.OKButton.Text = "&OK";
-			this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
+			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
+			this.buttonOK.TabIndex = 0;
+			this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
 			// 
 			// errorDetails
 			// 
@@ -82,6 +74,7 @@ namespace GorgonLibrary.UI
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.errorDetails.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.errorDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.errorDetails.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.errorDetails.Location = new System.Drawing.Point(8, 112);
 			this.errorDetails.MaxLength = 2097152;
 			this.errorDetails.Multiline = true;
@@ -96,15 +89,20 @@ namespace GorgonLibrary.UI
 			// detailsButton
 			// 
 			this.detailsButton.Appearance = System.Windows.Forms.Appearance.Button;
-			this.detailsButton.Image = global::GorgonLibrary.Properties.Resources.information;
+			this.detailsButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.detailsButton.FlatAppearance.BorderSize = 2;
+			this.detailsButton.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.detailsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.detailsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.detailsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.detailsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.detailsButton.Location = new System.Drawing.Point(12, 78);
 			this.detailsButton.Name = "detailsButton";
-			this.detailsButton.Size = new System.Drawing.Size(77, 28);
+			this.detailsButton.Size = new System.Drawing.Size(70, 44);
 			this.detailsButton.TabIndex = 1;
 			this.detailsButton.Text = "&Details";
-			this.detailsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.detailsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-			this.detailsButton.UseVisualStyleBackColor = true;
+			this.detailsButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.detailsButton.UseVisualStyleBackColor = false;
 			this.detailsButton.Click += new System.EventHandler(this.detailsButton_Click);
 			// 
 			// ErrorDialog
@@ -118,10 +116,8 @@ namespace GorgonLibrary.UI
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Error";
 			this.Controls.SetChildIndex(this.errorDetails, 0);
-			this.Controls.SetChildIndex(this.OKButton, 0);
-			this.Controls.SetChildIndex(this.imageIcon, 0);
+			this.Controls.SetChildIndex(this.buttonOK, 0);
 			this.Controls.SetChildIndex(this.detailsButton, 0);
-			((System.ComponentModel.ISupportInitialize)(this.imageIcon)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

@@ -52,6 +52,21 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
+	/// Font height mode.
+	/// </summary>
+	public enum FontHeightMode
+	{
+		/// <summary>
+		/// Point size.
+		/// </summary>
+		Points = 0,
+		/// <summary>
+		/// Pixels.
+		/// </summary>
+		Pixels = 1
+	}
+
+	/// <summary>
 	/// Settings for a font.
 	/// </summary>
 	public class GorgonFontSettings
@@ -66,6 +81,19 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
+		/// Property to return whether the font height is in pixels or in points.
+		/// </summary>
+		/// <remarks>
+		/// When the font uses points for its height, the user must be aware of DPI scaling issues that may arise.
+		/// <para>This will affect the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.Size">Size</see> value in that it will alter the meaning of the units.</para>
+		/// <para>The default value is Points.</para></remarks>
+		public FontHeightMode FontHeightMode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the font family name to generate the font from.
 		/// </summary>
 		public string FontFamilyName
@@ -75,9 +103,11 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the point size.
+		/// Property to set or return the font size.
 		/// </summary>
-		public float PointSize
+		/// <remarks>This is affected by the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.FontHeightMode">FontHeightMode</see>.  If the FontHeightMode is set to Points, then this unit is a point size height for the font. 
+		/// Otherwise, this represents the font height in pixels.</remarks>
+		public float Size
 		{
 			get;
 			set;
@@ -271,6 +301,7 @@ namespace GorgonLibrary.Graphics
 						 Select(i => Convert.ToChar(i)).
 						 Where(c => !char.IsControl(c));
 
+			FontHeightMode = FontHeightMode.Points;
 			OutlineColor = Color.Black;
 			OutlineSize = 0;
 			_baseColors = new [] { new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f) };

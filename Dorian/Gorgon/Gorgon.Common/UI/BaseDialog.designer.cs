@@ -55,47 +55,31 @@ namespace GorgonLibrary.UI
         private void InitializeComponent()
         {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BaseDialog));
-			this.imageIcon = new System.Windows.Forms.PictureBox();
-			this.OKButton = new System.Windows.Forms.Button();
-			((System.ComponentModel.ISupportInitialize)(this.imageIcon)).BeginInit();
+			this.buttonOK = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
-			// imageIcon
+			// buttonOK
 			// 
-			this.imageIcon.Image = global::GorgonLibrary.Properties.Resources.Default;
-			this.imageIcon.Location = new System.Drawing.Point(15, 7);
-			this.imageIcon.Margin = new System.Windows.Forms.Padding(4);
-			this.imageIcon.MaximumSize = new System.Drawing.Size(56, 52);
-			this.imageIcon.MinimumSize = new System.Drawing.Size(56, 52);
-			this.imageIcon.Name = "imageIcon";
-			this.imageIcon.Size = new System.Drawing.Size(56, 52);
-			this.imageIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-			this.imageIcon.TabIndex = 11;
-			this.imageIcon.TabStop = false;
-			this.imageIcon.Visible = false;
-			// 
-			// OKButton
-			// 
-			this.OKButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.OKButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
-			this.OKButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.OKButton.Image = ((System.Drawing.Image)(resources.GetObject("OKButton.Image")));
-			this.OKButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.OKButton.Location = new System.Drawing.Point(155, 96);
-			this.OKButton.Margin = new System.Windows.Forms.Padding(4);
-			this.OKButton.Name = "OKButton";
-			this.OKButton.Size = new System.Drawing.Size(77, 28);
-			this.OKButton.TabIndex = 10;
-			this.OKButton.Text = "OK";
-			this.OKButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
+			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.buttonOK.Location = new System.Drawing.Point(182, 77);
+			this.buttonOK.Margin = new System.Windows.Forms.Padding(4);
+			this.buttonOK.Name = "buttonOK";
+			this.buttonOK.Size = new System.Drawing.Size(50, 44);
+			this.buttonOK.TabIndex = 10;
+			this.buttonOK.Text = "&OK";
+			this.buttonOK.UseVisualStyleBackColor = false;
 			// 
 			// BaseDialog
 			// 
+			this.AcceptButton = this.buttonOK;
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.ClientSize = new System.Drawing.Size(245, 134);
-			this.Controls.Add(this.imageIcon);
-			this.Controls.Add(this.OKButton);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			this.Controls.Add(this.buttonOK);
+			this.Font = new System.Drawing.Font("Century Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.KeyPreview = true;
 			this.Margin = new System.Windows.Forms.Padding(4);
@@ -105,20 +89,15 @@ namespace GorgonLibrary.UI
 			this.Name = "BaseDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Caption";
-			((System.ComponentModel.ISupportInitialize)(this.imageIcon)).EndInit();
 			this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        /// <summary>
-        /// Image used for the dialog icon.
-        /// </summary>
-        protected System.Windows.Forms.PictureBox imageIcon;
-        /// <summary>
+		/// <summary>
         /// OK button.
         /// </summary>
-        protected System.Windows.Forms.Button OKButton;
+        protected System.Windows.Forms.Button buttonOK;
     }
 }
