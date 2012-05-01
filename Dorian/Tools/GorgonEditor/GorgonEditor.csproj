@@ -52,7 +52,7 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>GorgonEditor.ico</ApplicationIcon>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -118,7 +118,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GorgonEditor.ico" />
+    <Content Include="Gorgon2.ico" />
     <None Include="Resources\Gorgon_2.x_Logo_Full.png" />
   </ItemGroup>
   <ItemGroup>

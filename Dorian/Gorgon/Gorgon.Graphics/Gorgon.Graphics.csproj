@@ -36,7 +36,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>GorIcon.ico</ApplicationIcon>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
@@ -140,7 +140,7 @@
     <Compile Include="Textures\GorgonTextureSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GorIcon.ico" />
+    <Content Include="Gorgon2.ico" />
     <None Include="Resources\GorgonLogo3.png" />
   </ItemGroup>
   <ItemGroup>

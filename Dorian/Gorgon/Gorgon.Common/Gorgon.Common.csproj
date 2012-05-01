@@ -7,7 +7,7 @@
     <ProjectGuid>{933569ED-52A9-4232-A929-1D4C4489B5A1}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>GorIcon.ico</ApplicationIcon>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>Gorgon.Common</AssemblyName>
@@ -219,7 +219,7 @@
     <None Include="Resources\GorIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GorIcon.ico" />
+    <Content Include="Gorgon2.ico" />
     <None Include="Resources\information.png" />
     <None Include="Resources\Default.png" />
     <None Include="Resources\OK.png" />
