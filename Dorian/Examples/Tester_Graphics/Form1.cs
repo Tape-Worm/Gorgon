@@ -253,7 +253,7 @@ namespace Tester_Graphics
 						TextureSize = new System.Drawing.Size(512, 512),
 						FontFamilyName = "Arial",
 						FontStyle = FontStyle.Bold,
-						PointSize = 10,
+						Size = 10,
 						TextContrast = 0,
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 						PackingSpacing = 1,
