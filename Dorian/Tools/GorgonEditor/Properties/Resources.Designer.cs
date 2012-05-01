@@ -59,5 +59,12 @@ namespace GorgonLibrary.GorgonEditor.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full {
+            get {
+                object obj = ResourceManager.GetObject("Gorgon_2.x_Logo_Full", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
