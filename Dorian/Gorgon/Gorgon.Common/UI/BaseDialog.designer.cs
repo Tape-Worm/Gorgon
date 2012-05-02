@@ -56,6 +56,8 @@ namespace GorgonLibrary.UI
         {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BaseDialog));
 			this.buttonOK = new System.Windows.Forms.Button();
+			this.pictureDialog = new System.Windows.Forms.PictureBox();
+			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// buttonOK
@@ -72,11 +74,22 @@ namespace GorgonLibrary.UI
 			this.buttonOK.Text = "&OK";
 			this.buttonOK.UseVisualStyleBackColor = false;
 			// 
+			// pictureDialog
+			// 
+			this.pictureDialog.BackColor = System.Drawing.Color.White;
+			this.pictureDialog.Location = new System.Drawing.Point(2, 2);
+			this.pictureDialog.Name = "pictureDialog";
+			this.pictureDialog.Size = new System.Drawing.Size(64, 64);
+			this.pictureDialog.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.pictureDialog.TabIndex = 11;
+			this.pictureDialog.TabStop = false;
+			// 
 			// BaseDialog
 			// 
 			this.AcceptButton = this.buttonOK;
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.ClientSize = new System.Drawing.Size(245, 134);
+			this.Controls.Add(this.pictureDialog);
 			this.Controls.Add(this.buttonOK);
 			this.Font = new System.Drawing.Font("Century Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -89,6 +102,7 @@ namespace GorgonLibrary.UI
 			this.Name = "BaseDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Caption";
+			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -99,5 +113,6 @@ namespace GorgonLibrary.UI
         /// OK button.
         /// </summary>
         protected System.Windows.Forms.Button buttonOK;
+		protected System.Windows.Forms.PictureBox pictureDialog;
     }
 }

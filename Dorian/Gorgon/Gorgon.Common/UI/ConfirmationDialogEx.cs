@@ -33,7 +33,7 @@ namespace GorgonLibrary.UI
 	/// Dialog for confirmation + plus to all option.
 	/// </summary>
 	internal partial class ConfirmationDialogEx 
-        : ConfirmationDialog
+		: ConfirmationDialog
 	{
 		#region Variables.
 
@@ -93,7 +93,6 @@ namespace GorgonLibrary.UI
 			}
 
 			buttonNo.Top = buttonCancel.Top = buttonOK.Top = checkToAll.Top - buttonOK.Height - 4;
-			checkToAll.Top = ClientSize.Height - 4 - checkToAll.Height;
 
 			DrawMessage(g, maxTextHeight);			
 		}

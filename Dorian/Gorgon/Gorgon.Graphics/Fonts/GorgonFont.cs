@@ -122,7 +122,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Function to return the index of a glyph in the collection.
 			/// </summary>
-			/// <param name="value">Glyph to find.</param>
+			/// <param name="glyph">Glyph to find.</param>
 			/// <returns>The index of the glyph if found, -1 if not.</returns>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is NULL (Nothing in VB.Net).</exception>
 			public int IndexOf(GorgonGlyph glyph)

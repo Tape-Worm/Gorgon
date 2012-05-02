@@ -217,6 +217,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\GorgonWarning.ico" />
+    <None Include="Resources\GorgonInfo.ico" />
+    <None Include="Resources\Info_64x64.png" />
+    <None Include="Resources\GorgonInformation.ico" />
+    <None Include="Resources\Warning_64x64.png" />
+    <None Include="Resources\Warning_256x256.png" />
+    <None Include="Resources\Confirm_64x64.png" />
+    <None Include="Resources\Error_64x64.png" />
     <None Include="Resources\Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
