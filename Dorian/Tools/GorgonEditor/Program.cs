@@ -45,9 +45,6 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
-				//GorgonDialogs.ErrorBox(null, "This is an error string.  The buttons will be fucked up.  I assure you.\nLine break\n\nTest overflow here with a lot of text, but I don't know what to type.  The quick brown fox jumps over the lazy dog.  ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789abcdefghijklmnopqrstuvwxyzThis is an error string.  The buttons will be fucked up.  I assure you.\nLine break\n\nTest overflow here with a lot of text, but I don't know what to type.  The quick brown fox jumps over the lazy dog.  ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789abcdefghijklmnopqrstuvwxyzThis is an error string.  The buttons will be fucked up.  I assure you.\nLine break\n\nTest overflow here with a lot of text, but I don't know what to type.  The quick brown fox jumps over the lazy dog.  ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789abcdefghijklmnopqrstuvwxyzThis is an error string.  The buttons will be fucked up.  I assure you.\nLine break\n\nTest overflow here with a lot of text, but I don't know what to type.  The quick brown fox jumps over the lazy dog.  ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789abcdefghijklmnopqrstuvwxyzThis is an error string.  The buttons will be fucked up.  I assure you.\nLine break\n\nTest overflow here with a lot of text, but I don't know what to type.  The quick brown fox jumps over the lazy dog.  ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789abcdefghijklmnopqrstuvwxyz", "This is a description.  Hopefully it will be a fixed\nwidth font.");
-				GorgonDialogs.ErrorBox(null, "This is an error string.  The buttons will be fucked up.  I assure you.", "This is a description.  Hopefully it will be a fixed\nwidth font.");
-				//GorgonDialogs.ConfirmBox("Testing 1 2 3", true, true);
 				Gorgon.Run(new AppContext());
 			}
 			catch (Exception ex)

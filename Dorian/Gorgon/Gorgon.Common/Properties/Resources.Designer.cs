@@ -60,6 +60,20 @@ namespace GorgonLibrary.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Confirm_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Confirm_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Error_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Error_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon Gorgon2 {
             get {
                 object obj = ResourceManager.GetObject("Gorgon2", resourceCulture);
@@ -67,9 +81,37 @@ namespace GorgonLibrary.Properties {
             }
         }
         
+        internal static System.Drawing.Icon GorgonInfo {
+            get {
+                object obj = ResourceManager.GetObject("GorgonInfo", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap GorgonLogo3 {
             get {
                 object obj = ResourceManager.GetObject("GorgonLogo3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon GorgonWarning {
+            get {
+                object obj = ResourceManager.GetObject("GorgonWarning", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Info_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Info_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Warning_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Warning_64x64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

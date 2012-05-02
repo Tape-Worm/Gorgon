@@ -58,6 +58,7 @@ namespace GorgonLibrary.UI
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorDialog));
 			this.errorDetails = new System.Windows.Forms.TextBox();
 			this.detailsButton = new System.Windows.Forms.CheckBox();
+			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// buttonOK
@@ -67,6 +68,10 @@ namespace GorgonLibrary.UI
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.buttonOK.TabIndex = 0;
 			this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
+			// 
+			// pictureDialog
+			// 
+			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Error_64x64;
 			// 
 			// errorDetails
 			// 
@@ -115,9 +120,11 @@ namespace GorgonLibrary.UI
 			this.Name = "ErrorDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Error";
+			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.errorDetails, 0);
 			this.Controls.SetChildIndex(this.buttonOK, 0);
 			this.Controls.SetChildIndex(this.detailsButton, 0);
+			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

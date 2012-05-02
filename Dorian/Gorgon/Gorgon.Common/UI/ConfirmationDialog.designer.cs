@@ -57,6 +57,7 @@ namespace GorgonLibrary.UI
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfirmationDialog));
 			this.buttonNo = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
+			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// buttonOK
@@ -68,6 +69,10 @@ namespace GorgonLibrary.UI
 			this.buttonOK.TabIndex = 0;
 			this.buttonOK.Text = "&Yes";
 			this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
+			// 
+			// pictureDialog
+			// 
+			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Confirm_64x64;
 			// 
 			// buttonNo
 			// 
@@ -107,9 +112,11 @@ namespace GorgonLibrary.UI
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MinimumSize = new System.Drawing.Size(300, 158);
 			this.Name = "ConfirmationDialog";
+			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.buttonOK, 0);
 			this.Controls.SetChildIndex(this.buttonCancel, 0);
 			this.Controls.SetChildIndex(this.buttonNo, 0);
+			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
 			this.ResumeLayout(false);
 
 		}

@@ -55,6 +55,7 @@ namespace GorgonLibrary.UI
 		private void InitializeComponent()
 		{
 			this.checkToAll = new System.Windows.Forms.CheckBox();
+			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// buttonNo
@@ -79,27 +80,32 @@ namespace GorgonLibrary.UI
 			// checkToAll
 			// 
 			this.checkToAll.AutoSize = true;
+			this.checkToAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.checkToAll.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.checkToAll.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkToAll.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkToAll.Location = new System.Drawing.Point(54, 107);
+			this.checkToAll.Location = new System.Drawing.Point(0, 130);
 			this.checkToAll.Name = "checkToAll";
-			this.checkToAll.Size = new System.Drawing.Size(171, 20);
+			this.checkToAll.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+			this.checkToAll.Size = new System.Drawing.Size(294, 20);
 			this.checkToAll.TabIndex = 12;
 			this.checkToAll.Text = "&Apply selection to all items?";
-			this.checkToAll.UseVisualStyleBackColor = true;
+			this.checkToAll.UseVisualStyleBackColor = false;
 			// 
 			// ConfirmationDialogEx
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.ClientSize = new System.Drawing.Size(294, 130);
+			this.ClientSize = new System.Drawing.Size(294, 150);
 			this.Controls.Add(this.checkToAll);
 			this.Location = new System.Drawing.Point(0, 0);
-			this.MinimumSize = new System.Drawing.Size(188, 154);
+			this.MinimumSize = new System.Drawing.Size(188, 174);
 			this.Name = "ConfirmationDialogEx";
+			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.buttonCancel, 0);
 			this.Controls.SetChildIndex(this.buttonNo, 0);
 			this.Controls.SetChildIndex(this.checkToAll, 0);
 			this.Controls.SetChildIndex(this.buttonOK, 0);
+			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

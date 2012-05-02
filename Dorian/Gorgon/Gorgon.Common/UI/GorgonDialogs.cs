@@ -98,27 +98,6 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Function to display an error box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		public static DialogResult AbortRetryBox(Form owner, string message, string caption)
-		{
-			return MessageBox.Show(owner, message, caption, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
-		}
-
-		/// <summary>
-		/// Function to display an error box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		public static DialogResult AbortRetryBox(Form owner, string message)
-		{
-			return AbortRetryBox(owner, message, "Error.");
-		}
-
-		/// <summary>
 		/// Function to display the enhanced error dialog.
 		/// </summary>
 		/// <param name="owner">Owning window of this dialog.</param>
@@ -259,32 +238,6 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Function to display an error box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <returns>TRUE if Retry clicked, FALSE if cancelled.</returns>
-		public static bool ErrorRetryBox(Form owner, string message, string caption)
-		{
-			if (MessageBox.Show(owner, message, caption, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
-				return true;
-			else
-				return false;
-		}
-
-		/// <summary>
-		/// Function to display an error box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <returns>TRUE if Retry clicked, FALSE if cancelled.</returns>
-		public static bool ErrorRetryBox(Form owner, string message)
-		{
-			return ErrorRetryBox(owner, message, "Error.");
-		}
-
-		/// <summary>
 		/// Function to display an information box.
 		/// </summary>
 		/// <param name="owner">Owning window of this dialog.</param>
@@ -292,7 +245,33 @@ namespace GorgonLibrary.UI
 		/// <param name="caption">Caption for the dialog.</param>
 		public static void InfoBox(Form owner, string message, string caption)
 		{
-			MessageBox.Show(owner, message, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			BaseDialog dialog = null;
+
+			try
+			{
+				dialog = new BaseDialog();
+				dialog.Icon = Properties.Resources.GorgonInfo;
+				dialog.DialogImage = Properties.Resources.Info_64x64;
+				dialog.Message = message;
+				dialog.ButtonAction = DialogResult.OK;
+				if (owner != null)
+					dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height / 2;
+				else
+					dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height / 2;
+
+				if (!string.IsNullOrEmpty(caption))
+					dialog.Text = caption;
+				else
+					dialog.Text = "Information.";
+
+				dialog.ShowDialog(owner);
+			}
+			finally
+			{
+				if (dialog != null)
+					dialog.Dispose();
+				dialog = null;
+			}
 		}
 
 		/// <summary>
@@ -313,7 +292,33 @@ namespace GorgonLibrary.UI
 		/// <param name="caption">Caption for the dialog.</param>
 		public static void WarningBox(Form owner, string message, string caption)
 		{
-			MessageBox.Show(owner, message, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			BaseDialog dialog = null;
+
+			try
+			{
+				dialog = new BaseDialog();
+				dialog.Icon = Properties.Resources.GorgonWarning;
+				dialog.DialogImage = Properties.Resources.Warning_64x64;
+				dialog.Message = message;
+				dialog.ButtonAction = DialogResult.OK;
+				if (owner != null)
+					dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height / 2;
+				else
+					dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height / 2;
+
+				if (!string.IsNullOrEmpty(caption))
+					dialog.Text = caption;
+				else
+					dialog.Text = "Warning.";
+
+				dialog.ShowDialog(owner);
+			}
+			finally
+			{
+				if (dialog != null)
+					dialog.Dispose();
+				dialog = null;
+			}
 		}
 
 		/// <summary>
@@ -324,58 +329,6 @@ namespace GorgonLibrary.UI
 		public static void WarningBox(Form owner, string message)
 		{
 			WarningBox(owner, message, "Warning.");
-		}
-
-		/// <summary>
-		/// Function to display a warning box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <returns>TRUE if Retry clicked, FALSE if cancelled.</returns>
-		public static bool WarningRetryBox(Form owner, string message, string caption)
-		{
-			if (MessageBox.Show(owner, message, caption, MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) == DialogResult.Retry)
-				return true;
-			else
-				return false;
-		}
-
-		/// <summary>
-		/// Function to display a warning box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <returns>TRUE if Retry clicked, FALSE if cancelled.</returns>
-		public static bool WarningRetryBox(Form owner, string message)
-		{
-			return WarningRetryBox(owner, message, "Warning.");
-		}
-
-		/// <summary>
-		/// Function to display a confirmation box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <returns>TRUE if OK is clicked, FALSE if cancel is clicked.</returns>
-		public static bool OKCancelBox(Form owner, string message, string caption)
-		{
-			if (MessageBox.Show(owner, message, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
-				return true;
-			else
-				return false;
-		}
-
-		/// <summary>
-		/// Function to display a confirmation box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <returns>TRUE if yes is clicked, FALSE if no is clicked.</returns>
-		public static bool OkCancelBox(Form owner, string message)
-		{
-			return OKCancelBox(owner, message, "Confirmation.");
 		}
 
 		/// <summary>
@@ -497,46 +450,6 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Function to display an error box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		public static DialogResult AbortRetryBox(string message, string caption)
-		{
-			return AbortRetryBox(null, message, caption);
-		}
-
-		/// <summary>
-		/// Function to display an error box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		public static DialogResult AbortRetryBox(string message)
-		{
-			return AbortRetryBox(null, message, "Error.");
-		}
-
-		/// <summary>
-		/// Function to display an error box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <returns>TRUE if Retry clicked, FALSE if cancelled.</returns>
-		public static bool ErrorRetryBox(string message, string caption)
-		{
-			return ErrorRetryBox(null, message, caption);
-		}
-
-		/// <summary>
-		/// Function to display an error box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <returns>TRUE if Retry clicked, FALSE if cancelled.</returns>
-		public static bool ErrorRetryBox(string message)
-		{
-			return ErrorRetryBox(null, message, "Error.");
-		}
-
-		/// <summary>
 		/// Function to display an information box.
 		/// </summary>
 		/// <param name="message">Message to display.</param>
@@ -572,49 +485,6 @@ namespace GorgonLibrary.UI
 		public static void WarningBox(string message)
 		{
 			WarningBox(null, message, "Warning.");
-		}
-
-		/// <summary>
-		/// Function to display a warning box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <returns>TRUE if Retry clicked, FALSE if cancelled.</returns>
-		public static bool WarningRetryBox(string message, string caption)
-		{
-			return WarningRetryBox(null, message, caption);
-		}
-
-		/// <summary>
-		/// Function to display a warning box.
-		/// </summary>
-		/// 
-		/// <param name="message">Message to display.</param>
-		/// <returns>TRUE if Retry clicked, FALSE if cancelled.</returns>
-		public static bool WarningRetryBox(string message)
-		{
-			return WarningRetryBox(null, message, "Warning.");
-		}
-
-		/// <summary>
-		/// Function to display a confirmation box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <returns>TRUE if OK is clicked, FALSE if cancel is clicked.</returns>
-		public static bool OKCancelBox(string message, string caption)
-		{
-			return OKCancelBox(null, message, caption);
-		}
-
-		/// <summary>
-		/// Function to display a confirmation box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <returns>TRUE if yes is clicked, FALSE if no is clicked.</returns>
-		public static bool OkCancelBox(string message)
-		{
-			return OKCancelBox(null, message, "Confirmation.");
 		}
 		#endregion
 	}
