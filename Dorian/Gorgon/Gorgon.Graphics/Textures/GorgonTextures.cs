@@ -526,9 +526,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="bitmap">Bitmap to load.</param>
-		/// <param name="settings">Settings for the texture.</param>
 		/// <returns>The new 2D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="image"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="bitmap"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
 		/// <para>-or-</para>
