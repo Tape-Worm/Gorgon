@@ -78,12 +78,6 @@
     <Compile Include="comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="editorFont.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="editorFont.Designer.cs">
-      <DependentUpon>editorFont.cs</DependentUpon>
-    </Compile>
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,9 +101,6 @@
     <Compile Include="Document.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="editorFont.resx">
-      <DependentUpon>editorFont.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
     </EmbeddedResource>
