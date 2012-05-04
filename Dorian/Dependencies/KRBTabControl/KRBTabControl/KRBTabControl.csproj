@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{04506D1C-0E7E-4C9B-A07F-2EA358531AE9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KRBTabControl</RootNamespace>
+    <AssemblyName>KRBTabControl</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>KRBTabControl.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CaptionColorChooser.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaptionColorChooser.Designer.cs">
+      <DependentUpon>CaptionColorChooser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CaptionColorChooserEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ICaptionRandomizer.cs" />
+    <Compile Include="KRBTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SelectedIndexChangingEventArgs.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Win32\Enum.cs" />
+    <Compile Include="Win32\User32.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="KRBTabControl.snk" />
+    <None Include="Resources\RightHoverOfficeSilver.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightNormalBlackGlass.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightNormalKRBBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightNormalOfficeBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightNormalOfficeOlive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightNormalOfficeSilver.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TabClose.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CaptionClose.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DropDown.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\leftArrow.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\leftArrowDown.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\leftArrowHover.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightArrow.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightArrowDown.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightArrowHover.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftDownBlackGlass.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftDownKRBBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftDownOfficeBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftDownOfficeOlive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftDownOfficeSilver.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftHoverBlackGlass.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftHoverKRBBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftHoverOfficeBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftHoverOfficeOlive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftHoverOfficeSilver.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftNormalBlackGlass.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftNormalKRBBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftNormalOfficeBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftNormalOfficeOlive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftNormalOfficeSilver.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightDownBlackGlass.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightDownKRBBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightDownOfficeBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightDownOfficeOlive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightDownOfficeSilver.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightHoverBlackGlass.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightHoverKRBBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightHoverOfficeBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightHoverOfficeOlive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TabHover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TabPressed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UpArrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DownArrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete_12x12.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PushpinHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\InsertTabControlHS.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
