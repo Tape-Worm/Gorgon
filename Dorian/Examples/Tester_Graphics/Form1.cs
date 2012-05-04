@@ -263,8 +263,8 @@ namespace Tester_Graphics
 				System.IO.StreamReader reader = null;
 				try
 				{
-					//reader = new System.IO.StreamReader(@"X:\Unpak\LZWEXP.TXT");
-					reader = new System.IO.StreamReader(@"D:\Code\Archived\Other\Docs\LZWEXP.TXT");					
+					reader = new System.IO.StreamReader(@"X:\Unpak\LZWEXP.TXT");
+					//reader = new System.IO.StreamReader(@"D:\Code\Archived\Other\Docs\LZWEXP.TXT");					
 					test = reader.ReadToEnd();
 				}
 				finally
@@ -275,12 +275,12 @@ namespace Tester_Graphics
 				letter = _2D.Renderables.CreateSprite("Letter", new Vector2(1, 1), null, new RectangleF(0, 0, 1, 1));
 				letter.Color = Color.Black;
 				letter.Angle = 0.0f;
-				_text = new GorgonText(_2D, "Text", font);
+				_text = _2D.Renderables.CreateText("Text");
 				_text.Text = test;
 				//_text.TextRectangle = new RectangleF(0, 0, _mainScreen.Settings.Width, _mainScreen.Settings.Height);
 				//_text.ClipToRectangle = true;
 				//_text.WordWrap = true;
-				_fps = new GorgonText(_2D, "FPS", font);
+				_fps = _2D.Renderables.CreateText("FPS");
 				_fps.ShadowEnabled = true;
 				_fps.Color = Color.LightBlue;
 				_text.LineSpacing = -1.0f;
@@ -672,6 +672,9 @@ namespace Tester_Graphics
 						angle += 1.0f * timing.FrameDelta;
 						if (angle > 360.0f)
 							angle = 360.0f - angle;
+
+						_fps.Font = font;
+						_text.Font = font;
 
 						return true;
 					};
