@@ -89,15 +89,15 @@ namespace GorgonLibrary.GorgonEditor
 			Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
 			Renderer.Drawing.FilledRectangle(new RectangleF(2, logoBounds.Y, Control.ClientSize.Width - 4, logoBounds.Height), Color.FromKnownColor(KnownColor.ControlDark));
 
-			Renderer.Effects.GaussianBlur.BlurAmount = _blurAmount;
+			Renderer.Effects.GaussianBlur.BlurAmount = 3.2f;// _blurAmount;
 			Renderer.Drawing.BlendingMode = BlendingMode.PreMultiplied;
 			alpha = ((_blurAmount - 2.1f) / 15.8f);
 			Renderer.Effects.GaussianBlur.Render((int pass) =>
 				{
 					if (pass == 0)
-						Renderer.Drawing.FilledRectangle(new RectangleF(0, 0, 256, 256), new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f), _logo, new RectangleF(0, 0, logoSize.Width, logoSize.Height));
+						Renderer.Drawing.FilledRectangle(new RectangleF(0, 0, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize.Width, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize.Height), new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f), _logo, new RectangleF(0, 0, logoSize.Width, logoSize.Height));
 					else
-						Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 0.5f - alpha), Renderer.Effects.GaussianBlur.BlurredTexture, new RectangleF(0, 0, 256, 256));
+						Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 0.5f - alpha), Renderer.Effects.GaussianBlur.BlurredTexture, new RectangleF(0, 0, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize.Width, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize.Height));
 				});
 			Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 			Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, alpha), _logo, new RectangleF(Vector2.Zero, _logo.Settings.Size));
@@ -119,7 +119,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		protected virtual void LoadGraphics()
 		{
-			Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(256, 256);
+			Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(64, 64);
 			_logo = Program.Graphics.Textures.FromGDIBitmap("Logo", Properties.Resources.Gorgon_2_x_Logo_Full);
 		}
 
