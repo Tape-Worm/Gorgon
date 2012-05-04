@@ -47,6 +47,7 @@ namespace GorgonLibrary.Renderers
 		private GorgonLine _line = null;														// Line.
 		private GorgonEllipse _ellipse = null;													// Ellipse.
 		private GorgonTriangle _triangle = null;												// Triangle.
+		private GorgonText _string = null;														// String.
 		private GorgonRenderable.DepthStencilStates _depthStencil = null;						// Depth stencil states.
 		private GorgonRenderable.TextureSamplerState _sampler = null;							// Texture sampler states.
 		private GorgonRenderable.BlendState _blend = null;										// Blending states.
@@ -416,6 +417,47 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to draw a string.
+		/// </summary>
+		/// <param name="font">Font to use.</param>
+		/// <param name="text">Text to draw.</param>
+		/// <param name="position">Position of the text.</param>
+		/// <param name="color">Color of the text.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void DrawString(GorgonFont font, string text, Vector2 position, GorgonColor color)
+		{
+			DrawString(font, text, position, color, false, new Vector2(1), 0.25f);
+		}
+
+		/// <summary>
+		/// Function to draw a string.
+		/// </summary>
+		/// <param name="font">Font to use.</param>
+		/// <param name="text">Text to draw.</param>
+		/// <param name="position">Position of the text.</param>
+		/// <param name="color">Color of the text.</param>
+		/// <param name="useShadow">TRUE to use a shadow, FALSE to display normally.</param>
+		/// <param name="shadowOffset">Offset of the shadow, in pixels.</param>
+		/// <param name="shadowOpacity">Opacity of the shadow.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void DrawString(GorgonFont font, string text, Vector2 position, GorgonColor color, bool useShadow, Vector2 shadowOffset, float shadowOpacity)
+		{
+			GorgonDebug.AssertNull<GorgonFont>(font, "font");
+
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			_string.Position = position;
+			_string.Font = font;
+			_string.Text = text;
+			_string.Color = color;
+			_string.ShadowEnabled = useShadow;
+			_string.ShadowOffset = shadowOffset;
+			_string.ShadowOpacity = shadowOpacity;
+			_string.Draw();
+		}
+
+		/// <summary>
 		/// Function to draw an unfilled triangle.
 		/// </summary>
 		/// <param name="position">Position of the triangle.</param>
@@ -667,6 +709,7 @@ namespace GorgonLibrary.Renderers
 			_line = new GorgonLine(gorgon2D, "Gorgon2D.Line", Vector2.Zero, Vector2.Zero, Color.White);
 			_ellipse = new GorgonEllipse(gorgon2D, "Gorgon2D.Ellipse", Vector2.Zero, Vector2.Zero, Color.White, 64, false);
 			_triangle = new GorgonTriangle(gorgon2D, "Gorgon2D.Triangle", new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), false);
+			_string = new GorgonText(gorgon2D, "Gorgon2D.String", null);
 		}
 		#endregion
 	}

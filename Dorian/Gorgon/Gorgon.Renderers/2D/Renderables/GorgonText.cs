@@ -311,6 +311,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+				int prevLength = _text.Length;
+
 				if (value == null)
 					value = string.Empty;
 
@@ -319,6 +321,10 @@ namespace GorgonLibrary.Renderers
 					_text = value;
 					UpdateText();
 				}
+				
+				// Update the colors for the rest of the string if the text length is longer.
+				if (prevLength < _text.Length)
+					_needsColorUpdate = true;
 			}
 		}
 
@@ -353,7 +359,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void UpdateText()
 		{
-			if (_text.Length == 0)
+			if ((_text.Length == 0) || (_font == null))
 			{
 				_vertexCount = 0;
 				if (_vertices == null)
@@ -590,8 +596,6 @@ namespace GorgonLibrary.Renderers
 							continue;
 					}
 					
-					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset), lineLength, cosVal, sinVal);
-
 					// Add shadow character.
 					if (_shadowEnabled)
 					{
@@ -935,8 +939,8 @@ namespace GorgonLibrary.Renderers
 			StateChange states = StateChange.None;
 			int vertexIndex = 0;
 
-			// We don't need to draw anything.
-			if (_text.Length == 0)
+			// We don't need to draw anything if we don't have a font or text to draw.
+			if ((_text.Length == 0) || (_font == null))
 				return;
 
 			// If we've updated the font, then we need to update the text display.
@@ -1045,7 +1049,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="gorgon2D">2D interface that created this object.</param>
 		/// <param name="name">Name of the text object.</param>
 		/// <param name="font">The font to use.</param>
-		public GorgonText(Gorgon2D gorgon2D, string name, GorgonFont font)
+		internal GorgonText(Gorgon2D gorgon2D, string name, GorgonFont font)
 			: base(name)
 		{
 			Gorgon2D = gorgon2D;
@@ -1053,8 +1057,11 @@ namespace GorgonLibrary.Renderers
 			_text = string.Empty;
 			_formattedText = new StringBuilder(256);
 			_lines = new List<string>();
-			_font = font;
-			_font.HasChanged = false;
+			if (font != null)
+			{
+				_font = font;
+				_font.HasChanged = false;
+			}
 			_shadowAlpha[3] = _shadowAlpha[2] = _shadowAlpha[1] = _shadowAlpha[0] = 0.25f;
 
 			_depthStencil = new GorgonRenderable.DepthStencilStates();
