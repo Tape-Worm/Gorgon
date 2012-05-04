@@ -27,14 +27,128 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary;
 using GorgonLibrary.UI;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.GorgonEditor
 {
-	static class Program
+	/// <summary>
+	/// Main application interface.
+	/// </summary>
+	public static class Program
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the settings for the application.
+		/// </summary>
+		public static GorgonEditorSettings Settings
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the list of cached fonts on the system.
+		/// </summary>
+		public static IDictionary<string, Font> CachedFonts
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the currently active document.
+		/// </summary>
+		public static Document CurrentDocument
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the graphics interface.
+		/// </summary>
+		public static GorgonGraphics Graphics
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to initialize the graphics interface.
+		/// </summary>
+		public static void InitializeGraphics()
+		{
+			if (Graphics != null)
+			{
+				Graphics.Dispose();
+				Graphics = null;
+			}
+			Graphics = new GorgonGraphics();
+		}
+
+		/// <summary>
+		/// Funciton to update the font cache.
+		/// </summary>
+		public static void UpdateCachedFonts()
+		{
+			SortedDictionary<string, Font> fonts = null;
+
+			// Clear the cached fonts.
+			if (CachedFonts != null)
+			{
+				foreach (var font in CachedFonts)
+					font.Value.Dispose();
+			}
+
+			fonts = new SortedDictionary<string,Font>();
+
+			// Get font families.
+			foreach (var family in FontFamily.Families)
+			{
+				Font newFont = null;
+
+				if (!fonts.ContainsKey(family.Name))
+				{
+					if (family.IsStyleAvailable(FontStyle.Regular))
+						newFont = new Font(family, 16.0f, FontStyle.Regular);
+					else
+					{
+						if (family.IsStyleAvailable(FontStyle.Bold))
+							newFont = new Font(family, 16.0f, FontStyle.Bold);
+						else
+						{
+							if (family.IsStyleAvailable(FontStyle.Italic))
+								newFont = new Font(family, 16.0f, FontStyle.Italic);
+						}
+					}
+
+					// Only add if we could use the regular, bold or italic style.
+					if (newFont != null)
+						fonts.Add(family.Name, newFont);
+				}
+			}
+
+			CachedFonts = fonts;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes the <see cref="Program"/> class.
+		/// </summary>
+		static Program()
+		{
+			Settings = new GorgonEditorSettings();
+			Settings.Load();
+		}
+		#endregion
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
@@ -50,6 +164,22 @@ namespace GorgonLibrary.GorgonEditor
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(null, ex);
+			}
+			finally
+			{
+				// Shut down the graphics interface.
+				if (Graphics != null)
+				{
+					Graphics.Dispose();
+					Graphics = null;
+				}
+
+				// Clear the cached fonts.
+				if (CachedFonts != null)
+				{
+					foreach (var font in CachedFonts)
+						font.Value.Dispose();
+				}
 			}
 		}
 	}

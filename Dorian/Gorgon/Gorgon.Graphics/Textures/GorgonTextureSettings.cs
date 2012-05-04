@@ -188,14 +188,6 @@ namespace GorgonLibrary.Graphics
 	public class GorgonTexture1DSettings
 		: ITextureSettings
 	{
-		#region Variables.
-		/// <summary>
-		/// Default settings for the texture.
-		/// </summary>
-		/// <remarks>This should be used when loading a texture from memory, a stream or a file.</remarks>
-		public static readonly GorgonTexture1DSettings FromFile = new GorgonTexture1DSettings();
-		#endregion
-
 		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonTexture1DSettings"/> class.
@@ -387,14 +379,6 @@ namespace GorgonLibrary.Graphics
 	public class GorgonTexture2DSettings
 		: ITextureSettings
 	{
-		#region Variables.
-		/// <summary>
-		/// Default settings for the texture.
-		/// </summary>
-		/// <remarks>This should be used when loading a texture from memory, a stream or a file.</remarks>
-		public static readonly GorgonTexture2DSettings FromFile = new GorgonTexture2DSettings();
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the size of the texture.
@@ -601,14 +585,6 @@ namespace GorgonLibrary.Graphics
 	public class GorgonTexture3DSettings
 		: ITextureSettings
 	{
-		#region Variables.
-		/// <summary>
-		/// Default settings for the texture.
-		/// </summary>
-		/// <remarks>This should be used when loading a texture from memory, a stream or a file.</remarks>
-		public static readonly GorgonTexture3DSettings FromFile = new GorgonTexture3DSettings();
-		#endregion
-
 		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonTexture3DSettings"/> class.

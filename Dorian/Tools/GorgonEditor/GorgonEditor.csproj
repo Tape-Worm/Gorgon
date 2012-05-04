@@ -55,6 +55,12 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="KRBTabControl">
+      <HintPath>..\..\Dependencies\KRBTabControl\KRBTabControl.dll</HintPath>
+    </Reference>
+    <Reference Include="SlimMath, Version=1.0.0.0, Culture=neutral, PublicKeyToken=eb5b190254be1642, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -69,11 +75,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="comboFonts.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="editorFont.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="editorFont.Designer.cs">
+      <DependentUpon>editorFont.cs</DependentUpon>
+    </Compile>
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="formMain.Designer.cs">
       <DependentUpon>formMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formNewFont.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formNewFont.Designer.cs">
+      <DependentUpon>formNewFont.cs</DependentUpon>
     </Compile>
     <Compile Include="formSplash.cs">
       <SubType>Form</SubType>
@@ -82,10 +103,18 @@
       <DependentUpon>formSplash.cs</DependentUpon>
     </Compile>
     <Compile Include="GorgonEditorPlugIn.cs" />
+    <Compile Include="GorgonEditorSettings.cs" />
+    <Compile Include="Document.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="editorFont.resx">
+      <DependentUpon>editorFont.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formNewFont.resx">
+      <DependentUpon>formNewFont.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formSplash.resx">
       <DependentUpon>formSplash.cs</DependentUpon>
@@ -101,20 +130,19 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
+      <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
+      <Name>Gorgon.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj">
+      <Project>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</Project>
+      <Name>Gorgon.Renderers.2D</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
