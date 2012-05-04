@@ -44,10 +44,6 @@ namespace GorgonLibrary.GorgonEditor
 		private formSplash _splash = null;			// Main splash screen.
 		#endregion
 
-		#region Properties.
-
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Calls <see cref="M:System.Windows.Forms.ApplicationContext.ExitThreadCore"/>, which raises the <see cref="E:System.Windows.Forms.ApplicationContext.ThreadExit"/> event.
@@ -91,6 +87,16 @@ namespace GorgonLibrary.GorgonEditor
 
 				// If we've got time left, keep the pretty logo up.
 				timer.Reset();
+
+				_splash.UpdateVersion("Building font cache...");
+				// Get our cached fonts.
+				Program.UpdateCachedFonts();
+
+				_splash.UpdateVersion("Initializing graphics...");
+				Program.InitializeGraphics();
+
+				_splash.UpdateVersion(string.Empty);
+
 				while (timer.Milliseconds < 3000)
 					System.Threading.Thread.Sleep(1);
 

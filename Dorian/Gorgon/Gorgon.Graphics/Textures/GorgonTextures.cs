@@ -188,6 +188,26 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to return correct settings object for the specified texture.
+		/// </summary>
+		/// <typeparam name="T">Type of texture.</typeparam>
+		/// <returns>The correct settings object.</returns>
+		private ITextureSettings GetSettings<T>()
+			where T : GorgonTexture
+		{
+			if (typeof(T) == typeof(GorgonTexture1D))
+				return new GorgonTexture1DSettings();
+
+			if (typeof(T) == typeof(GorgonTexture2D))
+				return new GorgonTexture2DSettings();
+
+			if (typeof(T) == typeof(GorgonTexture3D))
+				return new GorgonTexture3DSettings();
+
+			throw new InvalidCastException("The settings could not be determined for the type '" + typeof(T).FullName + "'.");
+		}
+
+		/// <summary>
 		/// Function to return the width and height as powers of two.
 		/// </summary>
 		/// <param name="width">Width of the texture.</param>
@@ -508,7 +528,33 @@ namespace GorgonLibrary.Graphics
 		/// <param name="bitmap">Bitmap to load.</param>
 		/// <param name="settings">Settings for the texture.</param>
 		/// <returns>The new 2D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="image"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not supported.</para>
+		/// </exception>
+		public GorgonTexture2D FromGDIBitmap(string name, Image bitmap)
+		{
+			GorgonDebug.AssertNull<Image>(bitmap, "bitmap");
+
+			GorgonTexture2DSettings settings = new GorgonTexture2DSettings()
+			{
+				Width = bitmap.Width,
+				Height = bitmap.Height
+			};
+
+			return FromGDIBitmap(name, bitmap, settings);
+		}
+
+		/// <summary>
+		/// Function to load a texture from a GDI+ bitmap object.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="bitmap">Bitmap to load.</param>
+		/// <param name="settings">Settings for the texture.</param>
+		/// <returns>The new 2D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="bitmap"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
 		/// <para>-or-</para>
@@ -519,6 +565,7 @@ namespace GorgonLibrary.Graphics
 			GorgonTexture2D result = null;
 			MemoryStream stream = null;
 
+			GorgonDebug.AssertNull<Image>(bitmap, "bitmap");
 			GorgonDebug.AssertNull<GorgonTexture2DSettings>(settings, "settings");
 
 			try
@@ -535,6 +582,28 @@ namespace GorgonLibrary.Graphics
 			}			
 
 			return result;
+		}
+
+		/// <summary>
+		/// Function to load a texture from a byte array.
+		/// </summary>
+		/// <typeparam name="T">Type of texture to load.</typeparam>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="imageData">Array containing the image data.</param>
+		/// <returns>A new texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="imageData"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the imageData parameter is empty.</para>
+		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not supported.</para>
+		/// </exception>
+		public T FromMemory<T>(string name, byte[] imageData)
+			where T : GorgonTexture
+		{
+			return FromMemory<T>(name, imageData, GetSettings<T>());
 		}
 
 		/// <summary>
@@ -581,6 +650,8 @@ namespace GorgonLibrary.Graphics
 					settings.Format = (BufferFormat)info.Value.Format;
 				if (settings.Width < 1)
 					settings.Width = info.Value.Width;
+				if (settings.Height < 1)
+					settings.Height = info.Value.Height;
 				if (settings.MipCount == 0)
 					settings.MipCount = info.Value.MipLevels;
 				if (settings.ArrayCount == 0)
@@ -626,6 +697,26 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="stream">Stream to load the texture from.</param>
 		/// <param name="length">Size of the texture in the stream, in bytes.</param>
+		/// <returns>A new 1D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="stream"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not supported.</para>
+		/// </exception>
+		public T FromStream<T>(string name, Stream stream, int length)
+			where T : GorgonTexture
+		{
+			return FromStream<T>(name, stream, length, GetSettings<T>());
+		}
+		
+		/// <summary>
+		/// Function to load an image from a stream.
+		/// </summary>
+		/// <typeparam name="T">Type of texture.</typeparam>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="stream">Stream to load the texture from.</param>
+		/// <param name="length">Size of the texture in the stream, in bytes.</param>
 		/// <param name="settings">Settings to apply to the texture.</param>
 		/// <returns>A new 1D texture.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="stream"/> or <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
@@ -653,8 +744,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <typeparam name="T">Type of texture.</typeparam>
 		/// <param name="name">Name of the texture.</param>
-		/// <param name="settings">Settings to apply to the texture.</param>
 		/// <param name="filePath">Path to the file.</param>
+		/// <param name="settings">Settings to apply to the loaded texture.</param>
 		/// <returns>A new texture.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="filePath"/> or <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name or the filePath parameters are empty strings.</exception>
@@ -677,6 +768,25 @@ namespace GorgonLibrary.Graphics
 				if (stream != null)
 					stream.Dispose();
 			}
+		}
+
+		/// <summary>
+		/// Function to load a texture from a file.
+		/// </summary>
+		/// <typeparam name="T">Type of texture.</typeparam>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="filePath">Path to the file.</param>
+		/// <returns>A new texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="filePath"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name or the filePath parameters are empty strings.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not supported.</para>
+		/// </exception>
+		public T FromFile<T>(string name, string filePath)
+			where T : GorgonTexture
+		{
+			return FromFile<T>(name, filePath, GetSettings<T>());
 		}
 
 		/// <summary>
@@ -869,7 +979,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonTextures(GorgonGraphics graphics)
 		{
 			_graphics = graphics;
-			GorgonLogo = FromGDIBitmap("Gorgon.Logo", Properties.Resources.GorgonLogo3, GorgonTexture2DSettings.FromFile);
+			GorgonLogo = FromGDIBitmap("Gorgon.Logo", Properties.Resources.GorgonLogo3);
 		}
 		#endregion
 	}

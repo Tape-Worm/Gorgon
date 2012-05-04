@@ -628,10 +628,10 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private bool _disposed = false;								// Flag to indicate that the object was disposed.
-		private IList<GorgonTexture2D> _textures = null;			// List of internal textures for the font.
-		private GorgonTexture2DSettings _textureSettings = null;	// Settings for the texture.
-		private Bitmap _charBitmap = null;							// Bitmap used for character cropping.
+		private bool _disposed = false;									// Flag to indicate that the object was disposed.
+		private IList<GorgonTexture2D> _textures = null;				// List of internal textures for the font.
+		private GorgonTexture2DSettings _textureSettings = null;		// Settings for the texture.
+		private Bitmap _charBitmap = null;								// Bitmap used for character cropping.
 		#endregion
 
 		#region Properties.

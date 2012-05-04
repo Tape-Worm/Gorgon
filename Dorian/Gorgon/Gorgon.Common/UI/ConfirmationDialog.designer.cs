@@ -65,6 +65,7 @@ namespace GorgonLibrary.UI
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.buttonOK.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.buttonOK.Location = new System.Drawing.Point(12, 78);
 			this.buttonOK.TabIndex = 0;
 			this.buttonOK.Text = "&Yes";
@@ -109,6 +110,7 @@ namespace GorgonLibrary.UI
 			this.ClientSize = new System.Drawing.Size(294, 130);
 			this.Controls.Add(this.buttonNo);
 			this.Controls.Add(this.buttonCancel);
+			this.DialogImage = global::GorgonLibrary.Properties.Resources.Confirm_64x64;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MinimumSize = new System.Drawing.Size(300, 158);
 			this.Name = "ConfirmationDialog";

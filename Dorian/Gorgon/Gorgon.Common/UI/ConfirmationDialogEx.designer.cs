@@ -83,11 +83,11 @@ namespace GorgonLibrary.UI
 			this.checkToAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.checkToAll.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.checkToAll.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.checkToAll.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkToAll.Location = new System.Drawing.Point(0, 130);
+			this.checkToAll.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.checkToAll.Location = new System.Drawing.Point(0, 131);
 			this.checkToAll.Name = "checkToAll";
 			this.checkToAll.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.checkToAll.Size = new System.Drawing.Size(294, 20);
+			this.checkToAll.Size = new System.Drawing.Size(294, 19);
 			this.checkToAll.TabIndex = 12;
 			this.checkToAll.Text = "&Apply selection to all items?";
 			this.checkToAll.UseVisualStyleBackColor = false;

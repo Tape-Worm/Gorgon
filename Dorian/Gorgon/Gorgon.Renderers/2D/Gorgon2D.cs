@@ -1188,7 +1188,7 @@ namespace GorgonLibrary.Renderers
 
 			Initialize();
 
-			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, GorgonTexture2DSettings.FromFile);
+			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, new GorgonTexture2DSettings());
 			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings()
 			{
 				Anchor = new Vector2(200, 56),
