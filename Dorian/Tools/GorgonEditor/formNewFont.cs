@@ -20,7 +20,101 @@ namespace GorgonLibrary.GorgonEditor
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the font name.
+		/// </summary>
+		public string FontName
+		{
+			get
+			{
+				return textName.Text;
+			}
+		}
 
+		/// <summary>
+		/// Property to return the font family name.
+		/// </summary>
+		public string FontFamilyName
+		{
+			get
+			{
+				return comboFonts.Text;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether to use points or pixels for the font size.
+		/// </summary>
+		public Graphics.FontHeightMode FontHeightMode
+		{
+			get
+			{
+				return (string.Compare(comboSizeType.Text, "points", true) == 0) ? Graphics.FontHeightMode.Points : Graphics.FontHeightMode.Pixels;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the font size.
+		/// </summary>
+		public float FontSize
+		{
+			get
+			{
+				return (float)numericSize.Value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the anti-aliasing mode.
+		/// </summary>
+		public Graphics.FontAntiAliasMode FontAntiAliasMode
+		{
+			get
+			{
+				switch (comboAA.Text.ToLower())
+				{
+					case "none":
+						return Graphics.FontAntiAliasMode.None;
+					case "anti-alias":
+						return Graphics.FontAntiAliasMode.AntiAlias;
+					default:
+						return Graphics.FontAntiAliasMode.AntiAliasHQ;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return the font texture size.
+		/// </summary>
+		public Size FontTextureSize
+		{
+			get
+			{
+				return new Size((int)numericTextureWidth.Value, (int)numericTextureHeight.Value);
+			}			
+		}
+
+		/// <summary>
+		/// Property to return the font style.
+		/// </summary>
+		public FontStyle FontStyle
+		{
+			get
+			{
+				FontStyle result = System.Drawing.FontStyle.Regular;
+
+				if (checkBold.Checked)
+					result |= System.Drawing.FontStyle.Bold;
+				if (checkUnderline.Checked)
+					result |= System.Drawing.FontStyle.Underline;
+				if (checkStrikeThrough.Checked)
+					result |= System.Drawing.FontStyle.Strikeout;
+				if (checkItalic.Checked)
+					result |= System.Drawing.FontStyle.Italic;
+
+				return result;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -29,17 +123,20 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void ValidateControls()
 		{
-			buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = checkAntiAliased.Enabled = false;
+			if (string.IsNullOrEmpty(comboAA.Text))
+				comboAA.Text = "Anti-Alias (High Quality)";
+
+			buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = comboAA.Enabled = false;
 
 			if (string.IsNullOrEmpty(comboFonts.Text))
-				buttonOK.Enabled = checkAntiAliased.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
+				buttonOK.Enabled = comboAA.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
 			else
 			{
-				checkAntiAliased.Enabled = true;
+				comboAA.Enabled = true;
 				var family = FontFamily.Families.Where(item => string.Compare(item.Name, comboFonts.Text, true) == 0).SingleOrDefault();
 
 				if ((family == null) || (!Program.CachedFonts.ContainsKey(family.Name)))
-					checkBold.Checked = checkUnderline.Checked = checkItalic.Checked = checkStrikeThrough.Checked = checkAntiAliased.Checked = false;
+					checkBold.Checked = checkUnderline.Checked = checkItalic.Checked = checkStrikeThrough.Checked = false;
 				else
 				{						
 					Font font = Program.CachedFonts[family.Name];
@@ -80,7 +177,7 @@ namespace GorgonLibrary.GorgonEditor
 			if (checkStrikeThrough.Checked)
 				style |= FontStyle.Strikeout;
 
-			_font = new Font(comboFonts.Text, (float)numericSize.Value, style, (checkPoints.Checked ? GraphicsUnit.Point : GraphicsUnit.Pixel));
+			_font = new Font(comboFonts.Text, (float)numericSize.Value, style, (string.Compare(this.comboSizeType.Text, "points", true) == 0 ? GraphicsUnit.Point : GraphicsUnit.Pixel));
 			labelPreview.Font = _font;
 		}
 
@@ -123,6 +220,37 @@ namespace GorgonLibrary.GorgonEditor
 
 			if (_font != null)
 				_font.Dispose();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			numericTextureWidth.Maximum = Program.Graphics.Textures.MaxWidth;
+			numericTextureHeight.Maximum = Program.Graphics.Textures.MaxHeight;
+			comboSizeType.Text = Program.Settings.FontSizeType.ToString();
+
+			switch (Program.Settings.FontAntiAliasMode)
+			{
+				case Graphics.FontAntiAliasMode.None:
+					comboAA.Text = "None";
+					break;
+				case Graphics.FontAntiAliasMode.AntiAlias:
+					comboAA.Text = "Anti-Alias";
+					break;
+				default:
+					comboAA.Text = "Anti-Alias (High Quality)";
+					break;
+			}
+
+			numericTextureWidth.Value = Program.Settings.FontTextureSize.Width;
+			numericTextureHeight.Value = Program.Settings.FontTextureSize.Height;
+
+			ValidateControls();
 		}
 		#endregion
 

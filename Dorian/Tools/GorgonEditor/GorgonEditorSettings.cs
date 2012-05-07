@@ -63,10 +63,36 @@ namespace GorgonLibrary.GorgonEditor
 			get;
 			set;
 		}
-		#endregion
 
-		#region Methods.
+		/// <summary>
+		/// Property to set or return the default size type.
+		/// </summary>
+		[GorgonApplicationSetting("FontSizeType", Graphics.FontHeightMode.Points, typeof(Graphics.FontHeightMode), "FontEditor")]
+		public Graphics.FontHeightMode FontSizeType
+		{
+			get;
+			set;
+		}
 
+		/// <summary>
+		/// Property to set or return the default font anti-alias mode.
+		/// </summary>
+		[GorgonApplicationSetting("FontAntiAliasMode", Graphics.FontAntiAliasMode.AntiAliasHQ, typeof(Graphics.FontAntiAliasMode), "FontEditor")]
+		public Graphics.FontAntiAliasMode FontAntiAliasMode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the default font texture size.
+		/// </summary>
+		[GorgonApplicationSetting("FontTextureSize", typeof(Size), "FontEditor")]
+		public Size FontTextureSize
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -79,6 +105,7 @@ namespace GorgonLibrary.GorgonEditor
 			Size baseSize = new Size(1280, 800);
 
 			FormState = FormWindowState.Maximized;
+			FontTextureSize = new Size(256, 256);
 
 			// Set the default size, but ensure that it fits within the primary monitor.
 			// Do not go larger than 1280x800 by default.

@@ -34,7 +34,7 @@ namespace GorgonLibrary.Collections
 	/// </summary>
 	/// <typeparam name="T">Type of object, must implement <see cref="GorgonLibrary.INamedObject">INamedObject</see>.</typeparam>
 	public abstract class GorgonBaseNamedObjectDictionary<T>
-		: IDictionary<string, T>
+		: IDictionary<string, T>, IEnumerable<T>
 		where T : INamedObject
 	{
 		#region Variables.

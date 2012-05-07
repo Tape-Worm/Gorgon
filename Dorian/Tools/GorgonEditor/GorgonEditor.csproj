@@ -78,6 +78,16 @@
     <Compile Include="comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DocumentCollection.cs" />
+    <Compile Include="FontDocument.cs" />
+    <Compile Include="FontFamilyPicker.cs" />
+    <Compile Include="FontListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FontStyleListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FontStylePicker.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +111,7 @@
     <Compile Include="Document.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VisualStyle\MetroDarkRenderer.cs" />
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -138,6 +149,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Check_Enabled.png" />
+    <None Include="Resources\Check_Disabled.png" />
     <None Include="Resources\Gorgon_2.x_Logo_Full.png" />
   </ItemGroup>
   <ItemGroup>

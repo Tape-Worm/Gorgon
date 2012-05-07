@@ -92,7 +92,7 @@ namespace GorgonLibrary.Renderers
 
 					// Assign buffers.
 					Graphics.Shaders.PixelShader.ConstantBuffers[0] = _gorgon2D.ProjectionViewBuffer;
-					Graphics.Shaders.PixelShader.ConstantBuffers[1] = (_gorgon2D.IsAlphaTestEnabled ? _gorgon2D.AlphaTestBuffer : null);
+					Graphics.Shaders.PixelShader.ConstantBuffers[1] = _gorgon2D.AlphaTestBuffer;
 				}
 			}
 		}

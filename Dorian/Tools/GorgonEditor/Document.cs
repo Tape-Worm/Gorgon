@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
+using System.ComponentModel;
 using KRBTabControl;
 using SlimMath;
 using GorgonLibrary.Diagnostics;
@@ -16,20 +17,30 @@ namespace GorgonLibrary.GorgonEditor
 	/// A document for the editor.
 	/// </summary>
 	public class Document		
-		: GorgonNamedObject, IDisposable
+		: INamedObject, IDisposable
 	{
+		#region Events.
+		/// <summary>
+		/// Event fired when the properties of the document are updated.
+		/// </summary>
+		[Browsable(false)]
+		public event EventHandler PropertyUpdated;
+		#endregion
+
 		#region Variables.
 		private bool _disposed = false;				// Flag to indicate that the object was disposed.
 		private GorgonTexture2D _logo = null;		// Logo.
 		private float _blurDelta = 1.0f;			// Blur delta.
 		private float _blurAmount = 2.1f;			// Blur amount.
+		private string _name = string.Empty;		// Name of the document.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the renderer interface.
 		/// </summary>
-		protected Gorgon2D Renderer
+		[Browsable(false)]
+		public Gorgon2D Renderer
 		{
 			get;
 			private set;
@@ -47,6 +58,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to return the tab page that this document resides in.
 		/// </summary>
+		[Browsable(false)]
 		public TabPageEx Tab
 		{
 			get;
@@ -56,14 +68,65 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to return the editor control for this document.
 		/// </summary>
+		[Browsable(false)]
 		public Control Control
 		{
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to set or return the name for the document.
+		/// </summary>
+		[Browsable(true), Category("Design"), Description("Provides a name for the object.")]
+		public string Name
+		{
+			get
+			{
+				return _name;
+			}
+			set
+			{
+				if (string.IsNullOrEmpty(value))
+					return;
+
+				if (string.Compare(_name, value, false) != 0)
+				{
+					string previousName = _name;
+					_name = value;
+
+					// Update the collection.
+					Program.Documents.Rename(previousName, value);
+
+					Tab.Text = value;
+					Tab.Name = "tab" + Name;
+
+					DispatchUpdateNotification();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the object uses the property manager.
+		/// </summary>
+		[Browsable(false)]
+		public bool HasProperties
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to dispatch an update notification.
+		/// </summary>
+		protected void DispatchUpdateNotification()
+		{
+			if (PropertyUpdated != null)
+				PropertyUpdated(this, EventArgs.Empty);
+		}
+
 		/// <summary>
 		/// Function to draw to the control.
 		/// </summary>
@@ -120,7 +183,7 @@ namespace GorgonLibrary.GorgonEditor
 		protected virtual void LoadGraphics()
 		{
 			Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(64, 64);
-			_logo = Program.Graphics.Textures.FromGDIBitmap("Logo", Properties.Resources.Gorgon_2_x_Logo_Full);
+			_logo = Program.Graphics.Textures.FromGDIBitmap("Logo", Properties.Resources.Gorgon_2_Logo_Full);
 		}
 
 		/// <summary>
@@ -143,6 +206,7 @@ namespace GorgonLibrary.GorgonEditor
 			if ((SwapChain == null) || (Control == null) || (Renderer == null))
 				return;
 
+			Renderer.Target = null;
 			SwapChain.Clear(Control.BackColor);
 			Draw(timing);
 			Renderer.Render();
@@ -201,10 +265,14 @@ namespace GorgonLibrary.GorgonEditor
 		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		public Document(string name, bool allowClose)
-			: base(name)
 		{
+			GorgonDebug.AssertParamString(name, "name");
+
+			_name = name;
 			Tab = new TabPageEx(name);
+			Tab.Name = "tab" + name;
 			Control = new Panel();
+			Control.Name = "panel" + name;
 			Control.BackColor = Color.FromKnownColor(KnownColor.ControlDarkDark);
 			Control.Dock = DockStyle.Fill;
 			Tab.Controls.Add(Control);
@@ -226,7 +294,7 @@ namespace GorgonLibrary.GorgonEditor
 					TerminateRendering();
 					if (Control != null)
 						Control.Dispose();
-					if (Tab != null)
+					if ((Tab != null) && (!Tab.IsClosable))
 						Tab.Dispose();
 				}
 
@@ -243,6 +311,19 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+		#endregion
+
+		#region INamedObject Members
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		string INamedObject.Name
+		{
+			get 
+			{
+				return _name;
+			}
 		}
 		#endregion
 	}

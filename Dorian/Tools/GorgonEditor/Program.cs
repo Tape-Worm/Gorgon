@@ -39,8 +39,17 @@ namespace GorgonLibrary.GorgonEditor
 	/// Main application interface.
 	/// </summary>
 	public static class Program
-	{
+	{		
 		#region Properties.
+		/// <summary>
+		/// Property to return the list of documents.
+		/// </summary>
+		internal static DocumentCollection Documents
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to set or return the settings for the application.
 		/// </summary>
@@ -146,6 +155,8 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			Settings = new GorgonEditorSettings();
 			Settings.Load();
+
+			Documents = new DocumentCollection();
 		}
 		#endregion
 

@@ -263,8 +263,8 @@ namespace Tester_Graphics
 				System.IO.StreamReader reader = null;
 				try
 				{
-					reader = new System.IO.StreamReader(@"X:\Unpak\LZWEXP.TXT");
-					//reader = new System.IO.StreamReader(@"D:\Code\Archived\Other\Docs\LZWEXP.TXT");					
+					//reader = new System.IO.StreamReader(@"X:\Unpak\LZWEXP.TXT");
+					reader = new System.IO.StreamReader(@"D:\Code\Archived\Other\Docs\LZWEXP.TXT");					
 					test = reader.ReadToEnd();
 				}
 				finally

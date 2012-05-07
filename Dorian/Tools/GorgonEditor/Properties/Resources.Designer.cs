@@ -60,9 +60,23 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full {
+        internal static System.Drawing.Bitmap Check_Disabled {
             get {
-                object obj = ResourceManager.GetObject("Gorgon_2.x_Logo_Full", resourceCulture);
+                object obj = ResourceManager.GetObject("Check_Disabled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Check_Enabled {
+            get {
+                object obj = ResourceManager.GetObject("Check_Enabled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Gorgon_2_Logo_Full {
+            get {
+                object obj = ResourceManager.GetObject("Gorgon_2_Logo_Full", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

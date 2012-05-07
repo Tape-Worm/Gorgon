@@ -34,32 +34,10 @@ using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.GorgonEditor
 {
-	/// <summary>
-	/// Context for the file menu.
-	/// </summary>
-	public enum FileMenuContext
-	{
-		/// <summary>
-		/// No context.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// New menu item.
-		/// </summary>
-		New = 1,
-		/// <summary>
-		/// Open menu item.
-		/// </summary>
-		Open = 2,
-		/// <summary>
-		/// Save menu item.
-		/// </summary>
-		Save = 3
-	}
-
 	/// <summary>
 	/// Type of editor.
 	/// </summary>
@@ -82,11 +60,9 @@ namespace GorgonLibrary.GorgonEditor
 		: Form
 	{
 		#region Variables.
-		private FileMenuContext _context = FileMenuContext.None;			// File menu context.
 		private EditorType _editorType = EditorType.None;					// Editor type.
 		private string _projectName = string.Empty;							// Name of the current project.
 		private bool _needsSave = false;									// Flag to indicate that we have unsaved changes.
-		private Document _defaultDocument = null;							// Default document.
 		#endregion
 
 		#region Properties.
@@ -99,7 +75,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void ValidateControls()
 		{
-			buttonSave.Enabled = _editorType != EditorType.None;
+			itemSave.Enabled = _editorType != EditorType.None;
 
 			if (string.IsNullOrEmpty(_projectName))
 				Text = "Gorgon Editor - Untitled";
@@ -137,8 +113,10 @@ namespace GorgonLibrary.GorgonEditor
 
 			try
 			{
-				if (_defaultDocument != null)
-					_defaultDocument.Dispose();
+				foreach (var document in Program.Documents.ToArray())
+					document.Dispose();
+
+				Program.Documents.Clear();
 
 				if (this.WindowState != FormWindowState.Minimized)
 					Program.Settings.FormState = this.WindowState;
@@ -162,96 +140,85 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Function to open the file menu.
+		/// Function called when the font property gets updated.
 		/// </summary>
-		/// <param name="context">Context to use.</param>
-		private void OpenFileMenu(FileMenuContext context)
+		/// <param name="sender">Sender of the event.</param>
+		/// <param name="e">Event parameters.</param>
+		private void FontUpdated(object sender, EventArgs e)
 		{
-			// Toggle it off.
-			if ((context == _context) && (_context != FileMenuContext.None))
-				context = FileMenuContext.None;
+			FontDocument document = sender as FontDocument;
 
-			if (_context != FileMenuContext.None)
-			{
-				if (context == FileMenuContext.None)
-					splitMain.Panel1Collapsed = true;
-
-				buttonOpen.BackColor = buttonSave.BackColor = buttonNew.BackColor = Color.FromKnownColor(KnownColor.ControlDarkDark);
-			}
-
-			if (context == FileMenuContext.None)
-			{
-				_context = FileMenuContext.None;
+			if (sender == null)
 				return;
-			}
 
-			switch (context)
-			{
-				case FileMenuContext.New:
-					buttonNew.BackColor = Color.DodgerBlue;
-					break;
-				case FileMenuContext.Open:
-					buttonOpen.BackColor = Color.DodgerBlue;
-					break;
-				case FileMenuContext.Save:
-					buttonSave.BackColor = Color.DodgerBlue;
-					break;
-			}
-
-			splitMain.Panel1Collapsed = false;
-
-			_context = context;
+			document.Update();
 		}
 
 		/// <summary>
-		/// Handles the Click event of the buttonNew control.
+		/// Handles the Click event of the itemNewFont control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonNew_Click(object sender, EventArgs e)
+		private void itemNewFont_Click(object sender, EventArgs e)
 		{
+			formNewFont newFont = null;
+
 			try
 			{
-				OpenFileMenu(FileMenuContext.New);
+				newFont = new formNewFont();
+				if (newFont.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				{
+					FontDocument document = OpenDocument<FontDocument>(newFont.FontName, true);
+					document.FontFamily = newFont.FontFamilyName;
+					document.FontSize = newFont.FontSize;
+					document.FontStyle = newFont.FontStyle;
+					Program.Settings.FontSizeType = document.UsePointSize = newFont.FontHeightMode;
+					Program.Settings.FontTextureSize = document.FontTextureSize = newFont.FontTextureSize;
+					Program.Settings.FontAntiAliasMode = document.FontAntiAliasMode = newFont.FontAntiAliasMode;
+										
+					document.Update();
+
+					document.PropertyUpdated += new EventHandler(FontUpdated);
+
+					Program.Settings.Save();
+				}
 			}
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(this, ex);
 			}
-		}
-
-		/// <summary>
-		/// Handles the Click event of the buttonOpen control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonOpen_Click(object sender, EventArgs e)
-		{
-			try
+			finally
 			{
-				OpenFileMenu(FileMenuContext.Open);
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
+				if (newFont != null)
+					newFont.Dispose();
 			}
 		}
 
 		/// <summary>
-		/// Handles the Click event of the buttonSave control.
+		/// Function to open a document.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonSave_Click(object sender, EventArgs e)
+		/// <param name="documentName">Name of the document to open.</param>
+		/// <param name="allowClose">TRUE to allow the document to close, FALSE to disallow.</param>
+		private T OpenDocument<T>(string documentName, bool allowClose)
+			where T : Document
 		{
-			try
-			{
-				OpenFileMenu(FileMenuContext.Save);
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
-			}
+			T document = null;
+			Type type = typeof(T);
+
+			document = (T)Activator.CreateInstance(type, new object[] { documentName, allowClose });
+			Program.Documents.Add(document);
+			document.Tab.Font = this.Font;
+			tabDocuments.TabPages.Add(document.Tab);
+			tabDocuments.SelectedTab = document.Tab;
+			document.InitializeRendering();
+
+			propertyItem.SelectedObject = document;
+
+			Program.CurrentDocument = document;
+
+			splitEdit.Panel2Collapsed = !document.HasProperties;
+
+			return document;
 		}
 
 		/// <summary>
@@ -278,8 +245,10 @@ namespace GorgonLibrary.GorgonEditor
 			base.OnLoad(e);
 
 			try
-			{				
-				this.splitMain.Panel1Collapsed = true;
+			{
+				this.menuMain.Renderer = new MetroDarkRenderer();
+
+				this.splitMain.Panel1Collapsed = false;
 
 				// Adjust main window.
 				Visible = true;
@@ -292,14 +261,9 @@ namespace GorgonLibrary.GorgonEditor
 				this.WindowState = Program.Settings.FormState;
 				this.tabDocuments.Focus();
 
-				// Create the default document.
-				_defaultDocument = new Document("Gorgon Editor", false);
-				tabDocuments.TabPages.Add(_defaultDocument.Tab);
-				_defaultDocument.InitializeRendering();
+				OpenDocument<Document>("Gorgon Editor", false);
 
 				Gorgon.ApplicationIdleLoopMethod = Idle;
-
-				Program.CurrentDocument = _defaultDocument;
 			}
 			catch (Exception ex)
 			{
@@ -323,36 +287,56 @@ namespace GorgonLibrary.GorgonEditor
 		#endregion
 
 		/// <summary>
-		/// Handles the Click event of the buttonFontAction control.
+		/// Handles the Selected event of the tabDocuments control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonFontAction_Click(object sender, EventArgs e)
+		/// <param name="e">The <see cref="System.Windows.Forms.TabControlEventArgs"/> instance containing the event data.</param>
+		private void tabDocuments_Selected(object sender, TabControlEventArgs e)
 		{
-			formNewFont newFont = null;
-
 			try
 			{
-				switch(_context)
+				var document = Program.Documents[e.TabPage as KRBTabControl.TabPageEx];
+
+				if (document != null)
 				{
-					case FileMenuContext.New:
-						newFont = new formNewFont();
-						if (newFont.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-						{
-						}
-						break;
+					if ((Program.CurrentDocument != null) && (Program.CurrentDocument.Renderer != null))
+						Program.CurrentDocument.Renderer.End2D();
+
+					Program.CurrentDocument = document;
+
+					if (document.Renderer != null)
+						document.Renderer.Begin2D();
+
+					splitEdit.Panel2Collapsed = !document.HasProperties;
 				}
 			}
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(this, ex);
 			}
-			finally
-			{
-				if (newFont != null)
-					newFont.Dispose();
+		}
 
-				OpenFileMenu(FileMenuContext.None);
+		/// <summary>
+		/// Handles the TabPageClosing event of the tabDocuments control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KRBTabControl.KRBTabControl.SelectedIndexChangingEventArgs"/> instance containing the event data.</param>
+		private void tabDocuments_TabPageClosing(object sender, KRBTabControl.KRBTabControl.SelectedIndexChangingEventArgs e)
+		{
+			try
+			{
+				var document = Program.Documents[e.TabPage];
+
+				if (document != null)
+				{
+					document.PropertyUpdated -= new EventHandler(FontUpdated);
+					Program.Documents.Remove(document);
+					document.Dispose();
+				}				
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
 			}
 		}
 	}
