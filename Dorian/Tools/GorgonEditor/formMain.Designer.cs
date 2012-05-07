@@ -55,32 +55,29 @@ namespace GorgonLibrary.GorgonEditor
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
-			this.panelMainMenu = new System.Windows.Forms.Panel();
-			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this.buttonSave = new System.Windows.Forms.Button();
-			this.buttonOpen = new System.Windows.Forms.Button();
-			this.buttonNew = new System.Windows.Forms.Button();
-			this.buttonExit = new System.Windows.Forms.Button();
 			this.splitMain = new System.Windows.Forms.SplitContainer();
-			this.panelDynamicFileMenu = new System.Windows.Forms.Panel();
-			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-			this.buttonAnimationAction = new System.Windows.Forms.Button();
-			this.buttonShaderAction = new System.Windows.Forms.Button();
-			this.buttonSpriteAction = new System.Windows.Forms.Button();
-			this.buttonFontAction = new System.Windows.Forms.Button();
-			this.buttonProjectAction = new System.Windows.Forms.Button();
+			this.menuMain = new System.Windows.Forms.MenuStrip();
+			this.itemNew = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemNewProject = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemNewFont = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemOpen = new System.Windows.Forms.ToolStripMenuItem();
+			this.projectToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.fontToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
+			this.projectToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+			this.fontToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitEdit = new System.Windows.Forms.SplitContainer();
 			this.panelEditor = new System.Windows.Forms.Panel();
 			this.tabDocuments = new KRBTabControl.KRBTabControl();
 			this.propertyItem = new System.Windows.Forms.PropertyGrid();
-			this.panelMainMenu.SuspendLayout();
-			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
 			this.splitMain.Panel1.SuspendLayout();
 			this.splitMain.Panel2.SuspendLayout();
 			this.splitMain.SuspendLayout();
-			this.panelDynamicFileMenu.SuspendLayout();
-			this.tableLayoutPanel2.SuspendLayout();
+			this.menuMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitEdit)).BeginInit();
 			this.splitEdit.Panel1.SuspendLayout();
 			this.splitEdit.Panel2.SuspendLayout();
@@ -88,261 +85,127 @@ namespace GorgonLibrary.GorgonEditor
 			this.panelEditor.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// panelMainMenu
-			// 
-			this.panelMainMenu.AutoScroll = true;
-			this.panelMainMenu.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.panelMainMenu.Controls.Add(this.tableLayoutPanel1);
-			this.panelMainMenu.Dock = System.Windows.Forms.DockStyle.Left;
-			this.panelMainMenu.Location = new System.Drawing.Point(0, 0);
-			this.panelMainMenu.Name = "panelMainMenu";
-			this.panelMainMenu.Size = new System.Drawing.Size(92, 613);
-			this.panelMainMenu.TabIndex = 0;
-			// 
-			// tableLayoutPanel1
-			// 
-			this.tableLayoutPanel1.ColumnCount = 1;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel1.Controls.Add(this.buttonSave, 0, 2);
-			this.tableLayoutPanel1.Controls.Add(this.buttonOpen, 0, 1);
-			this.tableLayoutPanel1.Controls.Add(this.buttonNew, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.buttonExit, 0, 5);
-			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 6;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(92, 613);
-			this.tableLayoutPanel1.TabIndex = 0;
-			// 
-			// buttonSave
-			// 
-			this.buttonSave.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonSave.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonSave.FlatAppearance.CheckedBackColor = System.Drawing.Color.DodgerBlue;
-			this.buttonSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonSave.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonSave.ForeColor = System.Drawing.Color.White;
-			this.buttonSave.Location = new System.Drawing.Point(3, 69);
-			this.buttonSave.Name = "buttonSave";
-			this.buttonSave.Size = new System.Drawing.Size(86, 27);
-			this.buttonSave.TabIndex = 2;
-			this.buttonSave.Text = "&Save";
-			this.buttonSave.UseVisualStyleBackColor = true;
-			this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
-			// 
-			// buttonOpen
-			// 
-			this.buttonOpen.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonOpen.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonOpen.FlatAppearance.CheckedBackColor = System.Drawing.Color.DodgerBlue;
-			this.buttonOpen.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOpen.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOpen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonOpen.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonOpen.ForeColor = System.Drawing.Color.White;
-			this.buttonOpen.Location = new System.Drawing.Point(3, 36);
-			this.buttonOpen.Name = "buttonOpen";
-			this.buttonOpen.Size = new System.Drawing.Size(86, 27);
-			this.buttonOpen.TabIndex = 1;
-			this.buttonOpen.Text = "&Open";
-			this.buttonOpen.UseVisualStyleBackColor = true;
-			this.buttonOpen.Click += new System.EventHandler(this.buttonOpen_Click);
-			// 
-			// buttonNew
-			// 
-			this.buttonNew.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonNew.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonNew.FlatAppearance.CheckedBackColor = System.Drawing.Color.DodgerBlue;
-			this.buttonNew.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonNew.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonNew.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonNew.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonNew.ForeColor = System.Drawing.Color.White;
-			this.buttonNew.Location = new System.Drawing.Point(3, 3);
-			this.buttonNew.Name = "buttonNew";
-			this.buttonNew.Size = new System.Drawing.Size(86, 27);
-			this.buttonNew.TabIndex = 0;
-			this.buttonNew.Text = "&New";
-			this.buttonNew.UseVisualStyleBackColor = true;
-			this.buttonNew.Click += new System.EventHandler(this.buttonNew_Click);
-			// 
-			// buttonExit
-			// 
-			this.buttonExit.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.buttonExit.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonExit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonExit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonExit.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonExit.ForeColor = System.Drawing.Color.White;
-			this.buttonExit.Location = new System.Drawing.Point(3, 587);
-			this.buttonExit.Name = "buttonExit";
-			this.buttonExit.Size = new System.Drawing.Size(86, 23);
-			this.buttonExit.TabIndex = 3;
-			this.buttonExit.Text = "E&xit";
-			this.buttonExit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonExit.UseVisualStyleBackColor = true;
-			// 
 			// splitMain
 			// 
 			this.splitMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitMain.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
 			this.splitMain.IsSplitterFixed = true;
-			this.splitMain.Location = new System.Drawing.Point(92, 0);
+			this.splitMain.Location = new System.Drawing.Point(0, 0);
 			this.splitMain.Name = "splitMain";
 			// 
 			// splitMain.Panel1
 			// 
-			this.splitMain.Panel1.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.splitMain.Panel1.Controls.Add(this.panelDynamicFileMenu);
-			this.splitMain.Panel1.Padding = new System.Windows.Forms.Padding(3);
+			this.splitMain.Panel1.BackColor = System.Drawing.Color.DimGray;
+			this.splitMain.Panel1.Controls.Add(this.menuMain);
 			// 
 			// splitMain.Panel2
 			// 
 			this.splitMain.Panel2.Controls.Add(this.splitEdit);
-			this.splitMain.Size = new System.Drawing.Size(852, 613);
+			this.splitMain.Size = new System.Drawing.Size(944, 613);
 			this.splitMain.SplitterDistance = 110;
 			this.splitMain.SplitterWidth = 1;
 			this.splitMain.TabIndex = 1;
 			// 
-			// panelDynamicFileMenu
+			// menuMain
 			// 
-			this.panelDynamicFileMenu.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelDynamicFileMenu.Controls.Add(this.tableLayoutPanel2);
-			this.panelDynamicFileMenu.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelDynamicFileMenu.Location = new System.Drawing.Point(3, 3);
-			this.panelDynamicFileMenu.Name = "panelDynamicFileMenu";
-			this.panelDynamicFileMenu.Size = new System.Drawing.Size(104, 607);
-			this.panelDynamicFileMenu.TabIndex = 0;
+			this.menuMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemNew,
+            this.itemOpen,
+            this.itemSave});
+			this.menuMain.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
+			this.menuMain.Location = new System.Drawing.Point(0, 0);
+			this.menuMain.Name = "menuMain";
+			this.menuMain.Size = new System.Drawing.Size(110, 613);
+			this.menuMain.TabIndex = 0;
+			this.menuMain.Text = "menuStrip1";
 			// 
-			// tableLayoutPanel2
+			// itemNew
 			// 
-			this.tableLayoutPanel2.ColumnCount = 1;
-			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel2.Controls.Add(this.buttonAnimationAction, 0, 5);
-			this.tableLayoutPanel2.Controls.Add(this.buttonShaderAction, 0, 4);
-			this.tableLayoutPanel2.Controls.Add(this.buttonSpriteAction, 0, 3);
-			this.tableLayoutPanel2.Controls.Add(this.buttonFontAction, 0, 2);
-			this.tableLayoutPanel2.Controls.Add(this.buttonProjectAction, 0, 0);
-			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-			this.tableLayoutPanel2.RowCount = 6;
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(102, 605);
-			this.tableLayoutPanel2.TabIndex = 0;
+			this.itemNew.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemNewProject,
+            this.toolStripMenuItem1,
+            this.itemNewFont});
+			this.itemNew.Name = "itemNew";
+			this.itemNew.Size = new System.Drawing.Size(103, 19);
+			this.itemNew.Text = "&New";
+			this.itemNew.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// buttonAnimationAction
+			// itemNewProject
 			// 
-			this.buttonAnimationAction.BackColor = System.Drawing.SystemColors.Control;
-			this.buttonAnimationAction.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonAnimationAction.Enabled = false;
-			this.buttonAnimationAction.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonAnimationAction.FlatAppearance.BorderSize = 0;
-			this.buttonAnimationAction.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonAnimationAction.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonAnimationAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonAnimationAction.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonAnimationAction.ForeColor = System.Drawing.Color.Black;
-			this.buttonAnimationAction.Location = new System.Drawing.Point(3, 139);
-			this.buttonAnimationAction.Name = "buttonAnimationAction";
-			this.buttonAnimationAction.Size = new System.Drawing.Size(96, 23);
-			this.buttonAnimationAction.TabIndex = 9;
-			this.buttonAnimationAction.Text = "&Animation...";
-			this.buttonAnimationAction.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonAnimationAction.UseVisualStyleBackColor = false;
+			this.itemNewProject.Name = "itemNewProject";
+			this.itemNewProject.Size = new System.Drawing.Size(120, 22);
+			this.itemNewProject.Text = "&Project...";
 			// 
-			// buttonShaderAction
+			// toolStripMenuItem1
 			// 
-			this.buttonShaderAction.BackColor = System.Drawing.SystemColors.Control;
-			this.buttonShaderAction.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonShaderAction.Enabled = false;
-			this.buttonShaderAction.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonShaderAction.FlatAppearance.BorderSize = 0;
-			this.buttonShaderAction.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonShaderAction.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonShaderAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonShaderAction.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonShaderAction.ForeColor = System.Drawing.Color.Black;
-			this.buttonShaderAction.Location = new System.Drawing.Point(3, 110);
-			this.buttonShaderAction.Name = "buttonShaderAction";
-			this.buttonShaderAction.Size = new System.Drawing.Size(96, 23);
-			this.buttonShaderAction.TabIndex = 8;
-			this.buttonShaderAction.Text = "S&hader...";
-			this.buttonShaderAction.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonShaderAction.UseVisualStyleBackColor = false;
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(117, 6);
 			// 
-			// buttonSpriteAction
+			// itemNewFont
 			// 
-			this.buttonSpriteAction.BackColor = System.Drawing.SystemColors.Control;
-			this.buttonSpriteAction.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonSpriteAction.Enabled = false;
-			this.buttonSpriteAction.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonSpriteAction.FlatAppearance.BorderSize = 0;
-			this.buttonSpriteAction.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonSpriteAction.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonSpriteAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonSpriteAction.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonSpriteAction.ForeColor = System.Drawing.Color.Black;
-			this.buttonSpriteAction.Location = new System.Drawing.Point(3, 81);
-			this.buttonSpriteAction.Name = "buttonSpriteAction";
-			this.buttonSpriteAction.Size = new System.Drawing.Size(96, 23);
-			this.buttonSpriteAction.TabIndex = 7;
-			this.buttonSpriteAction.Text = "&Sprite...";
-			this.buttonSpriteAction.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonSpriteAction.UseVisualStyleBackColor = false;
+			this.itemNewFont.Name = "itemNewFont";
+			this.itemNewFont.Size = new System.Drawing.Size(120, 22);
+			this.itemNewFont.Text = "Font...";
+			this.itemNewFont.Click += new System.EventHandler(this.itemNewFont_Click);
 			// 
-			// buttonFontAction
+			// itemOpen
 			// 
-			this.buttonFontAction.BackColor = System.Drawing.SystemColors.Control;
-			this.buttonFontAction.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonFontAction.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonFontAction.FlatAppearance.BorderSize = 0;
-			this.buttonFontAction.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonFontAction.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonFontAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonFontAction.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonFontAction.ForeColor = System.Drawing.Color.Black;
-			this.buttonFontAction.Location = new System.Drawing.Point(3, 52);
-			this.buttonFontAction.Name = "buttonFontAction";
-			this.buttonFontAction.Size = new System.Drawing.Size(96, 23);
-			this.buttonFontAction.TabIndex = 6;
-			this.buttonFontAction.Text = "&Font...";
-			this.buttonFontAction.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonFontAction.UseVisualStyleBackColor = false;
-			this.buttonFontAction.Click += new System.EventHandler(this.buttonFontAction_Click);
+			this.itemOpen.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.projectToolStripMenuItem1,
+            this.toolStripMenuItem2,
+            this.fontToolStripMenuItem1});
+			this.itemOpen.Name = "itemOpen";
+			this.itemOpen.Size = new System.Drawing.Size(103, 19);
+			this.itemOpen.Text = "&Open";
+			this.itemOpen.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// buttonProjectAction
+			// projectToolStripMenuItem1
 			// 
-			this.buttonProjectAction.BackColor = System.Drawing.SystemColors.Control;
-			this.buttonProjectAction.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonProjectAction.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonProjectAction.FlatAppearance.BorderSize = 0;
-			this.buttonProjectAction.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonProjectAction.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonProjectAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonProjectAction.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonProjectAction.ForeColor = System.Drawing.Color.Black;
-			this.buttonProjectAction.Location = new System.Drawing.Point(3, 3);
-			this.buttonProjectAction.Name = "buttonProjectAction";
-			this.buttonProjectAction.Size = new System.Drawing.Size(96, 23);
-			this.buttonProjectAction.TabIndex = 5;
-			this.buttonProjectAction.Text = "P&roject...";
-			this.buttonProjectAction.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonProjectAction.UseVisualStyleBackColor = false;
+			this.projectToolStripMenuItem1.Name = "projectToolStripMenuItem1";
+			this.projectToolStripMenuItem1.Size = new System.Drawing.Size(120, 22);
+			this.projectToolStripMenuItem1.Text = "&Project...";
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(117, 6);
+			// 
+			// fontToolStripMenuItem1
+			// 
+			this.fontToolStripMenuItem1.Name = "fontToolStripMenuItem1";
+			this.fontToolStripMenuItem1.Size = new System.Drawing.Size(120, 22);
+			this.fontToolStripMenuItem1.Text = "&Font";
+			// 
+			// itemSave
+			// 
+			this.itemSave.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.projectToolStripMenuItem2,
+            this.toolStripMenuItem3,
+            this.fontToolStripMenuItem2});
+			this.itemSave.Enabled = false;
+			this.itemSave.Name = "itemSave";
+			this.itemSave.Size = new System.Drawing.Size(103, 19);
+			this.itemSave.Text = "&Save";
+			this.itemSave.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// projectToolStripMenuItem2
+			// 
+			this.projectToolStripMenuItem2.Name = "projectToolStripMenuItem2";
+			this.projectToolStripMenuItem2.Size = new System.Drawing.Size(111, 22);
+			this.projectToolStripMenuItem2.Text = "&Project";
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(108, 6);
+			// 
+			// fontToolStripMenuItem2
+			// 
+			this.fontToolStripMenuItem2.Enabled = false;
+			this.fontToolStripMenuItem2.Name = "fontToolStripMenuItem2";
+			this.fontToolStripMenuItem2.Size = new System.Drawing.Size(111, 22);
+			this.fontToolStripMenuItem2.Text = "&Font";
 			// 
 			// splitEdit
 			// 
@@ -359,8 +222,8 @@ namespace GorgonLibrary.GorgonEditor
 			// splitEdit.Panel2
 			// 
 			this.splitEdit.Panel2.Controls.Add(this.propertyItem);
-			this.splitEdit.Size = new System.Drawing.Size(741, 613);
-			this.splitEdit.SplitterDistance = 512;
+			this.splitEdit.Size = new System.Drawing.Size(833, 613);
+			this.splitEdit.SplitterDistance = 604;
 			this.splitEdit.TabIndex = 0;
 			// 
 			// panelEditor
@@ -369,7 +232,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.panelEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelEditor.Location = new System.Drawing.Point(3, 0);
 			this.panelEditor.Name = "panelEditor";
-			this.panelEditor.Size = new System.Drawing.Size(509, 613);
+			this.panelEditor.Size = new System.Drawing.Size(601, 613);
 			this.panelEditor.TabIndex = 0;
 			// 
 			// tabDocuments
@@ -394,26 +257,31 @@ namespace GorgonLibrary.GorgonEditor
 			this.tabDocuments.ItemSize = new System.Drawing.Size(0, 26);
 			this.tabDocuments.Location = new System.Drawing.Point(0, 0);
 			this.tabDocuments.Name = "tabDocuments";
-			this.tabDocuments.Size = new System.Drawing.Size(509, 613);
+			this.tabDocuments.Size = new System.Drawing.Size(601, 613);
 			this.tabDocuments.TabGradient.ColorEnd = System.Drawing.SystemColors.Control;
 			this.tabDocuments.TabGradient.ColorStart = System.Drawing.SystemColors.Control;
 			this.tabDocuments.TabHOffset = 2;
 			this.tabDocuments.TabIndex = 0;
 			this.tabDocuments.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.BlackGlass;
+			this.tabDocuments.TabPageClosing += new System.EventHandler<KRBTabControl.KRBTabControl.SelectedIndexChangingEventArgs>(this.tabDocuments_TabPageClosing);
 			this.tabDocuments.ContextMenuShown += new System.EventHandler<KRBTabControl.KRBTabControl.ContextMenuShownEventArgs>(this.tabDocuments_ContextMenuShown);
+			this.tabDocuments.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabDocuments_Selected);
 			// 
 			// propertyItem
 			// 
+			this.propertyItem.BackColor = System.Drawing.Color.DimGray;
 			this.propertyItem.CategoryForeColor = System.Drawing.Color.White;
+			this.propertyItem.CommandsDisabledLinkColor = System.Drawing.Color.Black;
+			this.propertyItem.CommandsForeColor = System.Drawing.Color.White;
 			this.propertyItem.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyItem.HelpBackColor = System.Drawing.SystemColors.ControlDark;
-			this.propertyItem.LineColor = System.Drawing.Color.Black;
+			this.propertyItem.HelpBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
+			this.propertyItem.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
 			this.propertyItem.Location = new System.Drawing.Point(0, 0);
 			this.propertyItem.Name = "propertyItem";
 			this.propertyItem.Size = new System.Drawing.Size(225, 613);
 			this.propertyItem.TabIndex = 0;
 			this.propertyItem.ToolbarVisible = false;
-			this.propertyItem.ViewBackColor = System.Drawing.SystemColors.ControlDark;
+			this.propertyItem.ViewBackColor = System.Drawing.Color.DimGray;
 			this.propertyItem.ViewForeColor = System.Drawing.Color.White;
 			// 
 			// formMain
@@ -423,21 +291,19 @@ namespace GorgonLibrary.GorgonEditor
 			this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.ClientSize = new System.Drawing.Size(944, 613);
 			this.Controls.Add(this.splitMain);
-			this.Controls.Add(this.panelMainMenu);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "formMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Editor";
-			this.panelMainMenu.ResumeLayout(false);
-			this.tableLayoutPanel1.ResumeLayout(false);
 			this.splitMain.Panel1.ResumeLayout(false);
+			this.splitMain.Panel1.PerformLayout();
 			this.splitMain.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitMain)).EndInit();
 			this.splitMain.ResumeLayout(false);
-			this.panelDynamicFileMenu.ResumeLayout(false);
-			this.tableLayoutPanel2.ResumeLayout(false);
+			this.menuMain.ResumeLayout(false);
+			this.menuMain.PerformLayout();
 			this.splitEdit.Panel1.ResumeLayout(false);
 			this.splitEdit.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitEdit)).EndInit();
@@ -449,24 +315,24 @@ namespace GorgonLibrary.GorgonEditor
 
 		#endregion
 
-		private System.Windows.Forms.Panel panelMainMenu;
-		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private System.Windows.Forms.Button buttonSave;
-		private System.Windows.Forms.Button buttonOpen;
-		private System.Windows.Forms.Button buttonNew;
-		private System.Windows.Forms.Button buttonExit;
 		private System.Windows.Forms.SplitContainer splitMain;
 		private System.Windows.Forms.SplitContainer splitEdit;
 		private System.Windows.Forms.PropertyGrid propertyItem;
-		private System.Windows.Forms.Panel panelDynamicFileMenu;
 		private System.Windows.Forms.Panel panelEditor;
-		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-		private System.Windows.Forms.Button buttonAnimationAction;
-		private System.Windows.Forms.Button buttonShaderAction;
-		private System.Windows.Forms.Button buttonSpriteAction;
-		private System.Windows.Forms.Button buttonFontAction;
-		private System.Windows.Forms.Button buttonProjectAction;
 		private KRBTabControl.KRBTabControl tabDocuments;
+		private System.Windows.Forms.MenuStrip menuMain;
+		private System.Windows.Forms.ToolStripMenuItem itemNew;
+		private System.Windows.Forms.ToolStripMenuItem itemNewProject;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem itemNewFont;
+		private System.Windows.Forms.ToolStripMenuItem itemOpen;
+		private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem1;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem fontToolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem itemSave;
+		private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem2;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+		private System.Windows.Forms.ToolStripMenuItem fontToolStripMenuItem2;
 	}
 }
 

@@ -44,7 +44,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Name.GetHashCode().GenerateHash(this);
+			return Name.GetHashCode();
 		}
 
 		/// <summary>
