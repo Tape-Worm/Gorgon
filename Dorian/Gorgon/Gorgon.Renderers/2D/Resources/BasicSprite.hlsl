@@ -88,7 +88,7 @@ cbuffer GorgonPosterizeEffect
 cbuffer GorgonSobelEdgeDetectEffect
 {
 	float4 sobelLineColor = float4(0, 0, 0, 1);
-	float sobelOffset = 0.0f;
+	float2 sobelOffset = float2(0, 0);
 	float sobelThreshold = 0.75f;
 	bool sobelUseLineColor = true;
 }
@@ -265,34 +265,38 @@ float4 GorgonPixelShaderPosterize(GorgonSpriteVertex vertex) : SV_Target
 // Function to perform a sobel edge detection.
 float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 s00 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2(-sobelOffset, -sobelOffset));
-	float4 s01 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( 0,   -sobelOffset));
-	float4 s02 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( sobelOffset, -sobelOffset));
+	float4 s00 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + -sobelOffset);
+	float4 s01 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( 0,   -sobelOffset.y));
+	float4 s02 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( sobelOffset.x, -sobelOffset.y));
 
-	float4 s10 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2(-sobelOffset,  0));
-	float4 s12 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( sobelOffset,  0));
+	float4 s10 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2(-sobelOffset.x,  0));
+	float4 s12 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( sobelOffset.x,  0));
 
-	float4 s20 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2(-sobelOffset,  sobelOffset));
-	float4 s21 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( 0,    sobelOffset));
-	float4 s22 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( sobelOffset,  sobelOffset));
+	float4 s20 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2(-sobelOffset.x,  sobelOffset.y));
+	float4 s21 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( 0,    sobelOffset.y));
+	float4 s22 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + sobelOffset);
 
 	float4 sobelX = s00 + 2 * s10 + s20 - s02 - 2 * s12 - s22;
 	float4 sobelY = s00 + 2 * s01 + s02 - s20 - 2 * s21 - s22;
 
 	float4 edgeSqr = sobelX * sobelX + sobelY * sobelY;
-	float4 color = 1 - dot(edgeSqr, 0.25f);
+	//float4 color = 1 - dot(edgeSqr, 0.25f);
+	float4 color = 1 - float4(edgeSqr.r <= sobelThreshold,
+							edgeSqr.g <= sobelThreshold,
+							edgeSqr.b <= sobelThreshold,
+							0);
 
-	if ((color.r < sobelThreshold) && (color.g < sobelThreshold) && (color.b < sobelThreshold))
-	{
-		color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	//if ((color.r < sobelThreshold) && (color.g < sobelThreshold) && (color.b < sobelThreshold))
+	//{
+	//	color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 
-		if (sobelUseLineColor)
-			color.rgb = sobelLineColor.rgb;		
-	}
-	else
-		color.a = 0;
+	//	if (sobelUseLineColor)
+	//		color.rgb = sobelLineColor.rgb;		
+	//}
+	//else
+	//	color.a = 0;
 
-	REJECT_ALPHA(color.a);
+	//REJECT_ALPHA(color.a);
 
 	return color;
 }

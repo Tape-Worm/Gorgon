@@ -44,7 +44,7 @@ namespace GorgonLibrary.Renderers
 		private bool _disposed = false;								// Flag to indicate that the object was disposed.
 		private GorgonConstantBuffer _sobelBuffer = null;			// Buffer for the sobel edge detection.
 		private GorgonDataStream _sobelStream = null;				// Stream for the sobel edge detection.
-		private float _sobelTexelSize = 0.0f;						// Size of a texel.
+		private Vector2 _sobelTexelSize = Vector2.Zero;				// Size of a texel.
 		private GorgonColor _sobelLineColor = Color.Black;			// Line color for the edges.
 		private float _sobelThreshold = 0.75f;						// Threshhold for edges.
 		private bool _sobelUseLineColor = true;						// Flag to indicate that we should use the line color for the edges.
@@ -98,7 +98,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the line thickness.
 		/// </summary>
-		public float LineThickness
+		public Vector2 LineThickness
 		{
 			get
 			{

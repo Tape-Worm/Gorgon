@@ -1113,13 +1113,15 @@ namespace GorgonLibrary.Renderers
 		/// Function to force the renderer to render its data to the current render target.
 		/// </summary>
 		/// <param name="flip">TRUE to flip the back buffer to the front buffer of the render target.</param>
+		/// <param name="interval">Presentation interval.</param>
 		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
 		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
 		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
 		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
 		/// user is now responsible for calling this method.</para>
+		/// <para>The <paramref name="interval"/> parameter is the number of vertical retraces to wait.  If the <paramref name="flip"/> parameter is FALSE, then the interval parameter has no effect.</para>
 		/// </remarks>
-		public void Render(bool flip)
+		public void Render(bool flip, int interval)
 		{
 			ICamera camera = _camera;
 			GorgonViewport? previousViewport = _viewPort;
@@ -1144,7 +1146,7 @@ namespace GorgonLibrary.Renderers
 			if (flip)
 			{
 				if (_swapChain != null)
-					_swapChain.Flip();
+					_swapChain.Flip(interval);
 
 				if (IsLogoVisible)
 				{
@@ -1161,6 +1163,37 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to force the renderer to render its data to the current render target.
 		/// </summary>
+		/// <param name="flip">TRUE to flip the back buffer to the front buffer of the render target.</param>
+		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
+		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
+		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
+		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
+		/// user is now responsible for calling this method.</para>
+		/// </remarks>
+		public void Render(bool flip)
+		{
+			Render(flip, 0);
+		}
+
+		/// <summary>
+		/// Function to force the renderer to render its data to the current render target.
+		/// </summary>
+		/// <param name="interval">Presentation interval.</param>
+		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
+		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
+		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
+		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
+		/// user is now responsible for calling this method.</para>
+		/// <para>The <paramref name="interval"/> parameter is the number of vertical retraces to wait.</para>
+		/// </remarks>
+		public void Render(int interval)
+		{
+			Render(true, interval);
+		}
+
+		/// <summary>
+		/// Function to force the renderer to render its data to the current render target.
+		/// </summary>
 		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
 		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
 		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
@@ -1169,7 +1202,7 @@ namespace GorgonLibrary.Renderers
 		/// </remarks>
 		public void Render()
 		{
-			Render(true);
+			Render(true, 0);
 		}
 		#endregion
 
