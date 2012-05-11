@@ -65,7 +65,6 @@ namespace GorgonLibrary.UI
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonOK.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.buttonOK.Location = new System.Drawing.Point(12, 78);
 			this.buttonOK.TabIndex = 0;
 			this.buttonOK.Text = "&Yes";
@@ -73,20 +72,21 @@ namespace GorgonLibrary.UI
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Confirm_64x64;
+			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Confirm_48x48;
 			// 
 			// buttonNo
 			// 
 			this.buttonNo.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonNo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.buttonNo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonNo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.buttonNo.Image = global::GorgonLibrary.Properties.Resources.no_16x16;
+			this.buttonNo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonNo.Location = new System.Drawing.Point(69, 78);
 			this.buttonNo.Name = "buttonNo";
-			this.buttonNo.Size = new System.Drawing.Size(50, 44);
+			this.buttonNo.Size = new System.Drawing.Size(50, 30);
 			this.buttonNo.TabIndex = 1;
 			this.buttonNo.Text = "&No";
-			this.buttonNo.UseVisualStyleBackColor = true;
+			this.buttonNo.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonNo.Click += new System.EventHandler(this.buttonNo_Click);
 			// 
 			// buttonCancel
@@ -94,13 +94,14 @@ namespace GorgonLibrary.UI
 			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.buttonCancel.Image = ((System.Drawing.Image)(resources.GetObject("buttonCancel.Image")));
+			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(125, 78);
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(77, 44);
+			this.buttonCancel.Size = new System.Drawing.Size(70, 30);
 			this.buttonCancel.TabIndex = 2;
 			this.buttonCancel.Text = "&Cancel";
-			this.buttonCancel.UseVisualStyleBackColor = true;
+			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonCancel.Visible = false;
 			this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
 			// 
@@ -110,7 +111,7 @@ namespace GorgonLibrary.UI
 			this.ClientSize = new System.Drawing.Size(294, 130);
 			this.Controls.Add(this.buttonNo);
 			this.Controls.Add(this.buttonCancel);
-			this.DialogImage = global::GorgonLibrary.Properties.Resources.Confirm_64x64;
+			this.DialogImage = global::GorgonLibrary.Properties.Resources.Confirm_48x48;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MinimumSize = new System.Drawing.Size(300, 158);
 			this.Name = "ConfirmationDialog";

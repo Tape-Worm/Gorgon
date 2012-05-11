@@ -38,7 +38,7 @@ namespace GorgonLibrary.UI
 	{
 		#region Variables.
 		private string _message = string.Empty;             // Message to be displayed.
-		private Point _textPosition = new Point(70, 2);		// Text position.
+		private Point _textPosition = new Point(60, 2);		// Text position.
 		private Size _maxTextSize = new Size(400, 152);     // Maximum text size.
 		#endregion
 
@@ -236,7 +236,9 @@ namespace GorgonLibrary.UI
 
 			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 			textDimensions = g.MeasureString(_message, Font, new SizeF(_maxTextSize.Width - 2, maxTextHeight));
-			g.FillRectangle(Brushes.White, 0, 0, Size.Width, borderHeight);
+			using (Brush backBrush = new SolidBrush(Color.FromArgb(255, 240, 240, 240)))
+				g.FillRectangle(backBrush, 0, 0, Size.Width, borderHeight);
+			g.FillRectangle(Brushes.White, 0, borderHeight + 1, Size.Width, DisplayRectangle.Bottom - borderHeight + 1);
 			pictureDialog.Refresh();
 			g.DrawLine(Pens.Black, new Point(0, borderHeight), new Point(Size.Width, borderHeight));
 			g.DrawString(_message, Font, Brushes.Black, new RectangleF(_textPosition.X, 2, textDimensions.Width, maxTextHeight));

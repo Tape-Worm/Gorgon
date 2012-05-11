@@ -90,7 +90,6 @@ cbuffer GorgonSobelEdgeDetectEffect
 	float4 sobelLineColor = float4(0, 0, 0, 1);
 	float2 sobelOffset = float2(0, 0);
 	float sobelThreshold = 0.75f;
-	bool sobelUseLineColor = true;
 }
 
 // Burn/dodge effect.
@@ -280,23 +279,17 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 	float4 sobelY = s00 + 2 * s01 + s02 - s20 - 2 * s21 - s22;
 
 	float4 edgeSqr = sobelX * sobelX + sobelY * sobelY;
-	//float4 color = 1 - dot(edgeSqr, 0.25f);
-	float4 color = 1 - float4(edgeSqr.r <= sobelThreshold,
+	float4 color = (1 - float4(edgeSqr.r <= sobelThreshold,
 							edgeSqr.g <= sobelThreshold,
 							edgeSqr.b <= sobelThreshold,
-							0);
+							0));
 
-	//if ((color.r < sobelThreshold) && (color.g < sobelThreshold) && (color.b < sobelThreshold))
-	//{
-	//	color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-
-	//	if (sobelUseLineColor)
-	//		color.rgb = sobelLineColor.rgb;		
-	//}
-	//else
-	//	color.a = 0;
-
-	//REJECT_ALPHA(color.a);
+	if ((color.r > 0) || (color.g > 0) | (color.b > 0))
+		color = sobelLineColor;
+	else
+		color = 0;
+	
+	REJECT_ALPHA(color.a);
 
 	return color;
 }

@@ -251,7 +251,7 @@ namespace GorgonLibrary.UI
 			{
 				dialog = new BaseDialog();
 				dialog.Icon = Properties.Resources.GorgonInfo;
-				dialog.DialogImage = Properties.Resources.Info_64x64;
+				dialog.DialogImage = Properties.Resources.Info_48x48;
 				dialog.Message = message;
 				dialog.ButtonAction = DialogResult.OK;
 				if (owner != null)
@@ -298,7 +298,7 @@ namespace GorgonLibrary.UI
 			{
 				dialog = new BaseDialog();
 				dialog.Icon = Properties.Resources.GorgonWarning;
-				dialog.DialogImage = Properties.Resources.Warning_64x64;
+				dialog.DialogImage = Properties.Resources.Warning_48x48;
 				dialog.Message = message;
 				dialog.ButtonAction = DialogResult.OK;
 				if (owner != null)
@@ -368,19 +368,6 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Function to display a confirmation dialog.
 		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <param name="allowCancel">TRUE to show a Cancel button, FALSE to hide.</param>
-		/// <param name="allowToAll">TRUE to show a 'To all' option, FALSE to hide.</param>
-		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
-		public static ConfirmationResult ConfirmBox(string message, string caption, bool allowCancel, bool allowToAll)
-		{
-			return ConfirmBox(null, message, caption, allowCancel, allowToAll);
-		}
-
-		/// <summary>
-		/// Function to display a confirmation dialog.
-		/// </summary>
 		/// <param name="owner">Owning window of this dialog.</param>
 		/// <param name="message">Message to display.</param>
 		/// <param name="allowCancel">TRUE to show a Cancel button, FALSE to hide.</param>
@@ -389,18 +376,6 @@ namespace GorgonLibrary.UI
 		public static ConfirmationResult ConfirmBox(Form owner, string message, bool allowCancel, bool allowToAll)
 		{
 			return ConfirmBox(owner, message, string.Empty, allowCancel, allowToAll);
-		}
-
-		/// <summary>
-		/// Function to display a confirmation dialog.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <param name="allowCancel">TRUE to show a Cancel button, FALSE to hide.</param>
-		/// <param name="allowToAll">TRUE to show a 'To all' option, FALSE to hide.</param>
-		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
-		public static ConfirmationResult ConfirmBox(string message, bool allowCancel, bool allowToAll)
-		{
-			return ConfirmBox(null, message, string.Empty, allowCancel, allowToAll);
 		}
 
 		/// <summary>
@@ -437,54 +412,6 @@ namespace GorgonLibrary.UI
 		public static ConfirmationResult ConfirmBox(Form owner, string message)
 		{
 			return ConfirmBox(owner, message, string.Empty, false, false);
-		}
-
-		/// <summary>
-		/// Function to display a confirmation dialog.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
-		public static ConfirmationResult ConfirmBox(string message)
-		{
-			return ConfirmBox(null, message, string.Empty, false, false);
-		}
-
-		/// <summary>
-		/// Function to display an information box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		public static void InfoBox(string message, string caption)
-		{
-			InfoBox(null, message, caption);
-		}
-
-		/// <summary>
-		/// Function to display an information box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		public static void InfoBox(string message)
-		{
-			InfoBox(null, message, "Information.");
-		}
-
-		/// <summary>
-		/// Function to display a warning box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		public static void WarningBox(string message, string caption)
-		{
-			WarningBox(null, message, caption);
-		}
-
-		/// <summary>
-		/// Function to display a warning box.
-		/// </summary>
-		/// <param name="message">Message to display.</param>
-		public static void WarningBox(string message)
-		{
-			WarningBox(null, message, "Warning.");
 		}
 		#endregion
 	}

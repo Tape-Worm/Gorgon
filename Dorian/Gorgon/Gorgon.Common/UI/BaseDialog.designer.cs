@@ -65,22 +65,22 @@ namespace GorgonLibrary.UI
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
-			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonOK.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonOK.Location = new System.Drawing.Point(182, 77);
+			this.buttonOK.Image = global::GorgonLibrary.Properties.Resources.ok_16x16;
+			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonOK.Location = new System.Drawing.Point(182, 92);
 			this.buttonOK.Margin = new System.Windows.Forms.Padding(4);
 			this.buttonOK.Name = "buttonOK";
-			this.buttonOK.Size = new System.Drawing.Size(50, 44);
+			this.buttonOK.Size = new System.Drawing.Size(50, 30);
 			this.buttonOK.TabIndex = 10;
 			this.buttonOK.Text = "&OK";
-			this.buttonOK.UseVisualStyleBackColor = false;
+			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// pictureDialog
 			// 
 			this.pictureDialog.BackColor = System.Drawing.Color.White;
 			this.pictureDialog.Location = new System.Drawing.Point(2, 2);
 			this.pictureDialog.Name = "pictureDialog";
-			this.pictureDialog.Size = new System.Drawing.Size(64, 64);
+			this.pictureDialog.Size = new System.Drawing.Size(48, 48);
 			this.pictureDialog.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureDialog.TabIndex = 11;
 			this.pictureDialog.TabStop = false;
@@ -92,7 +92,7 @@ namespace GorgonLibrary.UI
 			this.ClientSize = new System.Drawing.Size(245, 134);
 			this.Controls.Add(this.pictureDialog);
 			this.Controls.Add(this.buttonOK);
-			this.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.KeyPreview = true;

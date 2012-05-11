@@ -47,30 +47,10 @@ namespace GorgonLibrary.Renderers
 		private Vector2 _sobelTexelSize = Vector2.Zero;				// Size of a texel.
 		private GorgonColor _sobelLineColor = Color.Black;			// Line color for the edges.
 		private float _sobelThreshold = 0.75f;						// Threshhold for edges.
-		private bool _sobelUseLineColor = true;						// Flag to indicate that we should use the line color for the edges.
 		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return whether to use a line color for the edges, otherwise, use the texture.
-		/// </summary>
-		public bool UseLineColor
-		{
-			get
-			{
-				return _sobelUseLineColor;
-			}
-			set
-			{
-				if (_sobelUseLineColor != value)
-				{
-					_sobelUseLineColor = value;
-					_isUpdated = true;
-				}
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the threshold value for the edges.
 		/// </summary>
@@ -149,7 +129,6 @@ namespace GorgonLibrary.Renderers
 				_sobelStream.Write(_sobelLineColor);
 				_sobelStream.Write(_sobelTexelSize);
 				_sobelStream.Write(_sobelThreshold);
-				_sobelStream.Write(_sobelUseLineColor);
 				_sobelStream.Write<byte>(0);
 				_sobelStream.Write<byte>(0);
 				_sobelStream.Write<byte>(0);
