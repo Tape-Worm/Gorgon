@@ -80,9 +80,8 @@ namespace GorgonLibrary.UI
 			// checkToAll
 			// 
 			this.checkToAll.AutoSize = true;
-			this.checkToAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.checkToAll.BackColor = System.Drawing.Color.White;
 			this.checkToAll.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.checkToAll.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkToAll.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.checkToAll.Location = new System.Drawing.Point(0, 131);
 			this.checkToAll.Name = "checkToAll";

@@ -72,7 +72,7 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void detailsButton_Click(object sender, EventArgs e)
 		{
-			if (detailsButton.Checked)
+			if (checkDetail.Checked)
 			{
 				_lastWidth = Width;
 				Height += 202;
@@ -106,9 +106,9 @@ namespace GorgonLibrary.UI
 		protected override void ValidateFunctions()
 		{
 			if (_errorDetails == string.Empty)
-				detailsButton.Enabled = false;
+				checkDetail.Enabled = false;
 			else
-				detailsButton.Enabled = true;
+				checkDetail.Enabled = true;
 		}
 
 		/// <summary>
@@ -137,22 +137,23 @@ namespace GorgonLibrary.UI
 			maxTextHeight = AdjustSize(g,0);
 
 			// Relocate buttons.
-			buttonOK.Left = ClientSize.Width - buttonOK.Width - 8;
+			buttonOK.Left = ClientSize.Width - buttonOK.Width - checkDetail.Left;
 
 			// Adjust for detail window.
-			if (detailsButton.Checked)
+			if (checkDetail.Checked)
 			{
-				detailsButton.Top = errorDetails.Top - 6 - detailsButton.Height;
+				checkDetail.Top = errorDetails.Top - 6 - checkDetail.Height;
 				buttonOK.Top = errorDetails.Top - 6 - buttonOK.Height;
 			}
 			else
 			{
-				detailsButton.Top = ClientSize.Height - 6 - detailsButton.Height;
+				checkDetail.Top = ClientSize.Height - 6 - checkDetail.Height;
 				buttonOK.Top = ClientSize.Height - 6 - buttonOK.Height;
 			}
 
 			// Adjust the position of the details box.
 			errorDetails.Top = ClientSize.Height - 8 - errorDetails.Height;
+			errorDetails.Width = ClientSize.Width - (errorDetails.Left * 2);
 
 			DrawMessage(g, maxTextHeight);
 		}

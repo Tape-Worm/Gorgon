@@ -57,7 +57,7 @@ namespace GorgonLibrary.UI
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorDialog));
 			this.errorDetails = new System.Windows.Forms.TextBox();
-			this.detailsButton = new System.Windows.Forms.CheckBox();
+			this.checkDetail = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -66,12 +66,13 @@ namespace GorgonLibrary.UI
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
+			this.buttonOK.Location = new System.Drawing.Point(180, 78);
 			this.buttonOK.TabIndex = 0;
 			this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Error_64x64;
+			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Error_48x48;
 			// 
 			// errorDetails
 			// 
@@ -79,7 +80,7 @@ namespace GorgonLibrary.UI
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.errorDetails.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.errorDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.errorDetails.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.errorDetails.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.errorDetails.Location = new System.Drawing.Point(8, 112);
 			this.errorDetails.MaxLength = 2097152;
 			this.errorDetails.Multiline = true;
@@ -91,31 +92,31 @@ namespace GorgonLibrary.UI
 			this.errorDetails.Visible = false;
 			this.errorDetails.WordWrap = false;
 			// 
-			// detailsButton
+			// checkDetail
 			// 
-			this.detailsButton.Appearance = System.Windows.Forms.Appearance.Button;
-			this.detailsButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.detailsButton.FlatAppearance.BorderSize = 2;
-			this.detailsButton.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.detailsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.detailsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.detailsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.detailsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.detailsButton.Location = new System.Drawing.Point(12, 78);
-			this.detailsButton.Name = "detailsButton";
-			this.detailsButton.Size = new System.Drawing.Size(70, 44);
-			this.detailsButton.TabIndex = 1;
-			this.detailsButton.Text = "&Details";
-			this.detailsButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.detailsButton.UseVisualStyleBackColor = false;
-			this.detailsButton.Click += new System.EventHandler(this.detailsButton_Click);
+			this.checkDetail.Appearance = System.Windows.Forms.Appearance.Button;
+			this.checkDetail.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.checkDetail.FlatAppearance.BorderSize = 2;
+			this.checkDetail.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.checkDetail.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.checkDetail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.checkDetail.Image = global::GorgonLibrary.Properties.Resources.Info_16x16;
+			this.checkDetail.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.checkDetail.Location = new System.Drawing.Point(12, 78);
+			this.checkDetail.Name = "checkDetail";
+			this.checkDetail.Size = new System.Drawing.Size(70, 30);
+			this.checkDetail.TabIndex = 1;
+			this.checkDetail.Text = "&Details";
+			this.checkDetail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkDetail.Click += new System.EventHandler(this.detailsButton_Click);
 			// 
 			// ErrorDialog
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.ClientSize = new System.Drawing.Size(243, 130);
-			this.Controls.Add(this.detailsButton);
+			this.Controls.Add(this.checkDetail);
 			this.Controls.Add(this.errorDetails);
+			this.DialogImage = global::GorgonLibrary.Properties.Resources.Error_48x48;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ErrorDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -123,7 +124,7 @@ namespace GorgonLibrary.UI
 			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.errorDetails, 0);
 			this.Controls.SetChildIndex(this.buttonOK, 0);
-			this.Controls.SetChildIndex(this.detailsButton, 0);
+			this.Controls.SetChildIndex(this.checkDetail, 0);
 			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -133,6 +134,6 @@ namespace GorgonLibrary.UI
 		#endregion
 
 		private System.Windows.Forms.TextBox errorDetails;
-		private System.Windows.Forms.CheckBox detailsButton;
+		private System.Windows.Forms.CheckBox checkDetail;
 	}
 }
