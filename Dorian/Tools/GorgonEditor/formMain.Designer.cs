@@ -54,6 +54,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
 			this.splitMain = new System.Windows.Forms.SplitContainer();
 			this.menuMain = new System.Windows.Forms.MenuStrip();
@@ -73,6 +74,8 @@ namespace GorgonLibrary.GorgonEditor
 			this.panelEditor = new System.Windows.Forms.Panel();
 			this.tabDocuments = new KRBTabControl.KRBTabControl();
 			this.propertyItem = new System.Windows.Forms.PropertyGrid();
+			this.popupProperties = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.itemResetValue = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
 			this.splitMain.Panel1.SuspendLayout();
 			this.splitMain.Panel2.SuspendLayout();
@@ -83,6 +86,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.splitEdit.Panel2.SuspendLayout();
 			this.splitEdit.SuspendLayout();
 			this.panelEditor.SuspendLayout();
+			this.popupProperties.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// splitMain
@@ -271,8 +275,11 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			this.propertyItem.BackColor = System.Drawing.Color.DimGray;
 			this.propertyItem.CategoryForeColor = System.Drawing.Color.White;
+			this.propertyItem.CommandsActiveLinkColor = System.Drawing.Color.Lavender;
 			this.propertyItem.CommandsDisabledLinkColor = System.Drawing.Color.Black;
 			this.propertyItem.CommandsForeColor = System.Drawing.Color.White;
+			this.propertyItem.CommandsLinkColor = System.Drawing.Color.SteelBlue;
+			this.propertyItem.ContextMenuStrip = this.popupProperties;
 			this.propertyItem.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.propertyItem.HelpBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
 			this.propertyItem.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
@@ -283,6 +290,21 @@ namespace GorgonLibrary.GorgonEditor
 			this.propertyItem.ToolbarVisible = false;
 			this.propertyItem.ViewBackColor = System.Drawing.Color.DimGray;
 			this.propertyItem.ViewForeColor = System.Drawing.Color.White;
+			// 
+			// popupProperties
+			// 
+			this.popupProperties.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemResetValue});
+			this.popupProperties.Name = "popupProperties";
+			this.popupProperties.Size = new System.Drawing.Size(153, 48);
+			this.popupProperties.Opening += new System.ComponentModel.CancelEventHandler(this.popupProperties_Opening);
+			// 
+			// itemResetValue
+			// 
+			this.itemResetValue.Name = "itemResetValue";
+			this.itemResetValue.Size = new System.Drawing.Size(152, 22);
+			this.itemResetValue.Text = "&Reset Value";
+			this.itemResetValue.Click += new System.EventHandler(this.itemResetValue_Click);
 			// 
 			// formMain
 			// 
@@ -309,6 +331,7 @@ namespace GorgonLibrary.GorgonEditor
 			((System.ComponentModel.ISupportInitialize)(this.splitEdit)).EndInit();
 			this.splitEdit.ResumeLayout(false);
 			this.panelEditor.ResumeLayout(false);
+			this.popupProperties.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -333,6 +356,8 @@ namespace GorgonLibrary.GorgonEditor
 		private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem2;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
 		private System.Windows.Forms.ToolStripMenuItem fontToolStripMenuItem2;
+		private System.Windows.Forms.ContextMenuStrip popupProperties;
+		private System.Windows.Forms.ToolStripMenuItem itemResetValue;
 	}
 }
 

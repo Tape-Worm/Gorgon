@@ -40,7 +40,6 @@
 			this.textName = new System.Windows.Forms.TextBox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.labelPreview = new System.Windows.Forms.Label();
-			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.label4 = new System.Windows.Forms.Label();
 			this.comboAA = new System.Windows.Forms.ComboBox();
@@ -51,6 +50,7 @@
 			this.comboSizeType = new System.Windows.Forms.ComboBox();
 			this.label7 = new System.Windows.Forms.Label();
 			this.comboFonts = new GorgonLibrary.GorgonEditor.comboFonts();
+			this.buttonOK = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.numericSize)).BeginInit();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureWidth)).BeginInit();
@@ -60,8 +60,7 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.ForeColor = System.Drawing.Color.White;
-			this.label1.Location = new System.Drawing.Point(13, 45);
+			this.label1.Location = new System.Drawing.Point(13, 52);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(34, 15);
 			this.label1.TabIndex = 0;
@@ -76,8 +75,7 @@
 			this.checkBold.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.checkBold.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkBold.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkBold.ForeColor = System.Drawing.Color.White;
-			this.checkBold.Location = new System.Drawing.Point(16, 181);
+			this.checkBold.Location = new System.Drawing.Point(16, 188);
 			this.checkBold.Name = "checkBold";
 			this.checkBold.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkBold.Size = new System.Drawing.Size(65, 22);
@@ -95,8 +93,7 @@
 			this.checkItalic.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.checkItalic.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkItalic.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkItalic.ForeColor = System.Drawing.Color.White;
-			this.checkItalic.Location = new System.Drawing.Point(87, 181);
+			this.checkItalic.Location = new System.Drawing.Point(87, 188);
 			this.checkItalic.Name = "checkItalic";
 			this.checkItalic.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkItalic.Size = new System.Drawing.Size(75, 22);
@@ -114,8 +111,7 @@
 			this.checkUnderline.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.checkUnderline.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkUnderline.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkUnderline.ForeColor = System.Drawing.Color.White;
-			this.checkUnderline.Location = new System.Drawing.Point(168, 181);
+			this.checkUnderline.Location = new System.Drawing.Point(168, 188);
 			this.checkUnderline.Name = "checkUnderline";
 			this.checkUnderline.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkUnderline.Size = new System.Drawing.Size(98, 22);
@@ -133,8 +129,7 @@
 			this.checkStrikeThrough.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.checkStrikeThrough.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkStrikeThrough.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkStrikeThrough.ForeColor = System.Drawing.Color.White;
-			this.checkStrikeThrough.Location = new System.Drawing.Point(272, 181);
+			this.checkStrikeThrough.Location = new System.Drawing.Point(272, 188);
 			this.checkStrikeThrough.Name = "checkStrikeThrough";
 			this.checkStrikeThrough.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkStrikeThrough.Size = new System.Drawing.Size(109, 22);
@@ -146,8 +141,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.ForeColor = System.Drawing.Color.White;
-			this.label2.Location = new System.Drawing.Point(13, 94);
+			this.label2.Location = new System.Drawing.Point(13, 97);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(30, 15);
 			this.label2.TabIndex = 7;
@@ -158,7 +152,7 @@
 			this.numericSize.BackColor = System.Drawing.Color.White;
 			this.numericSize.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericSize.DecimalPlaces = 2;
-			this.numericSize.Location = new System.Drawing.Point(16, 111);
+			this.numericSize.Location = new System.Drawing.Point(16, 115);
 			this.numericSize.Maximum = new decimal(new int[] {
             512,
             0,
@@ -183,7 +177,6 @@
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.ForeColor = System.Drawing.Color.White;
 			this.label3.Location = new System.Drawing.Point(13, 8);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(42, 15);
@@ -193,10 +186,10 @@
 			// textName
 			// 
 			this.textName.BackColor = System.Drawing.Color.White;
-			this.textName.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.textName.Location = new System.Drawing.Point(16, 26);
 			this.textName.Name = "textName";
-			this.textName.Size = new System.Drawing.Size(365, 16);
+			this.textName.Size = new System.Drawing.Size(365, 23);
 			this.textName.TabIndex = 0;
 			this.textName.TextChanged += new System.EventHandler(this.textName_TextChanged);
 			// 
@@ -219,23 +212,6 @@
 			this.labelPreview.Text = "The quick brown fox jumps over the lazy dog.";
 			this.labelPreview.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// buttonOK
-			// 
-			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.buttonOK.Enabled = false;
-			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Location = new System.Drawing.Point(225, 302);
-			this.buttonOK.Name = "buttonOK";
-			this.buttonOK.Size = new System.Drawing.Size(75, 24);
-			this.buttonOK.TabIndex = 11;
-			this.buttonOK.Text = "OK";
-			this.buttonOK.UseVisualStyleBackColor = true;
-			// 
 			// buttonCancel
 			// 
 			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -243,20 +219,19 @@
 			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonCancel.ForeColor = System.Drawing.Color.White;
+			this.buttonCancel.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.cancel_16x16;
+			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(306, 302);
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(75, 24);
 			this.buttonCancel.TabIndex = 12;
 			this.buttonCancel.Text = "Cancel";
-			this.buttonCancel.UseVisualStyleBackColor = true;
+			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.ForeColor = System.Drawing.Color.White;
-			this.label4.Location = new System.Drawing.Point(238, 94);
+			this.label4.Location = new System.Drawing.Point(238, 97);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(116, 15);
 			this.label4.TabIndex = 13;
@@ -266,13 +241,12 @@
 			// 
 			this.comboAA.BackColor = System.Drawing.Color.White;
 			this.comboAA.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboAA.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.comboAA.FormattingEnabled = true;
 			this.comboAA.Items.AddRange(new object[] {
             "None",
             "Anti-Alias",
             "Anti-Alias (High Quality)"});
-			this.comboAA.Location = new System.Drawing.Point(241, 111);
+			this.comboAA.Location = new System.Drawing.Point(241, 115);
 			this.comboAA.Name = "comboAA";
 			this.comboAA.Size = new System.Drawing.Size(140, 23);
 			this.comboAA.TabIndex = 4;
@@ -286,7 +260,7 @@
             0,
             0,
             0});
-			this.numericTextureWidth.Location = new System.Drawing.Point(16, 154);
+			this.numericTextureWidth.Location = new System.Drawing.Point(16, 159);
 			this.numericTextureWidth.Maximum = new decimal(new int[] {
             16384,
             0,
@@ -310,8 +284,7 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.ForeColor = System.Drawing.Color.White;
-			this.label5.Location = new System.Drawing.Point(13, 136);
+			this.label5.Location = new System.Drawing.Point(13, 141);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(72, 15);
 			this.label5.TabIndex = 16;
@@ -326,7 +299,7 @@
             0,
             0,
             0});
-			this.numericTextureHeight.Location = new System.Drawing.Point(152, 154);
+			this.numericTextureHeight.Location = new System.Drawing.Point(150, 159);
 			this.numericTextureHeight.Maximum = new decimal(new int[] {
             16384,
             0,
@@ -350,8 +323,7 @@
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.ForeColor = System.Drawing.Color.White;
-			this.label6.Location = new System.Drawing.Point(132, 155);
+			this.label6.Location = new System.Drawing.Point(132, 161);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(12, 15);
 			this.label6.TabIndex = 18;
@@ -361,12 +333,11 @@
 			// 
 			this.comboSizeType.BackColor = System.Drawing.Color.White;
 			this.comboSizeType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboSizeType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.comboSizeType.FormattingEnabled = true;
 			this.comboSizeType.Items.AddRange(new object[] {
             "Points",
             "Pixels"});
-			this.comboSizeType.Location = new System.Drawing.Point(132, 111);
+			this.comboSizeType.Location = new System.Drawing.Point(132, 115);
 			this.comboSizeType.Name = "comboSizeType";
 			this.comboSizeType.Size = new System.Drawing.Size(103, 23);
 			this.comboSizeType.TabIndex = 3;
@@ -375,7 +346,6 @@
 			// label7
 			// 
 			this.label7.AutoSize = true;
-			this.label7.ForeColor = System.Drawing.Color.White;
 			this.label7.Location = new System.Drawing.Point(13, 217);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(51, 15);
@@ -387,18 +357,35 @@
 			this.comboFonts.BackColor = System.Drawing.Color.White;
 			this.comboFonts.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboFonts.FormattingEnabled = true;
-			this.comboFonts.Location = new System.Drawing.Point(16, 64);
+			this.comboFonts.Location = new System.Drawing.Point(16, 70);
 			this.comboFonts.Name = "comboFonts";
 			this.comboFonts.Size = new System.Drawing.Size(365, 24);
 			this.comboFonts.TabIndex = 1;
 			this.comboFonts.SelectedIndexChanged += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
+			// 
+			// buttonOK
+			// 
+			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.buttonOK.Enabled = false;
+			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
+			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+			this.buttonOK.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.ok_16x16;
+			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonOK.Location = new System.Drawing.Point(225, 302);
+			this.buttonOK.Name = "buttonOK";
+			this.buttonOK.Size = new System.Drawing.Size(75, 24);
+			this.buttonOK.TabIndex = 11;
+			this.buttonOK.Text = "OK";
+			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// formNewFont
 			// 
 			this.AcceptButton = this.buttonOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.Color.DimGray;
+			this.BackColor = System.Drawing.SystemColors.Control;
 			this.CancelButton = this.buttonCancel;
 			this.ClientSize = new System.Drawing.Size(400, 334);
 			this.Controls.Add(this.label7);

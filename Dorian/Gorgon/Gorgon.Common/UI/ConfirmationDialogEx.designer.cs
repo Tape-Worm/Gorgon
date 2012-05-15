@@ -86,7 +86,7 @@ namespace GorgonLibrary.UI
 			this.checkToAll.Location = new System.Drawing.Point(0, 131);
 			this.checkToAll.Name = "checkToAll";
 			this.checkToAll.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.checkToAll.Size = new System.Drawing.Size(294, 19);
+			this.checkToAll.Size = new System.Drawing.Size(243, 19);
 			this.checkToAll.TabIndex = 12;
 			this.checkToAll.Text = "&Apply selection to all items?";
 			this.checkToAll.UseVisualStyleBackColor = false;
@@ -94,10 +94,10 @@ namespace GorgonLibrary.UI
 			// ConfirmationDialogEx
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.ClientSize = new System.Drawing.Size(294, 150);
+			this.ClientSize = new System.Drawing.Size(243, 150);
 			this.Controls.Add(this.checkToAll);
 			this.Location = new System.Drawing.Point(0, 0);
-			this.MinimumSize = new System.Drawing.Size(188, 174);
+			this.MinimumSize = new System.Drawing.Size(249, 174);
 			this.Name = "ConfirmationDialogEx";
 			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.buttonCancel, 0);

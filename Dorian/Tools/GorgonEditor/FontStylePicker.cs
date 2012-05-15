@@ -55,7 +55,8 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			IWindowsFormsEditorService editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 			FontStyleListBox fonts = null;
-			FontDocument document = context.Instance as FontDocument;
+			DocumentTypeDescriptor descriptor = context.Instance as DocumentTypeDescriptor;
+			FontDocument document = descriptor.Document as FontDocument;
 
 			try
 			{

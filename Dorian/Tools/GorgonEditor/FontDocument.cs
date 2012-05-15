@@ -43,6 +43,7 @@ namespace GorgonLibrary.GorgonEditor
 		: Document
 	{
 		#region Variables.
+		private fontDisplay _fontWindow = null;				// Font window.
 		private bool _disposed = false;						// Flag to indicate that the object was disposed.
 		private GorgonFontSettings _fontSettings = null;	// Font settings.
 		private GorgonFont _font = null;					// Font.
@@ -82,7 +83,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the font style.
 		/// </summary>
-		[Editor(typeof(FontStylePicker), typeof(UITypeEditor))]
+		[Editor(typeof(FontStylePicker), typeof(UITypeEditor)), Category("Appearance"), Description("Sets whether the font should be bolded, underlined, italicized, or strike through"), DefaultValue(FontStyle.Regular)]
 		public FontStyle FontStyle
 		{
 			get
@@ -102,7 +103,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the name of the font family.
 		/// </summary>
-		[Editor(typeof(FontFamilyPicker), typeof(UITypeEditor)), RefreshProperties(System.ComponentModel.RefreshProperties.Repaint)]
+		[Editor(typeof(FontFamilyPicker), typeof(UITypeEditor)), RefreshProperties(System.ComponentModel.RefreshProperties.Repaint), Category("Design"), Description("The font family to use for the font.")]
 		public string FontFamily
 		{
 			get
@@ -125,6 +126,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the font size.
 		/// </summary>
+		[Category("Design"), Description("The size of the font.  This value may be in Points or in Pixels depending on the font height mode."), DefaultValue(9.0f)]
 		public float FontSize
 		{
 			get
@@ -147,6 +149,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the texture size for the font.
 		/// </summary>
+		[Category("Design"), Description("The size of the textures used to hold the sprite glyphs."), DefaultValue(typeof(Size), "256,256")]
 		public Size FontTextureSize
 		{
 			get
@@ -175,6 +178,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the anti-alias mode.
 		/// </summary>
+		[Category("Appearance"), Description("Sets the type of anti-aliasing to use for the font.  High Quality (HQ) produces the best output, but doesn't get applied to fonts at certain sizes.  Non HQ, will attempt to anti-alias regardless, but the result will be worse."), DefaultValue(FontAntiAliasMode.AntiAliasHQ)]
 		public FontAntiAliasMode FontAntiAliasMode
 		{
 			get
@@ -194,7 +198,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return whether the font size should be in point size or pixel size.
 		/// </summary>
-		[DisplayName("FontHeightMode"), Category("Design")]
+		[DisplayName("FontHeightMode"), Category("Design"), Description("Sets whether to use points or pixels to determine the size of the font."), DefaultValue(typeof(FontHeightMode), "Points")]
 		public FontHeightMode UsePointSize
 		{
 			get
@@ -228,19 +232,57 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Function to update the horizontal scroll bar on the render window.
+		/// </summary>
+		/// <param name="bounds">Bounds for rendering.</param>
+		private void UpdateHScroller(Rectangle bounds)
+		{
+			if (bounds.Width > _fontWindow.panelDisplay.ClientSize.Width)
+				_fontWindow.panelDisplay.HorizontalScroll.Visible = true;
+			else
+				_fontWindow.panelDisplay.HorizontalScroll.Visible = false;
+
+		}
+
+		/// <summary>
+		/// Function to update the vertical scroll bar on the render window.
+		/// </summary>
+		/// <param name="bounds">Bounds for rendering.</param>
+		private void UpdateVScroller(Rectangle bounds)
+		{
+			if (bounds.Height > _fontWindow.panelDisplay.ClientSize.Height)
+				_fontWindow.panelDisplay.VerticalScroll.Visible = true;
+			else
+				_fontWindow.panelDisplay.VerticalScroll.Visible = false;
+		}
+
+		/// <summary>
 		/// Function to draw to the control.
 		/// </summary>
 		/// <param name="timing">Timing data.</param>
-		protected override void Draw(Diagnostics.GorgonFrameRate timing)
+		/// <returns>
+		/// Number of vertical retraces to wait.
+		/// </returns>
+		protected override int Draw(Diagnostics.GorgonFrameRate timing)
 		{
 			if (_font == null)
-				return;
+				return 3;
+
+			GorgonTexture2D texture = _font.Textures[_fontWindow.CurrentTexture];
+			Rectangle bounds = new Rectangle(0, 0, (int)System.Math.Ceiling(texture.Settings.Width * _fontWindow.Zoom), (int)System.Math.Ceiling(texture.Settings.Height * _fontWindow.Zoom));
+
+			UpdateHScroller(bounds);
+			UpdateVScroller(bounds);
 
 			Renderer.IsBlendingEnabled = false;
 			Renderer.IsAlphaTestEnabled = false;
-			Renderer.Drawing.Blit(_font.Textures[0], Vector2.Zero);
+
+			Renderer.Drawing.Blit(texture, Vector2.Zero, new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
+
 			Renderer.IsAlphaTestEnabled = true;
 			Renderer.IsBlendingEnabled = true;
+
+			return 3;
 		}
 
 		/// <summary>
@@ -299,6 +341,8 @@ namespace GorgonLibrary.GorgonEditor
 				_font = Program.Graphics.Textures.CreateFont(Name, _fontSettings);
 			else
 				_font.Update(_fontSettings);
+
+			_fontWindow.CurrentFont = _font;
 		}
 		#endregion
 
@@ -313,9 +357,12 @@ namespace GorgonLibrary.GorgonEditor
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		public FontDocument(string name, bool allowClose)
 			: base(name, allowClose)
-		{
+		{			
+			_fontWindow = new fontDisplay();
 			_fontSettings = new GorgonFontSettings();
 			HasProperties = true;
+			_fontWindow.Dock = System.Windows.Forms.DockStyle.Fill;
+			UpdateControl(_fontWindow, _fontWindow.panelDisplay);
 		}
 		#endregion
 	}

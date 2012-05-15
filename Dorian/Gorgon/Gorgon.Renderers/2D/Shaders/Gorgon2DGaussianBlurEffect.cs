@@ -38,7 +38,9 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// An effect that with blur an image using Gaussian blurring.
 	/// </summary>
-	/// <remarks>This effect differs from the others in that it does not take an Action to render data.  It merely uses a <see cref="P:GorgonLibrary.Renderers.Gorgon2DGaussianBlurEffect.SourceTexture">source texture</see> and outputs to a destination render target.</remarks>
+	/// <remarks>
+	/// This effect differs from the others in that it does not take an Action to render data.  It merely uses a <see cref="P:GorgonLibrary.Renderers.Gorgon2DGaussianBlurEffect.SourceTexture">source texture</see> and outputs to a destination render target.
+	/// </remarks>
 	public class Gorgon2DGaussianBlurEffect
 		: Gorgon2DEffect
 	{
@@ -256,6 +258,20 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to free any resources allocated by the effect.
+		/// </summary>
+		public override void FreeResources()
+		{
+			if (_hTarget != null)
+				_hTarget.Dispose();
+			if (_vTarget != null)
+				_vTarget.Dispose();
+
+			_hTarget = null;
+			_vTarget = null;
+		}
+
+		/// <summary>
 		/// Function called when a pass is about to start rendering.
 		/// </summary>
 		/// <param name="passIndex">Index of the pass being rendered.</param>
@@ -295,6 +311,9 @@ namespace GorgonLibrary.Renderers
 		/// <param name="passIndex">Index of the pass to render.</param>
 		protected override void RenderImpl(Action<int> renderMethod, int passIndex)
 		{
+			if ((_hTarget == null) || (_vTarget == null))
+				UpdateRenderTarget();
+
 			if (passIndex == 0)
 				Gorgon2D.Target = _hTarget;
 			else			
@@ -331,10 +350,6 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
-					if (_hTarget != null)
-					    _hTarget.Dispose();
-					if (_vTarget != null)
-					    _vTarget.Dispose();
 					if (_blurStaticBuffer != null)
 						_blurStaticBuffer.Dispose();
 					if (_blurBuffer != null)
@@ -372,7 +387,6 @@ namespace GorgonLibrary.Renderers
 #else
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #endif
-			UpdateRenderTarget();
 			UpdateKernel();
 		}
 		#endregion

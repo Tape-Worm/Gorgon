@@ -573,13 +573,14 @@ namespace GorgonLibrary.Renderers
 			for (int line = 0; line < _lines.Count; line++)
 			{
 				float lineLength = 0;
+				string currentLine = _lines[line];
 
 				if ((_alignment != UI.Alignment.UpperLeft) && (_textRect.HasValue))
 					lineLength = LineMeasure(_lines[line], outlineOffset.X);
 
-				for (int i = 0; i < _lines[line].Length; i++)
-				{
-					char c = _lines[line][i];
+				for (int i = 0; i < currentLine.Length; i++)
+				{					
+					char c = currentLine[i];
 
 					if (_font.Glyphs.Contains(c))
 						glyph = _font.Glyphs[c];
@@ -611,9 +612,9 @@ namespace GorgonLibrary.Renderers
 					{
 						pos.X += glyph.Advance.X + glyph.Advance.Y + outlineOffset.X;
 
-						if ((i < _text.Length - 1) && (_font.KerningPairs.Count > 0))
+						if ((i < currentLine.Length - 1) && (_font.KerningPairs.Count > 0))
 						{
-							GorgonKerningPair kerning = new GorgonKerningPair(c, _text[i + 1]);
+							GorgonKerningPair kerning = new GorgonKerningPair(c, currentLine[i + 1]);
 							if (_font.KerningPairs.ContainsKey(kerning))
 								pos.X += _font.KerningPairs[kerning];
 							else

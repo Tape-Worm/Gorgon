@@ -79,6 +79,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DocumentCollection.cs" />
+    <Compile Include="fontDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="fontDisplay.Designer.cs">
+      <DependentUpon>fontDisplay.cs</DependentUpon>
+    </Compile>
     <Compile Include="FontDocument.cs" />
     <Compile Include="FontFamilyPicker.cs" />
     <Compile Include="FontListBox.cs">
@@ -111,7 +117,13 @@
     <Compile Include="Document.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyGrid\DocumentProperty.cs" />
+    <Compile Include="PropertyGrid\DocumentPropertyCollection.cs" />
+    <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
     <Compile Include="VisualStyle\MetroDarkRenderer.cs" />
+    <EmbeddedResource Include="fontDisplay.resx">
+      <DependentUpon>fontDisplay.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -149,6 +161,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\cancel_16x16.png" />
+    <None Include="Resources\no_16x16.png" />
+    <None Include="Resources\ok_16x16.png" />
     <None Include="Resources\Check_Enabled.png" />
     <None Include="Resources\Check_Disabled.png" />
     <None Include="Resources\Gorgon_2.x_Logo_Full.png" />

@@ -71,6 +71,43 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Click event of the itemResetValue control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void itemResetValue_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if ((propertyItem.SelectedObject == null) || (propertyItem.SelectedGridItem == null))
+					return;
+
+				propertyItem.SelectedGridItem.PropertyDescriptor.ResetValue(propertyItem.SelectedObject);
+				propertyItem.Refresh();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+		}
+
+		/// <summary>
+		/// Handles the Opening event of the popupProperties control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.ComponentModel.CancelEventArgs"/> instance containing the event data.</param>
+		private void popupProperties_Opening(object sender, CancelEventArgs e)
+		{
+			if ((propertyItem.SelectedObject == null) || (propertyItem.SelectedGridItem == null))
+			{
+				itemResetValue.Enabled = false;
+				return;
+			}
+
+			itemResetValue.Enabled = (propertyItem.SelectedGridItem.PropertyDescriptor.CanResetValue(propertyItem.SelectedObject));
+		}
+
+		/// <summary>
 		/// Function to validate the controls on the form.
 		/// </summary>
 		private void ValidateControls()
@@ -177,6 +214,8 @@ namespace GorgonLibrary.GorgonEditor
 					Program.Settings.FontAntiAliasMode = document.FontAntiAliasMode = newFont.FontAntiAliasMode;
 										
 					document.Update();
+					document.SetDefaults();
+					propertyItem.Refresh();
 
 					document.PropertyUpdated += new EventHandler(FontUpdated);
 
@@ -212,7 +251,8 @@ namespace GorgonLibrary.GorgonEditor
 			tabDocuments.SelectedTab = document.Tab;
 			document.InitializeRendering();
 
-			propertyItem.SelectedObject = document;
+			propertyItem.SelectedObject = document.TypeDescriptor;
+			propertyItem.Refresh();
 
 			Program.CurrentDocument = document;
 
@@ -247,6 +287,7 @@ namespace GorgonLibrary.GorgonEditor
 			try
 			{
 				this.menuMain.Renderer = new MetroDarkRenderer();
+				this.popupProperties.Renderer = this.menuMain.Renderer;
 
 				this.splitMain.Panel1Collapsed = false;
 

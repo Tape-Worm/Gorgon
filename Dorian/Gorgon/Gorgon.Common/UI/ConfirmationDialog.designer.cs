@@ -108,12 +108,11 @@ namespace GorgonLibrary.UI
 			// ConfirmationDialog
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.ClientSize = new System.Drawing.Size(294, 130);
+			this.ClientSize = new System.Drawing.Size(243, 130);
 			this.Controls.Add(this.buttonNo);
 			this.Controls.Add(this.buttonCancel);
 			this.DialogImage = global::GorgonLibrary.Properties.Resources.Confirm_48x48;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MinimumSize = new System.Drawing.Size(300, 158);
 			this.Name = "ConfirmationDialog";
 			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.buttonOK, 0);

@@ -126,13 +126,12 @@ namespace GorgonLibrary.GorgonEditor
 			if (string.IsNullOrEmpty(comboAA.Text))
 				comboAA.Text = "Anti-Alias (High Quality)";
 
-			buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = comboAA.Enabled = false;
+			buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
 
 			if (string.IsNullOrEmpty(comboFonts.Text))
-				buttonOK.Enabled = comboAA.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
+				buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
 			else
 			{
-				comboAA.Enabled = true;
 				var family = FontFamily.Families.Where(item => string.Compare(item.Name, comboFonts.Text, true) == 0).SingleOrDefault();
 
 				if ((family == null) || (!Program.CachedFonts.ContainsKey(family.Name)))

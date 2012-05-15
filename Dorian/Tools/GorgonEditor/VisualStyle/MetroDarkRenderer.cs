@@ -45,8 +45,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
 		{
-				e.Graphics.DrawLine(Pens.Black, new Point(0, e.AffectedBounds.Height - 1), new Point(e.AffectedBounds.Width, e.AffectedBounds.Height - 1));
-				e.Graphics.DrawLine(Pens.Black, new Point(e.AffectedBounds.Width-1, 0), new Point(e.AffectedBounds.Width-1, e.AffectedBounds.Bottom));
+
 		}
 
 		/// <summary>
@@ -133,7 +132,27 @@ namespace GorgonLibrary.GorgonEditor
 				using (Brush backBrush = new SolidBrush(Color.FromKnownColor(KnownColor.SteelBlue)))
 					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
 			}
-		}		
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.ToolStripRenderer.RenderButtonBackground"/> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripRenderEventArgs"/> that contains the event data.</param>
+		protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
+		{			
+			if (e.Item.Selected)
+			{
+				Color color = Color.FromKnownColor(KnownColor.SteelBlue);
+
+				if (Control.MouseButtons != MouseButtons.None)
+					color = Color.FromKnownColor(KnownColor.DodgerBlue);
+
+				using (Brush backBrush = new SolidBrush(color))
+					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
+			}
+			else			
+				base.OnRenderButtonBackground(e);
+		}
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.ToolStripRenderer.RenderItemCheck"/> event.
