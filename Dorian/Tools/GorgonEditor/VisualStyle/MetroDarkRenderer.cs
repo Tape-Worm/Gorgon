@@ -88,28 +88,21 @@ namespace GorgonLibrary.GorgonEditor
 		protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
 		{
 			Color textColor = Color.White;
+				
+			if (!e.Item.Enabled)
+				textColor = Color.FromArgb(255, 0, 0, 0);
 
-			try
+			ToolStrip strip = e.Item.GetCurrentParent();
+
+			if (!(strip is ToolStripDropDown))
 			{
-				if (!e.Item.Enabled)
-					textColor = Color.FromArgb(255, 0, 0, 0);
-			
-				using (Brush textBrush = new SolidBrush(textColor))
-				{
-					using (StringFormat format = new StringFormat(StringFormat.GenericDefault))
-					{
-						format.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Show;
-						if (e.Item.GetCurrentParent() is MenuStrip)
-							e.Graphics.DrawString(e.Text, e.TextFont, textBrush, e.TextRectangle, format);
-						else
-							e.Graphics.DrawString(e.Text, e.TextFont, textBrush, new RectangleF(3, 1, e.TextRectangle.Width, e.TextRectangle.Height), format);
-					}
-				}
+				if (e.Item.AutoSize)
+					e.TextRectangle = new Rectangle(e.TextRectangle.Location, Size.Round(e.Graphics.MeasureString(e.Text, e.TextFont)));
 			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.Message);
-			}
+			else
+				e.TextRectangle = new Rectangle(3, 1, e.TextRectangle.Width, e.TextRectangle.Height);
+
+			TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, textColor, e.TextFormat);
 		}
 
 		/// <summary>

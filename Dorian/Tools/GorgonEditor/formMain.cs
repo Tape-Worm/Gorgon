@@ -112,15 +112,36 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void ValidateControls()
 		{
-			itemSave.Enabled = _editorType != EditorType.None;
-
 			if (string.IsNullOrEmpty(_projectName))
 				Text = "Gorgon Editor - Untitled";
 			else
 				Text = "Gorgon Editor - " + _projectName;
 
+			if (Program.Documents.Count > 1)
+			{
+				foreach (var doc in Program.Documents)
+				{
+					if (doc.NeedsSave)
+					{
+						_needsSave = true;
+						break;
+					}
+				}
+			}
+			else
+				_needsSave = false;
+
 			if (_needsSave)
+			{
 				Text += "*";
+				itemSave.Enabled = true;
+				itemSaveFont.Enabled = (Program.CurrentDocument is FontDocument) && (Program.CurrentDocument.NeedsSave);
+			}
+			else
+			{
+				itemSave.Enabled = false;
+				itemSaveFont.Enabled = false;
+			}
 		}
 
 		/// <summary>
@@ -177,6 +198,17 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Function to close a document.
+		/// </summary>
+		/// <param name="document">Document to close.</param>
+		private void CloseDocument(Document document)
+		{
+			TabPage page = document.Tab;
+			document.Dispose();
+			tabDocuments.TabPages.Remove(page);
+		}
+
+		/// <summary>
 		/// Function called when the font property gets updated.
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
@@ -188,8 +220,16 @@ namespace GorgonLibrary.GorgonEditor
 			if (sender == null)
 				return;
 
-			document.Update();
-		}
+			try
+			{
+				document.Update();
+			}			
+			finally
+			{
+				propertyItem.Refresh();
+				ValidateControls();
+			}
+		}		
 
 		/// <summary>
 		/// Handles the Click event of the itemNewFont control.
@@ -199,13 +239,14 @@ namespace GorgonLibrary.GorgonEditor
 		private void itemNewFont_Click(object sender, EventArgs e)
 		{
 			formNewFont newFont = null;
+			FontDocument document = null;
 
 			try
 			{
 				newFont = new formNewFont();
 				if (newFont.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				{
-					FontDocument document = OpenDocument<FontDocument>(newFont.FontName, true);
+					document = OpenDocument<FontDocument>(newFont.FontName, true);
 					document.FontFamily = newFont.FontFamilyName;
 					document.FontSize = newFont.FontSize;
 					document.FontStyle = newFont.FontStyle;
@@ -224,12 +265,16 @@ namespace GorgonLibrary.GorgonEditor
 			}
 			catch (Exception ex)
 			{
+				if (document != null)
+					CloseDocument(document);
+
 				GorgonDialogs.ErrorBox(this, ex);
 			}
 			finally
 			{
 				if (newFont != null)
 					newFont.Dispose();
+				ValidateControls();
 			}
 		}
 
@@ -349,11 +394,18 @@ namespace GorgonLibrary.GorgonEditor
 						document.Renderer.Begin2D();
 
 					splitEdit.Panel2Collapsed = !document.HasProperties;
+
+					propertyItem.SelectedObject = document.TypeDescriptor;
+					propertyItem.Refresh();
 				}
 			}
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
 			}
 		}
 
@@ -370,14 +422,31 @@ namespace GorgonLibrary.GorgonEditor
 
 				if (document != null)
 				{
+					ConfirmationResult result = ConfirmationResult.None;
+					if (document.NeedsSave)
+					{
+						result = GorgonDialogs.ConfirmBox(this, "The " + document.DocumentType + " '" + document.Name + "' has changed.  Would you like to save it?", true, false);
+
+						switch (result)
+						{
+							case ConfirmationResult.Cancel:
+								e.Cancel = true;
+								return;
+						}
+					}
+
 					document.PropertyUpdated -= new EventHandler(FontUpdated);
 					Program.Documents.Remove(document);
 					document.Dispose();
-				}				
+				}
 			}
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
 			}
 		}
 	}

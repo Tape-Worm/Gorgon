@@ -31,6 +31,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Design;
 using System.ComponentModel;
+using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary.Graphics;
 
@@ -45,11 +46,13 @@ namespace GorgonLibrary.GorgonEditor
 		#region Variables.
 		private fontDisplay _fontWindow = null;				// Font window.
 		private bool _disposed = false;						// Flag to indicate that the object was disposed.
-		private GorgonFontSettings _fontSettings = null;	// Font settings.
+		private GorgonRenderTarget _target = null;			// Render target.
 		private GorgonFont _font = null;					// Font.
+		private Vector2 _lastBoundSize = Vector2.Zero;		// Last bounding area.
+		private GorgonFontSettings _fontSettings = null;	// Font settings.
 		#endregion
 
-		#region Properties.
+		#region Properties
 		/// <summary>
 		/// Property to return the font.
 		/// </summary>
@@ -75,6 +78,26 @@ namespace GorgonLibrary.GorgonEditor
 
 					_font = value;
 					_fontSettings = _font.Settings;
+					DispatchUpdateNotification();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to set the base color for the font glyphs.
+		/// </summary>
+		[Category("Appearance"), Description("Sets a base color for the glyphs on the texture."), Editor(typeof(ColorPropertyPicker), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+		public Color BaseColor
+		{
+			get
+			{
+				return _fontSettings.BaseColors[0];
+			}
+			set
+			{
+				if (_fontSettings.BaseColors[0].ToColor() != value)
+				{
+					_fontSettings.BaseColors = new GorgonColor[] { value };
 					DispatchUpdateNotification();
 				}
 			}
@@ -141,6 +164,7 @@ namespace GorgonLibrary.GorgonEditor
 				if (_fontSettings.Size != value)
 				{
 					_fontSettings.Size = value;
+					CheckTextureSize();
 					DispatchUpdateNotification();
 				}
 			}
@@ -158,10 +182,10 @@ namespace GorgonLibrary.GorgonEditor
 			}
 			set
 			{
-				if (value.Width < 128)
-					value.Width = 128;
-				if (value.Height < 128)
-					value.Height = 128;
+				if (value.Width < 16)
+					value.Width = 16;
+				if (value.Height < 16)
+					value.Height = 16;
 				if (value.Width >= Program.Graphics.Textures.MaxWidth)
 					value.Width = Program.Graphics.Textures.MaxWidth - 1;
 				if (value.Height >= Program.Graphics.Textures.MaxHeight)
@@ -170,6 +194,7 @@ namespace GorgonLibrary.GorgonEditor
 				if (_fontSettings.TextureSize != value)
 				{
 					_fontSettings.TextureSize = value;
+					CheckTextureSize();
 					DispatchUpdateNotification();
 				}
 			}
@@ -210,13 +235,38 @@ namespace GorgonLibrary.GorgonEditor
 				if (value != _fontSettings.FontHeightMode)
 				{
 					_fontSettings.FontHeightMode = value;
+					CheckTextureSize();
 					DispatchUpdateNotification();
 				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return the type of document.
+		/// </summary>
+		public override string DocumentType
+		{
+			get
+			{
+				return "Font";
 			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to limit the font texture size based on the font size.
+		/// </summary>
+		private void CheckTextureSize()
+		{
+			float fontSize = FontSize;
+			if (UsePointSize == FontHeightMode.Points)
+				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize));
+
+			if ((fontSize > FontTextureSize.Width) || (fontSize > FontTextureSize.Height))
+				FontTextureSize = new Size((int)fontSize, (int)fontSize);
+		}
+
 		/// <summary>
 		/// Function to initialize graphics and other items for the document.
 		/// </summary>
@@ -228,32 +278,10 @@ namespace GorgonLibrary.GorgonEditor
 		/// Function to remove graphics and other items for the document.
 		/// </summary>
 		protected override void UnloadGraphics()
-		{			
-		}
-
-		/// <summary>
-		/// Function to update the horizontal scroll bar on the render window.
-		/// </summary>
-		/// <param name="bounds">Bounds for rendering.</param>
-		private void UpdateHScroller(Rectangle bounds)
 		{
-			if (bounds.Width > _fontWindow.panelDisplay.ClientSize.Width)
-				_fontWindow.panelDisplay.HorizontalScroll.Visible = true;
-			else
-				_fontWindow.panelDisplay.HorizontalScroll.Visible = false;
-
-		}
-
-		/// <summary>
-		/// Function to update the vertical scroll bar on the render window.
-		/// </summary>
-		/// <param name="bounds">Bounds for rendering.</param>
-		private void UpdateVScroller(Rectangle bounds)
-		{
-			if (bounds.Height > _fontWindow.panelDisplay.ClientSize.Height)
-				_fontWindow.panelDisplay.VerticalScroll.Visible = true;
-			else
-				_fontWindow.panelDisplay.VerticalScroll.Visible = false;
+			if (_target != null)
+				_target.Dispose();
+			_target = null;
 		}
 
 		/// <summary>
@@ -269,19 +297,32 @@ namespace GorgonLibrary.GorgonEditor
 				return 3;
 
 			GorgonTexture2D texture = _font.Textures[_fontWindow.CurrentTexture];
+			IEnumerable<GorgonGlyph> glyphs = null;
 			Rectangle bounds = new Rectangle(0, 0, (int)System.Math.Ceiling(texture.Settings.Width * _fontWindow.Zoom), (int)System.Math.Ceiling(texture.Settings.Height * _fontWindow.Zoom));
+			
+			glyphs = from GorgonGlyph glyph in _font.Glyphs
+					 where glyph.Texture == texture && !char.IsWhiteSpace(glyph.Character)
+					 select glyph;
 
-			UpdateHScroller(bounds);
-			UpdateVScroller(bounds);
 
-			Renderer.IsBlendingEnabled = false;
-			Renderer.IsAlphaTestEnabled = false;
+			_fontWindow.panelDisplay.AutoScrollMinSize = bounds.Size;
 
-			Renderer.Drawing.Blit(texture, Vector2.Zero, new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
+			Renderer.Drawing.SmoothingMode = Renderers.SmoothingMode.Smooth;
+			Renderer.Target = _target;
+			_target.Clear(Color.Black);
 
-			Renderer.IsAlphaTestEnabled = true;
-			Renderer.IsBlendingEnabled = true;
+			foreach (var glyph in glyphs)
+				Renderer.Drawing.DrawRectangle(new RectangleF(glyph.GlyphCoordinates.Left - 1, glyph.GlyphCoordinates.Top - 1, glyph.GlyphCoordinates.Width + 1, glyph.GlyphCoordinates.Height + 1), Color.Red);
+			Renderer.Drawing.Blit(texture, Vector2.Zero);
 
+
+			Renderer.Target = null;
+
+			if ((_fontWindow.panelDisplay.HorizontalScroll.Visible) || (_fontWindow.panelDisplay.VerticalScroll.Visible))
+				Renderer.Drawing.Blit(_target, _fontWindow.panelDisplay.AutoScrollPosition, new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
+			else
+				Renderer.Drawing.Blit(_target, new Vector2(_fontWindow.panelDisplay.ClientSize.Width / 2 - bounds.Size.Width / 2, _fontWindow.panelDisplay.ClientSize.Height / 2 - bounds.Size.Height / 2), new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
+			Renderer.Drawing.SmoothingMode = Renderers.SmoothingMode.None;
 			return 3;
 		}
 
@@ -311,6 +352,8 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		public void Update()
 		{
+			GorgonFont newFont = null;
+
 			if (!Program.CachedFonts.ContainsKey(FontFamily))
 				return;
 
@@ -336,13 +379,53 @@ namespace GorgonLibrary.GorgonEditor
 					}
 				}
 			}
-			
-			if (_font == null)
-				_font = Program.Graphics.Textures.CreateFont(Name, _fontSettings);
-			else
-				_font.Update(_fontSettings);
 
-			_fontWindow.CurrentFont = _font;
+			try
+			{
+				newFont = Program.Graphics.Textures.CreateFont(Name, new GorgonFontSettings()
+					{
+						AntiAliasingMode = _fontSettings.AntiAliasingMode,
+						BaseColors = _fontSettings.BaseColors,
+						Brush = _fontSettings.Brush,
+						Characters = _fontSettings.Characters,
+						DefaultCharacter = _fontSettings.DefaultCharacter,
+						FontFamilyName = _fontSettings.FontFamilyName,
+						FontHeightMode = _fontSettings.FontHeightMode,
+						FontStyle = _fontSettings.FontStyle,
+						OutlineColor = _fontSettings.OutlineColor,
+						OutlineSize = _fontSettings.OutlineSize,
+						PackingSpacing = _fontSettings.PackingSpacing,
+						Size = _fontSettings.Size,
+						TextContrast = _fontSettings.TextContrast,
+						TextureSize = _fontSettings.TextureSize
+					});
+			}
+			catch
+			{
+				// Restore the settings.
+				if (_font != null)
+					_fontSettings = _font.Settings;
+
+				throw;
+			}			
+
+
+			if (_font != null)
+				_font.Dispose();
+
+			_fontWindow.CurrentFont = _font = newFont;
+			
+			if (_target != null)
+				_target.Dispose();
+
+			_target = Program.Graphics.Output.CreateRenderTarget("Surface", new GorgonRenderTargetSettings()
+				{
+					Width = _fontSettings.TextureSize.Width,
+					Height = _fontSettings.TextureSize.Height,
+					Format = BufferFormat.R8G8B8A8_UIntNormal					
+				});
+
+			NeedsSave = true;
 		}
 		#endregion
 

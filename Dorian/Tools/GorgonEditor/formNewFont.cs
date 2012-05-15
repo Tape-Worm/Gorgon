@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.UI;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.GorgonEditor
 {
@@ -152,7 +153,7 @@ namespace GorgonLibrary.GorgonEditor
 
 					buttonOK.Enabled = textName.Text.Length > 0;
 				}
-			}
+			}			
 		}
 
 		/// <summary>
@@ -181,6 +182,25 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Function to restrict the texture size based on the font size.
+		/// </summary>
+		private void RestrictTexture()
+		{
+			float fontSize = (float)numericSize.Value;
+			if (string.Compare(comboSizeType.Text, "points", true) == 0)
+				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize));
+
+			if ((fontSize > (float)numericTextureHeight.Value) || (fontSize > (float)numericTextureWidth.Value))
+			{
+				numericTextureWidth.Value = (decimal)fontSize;
+				numericTextureHeight.Value = (decimal)fontSize;
+			}
+
+			if (fontSize > 16)
+				numericTextureHeight.Minimum = numericTextureWidth.Minimum = (decimal)fontSize;
+		}
+
+		/// <summary>
 		/// Handles the SelectedIndexChanged event of the comboFonts control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -191,6 +211,10 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				if (sender == comboFonts)
 					ValidateControls();
+
+				if (sender == numericSize)
+					RestrictTexture();
+
 				UpdatePreview();
 			}
 			catch (Exception ex)

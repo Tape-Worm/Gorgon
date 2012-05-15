@@ -67,9 +67,9 @@ namespace GorgonLibrary.GorgonEditor
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.fontToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
-			this.projectToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemSaveProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
-			this.fontToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemSaveFont = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitEdit = new System.Windows.Forms.SplitContainer();
 			this.panelEditor = new System.Windows.Forms.Panel();
 			this.tabDocuments = new KRBTabControl.KRBTabControl();
@@ -138,18 +138,18 @@ namespace GorgonLibrary.GorgonEditor
 			// itemNewProject
 			// 
 			this.itemNewProject.Name = "itemNewProject";
-			this.itemNewProject.Size = new System.Drawing.Size(120, 22);
+			this.itemNewProject.Size = new System.Drawing.Size(152, 22);
 			this.itemNewProject.Text = "&Project...";
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(117, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
 			// 
 			// itemNewFont
 			// 
 			this.itemNewFont.Name = "itemNewFont";
-			this.itemNewFont.Size = new System.Drawing.Size(120, 22);
+			this.itemNewFont.Size = new System.Drawing.Size(152, 22);
 			this.itemNewFont.Text = "Font...";
 			this.itemNewFont.Click += new System.EventHandler(this.itemNewFont_Click);
 			// 
@@ -167,49 +167,49 @@ namespace GorgonLibrary.GorgonEditor
 			// projectToolStripMenuItem1
 			// 
 			this.projectToolStripMenuItem1.Name = "projectToolStripMenuItem1";
-			this.projectToolStripMenuItem1.Size = new System.Drawing.Size(120, 22);
+			this.projectToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
 			this.projectToolStripMenuItem1.Text = "&Project...";
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(117, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 6);
 			// 
 			// fontToolStripMenuItem1
 			// 
 			this.fontToolStripMenuItem1.Name = "fontToolStripMenuItem1";
-			this.fontToolStripMenuItem1.Size = new System.Drawing.Size(120, 22);
-			this.fontToolStripMenuItem1.Text = "&Font";
+			this.fontToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+			this.fontToolStripMenuItem1.Text = "&Font...";
 			// 
 			// itemSave
 			// 
 			this.itemSave.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.projectToolStripMenuItem2,
+            this.itemSaveProject,
             this.toolStripMenuItem3,
-            this.fontToolStripMenuItem2});
+            this.itemSaveFont});
 			this.itemSave.Enabled = false;
 			this.itemSave.Name = "itemSave";
 			this.itemSave.Size = new System.Drawing.Size(103, 19);
 			this.itemSave.Text = "&Save";
 			this.itemSave.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// projectToolStripMenuItem2
+			// itemSaveProject
 			// 
-			this.projectToolStripMenuItem2.Name = "projectToolStripMenuItem2";
-			this.projectToolStripMenuItem2.Size = new System.Drawing.Size(111, 22);
-			this.projectToolStripMenuItem2.Text = "&Project";
+			this.itemSaveProject.Name = "itemSaveProject";
+			this.itemSaveProject.Size = new System.Drawing.Size(152, 22);
+			this.itemSaveProject.Text = "&Project...";
 			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(108, 6);
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(149, 6);
 			// 
-			// fontToolStripMenuItem2
+			// itemSaveFont
 			// 
-			this.fontToolStripMenuItem2.Enabled = false;
-			this.fontToolStripMenuItem2.Name = "fontToolStripMenuItem2";
-			this.fontToolStripMenuItem2.Size = new System.Drawing.Size(111, 22);
-			this.fontToolStripMenuItem2.Text = "&Font";
+			this.itemSaveFont.Enabled = false;
+			this.itemSaveFont.Name = "itemSaveFont";
+			this.itemSaveFont.Size = new System.Drawing.Size(152, 22);
+			this.itemSaveFont.Text = "&Font...";
 			// 
 			// splitEdit
 			// 
@@ -353,9 +353,9 @@ namespace GorgonLibrary.GorgonEditor
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
 		private System.Windows.Forms.ToolStripMenuItem fontToolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem itemSave;
-		private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem itemSaveProject;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
-		private System.Windows.Forms.ToolStripMenuItem fontToolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem itemSaveFont;
 		private System.Windows.Forms.ContextMenuStrip popupProperties;
 		private System.Windows.Forms.ToolStripMenuItem itemResetValue;
 	}

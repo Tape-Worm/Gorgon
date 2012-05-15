@@ -32,6 +32,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using SlimMath;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
 
@@ -44,6 +45,7 @@ namespace GorgonLibrary.GorgonEditor
 	{
 		#region Variables.
 		private GorgonFont _font = null;
+		private float _zoom = -1;
 		#endregion
 
 		#region Properties.
@@ -61,8 +63,32 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		public float Zoom
 		{
-			get;
-			private set;
+			get
+			{
+				if (_zoom == -1)
+				{
+					Vector2 zoomValue = Vector2.Zero;
+
+					zoomValue = _font.Textures[CurrentTexture].Settings.Size;
+
+					if (panelDisplay.ClientSize.Width != 0)
+						zoomValue.X = panelDisplay.ClientSize.Width / zoomValue.X;
+					else
+						zoomValue.X = 1e-6f;
+					if (panelDisplay.ClientSize.Height != 0)
+						zoomValue.Y = panelDisplay.ClientSize.Height / zoomValue.Y;
+					else
+						zoomValue.Y = 1e-6f;
+
+					return (zoomValue.Y < zoomValue.X) ? zoomValue.Y : zoomValue.X;
+				}
+
+				return _zoom;
+			}
+			set
+			{
+				_zoom = value;
+			}
 		}
 
 		/// <summary>
@@ -91,12 +117,25 @@ namespace GorgonLibrary.GorgonEditor
 		private void itemZoom100_Click(object sender, EventArgs e)
 		{
 			ToolStripMenuItem item = sender as ToolStripMenuItem;
+			float zoomFactor = 0;
 
 			try
 			{
-				itemZoom100.Checked = itemZoom150.Checked = itemZoom200.Checked = itemZoom250.Checked = itemZoom300.Checked = false;
+				var menuItems = from toolItem in item.GetCurrentParent().Items.Cast<ToolStripItem>()
+								let menuItem = toolItem as ToolStripMenuItem
+								where menuItem != null && menuItem != item
+								select menuItem;
+
+				foreach (var menuItem in menuItems)
+					menuItem.Checked = false;
+
 				item.Checked = true;
-				Zoom = float.Parse(item.Tag.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo) / 100.0f;
+				zoomFactor = float.Parse(item.Tag.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+				if (zoomFactor > 0)
+					Zoom = zoomFactor / 100.0f;
+				else
+					Zoom = -1;
+
 				itemZoom.Text = "Zoom: " + item.Text;
 			}
 			catch (Exception ex)
@@ -152,7 +191,6 @@ namespace GorgonLibrary.GorgonEditor
 			base.OnLoad(e);
 						
 			stripFont.Renderer = new MetroDarkRenderer();
-			Zoom = 1.0f;
 		}
 		#endregion
 

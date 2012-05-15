@@ -38,6 +38,8 @@
 			this.itemZoom200 = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemZoom150 = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemToWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.buttonPrevious = new System.Windows.Forms.ToolStripButton();
 			this.labelTextureCounter = new System.Windows.Forms.ToolStripLabel();
 			this.buttonNext = new System.Windows.Forms.ToolStripButton();
@@ -47,10 +49,11 @@
 			// 
 			// panelDisplay
 			// 
+			this.panelDisplay.AutoScroll = true;
 			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(694, 428);
+			this.panelDisplay.Size = new System.Drawing.Size(694, 434);
 			this.panelDisplay.TabIndex = 0;
 			// 
 			// panel2
@@ -58,9 +61,9 @@
 			this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
 			this.panel2.Controls.Add(this.stripFont);
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel2.Location = new System.Drawing.Point(0, 428);
+			this.panel2.Location = new System.Drawing.Point(0, 434);
 			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(694, 34);
+			this.panel2.Size = new System.Drawing.Size(694, 28);
 			this.panel2.TabIndex = 1;
 			// 
 			// stripFont
@@ -72,7 +75,7 @@
             this.buttonPrevious,
             this.labelTextureCounter,
             this.buttonNext});
-			this.stripFont.Location = new System.Drawing.Point(0, 9);
+			this.stripFont.Location = new System.Drawing.Point(0, 3);
 			this.stripFont.Name = "stripFont";
 			this.stripFont.Size = new System.Drawing.Size(694, 25);
 			this.stripFont.Stretch = true;
@@ -86,16 +89,18 @@
             this.itemZoom250,
             this.itemZoom200,
             this.itemZoom150,
-            this.itemZoom100});
+            this.itemZoom100,
+            this.toolStripMenuItem1,
+            this.itemToWindow});
 			this.itemZoom.Name = "itemZoom";
-			this.itemZoom.Size = new System.Drawing.Size(85, 25);
-			this.itemZoom.Text = "Zoom: 100%";
+			this.itemZoom.Size = new System.Drawing.Size(116, 25);
+			this.itemZoom.Text = "Zoom: To window";
 			// 
 			// itemZoom300
 			// 
 			this.itemZoom300.CheckOnClick = true;
 			this.itemZoom300.Name = "itemZoom300";
-			this.itemZoom300.Size = new System.Drawing.Size(102, 22);
+			this.itemZoom300.Size = new System.Drawing.Size(133, 22);
 			this.itemZoom300.Tag = "300";
 			this.itemZoom300.Text = "300%";
 			this.itemZoom300.Click += new System.EventHandler(this.itemZoom100_Click);
@@ -104,7 +109,7 @@
 			// 
 			this.itemZoom250.CheckOnClick = true;
 			this.itemZoom250.Name = "itemZoom250";
-			this.itemZoom250.Size = new System.Drawing.Size(102, 22);
+			this.itemZoom250.Size = new System.Drawing.Size(133, 22);
 			this.itemZoom250.Tag = "250";
 			this.itemZoom250.Text = "250%";
 			this.itemZoom250.Click += new System.EventHandler(this.itemZoom100_Click);
@@ -113,7 +118,7 @@
 			// 
 			this.itemZoom200.CheckOnClick = true;
 			this.itemZoom200.Name = "itemZoom200";
-			this.itemZoom200.Size = new System.Drawing.Size(102, 22);
+			this.itemZoom200.Size = new System.Drawing.Size(133, 22);
 			this.itemZoom200.Tag = "200";
 			this.itemZoom200.Text = "200%";
 			this.itemZoom200.Click += new System.EventHandler(this.itemZoom100_Click);
@@ -122,21 +127,35 @@
 			// 
 			this.itemZoom150.CheckOnClick = true;
 			this.itemZoom150.Name = "itemZoom150";
-			this.itemZoom150.Size = new System.Drawing.Size(102, 22);
+			this.itemZoom150.Size = new System.Drawing.Size(133, 22);
 			this.itemZoom150.Tag = "150";
 			this.itemZoom150.Text = "150%";
 			this.itemZoom150.Click += new System.EventHandler(this.itemZoom100_Click);
 			// 
 			// itemZoom100
 			// 
-			this.itemZoom100.Checked = true;
 			this.itemZoom100.CheckOnClick = true;
-			this.itemZoom100.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.itemZoom100.Name = "itemZoom100";
-			this.itemZoom100.Size = new System.Drawing.Size(102, 22);
+			this.itemZoom100.Size = new System.Drawing.Size(133, 22);
 			this.itemZoom100.Tag = "100";
 			this.itemZoom100.Text = "100%";
 			this.itemZoom100.Click += new System.EventHandler(this.itemZoom100_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(130, 6);
+			// 
+			// itemToWindow
+			// 
+			this.itemToWindow.Checked = true;
+			this.itemToWindow.CheckOnClick = true;
+			this.itemToWindow.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.itemToWindow.Name = "itemToWindow";
+			this.itemToWindow.Size = new System.Drawing.Size(133, 22);
+			this.itemToWindow.Tag = "-1";
+			this.itemToWindow.Text = "To window";
+			this.itemToWindow.Click += new System.EventHandler(this.itemZoom100_Click);
 			// 
 			// buttonPrevious
 			// 
@@ -155,7 +174,7 @@
 			// 
 			this.labelTextureCounter.Name = "labelTextureCounter";
 			this.labelTextureCounter.Size = new System.Drawing.Size(69, 22);
-			this.labelTextureCounter.Text = "Texture: 1/1";
+			this.labelTextureCounter.Text = "Texture: 0/0";
 			// 
 			// buttonNext
 			// 
@@ -201,5 +220,7 @@
 		private System.Windows.Forms.ToolStripButton buttonPrevious;
 		private System.Windows.Forms.ToolStripLabel labelTextureCounter;
 		private System.Windows.Forms.ToolStripButton buttonNext;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem itemToWindow;
 	}
 }

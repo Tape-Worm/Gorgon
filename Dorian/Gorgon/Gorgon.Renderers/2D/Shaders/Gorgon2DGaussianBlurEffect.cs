@@ -182,17 +182,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void UpdateRenderTarget()
 		{
-			if (_vTarget != null)
-			{
-				_vTarget.Dispose();
-				_vTarget = null;
-			}
-
-			if (_hTarget != null)
-			{
-				_hTarget.Dispose();
-				_hTarget = null;
-			}
+			FreeResources();
 
 			GorgonRenderTargetSettings settings = new GorgonRenderTargetSettings()
 			{

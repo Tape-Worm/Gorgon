@@ -140,7 +140,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>Use this decrease or increase the number of textures used for a font.  If the number of glyphs cannot fit onto a single texture, a new texture will be created to 
 		/// store the remaining glyphs.  This value will control the width and height of the textures created.
 		/// <para>To retrieve the count of textures used, call the <see cref="P:GorgonLibrary.Graphics.GorgonFont.FontTextureCollection.Count">Count</see> property on the <see cref="P:GorgonLibrary.Graphics.GorgonFont.Textures">Textures</see> property.</para>
-		/// <para>The default size is 256x256, the minimum size is 64x64 and the maximum size depends on the maximum texture size that's supported by the feature level.</para>
+		/// <para>The default size is 256x256, the minimum size is 16x16 and the maximum size depends on the maximum texture size that's supported by the feature level.</para>
 		/// </remarks>
 		public Size TextureSize
 		{
@@ -150,10 +150,10 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (value.Width < 64)
-					value.Width = 64;
-				if (value.Height < 64)
-					value.Height = 64;
+				if (value.Width < 16)
+					value.Width = 16;
+				if (value.Height < 16)
+					value.Height = 16;
 
 				_textureSize = value;
 			}
@@ -287,6 +287,24 @@ namespace GorgonLibrary.Graphics
 				if (value > 8)
 					value = 8;
 				_packSpace = value;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to return the font height, in pixels.
+		/// </summary>
+		/// <param name="pointSize">Size of the font, in points.</param>
+		/// <returns>The font height, in pixels.</returns>
+		public static float GetFontHeight(float pointSize)
+		{
+			using (Bitmap tempBmp = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+			{
+				using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(tempBmp))
+				{
+					return (pointSize * g.DpiY) / 72.0f;
+				}
 			}
 		}
 		#endregion

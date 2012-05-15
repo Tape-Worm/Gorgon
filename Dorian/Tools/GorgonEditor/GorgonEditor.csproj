@@ -72,12 +72,22 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WinFormsColor">
+      <HintPath>..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="ColorPickerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ColorPickerControl.Designer.cs">
+      <DependentUpon>ColorPickerControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ColorPropertyPicker.cs" />
     <Compile Include="DocumentCollection.cs" />
     <Compile Include="fontDisplay.cs">
       <SubType>UserControl</SubType>
@@ -120,7 +130,11 @@
     <Compile Include="PropertyGrid\DocumentProperty.cs" />
     <Compile Include="PropertyGrid\DocumentPropertyCollection.cs" />
     <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
+    <Compile Include="RGBATypeConverter.cs" />
     <Compile Include="VisualStyle\MetroDarkRenderer.cs" />
+    <EmbeddedResource Include="ColorPickerControl.resx">
+      <DependentUpon>ColorPickerControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="fontDisplay.resx">
       <DependentUpon>fontDisplay.cs</DependentUpon>
     </EmbeddedResource>
@@ -161,6 +175,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Expando.png" />
+    <None Include="Resources\PropertyChecker.png" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\no_16x16.png" />
     <None Include="Resources\ok_16x16.png" />
