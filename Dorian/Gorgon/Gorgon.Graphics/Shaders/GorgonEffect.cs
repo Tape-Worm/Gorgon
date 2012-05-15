@@ -156,6 +156,11 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to free any resources allocated by the effect.
+		/// </summary>
+		public abstract void FreeResources();
+
+		/// <summary>
 		/// Function to render while using this effect.
 		/// </summary>
 		public void Render()
@@ -193,7 +198,11 @@ namespace GorgonLibrary.Graphics
 			if (!_disposed)
 			{
 				if (disposing)
+				{
 					Graphics.RemoveTrackedObject(this);
+
+					FreeResources();
+				}
 
 				_disposed = true;
 			}

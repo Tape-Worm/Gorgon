@@ -140,6 +140,16 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to free any resources allocated by the effect.
+		/// </summary>
+		public override void FreeResources()
+		{
+			if (_displacementTarget != null)
+				_displacementTarget.Dispose();
+			_displacementTarget = null;
+		}
+
+		/// <summary>
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
@@ -220,9 +230,6 @@ namespace GorgonLibrary.Renderers
 				{
 					if (disposing)
 					{
-						if (_displacementTarget != null)
-							_displacementTarget.Dispose();
-
 						if (PixelShader != null)
 							PixelShader.Dispose();
 					}

@@ -170,6 +170,13 @@ namespace GorgonLibrary.Renderers
 			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _1bitBuffer)
 				Gorgon2D.PixelShader.ConstantBuffers[2] = _1bitBuffer;
 		}
+
+		/// <summary>
+		/// Function to free any resources allocated by the effect.
+		/// </summary>
+		public override void FreeResources()
+		{			
+		}
 		
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources

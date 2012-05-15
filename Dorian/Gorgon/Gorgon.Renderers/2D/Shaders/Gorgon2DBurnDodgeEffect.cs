@@ -89,6 +89,13 @@ namespace GorgonLibrary.Renderers
 
 		#region Methods.
 		/// <summary>
+		/// Function to free any resources allocated by the effect.
+		/// </summary>
+		public override void FreeResources()
+		{
+		}
+
+		/// <summary>
 		/// Function called when a pass is about to start rendering.
 		/// </summary>
 		/// <param name="passIndex">Index of the pass being rendered.</param>

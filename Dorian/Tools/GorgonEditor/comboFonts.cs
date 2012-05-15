@@ -106,7 +106,7 @@ namespace GorgonLibrary.GorgonEditor
 				if ((this.RightToLeft & System.Windows.Forms.RightToLeft.No) != System.Windows.Forms.RightToLeft.No)
 					_format.FormatFlags |= StringFormatFlags.DirectionRightToLeft;
 			}
-
+			
 			e.DrawBackground();
 
 			if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
@@ -115,6 +115,7 @@ namespace GorgonLibrary.GorgonEditor
 			string fontName = Items[e.Index].ToString();
 			if (Program.CachedFonts.ContainsKey(fontName))
 			{
+				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 				SizeF measure = e.Graphics.MeasureString(fontName, this.Font, e.Bounds.Width, _format);
 				RectangleF textBounds = new RectangleF(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 				RectangleF fontBounds = new RectangleF(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);

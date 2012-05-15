@@ -102,7 +102,7 @@ namespace GorgonLibrary.UI
 				else
 					_result = ConfirmationResult.No;
 			}
-		}
+		}		
 
 		/// <summary>
 		/// Handles the Click event of the OKButton control.
@@ -173,6 +173,8 @@ namespace GorgonLibrary.UI
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+
+			MessageHeight = 256;
 
 			// Force focus.
 			if (_showCancel)

@@ -65,7 +65,7 @@ namespace GorgonLibrary.UI
 		{			
 			base.OnLoad(e);
 
-			MessageHeight = 150;
+			MessageHeight = 256 - this.checkToAll.Height;
 		}
 
 		/// <summary>

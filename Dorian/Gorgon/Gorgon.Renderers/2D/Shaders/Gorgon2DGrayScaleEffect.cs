@@ -66,6 +66,13 @@ namespace GorgonLibrary.Renderers
 
 			base.Dispose(disposing);
 		}
+
+		/// <summary>
+		/// Function to free any resources allocated by the effect.
+		/// </summary>
+		public override void FreeResources()
+		{			
+		}
 		#endregion
 
 		#region Constructor/Destructor.

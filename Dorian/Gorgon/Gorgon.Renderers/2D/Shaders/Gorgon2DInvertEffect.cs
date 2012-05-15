@@ -88,6 +88,13 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to free any resources allocated by the effect.
+		/// </summary>
+		public override void FreeResources()
+		{
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
