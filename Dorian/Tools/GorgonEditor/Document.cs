@@ -36,7 +36,8 @@ namespace GorgonLibrary.GorgonEditor
 		private string _name = string.Empty;					// Name of the document.
 		private float _alphaDelta = 0.025f;						// Alpha delta value.
 		private float _alpha = 0.0f;							// Alpha value.
-		private GorgonFont _debugFont = null;					// Debug font.		
+		private GorgonFont _debugFont = null;					// Debug font.	
+		private bool _needsSave = false;						// Flag to indicate that the document needs to be saved.
 		#endregion
 
 		#region Properties.
@@ -47,6 +48,32 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to return whether this document needs to be saved or not.
+		/// </summary>
+		[Browsable(false)]
+		public bool NeedsSave
+		{
+			get
+			{
+				return _needsSave;
+			}
+			set
+			{
+				_needsSave = value;
+				if (value)
+				{
+					if (!Tab.Text.EndsWith("*"))
+						Tab.Text = Name + "*";
+				}
+				else
+				{
+					if (Tab.Text.EndsWith("*"))
+						Tab.Text = Name;
+				}
+			}
 		}
 
 		/// <summary>
@@ -124,6 +151,7 @@ namespace GorgonLibrary.GorgonEditor
 					Tab.Text = value;
 					Tab.Name = "tab" + Name;
 
+					NeedsSave = true;
 					DispatchUpdateNotification();
 				}
 			}
@@ -137,6 +165,18 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the type of document.
+		/// </summary>
+		[Browsable(false)]
+		public virtual string DocumentType
+		{
+			get
+			{
+				return string.Empty;
+			}
 		}
 		#endregion
 

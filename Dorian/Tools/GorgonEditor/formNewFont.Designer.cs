@@ -267,7 +267,7 @@
             0,
             0});
 			this.numericTextureWidth.Minimum = new decimal(new int[] {
-            128,
+            16,
             0,
             0,
             0});
@@ -306,7 +306,7 @@
             0,
             0});
 			this.numericTextureHeight.Minimum = new decimal(new int[] {
-            128,
+            16,
             0,
             0,
             0});

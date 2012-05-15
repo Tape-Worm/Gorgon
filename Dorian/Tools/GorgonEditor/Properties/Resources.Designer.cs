@@ -81,6 +81,13 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Expando {
+            get {
+                object obj = ResourceManager.GetObject("Expando", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Gorgon_2_Logo_Full {
             get {
                 object obj = ResourceManager.GetObject("Gorgon_2_Logo_Full", resourceCulture);
@@ -98,6 +105,13 @@ namespace GorgonLibrary.GorgonEditor.Properties {
         internal static System.Drawing.Bitmap ok_16x16 {
             get {
                 object obj = ResourceManager.GetObject("ok_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap PropertyChecker {
+            get {
+                object obj = ResourceManager.GetObject("PropertyChecker", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
