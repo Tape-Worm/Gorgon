@@ -275,7 +275,7 @@ namespace GorgonLibrary.GorgonEditor
 		{			
 			base.OnLoad(e);
 						
-			EditText = "The quick brown fox jumps over the lazy dog.\n123456780 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
+			EditText = "The quick brown fox jumps over the lazy dog.\n1234567890 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
 			stripFont.Renderer = new MetroDarkRenderer();			
 		}
 		#endregion
