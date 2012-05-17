@@ -119,7 +119,7 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				Text += "*";
 				itemSave.Enabled = true;
-				itemSaveFont.Enabled = (Program.CurrentDocument is FontDocument) && (Program.CurrentDocument.NeedsSave);
+				itemSaveFont.Enabled = (Program.CurrentDocument is DocumentFont) && (Program.CurrentDocument.NeedsSave);
 			}
 			else
 			{
@@ -199,7 +199,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="e">Event parameters.</param>
 		private void FontUpdated(object sender, EventArgs e)
 		{
-			FontDocument document = sender as FontDocument;
+			DocumentFont document = sender as DocumentFont;
 
 			if (sender == null)
 				return;
@@ -223,14 +223,14 @@ namespace GorgonLibrary.GorgonEditor
 		private void itemNewFont_Click(object sender, EventArgs e)
 		{
 			formNewFont newFont = null;
-			FontDocument document = null;
+			DocumentFont document = null;
 
 			try
 			{
 				newFont = new formNewFont();
 				if (newFont.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				{
-					document = OpenDocument<FontDocument>(newFont.FontName, true);
+					document = OpenDocument<DocumentFont>(newFont.FontName, true);
 					document.FontFamily = newFont.FontFamilyName;
 					document.FontSize = newFont.FontSize;
 					document.FontStyle = newFont.FontStyle;

@@ -99,7 +99,7 @@
     <Compile Include="Controls\controlFontDisplay.Designer.cs">
       <DependentUpon>controlFontDisplay.cs</DependentUpon>
     </Compile>
-    <Compile Include="Documents\FontDocument.cs" />
+    <Compile Include="Documents\DocumentFont.cs" />
     <Compile Include="Designers\FontFamilyEditor.cs" />
     <Compile Include="Controls\listBoxFont.cs">
       <SubType>Component</SubType>
