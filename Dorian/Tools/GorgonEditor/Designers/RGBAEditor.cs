@@ -37,9 +37,9 @@ using System.Drawing;
 namespace GorgonLibrary.GorgonEditor
 {
 	/// <summary>
-	/// Editor for colors.
+	/// Editor for RGBA colors.
 	/// </summary>
-	class ColorEditor
+	class RGBAEditor
 		: UITypeEditor
 	{
 		#region Methods.
@@ -125,9 +125,9 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ColorEditor"/> class.
+		/// Initializes a new instance of the <see cref="RGBAEditor"/> class.
 		/// </summary>
-		public ColorEditor()
+		public RGBAEditor()
 		{
 		}
 		#endregion
