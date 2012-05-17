@@ -91,7 +91,7 @@
     <Compile Include="Controls\comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Designers\ColorEditor.cs" />
+    <Compile Include="Designers\RGBAEditor.cs" />
     <Compile Include="Documents\DocumentCollection.cs" />
     <Compile Include="Controls\controlFontDisplay.cs">
       <SubType>UserControl</SubType>
