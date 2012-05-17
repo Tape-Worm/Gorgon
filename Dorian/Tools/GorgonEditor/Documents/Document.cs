@@ -16,7 +16,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// A document for the editor.
 	/// </summary>
-	public class Document		
+	class Document		
 		: INamedObject, IDisposable
 	{
 		#region Events.
@@ -48,6 +48,16 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to return the property grid that this document is using.
+		/// </summary>
+		[Browsable(false)]
+		public PropertyGrid PropertyGrid
+		{
+			get;
+			set;
 		}
 
 		/// <summary>

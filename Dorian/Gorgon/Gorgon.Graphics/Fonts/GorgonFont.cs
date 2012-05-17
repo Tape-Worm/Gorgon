@@ -741,6 +741,8 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
+				graphics.CompositingQuality = CompositingQuality.HighQuality;
+
 				if (Settings.BaseColors.Count < 2)
 					brush = new SolidBrush(Settings.BaseColors[0]);
 				else
@@ -779,7 +781,7 @@ namespace GorgonLibrary.Graphics
 
 					position.Offset(Settings.OutlineSize, Settings.OutlineSize);
 				}
-				
+
 				graphics.DrawString(character.ToString(), font, brush, position, format);
 				graphics.Flush();
 			}

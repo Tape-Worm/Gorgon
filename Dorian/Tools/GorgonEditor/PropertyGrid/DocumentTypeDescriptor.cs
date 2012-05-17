@@ -123,7 +123,7 @@ namespace GorgonLibrary.GorgonEditor
 		}
 		#endregion
 
-	#region ICustomTypeDescriptor Members
+		#region ICustomTypeDescriptor Members
 		/// <summary>
 		/// Returns a collection of custom attributes for this instance of a component.
 		/// </summary>
@@ -236,7 +236,11 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			IList<PropertyDescriptor> descriptors = new List<PropertyDescriptor>();
 
-			foreach (var propValue in this)
+			var visibleProperties = from property in this
+									where !property.HideProperty
+									select property;
+
+			foreach (var propValue in visibleProperties)
 			{
 				Attribute[] propertyAttributes = propValue.RetrieveAttributes();
 				descriptors.Add(new DocumentPropertyDescriptor(propValue));

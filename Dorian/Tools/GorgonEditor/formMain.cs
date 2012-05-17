@@ -290,6 +290,7 @@ namespace GorgonLibrary.GorgonEditor
 			Type type = typeof(T);
 
 			document = (T)Activator.CreateInstance(type, new object[] { documentName, allowClose });
+			document.PropertyGrid = propertyItem;
 			Program.Documents.Add(document);
 			document.Tab.Font = this.Font;
 			tabDocuments.TabPages.Add(document.Tab);

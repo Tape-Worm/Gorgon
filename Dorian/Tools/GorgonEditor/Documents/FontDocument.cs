@@ -34,6 +34,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.GorgonEditor
@@ -54,6 +55,9 @@ namespace GorgonLibrary.GorgonEditor
 		private GorgonFontSettings _fontSettings = null;	// Font settings.
 		private GorgonSwapChain _textArea = null;			// Text area.
 		private GorgonText _text = null;					// Text sprite.
+		private bool _showIBar = true;						// I-Bar flag.
+		private GorgonTimer _iBarTimer = null;				// I-Bar timer.
+		private bool _dropShadowEnabled = false;			// Flag for the drop shadow.
 		#endregion
 
 		#region Properties
@@ -348,6 +352,43 @@ namespace GorgonLibrary.GorgonEditor
 				}
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the text color for the example text.
+		/// </summary>
+		[Category("Example Text"), Description("Sets the color for the example text."), DefaultValue(0xFF000000), TypeConverter(typeof(RGBATypeConverter)), Editor(typeof(ColorPropertyPicker), typeof(UITypeEditor))]
+		public Color TextColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the text should have a shadow or not.
+		/// </summary>
+		[Category("Example Text"), Description("Sets whether a drop shadow should be added to the text."), DefaultValue(false), RefreshProperties(RefreshProperties.All)]
+		public bool DropShadow
+		{
+			get
+			{
+				return _dropShadowEnabled;
+			}
+			set
+			{
+				_dropShadowEnabled = value;
+				TypeDescriptor["DropShadowOffset"].IsReadOnly = !_dropShadowEnabled;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the offset of the shadow.
+		/// </summary>
+		[Category("Example Text"), Description("Sets the offset, in pixels, of the drop shadow."), ReadOnly(false), TypeConverter(typeof(PointFConverter))]
+		public PointF DropShadowOffset
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -407,33 +448,30 @@ namespace GorgonLibrary.GorgonEditor
 
 			Renderer.Drawing.SmoothingMode = Renderers.SmoothingMode.Smooth;
 
-			if (!_fontWindow.EditMode)
-			{
-				GorgonTexture2D texture = _font.Textures[_fontWindow.CurrentTexture];
-				IEnumerable<GorgonGlyph> glyphs = null;
-				Rectangle bounds = new Rectangle(0, 0, (int)System.Math.Ceiling(texture.Settings.Width * _fontWindow.Zoom), (int)System.Math.Ceiling(texture.Settings.Height * _fontWindow.Zoom));
+			GorgonTexture2D texture = _font.Textures[_fontWindow.CurrentTexture];
+			IEnumerable<GorgonGlyph> glyphs = null;
+			Rectangle bounds = new Rectangle(0, 0, (int)System.Math.Ceiling(texture.Settings.Width * _fontWindow.Zoom), (int)System.Math.Ceiling(texture.Settings.Height * _fontWindow.Zoom));
 
-				glyphs = from GorgonGlyph glyph in _font.Glyphs
-						 where glyph.Texture == texture && !char.IsWhiteSpace(glyph.Character)
-						 select glyph;
+			glyphs = from GorgonGlyph glyph in _font.Glyphs
+						where glyph.Texture == texture && !char.IsWhiteSpace(glyph.Character)
+						select glyph;
 
 
-				_fontWindow.panelDisplay.AutoScrollMinSize = bounds.Size;
+			_fontWindow.panelDisplay.AutoScrollMinSize = bounds.Size;
 								
-				Renderer.Target = _target;
-				_target.Clear(Color.Black);
+			Renderer.Target = _target;
+			_target.Clear(Color.Black);
 
-				foreach (var glyph in glyphs)
-					Renderer.Drawing.DrawRectangle(new RectangleF(glyph.GlyphCoordinates.Left - 1, glyph.GlyphCoordinates.Top - 1, glyph.GlyphCoordinates.Width + 1, glyph.GlyphCoordinates.Height + 1), Color.Red);
-				Renderer.Drawing.Blit(texture, Vector2.Zero);
+			foreach (var glyph in glyphs)
+				Renderer.Drawing.DrawRectangle(new RectangleF(glyph.GlyphCoordinates.Left - 1, glyph.GlyphCoordinates.Top - 1, glyph.GlyphCoordinates.Width + 1, glyph.GlyphCoordinates.Height + 1), Color.Red);
+			Renderer.Drawing.Blit(texture, Vector2.Zero);
 				
-				Renderer.Target = null;
+			Renderer.Target = null;
 
-				if ((_fontWindow.panelDisplay.HorizontalScroll.Visible) || (_fontWindow.panelDisplay.VerticalScroll.Visible))
-					Renderer.Drawing.Blit(_target, _fontWindow.panelDisplay.AutoScrollPosition, new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
-				else
-					Renderer.Drawing.Blit(_target, new Vector2(_fontWindow.panelDisplay.ClientSize.Width / 2 - bounds.Size.Width / 2, _fontWindow.panelDisplay.ClientSize.Height / 2 - bounds.Size.Height / 2), new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));				
-			}
+			if ((_fontWindow.panelDisplay.HorizontalScroll.Visible) || (_fontWindow.panelDisplay.VerticalScroll.Visible))
+				Renderer.Drawing.Blit(_target, _fontWindow.panelDisplay.AutoScrollPosition, new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
+			else
+				Renderer.Drawing.Blit(_target, new Vector2(_fontWindow.panelDisplay.ClientSize.Width / 2 - bounds.Size.Width / 2, _fontWindow.panelDisplay.ClientSize.Height / 2 - bounds.Size.Height / 2), new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));				
 
 			// Draw preview text.
 			if ((!string.IsNullOrEmpty(_fontWindow.EditText)) || (_fontWindow.EditMode))
@@ -441,8 +479,17 @@ namespace GorgonLibrary.GorgonEditor
 				Vector2 position = Vector2.Zero;
 				IList<string> lines = _fontWindow.EditText.Split(new char[] {'\n'});
 				_textArea.Clear(Color.White);
+				_text.ShadowEnabled = DropShadow;
+				_text.ShadowOffset = DropShadowOffset;
+				_text.Color = TextColor;
 				_text.TextRectangle = new RectangleF(Vector2.Zero, _fontWindow.ClientSize);
 				Renderer.Target = _textArea;
+
+				if (_iBarTimer.Milliseconds > 500)
+				{
+					_iBarTimer.Reset();
+					_showIBar = !_showIBar;
+				}
 
 				foreach (var line in lines)
 				{
@@ -453,7 +500,7 @@ namespace GorgonLibrary.GorgonEditor
 				}
 
 				// Draw i-bar.
-				if ((_fontWindow.EditMode) && (_fontWindow.Focused))
+				if ((_fontWindow.EditMode) && (_fontWindow.panelText.Focused) && (_showIBar))
 				{
 					float ibarAspect = (float)_ibar.Settings.Width / (float)_ibar.Settings.Height;
 					Vector2 size = _text.MeasureText(lines[lines.Count - 1], false, 0);
@@ -586,9 +633,13 @@ namespace GorgonLibrary.GorgonEditor
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		public FontDocument(string name, bool allowClose)
 			: base(name, allowClose)
-		{			
+		{
+			_iBarTimer = new GorgonTimer();
 			_fontWindow = new fontDisplay();
 			_fontSettings = new GorgonFontSettings();
+			TextColor = Color.Black;
+			DropShadow = false;
+			DropShadowOffset = new Vector2(2, 2);
 			HasProperties = true;
 			_fontWindow.Dock = System.Windows.Forms.DockStyle.Fill;
 			UpdateControl(_fontWindow, _fontWindow.panelDisplay);

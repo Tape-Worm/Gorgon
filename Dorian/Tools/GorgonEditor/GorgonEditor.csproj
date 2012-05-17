@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Designers\PointFConverter.cs" />
     <Compile Include="Win32API.cs" />
     <Compile Include="Designers\CharacterPicker.cs" />
     <Compile Include="Designers\CharacterSetTypeConverter.cs" />
@@ -142,7 +143,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGrid\DocumentProperty.cs" />
-    <Compile Include="PropertyGrid\DocumentPropertyCollection.cs" />
+    <Compile Include="PropertyGrid\DocumentTypeDescriptor.cs" />
     <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
     <Compile Include="Designers\RGBATypeConverter.cs" />
     <Compile Include="VisualStyle\MetroDarkRenderer.cs" />

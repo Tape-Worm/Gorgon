@@ -210,16 +210,27 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			try
 			{
-				panelDisplay.Visible = false;
 				labelEdit.Visible = true;
 				EditMode = true;
+				ActiveControl = panelText;
 			}
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(ParentForm, ex);
 			}
 		}
-		
+
+		/// <summary>
+		/// Handles the Click event of the panelText control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void panelText_Click(object sender, EventArgs e)
+		{
+			if (EditMode)
+				ActiveControl = panelText;
+		}
+
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Control.PreviewKeyDown"/> event.
 		/// </summary>
@@ -236,7 +247,6 @@ namespace GorgonLibrary.GorgonEditor
 				switch(e.KeyCode)
 				{
 					case Keys.Escape:
-						panelDisplay.Visible = true;
 						labelEdit.Visible = false;
 						EditMode = false;
 						break;
@@ -290,14 +300,44 @@ namespace GorgonLibrary.GorgonEditor
 		}
 		#endregion
 
-		/// <summary>
-		/// Handles the Click event of the panelText control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void panelText_Click(object sender, EventArgs e)
+		private void panelText_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
-			Focus();
+			try
+			{
+				if (e.Control)
+					return;
+
+				switch (e.KeyCode)
+				{
+					case Keys.Escape:
+						labelEdit.Visible = false;
+						EditMode = false;
+						break;
+					case Keys.Back:
+						if (EditText.Length > 0)
+							EditText = EditText.Substring(0, EditText.Length - 1);
+						break;
+					case Keys.Enter:
+						EditText += "\n";
+						break;
+					case Keys.Tab:
+						EditText += "\t";
+						break;
+					case Keys.ControlKey:
+					case Keys.ShiftKey:
+					case Keys.Menu:
+						break;
+					default:
+						//if (!e.IsInputKey)
+						EditText += Win32API.GetKeyCharacter(e.KeyCode);
+						break;
+				}
+
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
 		}
 	}
 }
