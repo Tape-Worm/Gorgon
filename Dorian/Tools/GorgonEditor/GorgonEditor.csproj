@@ -81,29 +81,29 @@
     <Compile Include="Win32API.cs" />
     <Compile Include="CharacterPicker.cs" />
     <Compile Include="CharacterSetTypeConverter.cs" />
-    <Compile Include="ColorPickerControl.cs">
+    <Compile Include="Controls\ColorPickerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ColorPickerControl.Designer.cs">
+    <Compile Include="Controls\ColorPickerControl.Designer.cs">
       <DependentUpon>ColorPickerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="comboFonts.cs">
+    <Compile Include="Controls\comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ColorPropertyPicker.cs" />
     <Compile Include="DocumentCollection.cs" />
-    <Compile Include="fontDisplay.cs">
+    <Compile Include="Controls\fontDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="fontDisplay.Designer.cs">
+    <Compile Include="Controls\fontDisplay.Designer.cs">
       <DependentUpon>fontDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="FontDocument.cs" />
     <Compile Include="FontFamilyPicker.cs" />
-    <Compile Include="FontListBox.cs">
+    <Compile Include="Controls\FontListBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FontStyleListBox.cs">
+    <Compile Include="Controls\FontStyleListBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FontStylePicker.cs" />
@@ -134,10 +134,10 @@
     <Compile Include="GorgonEditorPlugIn.cs" />
     <Compile Include="GorgonEditorSettings.cs" />
     <Compile Include="Document.cs" />
-    <Compile Include="panelEx.cs">
+    <Compile Include="Controls\panelEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="panelEx.Designer.cs">
+    <Compile Include="Controls\panelEx.Designer.cs">
       <DependentUpon>panelEx.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -147,10 +147,10 @@
     <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
     <Compile Include="RGBATypeConverter.cs" />
     <Compile Include="VisualStyle\MetroDarkRenderer.cs" />
-    <EmbeddedResource Include="ColorPickerControl.resx">
+    <EmbeddedResource Include="Controls\ColorPickerControl.resx">
       <DependentUpon>ColorPickerControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="fontDisplay.resx">
+    <EmbeddedResource Include="Controls\fontDisplay.resx">
       <DependentUpon>fontDisplay.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formCharacterPicker.resx">
@@ -165,7 +165,7 @@
     <EmbeddedResource Include="formSplash.resx">
       <DependentUpon>formSplash.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="panelEx.resx">
+    <EmbeddedResource Include="Controls\panelEx.resx">
       <DependentUpon>panelEx.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
