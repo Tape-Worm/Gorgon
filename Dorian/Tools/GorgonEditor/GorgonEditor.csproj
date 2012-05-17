@@ -91,7 +91,7 @@
     <Compile Include="Controls\comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Designers\ColorPropertyPicker.cs" />
+    <Compile Include="Designers\ColorEditor.cs" />
     <Compile Include="Documents\DocumentCollection.cs" />
     <Compile Include="Controls\controlFontDisplay.cs">
       <SubType>UserControl</SubType>
@@ -100,14 +100,14 @@
       <DependentUpon>controlFontDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="Documents\FontDocument.cs" />
-    <Compile Include="Designers\FontFamilyPicker.cs" />
+    <Compile Include="Designers\FontFamilyEditor.cs" />
     <Compile Include="Controls\listBoxFont.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\listBoxFontStyle.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Designers\FontStylePicker.cs" />
+    <Compile Include="Designers\FontStyleEditor.cs" />
     <Compile Include="Designers\formCharacterPicker.cs">
       <SubType>Form</SubType>
     </Compile>
