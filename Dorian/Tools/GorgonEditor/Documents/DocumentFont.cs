@@ -42,7 +42,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Font document.
 	/// </summary>
-	class FontDocument
+	class DocumentFont
 		: Document
 	{
 		#region Variables.
@@ -631,14 +631,14 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FontDocument"/> class.
+		/// Initializes a new instance of the <see cref="DocumentFont"/> class.
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="allowClose">TRUE to allow the document to close, FALSE to keep open.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		public FontDocument(string name, bool allowClose)
+		public DocumentFont(string name, bool allowClose)
 			: base(name, allowClose)
 		{
 			_iBarTimer = new GorgonTimer();
