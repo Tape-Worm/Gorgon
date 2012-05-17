@@ -1112,6 +1112,10 @@ namespace GorgonLibrary.Graphics
 									   where (!Char.IsControl(chars)) && (!Glyphs.Contains(chars) && (Convert.ToInt32(chars) >= 32) && (!char.IsWhiteSpace(chars)))
 									   select chars).ToList();
 
+				// Ensure the default character is there.
+				if (!availableCharacters.Contains(settings.DefaultCharacter))
+					availableCharacters.Insert(0, settings.DefaultCharacter);
+
 				Win32API.SetActiveFont(graphics, newFont);
 				charABC = Win32API.GetCharABCWidths(availableCharacters.First(), availableCharacters.Last());
 				kernPairs = Win32API.GetKerningPairs();
@@ -1204,8 +1208,8 @@ namespace GorgonLibrary.Graphics
 						{
 							// Add whitespace glyph, this will never be rendered, but we need the size in order to determine how much space is required.
 							availableCharacters.Remove(c);
-							if (!Glyphs.Contains(' '))
-								Glyphs.Add(new GorgonGlyph(' ', currentTexture, new Rectangle(0, 0, size.Width, size.Height), Vector2.Zero, Vector3.Zero));
+							if (!Glyphs.Contains(settings.DefaultCharacter))
+								Glyphs.Add(new GorgonGlyph(settings.DefaultCharacter, currentTexture, new Rectangle(0, 0, size.Width, size.Height), Vector2.Zero, Vector3.Zero));
 						}
 					}
 

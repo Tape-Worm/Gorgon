@@ -34,6 +34,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.GorgonEditor
 {
@@ -44,12 +45,15 @@ namespace GorgonLibrary.GorgonEditor
 		: Document
 	{
 		#region Variables.
+		private GorgonTexture2D _ibar = null;				// I-Bar texture.
 		private fontDisplay _fontWindow = null;				// Font window.
 		private bool _disposed = false;						// Flag to indicate that the object was disposed.
 		private GorgonRenderTarget _target = null;			// Render target.
 		private GorgonFont _font = null;					// Font.
 		private Vector2 _lastBoundSize = Vector2.Zero;		// Last bounding area.
 		private GorgonFontSettings _fontSettings = null;	// Font settings.
+		private GorgonSwapChain _textArea = null;			// Text area.
+		private GorgonText _text = null;					// Text sprite.
 		#endregion
 
 		#region Properties
@@ -102,7 +106,52 @@ namespace GorgonLibrary.GorgonEditor
 				}
 			}
 		}
-		
+
+		/// <summary>
+		/// Property to set or return the outline size.
+		/// </summary>
+		[Category("Appearance"), Description("Sets the size, in pixels, of an outline to apply to each glyph.  Please note that the outline color must have an alpha greater than 0 before the outline is applied."), DefaultValue(0)]
+		public int OutlineSize
+		{
+			get
+			{
+				return _fontSettings.OutlineSize;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+				if (value > 16)
+					value = 16;
+
+				if (_fontSettings.OutlineSize != value)
+				{
+					_fontSettings.OutlineSize = value;
+					DispatchUpdateNotification();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to set the base color for the font glyphs.
+		/// </summary>
+		[Category("Appearance"), Description("Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph."), DefaultValue(0), Editor(typeof(ColorPropertyPicker), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+		public Color OutlineColor
+		{
+			get
+			{
+				return _fontSettings.OutlineColor;
+			}
+			set
+			{
+				if (_fontSettings.OutlineColor.ToColor() != value)
+				{
+					_fontSettings.OutlineColor = value ;
+					DispatchUpdateNotification();
+				}
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the font style.
 		/// </summary>
@@ -251,6 +300,54 @@ namespace GorgonLibrary.GorgonEditor
 				return "Font";
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the list of characters that need to be turned into glyphs.
+		/// </summary>
+		[Category("Design"), Description("Sets the list of characters to convert into glyphs."), TypeConverter(typeof(CharacterSetTypeConverter)), Editor(typeof(CharacterPicker), typeof(UITypeEditor))]
+		public IEnumerable<char> Characters
+		{
+			get
+			{
+				return _fontSettings.Characters;
+			}
+			set
+			{
+				if ((value == null) || (value.Count() == 0))
+					value = new char[] {' '};
+
+				if (_fontSettings.Characters != value)
+				{
+					_fontSettings.Characters = value;
+					DispatchUpdateNotification();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the contrast of the glyphs.
+		/// </summary>
+		[Category("Appearance"), Description("Sets the contrast for anti-aliased glyphs."), DefaultValue(4)]
+		public int TextContrast
+		{
+			get
+			{
+				return _fontSettings.TextContrast;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+				if (value > 12)
+					value = 12;
+
+				if (value != _fontSettings.TextContrast)
+				{
+					_fontSettings.TextContrast = value;
+					DispatchUpdateNotification();
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -261,7 +358,9 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			float fontSize = FontSize;
 			if (UsePointSize == FontHeightMode.Points)
-				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize));
+				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize, OutlineSize));
+			else
+				fontSize += OutlineSize;
 
 			if ((fontSize > FontTextureSize.Width) || (fontSize > FontTextureSize.Height))
 				FontTextureSize = new Size((int)fontSize, (int)fontSize);
@@ -271,7 +370,14 @@ namespace GorgonLibrary.GorgonEditor
 		/// Function to initialize graphics and other items for the document.
 		/// </summary>
 		protected override void LoadGraphics()
-		{			
+		{
+			_textArea = Program.Graphics.Output.CreateSwapChain("TextArea.SwapChain", new GorgonSwapChainSettings()
+				{
+					Window = _fontWindow.panelText,
+					Format = BufferFormat.R8G8B8A8_UIntNormal
+				});
+
+			_ibar = Program.Graphics.Textures.FromGDIBitmap("IBar", Properties.Resources.IBar);
 		}
 
 		/// <summary>
@@ -279,8 +385,11 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		protected override void UnloadGraphics()
 		{
+			if (_textArea != null)
+				_textArea.Dispose();
 			if (_target != null)
 				_target.Dispose();
+			_textArea = null;
 			_target = null;
 		}
 
@@ -296,32 +405,66 @@ namespace GorgonLibrary.GorgonEditor
 			if (_font == null)
 				return 3;
 
-			GorgonTexture2D texture = _font.Textures[_fontWindow.CurrentTexture];
-			IEnumerable<GorgonGlyph> glyphs = null;
-			Rectangle bounds = new Rectangle(0, 0, (int)System.Math.Ceiling(texture.Settings.Width * _fontWindow.Zoom), (int)System.Math.Ceiling(texture.Settings.Height * _fontWindow.Zoom));
-			
-			glyphs = from GorgonGlyph glyph in _font.Glyphs
-					 where glyph.Texture == texture && !char.IsWhiteSpace(glyph.Character)
-					 select glyph;
-
-
-			_fontWindow.panelDisplay.AutoScrollMinSize = bounds.Size;
-
 			Renderer.Drawing.SmoothingMode = Renderers.SmoothingMode.Smooth;
-			Renderer.Target = _target;
-			_target.Clear(Color.Black);
 
-			foreach (var glyph in glyphs)
-				Renderer.Drawing.DrawRectangle(new RectangleF(glyph.GlyphCoordinates.Left - 1, glyph.GlyphCoordinates.Top - 1, glyph.GlyphCoordinates.Width + 1, glyph.GlyphCoordinates.Height + 1), Color.Red);
-			Renderer.Drawing.Blit(texture, Vector2.Zero);
+			if (!_fontWindow.EditMode)
+			{
+				GorgonTexture2D texture = _font.Textures[_fontWindow.CurrentTexture];
+				IEnumerable<GorgonGlyph> glyphs = null;
+				Rectangle bounds = new Rectangle(0, 0, (int)System.Math.Ceiling(texture.Settings.Width * _fontWindow.Zoom), (int)System.Math.Ceiling(texture.Settings.Height * _fontWindow.Zoom));
+
+				glyphs = from GorgonGlyph glyph in _font.Glyphs
+						 where glyph.Texture == texture && !char.IsWhiteSpace(glyph.Character)
+						 select glyph;
 
 
-			Renderer.Target = null;
+				_fontWindow.panelDisplay.AutoScrollMinSize = bounds.Size;
+								
+				Renderer.Target = _target;
+				_target.Clear(Color.Black);
 
-			if ((_fontWindow.panelDisplay.HorizontalScroll.Visible) || (_fontWindow.panelDisplay.VerticalScroll.Visible))
-				Renderer.Drawing.Blit(_target, _fontWindow.panelDisplay.AutoScrollPosition, new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
-			else
-				Renderer.Drawing.Blit(_target, new Vector2(_fontWindow.panelDisplay.ClientSize.Width / 2 - bounds.Size.Width / 2, _fontWindow.panelDisplay.ClientSize.Height / 2 - bounds.Size.Height / 2), new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
+				foreach (var glyph in glyphs)
+					Renderer.Drawing.DrawRectangle(new RectangleF(glyph.GlyphCoordinates.Left - 1, glyph.GlyphCoordinates.Top - 1, glyph.GlyphCoordinates.Width + 1, glyph.GlyphCoordinates.Height + 1), Color.Red);
+				Renderer.Drawing.Blit(texture, Vector2.Zero);
+				
+				Renderer.Target = null;
+
+				if ((_fontWindow.panelDisplay.HorizontalScroll.Visible) || (_fontWindow.panelDisplay.VerticalScroll.Visible))
+					Renderer.Drawing.Blit(_target, _fontWindow.panelDisplay.AutoScrollPosition, new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));
+				else
+					Renderer.Drawing.Blit(_target, new Vector2(_fontWindow.panelDisplay.ClientSize.Width / 2 - bounds.Size.Width / 2, _fontWindow.panelDisplay.ClientSize.Height / 2 - bounds.Size.Height / 2), new Vector2(_fontWindow.Zoom, _fontWindow.Zoom));				
+			}
+
+			// Draw preview text.
+			if ((!string.IsNullOrEmpty(_fontWindow.EditText)) || (_fontWindow.EditMode))
+			{
+				Vector2 position = Vector2.Zero;
+				IList<string> lines = _fontWindow.EditText.Split(new char[] {'\n'});
+				_textArea.Clear(Color.White);
+				_text.TextRectangle = new RectangleF(Vector2.Zero, _fontWindow.ClientSize);
+				Renderer.Target = _textArea;
+
+				foreach (var line in lines)
+				{
+					_text.Position = position;
+					_text.Text = line;
+					_text.Draw();
+					position.Y += _font.FontHeight;
+				}
+
+				// Draw i-bar.
+				if ((_fontWindow.EditMode) && (_fontWindow.Focused))
+				{
+					float ibarAspect = (float)_ibar.Settings.Width / (float)_ibar.Settings.Height;
+					Vector2 size = _text.MeasureText(lines[lines.Count - 1], false, 0);
+					Renderer.Drawing.FilledRectangle(new RectangleF(size.X, position.Y - _font.FontHeight, _font.FontHeight * ibarAspect, _font.FontHeight), Color.White, _ibar, new RectangleF(Vector2.Zero, _ibar.Settings.Size));
+				}
+
+				Renderer.Target = null;
+				
+				_textArea.Flip();
+			}
+
 			Renderer.Drawing.SmoothingMode = Renderers.SmoothingMode.None;
 			return 3;
 		}
@@ -425,6 +568,9 @@ namespace GorgonLibrary.GorgonEditor
 					Format = BufferFormat.R8G8B8A8_UIntNormal					
 				});
 
+			_text = Renderer.Renderables.CreateText("Text");
+			_text.Font = _font;			
+			_text.Color = Color.Black;
 			NeedsSave = true;
 		}
 		#endregion

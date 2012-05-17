@@ -582,11 +582,11 @@ namespace GorgonLibrary.Renderers
 				{					
 					char c = currentLine[i];
 
-					if (_font.Glyphs.Contains(c))
-						glyph = _font.Glyphs[c];
-					else
-						glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+					if (!_font.Glyphs.Contains(c))
+						c = _font.Settings.DefaultCharacter;
 
+					glyph = _font.Glyphs[c];
+		
 					switch (c)
 					{
 						case ' ':
@@ -701,11 +701,11 @@ namespace GorgonLibrary.Renderers
 			{
 				character = _formattedText[i];
 
-				if (_font.Glyphs.Contains(character))
-					glyph = _font.Glyphs[character];
-				else
-					glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+				if (!_font.Glyphs.Contains(character))
+					character = _font.Settings.DefaultCharacter;
 
+				glyph = _font.Glyphs[character];
+	
 				// If we can't fit a single glyph into the boundaries, then just leave.  Else we'll have an infinite loop on our hands.
 				if (glyph.GlyphCoordinates.Width > _textRect.Value.Width)
 					return;
@@ -813,11 +813,11 @@ namespace GorgonLibrary.Renderers
 			{
 				GorgonGlyph glyph = null;
 				char c = line[i];
+				
+				if (!_font.Glyphs.Contains(c))
+					c = _font.Settings.DefaultCharacter;
 
-				if (_font.Glyphs.Contains(c))
-					glyph = _font.Glyphs[c];
-				else
-					glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+				glyph = _font.Glyphs[c];
 				
 				switch (c)
 				{
@@ -991,11 +991,11 @@ namespace GorgonLibrary.Renderers
 					if ((c != '\n') && (c != '\t') && (c != ' '))
 					{
 						GorgonGlyph glyph = null;
+						
+						if (!_font.Glyphs.Contains(c))
+							c = _font.Settings.DefaultCharacter;
 
-						if (_font.Glyphs.Contains(c))
-							glyph = _font.Glyphs[c];
-						else
-							glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+						glyph = _font.Glyphs[c];
 
 						// Change to the current texture.
 						if (Gorgon2D.PixelShader.Textures[0] != glyph.Texture)
@@ -1020,11 +1020,11 @@ namespace GorgonLibrary.Renderers
 				if ((c != '\n') && (c != '\t') && (c != ' ') && (c != '\r'))
 				{
 					GorgonGlyph glyph = null;
+					
+					if (!_font.Glyphs.Contains(c))
+						c = _font.Settings.DefaultCharacter;
 
-					if (_font.Glyphs.Contains(c))
-						glyph = _font.Glyphs[c];
-					else
-						glyph = _font.Glyphs[_font.Settings.DefaultCharacter];
+					glyph = _font.Glyphs[c];
 						
 					// Change to the current texture.
 					if (Gorgon2D.PixelShader.Textures[0] != glyph.Texture)

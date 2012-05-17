@@ -78,6 +78,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Win32API.cs" />
+    <Compile Include="CharacterPicker.cs" />
+    <Compile Include="CharacterSetTypeConverter.cs" />
     <Compile Include="ColorPickerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -104,6 +107,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FontStylePicker.cs" />
+    <Compile Include="formCharacterPicker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formCharacterPicker.Designer.cs">
+      <DependentUpon>formCharacterPicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +134,12 @@
     <Compile Include="GorgonEditorPlugIn.cs" />
     <Compile Include="GorgonEditorSettings.cs" />
     <Compile Include="Document.cs" />
+    <Compile Include="panelEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="panelEx.Designer.cs">
+      <DependentUpon>panelEx.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGrid\DocumentProperty.cs" />
@@ -138,6 +153,9 @@
     <EmbeddedResource Include="fontDisplay.resx">
       <DependentUpon>fontDisplay.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="formCharacterPicker.resx">
+      <DependentUpon>formCharacterPicker.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -146,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="formSplash.resx">
       <DependentUpon>formSplash.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="panelEx.resx">
+      <DependentUpon>panelEx.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -168,6 +189,10 @@
       <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
       <Name>Gorgon.Graphics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
+      <Project>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</Project>
+      <Name>Gorgon.Input</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj">
       <Project>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</Project>
       <Name>Gorgon.Renderers.2D</Name>
@@ -175,6 +200,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\IBar.png" />
+    <None Include="Resources\UnicodeData.txt" />
+    <None Include="Resources\UnicodeBlocks.txt" />
     <None Include="Resources\Expando.png" />
     <None Include="Resources\PropertyChecker.png" />
     <None Include="Resources\cancel_16x16.png" />

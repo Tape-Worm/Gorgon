@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fontDisplay));
 			this.panelDisplay = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
@@ -43,6 +44,9 @@
 			this.buttonPrevious = new System.Windows.Forms.ToolStripButton();
 			this.labelTextureCounter = new System.Windows.Forms.ToolStripLabel();
 			this.buttonNext = new System.Windows.Forms.ToolStripButton();
+			this.panelText = new System.Windows.Forms.Panel();
+			this.labelEdit = new System.Windows.Forms.Label();
+			this.tipEditor = new System.Windows.Forms.ToolTip(this.components);
 			this.panel2.SuspendLayout();
 			this.stripFont.SuspendLayout();
 			this.SuspendLayout();
@@ -50,10 +54,10 @@
 			// panelDisplay
 			// 
 			this.panelDisplay.AutoScroll = true;
-			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(694, 434);
+			this.panelDisplay.Size = new System.Drawing.Size(810, 450);
 			this.panelDisplay.TabIndex = 0;
 			// 
 			// panel2
@@ -61,9 +65,9 @@
 			this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
 			this.panel2.Controls.Add(this.stripFont);
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel2.Location = new System.Drawing.Point(0, 434);
+			this.panel2.Location = new System.Drawing.Point(0, 507);
 			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(694, 28);
+			this.panel2.Size = new System.Drawing.Size(810, 26);
 			this.panel2.TabIndex = 1;
 			// 
 			// stripFont
@@ -75,9 +79,9 @@
             this.buttonPrevious,
             this.labelTextureCounter,
             this.buttonNext});
-			this.stripFont.Location = new System.Drawing.Point(0, 3);
+			this.stripFont.Location = new System.Drawing.Point(0, 1);
 			this.stripFont.Name = "stripFont";
-			this.stripFont.Size = new System.Drawing.Size(694, 25);
+			this.stripFont.Size = new System.Drawing.Size(810, 25);
 			this.stripFont.Stretch = true;
 			this.stripFont.TabIndex = 0;
 			this.stripFont.Text = "toolStrip1";
@@ -189,15 +193,42 @@
 			this.buttonNext.ToolTipText = "Move to the next texture.";
 			this.buttonNext.Click += new System.EventHandler(this.buttonNext_Click);
 			// 
+			// panelText
+			// 
+			this.panelText.BackColor = System.Drawing.Color.White;
+			this.panelText.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.panelText.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelText.Location = new System.Drawing.Point(0, 465);
+			this.panelText.Name = "panelText";
+			this.panelText.Size = new System.Drawing.Size(810, 42);
+			this.panelText.TabIndex = 2;
+			this.tipEditor.SetToolTip(this.panelText, "Double click here to edit this text.");
+			this.panelText.Click += new System.EventHandler(this.panelText_Click);
+			this.panelText.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.panelText_MouseDoubleClick);
+			// 
+			// labelEdit
+			// 
+			this.labelEdit.BackColor = System.Drawing.SystemColors.Info;
+			this.labelEdit.Dock = System.Windows.Forms.DockStyle.Top;
+			this.labelEdit.Location = new System.Drawing.Point(0, 450);
+			this.labelEdit.Name = "labelEdit";
+			this.labelEdit.Size = new System.Drawing.Size(810, 15);
+			this.labelEdit.TabIndex = 3;
+			this.labelEdit.Text = "Press ESC to exit edit mode.";
+			this.labelEdit.Visible = false;
+			// 
 			// fontDisplay
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.DimGray;
-			this.Controls.Add(this.panelDisplay);
+			this.Controls.Add(this.panelText);
+			this.Controls.Add(this.labelEdit);
 			this.Controls.Add(this.panel2);
+			this.Controls.Add(this.panelDisplay);
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "fontDisplay";
-			this.Size = new System.Drawing.Size(694, 462);
+			this.Size = new System.Drawing.Size(810, 533);
 			this.panel2.ResumeLayout(false);
 			this.panel2.PerformLayout();
 			this.stripFont.ResumeLayout(false);
@@ -222,5 +253,8 @@
 		private System.Windows.Forms.ToolStripButton buttonNext;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem itemToWindow;
+		public System.Windows.Forms.Panel panelText;
+		private System.Windows.Forms.Label labelEdit;
+		private System.Windows.Forms.ToolTip tipEditor;
 	}
 }

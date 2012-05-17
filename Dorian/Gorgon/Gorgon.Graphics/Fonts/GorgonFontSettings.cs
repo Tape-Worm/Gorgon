@@ -296,14 +296,15 @@ namespace GorgonLibrary.Graphics
 		/// Function to return the font height, in pixels.
 		/// </summary>
 		/// <param name="pointSize">Size of the font, in points.</param>
+		/// <param name="outlineSize">Size of the outline, if applicable.</param>
 		/// <returns>The font height, in pixels.</returns>
-		public static float GetFontHeight(float pointSize)
+		public static float GetFontHeight(float pointSize, int outlineSize)
 		{
 			using (Bitmap tempBmp = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
 			{
 				using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(tempBmp))
 				{
-					return (pointSize * g.DpiY) / 72.0f;
+					return ((pointSize * g.DpiY) / 72.0f) + outlineSize;
 				}
 			}
 		}
