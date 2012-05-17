@@ -79,8 +79,8 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="Win32API.cs" />
-    <Compile Include="CharacterPicker.cs" />
-    <Compile Include="CharacterSetTypeConverter.cs" />
+    <Compile Include="Designers\CharacterPicker.cs" />
+    <Compile Include="Designers\CharacterSetTypeConverter.cs" />
     <Compile Include="Controls\ColorPickerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -90,23 +90,23 @@
     <Compile Include="Controls\comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ColorPropertyPicker.cs" />
-    <Compile Include="DocumentCollection.cs" />
+    <Compile Include="Designers\ColorPropertyPicker.cs" />
+    <Compile Include="Documents\DocumentCollection.cs" />
     <Compile Include="Controls\fontDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\fontDisplay.Designer.cs">
       <DependentUpon>fontDisplay.cs</DependentUpon>
     </Compile>
-    <Compile Include="FontDocument.cs" />
-    <Compile Include="FontFamilyPicker.cs" />
+    <Compile Include="Documents\FontDocument.cs" />
+    <Compile Include="Designers\FontFamilyPicker.cs" />
     <Compile Include="Controls\FontListBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\FontStyleListBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FontStylePicker.cs" />
+    <Compile Include="Designers\FontStylePicker.cs" />
     <Compile Include="formCharacterPicker.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -131,9 +131,8 @@
     <Compile Include="formSplash.Designer.cs">
       <DependentUpon>formSplash.cs</DependentUpon>
     </Compile>
-    <Compile Include="GorgonEditorPlugIn.cs" />
     <Compile Include="GorgonEditorSettings.cs" />
-    <Compile Include="Document.cs" />
+    <Compile Include="Documents\Document.cs" />
     <Compile Include="Controls\panelEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -145,7 +144,7 @@
     <Compile Include="PropertyGrid\DocumentProperty.cs" />
     <Compile Include="PropertyGrid\DocumentPropertyCollection.cs" />
     <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
-    <Compile Include="RGBATypeConverter.cs" />
+    <Compile Include="Designers\RGBATypeConverter.cs" />
     <Compile Include="VisualStyle\MetroDarkRenderer.cs" />
     <EmbeddedResource Include="Controls\ColorPickerControl.resx">
       <DependentUpon>ColorPickerControl.cs</DependentUpon>
@@ -234,6 +233,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
