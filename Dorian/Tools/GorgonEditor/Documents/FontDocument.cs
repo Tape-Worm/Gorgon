@@ -47,7 +47,7 @@ namespace GorgonLibrary.GorgonEditor
 	{
 		#region Variables.
 		private GorgonTexture2D _ibar = null;				// I-Bar texture.
-		private fontDisplay _fontWindow = null;				// Font window.
+		private controlFontDisplay _fontWindow = null;				// Font window.
 		private bool _disposed = false;						// Flag to indicate that the object was disposed.
 		private GorgonRenderTarget _target = null;			// Render target.
 		private GorgonFont _font = null;					// Font.
@@ -57,6 +57,7 @@ namespace GorgonLibrary.GorgonEditor
 		private GorgonText _text = null;					// Text sprite.
 		private bool _showIBar = true;						// I-Bar flag.
 		private GorgonTimer _iBarTimer = null;				// I-Bar timer.
+		private Vector2 _dropOffset = Vector2.Zero;			// Drop shadow offset.
 		private bool _dropShadowEnabled = false;			// Flag for the drop shadow.
 		#endregion
 
@@ -308,7 +309,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the list of characters that need to be turned into glyphs.
 		/// </summary>
-		[Category("Design"), Description("Sets the list of characters to convert into glyphs."), TypeConverter(typeof(CharacterSetTypeConverter)), Editor(typeof(CharacterPicker), typeof(UITypeEditor))]
+		[Category("Design"), Description("Sets the list of characters to convert into glyphs."), TypeConverter(typeof(CharacterSetTypeConverter)), Editor(typeof(CharacterSetEditor), typeof(UITypeEditor))]
 		public IEnumerable<char> Characters
 		{
 			get
@@ -383,11 +384,17 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the offset of the shadow.
 		/// </summary>
-		[Category("Example Text"), Description("Sets the offset, in pixels, of the drop shadow."), ReadOnly(false), TypeConverter(typeof(PointFConverter))]
+		[Category("Example Text"), Description("Sets the offset, in pixels, of the drop shadow."), TypeConverter(typeof(PointFConverter))]
 		public PointF DropShadowOffset
 		{
-			get;
-			set;
+			get
+			{
+				return _dropOffset;
+			}
+			set
+			{
+				_dropOffset = value;
+			}
 		}
 		#endregion
 
@@ -635,11 +642,11 @@ namespace GorgonLibrary.GorgonEditor
 			: base(name, allowClose)
 		{
 			_iBarTimer = new GorgonTimer();
-			_fontWindow = new fontDisplay();
+			_fontWindow = new controlFontDisplay();
 			_fontSettings = new GorgonFontSettings();
-			TextColor = Color.Black;
 			DropShadow = false;
-			DropShadowOffset = new Vector2(2, 2);
+			_dropOffset = new Vector2(1, 1);
+			TextColor = Color.Black;
 			HasProperties = true;
 			_fontWindow.Dock = System.Windows.Forms.DockStyle.Fill;
 			UpdateControl(_fontWindow, _fontWindow.panelDisplay);

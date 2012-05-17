@@ -37,7 +37,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Font list box control.
 	/// </summary>
-	class FontListBox
+	class listBoxFont
 		: ListBox
 	{
 		#region Variables.
@@ -130,9 +130,9 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FontListBox"/> class.
+		/// Initializes a new instance of the <see cref="listBoxFont"/> class.
 		/// </summary>
-		public FontListBox()
+		public listBoxFont()
 		{
 			Items.Clear();
 

@@ -39,7 +39,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Type editor for the character list.
 	/// </summary>
-	class CharacterPicker
+	class CharacterSetEditor
 		: UITypeEditor
 	{
 		#region Methods.

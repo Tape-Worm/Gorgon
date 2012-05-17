@@ -54,11 +54,11 @@ namespace GorgonLibrary.GorgonEditor
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			IWindowsFormsEditorService editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			FontListBox fonts = null;
+			listBoxFont fonts = null;
 
 			try
 			{
-				fonts = new FontListBox();
+				fonts = new listBoxFont();
 				fonts.SelectedItem = value.ToString();
 				fonts.Service = editorSerivce;
 

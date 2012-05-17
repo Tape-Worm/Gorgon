@@ -37,7 +37,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Listbox for font styles.
 	/// </summary>
-	class FontStyleListBox
+	class listBoxFontStyle
 		: CheckedListBox
 	{
 		#region Variables.
@@ -127,17 +127,17 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FontStyleListBox"/> class.
+		/// Initializes a new instance of the <see cref="listBoxFontStyle"/> class.
 		/// </summary>
-		public FontStyleListBox()
+		public listBoxFontStyle()
 		{
 		}
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FontStyleListBox"/> class.
+		/// Initializes a new instance of the <see cref="listBoxFontStyle"/> class.
 		/// </summary>
 		/// <param name="fontFamily">Font family.</param>
 		/// <param name="currentStyles">Currently selected styles.</param>
-		public FontStyleListBox(string fontFamily, FontStyle currentStyles)
+		public listBoxFontStyle(string fontFamily, FontStyle currentStyles)
 			: this()
 		{
 			FontStyle[] fontStyles = ((FontStyle[])Enum.GetValues(typeof(FontStyle))).Where(item => item != FontStyle.Regular).ToArray();
