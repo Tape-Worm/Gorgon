@@ -107,10 +107,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Designers\FontStylePicker.cs" />
-    <Compile Include="formCharacterPicker.cs">
+    <Compile Include="Designers\formCharacterPicker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formCharacterPicker.Designer.cs">
+    <Compile Include="Designers\formCharacterPicker.Designer.cs">
       <DependentUpon>formCharacterPicker.cs</DependentUpon>
     </Compile>
     <Compile Include="formMain.cs">
@@ -152,7 +152,7 @@
     <EmbeddedResource Include="Controls\fontDisplay.resx">
       <DependentUpon>fontDisplay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formCharacterPicker.resx">
+    <EmbeddedResource Include="Designers\formCharacterPicker.resx">
       <DependentUpon>formCharacterPicker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
