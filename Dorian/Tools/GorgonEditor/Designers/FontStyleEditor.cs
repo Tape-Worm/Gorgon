@@ -20,26 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, May 15, 2012 2:56:08 PM
+// Created: Sunday, May 06, 2012 11:14:29 PM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Drawing.Design;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
 
 namespace GorgonLibrary.GorgonEditor
 {
 	/// <summary>
-	/// Font picker.
+	/// Font style editor.
 	/// </summary>
-	class ColorPropertyPicker
+	class FontStyleEditor
 		: UITypeEditor
 	{
 		#region Methods.
@@ -55,47 +54,27 @@ namespace GorgonLibrary.GorgonEditor
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			IWindowsFormsEditorService editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			controlColorPicker colorPicker = null;
+			listBoxFontStyle fonts = null;
+			DocumentTypeDescriptor descriptor = context.Instance as DocumentTypeDescriptor;
+			FontDocument document = descriptor.Document as FontDocument;
 
 			try
 			{
-				colorPicker = new controlColorPicker();
-				colorPicker.EditorService = editorSerivce;
-				colorPicker.CurrentColor = (Color)value;
-				editorSerivce.DropDownControl(colorPicker);
+				fonts = new listBoxFontStyle(document.FontFamily, (System.Drawing.FontStyle)value);				
+				fonts.Service = editorSerivce;
 
-				return colorPicker.CurrentColor;
+				editorSerivce.DropDownControl(fonts);
+
+				if (fonts.FontStyle != (System.Drawing.FontStyle)value)
+					return fonts.FontStyle;
+
+				return value;
 			}
 			finally
 			{
-				if (colorPicker != null)
-					colorPicker.Dispose();
+				if (fonts != null)
+					fonts.Dispose();
 			}
-		}
-
-		/// <summary>
-		/// Indicates whether the specified context supports painting a representation of an object's value within the specified context.
-		/// </summary>
-		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that can be used to gain additional context information.</param>
-		/// <returns>
-		/// true if <see cref="M:System.Drawing.Design.UITypeEditor.PaintValue(System.Object,System.Drawing.Graphics,System.Drawing.Rectangle)"/> is implemented; otherwise, false.
-		/// </returns>
-		public override bool GetPaintValueSupported(ITypeDescriptorContext context)
-		{
-			return true;
-		}
-
-		/// <summary>
-		/// Paints a representation of the value of an object using the specified <see cref="T:System.Drawing.Design.PaintValueEventArgs"/>.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Drawing.Design.PaintValueEventArgs"/> that indicates what to paint and where to paint it.</param>
-		public override void PaintValue(PaintValueEventArgs e)
-		{
-			base.PaintValue(e);
-
-			e.Graphics.DrawImage(Properties.Resources.PropertyChecker, e.Bounds);
-			using (Brush brush = new SolidBrush((Color)e.Value))
-				e.Graphics.FillRectangle(brush, e.Bounds);
 		}
 
 		/// <summary>
@@ -109,25 +88,13 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			return UITypeEditorEditStyle.DropDown;
 		}
-
-		/// <summary>
-		/// Gets a value indicating whether drop-down editors should be resizable by the user.
-		/// </summary>
-		/// <returns>true if drop-down editors are resizable; otherwise, false. </returns>
-		public override bool IsDropDownResizable
-		{
-			get
-			{
-				return true;
-			}
-		}
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ColorPropertyPicker"/> class.
+		/// Initializes a new instance of the <see cref="FontStyleEditor"/> class.
 		/// </summary>
-		public ColorPropertyPicker()
+		public FontStyleEditor()
 		{
 		}
 		#endregion

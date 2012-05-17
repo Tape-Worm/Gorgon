@@ -95,7 +95,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to set the base color for the font glyphs.
 		/// </summary>
-		[Category("Appearance"), Description("Sets a base color for the glyphs on the texture."), Editor(typeof(ColorPropertyPicker), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+		[Category("Appearance"), Description("Sets a base color for the glyphs on the texture."), Editor(typeof(ColorEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
 		public Color BaseColor
 		{
 			get
@@ -140,7 +140,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to set the base color for the font glyphs.
 		/// </summary>
-		[Category("Appearance"), Description("Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph."), DefaultValue(0), Editor(typeof(ColorPropertyPicker), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+		[Category("Appearance"), Description("Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph."), DefaultValue(0), Editor(typeof(ColorEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
 		public Color OutlineColor
 		{
 			get
@@ -160,7 +160,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the font style.
 		/// </summary>
-		[Editor(typeof(FontStylePicker), typeof(UITypeEditor)), Category("Appearance"), Description("Sets whether the font should be bolded, underlined, italicized, or strike through"), DefaultValue(FontStyle.Regular)]
+		[Editor(typeof(FontStyleEditor), typeof(UITypeEditor)), Category("Appearance"), Description("Sets whether the font should be bolded, underlined, italicized, or strike through"), DefaultValue(FontStyle.Regular)]
 		public FontStyle FontStyle
 		{
 			get
@@ -180,7 +180,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the name of the font family.
 		/// </summary>
-		[Editor(typeof(FontFamilyPicker), typeof(UITypeEditor)), RefreshProperties(System.ComponentModel.RefreshProperties.Repaint), Category("Design"), Description("The font family to use for the font.")]
+		[Editor(typeof(FontFamilyEditor), typeof(UITypeEditor)), RefreshProperties(System.ComponentModel.RefreshProperties.Repaint), Category("Design"), Description("The font family to use for the font.")]
 		public string FontFamily
 		{
 			get
@@ -357,7 +357,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the text color for the example text.
 		/// </summary>
-		[Category("Example Text"), Description("Sets the color for the example text."), DefaultValue(0xFF000000), TypeConverter(typeof(RGBATypeConverter)), Editor(typeof(ColorPropertyPicker), typeof(UITypeEditor))]
+		[Category("Example Text"), Description("Sets the color for the example text."), DefaultValue(0xFF000000), TypeConverter(typeof(RGBATypeConverter)), Editor(typeof(ColorEditor), typeof(UITypeEditor))]
 		public Color TextColor
 		{
 			get;

@@ -39,28 +39,12 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.GorgonEditor
 {
 	/// <summary>
-	/// Type of editor.
-	/// </summary>
-	public enum EditorType
-	{
-		/// <summary>
-		/// No editor.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// Font editor.
-		/// </summary>
-		Font = 1
-	}
-
-	/// <summary>
 	/// Main application object.
 	/// </summary>
 	public partial class formMain 
 		: Form
 	{
 		#region Variables.
-		private EditorType _editorType = EditorType.None;					// Editor type.
 		private string _projectName = string.Empty;							// Name of the current project.
 		private bool _needsSave = false;									// Flag to indicate that we have unsaved changes.
 		#endregion

@@ -36,9 +36,9 @@ using System.Text;
 namespace GorgonLibrary.GorgonEditor
 {
 	/// <summary>
-	/// Font picker.
+	/// Font family editor.
 	/// </summary>
-	class FontFamilyPicker
+	class FontFamilyEditor
 		: UITypeEditor
 	{
 		#region Methods.
@@ -103,9 +103,9 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FontFamilyPicker"/> class.
+		/// Initializes a new instance of the <see cref="FontFamilyEditor"/> class.
 		/// </summary>
-		public FontFamilyPicker()
+		public FontFamilyEditor()
 		{
 		}
 		#endregion
