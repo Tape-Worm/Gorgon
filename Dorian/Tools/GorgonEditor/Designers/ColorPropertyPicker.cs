@@ -55,11 +55,11 @@ namespace GorgonLibrary.GorgonEditor
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			IWindowsFormsEditorService editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			ColorPickerControl colorPicker = null;
+			controlColorPicker colorPicker = null;
 
 			try
 			{
-				colorPicker = new ColorPickerControl();
+				colorPicker = new controlColorPicker();
 				colorPicker.EditorService = editorSerivce;
 				colorPicker.CurrentColor = (Color)value;
 				editorSerivce.DropDownControl(colorPicker);

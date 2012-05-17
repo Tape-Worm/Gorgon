@@ -54,13 +54,13 @@ namespace GorgonLibrary.GorgonEditor
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			IWindowsFormsEditorService editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			FontStyleListBox fonts = null;
+			listBoxFontStyle fonts = null;
 			DocumentTypeDescriptor descriptor = context.Instance as DocumentTypeDescriptor;
 			FontDocument document = descriptor.Document as FontDocument;
 
 			try
 			{
-				fonts = new FontStyleListBox(document.FontFamily, (System.Drawing.FontStyle)value);				
+				fonts = new listBoxFontStyle(document.FontFamily, (System.Drawing.FontStyle)value);				
 				fonts.Service = editorSerivce;
 
 				editorSerivce.DropDownControl(fonts);
