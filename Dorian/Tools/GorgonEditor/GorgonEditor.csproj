@@ -78,6 +78,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Designers\AlphaChannelEditor.cs" />
+    <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
     <Compile Include="Designers\PointFConverter.cs" />
     <Compile Include="Win32API.cs" />
     <Compile Include="Designers\CharacterSetEditor.cs" />

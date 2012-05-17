@@ -106,7 +106,7 @@
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(627, 333);
+			this.panel1.Size = new System.Drawing.Size(626, 333);
 			this.panel1.TabIndex = 15;
 			// 
 			// buttonSelectAll
@@ -1013,7 +1013,7 @@
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.buttonOK.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonOK.Location = new System.Drawing.Point(431, 14);
+			this.buttonOK.Location = new System.Drawing.Point(430, 14);
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(87, 28);
 			this.buttonOK.TabIndex = 0;
@@ -1044,7 +1044,7 @@
 			this.panelEx1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelEx1.Location = new System.Drawing.Point(0, 335);
 			this.panelEx1.Name = "panelEx1";
-			this.panelEx1.Size = new System.Drawing.Size(627, 55);
+			this.panelEx1.Size = new System.Drawing.Size(626, 55);
 			this.panelEx1.TabIndex = 16;
 			// 
 			// formCharacterPicker
@@ -1053,7 +1053,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(627, 390);
+			this.ClientSize = new System.Drawing.Size(626, 390);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.panelEx1);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

@@ -40,11 +40,6 @@ namespace GorgonLibrary.GorgonEditor
 	class listBoxFont
 		: ListBox
 	{
-		#region Variables.
-		private StringFormat _format = null;					// String format.
-		private bool _disposed = false;							// Flag to indicate that we've disposed the object.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the editor service to use.
@@ -58,25 +53,6 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Methods.
 		/// <summary>
-		/// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control"/> and its child controls and optionally releases the managed resources.
-		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (_format != null)
-						_format.Dispose();
-				}
-
-				_format = null;
-				_disposed = true;
-			}
-			base.Dispose(disposing);
-		}
-		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.ListBox.DrawItem"/> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.DrawItemEventArgs"/> that contains the event data.</param>
@@ -84,20 +60,13 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			base.OnDrawItem(e);
 
+			TextFormatFlags flags = TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter;
+
 			if ((e.Index < 0) || (e.Index >= Items.Count))
 				return;
 
-			if (_format == null)
-			{
-				_format = new StringFormat(StringFormatFlags.NoWrap);
-				_format.Trimming = StringTrimming.EllipsisCharacter;
-				_format.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.None;
-				_format.Alignment = StringAlignment.Near;
-				_format.LineAlignment = StringAlignment.Center;
-
-				if ((this.RightToLeft & System.Windows.Forms.RightToLeft.No) != System.Windows.Forms.RightToLeft.No)
-					_format.FormatFlags |= StringFormatFlags.DirectionRightToLeft;
-			}
+			if ((this.RightToLeft & System.Windows.Forms.RightToLeft.Yes) == System.Windows.Forms.RightToLeft.Yes)
+				flags |= TextFormatFlags.RightToLeft;
 
 			e.DrawBackground();
 
@@ -108,11 +77,11 @@ namespace GorgonLibrary.GorgonEditor
 			if (Program.CachedFonts.ContainsKey(fontName))
 			{
 				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-				SizeF measure = e.Graphics.MeasureString(fontName, this.Font, e.Bounds.Width, _format);
-				RectangleF textBounds = new RectangleF(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
-				RectangleF fontBounds = new RectangleF(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
-				e.Graphics.DrawString(fontName, Program.CachedFonts[fontName], Brushes.Black, fontBounds, _format);
-				e.Graphics.DrawString(fontName, this.Font, Brushes.Black, textBounds, _format);
+				Size measure = TextRenderer.MeasureText(e.Graphics, fontName, this.Font, e.Bounds.Size, flags);
+				Rectangle textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+				Rectangle fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
+				TextRenderer.DrawText(e.Graphics, fontName, Program.CachedFonts[fontName], fontBounds, e.ForeColor, e.BackColor, flags);
+				TextRenderer.DrawText(e.Graphics, fontName, this.Font, textBounds, e.ForeColor, e.BackColor, flags);
 			}
 		}
 

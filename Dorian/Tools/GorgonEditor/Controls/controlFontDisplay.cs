@@ -47,6 +47,7 @@ namespace GorgonLibrary.GorgonEditor
 		#region Variables.
 		private GorgonFont _font = null;
 		private float _zoom = -1;
+		private Control _activeControl = null;
 		#endregion
 
 		#region Properties.
@@ -202,53 +203,54 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Handles the MouseDoubleClick event of the panelText control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
-		private void panelText_MouseDoubleClick(object sender, MouseEventArgs e)
-		{
-			try
-			{
-				labelEdit.Visible = true;
-				EditMode = true;
-				ActiveControl = panelText;
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(ParentForm, ex);
-			}
-		}
-
-		/// <summary>
 		/// Handles the Click event of the panelText control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void panelText_Click(object sender, EventArgs e)
 		{
-			if (EditMode)
-				ActiveControl = panelText;
+			EditMode = true;
+			_activeControl = ActiveControl;
+			ActiveControl = panelText;
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.PreviewKeyDown"/> event.
+		/// Raises the <see cref="E:System.Windows.Forms.Control.Leave"/> event.
 		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.PreviewKeyDownEventArgs"/> that contains the event data.</param>
-		protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnLeave(EventArgs e)
 		{
-			base.OnPreviewKeyDown(e);
+			base.OnLeave(e);
+			EditMode = false;
+			//ActiveControl = _activeControl;
+		}
 
+		/// <summary>
+		/// Function to retrieve clipboard text.
+		/// </summary>
+		private void GetClipboardText()
+		{
+			string clipData = string.Empty;
+
+			if (Clipboard.ContainsText(TextDataFormat.Text))
+				EditText += Clipboard.GetText(TextDataFormat.Text);
+			else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
+				EditText += Clipboard.GetText(TextDataFormat.UnicodeText);
+		}
+
+		/// <summary>
+		/// Handles the PreviewKeyDown event of the panelText control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+		private void panelText_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
 			try
 			{
-				if (e.Control)
-					return;
-
-				switch(e.KeyCode)
+				switch (e.KeyCode)
 				{
 					case Keys.Escape:
-						labelEdit.Visible = false;
-						EditMode = false;
+						OnLeave(EventArgs.Empty);
 						break;
 					case Keys.Back:
 						if (EditText.Length > 0)
@@ -265,7 +267,15 @@ namespace GorgonLibrary.GorgonEditor
 					case Keys.Menu:
 						break;
 					default:
-						if (!e.IsInputKey)
+						if (((e.Control) && (e.KeyCode == Keys.V)) || ((e.Shift) && (e.KeyCode == Keys.Insert)))
+						{
+							GetClipboardText();
+							break;
+						}
+
+						char c = Win32API.GetKeyCharacter(e.KeyCode);
+
+						if (!char.IsControl(c))
 							EditText += Win32API.GetKeyCharacter(e.KeyCode);
 						break;
 				}
@@ -299,45 +309,5 @@ namespace GorgonLibrary.GorgonEditor
 			InitializeComponent();
 		}
 		#endregion
-
-		private void panelText_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-		{
-			try
-			{
-				if (e.Control)
-					return;
-
-				switch (e.KeyCode)
-				{
-					case Keys.Escape:
-						labelEdit.Visible = false;
-						EditMode = false;
-						break;
-					case Keys.Back:
-						if (EditText.Length > 0)
-							EditText = EditText.Substring(0, EditText.Length - 1);
-						break;
-					case Keys.Enter:
-						EditText += "\n";
-						break;
-					case Keys.Tab:
-						EditText += "\t";
-						break;
-					case Keys.ControlKey:
-					case Keys.ShiftKey:
-					case Keys.Menu:
-						break;
-					default:
-						//if (!e.IsInputKey)
-						EditText += Win32API.GetKeyCharacter(e.KeyCode);
-						break;
-				}
-
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(ParentForm, ex);
-			}
-		}
 	}
 }

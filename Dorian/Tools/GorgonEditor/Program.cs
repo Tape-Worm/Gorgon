@@ -125,15 +125,15 @@ namespace GorgonLibrary.GorgonEditor
 				if (!fonts.ContainsKey(family.Name))
 				{
 					if (family.IsStyleAvailable(FontStyle.Regular))
-						newFont = new Font(family, 16.0f, FontStyle.Regular);
+						newFont = new Font(family, 16.0f, FontStyle.Regular, GraphicsUnit.Pixel);
 					else
 					{
 						if (family.IsStyleAvailable(FontStyle.Bold))
-							newFont = new Font(family, 16.0f, FontStyle.Bold);
+							newFont = new Font(family, 16.0f, FontStyle.Bold, GraphicsUnit.Pixel);
 						else
 						{
 							if (family.IsStyleAvailable(FontStyle.Italic))
-								newFont = new Font(family, 16.0f, FontStyle.Italic);
+								newFont = new Font(family, 16.0f, FontStyle.Italic, GraphicsUnit.Pixel);
 						}
 					}
 

@@ -47,7 +47,7 @@ namespace GorgonLibrary.GorgonEditor
 	{
 		#region Variables.
 		private GorgonTexture2D _ibar = null;				// I-Bar texture.
-		private controlFontDisplay _fontWindow = null;				// Font window.
+		private controlFontDisplay _fontWindow = null;		// Font window.
 		private bool _disposed = false;						// Flag to indicate that the object was disposed.
 		private GorgonRenderTarget _target = null;			// Render target.
 		private GorgonFont _font = null;					// Font.
@@ -58,6 +58,7 @@ namespace GorgonLibrary.GorgonEditor
 		private bool _showIBar = true;						// I-Bar flag.
 		private GorgonTimer _iBarTimer = null;				// I-Bar timer.
 		private Vector2 _dropOffset = Vector2.Zero;			// Drop shadow offset.
+		private int _dropOpacity = 64;						// Drop shadow opacity.
 		private bool _dropShadowEnabled = false;			// Flag for the drop shadow.
 		#endregion
 
@@ -378,6 +379,7 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				_dropShadowEnabled = value;
 				TypeDescriptor["DropShadowOffset"].IsReadOnly = !_dropShadowEnabled;
+				TypeDescriptor["DropShadowOpacity"].IsReadOnly = !_dropShadowEnabled;
 			}
 		}
 
@@ -394,6 +396,22 @@ namespace GorgonLibrary.GorgonEditor
 			set
 			{
 				_dropOffset = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the drop shadow opacity.
+		/// </summary>
+		[Category("Example Text"), Description("Sets the opacity of the drop shadow."), Editor(typeof(AlphaChannelEditor), typeof(UITypeEditor)), TypeConverter(typeof(AlphaChannelTypeConverter))]
+		public Color DropShadowOpacity
+		{
+			get
+			{
+				return Color.FromArgb(_dropOpacity, 255, 255, 255);
+			}
+			set
+			{
+				_dropOpacity = value.A;
 			}
 		}
 		#endregion
@@ -483,11 +501,13 @@ namespace GorgonLibrary.GorgonEditor
 			// Draw preview text.
 			if ((!string.IsNullOrEmpty(_fontWindow.EditText)) || (_fontWindow.EditMode))
 			{
+				float shadowOpacity = _dropOpacity / 255.0f;
 				Vector2 position = Vector2.Zero;
 				IList<string> lines = _fontWindow.EditText.Split(new char[] {'\n'});
 				_textArea.Clear(Color.White);
 				_text.ShadowEnabled = DropShadow;
 				_text.ShadowOffset = DropShadowOffset;
+				_text.ShadowOpacity = shadowOpacity;
 				_text.Color = TextColor;
 				_text.TextRectangle = new RectangleF(Vector2.Zero, _fontWindow.ClientSize);
 				Renderer.Target = _textArea;
@@ -552,7 +572,7 @@ namespace GorgonLibrary.GorgonEditor
 			GorgonFont newFont = null;
 
 			if (!Program.CachedFonts.ContainsKey(FontFamily))
-				return;
+				throw new KeyNotFoundException("The font family '" + FontFamily + "' count not be found.");
 
 			Font cachedFont = Program.CachedFonts[FontFamily];
 			FontStyle[] styles = Enum.GetValues(typeof(FontStyle)) as FontStyle[];
