@@ -47,17 +47,22 @@
 			this.panelText = new System.Windows.Forms.Panel();
 			this.labelEdit = new System.Windows.Forms.Label();
 			this.tipEditor = new System.Windows.Forms.ToolTip(this.components);
+			this.splitFontEdit = new System.Windows.Forms.SplitContainer();
 			this.panel2.SuspendLayout();
 			this.stripFont.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitFontEdit)).BeginInit();
+			this.splitFontEdit.Panel1.SuspendLayout();
+			this.splitFontEdit.Panel2.SuspendLayout();
+			this.splitFontEdit.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panelDisplay
 			// 
 			this.panelDisplay.AutoScroll = true;
-			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(810, 450);
+			this.panelDisplay.Size = new System.Drawing.Size(810, 50);
 			this.panelDisplay.TabIndex = 0;
 			// 
 			// panel2
@@ -198,34 +203,52 @@
 			this.panelText.BackColor = System.Drawing.Color.White;
 			this.panelText.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.panelText.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelText.Location = new System.Drawing.Point(0, 465);
+			this.panelText.Location = new System.Drawing.Point(0, 18);
 			this.panelText.Name = "panelText";
-			this.panelText.Size = new System.Drawing.Size(810, 42);
+			this.panelText.Size = new System.Drawing.Size(810, 435);
 			this.panelText.TabIndex = 2;
 			this.tipEditor.SetToolTip(this.panelText, "Double click here to edit this text.");
 			this.panelText.Click += new System.EventHandler(this.panelText_Click);
 			this.panelText.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.panelText_MouseDoubleClick);
+			this.panelText.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelText_PreviewKeyDown);
 			// 
 			// labelEdit
 			// 
 			this.labelEdit.BackColor = System.Drawing.SystemColors.Info;
+			this.labelEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.labelEdit.Dock = System.Windows.Forms.DockStyle.Top;
-			this.labelEdit.Location = new System.Drawing.Point(0, 450);
+			this.labelEdit.Location = new System.Drawing.Point(0, 0);
 			this.labelEdit.Name = "labelEdit";
-			this.labelEdit.Size = new System.Drawing.Size(810, 15);
+			this.labelEdit.Size = new System.Drawing.Size(810, 18);
 			this.labelEdit.TabIndex = 3;
 			this.labelEdit.Text = "Press ESC to exit edit mode.";
 			this.labelEdit.Visible = false;
+			// 
+			// splitFontEdit
+			// 
+			this.splitFontEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitFontEdit.Location = new System.Drawing.Point(0, 0);
+			this.splitFontEdit.Name = "splitFontEdit";
+			this.splitFontEdit.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// splitFontEdit.Panel1
+			// 
+			this.splitFontEdit.Panel1.Controls.Add(this.panelDisplay);
+			// 
+			// splitFontEdit.Panel2
+			// 
+			this.splitFontEdit.Panel2.Controls.Add(this.panelText);
+			this.splitFontEdit.Panel2.Controls.Add(this.labelEdit);
+			this.splitFontEdit.Size = new System.Drawing.Size(810, 507);
+			this.splitFontEdit.TabIndex = 2;
 			// 
 			// fontDisplay
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.DimGray;
-			this.Controls.Add(this.panelText);
-			this.Controls.Add(this.labelEdit);
+			this.Controls.Add(this.splitFontEdit);
 			this.Controls.Add(this.panel2);
-			this.Controls.Add(this.panelDisplay);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "fontDisplay";
 			this.Size = new System.Drawing.Size(810, 533);
@@ -233,6 +256,10 @@
 			this.panel2.PerformLayout();
 			this.stripFont.ResumeLayout(false);
 			this.stripFont.PerformLayout();
+			this.splitFontEdit.Panel1.ResumeLayout(false);
+			this.splitFontEdit.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitFontEdit)).EndInit();
+			this.splitFontEdit.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -256,5 +283,6 @@
 		public System.Windows.Forms.Panel panelText;
 		private System.Windows.Forms.Label labelEdit;
 		private System.Windows.Forms.ToolTip tipEditor;
+		private System.Windows.Forms.SplitContainer splitFontEdit;
 	}
 }

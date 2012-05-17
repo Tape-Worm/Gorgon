@@ -147,6 +147,15 @@ namespace GorgonLibrary.GorgonEditor
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return whether to hide this property from the property grid.
+		/// </summary>
+		public bool HideProperty
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -289,6 +298,7 @@ namespace GorgonLibrary.GorgonEditor
 			Description = string.Empty;
 			DisplayName = _descriptor.Name;
 			Converter = string.Empty;
+			HideProperty = false;
 			RefreshProperties = RefreshProperties.None;
 			GetAttributes();
 		}

@@ -324,7 +324,11 @@ namespace GorgonLibrary.Renderers
 				
 				// Update the colors for the rest of the string if the text length is longer.
 				if (prevLength < _text.Length)
+				{
 					_needsColorUpdate = true;
+					if (ShadowEnabled)
+						_needsShadowUpdate = true;
+				}
 			}
 		}
 

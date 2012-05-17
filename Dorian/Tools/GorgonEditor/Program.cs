@@ -38,7 +38,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Main application interface.
 	/// </summary>
-	public static class Program
+	static class Program
 	{		
 		#region Properties.
 		/// <summary>
