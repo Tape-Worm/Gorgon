@@ -61,15 +61,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void Refresh(SharpDX.Direct3D11.Device device)
 		{
-			int outputCount = _videoDevice.GIAdapter.GetOutputCount();
-
 			ClearOutputs();
 
 			Gorgon.Log.Print("Retrieving outputs for video device '{0}'...", Diagnostics.LoggingLevel.Simple, _videoDevice.Name);
 
-			for (int i = 0; i < outputCount; i++)
+			foreach(var giOutput in _videoDevice.GIAdapter.Outputs)
 			{
-				GorgonVideoOutput output = new GorgonVideoOutput(_videoDevice, _videoDevice.GIAdapter.GetOutput(i));
+				GorgonVideoOutput output = new GorgonVideoOutput(_videoDevice, giOutput);
 
 				GI.ModeDescription findMode = GorgonVideoMode.Convert(new GorgonVideoMode(output.OutputBounds.Width, output.OutputBounds.Height, BufferFormat.R8G8B8A8_UIntNormal, 60, 1));
 				GI.ModeDescription result = default(GI.ModeDescription);

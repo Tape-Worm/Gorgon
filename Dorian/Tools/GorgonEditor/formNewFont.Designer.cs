@@ -40,7 +40,6 @@
 			this.textName = new System.Windows.Forms.TextBox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.labelPreview = new System.Windows.Forms.Label();
-			this.buttonCancel = new System.Windows.Forms.Button();
 			this.label4 = new System.Windows.Forms.Label();
 			this.comboAA = new System.Windows.Forms.ComboBox();
 			this.numericTextureWidth = new System.Windows.Forms.NumericUpDown();
@@ -49,12 +48,15 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.comboSizeType = new System.Windows.Forms.ComboBox();
 			this.label7 = new System.Windows.Forms.Label();
-			this.comboFonts = new GorgonLibrary.GorgonEditor.comboFonts();
 			this.buttonOK = new System.Windows.Forms.Button();
+			this.buttonCancel = new System.Windows.Forms.Button();
+			this.comboFonts = new GorgonLibrary.GorgonEditor.comboFonts();
+			this.panel2 = new GorgonLibrary.GorgonEditor.panelEx();
 			((System.ComponentModel.ISupportInitialize)(this.numericSize)).BeginInit();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureWidth)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureHeight)).BeginInit();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -212,22 +214,6 @@
 			this.labelPreview.Text = "The quick brown fox jumps over the lazy dog.";
 			this.labelPreview.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// buttonCancel
-			// 
-			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonCancel.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.cancel_16x16;
-			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonCancel.Location = new System.Drawing.Point(306, 302);
-			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(75, 24);
-			this.buttonCancel.TabIndex = 12;
-			this.buttonCancel.Text = "Cancel";
-			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
 			// label4
 			// 
 			this.label4.AutoSize = true;
@@ -352,6 +338,36 @@
 			this.label7.TabIndex = 19;
 			this.label7.Text = "Preview:";
 			// 
+			// buttonOK
+			// 
+			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.buttonOK.Enabled = false;
+			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
+			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+			this.buttonOK.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.ok_16x16;
+			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonOK.Location = new System.Drawing.Point(208, 16);
+			this.buttonOK.Name = "buttonOK";
+			this.buttonOK.Size = new System.Drawing.Size(87, 28);
+			this.buttonOK.TabIndex = 11;
+			this.buttonOK.Text = "OK";
+			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// buttonCancel
+			// 
+			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.buttonCancel.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.cancel_16x16;
+			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonCancel.Location = new System.Drawing.Point(301, 16);
+			this.buttonCancel.Name = "buttonCancel";
+			this.buttonCancel.Size = new System.Drawing.Size(87, 28);
+			this.buttonCancel.TabIndex = 12;
+			this.buttonCancel.Text = "Cancel";
+			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
 			// comboFonts
 			// 
 			this.comboFonts.BackColor = System.Drawing.Color.White;
@@ -363,22 +379,15 @@
 			this.comboFonts.TabIndex = 1;
 			this.comboFonts.SelectedIndexChanged += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
-			// buttonOK
+			// panel2
 			// 
-			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.buttonOK.Enabled = false;
-			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOK.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.ok_16x16;
-			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonOK.Location = new System.Drawing.Point(225, 302);
-			this.buttonOK.Name = "buttonOK";
-			this.buttonOK.Size = new System.Drawing.Size(75, 24);
-			this.buttonOK.TabIndex = 11;
-			this.buttonOK.Text = "OK";
-			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.panel2.Controls.Add(this.buttonOK);
+			this.panel2.Controls.Add(this.buttonCancel);
+			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panel2.Location = new System.Drawing.Point(0, 302);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(400, 56);
+			this.panel2.TabIndex = 20;
 			// 
 			// formNewFont
 			// 
@@ -387,7 +396,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(400, 334);
+			this.ClientSize = new System.Drawing.Size(400, 358);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.comboSizeType);
 			this.Controls.Add(this.label6);
@@ -396,8 +405,6 @@
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.comboAA);
 			this.Controls.Add(this.label4);
-			this.Controls.Add(this.buttonCancel);
-			this.Controls.Add(this.buttonOK);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.textName);
 			this.Controls.Add(this.label3);
@@ -409,6 +416,7 @@
 			this.Controls.Add(this.checkBold);
 			this.Controls.Add(this.comboFonts);
 			this.Controls.Add(this.label1);
+			this.Controls.Add(this.panel2);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -423,6 +431,7 @@
 			this.panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureWidth)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureHeight)).EndInit();
+			this.panel2.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -452,5 +461,6 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.ComboBox comboSizeType;
 		private System.Windows.Forms.Label label7;
+		private panelEx panel2;
 	}
 }

@@ -188,7 +188,7 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			float fontSize = (float)numericSize.Value;
 			if (string.Compare(comboSizeType.Text, "points", true) == 0)
-				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize));
+				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize, 0));
 
 			if ((fontSize > (float)numericTextureHeight.Value) || (fontSize > (float)numericTextureWidth.Value))
 			{

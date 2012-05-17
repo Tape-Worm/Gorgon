@@ -458,6 +458,27 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to measure a string.
+		/// </summary>
+		/// <param name="font">Font to use when measuring.</param>
+		/// <param name="text">Text to measure.</param>
+		/// <param name="wordWrap">TRUE if word wrapping should be used.</param>
+		/// <param name="bounds">Boundaries for the size.</param>
+		/// <returns>The size of the string.</returns>
+		public Vector2 MeasureString(GorgonFont font, string text, bool wordWrap, RectangleF bounds)
+		{			
+			_string.Font = font;
+			Vector2 size = _string.MeasureText(text, wordWrap, bounds.Width);
+
+			if (size.X > bounds.Width)
+				size.X = bounds.Width;
+			if (size.Y > bounds.Height)
+				size.Y = bounds.Height;
+
+			return size;
+		}
+
+		/// <summary>
 		/// Function to draw an unfilled triangle.
 		/// </summary>
 		/// <param name="position">Position of the triangle.</param>

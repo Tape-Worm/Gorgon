@@ -354,13 +354,13 @@ namespace GorgonLibrary.Graphics
 			}
 			catch (SharpDX.SharpDXException sdEx)
 			{
-				if (sdEx.ResultCode == (int)GI.DXGIStatus.ModeChangeInProgress)
+				if (sdEx.ResultCode.Code == (int)GI.DXGIStatus.ModeChangeInProgress)
 				{
 					Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", LoggingLevel.All, Name);
 				}
 				else
 				{
-					if (sdEx.ResultCode.Code == GI.DXGIError.NotCurrentlyAvailable)
+					if (sdEx.ResultCode == GI.ResultCode.NotCurrentlyAvailable)
 						Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .", LoggingLevel.All, Name);
 					else
 						throw sdEx;

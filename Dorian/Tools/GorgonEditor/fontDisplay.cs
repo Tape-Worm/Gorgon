@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SlimMath;
+using GorgonLibrary.Input;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
 
@@ -105,6 +106,24 @@ namespace GorgonLibrary.GorgonEditor
 				_font = value;
 				ValidateCommands();
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return the edit text.
+		/// </summary>
+		public string EditText
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether we're in edit mode or not.
+		/// </summary>
+		public bool EditMode
+		{
+			get;
+			set;
 		}
 		#endregion
 
@@ -183,6 +202,72 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Handles the MouseDoubleClick event of the panelText control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
+		private void panelText_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			try
+			{
+				panelDisplay.Visible = false;
+				labelEdit.Visible = true;
+				EditMode = true;
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+		}
+		
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.PreviewKeyDown"/> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.PreviewKeyDownEventArgs"/> that contains the event data.</param>
+		protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
+		{
+			base.OnPreviewKeyDown(e);
+
+			try
+			{
+				if (e.Control)
+					return;
+
+				switch(e.KeyCode)
+				{
+					case Keys.Escape:
+						panelDisplay.Visible = true;
+						labelEdit.Visible = false;
+						EditMode = false;
+						break;
+					case Keys.Back:
+						if (EditText.Length > 0)
+							EditText = EditText.Substring(0, EditText.Length - 1);
+						break;
+					case Keys.Enter:
+						EditText += "\n";
+						break;
+					case Keys.Tab:
+						EditText += "\t";
+						break;
+					case Keys.ControlKey:
+					case Keys.ShiftKey:
+					case Keys.Menu:
+						break;
+					default:
+						if (!e.IsInputKey)
+							EditText += Win32API.GetKeyCharacter(e.KeyCode);
+						break;
+				}
+
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
@@ -190,7 +275,8 @@ namespace GorgonLibrary.GorgonEditor
 		{			
 			base.OnLoad(e);
 						
-			stripFont.Renderer = new MetroDarkRenderer();
+			EditText = "The quick brown fox jumps over the lazy dog.\n123456780 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
+			stripFont.Renderer = new MetroDarkRenderer();			
 		}
 		#endregion
 
@@ -203,5 +289,15 @@ namespace GorgonLibrary.GorgonEditor
 			InitializeComponent();
 		}
 		#endregion
+
+		/// <summary>
+		/// Handles the Click event of the panelText control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void panelText_Click(object sender, EventArgs e)
+		{
+			Focus();
+		}
 	}
 }
