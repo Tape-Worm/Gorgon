@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, May 06, 2012 11:15:27 PM
+// Created: Thursday, May 17, 2012 1:37:42 PM
 // 
 #endregion
 
@@ -32,13 +32,14 @@ using System.Windows.Forms.Design;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace GorgonLibrary.GorgonEditor
 {
 	/// <summary>
-	/// Font family editor.
+	/// Editor for the alpha channel.
 	/// </summary>
-	class FontFamilyEditor
+	class AlphaChannelEditor
 		: UITypeEditor
 	{
 		#region Properties.
@@ -50,7 +51,7 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			get
 			{
-				return true;
+				return false;
 			}
 		}
 		#endregion
@@ -68,26 +69,49 @@ namespace GorgonLibrary.GorgonEditor
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			IWindowsFormsEditorService editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			listBoxFont fonts = null;
+			controlColorPicker colorPicker = null;
+			Color colorValue = Color.Empty;
 
 			try
 			{
-				fonts = new listBoxFont();
-				fonts.SelectedItem = value.ToString();
-				fonts.Service = editorSerivce;
+				colorPicker = new controlColorPicker();
+				colorPicker.EditorService = editorSerivce;
+				colorPicker.AlphaOnly = true;
+				colorPicker.CurrentColor = (Color)value;
+				editorSerivce.DropDownControl(colorPicker);
 
-				editorSerivce.DropDownControl(fonts);
-
-				if (string.Compare(fonts.SelectedItem.ToString(), value.ToString(), true) != 0)
-					return fonts.SelectedItem.ToString();
-
-				return value;
+				return colorPicker.CurrentColor;
 			}
 			finally
 			{
-				if (fonts != null)
-					fonts.Dispose();
+				if (colorPicker != null)
+					colorPicker.Dispose();
 			}
+		}
+
+		/// <summary>
+		/// Indicates whether the specified context supports painting a representation of an object's value within the specified context.
+		/// </summary>
+		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that can be used to gain additional context information.</param>
+		/// <returns>
+		/// true if <see cref="M:System.Drawing.Design.UITypeEditor.PaintValue(System.Object,System.Drawing.Graphics,System.Drawing.Rectangle)"/> is implemented; otherwise, false.
+		/// </returns>
+		public override bool GetPaintValueSupported(ITypeDescriptorContext context)
+		{
+			return true;
+		}
+
+		/// <summary>
+		/// Paints a representation of the value of an object using the specified <see cref="T:System.Drawing.Design.PaintValueEventArgs"/>.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Drawing.Design.PaintValueEventArgs"/> that indicates what to paint and where to paint it.</param>
+		public override void PaintValue(PaintValueEventArgs e)
+		{
+			base.PaintValue(e);
+
+			e.Graphics.DrawImage(Properties.Resources.PropertyChecker, e.Bounds);
+			using (Brush brush = new SolidBrush((Color)e.Value))
+				e.Graphics.FillRectangle(brush, e.Bounds);
 		}
 
 		/// <summary>
@@ -105,9 +129,9 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FontFamilyEditor"/> class.
+		/// Initializes a new instance of the <see cref="AlphaChannelEditor"/> class.
 		/// </summary>
-		public FontFamilyEditor()
+		public AlphaChannelEditor()
 		{
 		}
 		#endregion

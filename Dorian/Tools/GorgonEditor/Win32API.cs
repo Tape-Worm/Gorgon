@@ -73,8 +73,8 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="lpChar"></param>
 		/// <param name="uFlags"></param>
 		/// <returns></returns>
-		[DllImport("user32.dll")]
-		private extern static int ToAscii(int uVirtKey, int uScanCode , byte[] lpbKeyState, byte[] lpChar, int uFlags);
+		[DllImport("user32.dll", CharSet=CharSet.Unicode)]
+		private extern static int ToUnicode(int uVirtKey, int uScanCode , byte[] lpbKeyState, [Out] char[] lpChar, int cchBuff, int uFlags);
 
 		/// <summary>
 		/// Retrieves the current keyboard state.
@@ -157,11 +157,11 @@ namespace GorgonLibrary.GorgonEditor
 			char result = ' ';
 
 			byte[] keys = new byte[255];
-			byte[] characters = new byte[1];
 			GetKeyboardState(keys);
+			char[] characters = new char[1];
 
-			if (ToAscii((int)key, 0, keys, characters, 0) != 0)
-				result = Convert.ToChar(characters[0]);
+			if (ToUnicode((int)key, 0, keys, characters, characters.Length, 1) != 0)
+				result = characters[0];
 
 			return result;
 		}

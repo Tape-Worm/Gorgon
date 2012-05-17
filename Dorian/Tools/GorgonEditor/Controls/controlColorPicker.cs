@@ -53,6 +53,15 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Property to set or return whether to edit the only the alpha channel.
+		/// </summary>
+		public bool AlphaOnly
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the color.
 		/// </summary>
 		public Color CurrentColor
@@ -115,7 +124,10 @@ namespace GorgonLibrary.GorgonEditor
 			panelColor.BottomLeftColor = Color.FromArgb(sliderAlpha.Value.A, Color.Black);
 			panelColor.BottomRightColor = Color.FromArgb(sliderAlpha.Value.A, Color.Black);
 
-			labelColorInfo.Text = string.Format("R:{0}, G:{1}, B:{2}, A:{3}", current.R, current.G, current.B, current.A);
+			if (!AlphaOnly)
+				labelColorInfo.Text = string.Format("R:{0}, G:{1}, B:{2}, A:{3}", current.R, current.G, current.B, current.A);
+			else
+				labelColorInfo.Text = string.Format("Alpha: {0}", current.A);
 			labelColorInfo.Refresh();
 		}
 
@@ -145,6 +157,33 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				if (picker != null)
 					picker.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			try
+			{
+				if (AlphaOnly)
+				{
+					panelColor.Visible = false;
+					sliderColor.Visible = false;
+					buttonExpando.Visible = false;
+					sliderAlpha.Location = panelColor.Location;
+					sliderAlpha.Width = 64;
+					sliderAlpha.Height = panelColor.Height;					
+					this.Width = 64 + (panelColor.Left * 2);
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
 			}
 		}
 	}

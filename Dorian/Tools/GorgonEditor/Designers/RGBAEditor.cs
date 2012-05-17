@@ -42,6 +42,20 @@ namespace GorgonLibrary.GorgonEditor
 	class RGBAEditor
 		: UITypeEditor
 	{
+		#region Properties.
+		/// <summary>
+		/// Gets a value indicating whether drop-down editors should be resizable by the user.
+		/// </summary>
+		/// <returns>true if drop-down editors are resizable; otherwise, false. </returns>
+		public override bool IsDropDownResizable
+		{
+			get
+			{
+				return false;
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Edits the specified object's value using the editor style indicated by the <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"/> method.
@@ -108,18 +122,6 @@ namespace GorgonLibrary.GorgonEditor
 		public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
 		{
 			return UITypeEditorEditStyle.DropDown;
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether drop-down editors should be resizable by the user.
-		/// </summary>
-		/// <returns>true if drop-down editors are resizable; otherwise, false. </returns>
-		public override bool IsDropDownResizable
-		{
-			get
-			{
-				return true;
-			}
 		}
 		#endregion
 
