@@ -40,9 +40,9 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.GorgonEditor
 {
 	/// <summary>
-	/// Font editor.
+	/// Main font editor interface.
 	/// </summary>
-	public partial class fontDisplay : UserControl
+	public partial class controlFontDisplay : UserControl
 	{
 		#region Variables.
 		private GorgonFont _font = null;
@@ -292,9 +292,9 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="fontDisplay"/> class.
+		/// Initializes a new instance of the <see cref="controlFontDisplay"/> class.
 		/// </summary>
-		public fontDisplay()
+		public controlFontDisplay()
 		{
 			InitializeComponent();
 		}

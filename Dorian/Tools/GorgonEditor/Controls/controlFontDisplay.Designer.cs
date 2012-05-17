@@ -1,6 +1,6 @@
 ﻿namespace GorgonLibrary.GorgonEditor
 {
-	partial class fontDisplay
+	partial class controlFontDisplay
 	{
 		/// <summary> 
 		/// Required designer variable.
@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fontDisplay));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(controlFontDisplay));
 			this.panelDisplay = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.stripFont = new System.Windows.Forms.ToolStrip();
