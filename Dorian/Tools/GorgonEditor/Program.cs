@@ -99,6 +99,7 @@ namespace GorgonLibrary.GorgonEditor
 				Graphics = null;
 			}
 			Graphics = new GorgonGraphics();
+			SharedResources.Initialize();
 		}
 
 		/// <summary>
@@ -178,6 +179,8 @@ namespace GorgonLibrary.GorgonEditor
 			}
 			finally
 			{
+				SharedResources.Terminate();
+
 				// Shut down the graphics interface.
 				if (Graphics != null)
 				{
