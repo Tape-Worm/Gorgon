@@ -46,7 +46,6 @@ namespace GorgonLibrary.GorgonEditor
 		: Document
 	{
 		#region Variables.
-		private GorgonTexture2D _ibar = null;				// I-Bar texture.
 		private controlFontDisplay _fontWindow = null;		// Font window.
 		private bool _disposed = false;						// Flag to indicate that the object was disposed.
 		private GorgonRenderTarget _target = null;			// Render target.
@@ -441,9 +440,7 @@ namespace GorgonLibrary.GorgonEditor
 				{
 					Window = _fontWindow.panelText,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
-				});
-
-			_ibar = Program.Graphics.Textures.FromGDIBitmap("IBar", Properties.Resources.IBar);
+				});			
 		}
 
 		/// <summary>
@@ -529,9 +526,26 @@ namespace GorgonLibrary.GorgonEditor
 				// Draw i-bar.
 				if ((_fontWindow.EditMode) && (_fontWindow.panelText.Focused) && (_showIBar))
 				{
-					float ibarAspect = (float)_ibar.Settings.Width / (float)_ibar.Settings.Height;
 					Vector2 size = _text.MeasureText(lines[lines.Count - 1], false, 0);
-					Renderer.Drawing.FilledRectangle(new RectangleF(size.X, position.Y - _font.FontHeight, _font.FontHeight * ibarAspect, _font.FontHeight), Color.White, _ibar, new RectangleF(Vector2.Zero, _ibar.Settings.Size));
+					// 0.40625 is the aspect ratio of the i-bar cursor (26w x 64h)
+					if (size.X < _fontWindow.panelText.ClientSize.Width)
+						Renderer.Drawing.FilledRectangle(new RectangleF((int)size.X, (int)(position.Y - _font.FontHeight), (int)(_font.FontHeight * 0.40625f), (int)_font.FontHeight), Color.White, SharedResources.FontTools, new RectangleF(Vector2.Zero, new SizeF(26.0f, 64.0f)));
+					else
+					{
+						int height = (int)(_font.FontHeight / 4.0f);
+						
+						// Limit the height.
+						if (height < 6)
+							height = 6;
+
+						if (height > 13)
+							height = 13;
+
+						int width = (int)(height * 0.692308f);
+
+						Renderer.Drawing.FilledRectangle(new RectangleF(_fontWindow.panelText.ClientSize.Width - width, (int)(position.Y - _font.FontHeight), width, height), Color.White, SharedResources.FontTools, new RectangleF(new Vector2(35, 3), new SizeF(9, 13)));
+						Renderer.Drawing.FilledRectangle(new RectangleF(_fontWindow.panelText.ClientSize.Width - width, (int)(position.Y - height), width, height), Color.White, SharedResources.FontTools, new RectangleF(new Vector2(35, 3), new SizeF(9, 13)));
+					}
 				}
 
 				Renderer.Target = null;
