@@ -150,6 +150,8 @@
     <Compile Include="Diagnostics\GorgonFrameRate.cs" />
     <Compile Include="Diagnostics\GorgonTimer.cs" />
     <Compile Include="INamedObject.cs" />
+    <Compile Include="IO\GorgonFileSystemBinaryReader.cs" />
+    <Compile Include="IO\GorgonFileSystemBinaryWriter.cs" />
     <Compile Include="Math\GorgonMathUtility.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
