@@ -102,7 +102,7 @@ namespace GorgonLibrary.Graphics
 		private static bool _isDWMEnabled = true;						// Flag to indicate that the desktop window manager compositor is enabled.
 		private static bool _dontEnableDWM = false;						// Flag to indicate that we should not enable the DWM.
 		private bool _disposed = false;									// Flag to indicate that the object was disposed.
-		private GorgonTrackedObjectCollection TrackedObjects = null;	// Tracked objects.
+		private GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
 		#endregion
 
 		#region Properties.
@@ -241,6 +241,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the fonts interface.
+		/// </summary>
+		public GorgonFonts Fonts
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to set or return the video device to use for this graphics interface.
 		/// </summary>
 		/// <remarks>When this value is set to NULL (Nothing in VB.Net), then the first video device in the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevices">VideoDevices</see> collection will be returned.
@@ -301,7 +310,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A list of full screen swap chains.</returns>
 		internal IEnumerable<GorgonSwapChain> GetFullscreenSwapChains()
 		{
-			return (from item in TrackedObjects
+			return (from item in _trackedObjects
 					let swapChain = item as GorgonSwapChain
 					where (swapChain != null) && (!swapChain.Settings.IsWindowed)
 					select swapChain);
@@ -317,7 +326,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDebug.AssertNull<IDisposable>(trackedObject, "trackedObject");
 
-			TrackedObjects.Add(trackedObject);
+			_trackedObjects.Add(trackedObject);
 		}
 
 		/// <summary>
@@ -330,7 +339,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDebug.AssertNull<IDisposable>(trackedObject, "trackedObject");
 
-			TrackedObjects.Remove(trackedObject);
+			_trackedObjects.Remove(trackedObject);
 		}
 
 		/// <summary>
@@ -341,7 +350,7 @@ namespace GorgonLibrary.Graphics
 		public IList<T> GetGraphicsObjectOfType<T>()
 			where T : IDisposable
 		{
-			return (from trackedObject in TrackedObjects
+			return (from trackedObject in _trackedObjects
 						  where trackedObject is T
 						  select (T)trackedObject).ToArray();
 		}
@@ -376,7 +385,7 @@ namespace GorgonLibrary.Graphics
 			if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
 				throw new GorgonException(GorgonResult.CannotCreate, "The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater.");
 
-			TrackedObjects = new GorgonTrackedObjectCollection();
+			_trackedObjects = new GorgonTrackedObjectCollection();
 			ResetFullscreenOnFocus = true;
 
 			Gorgon.Log.Print("Gorgon Graphics initializing...", Diagnostics.LoggingLevel.Simple);
@@ -414,6 +423,7 @@ namespace GorgonLibrary.Graphics
 			Shaders = new GorgonShaderBinding(this);
 			Output = new GorgonOutputMerger(this);
 			Textures = new GorgonTextures(this);
+			Fonts = new GorgonFonts(this);
 
 			Gorgon.Log.Print("Gorgon Graphics initialized.", Diagnostics.LoggingLevel.Simple);
 		}
@@ -489,7 +499,7 @@ namespace GorgonLibrary.Graphics
 				{
 					Gorgon.Log.Print("Gorgon Graphics shutting down...", Diagnostics.LoggingLevel.Simple);
 
-					TrackedObjects.ReleaseAll();
+					_trackedObjects.ReleaseAll();
 					DestroyInterfaces();
 
 					Gorgon.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);

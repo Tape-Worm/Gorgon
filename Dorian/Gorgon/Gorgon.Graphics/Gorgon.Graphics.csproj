@@ -75,6 +75,7 @@
     <Compile Include="DeviceInfo\GorgonVideoOutput.cs" />
     <Compile Include="DeviceInfo\GorgonVideoOutputCollection.cs" />
     <Compile Include="Fonts\GorgonFont.cs" />
+    <Compile Include="Fonts\GorgonFonts.cs" />
     <Compile Include="Fonts\GorgonFontSettings.cs" />
     <Compile Include="Fonts\GorgonGlyph.cs" />
     <Compile Include="Fonts\GorgonGlyphPacker.cs" />

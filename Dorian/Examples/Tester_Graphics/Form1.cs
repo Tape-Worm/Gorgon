@@ -248,16 +248,15 @@ namespace Tester_Graphics
 				window.Angle = 0.0f;
 				window.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 
-				font = _graphics.Textures.CreateFont("Bradley Hand ITC Regular", new GorgonFontSettings()
+				font = _graphics.Fonts.CreateFont("Bradley Hand ITC Regular", new GorgonFontSettings()
 					{
 						TextureSize = new System.Drawing.Size(512, 512),
 						FontFamilyName = "Arial",
 						FontStyle = FontStyle.Bold,
-						Size = 10,
-						TextContrast = 0,
+						Size = 24,
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 						PackingSpacing = 1,
-						OutlineSize = 1
+						OutlineSize = 0
 					});
 
 				System.IO.StreamReader reader = null;
@@ -288,6 +287,11 @@ namespace Tester_Graphics
 				//_text.UseKerning = false;
 				//_text.Alignment = Alignment.Center;				
 				float lineSpaceAngle = 90;
+
+				//font.Save(GorgonComputerInfo.FolderPath(Environment.SpecialFolder.DesktopDirectory) + "/testFont.gorFont", true);
+				font.Dispose();
+				font = _graphics.Fonts.FromFile("The Font", GorgonComputerInfo.FolderPath(Environment.SpecialFolder.DesktopDirectory) + "/testFont.gorFont");
+				_text.Font = font;
 				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
 					{
 						//Text = timing.AverageFPS.ToString("0.0");

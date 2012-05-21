@@ -32,6 +32,7 @@ using System.Xml.Linq;
 using System.IO;
 using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.BZip2;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.FileSystem.GorPack
@@ -162,7 +163,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		{
 			using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				using (GorgonFileSystemBinaryReader reader = new GorgonFileSystemBinaryReader(stream, true))
+				using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
 				{
 					string header = reader.ReadString();
 					int indexLength = reader.ReadInt32();
@@ -226,7 +227,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 
 			using (FileStream stream = File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				using (GorgonFileSystemBinaryReader reader = new GorgonFileSystemBinaryReader(stream, true))
+				using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
 				{
 
 					stream.Position = file.Offset;
@@ -262,7 +263,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 
 			using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				using (GorgonFileSystemBinaryReader reader = new GorgonFileSystemBinaryReader(stream, true))
+				using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
 				{
 					header = reader.ReadString();
 				}

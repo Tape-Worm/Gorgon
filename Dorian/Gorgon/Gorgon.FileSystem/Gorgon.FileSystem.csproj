@@ -48,8 +48,6 @@
   <ItemGroup>
     <Compile Include="FolderFileSystem\GorgonFolderFileSystemProvider.cs" />
     <Compile Include="GorgonFileSystem.cs" />
-    <Compile Include="GorgonFileSystemBinaryReader.cs" />
-    <Compile Include="GorgonFileSystemBinaryWriter.cs" />
     <Compile Include="GorgonFileSystemDirectory.cs" />
     <Compile Include="GorgonFileSystemDirectoryCollection.cs" />
     <Compile Include="GorgonFileSystemFileEntry.cs" />
