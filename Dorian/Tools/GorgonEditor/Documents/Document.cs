@@ -357,7 +357,7 @@ namespace GorgonLibrary.GorgonEditor
 					blur.Dispose();
 			}
 
-			_debugFont = Program.Graphics.Textures.CreateFont("My font", new GorgonFontSettings()
+			_debugFont = Program.Graphics.Fonts.CreateFont("My font", new GorgonFontSettings()
 			{
 				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 				FontFamilyName = "Arial",

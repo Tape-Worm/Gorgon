@@ -613,7 +613,7 @@ namespace GorgonLibrary.GorgonEditor
 
 			try
 			{
-				newFont = Program.Graphics.Textures.CreateFont(Name, new GorgonFontSettings()
+				newFont = Program.Graphics.Fonts.CreateFont(Name, new GorgonFontSettings()
 					{
 						AntiAliasingMode = _fontSettings.AntiAliasingMode,
 						BaseColors = _fontSettings.BaseColors,

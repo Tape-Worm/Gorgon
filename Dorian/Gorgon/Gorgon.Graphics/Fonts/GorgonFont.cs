@@ -34,6 +34,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.IO;
 using SlimMath;
+using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections;
@@ -46,6 +47,10 @@ namespace GorgonLibrary.Graphics
 	public sealed class GorgonFont
 		: GorgonNamedObject, IDisposable, INotifier
 	{
+		#region Constants.
+		public const string FileHeader = "GORFONT2.0";			// Gorgon font file header.
+		#endregion
+
 		#region Classes.
 		/// <summary>
 		/// A collection of glyphs for the font.
@@ -690,7 +695,7 @@ namespace GorgonLibrary.Graphics
 		public float Ascent
 		{
 			get;
-			private set;
+			internal set;
 		}
 
 		/// <summary>
@@ -699,7 +704,7 @@ namespace GorgonLibrary.Graphics
 		public float Descent
 		{
 			get;
-			private set;
+			internal set;
 		}
 
 		/// <summary>
@@ -708,7 +713,7 @@ namespace GorgonLibrary.Graphics
 		public float LineHeight
 		{
 			get;
-			private set;
+			internal set;
 		}
 
 		/// <summary>
@@ -718,11 +723,139 @@ namespace GorgonLibrary.Graphics
 		public float FontHeight
 		{
 			get;
-			private set;
+			internal set;
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to save the font to a stream.
+		/// </summary>
+		/// <param name="stream">Stream to write into.</param>
+		/// <param name="externalTextures">TRUE to save the textures as external files, FALSE to bundle them with the font.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter does not allow for writing.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the externalTextures parameter is TRUE and the stream is not a file stream.</exception>
+		/// <remarks>The <paramref name="externalTextures"/> parameter will only work on file streams, if the stream is not a file stream, then an exception will be thrown.</remarks>
+		private void Save(Stream stream, bool externalTextures)
+		{
+			GorgonBinaryWriter writer = null;
+			int textureCounter = 0;
+
+			GorgonDebug.AssertNull<Stream>(stream, "stream");
+
+			if (!stream.CanWrite)
+				throw new IOException("The stream is not writable.");
+
+			if ((externalTextures) && (!(stream is FileStream)))
+				throw new ArgumentException("The stream is not a file stream, external textures cannot be saved.", "externalTextures");
+
+			try
+			{
+				writer = new GorgonBinaryWriter(stream, true);
+				writer.Write(GorgonFont.FileHeader);
+				// Write font settings meta data.
+				writer.Write((int)Settings.AntiAliasingMode);
+				writer.Write(Settings.BaseColors.Count);
+				for (int i = 0; i < Settings.BaseColors.Count; i++)
+					writer.Write(Settings.BaseColors[i].ToRGBA());
+				writer.Write(string.Join(string.Empty, Settings.Characters));
+				writer.Write(Settings.DefaultCharacter);
+				writer.Write(Settings.FontFamilyName);
+				writer.Write((int)Settings.FontHeightMode);
+				writer.Write((int)Settings.FontStyle);
+				writer.Write(Settings.OutlineColor.ToRGBA());
+				writer.Write(Settings.OutlineSize);
+				writer.Write(Settings.PackingSpacing);
+				writer.Write(Settings.Size);
+				writer.Write(Settings.TextContrast);
+				writer.Write(Settings.TextureSize.Width);
+				writer.Write(Settings.TextureSize.Height);
+
+				// Save other meta-data.
+				writer.Write(FontHeight);
+				writer.Write(LineHeight);
+				writer.Write(Ascent);
+				writer.Write(Descent);
+
+				// Write texture data.
+				writer.Write(Textures.Count);
+				foreach (var texture in Textures)
+				{
+					writer.Write(texture.Name);
+					if (!externalTextures)
+					{
+						// Save the position of the stream so we can write out the size
+						// without allocating memory to determine the size of the compressed
+						// texture.
+						long position = 0;
+						int size = 0;
+						writer.Write(false);
+
+						position = stream.Position;
+						// Write a dummy value that we will overwrite after.
+						writer.Write(size);
+						texture.Save(stream, ImageFileFormat.PNG);
+						size = (int)(stream.Position - position);
+						stream.Position = position;
+						writer.Write(size);
+						stream.Position += size;
+					}
+					else
+					{
+						FileStream fileStream = stream as FileStream;
+						string path = Path.GetDirectoryName(fileStream.Name);
+						string textureFileName = Name + "Texture_" + textureCounter.ToString("0000") + ".png";
+						textureFileName = textureFileName.FormatFileName().Replace(' ', '_');						
+						texture.Save(path.FormatDirectory(Path.DirectorySeparatorChar) + textureFileName, ImageFileFormat.PNG);
+						writer.Write(true);
+						writer.Write(textureFileName);
+						textureCounter++;
+					}
+				}
+
+				// Write glyph data.
+				var textureGlyphs = from GorgonGlyph glyph in Glyphs
+									group glyph by glyph.Texture;
+
+				// Write group count.
+				writer.Write(textureGlyphs.Count());
+
+				foreach (var group in textureGlyphs)
+				{
+					writer.Write(group.Key.Name);
+					writer.Write(group.Count());
+					foreach (var glyph in group)
+					{
+						writer.Write(glyph.Character);
+						writer.Write(glyph.GlyphCoordinates.Left);
+						writer.Write(glyph.GlyphCoordinates.Top);
+						writer.Write(glyph.GlyphCoordinates.Width);
+						writer.Write(glyph.GlyphCoordinates.Height);
+						writer.Write(glyph.Offset.X);
+						writer.Write(glyph.Offset.Y);
+						writer.Write(glyph.Advance.X);
+						writer.Write(glyph.Advance.Y);
+						writer.Write(glyph.Advance.Z);
+					}
+				}
+
+				// Write kerning data if we have it.
+				writer.Write(this.KerningPairs.Count);
+				foreach (var kernInfo in KerningPairs)
+				{
+					writer.Write(kernInfo.Key.LeftCharacter);
+					writer.Write(kernInfo.Key.RightCharacter);
+					writer.Write(kernInfo.Value);
+				}
+			}
+			finally
+			{
+				if (writer != null)
+					writer.Dispose();
+			}
+		}
+
 		/// <summary>
 		/// Function to draw the glyph character onto the bitmap.
 		/// </summary>
@@ -1018,6 +1151,56 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to save the font to a stream.
+		/// </summary>
+		/// <param name="stream">Stream to write into.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter does not allow for writing.</exception>
+		public void Save(Stream stream)
+		{
+			Save(stream, false);
+		}
+
+		/// <summary>
+		/// Function to save the font to a file.
+		/// </summary>
+		/// <param name="fileName">File name and path of the font to save.</param>
+		/// <param name="externalTextures">TRUE to save the textures external to the font file, FALSE to bundle together with the font file.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.</exception>
+		/// <remarks>Saving the textures externally with the <paramref name="externalTextures"/> parameter set to TRUE is good for altering the textures in an image 
+		/// editing application.  Ultimately, it is recommended that the textures be bundled with the font by setting externalTextures to FALSE.</remarks>
+		public void Save(string fileName, bool externalTextures)
+		{
+			FileStream stream = null;
+
+			GorgonDebug.AssertParamString(fileName, "fileName");
+
+			try
+			{
+				stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+				Save(stream, externalTextures);
+			}
+			finally			
+			{
+				if (stream != null)
+					stream.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Function to save the font to a file.
+		/// </summary>
+		/// <param name="fileName">File name and path of the font to save.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.</exception>
+		/// <remarks>This overload will always save the textures with the font.</remarks>
+		public void Save(string fileName)
+		{
+			Save(fileName, false);
+		}
+
+		/// <summary>
 		/// Function to create or update the font.
 		/// </summary>
 		/// <param name="settings">Font settings to use.</param>
@@ -1197,8 +1380,7 @@ namespace GorgonLibrary.Graphics
 								location.X += Settings.PackingSpacing;
 								location.Y += Settings.PackingSpacing;
 								availableCharacters.Remove(c);
-								//graphics.FillRectangle(Brushes.DarkCyan, new Rectangle(location, size));
-								//graphics.DrawRectangle(Pens.Yellow, new Rectangle(location, charBounds.Item1.Size));
+
 								graphics.DrawImage(_charBitmap, new Rectangle(location, size), new Rectangle(charBounds.Item1.Location, size), GraphicsUnit.Pixel);
 								ABC advanceData = default(ABC);
 								if (charABC.ContainsKey(charBounds.Item3))
@@ -1216,7 +1398,6 @@ namespace GorgonLibrary.Graphics
 					}
 
 					// Copy the data to the texture.
-					//tempBitmap.Save(@"c:\users\mike\desktop\image" + Textures.Count.ToString() + ".png", ImageFormat.Png);
 					CopyBitmap(tempBitmap, currentTexture);
 					Textures.Add(currentTexture);
 					// Add to internal texture list.
