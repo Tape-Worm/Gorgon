@@ -302,6 +302,51 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Property to set or return the size of the object with scaling applied.
+        /// </summary>
+        public override Vector2D ScaledDimensions
+        {
+            get
+            {
+                return new Vector2D(Width, Height) * Scale;
+            }
+            set
+            {
+                Scale = new Vector2D(value.X / Width, value.Y / Height);
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the scaled width of the object.
+        /// </summary>
+        public override float ScaledWidth
+        {
+            get
+            {
+                return Width * Scale.X;
+            }
+            set
+            {
+                Scale = new Vector2D(value / Width,Scale.Y);
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the scaled height of the object.
+        /// </summary>
+        public override float ScaledHeight
+        {
+            get
+            {
+                return Height * Scale.Y;
+            }
+            set
+            {
+                Scale = new Vector2D(Scale.X, value / Height);
+            }
+        }
+
 		/// <summary>
 		/// Property to set or return the sprite color.
 		/// </summary>
