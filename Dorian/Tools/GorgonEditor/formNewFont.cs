@@ -282,8 +282,8 @@ namespace GorgonLibrary.GorgonEditor
 		/// Initializes a new instance of the <see cref="formNewFont"/> class.
 		/// </summary>
 		public formNewFont()
-		{
-			InitializeComponent();
+		{			
+			InitializeComponent();			
 		}
 		#endregion
 	}

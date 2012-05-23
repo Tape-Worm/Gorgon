@@ -78,6 +78,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Controls\controlDefault.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\controlDefault.Designer.cs">
+      <DependentUpon>controlDefault.cs</DependentUpon>
+    </Compile>
     <Compile Include="Designers\AlphaChannelEditor.cs" />
     <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
     <Compile Include="Designers\PointFConverter.cs" />
@@ -153,6 +159,9 @@
     <EmbeddedResource Include="Controls\controlColorPicker.resx">
       <DependentUpon>controlColorPicker.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\controlDefault.resx">
+      <DependentUpon>controlDefault.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\controlFontDisplay.resx">
       <DependentUpon>controlFontDisplay.cs</DependentUpon>
     </EmbeddedResource>
@@ -188,6 +197,10 @@
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
+      <Project>{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}</Project>
+      <Name>Gorgon.FileSystem</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
       <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
       <Name>Gorgon.Graphics</Name>
@@ -203,6 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\FontIcon_64x64.png" />
     <None Include="Resources\IBar.png" />
     <None Include="Resources\UnicodeData.txt" />
     <None Include="Resources\UnicodeBlocks.txt" />

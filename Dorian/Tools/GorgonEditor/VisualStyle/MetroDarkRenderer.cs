@@ -82,6 +82,14 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Draws the item background.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripRenderEventArgs"/> that contains the event data.</param>
+		protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
+		{
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.ToolStripRenderer.RenderItemText"/> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemTextRenderEventArgs"/> that contains the event data.</param>
@@ -99,8 +107,6 @@ namespace GorgonLibrary.GorgonEditor
 				if (e.Item.AutoSize)
 					e.TextRectangle = new Rectangle(e.TextRectangle.Location, Size.Round(e.Graphics.MeasureString(e.Text, e.TextFont)));
 			}
-			else
-				e.TextRectangle = new Rectangle(3, 1, e.TextRectangle.Width, e.TextRectangle.Height);
 
 			TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, textColor, e.TextFormat);
 		}
@@ -119,11 +125,20 @@ namespace GorgonLibrary.GorgonEditor
 
 			ToolStripMenuItem item = e.Item as ToolStripMenuItem;
 
-			if ((item.Selected) || (item.DropDown.Visible))
+			if (item.Selected)
 			{
-				item.DropDown.DropShadowEnabled = false;
-				using (Brush backBrush = new SolidBrush(Color.FromKnownColor(KnownColor.SteelBlue)))
+				using (Brush backBrush = new SolidBrush(Color.FromKnownColor(item.DropDown.Visible ? KnownColor.DimGray : KnownColor.SteelBlue)))
 					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
+			}
+
+			if (!item.IsOnDropDown)
+			{
+				if (item.DropDown.Visible)
+				{
+					e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(e.Item.Width - 1, 0));
+					e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(0, e.Item.Height));
+					e.Graphics.DrawLine(Pens.Black, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+				}
 			}
 		}
 
@@ -169,14 +184,17 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			using(Brush backBrush = new SolidBrush(Color.FromArgb(255, 160, 160, 160)))
 			{				
-				e.Graphics.FillRectangle(backBrush, e.AffectedBounds);
-
-				if ((e.ToolStrip.IsDropDown))
+				using (Pen selectPen = new Pen(Color.FromKnownColor(KnownColor.SteelBlue)))
 				{
-					ToolStripDropDownMenu menu = e.ToolStrip as ToolStripDropDownMenu;
+					e.Graphics.FillRectangle(backBrush, e.AffectedBounds);
 
-					e.Graphics.DrawRectangle(Pens.Black, new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1));
-					e.Graphics.FillRectangle(backBrush, e.ConnectedArea);
+					if ((e.ToolStrip.IsDropDown))
+					{					
+						ToolStripDropDownMenu menu = e.ToolStrip as ToolStripDropDownMenu;
+						e.Graphics.DrawRectangle(Pens.Black, new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1));
+						e.Graphics.FillRectangle(backBrush, e.ConnectedArea);
+						//e.Graphics.DrawLine(selectPen, e.ConnectedArea.Left, e.ConnectedArea.Top, e.ConnectedArea.Right - 1, e.ConnectedArea.Top);
+					}
 				}
 			}
 		}

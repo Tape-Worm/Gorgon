@@ -29,8 +29,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 using GorgonLibrary;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
+using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.GorgonEditor
@@ -39,7 +42,10 @@ namespace GorgonLibrary.GorgonEditor
 	/// Main application interface.
 	/// </summary>
 	static class Program
-	{		
+	{
+		#region Variables.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the list of documents.
@@ -48,6 +54,15 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the file system interface.
+		/// </summary>
+		public static GorgonFileSystem FileSystem
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -146,6 +161,33 @@ namespace GorgonLibrary.GorgonEditor
 
 			CachedFonts = fonts;
 		}
+
+		/// <summary>
+		/// Function to initalize the file system.
+		/// </summary>
+		public static void InitializeFileSystem()
+		{
+			string projectPath = Settings.InitialPath.FormatDirectory(Path.DirectorySeparatorChar) + "Working" + Path.DirectorySeparatorChar.ToString();
+
+			if (!Directory.Exists(projectPath))
+				Directory.CreateDirectory(projectPath);
+
+			var files = Directory.EnumerateFiles(projectPath, "*.*", SearchOption.AllDirectories);
+
+			foreach (var file in files)
+				File.Delete(file);
+
+			var directories = Directory.EnumerateDirectories(projectPath, "*", SearchOption.AllDirectories)
+				.OrderByDescending(item => item.Length)
+				.Where(item => string.Compare(item, projectPath, true) != 0);
+
+			foreach (var directory in directories)
+				Directory.Delete(directory);
+
+			FileSystem = new GorgonFileSystem();
+			FileSystem.Mount(projectPath);
+			FileSystem.WriteLocation = projectPath;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -156,6 +198,8 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			Settings = new GorgonEditorSettings();
 			Settings.Load();
+
+			InitializeFileSystem();
 
 			Documents = new DocumentCollection();
 		}
@@ -168,9 +212,10 @@ namespace GorgonLibrary.GorgonEditor
 		static void Main()
 		{
 			try
-			{
+			{				
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
+								
 				Gorgon.Run(new AppContext());
 			}
 			catch (Exception ex)

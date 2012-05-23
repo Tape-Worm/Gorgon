@@ -47,6 +47,7 @@ namespace GorgonLibrary.GorgonEditor
 		#region Variables.
 		private string _projectName = string.Empty;							// Name of the current project.
 		private bool _needsSave = false;									// Flag to indicate that we have unsaved changes.
+		private Document _defaultDocument = null;							// Our default page.
 		#endregion
 
 		#region Properties.
@@ -118,13 +119,11 @@ namespace GorgonLibrary.GorgonEditor
 			if (_needsSave)
 			{
 				Text += "*";
-				itemSave.Enabled = true;
-				itemSaveFont.Enabled = (Program.CurrentDocument is DocumentFont) && (Program.CurrentDocument.NeedsSave);
+				itemSaveAll.Enabled = itemSaveAs.Enabled = itemSave.Enabled = true;
 			}
 			else
 			{
-				itemSave.Enabled = false;
-				itemSaveFont.Enabled = false;
+				itemSaveAll.Enabled = itemSaveAs.Enabled = itemSave.Enabled = false;
 			}
 		}
 
@@ -155,6 +154,9 @@ namespace GorgonLibrary.GorgonEditor
 
 			try
 			{
+				// Assign events.
+				((controlDefault)_defaultDocument.Control).buttonCreateFont.Click -= new EventHandler(itemNewFont_Click);
+
 				foreach (var document in Program.Documents.ToArray())
 					document.Dispose();
 
@@ -230,6 +232,7 @@ namespace GorgonLibrary.GorgonEditor
 				newFont = new formNewFont();
 				if (newFont.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				{
+					Cursor.Current = Cursors.WaitCursor;
 					document = OpenDocument<DocumentFont>(newFont.FontName, true);
 					document.FontFamily = newFont.FontFamilyName;
 					document.FontSize = newFont.FontSize;
@@ -256,6 +259,7 @@ namespace GorgonLibrary.GorgonEditor
 			}
 			finally
 			{
+				Cursor.Current = Cursors.Default;
 				if (newFont != null)
 					newFont.Dispose();
 				ValidateControls();
@@ -286,9 +290,67 @@ namespace GorgonLibrary.GorgonEditor
 
 			Program.CurrentDocument = document;
 
-			splitEdit.Panel2Collapsed = !document.HasProperties;
+			if (!Program.CurrentDocument.HasProperties)
+			{
+				if (tabDocumentManager.TabPages.Contains(pageProperties))
+					tabDocumentManager.TabPages.Remove(pageProperties);
+			}
+			else
+			{
+				if (!tabDocumentManager.TabPages.Contains(pageProperties))
+					tabDocumentManager.TabPages.Add(pageProperties);
+			}
 
 			return document;
+		}
+
+		/// <summary>
+		/// Function to fill the document tree.
+		/// </summary>
+		private void FillDocumentTree()
+		{
+			TreeNode rootNode = new TreeNode("Project: " + (string.IsNullOrEmpty(_projectName) ? "Untitled" : _projectName));
+			treeFiles.BeginUpdate();
+			
+			treeFiles.Nodes.Clear();
+
+			treeFiles.Nodes.Add(rootNode);
+			rootNode.ImageIndex = rootNode.SelectedImageIndex = -1;
+			foreach (var directory in Program.FileSystem.Directories["/"].Directories)
+			{
+				TreeNode dirNode = rootNode.Nodes.Add(directory.Name);
+				dirNode.ImageIndex = dirNode.SelectedImageIndex = 0;
+				if ((directory.Directories.Count > 0) || (directory.Files.Count > 0))
+					dirNode.Nodes.Add("DummyNode");
+				
+				dirNode.Collapse();
+			}
+
+			foreach (var file in Program.FileSystem.Directories["/"].Files)
+			{
+				TreeNode fileNode = rootNode.Nodes.Add(file.Name);
+
+				switch (file.Extension.ToLower())
+				{
+					case ".gorfont":
+						fileNode.ImageIndex = fileNode.SelectedImageIndex = 2;
+						break;
+					case ".png":
+					case ".tga":
+					case ".jpg": 
+					case ".jpeg": 
+					case ".bmp": 
+					case ".dds":
+						fileNode.ImageIndex = fileNode.SelectedImageIndex = 5;
+						break;
+					default:
+						fileNode.ImageIndex = fileNode.SelectedImageIndex = 3;
+						break;
+				}
+			}
+
+			rootNode.Expand();
+			treeFiles.EndUpdate();
 		}
 
 		/// <summary>
@@ -316,10 +378,7 @@ namespace GorgonLibrary.GorgonEditor
 
 			try
 			{
-				this.menuMain.Renderer = new MetroDarkRenderer();
-				this.popupProperties.Renderer = this.menuMain.Renderer;
-
-				this.splitMain.Panel1Collapsed = false;
+				ToolStripManager.Renderer = new MetroDarkRenderer();
 
 				// Adjust main window.
 				Visible = true;
@@ -332,7 +391,12 @@ namespace GorgonLibrary.GorgonEditor
 				this.WindowState = Program.Settings.FormState;
 				this.tabDocuments.Focus();
 
-				OpenDocument<Document>("Gorgon Editor", false);
+				_defaultDocument = OpenDocument<Document>("Gorgon Editor", false);
+
+				FillDocumentTree();
+
+				// Assign events.
+				((controlDefault)_defaultDocument.Control).buttonCreateFont.Click += new EventHandler(itemNewFont_Click);
 
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}
@@ -378,7 +442,16 @@ namespace GorgonLibrary.GorgonEditor
 					if (document.Renderer != null)
 						document.Renderer.Begin2D();
 
-					splitEdit.Panel2Collapsed = !document.HasProperties;
+					if (!Program.CurrentDocument.HasProperties)
+					{
+						if (tabDocumentManager.TabPages.Contains(pageProperties))
+							tabDocumentManager.TabPages.Remove(pageProperties);
+					}
+					else
+					{
+						if (!tabDocumentManager.TabPages.Contains(pageProperties))
+							tabDocumentManager.TabPages.Add(pageProperties);
+					}
 
 					propertyItem.SelectedObject = document.TypeDescriptor;
 					propertyItem.Refresh();
@@ -432,6 +505,23 @@ namespace GorgonLibrary.GorgonEditor
 			finally
 			{
 				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemExit control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void itemExit_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				Close();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
 			}
 		}
 	}
