@@ -88,6 +88,13 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap FontIcon_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("FontIcon_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Gorgon_2_Logo_Full {
             get {
                 object obj = ResourceManager.GetObject("Gorgon_2_Logo_Full", resourceCulture);

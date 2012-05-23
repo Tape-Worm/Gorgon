@@ -213,19 +213,19 @@ namespace GorgonLibrary.GorgonEditor
 
 			logoSize.Height = 124;
 
-			if (Control.ClientSize.Width < logoSize.Width)
-				logoBounds.Width = logoSize.Width * Control.ClientSize.Width / logoSize.Width;
+			if (RenderWindow.ClientSize.Width < logoSize.Width)
+				logoBounds.Width = logoSize.Width * RenderWindow.ClientSize.Width / logoSize.Width;
 			else
 				logoBounds.Width = logoSize.Width;
 
 			aspect = logoSize.Height / logoSize.Width;
 			logoBounds.Height = logoBounds.Width * aspect;
 
-			logoBounds.X = Control.ClientSize.Width / 2.0f - logoBounds.Width / 2.0f;
-			logoBounds.Y = Control.ClientSize.Height / 2.0f - logoBounds.Height / 2.0f;
+			logoBounds.X = RenderWindow.ClientSize.Width / 2.0f - logoBounds.Width / 2.0f;
+			logoBounds.Y = RenderWindow.ClientSize.Height / 2.0f - logoBounds.Height / 2.0f;
 
 			Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
-			Renderer.Drawing.FilledRectangle(new RectangleF(2, logoBounds.Y, Control.ClientSize.Width - 4, logoBounds.Height), Color.FromArgb(160, 160, 160));
+			Renderer.Drawing.FilledRectangle(new RectangleF(2, logoBounds.Y, RenderWindow.ClientSize.Width - 4, logoBounds.Height), Color.FromArgb(160, 160, 160));
 
 			Renderer.Drawing.BlendingMode = BlendingMode.PreMultiplied;
 			Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 1.0f - _alpha), _logo, _sourceState);
@@ -431,10 +431,10 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Functino to terminate the document.
+		/// Function to terminate the document.
 		/// </summary>
 		public void TerminateRendering()
-		{
+		{			
 			UnloadGraphics();
 
 			if (Renderer != null)
@@ -492,11 +492,11 @@ namespace GorgonLibrary.GorgonEditor
 			_name = name;
 			Tab = new TabPageEx(name);
 			Tab.Name = "tab" + name;
-			Control = new Panel();
-			Control.Name = "panel" + name;
+			Control = new controlDefault();
+			Control.Name = "default" + name;
 			Control.BackColor = Color.FromKnownColor(KnownColor.DimGray);
 			Control.Dock = DockStyle.Fill;
-			RenderWindow = Control;
+			RenderWindow = ((controlDefault)Control).panelLogo;
 			Tab.Controls.Add(Control);
 			Tab.IsClosable = allowClose;
 

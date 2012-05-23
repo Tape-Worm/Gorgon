@@ -30,6 +30,8 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Configuration;
 
 namespace GorgonLibrary.GorgonEditor
@@ -93,6 +95,16 @@ namespace GorgonLibrary.GorgonEditor
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the initial path for projects.
+		/// </summary>
+		[GorgonApplicationSetting("InitialPath", typeof(string), "")]
+		public string InitialPath
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -115,6 +127,7 @@ namespace GorgonLibrary.GorgonEditor
 				baseSize.Height = Screen.PrimaryScreen.WorkingArea.Height;
 			
 			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2, Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2, 1280, 800);
+			InitialPath = GorgonComputerInfo.FolderPath(Environment.SpecialFolder.MyDocuments) + @"\Gorgon\Projects\";
 		}
 		#endregion
 	}
