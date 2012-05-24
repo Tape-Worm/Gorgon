@@ -283,6 +283,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void DestroyInterfaces()
 		{
+			if (Fonts != null)
+				Fonts.CleanUp();
+			Fonts = null;
+
 			if (Shaders != null)
 				Shaders.CleanUp();
 			Shaders = null;
