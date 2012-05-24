@@ -70,6 +70,8 @@ namespace GorgonLibrary.Graphics
 						Size = 14,
 						TextureSize = new Size(128, 128)
 					});
+
+					_default.Update(_default.Settings);
 				}
 
 				return _default;
