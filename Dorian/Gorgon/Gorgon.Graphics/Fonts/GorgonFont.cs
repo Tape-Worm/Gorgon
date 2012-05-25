@@ -48,7 +48,10 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedObject, IDisposable, INotifier
 	{
 		#region Constants.
-		public const string FileHeader = "GORFONT2.0";			// Gorgon font file header.
+		/// <summary>
+		/// Header for a Gorgon font file.
+		/// </summary>
+		public const string FileHeader = "GORFONT2.0";
 		#endregion
 
 		#region Classes.

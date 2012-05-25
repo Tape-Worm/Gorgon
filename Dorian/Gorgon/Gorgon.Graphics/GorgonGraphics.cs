@@ -287,25 +287,20 @@ namespace GorgonLibrary.Graphics
 				Fonts.CleanUp();
 			Fonts = null;
 
+			if (Textures != null)
+				Textures.CleanUp();
+			Textures = null;
+
 			if (Shaders != null)
 				Shaders.CleanUp();
 			Shaders = null;
-
+			
 			if (Output != null)
 				Output.CleanUp();
 			Output = null;
-			
 
 			if (Rasterizer != null)
 				((IDisposable)Rasterizer).Dispose();
-		}
-
-		/// <summary>
-		/// Function to create any default states.
-		/// </summary>
-		private void CreateDefaultStates()
-		{
-			Rasterizer = new GorgonRasterizerRenderState(this);
 		}
 
 		/// <summary>
@@ -419,10 +414,8 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.AddTrackedObject(this);
 
-			// Create default state objects.
-			CreateDefaultStates();
-
 			// Create interfaces.
+			Rasterizer = new GorgonRasterizerRenderState(this);
 			Input = new GorgonInputGeometry(this);
 			Shaders = new GorgonShaderBinding(this);
 			Output = new GorgonOutputMerger(this);
