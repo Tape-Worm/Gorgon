@@ -1224,11 +1224,11 @@ namespace GorgonLibrary.Renderers
 			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, new GorgonTexture2DSettings());
 			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings()
 			{
-				Anchor = new Vector2(200, 56),
+				Anchor = new Vector2(Graphics.Textures.GorgonLogo.Settings.Size),
 				Texture = Graphics.Textures.GorgonLogo,
-				TextureRegion = new RectangleF(0, 0, 200, 56),
+				TextureRegion = new RectangleF(Vector2.Zero, Graphics.Textures.GorgonLogo.Settings.Size),
 				Color = Color.White,
-				Size = new Vector2(200, 56)
+				Size = Graphics.Textures.GorgonLogo.Settings.Size
 			});
 			_defaultCamera = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new Vector2(target.Settings.Width, target.Settings.Height), 100.0f);			
 
