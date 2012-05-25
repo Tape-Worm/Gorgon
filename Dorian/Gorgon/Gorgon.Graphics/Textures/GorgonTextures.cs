@@ -119,6 +119,7 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private GorgonGraphics _graphics = null;
+		private GorgonTexture2D _logo = null;
 		#endregion
 
 		#region Properties.
@@ -127,8 +128,18 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonTexture2D GorgonLogo
 		{
-			get;
-			private set;
+			get
+			{
+				if (_logo == null)
+				{
+					_logo = FromGDIBitmap("Gorgon.Logo", Properties.Resources.Gorgon_2_x_Logo_Small);
+
+					// Don't track this image.
+					_graphics.RemoveTrackedObject(GorgonLogo);
+				}
+
+				return _logo;
+			}
 		}
 
 		/// <summary>
@@ -287,6 +298,16 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format.ToString() + "' is not supported by the hardware.");
 
 
+		}
+
+		/// <summary>
+		/// Function to perform clean up of resources.
+		/// </summary>
+		internal void CleanUp()
+		{
+			if (_logo != null)
+				_logo.Dispose();
+			_logo = null;
 		}
 
 		/// <summary>
@@ -852,7 +873,6 @@ namespace GorgonLibrary.Graphics
 		internal GorgonTextures(GorgonGraphics graphics)
 		{
 			_graphics = graphics;
-			GorgonLogo = FromGDIBitmap("Gorgon.Logo", Properties.Resources.GorgonLogo3);
 		}
 		#endregion
 	}

@@ -143,7 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <None Include="Resources\GorgonLogo3.png" />
+    <None Include="Resources\Gorgon_2.x_Logo_Small.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
