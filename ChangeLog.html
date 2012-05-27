@@ -119,8 +119,18 @@
 
 <div>
 	<pre>
-April 17/2011 - Version - Current
-===============================================================================================
+May 23/2012 - Version - Current
+=============================================================================================== 
+* Fixed ScaleDimensions, ScaledWidth, and ScaledHeight in the TextSprite class. - SD
+
+* Converted the solution/projects to Visual Studio 2010.  This means that to compile Gorgon
+  and its associated tools, you will need Visual Studio 2010.  Gorgon is still using .NET 3.5 
+  however, so VS2008 can still be used for projects. - TW
+
++ Added new blending mode support for alpha channel blending - SD
+  
++ Added new library - Gorgon Sound.  Uses OpenAL to play back ogg and mp3 files. - SD
+  
 * Fixed a bug (or rather, something I forgot to implement) in the Image deserializer code.  This
   broke the FromStream(string name, Stream stream, int bytes) method, and would have broken
   any method that had the size in bytes passed in. - TW
