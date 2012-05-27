@@ -49,7 +49,7 @@
     <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
     <CopyrightText>Copyright &amp;#169%3b 2011 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
     <FeedbackEMailAddress>tape_worm%40tape-worm.net</FeedbackEMailAddress>
-    <FooterText>Gorgon v1.1.4119.34319</FooterText>
+    <FooterText>Gorgon v1.1.4529.31450</FooterText>
     <SdkLinkTarget>Self</SdkLinkTarget>
     <PresentationStyle>vs2005</PresentationStyle>
     <ShowFeedbackControl>True</ShowFeedbackControl>
@@ -123,13 +123,14 @@
     </ComponentConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Tools\DialogHelper\bin\Release\DialogHelper.dll" />
-<DocumentationSource sourceFile="..\Tools\DialogHelper\bin\Release\DialogHelper.xml" />
-<DocumentationSource sourceFile="..\Gorgon\bin\Release\Gorgon.dll" />
-<DocumentationSource sourceFile="..\Gorgon\bin\Release\Gorgon.xml" />
-<DocumentationSource sourceFile="..\Tools\GorgonFramework\bin\Release\GorgonFramework.dll" />
-<DocumentationSource sourceFile="..\Tools\GorgonFramework\bin\Release\GorgonFramework.xml" />
-<DocumentationSource sourceFile="..\Tools\GSound\bin\Release\GSound.dll" />
-<DocumentationSource sourceFile="..\Tools\GSound\bin\Release\GSound.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\Tools\DialogHelper\bin\Release\DialogHelper.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\bin\Release\Gorgon.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\bin\Release\Gorgon.xml" />
+      <DocumentationSource sourceFile="..\Tools\GorgonFramework\bin\Release\GorgonFramework.dll" />
+      <DocumentationSource sourceFile="..\Tools\GorgonFramework\bin\Release\GorgonFramework.xml" />
+      <DocumentationSource sourceFile="..\Tools\GSound\bin\Release\GSound.dll" />
+      <DocumentationSource sourceFile="..\Tools\GSound\bin\Release\GSound.xml" />
+    </DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
       <NamespaceSummaryItem name="Dialogs" isDocumented="True" xmlns="">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
