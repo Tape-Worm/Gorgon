@@ -380,7 +380,7 @@ namespace GorgonLibrary.Example
 				Gorgon.DeviceReset += new EventHandler(Gorgon_DeviceReset);
 				
 
- 				Gorgon.Go();
+				Gorgon.Go();
 			}
 			catch (Exception ex)
 			{
