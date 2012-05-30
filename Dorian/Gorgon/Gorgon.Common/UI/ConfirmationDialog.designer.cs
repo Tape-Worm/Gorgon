@@ -79,7 +79,7 @@ namespace GorgonLibrary.UI
 			this.buttonNo.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonNo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.buttonNo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonNo.Image = global::GorgonLibrary.Properties.Resources.no_16x16;
+			this.buttonNo.Image = ((System.Drawing.Image)(resources.GetObject("buttonNo.Image")));
 			this.buttonNo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonNo.Location = new System.Drawing.Point(69, 78);
 			this.buttonNo.Name = "buttonNo";
@@ -94,7 +94,7 @@ namespace GorgonLibrary.UI
 			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonCancel.Image = ((System.Drawing.Image)(resources.GetObject("buttonCancel.Image")));
+			this.buttonCancel.Image = global::GorgonLibrary.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(125, 78);
 			this.buttonCancel.Name = "buttonCancel";

@@ -97,6 +97,7 @@ namespace GorgonLibrary.UI
 			this.ClientSize = new System.Drawing.Size(243, 150);
 			this.Controls.Add(this.checkToAll);
 			this.Location = new System.Drawing.Point(0, 0);
+			this.MessageHeight = 256;
 			this.MinimumSize = new System.Drawing.Size(249, 174);
 			this.Name = "ConfirmationDialogEx";
 			this.Controls.SetChildIndex(this.pictureDialog, 0);

@@ -72,7 +72,7 @@ namespace GorgonLibrary.UI
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Error_48x48;
+			this.pictureDialog.Image = ((System.Drawing.Image)(resources.GetObject("pictureDialog.Image")));
 			// 
 			// errorDetails
 			// 
@@ -100,7 +100,7 @@ namespace GorgonLibrary.UI
 			this.checkDetail.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.checkDetail.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.checkDetail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.checkDetail.Image = global::GorgonLibrary.Properties.Resources.Info_16x16;
+			this.checkDetail.Image = ((System.Drawing.Image)(resources.GetObject("checkDetail.Image")));
 			this.checkDetail.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.checkDetail.Location = new System.Drawing.Point(12, 78);
 			this.checkDetail.Name = "checkDetail";
@@ -116,7 +116,7 @@ namespace GorgonLibrary.UI
 			this.ClientSize = new System.Drawing.Size(243, 130);
 			this.Controls.Add(this.checkDetail);
 			this.Controls.Add(this.errorDetails);
-			this.DialogImage = global::GorgonLibrary.Properties.Resources.Error_48x48;
+			this.DialogImage = ((System.Drawing.Image)(resources.GetObject("$this.DialogImage")));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ErrorDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

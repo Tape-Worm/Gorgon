@@ -65,7 +65,7 @@ namespace GorgonLibrary.UI
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
-			this.buttonOK.Image = global::GorgonLibrary.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = ((System.Drawing.Image)(resources.GetObject("buttonOK.Image")));
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(182, 92);
 			this.buttonOK.Margin = new System.Windows.Forms.Padding(4);
@@ -77,7 +77,6 @@ namespace GorgonLibrary.UI
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.BackColor = System.Drawing.Color.White;
 			this.pictureDialog.Location = new System.Drawing.Point(2, 2);
 			this.pictureDialog.Name = "pictureDialog";
 			this.pictureDialog.Size = new System.Drawing.Size(48, 48);
