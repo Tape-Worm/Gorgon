@@ -50,7 +50,7 @@ namespace GorgonLibrary.FileSystem.Zip
 		protected override void Enumerate(string physicalMountPoint, GorgonFileSystemDirectory mountPoint)
 		{
 			if (mountPoint == null)
-				mountPoint = FileSystem.Directories[0];					
+				mountPoint = FileSystem.RootDirectory;					
 
 			using (FileStream stream = File.Open(physicalMountPoint, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{

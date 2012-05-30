@@ -54,27 +54,37 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formGorgonFileDialog));
 			this.splitMain = new System.Windows.Forms.SplitContainer();
 			this.treeDirectories = new System.Windows.Forms.TreeView();
-			this.stripContainer = new System.Windows.Forms.ToolStripContainer();
-			this.stripMenu = new System.Windows.Forms.ToolStrip();
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-			this.buttonOpen = new System.Windows.Forms.Button();
-			this.buttonCancel = new System.Windows.Forms.Button();
-			this.label1 = new System.Windows.Forms.Label();
-			this.textFileName = new System.Windows.Forms.TextBox();
-			this.comboExtension = new System.Windows.Forms.ComboBox();
+			this.imagesTree = new System.Windows.Forms.ImageList(this.components);
 			this.listFiles = new System.Windows.Forms.ListView();
-			this.statusMain = new System.Windows.Forms.StatusStrip();
-			this.toolStripButton2 = new System.Windows.Forms.ToolStripDropDownButton();
-			this.detailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.listToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.iconsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.columnFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.imagesLargeIcons = new System.Windows.Forms.ImageList(this.components);
+			this.stripContainer = new System.Windows.Forms.ToolStripContainer();
+			this.statusMain = new System.Windows.Forms.StatusStrip();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.comboExtension = new System.Windows.Forms.ComboBox();
+			this.textFileName = new System.Windows.Forms.TextBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.buttonCancel = new System.Windows.Forms.Button();
+			this.buttonOpen = new System.Windows.Forms.Button();
+			this.stripMenu = new System.Windows.Forms.ToolStrip();
+			this.toolStripButton2 = new System.Windows.Forms.ToolStripDropDownButton();
+			this.itemDetails = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemList = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemIcons = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuFile = new System.Windows.Forms.ToolStripDropDownButton();
+			this.itemNewFolder = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.deleteFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.buttonUp = new System.Windows.Forms.ToolStripButton();
+			this.buttonRefresh = new System.Windows.Forms.ToolStripButton();
 			((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
 			this.splitMain.Panel1.SuspendLayout();
 			this.splitMain.Panel2.SuspendLayout();
@@ -83,8 +93,8 @@ namespace GorgonLibrary.UI
 			this.stripContainer.ContentPanel.SuspendLayout();
 			this.stripContainer.TopToolStripPanel.SuspendLayout();
 			this.stripContainer.SuspendLayout();
-			this.stripMenu.SuspendLayout();
 			this.panel1.SuspendLayout();
+			this.stripMenu.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// splitMain
@@ -110,10 +120,73 @@ namespace GorgonLibrary.UI
 			// 
 			this.treeDirectories.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.treeDirectories.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treeDirectories.FullRowSelect = true;
+			this.treeDirectories.HideSelection = false;
+			this.treeDirectories.ImageIndex = 0;
+			this.treeDirectories.ImageList = this.imagesTree;
 			this.treeDirectories.Location = new System.Drawing.Point(0, 0);
 			this.treeDirectories.Name = "treeDirectories";
+			this.treeDirectories.SelectedImageIndex = 0;
+			this.treeDirectories.ShowLines = false;
+			this.treeDirectories.ShowNodeToolTips = true;
+			this.treeDirectories.ShowRootLines = false;
 			this.treeDirectories.Size = new System.Drawing.Size(151, 305);
 			this.treeDirectories.TabIndex = 0;
+			this.treeDirectories.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeDirectories_BeforeCollapse);
+			this.treeDirectories.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeDirectories_BeforeExpand);
+			this.treeDirectories.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeDirectories_BeforeSelect);
+			this.treeDirectories.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeDirectories_AfterSelect);
+			// 
+			// imagesTree
+			// 
+			this.imagesTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this.imagesTree.ImageSize = new System.Drawing.Size(16, 16);
+			this.imagesTree.TransparentColor = System.Drawing.Color.Transparent;
+			// 
+			// listFiles
+			// 
+			this.listFiles.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.listFiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnFileName,
+            this.columnSize,
+            this.columnDate,
+            this.columnType});
+			this.listFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listFiles.FullRowSelect = true;
+			this.listFiles.LabelEdit = true;
+			this.listFiles.LargeImageList = this.imagesLargeIcons;
+			this.listFiles.Location = new System.Drawing.Point(0, 0);
+			this.listFiles.Name = "listFiles";
+			this.listFiles.Size = new System.Drawing.Size(529, 305);
+			this.listFiles.SmallImageList = this.imagesTree;
+			this.listFiles.TabIndex = 1;
+			this.listFiles.UseCompatibleStateImageBehavior = false;
+			this.listFiles.View = System.Windows.Forms.View.Details;
+			this.listFiles.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listFiles_ColumnClick);
+			this.listFiles.DoubleClick += new System.EventHandler(this.listFiles_DoubleClick);
+			this.listFiles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listFiles_KeyDown);
+			// 
+			// columnFileName
+			// 
+			this.columnFileName.Text = "File name";
+			// 
+			// columnSize
+			// 
+			this.columnSize.Text = "Size";
+			// 
+			// columnDate
+			// 
+			this.columnDate.Text = "Date Modified";
+			// 
+			// columnType
+			// 
+			this.columnType.Text = "Type";
+			// 
+			// imagesLargeIcons
+			// 
+			this.imagesLargeIcons.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this.imagesLargeIcons.ImageSize = new System.Drawing.Size(32, 32);
+			this.imagesLargeIcons.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// stripContainer
 			// 
@@ -138,19 +211,16 @@ namespace GorgonLibrary.UI
 			// 
 			this.stripContainer.TopToolStripPanel.Controls.Add(this.stripMenu);
 			// 
-			// stripMenu
+			// statusMain
 			// 
-			this.stripMenu.Dock = System.Windows.Forms.DockStyle.None;
-			this.stripMenu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.stripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.toolStripButton1,
-			this.toolStripButton2});
-			this.stripMenu.Location = new System.Drawing.Point(0, 0);
-			this.stripMenu.Name = "stripMenu";
-			this.stripMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-			this.stripMenu.Size = new System.Drawing.Size(682, 25);
-			this.stripMenu.Stretch = true;
-			this.stripMenu.TabIndex = 0;
+			this.statusMain.Dock = System.Windows.Forms.DockStyle.None;
+			this.statusMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
+			this.statusMain.Location = new System.Drawing.Point(0, 0);
+			this.statusMain.Name = "statusMain";
+			this.statusMain.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+			this.statusMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+			this.statusMain.Size = new System.Drawing.Size(682, 22);
+			this.statusMain.TabIndex = 2;
 			// 
 			// panel1
 			// 
@@ -165,58 +235,6 @@ namespace GorgonLibrary.UI
 			this.panel1.Size = new System.Drawing.Size(682, 63);
 			this.panel1.TabIndex = 2;
 			// 
-			// toolStripButton1
-			// 
-			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-			this.toolStripButton1.Enabled = false;
-			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(80, 22);
-			this.toolStripButton1.Text = "New Folder...";
-			// 
-			// buttonOpen
-			// 
-			this.buttonOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonOpen.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.buttonOpen.Enabled = false;
-			this.buttonOpen.Location = new System.Drawing.Point(488, 33);
-			this.buttonOpen.Name = "buttonOpen";
-			this.buttonOpen.Size = new System.Drawing.Size(87, 27);
-			this.buttonOpen.TabIndex = 2;
-			this.buttonOpen.Text = "&Open";
-			this.buttonOpen.UseVisualStyleBackColor = true;
-			// 
-			// buttonCancel
-			// 
-			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonCancel.Location = new System.Drawing.Point(581, 33);
-			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(87, 27);
-			this.buttonCancel.TabIndex = 3;
-			this.buttonCancel.Text = "&Cancel";
-			this.buttonCancel.UseVisualStyleBackColor = true;
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(124, 10);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(61, 15);
-			this.label1.TabIndex = 4;
-			this.label1.Text = "File name:";
-			// 
-			// textFileName
-			// 
-			this.textFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.textFileName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.textFileName.Location = new System.Drawing.Point(191, 7);
-			this.textFileName.Name = "textFileName";
-			this.textFileName.Size = new System.Drawing.Size(289, 23);
-			this.textFileName.TabIndex = 5;
-			// 
 			// comboExtension
 			// 
 			this.comboExtension.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -227,81 +245,174 @@ namespace GorgonLibrary.UI
 			this.comboExtension.Size = new System.Drawing.Size(182, 23);
 			this.comboExtension.TabIndex = 6;
 			// 
-			// listFiles
+			// textFileName
 			// 
-			this.listFiles.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.listFiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.columnFileName,
-			this.columnSize,
-			this.columnDate});
-			this.listFiles.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.listFiles.FullRowSelect = true;
-			this.listFiles.LabelEdit = true;
-			this.listFiles.Location = new System.Drawing.Point(0, 0);
-			this.listFiles.Name = "listFiles";
-			this.listFiles.Size = new System.Drawing.Size(529, 305);
-			this.listFiles.TabIndex = 1;
-			this.listFiles.UseCompatibleStateImageBehavior = false;
-			this.listFiles.View = System.Windows.Forms.View.Details;
+			this.textFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textFileName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.textFileName.Location = new System.Drawing.Point(191, 7);
+			this.textFileName.Name = "textFileName";
+			this.textFileName.Size = new System.Drawing.Size(289, 23);
+			this.textFileName.TabIndex = 5;
 			// 
-			// statusMain
+			// label1
 			// 
-			this.statusMain.Dock = System.Windows.Forms.DockStyle.None;
-			this.statusMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
-			this.statusMain.Location = new System.Drawing.Point(0, 0);
-			this.statusMain.Name = "statusMain";
-			this.statusMain.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-			this.statusMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-			this.statusMain.Size = new System.Drawing.Size(682, 22);
-			this.statusMain.TabIndex = 2;
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(124, 10);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(61, 15);
+			this.label1.TabIndex = 4;
+			this.label1.Text = "File name:";
+			// 
+			// buttonCancel
+			// 
+			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.buttonCancel.Image = ((System.Drawing.Image)(resources.GetObject("buttonCancel.Image")));
+			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonCancel.Location = new System.Drawing.Point(581, 33);
+			this.buttonCancel.Name = "buttonCancel";
+			this.buttonCancel.Size = new System.Drawing.Size(87, 27);
+			this.buttonCancel.TabIndex = 3;
+			this.buttonCancel.Text = "&Cancel";
+			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.buttonCancel.UseVisualStyleBackColor = true;
+			// 
+			// buttonOpen
+			// 
+			this.buttonOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonOpen.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.buttonOpen.Enabled = false;
+			this.buttonOpen.Image = ((System.Drawing.Image)(resources.GetObject("buttonOpen.Image")));
+			this.buttonOpen.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonOpen.Location = new System.Drawing.Point(488, 33);
+			this.buttonOpen.Name = "buttonOpen";
+			this.buttonOpen.Size = new System.Drawing.Size(87, 27);
+			this.buttonOpen.TabIndex = 2;
+			this.buttonOpen.Text = "&Open";
+			this.buttonOpen.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.buttonOpen.UseVisualStyleBackColor = true;
+			// 
+			// stripMenu
+			// 
+			this.stripMenu.Dock = System.Windows.Forms.DockStyle.None;
+			this.stripMenu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.stripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton2,
+            this.menuFile,
+            this.buttonUp,
+            this.buttonRefresh});
+			this.stripMenu.Location = new System.Drawing.Point(0, 0);
+			this.stripMenu.Name = "stripMenu";
+			this.stripMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+			this.stripMenu.Size = new System.Drawing.Size(682, 25);
+			this.stripMenu.Stretch = true;
+			this.stripMenu.TabIndex = 0;
 			// 
 			// toolStripButton2
 			// 
 			this.toolStripButton2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.toolStripButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.detailsToolStripMenuItem,
-			this.listToolStripMenuItem,
-			this.iconsToolStripMenuItem});
+            this.itemDetails,
+            this.itemList,
+            this.itemIcons});
 			this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
 			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton2.Name = "toolStripButton2";
 			this.toolStripButton2.Size = new System.Drawing.Size(29, 22);
 			this.toolStripButton2.Text = "Change View";
 			// 
-			// detailsToolStripMenuItem
+			// itemDetails
 			// 
-			this.detailsToolStripMenuItem.Checked = true;
-			this.detailsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.detailsToolStripMenuItem.Name = "detailsToolStripMenuItem";
-			this.detailsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.detailsToolStripMenuItem.Text = "&Details";
+			this.itemDetails.Checked = true;
+			this.itemDetails.CheckOnClick = true;
+			this.itemDetails.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.itemDetails.Name = "itemDetails";
+			this.itemDetails.Size = new System.Drawing.Size(109, 22);
+			this.itemDetails.Text = "&Details";
+			this.itemDetails.Click += new System.EventHandler(this.itemDetails_Click);
 			// 
-			// listToolStripMenuItem
+			// itemList
 			// 
-			this.listToolStripMenuItem.Name = "listToolStripMenuItem";
-			this.listToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.listToolStripMenuItem.Text = "&List";
+			this.itemList.CheckOnClick = true;
+			this.itemList.Name = "itemList";
+			this.itemList.Size = new System.Drawing.Size(109, 22);
+			this.itemList.Text = "&List";
+			this.itemList.Click += new System.EventHandler(this.itemDetails_Click);
 			// 
-			// iconsToolStripMenuItem
+			// itemIcons
 			// 
-			this.iconsToolStripMenuItem.Name = "iconsToolStripMenuItem";
-			this.iconsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.iconsToolStripMenuItem.Text = "&Icons";
+			this.itemIcons.CheckOnClick = true;
+			this.itemIcons.Name = "itemIcons";
+			this.itemIcons.Size = new System.Drawing.Size(109, 22);
+			this.itemIcons.Text = "&Icons";
+			this.itemIcons.Click += new System.EventHandler(this.itemDetails_Click);
 			// 
-			// columnFileName
+			// menuFile
 			// 
-			this.columnFileName.Text = "File name";
+			this.menuFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemNewFolder,
+            this.toolStripSeparator1,
+            this.deleteFolderToolStripMenuItem,
+            this.renameToolStripMenuItem});
+			this.menuFile.Image = ((System.Drawing.Image)(resources.GetObject("menuFile.Image")));
+			this.menuFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.menuFile.Name = "menuFile";
+			this.menuFile.Size = new System.Drawing.Size(38, 22);
+			this.menuFile.Text = "&File";
 			// 
-			// columnSize
+			// itemNewFolder
 			// 
-			this.columnSize.Text = "Size";
+			this.itemNewFolder.Enabled = false;
+			this.itemNewFolder.Name = "itemNewFolder";
+			this.itemNewFolder.Size = new System.Drawing.Size(143, 22);
+			this.itemNewFolder.Text = "&New Folder...";
 			// 
-			// columnDate
+			// toolStripSeparator1
 			// 
-			this.columnDate.Text = "Date Modified";
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(140, 6);
 			// 
-			// formOpenFileDialog
+			// deleteFolderToolStripMenuItem
+			// 
+			this.deleteFolderToolStripMenuItem.Enabled = false;
+			this.deleteFolderToolStripMenuItem.Name = "deleteFolderToolStripMenuItem";
+			this.deleteFolderToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+			this.deleteFolderToolStripMenuItem.Text = "&Delete...";
+			// 
+			// renameToolStripMenuItem
+			// 
+			this.renameToolStripMenuItem.Enabled = false;
+			this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
+			this.renameToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+			this.renameToolStripMenuItem.Text = "Rename...";
+			// 
+			// buttonUp
+			// 
+			this.buttonUp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.buttonUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonUp.Enabled = false;
+			this.buttonUp.Image = global::GorgonLibrary.FileSystem.Properties.Resources.up_directory_16x16;
+			this.buttonUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonUp.Name = "buttonUp";
+			this.buttonUp.Size = new System.Drawing.Size(23, 22);
+			this.buttonUp.Text = "Go up one directory.";
+			this.buttonUp.Click += new System.EventHandler(this.buttonUp_Click);
+			// 
+			// buttonRefresh
+			// 
+			this.buttonRefresh.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.buttonRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonRefresh.Image = global::GorgonLibrary.FileSystem.Properties.Resources.Refresh_16x16;
+			this.buttonRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonRefresh.Name = "buttonRefresh";
+			this.buttonRefresh.Size = new System.Drawing.Size(23, 22);
+			this.buttonRefresh.Text = "Refresh the selected directory.";
+			this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
+			// 
+			// formGorgonFileDialog
 			// 
 			this.AcceptButton = this.buttonOpen;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -313,7 +424,7 @@ namespace GorgonLibrary.UI
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "formOpenFileDialog";
+			this.Name = "formGorgonFileDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Open File";
 			this.splitMain.Panel1.ResumeLayout(false);
@@ -327,10 +438,10 @@ namespace GorgonLibrary.UI
 			this.stripContainer.TopToolStripPanel.PerformLayout();
 			this.stripContainer.ResumeLayout(false);
 			this.stripContainer.PerformLayout();
-			this.stripMenu.ResumeLayout(false);
-			this.stripMenu.PerformLayout();
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
+			this.stripMenu.ResumeLayout(false);
+			this.stripMenu.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -342,7 +453,6 @@ namespace GorgonLibrary.UI
 		private System.Windows.Forms.ToolStripContainer stripContainer;
 		private System.Windows.Forms.ToolStrip stripMenu;
 		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.ToolStripButton toolStripButton1;
 		private System.Windows.Forms.Button buttonCancel;
 		private System.Windows.Forms.Button buttonOpen;
 		private System.Windows.Forms.ComboBox comboExtension;
@@ -351,11 +461,21 @@ namespace GorgonLibrary.UI
 		private System.Windows.Forms.ListView listFiles;
 		private System.Windows.Forms.StatusStrip statusMain;
 		private System.Windows.Forms.ToolStripDropDownButton toolStripButton2;
-		private System.Windows.Forms.ToolStripMenuItem detailsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem listToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem iconsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem itemDetails;
+		private System.Windows.Forms.ToolStripMenuItem itemList;
+		private System.Windows.Forms.ToolStripMenuItem itemIcons;
 		private System.Windows.Forms.ColumnHeader columnFileName;
 		private System.Windows.Forms.ColumnHeader columnSize;
 		private System.Windows.Forms.ColumnHeader columnDate;
+		private System.Windows.Forms.ImageList imagesTree;
+		private System.Windows.Forms.ToolStripDropDownButton menuFile;
+		private System.Windows.Forms.ToolStripMenuItem itemNewFolder;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripMenuItem deleteFolderToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
+		private System.Windows.Forms.ImageList imagesLargeIcons;
+		private System.Windows.Forms.ColumnHeader columnType;
+		private System.Windows.Forms.ToolStripButton buttonUp;
+		private System.Windows.Forms.ToolStripButton buttonRefresh;
 	}
 }
