@@ -58,7 +58,14 @@
     <Compile Include="GorgonFileSystemProviderCollection.cs" />
     <Compile Include="GorgonFileSystemProviderPlugIn.cs" />
     <Compile Include="GorgonFileSystemStream.cs" />
+    <Compile Include="Native\Win32API.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\GorgonFileExtensionCollection.cs" />
     <Compile Include="UI\formGorgonFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,6 +75,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\up_directory_16x16.png" />
+    <None Include="Resources\change_view_16x16.png" />
+    <None Include="Resources\cancel_16x16.png" />
+    <None Include="Resources\open_16x16.png" />
+    <None Include="Resources\Actions-view-refresh-icon_16x16.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
@@ -76,6 +88,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\formGorgonFileDialog.resx">
       <DependentUpon>formGorgonFileDialog.cs</DependentUpon>
     </EmbeddedResource>

@@ -110,7 +110,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 			var directories = index.Descendants("Path");
 
 			if (mountPoint == null)
-				mountPoint = FileSystem.Directories[0];
+				mountPoint = FileSystem.RootDirectory;
 
 			_compressedFiles = new Dictionary<string, CompressedFileEntry>();
 

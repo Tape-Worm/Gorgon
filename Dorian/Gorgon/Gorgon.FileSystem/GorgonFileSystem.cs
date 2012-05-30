@@ -45,8 +45,6 @@ namespace GorgonLibrary.FileSystem
 	public class GorgonFileSystem
 	{
 		#region Variables.
-		private GorgonFileSystemProviderCollection _providers = null;			// File system providers.
-		private GorgonFileSystemDirectoryCollection _directories = null;		// List of file system directories.
 		private string _writeLocation = string.Empty;							// The area on the physical file system that we can write into.
 		#endregion
 
@@ -84,14 +82,12 @@ namespace GorgonLibrary.FileSystem
 		}
 
 		/// <summary>
-		/// Property to return the directories available in this virtual file system.
+		/// Property to return the root directory for the file system.
 		/// </summary>
-		public GorgonFileSystemDirectoryCollection Directories
+		public GorgonFileSystemDirectory RootDirectory
 		{
-			get
-			{
-				return _directories;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -99,10 +95,8 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		public GorgonFileSystemProviderCollection Providers
 		{
-			get
-			{
-				return _providers;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
@@ -187,7 +181,7 @@ namespace GorgonLibrary.FileSystem
 			if (directories.Length == 0)
 				throw new ArgumentException("The path '" + path + "' is not valid.", "directoryPath");
 
-			directory = Directories["/"];
+			directory = RootDirectory;
 			foreach (string item in directories)
 			{
 				if (directory.Directories.Contains(item))
@@ -289,7 +283,7 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerTypeName"/> parameter is an empty string.</exception>
 		public void AddProvider(string providerTypeName)
 		{
-			_providers.Add(providerTypeName);
+			Providers.Add(providerTypeName);
 		}
 
 		/// <summary>
@@ -416,7 +410,7 @@ namespace GorgonLibrary.FileSystem
 		{
 			string directory = string.Empty;
 			string filename = string.Empty;
-			GorgonFileSystemDirectory search = Directories["/"];
+			GorgonFileSystemDirectory search = RootDirectory;
 
 			GorgonDebug.AssertParamString(path, "path");
 
@@ -460,14 +454,14 @@ namespace GorgonLibrary.FileSystem
 				path = "/" + path;
 
 			if (path == "/")
-				return Directories["/"];
+				return RootDirectory;
 
 			directories = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (directories.Length == 0)
 				return null;
 
-			directory = Directories["/"];
+			directory = RootDirectory;
 
 			for (int i = 0; i < directories.Length; i++)
 			{
@@ -520,7 +514,7 @@ namespace GorgonLibrary.FileSystem
 			file = GetFile(path);
 
 			if (file == null)
-				file = AddFileEntry(_providers[typeof(GorgonFolderFileSystemProvider).FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
+				file = AddFileEntry(Providers[typeof(GorgonFolderFileSystemProvider).FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
 
 			file.Provider.WriteFile(file, data);
 		}
@@ -696,8 +690,8 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		public void Clear()
 		{
-			Directories.Clear();
-			Directories.Add(new GorgonFileSystemDirectory("/", null));
+			RootDirectory.Directories.Clear();
+			RootDirectory.Files.Clear();
 		}
 
 		/// <summary>
@@ -784,7 +778,7 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the provider specified by <paramref name="providerTypeName"/> parameter could not be found.</exception>
 		public void RemoveProvider(string providerTypeName)
 		{
-			_providers.Remove(providerTypeName);
+			Providers.Remove(providerTypeName);
 		}
 
 		/// <summary>
@@ -793,8 +787,8 @@ namespace GorgonLibrary.FileSystem
 		/// <remarks>This will remove all providers and files and reset to the default folder file system provider.</remarks>
 		public void RemoveAll()
 		{
-			_providers.Clear();
-			_providers = new GorgonFileSystemProviderCollection(this);
+			Providers.Clear();
+			Providers = new GorgonFileSystemProviderCollection(this);
 			Clear();
 		}
 		#endregion
@@ -805,8 +799,8 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		public GorgonFileSystem()
 		{
-			_providers = new GorgonFileSystemProviderCollection(this);
-			_directories = new GorgonFileSystemDirectoryCollection();
+			Providers = new GorgonFileSystemProviderCollection(this);
+			RootDirectory = new GorgonFileSystemDirectory("/", null);
 			Clear();
 			WriteLocation = string.Empty;
 		}

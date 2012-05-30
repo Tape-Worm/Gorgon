@@ -316,7 +316,7 @@ namespace GorgonLibrary.GorgonEditor
 
 			treeFiles.Nodes.Add(rootNode);
 			rootNode.ImageIndex = rootNode.SelectedImageIndex = -1;
-			foreach (var directory in Program.FileSystem.Directories["/"].Directories)
+			foreach (var directory in Program.FileSystem.RootDirectory.Directories)
 			{
 				TreeNode dirNode = rootNode.Nodes.Add(directory.Name);
 				dirNode.ImageIndex = dirNode.SelectedImageIndex = 0;
@@ -326,7 +326,7 @@ namespace GorgonLibrary.GorgonEditor
 				dirNode.Collapse();
 			}
 
-			foreach (var file in Program.FileSystem.Directories["/"].Files)
+			foreach (var file in Program.FileSystem.RootDirectory.Files)
 			{
 				TreeNode fileNode = rootNode.Nodes.Add(file.Name);
 
