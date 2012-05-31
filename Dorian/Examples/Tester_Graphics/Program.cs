@@ -27,12 +27,17 @@ namespace Tester_Graphics
 			//GorgonDialogs.ConfirmBox(null, "Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=", true, true);
 
 			GorgonFileSystem fs = new GorgonFileSystem();
-			formGorgonFileDialog dialog = null;
+			GorgonFileSystemOpenFile dialog = null;
 
 			fs.Mount(@"x:\unpak\");
 
-			dialog = new formGorgonFileDialog(fs, true);
-			dialog.ShowDialog();
+			dialog = new GorgonFileSystemOpenFile(fs);
+			dialog.Filter = "WinZip files (*.zip)|*.zip;*.zeep|All the files (*.*)|*.*";
+			dialog.FilterIndex = 1;
+			if (dialog.ShowDialog() == DialogResult.OK)
+			{
+				GorgonDialogs.InfoBox(null, string.Join("\n", dialog.Filenames));
+			}
 
 			return;
 			Gorgon.Run(new Form1());

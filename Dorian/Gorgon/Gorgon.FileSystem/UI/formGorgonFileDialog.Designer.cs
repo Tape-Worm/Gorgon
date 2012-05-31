@@ -163,6 +163,7 @@ namespace GorgonLibrary.UI
 			this.listFiles.UseCompatibleStateImageBehavior = false;
 			this.listFiles.View = System.Windows.Forms.View.Details;
 			this.listFiles.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listFiles_ColumnClick);
+			this.listFiles.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listFiles_ItemSelectionChanged);
 			this.listFiles.DoubleClick += new System.EventHandler(this.listFiles_DoubleClick);
 			this.listFiles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listFiles_KeyDown);
 			// 
@@ -244,6 +245,7 @@ namespace GorgonLibrary.UI
 			this.comboExtension.Name = "comboExtension";
 			this.comboExtension.Size = new System.Drawing.Size(182, 23);
 			this.comboExtension.TabIndex = 6;
+			this.comboExtension.SelectedIndexChanged += new System.EventHandler(this.comboExtension_SelectedIndexChanged);
 			// 
 			// textFileName
 			// 
@@ -254,6 +256,7 @@ namespace GorgonLibrary.UI
 			this.textFileName.Name = "textFileName";
 			this.textFileName.Size = new System.Drawing.Size(289, 23);
 			this.textFileName.TabIndex = 5;
+			this.textFileName.TextChanged += new System.EventHandler(this.textFileName_TextChanged);
 			// 
 			// label1
 			// 
@@ -292,6 +295,7 @@ namespace GorgonLibrary.UI
 			this.buttonOpen.Text = "&Open";
 			this.buttonOpen.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonOpen.UseVisualStyleBackColor = true;
+			this.buttonOpen.Click += new System.EventHandler(this.buttonOpen_Click);
 			// 
 			// stripMenu
 			// 

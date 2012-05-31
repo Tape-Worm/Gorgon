@@ -39,11 +39,12 @@ namespace GorgonLibrary.UI
 	/// <summary>
 	/// Dialog box for files.
 	/// </summary>
-	public partial class formGorgonFileDialog : Form
+	partial class formGorgonFileDialog : Form
 	{
 		#region Variables.
 		private IDictionary<string, string> _fileTypes = null;		// File types.
 		private Tuple<ColumnHeader, bool> _selectedHeader = null;	// Selected header.
+		private GorgonFileSystem _fileSystem = null;				// File system.
 		#endregion
 
 		#region Properties.
@@ -57,12 +58,91 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// Property to set or return whether to check to see if the file exists.
+		/// </summary>
+		public bool CheckForExistingFile
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the list of selected file names.
+		/// </summary>
+		public IList<string> FileNames
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow multiple files to be selected.
+		/// </summary>
+		public bool AllowMultiSelect
+		{
+			get
+			{
+				return listFiles.MultiSelect;
+			}
+			set
+			{
+				listFiles.MultiSelect = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the selected file name.
+		/// </summary>
+		public string FileName
+		{
+			get
+			{
+				if ((FileNames == null) || (FileNames.Count == 0))
+					return string.Empty;
+
+				return FileNames[0];
+			}
+			set
+			{
+				FileNames = new string[] { value };
+				textFileName.Text = value;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the file system for the dialog.
 		/// </summary>
 		public GorgonFileSystem FileSystem
 		{
-			get;
-			private set;
+			get
+			{
+				return _fileSystem;
+			}
+			set
+			{
+				_fileSystem = value;
+
+				InitializeTree();
+				GetFiles(null);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the extension filter index.
+		/// </summary>
+		public int FilterIndex
+		{
+			get
+			{
+				return comboExtension.SelectedIndex;
+			}
+			set
+			{
+				if ((value < 0) || (value >= comboExtension.Items.Count))
+					value = 0;
+
+				comboExtension.SelectedIndex = value;
+			}
 		}
 
 		/// <summary>
@@ -76,6 +156,192 @@ namespace GorgonLibrary.UI
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the SelectedIndexChanged event of the comboExtension control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void comboExtension_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			try
+			{
+				if (treeDirectories.SelectedNode != null)
+					RefreshCurrentDirectory();
+				textFileName.Text = string.Empty;
+			}
+			finally
+			{
+				ValidateButtons();
+			}
+		}
+
+		/// <summary>
+		/// Function to parse the file entries from the text box.
+		/// </summary>
+		/// <returns>A list of parsed file entries.</returns>
+		private IList<string> ParseFromTextBox()
+		{
+			string[] entries = null;
+			string worker = textFileName.Text.Trim().Replace("\"\"", string.Empty);		// Replace empty paths.
+
+			if (!worker.Contains("\""))
+				return new string[] { textFileName.Text };
+
+			// Ensure we have an even number of quotes around our paths.
+			int count = worker.Count(item => item == '\"');
+
+			if ((count % 2) != 0)
+				throw new System.IO.IOException("Unclosed quotes found in path '" + textFileName.Text +  "'.");
+
+			// Take out trailing quote and space for another delimiter.
+			worker = worker.Replace("\" ", "*");
+
+			entries = worker.Split(new char[] {'*'}, StringSplitOptions.RemoveEmptyEntries);
+
+			if (AllowMultiSelect) 
+			{
+				for (int i = 0; i < entries.Length; i++)
+					entries[i] = entries[i].Replace("\"", string.Empty);
+			}
+			else
+			{
+				if (entries.Length > 0)
+					entries = new string[] { entries[0].Replace("\"", string.Empty) };
+			}
+
+			return entries;
+		}
+
+		/// <summary>
+		/// Handles the ItemSelectionChanged event of the listFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.ListViewItemSelectionChangedEventArgs"/> instance containing the event data.</param>
+		private void listFiles_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+		{
+			try
+			{
+				StringBuilder files = new StringBuilder(2048);
+
+				foreach (var item in listFiles.SelectedItems.Cast<ListViewItem>())
+				{
+					GorgonFileSystemFileEntry entry = item.Tag as GorgonFileSystemFileEntry;
+
+					if (entry == null)
+						continue;
+
+					if (files.Length > 0)
+						files.Append(" ");
+
+					files.Append("\"" + entry.FullPath + "\"");
+				}
+
+				if (files.Length > 0)
+					textFileName.Text = files.ToString();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+		}
+
+		/// <summary>
+		/// Handles the TextChanged event of the textFileName control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void textFileName_TextChanged(object sender, EventArgs e)
+		{
+			ValidateButtons();
+		}
+
+		/// <summary>
+		/// Handles the ColumnClick event of the listFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.ColumnClickEventArgs"/> instance containing the event data.</param>
+		private void listFiles_ColumnClick(object sender, ColumnClickEventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				if (e.Column < 0)
+					return;
+
+				bool direction = _selectedHeader.Item2;
+
+				listFiles.SetSortIcon(_selectedHeader.Item1.Index, SortOrder.None);
+
+				if (_selectedHeader.Item1 == listFiles.Columns[e.Column])
+					direction = !direction;
+				else
+					direction = true;
+
+				_selectedHeader = new Tuple<ColumnHeader, bool>(listFiles.Columns[e.Column], direction);
+
+				if (direction)
+					listFiles.SetSortIcon(e.Column, SortOrder.Ascending);
+				else
+					listFiles.SetSortIcon(e.Column, SortOrder.Descending);
+				GetFiles(treeDirectories.SelectedNode.Tag as GorgonFileSystemDirectory);
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonOpen control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonOpen_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				IList<string> entries = ParseFromTextBox();
+
+				// Check to see if the file exists.
+				for(int i = 0; i < entries.Count; i++)
+				{
+					string entry = entries[i];
+					GorgonFileSystemDirectory directory = treeDirectories.SelectedNode.Tag as GorgonFileSystemDirectory;
+					GorgonFileSystemFileEntry file = null;
+
+					if (string.IsNullOrEmpty(System.IO.Path.GetDirectoryName(entry)))
+						entry = directory.FullPath + entry;
+
+					file = FileSystem.GetFile(entry);
+
+					if ((file == null) && (IsOpenDialog) && (CheckForExistingFile))
+						throw new System.IO.FileNotFoundException("The file '" + entry + "' does not exist.");
+
+					if ((file != null) && (!IsOpenDialog) && (CheckForExistingFile))
+					{
+						if (GorgonDialogs.ConfirmBox(this, "The file '" + entry + "' already exists.  Would you like to overwrite it?") == ConfirmationResult.No)
+						{
+							DialogResult = System.Windows.Forms.DialogResult.None;
+							return;
+						}
+					}
+
+					entries[i] = file.FullPath;
+				}
+
+				FileNames = entries;
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+				DialogResult = System.Windows.Forms.DialogResult.None;
+			}
+		}
+
 		/// <summary>
 		/// Handles the KeyDown event of the listFiles control.
 		/// </summary>
@@ -181,7 +447,15 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="System.Windows.Forms.TreeViewEventArgs"/> instance containing the event data.</param>
 		private void treeDirectories_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			RefreshCurrentDirectory();
+			try
+			{
+				RefreshCurrentDirectory();
+				textFileName.Text = string.Empty;
+			}
+			finally
+			{
+				ValidateButtons();
+			}
 		}
 
 		/// <summary>
@@ -248,7 +522,7 @@ namespace GorgonLibrary.UI
 					return;
 				}
 
-				e.Node.ImageIndex = e.Node.SelectedImageIndex = 0;
+				e.Node.SelectedImageKey = e.Node.ImageKey = "Default_Folder_Closed";
 			}
 			catch (Exception ex)
 			{
@@ -278,7 +552,7 @@ namespace GorgonLibrary.UI
 
 				GetDirectories(e.Node);
 
-				e.Node.ImageIndex = e.Node.SelectedImageIndex = 1;
+				e.Node.SelectedImageKey = e.Node.ImageKey = "Default_Folder_Open";
 			}
 			catch (Exception ex)
 			{
@@ -394,38 +668,38 @@ namespace GorgonLibrary.UI
 
 			IEnumerable<GorgonFileSystemDirectory> sortedDirs = null;
 
-			if ((_selectedHeader.Item1 == columnFileName) && (!_selectedHeader.Item2))
+			if (!_selectedHeader.Item2)
 				sortedDirs = directory.Directories.OrderByDescending(item => item.Name);
 			else
 				sortedDirs = directory.Directories.OrderBy(item => item.Name);
 
-			foreach (var subDir in sortedDirs)
+			if (_selectedHeader.Item2)
 			{
-				ListViewItem directoryItem = new ListViewItem();
-				directoryItem.Text = subDir.Name;
-				directoryItem.Tag = subDir;
-				directoryItem.Name = subDir.FullPath;
-				directoryItem.ImageKey = "Default_Folder_Closed";
-				directoryItem.SubItems.Add("");
-				directoryItem.SubItems.Add("");
-				directoryItem.SubItems.Add("Directory");
-				listFiles.Items.Add(directoryItem);
+				foreach (var subDir in sortedDirs)
+				{
+					ListViewItem directoryItem = new ListViewItem();
+					directoryItem.Text = subDir.Name;
+					directoryItem.Tag = subDir;
+					directoryItem.Name = subDir.FullPath;
+					directoryItem.ImageKey = "Default_Folder_Closed";
+					directoryItem.SubItems.Add("");
+					directoryItem.SubItems.Add("");
+					directoryItem.SubItems.Add("Directory");
+					listFiles.Items.Add(directoryItem);
+				}
 			}
 
 			// Filter extensions.
-			IList<GorgonFileSystemFileEntry> fileList = null;
+			List<GorgonFileSystemFileEntry> fileList = new List<GorgonFileSystemFileEntry>();
 
 			extension = (GorgonFileExtension)comboExtension.SelectedItem;
 
-			foreach (var fileExtension in FileExtensions)
+			foreach (var mask in extension.Extension)
 			{
-				foreach (var mask in fileExtension.Extension)
-				{
-					if ((mask != "*.*") && (mask != "*"))
-						fileList = new List<GorgonFileSystemFileEntry>(FileSystem.FindFiles(directory.FullPath, mask, false));
-					else
-						fileList = new List<GorgonFileSystemFileEntry>(directory.Files);
-				}
+				if ((mask != "*.*") && (mask != "*"))
+					fileList.AddRange(FileSystem.FindFiles(directory.FullPath, mask, false));
+				else
+					fileList.AddRange(directory.Files);
 			}
 
 			foreach (var file in GetSortedFiles(fileList.Distinct()))
@@ -459,6 +733,22 @@ namespace GorgonLibrary.UI
 				listFiles.Items.Add(fileItem);
 			}
 
+			if (!_selectedHeader.Item2)
+			{
+				foreach (var subDir in sortedDirs)
+				{
+					ListViewItem directoryItem = new ListViewItem();
+					directoryItem.Text = subDir.Name;
+					directoryItem.Tag = subDir;
+					directoryItem.Name = subDir.FullPath;
+					directoryItem.ImageKey = "Default_Folder_Closed";
+					directoryItem.SubItems.Add("");
+					directoryItem.SubItems.Add("");
+					directoryItem.SubItems.Add("Directory");
+					listFiles.Items.Add(directoryItem);
+				}
+			}
+
 			listFiles.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 			listFiles.EndUpdate();
 		}
@@ -489,8 +779,8 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		private void ValidateButtons()
 		{			
-			this.buttonOpen.Enabled = !string.IsNullOrEmpty(textFileName.Text);
-			this.buttonUp.Enabled = treeDirectories.SelectedNode.Parent != null;
+			this.buttonOpen.Enabled = !string.IsNullOrEmpty(textFileName.Text.Trim());
+			this.buttonUp.Enabled = treeDirectories.SelectedNode != null && treeDirectories.SelectedNode.Parent != null;
 		}
 
 		/// <summary>
@@ -551,10 +841,18 @@ namespace GorgonLibrary.UI
 
 			try
 			{
+				if (Owner != null)
+					Icon = Owner.Icon;
+				else
+				{
+					if (Gorgon.ApplicationForm != null)
+						Icon = Gorgon.ApplicationForm.Icon;
+				}
+
 				FillExtensions();
-				GetShellIcons();
 				InitializeTree();
 				GetFiles(null);
+				listFiles.SetSortIcon(0, SortOrder.Ascending);
 			}
 			catch (Exception ex)
 			{
@@ -583,6 +881,7 @@ namespace GorgonLibrary.UI
 			FileExtensions = new GorgonFileExtensionCollection();
 			FileExtensions.Add(new GorgonFileExtension("*.*", "All Files"));
 			_selectedHeader = new Tuple<ColumnHeader,bool>(columnFileName, true);
+			FileNames = new string[] { string.Empty };
 		}
 
 		/// <summary>
@@ -594,7 +893,7 @@ namespace GorgonLibrary.UI
 			: this()
 		{			
 			IsOpenDialog = isOpenDialog;
-			FileSystem = fileSystem;
+			_fileSystem = fileSystem;
 
 			if (IsOpenDialog)
 			{
@@ -603,6 +902,7 @@ namespace GorgonLibrary.UI
 				menuFile.Visible = false;
 				treeDirectories.LabelEdit = false;
 				listFiles.LabelEdit = false;
+				listFiles.MultiSelect = true;
 			}
 			else
 			{
@@ -611,41 +911,13 @@ namespace GorgonLibrary.UI
 				menuFile.Visible = true;
 				treeDirectories.LabelEdit = true;
 				listFiles.LabelEdit = true;
+				listFiles.MultiSelect = false;
 			}
+
+			CheckForExistingFile = true;
+			GetShellIcons();
+			FillExtensions();
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the ColumnClick event of the listFiles control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.Forms.ColumnClickEventArgs"/> instance containing the event data.</param>
-		private void listFiles_ColumnClick(object sender, ColumnClickEventArgs e)
-		{
-			Cursor.Current = Cursors.WaitCursor;
-			try
-			{
-				if (e.Column < 0)
-					return;
-
-				bool direction = _selectedHeader.Item2;
-
-				if (_selectedHeader.Item1 == listFiles.Columns[e.Column])
-					direction = !direction;
-				else
-					direction = true;
-
-				_selectedHeader = new Tuple<ColumnHeader, bool>(listFiles.Columns[e.Column], direction);
-				GetFiles(treeDirectories.SelectedNode.Tag as GorgonFileSystemDirectory);
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-		}
 	}
 }
