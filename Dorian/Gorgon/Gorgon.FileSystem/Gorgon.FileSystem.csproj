@@ -72,6 +72,7 @@
     <Compile Include="UI\formGorgonFileDialog.Designer.cs">
       <DependentUpon>formGorgonFileDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\GorgonFileSystemOpenFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

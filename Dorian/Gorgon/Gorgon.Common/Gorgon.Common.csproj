@@ -136,6 +136,7 @@
     <Compile Include="Extensions\GorgonHashGenerationExtension.cs" />
     <Compile Include="Extensions\GorgonIntPtrExtensions.cs" />
     <Compile Include="Diagnostics\GorgonDebug.cs" />
+    <Compile Include="Extensions\GorgonListViewExtensions.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
     <Compile Include="Extensions\GorgonStringFormatting.cs" />
     <Compile Include="Gorgon.cs" />
@@ -224,6 +225,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\WarningDialogIcon.ico" />
+    <None Include="Resources\InfoDialogIcon.ico" />
     <None Include="Resources\Warning_48x48.png" />
     <None Include="Resources\Confirm_48x48.png" />
     <None Include="Resources\Info_48x48.png" />
@@ -232,9 +235,6 @@
     <None Include="Resources\ok_16x16.png" />
     <None Include="Resources\no_16x16.png" />
     <None Include="Resources\cancel_16x16.png" />
-    <None Include="Resources\GorgonWarning.ico" />
-    <None Include="Resources\GorgonInfo.ico" />
-    <None Include="Resources\GorgonInformation.ico" />
     <None Include="Resources\Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -55,7 +55,7 @@ namespace GorgonLibrary.UI
 		/// </returns>
 		public override string ToString()
 		{
-			return Description + " (" + string.Join(";", Extension) + ")";
+			return Description;
 		}
 
 		/// <summary>

@@ -34,6 +34,63 @@ namespace GorgonLibrary.Native
 {
 	#region Value types.
 	/// <summary>
+	/// Header item structure.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct HDITEM
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		public HeaderMask mask;
+		/// <summary>
+		/// 
+		/// </summary>
+		public int cxy;
+		/// <summary>
+		/// 
+		/// </summary>
+		[MarshalAs(UnmanagedType.LPTStr)]
+		public string pszText;
+		/// <summary>
+		/// 
+		/// </summary>
+		public IntPtr hbm;
+		/// <summary>
+		/// 
+		/// </summary>
+		public int cchTextMax;
+		/// <summary>
+		/// 
+		/// </summary>
+		public HeaderFormat fmt;
+		/// <summary>
+		/// 
+		/// </summary>
+		public IntPtr lParam;
+		/// <summary>
+		/// 
+		/// </summary>
+		public int iImage;
+		/// <summary>
+		/// 
+		/// </summary>
+		public int iOrder;
+		/// <summary>
+		/// 
+		/// </summary>
+		public uint type;
+		/// <summary>
+		/// 
+		/// </summary>
+		public IntPtr pvFilter;
+		/// <summary>
+		/// 
+		/// </summary>
+		public uint state;
+	};
+
+	/// <summary>
 	/// Used with GlobalMemoryStatusEx.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
@@ -147,6 +204,39 @@ namespace GorgonLibrary.Native
 		/// <returns>The handle to the window in the foreground.</returns>
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		public static extern IntPtr GetForegroundWindow();
+
+		/// <summary>
+		/// Function to send a message to a window.
+		/// </summary>
+		/// <param name="hWnd"></param>
+		/// <param name="msg"></param>
+		/// <param name="wParam"></param>
+		/// <param name="lParam"></param>
+		/// <returns></returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 msg, IntPtr wParam, IntPtr lParam);
+
+		/// <summary>
+		/// Function to send a message to a window.
+		/// </summary>
+		/// <param name="hWnd"></param>
+		/// <param name="msg"></param>
+		/// <param name="wParam"></param>
+		/// <param name="lParam"></param>
+		/// <returns></returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 msg, IntPtr wParam, ref HDITEM lParam);
+
+		/// <summary>
+		/// Function to send a message to a header.
+		/// </summary>
+		/// <param name="hWnd"></param>
+		/// <param name="msg"></param>
+		/// <param name="wParam"></param>
+		/// <param name="lParam"></param>
+		/// <returns></returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 msg, IntPtr wParam, ref IntPtr lParam);
 
 		/// <summary>
 		/// Function to retrieve the process ID of a window.
