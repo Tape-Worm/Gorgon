@@ -87,7 +87,6 @@
     <Compile Include="Designers\AlphaChannelEditor.cs" />
     <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
     <Compile Include="Designers\PointFConverter.cs" />
-    <Compile Include="SharedResources.cs" />
     <Compile Include="Win32API.cs" />
     <Compile Include="Designers\CharacterSetEditor.cs" />
     <Compile Include="Designers\CharacterSetTypeConverter.cs" />
@@ -216,6 +215,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\save_as_16x16.png" />
+    <None Include="Resources\open_project_16x16.png" />
+    <None Include="Resources\new_project_16x16.png" />
+    <None Include="Resources\delete_item_16x16.png" />
+    <None Include="Resources\edit_16x16.png" />
+    <None Include="Resources\new_item_16x16.png" />
+    <None Include="Resources\item_actions_16x16.png" />
+    <None Include="Resources\font_16x16.png" />
     <None Include="Resources\FontIcon_64x64.png" />
     <None Include="Resources\IBar.png" />
     <None Include="Resources\UnicodeData.txt" />

@@ -51,6 +51,34 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Property to set or return the tree node that is attached to this document.
+		/// </summary>
+		[Browsable(false)]
+		public TreeNode BoundNode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the file path to the project that this document resides within.
+		/// </summary>
+		public string ProjectFilePath
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the file path to the document.
+		/// </summary>
+		public string FilePath
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return the property grid that this document is using.
 		/// </summary>
 		[Browsable(false)]

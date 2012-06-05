@@ -54,7 +54,10 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripArrowRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
 		{
-			e.ArrowColor = Color.White;
+			if (e.Item.Enabled)
+				e.ArrowColor = Color.White;
+			else
+				e.ArrowColor = Color.Black;
 			base.OnRenderArrow(e);
 		}
 
@@ -205,7 +208,32 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripSeparatorRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
 		{
-			e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(e.Item.Width, 0));
+			if (!e.Vertical)
+				e.Graphics.DrawLine(Pens.Black, new Point(0, e.Item.ContentRectangle.Height / 2), new Point(e.Item.Width, e.Item.ContentRectangle.Height / 2));
+			else
+				e.Graphics.DrawLine(Pens.Black, new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Top + 3), new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Bottom - 5));
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.ToolStripRenderer.RenderDropDownButtonBackground"/> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemRenderEventArgs"/> that contains the event data.</param>
+		protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
+		{
+			ToolStripDropDownButton item = e.Item as ToolStripDropDownButton;
+
+			if (item.Selected)
+			{
+				using (Brush backBrush = new SolidBrush(Color.FromKnownColor(item.DropDown.Visible ? KnownColor.DimGray : KnownColor.SteelBlue)))
+					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
+			}
+
+			if (item.DropDown.Visible)
+			{
+				e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(e.Item.Width - 1, 0));
+				e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(0, e.Item.Height));
+				e.Graphics.DrawLine(Pens.Black, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+			}
 		}
 
 		/// <summary>
