@@ -88,6 +88,13 @@ namespace GorgonLibrary.FileSystem.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap save_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("save_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap up_directory_16x16 {
             get {
                 object obj = ResourceManager.GetObject("up_directory_16x16", resourceCulture);

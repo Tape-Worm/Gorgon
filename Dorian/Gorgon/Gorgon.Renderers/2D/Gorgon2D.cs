@@ -1039,6 +1039,14 @@ namespace GorgonLibrary.Renderers
 		/// </remarks>
 		public void Begin2D()
 		{
+			// Reset the cache values.
+			_baseVertex = 0;
+			_cacheStart = 0;
+			_cacheEnd = 0;
+			_renderIndexCount = 0;
+			_renderIndexStart = 0;
+			_cacheWritten = 0;
+
 			_stateRecall.Push(new PreviousStates(Graphics));
 
 			// Set our default shaders.
@@ -1097,6 +1105,14 @@ namespace GorgonLibrary.Renderers
 			{
 				PreviousStates states = _stateRecall.Pop();
 				states.Restore(Graphics);
+
+				// Reset the cache values.
+				_baseVertex = 0;
+				_cacheStart = 0;
+				_cacheEnd = 0;
+				_renderIndexCount = 0;
+				_renderIndexStart = 0;
+				_cacheWritten = 0;
 			}
 		}
 

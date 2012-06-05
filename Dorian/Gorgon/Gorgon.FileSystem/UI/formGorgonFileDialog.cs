@@ -120,10 +120,10 @@ namespace GorgonLibrary.UI
 			}
 			set
 			{
-				_fileSystem = value;
+				if (value == null)
+					return;
 
-				InitializeTree();
-				GetFiles(null);
+				_fileSystem = value;
 			}
 		}
 
@@ -146,9 +146,59 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// Property to set or return the default extension to apply.
+		/// </summary>
+		public string DefaultExtension
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Porperty to set or return the list of file extensions to filter.
 		/// </summary>
-		internal GorgonFileExtensionCollection FileExtensions
+		public GorgonFileExtensionCollection FileExtensions
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the initial directory for the dialog.
+		/// </summary>
+		public string InitialDirectory
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the current directory.
+		/// </summary>
+		public string CurrentDirectory
+		{
+			get
+			{
+				if (treeDirectories.SelectedNode == null)
+					return string.Empty;
+
+				return ((GorgonFileSystemDirectory)treeDirectories.SelectedNode.Tag).FullPath;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the write path for the writeable area of the file system.
+		/// </summary>
+		public string WritePath
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the view mode for the dialog.
+		/// </summary>
+		public FileDialogView DialogView
 		{
 			get;
 			set;
@@ -156,6 +206,72 @@ namespace GorgonLibrary.UI
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the AfterLabelEdit event of the treeDirectories control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.NodeLabelEditEventArgs"/> instance containing the event data.</param>
+		private void treeDirectories_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+		{
+			try
+			{
+				GorgonFileSystemDirectory currentDirectory = e.Node.Tag as GorgonFileSystemDirectory;
+				GorgonFileSystemDirectory newDirectory = FileSystem.CreateDirectory(currentDirectory.Parent.FullPath + e.Label);
+
+				var dirs = FileSystem.FindDirectories(currentDirectory.FullPath, "*", true);
+				var files = FileSystem.FindFiles(currentDirectory.FullPath, "*", true);
+
+				foreach (var file in files)
+				{
+					string newPath = file.FullPath.Replace(currentDirectory.FullPath, newDirectory.FullPath);
+				}
+
+				foreach (var dir in dirs)
+				{
+					string newPath = dir.FullPath.Replace(currentDirectory.FullPath, newDirectory.FullPath);
+					FileSystem.CreateDirectory(newPath);
+				}
+
+				e.Node.EndEdit(false);
+				// Remove the old directory.
+				FileSystem.DeleteDirectory(currentDirectory.FullPath);
+				e.Node.Tag = newDirectory;
+				GetDirectories(e.Node);
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+		}
+
+		/// <summary>
+		/// Handles the BeforeLabelEdit event of the treeDirectories control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.NodeLabelEditEventArgs"/> instance containing the event data.</param>
+		private void treeDirectories_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
+		{
+			try
+			{
+				if (e.Node.IsEditing)
+				{
+					e.CancelEdit = true;
+					return;
+				}
+
+				// Don't allow renaming of the root node.
+				if (e.Node == treeDirectories.Nodes[0])
+				{
+					e.CancelEdit = true;
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+		}
+
 		/// <summary>
 		/// Handles the SelectedIndexChanged event of the comboExtension control.
 		/// </summary>
@@ -305,23 +421,44 @@ namespace GorgonLibrary.UI
 			try
 			{
 				IList<string> entries = ParseFromTextBox();
+				string defaultExtension = DefaultExtension.RemoveIllegalFilenameChars();
 
+				if ((!string.IsNullOrEmpty(defaultExtension)) && (!defaultExtension.StartsWith(".")))
+					defaultExtension = "." + defaultExtension;
+				
 				// Check to see if the file exists.
 				for(int i = 0; i < entries.Count; i++)
 				{
 					string entry = entries[i];
+					string path = string.Empty;
 					GorgonFileSystemDirectory directory = treeDirectories.SelectedNode.Tag as GorgonFileSystemDirectory;
 					GorgonFileSystemFileEntry file = null;
 
-					if (string.IsNullOrEmpty(System.IO.Path.GetDirectoryName(entry)))
+					path = System.IO.Path.GetDirectoryName(entry).FormatDirectory('/');
+					if (string.IsNullOrEmpty(path))
+					{
+						path = directory.FullPath;
 						entry = directory.FullPath + entry;
+					}
+
+					if ((string.IsNullOrEmpty(System.IO.Path.GetExtension(entry))) && (!entry.EndsWith(".")))
+						entry += defaultExtension;
 
 					file = FileSystem.GetFile(entry);
+
+					if (file != null)
+						entry = file.FullPath;
 
 					if ((file == null) && (IsOpenDialog) && (CheckForExistingFile))
 						throw new System.IO.FileNotFoundException("The file '" + entry + "' does not exist.");
 
-					if ((file != null) && (!IsOpenDialog) && (CheckForExistingFile))
+					if (!IsOpenDialog)
+					{
+						if (!path.StartsWith(directory.FullPath))
+							throw new System.IO.DirectoryNotFoundException("Cannot find the path '" + path + "'");
+					}
+
+					if ((!IsOpenDialog) && (file != null) && (CheckForExistingFile))
 					{
 						if (GorgonDialogs.ConfirmBox(this, "The file '" + entry + "' already exists.  Would you like to overwrite it?") == ConfirmationResult.No)
 						{
@@ -330,7 +467,7 @@ namespace GorgonLibrary.UI
 						}
 					}
 
-					entries[i] = file.FullPath;
+					entries[i] = entry;
 				}
 
 				FileNames = entries;
@@ -514,9 +651,7 @@ namespace GorgonLibrary.UI
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-				GorgonFileSystemDirectory dir = e.Node.Tag as GorgonFileSystemDirectory;
-
-				if ((dir == null) || (dir == FileSystem.RootDirectory))
+				if (e.Node == treeDirectories.Nodes[0])
 				{
 					e.Cancel = true;
 					return;
@@ -705,6 +840,8 @@ namespace GorgonLibrary.UI
 			foreach (var file in GetSortedFiles(fileList.Distinct()))
 			{
 				ListViewItem fileItem = new ListViewItem();
+				string fileExtension = file.Extension;
+
 				fileItem.Text = file.Name;
 				fileItem.Tag = file;
 				fileItem.Name = file.FullPath;
@@ -712,24 +849,27 @@ namespace GorgonLibrary.UI
 				fileItem.SubItems.Add(file.Size.FormatMemory());
 				fileItem.SubItems.Add(file.CreateDate.ToString());
 
-				if (!_fileTypes.ContainsKey(file.Extension))
+				if (string.IsNullOrEmpty(fileExtension))
+					fileExtension = "*";
+
+				if (!_fileTypes.ContainsKey(fileExtension))
 				{
-					string fileType = Win32API.GetFileType(file.Extension);
+					string fileType = Win32API.GetFileType(fileExtension);
 
 					if (!string.IsNullOrEmpty(fileType))
-						_fileTypes.Add(file.Extension, fileType);
+						_fileTypes.Add(fileExtension, fileType);
 					else
-						_fileTypes.Add(file.Extension, file.Extension + " file");							
+						_fileTypes.Add(fileExtension, fileExtension + " file");
 				}
 
-				fileItem.SubItems.Add(_fileTypes[file.Extension]);
+				fileItem.SubItems.Add(_fileTypes[fileExtension]);
 
-				if (!imagesTree.Images.ContainsKey(file.Extension))
+				if (!imagesTree.Images.ContainsKey(fileExtension))
 				{
-					imagesTree.Images.Add(file.Extension, Win32API.GetFileIcon(file.Extension, false));
-					imagesLargeIcons.Images.Add(file.Extension, Win32API.GetFileIcon(file.Extension, true));
+					imagesTree.Images.Add(fileExtension, Win32API.GetFileIcon(fileExtension, false));
+					imagesLargeIcons.Images.Add(fileExtension, Win32API.GetFileIcon(fileExtension, true));
 				}
-				fileItem.ImageKey = file.Extension;
+				fileItem.ImageKey = fileExtension;
 				listFiles.Items.Add(fileItem);
 			}
 
@@ -788,9 +928,31 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		private void InitializeTree()
 		{
-			TreeNode root = new TreeNode(FileSystem.RootDirectory.Name);
-			root.Name = FileSystem.RootDirectory.FullPath;
-			root.Tag = FileSystem.RootDirectory;
+			TreeNode root = null;
+
+			if (IsOpenDialog)
+			{
+				root = new TreeNode(FileSystem.RootDirectory.Name);
+				root.Name = FileSystem.RootDirectory.FullPath;
+				root.Tag = FileSystem.RootDirectory;
+			}
+			else
+			{
+				// Locate the write location in the file system.
+				if (!string.IsNullOrEmpty(WritePath))
+				{
+					GorgonFileSystemDirectory writeDirectory = FileSystem.GetDirectory(WritePath);
+
+					if (writeDirectory != null)
+					{
+						root = new TreeNode(writeDirectory.Name);
+						root.Name = writeDirectory.FullPath;
+						root.Tag = writeDirectory;
+					}
+					else
+						throw new GorgonException(GorgonResult.AccessDenied, "Cannot use the save dialog without a writable path.");
+				}
+			}
 			
 			treeDirectories.BeginUpdate();
 			treeDirectories.Nodes.Clear();
@@ -830,12 +992,64 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// Function to go to the initial directory.
+		/// </summary>
+		private void GotoInitialDirectory()
+		{
+			Stack<GorgonFileSystemDirectory> directoryStack = null;
+			GorgonFileSystemDirectory directory = FileSystem.GetDirectory(InitialDirectory);
+			GorgonFileSystemDirectory parent = null;
+
+			// If we can't locate the directory, then we are done here.
+			if (directory == null)
+				return;
+
+			// Build the directory stack.
+			parent = directory.Parent;
+			directoryStack = new Stack<GorgonFileSystemDirectory>();
+			directoryStack.Push(directory);
+
+			while (parent.Parent != null)
+			{
+				directoryStack.Push(parent);
+				parent = parent.Parent;
+			}
+
+			TreeNode parentNode = treeDirectories.Nodes[0];
+			while (directoryStack.Count > 0)
+			{
+				parent = directoryStack.Pop();
+				foreach (TreeNode node in parentNode.Nodes)
+				{
+					if (node.Tag == parent)
+					{
+						if (node.Nodes.Count > 0)
+							node.Expand();
+						else
+						{
+							// If we can't go below here for any reason, then just use this as our destination.
+							treeDirectories.SelectedNode = node;
+							directoryStack.Clear();
+							break;
+						}
+						parentNode = node;
+						break;
+					}
+				}
+
+				if ((parentNode != null) && (parentNode.Tag == directory))
+					treeDirectories.SelectedNode = parentNode;
+			}
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+
 
 			Cursor.Current = Cursors.WaitCursor;
 
@@ -851,8 +1065,28 @@ namespace GorgonLibrary.UI
 
 				FillExtensions();
 				InitializeTree();
-				GetFiles(null);
 				listFiles.SetSortIcon(0, SortOrder.Ascending);
+
+				if (!String.IsNullOrEmpty(InitialDirectory))
+				{
+					if (!InitialDirectory.EndsWith("/"))
+						InitialDirectory += "/";
+
+					GotoInitialDirectory();
+				}
+
+				switch (DialogView)
+				{
+					case FileDialogView.Icons:
+						itemIcons.PerformClick();
+						break;
+					case FileDialogView.List:
+						itemList.PerformClick();
+						break;
+					default:
+						itemDetails.PerformClick();
+						break;
+				}
 			}
 			catch (Exception ex)
 			{
@@ -882,6 +1116,7 @@ namespace GorgonLibrary.UI
 			FileExtensions.Add(new GorgonFileExtension("*.*", "All Files"));
 			_selectedHeader = new Tuple<ColumnHeader,bool>(columnFileName, true);
 			FileNames = new string[] { string.Empty };
+			DefaultExtension = string.Empty;
 		}
 
 		/// <summary>
@@ -903,6 +1138,7 @@ namespace GorgonLibrary.UI
 				treeDirectories.LabelEdit = false;
 				listFiles.LabelEdit = false;
 				listFiles.MultiSelect = true;
+				buttonOpen.Image = GorgonLibrary.FileSystem.Properties.Resources.open_16x16;				
 			}
 			else
 			{
@@ -912,8 +1148,10 @@ namespace GorgonLibrary.UI
 				treeDirectories.LabelEdit = true;
 				listFiles.LabelEdit = true;
 				listFiles.MultiSelect = false;
+				buttonOpen.Image = GorgonLibrary.FileSystem.Properties.Resources.save_16x16;
 			}
 
+			WritePath = string.Empty;
 			CheckForExistingFile = true;
 			GetShellIcons();
 			FillExtensions();

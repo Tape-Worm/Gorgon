@@ -65,6 +65,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\GorgonFileSystemSaveFile.cs" />
     <Compile Include="UI\GorgonFileExtensionCollection.cs" />
     <Compile Include="UI\formGorgonFileDialog.cs">
       <SubType>Form</SubType>
@@ -72,10 +73,12 @@
     <Compile Include="UI\formGorgonFileDialog.Designer.cs">
       <DependentUpon>formGorgonFileDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\GorgonFileSystemDialog.cs" />
     <Compile Include="UI\GorgonFileSystemOpenFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\save_16x16.png" />
     <None Include="Resources\up_directory_16x16.png" />
     <None Include="Resources\change_view_16x16.png" />
     <None Include="Resources\cancel_16x16.png" />

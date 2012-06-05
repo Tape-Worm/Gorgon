@@ -35,29 +35,41 @@ using GorgonLibrary.FileSystem;
 namespace GorgonLibrary.UI
 {
 	/// <summary>
-	/// The open file dialog interface.
+	/// The save file dialog interface.
 	/// </summary>
-	public class GorgonFileSystemOpenFile
+	public class GorgonFileSystemSaveFile
 		: GorgonFileSystemDialog
 	{
+		#region Variables.
+		private string _writePath = string.Empty;
+		#endregion
+
 		#region Properties.
 		/// <summary>
-		/// Property to set or return whether to allow multiple files to be selected or not.
+		/// Property to set or return whether to prompt if an existing file is going to be overwritten.
 		/// </summary>
-		public bool AllowMultiSelect
+		public bool PromptForOverwrite
 		{
 			get;
 			set;
 		}
-		
+
 		/// <summary>
-		/// Property to set or return whether to check to see if a file exists or not.
+		/// Property to set or return the writable path on the file system.
 		/// </summary>
-		/// <remarks>If this value is set to FALSE, the user is responsible for checking filename validity.</remarks>
-		public bool CheckIfFileExists
+		public string WritePath
 		{
-			get;
-			set;
+			get
+			{
+				return _writePath;
+			}
+			set
+			{
+				if (string.IsNullOrEmpty(value))
+					return;
+
+				_writePath = value;
+			}
 		}
 		#endregion
 
@@ -67,24 +79,33 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		protected override void InitWindow()
 		{
-			DialogWindow.AllowMultiSelect = AllowMultiSelect;
-			DialogWindow.CheckForExistingFile = CheckIfFileExists;
+			DialogWindow.WritePath = _writePath;
+			DialogWindow.AllowMultiSelect = false;
+			DialogWindow.CheckForExistingFile = PromptForOverwrite;
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileSystemOpenFile"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFileSystemSaveFile"/> class.
 		/// </summary>
 		/// <param name="fileSystem">The file system.</param>
+		/// <param name="writePath">Path on the file system that's writable.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the file system has had a directory or packed file mounted.</exception>
-		public GorgonFileSystemOpenFile(GorgonFileSystem fileSystem)
-			: base(fileSystem, true)
+		/// <exception cref="System.ArgumentException">Thrown when the file system has had a directory or packed file mounted.
+		/// <para>-or-</para>
+		/// <para>Thrown when the file system does not have a <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">write location</see> specified or the <paramref name="writePath"/> is empty or NULL.</para>
+		/// </exception>
+		/// <remarks>The writePath must be a path accessible by the file system and -not- a physical file path:  e.g. c:\dir\ is NOT valid, /dir/ is.</remarks>
+		public GorgonFileSystemSaveFile(GorgonFileSystem fileSystem, string writePath)
+			: base(fileSystem, false)
 		{
-			AllowMultiSelect = true;
-			CheckIfFileExists = true;
-			Text = "Open file...";
+			if ((string.IsNullOrEmpty(fileSystem.WriteLocation)) || (string.IsNullOrEmpty(writePath)))
+				throw new ArgumentException("Cannot save to a file system without a write location.", "fileSystem");
+
+			WritePath = writePath;
+			PromptForOverwrite = true;
+			Text = "Save file...";
 		}
 		#endregion
 	}

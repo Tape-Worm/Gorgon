@@ -132,6 +132,8 @@ namespace GorgonLibrary.UI
 			this.treeDirectories.ShowRootLines = false;
 			this.treeDirectories.Size = new System.Drawing.Size(151, 305);
 			this.treeDirectories.TabIndex = 0;
+			this.treeDirectories.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeDirectories_BeforeLabelEdit);
+			this.treeDirectories.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeDirectories_AfterLabelEdit);
 			this.treeDirectories.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeDirectories_BeforeCollapse);
 			this.treeDirectories.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeDirectories_BeforeExpand);
 			this.treeDirectories.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeDirectories_BeforeSelect);

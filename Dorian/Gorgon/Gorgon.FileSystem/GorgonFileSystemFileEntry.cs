@@ -189,7 +189,8 @@ namespace GorgonLibrary.FileSystem
 			Provider = provider;
 			Directory = directory;
 			Extension = Path.GetExtension(Name);
-			//BaseFilename = Path.GetFileNameWithoutExtension(Name);
+			BaseFileName = Path.GetFileNameWithoutExtension(fileName);
+			
 			if (string.IsNullOrEmpty(physicalPath))
 			{
 				PhysicalFileSystemPath = Name;
@@ -200,9 +201,6 @@ namespace GorgonLibrary.FileSystem
 				MountPoint = mountPoint;
 				PhysicalFileSystemPath = physicalPath;
 			}
-
-			if ((string.IsNullOrEmpty(Extension)) && (string.IsNullOrEmpty(BaseFileName)))
-				throw new IOException("No file name was given for the file entry.");
 
 			Offset = offset;
 			Size = fileSize;
