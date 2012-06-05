@@ -163,12 +163,8 @@ namespace GorgonLibrary.Renderers
 						_posterizeBuffer.Dispose();
 					if (_posterizeStream != null)
 						_posterizeStream.Dispose();
-
-					if (disposing)
-					{
-						if (PixelShader != null)
-							PixelShader.Dispose();
-					}
+					if (PixelShader != null)
+						PixelShader.Dispose();
 				}
 
 				PixelShader = null;
