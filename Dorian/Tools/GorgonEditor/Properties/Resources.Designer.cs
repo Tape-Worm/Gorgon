@@ -81,9 +81,30 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap delete_item_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("delete_item_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap edit_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("edit_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Expando {
             get {
                 object obj = ResourceManager.GetObject("Expando", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap font_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("font_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -109,6 +130,27 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap item_actions_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("item_actions_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap new_item_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("new_item_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap new_project_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("new_project_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap no_16x16 {
             get {
                 object obj = ResourceManager.GetObject("no_16x16", resourceCulture);
@@ -123,9 +165,23 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap open_project_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("open_project_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap PropertyChecker {
             get {
                 object obj = ResourceManager.GetObject("PropertyChecker", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap save_as_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("save_as_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -529,7 +529,7 @@ namespace GorgonLibrary.GorgonEditor
 					Vector2 size = _text.MeasureText(lines[lines.Count - 1], false, 0);
 					// 0.40625 is the aspect ratio of the i-bar cursor (26w x 64h)
 					if (size.X < _fontWindow.panelText.ClientSize.Width)
-						Renderer.Drawing.FilledRectangle(new RectangleF((int)size.X, (int)(position.Y - _font.FontHeight), (int)(_font.FontHeight * 0.40625f), (int)_font.FontHeight), Color.White, SharedResources.FontTools, new RectangleF(Vector2.Zero, new SizeF(26.0f, 64.0f)));
+						Renderer.Drawing.FilledRectangle(new RectangleF((int)size.X, (int)(position.Y - _font.FontHeight), (int)(_font.FontHeight * 0.40625f), (int)_font.FontHeight), Color.White, Program.FontTools, new RectangleF(Vector2.Zero, new SizeF(26.0f, 64.0f)));
 					else
 					{
 						int height = (int)(_font.FontHeight / 4.0f);
@@ -543,8 +543,8 @@ namespace GorgonLibrary.GorgonEditor
 
 						int width = (int)(height * 0.692308f);
 
-						Renderer.Drawing.FilledRectangle(new RectangleF(_fontWindow.panelText.ClientSize.Width - width, (int)(position.Y - _font.FontHeight), width, height), Color.White, SharedResources.FontTools, new RectangleF(new Vector2(35, 3), new SizeF(9, 13)));
-						Renderer.Drawing.FilledRectangle(new RectangleF(_fontWindow.panelText.ClientSize.Width - width, (int)(position.Y - height), width, height), Color.White, SharedResources.FontTools, new RectangleF(new Vector2(35, 3), new SizeF(9, 13)));
+						Renderer.Drawing.FilledRectangle(new RectangleF(_fontWindow.panelText.ClientSize.Width - width, (int)(position.Y - _font.FontHeight), width, height), Color.White, Program.FontTools, new RectangleF(new Vector2(35, 3), new SizeF(9, 13)));
+						Renderer.Drawing.FilledRectangle(new RectangleF(_fontWindow.panelText.ClientSize.Width - width, (int)(position.Y - height), width, height), Color.White, Program.FontTools, new RectangleF(new Vector2(35, 3), new SizeF(9, 13)));
 					}
 				}
 

@@ -119,12 +119,10 @@ namespace GorgonLibrary.GorgonEditor
 			if (_needsSave)
 			{
 				Text += "*";
-				itemSaveAll.Enabled = itemSaveAs.Enabled = itemSave.Enabled = true;
+				itemSaveAs.Enabled = itemSave.Enabled = true;
 			}
 			else
-			{
-				itemSaveAll.Enabled = itemSaveAs.Enabled = itemSave.Enabled = false;
-			}
+				itemSaveAs.Enabled = itemSave.Enabled = false;
 		}
 
 		/// <summary>
@@ -305,55 +303,6 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Function to fill the document tree.
-		/// </summary>
-		private void FillDocumentTree()
-		{
-			TreeNode rootNode = new TreeNode("Project: " + (string.IsNullOrEmpty(_projectName) ? "Untitled" : _projectName));
-			treeFiles.BeginUpdate();
-			
-			treeFiles.Nodes.Clear();
-
-			treeFiles.Nodes.Add(rootNode);
-			rootNode.ImageIndex = rootNode.SelectedImageIndex = -1;
-			foreach (var directory in Program.FileSystem.RootDirectory.Directories)
-			{
-				TreeNode dirNode = rootNode.Nodes.Add(directory.Name);
-				dirNode.ImageIndex = dirNode.SelectedImageIndex = 0;
-				if ((directory.Directories.Count > 0) || (directory.Files.Count > 0))
-					dirNode.Nodes.Add("DummyNode");
-				
-				dirNode.Collapse();
-			}
-
-			foreach (var file in Program.FileSystem.RootDirectory.Files)
-			{
-				TreeNode fileNode = rootNode.Nodes.Add(file.Name);
-
-				switch (file.Extension.ToLower())
-				{
-					case ".gorfont":
-						fileNode.ImageIndex = fileNode.SelectedImageIndex = 2;
-						break;
-					case ".png":
-					case ".tga":
-					case ".jpg": 
-					case ".jpeg": 
-					case ".bmp": 
-					case ".dds":
-						fileNode.ImageIndex = fileNode.SelectedImageIndex = 5;
-						break;
-					default:
-						fileNode.ImageIndex = fileNode.SelectedImageIndex = 3;
-						break;
-				}
-			}
-
-			rootNode.Expand();
-			treeFiles.EndUpdate();
-		}
-
-		/// <summary>
 		/// Function for idle time.
 		/// </summary>
 		/// <param name="timing">Timing data.</param>
@@ -392,8 +341,6 @@ namespace GorgonLibrary.GorgonEditor
 				this.tabDocuments.Focus();
 
 				_defaultDocument = OpenDocument<Document>("Gorgon Editor", false);
-
-				FillDocumentTree();
 
 				// Assign events.
 				((controlDefault)_defaultDocument.Control).buttonCreateFont.Click += new EventHandler(itemNewFont_Click);
@@ -492,6 +439,10 @@ namespace GorgonLibrary.GorgonEditor
 								return;
 						}
 					}
+
+					// If we haven't saved this project yet then remove the node.
+					if ((string.IsNullOrEmpty(document.ProjectFilePath)) && (document.BoundNode != null))
+						document.BoundNode.Remove();
 
 					document.PropertyUpdated -= new EventHandler(FontUpdated);
 					Program.Documents.Remove(document);

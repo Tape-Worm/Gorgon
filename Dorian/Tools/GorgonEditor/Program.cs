@@ -50,19 +50,28 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to return the list of documents.
 		/// </summary>
-		internal static DocumentCollection Documents
+		public static DocumentCollection Documents
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to set or return the file system interface.
+		/// Property to return the texture used for font tools.
 		/// </summary>
-		public static GorgonFileSystem FileSystem
+		public static GorgonTexture2D FontTools
 		{
 			get;
-			set;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current file system holding the project.
+		/// </summary>
+		public static GorgonFileSystem CurrentFile
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -114,7 +123,7 @@ namespace GorgonLibrary.GorgonEditor
 				Graphics = null;
 			}
 			Graphics = new GorgonGraphics();
-			SharedResources.Initialize();
+			FontTools = Program.Graphics.Textures.FromGDIBitmap("Texture.FontTools", Properties.Resources.IBar);
 		}
 
 		/// <summary>
@@ -161,33 +170,6 @@ namespace GorgonLibrary.GorgonEditor
 
 			CachedFonts = fonts;
 		}
-
-		/// <summary>
-		/// Function to initalize the file system.
-		/// </summary>
-		public static void InitializeFileSystem()
-		{
-			string projectPath = Settings.InitialPath.FormatDirectory(Path.DirectorySeparatorChar) + "Working" + Path.DirectorySeparatorChar.ToString();
-
-			if (!Directory.Exists(projectPath))
-				Directory.CreateDirectory(projectPath);
-
-			var files = Directory.EnumerateFiles(projectPath, "*.*", SearchOption.AllDirectories);
-
-			foreach (var file in files)
-				File.Delete(file);
-
-			var directories = Directory.EnumerateDirectories(projectPath, "*", SearchOption.AllDirectories)
-				.OrderByDescending(item => item.Length)
-				.Where(item => string.Compare(item, projectPath, true) != 0);
-
-			foreach (var directory in directories)
-				Directory.Delete(directory);
-
-			FileSystem = new GorgonFileSystem();
-			FileSystem.Mount(projectPath);
-			FileSystem.WriteLocation = projectPath;
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -199,8 +181,7 @@ namespace GorgonLibrary.GorgonEditor
 			Settings = new GorgonEditorSettings();
 			Settings.Load();
 
-			InitializeFileSystem();
-
+			CurrentFile = new GorgonFileSystem();
 			Documents = new DocumentCollection();
 		}
 		#endregion
@@ -224,7 +205,12 @@ namespace GorgonLibrary.GorgonEditor
 			}
 			finally
 			{
-				SharedResources.Terminate();
+				// Get rid of shared resources.
+				if (FontTools != null)
+				{
+					FontTools.Dispose();
+					FontTools = null;
+				}
 
 				// Shut down the graphics interface.
 				if (Graphics != null)
