@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary;
 
 namespace GorgonLibrary.FileSystem
