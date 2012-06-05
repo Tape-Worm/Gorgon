@@ -636,6 +636,9 @@ namespace GorgonLibrary.FileSystem
 
 			directory = GetDirectory(path);
 
+			if (directory == null)
+				throw new DirectoryNotFoundException("The directory in '" + path + "' was not found.");
+
 			// If we specify the root, then remove everything.
 			if (directory.Name == "/")
 			{
@@ -644,22 +647,16 @@ namespace GorgonLibrary.FileSystem
 
 				if (!string.IsNullOrEmpty(WriteLocation))
 					newPath = WriteLocation;
-				return;
 			}
 			else
 			{
-				if (directory == null)
-					throw new ArgumentException("The directory in '" + path + "' was not found.", "path");
-
-
 				if (!string.IsNullOrEmpty(WriteLocation))
 					newPath = GetWritePath(directory.FullPath);
 				
 				directory.Parent.Directories.Remove(directory);
 			}
 
-
-			if (!string.IsNullOrEmpty(WriteLocation))
+			if (!string.IsNullOrEmpty(newPath))
 			{
 				if (Directory.Exists(newPath))
 				{
@@ -753,7 +750,7 @@ namespace GorgonLibrary.FileSystem
 				directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
 
 			if (!File.Exists(directory + fileName))
-				throw new ArgumentException("The path '" + directory + "' does not exist.", "physicalPath");
+				throw new ArgumentException("The path '" + directory + fileName + "' does not exist.", "physicalPath");
 
 			// Find the file system provider that can read this file type.
 			foreach (GorgonFileSystemProvider fileSystemProvider in Providers)
