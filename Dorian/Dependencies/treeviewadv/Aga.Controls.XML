@@ -1,0 +1,327 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Aga.Controls</name>
+    </assembly>
+    <members>
+        <member name="T:Aga.Controls.Tree.TreeViewAdv">
+            <summary>
+            Extensible advanced <see cref="T:System.Windows.Forms.TreeView"/> implemented in 100% managed C# code.
+            Features: Model/View architecture. Multiple column per node. Ability to select
+            multiple tree nodes. Different types of controls for each node column: 
+            <see cref="T:System.Windows.Forms.CheckBox"/>, Icon, Label... Drag and Drop highlighting. Load on
+            demand of nodes. Incremental search of nodes.
+            </summary>
+        </member>
+        <member name="M:Aga.Controls.Tree.TreeViewAdv.EnsureVisible(Aga.Controls.Tree.TreeNodeAdv)">
+            <summary>
+            Expand all parent nodes, andd scroll to the specified node
+            </summary>
+        </member>
+        <member name="M:Aga.Controls.Tree.TreeViewAdv.ScrollTo(Aga.Controls.Tree.TreeNodeAdv)">
+            <summary>
+            Make node visible, scroll if needed. All parent nodes of the specified node must be expanded
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeViewAdv.VisibleNodes">
+            <summary>
+            returns all nodes, which parent is expanded
+            </summary>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeViewAdv.CurrentPageSize">
+            <summary>
+            Number of rows fits to the current page
+            </summary>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeViewAdv.RowCount">
+            <summary>
+            Number of all visible nodes (which parent is expanded)
+            </summary>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeViewAdv.Model">
+            <Summary>
+            The model associated with this <see cref="T:Aga.Controls.Tree.TreeViewAdv"/>.
+            </Summary>
+            <seealso cref="T:Aga.Controls.Tree.ITreeModel"/>
+            <seealso cref="T:Aga.Controls.Tree.TreeModel"/>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeViewAdv.Font">
+            <summary>
+            The font to render <see cref="T:Aga.Controls.Tree.TreeViewAdv"/> content in.
+            </summary>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeViewAdv.AutoRowHeight">
+            <summary>
+            Set to true to expand each row's height to fit the text of it's largest column.
+            </summary>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeViewAdv.AsyncExpanding">
+            <summary>
+            When set to true, node contents will be read in background thread.
+            </summary>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeViewAdv.HorizontalScrollPosition">
+            <summary>
+            Indicates the distance the content is scrolled to the left
+            </summary>
+        </member>
+        <member name="E:Aga.Controls.Tree.TreeViewAdv.DrawControl">
+            <summary>
+            Fires when control is going to draw. Can be used to change text or back color
+            </summary>
+        </member>
+        <member name="M:Aga.Controls.Tree.InputState.MouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            handle OnMouseMove event
+            </summary>
+            <param name="args"></param>
+            <returns>true if event was handled and should be dispatched</returns>
+        </member>
+        <member name="P:Aga.Controls.Tree.TreeNodeAdv.IsVisible">
+            <summary>
+            Returns true if all parent nodes of this node are expanded.
+            </summary>
+        </member>
+        <member name="E:Aga.Controls.Tree.NodeControls.BaseTextControl.DrawText">
+            <summary>
+            Fires when control is going to draw a text. Can be used to change text or back color
+            </summary>
+        </member>
+        <member name="T:Aga.Controls.TimeCounter">
+            <summary>
+            High resolution timer, used to test performance
+            </summary>
+        </member>
+        <member name="M:Aga.Controls.TimeCounter.Start">
+            <summary>
+            Start time counting
+            </summary>
+        </member>
+        <member name="M:Aga.Controls.TimeCounter.Finish">
+            <summary>
+            Finish time counting
+            </summary>
+            <returns>time in seconds elapsed from Start till Finish	</returns>
+        </member>
+        <member name="T:Aga.Controls.PerformanceAnalyzer">
+            <summary>
+            Is used to analyze code performance
+            </summary>
+        </member>
+        <member name="F:Aga.Controls.Tree.ImageScaleMode.Clip">
+            <summary>
+            Don't scale
+            </summary>
+        </member>
+        <member name="F:Aga.Controls.Tree.ImageScaleMode.Fit">
+            <summary>
+            Scales image to fit the display rectangle, aspect ratio is not fixed.
+            </summary>
+        </member>
+        <member name="F:Aga.Controls.Tree.ImageScaleMode.ScaleDown">
+            <summary>
+            Scales image down if it is larger than display rectangle, taking aspect ratio into account
+            </summary>
+        </member>
+        <member name="F:Aga.Controls.Tree.ImageScaleMode.ScaleUp">
+            <summary>
+            Scales image up if it is smaller than display rectangle, taking aspect ratio into account
+            </summary>
+        </member>
+        <member name="F:Aga.Controls.Tree.ImageScaleMode.AlwaysScale">
+            <summary>
+            Scales image to match the display rectangle, taking aspect ratio into account
+            </summary>
+        </member>
+        <member name="M:Aga.Controls.ResourceHelper.GetCursor(System.Byte[])">
+            <summary>
+            Help function to convert byte[] from resource into Cursor Type 
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Aga.Controls.ResourceHelper.GetGifDecoder(System.Byte[])">
+            <summary>
+            Help function to convert byte[] from resource into GifDecoder Type 
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Aga.Controls.Tree.TreeModel">
+            <summary>
+            Provides a simple ready to use implementation of <see cref="T:Aga.Controls.Tree.ITreeModel"/>. Warning: this class is not optimized 
+            to work with big amount of data. In this case create you own implementation of <c>ITreeModel</c>, and pay attention
+            on GetChildren and IsLeaf methods.
+            </summary>
+        </member>
+        <member name="T:Aga.Controls.Tree.TreeListAdapter">
+            <summary>
+            Converts IEnumerable interface to ITreeModel. 
+            Allows to display a plain list in the TreeView
+            </summary>
+        </member>
+        <member name="T:Aga.Controls.Tree.NodeControls.ExpandingIcon">
+            <summary>
+            Displays an animated icon for those nodes, who are in expanding state. 
+            Parent TreeView must have AsyncExpanding property set to true.
+            </summary>
+        </member>
+        <member name="T:Aga.Controls.NumericTextBox">
+            <summary>
+            Restricts the entry of characters to digits, the negative sign,
+            the decimal point, and editing keystrokes (backspace).
+            It does not handle the AltGr key so any keys that can be created in any
+            combination with AltGr these are not filtered
+            </summary>
+        </member>
+        <member name="M:Aga.Controls.NumericTextBox.OnKeyPress(System.Windows.Forms.KeyPressEventArgs)">
+            <summary>
+            Restricts the entry of characters to digits, the negative sign,
+            the decimal point, and editing keystrokes (backspace).
+            It does not handle the AltGr key
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:Aga.Controls.NumericTextBox.invalidNumeric(System.Char)">
+            <summary>
+            Main method for verifying allowed keypresses.
+            This does not catch cut paste copy ... operations.
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Aga.Controls.NumericTextBox.WndProc(System.Windows.Forms.Message@)">
+            <summary>
+            Method invoked when Windows sends a message.
+            </summary>
+            <param name="m">Message from Windows.</param>
+            <remarks>
+            This is over-ridden so that the user can not use
+            cut or paste operations to bypass the TextChanging event.
+            This catches ContextMenu Paste, Shift+Insert, Ctrl+V,
+            While it is generally frowned upon to override WndProc, no
+            other simple mechanism was apparent to simultaneously and
+            transparently intercept so many different operations.
+            </remarks>
+        </member>
+        <member name="T:Aga.Controls.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Aga.Controls.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Aga.Controls.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="M:Aga.Controls.Tree.TreeModelEventArgs.#ctor(Aga.Controls.Tree.TreePath,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="parent">Path to a parent node</param>
+            <param name="children">Child nodes</param>
+        </member>
+        <member name="M:Aga.Controls.Tree.TreeModelEventArgs.#ctor(Aga.Controls.Tree.TreePath,System.Int32[],System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="parent">Path to a parent node</param>
+            <param name="indices">Indices of children in parent nodes collection</param>
+            <param name="children">Child nodes</param>
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.GetPixels(System.Drawing.Bitmap)">
+            Creates new frame image from current data (and previous
+            frames as specified by their disposition codes).
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.GetFrame(System.Int32)">
+             Gets the image contents of frame n.
+            
+             @return BufferedImage representation of frame.
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.Read(System.IO.Stream)">
+             Reads GIF image from stream
+            
+             @param BufferedInputStream containing GIF file.
+             @return read status code (0 = no errors)
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.DecodeImageData">
+            Decodes LZW image data into pixel array.
+            Adapted from John Cristy's ImageMagick.
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.Error">
+            Returns true if an error was encountered during reading/decoding
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.Init">
+            Initializes or re-initializes reader
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.Read">
+            Reads a single byte from the input stream.
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadBlock">
+             Reads next variable length block from input.
+            
+             @return number of bytes stored in "buffer"
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadColorTable(System.Int32)">
+             Reads color table as 256 RGB integer values
+            
+             @param ncolors int number of colors to read
+             @return int array containing 256 colors (packed ARGB with full alpha)
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadContents">
+            Main file parser.  Reads GIF content blocks.
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadGraphicControlExt">
+            Reads Graphics Control Extension values
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadHeader">
+            Reads GIF file header information.
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadImage">
+            Reads next frame image
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadLSD">
+            Reads Logical Screen Descriptor
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadNetscapeExt">
+            Reads Netscape extenstion to obtain iteration count
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ReadShort">
+            Reads next 16-bit value, LSB first
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.ResetFrame">
+            Resets frame state for reading next image.
+        </member>
+        <member name="M:Aga.Controls.GifDecoder.Skip">
+            Skips variable length blocks up to and including
+            next zero length block.
+        </member>
+        <member name="P:Aga.Controls.GifDecoder.FrameCount">
+            Gets the number of frames read from file.
+            @return frame count
+        </member>
+        <member name="P:Aga.Controls.GifDecoder.Image">
+             Gets the first (or only) image read.
+            
+             @return BufferedImage containing first frame, or null if none.
+        </member>
+        <member name="P:Aga.Controls.GifDecoder.LoopCount">
+             Gets the "Netscape" iteration count, if any.
+             A count of 0 means repeat indefinitiely.
+            
+             @return iteration count if one was specified, else 1.
+        </member>
+        <member name="P:Aga.Controls.GifDecoder.FrameSize">
+             Gets image size.
+            
+             @return GIF image dimensions
+        </member>
+    </members>
+</doc>
