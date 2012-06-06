@@ -55,6 +55,9 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aga.Controls">
+      <HintPath>..\..\Dependencies\treeviewadv\Aga.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="KRBTabControl">
       <HintPath>..\..\Dependencies\KRBTabControl\KRBTabControl.dll</HintPath>
     </Reference>
@@ -64,6 +67,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -87,6 +91,12 @@
     <Compile Include="Designers\AlphaChannelEditor.cs" />
     <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
     <Compile Include="Designers\PointFConverter.cs" />
+    <Compile Include="Documents\DocumentExtensionAttribute.cs" />
+    <Compile Include="Documents\DocumentUnknown.cs" />
+    <Compile Include="Documents\DefaultDocument.cs" />
+    <Compile Include="Documents\ProjectFolderCollection.cs" />
+    <Compile Include="Documents\Project.cs" />
+    <Compile Include="Documents\ProjectFolder.cs" />
     <Compile Include="Win32API.cs" />
     <Compile Include="Designers\CharacterSetEditor.cs" />
     <Compile Include="Designers\CharacterSetTypeConverter.cs" />
@@ -215,6 +225,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\unknown_document_16x16.png" />
+    <None Include="Resources\font_document_16x16.png" />
+    <None Include="Resources\folder_16x16.png" />
+    <None Include="Resources\font_64x64.png" />
+    <None Include="Resources\cancel_16x16.png" />
+    <None Include="Resources\ok_16x16.png" />
+    <None Include="Resources\no_16x16.png" />
     <None Include="Resources\save_as_16x16.png" />
     <None Include="Resources\open_project_16x16.png" />
     <None Include="Resources\new_project_16x16.png" />
@@ -223,15 +240,11 @@
     <None Include="Resources\new_item_16x16.png" />
     <None Include="Resources\item_actions_16x16.png" />
     <None Include="Resources\font_16x16.png" />
-    <None Include="Resources\FontIcon_64x64.png" />
     <None Include="Resources\IBar.png" />
     <None Include="Resources\UnicodeData.txt" />
     <None Include="Resources\UnicodeBlocks.txt" />
     <None Include="Resources\Expando.png" />
     <None Include="Resources\PropertyChecker.png" />
-    <None Include="Resources\cancel_16x16.png" />
-    <None Include="Resources\no_16x16.png" />
-    <None Include="Resources\ok_16x16.png" />
     <None Include="Resources\Check_Enabled.png" />
     <None Include="Resources\Check_Disabled.png" />
     <None Include="Resources\Gorgon_2.x_Logo_Full.png" />

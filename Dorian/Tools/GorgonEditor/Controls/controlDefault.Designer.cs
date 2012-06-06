@@ -71,7 +71,7 @@
 			this.buttonCreateFont.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.buttonCreateFont.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.buttonCreateFont.ForeColor = System.Drawing.Color.White;
-			this.buttonCreateFont.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.FontIcon_64x64;
+			this.buttonCreateFont.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.font_64x64;
 			this.buttonCreateFont.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCreateFont.Location = new System.Drawing.Point(3, 3);
 			this.buttonCreateFont.Name = "buttonCreateFont";
@@ -92,7 +92,7 @@
 			this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.button2.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.button2.ForeColor = System.Drawing.Color.White;
-			this.button2.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.FontIcon_64x64;
+			this.button2.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.font_64x64;
 			this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.button2.Location = new System.Drawing.Point(200, 3);
 			this.button2.Name = "button2";
@@ -112,7 +112,7 @@
 			this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.button3.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.button3.ForeColor = System.Drawing.Color.White;
-			this.button3.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.FontIcon_64x64;
+			this.button3.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.font_64x64;
 			this.button3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.button3.Location = new System.Drawing.Point(397, 3);
 			this.button3.Name = "button3";
@@ -132,7 +132,7 @@
 			this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.button4.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.button4.ForeColor = System.Drawing.Color.White;
-			this.button4.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.FontIcon_64x64;
+			this.button4.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.font_64x64;
 			this.button4.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.button4.Location = new System.Drawing.Point(594, 3);
 			this.button4.Name = "button4";
@@ -152,7 +152,7 @@
 			this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.button5.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.button5.ForeColor = System.Drawing.Color.White;
-			this.button5.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.FontIcon_64x64;
+			this.button5.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.font_64x64;
 			this.button5.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.button5.Location = new System.Drawing.Point(3, 98);
 			this.button5.Name = "button5";
@@ -172,7 +172,7 @@
 			this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.button6.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.button6.ForeColor = System.Drawing.Color.White;
-			this.button6.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.FontIcon_64x64;
+			this.button6.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.font_64x64;
 			this.button6.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.button6.Location = new System.Drawing.Point(200, 98);
 			this.button6.Name = "button6";

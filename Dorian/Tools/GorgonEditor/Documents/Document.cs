@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using KRBTabControl;
 using SlimMath;
+using Aga.Controls.Tree;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
@@ -16,7 +17,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// A document for the editor.
 	/// </summary>
-	class Document		
+	abstract class Document		
 		: INamedObject, IDisposable
 	{
 		#region Events.
@@ -29,53 +30,75 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Variables.
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
-		private GorgonTexture2D _logo = null;					// Logo.
-		private RectangleF[] _blurStates = null;				// Images for blur states.
-		private RectangleF _sourceState = RectangleF.Empty;		// Source image state.
-		private RectangleF _destState = RectangleF.Empty;		// Destination image state.
 		private string _name = string.Empty;					// Name of the document.
-		private float _alphaDelta = 0.025f;						// Alpha delta value.
-		private float _alpha = 0.0f;							// Alpha value.
-		private GorgonFont _debugFont = null;					// Debug font.	
 		private bool _needsSave = false;						// Flag to indicate that the document needs to be saved.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the type descriptor for this document.
+		/// Property to set or return whether to allow the document to be closed or not.
 		/// </summary>
-		internal DocumentTypeDescriptor TypeDescriptor
+		protected bool AllowClose
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the renderer interface.
+		/// </summary>
+		protected Gorgon2D Renderer
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to set or return the tree node that is attached to this document.
+		/// Property to return the swap chain used for rendering in this document.
+		/// </summary>
+		protected GorgonSwapChain SwapChain
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return whether the document can be opened or not.
+		/// </summary>
+		public bool CanOpen
+		{
+			get;
+			protected set;
+		}
+		
+		/// <summary>
+		/// Property to return the type descriptor for this document.
 		/// </summary>
 		[Browsable(false)]
-		public TreeNode BoundNode
+		public DocumentTypeDescriptor TypeDescriptor
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
-		/// Property to return the file path to the project that this document resides within.
+		/// Property to return the folder that owns this document.
 		/// </summary>
-		public string ProjectFilePath
+		[Browsable(false)]
+		public ProjectFolder Folder
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
-		/// Property to set or return the file path to the document.
+		/// Property to return the tree node that is attached to this document.
 		/// </summary>
-		public string FilePath
+		[Browsable(false)]
+		public Node TreeNode
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -115,25 +138,6 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Property to return the renderer interface.
-		/// </summary>
-		[Browsable(false)]
-		public Gorgon2D Renderer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the swap chain used for rendering in this document.
-		/// </summary>
-		protected GorgonSwapChain SwapChain
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the tab page that this document resides in.
 		/// </summary>
 		[Browsable(false)]
@@ -160,7 +164,7 @@ namespace GorgonLibrary.GorgonEditor
 		public Control RenderWindow
 		{
 			get;
-			private set;
+			protected set;
 		}
 
 		/// <summary>
@@ -209,12 +213,19 @@ namespace GorgonLibrary.GorgonEditor
 		/// Property to return the type of document.
 		/// </summary>
 		[Browsable(false)]
-		public virtual string DocumentType
+		public abstract string DocumentType
 		{
-			get
-			{
-				return string.Empty;
-			}
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the tab image index.
+		/// </summary>
+		[Browsable(false)]
+		public int TabImageIndex
+		{
+			get;
+			protected set;
 		}
 		#endregion
 
@@ -222,7 +233,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to dispatch an update notification.
 		/// </summary>
-		protected void DispatchUpdateNotification()
+		protected virtual void DispatchUpdateNotification()
 		{
 			if (PropertyUpdated != null)
 				PropertyUpdated(this, EventArgs.Empty);
@@ -233,178 +244,23 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		/// <param name="timing">Timing data.</param>
 		/// <returns>Number of vertical retraces to wait.</returns>
-		protected virtual int Draw(GorgonFrameRate timing)
-		{
-			RectangleF logoBounds = RectangleF.Empty;
-			SizeF logoSize = _logo.Settings.Size;
-			float aspect = 0.0f;
-
-			logoSize.Height = 124;
-
-			if (RenderWindow.ClientSize.Width < logoSize.Width)
-				logoBounds.Width = logoSize.Width * RenderWindow.ClientSize.Width / logoSize.Width;
-			else
-				logoBounds.Width = logoSize.Width;
-
-			aspect = logoSize.Height / logoSize.Width;
-			logoBounds.Height = logoBounds.Width * aspect;
-
-			logoBounds.X = RenderWindow.ClientSize.Width / 2.0f - logoBounds.Width / 2.0f;
-			logoBounds.Y = RenderWindow.ClientSize.Height / 2.0f - logoBounds.Height / 2.0f;
-
-			Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
-			Renderer.Drawing.FilledRectangle(new RectangleF(2, logoBounds.Y, RenderWindow.ClientSize.Width - 4, logoBounds.Height), Color.FromArgb(160, 160, 160));
-
-			Renderer.Drawing.BlendingMode = BlendingMode.PreMultiplied;
-			Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 1.0f - _alpha), _logo, _sourceState);
-			Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
-			Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, _alpha), _logo, _destState);
-
-			_alpha += _alphaDelta * timing.FrameDelta;
-
-			if ((_alpha > 1.0f) && (_alphaDelta > 0))
-			{
-				if (_destState != _blurStates[0])
-				{
-					_sourceState = _blurStates[1];
-					_destState = _blurStates[0];
-					_alpha = 0.0f;
-				}
-				else
-				{
-					_destState = _blurStates[0];
-					_sourceState = _blurStates[1];
-					_alpha = 1.0f;
-					_alphaDelta = -_alphaDelta;
-				}
-			}
-
-			if ((_alpha < 0.0f) && (_alphaDelta < 0))
-			{
-				if (_destState != _blurStates[1])
-				{
-					_destState = _blurStates[1];
-					_sourceState = _blurStates[2];
-					_alpha = 1.0f;
-				}
-				else
-				{
-					_destState = _blurStates[1];
-					_sourceState = _blurStates[2];
-					_alpha = 0.0f;
-					_alphaDelta = -_alphaDelta;
-				}
-			}
-
-			Renderer.Drawing.DrawString(_debugFont, "FPS: " + timing.FPS.ToString("0.0##"), Vector2.Zero, Color.White);
-
-			return 2;
-		}
+		protected abstract int Draw(GorgonFrameRate timing);
 
 		/// <summary>
 		/// Function to initialize graphics and other items for the document.
 		/// </summary>
-		protected virtual void LoadGraphics()
-		{
-			SizeF logoSize = SizeF.Empty;
-			GorgonRenderTarget blur = null;	// Medium blur.
-
-			_logo = Program.Graphics.Textures.FromGDIBitmap("Logo", Properties.Resources.Gorgon_2_Logo_Full, new GorgonTexture2DSettings()
-				{
-					Width = 0,
-					Height = 372,
-					FileFilter = ImageFilters.None,
-					FileMipFilter = ImageFilters.None,
-					Format = BufferFormat.Unknown,
-					ArrayCount = 1,
-					IsTextureCube = false,
-					MipCount = 1,
-					Usage = BufferUsage.Default
-				});
-
-			logoSize = new SizeF(_logo.Settings.Width, 124.0f);
-
-			blur = Program.Graphics.Output.CreateRenderTarget("Blur.Medium", new GorgonRenderTargetSettings()
-				{
-					Width = (int)logoSize.Width,
-					Height = (int)logoSize.Height,
-					Format = _logo.Settings.Format				
-				});
-
-			try
-			{
-				// Blur the logo.
-				blur.Clear(Control.BackColor);
-
-				// Maximum blur.
-				Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(64, 64);
-				Renderer.Effects.GaussianBlur.BlurAmount = 3.2f;
-				Renderer.Effects.GaussianBlur.Render((int pass) =>
-					{
-						if (pass == 0)
-							Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize), Color.White, _logo, new RectangleF(Vector2.Zero, logoSize));
-						else
-						{
-							Renderer.Target = blur;
-							Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, logoSize), Color.White, Renderer.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize));
-						}
-					});
-				_logo.CopySubResource(blur.Texture, new Rectangle(0, 0, blur.Settings.Width, blur.Settings.Height), new Vector2(0, 124));
-				
-				// Medium blur.
-				Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(128, 128);
-				Renderer.Effects.GaussianBlur.BlurAmount = 2.7f;
-				Renderer.Effects.GaussianBlur.Render((int pass) =>
-				{
-					if (pass == 0)
-						Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize), Color.White, _logo, new RectangleF(Vector2.Zero, logoSize));
-					else
-					{
-						Renderer.Target = blur;
-						Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, logoSize), Color.White, Renderer.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize));
-					}
-				});
-				_logo.CopySubResource(blur.Texture, new Rectangle(0, 0, blur.Settings.Width, blur.Settings.Height), new Vector2(0, 248));
-
-				_blurStates = new[] {
-					new RectangleF(0, 0, _logo.Settings.Width, 124),		// No blur.
-					new RectangleF(0, 248, _logo.Settings.Width, 124),		// Medium blur.
-					new RectangleF(0, 124, _logo.Settings.Width, 124),		// Max blur.
-					};
-				
-				_sourceState = _blurStates[2];
-				_destState = _blurStates[1];
-
-				Renderer.Target = null;				
-			}
-			finally
-			{
-				Renderer.Effects.GaussianBlur.FreeResources();
-
-				if (blur != null)
-					blur.Dispose();
-			}
-
-			_debugFont = Program.Graphics.Fonts.CreateFont("My font", new GorgonFontSettings()
-			{
-				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-				FontFamilyName = "Arial",
-				FontStyle = FontStyle.Bold,
-				FontHeightMode = FontHeightMode.Points,
-				Size = 14.0f
-			});
-		}
+		protected abstract void LoadGraphics();
 
 		/// <summary>
 		/// Function to remove graphics and other items for the document.
 		/// </summary>
-		protected virtual void UnloadGraphics()
-		{
-			if (_logo != null)
-				_logo.Dispose();
+		protected abstract void UnloadGraphics();
 
-			_logo = null;
-		}
+		/// <summary>
+		/// Function to initialize the editor control.
+		/// </summary>
+		/// <returns>The editor control.</returns>
+		protected abstract Control InitializeEditorControl();
 
 		/// <summary>
 		/// Function to retrieve default values for properties with the DefaultValue attribute.
@@ -436,6 +292,21 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to initialize the document.
 		/// </summary>
+		public void InitializeDocument()
+		{
+			Tab = new TabPageEx(Name);
+			Tab.ImageIndex = TabImageIndex;
+			Tab.Name = "tab" + Name;
+			Control = InitializeEditorControl();
+
+			// Add the tab for this document to our tab control.
+			Tab.Controls.Add(Control);
+			Tab.IsClosable = AllowClose;
+		}
+
+		/// <summary>
+		/// Function to initialize the document.
+		/// </summary>
 		public void InitializeRendering()
 		{
 			if (Control == null)
@@ -462,7 +333,10 @@ namespace GorgonLibrary.GorgonEditor
 		/// Function to terminate the document.
 		/// </summary>
 		public void TerminateRendering()
-		{			
+		{
+			if ((Renderer == null) || (SwapChain == null))
+				return;
+
 			UnloadGraphics();
 
 			if (Renderer != null)
@@ -476,31 +350,23 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Function to update the rendering control.
+		/// Function to terminate the document (but still keep it alive).
 		/// </summary>
-		/// <param name="newControl">New control to use.</param>
-		/// <param name="renderControl">Control to receive rendering.</param>
-		protected void UpdateControl(Control newControl, Control renderControl)
+		public void TerminateDocument()
 		{
-			bool needReinit = false;		// Flag to indicate that we need to reinitialize the renderer.
-
-			if (SwapChain != null)
-			{
+			// Stop rendering.
+			if (Renderer != null)
 				TerminateRendering();
-				needReinit = true;
-			}
 
 			if (Control != null)
 				Control.Dispose();
-			Control = newControl;
-			if (renderControl == null)
-				RenderWindow = Control;
-			else
-				RenderWindow = renderControl;
-			Tab.Controls.Add(Control);
 
-			if (needReinit)
-				InitializeRendering();
+			if ((Tab != null) && (!Tab.IsClosable))
+				Tab.Dispose();
+
+			RenderWindow = null;
+			Control = null;
+			Tab = null;
 		}
 		#endregion
 
@@ -510,26 +376,30 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="allowClose">TRUE to allow the document to close, FALSE to keep open.</param>
+		/// <param name="folder">Folder that contains the document.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		public Document(string name, bool allowClose)
+		protected Document(string name, bool allowClose, ProjectFolder folder)
 		{
 			GorgonDebug.AssertParamString(name, "name");
 
+			CanOpen = true;
+			TabImageIndex = -1;
+			AllowClose = allowClose;
+			Folder = folder;
 			_name = name;
-			Tab = new TabPageEx(name);
-			Tab.Name = "tab" + name;
-			Control = new controlDefault();
-			Control.Name = "default" + name;
-			Control.BackColor = Color.FromKnownColor(KnownColor.DimGray);
-			Control.Dock = DockStyle.Fill;
-			RenderWindow = ((controlDefault)Control).panelLogo;
-			Tab.Controls.Add(Control);
-			Tab.IsClosable = allowClose;
 
 			TypeDescriptor = new DocumentTypeDescriptor(this);
 			TypeDescriptor.Enumerate(GetType());
+			
+			TreeNode = new Node(name);
+			TreeNode.Image = Properties.Resources.unknown_document_16x16;
+			TreeNode.Tag = this;			
+			
+			// Add to parent folder nodes.
+			if (folder != null)
+				folder.TreeNode.Nodes.Add(TreeNode);
 		}
 		#endregion
 
@@ -544,16 +414,11 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				if (disposing)
 				{
-					TerminateRendering();
-					if (Control != null)
-						Control.Dispose();
-					if ((Tab != null) && (!Tab.IsClosable))
-						Tab.Dispose();
+					if (TreeNode.Parent != null)
+						TreeNode.Parent.Nodes.Remove(TreeNode);
+					TerminateDocument();
 				}
 
-				RenderWindow = null;
-				Control = null;
-				Tab = null;
 				_disposed = true;
 			}
 		}

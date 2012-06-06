@@ -48,6 +48,15 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the current project.
+		/// </summary>
+		public static Project Project
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return the list of documents.
 		/// </summary>
 		public static DocumentCollection Documents
@@ -181,6 +190,8 @@ namespace GorgonLibrary.GorgonEditor
 			Settings = new GorgonEditorSettings();
 			Settings.Load();
 
+			Project = new Project();
+			Project.LoadProject(@"d:\unpak\");
 			CurrentFile = new GorgonFileSystem();
 			Documents = new DocumentCollection();
 		}

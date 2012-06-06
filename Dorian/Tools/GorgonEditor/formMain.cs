@@ -32,6 +32,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Aga.Controls.Tree;
+using GorgonLibrary.FileSystem;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
@@ -45,9 +47,9 @@ namespace GorgonLibrary.GorgonEditor
 		: Form
 	{
 		#region Variables.
-		private string _projectName = string.Empty;							// Name of the current project.
+		private TreeModel _treeModel = null;								// Tree model.
 		private bool _needsSave = false;									// Flag to indicate that we have unsaved changes.
-		private Document _defaultDocument = null;							// Our default page.
+		private DefaultDocument _defaultDocument = null;					// Our default page.
 		#endregion
 
 		#region Properties.
@@ -55,6 +57,28 @@ namespace GorgonLibrary.GorgonEditor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the Click event of the buttonDeleteItem control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void buttonDeleteItem_Click(object sender, EventArgs e)
+		{
+			ConfirmationResult result = ConfirmationResult.None;
+
+			try
+			{
+				
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+			}
+		}
+
 		/// <summary>
 		/// Handles the Click event of the itemResetValue control.
 		/// </summary>
@@ -97,10 +121,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void ValidateControls()
 		{
-			if (string.IsNullOrEmpty(_projectName))
-				Text = "Gorgon Editor - Untitled";
-			else
-				Text = "Gorgon Editor - " + _projectName;
+			Text = Program.Project.Name + " - Gorgon Editor";
 
 			if (Program.Documents.Count > 1)
 			{
@@ -152,6 +173,8 @@ namespace GorgonLibrary.GorgonEditor
 
 			try
 			{
+				_nodeText.DrawText -= new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(_nodeText_DrawText);
+
 				// Assign events.
 				((controlDefault)_defaultDocument.Control).buttonCreateFont.Click -= new EventHandler(itemNewFont_Click);
 
@@ -275,7 +298,8 @@ namespace GorgonLibrary.GorgonEditor
 			T document = null;
 			Type type = typeof(T);
 
-			document = (T)Activator.CreateInstance(type, new object[] { documentName, allowClose });
+			document = (T)Activator.CreateInstance(type, new object[] { documentName, allowClose, null });
+			document.InitializeDocument();
 			document.PropertyGrid = propertyItem;
 			Program.Documents.Add(document);
 			document.Tab.Font = this.Font;
@@ -318,6 +342,49 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Handles the DrawText event of the _nodeText control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="Aga.Controls.Tree.NodeControls.DrawEventArgs"/> instance containing the event data.</param>
+		private void _nodeText_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		{
+			Document document = ((Node)e.Node.Tag).Tag as Document;
+
+			e.TextColor = Color.White;
+
+			if ((document != null) && (!document.CanOpen))
+				e.TextColor = Color.Black;
+		}
+
+		/// <summary>
+		/// Function to initialize the files tree.
+		/// </summary>
+		private void InitializeTree()
+		{
+			Node rootNode = null;
+
+			_nodeText.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(_nodeText_DrawText);
+			_treeModel = new TreeModel();
+			treeFiles.Model = _treeModel;
+
+			treeFiles.BeginUpdate();
+
+			rootNode = new Node(Program.Project.Name);
+			_treeModel.Nodes.Add(rootNode);
+			rootNode.Image = imageFiles.Images["project_node"];
+
+			foreach (var folder in Program.Project.Folders)
+				_treeModel.Nodes.Add(folder.TreeNode);
+
+			foreach (var file in Program.Project.Documents)
+				_treeModel.Nodes.Add(file.TreeNode);
+
+			treeFiles.EndUpdate();
+			
+			treeFiles.Root.Children[0].Expand();
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
@@ -340,7 +407,9 @@ namespace GorgonLibrary.GorgonEditor
 				this.WindowState = Program.Settings.FormState;
 				this.tabDocuments.Focus();
 
-				_defaultDocument = OpenDocument<Document>("Gorgon Editor", false);
+				InitializeTree();
+
+				_defaultDocument = OpenDocument<DefaultDocument>("Gorgon Editor", false);
 
 				// Assign events.
 				((controlDefault)_defaultDocument.Control).buttonCreateFont.Click += new EventHandler(itemNewFont_Click);
@@ -381,13 +450,12 @@ namespace GorgonLibrary.GorgonEditor
 
 				if (document != null)
 				{
-					if ((Program.CurrentDocument != null) && (Program.CurrentDocument.Renderer != null))
-						Program.CurrentDocument.Renderer.End2D();
+					if (Program.CurrentDocument != null)
+						Program.CurrentDocument.TerminateRendering();
 
 					Program.CurrentDocument = document;
 
-					if (document.Renderer != null)
-						document.Renderer.Begin2D();
+					Program.CurrentDocument.InitializeRendering();
 
 					if (!Program.CurrentDocument.HasProperties)
 					{
@@ -439,10 +507,6 @@ namespace GorgonLibrary.GorgonEditor
 								return;
 						}
 					}
-
-					// If we haven't saved this project yet then remove the node.
-					if ((string.IsNullOrEmpty(document.ProjectFilePath)) && (document.BoundNode != null))
-						document.BoundNode.Remove();
 
 					document.PropertyUpdated -= new EventHandler(FontUpdated);
 					Program.Documents.Remove(document);

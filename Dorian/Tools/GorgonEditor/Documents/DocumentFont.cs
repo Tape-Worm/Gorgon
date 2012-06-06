@@ -42,6 +42,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Font document.
 	/// </summary>
+	[DocumentExtension(typeof(DocumentFont), "gorFont", true)]
 	class DocumentFont
 		: Document
 	{
@@ -298,6 +299,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to return the type of document.
 		/// </summary>
+		[Browsable(false)]
 		public override string DocumentType
 		{
 			get
@@ -440,7 +442,7 @@ namespace GorgonLibrary.GorgonEditor
 				{
 					Window = _fontWindow.panelText,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
-				});			
+				});
 		}
 
 		/// <summary>
@@ -448,10 +450,14 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		protected override void UnloadGraphics()
 		{
+			if (_font != null)
+				_font.Dispose();
 			if (_textArea != null)
 				_textArea.Dispose();
 			if (_target != null)
 				_target.Dispose();
+
+			_font = null;
 			_textArea = null;
 			_target = null;
 		}
@@ -465,8 +471,16 @@ namespace GorgonLibrary.GorgonEditor
 		/// </returns>
 		protected override int Draw(Diagnostics.GorgonFrameRate timing)
 		{
+			// If we don't have the font, then we've unloaded the resources for the font.  
+			// In that case, we'll need to regenerate.
 			if (_font == null)
-				return 3;
+			{
+				Update();
+
+				// If we still don't have a font (missing meta data or something), then just leave.
+				if (_font == null)
+					return 3;
+			}
 
 			Renderer.Drawing.SmoothingMode = Renderers.SmoothingMode.Smooth;
 
@@ -579,6 +593,25 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Function to initialize the editor control.
+		/// </summary>
+		/// <returns>
+		/// The editor control.
+		/// </returns>
+		protected override Control InitializeEditorControl()
+		{
+			if (_fontWindow != null)
+				return _fontWindow;
+
+			_fontWindow = new controlFontDisplay();
+			_fontWindow.Dock = System.Windows.Forms.DockStyle.Fill;
+			_iBarTimer = new GorgonTimer();
+			RenderWindow = _fontWindow.panelDisplay;
+
+			return _fontWindow;
+		}
+
+		/// <summary>
 		/// Function to update the font.
 		/// </summary>
 		public void Update()
@@ -586,7 +619,7 @@ namespace GorgonLibrary.GorgonEditor
 			GorgonFont newFont = null;
 
 			if (!Program.CachedFonts.ContainsKey(FontFamily))
-				throw new KeyNotFoundException("The font family '" + FontFamily + "' count not be found.");
+				throw new KeyNotFoundException("The font family '" + FontFamily + "' could not be found.");
 
 			Font cachedFont = Program.CachedFonts[FontFamily];
 			FontStyle[] styles = Enum.GetValues(typeof(FontStyle)) as FontStyle[];
@@ -669,21 +702,19 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="allowClose">TRUE to allow the document to close, FALSE to keep open.</param>
+		/// <param name="folder">Folder that owns this document.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		public DocumentFont(string name, bool allowClose)
-			: base(name, allowClose)
+		public DocumentFont(string name, bool allowClose, ProjectFolder folder)
+			: base(name, allowClose, folder)
 		{
-			_iBarTimer = new GorgonTimer();
-			_fontWindow = new controlFontDisplay();
 			_fontSettings = new GorgonFontSettings();
 			DropShadow = false;
 			_dropOffset = new Vector2(1, 1);
 			TextColor = Color.Black;
 			HasProperties = true;
-			_fontWindow.Dock = System.Windows.Forms.DockStyle.Fill;
-			UpdateControl(_fontWindow, _fontWindow.panelDisplay);
+			TabImageIndex = 5;
+			TreeNode.Image = Properties.Resources.font_document_16x16;
 		}
 		#endregion
 	}
