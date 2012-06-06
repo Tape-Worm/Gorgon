@@ -58,6 +58,15 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Property to return the document description.
+		/// </summary>
+		public string DocumentDescription
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return whether the editor can open the file or not.
 		/// </summary>
 		public bool CanOpen
@@ -72,10 +81,11 @@ namespace GorgonLibrary.GorgonEditor
 		/// Initializes a new instance of the <see cref="DocumentExtensionAttribute"/> class.
 		/// </summary>
 		/// <param name="extensions">The extensions for the document.</param>
+		/// <param name="documentDescription">Description of the document type.</param>
 		/// <param name="type">The type of the document.</param>
 		/// <param name="canOpen">TRUE if the editor can open the file, FALSE if not.</param>
 		/// <remarks>The <paramref name="extensions"/> parameter can take multiple file extensions delimited by a semi-colon.  For example "zip;rar;tga" will be parsed into 3 extensions for the same type.</remarks>
-		public DocumentExtensionAttribute(Type type, string extensions, bool canOpen)
+		public DocumentExtensionAttribute(Type type, string extensions, string documentDescription, bool canOpen)
 		{
 			DocumentType = type;
 
@@ -101,8 +111,12 @@ namespace GorgonLibrary.GorgonEditor
 				}
 			}
 
+			if (documentDescription == null)
+				documentDescription = string.Empty;
+
 			Extensions = list;
 			CanOpen = canOpen;
+			DocumentDescription = documentDescription;
 		}
 		#endregion
 	}

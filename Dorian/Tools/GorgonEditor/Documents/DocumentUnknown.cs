@@ -16,7 +16,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// An unknown document type.
 	/// </summary>
-	[DocumentExtension(typeof(DocumentUnknown), null, false)]
+	[DocumentExtension(typeof(DocumentUnknown), null, null, false)]
 	class DocumentUnknown
 		: Document
 	{
@@ -84,7 +84,6 @@ namespace GorgonLibrary.GorgonEditor
 		public DocumentUnknown(string name, bool allowClose, ProjectFolder folder)
 			: base(name, allowClose, folder)
 		{
-			CanOpen = false;
 		}
 		#endregion
 	}

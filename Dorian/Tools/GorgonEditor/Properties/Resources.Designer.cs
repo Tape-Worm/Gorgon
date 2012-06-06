@@ -102,6 +102,13 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap export_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("export_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap folder_16x16 {
             get {
                 object obj = ResourceManager.GetObject("folder_16x16", resourceCulture);
@@ -144,6 +151,13 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap import_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("import_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap item_actions_16x16 {
             get {
                 object obj = ResourceManager.GetObject("item_actions_16x16", resourceCulture);
@@ -182,6 +196,13 @@ namespace GorgonLibrary.GorgonEditor.Properties {
         internal static System.Drawing.Bitmap open_project_16x16 {
             get {
                 object obj = ResourceManager.GetObject("open_project_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap project_node_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("project_node_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -257,7 +257,7 @@ namespace GorgonLibrary.GorgonEditor
 		public DefaultDocument(string name, bool allowClose, ProjectFolder folder)
 			: base(name, allowClose, folder)
 		{
-			TabImageIndex = 6;
+			TabImageIndex = 0;
 		}
 		#endregion
 	}

@@ -64,6 +64,9 @@ namespace GorgonLibrary.GorgonEditor
 			this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemImport = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemExport = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.itemExit = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitEdit = new System.Windows.Forms.SplitContainer();
 			this.panelEditor = new System.Windows.Forms.Panel();
@@ -120,6 +123,9 @@ namespace GorgonLibrary.GorgonEditor
             this.itemSave,
             this.itemSaveAs,
             this.toolStripMenuItem5,
+            this.itemImport,
+            this.itemExport,
+            this.toolStripSeparator2,
             this.itemExit});
 			this.menuFile.Name = "menuFile";
 			this.menuFile.Size = new System.Drawing.Size(37, 20);
@@ -149,6 +155,7 @@ namespace GorgonLibrary.GorgonEditor
 			// itemSave
 			// 
 			this.itemSave.Name = "itemSave";
+			this.itemSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
 			this.itemSave.Size = new System.Drawing.Size(155, 22);
 			this.itemSave.Text = "&Save...";
 			// 
@@ -163,6 +170,26 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
 			this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 6);
+			// 
+			// itemImport
+			// 
+			this.itemImport.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.import_16x16;
+			this.itemImport.Name = "itemImport";
+			this.itemImport.Size = new System.Drawing.Size(155, 22);
+			this.itemImport.Text = "Import...";
+			this.itemImport.Click += new System.EventHandler(this.itemImport_Click);
+			// 
+			// itemExport
+			// 
+			this.itemExport.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.export_16x16;
+			this.itemExport.Name = "itemExport";
+			this.itemExport.Size = new System.Drawing.Size(155, 22);
+			this.itemExport.Text = "&Export...";
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
 			// 
 			// itemExit
 			// 
@@ -236,10 +263,10 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			this.imageFiles.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageFiles.ImageStream")));
 			this.imageFiles.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageFiles.Images.SetKeyName(0, "files_tab");
-			this.imageFiles.Images.SetKeyName(1, "properties_tab");
-			this.imageFiles.Images.SetKeyName(2, "font_icon");
-			this.imageFiles.Images.SetKeyName(3, "gorgon_icon");
+			this.imageFiles.Images.SetKeyName(0, "gorgon_icon");
+			this.imageFiles.Images.SetKeyName(1, "font_icon");
+			this.imageFiles.Images.SetKeyName(2, "files_tab");
+			this.imageFiles.Images.SetKeyName(3, "properties_tab");
 			// 
 			// tabDocumentManager
 			// 
@@ -273,7 +300,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.pageFiles.BackColor = System.Drawing.Color.DimGray;
 			this.pageFiles.Controls.Add(this.containerFiles);
 			this.pageFiles.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.pageFiles.ImageIndex = 1;
+			this.pageFiles.ImageIndex = 2;
 			this.pageFiles.IsClosable = false;
 			this.pageFiles.Location = new System.Drawing.Point(1, 1);
 			this.pageFiles.Name = "pageFiles";
@@ -405,7 +432,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.pageProperties.BackColor = System.Drawing.Color.DimGray;
 			this.pageProperties.Controls.Add(this.propertyItem);
 			this.pageProperties.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.pageProperties.ImageIndex = 2;
+			this.pageProperties.ImageIndex = 3;
 			this.pageProperties.IsClosable = false;
 			this.pageProperties.Location = new System.Drawing.Point(1, 1);
 			this.pageProperties.Name = "pageProperties";
@@ -517,6 +544,9 @@ namespace GorgonLibrary.GorgonEditor
 		private Aga.Controls.Tree.TreeColumn columnFiles;
 		private Aga.Controls.Tree.NodeControls.NodeTextBox _nodeText;
 		private Aga.Controls.Tree.NodeControls.NodeStateIcon _nodeImage;
+		private System.Windows.Forms.ToolStripMenuItem itemImport;
+		private System.Windows.Forms.ToolStripMenuItem itemExport;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 	}
 }
 

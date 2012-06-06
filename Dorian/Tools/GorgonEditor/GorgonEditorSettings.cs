@@ -105,6 +105,26 @@ namespace GorgonLibrary.GorgonEditor
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the import project folder path.
+		/// </summary>
+		[GorgonApplicationSetting("LastProjectFolder", "", typeof(string), "Import")]
+		public string ImportLastProjectFolder
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the import project folder path.
+		/// </summary>
+		[GorgonApplicationSetting("LastFilePath", "", typeof(string), "Import")]
+		public string ImportLastFilePath
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.

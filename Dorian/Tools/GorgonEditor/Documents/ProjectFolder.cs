@@ -42,6 +42,20 @@ namespace GorgonLibrary.GorgonEditor
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the path to the folder.
+		/// </summary>
+		public string Path
+		{
+			get
+			{
+				if (Owner == null)
+					return "/" + Name + "/";
+				else
+					return Owner.Path + Name + "/";
+			}
+		}
+
+		/// <summary>
 		/// Property to return the tree node for the project folder.
 		/// </summary>
 		public Node TreeNode
@@ -111,6 +125,8 @@ namespace GorgonLibrary.GorgonEditor
 
 			if (Owner != null)
 				Owner.TreeNode.Nodes.Add(TreeNode);
+			else
+				Program.Project.RootNode.Nodes.Add(TreeNode);
 		}
 		#endregion
 	}
