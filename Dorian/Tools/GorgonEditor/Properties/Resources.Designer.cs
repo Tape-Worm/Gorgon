@@ -102,6 +102,13 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap folder_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("folder_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap font_16x16 {
             get {
                 object obj = ResourceManager.GetObject("font_16x16", resourceCulture);
@@ -109,9 +116,16 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap FontIcon_64x64 {
+        internal static System.Drawing.Bitmap font_64x64 {
             get {
-                object obj = ResourceManager.GetObject("FontIcon_64x64", resourceCulture);
+                object obj = ResourceManager.GetObject("font_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap font_document_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("font_document_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -231,6 +245,13 @@ namespace GorgonLibrary.GorgonEditor.Properties {
         internal static string UnicodeData {
             get {
                 return ResourceManager.GetString("UnicodeData", resourceCulture);
+            }
+        }
+        
+        internal static System.Drawing.Bitmap unknown_document_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("unknown_document_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

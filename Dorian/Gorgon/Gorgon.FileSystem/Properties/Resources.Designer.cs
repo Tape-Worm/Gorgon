@@ -59,47 +59,5 @@ namespace GorgonLibrary.FileSystem.Properties {
                 resourceCulture = value;
             }
         }
-        
-        internal static System.Drawing.Bitmap cancel_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap change_view_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("change_view_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap open_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("open_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap Refresh_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("Refresh_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap save_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("save_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap up_directory_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("up_directory_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

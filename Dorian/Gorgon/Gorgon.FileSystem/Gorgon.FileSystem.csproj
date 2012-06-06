@@ -68,12 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <None Include="Resources\save_16x16.png" />
-    <None Include="Resources\up_directory_16x16.png" />
-    <None Include="Resources\change_view_16x16.png" />
-    <None Include="Resources\cancel_16x16.png" />
-    <None Include="Resources\open_16x16.png" />
-    <None Include="Resources\Actions-view-refresh-icon_16x16.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
