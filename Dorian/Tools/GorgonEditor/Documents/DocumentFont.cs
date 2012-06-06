@@ -42,7 +42,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Font document.
 	/// </summary>
-	[DocumentExtension(typeof(DocumentFont), "gorFont", true)]
+	[DocumentExtension(typeof(DocumentFont), "gorFont", "Gorgon Font", true)]
 	class DocumentFont
 		: Document
 	{
@@ -708,12 +708,14 @@ namespace GorgonLibrary.GorgonEditor
 		public DocumentFont(string name, bool allowClose, ProjectFolder folder)
 			: base(name, allowClose, folder)
 		{
+			CanOpen = true;
+			CanSave = true;
 			_fontSettings = new GorgonFontSettings();
 			DropShadow = false;
 			_dropOffset = new Vector2(1, 1);
 			TextColor = Color.Black;
 			HasProperties = true;
-			TabImageIndex = 5;
+			TabImageIndex = 1;
 			TreeNode.Image = Properties.Resources.font_document_16x16;
 		}
 		#endregion

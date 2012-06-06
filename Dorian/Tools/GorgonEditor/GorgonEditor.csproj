@@ -97,6 +97,18 @@
     <Compile Include="Documents\ProjectFolderCollection.cs" />
     <Compile Include="Documents\Project.cs" />
     <Compile Include="Documents\ProjectFolder.cs" />
+    <Compile Include="formImport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formImport.Designer.cs">
+      <DependentUpon>formImport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formProjectFolderSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formProjectFolderSelector.Designer.cs">
+      <DependentUpon>formProjectFolderSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="Win32API.cs" />
     <Compile Include="Designers\CharacterSetEditor.cs" />
     <Compile Include="Designers\CharacterSetTypeConverter.cs" />
@@ -177,11 +189,17 @@
     <EmbeddedResource Include="Designers\formCharacterPicker.resx">
       <DependentUpon>formCharacterPicker.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="formImport.resx">
+      <DependentUpon>formImport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formNewFont.resx">
       <DependentUpon>formNewFont.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formProjectFolderSelector.resx">
+      <DependentUpon>formProjectFolderSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formSplash.resx">
       <DependentUpon>formSplash.cs</DependentUpon>
@@ -225,6 +243,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\project_node_16x16.png" />
+    <None Include="Resources\import_16x16.png" />
+    <None Include="Resources\export_16x16.png" />
     <None Include="Resources\unknown_document_16x16.png" />
     <None Include="Resources\font_document_16x16.png" />
     <None Include="Resources\folder_16x16.png" />

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Aga.Controls.Tree;
 using GorgonLibrary.FileSystem;
 
 namespace GorgonLibrary.GorgonEditor
@@ -42,6 +43,15 @@ namespace GorgonLibrary.GorgonEditor
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the root node for the tree.
+		/// </summary>
+		public Node RootNode
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the type registry for the documents.
 		/// </summary>
@@ -174,6 +184,175 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Function to create the specified folder path.
+		/// </summary>
+		/// <param name="path">Path to the folder.</param>
+		/// <returns>The newly created folder, or the folder if it already exists.</returns>
+		public ProjectFolder CreateFolder(string path)
+		{
+			ProjectFolder folder = null;
+			ProjectFolderCollection folders = null;
+
+			path = path.FormatDirectory('/');
+
+			if ((Path.GetInvalidPathChars().Any(item => path.Contains(item))) || (Path.GetInvalidFileNameChars().Any(item => path.Contains(item) && (item != '/'))))
+				throw new ArgumentException("Cannot create the path, it contains invalid characters.", "path");			
+
+			if (path == "/")
+				return null;
+
+			folder = GetFolder(null, path);
+
+			if (folder != null)
+				return folder;
+
+			folders = Folders;
+			var parts = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+			foreach (var part in parts)
+			{
+				if (folders.Contains(part))
+				{
+					folder = Folders[part];
+					folders = folder.Folders;
+				}
+				else
+				{
+					folder = new ProjectFolder(this, folder, part);
+					folders.Add(folder);
+					folders = folder.Folders;
+				}
+			}
+
+			return folder;
+		}
+
+		/// <summary>
+		/// Function to retrieve all the folders in the specified folder and sub folders.
+		/// </summary>
+		/// <param name="folder">Folder to start searching with.</param>
+		/// <returns>The folders and the sub folders.</returns>
+		public IEnumerable<ProjectFolder> GetFolders(ProjectFolder folder)
+		{
+			List<ProjectFolder> result = new List<ProjectFolder>();
+			ProjectFolderCollection folders = null;
+
+			if (folder == null)
+			{
+				folders = Folders;
+				result.AddRange(Folders);
+			}
+			else
+			{
+				folders = folder.Folders;
+				result.AddRange(folder.Folders);
+			}
+
+			foreach (var subFolder in folders)
+				result.AddRange(GetFolders(subFolder));
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to find a folder.
+		/// </summary>
+		/// <param name="folder">Folder to start searching from.</param>
+		/// <param name="path">Path to the folder.</param>
+		/// <returns></returns>
+		public ProjectFolder GetFolder(ProjectFolder rootFolder, string path)
+		{
+			var folders = GetFolders(rootFolder);
+
+			if (!path.StartsWith("/"))
+				path = "/" + path;
+
+			if (!path.EndsWith("/"))
+				path += "/";
+
+			return (from folder in folders
+				   where string.Compare(folder.Path, path, true) == 0
+				   select folder).SingleOrDefault();
+		}
+
+		/// <summary>
+		/// Function to retrieve all the documents in the specified folder and sub folders.
+		/// </summary>
+		/// <param name="folder">Folder to start searching with.</param>
+		/// <returns>The documents in the folder and the sub-folders.</returns>
+		public IEnumerable<Document> GetDocuments(ProjectFolder folder)
+		{
+			List<Document> result = new List<Document>();
+			ProjectFolderCollection folders = null;
+
+			if (folder == null)
+			{
+				folders = Folders;
+				result.AddRange(Documents);
+			}
+			else
+			{
+				folders = folder.Folders;
+				result.AddRange(folder.Documents);
+			}
+
+			foreach (var subFolder in folders)
+				result.AddRange(GetDocuments(subFolder));
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return whether the project needs to be saved or not.
+		/// </summary>
+		/// <returns>TRUE if the project needs to be saved, FALSE if not.</returns>
+		public bool GetProjectState()
+		{
+			return GetDocuments(null).Count(item => item.NeedsSave) > 0;			
+		}
+
+		/// <summary>
+		/// Function to import documents into the project.
+		/// </summary>
+		/// <param name="paths">Paths to the files to import.</param>
+		/// <param name="folder">Folder to contain the documents.</param>
+		public void ImportDocuments(IEnumerable<string> paths, ProjectFolder folder)
+		{
+			DocumentCollection documents = Documents;
+
+			if (folder != null)
+				documents = folder.Documents;
+
+			foreach (var file in paths)
+			{
+				Document document = null;
+				string extension = Path.GetExtension(file);
+				string fileName = Path.GetFileName(file);
+
+				if ((extension.Length > 0) && (extension.StartsWith(".")))
+					extension = extension.Substring(1);
+
+				extension = extension.ToLower();
+				
+				var type = (from types in DocumentTypes
+						   where types.Value.Extensions.Contains(extension)
+						   select types.Key).FirstOrDefault();
+								
+				if (type == null)
+					document = new DocumentUnknown(fileName, true, folder);
+				else
+				{
+					document = (Document)Activator.CreateInstance(type, new object[] { fileName, true, folder });
+					// TODO: We need a method to import the file data into the document on the Document object.
+					// This method will set the file name for the document and import the name from the object data.
+					// document.Import(path);
+				}
+
+				folder.Documents.Add(document);
+			}
+		}
+
+		/// <summary>
 		/// Function to load a project.
 		/// </summary>
 		/// <param name="path">Path to the project.</param>
@@ -192,6 +371,8 @@ namespace GorgonLibrary.GorgonEditor
 			// Retrieve all directories and files.
 			CreateFolders(FileSystem.RootDirectory.Directories, null);
 			CreateDocuments(FileSystem.RootDirectory, null);
+
+			RootNode.Text = Name;
 		}
 
 		/// <summary>
@@ -204,6 +385,7 @@ namespace GorgonLibrary.GorgonEditor
 			Name = "Untitled";
 			Documents = new DocumentCollection();
 			Folders = new ProjectFolderCollection();
+			RootNode.Nodes.Clear();
 		}
 		#endregion
 
@@ -213,8 +395,12 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		public Project()
 		{
+			RootNode = new Node("Untitled");
+			RootNode.Image = Properties.Resources.project_node_16x16;
+			RootNode.Tag = this;
+
 			Clear();
-			BuildTypeRegistry();			
+			BuildTypeRegistry();
 		}
 		#endregion
 	}

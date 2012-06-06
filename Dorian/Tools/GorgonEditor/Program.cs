@@ -188,10 +188,7 @@ namespace GorgonLibrary.GorgonEditor
 		static Program()
 		{
 			Settings = new GorgonEditorSettings();
-			Settings.Load();
-
 			Project = new Project();
-			Project.LoadProject(@"d:\unpak\");
 			CurrentFile = new GorgonFileSystem();
 			Documents = new DocumentCollection();
 		}
@@ -204,9 +201,12 @@ namespace GorgonLibrary.GorgonEditor
 		static void Main()
 		{
 			try
-			{				
+			{
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
+
+				Project.LoadProject(Path.GetPathRoot(Environment.GetCommandLineArgs()[0]) + @"unpak\");
+				Settings.Load();
 								
 				Gorgon.Run(new AppContext());
 			}

@@ -63,8 +63,19 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Property to return whether the document can be saved or not.
+		/// </summary>
+		[Browsable(false)]
+		public bool CanSave
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
 		/// Property to return whether the document can be opened or not.
 		/// </summary>
+		[Browsable(false)]
 		public bool CanOpen
 		{
 			get;
@@ -384,7 +395,9 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			GorgonDebug.AssertParamString(name, "name");
 
-			CanOpen = true;
+			Filename = string.Empty;
+			CanOpen = false;
+			CanSave = false;
 			TabImageIndex = -1;
 			AllowClose = allowClose;
 			Folder = folder;
@@ -400,6 +413,8 @@ namespace GorgonLibrary.GorgonEditor
 			// Add to parent folder nodes.
 			if (folder != null)
 				folder.TreeNode.Nodes.Add(TreeNode);
+			else
+				Program.Project.RootNode.Nodes.Add(TreeNode);
 		}
 		#endregion
 

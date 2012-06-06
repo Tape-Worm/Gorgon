@@ -38,6 +38,57 @@ namespace GorgonLibrary
 	/// </summary>
 	public static class GorgonStringFormattingExtension
 	{
+		private static List<string> _pathParts = null;			// Parts for a path.
+
+		/// <summary>
+		/// Function to determine if this path is valid.
+		/// </summary>
+		/// <param name="path">Path to a file or directory.</param>
+		/// <returns>TRUE if valid, FALSE if not.</returns>
+		public static bool IsValidPath(this string path)
+		{
+			if (string.IsNullOrEmpty(path))
+				return false;
+
+			int lastIndexOfSep = -1;			
+			string fileName = string.Empty;
+			string directory = string.Empty;			
+
+			var illegalChars = Path.GetInvalidFileNameChars();
+
+			lastIndexOfSep = path.LastIndexOf(Path.DirectorySeparatorChar.ToString());
+
+			if (lastIndexOfSep == -1)
+				lastIndexOfSep = path.LastIndexOf(Path.AltDirectorySeparatorChar.ToString());
+
+			if (lastIndexOfSep == -1)
+				fileName = path;
+			else
+			{
+				directory = path.Substring(0, lastIndexOfSep);
+				if (lastIndexOfSep < path.Length - 1)
+					fileName = path.Substring(lastIndexOfSep + 1);
+			}
+
+			_pathParts.Clear();
+			if (!string.IsNullOrEmpty(directory))
+			{
+				directory = directory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+				_pathParts.AddRange(directory.Split(new char[] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries));
+			}
+
+			if (!string.IsNullOrEmpty(fileName))
+				_pathParts.Add(fileName);
+
+			foreach (var part in _pathParts)
+			{
+				if (illegalChars.Any(item => part.Contains(item)))
+					return false;
+			}
+
+			return true;
+		}
+
 		/// <summary>
 		/// Function to return a properly file name.
 		/// </summary>
@@ -144,6 +195,14 @@ namespace GorgonLibrary
 			filePath.Append(output);
 
 			return filePath.ToString();
+		}
+
+		/// <summary>
+		/// Initializes the <see cref="GorgonStringFormattingExtension"/> class.
+		/// </summary>
+		static GorgonStringFormattingExtension()
+		{
+			_pathParts = new List<string>();
 		}
 	}
 }
