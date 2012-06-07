@@ -39,6 +39,8 @@
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.panel2 = new GorgonLibrary.GorgonEditor.panelEx();
+			this.checkOpenDoc = new System.Windows.Forms.CheckBox();
+			this.checkOpenLastDoc = new System.Windows.Forms.CheckBox();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -120,7 +122,7 @@
 			this.buttonOK.Location = new System.Drawing.Point(286, 16);
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(87, 28);
-			this.buttonOK.TabIndex = 0;
+			this.buttonOK.TabIndex = 2;
 			this.buttonOK.Text = "OK";
 			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -134,12 +136,14 @@
 			this.buttonCancel.Location = new System.Drawing.Point(379, 16);
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(87, 28);
-			this.buttonCancel.TabIndex = 1;
+			this.buttonCancel.TabIndex = 3;
 			this.buttonCancel.Text = "Cancel";
 			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// panel2
 			// 
+			this.panel2.Controls.Add(this.checkOpenLastDoc);
+			this.panel2.Controls.Add(this.checkOpenDoc);
 			this.panel2.Controls.Add(this.buttonOK);
 			this.panel2.Controls.Add(this.buttonCancel);
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -147,6 +151,30 @@
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(478, 56);
 			this.panel2.TabIndex = 4;
+			// 
+			// checkOpenDoc
+			// 
+			this.checkOpenDoc.AutoSize = true;
+			this.checkOpenDoc.BackColor = System.Drawing.Color.White;
+			this.checkOpenDoc.Location = new System.Drawing.Point(12, 4);
+			this.checkOpenDoc.Name = "checkOpenDoc";
+			this.checkOpenDoc.Size = new System.Drawing.Size(171, 17);
+			this.checkOpenDoc.TabIndex = 0;
+			this.checkOpenDoc.Text = "Open document(s) after import.";
+			this.checkOpenDoc.UseVisualStyleBackColor = false;
+			this.checkOpenDoc.Click += new System.EventHandler(this.checkOpenDoc_Click);
+			// 
+			// checkOpenLastDoc
+			// 
+			this.checkOpenLastDoc.AutoSize = true;
+			this.checkOpenLastDoc.BackColor = System.Drawing.Color.White;
+			this.checkOpenLastDoc.Enabled = false;
+			this.checkOpenLastDoc.Location = new System.Drawing.Point(12, 27);
+			this.checkOpenLastDoc.Name = "checkOpenLastDoc";
+			this.checkOpenLastDoc.Size = new System.Drawing.Size(146, 17);
+			this.checkOpenLastDoc.TabIndex = 1;
+			this.checkOpenLastDoc.Text = "Only open last document.";
+			this.checkOpenLastDoc.UseVisualStyleBackColor = false;
 			// 
 			// formImport
 			// 
@@ -170,6 +198,7 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Import";
 			this.panel2.ResumeLayout(false);
+			this.panel2.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -187,5 +216,7 @@
 		private System.Windows.Forms.Button buttonOK;
 		private System.Windows.Forms.Button buttonCancel;
 		private System.Windows.Forms.OpenFileDialog dialogFile;
+		private System.Windows.Forms.CheckBox checkOpenLastDoc;
+		private System.Windows.Forms.CheckBox checkOpenDoc;
 	}
 }

@@ -158,11 +158,13 @@ namespace GorgonLibrary.GorgonEditor
 				root.SelectedImageIndex = root.ImageIndex = 0;
 
 				// Enumerate folders.
-
 				treeFolders.BeginUpdate();
 				treeFolders.Nodes.Clear();
 				treeFolders.Nodes.Add(root);
 				EnumerateFolders(root, Program.Project.Folders.OrderBy((ProjectFolder item) => item.Name));
+
+				if (treeFolders.SelectedNode == null)
+					treeFolders.SelectedNode = root;
 				root.Expand();
 			}
 			catch (Exception ex)

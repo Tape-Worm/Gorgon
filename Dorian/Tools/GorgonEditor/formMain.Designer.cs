@@ -88,6 +88,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.propertyItem = new System.Windows.Forms.PropertyGrid();
 			this.popupProperties = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.itemResetValue = new System.Windows.Forms.ToolStripMenuItem();
+			this.dialogExport = new System.Windows.Forms.SaveFileDialog();
 			this.menuMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitEdit)).BeginInit();
 			this.splitEdit.Panel1.SuspendLayout();
@@ -185,6 +186,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.itemExport.Name = "itemExport";
 			this.itemExport.Size = new System.Drawing.Size(155, 22);
 			this.itemExport.Text = "&Export...";
+			this.itemExport.Click += new System.EventHandler(this.itemExport_Click);
 			// 
 			// toolStripSeparator2
 			// 
@@ -476,6 +478,11 @@ namespace GorgonLibrary.GorgonEditor
 			this.itemResetValue.Text = "&Reset Value";
 			this.itemResetValue.Click += new System.EventHandler(this.itemResetValue_Click);
 			// 
+			// dialogExport
+			// 
+			this.dialogExport.Filter = "All files (*.*)|*.*";
+			this.dialogExport.Title = "Export current document.";
+			// 
 			// formMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -547,6 +554,7 @@ namespace GorgonLibrary.GorgonEditor
 		private System.Windows.Forms.ToolStripMenuItem itemImport;
 		private System.Windows.Forms.ToolStripMenuItem itemExport;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.SaveFileDialog dialogExport;
 	}
 }
 

@@ -88,6 +88,7 @@ namespace GorgonLibrary.GorgonEditor
 		#region Variables.
 		private SortedTreeModel _treeModel = null;							// Tree model.
 		private DefaultDocument _defaultDocument = null;					// Our default page.
+		private Font _unSavedFont = null;									// Font for unsaved documents.
 		#endregion
 
 		#region Properties.
@@ -95,6 +96,72 @@ namespace GorgonLibrary.GorgonEditor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the Click event of the itemExport control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void itemExport_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if (Program.CurrentDocument == null)
+					return;
+
+				var extensions = from docType in Program.Project.DocumentTypes
+								 join docDesc in Program.Project.DocumentDescriptions on docType.Value equals docDesc.Value
+								 let Extension = docType.Key
+								 let TypeDesc = new { DocType = docType.Value, Desc = docDesc.Key }
+								 group Extension by TypeDesc;
+
+				// Get the registered type for the current document.
+				if (extensions.Count() == 0)
+					throw new IOException("Cannot export the document '" + Program.CurrentDocument.Name + "'.  No document type handler is registered.");
+
+				string filter = string.Empty;
+				string extension = string.Empty;
+
+				foreach (var extensionType in extensions)
+				{
+					if (filter.Length > 0)
+						filter += "|";
+					filter += extensionType.Key.Desc;
+					foreach (var ext in extensionType)
+					{
+						if (extension.Length > 0)
+							extension += ";";
+
+						extension += "*." + ext;
+					}
+
+					filter += " (" + extension + ")|" + extension;
+				}
+
+				// Show dialog.
+				dialogExport.InitialDirectory = Program.Settings.ExportLastFilePath;
+				dialogExport.Filter = filter;
+				if (extensions.ElementAt(0).Count() > 0)
+				{
+					dialogExport.DefaultExt = extensions.ElementAt(0).ElementAt(0);
+					dialogExport.FileName = Program.CurrentDocument.Name + "." + extensions.ElementAt(0).ElementAt(0);
+				}
+
+				if (dialogExport.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				{
+					Program.CurrentDocument.Export(dialogExport.FileName);
+					Program.Settings.ExportLastFilePath = Path.GetDirectoryName(dialogExport.FileName).FormatDirectory(Path.DirectorySeparatorChar);
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
 		/// <summary>
 		/// Handles the Click event of the itemImport control.
 		/// </summary>
@@ -124,6 +191,8 @@ namespace GorgonLibrary.GorgonEditor
 					}
 					else if (selectedFolder != null)
 						lastPath = selectedFolder.Path;
+					else
+						lastPath = "/";
 				}
 
 				importer = new formImport();
@@ -132,8 +201,53 @@ namespace GorgonLibrary.GorgonEditor
 
 				if (importer.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				{
+					DocumentCollection currentDocuments = null;
+					ConfirmationResult result = ConfirmationResult.None;
+
 					// Import the documents.
-					Program.Project.ImportDocuments(importer.Files, importer.Folder);
+					IList<Tuple<Document, string>> documents = Program.Project.ImportDocuments(importer.Files, importer.Folder);
+
+					if (importer.Folder == null)
+						currentDocuments = Program.Project.Documents;
+					else
+						currentDocuments = importer.Folder.Documents;
+
+					foreach (var document in documents)
+					{
+						if ((currentDocuments.Contains(document.Item1.Name)) && ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll))
+						{
+							result = GorgonDialogs.ConfirmBox(this, "The document '" + document.Item1.Name + "' already exists.  Would you like to overwrite it?", true, true);
+							// Destroy these documents.
+							if (result == ConfirmationResult.Cancel)
+							{
+								for (int i = 0; i < documents.Count; i++)
+									documents[i].Item1.Dispose();
+								return;
+							}
+						}
+
+						if (((result & ConfirmationResult.Yes) == ConfirmationResult.Yes) || (result == ConfirmationResult.None))
+						{
+							// Destroy the old document.
+							currentDocuments[document.Item1.Name].Dispose();
+							currentDocuments.Remove(document.Item1.Name);
+
+							// Add the new document.
+							currentDocuments.Add(document.Item1);
+
+							// Choose how to open the documents (if possible).
+							bool openDoc = (document.Item1.CanOpen) && (Program.Settings.OpenDocsAfterImport) && 
+								(((Program.Settings.OpenLastDocOnly) && (document == documents[documents.Count - 1])) || (!Program.Settings.OpenLastDocOnly));
+
+							if (openDoc)
+							{
+								DisplayDocument(document.Item1);
+								document.Item1.Import(document.Item2);
+							}
+						}
+						else
+							document.Item1.Dispose();
+					}
 
 					Program.Settings.ImportLastFilePath = importer.LastFilePath;
 					Program.Settings.ImportLastProjectFolder = importer.DestinationPath;
@@ -160,15 +274,17 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			try
 			{
-				var document = Program.Documents[e.TabPage as KRBTabControl.TabPageEx];
+				var document = e.TabPage.Tag as Document;
 
 				if (document != null)
 				{
 					if (Program.CurrentDocument != null)
 						Program.CurrentDocument.TerminateRendering();
 
-					Program.CurrentDocument = document;
+					if (document.Control == null)
+						document.InitializeDocument();
 
+					Program.CurrentDocument = document;
 					Program.CurrentDocument.InitializeRendering();
 
 					if (!Program.CurrentDocument.HasProperties)
@@ -205,26 +321,12 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			try
 			{
-				var document = Program.Documents[e.TabPage];
+				var document = e.TabPage.Tag as Document;
 
 				if (document != null)
 				{
-					ConfirmationResult result = ConfirmationResult.None;
-					if (document.NeedsSave)
-					{
-						result = GorgonDialogs.ConfirmBox(this, "The " + document.DocumentType + " '" + document.Name + "' has changed.  Would you like to save it?", true, false);
-
-						switch (result)
-						{
-							case ConfirmationResult.Cancel:
-								e.Cancel = true;
-								return;
-						}
-					}
-
 					document.PropertyUpdated -= new EventHandler(FontUpdated);
-					Program.Documents.Remove(document);
-					document.Dispose();
+					document.TerminateDocument();
 				}
 			}
 			catch (Exception ex)
@@ -318,7 +420,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void ValidateControls()
 		{
-			Text = Program.Project.Name + " - Gorgon Editor";
+			Text = Program.Project.Name;
 
 			if (Program.Project.GetProjectState())
 			{
@@ -329,6 +431,8 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				itemSaveAs.Enabled = itemSave.Enabled = false;
 			}
+
+			Text += " - Gorgon Editor";
 
 			itemExport.Enabled = Program.CurrentDocument.CanSave;
 		}
@@ -360,15 +464,14 @@ namespace GorgonLibrary.GorgonEditor
 
 			try
 			{
+				if (_unSavedFont != null)
+					_unSavedFont.Dispose();
 				_nodeText.DrawText -= new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(_nodeText_DrawText);
 
 				// Assign events.
 				((controlDefault)_defaultDocument.Control).buttonCreateFont.Click -= new EventHandler(itemNewFont_Click);
 
-				foreach (var document in Program.Documents.ToArray())
-					document.Dispose();
-
-				Program.Documents.Clear();
+				Program.Project.Clear();
 
 				if (this.WindowState != FormWindowState.Minimized)
 					Program.Settings.FormState = this.WindowState;
@@ -440,14 +543,21 @@ namespace GorgonLibrary.GorgonEditor
 				newFont = new formNewFont();
 				if (newFont.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				{
+					string fontFileName = newFont.FontName;
+
+					if (string.IsNullOrEmpty(Path.GetExtension(fontFileName)))
+						fontFileName = Path.ChangeExtension(fontFileName, "gorFont");
+
 					Cursor.Current = Cursors.WaitCursor;
-					document = OpenDocument<DocumentFont>(newFont.FontName, true);
+					document = Program.Project.CreateDocument<DocumentFont>(fontFileName, null, true);
 					document.FontFamily = newFont.FontFamilyName;
 					document.FontSize = newFont.FontSize;
 					document.FontStyle = newFont.FontStyle;
 					Program.Settings.FontSizeType = document.UsePointSize = newFont.FontHeightMode;
 					Program.Settings.FontTextureSize = document.FontTextureSize = newFont.FontTextureSize;
 					Program.Settings.FontAntiAliasMode = document.FontAntiAliasMode = newFont.FontAntiAliasMode;
+
+					DisplayDocument(document);
 
 					document.Update();
 					document.SetDefaults();
@@ -475,27 +585,17 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Function to open a document.
+		/// Function to display a document.
 		/// </summary>
-		/// <param name="documentName">Name of the document to open.</param>
-		/// <param name="allowClose">TRUE to allow the document to close, FALSE to disallow.</param>
-		private T OpenDocument<T>(string documentName, bool allowClose)
-			where T : Document
+		/// <param name="document">Document to display.</param>
+		private void DisplayDocument(Document document)
 		{
-			T document = null;
-			Type type = typeof(T);
-
-			document = (T)Activator.CreateInstance(type, new object[] { documentName, allowClose, null });
 			document.InitializeDocument();
 			document.PropertyGrid = propertyItem;
-			Program.Documents.Add(document);
 			document.Tab.Font = this.Font;
 			tabDocuments.TabPages.Add(document.Tab);
 			tabDocuments.SelectedTab = document.Tab;
 			document.InitializeRendering();
-
-			propertyItem.SelectedObject = document.TypeDescriptor;
-			propertyItem.Refresh();
 
 			Program.CurrentDocument = document;
 
@@ -508,9 +608,10 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				if (!tabDocumentManager.TabPages.Contains(pageProperties))
 					tabDocumentManager.TabPages.Add(pageProperties);
-			}
 
-			return document;
+				propertyItem.SelectedObject = document.TypeDescriptor;
+				propertyItem.Refresh();
+			}
 		}
 
 		/// <summary>
@@ -539,8 +640,15 @@ namespace GorgonLibrary.GorgonEditor
 
 			e.TextColor = Color.White;
 
-			if ((document != null) && (!document.CanOpen))
-				e.TextColor = Color.Black;
+			if (document != null)
+			{
+				if (!document.CanOpen)
+					e.TextColor = Color.Black;
+
+				if ((document.NeedsSave) && (document.CanSave))
+					e.Font = _unSavedFont;
+			}
+			
 		}
 
 		/// <summary>
@@ -585,7 +693,8 @@ namespace GorgonLibrary.GorgonEditor
 
 				InitializeTree();
 
-				_defaultDocument = OpenDocument<DefaultDocument>("Gorgon Editor", false);
+				_defaultDocument = new DefaultDocument("Gorgon Editor", false, null);
+				DisplayDocument(_defaultDocument);
 
 				// Assign events.
 				((controlDefault)_defaultDocument.Control).buttonCreateFont.Click += new EventHandler(itemNewFont_Click);
@@ -610,6 +719,8 @@ namespace GorgonLibrary.GorgonEditor
 		public formMain()
 		{
 			InitializeComponent();
+
+			_unSavedFont = new Font(this.Font, FontStyle.Bold);
 		}
 		#endregion
 	}
