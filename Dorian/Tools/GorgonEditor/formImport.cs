@@ -92,6 +92,16 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Click event of the checkOpenDoc control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void checkOpenDoc_Click(object sender, EventArgs e)
+		{
+			ValidateButtons();
+		}
+
+		/// <summary>
 		/// Handles the TextChanged event of the textDestination control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -123,6 +133,11 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			try
 			{
+				Program.Settings.OpenDocsAfterImport = checkOpenDoc.Checked;
+
+				if (checkOpenDoc.Checked)
+					Program.Settings.OpenLastDocOnly = checkOpenLastDoc.Checked;
+
 				ParseFiles();
 
 				// Check to see if each file exists.
@@ -200,17 +215,23 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				string extensions = "All files (*.*)|*.*";
 				// Get extension support.
-				foreach (var docType in Program.Project.DocumentTypes.Where(item => item.Value.CanOpen))
-				{
+
+				var types = from docType in Program.Project.DocumentTypes
+							join docDesc in Program.Project.DocumentDescriptions on docType.Value equals docDesc.Value
+							let Extension = docType.Key
+							let TypeDesc = new { DocType = docType.Value, Description = docDesc.Key }
+							group Extension by TypeDesc;
+							
+				foreach (var type in types)
+				{					
 					string wildCarded = string.Empty;
+					extensions += "|" + type.Key.Description;
 
-					extensions += "|" + docType.Value.DocumentDescription;
-
-					foreach (var ext in docType.Value.Extensions)
+					foreach (var extension in type)
 					{
 						if (wildCarded.Length > 0)
 							wildCarded += ";";
-						wildCarded += "*." + ext;
+						wildCarded += "*." + extension;
 					}
 					extensions += "|" + wildCarded;
 				}
@@ -258,9 +279,28 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void ValidateButtons()
 		{
+			checkOpenLastDoc.Enabled = checkOpenDoc.Checked;
 			textDestination.Enabled = buttonSelectDestination.Enabled = textImportFile.Text.Length > 0;
 			buttonOK.Enabled = textDestination.Text.Length > 0 && textImportFile.Text.Length > 0;
-		}		
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			checkOpenDoc.Checked = Program.Settings.OpenDocsAfterImport;
+
+			if (checkOpenDoc.Checked)
+				checkOpenLastDoc.Checked = Program.Settings.OpenLastDocOnly;
+			else
+				checkOpenLastDoc.Checked = false;
+
+			ValidateButtons();
+		}
 		#endregion
 
 		#region Constructor/Destructor.

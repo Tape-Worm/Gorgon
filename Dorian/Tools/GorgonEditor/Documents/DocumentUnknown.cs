@@ -69,6 +69,29 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			return null;
 		}
+
+		/// <summary>
+		/// Function to release any resources when the document is terminated.
+		/// </summary>
+		protected override void ReleaseResources()
+		{			
+		}
+
+		/// <summary>
+		/// Function to import a document.
+		/// </summary>
+		/// <param name="filePath">Path to the document file.</param>
+		public override void Import(string filePath)
+		{
+		}
+
+		/// <summary>
+		/// Function to export a document
+		/// </summary>
+		/// <param name="filePath"></param>
+		public override void Export(string filePath)
+		{			
+		}
 		#endregion
 
 		#region Constructor.

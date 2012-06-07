@@ -97,6 +97,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.treeFolders.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.treeFolders.HideSelection = false;
 			this.treeFolders.ImageIndex = 0;
 			this.treeFolders.ImageList = this.imageTree;
 			this.treeFolders.Location = new System.Drawing.Point(3, 3);

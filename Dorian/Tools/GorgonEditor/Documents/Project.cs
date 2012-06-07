@@ -55,7 +55,16 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to return the type registry for the documents.
 		/// </summary>
-		public IDictionary<Type, DocumentExtensionAttribute> DocumentTypes
+		public IDictionary<string, Type> DocumentTypes
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return a description for a specific document type.
+		/// </summary>
+		public IDictionary<string, Type> DocumentDescriptions
 		{
 			get;
 			private set;
@@ -113,18 +122,28 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void BuildTypeRegistry()
 		{
-			DocumentTypes = new Dictionary<Type, DocumentExtensionAttribute>();
+			DocumentTypes = new Dictionary<string, Type>();
+			DocumentDescriptions = new Dictionary<string, Type>();
 
 			var docTypes = (from type in GetType().Assembly.GetTypes()
 							let extAttrib = type.GetCustomAttributes(typeof(DocumentExtensionAttribute), false) as IList<DocumentExtensionAttribute>
 							where (type.IsSubclassOf(typeof(Document))) && (!type.IsAbstract) && (extAttrib != null) && (extAttrib.Count > 0)
-							select extAttrib[0]);
+							select new {type, extAttrib});
 
 			// Only add types once.
 			foreach (var docType in docTypes)
-			{
-				if (!DocumentTypes.ContainsKey(docType.DocumentType))
-					DocumentTypes.Add(docType.DocumentType, docType);
+			{	
+				foreach (var attrib in docType.extAttrib.Where(item => item.CanOpen))
+				{
+					if (!DocumentDescriptions.ContainsKey(attrib.DocumentDescription))
+						DocumentDescriptions.Add(attrib.DocumentDescription, docType.type);
+
+					foreach (var ext in attrib.Extensions)
+					{
+						if (!DocumentTypes.ContainsKey(ext))
+							DocumentTypes.Add(ext, docType.type);						
+					}
+				}
 			}
 		}
 
@@ -168,8 +187,8 @@ namespace GorgonLibrary.GorgonEditor
 				
 				// Find the type.
 				var docType = (from documentType in DocumentTypes
-							   where documentType.Value.Extensions.Contains(fileExtension)
-							   select documentType.Key).FirstOrDefault();
+							   where string.Compare(documentType.Key, fileExtension, true) == 0
+							   select documentType.Value).FirstOrDefault();
 
 				if (docType != null)
 					document = (Document)(Activator.CreateInstance(docType, new object[] {file.Name, true, owner }));
@@ -181,6 +200,34 @@ namespace GorgonLibrary.GorgonEditor
 				else
 					owner.Documents.Add(document);
 			}
+		}
+
+		/// <summary>
+		/// Function to destroy the data for the project.
+		/// </summary>
+		/// <param name="folder">Folder to start searching at.</param>
+		private void DestroyData(ProjectFolder folder)
+		{
+			DocumentCollection documents = Documents;
+			ProjectFolderCollection folders = Folders;
+
+			if ((Documents == null) || (Folders == null))
+				return;
+
+			if (folder != null)
+			{
+				documents = folder.Documents;
+				folders = folder.Folders;
+			}
+
+			foreach (var subFolder in folders)
+				DestroyData(subFolder);
+
+			foreach (var doc in documents)
+				doc.Dispose();
+
+			folders.Clear();
+			documents.Clear();
 		}
 
 		/// <summary>
@@ -303,6 +350,35 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Function to create a new document.
+		/// </summary>
+		/// <param name="name">Name of the document.</param>
+		/// <param name="folder">Folder in which to store the document.</param>
+		/// <param name="allowClose">TRUE to allow the document to close, FALSE to keep it open.</param>
+		/// <returns>The new document.</returns>
+		public T CreateDocument<T>(string name, ProjectFolder folder, bool allowClose)
+			where T : Document
+		{
+			Type type = typeof(T);
+
+			type = (from docType in Program.Project.DocumentTypes
+					where docType.Value == type
+					select docType.Value).SingleOrDefault();
+
+			if (type == null)
+				throw new ArgumentException("The type '" + type.FullName + "' is not supported.", "type");
+
+			T result = (T)Activator.CreateInstance(type, new object[] { name, allowClose, folder });
+
+			if (folder == null)
+				Documents.Add(result);
+			else
+				folder.Documents.Add(result);
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to return whether the project needs to be saved or not.
 		/// </summary>
 		/// <returns>TRUE if the project needs to be saved, FALSE if not.</returns>
@@ -316,12 +392,9 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		/// <param name="paths">Paths to the files to import.</param>
 		/// <param name="folder">Folder to contain the documents.</param>
-		public void ImportDocuments(IEnumerable<string> paths, ProjectFolder folder)
+		public IList<Tuple<Document, string>> ImportDocuments(IEnumerable<string> paths, ProjectFolder folder)
 		{
-			DocumentCollection documents = Documents;
-
-			if (folder != null)
-				documents = folder.Documents;
+			List<Tuple<Document, string>> result = new List<Tuple<Document, string>>();
 
 			foreach (var file in paths)
 			{
@@ -332,24 +405,19 @@ namespace GorgonLibrary.GorgonEditor
 				if ((extension.Length > 0) && (extension.StartsWith(".")))
 					extension = extension.Substring(1);
 
-				extension = extension.ToLower();
-				
 				var type = (from types in DocumentTypes
-						   where types.Value.Extensions.Contains(extension)
-						   select types.Key).FirstOrDefault();
+						   where string.Compare(types.Key, extension, true) == 0
+						   select types.Value).FirstOrDefault();
 								
 				if (type == null)
 					document = new DocumentUnknown(fileName, true, folder);
 				else
-				{
 					document = (Document)Activator.CreateInstance(type, new object[] { fileName, true, folder });
-					// TODO: We need a method to import the file data into the document on the Document object.
-					// This method will set the file name for the document and import the name from the object data.
-					// document.Import(path);
-				}
 
-				folder.Documents.Add(document);
+				result.Add(new Tuple<Document, string>(document, file));
 			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -380,6 +448,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		public void Clear()
 		{
+			DestroyData(null);
 			FileSystem = new GorgonFileSystem();
 			ProjectPath = string.Empty;
 			Name = "Untitled";

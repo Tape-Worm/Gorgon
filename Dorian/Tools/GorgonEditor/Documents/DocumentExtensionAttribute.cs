@@ -34,7 +34,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Used to specify which extensions map to a document type.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 	class DocumentExtensionAttribute
 		: Attribute
 	{

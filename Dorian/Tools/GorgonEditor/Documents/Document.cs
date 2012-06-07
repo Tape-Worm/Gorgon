@@ -195,14 +195,20 @@ namespace GorgonLibrary.GorgonEditor
 
 				if (string.Compare(_name, value, false) != 0)
 				{
+					DocumentCollection documents = Program.Project.Documents;
+
 					string previousName = _name;
 					_name = value;
 
 					// Update the collection.
-					Program.Documents.Rename(previousName, value);
+					if (Folder != null)
+						documents = Folder.Documents;
+
+					documents.Rename(previousName, value);
 
 					Tab.Text = value;
 					Tab.Name = "tab" + Name;
+					TreeNode.Text = Name;
 
 					NeedsSave = true;
 					DispatchUpdateNotification();
@@ -274,6 +280,11 @@ namespace GorgonLibrary.GorgonEditor
 		protected abstract Control InitializeEditorControl();
 
 		/// <summary>
+		/// Function to release any resources when the document is terminated.
+		/// </summary>
+		protected abstract void ReleaseResources();
+
+		/// <summary>
 		/// Function to retrieve default values for properties with the DefaultValue attribute.
 		/// </summary>
 		public void SetDefaults()
@@ -308,6 +319,7 @@ namespace GorgonLibrary.GorgonEditor
 			Tab = new TabPageEx(Name);
 			Tab.ImageIndex = TabImageIndex;
 			Tab.Name = "tab" + Name;
+			Tab.Tag = this;
 			Control = InitializeEditorControl();
 
 			// Add the tab for this document to our tab control.
@@ -365,6 +377,8 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		public void TerminateDocument()
 		{
+			ReleaseResources();
+
 			// Stop rendering.
 			if (Renderer != null)
 				TerminateRendering();
@@ -379,6 +393,18 @@ namespace GorgonLibrary.GorgonEditor
 			Control = null;
 			Tab = null;
 		}
+
+		/// <summary>
+		/// Function to import a document.
+		/// </summary>
+		/// <param name="filePath">Path to the document file.</param>
+		public abstract void Import(string filePath);
+
+		/// <summary>
+		/// Function to export a document
+		/// </summary>
+		/// <param name="filePath"></param>
+		public abstract void Export(string filePath);
 		#endregion
 
 		#region Constructor.
@@ -395,7 +421,6 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			GorgonDebug.AssertParamString(name, "name");
 
-			Filename = string.Empty;
 			CanOpen = false;
 			CanSave = false;
 			TabImageIndex = -1;

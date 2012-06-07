@@ -57,15 +57,6 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Property to return the list of documents.
-		/// </summary>
-		public static DocumentCollection Documents
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the texture used for font tools.
 		/// </summary>
 		public static GorgonTexture2D FontTools
@@ -190,7 +181,6 @@ namespace GorgonLibrary.GorgonEditor
 			Settings = new GorgonEditorSettings();
 			Project = new Project();
 			CurrentFile = new GorgonFileSystem();
-			Documents = new DocumentCollection();
 		}
 		#endregion
 

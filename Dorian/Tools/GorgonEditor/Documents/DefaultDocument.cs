@@ -227,6 +227,13 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Function to release any resources when the document is terminated.
+		/// </summary>
+		protected override void ReleaseResources()
+		{			
+		}
+
+		/// <summary>
 		/// Function to initialize the editor control.
 		/// </summary>
 		/// <returns>
@@ -241,6 +248,22 @@ namespace GorgonLibrary.GorgonEditor
 			RenderWindow = ((controlDefault)result).panelLogo;
 
 			return result;
+		}
+
+		/// <summary>
+		/// Function to import a document.
+		/// </summary>
+		/// <param name="filePath">Path to the document file.</param>
+		public override void Import(string filePath)
+		{			
+		}
+
+		/// <summary>
+		/// Function to export a document
+		/// </summary>
+		/// <param name="filePath"></param>
+		public override void Export(string filePath)
+		{			
 		}
 		#endregion
 

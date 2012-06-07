@@ -31,6 +31,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Design;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary.Graphics;
@@ -434,6 +435,26 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Function to get the render target used for the text display.
+		/// </summary>
+		private void GetTarget()
+		{
+			if (_target != null)
+				_target.Dispose();
+
+			_target = Program.Graphics.Output.CreateRenderTarget("Surface", new GorgonRenderTargetSettings()
+			{
+				Width = _fontSettings.TextureSize.Width,
+				Height = _fontSettings.TextureSize.Height,
+				Format = BufferFormat.R8G8B8A8_UIntNormal
+			});
+
+			_text = Renderer.Renderables.CreateText("Text");
+			_text.Font = _font;
+			_text.Color = Color.Black;
+		}
+
+		/// <summary>
 		/// Function to initialize graphics and other items for the document.
 		/// </summary>
 		protected override void LoadGraphics()
@@ -443,6 +464,8 @@ namespace GorgonLibrary.GorgonEditor
 					Window = _fontWindow.panelText,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
+
+			GetTarget();
 		}
 
 		/// <summary>
@@ -450,14 +473,11 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		protected override void UnloadGraphics()
 		{
-			if (_font != null)
-				_font.Dispose();
 			if (_textArea != null)
 				_textArea.Dispose();
 			if (_target != null)
 				_target.Dispose();
 
-			_font = null;
 			_textArea = null;
 			_target = null;
 		}
@@ -572,27 +592,6 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (_font != null)
-						_font.Dispose();
-				}
-
-				_font = null;
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
-		}
-
-		/// <summary>
 		/// Function to initialize the editor control.
 		/// </summary>
 		/// <returns>
@@ -609,6 +608,17 @@ namespace GorgonLibrary.GorgonEditor
 			RenderWindow = _fontWindow.panelDisplay;
 
 			return _fontWindow;
+		}
+
+		/// <summary>
+		/// Function to release any resources when the document is terminated.
+		/// </summary>
+		protected override void ReleaseResources()
+		{
+			if (_font != null)
+				_font.Dispose();
+
+			_font = null;
 		}
 
 		/// <summary>
@@ -671,27 +681,82 @@ namespace GorgonLibrary.GorgonEditor
 					_fontSettings = _font.Settings;
 
 				throw;
-			}			
+			}
 
 
-			if (_font != null)
-				_font.Dispose();
+			ReleaseResources();
 
 			_fontWindow.CurrentFont = _font = newFont;
-			
-			if (_target != null)
-				_target.Dispose();
 
-			_target = Program.Graphics.Output.CreateRenderTarget("Surface", new GorgonRenderTargetSettings()
-				{
-					Width = _fontSettings.TextureSize.Width,
-					Height = _fontSettings.TextureSize.Height,
-					Format = BufferFormat.R8G8B8A8_UIntNormal					
-				});
+			GetTarget();
 
-			_text = Renderer.Renderables.CreateText("Text");
-			_text.Font = _font;			
-			_text.Color = Color.Black;
+			NeedsSave = true;
+		}
+
+		/// <summary>
+		/// Function to export a document
+		/// </summary>
+		/// <param name="filePath"></param>
+		public override void Export(string filePath)
+		{
+			bool wasCreated = _font != null;
+
+			// If the font was not previously created, then create it temporarily.
+			try
+			{
+				if (!wasCreated)
+					Update();
+
+				_font.Save(filePath);
+			}
+			finally
+			{
+				if (!wasCreated)
+					UnloadGraphics();
+			}
+		}
+
+		/// <summary>
+		/// Function to import a document.
+		/// </summary>
+		/// <param name="filePath">Path to the document file.</param>
+		public override void Import(string filePath)
+		{
+			GorgonFont font = null;
+
+			// Load the font.
+			font = Program.Graphics.Fonts.FromFile(Path.GetFileNameWithoutExtension(filePath), filePath);
+
+			// Copy the settings.
+			_fontSettings = new GorgonFontSettings()
+					{
+						AntiAliasingMode = font.Settings.AntiAliasingMode,
+						BaseColors = font.Settings.BaseColors,
+						Brush = font.Settings.Brush,
+						Characters = font.Settings.Characters,
+						DefaultCharacter = font.Settings.DefaultCharacter,
+						FontFamilyName = font.Settings.FontFamilyName,
+						FontHeightMode = font.Settings.FontHeightMode,
+						FontStyle = font.Settings.FontStyle,
+						OutlineColor = font.Settings.OutlineColor,
+						OutlineSize = font.Settings.OutlineSize,
+						PackingSpacing = font.Settings.PackingSpacing,
+						Size = font.Settings.Size,
+						TextContrast = font.Settings.TextContrast,
+						TextureSize = font.Settings.TextureSize
+					};
+
+			// Clean up the previous font resources.
+			UnloadGraphics();
+			LoadGraphics();
+
+			// Update our new resources.
+			ReleaseResources();
+
+			_font = font;
+			_fontWindow.CurrentFont = _font;
+			GetTarget();
+
 			NeedsSave = true;
 		}
 		#endregion

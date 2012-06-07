@@ -107,6 +107,26 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Property to set or return whether to open the documents after they're imported.
+		/// </summary>
+		[GorgonApplicationSetting("OpenAfterImport", false, typeof(bool), "Import")]
+		public bool OpenDocsAfterImport
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to open the last document when opening documents after import.
+		/// </summary>
+		[GorgonApplicationSetting("OpenLastDocOnly", false, typeof(bool), "Import")]
+		public bool OpenLastDocOnly
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the import project folder path.
 		/// </summary>
 		[GorgonApplicationSetting("LastProjectFolder", "", typeof(string), "Import")]
@@ -117,10 +137,20 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Property to set or return the import project folder path.
+		/// Property to set or return the last import file path.
 		/// </summary>
 		[GorgonApplicationSetting("LastFilePath", "", typeof(string), "Import")]
 		public string ImportLastFilePath
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the last export file path.
+		/// </summary>
+		[GorgonApplicationSetting("LastFilePath", "", typeof(string), "Export")]
+		public string ExportLastFilePath
 		{
 			get;
 			set;
