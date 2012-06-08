@@ -278,14 +278,15 @@ namespace GorgonLibrary.GorgonEditor
 
 				if (document != null)
 				{
+					// Reset the 2D renderer.
 					if (Program.CurrentDocument != null)
-						Program.CurrentDocument.TerminateRendering();
+						Program.Renderer.End2D();
 
 					if (document.Control == null)
 						document.InitializeDocument();
-
+										
+					Program.Renderer.Begin2D();
 					Program.CurrentDocument = document;
-					Program.CurrentDocument.InitializeRendering();
 
 					if (!Program.CurrentDocument.HasProperties)
 					{
@@ -420,6 +421,9 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		private void ValidateControls()
 		{
+			if (Program.CurrentDocument == null)
+				return;
+
 			Text = Program.Project.Name;
 
 			if (Program.Project.GetProjectState())
@@ -595,7 +599,9 @@ namespace GorgonLibrary.GorgonEditor
 			document.Tab.Font = this.Font;
 			tabDocuments.TabPages.Add(document.Tab);
 			tabDocuments.SelectedTab = document.Tab;
-			document.InitializeRendering();
+
+			// Initialize any resources.
+			document.InitializeResources();
 
 			Program.CurrentDocument = document;
 
@@ -693,12 +699,6 @@ namespace GorgonLibrary.GorgonEditor
 
 				InitializeTree();
 
-				_defaultDocument = new DefaultDocument("Gorgon Editor", false, null);
-				DisplayDocument(_defaultDocument);
-
-				// Assign events.
-				((controlDefault)_defaultDocument.Control).buttonCreateFont.Click += new EventHandler(itemNewFont_Click);
-
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}
 			catch (Exception ex)
@@ -709,6 +709,20 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				ValidateControls();
 			}
+		}
+
+		/// <summary>
+		/// Function to initialize the default document.
+		/// </summary>
+		internal void InitializeDefaultDocument()
+		{
+			_defaultDocument = new DefaultDocument("Gorgon Editor", false, null);
+			DisplayDocument(_defaultDocument);
+
+			// Assign events.
+			((controlDefault)_defaultDocument.Control).buttonCreateFont.Click += new EventHandler(itemNewFont_Click);
+
+			ValidateControls();
 		}
 		#endregion
 

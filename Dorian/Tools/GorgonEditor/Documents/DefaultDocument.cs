@@ -19,7 +19,7 @@ namespace GorgonLibrary.GorgonEditor
 	class DefaultDocument
 		: Document
 	{
-		#region Variables.
+		#region Variables.		
 		private GorgonTexture2D _logo = null;					// Logo.
 		private RectangleF[] _blurStates = null;				// Images for blur states.
 		private RectangleF _sourceState = RectangleF.Empty;		// Source image state.
@@ -68,13 +68,13 @@ namespace GorgonLibrary.GorgonEditor
 			logoBounds.X = RenderWindow.ClientSize.Width / 2.0f - logoBounds.Width / 2.0f;
 			logoBounds.Y = RenderWindow.ClientSize.Height / 2.0f - logoBounds.Height / 2.0f;
 
-			Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
-			Renderer.Drawing.FilledRectangle(new RectangleF(2, logoBounds.Y, RenderWindow.ClientSize.Width - 4, logoBounds.Height), Color.FromArgb(160, 160, 160));
+			Program.Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
+			Program.Renderer.Drawing.FilledRectangle(new RectangleF(2, logoBounds.Y, RenderWindow.ClientSize.Width - 4, logoBounds.Height), Color.FromArgb(160, 160, 160));
 
-			Renderer.Drawing.BlendingMode = BlendingMode.PreMultiplied;
-			Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 1.0f - _alpha), _logo, _sourceState);
-			Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
-			Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, _alpha), _logo, _destState);
+			Program.Renderer.Drawing.BlendingMode = BlendingMode.PreMultiplied;
+			Program.Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 1.0f - _alpha), _logo, _sourceState);
+			Program.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
+			Program.Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, _alpha), _logo, _destState);
 
 			_alpha += _alphaDelta * timing.FrameDelta;
 
@@ -112,7 +112,7 @@ namespace GorgonLibrary.GorgonEditor
 				}
 			}
 
-			Renderer.Drawing.DrawString(_debugFont, "FPS: " + timing.FPS.ToString("0.0##"), Vector2.Zero, Color.White);
+			Program.Renderer.Drawing.DrawString(_debugFont, "FPS: " + timing.FPS.ToString("0.0##"), Vector2.Zero, Color.White);
 
 			return 2;
 		}
@@ -120,7 +120,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to initialize graphics and other items for the document.
 		/// </summary>
-		protected override void LoadGraphics()
+		protected override void LoadResources()
 		{
 			SizeF logoSize = SizeF.Empty;
 			GorgonRenderTarget blur = null;	// Medium blur.
@@ -153,31 +153,31 @@ namespace GorgonLibrary.GorgonEditor
 				blur.Clear(Control.BackColor);
 
 				// Maximum blur.
-				Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(64, 64);
-				Renderer.Effects.GaussianBlur.BlurAmount = 3.2f;
-				Renderer.Effects.GaussianBlur.Render((int pass) =>
+				Program.Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(64, 64);
+				Program.Renderer.Effects.GaussianBlur.BlurAmount = 3.2f;
+				Program.Renderer.Effects.GaussianBlur.Render((int pass) =>
 				{
 					if (pass == 0)
-						Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize), Color.White, _logo, new RectangleF(Vector2.Zero, logoSize));
+						Program.Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, Program.Renderer.Effects.GaussianBlur.BlurRenderTargetsSize), Color.White, _logo, new RectangleF(Vector2.Zero, logoSize));
 					else
 					{
-						Renderer.Target = blur;
-						Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, logoSize), Color.White, Renderer.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize));
+						Program.Renderer.Target = blur;
+						Program.Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, logoSize), Color.White, Program.Renderer.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, Program.Renderer.Effects.GaussianBlur.BlurRenderTargetsSize));
 					}
 				});
 				_logo.CopySubResource(blur.Texture, new Rectangle(0, 0, blur.Settings.Width, blur.Settings.Height), new Vector2(0, 124));
 
 				// Medium blur.
-				Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(128, 128);
-				Renderer.Effects.GaussianBlur.BlurAmount = 2.7f;
-				Renderer.Effects.GaussianBlur.Render((int pass) =>
+				Program.Renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(128, 128);
+				Program.Renderer.Effects.GaussianBlur.BlurAmount = 2.7f;
+				Program.Renderer.Effects.GaussianBlur.Render((int pass) =>
 				{
 					if (pass == 0)
-						Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize), Color.White, _logo, new RectangleF(Vector2.Zero, logoSize));
+						Program.Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, Program.Renderer.Effects.GaussianBlur.BlurRenderTargetsSize), Color.White, _logo, new RectangleF(Vector2.Zero, logoSize));
 					else
 					{
-						Renderer.Target = blur;
-						Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, logoSize), Color.White, Renderer.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, Renderer.Effects.GaussianBlur.BlurRenderTargetsSize));
+						Program.Renderer.Target = blur;
+						Program.Renderer.Drawing.FilledRectangle(new RectangleF(Vector2.Zero, logoSize), Color.White, Program.Renderer.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, Program.Renderer.Effects.GaussianBlur.BlurRenderTargetsSize));
 					}
 				});
 				_logo.CopySubResource(blur.Texture, new Rectangle(0, 0, blur.Settings.Width, blur.Settings.Height), new Vector2(0, 248));
@@ -191,11 +191,11 @@ namespace GorgonLibrary.GorgonEditor
 				_sourceState = _blurStates[2];
 				_destState = _blurStates[1];
 
-				Renderer.Target = null;
+				Program.Renderer.Target = null;
 			}
 			finally
 			{
-				Renderer.Effects.GaussianBlur.FreeResources();
+				Program.Renderer.Effects.GaussianBlur.FreeResources();
 
 				if (blur != null)
 					blur.Dispose();
@@ -212,9 +212,9 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Function to remove graphics and other items for the document.
+		/// Function to release any resources when the document is terminated.
 		/// </summary>
-		protected override void UnloadGraphics()
+		protected override void ReleaseResources()
 		{
 			if (_debugFont != null)
 				_debugFont.Dispose();
@@ -224,13 +224,6 @@ namespace GorgonLibrary.GorgonEditor
 
 			_debugFont = null;
 			_logo = null;
-		}
-
-		/// <summary>
-		/// Function to release any resources when the document is terminated.
-		/// </summary>
-		protected override void ReleaseResources()
-		{			
 		}
 
 		/// <summary>
@@ -244,10 +237,20 @@ namespace GorgonLibrary.GorgonEditor
 			Control result = new controlDefault();
 			result.Name = "default" + Name;
 			result.BackColor = Color.FromKnownColor(KnownColor.DimGray);
-			result.Dock = DockStyle.Fill;
-			RenderWindow = ((controlDefault)result).panelLogo;
+			result.Dock = DockStyle.Fill;			
 
 			return result;
+		}
+
+		/// <summary>
+		/// Function to retrieve the rendering window.
+		/// </summary>
+		/// <returns>
+		/// The rendering window.
+		/// </returns>
+		protected override Control GetRenderWindow()
+		{
+			return ((controlDefault)Control).panelLogo;
 		}
 
 		/// <summary>
