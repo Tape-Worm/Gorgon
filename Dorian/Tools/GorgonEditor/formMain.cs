@@ -143,7 +143,10 @@ namespace GorgonLibrary.GorgonEditor
 				if (extensions.ElementAt(0).Count() > 0)
 				{
 					dialogExport.DefaultExt = extensions.ElementAt(0).ElementAt(0);
-					dialogExport.FileName = Program.CurrentDocument.Name + "." + extensions.ElementAt(0).ElementAt(0);
+					if (string.IsNullOrEmpty(Path.GetExtension(Program.CurrentDocument.Name)))
+						dialogExport.FileName = Program.CurrentDocument.Name + "." + extensions.ElementAt(0).ElementAt(0);
+					else
+						dialogExport.FileName = Program.CurrentDocument.Name;
 				}
 
 				if (dialogExport.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
