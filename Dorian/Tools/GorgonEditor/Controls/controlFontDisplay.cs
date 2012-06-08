@@ -222,7 +222,6 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			base.OnLeave(e);
 			EditMode = false;
-			//ActiveControl = _activeControl;
 		}
 
 		/// <summary>

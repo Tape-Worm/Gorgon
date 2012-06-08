@@ -48,14 +48,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to initialize graphics and other items for the document.
 		/// </summary>
-		protected override void LoadGraphics()
-		{
-		}
-
-		/// <summary>
-		/// Function to remove graphics and other items for the document.
-		/// </summary>
-		protected override void UnloadGraphics()
+		protected override void LoadResources()
 		{
 		}
 
@@ -66,6 +59,17 @@ namespace GorgonLibrary.GorgonEditor
 		/// The editor control.
 		/// </returns>
 		protected override Control InitializeEditorControl()
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// Function to retrieve the rendering window.
+		/// </summary>
+		/// <returns>
+		/// The rendering window.
+		/// </returns>
+		protected override Control GetRenderWindow()
 		{
 			return null;
 		}

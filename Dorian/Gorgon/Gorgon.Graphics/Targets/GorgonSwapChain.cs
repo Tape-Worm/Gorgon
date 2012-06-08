@@ -117,6 +117,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return whether the swap chain resizes with its parent control.
+		/// </summary>
+		public bool AutoResize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return whether we're in stand by mode.
 		/// </summary>
 		/// <remarks>Stand by mode is entered when the <see cref="M:GorgonLibrary.Graphics.GorgonSwapChain.Flip">Flip</see> method detects that the window is occluded.</remarks>
@@ -305,6 +314,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void Window_Resize(object sender, EventArgs e)
 		{
+			if ((!AutoResize) || (_parentForm == null))
+				return;
+
 			// Only do this if the size has changed, if we're just restoring the window, then don't bother.
 			if (((_parentForm.WindowState != FormWindowState.Minimized) && (GISwapChain != null)) && (Settings.Window.ClientSize.Width > 0) && (Settings.Window.ClientSize.Height > 0))
 			{
@@ -514,9 +526,10 @@ namespace GorgonLibrary.Graphics
 			GI.SwapChainDescription d3dSettings = new GI.SwapChainDescription();
 
 			// Resize the window to match requested mode size.
-			if ((_parentForm == Settings.Window) && (Settings.IsWindowed))
+			if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && (!Settings.NoClientResize))
 				_parentForm.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
 
+			AutoResize = !Settings.NoClientResize;
 			_swapChains = Graphics.GetFullscreenSwapChains();
 
 			d3dSettings.BufferCount = Settings.BufferCount;
@@ -724,6 +737,7 @@ namespace GorgonLibrary.Graphics
 		{
 			// Get the parent form for our window.
 			_parentForm = Gorgon.GetTopLevelForm(settings.Window);
+			AutoResize = true;
 		}
 		#endregion
 	}

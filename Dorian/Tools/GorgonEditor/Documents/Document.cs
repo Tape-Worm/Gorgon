@@ -36,6 +36,15 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return whether to disable the property updated dispatch event from being fired.
+		/// </summary>
+		protected bool NoDispatchUpdate
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return whether to allow the document to be closed or not.
 		/// </summary>
 		protected bool AllowClose
@@ -45,21 +54,12 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Property to return the renderer interface.
-		/// </summary>
-		protected Gorgon2D Renderer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the swap chain used for rendering in this document.
 		/// </summary>
 		protected GorgonSwapChain SwapChain
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -171,11 +171,12 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to return the control that will receive rendering.
 		/// </summary>
+		/// <remarks>The user is responsible for maintaining/disposing of this window since it may be a child window of the main document control.</remarks>
 		[Browsable(false)]
 		public Control RenderWindow
 		{
 			get;
-			protected set;
+			private set;
 		}
 
 		/// <summary>
@@ -248,11 +249,33 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Methods.
 		/// <summary>
+		/// Function to create the swap chain and any associated resources.
+		/// </summary>
+		private void CreateSwapChain()
+		{
+			RenderWindow = GetRenderWindow();
+
+			if (RenderWindow != null)
+			{
+				// Create a swap chain for our renderer.
+				SwapChain = Program.Graphics.Output.CreateSwapChain("Document.SwapChain." + Name, new GorgonSwapChainSettings()
+				{
+					BufferCount = 2,
+					DepthStencilFormat = BufferFormat.Unknown,
+					Flags = SwapChainUsageFlags.RenderTarget,
+					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					IsWindowed = true,
+					Window = RenderWindow
+				});
+			}
+		}
+
+		/// <summary>
 		/// Function to dispatch an update notification.
 		/// </summary>
 		protected virtual void DispatchUpdateNotification()
-		{
-			if (PropertyUpdated != null)
+		{			
+			if ((PropertyUpdated != null) && (!NoDispatchUpdate))
 				PropertyUpdated(this, EventArgs.Empty);
 		}
 
@@ -266,12 +289,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to initialize graphics and other items for the document.
 		/// </summary>
-		protected abstract void LoadGraphics();
-
-		/// <summary>
-		/// Function to remove graphics and other items for the document.
-		/// </summary>
-		protected abstract void UnloadGraphics();
+		protected abstract void LoadResources();
 
 		/// <summary>
 		/// Function to initialize the editor control.
@@ -280,14 +298,35 @@ namespace GorgonLibrary.GorgonEditor
 		protected abstract Control InitializeEditorControl();
 
 		/// <summary>
+		/// Function to retrieve the rendering window.
+		/// </summary>
+		/// <returns>The rendering window.</returns>
+		protected abstract Control GetRenderWindow();
+
+		/// <summary>
 		/// Function to release any resources when the document is terminated.
 		/// </summary>
 		protected abstract void ReleaseResources();
 
 		/// <summary>
+		/// Function to call for rendering.
+		/// </summary>
+		/// <param name="timing">Timing data to pass to the method.</param>
+		/// <returns>TRUE to continue running, FALSE to exit.</returns>
+		internal void RenderMethod(GorgonFrameRate timing)
+		{
+			if ((SwapChain == null) || (RenderWindow == null))
+				return;
+
+			Program.Renderer.Target = SwapChain;
+			Program.Renderer.Clear(RenderWindow.BackColor);
+			Program.Renderer.Render(Draw(timing));
+		}
+
+		/// <summary>
 		/// Function to retrieve default values for properties with the DefaultValue attribute.
 		/// </summary>
-		public void SetDefaults()
+		internal void SetDefaults()
 		{
 			foreach (var descriptor in TypeDescriptor)
 			{
@@ -295,26 +334,22 @@ namespace GorgonLibrary.GorgonEditor
 					descriptor.DefaultValue = descriptor.GetValue<object>();
 			}
 		}
-		
+
 		/// <summary>
-		/// Function to call for rendering.
+		/// Function to perform any resource loading that we'll need.
 		/// </summary>
-		/// <param name="timing">Timing data to pass to the method.</param>
-		/// <returns>TRUE to continue running, FALSE to exit.</returns>
-		public void RenderMethod(GorgonFrameRate timing)
+		internal void InitializeResources()
 		{
-			if ((SwapChain == null) || (Control == null) || (Renderer == null))
-				return;
+			CreateSwapChain();
 
-			Renderer.Target = null;
-			SwapChain.Clear(Control.BackColor);			
-			Renderer.Render(Draw(timing));
+			// Load any resources that we'll need.
+			LoadResources();
 		}
-
+		
 		/// <summary>
 		/// Function to initialize the document.
 		/// </summary>
-		public void InitializeDocument()
+		internal void InitializeDocument()
 		{
 			Tab = new TabPageEx(Name);
 			Tab.ImageIndex = TabImageIndex;
@@ -328,60 +363,16 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Function to initialize the document.
-		/// </summary>
-		public void InitializeRendering()
-		{
-			if (Control == null)
-				return;
-
-			TerminateRendering();
-
-			SwapChain = Program.Graphics.Output.CreateSwapChain("Document.SwapChain." + Name, new GorgonSwapChainSettings()
-			{
-				BufferCount = 2,
-				DepthStencilFormat = BufferFormat.Unknown,
-				Flags = SwapChainUsageFlags.RenderTarget,
-				Format = BufferFormat.R8G8B8A8_UIntNormal,
-				IsWindowed = true,
-				Window = RenderWindow
-			});
-
-			Renderer = Program.Graphics.Create2DRenderer(SwapChain);
-
-			LoadGraphics();
-		}
-
-		/// <summary>
-		/// Function to terminate the document.
-		/// </summary>
-		public void TerminateRendering()
-		{
-			if ((Renderer == null) || (SwapChain == null))
-				return;
-
-			UnloadGraphics();
-
-			if (Renderer != null)
-				Renderer.Dispose();
-
-			if (SwapChain != null)
-				SwapChain.Dispose();
-
-			Renderer = null;
-			SwapChain = null;
-		}
-
-		/// <summary>
 		/// Function to terminate the document (but still keep it alive).
 		/// </summary>
 		public void TerminateDocument()
 		{
 			ReleaseResources();
 
-			// Stop rendering.
-			if (Renderer != null)
-				TerminateRendering();
+			if (SwapChain != null)
+				SwapChain.Dispose();
+
+			SwapChain = null;
 
 			if (Control != null)
 				Control.Dispose();

@@ -93,7 +93,10 @@ namespace GorgonLibrary.GorgonEditor
 				Program.UpdateCachedFonts();
 
 				_splash.UpdateVersion("Initializing graphics...");
-				Program.InitializeGraphics();
+				Program.InitializeGraphics(MainForm);
+
+				// Create the default document.
+				((formMain)MainForm).InitializeDefaultDocument();
 
 				_splash.UpdateVersion(string.Empty);
 

@@ -61,7 +61,7 @@
 			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(810, 253);
+			this.panelDisplay.Size = new System.Drawing.Size(810, 379);
 			this.panelDisplay.TabIndex = 0;
 			// 
 			// panel2
@@ -204,7 +204,7 @@
 			this.panelText.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelText.Location = new System.Drawing.Point(0, 0);
 			this.panelText.Name = "panelText";
-			this.panelText.Size = new System.Drawing.Size(810, 250);
+			this.panelText.Size = new System.Drawing.Size(810, 124);
 			this.panelText.TabIndex = 2;
 			this.tipEditor.SetToolTip(this.panelText, "Click here to edit this text.");
 			this.panelText.Click += new System.EventHandler(this.panelText_Click);
@@ -225,7 +225,7 @@
 			// 
 			this.splitFontEdit.Panel2.Controls.Add(this.panelText);
 			this.splitFontEdit.Size = new System.Drawing.Size(810, 507);
-			this.splitFontEdit.SplitterDistance = 253;
+			this.splitFontEdit.SplitterDistance = 379;
 			this.splitFontEdit.TabIndex = 2;
 			// 
 			// controlFontDisplay

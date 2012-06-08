@@ -35,6 +35,7 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.GorgonEditor
 {
@@ -109,21 +110,57 @@ namespace GorgonLibrary.GorgonEditor
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the renderer for the editor.
+		/// </summary>
+		public static Gorgon2D Renderer
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to initialize the graphics interface.
 		/// </summary>
-		public static void InitializeGraphics()
+		/// <param name="form">Main form interface.</param>
+		public static void InitializeGraphics(Form form)
 		{
+			if (Renderer != null)
+			{
+				Renderer.Dispose();
+				Renderer = null;
+			}
+
 			if (Graphics != null)
 			{
 				Graphics.Dispose();
 				Graphics = null;
 			}
+
 			Graphics = new GorgonGraphics();
-			FontTools = Program.Graphics.Textures.FromGDIBitmap("Texture.FontTools", Properties.Resources.IBar);
+			FontTools = Graphics.Textures.FromGDIBitmap("Texture.FontTools", Properties.Resources.IBar);
+			// Create the renderer with a default swap chain.  This is sized to 1x1 to keep from eating
+			// video memory since we'll never use this particular swap chain.
+			// The down side is that we'll end up having to manage our render targets manually.
+			// i.e. setting Target = null won't work because it'll just flip to this 1x1 swap chain.
+			Renderer = Graphics.Create2DRenderer(
+				Graphics.Output.CreateSwapChain("Dummy.SwapChain", new GorgonSwapChainSettings()
+				{
+					Width = 1,
+					Height = 1,
+					BufferCount = 2,
+					DepthStencilFormat = BufferFormat.Unknown,
+					Flags = SwapChainUsageFlags.RenderTarget,
+					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					IsWindowed = true,
+					MultiSample = new GorgonMultisampling(1, 0),
+					NoClientResize = true,
+					SwapEffect = SwapEffect.Discard,
+					Window = form
+				}));
 		}
 
 		/// <summary>
@@ -211,6 +248,12 @@ namespace GorgonLibrary.GorgonEditor
 				{
 					FontTools.Dispose();
 					FontTools = null;
+				}
+
+				if (Renderer != null)
+				{
+					Renderer.Dispose();
+					Renderer = null;
 				}
 
 				// Shut down the graphics interface.
