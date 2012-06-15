@@ -202,7 +202,7 @@ namespace GorgonLibrary.Renderers
 						
 			if (_angle != 0.0f)
 			{
-				Matrix.RotationZ(GorgonMathUtility.Radians(_angle), out rotation);
+				Matrix.RotationZ(_angle.Radians(), out rotation);
 				Matrix.Multiply(ref rotation, ref center, out center);
 			}
 

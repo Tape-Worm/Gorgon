@@ -203,7 +203,7 @@ namespace GorgonLibrary.Graphics
 					int slicePitch = 0;
 
 					if (isCompressed)
-						slicePitch = GorgonMathUtility.Max(1, ((mipHeight + 3) / 4)) * (GorgonMathUtility.Max(1, ((mipWidth + 3) / 4)) * bytes);
+						slicePitch = 1.Max(((mipHeight + 3) / 4)) * (1.Max(((mipWidth + 3) / 4)) * bytes);
 					else
 						slicePitch = (mipWidth * bytes) * mipHeight;
 						

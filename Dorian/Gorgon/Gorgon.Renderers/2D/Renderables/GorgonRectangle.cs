@@ -205,9 +205,9 @@ namespace GorgonLibrary.Renderers
 			// Calculate rotation if necessary.
 			if (Angle != 0.0f)
 			{
-				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
-				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
-				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+				float angle = Angle.Radians();						// Angle in radians.
+				float cosVal = angle.Cos();							// Cached cosine.
+				float sinVal = angle.Sin();							// Cached sine.
 
 				_corners[0].X = (posX1 * cosVal - posY1 * sinVal);
 				_corners[0].Y = (posX1 * sinVal + posY1 * cosVal);

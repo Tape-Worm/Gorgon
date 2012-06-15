@@ -298,9 +298,9 @@ namespace GorgonLibrary.Renderers
 			if (Angle != 0.0f)
 			{
 				Vector2 rotVector = result;
-				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
-				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
-				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+				float angle = Angle.Radians();						// Angle in radians.
+				float cosVal = angle.Cos();							// Cached cosine.
+				float sinVal = angle.Sin();							// Cached sine.
 
 				result.X = (rotVector.X * cosVal - rotVector.Y * sinVal);
 				result.Y = (rotVector.X * sinVal + rotVector.Y * cosVal);
@@ -348,9 +348,9 @@ namespace GorgonLibrary.Renderers
 
 				if (Angle != 0.0f)
 				{
-					float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
-					float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
-					float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+					float angle = Angle.Radians();		// Angle in radians.
+					float cosVal = angle.Cos();		// Cached cosine.
+					float sinVal = angle.Sin();		// Cached sine.
 
 					Vertices[vertexIndex].Position.X = (center.X * cosVal - center.Y * sinVal);
 					Vertices[vertexIndex].Position.Y = (center.X * sinVal + center.Y * cosVal);
@@ -404,7 +404,7 @@ namespace GorgonLibrary.Renderers
 		protected override void InitializeCustomVertexInformation()
 		{
 			float angle = 0.0f;
-			float step = GorgonMathUtility.PI * 2 / (_quality);
+			float step = (float)System.Math.PI * 2 / (_quality);
 
 			_offsets = new Vector2[_quality];
 			_points = new Vector2[_offsets.Length];
@@ -413,7 +413,7 @@ namespace GorgonLibrary.Renderers
 			for (int i = 0; i < _offsets.Length; i++)
 			{
 				_colors[i] = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
-				_offsets[i] = new Vector2(GorgonMathUtility.Cos(angle), GorgonMathUtility.Sin(angle)) * 0.5f;
+				_offsets[i] = new Vector2(angle.Cos(), angle.Sin()) * 0.5f;
 				_offsets[i] += new Vector2(0.5f, 0.5f);
 				angle += step;
 			}

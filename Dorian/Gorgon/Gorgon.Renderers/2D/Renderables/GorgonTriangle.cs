@@ -236,9 +236,9 @@ namespace GorgonLibrary.Renderers
 			// Calculate rotation if necessary.
 			if (Angle != 0.0f)
 			{
-				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
-				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
-				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+				float angle = Angle.Radians();						// Angle in radians.
+				float cosVal = angle.Cos();							// Cached cosine.
+				float sinVal = angle.Sin();							// Cached sine.
 
 				Vertices[0].Position.X = (point1.X * cosVal) - (point1.Y * sinVal);
 				Vertices[0].Position.Y = (point1.X * sinVal) + (point1.Y * cosVal);
@@ -420,10 +420,10 @@ namespace GorgonLibrary.Renderers
 
 				for (int i = 0; i < _points.Length; i++)
 				{
-					min.X = GorgonMathUtility.Min(_points[i].TextureCoordinate.X, min.X);
-					min.Y = GorgonMathUtility.Min(_points[i].TextureCoordinate.Y, min.Y);
-					max.X = GorgonMathUtility.Max(_points[i].TextureCoordinate.X, max.X);
-					max.Y = GorgonMathUtility.Max(_points[i].TextureCoordinate.Y, min.Y);
+					min.X = _points[i].TextureCoordinate.X.Min(min.X);
+					min.Y = _points[i].TextureCoordinate.Y.Min(min.Y);
+					max.X = _points[i].TextureCoordinate.X.Max(max.X);
+					max.Y = _points[i].TextureCoordinate.Y.Max(max.Y);
 				}
 
 				return RectangleF.FromLTRB(min.X, min.Y, max.X, max.Y);
@@ -476,10 +476,10 @@ namespace GorgonLibrary.Renderers
 
 				for (int i = 0; i < _points.Length; i++)
 				{
-					min.X = GorgonMathUtility.Min(_points[i].Position.X, min.X);
-					min.Y = GorgonMathUtility.Min(_points[i].Position.Y, min.Y);
-					max.X = GorgonMathUtility.Max(_points[i].Position.X, max.X);
-					max.Y = GorgonMathUtility.Max(_points[i].Position.Y, min.Y);
+					min.X = _points[i].Position.X.Min(min.X);
+					min.Y = _points[i].Position.Y.Min(min.Y);
+					max.X = _points[i].Position.X.Max(max.X);
+					max.Y = _points[i].Position.Y.Max(max.Y);
 				}
 
 				return Vector2.Subtract(max, min);

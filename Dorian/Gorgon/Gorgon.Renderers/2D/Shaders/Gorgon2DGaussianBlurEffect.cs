@@ -221,7 +221,7 @@ namespace GorgonLibrary.Renderers
 		{
 			float sigma = _blurRadius / _blurAmount;
 			float sqSigmaDouble = 2.0f * sigma * sigma;
-			float sigmaRoot = GorgonMathUtility.Sqrt(sqSigmaDouble * GorgonMathUtility.PI);
+			float sigmaRoot = (sqSigmaDouble * (float)System.Math.PI).Sqrt();
 			float total = 0.0f;
 			float distance = 0.0f;
 			int blurKernelSize = (_blurRadius * 2) + 1;
@@ -230,7 +230,7 @@ namespace GorgonLibrary.Renderers
 			for (int i = -_blurRadius; i <= _blurRadius; i++)
 			{
 				distance = i * i;
-				_kernel[index] = new Vector4(0, 0, 0, GorgonMathUtility.Exp(-distance / sqSigmaDouble) / sigmaRoot);
+				_kernel[index] = new Vector4(0, 0, 0, (-distance / sqSigmaDouble).Exp() / sigmaRoot);
 				total += _kernel[index].W;
 				index++;
 			}
