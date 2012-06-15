@@ -633,9 +633,9 @@ namespace Tester_Graphics
 
 						//_2D.Drawing.Blit(font.Textures[0], Vector2.Zero);
 						//_text.Color = Color.FromArgb(96, 0, 0, 0);
-						float rads = GorgonMathUtility.Radians(angle * 90.0f);
-						float cos = GorgonMathUtility.Cos(rads);
-						float sin = GorgonMathUtility.Sin(rads);
+						float rads = (angle * 90.0f).Radians();
+						float cos = rads.Cos();
+						float sin = rads.Sin();
 
 						_text.ShadowOffset = new Vector2(2 * cos - 2 * sin, 2 * sin + 2 * cos);
 						_text.SmoothingMode = SmoothingMode.Smooth;
@@ -644,7 +644,7 @@ namespace Tester_Graphics
 						_text.Position = new Vector2(45, 45);
 						//_text.Anchor = new Vector2(-1, -1);
 						//_text.Scale = new Vector2(2, 2);
-						_text.LineSpacing = -(((float)Math.Sin(GorgonMathUtility.Radians(lineSpaceAngle)) + 0.95f) * (1 / 1.95f));
+						_text.LineSpacing = -(((float)Math.Sin(lineSpaceAngle.Radians()) + 0.95f) * (1 / 1.95f));
 						//_text.TextRectangle = new RectangleF(0, 0, _2D.Target.Viewport.Region.Width - _text.Position.X + _text.Anchor.X, _2D.Target.Viewport.Region.Height - _text.Position.Y + _text.Anchor.Y);
 						//_2D.Drawing.DrawRectangle(new RectangleF(Vector2.Zero, _text.Size), Color.Blue);
 						_text.Angle = angle * 5.0f;

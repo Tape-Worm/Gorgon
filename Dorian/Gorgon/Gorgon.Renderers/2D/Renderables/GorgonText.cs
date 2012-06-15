@@ -567,9 +567,9 @@ namespace GorgonLibrary.Renderers
 			Vector2 pos = Vector2.Zero;
 			Vector2 outlineOffset = Vector2.Zero;
 			GorgonGlyph glyph = null;
-			float angle = GorgonMathUtility.Radians(_angle);	// Angle in radians.
-			float cosVal = GorgonMathUtility.Cos(angle);		// Cached cosine.
-			float sinVal = GorgonMathUtility.Sin(angle);		// Cached sine.
+			float angle = _angle.Radians();						// Angle in radians.
+			float cosVal = angle.Cos();							// Cached cosine.
+			float sinVal = angle.Sin();							// Cached sine.
 			
 			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
 				outlineOffset = new Vector2(_font.Settings.OutlineSize, _font.Settings.OutlineSize);
@@ -884,7 +884,7 @@ namespace GorgonLibrary.Renderers
 				result.Y = (_lines.Count * (((_font.LineHeight + outlineSize) * _lineSpace)));
 
 			for (int i = 0; i < _lines.Count; i++)
-				result.X = GorgonMathUtility.Max(result.X, LineMeasure(_lines[i], outlineSize));
+				result.X = result.X.Max(LineMeasure(_lines[i], outlineSize));
 
 			return result;
 		}

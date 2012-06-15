@@ -398,9 +398,9 @@ namespace GorgonLibrary.Renderers
 
 			if (Angle != 0.0f)
 			{
-				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
-				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
-				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+				float angle = Angle.Radians();						// Angle in radians.
+				float cosVal = angle.Cos();							// Cached cosine.
+				float sinVal = angle.Sin();							// Cached sine.
 
 				Vertices[0].Position.X = (corner1.X * cosVal - corner1.Y * sinVal);
 				Vertices[0].Position.Y = (corner1.X * sinVal + corner1.Y * cosVal);
@@ -477,9 +477,9 @@ namespace GorgonLibrary.Renderers
 			// Calculate rotation if necessary.
 			if (Angle != 0.0f)
 			{
-				float angle = GorgonMathUtility.Radians(Angle);		// Angle in radians.
-				float cosVal = (float)System.Math.Cos(angle);		// Cached cosine.
-				float sinVal = (float)System.Math.Sin(angle);		// Cached sine.
+				float angle = Angle.Radians();						// Angle in radians.
+				float cosVal = angle.Cos();							// Cached cosine.
+				float sinVal = angle.Sin();							// Cached sine.
 
 				Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal);
 				Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal);

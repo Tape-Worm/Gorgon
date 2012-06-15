@@ -435,7 +435,7 @@ namespace GorgonLibrary
 		/// <returns>The result of the operator.</returns>
 		public static bool operator ==(GorgonMinMaxD left, GorgonMinMaxD right)
 		{
-			return GorgonMathUtility.EqualDouble(left.Minimum, right.Minimum) && GorgonMathUtility.EqualDouble(left.Maximum, right.Maximum);
+			return left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 		}
 
 		/// <summary>
@@ -446,7 +446,7 @@ namespace GorgonLibrary
 		/// <returns>The result of the operator.</returns>
 		public static bool operator !=(GorgonMinMaxD left, GorgonMinMaxD right)
 		{
-			return !(GorgonMathUtility.EqualDouble(left.Minimum, right.Minimum) && GorgonMathUtility.EqualDouble(left.Maximum, right.Maximum));
+			return !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
 		}
 
 		/// <summary>
@@ -964,7 +964,7 @@ namespace GorgonLibrary
 		/// <returns>The result of the operator.</returns>
 		public static bool operator ==(GorgonMinMaxF left, GorgonMinMaxF right)
 		{
-			return GorgonMathUtility.EqualFloat(left.Minimum, right.Minimum) && GorgonMathUtility.EqualFloat(left.Maximum, right.Maximum);
+			return left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 		}
 
 		/// <summary>
@@ -975,7 +975,7 @@ namespace GorgonLibrary
 		/// <returns>The result of the operator.</returns>
 		public static bool operator !=(GorgonMinMaxF left, GorgonMinMaxF right)
 		{
-			return !(GorgonMathUtility.EqualFloat(left.Minimum, right.Minimum) && GorgonMathUtility.EqualFloat(left.Maximum, right.Maximum));
+			return !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
 		}
 
 		/// <summary>
@@ -1104,7 +1104,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public bool Equals(GorgonMinMaxF other)
 		{
-			return (GorgonMathUtility.EqualFloat(Minimum ,other.Minimum) && GorgonMathUtility.EqualFloat(Maximum, other.Maximum));
+			return other.Minimum == this.Minimum && other.Maximum == this.Maximum;
 		}
 		#endregion
 	}

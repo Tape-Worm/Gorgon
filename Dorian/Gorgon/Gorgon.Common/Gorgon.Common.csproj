@@ -137,6 +137,7 @@
     <Compile Include="Extensions\GorgonIntPtrExtensions.cs" />
     <Compile Include="Diagnostics\GorgonDebug.cs" />
     <Compile Include="Extensions\GorgonListViewExtensions.cs" />
+    <Compile Include="Extensions\GorgonMathExtensions.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
     <Compile Include="Extensions\GorgonStringFormatting.cs" />
     <Compile Include="Gorgon.cs" />
@@ -153,7 +154,6 @@
     <Compile Include="INamedObject.cs" />
     <Compile Include="IO\GorgonBinaryReader.cs" />
     <Compile Include="IO\GorgonBinaryWriter.cs" />
-    <Compile Include="Math\GorgonMathUtility.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
     <Compile Include="GorgonDataStream.cs" />
