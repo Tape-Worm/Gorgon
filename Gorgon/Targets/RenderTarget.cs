@@ -1053,7 +1053,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to draw a horizontal line.
+		/// Function to draw a vertical line.
 		/// </summary>
 		/// <param name="x">Starting horizontal position.</param>
 		/// <param name="y">Starting vertical position.</param>
@@ -1108,7 +1108,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to draw a horizontal line.
+        /// Function to draw a vertical line.
 		/// </summary>
 		/// <param name="x">Starting horizontal position.</param>
 		/// <param name="y">Starting vertical position.</param>
@@ -1121,7 +1121,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to draw a horizontal line.
+        /// Function to draw a vertical line.
 		/// </summary>
 		/// <param name="x">Starting horizontal position.</param>
 		/// <param name="y">Starting vertical position.</param>
