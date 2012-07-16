@@ -161,11 +161,13 @@ namespace GorgonLibrary
 					return;
 				}
 				
+#if DEBUG
 				// Limit to the bounds of an integer.
 				if (value > Int32.MaxValue)
 					value = Int32.MaxValue;
 				if (value < 0)
 					value = 0;
+#endif
 				
 				_pointerPosition = (int)value;
 				_pointerOffset = _data + _pointerPosition;
