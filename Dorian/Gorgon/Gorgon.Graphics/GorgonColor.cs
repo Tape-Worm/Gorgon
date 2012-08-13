@@ -63,7 +63,7 @@ namespace GorgonLibrary.Graphics
 		public static readonly GorgonColor Transparent = new GorgonColor(0, 0, 0, 0);
 		#endregion
 
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return a SharpDX color4 type.
 		/// </summary>

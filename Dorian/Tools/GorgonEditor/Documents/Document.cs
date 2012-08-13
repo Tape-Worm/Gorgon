@@ -1,14 +1,42 @@
-﻿using System;
+﻿#region MIT.
+// 
+// Gorgon.
+// Copyright (C) 2012 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: Tuesday, June 12, 2012 10:15:09 AM
+// 
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.IO;
 using KRBTabControl;
 using SlimMath;
 using Aga.Controls.Tree;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
 
@@ -17,7 +45,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// A document for the editor.
 	/// </summary>
-	abstract class Document		
+	public abstract class Document		
 		: INamedObject, IDisposable
 	{
 		#region Events.
@@ -32,6 +60,7 @@ namespace GorgonLibrary.GorgonEditor
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		private string _name = string.Empty;					// Name of the document.
 		private bool _needsSave = false;						// Flag to indicate that the document needs to be saved.
+		private Stream _serialized = null;						// Serialized data.
 		#endregion
 
 		#region Properties.
@@ -54,12 +83,31 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
+		/// Property to set or return whether the document can be serialized.
+		/// </summary>
+		protected bool CanSerialize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return the swap chain used for rendering in this document.
 		/// </summary>
 		protected GorgonSwapChain SwapChain
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the type descriptor for this document.
+		/// </summary>
+		[Browsable(false)]
+		internal DocumentTypeDescriptor TypeDescriptor
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -82,16 +130,6 @@ namespace GorgonLibrary.GorgonEditor
 			protected set;
 		}
 		
-		/// <summary>
-		/// Property to return the type descriptor for this document.
-		/// </summary>
-		[Browsable(false)]
-		public DocumentTypeDescriptor TypeDescriptor
-		{
-			get;
-			private set;
-		}
-
 		/// <summary>
 		/// Property to return the folder that owns this document.
 		/// </summary>
@@ -345,6 +383,92 @@ namespace GorgonLibrary.GorgonEditor
 			// Load any resources that we'll need.
 			LoadResources();
 		}
+
+		/// <summary>
+		/// Function to serialize the document into a data stream.
+		/// </summary>
+		/// <param name="stream">Stream used to store the serialized data.</param>
+		protected abstract void SerializeImpl(System.IO.Stream stream);
+
+		/// <summary>
+		/// Function to serialize the document data.
+		/// </summary>
+		protected void Serialize()
+		{
+			if (_serialized != null)
+			{
+				_serialized.Dispose();
+				_serialized = null;
+			}
+
+			_serialized = new GorgonDataStream();
+			SerializeImpl(_serialized);
+			_serialized.Position = 0;
+		}
+
+		/// <summary>
+		/// Function to deserialize the document data from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the document.</param>
+		protected abstract void DeserializeImpl(System.IO.Stream stream);
+
+		/// <summary>
+		/// Function to deserialize the document data.
+		/// </summary>
+		protected void Deserialize()
+		{
+			if ((_serialized == null) || (_serialized.Length == 0))
+				return;
+
+			try
+			{
+				NoDispatchUpdate = true;
+				_serialized.Position = 0;
+				DeserializeImpl(_serialized);
+			}
+			finally
+			{
+				NoDispatchUpdate = false;
+				_serialized.Dispose();
+				_serialized = null;
+			}
+		}
+
+		/// <summary>
+		/// Function to load the file from the file system or from its internal cached object.
+		/// </summary>
+		internal void LoadDocument()
+		{
+			GorgonFileSystemFileEntry file = null;
+
+			try
+			{
+				if (!CanSerialize)
+					return;
+
+				NoDispatchUpdate = true;
+				if ((_serialized == null) || (_serialized.Length == 0))
+				{
+					if (Folder != null)
+						file = Program.Project.FileSystem.GetFile(Folder.Path + Name);
+					else
+						file = Program.Project.FileSystem.GetFile("/" + Name);
+
+					if (file != null)
+						_serialized = Program.Project.FileSystem.OpenStream(file.FullPath, false);
+				}
+
+				if (_serialized != null)
+					DeserializeImpl(_serialized);
+			}
+			finally
+			{
+				NoDispatchUpdate = false;
+				if (_serialized != null)
+					_serialized.Dispose();
+				_serialized = null;
+			}
+		}
 		
 		/// <summary>
 		/// Function to initialize the document.
@@ -360,13 +484,16 @@ namespace GorgonLibrary.GorgonEditor
 			// Add the tab for this document to our tab control.
 			Tab.Controls.Add(Control);
 			Tab.IsClosable = AllowClose;
-		}
+		}		
 
 		/// <summary>
 		/// Function to terminate the document (but still keep it alive).
 		/// </summary>
 		public void TerminateDocument()
 		{
+			if (CanSerialize)
+				Serialize();		// Serialize into a form we can use later.
+
 			ReleaseResources();
 
 			if (SwapChain != null)
@@ -412,6 +539,7 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			GorgonDebug.AssertParamString(name, "name");
 
+			CanSerialize = false;
 			CanOpen = false;
 			CanSave = false;
 			TabImageIndex = -1;
@@ -445,8 +573,12 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				if (disposing)
 				{
+					CanSerialize = false;
 					if (TreeNode.Parent != null)
 						TreeNode.Parent.Nodes.Remove(TreeNode);
+					if (_serialized != null)
+						_serialized.Dispose();
+
 					TerminateDocument();
 				}
 

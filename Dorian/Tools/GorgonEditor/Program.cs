@@ -67,15 +67,6 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Property to set or return the current file system holding the project.
-		/// </summary>
-		public static GorgonFileSystem CurrentFile
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to set or return the settings for the application.
 		/// </summary>
 		public static GorgonEditorSettings Settings
@@ -216,8 +207,7 @@ namespace GorgonLibrary.GorgonEditor
 		static Program()
 		{
 			Settings = new GorgonEditorSettings();
-			Project = new Project();
-			CurrentFile = new GorgonFileSystem();
+			Project = new Project();			
 		}
 		#endregion
 

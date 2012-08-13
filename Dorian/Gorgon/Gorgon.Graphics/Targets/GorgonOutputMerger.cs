@@ -34,6 +34,36 @@ using GorgonLibrary.Diagnostics;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// Extensions for the timing data to provide more
+	/// </summary>
+	public static class GorgonFrameRateExtensions
+	{
+		/// <summary>
+		/// Draw call count per frame.
+		/// </summary>
+		internal static int DrawCallCount = 0;
+
+		/// <summary>
+		/// Function to reset the draw call count at the end of a frame.
+		/// </summary>
+		/// <param name="frameRate">Frame rate object to attach with.</param>
+		public static void ResetDrawCallCount(this GorgonFrameRate frameRate)
+		{
+			DrawCallCount = 0;
+		}
+
+		/// <summary>
+		/// Function to return the draw call count.
+		/// </summary>
+		/// <param name="frameRate">Frame rate object to attach with.</param>
+		/// <returns>The number of draw calls made on the current frame.</returns>
+		public static int GetDrawCalls(this GorgonFrameRate frameRate)
+		{
+			return DrawCallCount;
+		}
+	}
+
+	/// <summary>
 	/// Manages the display of the graphics data.
 	/// </summary>
 	public sealed class GorgonOutputMerger
@@ -490,6 +520,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="vertexCount">Number of vertices to draw.</param>
 		public void Draw(int vertexStart, int vertexCount)
 		{
+			GorgonFrameRateExtensions.DrawCallCount++;
 			_graphics.Context.Draw(vertexCount, vertexStart);
 		}
 
@@ -502,7 +533,7 @@ namespace GorgonLibrary.Graphics
 			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 				throw new GorgonException(GorgonResult.AccessDenied, "SM 2.0 video devices cannot draw auto-generated data.");
 #endif
-
+			GorgonFrameRateExtensions.DrawCallCount++;
 			_graphics.Context.DrawAuto();
 		}
 
@@ -514,6 +545,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="indexCount">Number of indices to use.</param>
 		public void DrawIndexed(int indexStart, int baseVertex, int indexCount)
 		{
+			GorgonFrameRateExtensions.DrawCallCount++;
 			_graphics.Context.DrawIndexed(indexCount, indexStart, baseVertex);
 		}
 
@@ -527,6 +559,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="indexCount">Number of indices to read per instance.</param>
 		public void DrawIndexedInstanced(int startInstance, int indexStart, int baseVertex, int instanceCount, int indexCount)
 		{
+			GorgonFrameRateExtensions.DrawCallCount++;
 			_graphics.Context.DrawIndexedInstanced(indexCount, instanceCount, indexStart, baseVertex, startInstance);
 		}
 
@@ -539,6 +572,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="vertexCount">Number of vertices to draw.</param>
 		public void DrawInstanced(int startInstance, int startVertex, int instanceCount, int vertexCount)
 		{
+			GorgonFrameRateExtensions.DrawCallCount++;
 			_graphics.Context.DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
 		}
 
@@ -560,7 +594,7 @@ namespace GorgonLibrary.Graphics
 				(_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1))
 				throw new InvalidOperationException("Cannot call DrawInstancedIndirect without a SM5 or better video device.");
 #endif
-
+			GorgonFrameRateExtensions.DrawCallCount++;
 			if (isIndexed)
 				_graphics.Context.DrawIndexedInstancedIndirect(buffer.D3DBuffer, alignedAyteOffset);
 			else

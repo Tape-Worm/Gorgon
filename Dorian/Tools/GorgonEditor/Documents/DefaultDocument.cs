@@ -45,6 +45,24 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Methods.
 		/// <summary>
+		/// Function to deserialize the document data from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the document.</param>
+		protected override void DeserializeImpl(System.IO.Stream stream)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Function to serialize the document into a data stream.
+		/// </summary>
+		/// <param name="stream">Stream used to store the serialized data.</param>
+		protected override void SerializeImpl(System.IO.Stream stream)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
 		/// Function to draw to the control.
 		/// </summary>
 		/// <param name="timing">Timing data.</param>

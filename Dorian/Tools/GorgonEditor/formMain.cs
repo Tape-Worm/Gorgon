@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using KRBTabControl;
 using Aga.Controls.Tree;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.Diagnostics;
@@ -89,6 +90,7 @@ namespace GorgonLibrary.GorgonEditor
 		private SortedTreeModel _treeModel = null;							// Tree model.
 		private DefaultDocument _defaultDocument = null;					// Our default page.
 		private Font _unSavedFont = null;									// Font for unsaved documents.
+		private bool _wasSaved = false;										// Flag to indicate that the project was previously saved.
 		#endregion
 
 		#region Properties.
@@ -96,6 +98,98 @@ namespace GorgonLibrary.GorgonEditor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the Click event of the itemSaveAs control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void itemSaveAs_Click(object sender, EventArgs e)
+		{
+			try
+			{
+
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Function to hide a document.
+		/// </summary>
+		/// <param name="document">Document to hide.</param>
+		private void HideDocument(Document document)
+		{
+			if ((document == null) && (!((TabPageEx)document.Tab).IsClosable))
+				return;
+
+			if (tabDocuments.TabPages.Contains(document.Tab))
+				tabDocuments.TabPages.Remove(document.Tab);
+
+			document.PropertyUpdated -= new EventHandler(FontUpdated);
+			document.TerminateDocument();
+		}
+
+		/// <summary>
+		/// Handles the NodeMouseDoubleClick event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="Aga.Controls.Tree.TreeNodeAdvMouseEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
+		{
+			Document document = null;
+
+			try
+			{
+				Node node = e.Node.Tag as Node;
+
+				Cursor.Current = Cursors.WaitCursor;
+
+				if (node.Tag is ProjectFolder)
+				{
+					e.Node.ExpandAll();
+					return;
+				}
+
+				document = node.Tag as Document;
+
+				foreach (var tabPage in tabDocuments.TabPages.Cast<TabPageEx>())
+				{
+					if (document == tabPage.Tag)
+					{
+						tabDocuments.SelectedTab = tabPage;
+						return;
+					}
+				}
+
+				if (Program.Project.DocumentTypes.Count(item => item.Value == document.GetType()) == 0)
+				{
+					GorgonDialogs.ErrorBox(this, "Cannot open this document.  It is of an unknown type.");
+					return;
+				}
+								
+				DisplayDocument(document);
+				document.LoadDocument();
+
+				document.PropertyUpdated += new EventHandler(FontUpdated);
+			}
+			catch (Exception ex)
+			{
+				if (document != null)
+					HideDocument(document);
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
 		/// <summary>
 		/// Handles the Click event of the itemExport control.
 		/// </summary>
@@ -277,6 +371,9 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			try
 			{
+				if (e.TabPage == null)
+					return;
+
 				var document = e.TabPage.Tag as Document;
 
 				if (document != null)
@@ -432,11 +529,11 @@ namespace GorgonLibrary.GorgonEditor
 			if (Program.Project.GetProjectState())
 			{
 				Text += "*";
-				itemSaveAs.Enabled = itemSave.Enabled = true;
+				itemSave.Enabled = _wasSaved;
 			}
 			else
 			{
-				itemSaveAs.Enabled = itemSave.Enabled = false;
+				itemSave.Enabled = false;
 			}
 
 			Text += " - Gorgon Editor";
