@@ -284,7 +284,7 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 							edgeSqr.b <= sobelThreshold,
 							0));
 
-	if ((color.r > 0) || (color.g > 0) | (color.b > 0))
+	if ((color.r > 0) || (color.g > 0) || (color.b > 0))
 		color = sobelLineColor;
 	else
 		color = 0;

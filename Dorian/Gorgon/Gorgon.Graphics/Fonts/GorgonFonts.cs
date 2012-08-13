@@ -42,6 +42,7 @@ namespace GorgonLibrary.Graphics
 	public class GorgonFonts
 	{
 		#region Variables.
+		private byte[] _fileHeader = null;					// File header.
 		private GorgonGraphics _graphics = null;			// Graphics interface.
 		private GorgonFont _default = null;					// Default font for debugging, etc...
 		#endregion
@@ -99,14 +100,15 @@ namespace GorgonLibrary.Graphics
 		private GorgonFont LoadFont(string fontName, Stream stream)
 		{
 			GorgonBinaryReader reader = null;
-			GorgonFont font = null;
+			GorgonFont font = null;			
 
 			try
 			{
 				GorgonFontSettings settings = new GorgonFontSettings();
 				reader = new GorgonBinaryReader(stream, true);
 
-				string header = reader.ReadString();
+				reader.Read(_fileHeader, 0, _fileHeader.Length);
+				string header = Encoding.UTF8.GetString(_fileHeader);
 
 				if (string.Compare(header, GorgonFont.FileHeader, false) != 0)
 					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this font.  It is not a Gorgon font or is a newer version.");
@@ -394,6 +396,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonFonts(GorgonGraphics graphics)
 		{
 			_graphics = graphics;
+			_fileHeader = Encoding.UTF8.GetBytes(GorgonFont.FileHeader);
 		}
 		#endregion
 	}

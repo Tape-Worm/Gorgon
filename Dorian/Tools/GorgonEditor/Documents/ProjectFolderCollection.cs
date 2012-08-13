@@ -35,7 +35,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// A collection of project folders.
 	/// </summary>
-	class ProjectFolderCollection
+	public class ProjectFolderCollection
 		: GorgonBaseNamedObjectDictionary<ProjectFolder>
 	{
 		#region Variables.
@@ -114,7 +114,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProjectFolderCollection"/> class.
 		/// </summary>
-		public ProjectFolderCollection()
+		internal ProjectFolderCollection()
 			: base(false)
 		{
 		}

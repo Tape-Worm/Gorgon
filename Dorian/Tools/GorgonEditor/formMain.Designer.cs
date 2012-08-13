@@ -73,7 +73,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.tabDocuments = new KRBTabControl.KRBTabControl();
 			this.imageFiles = new System.Windows.Forms.ImageList(this.components);
 			this.tabDocumentManager = new KRBTabControl.KRBTabControl();
-			this.pageFiles = new KRBTabControl.TabPageEx();
+			this.pageItems = new KRBTabControl.TabPageEx();
 			this.containerFiles = new System.Windows.Forms.ToolStripContainer();
 			this.treeFiles = new Aga.Controls.Tree.TreeViewAdv();
 			this.columnFiles = new Aga.Controls.Tree.TreeColumn();
@@ -96,7 +96,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.splitEdit.SuspendLayout();
 			this.panelEditor.SuspendLayout();
 			this.tabDocumentManager.SuspendLayout();
-			this.pageFiles.SuspendLayout();
+			this.pageItems.SuspendLayout();
 			this.containerFiles.ContentPanel.SuspendLayout();
 			this.containerFiles.TopToolStripPanel.SuspendLayout();
 			this.containerFiles.SuspendLayout();
@@ -166,6 +166,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.itemSaveAs.Name = "itemSaveAs";
 			this.itemSaveAs.Size = new System.Drawing.Size(155, 22);
 			this.itemSaveAs.Text = "Save &as...";
+			this.itemSaveAs.Click += new System.EventHandler(this.itemSaveAs_Click);
 			// 
 			// toolStripMenuItem5
 			// 
@@ -278,7 +279,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.tabDocumentManager.BackgroundColor = System.Drawing.Color.DimGray;
 			this.tabDocumentManager.BackgroundHatcher.HatchType = System.Drawing.Drawing2D.HatchStyle.DashedVertical;
 			this.tabDocumentManager.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-			this.tabDocumentManager.Controls.Add(this.pageFiles);
+			this.tabDocumentManager.Controls.Add(this.pageItems);
 			this.tabDocumentManager.Controls.Add(this.pageProperties);
 			this.tabDocumentManager.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabDocumentManager.ImageList = this.imageFiles;
@@ -297,18 +298,18 @@ namespace GorgonLibrary.GorgonEditor
 			this.tabDocumentManager.TabIndex = 1;
 			this.tabDocumentManager.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.BlackGlass;
 			// 
-			// pageFiles
+			// pageItems
 			// 
-			this.pageFiles.BackColor = System.Drawing.Color.DimGray;
-			this.pageFiles.Controls.Add(this.containerFiles);
-			this.pageFiles.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.pageFiles.ImageIndex = 2;
-			this.pageFiles.IsClosable = false;
-			this.pageFiles.Location = new System.Drawing.Point(1, 1);
-			this.pageFiles.Name = "pageFiles";
-			this.pageFiles.Size = new System.Drawing.Size(223, 554);
-			this.pageFiles.TabIndex = 1;
-			this.pageFiles.Text = "Files";
+			this.pageItems.BackColor = System.Drawing.Color.DimGray;
+			this.pageItems.Controls.Add(this.containerFiles);
+			this.pageItems.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.pageItems.ImageIndex = 2;
+			this.pageItems.IsClosable = false;
+			this.pageItems.Location = new System.Drawing.Point(1, 1);
+			this.pageItems.Name = "pageItems";
+			this.pageItems.Size = new System.Drawing.Size(223, 554);
+			this.pageItems.TabIndex = 1;
+			this.pageItems.Text = "Items";
 			// 
 			// containerFiles
 			// 
@@ -351,6 +352,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.treeFiles.ShowLines = false;
 			this.treeFiles.Size = new System.Drawing.Size(223, 529);
 			this.treeFiles.TabIndex = 0;
+			this.treeFiles.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeFiles_NodeMouseDoubleClick);
 			// 
 			// columnFiles
 			// 
@@ -505,7 +507,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.splitEdit.ResumeLayout(false);
 			this.panelEditor.ResumeLayout(false);
 			this.tabDocumentManager.ResumeLayout(false);
-			this.pageFiles.ResumeLayout(false);
+			this.pageItems.ResumeLayout(false);
 			this.containerFiles.ContentPanel.ResumeLayout(false);
 			this.containerFiles.TopToolStripPanel.ResumeLayout(false);
 			this.containerFiles.TopToolStripPanel.PerformLayout();
@@ -539,7 +541,7 @@ namespace GorgonLibrary.GorgonEditor
 		private System.Windows.Forms.ToolStripMenuItem itemExit;
 		private KRBTabControl.KRBTabControl tabDocumentManager;
 		private KRBTabControl.TabPageEx pageProperties;
-		private KRBTabControl.TabPageEx pageFiles;
+		private KRBTabControl.TabPageEx pageItems;
 		private System.Windows.Forms.ImageList imageFiles;
 		private System.Windows.Forms.ToolStripContainer containerFiles;
 		private System.Windows.Forms.ToolStrip stripFiles;

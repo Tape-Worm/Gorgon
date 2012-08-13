@@ -37,7 +37,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// Project object.
 	/// </summary>
-	class Project
+	public class Project
 	{
 		#region Variables.
 		#endregion

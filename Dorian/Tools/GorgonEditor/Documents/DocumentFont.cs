@@ -49,7 +49,6 @@ namespace GorgonLibrary.GorgonEditor
 	{
 		#region Variables.
 		private controlFontDisplay _fontWindow = null;		// Font window.
-		private bool _disposed = false;						// Flag to indicate that the object was disposed.
 		private GorgonFont _font = null;					// Font.
 		private Vector2 _lastBoundSize = Vector2.Zero;		// Last bounding area.
 		private GorgonFontSettings _fontSettings = null;	// Font settings.
@@ -419,7 +418,7 @@ namespace GorgonLibrary.GorgonEditor
 		}
 		#endregion
 
-		#region Methods.
+		#region Methods.		
 		/// <summary>
 		/// Function to limit the font texture size based on the font size.
 		/// </summary>
@@ -433,6 +432,51 @@ namespace GorgonLibrary.GorgonEditor
 
 			if ((fontSize > FontTextureSize.Width) || (fontSize > FontTextureSize.Height))
 				FontTextureSize = new Size((int)fontSize, (int)fontSize);
+		}
+
+		/// <summary>
+		/// Function to serialize the document into a data stream.
+		/// </summary>
+		/// <param name="stream">Stream used to store the serialized data.</param>
+		protected override void SerializeImpl(Stream stream)
+		{
+			if (_font == null)
+				return;
+
+			// Save to a temporary stream and dump to the main stream.
+			MemoryStream baseStream = new MemoryStream();
+
+			try
+			{
+				_font.Save(baseStream);
+				baseStream.Position = 0;
+
+				stream.SetLength(baseStream.Length);
+				baseStream.WriteTo(stream);
+			}
+			finally
+			{
+				if (baseStream != null)
+					baseStream.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Function to deserialize the document data from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the document.</param>
+		protected override void DeserializeImpl(Stream stream)
+		{
+			GorgonFont newFont = null;
+
+			try
+			{
+				newFont = Program.Graphics.Fonts.FromStream(Path.GetFileNameWithoutExtension(Name), stream);
+				Font = newFont;
+			}
+			finally
+			{
+			}
 		}
 
 		/// <summary>
@@ -568,9 +612,6 @@ namespace GorgonLibrary.GorgonEditor
 		/// </returns>
 		protected override Control InitializeEditorControl()
 		{
-			if (_fontWindow != null)
-				return _fontWindow;
-
 			_fontWindow = new controlFontDisplay();
 			_fontWindow.Dock = System.Windows.Forms.DockStyle.Fill;
 			_iBarTimer = new GorgonTimer();		
@@ -672,7 +713,6 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				NoDispatchUpdate = true;
 				Font = newFont;
-				_fontWindow.CurrentFont = _font = newFont;
 				NeedsSave = true;
 			}
 			finally
@@ -766,6 +806,7 @@ namespace GorgonLibrary.GorgonEditor
 		public DocumentFont(string name, bool allowClose, ProjectFolder folder)
 			: base(name, allowClose, folder)
 		{
+			CanSerialize = true;
 			CanOpen = true;
 			CanSave = true;
 			_fontSettings = new GorgonFontSettings();

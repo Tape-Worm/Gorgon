@@ -35,7 +35,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// A collection of documents.
 	/// </summary>
-	class DocumentCollection
+	public class DocumentCollection
 		: GorgonBaseNamedObjectDictionary<Document>
 	{
 		#region Properties.
@@ -135,7 +135,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DocumentCollection"/> class.
 		/// </summary>
-		public DocumentCollection()
+		internal DocumentCollection()
 			: base(false)
 		{
 		}

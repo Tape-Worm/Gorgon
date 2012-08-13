@@ -66,7 +66,7 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("Retrieving outputs for video device '{0}'...", Diagnostics.LoggingLevel.Simple, _videoDevice.Name);
 
 			foreach(var giOutput in _videoDevice.GIAdapter.Outputs)
-			{
+			{				
 				GorgonVideoOutput output = new GorgonVideoOutput(_videoDevice, giOutput);
 
 				GI.ModeDescription findMode = GorgonVideoMode.Convert(new GorgonVideoMode(output.OutputBounds.Width, output.OutputBounds.Height, BufferFormat.R8G8B8A8_UIntNormal, 60, 1));

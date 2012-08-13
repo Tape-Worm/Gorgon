@@ -117,20 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="HelpText" xml:space="preserve">
-    <value>Help:
-F1 - Show or hide this help message.
-↑ (up arrow) - Increase the ball count by 1 ball.
-↓ (down arrow) - Decrease the ball count by 1 ball.
-Shift + ↑ (up arrow) - Increase the ball count by 10 balls.
-Shift + ↓ (down arrow) - Decrease the ball count by 10 balls.
-Ctrl + ↑ (up arrow) - Increase the ball count by 100 balls.
-Ctrl + ↓ (down arrow) - Decrease the ball count by 100 balls.
-Shift + Ctrl + ↑ (up arrow) - Increase the ball count by 1000 balls.
-Shift + Ctrl + ↓ (down arrow) - Decrease the ball count by 1000 balls.
-+ - Increase blur.
-- - Decrease blur.
-Alt + Enter - Switch to fullscreen (or windowed).
-ESC - Exit.</value>
-  </data>
 </root>

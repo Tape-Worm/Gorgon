@@ -37,7 +37,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// <summary>
 	/// A folder object for the file system.
 	/// </summary>
-	class ProjectFolder
+	public class ProjectFolder
 		: GorgonNamedObject
 	{
 		#region Properties.

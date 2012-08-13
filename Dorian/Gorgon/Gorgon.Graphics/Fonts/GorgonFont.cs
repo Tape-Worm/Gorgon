@@ -636,6 +636,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
+		private byte[] _fileHeader = null;								// File header.
 		private bool _disposed = false;									// Flag to indicate that the object was disposed.
 		private IList<GorgonTexture2D> _textures = null;				// List of internal textures for the font.
 		private GorgonTexture2DSettings _textureSettings = null;		// Settings for the texture.
@@ -756,7 +757,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				writer = new GorgonBinaryWriter(stream, true);
-				writer.Write(GorgonFont.FileHeader);
+				writer.Write(_fileHeader, 0, _fileHeader.Length);
 				// Write font settings meta data.
 				writer.Write((int)Settings.AntiAliasingMode);
 				writer.Write(Settings.BaseColors.Count);
@@ -1437,6 +1438,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonFont(GorgonGraphics graphics, string name, GorgonFontSettings settings)
 			: base(name)
 		{
+			_fileHeader = Encoding.UTF8.GetBytes(FileHeader);
 			Graphics = graphics;
 			Settings = settings;
 			Textures = new FontTextureCollection(this);

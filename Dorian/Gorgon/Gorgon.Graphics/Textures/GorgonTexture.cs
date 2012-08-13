@@ -445,7 +445,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="z">Destination depth coordinate.</param>
 		internal virtual void CopySubResourceProxy(GorgonTexture source, GorgonTexture destination, int srcSubResourceIndex, int destSubResourceIndex, D3D.ResourceRegion? sourceRegion, int x, int y, int z)
 		{
-			Graphics.Context.CopySubresourceRegion(source.D3DTexture, srcSubResourceIndex, sourceRegion, destination.D3DTexture, destSubResourceIndex, z, y, z);
+			Graphics.Context.CopySubresourceRegion(source.D3DTexture, srcSubResourceIndex, sourceRegion, destination.D3DTexture, destSubResourceIndex, x, y, z);
 		}
 
 		/// <summary>
