@@ -723,14 +723,13 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function for idle time.
 		/// </summary>
-		/// <param name="timing">Timing data.</param>
 		/// <returns>TRUE to continue, FALSE to exit.</returns>
-		private bool Idle(GorgonFrameRate timing)
+		private bool Idle()
 		{
 			if (Program.CurrentDocument == null)
 				return true;
 
-			Program.CurrentDocument.RenderMethod(timing);
+			Program.CurrentDocument.RenderMethod();
 
 			return true;
 		}

@@ -33,7 +33,7 @@ namespace Test_Dual
 		/// </summary>
 		/// <param name="timing"></param>
 		/// <returns></returns>
-		static bool Idle(GorgonFrameRate timing)
+		static bool Idle()
 		{
 			_swap1.Clear(new GorgonColor(0.0f, 1.0f, 0.0f));
 			_swap2.Clear(new GorgonColor(0.0f, 0.0f, 1.0f));
@@ -55,14 +55,14 @@ namespace Test_Dual
 			_2D.Render();
 
 			if (!_bounceH)
-				_spriteGlobal.X += 300 * timing.FrameDelta;
+				_spriteGlobal.X += 300 * GorgonTiming.FrameDelta;
 			else
-				_spriteGlobal.X -= 300 * timing.FrameDelta;
+				_spriteGlobal.X -= 300 * GorgonTiming.FrameDelta;
 
 			if (!_bounceV)
-				_spriteGlobal.Y += 300 * timing.FrameDelta;
+				_spriteGlobal.Y += 300 * GorgonTiming.FrameDelta;
 			else
-				_spriteGlobal.Y -= 300 * timing.FrameDelta;
+				_spriteGlobal.Y -= 300 * GorgonTiming.FrameDelta;
 
 			if (_spriteGlobal.Y > 600)
 			{
@@ -137,7 +137,7 @@ namespace Test_Dual
 				Window = _form2
 			});
 
-			_2D = _graphics.Create2DRenderer(_swap1);
+			_2D = _graphics.Output.Create2DRenderer(_swap1);
 			_font = _graphics.Fonts.CreateFont("Font", _form1.Font, FontAntiAliasMode.AntiAliasHQ, new System.Drawing.Size(256, 256));
 			_ball = _graphics.Textures.FromFile<GorgonTexture2D>("Ball", @"..\..\..\..\Resources\BallDemo\BallDemo.png");
 			_sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(64, 64), _ball, new System.Drawing.RectangleF(64, 0, 64, 64));

@@ -55,7 +55,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
-		public static Gorgon2D Create2DRenderer(this GorgonGraphics graphics, Control window)
+		public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, Control window)
 		{
 			if (window == null)
 				window = Gorgon.ApplicationForm;
@@ -86,7 +86,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
-		public static Gorgon2D Create2DRenderer(this GorgonGraphics graphics, Control window, int width, int height, BufferFormat format, bool isWindowed)
+		public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, Control window, int width, int height, BufferFormat format, bool isWindowed)
 		{
 			return Create2DRenderer(graphics, window, width, height, format, isWindowed, BufferFormat.Unknown);
 		}
@@ -114,11 +114,11 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
-		public static Gorgon2D Create2DRenderer(this GorgonGraphics graphics, Control window, int width, int height, BufferFormat format, bool isWindowed, BufferFormat depthStencilFormat)
+		public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, Control window, int width, int height, BufferFormat format, bool isWindowed, BufferFormat depthStencilFormat)
 		{
 			GorgonSwapChain swapChain = null;
 
-			swapChain = graphics.Output.CreateSwapChain("Gorgon2D.DefaultSwapChain", new GorgonSwapChainSettings()
+			swapChain = graphics.CreateSwapChain("Gorgon2D.DefaultSwapChain", new GorgonSwapChainSettings()
 			{
 				BufferCount = 2,
 				DepthStencilFormat = depthStencilFormat,
@@ -143,19 +143,14 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new 2D graphics interface.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.</exception>
-		public static Gorgon2D Create2DRenderer(this GorgonGraphics graphics, GorgonRenderTarget target)
+		public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, GorgonRenderTarget target)
 		{
 			Gorgon2D result = null;
 
 			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
 
-#if DEBUG
-			if (target.Graphics != graphics)
-				throw new ArgumentException("The target '" + target.Name + "' was not created by the same graphics interface as this one.", "target");
-#endif
-
 			result = new Gorgon2D(target);
-			graphics.AddTrackedObject(result);
+			target.Graphics.AddTrackedObject(result);
 
 			return result;
 		}

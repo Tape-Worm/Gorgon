@@ -164,8 +164,24 @@ namespace GorgonLibrary.Graphics
 			int mipCount = 1;
 			int arrayCount = 1;		// This is always 1 for a 3D texture.
 			int result = 0;
-			int bytes = FormatInformation.SizeInBytes;
-			bool isCompressed = FormatInformation.IsCompressed;
+			int bytes = 0;
+			bool isCompressed = false;
+
+			if (FormatInformation == null)
+			{
+				FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+
+				if (ViewFormatInformation == null)
+				{
+					if (Settings.ViewFormat == BufferFormat.Unknown)
+						ViewFormatInformation = FormatInformation;
+					else
+						ViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.ViewFormat);
+				}
+			}
+
+			bytes = FormatInformation.SizeInBytes;
+			isCompressed = FormatInformation.IsCompressed;
 
 			if (bytes == 0)
 				return 0;
@@ -461,6 +477,9 @@ namespace GorgonLibrary.Graphics
 				InitializeImpl(initialData);
 				D3DTexture.DebugName = GetType().Name + " '" + Name + "' D3D texture";
 				CreateResourceView();
+
+				GorgonRenderStatistics.TextureCount++;
+				GorgonRenderStatistics.TextureSize += SizeInBytes;
 			}
 			catch
 			{
@@ -520,6 +539,9 @@ namespace GorgonLibrary.Graphics
 
 				Settings = GetTextureInformation();
 				CreateResourceView();
+
+				GorgonRenderStatistics.TextureCount++;
+				GorgonRenderStatistics.TextureSize += SizeInBytes;
 			}
 			catch
 			{
@@ -920,7 +942,12 @@ namespace GorgonLibrary.Graphics
 
 					Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", Diagnostics.LoggingLevel.Verbose, Name);
 					if (D3DTexture != null)
+					{
+						GorgonRenderStatistics.TextureCount--;
+						GorgonRenderStatistics.TextureSize -= SizeInBytes;
+
 						D3DTexture.Dispose();
+					}
 
 					Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 shader resource view.", Diagnostics.LoggingLevel.Verbose, Name);
 					if (View != null)

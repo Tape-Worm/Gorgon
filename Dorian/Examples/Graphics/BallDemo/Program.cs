@@ -52,7 +52,7 @@ namespace GorgonLibrary.Graphics.Example
 		private static IList<Ball> _ballList = null;														// Our list of balls.
 		private static int _ballCount = 0;																	// Number of balls.
 		private static float _accumulator = 0;																// Our accumulator for running at a fixed frame rate.
-		private static float _maxSimulationFPS = (float)GorgonFrameRate.FpsToMilliseconds(60) / 1000.0f;	// Maximum FPS for our ball simulation.
+		private static float _maxSimulationFPS = (float)GorgonTiming.FpsToMilliseconds(60) / 1000.0f;	// Maximum FPS for our ball simulation.
 		private static GorgonFont _ballFont = null;															// Font to display our FPS, etc...
 		private static GorgonRenderTarget _ballTarget = null;												// Render target for the balls.
 		private static GorgonRenderTarget _statsTarget = null;												// Render target for statistics.
@@ -230,11 +230,10 @@ namespace GorgonLibrary.Graphics.Example
 		/// <summary>
 		/// Function to draw the overlay elements, like text.
 		/// </summary>
-		/// <param name="timing">Timing data.</param>
-		private static void DrawOverlay(GorgonFrameRate timing)
+		private static void DrawOverlay()
 		{
 			_fpsText.Length = 0;
-			_fpsText.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.0#} ms\nBall count: {2}", timing.AverageFPS, timing.AverageFrameDelta, _ballCount);
+			_fpsText.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.0#} ms\nBall count: {2}", GorgonTiming.AverageFPS, GorgonTiming.AverageFrameDelta, _ballCount);
 
 			_2D.Drawing.Blit(_statsTarget, Vector2.Zero);
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 0), Color.White);
@@ -242,25 +241,24 @@ namespace GorgonLibrary.Graphics.Example
 			if (_showHelp)
 				_2D.Drawing.DrawString(_ballFont, _helpText.ToString(), new Vector2(3.0f, 72.0f), Color.Yellow, true, new Vector2(2.0f, 2.0f), 0.5f);
 
-			_2D.Drawing.DrawString(_ballFont, "1111", new Vector2(3.0f, 600.0f), Color.White);
-
 			// Draw the draw call counter.
 			_fpsText.Length = 0;
-			_fpsText.AppendFormat("Draw calls: {0}", timing.GetDrawCalls());
+			_fpsText.AppendFormat("Draw calls: {0}", GorgonRenderStatistics.DrawCallCount);
+			_2D.Render(false);
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 48.0f), Color.White);
+			GorgonRenderStatistics.EndFrame();
 		}
 
 		/// <summary>
 		/// Function for the main idle loop.
 		/// </summary>
-		/// <param name="timing">Timing data.</param>
 		/// <remarks>This is used as the main loop for the application.  All drawing and logic can go in here.</remarks>
 		/// <returns>TRUE to keep running, FALSE to exit.</returns>
-		private static bool Idle(GorgonFrameRate timing)
+		private static bool Idle()
 		{
 			// Update the simulation at our desired frame rate.
-			if (timing.FrameDelta < 0.166667f)
-				_accumulator += timing.FrameDelta;
+			if (GorgonTiming.FrameDelta < 0.166667f)
+				_accumulator += GorgonTiming.FrameDelta;
 			else
 				_accumulator += 0.166667f;
 
@@ -272,11 +270,9 @@ namespace GorgonLibrary.Graphics.Example
 
 			DrawBackground();
 			DrawBlurred();
-			DrawOverlay(timing);		
+			DrawOverlay();		
 
 			_2D.Render();
-
-			timing.ResetDrawCallCount();
 						
 			return true;
 		}		
@@ -310,7 +306,7 @@ namespace GorgonLibrary.Graphics.Example
 			_ballTexture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", @"..\..\..\..\Resources\Images\BallDemo.png");
 
 			// Create the 2D interface.
-			_2D = _graphics.Create2DRenderer(_mainScreen);
+			_2D = _graphics.Output.Create2DRenderer(_mainScreen);
 			_2D.IsLogoVisible = true;
 
 			// Set our drawing code to use modulated blending.

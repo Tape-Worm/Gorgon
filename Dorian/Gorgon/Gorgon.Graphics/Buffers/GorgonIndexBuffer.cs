@@ -82,6 +82,9 @@ namespace GorgonLibrary.Graphics
 					D3DBuffer = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
 			}
 
+			GorgonRenderStatistics.IndexBufferCount++;
+			GorgonRenderStatistics.IndexBufferSize += D3DBuffer.Description.SizeInBytes;
+
 #if DEBUG
 			D3DBuffer.DebugName = "Gorgon Index Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonIndexBuffer>().Count().ToString(); 
 #endif
@@ -169,7 +172,12 @@ namespace GorgonLibrary.Graphics
 						Unlock();
 
 					if (D3DBuffer != null)
+					{
+						GorgonRenderStatistics.IndexBufferCount--;
+						GorgonRenderStatistics.IndexBufferSize -= D3DBuffer.Description.SizeInBytes;
+
 						D3DBuffer.Dispose();
+					}
 				}
 
 				D3DBuffer = null;

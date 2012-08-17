@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics
 		}		
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function called when the target is resized.
 		/// </summary>
@@ -148,7 +148,12 @@ namespace GorgonLibrary.Graphics
 		protected virtual void CleanUp()
 		{
 			if (Texture != null)
+			{
+				GorgonRenderStatistics.RenderTargetCount--;
+				GorgonRenderStatistics.RenderTargetSize -= Texture.SizeInBytes;
+
 				Texture.Dispose();
+			}
 
 			if (InternalDepthStencil != null)
 			{
@@ -209,6 +214,9 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
 			UpdateResourceView();
+
+			GorgonRenderStatistics.RenderTargetCount++;
+			GorgonRenderStatistics.RenderTargetSize += Texture.SizeInBytes;
 
 			// Set default viewport.
 			Viewport = new GorgonViewport(0, 0, Settings.Width, Settings.Height, 0.0f, 1.0f);

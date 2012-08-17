@@ -65,9 +65,8 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to draw to the control.
 		/// </summary>
-		/// <param name="timing">Timing data.</param>
 		/// <returns>Number of vertical retraces to wait.</returns>
-		protected override int Draw(GorgonFrameRate timing)
+		protected override int Draw()
 		{
 			RectangleF logoBounds = RectangleF.Empty;
 			SizeF logoSize = _logo.Settings.Size;
@@ -94,7 +93,7 @@ namespace GorgonLibrary.GorgonEditor
 			Program.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 			Program.Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, _alpha), _logo, _destState);
 
-			_alpha += _alphaDelta * timing.FrameDelta;
+			_alpha += _alphaDelta * GorgonTiming.FrameDelta;
 
 			if ((_alpha > 1.0f) && (_alphaDelta > 0))
 			{
@@ -130,7 +129,7 @@ namespace GorgonLibrary.GorgonEditor
 				}
 			}
 
-			Program.Renderer.Drawing.DrawString(_debugFont, "FPS: " + timing.FPS.ToString("0.0##"), Vector2.Zero, Color.White);
+			Program.Renderer.Drawing.DrawString(_debugFont, "FPS: " + GorgonTiming.FPS.ToString("0.0##"), Vector2.Zero, Color.White);
 
 			return 2;
 		}
