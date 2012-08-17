@@ -32,7 +32,7 @@ namespace GorgonLibrary.Diagnostics
 	/// Data used for frame rate timing operations.
 	/// </summary>
 	/// <remarks>This object is returned to the main application loop from the <see cref="D:GorgonLibrary.Gorgon.ApplicationLoopMethod">ApplicationLoopMethod</see> delgate.</remarks>
-	public class GorgonFrameRate
+	public class GorgonTiming
 	{
 		#region Variables.
 		private bool _initialized = false;					// Flag to indicate that we're initalized.
@@ -267,18 +267,18 @@ namespace GorgonLibrary.Diagnostics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFrameRate"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTiming"/> class.
 		/// </summary>
-		internal GorgonFrameRate()
+		internal GorgonTiming()
 		{
 			Reset();
 			_initialized = false;
 		}
 
 		/// <summary>
-		/// Initializes the <see cref="GorgonFrameRate"/> class.
+		/// Initializes the <see cref="GorgonTiming"/> class.
 		/// </summary>
-		static GorgonFrameRate()
+		static GorgonTiming()
 		{
 			// Default to high resolution timer.
 			UseHighResolutionTimer = true;
