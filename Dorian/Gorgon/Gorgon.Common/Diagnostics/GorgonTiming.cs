@@ -31,25 +31,50 @@ namespace GorgonLibrary.Diagnostics
 	/// <summary>
 	/// Data used for frame rate timing operations.
 	/// </summary>
-	/// <remarks>This object is returned to the main application loop from the <see cref="D:GorgonLibrary.Gorgon.ApplicationLoopMethod">ApplicationLoopMethod</see> delgate.</remarks>
-	public class GorgonTiming
+	public static class GorgonTiming
 	{
 		#region Variables.
-		private bool _initialized = false;					// Flag to indicate that we're initalized.
-		private GorgonTimer _timer = null;					// Timer used in calculations.
-		private long _frameCounter = 0;						// Frame counter.
-		private long _averageCounter = 0;					// Counter for averages.
-		private double _lastTime = 0.0;						// Last recorded time since update.
-		private double _lastTimerValue = 0.0;				// Last timer value.
-		private float _averageFPSTotal = 0.0f;				// Average FPS total.
-		private float _averageDTTotal = 0.0f;				// Average draw time total.
+		private static GorgonTimer _baseTimer = null;				// Base timer to determine over all system time.
+		private static float _baseTime = 0;							// Base time at which the system started.
+		private static bool _useHRTimer = true;						// Flag to indicate that we're using a high resolution timer.
+		private static GorgonTimer _timer = null;					// Timer used in calculations.
+		private static long _frameCounter = 0;						// Frame counter.
+		private static long _averageCounter = 0;					// Counter for averages.
+		private static double _lastTime = 0.0;						// Last recorded time since update.
+		private static double _lastTimerValue = 0.0;				// Last timer value.
+		private static float _averageFPSTotal = 0.0f;				// Average FPS total.
+		private static float _averageDTTotal = 0.0f;				// Average draw time total.
 		#endregion
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the number of seconds since a Gorgon application was started.
+		/// </summary>
+		/// <remarks>This property starts counting at the first start of a Gorgon application and will continue to end of the application.</remarks>
+		public static float SecondsSinceStart
+		{
+			get
+			{
+				return MillisecondsSinceStart / 1000.0f;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the number of milliseconds since a Gorgon application was started.
+		/// </summary>
+		/// <remarks>This property starts counting at the first start of a Gorgon application and will continue to end of the application.</remarks>
+		public static float MillisecondsSinceStart
+		{
+			get
+			{
+				return (float)_baseTimer.Milliseconds - _baseTime;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the frame rate delta in milliseconds.
 		/// </summary>
-		public float FrameDelta
+		public static float FrameDelta
 		{
 			get;
 			private set;
@@ -58,7 +83,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the number of frames that have been presented.
 		/// </summary>
-		public long FrameCount
+		public static long FrameCount
 		{
 			get;
 			private set;
@@ -67,7 +92,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the average FPS.
 		/// </summary>
-		public float AverageFPS
+		public static float AverageFPS
 		{
 			get;
 			private set;
@@ -76,7 +101,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the highest FPS.
 		/// </summary>
-		public float HighestFPS
+		public static float HighestFPS
 		{
 			get;
 			private set;
@@ -85,7 +110,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Propery to return the lowest FPS.
 		/// </summary>
-		public float LowestFPS
+		public static float LowestFPS
 		{
 			get;
 			private set;
@@ -94,7 +119,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the highest frame delta.
 		/// </summary>
-		public float HighestFrameDelta
+		public static float HighestFrameDelta
 		{
 			get;
 			private set;
@@ -103,7 +128,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the lowest frame delta.
 		/// </summary>
-		public float LowestFrameDelta
+		public static float LowestFrameDelta
 		{
 			get;
 			private set;
@@ -112,7 +137,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the average frame delta.
 		/// </summary>
-		public float AverageFrameDelta
+		public static float AverageFrameDelta
 		{
 			get;
 			private set;
@@ -121,7 +146,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the number of frames per second.
 		/// </summary>
-		public float FPS
+		public static float FPS
 		{
 			get;
 			private set;
@@ -132,8 +157,16 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public static bool UseHighResolutionTimer
 		{
-			get;
-			set;
+			get
+			{
+				return _useHRTimer;
+			}
+
+			set
+			{
+				_useHRTimer = value;
+				Reset();
+			}
 		}
 		#endregion
 
@@ -141,14 +174,10 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Function to refresh the contents of the timing data.
 		/// </summary>
-		internal void Update()
+		internal static void Update()
 		{
 			double theTime = 0.0;				// Time value.
 			double delta = 0.0;					// Frame delta.
-
-			// If we switch the timer precision, then update it.
-			if ((UseHighResolutionTimer != _timer.IsHighResolution) || (!_initialized))
-				Reset();
 
 			do
 			{
@@ -209,6 +238,37 @@ namespace GorgonLibrary.Diagnostics
 			}
 		}
 
+		/// <summary>
+		/// Function to clear the timing data and reset any timers.
+		/// </summary>
+		internal static void Reset()
+		{
+			if ((_timer == null) || (UseHighResolutionTimer != _timer.IsHighResolution))
+				_timer = new GorgonTimer(UseHighResolutionTimer);
+
+			if ((_baseTimer == null) || (UseHighResolutionTimer != _baseTimer.IsHighResolution))
+				_baseTimer = new GorgonTimer(UseHighResolutionTimer);
+
+			_useHRTimer = _timer.IsHighResolution;
+			HighestFPS = float.MinValue;
+			LowestFPS = float.MaxValue;
+			AverageFPS = 0.0f;
+			HighestFrameDelta = float.MinValue;
+			LowestFrameDelta = float.MaxValue;
+			AverageFrameDelta = 0.0f;
+			FrameDelta = 0.0f;
+			FPS = 0.0f;
+			FrameCount = 0;
+			_averageCounter = 0;
+			_frameCounter = 0;
+			_lastTime = 0.0;
+			_lastTimerValue = 0.0;
+			_averageFPSTotal = 0.0f;
+			_averageDTTotal = 0.0f;
+			_timer.Reset();
+			_baseTimer.Reset();
+			_baseTime = (float)_baseTimer.Milliseconds;
+		}
 
 
 		/// <summary>
@@ -236,52 +296,15 @@ namespace GorgonLibrary.Diagnostics
 			else
 				return 0;
 		}
-
-		/// <summary>
-		/// Function to clear the timing data.
-		/// </summary>
-		public void Reset()
-		{
-			if ((_timer == null) || (UseHighResolutionTimer != _timer.IsHighResolution))
-				_timer = new GorgonTimer(UseHighResolutionTimer);			
-			UseHighResolutionTimer = _timer.IsHighResolution;
-			HighestFPS = float.MinValue;
-			LowestFPS = float.MaxValue;
-			AverageFPS = 0.0f;
-			HighestFrameDelta = float.MinValue;
-			LowestFrameDelta = float.MaxValue;
-			AverageFrameDelta = 0.0f;
-			FrameDelta = 0.0f;
-			FPS = 0.0f;
-			FrameCount = 0;
-			_averageCounter = 0;
-			_frameCounter = 0;
-			_lastTime = 0.0;
-			_lastTimerValue = 0.0;
-			_averageFPSTotal = 0.0f;
-			_averageDTTotal = 0.0f;
-			_timer.Reset();
-			_initialized = true;
-		}
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTiming"/> class.
-		/// </summary>
-		internal GorgonTiming()
-		{
-			Reset();
-			_initialized = false;
-		}
-
 		/// <summary>
 		/// Initializes the <see cref="GorgonTiming"/> class.
 		/// </summary>
 		static GorgonTiming()
 		{
-			// Default to high resolution timer.
-			UseHighResolutionTimer = true;
+			Reset();
 		}
 		#endregion
 	}
