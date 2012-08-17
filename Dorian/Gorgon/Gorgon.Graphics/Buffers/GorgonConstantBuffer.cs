@@ -85,6 +85,9 @@ namespace GorgonLibrary.Graphics
 			else
 				D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, desc);
 
+			GorgonRenderStatistics.ConstantBufferCount++;
+			GorgonRenderStatistics.ConstantBufferSize += D3DBuffer.Description.SizeInBytes;
+
 #if DEBUG
 			D3DBuffer.DebugName = "Gorgon Constant Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonConstantBuffer>().Count().ToString(); 
 #endif
@@ -135,7 +138,12 @@ namespace GorgonLibrary.Graphics
 						Unlock();
 
 					if (D3DBuffer != null)
+					{
+						GorgonRenderStatistics.ConstantBufferCount--;
+						GorgonRenderStatistics.ConstantBufferSize -= D3DBuffer.Description.SizeInBytes;
+
 						D3DBuffer.Dispose();
+					}
 				}
 
 				D3DBuffer = null;

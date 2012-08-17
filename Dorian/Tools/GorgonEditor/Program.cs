@@ -137,7 +137,7 @@ namespace GorgonLibrary.GorgonEditor
 			// video memory since we'll never use this particular swap chain.
 			// The down side is that we'll end up having to manage our render targets manually.
 			// i.e. setting Target = null won't work because it'll just flip to this 1x1 swap chain.
-			Renderer = Graphics.Create2DRenderer(
+			Renderer = Graphics.Output.Create2DRenderer(
 				Graphics.Output.CreateSwapChain("Dummy.SwapChain", new GorgonSwapChainSettings()
 				{
 					Width = 1,

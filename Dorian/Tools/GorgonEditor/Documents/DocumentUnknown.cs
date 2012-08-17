@@ -56,9 +56,8 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to draw to the control.
 		/// </summary>
-		/// <param name="timing">Timing data.</param>
 		/// <returns>Number of vertical retraces to wait.</returns>
-		protected override int Draw(GorgonFrameRate timing)
+		protected override int Draw()
 		{
 			return 2;
 		}

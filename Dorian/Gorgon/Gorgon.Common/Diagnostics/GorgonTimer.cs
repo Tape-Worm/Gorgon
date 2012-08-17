@@ -161,9 +161,12 @@ namespace GorgonLibrary.Diagnostics
 		{
 			long currentTime = 0;
 
-			Win32API.QueryPerformanceCounter(out currentTime);
-			_currentTicks =  currentTime - _startTime;
-			_microSeconds = (_currentTicks * 1000000.0) / _frequency;
+			unchecked
+			{
+				Win32API.QueryPerformanceCounter(out currentTime);
+				_currentTicks =  currentTime - _startTime;
+				_microSeconds = (_currentTicks * 1000000.0) / _frequency;
+			}
 		}
 
 		/// <summary>
@@ -189,8 +192,11 @@ namespace GorgonLibrary.Diagnostics
 				ticks += diff;
 			}
 
-			_microSeconds = (currentTime - _startTime) * 1000.0;
-			_currentTicks = ticks - _startTick;
+			unchecked
+			{
+				_microSeconds = (currentTime - _startTime) * 1000.0;
+				_currentTicks = ticks - _startTick;
+			}
 		}
 
 		/// <summary>

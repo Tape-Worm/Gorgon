@@ -63,7 +63,7 @@ namespace GorgonLibrary.Diagnostics
 		/// Property to return the number of milliseconds since a Gorgon application was started.
 		/// </summary>
 		/// <remarks>This property starts counting at the first start of a Gorgon application and will continue to end of the application.</remarks>
-		public static float MillisecondsSinceStart
+		public  static float MillisecondsSinceStart
 		{
 			get
 			{
@@ -72,7 +72,7 @@ namespace GorgonLibrary.Diagnostics
 		}
 
 		/// <summary>
-		/// Property to return the frame rate delta in milliseconds.
+		/// Property to return the frame rate delta in seconds.
 		/// </summary>
 		public static float FrameDelta
 		{
@@ -194,7 +194,11 @@ namespace GorgonLibrary.Diagnostics
 
 			_lastTimerValue = theTime;
 
-			FrameCount++;
+			unchecked
+			{
+				FrameCount++;
+			}
+
 			_frameCounter++;
 			delta = _lastTimerValue - _lastTime;
 

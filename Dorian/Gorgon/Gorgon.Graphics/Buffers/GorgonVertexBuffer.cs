@@ -71,6 +71,9 @@ namespace GorgonLibrary.Graphics
 					D3DBuffer = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
 			}
 
+			GorgonRenderStatistics.VertexBufferCount++;
+			GorgonRenderStatistics.VertexBufferSize += D3DBuffer.Description.SizeInBytes;
+
 #if DEBUG
 			D3DBuffer.DebugName = "Gorgon Vertex Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonVertexBuffer>().Count().ToString();
 #endif
@@ -161,7 +164,12 @@ namespace GorgonLibrary.Graphics
 						Unlock();
 
 					if (D3DBuffer != null)
+					{
+						GorgonRenderStatistics.VertexBufferCount--;
+						GorgonRenderStatistics.VertexBufferSize -= D3DBuffer.Description.SizeInBytes;
+
 						D3DBuffer.Dispose();
+					}
 				}
 
 				D3DBuffer = null;

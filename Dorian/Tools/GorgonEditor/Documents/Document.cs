@@ -320,9 +320,8 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to draw to the control.
 		/// </summary>
-		/// <param name="timing">Timing data.</param>
 		/// <returns>Number of vertical retraces to wait.</returns>
-		protected abstract int Draw(GorgonFrameRate timing);
+		protected abstract int Draw();
 
 		/// <summary>
 		/// Function to initialize graphics and other items for the document.
@@ -349,16 +348,15 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to call for rendering.
 		/// </summary>
-		/// <param name="timing">Timing data to pass to the method.</param>
 		/// <returns>TRUE to continue running, FALSE to exit.</returns>
-		internal void RenderMethod(GorgonFrameRate timing)
+		internal void RenderMethod()
 		{
 			if ((SwapChain == null) || (RenderWindow == null))
 				return;
 
 			Program.Renderer.Target = SwapChain;
 			Program.Renderer.Clear(RenderWindow.BackColor);
-			Program.Renderer.Render(Draw(timing));
+			Program.Renderer.Render(Draw());
 		}
 
 		/// <summary>

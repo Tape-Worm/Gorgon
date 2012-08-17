@@ -38,18 +38,6 @@ using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary
 {
-	#region Delegates.
-	/// <summary>
-	/// Delegate for an application loop method.
-	/// </summary>
-	/// <param name="timingData">Data used for frame rate timing.</param>
-	/// <returns>TRUE to continue executing the application, FALSE to end the application.</returns>
-	/// <remarks>Use this to execute custom code during idle time in the application.
-	/// <para>Returning FALSE will cause the application to shut down.  When the application shuts down, the main form, and any objects that are tracked by Gorgon (like the input or graphics) will be destroyed.</para>
-	/// </remarks>
-	public delegate bool ApplicationLoopMethod(GorgonFrameRate timingData);
-	#endregion
-
 	/// <summary>
 	/// The gorgon application.
 	/// </summary>
@@ -165,9 +153,8 @@ namespace GorgonLibrary
 
 		#region Variables.
 		private static Form _mainForm = null;									// Main application form.
-		private static GorgonFrameRate _timingData = null;						// Frame rate timing data.
 		private static bool _quitSignalled = false;								// Flag to indicate that the application needs to close.
-		private static ApplicationLoopMethod _loop = null;						// Application loop method.
+		private static Func<bool> _loop = null;									// Application loop method.
 		private static GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
 		#endregion
 
@@ -221,7 +208,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <remarks>This is used to call the users code when the application is in an idle state.
 		/// </remarks>
-		public static ApplicationLoopMethod ApplicationIdleLoopMethod
+		public static Func<bool> ApplicationIdleLoopMethod
 		{
 			get
 			{
@@ -343,9 +330,9 @@ namespace GorgonLibrary
 
 			while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 			{
-				_timingData.Update();
+				GorgonTiming.Update();
 				
-				if (!ApplicationIdleLoopMethod(_timingData))
+				if (!ApplicationIdleLoopMethod())
 				{
 					// Force an exit from the thread.
 					Application.Exit();
@@ -456,7 +443,7 @@ namespace GorgonLibrary
 		/// <para>-or-</para>
 		/// Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.
 		/// </exception>
-		public static void Run(ApplicationContext context, ApplicationLoopMethod loop)
+		public static void Run(ApplicationContext context, Func<bool> loop)
 		{
 			if ((context == null) && (loop == null))
 				throw new InvalidOperationException("Cannot run an application without either a main form, or a idle method.");
@@ -508,7 +495,7 @@ namespace GorgonLibrary
 		/// <para>-or-</para>
 		/// Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.
 		/// </exception>
-		public static void Run(Form mainForm, ApplicationLoopMethod loop)
+		public static void Run(Form mainForm, Func<bool> loop)
 		{
 			if ((mainForm == null) && (loop == null))
 				throw new InvalidOperationException("Cannot run an application without either a main form, or a idle method.");
@@ -556,9 +543,9 @@ namespace GorgonLibrary
 		/// <param name="loop">Idle loop method for the application.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
-		public static void Run(ApplicationLoopMethod loop)
+		public static void Run(Func<bool> loop)
 		{
-			GorgonDebug.AssertNull<ApplicationLoopMethod>(loop, "loop");
+			GorgonDebug.AssertNull<Func<bool>>(loop, "loop");
 
 			if (IsRunning)
 				throw new InvalidOperationException("The application is already running.");
@@ -655,7 +642,6 @@ namespace GorgonLibrary
 			_trackedObjects = new GorgonTrackedObjectCollection();
 			PlugIns = new GorgonPlugInFactory();
 			Log = new GorgonLogFile(Gorgon._logFile, "Tape_Worm");
-			_timingData = new GorgonFrameRate();
 
 			// Re-open the log if it's closed.
 			if (Log.IsClosed)

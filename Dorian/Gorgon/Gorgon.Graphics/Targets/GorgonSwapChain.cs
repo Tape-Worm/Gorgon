@@ -234,7 +234,16 @@ namespace GorgonLibrary.Graphics
 		private void ReleaseResources()
 		{
 			if (Texture != null)
+			{
+				// This is to offset the change in the stats.
+				GorgonRenderStatistics.TextureCount++;
+				GorgonRenderStatistics.TextureSize += Texture.SizeInBytes;
+
+				GorgonRenderStatistics.RenderTargetCount--;
+				GorgonRenderStatistics.RenderTargetSize -= (Texture.SizeInBytes * Settings.BufferCount);
+
 				Texture.Dispose();
+			}
 
 			if (InternalDepthStencil != null)
 			{
@@ -288,6 +297,9 @@ namespace GorgonLibrary.Graphics
 
 			// Set up the default viewport.
 			Viewport = new GorgonViewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height, 0.0f, 1.0f);
+
+			GorgonRenderStatistics.RenderTargetCount++;
+			GorgonRenderStatistics.RenderTargetSize += (Texture.SizeInBytes * Settings.BufferCount);
 
 			// Re-seat the target.
 			Graphics.Output.RenderTargets.ReSeat(this);

@@ -117,7 +117,7 @@ namespace Tester_Graphics
 					Window = this,
 					Flags = SwapChainUsageFlags.RenderTarget | SwapChainUsageFlags.ShaderInput
 				});
-				_2D = _graphics.Create2DRenderer(_mainScreen);
+				_2D = _graphics.Output.Create2DRenderer(_mainScreen);
 				//_2D.IsLogoVisible = true;
 
 				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(178, 207), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
@@ -292,10 +292,10 @@ namespace Tester_Graphics
 				font.Dispose();
 				font = _graphics.Fonts.FromFile("The Font", GorgonComputerInfo.FolderPath(Environment.SpecialFolder.DesktopDirectory) + "/testFont.gorFont");
 				_text.Font = font;
-				Gorgon.ApplicationIdleLoopMethod = (GorgonFrameRate timing) =>
+				Gorgon.ApplicationIdleLoopMethod = () =>
 					{
 						//Text = timing.AverageFPS.ToString("0.0");
-						fps = timing.AverageFPS.ToString("0.0");
+						fps = GorgonTiming.AverageFPS.ToString("0.0");
 						_2D.Clear(Color.White);
 //                        /*						if (!backForth)
 //                                                    angle += 0.125f * timing.FrameDelta;
@@ -656,7 +656,7 @@ namespace Tester_Graphics
 						_text.Draw();
 						//_fps.Color = Color.FromArgb(96, 0, 0, 0);
 						//_fps.Anchor = new Vector2(-1, -1);
-						_fps.Text = timing.AverageFPS.ToString("0.0#") + " DT: " + (timing.AverageFrameDelta * 1000.0f).ToString("0.000") + " ms";
+						_fps.Text = GorgonTiming.AverageFPS.ToString("0.0#") + " DT: " + (GorgonTiming.AverageFrameDelta * 1000.0f).ToString("0.000") + " ms";
 						_fps.Position = Vector2.Zero;
 						//_fps.Draw();
 						_fps.Color = Color.LightBlue;
@@ -669,11 +669,11 @@ namespace Tester_Graphics
 						//Text = timing.AverageFPS.ToString("0.0#");
 						_2D.Render();
 
-						lineSpaceAngle += 180.0f * timing.FrameDelta;
+						lineSpaceAngle += 180.0f * GorgonTiming.FrameDelta;
 						if (lineSpaceAngle > 360.0f)
 							lineSpaceAngle = 360.0f - lineSpaceAngle;
 
-						angle += 1.0f * timing.FrameDelta;
+						angle += 1.0f * GorgonTiming.FrameDelta;
 						if (angle > 360.0f)
 							angle = 360.0f - angle;
 

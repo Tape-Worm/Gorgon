@@ -106,6 +106,11 @@ namespace GorgonLibrary.Graphics
 
 			if (Texture != null)
 			{
+				GorgonRenderStatistics.DepthBufferCount--;
+				GorgonRenderStatistics.DepthBufferSize -= Texture.SizeInBytes;
+				// To offset the stats for textures.
+				GorgonRenderStatistics.TextureCount++;
+				GorgonRenderStatistics.TextureSize += Texture.SizeInBytes;
 				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
 				Texture.Dispose();
 			}
@@ -151,6 +156,9 @@ namespace GorgonLibrary.Graphics
 			D3DDepthStencilView.DebugName = "Depth buffer '" + Name + "' view.";
 
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+
+			GorgonRenderStatistics.DepthBufferCount++;
+			GorgonRenderStatistics.DepthBufferSize += Texture.SizeInBytes;
 		}
 
 		/// <summary>

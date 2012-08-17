@@ -149,7 +149,7 @@
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
-    <Compile Include="Diagnostics\GorgonFrameRate.cs" />
+    <Compile Include="Diagnostics\GorgonTiming.cs" />
     <Compile Include="Diagnostics\GorgonTimer.cs" />
     <Compile Include="INamedObject.cs" />
     <Compile Include="IO\GorgonBinaryReader.cs" />

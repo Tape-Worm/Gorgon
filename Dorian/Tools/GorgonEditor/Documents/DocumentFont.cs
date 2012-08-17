@@ -498,11 +498,10 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to draw to the control.
 		/// </summary>
-		/// <param name="timing">Timing data.</param>
 		/// <returns>
 		/// Number of vertical retraces to wait.
 		/// </returns>
-		protected override int Draw(Diagnostics.GorgonFrameRate timing)
+		protected override int Draw()
 		{
 			// If we don't have the font, then we've unloaded the resources for the font.  
 			// In that case, we'll need to regenerate.
