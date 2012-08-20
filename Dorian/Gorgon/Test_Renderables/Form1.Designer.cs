@@ -1,4 +1,4 @@
-﻿namespace Test_TextureArray
+﻿namespace Test_Renderables
 {
 	partial class Form1
 	{
@@ -34,9 +34,8 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(680, 498);
+			this.ClientSize = new System.Drawing.Size(290, 268);
 			this.Name = "Form1";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Form1";
 			this.ResumeLayout(false);
 

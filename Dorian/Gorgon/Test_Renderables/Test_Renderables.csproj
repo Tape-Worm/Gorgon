@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0C1E79B4-0531-46FA-995A-D7413BBE9A1B}</ProjectGuid>
+    <ProjectGuid>{088982F3-9A3C-4A9A-B443-CC51FA33A79B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Test_TextureArray</RootNamespace>
-    <AssemblyName>Test_TextureArray</AssemblyName>
+    <RootNamespace>Test_Renderables</RootNamespace>
+    <AssemblyName>Test_Renderables</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -68,7 +68,6 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -81,15 +80,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
+    <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
+    <ProjectReference Include="..\Gorgon.Graphics\Gorgon.Graphics.csproj">
       <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
       <Name>Gorgon.Graphics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj">
+    <ProjectReference Include="..\Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj">
       <Project>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</Project>
       <Name>Gorgon.Renderers.2D</Name>
     </ProjectReference>

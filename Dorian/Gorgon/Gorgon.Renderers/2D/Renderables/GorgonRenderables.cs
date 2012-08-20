@@ -192,7 +192,11 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture, Vector2 textureOffset)
 		{
-			return CreateSprite(name, size, texture, new RectangleF(textureOffset.X, textureOffset.Y, size.X, size.Y));
+			Vector2 texelSize = Vector2.Zero;
+
+			if (texture != null)
+				texelSize = texture.ToTexel(size);
+			return CreateSprite(name, size, texture, new RectangleF(textureOffset, texelSize));
 		}
 
 		/// <summary>
@@ -206,7 +210,12 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture)
 		{
-			return CreateSprite(name, size, texture, new RectangleF(0, 0, size.X, size.Y));
+			Vector2 texelSize = Vector2.Zero;
+
+			if (texture != null)
+				texelSize = texture.ToTexel(size);
+
+			return CreateSprite(name, size, texture, new RectangleF(Vector2.Zero, texelSize));
 		}		
 
 		/// <summary>

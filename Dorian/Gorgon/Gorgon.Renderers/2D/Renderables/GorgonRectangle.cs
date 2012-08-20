@@ -256,11 +256,6 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void DrawUnfilled()
 		{
-			Vector2 texOffset = Vector2.Zero;		// Texture offset.
-
-			texOffset.X = LineThickness.X - 1.0f;
-			texOffset.Y = LineThickness.Y - 1.0f;
-
 			TransformVertices();
 
 			for (int i = 0; i < _corners.Length; i++)
@@ -280,7 +275,7 @@ namespace GorgonLibrary.Renderers
 			_line.TextureSampler = TextureSampler;
 
 			_line.TextureStart = TextureRegion.Location;
-			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Top + texOffset.Y);
+			_line.TextureEnd = new Vector2(TextureRegion.Right, TextureRegion.Top);
 			_line.StartColor = _colors[0];
 			_line.EndColor = _colors[1];
 			_line.StartPoint = new Vector2(_corners[0].X, _corners[0].Y);
@@ -295,7 +290,7 @@ namespace GorgonLibrary.Renderers
 			_line.EndPoint = new Vector2(_corners[2].X + 1, _corners[2].Y);
 			_line.Draw();
 
-			_line.TextureStart = new Vector2(TextureRegion.Right, TextureRegion.Bottom - texOffset.Y);
+			_line.TextureStart = new Vector2(TextureRegion.Right, TextureRegion.Bottom);
 			_line.TextureEnd = new Vector2(TextureRegion.Left, TextureRegion.Bottom);
 			_line.StartColor = _colors[3];
 			_line.EndColor = _colors[2];

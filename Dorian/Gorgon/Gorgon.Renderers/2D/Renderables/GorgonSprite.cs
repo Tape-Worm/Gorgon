@@ -245,11 +245,11 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			offsetUV.X = TextureOffset.X / Texture.Settings.Width;
-			scaleUV.X = TextureRegion.Right / Texture.Settings.Width;
+			offsetUV.X = TextureOffset.X;
+			scaleUV.X = TextureRegion.Right;
 
-			offsetUV.Y = TextureOffset.Y / Texture.Settings.Height;
-			scaleUV.Y = TextureRegion.Bottom / Texture.Settings.Height;
+			offsetUV.Y = TextureOffset.Y;
+			scaleUV.Y = TextureRegion.Bottom;
 			
 			Vertices[0].UV = offsetUV;
 			Vertices[1].UV = new Vector2(scaleUV.X, offsetUV.Y);

@@ -113,6 +113,36 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to convert a texel space coordinate into a pixel space coordinate.
+		/// </summary>
+		/// <param name="texel">The texel coordinate to convert.</param>
+		/// <returns>The pixel location of the texel on the texture.</returns>
+		public Vector3 ToPixel(Vector3 texel)
+		{
+			return new Vector3(texel.X * Settings.Width, texel.Y * Settings.Height, texel.Z * Settings.Depth);
+		}
+
+		/// <summary>
+		/// Function to convert a pixel coordinate into a texel space coordinate.
+		/// </summary>
+		/// <param name="pixel">The pixel coordinate to convert.</param>
+		/// <returns>The texel space location of the pixel on the texture.</returns>
+		/// <exception cref="System.DivideByZeroException">Thrown when the texture width, height or depth is equal to 0.</exception>
+		public Vector3 ToTexel(Vector3 pixel)
+		{
+#if DEBUG
+			if (Settings.Width == 0)
+				throw new DivideByZeroException("The texture width is 0.");
+			if (Settings.Height == 0)
+				throw new DivideByZeroException("The texture height is 0.");
+			if (Settings.Depth == 0)
+				throw new DivideByZeroException("The texture depth is 0.");
+#endif
+
+			return new Vector3(pixel.X / Settings.Width, pixel.Y / Settings.Height, pixel.Z / Settings.Depth);
+		}
+
+		/// <summary>
 		/// Function to return the index of a sub resource in a texture.
 		/// </summary>
 		/// <param name="mipLevel">Mip level to look up.</param>

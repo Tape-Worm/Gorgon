@@ -123,6 +123,33 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to convert a texel space coordinate into a pixel space coordinate.
+		/// </summary>
+		/// <param name="texel">The texel coordinate to convert.</param>
+		/// <returns>The pixel location of the texel on the texture.</returns>
+		public float ToPixel(float texel)
+		{
+			return texel * Settings.Width;
+		}
+
+		/// <summary>
+		/// Function to convert a pixel coordinate into a texel space coordinate.
+		/// </summary>
+		/// <param name="pixel">The pixel coordinate to convert.</param>
+		/// <returns>The texel space location of the pixel on the texture.</returns>
+		/// <exception cref="System.DivideByZeroException">Thrown when the texture width is equal to 0.</exception>
+		public float ToTexel(float pixel)
+		{
+#if DEBUG
+			if (Settings.Width == 0)
+				throw new DivideByZeroException("The texture width is 0.");
+#endif
+
+			return pixel / Settings.Width;
+		}
+
+
+		/// <summary>
 		/// Function to return the index of a sub resource (mip level, array item, etc...) in a texture.
 		/// </summary>
 		/// <param name="mipLevel">Mip level to look up.</param>
