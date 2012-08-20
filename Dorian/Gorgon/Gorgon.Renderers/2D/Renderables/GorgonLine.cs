@@ -72,7 +72,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected internal override PrimitiveType PrimitiveType
 		{
-			get 
+			get
 			{
 				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					return Graphics.PrimitiveType.LineList;
@@ -86,7 +86,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected internal override int IndexCount
 		{
-			get 
+			get
 			{
 				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
 					return 0;
@@ -138,8 +138,10 @@ namespace GorgonLibrary.Renderers
 						value.Y = 1.0f;
 
 					_lineThickness = value;
+					NeedsTextureUpdate = true;
+					NeedsVertexUpdate = true;
 				}
-			}			
+			}
 		}
 
 		/// <summary>
@@ -183,7 +185,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				_line.Location = value;
+				_line = RectangleF.FromLTRB(value.X, value.Y, EndPoint.X, EndPoint.Y);
 			}
 		}
 
@@ -243,6 +245,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the texture offset for the start point.
 		/// </summary>
+		/// <remarks>This texture value is in texel space (0..1).</remarks>
 		public Vector2 TextureStart
 		{
 			get
@@ -262,6 +265,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the texture offset for the end point.
 		/// </summary>
+		/// <remarks>This texture value is in texel space (0..1) and is an absolute value (i.e. not relative to the starting position).</remarks>
 		public Vector2 TextureEnd
 		{
 			get
@@ -303,46 +307,39 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void UpdateTextureCoordinates()
 		{
+			Vector2 textureDims = Vector2.Zero;
+			Vector2 textureNormal = Vector2.Zero;
+			Vector2 textureCrossProduct = Vector2.Zero;
+			float length = 0;
+
 			if (Texture == null)
 			{
 				Vertices[3].UV = Vertices[2].UV = Vertices[0].UV = Vertices[1].UV = Vector2.Zero;
 				return;
 			}
 
+			Vector2.Subtract(ref _textureEnd, ref _textureStart, out textureDims);
+			length = textureDims.Length;
+
+			if (length > 0)
+			{
+				textureNormal = textureDims * (1.0f / length);
+				textureCrossProduct = new Vector2(textureNormal.Y, -textureNormal.X);
+				textureCrossProduct.X *= LineThickness.X / (float)Texture.Settings.Width;
+				textureCrossProduct.Y *= LineThickness.Y / (float)Texture.Settings.Height;
+			}
+
 			if ((LineThickness.X == 1.0f) && (LineThickness.Y == 1.0f))
 			{
-				Vertices[0].UV.X = TextureStart.X / Texture.Settings.Width;
-				Vertices[1].UV.X = TextureEnd.X / Texture.Settings.Width;
-				Vertices[0].UV.Y = TextureStart.Y / Texture.Settings.Height;
-				Vertices[1].UV.Y = TextureEnd.Y / Texture.Settings.Height;
+				Vector2.Add(ref _textureStart, ref textureCrossProduct, out Vertices[0].UV);
+				Vector2.Add(ref _textureEnd, ref textureCrossProduct, out Vertices[1].UV);
 			}
 			else
 			{
-				Vector2 textureDims = new Vector2(_textureEnd.X - _textureStart.X, _textureEnd.Y - _textureStart.Y);
-				Vector2 textureNormal = Vector2.Zero;
-				Vector2 textureCP = Vector2.Zero;
-				float length = textureDims.Length;
-
-
-				if (length > 0)
-				{
-					textureNormal = textureDims * (1.0f / textureDims.Length);
-					textureCP = new Vector2(textureNormal.Y, -textureNormal.X);
-					textureCP.X *= LineThickness.X;
-					textureCP.Y *= LineThickness.Y;
-				}
-
-				Vertices[0].UV.X = (TextureStart.X + textureCP.X) / Texture.Settings.Width;
-				Vertices[0].UV.Y = (TextureStart.Y + textureCP.Y) / Texture.Settings.Height;
-
-				Vertices[1].UV.X = (TextureEnd.X + textureCP.X) / Texture.Settings.Width;
-				Vertices[1].UV.Y = (TextureEnd.Y + textureCP.Y) / Texture.Settings.Height;
-
-				Vertices[2].UV.X = (TextureStart.X - textureCP.X) / Texture.Settings.Width;
-				Vertices[2].UV.Y = (TextureStart.Y - textureCP.Y) / Texture.Settings.Height;
-				
-				Vertices[3].UV.X = (TextureEnd.X - textureCP.X) / Texture.Settings.Width;
-				Vertices[3].UV.Y = (TextureEnd.Y - textureCP.Y) / Texture.Settings.Height;
+				Vector2.Add(ref _textureStart, ref textureCrossProduct, out Vertices[0].UV);
+				Vector2.Add(ref _textureEnd, ref textureCrossProduct, out Vertices[1].UV);
+				Vector2.Subtract(ref _textureStart, ref textureCrossProduct, out Vertices[2].UV);
+				Vector2.Subtract(ref _textureEnd, ref textureCrossProduct, out Vertices[3].UV);
 			}
 		}
 
@@ -523,9 +520,9 @@ namespace GorgonLibrary.Renderers
 		{
 			UpdateVertices();
 			UpdateTextureCoordinates();
-			
+
 			NeedsVertexUpdate = false;
-			NeedsTextureUpdate = false;			
+			NeedsTextureUpdate = false;
 		}
 
 		/// <summary>
@@ -591,6 +588,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the texture region.
 		/// </summary>
+		/// <remarks>This texture value is in texel space (0..1).</remarks>
 		public RectangleF TextureRegion
 		{
 			get

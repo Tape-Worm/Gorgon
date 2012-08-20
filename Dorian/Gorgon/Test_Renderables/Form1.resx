@@ -117,17 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Shader" xml:space="preserve">
-    <value>#GorgonInclude "Gorgon2DShaders"
-
-Texture2DArray _textureArray : register(t0);
-
-float4 DualTex(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 sample1 = _textureArray.Sample(_gorgonEffectSampler, float3(vertex.uv, 0));
-	float4 sample2 = _textureArray.Sample(_gorgonEffectSampler, float3(vertex.uv, 1));
-	
-	return saturate((sample1 * sample2) * 1.0f);
-}</value>
-  </data>
 </root>

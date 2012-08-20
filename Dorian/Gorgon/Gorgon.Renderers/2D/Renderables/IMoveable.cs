@@ -42,6 +42,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the texture region.
 		/// </summary>
+		/// <para>This texture value is in texel space (0..1).</para>
 		RectangleF TextureRegion
 		{
 			get;
@@ -99,7 +100,9 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
 		/// </summary>
-		/// <remarks>You can use this property to scroll the texture in the renderable.</remarks>
+		/// <remarks>You can use this property to scroll the texture in the renderable.
+		/// <para>This texture value is in texel space (0..1).</para>
+		/// </remarks>
 		Vector2 TextureOffset
 		{
 			get;
@@ -109,6 +112,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
+		/// <para>This texture value is in texel space (0..1).</para>
 		Vector2 TextureSize
 		{
 			get;

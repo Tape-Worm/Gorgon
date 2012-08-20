@@ -188,6 +188,84 @@ namespace GorgonLibrary.Graphics
 		protected abstract void UpdateImpl(GorgonDataStream stream, int offset, int size);
 
 		/// <summary>
+		/// Function to copy the contents of the specified buffer to this buffer.
+		/// </summary>
+		/// <param name="buffer">Buffer to copy.</param>
+		/// <remarks>This is used to copy data from one GPU buffer to another.  The size of the buffers must be the same.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> size is not equal to the size of this buffer.</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when this buffer has a usage of Immutable.</exception>
+		public void Copy(GorgonBaseBuffer buffer)
+		{
+#if DEBUG
+			if (buffer.Size != Size)
+				throw new ArgumentException("The size of the buffers do not match.", "buffer");
+
+			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Immutable)
+				throw new InvalidOperationException("This buffer is immutable and this cannot be updated.");
+#endif
+			Graphics.Context.CopyResource(buffer.D3DBuffer, D3DBuffer);
+		}
+
+		/// <summary>
+		/// Function to copy the contents of the specified buffer to this buffer.
+		/// </summary>
+		/// <param name="buffer">Buffer to copy.</param>
+		/// <param name="sourceStartingIndex">Starting byte index to start copying from.</param>
+		/// <param name="byteCount">The number of bytes to copy.</param>
+		/// <remarks>This is used to copy data from one GPU buffer to another.</remarks>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="sourceStartingIndex"/> is less than 0 or larger than the size of the source <paramref name="buffer"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="byteCount"/> + sourceStartIndex is greater than the size of the source buffer, or less than 0.</para>
+		/// </exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when this buffer has a usage of Immutable.</exception>
+		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount)
+		{
+			Copy(buffer, sourceStartingIndex, byteCount, 0);
+		}
+
+		/// <summary>
+		/// Function to copy the contents of the specified buffer to this buffer.
+		/// </summary>
+		/// <param name="buffer">Buffer to copy.</param>
+		/// <param name="sourceStartingIndex">Starting byte index to start copying from.</param>
+		/// <param name="byteCount">The number of bytes to copy.</param>
+		/// <param name="destOffset">The offset within the destination buffer.</param>
+		/// <remarks>This is used to copy data from one GPU buffer to another.</remarks>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="sourceStartingIndex"/> is less than 0 or larger than the size of the source <paramref name="buffer"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="byteCount"/> + sourceStartIndex is greater than the size of the source buffer, or less than 0.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="destOffset"/> + byteCount is greater than the size of this buffer, or less than 0.</para>
+		/// </exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when this buffer has a usage of Immutable.</exception>
+		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
+		{
+			int endByteIndex = sourceStartingIndex + byteCount;
+#if DEBUG
+			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Immutable)
+				throw new InvalidOperationException("This buffer is immutable and this cannot be updated.");
+
+			if ((sourceStartingIndex < 0) || (sourceStartingIndex >= buffer.Size))
+				throw new ArgumentOutOfRangeException("sourceStartingIndex", "The start index is outside of the bounds of the buffer.");
+
+			if ((endByteIndex < 0) || (endByteIndex >= buffer.Size))
+				throw new ArgumentOutOfRangeException("byteCount", "The byte count is less than 0 or greater than the size of the source buffer.");
+
+			if ((destOffset < 0) || (destOffset + byteCount >= Size))
+				throw new ArgumentOutOfRangeException("destOffset", "The destination offset or the number of bytes + the destination offset are greater than the size of the destination buffer.");
+#endif
+			Graphics.Context.CopySubresourceRegion(buffer.D3DBuffer, 0, new D3D11.ResourceRegion()
+				{
+					Top = 0,
+					Bottom = 1,
+					Left = sourceStartingIndex,
+					Right = endByteIndex,
+					Front = 0,
+					Back = 1
+				}, D3DBuffer, 0, destOffset, 0, 0);
+		}
+
+		/// <summary>
 		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>

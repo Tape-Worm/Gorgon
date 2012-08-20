@@ -14,11 +14,16 @@ namespace Test_TextureArray
 {
 	static class Program
 	{
+		private static GorgonTexture2D _tex = null;
+		private static GorgonTexture2D _noDecal = null;
 		private static Form1 _form = null;
 		private static GorgonGraphics _graphics = null;
 		private static Gorgon2D _2D = null;
 		private static GorgonSwapChain _swap = null;
+		private static GorgonSprite _sprite = null;
+		private static GorgonPixelShader _shader = null;
 		private static float _startTime = 0;
+		private static bool _showDecal = true;
 
 		private static bool Idle()
 		{
@@ -40,6 +45,14 @@ namespace Test_TextureArray
 
 			_startTime = GorgonTiming.SecondsSinceStart;
 
+			if (_showDecal)
+				_2D.PixelShader.Current = _shader;
+			_sprite.Angle = 0.0f;
+			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f - 160.0f, _swap.Settings.Height / 2.0f - 120.0f);
+			_sprite.Draw();
+			if (_showDecal)
+				_2D.PixelShader.Current = null;
+
 			GorgonRenderStatistics.EndFrame();
 
 			_2D.Render(false);
@@ -55,6 +68,7 @@ namespace Test_TextureArray
 			_form = new Form1();
 			_form.Show();
 			_form.FormClosing += new FormClosingEventHandler(_form_FormClosing);
+			_form.KeyDown += new KeyEventHandler(_form_KeyDown);
 
 			_graphics = new GorgonGraphics();
 			_swap = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings()
@@ -62,12 +76,55 @@ namespace Test_TextureArray
 						Window = _form,
 						Width = 1280,
 						Height = 800,
-						DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt,
-						IsWindowed = false
+						IsWindowed = true
 					});
 			_2D = _graphics.Output.Create2DRenderer(_swap);
 			_2D.IsLogoVisible = true;
 			_startTime = GorgonTiming.SecondsSinceStart;
+
+			_shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("MyShader", "DualTex", Properties.Resources.Shader, true);			
+
+			_noDecal = _graphics.Textures.FromFile<GorgonTexture2D>("Image", @"..\..\..\..\Resources\Images\Ship.png", 
+				new GorgonTexture2DSettings());
+
+			_tex = _graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", new GorgonTexture2DSettings()
+			{
+				Width = _noDecal.Settings.Width,
+				Height = _noDecal.Settings.Height,
+				Format = BufferFormat.R8G8B8A8_UIntNormal,
+				Usage = BufferUsage.Default,
+				ArrayCount = 2,
+				MipCount = 1
+			});
+			_tex.CopySubResource(_noDecal, 0, 1);
+
+
+			GorgonTexture2D image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png",
+				new GorgonTexture2DSettings()
+				{
+					Usage = BufferUsage.Staging,
+					ArrayCount = 1,
+					MipCount = 1
+				});
+
+			_tex.CopySubResource(image, 0, 0);
+
+			image.Dispose();
+
+			_sprite = _2D.Renderables.CreateSprite("Test", _tex.Settings.Size, _tex);
+		}
+
+		static void _form_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.S)
+			{
+				_showDecal = !_showDecal;
+
+				if (_showDecal)
+					_sprite.Texture = _tex;
+				else
+					_sprite.Texture = _noDecal;
+			}
 		}
 
 		static void _form_FormClosing(object sender, FormClosingEventArgs e)

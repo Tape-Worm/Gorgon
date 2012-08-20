@@ -843,7 +843,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (typeof(T) == typeof(GorgonTexture2D))
 				{
-					ValidateTexture1D(ref settings, false);
+					ValidateTexture2D(ref settings, false);
 					texture = GorgonTexture2D.CreateTexture(_graphics, name, settings);
 				}
 				else

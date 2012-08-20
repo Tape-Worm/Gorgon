@@ -206,9 +206,9 @@ namespace GorgonLibrary.Renderers
 				endUV = Vector2.Zero;
 				return;
 			}
-						
-			scaledPos = new Vector2(TextureOffset.X / Texture.Settings.Width, TextureOffset.Y / Texture.Settings.Height);
-			scaledTexture = new Vector2(TextureRegion.Width / Texture.Settings.Width, TextureRegion.Height / Texture.Settings.Height);
+
+			scaledPos = TextureOffset;
+			scaledTexture = TextureRegion.Size;
 			
 			Vector2.Modulate(ref _offsets[index], ref scaledTexture, out startUV);
 			Vector2.Modulate(ref _offsets[nextIndex], ref scaledTexture, out endUV);
@@ -216,10 +216,10 @@ namespace GorgonLibrary.Renderers
 			Vector2.Add(ref startUV, ref scaledPos, out startUV);
 			Vector2.Add(ref endUV, ref scaledPos, out endUV);
 
-			startUV.X *= Texture.Settings.Width;
-			startUV.Y *= Texture.Settings.Height;
-			endUV.X *= Texture.Settings.Width;
-			endUV.Y *= Texture.Settings.Height;
+			//startUV.X *= Texture.Settings.Width;
+			//startUV.Y *= Texture.Settings.Height;
+			//endUV.X *= Texture.Settings.Width;
+			//endUV.Y *= Texture.Settings.Height;
 		}
 
 		/// <summary>

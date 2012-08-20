@@ -272,9 +272,9 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, Vector2 position, Vector2 scale)
 		{
-			Vector2 size = texture.Settings.Size;
-
 			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+
+			Vector2 size = texture.Settings.Size;
 
 			if (scale.X < 1e-6f)
 				scale.X = 1e-6f;
@@ -284,7 +284,7 @@ namespace GorgonLibrary.Renderers
 
 			Vector2.Modulate(ref size, ref scale, out size);
 
-			FilledRectangle(new RectangleF(position, size), Color.White, texture, new RectangleF(0, 0, size.X / scale.X, size.Y / scale.Y));
+			FilledRectangle(new RectangleF(position, size), Color.White, texture, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
@@ -325,7 +325,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="texture">Texture to apply to the rectangle.</param>
 		public void FilledRectangle(RectangleF rectangle, GorgonColor color, GorgonTexture2D texture)
 		{
-			FilledRectangle(rectangle, color, texture, new RectangleF(0, 0, rectangle.Width, rectangle.Height));
+			FilledRectangle(rectangle, color, texture, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
@@ -370,7 +370,7 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>The <paramref name="quality"/> parameter can have a value from 4 to 256.  The higher the quality, the better looking the ellipse, however this will impact performance.</remarks>
 		public void FilledEllipse(RectangleF dimensions, GorgonColor color, int quality, GorgonTexture2D texture)
 		{
-			FilledEllipse(dimensions, color, quality, texture, new RectangleF(0, 0, dimensions.Width, dimensions.Height));
+			FilledEllipse(dimensions, color, quality, texture, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
@@ -535,7 +535,7 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>The <paramref name="quality"/> parameter can have a value from 4 to 256.  The higher the quality, the better looking the ellipse, however this will impact performance.</remarks>
 		public void DrawEllipse(RectangleF dimensions, GorgonColor color, int quality, Vector2 thickness, GorgonTexture2D texture)
 		{
-			DrawEllipse(dimensions, color, quality, thickness, texture, new RectangleF(0, 0, dimensions.Width, dimensions.Height));
+			DrawEllipse(dimensions, color, quality, thickness, texture, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
@@ -602,7 +602,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="texture">Texture to apply to the rectangle.</param>
 		public void DrawRectangle(RectangleF rectangle, GorgonColor color, Vector2 thickness, GorgonTexture2D texture)
 		{
-			DrawRectangle(rectangle, color, thickness, texture, new RectangleF(0, 0, rectangle.Width, rectangle.Height));
+			DrawRectangle(rectangle, color, thickness, texture, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
@@ -684,7 +684,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="texture">Texture to apply to the line.</param>
 		public void DrawLine(Vector2 startPosition, Vector2 endPosition, GorgonColor color, Vector2 thickness, GorgonTexture2D texture)
 		{
-			DrawLine(startPosition, endPosition, color, thickness, texture, Vector2.Zero, endPosition);
+			DrawLine(startPosition, endPosition, color, thickness, texture, Vector2.Zero, new Vector2(1));
 		}
 
 		/// <summary>

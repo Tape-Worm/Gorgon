@@ -37,8 +37,9 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// A renderable object for drawing a triangle on the target.
+	/// A renderable object for drawing a triangle.
 	/// </summary>
+	/// <remarks>Unlike other renderables, this object does not have a texture region, and instead takes a texture coordinate from the points passed in.</remarks>
 	public class GorgonTriangle
 		: GorgonRenderable, IMoveable
 	{
@@ -57,6 +58,7 @@ namespace GorgonLibrary.Renderers
 			/// <summary>
 			/// The texture coordinate of the point.
 			/// </summary>
+			/// <remarks>This texture value is in texel space (0..1).</remarks>
 			public Vector2 TextureCoordinate;
 			/// <summary>
 			/// The color of the point.
@@ -195,10 +197,10 @@ namespace GorgonLibrary.Renderers
 				Vertices[0].UV = Vertices[1].UV = Vertices[2].UV = Vector2.Zero;
 				return;
 			}
-			
-			Vertices[0].UV = new Vector2(_points[0].TextureCoordinate.X / Texture.Settings.Width, _points[0].TextureCoordinate.Y / Texture.Settings.Height);
-			Vertices[1].UV = new Vector2(_points[1].TextureCoordinate.X / Texture.Settings.Width, _points[1].TextureCoordinate.Y / Texture.Settings.Height);
-			Vertices[2].UV = new Vector2(_points[2].TextureCoordinate.X / Texture.Settings.Width, _points[2].TextureCoordinate.Y / Texture.Settings.Height);
+
+			Vertices[0].UV = _points[0].TextureCoordinate;
+			Vertices[1].UV = _points[1].TextureCoordinate;
+			Vertices[2].UV = _points[2].TextureCoordinate;
 		}
 
 		/// <summary>

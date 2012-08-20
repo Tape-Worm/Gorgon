@@ -59,6 +59,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Texture region to map to the sprite.
 		/// </summary>
+		/// <remarks>This value is in texture space (0..1).</remarks>
 		public RectangleF TextureRegion;
 		/// <summary>
 		/// Initial position of the sprite.
