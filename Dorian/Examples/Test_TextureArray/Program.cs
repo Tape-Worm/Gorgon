@@ -24,15 +24,16 @@ namespace Test_TextureArray
 		private static GorgonPixelShader _shader = null;
 		private static float _startTime = 0;
 		private static bool _showDecal = true;
+		private static float _angle = 0.0f;
 
 		private static bool Idle()
 		{
 			_2D.Clear(Color.Blue);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Time since startup: " + GorgonTiming.SecondsSinceStart.ToString("0.0") + " seconds", new Vector2(0, 0), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "FPS: " + GorgonTiming.FPS.ToString("0.0"), new Vector2(0, 16), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Frame Delta: " + (GorgonTiming.FrameDelta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 32), Color.White);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Frame Delta: " + (GorgonTiming.Delta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 32), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Avg. FPS: " + GorgonTiming.AverageFPS.ToString("0.0"), new Vector2(0, 48), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Avg. Frame Delta: " + (GorgonTiming.AverageFrameDelta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 64), Color.White);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Avg. Frame Delta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 64), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Frame Count: " + GorgonTiming.FrameCount.ToString("0"), new Vector2(0, 80), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Highest FPS: " + GorgonTiming.HighestFPS.ToString("0.0"), new Vector2(0, 96), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Lowest FPS: " + GorgonTiming.LowestFPS.ToString("0.0"), new Vector2(0, 112), Color.White);
@@ -43,22 +44,25 @@ namespace Test_TextureArray
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "RT Count: " + GorgonRenderStatistics.RenderTargetCount.ToString() + " (" + GorgonRenderStatistics.RenderTargetSize.FormatMemory() + ")", new Vector2(0, 208), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Depth Count: " + GorgonRenderStatistics.DepthBufferCount.ToString() + " (" + GorgonRenderStatistics.DepthBufferSize.FormatMemory() + ")", new Vector2(0, 224), Color.White);
 
-			_startTime = GorgonTiming.SecondsSinceStart;
+			float time = ((GorgonTiming.SecondsSinceStart - _startTime) / 180.0f).Min(1);
+			_angle = 360.0f * time;
 
-			if (_showDecal)
+			/*if (_showDecal)
 				_2D.PixelShader.Current = _shader;
-			_sprite.Angle = 0.0f;
+			_sprite.Angle = _angle;
 			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f - 160.0f, _swap.Settings.Height / 2.0f - 120.0f);
 			_sprite.Draw();
 			if (_showDecal)
-				_2D.PixelShader.Current = null;
+				_2D.PixelShader.Current = null;*/
 
-			GorgonRenderStatistics.EndFrame();
-
-			_2D.Render(false);
+			//_2D.Render(false);
 
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Draw calls: " + GorgonRenderStatistics.DrawCallCount.ToString(), new Vector2(0, 128), Color.White);
+			GorgonRenderStatistics.EndFrame();
 			_2D.Render();
+
+			if (time >= 1.0f)
+				_startTime = GorgonTiming.SecondsSinceStart;
 
 			return true;
 		}
@@ -79,7 +83,7 @@ namespace Test_TextureArray
 						IsWindowed = true
 					});
 			_2D = _graphics.Output.Create2DRenderer(_swap);
-			_2D.IsLogoVisible = true;
+			//_2D.IsLogoVisible = true;
 			_startTime = GorgonTiming.SecondsSinceStart;
 
 			_shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("MyShader", "DualTex", Properties.Resources.Shader, true);			
@@ -98,7 +102,7 @@ namespace Test_TextureArray
 			});
 			_tex.CopySubResource(_noDecal, 0, 1);
 
-
+			
 			GorgonTexture2D image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png",
 				new GorgonTexture2DSettings()
 				{
@@ -107,11 +111,12 @@ namespace Test_TextureArray
 					MipCount = 1
 				});
 
-			_tex.CopySubResource(image, 0, 0);
+			_tex.CopySubResource(image, 0, 0);			
 
 			image.Dispose();
 
 			_sprite = _2D.Renderables.CreateSprite("Test", _tex.Settings.Size, _tex);
+			GorgonTiming.TimeScale = 0.001f;
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)

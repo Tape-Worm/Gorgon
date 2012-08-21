@@ -1242,7 +1242,7 @@ namespace GorgonLibrary.Renderers
 			{
 				Anchor = new Vector2(Graphics.Textures.GorgonLogo.Settings.Size),
 				Texture = Graphics.Textures.GorgonLogo,
-				TextureRegion = new RectangleF(Vector2.Zero, Graphics.Textures.GorgonLogo.Settings.Size),
+				TextureRegion = new RectangleF(Vector2.Zero, new Vector2(1)),
 				Color = Color.White,
 				Size = Graphics.Textures.GorgonLogo.Settings.Size
 			});

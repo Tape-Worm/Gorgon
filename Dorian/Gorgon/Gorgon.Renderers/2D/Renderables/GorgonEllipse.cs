@@ -209,7 +209,7 @@ namespace GorgonLibrary.Renderers
 
 			scaledPos = TextureOffset;
 			scaledTexture = TextureRegion.Size;
-			
+
 			Vector2.Modulate(ref _offsets[index], ref scaledTexture, out startUV);
 			Vector2.Modulate(ref _offsets[nextIndex], ref scaledTexture, out endUV);
 
@@ -243,8 +243,8 @@ namespace GorgonLibrary.Renderers
 			}
 
 			midPoint = new Vector2(TextureRegion.Width / 2.0f, TextureRegion.Height / 2.0f);
-			scaledPos = new Vector2(TextureOffset.X / Texture.Settings.Width, TextureOffset.Y / Texture.Settings.Height);
-			scaledTexture = new Vector2(TextureRegion.Width / Texture.Settings.Width, TextureRegion.Height / Texture.Settings.Height);
+			scaledPos = TextureOffset;
+			scaledTexture = TextureRegion.Size;
 			for (int i = 0; i < _offsets.Length; i++)
 			{
 				Vector2.Modulate(ref _offsets[i], ref scaledTexture, out offsetUV);
@@ -258,8 +258,8 @@ namespace GorgonLibrary.Renderers
 				Vector2.Add(ref offsetUV, ref scaledPos, out offsetUV);
 
 				// Set center coordinate.
-				Vertices[vertexIndex].UV.X = (TextureOffset.X + midPoint.X) / Texture.Settings.Width;
-				Vertices[vertexIndex].UV.Y = (TextureOffset.Y + midPoint.Y) / Texture.Settings.Height;
+				Vertices[vertexIndex].UV.X = (TextureOffset.X + midPoint.X);
+				Vertices[vertexIndex].UV.Y = (TextureOffset.Y + midPoint.Y);
 				Vertices[vertexIndex + 1].UV = offsetUV;
 				Vertices[vertexIndex + 2].UV = scaleUV;
 				vertexIndex += 3;
@@ -481,7 +481,7 @@ namespace GorgonLibrary.Renderers
 				_line.StartPoint = start;
 				_line.EndPoint = end;
 				_line.Depth = Depth;
-				
+
 				_line.Draw();
 			}
 
@@ -505,9 +505,9 @@ namespace GorgonLibrary.Renderers
 		{
 			TextureRegion = new System.Drawing.RectangleF(0, 0, size.X, size.Y);
 			Position = position;
-			Size = size;			
+			Size = size;
 			Quality = quality;
-			IsFilled = isFilled;			
+			IsFilled = isFilled;
 			_line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero, color);
 			Color = color;
 		}

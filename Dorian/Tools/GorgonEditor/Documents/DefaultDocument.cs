@@ -93,7 +93,7 @@ namespace GorgonLibrary.GorgonEditor
 			Program.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 			Program.Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, _alpha), _logo, _destState);
 
-			_alpha += _alphaDelta * GorgonTiming.FrameDelta;
+			_alpha += _alphaDelta * GorgonTiming.ScaledDelta;
 
 			if ((_alpha > 1.0f) && (_alphaDelta > 0))
 			{

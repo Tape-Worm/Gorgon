@@ -55,14 +55,14 @@ namespace Test_Dual
 			_2D.Render();
 
 			if (!_bounceH)
-				_spriteGlobal.X += 300 * GorgonTiming.FrameDelta;
+				_spriteGlobal.X += 300 * GorgonTiming.ScaledDelta;
 			else
-				_spriteGlobal.X -= 300 * GorgonTiming.FrameDelta;
+				_spriteGlobal.X -= 300 * GorgonTiming.ScaledDelta;
 
 			if (!_bounceV)
-				_spriteGlobal.Y += 300 * GorgonTiming.FrameDelta;
+				_spriteGlobal.Y += 300 * GorgonTiming.ScaledDelta;
 			else
-				_spriteGlobal.Y -= 300 * GorgonTiming.FrameDelta;
+				_spriteGlobal.Y -= 300 * GorgonTiming.ScaledDelta;
 
 			if (_spriteGlobal.Y > 600)
 			{
