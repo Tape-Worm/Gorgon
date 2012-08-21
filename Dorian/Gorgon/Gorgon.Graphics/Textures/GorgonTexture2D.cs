@@ -140,7 +140,7 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("{0} {1}: Creating 2D D3D 11 render target texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
-			
+
 			CreateResourceView();
 		}
 
@@ -192,7 +192,7 @@ namespace GorgonLibrary.Graphics
 			else
 				desc.BindFlags = D3D.BindFlags.None;
 			desc.Usage = (D3D.ResourceUsage)Settings.Usage;
-			switch(Settings.Usage)
+			switch (Settings.Usage)
 			{
 				case BufferUsage.Staging:
 					desc.CpuAccessFlags = D3D.CpuAccessFlags.Read | D3D.CpuAccessFlags.Write;
@@ -202,7 +202,7 @@ namespace GorgonLibrary.Graphics
 					break;
 				default:
 					desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
-					break;				
+					break;
 			}
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
 			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
@@ -242,6 +242,33 @@ namespace GorgonLibrary.Graphics
 #endif
 
 			return new Vector2(pixel.X / Settings.Width, pixel.Y / Settings.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a texel space coordinate into a pixel space coordinate.
+		/// </summary>
+		/// <param name="texel">The texel coordinate to convert.</param>
+		/// <param name="result">The texel converted to pixel space.</param>
+		public void ToPixel(ref Vector2 texel, out Vector2 result)
+		{
+			result = new Vector2(texel.X * Settings.Width, texel.Y * Settings.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a pixel coordinate into a texel space coordinate.
+		/// </summary>
+		/// <param name="pixel">The pixel coordinate to convert.</param>
+		/// <param name="result">The texel space location of the pixel on the texture.</param>
+		/// <exception cref="System.DivideByZeroException">Thrown when the texture width or height is equal to 0.</exception>
+		public void ToTexel(ref Vector2 pixel, out Vector2 result)
+		{
+#if DEBUG
+			if (Settings.Width == 0)
+				throw new DivideByZeroException("The texture width is 0.");
+			if (Settings.Height == 0)
+				throw new DivideByZeroException("The texture height is 0.");
+#endif
+			result = new Vector2(pixel.X / Settings.Width, pixel.Y / Settings.Height);
 		}
 
 		/// <summary>
@@ -303,9 +330,9 @@ namespace GorgonLibrary.Graphics
 			D3D.ImageInformation? info = null;
 			System.IO.MemoryStream stream = null;
 			byte[] imageData = null;
-			
+
 			try
-			{				
+			{
 				if ((image.Width <= 0) || (image.Width >= Graphics.Textures.MaxWidth))
 					throw new ArgumentException("The texture width must be at least 1 pixel, or less than " + Graphics.Textures.MaxWidth.ToString() + " pixels.", "image");
 
@@ -346,7 +373,7 @@ namespace GorgonLibrary.Graphics
 					View.Dispose();
 					View = null;
 				}
-				
+
 				if (D3DTexture != null)
 				{
 					D3DTexture.Dispose();
@@ -399,7 +426,7 @@ namespace GorgonLibrary.Graphics
 				if (stream != null)
 					stream.Dispose();
 				stream = null;
-			}			
+			}
 		}
 
 
@@ -584,7 +611,7 @@ namespace GorgonLibrary.Graphics
 			// We can only save to 32 bit RGBA uint normalized formats if we're not using DDS, so we have to convert.
 			if ((format != ImageFileFormat.DDS) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB))
 				throw new ArgumentException("Cannot save the format '" + Settings.Format.ToString() + "' to a " + format.ToString() + " file.  DDS is the only file format that may be used with that texture format.");
-					
+
 			D3D.Resource.ToStream<D3D.Texture2D>(Graphics.Context, (D3D.Texture2D)D3DTexture, fileFormat, stream);
 		}
 

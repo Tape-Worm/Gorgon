@@ -233,7 +233,7 @@ namespace GorgonLibrary.Graphics.Example
 		private static void DrawOverlay()
 		{
 			_fpsText.Length = 0;
-			_fpsText.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.0#} ms\nBall count: {2}", GorgonTiming.AverageFPS, GorgonTiming.AverageFrameDelta, _ballCount);
+			_fpsText.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.0#} ms\nBall count: {2}", GorgonTiming.AverageFPS, GorgonTiming.AverageScaledDelta, _ballCount);
 
 			_2D.Drawing.Blit(_statsTarget, Vector2.Zero);
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 0), Color.White);
@@ -257,8 +257,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static bool Idle()
 		{
 			// Update the simulation at our desired frame rate.
-			if (GorgonTiming.FrameDelta < 0.166667f)
-				_accumulator += GorgonTiming.FrameDelta;
+			if (GorgonTiming.ScaledDelta < 0.166667f)
+				_accumulator += GorgonTiming.ScaledDelta;
 			else
 				_accumulator += 0.166667f;
 

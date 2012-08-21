@@ -656,7 +656,7 @@ namespace Tester_Graphics
 						_text.Draw();
 						//_fps.Color = Color.FromArgb(96, 0, 0, 0);
 						//_fps.Anchor = new Vector2(-1, -1);
-						_fps.Text = GorgonTiming.AverageFPS.ToString("0.0#") + " DT: " + (GorgonTiming.AverageFrameDelta * 1000.0f).ToString("0.000") + " ms";
+						_fps.Text = GorgonTiming.AverageFPS.ToString("0.0#") + " DT: " + (GorgonTiming.AverageScaledDelta * 1000.0f).ToString("0.000") + " ms";
 						_fps.Position = Vector2.Zero;
 						//_fps.Draw();
 						_fps.Color = Color.LightBlue;
@@ -669,11 +669,11 @@ namespace Tester_Graphics
 						//Text = timing.AverageFPS.ToString("0.0#");
 						_2D.Render();
 
-						lineSpaceAngle += 180.0f * GorgonTiming.FrameDelta;
+						lineSpaceAngle += 180.0f * GorgonTiming.ScaledDelta;
 						if (lineSpaceAngle > 360.0f)
 							lineSpaceAngle = 360.0f - lineSpaceAngle;
 
-						angle += 1.0f * GorgonTiming.FrameDelta;
+						angle += 1.0f * GorgonTiming.ScaledDelta;
 						if (angle > 360.0f)
 							angle = 360.0f - angle;
 

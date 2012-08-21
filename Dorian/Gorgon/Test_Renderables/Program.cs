@@ -42,7 +42,7 @@ namespace Test_Renderables
 
 			_ellipse.Draw();
 
-			_angle += 3.0f * GorgonLibrary.Diagnostics.GorgonTiming.FrameDelta;
+			_angle += 3.0f * GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta;
 
 			_2D.Render(1);
 			return true;
