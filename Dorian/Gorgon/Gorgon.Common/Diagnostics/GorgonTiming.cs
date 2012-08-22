@@ -48,6 +48,7 @@ namespace GorgonLibrary.Diagnostics
 		private static float _averageFPSTotal = 0.0f;				// Average FPS total.
 		private static float _averageSDTTotal = 0.0f;				// Average draw time total.
 		private static float _averageDTTotal = 0.0f;				// Average draw time total.
+		private static long _maxAverageCount = 32768;				// Maximum number of iterations for average reset.
 		private static bool _firstCall = true;						// Flag to indicate that this is the first call.
 		#endregion
 
@@ -123,6 +124,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the average FPS.
 		/// </summary>
+		/// <para>Note that the averages calculations are affected by the length of time it takes to execute a single iteration of the idle loop.</para>
 		public static float AverageFPS
 		{
 			get;
@@ -172,6 +174,7 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		/// <remarks>This value can be used to get a smoother delta value over time.
 		/// <para>This value is not affected by the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.TimeScale">TimeScale</see> property.</para>
+		/// <para>Note that the averages calculations are affected by the length of time it takes to execute a single iteration of the idle loop.</para>
 		/// </remarks>
 		public static float AverageDelta
 		{
@@ -184,11 +187,33 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		/// <remarks>This value can be used to get a smoother delta value over time.
 		/// <para>This value is affected by the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.TimeScale">TimeScale</see> property.</para>
+		/// <para>Note that the averages calculations are affected by the length of time it takes to execute a single iteration of the idle loop.</para>
 		/// </remarks>
 		public static float AverageScaledDelta
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the maximum number of iterations before an average value is reset.
+		/// </summary>
+		/// <remarks>This only applies to the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.AverageFPS">AverageFPS</see>, <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.AverageFPS">AverageDelta</see> and <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.AverageFPS">AverageScaledDelta</see> properties.
+		/// <para>Note that the higher the value assigned to this property, the longer it'll take for the averages to compute, this is in addition to any overhead from the time it takes to execute a single iteration of the idle loop.</para>
+		/// </remarks>
+		public static long MaxAverageCount
+		{
+			get
+			{
+				return _maxAverageCount;
+			}
+			set
+			{
+				if (_maxAverageCount < 0)
+					_maxAverageCount = 0;
+
+				_maxAverageCount = value;
+			}
 		}
 
 		/// <summary>
@@ -294,8 +319,8 @@ namespace GorgonLibrary.Diagnostics
 				_averageDTTotal += Delta;
 				_averageCounter++;
 
-				// Don't overflow.
-				if (_averageCounter > 2147483600)
+				// Reset the average.
+				if (_averageCounter >= _maxAverageCount)
 				{
 					_averageCounter = 0;
 					_averageFPSTotal = 0;
@@ -308,7 +333,10 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Function to clear the timing data and reset any timers.
 		/// </summary>
-		/// <remarks>You do not need to call this method unless you've got your own mechanism for handling an idle time loop.</remarks>
+		/// <remarks>You do not need to call this method unless you've got your own mechanism for handling an idle time loop.
+		/// <para>Values set by the user (e.g. <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.UseHighResolutionTimer">UseHighResolutionTimer</see>, <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.AverageFPS">MaxAverageCount</see>, etc...) will not be reset.  
+		/// The exception to this is if a high resolution timer is required but is not supported by the hardware.</para>
+		/// </remarks>
 		public static void Reset()
 		{
 			if ((_timer == null) || (UseHighResolutionTimer != _timer.IsHighResolution))
