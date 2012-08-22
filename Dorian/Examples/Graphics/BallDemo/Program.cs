@@ -221,7 +221,7 @@ namespace GorgonLibrary.Graphics.Example
 					else
 					{
 						// Copy the blurred output.
-						_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, Vector2.Zero, new Vector2((float)_mainScreen.Settings.Width / (float)_ballTarget.Settings.Width, (float)_mainScreen.Settings.Height / (float)_ballTarget.Settings.Height));
+						_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
 					}
 				});
 			}
@@ -237,16 +237,14 @@ namespace GorgonLibrary.Graphics.Example
 
 			_2D.Drawing.Blit(_statsTarget, Vector2.Zero);
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 0), Color.White);
-			
+
 			if (_showHelp)
 				_2D.Drawing.DrawString(_ballFont, _helpText.ToString(), new Vector2(3.0f, 72.0f), Color.Yellow, true, new Vector2(2.0f, 2.0f), 0.5f);
 
 			// Draw the draw call counter.
 			_fpsText.Length = 0;
 			_fpsText.AppendFormat("Draw calls: {0}", GorgonRenderStatistics.DrawCallCount);
-			_2D.Render(false);
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 48.0f), Color.White);
-			GorgonRenderStatistics.EndFrame();
 		}
 
 		/// <summary>
@@ -270,12 +268,13 @@ namespace GorgonLibrary.Graphics.Example
 
 			DrawBackground();
 			DrawBlurred();
-			DrawOverlay();		
+			DrawOverlay();
 
 			_2D.Render();
-						
+			GorgonRenderStatistics.EndFrame();
+
 			return true;
-		}		
+		}
 
 		/// <summary>
 		/// Function to initialize the application.
@@ -290,13 +289,13 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create the primary swap chain.
 			_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings()
-						{
-							Width = Properties.Settings.Default.ScreenWidth,
-							Height = Properties.Settings.Default.ScreenHeight,
-							Format = BufferFormat.R8G8B8A8_UIntNormal,
-							Window = _form,
-							IsWindowed = Properties.Settings.Default.Windowed							
-						});
+			{
+				Width = Properties.Settings.Default.ScreenWidth,
+				Height = Properties.Settings.Default.ScreenHeight,
+				Format = BufferFormat.R8G8B8A8_UIntNormal,
+				Window = _form,
+				IsWindowed = Properties.Settings.Default.Windowed
+			});
 
 			// Center the display.
 			if (_mainScreen.Settings.IsWindowed)
@@ -328,8 +327,8 @@ namespace GorgonLibrary.Graphics.Example
 				Width = 512,
 				Height = 512,
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
-				MultiSample = new GorgonMultisampling(1, 0)				
-			});			
+				MultiSample = new GorgonMultisampling(1, 0)
+			});
 			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = _ballTarget.Settings.Size;
 			_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
 
@@ -344,11 +343,11 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create statistics render target.
 			_statsTarget = _graphics.Output.CreateRenderTarget("Statistics", new GorgonRenderTargetSettings()
-				{
-					Width = 140,
-					Height = 66,
-					Format = BufferFormat.R8G8B8A8_UIntNormal					
-				});
+			{
+				Width = 140,
+				Height = 66,
+				Format = BufferFormat.R8G8B8A8_UIntNormal
+			});
 
 			// Draw our stats window frame.
 			_2D.Target = _statsTarget;
@@ -358,21 +357,21 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create our font.
 			_ballFont = _graphics.Fonts.CreateFont("Arial 9pt Bold", new GorgonFontSettings()
-					{
-						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-						FontStyle = FontStyle.Bold,
-						FontFamilyName = "Arial",
-						FontHeightMode = FontHeightMode.Pixels,
-						Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
-						TextureSize = new Size(256, 256),						
-						Size = 12.0f						
-					});
+			{
+				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+				FontStyle = FontStyle.Bold,
+				FontFamilyName = "Arial",
+				FontHeightMode = FontHeightMode.Pixels,
+				Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
+				TextureSize = new Size(256, 256),
+				Size = 12.0f
+			});
 
 			// Statistics text buffer.
 			_fpsText = new StringBuilder(64);
-			_helpText = new StringBuilder("Device: " + _graphics.VideoDevice.Name + 
-				"\nFeature Level: " + _graphics.VideoDevice.SupportedFeatureLevel.ToString() + 
-				"\nVideo Memory: " + _graphics.VideoDevice.DedicatedVideoMemory.FormatMemory() + 
+			_helpText = new StringBuilder("Device: " + _graphics.VideoDevice.Name +
+				"\nFeature Level: " + _graphics.VideoDevice.SupportedFeatureLevel.ToString() +
+				"\nVideo Memory: " + _graphics.VideoDevice.DedicatedVideoMemory.FormatMemory() +
 				"\n\n" + Properties.Resources.HelpText);
 		}
 
@@ -424,7 +423,7 @@ namespace GorgonLibrary.Graphics.Example
 							ballIncrement = 100;
 						if (e.Shift)
 							ballIncrement = 10;
-					}					
+					}
 					GenerateBalls(ballIncrement);
 					break;
 				case Keys.Down:
@@ -436,7 +435,7 @@ namespace GorgonLibrary.Graphics.Example
 							ballIncrement = 100;
 						if (e.Shift)
 							ballIncrement = 10;
-					}					
+					}
 					GenerateBalls(-ballIncrement);
 					break;
 				case Keys.Enter:

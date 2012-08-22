@@ -153,7 +153,7 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				if (_fontSettings.OutlineColor.ToColor() != value)
 				{
-					_fontSettings.OutlineColor = value ;
+					_fontSettings.OutlineColor = value;
 					DispatchUpdateNotification();
 				}
 			}
@@ -214,7 +214,7 @@ namespace GorgonLibrary.GorgonEditor
 			}
 			set
 			{
-				if (value < 1.0f) 
+				if (value < 1.0f)
 					value = 1.0f;
 
 				if (_fontSettings.Size != value)
@@ -322,7 +322,7 @@ namespace GorgonLibrary.GorgonEditor
 			set
 			{
 				if ((value == null) || (value.Count() == 0))
-					value = new char[] {' '};
+					value = new char[] { ' ' };
 
 				if (_fontSettings.Characters != value)
 				{
@@ -418,7 +418,7 @@ namespace GorgonLibrary.GorgonEditor
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to limit the font texture size based on the font size.
 		/// </summary>
@@ -485,10 +485,10 @@ namespace GorgonLibrary.GorgonEditor
 		protected override void LoadResources()
 		{
 			_textArea = Program.Graphics.Output.CreateSwapChain("TextArea.SwapChain", new GorgonSwapChainSettings()
-				{
-					Window = _fontWindow.panelText,
-					Format = BufferFormat.R8G8B8A8_UIntNormal
-				});
+			{
+				Window = _fontWindow.panelText,
+				Format = BufferFormat.R8G8B8A8_UIntNormal
+			});
 
 			_text = Program.Renderer.Renderables.CreateText("Text");
 			_text.Font = _font;
@@ -515,9 +515,9 @@ namespace GorgonLibrary.GorgonEditor
 			Rectangle bounds = new Rectangle(0, 0, (int)System.Math.Ceiling(texture.Settings.Width * _fontWindow.Zoom), (int)System.Math.Ceiling(texture.Settings.Height * _fontWindow.Zoom));
 
 			glyphs = from GorgonGlyph glyph in _font.Glyphs
-						where glyph.Texture == texture && !char.IsWhiteSpace(glyph.Character)
-						select glyph;
-			
+					 where glyph.Texture == texture && !char.IsWhiteSpace(glyph.Character)
+					 select glyph;
+
 			_fontWindow.panelDisplay.AutoScrollMinSize = bounds.Size;
 
 			Vector2 textureScale = new Vector2(_fontWindow.Zoom, _fontWindow.Zoom);
@@ -539,14 +539,14 @@ namespace GorgonLibrary.GorgonEditor
 				glyphRect.Height *= textureScale.Y;
 				Program.Renderer.Drawing.DrawRectangle(glyphRect, Color.Red);
 			}
-			Program.Renderer.Drawing.Blit(texture, textureLocation, textureScale);
+			Program.Renderer.Drawing.Blit(texture, textureLocation);
 
 			// Draw preview text.
 			if ((!string.IsNullOrEmpty(_fontWindow.EditText)) || (_fontWindow.EditMode))
 			{
 				float shadowOpacity = _dropOpacity / 255.0f;
 				Vector2 position = Vector2.Zero;
-				IList<string> lines = _fontWindow.EditText.Split(new char[] {'\n'});
+				IList<string> lines = _fontWindow.EditText.Split(new char[] { '\n' });
 				_textArea.Clear(Color.White);
 				_text.ShadowEnabled = DropShadow;
 				_text.ShadowOffset = DropShadowOffset;
@@ -579,7 +579,7 @@ namespace GorgonLibrary.GorgonEditor
 					else
 					{
 						int height = (int)(_font.FontHeight / 4.0f);
-						
+
 						// Limit the height.
 						if (height < 6)
 							height = 6;
@@ -595,7 +595,7 @@ namespace GorgonLibrary.GorgonEditor
 				}
 
 				Program.Renderer.Target = SwapChain;
-				
+
 				_textArea.Flip();
 			}
 
@@ -613,7 +613,7 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			_fontWindow = new controlFontDisplay();
 			_fontWindow.Dock = System.Windows.Forms.DockStyle.Fill;
-			_iBarTimer = new GorgonTimer();		
+			_iBarTimer = new GorgonTimer();
 
 			return _fontWindow;
 		}
@@ -651,7 +651,7 @@ namespace GorgonLibrary.GorgonEditor
 		public void Update()
 		{
 			GorgonFont newFont = null;
-			
+
 			if (!Program.CachedFonts.ContainsKey(FontFamily))
 				throw new KeyNotFoundException("The font family '" + FontFamily + "' could not be found.");
 
@@ -681,22 +681,22 @@ namespace GorgonLibrary.GorgonEditor
 			try
 			{
 				newFont = Program.Graphics.Fonts.CreateFont(Name, new GorgonFontSettings()
-					{
-						AntiAliasingMode = _fontSettings.AntiAliasingMode,
-						BaseColors = _fontSettings.BaseColors,
-						Brush = _fontSettings.Brush,
-						Characters = _fontSettings.Characters,
-						DefaultCharacter = _fontSettings.DefaultCharacter,
-						FontFamilyName = _fontSettings.FontFamilyName,
-						FontHeightMode = _fontSettings.FontHeightMode,
-						FontStyle = _fontSettings.FontStyle,
-						OutlineColor = _fontSettings.OutlineColor,
-						OutlineSize = _fontSettings.OutlineSize,
-						PackingSpacing = _fontSettings.PackingSpacing,
-						Size = _fontSettings.Size,
-						TextContrast = _fontSettings.TextContrast,
-						TextureSize = _fontSettings.TextureSize
-					});
+				{
+					AntiAliasingMode = _fontSettings.AntiAliasingMode,
+					BaseColors = _fontSettings.BaseColors,
+					Brush = _fontSettings.Brush,
+					Characters = _fontSettings.Characters,
+					DefaultCharacter = _fontSettings.DefaultCharacter,
+					FontFamilyName = _fontSettings.FontFamilyName,
+					FontHeightMode = _fontSettings.FontHeightMode,
+					FontStyle = _fontSettings.FontStyle,
+					OutlineColor = _fontSettings.OutlineColor,
+					OutlineSize = _fontSettings.OutlineSize,
+					PackingSpacing = _fontSettings.PackingSpacing,
+					Size = _fontSettings.Size,
+					TextContrast = _fontSettings.TextContrast,
+					TextureSize = _fontSettings.TextureSize
+				});
 			}
 			catch
 			{
@@ -706,7 +706,7 @@ namespace GorgonLibrary.GorgonEditor
 
 				throw;
 			}
-			
+
 			// Clear resources.
 			try
 			{
@@ -730,7 +730,7 @@ namespace GorgonLibrary.GorgonEditor
 
 			// If the font was not previously created, then create it temporarily.
 			try
-			{				
+			{
 				if (!wasCreated)
 					Update();
 
@@ -761,22 +761,22 @@ namespace GorgonLibrary.GorgonEditor
 
 				// Copy the settings.
 				_fontSettings = new GorgonFontSettings()
-						{
-							AntiAliasingMode = font.Settings.AntiAliasingMode,
-							BaseColors = font.Settings.BaseColors,
-							Brush = font.Settings.Brush,
-							Characters = font.Settings.Characters,
-							DefaultCharacter = font.Settings.DefaultCharacter,
-							FontFamilyName = font.Settings.FontFamilyName,
-							FontHeightMode = font.Settings.FontHeightMode,
-							FontStyle = font.Settings.FontStyle,
-							OutlineColor = font.Settings.OutlineColor,
-							OutlineSize = font.Settings.OutlineSize,
-							PackingSpacing = font.Settings.PackingSpacing,
-							Size = font.Settings.Size,
-							TextContrast = font.Settings.TextContrast,
-							TextureSize = font.Settings.TextureSize
-						};
+				{
+					AntiAliasingMode = font.Settings.AntiAliasingMode,
+					BaseColors = font.Settings.BaseColors,
+					Brush = font.Settings.Brush,
+					Characters = font.Settings.Characters,
+					DefaultCharacter = font.Settings.DefaultCharacter,
+					FontFamilyName = font.Settings.FontFamilyName,
+					FontHeightMode = font.Settings.FontHeightMode,
+					FontStyle = font.Settings.FontStyle,
+					OutlineColor = font.Settings.OutlineColor,
+					OutlineSize = font.Settings.OutlineSize,
+					PackingSpacing = font.Settings.PackingSpacing,
+					Size = font.Settings.Size,
+					TextContrast = font.Settings.TextContrast,
+					TextureSize = font.Settings.TextureSize
+				};
 
 				// Update our new resources.
 				ReleaseResources();
