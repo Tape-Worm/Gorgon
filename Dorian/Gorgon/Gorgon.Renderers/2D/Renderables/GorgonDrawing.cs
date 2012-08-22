@@ -240,15 +240,27 @@ namespace GorgonLibrary.Renderers
 		/// Function to blit a render target to the current render target.
 		/// </summary>
 		/// <param name="target">Render target to blit to the current render target.</param>
-		/// <param name="position">Position on the screen to blit onto.</param>
-		/// <param name="scale">Scaling for the target.</param>
+		/// <param name="blitRegion">The position, and size of the blitted region.</param>
+		/// <param name="textureRegion">The region of the texture to blit.</param>
 		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void Blit(GorgonRenderTarget target, Vector2 position, Vector2 scale)
+		public void Blit(GorgonRenderTarget target, RectangleF blitRegion, RectangleF textureRegion)
 		{
 			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
+			Blit(target.Texture, blitRegion, textureRegion);
+		}
 
-			Blit(target.Texture, position, scale);
+		/// <summary>
+		/// Function to blit a render target to the current render target.
+		/// </summary>
+		/// <param name="target">Render target to blit to the current render target.</param>
+		/// <param name="blitRegion">The position, and size of the blitted region.</param>
+		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void Blit(GorgonRenderTarget target, RectangleF blitRegion)
+		{
+			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
+			Blit(target.Texture, blitRegion, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
@@ -257,45 +269,51 @@ namespace GorgonLibrary.Renderers
 		/// <param name="target">Render target to blit to the current render target.</param>
 		/// <param name="position">Position on the screen to blit onto.</param>
 		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonRenderTarget target, Vector2 position)
 		{
-			Blit(target, position, new Vector2(1.0f));
+			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
+			Blit(target, new RectangleF(position, target.Settings.Size), new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
 		/// Function to blit a texture to the current render target.
 		/// </summary>
 		/// <param name="texture">Texture to blit to the current render target.</param>
-		/// <param name="position">Position on the screen to blit onto.</param>
-		/// <param name="scale">Scaling for the target.</param>
+		/// <param name="blitRegion">The position, and size of the blitted region.</param>
+		/// <param name="textureRegion">The region of the texture to blit.</param>
 		/// <remarks>This is for very quickly copying a texture to a render target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void Blit(GorgonTexture2D texture, Vector2 position, Vector2 scale)
+		public void Blit(GorgonTexture2D texture, RectangleF blitRegion, RectangleF textureRegion)
 		{
 			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+			FilledRectangle(blitRegion, Color.White, texture, textureRegion);
+		}
 
-			Vector2 size = texture.Settings.Size;
-
-			if (scale.X < 1e-6f)
-				scale.X = 1e-6f;
-
-			if (scale.Y < 1e-6f)
-				scale.Y = 1e-6f;
-
-			Vector2.Modulate(ref size, ref scale, out size);
-
-			FilledRectangle(new RectangleF(position, size), Color.White, texture, new RectangleF(Vector2.Zero, new Vector2(1)));
+		/// <summary>
+		/// Function to blit a texture to the current render target.
+		/// </summary>
+		/// <param name="texture">Texture to blit to the current render target.</param>
+		/// <param name="blitRegion">The position, and size of the blitted region.</param>
+		/// <remarks>This is for very quickly copying a texture to a render target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void Blit(GorgonTexture2D texture, RectangleF blitRegion)
+		{
+			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+			Blit(texture, blitRegion, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
 		/// Function to blit a render target to the current render target.
 		/// </summary>
-		/// <param name="target">Render target to blit to the current render target.</param>
+		/// <param name="texture">Texture to blit to the current render target.</param>
 		/// <param name="position">Position on the screen to blit onto.</param>
 		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
-		public void Blit(GorgonTexture2D target, Vector2 position)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void Blit(GorgonTexture2D texture, Vector2 position)
 		{
-			Blit(target, position, new Vector2(1.0f));
+			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+			Blit(texture, new RectangleF(position, texture.Settings.Size), new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
 		/// <summary>
@@ -466,7 +484,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="bounds">Boundaries for the size.</param>
 		/// <returns>The size of the string.</returns>
 		public Vector2 MeasureString(GorgonFont font, string text, bool wordWrap, RectangleF bounds)
-		{			
+		{
 			_string.Font = font;
 			Vector2 size = _string.MeasureText(text, wordWrap, bounds.Width);
 
