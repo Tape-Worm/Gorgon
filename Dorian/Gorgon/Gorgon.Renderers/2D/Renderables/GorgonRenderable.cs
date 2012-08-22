@@ -484,10 +484,12 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the vertex buffer binding for this renderable.
 		/// </summary>
-		protected internal GorgonVertexBufferBinding VertexBufferBinding
+		protected virtual internal GorgonVertexBufferBinding VertexBufferBinding
 		{
-			get;
-			protected set;
+			get
+			{
+				return Gorgon2D.DefaultVertexBufferBinding;
+			}			
 		}
 
 		/// <summary>
@@ -851,7 +853,6 @@ namespace GorgonLibrary.Renderers
 			Gorgon2D = gorgon2D;
 			CullingMode = Graphics.CullingMode.Back;
 	
-			VertexBufferBinding = gorgon2D.DefaultVertexBufferBinding;
 			AlphaTestValues = GorgonMinMaxF.Empty;
 			DepthStencil = new DepthStencilStates();
 			Blending = new BlendState();

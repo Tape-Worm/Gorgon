@@ -52,7 +52,7 @@ namespace GorgonLibrary.Graphics.Example
 		private static IList<Ball> _ballList = null;														// Our list of balls.
 		private static int _ballCount = 0;																	// Number of balls.
 		private static float _accumulator = 0;																// Our accumulator for running at a fixed frame rate.
-		private static float _maxSimulationFPS = (float)GorgonTiming.FpsToMilliseconds(60) / 1000.0f;	// Maximum FPS for our ball simulation.
+		private static float _maxSimulationFPS = (float)GorgonTiming.FpsToMilliseconds(60) / 1000.0f;		// Maximum FPS for our ball simulation.
 		private static GorgonFont _ballFont = null;															// Font to display our FPS, etc...
 		private static GorgonRenderTarget _ballTarget = null;												// Render target for the balls.
 		private static GorgonRenderTarget _statsTarget = null;												// Render target for statistics.
@@ -199,9 +199,9 @@ namespace GorgonLibrary.Graphics.Example
 				_ball.Scale = new Vector2(_ballList[i].Scale, _ballList[i].Scale);
 
 				if (_ballList[i].Checkered)
-					_ball.TextureOffset = new Vector2(64, 0);
+					_ball.TextureOffset = new Vector2(0.5f, 0);
 				else
-					_ball.TextureOffset = new Vector2(0, 64);
+					_ball.TextureOffset = new Vector2(0, 0.5f);
 
 				_ball.Draw();
 			}
@@ -233,7 +233,7 @@ namespace GorgonLibrary.Graphics.Example
 		private static void DrawOverlay()
 		{
 			_fpsText.Length = 0;
-			_fpsText.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.0#} ms\nBall count: {2}", GorgonTiming.AverageFPS, GorgonTiming.AverageScaledDelta, _ballCount);
+			_fpsText.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.0#} ms\nBall count: {2}", GorgonTiming.AverageFPS, GorgonTiming.AverageDelta * 1000.0f, _ballCount);
 
 			_2D.Drawing.Blit(_statsTarget, Vector2.Zero);
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 0), Color.White);
@@ -257,8 +257,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static bool Idle()
 		{
 			// Update the simulation at our desired frame rate.
-			if (GorgonTiming.ScaledDelta < 0.166667f)
-				_accumulator += GorgonTiming.ScaledDelta;
+			if (GorgonTiming.Delta < 0.166667f)
+				_accumulator += GorgonTiming.Delta;
 			else
 				_accumulator += 0.166667f;
 
@@ -317,7 +317,7 @@ namespace GorgonLibrary.Graphics.Example
 			_wall.BlendingMode = BlendingMode.None;
 
 			// Create the ball sprite.
-			_ball = _2D.Renderables.CreateSprite("Ball", new Vector2(64, 64), _ballTexture, new Vector2(32, 32));
+			_ball = _2D.Renderables.CreateSprite("Ball", new Vector2(64, 64), _ballTexture, new Vector2(0.5f, 0.5f));
 			_ball.SmoothingMode = SmoothingMode.Smooth;
 			_ball.Anchor = new Vector2(32, 32);
 
