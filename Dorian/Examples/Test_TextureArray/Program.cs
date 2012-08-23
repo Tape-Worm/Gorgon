@@ -47,13 +47,16 @@ namespace Test_TextureArray
 			float time = ((GorgonTiming.SecondsSinceStart - _startTime) / 180.0f).Min(1);
 			_angle = 360.0f * time;
 
-			/*if (_showDecal)
+			if (_showDecal)
 				_2D.PixelShader.Current = _shader;
 			_sprite.Angle = _angle;
-			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f - 160.0f, _swap.Settings.Height / 2.0f - 120.0f);
+			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
 			_sprite.Draw();
 			if (_showDecal)
-				_2D.PixelShader.Current = null;*/
+				_2D.PixelShader.Current = null;
+			_sprite.Collider.UpdateFromCollisionObject();
+
+			_2D.Drawing.DrawRectangle(_sprite.Collider.ColliderBoundaries, Color.Green);
 
 			//_2D.Render(false);
 
@@ -86,10 +89,14 @@ namespace Test_TextureArray
 			//_2D.IsLogoVisible = true;
 			_startTime = GorgonTiming.SecondsSinceStart;
 
-			_shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("MyShader", "DualTex", Properties.Resources.Shader, true);			
+			_shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("MyShader", "DualTex", Properties.Resources.Shader, true);
 
-			_noDecal = _graphics.Textures.FromFile<GorgonTexture2D>("Image", @"..\..\..\..\Resources\Images\Ship.png", 
-				new GorgonTexture2DSettings());
+			_noDecal = _graphics.Textures.FromFile<GorgonTexture2D>("Image", @"..\..\..\..\Resources\Images\Ship.png",
+				new GorgonTexture2DSettings()
+				{
+					FileFilter = ImageFilters.Point,
+					FileMipFilter = ImageFilters.Point
+				});
 
 			_tex = _graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", new GorgonTexture2DSettings()
 			{
@@ -106,6 +113,8 @@ namespace Test_TextureArray
 			GorgonTexture2D image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png",
 				new GorgonTexture2DSettings()
 				{
+					FileFilter = ImageFilters.Point,
+					FileMipFilter = ImageFilters.Point,
 					Usage = BufferUsage.Staging,
 					ArrayCount = 1,
 					MipCount = 1
@@ -116,7 +125,9 @@ namespace Test_TextureArray
 			image.Dispose();
 
 			_sprite = _2D.Renderables.CreateSprite("Test", _tex.Settings.Size, _tex);
-			GorgonTiming.TimeScale = 0.001f;
+			_sprite.Collider = new Gorgon2DAABB();
+			_sprite.Anchor = new Vector2(_sprite.Size.X / 2.0f, _sprite.Size.Y / 2.0f);
+			GorgonTiming.TimeScale = 0.1f;
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)

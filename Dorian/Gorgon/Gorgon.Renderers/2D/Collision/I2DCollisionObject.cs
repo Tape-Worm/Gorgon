@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, April 25, 2012 12:03:58 PM
+// Created: Wednesday, August 22, 2012 9:31:26 PM
 // 
 #endregion
 
@@ -28,68 +28,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Drawing;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// An interface that describes moveable and renderable object.
+	/// Defines an object that can use colliders.
 	/// </summary>
-	public interface IMoveable
+	public interface I2DCollisionObject
 	{
 		/// <summary>
-		/// Property to set or return the position of the renderable.
+		/// Property to set or return the collider that is assigned to the object.
 		/// </summary>
-		Vector2 Position
+		I2DCollider Collider
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the angle of rotation (in degrees) for a renderable.
+		/// Property to return the list of vertices associated with the object.
 		/// </summary>
-		float Angle
+		Gorgon2DVertex[] Vertices
 		{
 			get;
-			set;
 		}
 
-		/// <summary>
-		/// Property to set or return the scale of the renderable.
-		/// </summary>
-		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Size">Size</see> property.
-		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
-		/// </remarks>
-		Vector2 Scale
-		{
-			get;
-			set;
-		}
 
 		/// <summary>
-		/// Property to set or return the anchor point of the renderable.
+		/// Property to set or return whether the collider needs to be updated.
 		/// </summary>
-		Vector2 Anchor
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the "depth" of the renderable in a depth buffer.
-		/// </summary>
-		float Depth
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the size of the renderable.
-		/// </summary>
-		Vector2 Size
+		bool NeedsColliderUpdate
 		{
 			get;
 			set;

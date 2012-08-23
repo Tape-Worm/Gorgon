@@ -427,6 +427,50 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		RectangleF IRenderable.TextureRegion
+		{
+			get
+			{
+				return RectangleF.Empty;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		Vector2 IRenderable.TextureOffset
+		{
+			get
+			{
+				return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		Vector2 IRenderable.TextureSize
+		{
+			get
+			{
+				return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
@@ -440,20 +484,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region IMoveable Members
-		/// <summary>
-		/// Property to set or return the texture region.
-		/// </summary>
-		RectangleF IMoveable.TextureRegion
-		{
-			get
-			{
-				return RectangleF.Empty;
-			}
-			set
-			{				
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for a renderable.
 		/// </summary>
@@ -488,36 +518,6 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the anchor point of the renderable.
 		/// </summary>
 		Vector2 IMoveable.Anchor
-		{
-			get
-			{
-				return Vector2.Zero;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
-		/// </summary>
-		Vector2 IMoveable.TextureOffset
-		{
-			get
-			{
-				return Vector2.Zero;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the scaling of the texture width and height.
-		/// </summary>
-		Vector2 IMoveable.TextureSize
 		{
 			get
 			{

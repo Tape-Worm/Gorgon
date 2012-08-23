@@ -150,6 +150,8 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
 
 			result = new Gorgon2D(target);
+			result.Initialize();
+			result.Begin2D();
 			target.Graphics.AddTrackedObject(result);
 
 			return result;

@@ -243,6 +243,53 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		/// <remarks>This texture value is in texel space (0..1).</remarks>
+		public RectangleF TextureRegion
+		{
+			get
+			{
+				return RectangleF.FromLTRB(_textureStart.X, _textureStart.Y, _textureEnd.X, _textureEnd.Y);
+			}
+			set
+			{
+				_textureStart = value.Location;
+				_textureEnd = new Vector2(value.Right, value.Bottom);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		public override Vector2 TextureOffset
+		{
+			get
+			{
+				return _textureStart;
+			}
+			set
+			{
+				TextureStart = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		public override Vector2 TextureSize
+		{
+			get
+			{
+				return Vector2.Subtract(_textureEnd, _textureStart);
+			}
+			set
+			{
+				_textureEnd = Vector2.Add(_textureStart, _textureEnd);
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the texture offset for the start point.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1).</remarks>
@@ -586,23 +633,6 @@ namespace GorgonLibrary.Renderers
 
 		#region IMoveable Members
 		/// <summary>
-		/// Property to set or return the texture region.
-		/// </summary>
-		/// <remarks>This texture value is in texel space (0..1).</remarks>
-		public RectangleF TextureRegion
-		{
-			get
-			{
-				return RectangleF.FromLTRB(_textureStart.X, _textureStart.Y, _textureEnd.X, _textureEnd.Y);
-			}
-			set
-			{
-				_textureStart = value.Location;
-				_textureEnd = new Vector2(value.Right, value.Bottom);
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return the position of the renderable.
 		/// </summary>
 		Vector2 IMoveable.Position
@@ -629,36 +659,6 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				throw new NotSupportedException();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
-		/// </summary>
-		Vector2 IMoveable.TextureOffset
-		{
-			get
-			{
-				return _textureStart;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the scaling of the texture width and height.
-		/// </summary>
-		Vector2 IMoveable.TextureSize
-		{
-			get
-			{
-				return Vector2.Subtract(_textureEnd, _textureStart);
-			}
-			set
-			{
-				_textureEnd = Vector2.Add(_textureStart, _textureEnd);
 			}
 		}
 

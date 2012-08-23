@@ -181,6 +181,65 @@ namespace GorgonLibrary.Renderers
 				_line.LineThickness = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the texture region.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when a value is assigned to the property.</exception>
+		public override RectangleF TextureRegion
+		{
+			get
+			{
+				Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
+				Vector2 max = new Vector2(float.MinValue, float.MinValue);
+
+				for (int i = 0; i < _points.Length; i++)
+				{
+					min.X = _points[i].TextureCoordinate.X.Min(min.X);
+					min.Y = _points[i].TextureCoordinate.Y.Min(min.Y);
+					max.X = _points[i].TextureCoordinate.X.Max(max.X);
+					max.Y = _points[i].TextureCoordinate.Y.Max(max.Y);
+				}
+
+				return RectangleF.FromLTRB(min.X, min.Y, max.X, max.Y);
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when a value is assigned to the property.</exception>
+		public override Vector2 TextureOffset
+		{
+			get
+			{
+				return TextureRegion.Location;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to return the scaling of the texture width and height.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when a value is assigned to the property.</exception>
+		public override Vector2 TextureSize
+		{
+			get
+			{
+				return TextureRegion.Size;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -410,62 +469,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region IMoveable Members
-		/// <summary>
-		/// Property to set or return the texture region.
-		/// </summary>
-		RectangleF IMoveable.TextureRegion
-		{
-			get
-			{
-				Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
-				Vector2 max = new Vector2(float.MinValue, float.MinValue);
-
-				for (int i = 0; i < _points.Length; i++)
-				{
-					min.X = _points[i].TextureCoordinate.X.Min(min.X);
-					min.Y = _points[i].TextureCoordinate.Y.Min(min.Y);
-					max.X = _points[i].TextureCoordinate.X.Max(max.X);
-					max.Y = _points[i].TextureCoordinate.Y.Max(max.Y);
-				}
-
-				return RectangleF.FromLTRB(min.X, min.Y, max.X, max.Y);
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
-		/// </summary>
-		Vector2 IMoveable.TextureOffset
-		{
-			get
-			{
-				return ((IMoveable)this).TextureRegion.Location;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the scaling of the texture width and height.
-		/// </summary>
-		Vector2 IMoveable.TextureSize
-		{
-			get
-			{
-				return ((IMoveable)this).TextureRegion.Size;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the size of the renderable.
 		/// </summary>

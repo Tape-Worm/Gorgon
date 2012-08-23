@@ -40,33 +40,11 @@ namespace GorgonLibrary.Renderers
 		: GorgonRenderable, IMoveable
 	{
 		#region Variables.
-		private string _textureName = string.Empty;															// Name of the texture for deferred loading.
 		private Vector2 _size = Vector2.Zero;																// Size of the renderable.
-		private RectangleF _textureRegion = RectangleF.Empty;												// Texture region.
 		private Vector2 _anchor = Vector2.Zero;																// Anchor.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the texture region.
-		/// </summary>
-		/// <remarks>This texture value is in texel space (0..1).</remarks>
-		public RectangleF TextureRegion
-		{
-			get
-			{
-				return _textureRegion;
-			}
-			set
-			{
-				if (_textureRegion != value)
-				{
-					_textureRegion = value;
-					NeedsTextureUpdate = true;
-				}			
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the position of the renderable.
 		/// </summary>
@@ -126,55 +104,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
-		/// </summary>
-		/// <remarks>You can use this property to scroll the texture in the renderable.
-		/// <para>This texture value is in texel space (0..1).</para>
-		/// </remarks>
-		public virtual Vector2 TextureOffset
-		{
-			get
-			{
-				return _textureRegion.Location;
-			}
-			set
-			{
-				if (!value.Equals(_textureRegion.Location))
-				{
-					_textureRegion.Location = value;
-					NeedsTextureUpdate = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the scaling of the texture width and height.
-		/// </summary>
-		/// <remarks>This texture value is in texel space (0..1).</remarks>
-		public virtual Vector2 TextureSize
-		{
-			get
-			{
-				return _textureRegion.Size;
-			}
-			set
-			{
-				if (!value.Equals(_textureRegion.Size))
-				{
-					// Lock the size.
-					if (value.X == 0.0f)
-						value.X = 1e-6f;
-
-					if (value.Y == 0.0f)
-						value.Y = 1e-6f;
-
-					_textureRegion.Size = value;
-					NeedsTextureUpdate = true;
-				}
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return the size of the renderable.
 		/// </summary>
 		public virtual Vector2 Size
@@ -186,7 +115,7 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (_size != value)
-				{					
+				{
 					_size = value;					
 					NeedsVertexUpdate = true;
 				}

@@ -48,7 +48,7 @@ namespace GorgonLibrary.Diagnostics
 		private static float _averageFPSTotal = 0.0f;				// Average FPS total.
 		private static float _averageSDTTotal = 0.0f;				// Average draw time total.
 		private static float _averageDTTotal = 0.0f;				// Average draw time total.
-		private static long _maxAverageCount = 32768;				// Maximum number of iterations for average reset.
+		private static long _maxAverageCount = 500;					// Maximum number of iterations for average reset.
 		private static bool _firstCall = true;						// Flag to indicate that this is the first call.
 		#endregion
 

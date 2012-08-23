@@ -1386,13 +1386,11 @@ namespace GorgonLibrary.Renderers
 			{
 			}
 		}
-		#endregion
 
-		#region IMoveable Members
 		/// <summary>
 		/// Property to set or return the texture region.
 		/// </summary>
-		RectangleF IMoveable.TextureRegion
+		RectangleF IRenderable.TextureRegion
 		{
 			get
 			{
@@ -1407,6 +1405,41 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		Vector2 IRenderable.TextureOffset
+		{
+			get
+			{
+				return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		Vector2 IRenderable.TextureSize
+		{
+			get
+			{
+				if (_currentTexture != null)
+					return _currentTexture.Settings.Size;
+				else
+					return Vector2.Zero;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+		#endregion
+
+		#region IMoveable Members
 		/// <summary>
 		/// Property to set or return the position of the renderable.
 		/// </summary>
@@ -1499,39 +1532,6 @@ namespace GorgonLibrary.Renderers
 					_depth = value;
 					_needsVertexUpdate = true;
 				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
-		/// </summary>
-		Vector2 IMoveable.TextureOffset
-		{
-			get
-			{
-				return Vector2.Zero;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the scaling of the texture width and height.
-		/// </summary>
-		Vector2 IMoveable.TextureSize
-		{
-			get
-			{
-				if (_currentTexture != null)
-					return _currentTexture.Settings.Size;
-				else
-					return Vector2.Zero;
-			}
-			set
-			{
-				throw new NotSupportedException();
 			}
 		}
 

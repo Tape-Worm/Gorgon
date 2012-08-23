@@ -690,9 +690,19 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to handle a resize of the current render target.
+		/// </summary>
+		/// <param name="sender">Object that sent the event.</param>
+		/// <param name="e">Event parameters.</param>
+		private void target_Resized(object sender, EventArgs e)
+		{
+			UpdateTarget();
+		}
+
+		/// <summary>
 		/// Function to initialize the 2D renderer.
 		/// </summary>
-		private void Initialize()
+		internal void Initialize()
 		{
 			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
 			
@@ -782,16 +792,6 @@ namespace GorgonLibrary.Renderers
 			_renderIndexStart = 0;		
 			_renderIndexCount = 0;
 			_baseVertex = 0;
-		}
-
-		/// <summary>
-		/// Function to handle a resize of the current render target.
-		/// </summary>
-		/// <param name="sender">Object that sent the event.</param>
-		/// <param name="e">Event parameters.</param>
-		private void target_Resized(object sender, EventArgs e)
-		{
-			UpdateTarget();
 		}
 
 		/// <summary>
@@ -1235,8 +1235,6 @@ namespace GorgonLibrary.Renderers
 			_defaultTarget = target;
 			_swapChain = target as GorgonSwapChain;
 
-			Initialize();
-
 			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, new GorgonTexture2DSettings());
 			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings()
 			{
@@ -1247,8 +1245,6 @@ namespace GorgonLibrary.Renderers
 				Size = Graphics.Textures.GorgonLogo.Settings.Size
 			});
 			_defaultCamera = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new Vector2(target.Settings.Width, target.Settings.Height), 100.0f);			
-
-			Begin2D();
 
 			Renderables = new GorgonRenderables(this);
 			Drawing = new GorgonDrawing(this);
