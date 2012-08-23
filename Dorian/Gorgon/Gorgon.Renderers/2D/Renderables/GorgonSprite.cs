@@ -65,12 +65,16 @@ namespace GorgonLibrary.Renderers
 	/// A sprite object.
 	/// </summary>
 	public class GorgonSprite
-		: GorgonMoveable, IDeferredTextureLoad
+		: GorgonMoveable, IDeferredTextureLoad, I2DCollisionObject
 	{
 		#region Variables.
 		private float[] _corners = new float[4];										// Corners for the sprite.
 		private string _textureName = string.Empty;										// Name of the texture for the sprite.
 		private Vector2[] _offsets = null;												// A list of vertex offsets.
+		private bool _horizontalFlip = false;											// Flag to indicate that the sprite is flipped horizontally.
+		private bool _verticalFlip = false;												// Flag to indicate that the sprite is flipped vertically.
+		private bool _needsColliderUpdate = false;										// Flag to indicate that the collider needs to be updated.
+		private I2DCollider _collider = null;											// Collider for the sprite.
 		#endregion
 
 		#region Properties.
@@ -102,6 +106,46 @@ namespace GorgonLibrary.Renderers
 			get 
 			{
 				return Graphics.PrimitiveType.TriangleList;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the sprite texture is flipped horizontally.
+		/// </summary>
+		/// <remarks>This only flips the texture region mapped to the sprite.  It does not affect the positioning or axis of the sprite.</remarks>
+		public bool HorizontalFlip
+		{
+			get
+			{
+				return _horizontalFlip;
+			}
+			set
+			{
+				if (value == _horizontalFlip)
+					return;
+
+				_horizontalFlip = value;
+				NeedsTextureUpdate = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the sprite texture is flipped vertically.
+		/// </summary>
+		/// <remarks>This only flips the texture region mapped to the sprite.  It does not affect the positioning or axis of the sprite.</remarks>
+		public bool VerticalFlip
+		{
+			get
+			{
+				return _verticalFlip;
+			}
+			set
+			{
+				if (value == _verticalFlip)
+					return;
+
+				_verticalFlip = value;
+				NeedsTextureUpdate = true;
 			}
 		}
 
@@ -227,7 +271,10 @@ namespace GorgonLibrary.Renderers
 			Vertices[2].Position.X += _offsets[2].X;
 			Vertices[2].Position.Y += _offsets[2].Y;
 			Vertices[3].Position.X += _offsets[3].X;
-			Vertices[3].Position.Y += _offsets[3].Y;			
+			Vertices[3].Position.Y += _offsets[3].Y;
+
+			// Flag to indicate that the collider needs to be updated.
+			_needsColliderUpdate = true;
 		}
 
 		/// <summary>
@@ -236,8 +283,8 @@ namespace GorgonLibrary.Renderers
 		protected override void UpdateTextureCoordinates()
 		{
 			// Calculate texture coordinates.
-			Vector2 scaleUV = Vector2.Zero;
-			Vector2 offsetUV = Vector2.Zero;
+			Vector2 rightBottom = Vector2.Zero;
+			Vector2 leftTop = Vector2.Zero;
 
 			if (Texture == null)
 			{
@@ -245,16 +292,32 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			offsetUV.X = TextureOffset.X;
-			scaleUV.X = TextureRegion.Right;
+			if (!_horizontalFlip)
+			{
+				leftTop.X = TextureRegion.Left;
+				rightBottom.X = TextureRegion.Right;
+			}
+			else
+			{
+				leftTop.X = TextureRegion.Right;
+				rightBottom.X = TextureRegion.Left;
+			}
 
-			offsetUV.Y = TextureOffset.Y;
-			scaleUV.Y = TextureRegion.Bottom;
+			if (!_verticalFlip)
+			{
+				leftTop.Y = TextureRegion.Top;
+				rightBottom.Y = TextureRegion.Bottom;
+			}
+			else
+			{
+				leftTop.Y = TextureRegion.Bottom;
+				rightBottom.Y = TextureRegion.Top;
+			}
 			
-			Vertices[0].UV = offsetUV;
-			Vertices[1].UV = new Vector2(scaleUV.X, offsetUV.Y);
-			Vertices[2].UV = new Vector2(offsetUV.X, scaleUV.Y);
-			Vertices[3].UV = scaleUV;
+			Vertices[0].UV = leftTop;
+			Vertices[1].UV = new Vector2(rightBottom.X, leftTop.Y);
+			Vertices[2].UV = new Vector2(leftTop.X, rightBottom.Y);
+			Vertices[3].UV = rightBottom;
 		}
 
 		/// <summary>
@@ -393,6 +456,81 @@ namespace GorgonLibrary.Renderers
 							where (texture != null) && (string.Compare(texture.Name, _textureName, true) == 0)
 							select texture).FirstOrDefault();
 			NeedsTextureUpdate = true;
+		}
+		#endregion
+
+		#region I2DCollisionObject Members
+		/// <summary>
+		/// Property to set or return the collider that is assigned to the object.
+		/// </summary>
+		public I2DCollider Collider
+		{
+			get
+			{
+				return _collider;
+			}
+			set
+			{
+				if (value == _collider)
+					return;
+
+				if (value == null)
+				{
+					if (_collider != null)
+						_collider.CollisionObject = null;
+
+					return;
+				}
+				
+				value.CollisionObject = this;
+				NeedsColliderUpdate = true;
+				value.UpdateFromCollisionObject();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the collider that is assigned to the object.
+		/// </summary>
+		I2DCollider I2DCollisionObject.Collider
+		{
+			get
+			{
+				return _collider;
+			}
+			set
+			{
+				_collider = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return a list of vertices to render.
+		/// </summary>
+		Gorgon2DVertex[] I2DCollisionObject.Vertices
+		{
+			get 
+			{
+				return this.Vertices;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the collider needs to be updated.
+		/// </summary>
+		public bool NeedsColliderUpdate
+		{
+			get
+			{
+				if (Collider == null)
+					return false;
+
+				return _needsColliderUpdate;
+			}
+			set
+			{
+				if (Collider != null)
+					_needsColliderUpdate = value;
+			}
 		}
 		#endregion
 	}

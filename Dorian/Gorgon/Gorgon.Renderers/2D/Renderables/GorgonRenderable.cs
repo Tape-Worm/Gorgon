@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Drawing;
 using SlimMath;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
@@ -460,6 +461,7 @@ namespace GorgonLibrary.Renderers
 		private DepthStencilStates _depthStencil = null;													// Depth stencil interface.
 		private BlendState _blendState = null;																// Blending state.
 		private TextureSamplerState _samplerState = null;													// Texture sampler state.
+		private RectangleF _textureRegion = RectangleF.Empty;												// Texture region.
 		#endregion
 
 		#region Properties.
@@ -761,6 +763,75 @@ namespace GorgonLibrary.Renderers
 				{
 					for (int i = 0; i < Vertices.Length; i++)
 						Vertices[i].Color = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		/// <remarks>This texture value is in texel space (0..1).</remarks>
+		public virtual RectangleF TextureRegion
+		{
+			get
+			{
+				return _textureRegion;
+			}
+			set
+			{
+				if (_textureRegion != value)
+				{
+					_textureRegion = value;
+					NeedsTextureUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		/// <remarks>You can use this property to scroll the texture in the renderable.
+		/// <para>This texture value is in texel space (0..1).</para>
+		/// </remarks>
+		public virtual Vector2 TextureOffset
+		{
+			get
+			{
+				return _textureRegion.Location;
+			}
+			set
+			{
+				if (!value.Equals(_textureRegion.Location))
+				{
+					_textureRegion.Location = value;
+					NeedsTextureUpdate = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		/// <remarks>This texture value is in texel space (0..1).</remarks>
+		public virtual Vector2 TextureSize
+		{
+			get
+			{
+				return _textureRegion.Size;
+			}
+			set
+			{
+				if (!value.Equals(_textureRegion.Size))
+				{
+					// Lock the size.
+					if (value.X == 0.0f)
+						value.X = 1e-6f;
+
+					if (value.Y == 0.0f)
+						value.Y = 1e-6f;
+
+					_textureRegion.Size = value;
+					NeedsTextureUpdate = true;
 				}
 			}
 		}

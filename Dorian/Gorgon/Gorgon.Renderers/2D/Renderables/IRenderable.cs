@@ -24,11 +24,9 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
 using GorgonLibrary.Graphics;
+using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {
@@ -37,6 +35,38 @@ namespace GorgonLibrary.Renderers
 	/// </summary>
 	public interface IRenderable
 	{
+		/// <summary>
+		/// Property to set or return the texture region.
+		/// </summary>
+		/// <para>This texture value is in texel space (0..1).</para>
+		RectangleF TextureRegion
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+		/// </summary>
+		/// <remarks>You can use this property to scroll the texture in the renderable.
+		/// <para>This texture value is in texel space (0..1).</para>
+		/// </remarks>
+		Vector2 TextureOffset
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling of the texture width and height.
+		/// </summary>
+		/// <para>This texture value is in texel space (0..1).</para>
+		Vector2 TextureSize
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to set or return the vertex buffer binding for this renderable.
 		/// </summary>

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, April 25, 2012 12:03:58 PM
+// Created: Wednesday, August 22, 2012 9:06:57 PM
 // 
 #endregion
 
@@ -29,70 +29,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
-using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// An interface that describes moveable and renderable object.
+	/// Interface for collidable objects.
 	/// </summary>
-	public interface IMoveable
+	public interface I2DCollider
 	{
+		#region Properties.
 		/// <summary>
-		/// Property to set or return the position of the renderable.
+		/// Property to return the collision object that is attached to this collider.
 		/// </summary>
-		Vector2 Position
+		I2DCollisionObject CollisionObject
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the angle of rotation (in degrees) for a renderable.
+		/// Property to set or return whether this collider is enabled or not.
 		/// </summary>
-		float Angle
+		bool Enabled
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the scale of the renderable.
+		/// Property to set or return the boundaries for the collider.
 		/// </summary>
-		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Size">Size</see> property.
-		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
-		/// </remarks>
-		Vector2 Scale
+		RectangleF ColliderBoundaries
 		{
 			get;
 			set;
 		}
+		#endregion
 
+		#region Methods.
 		/// <summary>
-		/// Property to set or return the anchor point of the renderable.
+		/// Function to update the collider on the object to match the collision object transformation.
 		/// </summary>
-		Vector2 Anchor
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the "depth" of the renderable in a depth buffer.
-		/// </summary>
-		float Depth
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the size of the renderable.
-		/// </summary>
-		Vector2 Size
-		{
-			get;
-			set;
-		}
+		/// <remarks>This function must be called to update the collider object boundaries from the collision object.</remarks>
+		void UpdateFromCollisionObject();
+		#endregion
 	}
 }
