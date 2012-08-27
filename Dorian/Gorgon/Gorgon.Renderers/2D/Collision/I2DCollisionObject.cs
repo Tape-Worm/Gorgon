@@ -40,7 +40,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the collider that is assigned to the object.
 		/// </summary>
-		I2DCollider Collider
+		Gorgon2DCollider Collider
 		{
 			get;
 			set;
@@ -52,16 +52,6 @@ namespace GorgonLibrary.Renderers
 		Gorgon2DVertex[] Vertices
 		{
 			get;
-		}
-
-
-		/// <summary>
-		/// Property to set or return whether the collider needs to be updated.
-		/// </summary>
-		bool NeedsColliderUpdate
-		{
-			get;
-			set;
 		}
 	}
 }

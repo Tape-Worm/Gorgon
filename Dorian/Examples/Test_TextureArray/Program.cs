@@ -54,7 +54,6 @@ namespace Test_TextureArray
 			_sprite.Draw();
 			if (_showDecal)
 				_2D.PixelShader.Current = null;
-			_sprite.Collider.UpdateFromCollisionObject();
 
 			_2D.Drawing.DrawRectangle(_sprite.Collider.ColliderBoundaries, Color.Green);
 
@@ -126,6 +125,7 @@ namespace Test_TextureArray
 
 			_sprite = _2D.Renderables.CreateSprite("Test", _tex.Settings.Size, _tex);
 			_sprite.Collider = new Gorgon2DAABB();
+
 			_sprite.Anchor = new Vector2(_sprite.Size.X / 2.0f, _sprite.Size.Y / 2.0f);
 			GorgonTiming.TimeScale = 0.1f;
 		}

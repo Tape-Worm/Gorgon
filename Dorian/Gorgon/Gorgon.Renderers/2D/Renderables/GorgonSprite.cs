@@ -73,8 +73,7 @@ namespace GorgonLibrary.Renderers
 		private Vector2[] _offsets = null;												// A list of vertex offsets.
 		private bool _horizontalFlip = false;											// Flag to indicate that the sprite is flipped horizontally.
 		private bool _verticalFlip = false;												// Flag to indicate that the sprite is flipped vertically.
-		private bool _needsColliderUpdate = false;										// Flag to indicate that the collider needs to be updated.
-		private I2DCollider _collider = null;											// Collider for the sprite.
+		private Gorgon2DCollider _collider = null;											// Collider for the sprite.
 		#endregion
 
 		#region Properties.
@@ -86,13 +85,13 @@ namespace GorgonLibrary.Renderers
 			get;
 			set;
 		}
-		
+
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
 		protected internal override int IndexCount
 		{
-			get 
+			get
 			{
 				return 6;
 			}
@@ -103,7 +102,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected internal override PrimitiveType PrimitiveType
 		{
-			get 
+			get
 			{
 				return Graphics.PrimitiveType.TriangleList;
 			}
@@ -183,10 +182,11 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void TransformVertices()
 		{
-			float posX1;		// Horizontal position 1.
-			float posX2;		// Horizontal position 2.
-			float posY1;		// Vertical position 1.
-			float posY2;		// Vertical position 2.			
+			bool changed = false;	// Flag to indicate that the object changed.
+			float posX1;			// Horizontal position 1.
+			float posX2;			// Horizontal position 2.
+			float posY1;			// Vertical position 1.
+			float posY2;			// Vertical position 2.			
 
 			posX1 = _corners[0];
 			posX2 = _corners[2];
@@ -198,6 +198,7 @@ namespace GorgonLibrary.Renderers
 			{
 				posX1 *= Scale.X;
 				posX2 *= Scale.X;
+				changed = true;
 			}
 
 			// Scale vertically.
@@ -205,6 +206,7 @@ namespace GorgonLibrary.Renderers
 			{
 				posY1 *= Scale.Y;
 				posY2 *= Scale.Y;
+				changed = true;
 			}
 
 			// Calculate rotation if necessary.
@@ -225,6 +227,8 @@ namespace GorgonLibrary.Renderers
 
 				Vertices[3].Position.X = (posX2 * cosVal - posY2 * sinVal);
 				Vertices[3].Position.Y = (posX2 * sinVal + posY2 * cosVal);
+
+				changed = true;
 			}
 			else
 			{
@@ -245,6 +249,7 @@ namespace GorgonLibrary.Renderers
 				Vertices[1].Position.X += Position.X;
 				Vertices[2].Position.X += Position.X;
 				Vertices[3].Position.X += Position.X;
+				changed = true;
 			}
 
 			if (Position.Y != 0.0f)
@@ -253,6 +258,7 @@ namespace GorgonLibrary.Renderers
 				Vertices[1].Position.Y += Position.Y;
 				Vertices[2].Position.Y += Position.Y;
 				Vertices[3].Position.Y += Position.Y;
+				changed = true;
 			}
 
 			// Apply depth to the sprite.
@@ -264,17 +270,24 @@ namespace GorgonLibrary.Renderers
 				Vertices[3].Position.Z = Depth;
 			}
 
-			Vertices[0].Position.X += _offsets[0].X;
-			Vertices[0].Position.Y += _offsets[0].Y;
-			Vertices[1].Position.X += _offsets[1].X;
-			Vertices[1].Position.Y += _offsets[1].Y;
-			Vertices[2].Position.X += _offsets[2].X;
-			Vertices[2].Position.Y += _offsets[2].Y;
-			Vertices[3].Position.X += _offsets[3].X;
-			Vertices[3].Position.Y += _offsets[3].Y;
+			for (int i = 0; i < Vertices.Length; i++)
+			{
+				if (Vertices[i].Position.X != _offsets[i].X)
+				{
+					Vertices[i].Position.X += _offsets[i].X;
+					changed = true;
+				}
 
-			// Flag to indicate that the collider needs to be updated.
-			_needsColliderUpdate = true;
+				if (Vertices[i].Position.Y != _offsets[i].Y)
+				{
+					Vertices[i].Position.Y += _offsets[i].Y;
+					changed = true;
+				}
+			}
+
+			// Update the collider boundaries.
+			if ((Collider != null) && (changed))
+				Collider.UpdateFromCollisionObject();
 		}
 
 		/// <summary>
@@ -313,7 +326,7 @@ namespace GorgonLibrary.Renderers
 				leftTop.Y = TextureRegion.Bottom;
 				rightBottom.Y = TextureRegion.Top;
 			}
-			
+
 			Vertices[0].UV = leftTop;
 			Vertices[1].UV = new Vector2(rightBottom.X, leftTop.Y);
 			Vertices[2].UV = new Vector2(leftTop.X, rightBottom.Y);
@@ -404,7 +417,7 @@ namespace GorgonLibrary.Renderers
 			TextureRegion = settings.TextureRegion;
 			Anchor = settings.Anchor;
 
-			_offsets = new [] { 
+			_offsets = new[] { 
 				Vector2.Zero, 
 				Vector2.Zero, 
 				Vector2.Zero, 
@@ -463,7 +476,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the collider that is assigned to the object.
 		/// </summary>
-		public I2DCollider Collider
+		public Gorgon2DCollider Collider
 		{
 			get
 			{
@@ -481,25 +494,11 @@ namespace GorgonLibrary.Renderers
 
 					return;
 				}
-				
-				value.CollisionObject = this;
-				NeedsColliderUpdate = true;
-				value.UpdateFromCollisionObject();
-			}
-		}
 
-		/// <summary>
-		/// Property to set or return the collider that is assigned to the object.
-		/// </summary>
-		I2DCollider I2DCollisionObject.Collider
-		{
-			get
-			{
-				return _collider;
-			}
-			set
-			{
+				// Force a transform to get the latest vertices.
+				value.CollisionObject = this;
 				_collider = value;
+				TransformVertices();
 			}
 		}
 
@@ -508,28 +507,9 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		Gorgon2DVertex[] I2DCollisionObject.Vertices
 		{
-			get 
-			{
-				return this.Vertices;
-			}
-		}
-
-		/// <summary>
-		/// Property to return whether the collider needs to be updated.
-		/// </summary>
-		public bool NeedsColliderUpdate
-		{
 			get
 			{
-				if (Collider == null)
-					return false;
-
-				return _needsColliderUpdate;
-			}
-			set
-			{
-				if (Collider != null)
-					_needsColliderUpdate = value;
+				return this.Vertices;
 			}
 		}
 		#endregion

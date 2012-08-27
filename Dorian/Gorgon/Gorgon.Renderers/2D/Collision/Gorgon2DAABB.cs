@@ -38,88 +38,58 @@ namespace GorgonLibrary.Renderers
 	/// A 2 dimensional axis aligned bounding box collider.
 	/// </summary>
 	public class Gorgon2DAABB
-		: I2DCollider
+		: Gorgon2DCollider
 	{
 		#region Variables.
-		private I2DCollisionObject _collision = null;				// Collision object attached to this collider.
-		private RectangleF _bounds = RectangleF.Empty;				// Collider boundaries.
-		private bool _enabled = true;								// Flag to indicate that the collider is enabled.
+		private Vector2 _center = Vector2.Zero;             // Offset for the AABB.
+		private Vector2 _size = new Vector2(1);             // Size of the AABB.
 		#endregion
 
 		#region Properties.
-
-		#endregion
-
-		#region Methods.
-
-		#endregion
-
-		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DAABB"/> class.
+		/// Property to set or return the center of the AAAB.
 		/// </summary>
-		public Gorgon2DAABB()
-		{
-		}
-		#endregion
-
-		#region ICollider Members
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether this collider is enabled or not.
-		/// </summary>
-		public bool Enabled
+		/// <remarks>This is relative to the object being bound.</remarks>
+		public Vector2 Center
 		{
 			get
 			{
-				if (_collision == null)
-					return false;
-
-				return _enabled;
+				return _center;
 			}
 			set
 			{
-				_enabled = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the boundaries for the collider.
-		/// </summary>
-		public System.Drawing.RectangleF ColliderBoundaries
-		{
-			get
-			{
-				if (!Enabled)
-					return RectangleF.Empty;
-
-				return _bounds;
-			}
-			set
-			{
-				_bounds = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the collision object that is attached to this collider.
-		/// </summary>
-		public I2DCollisionObject CollisionObject
-		{
-			get
-			{
-				return _collision;
-			}
-			set
-			{
-				if (value == null)
-				{
-					_collision.Collider = null;
+				if (_center == value)
 					return;
-				}
 
-				_collision = value;
-				_collision.Collider = this;
+				_center = value;
+
+				if (CollisionObject == null)
+					ColliderBoundaries = new RectangleF(_center.X, _center.Y, _size.X, _size.Y);
+				else
+					UpdateFromCollisionObject();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the size for the AABB.
+		/// </summary>
+		/// <remarks>This is relative to the object being bound.</remarks>
+		public Vector2 Size
+		{
+			get
+			{
+				return _size;
+			}
+			set
+			{
+				if (_size == value)
+					return;
+
+				_size = value;
+				if (CollisionObject == null)
+					ColliderBoundaries = new RectangleF(_center.X, _center.Y, _size.X, _size.Y);
+				else
+					UpdateFromCollisionObject();
 			}
 		}
 		#endregion
@@ -128,23 +98,25 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to update the collider on the object to match the collision object transformation.
 		/// </summary>
-		/// <remarks>This function must be called to update the collider object boundaries from the collision object.</remarks>
-		public void UpdateFromCollisionObject()
+		/// <remarks>This function must be called to update the collider object boundaries from the collision object after transformation.</remarks>
+		protected internal override void UpdateFromCollisionObject()
 		{
-			if ((!CollisionObject.NeedsColliderUpdate) || (CollisionObject == null) || (!Enabled))
+			Vector2 center = Vector2.Zero;
+			Vector2 size = Vector2.Zero;
+
+			if ((CollisionObject == null) || (!Enabled))
 				return;
 
 			if ((CollisionObject.Vertices == null) || (CollisionObject.Vertices.Length == 0))
 			{
-				_bounds = RectangleF.Empty;
+				ColliderBoundaries = new RectangleF(_center, _size);
 				return;
 			}
-		
-			// Define an infinite boundary.
 
+			// Define an infinite boundary.
 			Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
 			Vector2 max = new Vector2(float.MinValue, float.MinValue);
-			
+
 			// Determine the minimum and maximum extents.
 			for (int i = 0; i < CollisionObject.Vertices.Length; i++)
 			{
@@ -156,10 +128,24 @@ namespace GorgonLibrary.Renderers
 				max.Y = max.Y.Max(position.Y);
 			}
 
-			_bounds = RectangleF.FromLTRB(min.X, min.Y, max.X, max.Y);
-			CollisionObject.NeedsColliderUpdate = false;
+
+			size = new Vector2(max.X - min.X, max.Y - min.Y);
+			center = new Vector2(size.X / 2.0f + _center.X + min.X, size.Y / 2.0f + _center.Y + min.Y);
+
+			Vector2.Modulate(ref size, ref _size, out size);
+
+			ColliderBoundaries = new RectangleF(center.X - size.X / 2.0f, center.Y - size.Y / 2.0f, size.X, size.Y);
 		}
 		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Gorgon2DAABB"/> class.
+		/// </summary>
+		public Gorgon2DAABB()
+		{
+
+		}
 		#endregion
 	}
 }
