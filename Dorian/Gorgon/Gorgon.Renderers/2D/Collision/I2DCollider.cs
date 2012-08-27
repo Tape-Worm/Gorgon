@@ -35,34 +35,47 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// Interface for collidable objects.
 	/// </summary>
-	public interface I2DCollider
+	public abstract class Gorgon2DCollider
 	{
+		#region Variables.
+		private bool _enabled = true;           // Flag to indicate that the collider is enabled.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the collision object that is attached to this collider.
 		/// </summary>
-		I2DCollisionObject CollisionObject
+		public I2DCollisionObject CollisionObject
 		{
 			get;
-			set;
+			internal set;
 		}
 
 		/// <summary>
 		/// Property to set or return whether this collider is enabled or not.
 		/// </summary>
-		bool Enabled
+		public bool Enabled
 		{
-			get;
-			set;
+			get
+			{
+				if (CollisionObject == null)
+					return false;
+
+				return _enabled;
+			}
+			set
+			{
+				_enabled = value;
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the boundaries for the collider.
 		/// </summary>
-		RectangleF ColliderBoundaries
+		public RectangleF ColliderBoundaries
 		{
 			get;
-			set;
+			protected set;
 		}
 		#endregion
 
@@ -70,8 +83,18 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to update the collider on the object to match the collision object transformation.
 		/// </summary>
-		/// <remarks>This function must be called to update the collider object boundaries from the collision object.</remarks>
-		void UpdateFromCollisionObject();
+		/// <remarks>This function must be called to update the collider object boundaries from the collision object after transformation.</remarks>
+		protected internal abstract void UpdateFromCollisionObject();
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Gorgon2DCollider"/> class.
+		/// </summary>
+		protected Gorgon2DCollider()
+		{
+			ColliderBoundaries = new RectangleF(0, 0, 1, 1);
+		}
 		#endregion
 	}
 }
