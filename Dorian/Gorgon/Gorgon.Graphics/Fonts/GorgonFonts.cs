@@ -61,6 +61,7 @@ namespace GorgonLibrary.Graphics
 					_default = new GorgonFont(_graphics, "Gorgon.Default.Font", new GorgonFontSettings()
 					{
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+						TextContrast = 2,
 						Characters = Enumerable.Range(32, 127).
 							Select(i => Convert.ToChar(i)).
 							Where(c => !char.IsControl(c)),

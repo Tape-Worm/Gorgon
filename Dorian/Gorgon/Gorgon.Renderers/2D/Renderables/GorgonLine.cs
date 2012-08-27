@@ -246,7 +246,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the texture region.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1).</remarks>
-		public RectangleF TextureRegion
+		public override RectangleF TextureRegion
 		{
 			get
 			{
