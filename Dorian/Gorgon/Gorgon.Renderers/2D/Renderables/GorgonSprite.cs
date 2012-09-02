@@ -503,6 +503,18 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Property to return the number of vertices to process.
+		/// </summary>
+		int I2DCollisionObject.VertexCount
+		{
+			get
+			{
+				// Always 4 for a sprite.
+				return 4;
+			}
+		}
+
+		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
 		Gorgon2DVertex[] I2DCollisionObject.Vertices

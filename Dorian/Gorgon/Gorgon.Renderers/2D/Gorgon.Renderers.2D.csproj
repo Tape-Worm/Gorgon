@@ -62,6 +62,7 @@
     <Compile Include="Cameras\GorgonOrthoCamera.cs" />
     <Compile Include="Cameras\ICamera.cs" />
     <Compile Include="Collision\Gorgon2DAABB.cs" />
+    <Compile Include="Collision\Gorgon2DBoundingCircle.cs" />
     <Compile Include="Collision\Gorgon2DCollider.cs" />
     <Compile Include="Collision\I2DCollisionObject.cs" />
     <Compile Include="Gorgon2D.cs" />

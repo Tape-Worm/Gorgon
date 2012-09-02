@@ -53,5 +53,13 @@ namespace GorgonLibrary.Renderers
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Property to return the number of vertices to process.
+		/// </summary>
+		int VertexCount
+		{
+			get;
+		}
 	}
 }
