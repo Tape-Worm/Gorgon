@@ -217,6 +217,29 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to copy this texture into a staging texture.
+		/// </summary>
+		/// <returns>A new staging texture.</returns>
+		public GorgonTexture2D GetStagingTexture()
+		{
+			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
+
+			settings.ArrayCount = Settings.ArrayCount;
+			settings.Format = Settings.Format;
+			settings.Height = Settings.Height;
+			settings.Width = Settings.Width;
+			settings.IsTextureCube = Settings.IsTextureCube;
+			settings.MipCount = Settings.MipCount;
+			settings.Multisampling = Settings.Multisampling;
+			settings.Usage = BufferUsage.Staging;
+
+			GorgonTexture2D result = Graphics.Textures.CreateTexture<GorgonTexture2D>(Name + ".Staging", settings);
+			result.Copy(this);
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to convert a texel space coordinate into a pixel space coordinate.
 		/// </summary>
 		/// <param name="texel">The texel coordinate to convert.</param>

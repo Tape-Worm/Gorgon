@@ -21,6 +21,7 @@ namespace Test_TextureArray
 		private static Gorgon2D _2D = null;
 		private static GorgonSwapChain _swap = null;
 		private static GorgonSprite _sprite = null;
+		private static GorgonText _text = null;
 		private static GorgonPixelShader _shader = null;
 		private static float _startTime = 0;
 		private static bool _showDecal = true;
@@ -44,7 +45,7 @@ namespace Test_TextureArray
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "RT Count: " + GorgonRenderStatistics.RenderTargetCount.ToString() + " (" + GorgonRenderStatistics.RenderTargetSize.FormatMemory() + ")", new Vector2(0, 208), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Depth Count: " + GorgonRenderStatistics.DepthBufferCount.ToString() + " (" + GorgonRenderStatistics.DepthBufferSize.FormatMemory() + ")", new Vector2(0, 224), Color.White);
 
-			float time = ((GorgonTiming.SecondsSinceStart - _startTime) / 180.0f).Min(1);
+			float time = ((GorgonTiming.SecondsSinceStart - _startTime) / 45.0f).Min(1);
 			_angle = 360.0f * time;
 
 			if (_showDecal)
@@ -55,9 +56,15 @@ namespace Test_TextureArray
 			if (_showDecal)
 				_2D.PixelShader.Current = null;
 
-			_2D.Drawing.DrawRectangle(_sprite.Collider.ColliderBoundaries, Color.Green);
+			/*_2D.Drawing.DrawRectangle(_sprite.Collider.ColliderBoundaries, Color.Green);
+			_2D.Drawing.DrawEllipse(_sprite.Collider.ColliderBoundaries, Color.Red);*/
 
 			//_2D.Render(false);
+
+			_text.Position = new Vector2(320, 240);
+			_text.Draw();
+			_2D.Drawing.DrawRectangle(_text.Collider.ColliderBoundaries, Color.Cyan);
+
 
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Draw calls: " + GorgonRenderStatistics.DrawCallCount.ToString(), new Vector2(0, 128), Color.White);
 			GorgonRenderStatistics.EndFrame();
@@ -78,12 +85,12 @@ namespace Test_TextureArray
 
 			_graphics = new GorgonGraphics();
 			_swap = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings()
-					{
-						Window = _form,
-						Width = 1280,
-						Height = 800,
-						IsWindowed = true
-					});
+			{
+				Window = _form,
+				Width = 1280,
+				Height = 800,
+				IsWindowed = true
+			});
 			_2D = _graphics.Output.Create2DRenderer(_swap);
 			//_2D.IsLogoVisible = true;
 			_startTime = GorgonTiming.SecondsSinceStart;
@@ -108,7 +115,7 @@ namespace Test_TextureArray
 			});
 			_tex.CopySubResource(_noDecal, 0, 1);
 
-			
+
 			GorgonTexture2D image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png",
 				new GorgonTexture2DSettings()
 				{
@@ -119,15 +126,23 @@ namespace Test_TextureArray
 					MipCount = 1
 				});
 
-			_tex.CopySubResource(image, 0, 0);			
+			_tex.CopySubResource(image, 0, 0);
 
 			image.Dispose();
 
 			_sprite = _2D.Renderables.CreateSprite("Test", _tex.Settings.Size, _tex);
-			_sprite.Collider = new Gorgon2DAABB();
+			//_sprite.Collider = new Gorgon2DAABB();
+			//((Gorgon2DAABB)_sprite.Collider).Location = new Vector2(_tex.Settings.Width / 4.0f, _tex.Settings.Height / 4.0f);
+			//((Gorgon2DAABB)_sprite.Collider).Size = new Vector2(0.5f, 0.5f);
+			//_sprite.Collider = new Gorgon2DBoundingCircle();
+			//((Gorgon2DBoundingCircle)_sprite.Collider).Radius = 0.75f;
 
 			_sprite.Anchor = new Vector2(_sprite.Size.X / 2.0f, _sprite.Size.Y / 2.0f);
 			GorgonTiming.TimeScale = 0.1f;
+
+			_text = _2D.Renderables.CreateText("Text", _graphics.Fonts.DefaultFont, "This is a line of text.");
+			_text.Collider = new Gorgon2DAABB();
+			_text.Angle = 45.0f;
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)

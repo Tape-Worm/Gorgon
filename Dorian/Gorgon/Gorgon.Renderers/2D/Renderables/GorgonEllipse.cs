@@ -277,8 +277,8 @@ namespace GorgonLibrary.Renderers
 
 			for (int i = 0; i < _points.Length; i++)
 			{
-				_points[i].X = (_offsets[i].X * Size.X - Anchor.X) / 2.0f;
-				_points[i].Y = (_offsets[i].Y * Size.Y - Anchor.Y) / 2.0f;
+				_points[i].X = (_offsets[i].X * (Size.X * 2.0f) - Anchor.X) / 2.0f;
+				_points[i].Y = (_offsets[i].Y * (Size.Y * 2.0f) - Anchor.Y) / 2.0f;
 			}
 		}
 

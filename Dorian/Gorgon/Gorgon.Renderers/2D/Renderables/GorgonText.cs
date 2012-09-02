@@ -41,9 +41,11 @@ namespace GorgonLibrary.Renderers
 	/// A renderable object that renders a block of text.
 	/// </summary>
 	public class GorgonText
-		: GorgonNamedObject, IRenderable, IMoveable
+		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
 	{
 		#region Variables.
+		private Gorgon2DCollider _collider = null;                                      // Collision object.
+		private int _colliderVertexCount = 0;                                           // Collider vertex count.
 		private RectangleF? _textRect = null;											// Text rectangle.
 		private int _vertexCount = 0;													// Number of vertices.
 		private Gorgon2DVertex[] _vertices = null;										// Vertices.
@@ -142,7 +144,7 @@ namespace GorgonLibrary.Renderers
 			{
 				if (_shadowEnabled != value)
 				{
-					_shadowEnabled = value;					
+					_shadowEnabled = value;
 					_needsShadowUpdate = value;
 					_needsVertexUpdate = true;
 					_needsColorUpdate = true;
@@ -227,7 +229,7 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value != _wordWrap)
-				{					
+				{
 					_wordWrap = value;
 					FormatText();
 					_needsVertexUpdate = true;
@@ -275,7 +277,7 @@ namespace GorgonLibrary.Renderers
 				if (_textRect != value)
 				{
 					_textRect = value;
-					_needsVertexUpdate = true;					
+					_needsVertexUpdate = true;
 					FormatText();
 				}
 			}
@@ -321,7 +323,7 @@ namespace GorgonLibrary.Renderers
 					_text = value;
 					UpdateText();
 				}
-				
+
 				// Update the colors for the rest of the string if the text length is longer.
 				if (prevLength < _text.Length)
 				{
@@ -440,7 +442,7 @@ namespace GorgonLibrary.Renderers
 					leftTop.X += calc;
 					rightBottom.X += calc;
 					break;
-				case UI.Alignment.CenterLeft:					
+				case UI.Alignment.CenterLeft:
 					calc = (int)(ClipRegion.Height / 2.0f - _size.Y / 2.0f);
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
@@ -462,7 +464,7 @@ namespace GorgonLibrary.Renderers
 					rightBottom.Y += calc;
 					break;
 				case UI.Alignment.LowerLeft:
-					calc = (int)(ClipRegion.Height  - _size.Y);
+					calc = (int)(ClipRegion.Height - _size.Y);
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
 					break;
@@ -470,7 +472,7 @@ namespace GorgonLibrary.Renderers
 					calc = (int)((ClipRegion.Width / 2.0f) - (lineLength / 2.0f));
 					leftTop.X += calc;
 					rightBottom.X += calc;
-					calc = (int)(ClipRegion.Height  - _size.Y);
+					calc = (int)(ClipRegion.Height - _size.Y);
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
 					break;
@@ -478,7 +480,7 @@ namespace GorgonLibrary.Renderers
 					calc = (int)(ClipRegion.Width - lineLength);
 					leftTop.X += calc;
 					rightBottom.X += calc;
-					calc = (int)(ClipRegion.Height  - _size.Y);
+					calc = (int)(ClipRegion.Height - _size.Y);
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
 					break;
@@ -570,10 +572,11 @@ namespace GorgonLibrary.Renderers
 			float angle = _angle.Radians();						// Angle in radians.
 			float cosVal = angle.Cos();							// Cached cosine.
 			float sinVal = angle.Sin();							// Cached sine.
-			
+
 			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
 				outlineOffset = new Vector2(_font.Settings.OutlineSize, _font.Settings.OutlineSize);
 
+			_colliderVertexCount = 0;
 			for (int line = 0; line < _lines.Count; line++)
 			{
 				float lineLength = 0;
@@ -583,14 +586,14 @@ namespace GorgonLibrary.Renderers
 					lineLength = LineMeasure(_lines[line], outlineOffset.X);
 
 				for (int i = 0; i < currentLine.Length; i++)
-				{					
+				{
 					char c = currentLine[i];
 
 					if (!_font.Glyphs.Contains(c))
 						c = _font.Settings.DefaultCharacter;
 
 					glyph = _font.Glyphs[c];
-		
+
 					switch (c)
 					{
 						case ' ':
@@ -600,16 +603,18 @@ namespace GorgonLibrary.Renderers
 							pos.X += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
 							continue;
 					}
-					
+
 					// Add shadow character.
 					if (_shadowEnabled)
 					{
 						UpdateTransform(glyph, vertexIndex, Vector2.Add(Vector2.Add(pos, glyph.Offset), _shadowOffset), lineLength, cosVal, sinVal);
 						vertexIndex += 4;
+						_colliderVertexCount += 4;
 					}
 
 					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset), lineLength, cosVal, sinVal);
 					vertexIndex += 4;
+					_colliderVertexCount += 4;
 
 					// Apply kerning pairs.
 					if (_useKerning)
@@ -639,6 +644,9 @@ namespace GorgonLibrary.Renderers
 				pos.Y += (_font.LineHeight + outlineOffset.Y) * _lineSpace;
 				pos.X = 0;
 			}
+
+			if (_collider != null)
+				_collider.UpdateFromCollisionObject();
 		}
 
 		/// <summary>
@@ -709,7 +717,7 @@ namespace GorgonLibrary.Renderers
 					character = _font.Settings.DefaultCharacter;
 
 				glyph = _font.Glyphs[character];
-	
+
 				// If we can't fit a single glyph into the boundaries, then just leave.  Else we'll have an infinite loop on our hands.
 				if (glyph.GlyphCoordinates.Width > _textRect.Value.Width)
 					return;
@@ -755,7 +763,7 @@ namespace GorgonLibrary.Renderers
 
 					// Try to find the previous space and replace it with a new line.
 					// Otherwise just insert it at the previous character.
-					while(j >= 0)
+					while (j >= 0)
 					{
 						if ((_formattedText[j] == '\n') || (_formattedText[j] == '\r'))
 						{
@@ -788,7 +796,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to format the text for measuring and clipping.
 		/// </summary>
 		private void FormatText()
-		{			
+		{
 			_formattedText.Length = 0;
 			if ((!_textRect.HasValue) || (!_wordWrap))
 				_formattedText.Append(_text);
@@ -817,12 +825,12 @@ namespace GorgonLibrary.Renderers
 			{
 				GorgonGlyph glyph = null;
 				char c = line[i];
-				
+
 				if (!_font.Glyphs.Contains(c))
 					c = _font.Settings.DefaultCharacter;
 
 				glyph = _font.Glyphs[c];
-				
+
 				switch (c)
 				{
 					case ' ':
@@ -920,7 +928,7 @@ namespace GorgonLibrary.Renderers
 				// gauge size.  Otherwise, use the original size.
 				if (string.Compare(text, Text, false) != 0)
 					Text = text;
-				
+
 				return Size;
 			}
 			finally
@@ -961,7 +969,7 @@ namespace GorgonLibrary.Renderers
 			states = Gorgon2D.StateManager.CheckState(this);
 			if (states != StateChange.None)
 			{
-				Gorgon2D.RenderObjects();				
+				Gorgon2D.RenderObjects();
 				Gorgon2D.StateManager.ApplyState(this, states);
 			}
 
@@ -995,7 +1003,7 @@ namespace GorgonLibrary.Renderers
 					if ((c != '\n') && (c != '\t') && (c != ' '))
 					{
 						GorgonGlyph glyph = null;
-						
+
 						if (!_font.Glyphs.Contains(c))
 							c = _font.Settings.DefaultCharacter;
 
@@ -1016,7 +1024,7 @@ namespace GorgonLibrary.Renderers
 
 				vertexIndex = 4;
 			}
-						
+
 			for (int i = 0; i < _text.Length; i++)
 			{
 				char c = _text[i];
@@ -1024,12 +1032,12 @@ namespace GorgonLibrary.Renderers
 				if ((c != '\n') && (c != '\t') && (c != ' ') && (c != '\r'))
 				{
 					GorgonGlyph glyph = null;
-					
+
 					if (!_font.Glyphs.Contains(c))
 						c = _font.Settings.DefaultCharacter;
 
 					glyph = _font.Glyphs[c];
-						
+
 					// Change to the current texture.
 					if (Gorgon2D.PixelShader.Textures[0] != glyph.Texture)
 					{
@@ -1124,7 +1132,7 @@ namespace GorgonLibrary.Renderers
 		/// <value></value>
 		GorgonVertexBufferBinding IRenderable.VertexBufferBinding
 		{
-			get 
+			get
 			{
 				return Gorgon2D.DefaultVertexBufferBinding;
 			}
@@ -1136,7 +1144,7 @@ namespace GorgonLibrary.Renderers
 		/// <value></value>
 		GorgonIndexBuffer IRenderable.IndexBuffer
 		{
-			get 
+			get
 			{
 				return Gorgon2D.DefaultIndexBuffer;
 			}
@@ -1148,7 +1156,7 @@ namespace GorgonLibrary.Renderers
 		/// <value></value>
 		Gorgon2DVertex[] IRenderable.Vertices
 		{
-			get 
+			get
 			{
 				return _vertices;
 			}
@@ -1160,7 +1168,7 @@ namespace GorgonLibrary.Renderers
 		/// <value></value>
 		int IRenderable.BaseVertexCount
 		{
-			get 
+			get
 			{
 				return 0;
 			}
@@ -1527,7 +1535,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_depth != value) 
+				if (_depth != value)
 				{
 					_depth = value;
 					_needsVertexUpdate = true;
@@ -1547,6 +1555,59 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				throw new NotSupportedException();
+			}
+		}
+		#endregion
+
+		#region I2DCollisionObject Members
+		/// <summary>
+		/// Property to set or return the collider that is assigned to the object.
+		/// </summary>
+		public Gorgon2DCollider Collider
+		{
+			get
+			{
+				return _collider;
+			}
+			set
+			{
+				if (value == _collider)
+					return;
+
+				if (value == null)
+				{
+					if (_collider != null)
+						_collider.CollisionObject = null;
+					return;
+				}
+
+				// Force a transform to get the latest vertices.
+				value.CollisionObject = this;
+				_collider = value;
+				UpdateText();
+				UpdateVertices();
+			}
+		}
+
+		/// <summary>
+		/// Property to return the number of vertices to process.
+		/// </summary>
+		int I2DCollisionObject.VertexCount
+		{
+			get
+			{
+				return _colliderVertexCount;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the list of vertices associated with the object.
+		/// </summary>
+		Gorgon2DVertex[] I2DCollisionObject.Vertices
+		{
+			get
+			{
+				return _vertices;
 			}
 		}
 		#endregion

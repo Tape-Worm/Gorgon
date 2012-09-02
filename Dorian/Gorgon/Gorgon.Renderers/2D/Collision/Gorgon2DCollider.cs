@@ -29,12 +29,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// Interface for collidable objects.
+	/// Base class for collider types.
 	/// </summary>
+	/// <remarks>Colliders allow for various shapes to be used as detectors for collisions.   Using a <see cref="GorgonLibrary.Renderers.Gorgon2DAABB">Gorgon2DAABB</see> object for example will create a rectangular 
+	/// bounding area around the object and will expand or contract based on the orientation or scale and shift according to the location of the object.
+	/// <para>Colliders don't necessarily have to be bound to an object to be used, they will often contain properties that will allow the user to shift their position (in screen space, when connected to an object, the positioning is local to that object) 
+	/// or alter the size of the collider.</para>
+	/// <para>In order for an object to use a collider, it must implement the <see cref="GorgonLibrary.Renderers.I2DCollisionObject">I2DCollisionObject</see> interface.  When the collider is assigned 
+	/// to the object it will take on the location and dimensions of the object.  When the collider position or size is modified, it will be relative to the object.  The Gorgon2DAABB and <see cref="GorgonLibrary.Renderers.Gorgon2DBoundingCircle">Gorgon2DBoundingCircle</see> 
+	/// colliders are relative to the center of the object.  Any custom colliders should do the same.</para>
+	/// </remarks>
 	public abstract class Gorgon2DCollider
 	{
 		#region Variables.
@@ -43,12 +52,12 @@ namespace GorgonLibrary.Renderers
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the collision object that is attached to this collider.
+		/// Property to set or return the collision object that is attached to this collider.
 		/// </summary>
 		public I2DCollisionObject CollisionObject
 		{
 			get;
-			internal set;
+			set;
 		}
 
 		/// <summary>
@@ -83,7 +92,9 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to update the collider on the object to match the collision object transformation.
 		/// </summary>
-		/// <remarks>This function must be called to update the collider object boundaries from the collision object after transformation.</remarks>
+		/// <remarks>This function must be called to update the collider object boundaries from the collision object after transformation.
+		/// <para>This must be implemented in any child collider object.</para>
+		/// </remarks>
 		protected internal abstract void UpdateFromCollisionObject();
 		#endregion
 
