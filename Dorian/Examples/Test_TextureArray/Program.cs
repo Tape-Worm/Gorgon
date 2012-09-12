@@ -29,7 +29,7 @@ namespace Test_TextureArray
 
 		private static bool Idle()
 		{
-			_2D.Clear(Color.Blue);
+			_2D.Clear(Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Time since startup: " + GorgonTiming.SecondsSinceStart.ToString("0.0") + " seconds", new Vector2(0, 0), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "FPS: " + GorgonTiming.FPS.ToString("0.0"), new Vector2(0, 16), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Frame Delta: " + (GorgonTiming.Delta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 32), Color.White);
@@ -61,9 +61,12 @@ namespace Test_TextureArray
 
 			//_2D.Render(false);
 
+			_text.Color = Color.White;
+			_text.Angle = _angle;
 			_text.Position = new Vector2(320, 240);
 			_text.Draw();
 			_2D.Drawing.DrawRectangle(_text.Collider.ColliderBoundaries, Color.Cyan);
+			_2D.Drawing.DrawEllipse(_text.Collider.ColliderBoundaries, Color.Red);
 
 
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Draw calls: " + GorgonRenderStatistics.DrawCallCount.ToString(), new Vector2(0, 128), Color.White);
@@ -141,8 +144,9 @@ namespace Test_TextureArray
 			GorgonTiming.TimeScale = 0.1f;
 
 			_text = _2D.Renderables.CreateText("Text", _graphics.Fonts.DefaultFont, "This is a line of text.");
-			_text.Collider = new Gorgon2DAABB();
+			_text.Collider = new Gorgon2DBoundingCircle();
 			_text.Angle = 45.0f;
+			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)

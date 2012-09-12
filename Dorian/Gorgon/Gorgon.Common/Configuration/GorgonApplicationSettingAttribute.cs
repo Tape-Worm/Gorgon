@@ -32,7 +32,7 @@ namespace GorgonLibrary.Configuration
 	/// An attribute defining whether a property is to be used as an application setting.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property, Inherited=true, AllowMultiple=false)]
-	public class GorgonApplicationSettingAttribute
+	public class ApplicationSettingAttribute
 		: Attribute
 	{
 		#region Properties.
@@ -84,13 +84,13 @@ namespace GorgonLibrary.Configuration
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonApplicationSettingAttribute"/> class.
+		/// Initializes a new instance of the <see cref="ApplicationSettingAttribute"/> class.
 		/// </summary>
 		/// <param name="settingName">Name of the setting.</param>
 		/// <param name="defaultValue">The default value for the property.</param>
 		/// <param name="propertyType">Type of property.</param>		
 		/// <param name="section">Section for the setting.</param>
-		public GorgonApplicationSettingAttribute(string settingName, object defaultValue, Type propertyType, string section)
+		public ApplicationSettingAttribute(string settingName, object defaultValue, Type propertyType, string section)
 		{
 			SettingName = settingName;
 			DefaultValue = defaultValue;
@@ -101,34 +101,34 @@ namespace GorgonLibrary.Configuration
 
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonApplicationSettingAttribute"/> class.
+		/// Initializes a new instance of the <see cref="ApplicationSettingAttribute"/> class.
 		/// </summary>
 		/// <param name="settingName">Name of the setting.</param>
 		/// <param name="defaultValue">The default value for the property.</param>
 		/// <param name="propertyType">Type of property.</param>		
-		public GorgonApplicationSettingAttribute(string settingName, object defaultValue, Type propertyType)
+		public ApplicationSettingAttribute(string settingName, object defaultValue, Type propertyType)
 			: this(settingName, defaultValue, propertyType, string.Empty)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonApplicationSettingAttribute"/> class.
+		/// Initializes a new instance of the <see cref="ApplicationSettingAttribute"/> class.
 		/// </summary>
 		/// <param name="settingName">Name of the setting.</param>
 		/// <param name="propertyType">Type of property.</param>		
 		/// <param name="section">Section for the setting.</param>
-		public GorgonApplicationSettingAttribute(string settingName, Type propertyType, string section)
+		public ApplicationSettingAttribute(string settingName, Type propertyType, string section)
 			: this(settingName, null, propertyType, section)
 		{
 			HasDefault = false;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonApplicationSettingAttribute"/> class.
+		/// Initializes a new instance of the <see cref="ApplicationSettingAttribute"/> class.
 		/// </summary>
 		/// <param name="settingName">Name of the setting.</param>
 		/// <param name="propertyType">Type of property.</param>		
-		public GorgonApplicationSettingAttribute(string settingName, Type propertyType)
+		public ApplicationSettingAttribute(string settingName, Type propertyType)
 			: this(settingName, null, propertyType, string.Empty)
 		{
 			HasDefault = false;

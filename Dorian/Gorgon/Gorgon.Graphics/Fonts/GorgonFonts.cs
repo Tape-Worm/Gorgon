@@ -69,6 +69,7 @@ namespace GorgonLibrary.Graphics
 						FontFamilyName = "Segoe UI",
 						FontHeightMode = FontHeightMode.Pixels,
 						FontStyle = FontStyle.Regular,
+						OutlineSize = 1,
 						Size = 14,
 						TextureSize = new Size(128, 128)
 					});

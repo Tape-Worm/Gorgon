@@ -49,7 +49,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the main form state.
 		/// </summary>
-		[GorgonApplicationSetting("FormState", FormWindowState.Maximized, typeof(FormWindowState), "MainApplication")]
+		[ApplicationSetting("FormState", FormWindowState.Maximized, typeof(FormWindowState), "MainApplication")]
 		public FormWindowState FormState
 		{
 			get;
@@ -59,7 +59,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the window dimensions.
 		/// </summary>
-		[GorgonApplicationSetting("WindowDimensions", typeof(Rectangle), "MainApplication")]
+		[ApplicationSetting("WindowDimensions", typeof(Rectangle), "MainApplication")]
 		public Rectangle WindowDimensions
 		{
 			get;
@@ -69,7 +69,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the default size type.
 		/// </summary>
-		[GorgonApplicationSetting("FontSizeType", Graphics.FontHeightMode.Points, typeof(Graphics.FontHeightMode), "FontEditor")]
+		[ApplicationSetting("FontSizeType", Graphics.FontHeightMode.Points, typeof(Graphics.FontHeightMode), "FontEditor")]
 		public Graphics.FontHeightMode FontSizeType
 		{
 			get;
@@ -79,7 +79,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the default font anti-alias mode.
 		/// </summary>
-		[GorgonApplicationSetting("FontAntiAliasMode", Graphics.FontAntiAliasMode.AntiAliasHQ, typeof(Graphics.FontAntiAliasMode), "FontEditor")]
+		[ApplicationSetting("FontAntiAliasMode", Graphics.FontAntiAliasMode.AntiAliasHQ, typeof(Graphics.FontAntiAliasMode), "FontEditor")]
 		public Graphics.FontAntiAliasMode FontAntiAliasMode
 		{
 			get;
@@ -89,7 +89,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the default font texture size.
 		/// </summary>
-		[GorgonApplicationSetting("FontTextureSize", typeof(Size), "FontEditor")]
+		[ApplicationSetting("FontTextureSize", typeof(Size), "FontEditor")]
 		public Size FontTextureSize
 		{
 			get;
@@ -99,7 +99,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the initial path for projects.
 		/// </summary>
-		[GorgonApplicationSetting("InitialPath", typeof(string), "")]
+		[ApplicationSetting("InitialPath", typeof(string), "")]
 		public string InitialPath
 		{
 			get;
@@ -109,7 +109,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return whether to open the documents after they're imported.
 		/// </summary>
-		[GorgonApplicationSetting("OpenAfterImport", false, typeof(bool), "Import")]
+		[ApplicationSetting("OpenAfterImport", false, typeof(bool), "Import")]
 		public bool OpenDocsAfterImport
 		{
 			get;
@@ -119,7 +119,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return whether to open the last document when opening documents after import.
 		/// </summary>
-		[GorgonApplicationSetting("OpenLastDocOnly", false, typeof(bool), "Import")]
+		[ApplicationSetting("OpenLastDocOnly", false, typeof(bool), "Import")]
 		public bool OpenLastDocOnly
 		{
 			get;
@@ -129,7 +129,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the import project folder path.
 		/// </summary>
-		[GorgonApplicationSetting("LastProjectFolder", "", typeof(string), "Import")]
+		[ApplicationSetting("LastProjectFolder", "", typeof(string), "Import")]
 		public string ImportLastProjectFolder
 		{
 			get;
@@ -139,7 +139,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the last import file path.
 		/// </summary>
-		[GorgonApplicationSetting("LastFilePath", "", typeof(string), "Import")]
+		[ApplicationSetting("LastFilePath", "", typeof(string), "Import")]
 		public string ImportLastFilePath
 		{
 			get;
@@ -149,7 +149,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to set or return the last export file path.
 		/// </summary>
-		[GorgonApplicationSetting("LastFilePath", "", typeof(string), "Export")]
+		[ApplicationSetting("LastFilePath", "", typeof(string), "Export")]
 		public string ExportLastFilePath
 		{
 			get;

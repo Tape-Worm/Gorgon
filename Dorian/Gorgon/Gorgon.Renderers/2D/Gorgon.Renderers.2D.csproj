@@ -59,6 +59,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\AnimatedPropertyAttribute.cs" />
+    <Compile Include="Animation\GorgonAnimation.cs" />
+    <Compile Include="Animation\GorgonAnimationClip.cs" />
+    <Compile Include="Animation\GorgonAnimationClipCollection.cs" />
+    <Compile Include="Animation\GorgonAnimationTrack.cs" />
+    <Compile Include="Animation\GorgonAnimationTrackCollection.cs" />
     <Compile Include="Cameras\GorgonOrthoCamera.cs" />
     <Compile Include="Cameras\ICamera.cs" />
     <Compile Include="Collision\Gorgon2DAABB.cs" />
