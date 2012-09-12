@@ -462,6 +462,7 @@ namespace GorgonLibrary.Renderers
 		private BlendState _blendState = null;																// Blending state.
 		private TextureSamplerState _samplerState = null;													// Texture sampler state.
 		private RectangleF _textureRegion = RectangleF.Empty;												// Texture region.
+		private GorgonAnimation _animation = null;																// Animation for this object.
 		#endregion
 
 		#region Properties.
@@ -547,6 +548,32 @@ namespace GorgonLibrary.Renderers
 		{
 			get;
 			protected set;
+		}
+
+		/// <summary>
+		/// Property to set or return the animation(s) for this renderable object.
+		/// </summary>
+		public GorgonAnimation Animation
+		{
+			get
+			{
+				return _animation;
+			}
+			set
+			{
+				if (value == _animation)
+					return;
+
+				if (value == null)
+				{
+					if (_animation.Renderable != null)
+						_animation.Renderable = null;
+
+					return;
+				}
+
+				_animation.Renderable = this;
+			}
 		}
 
 		/// <summary>

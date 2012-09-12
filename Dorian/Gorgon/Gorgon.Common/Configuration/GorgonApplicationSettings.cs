@@ -44,7 +44,7 @@ namespace GorgonLibrary.Configuration
 		#region Variables.
 		private XDocument _xmlSettings = null;															// XML document containing application settings.
 		private string _path = string.Empty;															// Path to the XML settings.
-		private IDictionary<PropertyInfo, GorgonApplicationSettingAttribute> _properties = null;		// List of properties to serialize.
+		private IDictionary<PropertyInfo, ApplicationSettingAttribute> _properties = null;		// List of properties to serialize.
 		#endregion
 
 		#region Properties.
@@ -160,7 +160,7 @@ namespace GorgonLibrary.Configuration
 			foreach (var section in sections)
 				AddSection(string.Empty, section);
 
-			foreach (KeyValuePair<PropertyInfo, GorgonApplicationSettingAttribute> property in _properties)
+			foreach (KeyValuePair<PropertyInfo, ApplicationSettingAttribute> property in _properties)
 			{
 				XElement section = GetSectionElement(property.Value.Section);
 
@@ -218,7 +218,7 @@ namespace GorgonLibrary.Configuration
 		{
 			GetProperties();
 
-			foreach (KeyValuePair<PropertyInfo, GorgonApplicationSettingAttribute> property in _properties)
+			foreach (KeyValuePair<PropertyInfo, ApplicationSettingAttribute> property in _properties)
 			{
 				if ((property.Value.PropertyType.IsGenericType) || (property.Value.PropertyType == typeof(IList)))
 				{
@@ -276,13 +276,13 @@ namespace GorgonLibrary.Configuration
 			Type settingsType = this.GetType();
 			PropertyInfo[] properties = null;
 
-			_properties = new Dictionary<PropertyInfo, GorgonApplicationSettingAttribute>();
+			_properties = new Dictionary<PropertyInfo, ApplicationSettingAttribute>();
 
 			properties = settingsType.GetProperties();
 
 			foreach (PropertyInfo info in properties)
 			{
-				GorgonApplicationSettingAttribute[] attributes = (GorgonApplicationSettingAttribute[])info.GetCustomAttributes(typeof(GorgonApplicationSettingAttribute), true);
+				ApplicationSettingAttribute[] attributes = (ApplicationSettingAttribute[])info.GetCustomAttributes(typeof(ApplicationSettingAttribute), true);
 
 				if ((attributes != null) && (attributes.Length > 0))
 				{

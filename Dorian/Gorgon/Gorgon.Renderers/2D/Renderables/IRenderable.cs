@@ -228,6 +228,15 @@ namespace GorgonLibrary.Renderers
 			set;
 		}
 
+		/*/// <summary>
+		/// Property to set or return the animation(s) for this renderable.
+		/// </summary>
+		GorgonAnimation Animation
+		{
+			get;
+			set;
+		}*/
+
 		/// <summary>
 		/// Function to draw the object.
 		/// </summary>

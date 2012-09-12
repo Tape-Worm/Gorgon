@@ -808,7 +808,7 @@ namespace GorgonLibrary.Renderers
 			_formattedText.Replace("\r", "\n");
 			_lines.Clear();
 			_lines.AddRange(_formattedText.ToString().Split('\n'));
-			_size = MeasureText();
+			_size = GetTextSize();
 		}
 
 		/// <summary>
@@ -875,7 +875,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to measure the bounds of the text in the text object.
 		/// </summary>
 		/// <returns>The bounding rectangle for the text.</returns>
-		private Vector2 MeasureText()
+		private Vector2 GetTextSize()
 		{
 			Vector2 result = Vector2.Zero;
 			float outlineSize = 0;
@@ -895,6 +895,31 @@ namespace GorgonLibrary.Renderers
 				result.X = result.X.Max(LineMeasure(_lines[i], outlineSize));
 
 			return result;
+		}
+
+		/// <summary>
+		/// Function to return the size, in pixels of the string assigned to the text object.
+		/// </summary>
+		/// <remarks>Unlike the overloaded MeasureText function, this one determines whether to use word wrapping based on the settings for the text object and uses the text that's already assigned to the text object.</remarks>
+		public Vector2 MeasureText()
+		{
+			return MeasureText(Text);
+		}
+
+		/// <summary>
+		/// Function to return the size, in pixels, of a string.
+		/// </summary>
+		/// <param name="text">Text to measure.</param>
+		/// <returns>The size of the text, in pixels.</returns>
+		/// <remarks>Unlike the overloaded MeasureText function, this one determines whether to use word wrapping based on the settings for the text object.</remarks>
+		public Vector2 MeasureText(string text)
+		{
+			float size = float.MaxValue - 1;
+
+			if (this.TextRectangle != null)
+				size = this.TextRectangle.Value.Width;
+
+			return MeasureText(text, WordWrap, size);
 		}
 
 		/// <summary>

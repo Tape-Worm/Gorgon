@@ -143,7 +143,6 @@
     <Compile Include="Gorgon.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="INotifier.cs" />
-    <Compile Include="GorgonFieldDescriptor.cs" />
     <Compile Include="GorgonRange.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
