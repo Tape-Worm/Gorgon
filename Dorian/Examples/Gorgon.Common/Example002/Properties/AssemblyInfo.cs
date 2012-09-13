@@ -37,12 +37,12 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 //
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Common Objects Example #1 [DEBUG VERSION]")]
-[assembly: AssemblyDescription("Example application #1 [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Gorgon Common Objects Example #2 [DEBUG VERSION]")]
+[assembly: AssemblyDescription("Example application #2 [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
-[assembly: AssemblyTitle("Gorgon Common Objects Example #1")]
-[assembly: AssemblyDescription("Example application #1.")]
+[assembly: AssemblyTitle("Gorgon Common Objects Example #2")]
+[assembly: AssemblyDescription("Example application #2.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
@@ -60,7 +60,7 @@ using System.Runtime.CompilerServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("70EFA4A4-684B-45CF-9D4B-0563F9E5B848")]
+[assembly: Guid("2C37403C-18E9-4020-A307-8BD6ACE15C5A")]
 
 //
 // Version information for an assembly consists of the following four values:

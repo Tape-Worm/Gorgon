@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example001", "..\Examples\G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_Renderables", "..\Examples\Test_Renderables\Test_Renderables.csproj", "{088982F3-9A3C-4A9A-B443-CC51FA33A79B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example002", "..\Examples\Gorgon.Common\Example002\Example002.csproj", "{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,11 +128,16 @@ Global
 		{088982F3-9A3C-4A9A-B443-CC51FA33A79B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{088982F3-9A3C-4A9A-B443-CC51FA33A79B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{088982F3-9A3C-4A9A-B443-CC51FA33A79B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{92184B11-8908-40DE-A81B-827CE74FE8C7} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
+		{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
 	EndGlobalSection
 EndGlobal
