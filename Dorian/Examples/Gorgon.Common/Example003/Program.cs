@@ -20,13 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, September 12, 2012 8:26:10 PM
+// Created: Tuesday, September 18, 2012 8:00:02 PM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 
@@ -35,16 +38,17 @@ namespace GorgonLibrary.Examples
 	/// <summary>
 	/// Entry point class.
 	/// </summary>
-	/// <remarks>This example doesn't do much, just uses the idle time to draw pixels to the window.  It's meant to show 
-	/// how to use the idle loop from outside of the form.</remarks>
+	/// <remarks>This example is tiny bit more advanced.  It'll show how to use an application context with Gorgon and how to 
+	/// dynamically switch idle loops on the fly.</remarks>
 	static class Program
 	{
 		#region Variables.
-		private static formMain _form = null;				// Our application form.
 		private static Random _rnd = new Random();			// Random number generator.
 		private static int _lastX = 0;						// Last horizontal coordinate.
 		private static int _lastY = 0;						// Last vertical coordinate.
 		private static float _lastTime = 0;					// Last time we drew.
+		private static int _color = 0;						// Color for the bars.
+		private static int _component = 0;					// Color component.
 		#endregion
 
 		#region Methods.
@@ -52,27 +56,85 @@ namespace GorgonLibrary.Examples
 		/// Function that's called during idle time.
 		/// </summary>
 		/// <returns>TRUE to continue execution, FALSE to stop.</returns>
-		private static bool Idle()
+		/// <remarks>This is the secondary default idle loop.</remarks>
+		public static bool NewIdle()
 		{
-			int x = _rnd.Next(0, _form.GraphicsSize.Width - 1);
-			int y = _rnd.Next(0, _form.GraphicsSize.Height - 1);
+			formMain form = (formMain)Gorgon.ApplicationContext.MainForm;		// Get our main form from the context.
+			
+			// Draw some bars every 16 ms.
+			if (GorgonTiming.MillisecondsSinceStart - _lastTime >= 16.6f)
+			{
+				Color newColor = Color.Transparent;
+
+				switch (_component)
+				{
+					case 0:
+						newColor = Color.FromArgb(_color, 0, 0);
+						break;
+					case 1:
+						newColor = Color.FromArgb(0, _color, 0);
+						break;
+					case 2:
+						newColor = Color.FromArgb(0, 0, _color);
+						break;
+				}
+
+				_lastTime = GorgonTiming.MillisecondsSinceStart;
+
+				form.Draw(_lastX, _lastY, _lastX, (form.GraphicsSize.Height - 1) - (_lastY), newColor);
+
+				_color += 3;
+				_lastX++;
+
+				if (_color >= 255)
+				{
+					_color = 0;
+					_component++;
+					if (_component > 2)
+						_component = 0;
+				}
+
+				if (_lastX >= form.GraphicsSize.Width)
+					_lastX = 0;
+
+				_lastY = _rnd.Next(0, form.GraphicsSize.Height / 4);
+			}
+
+			form.Flip();
+
+			form.DrawFPS("Secondary Idle Loop - FPS: " + GorgonTiming.FPS.ToString("0.0"));
+
+			return true;
+		}
+
+		/// <summary>
+		/// Function that's called during idle time.
+		/// </summary>
+		/// <returns>TRUE to continue execution, FALSE to stop.</returns>
+		/// <remarks>This is the default idle loop.</remarks>
+		public static bool Idle()
+		{
+			formMain form = (formMain)Gorgon.ApplicationContext.MainForm;		// Get our main form from the context.
+
+			int x = _rnd.Next(0, form.GraphicsSize.Width - 1);
+			int y = _rnd.Next(0, form.GraphicsSize.Height - 1);
 
 			// Draw a connected line on the form every 256 milliseconds.
 			// This will run continously until the application has ended.
 			if (GorgonTiming.MillisecondsSinceStart - _lastTime >= 256)
 			{
 				_lastTime = GorgonTiming.MillisecondsSinceStart;
-				_form.Draw(_lastX, _lastY, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
+				form.Draw(_lastX, _lastY, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
 				_lastX = x;
 				_lastY = y;
 			}
 			else
-				_form.Draw(x, y, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
+				form.Draw(x, y, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
 
 			// Flip the buffer.
-			_form.Flip();
+			form.Flip();
 
-			_form.DrawFPS("FPS: " + GorgonTiming.FPS.ToString("0.0"));
+			form.DrawFPS("Primary Idle Loop - FPS: " + GorgonTiming.FPS.ToString("0.0"));
 
 			return true;
 		}
@@ -88,21 +150,14 @@ namespace GorgonLibrary.Examples
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				_form = new formMain();
-				_form.ClientSize = new Size(640, 480);
-
 				// Get the initial time.
 				_lastTime = GorgonTiming.MillisecondsSinceStart;
 
-				// Run the application with an idle loop.
+				// Run the application context with an idle loop.
 				//
-				// The form will still control the life time of the application (i.e. the close button will end the application). 
-				// However, you may specify only the idle method and use that to control the application life time, similar to 
-				// standard windows application in C++.
-				// Other overloads allow using only the form and assigning the idle method at another time (if at all), or setting
-				// up an application context object to manage the life time of the application (with or without an idle loop 
-				// method).
-				Gorgon.Run(_form, Idle);
+				// Here we specify that we want to run an application context and an idle loop.  The idle loop 
+				// will kick in after the main form displays.
+				Gorgon.Run(new Context(), Idle);
 			}
 			catch (Exception ex)
 			{

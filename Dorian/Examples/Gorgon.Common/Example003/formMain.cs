@@ -20,17 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, September 12, 2012 8:26:19 PM
+// Created: Tuesday, September 18, 2012 8:01:47 PM
 // 
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.UI;
 
@@ -169,6 +164,14 @@ namespace GorgonLibrary.Examples
 		public void Flip()
 		{
 			_formGraphics.DrawImageUnscaled(_bitmap, 0, 0, _bitmap.Width, _bitmap.Height);
+		}
+
+		/// <summary>
+		/// Function to clear the buffer.
+		/// </summary>
+		public void Clear()
+		{
+			_graphics.Clear(Color.Black);
 		}
 		#endregion
 
