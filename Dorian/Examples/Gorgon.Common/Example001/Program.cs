@@ -25,12 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Examples
 {
