@@ -66,10 +66,10 @@ namespace GorgonLibrary.Graphics
 							Select(i => Convert.ToChar(i)).
 							Where(c => !char.IsControl(c)),
 						DefaultCharacter = ' ',
-						FontFamilyName = "Segoe UI",
+						FontFamilyName = "Tahoma",
 						FontHeightMode = FontHeightMode.Pixels,
-						FontStyle = FontStyle.Regular,
-						OutlineSize = 1,
+						FontStyle = FontStyle.Bold,
+						OutlineSize = 0,
 						Size = 14,
 						TextureSize = new Size(128, 128)
 					});
