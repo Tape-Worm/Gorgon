@@ -38,36 +38,36 @@ namespace GorgonLibrary.Renderers
 		: GorgonNamedObject
 	{
 		#region Variables.
-		private GorgonAnimation _animation = null;
+		private IRenderable _renderable = null;
 		#endregion
 
 		#region Properties.
-		/// <summary>
+        /// <summary>
+        /// Property to return the renderable that owns this animation.
+        /// </summary>
+        public IRenderable Renderable
+        {
+            get
+            {
+                return _renderable;
+            }
+            internal set
+            {
+                if (_renderable == value)
+                    return;
+
+                _renderable = value;
+                GetTracks();
+            }
+        }
+        
+        /// <summary>
 		/// Property to return the list of tracks for the animation.
 		/// </summary>
 		public GorgonAnimationTrackCollection Tracks
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to return the animation that owns this clip.
-		/// </summary>
-		public GorgonAnimation Animation
-		{
-			get
-			{
-				return _animation;
-			}
-			internal set
-			{
-				if (_animation == value)
-					return;
-
-				_animation = value;
-				GetTracks();
-			}
 		}
 		#endregion
 
@@ -77,12 +77,15 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void GetTracks()
 		{
-			Tracks = new GorgonAnimationTrackCollection();
+            if (Tracks == null)
+                Tracks = new GorgonAnimationTrackCollection();
+            else
+                Tracks.Clear();
 
-			if (_animation == null)
+			if (_renderable == null)
 				return;
 
-			foreach (var property in _animation.RenderableProperties)
+			foreach (var property in _renderable.Animations.RenderableProperties)
 				Tracks.AddTrack(new GorgonAnimationTrack(property.Key, property.Value));
 		}
 		#endregion

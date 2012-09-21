@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Collections;
 
 namespace GorgonLibrary.Renderers
 {
@@ -40,14 +42,11 @@ namespace GorgonLibrary.Renderers
 	public delegate void Animator<T>(string propertyName, T value);
 
 	/// <summary>
-	/// Defines an animation for a renderable object.
+	/// Defines animations for a renderable object.
 	/// </summary>
-	public class GorgonAnimation
+	public class GorgonAnimationCollection
+        : GorgonBaseNamedObjectCollection<GorgonAnimationClip>
 	{
-		#region Variables.
-		private IRenderable _renderable = null;			// Renderable object that is using this animation.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the list of animated properties on the renderable.
@@ -58,57 +57,292 @@ namespace GorgonLibrary.Renderers
 			private set;
 		}
 
+        /// <summary>
+        /// Property to return the currently playing animation.
+        /// </summary>
+        public GorgonAnimationClip CurrentAnimation
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the renderable object that this animation is assigned to.
 		/// </summary>
-		public IRenderable Renderable
-		{
-			get
-			{
-				return _renderable;
-			}
-			internal set
-			{
-				if (value == _renderable)
-					return;
+        public IRenderable Renderable
+        {
+            get;
+            private set;
+        }
 
-				_renderable = value;
-				RefreshProperties();
-			}
-		}
+        /// <summary>
+        /// Property to set or return the animation at the specified index.
+        /// </summary>
+        public GorgonAnimationClip this[int index]
+        {
+            get
+            {
+                return GetItem(index);
+            }
+            set
+            {
+                if (value == null)
+                    return;
+
+                SetItem(value.Name, value);
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return an animation by name.
+        /// </summary>
+        public GorgonAnimationClip this[string name]
+        {
+            get
+            {
+                return GetItem(name);
+            }
+            set
+            {
+                if (value == null)
+                {
+                    if (Contains(name))
+                        RemoveItem(name);
+                    return;
+                }
+
+                if (Contains(name))
+                    SetItem(name, value);
+                else
+                    AddItem(value);
+            }
+        }
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve the animated properties for the renderable.
-		/// </summary>
-		private void RefreshProperties()
-		{
-			if (_renderable == null)
-			{
-				RenderableProperties = new Dictionary<string, Type>();
-				return;
-			}
+        /// <summary>
+        /// Function to set an item by its name.
+        /// </summary>
+        /// <param name="name">Name of the item to set.</param>
+        /// <param name="value">Value to set.</param>
+        protected override void SetItem(string name, GorgonAnimationClip value)
+        {
+            if (CurrentAnimation == this[name])
+                Stop();
 
-			// Get only the properties marked with the animated attribute.
-			var properties = _renderable.GetType().GetProperties();
-			RenderableProperties = (from property in properties
-						  let propertyAttrib = property.GetCustomAttributes(typeof(AnimatedPropertyAttribute), false) as IList<AnimatedPropertyAttribute>
-						  where propertyAttrib != null && propertyAttrib.Count > 0
-						  select new {Name = property.Name, PropType = property.PropertyType }).ToDictionary(key => key.Name, val => val.PropType);
-		}
-		#endregion
+            if ((this[name].Renderable != null) && (this[name].Renderable.Animations != this))
+                throw new ArgumentException("The animation '" + name + "' is already in another collection!", "animation");
+
+            this[name].Renderable = Renderable;
+
+            base.SetItem(name, value);
+        }
+
+        /// <summary>
+        /// Function to add an animation to the collection.
+        /// </summary>
+        /// <param name="value">Animation to add.</param>
+        protected override void AddItem(GorgonAnimationClip value)
+        {
+            base.AddItem(value);
+            if ((value.Renderable != null) && (value.Renderable.Animations != this))
+                throw new ArgumentException("The animation '" + value.Name + "' is already in another collection!", "animation");
+            value.Renderable = Renderable;
+        }
+
+        /// <summary>
+        /// Function to remove an item from the collection.
+        /// </summary>
+        /// <param name="item">Item to remove.</param>
+        protected override void RemoveItem(GorgonAnimationClip item)
+        {
+            if (CurrentAnimation == item)
+                Stop();
+            item.Renderable = null;
+            base.RemoveItem(item);
+        }
+
+        /// <summary>
+        /// Function to retrieve the animated properties for the renderable.
+        /// </summary>
+        internal void RefreshProperties()
+        {
+            // Get only the properties marked with the animated attribute.
+            var properties = Renderable.GetType().GetProperties();
+            RenderableProperties = (from property in properties
+                                    let propertyAttrib = property.GetCustomAttributes(typeof(AnimatedPropertyAttribute), false) as IList<AnimatedPropertyAttribute>
+                                    where propertyAttrib != null && propertyAttrib.Count > 0
+                                    select new { Name = property.Name, PropType = property.PropertyType }).ToDictionary(key => key.Name, val => val.PropType);
+        }
+
+        /// <summary>
+        /// Function to set an animation playing.
+        /// </summary>
+        /// <param name="animation">Animation to play.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
+        public void Play(GorgonAnimationClip animation)
+        {
+            GorgonDebug.AssertNull<GorgonAnimationClip>(animation, "animation");
+
+#if DEBUG
+            if (!Contains(animation.Name))
+                throw new KeyNotFoundException("The animation '" + animation + "' was not found in this collection");
+#endif
+
+            // Stop the current animation.
+            if (CurrentAnimation != null)
+            {
+                // TODO: Write this.
+            }
+                        
+            // TODO: Set the animation as playing.
+            CurrentAnimation = animation;
+        }
+
+        /// <summary>
+        /// Function to set an animation playing.
+        /// </summary>
+        /// <param name="animation">Name of the animation to start playing.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
+        public void Play(string animation)
+        {
+            GorgonDebug.AssertParamString(animation, animation);
+
+#if DEBUG
+            if (!Contains(animation))
+                throw new KeyNotFoundException("The animation '" + animation + "' was not found in this collection");
+#endif            
+            Play(this[animation]);
+        }
+
+        /// <summary>
+        /// Function to set an animation playing.
+        /// </summary>
+        /// <param name="index">Index of the animation to start playing.</param>
+        /// <exception cref="System.Collections.IndexOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than (or equal to) the number of animations.</exception>
+        public void Play(int index)
+        {
+            GorgonDebug.AssertParamRange(index, 0, Count, "index");
+            Play(this[index]);
+        }
+
+        /// <summary>
+        /// Function to stop the currently playing animation.
+        /// </summary>
+        public void Stop()
+        {
+            if (CurrentAnimation == null)
+                return;
+
+            // TODO: Write stop code.
+
+            CurrentAnimation = null;
+        }
+
+        /// <summary>
+        /// Function to add a list of animations to the collection.
+        /// </summary>
+        /// <param name="animations">Animations to add.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animations"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when an animation in the list already exists in this collection.</exception>
+        public void AddRange(IEnumerable<GorgonAnimationClip> animations)
+        {
+            GorgonDebug.AssertNull<IEnumerable<GorgonAnimationClip>>(animations, "animations");
+            
+            if (animations.Count() == 0)
+                return;
+
+            AddItems(animations);
+        }
+
+        /// <summary>
+        /// Function to add an animation to the collection.
+        /// </summary>
+        /// <param name="animation">Animation to add to the collection.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the animation already exists in this collection.</exception>
+        public void Add(GorgonAnimationClip animation)
+        {
+            GorgonDebug.AssertNull<GorgonAnimationClip>(animation, "animation");
+
+            if (Contains(animation.Name))
+                throw new ArgumentException("'" + animation.Name + "' already exists in this collection.", "animation");
+
+            AddItem(animation);
+        }
+
+        /// <summary>
+        /// Function to clear the animation collection.
+        /// </summary>
+        public void Clear()
+        {
+            // Stop the current animation.
+            Stop();
+            
+            foreach (var item in this)
+                item.Renderable = null;
+
+            ClearItems();
+        }
+
+        /// <summary>
+        /// Function to remove an animation from the collection.
+        /// </summary>
+        /// <param name="animation">Animation to remove.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
+        public void Remove(GorgonAnimationClip animation)
+        {
+            GorgonDebug.AssertNull<GorgonAnimationClip>(animation, "animation");
+            if (!Contains(animation))
+                throw new KeyNotFoundException("The animation '" + animation.Name + "' was not found in this collection.");
+
+            RemoveItem(animation);
+        }
+
+        /// <summary>
+        /// Function to remove an animation from the collection.
+        /// </summary>
+        /// <param name="animation">Animation to remove.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
+        public void Remove(string animation)
+        {
+            GorgonDebug.AssertParamString(animation, "animation");
+            if (!Contains(animation))
+                throw new KeyNotFoundException("The animation '" + animation + "' was not found in this collection.");
+
+            RemoveItem(this[animation]);
+        }
+
+        /// <summary>
+        /// Function to remove an animation from the collection.
+        /// </summary>
+        /// <param name="index">Index of the animation to remove.</param>
+        /// <exception cref="System.Collections.IndexOutOfRange">Thrown when the <paramref name="animation"/> parameter is less than 0 or greater than (or equal to) the number of items in the collection.</exception>
+        public void Remove(int index)
+        {
+            GorgonDebug.AssertParamRange(index, 0, Count, "index");
+
+            RemoveItem(this[index]);
+        }
+        #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimation" /> class.
+        /// Initializes a new instance of the <see cref="GorgonAnimationCollection" /> class.
 		/// </summary>
-		public GorgonAnimation()
+        /// <param name="renderable">The renderable that holds the animations.</param>
+		internal GorgonAnimationCollection(IRenderable renderable)
+            : base(false)
 		{
-			_renderable = null;
+			Renderable = renderable;
 			RenderableProperties = new Dictionary<string, Type>();
 		}
 		#endregion
-
 	}
 }

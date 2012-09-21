@@ -34,8 +34,9 @@ namespace GorgonLibrary.Renderers
 	/// Defines a renderable object and its states.
 	/// </summary>
 	public interface IRenderable
-	{
-		/// <summary>
+    {
+        #region Properties.
+        /// <summary>
 		/// Property to set or return the texture region.
 		/// </summary>
 		/// <para>This texture value is in texel space (0..1).</para>
@@ -228,21 +229,23 @@ namespace GorgonLibrary.Renderers
 			set;
 		}
 
-		/*/// <summary>
-		/// Property to set or return the animation(s) for this renderable.
+		/// <summary>
+		/// Property to return the animation(s) for this renderable.
 		/// </summary>
-		GorgonAnimation Animation
+		GorgonAnimationCollection Animations
 		{
 			get;
-			set;
-		}*/
+		}
+        #endregion
 
-		/// <summary>
+        #region Methods.
+        /// <summary>
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
 		/// drawn when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
 		void Draw();
-	}
+        #endregion
+    }
 }
