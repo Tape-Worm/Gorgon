@@ -70,7 +70,7 @@ namespace Test_TextureArray.Properties {
         ///	float4 sample1 = _textureArray.Sample(_gorgonSampler, float3(vertex.uv, 0));
         ///	float4 sample2 = _textureArray.Sample(_gorgonSampler, float3(vertex.uv, 1));
         ///	
-        ///	return saturate((sample1 * sample2) * 1.0f);
+        ///	return saturate((sample1 * sample2) * 2.0f);
         ///}.
         /// </summary>
         internal static string Shader {

@@ -30,20 +30,20 @@ namespace Test_TextureArray
 		private static bool Idle()
 		{
 			_2D.Clear(Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Time since startup: " + GorgonTiming.SecondsSinceStart.ToString("0.0") + " seconds", new Vector2(0, 0), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "FPS: " + GorgonTiming.FPS.ToString("0.0"), new Vector2(0, 16), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Frame Delta: " + (GorgonTiming.Delta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 32), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Avg. FPS: " + GorgonTiming.AverageFPS.ToString("0.0"), new Vector2(0, 48), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Avg. Frame Delta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 64), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Frame Count: " + GorgonTiming.FrameCount.ToString("0"), new Vector2(0, 80), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Highest FPS: " + GorgonTiming.HighestFPS.ToString("0.0"), new Vector2(0, 96), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Lowest FPS: " + GorgonTiming.LowestFPS.ToString("0.0"), new Vector2(0, 112), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "VB Count: " + GorgonRenderStatistics.VertexBufferCount.ToString() + " (" + GorgonRenderStatistics.VertexBufferSize.FormatMemory() + ")", new Vector2(0, 144), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "IB Count: " + GorgonRenderStatistics.IndexBufferCount.ToString() + " (" + GorgonRenderStatistics.IndexBufferSize.FormatMemory() + ")", new Vector2(0, 160), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "CB Count: " + GorgonRenderStatistics.ConstantBufferCount.ToString() + " (" + GorgonRenderStatistics.ConstantBufferSize.FormatMemory() + ")", new Vector2(0, 176), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Texture Count: " + GorgonRenderStatistics.TextureCount.ToString() + " (" + GorgonRenderStatistics.TextureSize.FormatMemory() + ")", new Vector2(0, 192), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "RT Count: " + GorgonRenderStatistics.RenderTargetCount.ToString() + " (" + GorgonRenderStatistics.RenderTargetSize.FormatMemory() + ")", new Vector2(0, 208), Color.White);
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Depth Count: " + GorgonRenderStatistics.DepthBufferCount.ToString() + " (" + GorgonRenderStatistics.DepthBufferSize.FormatMemory() + ")", new Vector2(0, 224), Color.White);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Time since startup: " + GorgonTiming.SecondsSinceStart.ToString("0.0") + " seconds", new Vector2(0, 0), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "FPS: " + GorgonTiming.FPS.ToString("0.0"), new Vector2(0, 16), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Frame Delta: " + (GorgonTiming.Delta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 32), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Avg. FPS: " + GorgonTiming.AverageFPS.ToString("0.0"), new Vector2(0, 48), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Avg. Frame Delta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " ms", new Vector2(0, 64), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Frame Count: " + GorgonTiming.FrameCount.ToString("0"), new Vector2(0, 80), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Highest FPS: " + GorgonTiming.HighestFPS.ToString("0.0"), new Vector2(0, 96), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Lowest FPS: " + GorgonTiming.LowestFPS.ToString("0.0"), new Vector2(0, 112), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "VB Count: " + GorgonRenderStatistics.VertexBufferCount.ToString() + " (" + GorgonRenderStatistics.VertexBufferSize.FormatMemory() + ")", new Vector2(0, 144), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "IB Count: " + GorgonRenderStatistics.IndexBufferCount.ToString() + " (" + GorgonRenderStatistics.IndexBufferSize.FormatMemory() + ")", new Vector2(0, 160), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "CB Count: " + GorgonRenderStatistics.ConstantBufferCount.ToString() + " (" + GorgonRenderStatistics.ConstantBufferSize.FormatMemory() + ")", new Vector2(0, 176), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Texture Count: " + GorgonRenderStatistics.TextureCount.ToString() + " (" + GorgonRenderStatistics.TextureSize.FormatMemory() + ")", new Vector2(0, 192), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "RT Count: " + GorgonRenderStatistics.RenderTargetCount.ToString() + " (" + GorgonRenderStatistics.RenderTargetSize.FormatMemory() + ")", new Vector2(0, 208), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Depth Count: " + GorgonRenderStatistics.DepthBufferCount.ToString() + " (" + GorgonRenderStatistics.DepthBufferSize.FormatMemory() + ")", new Vector2(0, 224), Color.Black);
 
 			float time = ((GorgonTiming.SecondsSinceStart - _startTime) / 45.0f).Min(1);
 			_angle = 360.0f * time;
@@ -61,7 +61,7 @@ namespace Test_TextureArray
 
 			//_2D.Render(false);
 
-			_text.Color = Color.White;
+			_text.Color = Color.Black;
 			_text.Angle = _angle;
 			_text.Position = new Vector2(320, 240);
 			_text.Draw();
@@ -69,7 +69,7 @@ namespace Test_TextureArray
 			_2D.Drawing.DrawEllipse(_text.Collider.ColliderBoundaries, Color.Red);
 
 
-			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Draw calls: " + GorgonRenderStatistics.DrawCallCount.ToString(), new Vector2(0, 128), Color.White);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Draw calls: " + GorgonRenderStatistics.DrawCallCount.ToString(), new Vector2(0, 128), Color.Black);
 			GorgonRenderStatistics.EndFrame();
 			_2D.Render();
 
