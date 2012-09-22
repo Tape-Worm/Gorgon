@@ -40,6 +40,11 @@ namespace Test_Renderables
 
 			_rect.Draw();
 
+			_ellipse.Size = new Vector2(100, 100);
+			_ellipse.Anchor = new Vector2(50, 50);
+			_ellipse.Draw();
+			_ellipse.Size = new Vector2(80, 80);
+			_ellipse.Anchor = new Vector2(40, 40);
 			_ellipse.Draw();
 
 			_angle += 3.0f * GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta;
@@ -71,10 +76,12 @@ namespace Test_Renderables
 			_rect.TextureRegion = new RectangleF(0.0f, 0.0f, 0.5f, 0.5f);
 			_rect.LineThickness = new Vector2(8, 8);
 
-			_ellipse = _2D.Renderables.CreateEllipse("TestEllipse", new Vector2(160, 300), new Vector2(100, 100), GorgonColor.White, false);
+			
+			_ellipse = _2D.Renderables.CreateEllipse("TestEllipse", new Vector2(160, 120), new Vector2(100, 100), GorgonColor.White, false);
 			_ellipse.Texture = _texture;
 			_ellipse.TextureRegion = new RectangleF(0.5f, 0, 0.5f, 0.5f);
-			_ellipse.LineThickness = new Vector2(8, 8);
+			_ellipse.LineThickness = new Vector2(4, 4);
+			
 		}
 
 		static void _form_FormClosing(object sender, FormClosingEventArgs e)
