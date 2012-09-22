@@ -200,7 +200,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				Line = RectangleF.FromLTRB(StartPoint.X, StartPoint.Y, value.X, value.Y);
+				LineRegion = RectangleF.FromLTRB(StartPoint.X, StartPoint.Y, value.X, value.Y);
 			}
 		}
 
@@ -226,7 +226,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the line dimensions for this line object.
 		/// </summary>
-		public RectangleF Line
+		public RectangleF LineRegion
 		{
 			get
 			{

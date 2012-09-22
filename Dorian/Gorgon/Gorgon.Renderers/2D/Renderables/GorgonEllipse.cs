@@ -268,13 +268,13 @@ namespace GorgonLibrary.Renderers
 		protected override void UpdateVertices()
 		{
 			// Set center point.
-			_center.X = (0.5f * Size.X - Anchor.X * 2.0f) / 2.0f;
-			_center.Y = (0.5f * Size.Y - Anchor.Y * 2.0f) / 2.0f;
+			_center.X = (0.5f * Size.X - Anchor.X) / 2.0f;
+			_center.Y = (0.5f * Size.Y - Anchor.Y) / 2.0f;
 
 			for (int i = 0; i < _points.Length; i++)
 			{
-				_points[i].X = (_offsets[i].X * (Size.X * 2.0f) - Anchor.X * 2.0f) / 2.0f;
-				_points[i].Y = (_offsets[i].Y * (Size.Y * 2.0f) - Anchor.Y * 2.0f) / 2.0f;
+				_points[i].X = (_offsets[i].X * (Size.X * 2.0f)) / 2.0f - Anchor.X;
+				_points[i].Y = (_offsets[i].Y * (Size.Y * 2.0f)) / 2.0f - Anchor.Y;
 			}
 		}
 
