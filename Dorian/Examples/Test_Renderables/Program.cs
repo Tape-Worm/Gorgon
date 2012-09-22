@@ -47,6 +47,8 @@ namespace Test_Renderables
 			_ellipse.Anchor = new Vector2(40, 40);
 			_ellipse.Draw();
 
+			_2D.Drawing.DrawPoint(new Vector2(160, 120), Color.Cyan);
+
 			_angle += 3.0f * GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta;
 
 			_2D.Render(1);
