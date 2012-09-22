@@ -40,6 +40,7 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// A renderable object for drawing an ellipse on the screen.
 	/// </summary>
+	/// <remarks>Unlike other primitive types: line, rectangle, etc... the ellipse starts with its <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Anchor">anchor</see> set to center the around the position.</remarks>
 	public class GorgonEllipse
 		: GorgonMoveable
 	{
@@ -215,11 +216,6 @@ namespace GorgonLibrary.Renderers
 
 			Vector2.Add(ref startUV, ref scaledPos, out startUV);
 			Vector2.Add(ref endUV, ref scaledPos, out endUV);
-
-			//startUV.X *= Texture.Settings.Width;
-			//startUV.Y *= Texture.Settings.Height;
-			//endUV.X *= Texture.Settings.Width;
-			//endUV.Y *= Texture.Settings.Height;
 		}
 
 		/// <summary>
@@ -272,13 +268,13 @@ namespace GorgonLibrary.Renderers
 		protected override void UpdateVertices()
 		{
 			// Set center point.
-			_center.X = (0.5f * Size.X - Anchor.X) / 2.0f;
-			_center.Y = (0.5f * Size.Y - Anchor.Y) / 2.0f;
+			_center.X = (0.5f * Size.X - Anchor.X * 2.0f) / 2.0f;
+			_center.Y = (0.5f * Size.Y - Anchor.Y * 2.0f) / 2.0f;
 
 			for (int i = 0; i < _points.Length; i++)
 			{
-				_points[i].X = (_offsets[i].X * (Size.X * 2.0f) - Anchor.X) / 2.0f;
-				_points[i].Y = (_offsets[i].Y * (Size.Y * 2.0f) - Anchor.Y) / 2.0f;
+				_points[i].X = (_offsets[i].X * (Size.X * 2.0f) - Anchor.X * 2.0f) / 2.0f;
+				_points[i].Y = (_offsets[i].Y * (Size.Y * 2.0f) - Anchor.Y * 2.0f) / 2.0f;
 			}
 		}
 
@@ -503,6 +499,7 @@ namespace GorgonLibrary.Renderers
 		internal GorgonEllipse(Gorgon2D gorgon2D, string name, Vector2 position, Vector2 size, GorgonColor color, int quality, bool isFilled)
 			: base(gorgon2D, name)
 		{
+			Anchor = new Vector2(size.X / 2.0f, size.Y / 2.0f);
 			TextureRegion = new System.Drawing.RectangleF(0, 0, size.X, size.Y);
 			Position = position;
 			Size = size;

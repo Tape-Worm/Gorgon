@@ -471,6 +471,17 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Property to return the animations for this renderable.
+		/// </summary>
+		GorgonAnimationCollection IRenderable.Animations
+		{
+			get
+			{
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
