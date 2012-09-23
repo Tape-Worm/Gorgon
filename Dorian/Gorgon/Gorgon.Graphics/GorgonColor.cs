@@ -195,8 +195,8 @@ namespace GorgonLibrary.Graphics
 		{
 			outColor.Alpha = start.Alpha + ((end.Alpha - start.Alpha) * weight);
 			outColor.Red = start.Red + ((end.Red - start.Red) * weight);
-			outColor.Green = start.Red + ((end.Green - start.Green) * weight);
-			outColor.Blue = start.Red + ((end.Blue - start.Blue) * weight);
+			outColor.Green = start.Green + ((end.Green - start.Green) * weight);
+			outColor.Blue = start.Blue + ((end.Blue - start.Blue) * weight);
 		}
 
 		/// <summary>
