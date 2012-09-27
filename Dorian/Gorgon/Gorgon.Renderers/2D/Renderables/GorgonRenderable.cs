@@ -550,15 +550,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the animation(s) for this renderable object.
-		/// </summary>
-		public GorgonAnimationCollection Animations
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to set or return depth/stencil buffer states for this renderable.
 		/// </summary>
 		public virtual DepthStencilStates DepthStencil
@@ -876,17 +867,17 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to provide animation to a property.
-        /// </summary>
-        /// <typeparam name="T">Type of data in the property.</typeparam>
-        /// <param name="propertyName">Name of the property to update.</param>
-        /// <param name="value">Value to assign to the property.</param>
-        /// <remarks>This method is used during an animation, it offsets the overhead of setting a property through reflection (which the previous version of Gorgon did) by using a callback.</remarks>
-        protected virtual void AnimateProperty<T>(string propertyName, T value)
-        {
-            // Nothing needs to be here right now.
-        }
+		/// <summary>
+		/// Function to provide animation to a property.
+		/// </summary>
+		/// <typeparam name="T">Type of data in the property.</typeparam>
+		/// <param name="propertyName">Name of the property to update.</param>
+		/// <param name="value">Value to assign to the property.</param>
+		/// <remarks>This method is used during an animation, it offsets the overhead of setting a property through reflection (which the previous version of Gorgon did) by using a callback.</remarks>
+		protected virtual void AnimateProperty<T>(string propertyName, T value)
+		{
+			// Nothing needs to be here right now.
+		}
 
 		/// <summary>
 		/// Function to set up any additional information for the renderable.
@@ -949,8 +940,6 @@ namespace GorgonLibrary.Renderers
 			Blending = new BlendState();
 			TextureSampler = new TextureSamplerState();
 			BaseVertexCount = 0;
-            Animations = new GorgonAnimationCollection(this);
-            Animations.RefreshProperties();
 		}
 		#endregion
 

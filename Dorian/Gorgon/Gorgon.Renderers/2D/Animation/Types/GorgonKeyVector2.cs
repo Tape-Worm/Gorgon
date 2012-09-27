@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, September 3, 2012 8:10:46 PM
+// Created: Sunday, September 23, 2012 11:38:03 AM
 // 
 #endregion
 
@@ -28,53 +28,64 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// An attribute to define a property on an animated object as being animated.
+	/// A key frame that manipulates a Vector2 data type.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-	public class AnimatedPropertyAttribute
-		: Attribute
+	public struct GorgonKeyVector2
+		: IKeyFrame
 	{
-		#region Properties
-		/// <summary>
-		/// Property to return the data type.
-		/// </summary>
-		public Type DataType
-		{
-			get;
-			private set;
-		}
+		#region Variables.
+		private Type _dataType;								// Type of data for the key frame.
 
 		/// <summary>
-		/// Property to return the name to display.
+		/// Value to store in the key frame.
 		/// </summary>
-		public string DisplayName
-		{
-			get;
-			private set;
-		}
+		public Vector2 Value;
+		/// <summary>
+		/// Time for the key frame in the animation.
+		/// </summary>
+		public float Time;
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AnimatedPropertyAttribute" /> class.
+		/// Initializes a new instance of the <see cref="GorgonKeyVector2" /> struct.
 		/// </summary>
-		public AnimatedPropertyAttribute()
+		/// <param name="time">The time for the key frame.</param>
+		/// <param name="value">The value to apply to the key frame.</param>
+		public GorgonKeyVector2(float time, Vector2 value)
 		{
+			Time = time;
+			_dataType = typeof(Vector2);
+			Value = value;
+		}
+		#endregion
+
+		#region IKeyFrame Members
+		/// <summary>
+		/// Property to set or return the time at which the key frame is stored.
+		/// </summary>
+		float IKeyFrame.Time
+		{
+			get
+			{
+				return Time;
+			}
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AnimatedPropertyAttribute" /> class.
+		/// Property to return the type of data for this key frame.
 		/// </summary>
-		/// <param name="displayName">The display name for this property.</param>
-		/// <param name="dataType">Type of the data that this property represents.</param>
-		public AnimatedPropertyAttribute(string displayName, Type dataType)
+		public Type DataType
 		{
-			DisplayName = displayName;
-			DataType = dataType;
+			get 
+			{
+				return _dataType;
+			}
 		}
 		#endregion
 	}

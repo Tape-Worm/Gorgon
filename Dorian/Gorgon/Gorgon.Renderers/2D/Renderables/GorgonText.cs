@@ -75,7 +75,6 @@ namespace GorgonLibrary.Renderers
 		private Vector2 _shadowOffset = new Vector2(1);									// Shadow offset.
 		private bool _shadowEnabled = false;											// Flag to indicate whether shadowing is enabled or not.
 		private bool _useKerning = true;												// Flag to indicate that kerning should be used.
-		private GorgonAnimationCollection _animations = null;							// Animation collection.
 		#endregion
 
 		#region Properties.
@@ -1112,23 +1111,10 @@ namespace GorgonLibrary.Renderers
 			BlendingMode = BlendingMode.Modulate;
 
 			UpdateText();
-			_animations = new GorgonAnimationCollection(this);
-			_animations.RefreshProperties();
 		}
 		#endregion
 
 		#region IRenderable Members
-		/// <summary>
-		/// Property to return the animations for this renderable.
-		/// </summary>
-		public GorgonAnimationCollection Animations
-		{
-			get
-			{
-				return _animations;
-			}
-		}
-		
 		/// <summary>
 		/// Property to return the number of vertices for the renderable.
 		/// </summary>

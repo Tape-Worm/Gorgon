@@ -138,8 +138,13 @@ namespace GorgonLibrary.Collections
 		/// <param name="value">Value to set to the item.</param>
 		protected virtual void SetItem(string name, T value)
 		{
-			RemoveItem(name);
-			AddItem(value);
+			if (string.Compare(name, value.Name, !KeysAreCaseSensitive) == 0)
+				_list[name] = value;
+			else
+			{
+				RemoveItem(name);
+				AddItem(value);
+			}
 		}
 
 		/// <summary>

@@ -62,8 +62,13 @@
     <Compile Include="Animation\AnimatedPropertyAttribute.cs" />
     <Compile Include="Animation\GorgonAnimation.cs" />
     <Compile Include="Animation\GorgonAnimationClip.cs" />
+    <Compile Include="Animation\GorgonAnimationKeyFrameCollection.cs" />
     <Compile Include="Animation\GorgonAnimationTrack.cs" />
     <Compile Include="Animation\GorgonAnimationTrackCollection.cs" />
+    <Compile Include="Animation\IAnimated.cs" />
+    <Compile Include="Animation\IKeyFrame.cs" />
+    <Compile Include="Animation\Types\GorgonTrackVector2.cs" />
+    <Compile Include="Animation\Types\GorgonKeyVector2.cs" />
     <Compile Include="Cameras\GorgonOrthoCamera.cs" />
     <Compile Include="Cameras\ICamera.cs" />
     <Compile Include="Collision\Gorgon2DAABB.cs" />
