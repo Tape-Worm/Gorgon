@@ -28,40 +28,83 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// An animation clip for a renderable object.
+	/// An animation clip for an animated object.
 	/// </summary>
 	public class GorgonAnimationClip
 		: GorgonNamedObject
 	{
 		#region Variables.
-		private IRenderable _renderable = null;
+		private IAnimated _owner = null;
+		private float _length = 0;
 		#endregion
 
 		#region Properties.
-        /// <summary>
-        /// Property to return the renderable that owns this animation.
-        /// </summary>
-        public IRenderable Renderable
-        {
-            get
-            {
-                return _renderable;
-            }
-            internal set
-            {
-                if (_renderable == value)
-                    return;
+		/// <summary>
+		/// Property to return whether this animation is currently playing or not.
+		/// </summary>
+		public bool IsPlaying
+		{
+			get
+			{
+				if (_owner == null)
+					return false;
 
-                _renderable = value;
-                GetTracks();
-            }
-        }
-        
-        /// <summary>
+				return _owner.Animations.CurrentAnimation == this;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the length of the animation (in milliseconds).
+		/// </summary>
+		public float Length
+		{
+			get
+			{
+				return _length;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+
+				_length = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the object that owns this animation.
+		/// </summary>
+		public IAnimated Owner
+		{
+			get
+			{
+				return _owner;
+			}
+			internal set
+			{
+				if (_owner == value)
+					return;
+
+				_owner = value;
+				GetTracks(_owner);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether this animation should be looping or not.
+		/// </summary>
+		public bool IsLooped
+		{
+			get;
+			set;
+		}
+		
+		/// <summary>
 		/// Property to return the list of tracks for the animation.
 		/// </summary>
 		public GorgonAnimationTrackCollection Tracks
@@ -73,20 +116,27 @@ namespace GorgonLibrary.Renderers
 
 		#region Methods.
 		/// <summary>
-		/// Function to set up the track list.
+		/// Function to build the track list for the owner object.
 		/// </summary>
-		private void GetTracks()
+		/// <param name="owner">The object that contains the properties to animate.</param>
+		internal void GetTracks(IAnimated owner)
 		{
-            if (Tracks == null)
-                Tracks = new GorgonAnimationTrackCollection();
-            else
-                Tracks.Clear();
-
-			if (_renderable == null)
+			if (owner == null)
 				return;
 
-			foreach (var property in _renderable.Animations.RenderableProperties)
-				Tracks.AddTrack(new GorgonAnimationTrack(property.Key, property.Value));
+			// Enumerate tracks from the owner object animated properties list.
+			foreach (var item in owner.Animations.AnimatedProperties)
+			{
+				if (Tracks.Contains(item.Value.DisplayName))		// Don't add tracks that are already here.
+					continue;
+
+				switch (item.Value.DataType.FullName.ToLower())
+				{
+					case "slimmmath.vector2":						
+						Tracks.AddTrack(new GorgonTrackVector2(this, item.Value));
+						break;
+				}
+			}
 		}
 		#endregion
 
@@ -95,12 +145,16 @@ namespace GorgonLibrary.Renderers
 		/// Initializes a new instance of the <see cref="GorgonAnimationClip" /> class.
 		/// </summary>
 		/// <param name="name">The name.</param>
+		/// <param name="length">The length of the animation, in milliseconds.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		public GorgonAnimationClip(string name)
+		internal GorgonAnimationClip(string name, float length)
 			: base(name)
 		{
+			GorgonDebug.AssertParamString(name, "name");
+
 			Tracks = new GorgonAnimationTrackCollection();
+			Length = length;
 		}
 		#endregion		
 	}

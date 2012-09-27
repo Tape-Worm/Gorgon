@@ -35,6 +35,7 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// A collection of animation tracks.
 	/// </summary>
+	/// 
 	public class GorgonAnimationTrackCollection
 		: GorgonBaseNamedObjectDictionary<GorgonAnimationTrack>
 	{

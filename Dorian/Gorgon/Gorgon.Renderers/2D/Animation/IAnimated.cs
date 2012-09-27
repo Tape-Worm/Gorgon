@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, September 3, 2012 8:10:46 PM
+// Created: Sunday, September 23, 2012 10:35:34 AM
 // 
 #endregion
 
@@ -28,54 +28,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
+using SlimMath;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// An attribute to define a property on an animated object as being animated.
+	/// Defines the properties on an object that can be animated.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-	public class AnimatedPropertyAttribute
-		: Attribute
+	public interface IAnimated
 	{
-		#region Properties
 		/// <summary>
-		/// Property to return the data type.
+		/// Property to return the animations for this object.
 		/// </summary>
-		public Type DataType
+		GorgonAnimationCollection Animations
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
-		/// Property to return the name to display.
+		/// Function to create an animation for this object.
 		/// </summary>
-		public string DisplayName
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AnimatedPropertyAttribute" /> class.
-		/// </summary>
-		public AnimatedPropertyAttribute()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AnimatedPropertyAttribute" /> class.
-		/// </summary>
-		/// <param name="displayName">The display name for this property.</param>
-		/// <param name="dataType">Type of the data that this property represents.</param>
-		public AnimatedPropertyAttribute(string displayName, Type dataType)
-		{
-			DisplayName = displayName;
-			DataType = dataType;
-		}
-		#endregion
+		/// <param name="name">Name of the animation.</param>
+		/// <param name="length">Length of the animation, in milliseconds.</param>
+		/// <returns>The new animation for the object.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		GorgonAnimationClip CreateAnimation(string name, float length);
 	}
 }

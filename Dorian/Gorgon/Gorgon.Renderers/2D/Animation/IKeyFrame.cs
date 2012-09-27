@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, September 3, 2012 8:10:46 PM
+// Created: Sunday, September 23, 2012 11:35:35 AM
 // 
 #endregion
 
@@ -32,49 +32,25 @@ using System.Text;
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// An attribute to define a property on an animated object as being animated.
+	/// An animation key frame.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-	public class AnimatedPropertyAttribute
-		: Attribute
+	public interface IKeyFrame
 	{
-		#region Properties
+		#region Properties.
 		/// <summary>
-		/// Property to return the data type.
+		/// Property to return the time at which the key frame is stored.
 		/// </summary>
-		public Type DataType
+		float Time
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
-		/// Property to return the name to display.
+		/// Property to return the type of data for this key frame.
 		/// </summary>
-		public string DisplayName
+		Type DataType
 		{
 			get;
-			private set;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AnimatedPropertyAttribute" /> class.
-		/// </summary>
-		public AnimatedPropertyAttribute()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AnimatedPropertyAttribute" /> class.
-		/// </summary>
-		/// <param name="displayName">The display name for this property.</param>
-		/// <param name="dataType">Type of the data that this property represents.</param>
-		public AnimatedPropertyAttribute(string displayName, Type dataType)
-		{
-			DisplayName = displayName;
-			DataType = dataType;
 		}
 		#endregion
 	}

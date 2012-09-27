@@ -146,7 +146,7 @@ namespace Test_TextureArray
 			_text = _2D.Renderables.CreateText("Text", _graphics.Fonts.DefaultFont, "This is a line of text.");
 			_text.Collider = new Gorgon2DBoundingCircle();
 			_text.Angle = 45.0f;
-			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
+			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);			
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)
