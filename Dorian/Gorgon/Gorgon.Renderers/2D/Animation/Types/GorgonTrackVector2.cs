@@ -29,7 +29,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="keyValues">Values to use when updating.</param>
 		/// <param name="key">The key to work on.</param>
 		/// <param name="time">Time to reference, in milliseconds.</param>
-		protected internal override void UpdateProperty(ref GorgonAnimationTrack.NearestKeys keyValues, ref IKeyFrame key, float time)
+		protected override void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time)
 		{
 			// Just use the previous key if we're at 0.
 			if (time == 0)
@@ -38,26 +38,20 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			GorgonKeyVector2 theKey = (GorgonKeyVector2)key;
 			GorgonKeyVector2 next = (GorgonKeyVector2)keyValues.NextKey;
 			GorgonKeyVector2 prev = (GorgonKeyVector2)keyValues.PreviousKey;
-
-			theKey.Time = time;
-			theKey.Value = Vector2.Lerp(prev.Value, next.Value, time);
-
-			key = theKey;
+            key = new GorgonKeyVector2(time, Vector2.Lerp(prev.Value, next.Value, (time / Animation.Length)));
 		}
 
-		/// <summary>
-		/// Function to create a key frame for the track with the correct data type.
-		/// </summary>
-		/// <returns>
-		/// The key frame with the correct data type.
-		/// </returns>
-		protected internal override IKeyFrame CreateKeyFrame()
-		{
-			return new GorgonKeyVector2(0, Vector2.Zero);
-		}
+        /// <summary>
+        /// Function to apply the key value to the object properties.
+        /// </summary>
+        /// <param name="key">Key to apply to the properties.</param>
+        protected internal override void ApplyKey(ref IKeyFrame key)
+        {
+            GorgonKeyVector2 value = (GorgonKeyVector2)key;
+            _setProperty(Animation.Owner, value.Value);
+        }
 		#endregion
 
 		#region Constructor/Destructor.

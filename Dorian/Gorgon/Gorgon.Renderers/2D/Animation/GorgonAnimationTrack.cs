@@ -280,13 +280,13 @@ namespace GorgonLibrary.Renderers
 		/// <param name="keyValues">Values to use when updating.</param>
 		/// <param name="key">The key to work on.</param>
 		/// <param name="time">Time to reference.</param>
-		protected internal abstract void UpdateProperty(ref GorgonAnimationTrack.NearestKeys keyValues, ref IKeyFrame key, float time);
+		protected abstract void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time);
 
-		/// <summary>
-		/// Function to create a key frame for the track with the correct data type.
-		/// </summary>
-		/// <returns>The key frame with the correct data type.</returns>
-		protected internal abstract IKeyFrame CreateKeyFrame();
+        /// <summary>
+        /// Function to apply the key value to the object properties.
+        /// </summary>
+        /// <param name="key">Key to apply to the properties.</param>
+        protected abstract internal void ApplyKey(ref IKeyFrame key);
 
 		/// <summary>
 		/// Function to retrieve a key frame for a given time.
@@ -297,19 +297,19 @@ namespace GorgonLibrary.Renderers
 		{
 			NearestKeys keys = default(NearestKeys);
 
-			if (KeyFrames.Times.ContainsKey(time))
-				return KeyFrames.Times[time];
+            if (KeyFrames.Times.ContainsKey(time))
+                return KeyFrames.Times[time];
 
-			if (time >= KeyFrames.Times[KeyFrames.Times.Count - 1].Time)
-				return KeyFrames[KeyFrames.Count];
+            if (time >= KeyFrames[KeyFrames.Count - 1].Time)
+                return KeyFrames[KeyFrames.Count - 1];
 
-			if (time <= 0)
-				return KeyFrames[0];
+            if (time <= 0)
+                return KeyFrames[0];
 
 			keys = new NearestKeys(this, time);
-			
-			var key = CreateKeyFrame();
-			UpdateProperty(ref keys, ref key, time);
+
+            IKeyFrame key = default(IKeyFrame);
+			GetTweenKey(ref keys, out key, time);
 
 			return key;
 		}

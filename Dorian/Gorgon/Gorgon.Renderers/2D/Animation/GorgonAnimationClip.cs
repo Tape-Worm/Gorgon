@@ -39,11 +39,42 @@ namespace GorgonLibrary.Renderers
 		: GorgonNamedObject
 	{
 		#region Variables.
-		private IAnimated _owner = null;
-		private float _length = 0;
+		private IAnimated _owner = null;                // Object that owns this animation.
+		private float _length = 0;                      // Length of the animation, in milliseconds.
+        private float _time = 0;                        // Current time for the animation, in milliseconds.
+        private int _loopCount = 0;                     // Number of loops for the animation.
+        private int _looped = 0;                        // Number of times the animation has currently looped.
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return the number of times to loop an animation.
+        /// </summary>
+        /// <remarks></remarks>
+        public int LoopCount
+        {
+            get
+            {
+                return _loopCount;
+            }
+            set
+            {
+                if (value < 0)
+                    value = 0;
+                _loopCount = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the speed of the animation.
+        /// </summary>
+        /// <remarks>Setting this value to a negative value will make the animation play backwards.</remarks>
+        public float Speed
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to return whether this animation is currently playing or not.
 		/// </summary>
@@ -103,6 +134,43 @@ namespace GorgonLibrary.Renderers
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return the current time, in milliseconds, for this animation.
+        /// </summary>
+        public float Time
+        {
+            get
+            {
+                return _time;
+            }
+            set
+            {
+                if ((_time == value) || (_length <= 0))
+                    return;
+
+                _time = value;
+
+                if ((IsLooped) && (_time > _length))
+                {
+                    // Loop the animation.
+                    if ((_loopCount == 0) || (_looped != _loopCount))
+                    {
+                        _looped++;
+                        _time = _time % _length;
+                        if (_time < 0)
+                            _time += _length;
+                    }
+                    else
+                    {
+                        if (_time <= 0)
+                            _time = 0;
+                        if (_time >= _length)
+                            _time = _length;
+                    }
+                }
+            }
+        }
 		
 		/// <summary>
 		/// Property to return the list of tracks for the animation.
@@ -132,12 +200,41 @@ namespace GorgonLibrary.Renderers
 
 				switch (item.Value.DataType.FullName.ToLower())
 				{
-					case "slimmmath.vector2":						
+					case "slimmath.vector2":						
 						Tracks.AddTrack(new GorgonTrackVector2(this, item.Value));
 						break;
 				}
 			}
 		}
+
+        /// <summary>
+        /// Function to update the owner of the animation.
+        /// </summary>
+        internal void UpdateOwner()
+        {
+            if (_owner == null)
+                return;
+
+            // Notify each track to update their animation to the current time.
+            foreach (var track in Tracks)
+            {
+                if (track.KeyFrames.Count > 0)
+                {
+                    IKeyFrame key = track.GetKeyAtTime(_time);
+                    track.ApplyKey(ref key);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to reset the animation state.
+        /// </summary>
+        public void Reset()
+        {
+            _time = 0;
+            _looped = 0;
+            UpdateOwner();
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -155,6 +252,7 @@ namespace GorgonLibrary.Renderers
 
 			Tracks = new GorgonAnimationTrackCollection();
 			Length = length;
+            Speed = 1.0f;
 		}
 		#endregion		
 	}
