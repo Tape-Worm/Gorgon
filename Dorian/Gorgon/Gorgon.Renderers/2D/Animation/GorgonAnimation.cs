@@ -200,7 +200,23 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to update the currently playing animation time and bound properties.
+        /// </summary>
+        /// <remarks>This will update the animation time using the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta">ScaledDelta</see>.</remarks>
+        public void Update()
+        {
+            if ((Count == 0) || (CurrentAnimation == null))
+                return;
+
+            // Push the animation time forward (or backward, depending on the Speed modifier).
+            CurrentAnimation.Time += (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;       // We modify this value by 1000 because delta time is in seconds, and our animation uses milliseconds.
+
+            // Update the bound properties.
+            CurrentAnimation.UpdateOwner();
+        }
+        
+        /// <summary>
 		/// Function to set an animation playing.
 		/// </summary>
 		/// <param name="animation">Animation to play.</param>
@@ -217,12 +233,10 @@ namespace GorgonLibrary.Renderers
 
 			// Stop the current animation.
 			if (CurrentAnimation != null)
-			{
-				// TODO: Write this.
-			}
-						
-			// TODO: Set the animation as playing.
-			CurrentAnimation = animation;
+                Stop();
+
+            animation.Reset();
+            CurrentAnimation = animation;
 		}
 
 		/// <summary>
@@ -261,9 +275,6 @@ namespace GorgonLibrary.Renderers
 		{
 			if (CurrentAnimation == null)
 				return;
-
-			// TODO: Write stop code.
-
 			CurrentAnimation = null;
 		}
 

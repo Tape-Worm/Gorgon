@@ -50,8 +50,7 @@ namespace Test_TextureArray
 
 			if (_showDecal)
 				_2D.PixelShader.Current = _shader;
-			_sprite.Angle = _angle;
-			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
+			_sprite.Angle = _angle;			
 			_sprite.Draw();
 			if (_showDecal)
 				_2D.PixelShader.Current = null;
@@ -76,6 +75,7 @@ namespace Test_TextureArray
 			if (time >= 1.0f)
 				_startTime = GorgonTiming.SecondsSinceStart;
 
+            _sprite.Animations.Update();
 			return true;
 		}
 
@@ -146,7 +146,18 @@ namespace Test_TextureArray
 			_text = _2D.Renderables.CreateText("Text", _graphics.Fonts.DefaultFont, "This is a line of text.");
 			_text.Collider = new Gorgon2DBoundingCircle();
 			_text.Angle = 45.0f;
-			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);			
+			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
+
+            GorgonAnimationClip anim = _sprite.CreateAnimation("Position", 3000.0f);
+
+            _sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
+
+            anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(0.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
+            anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(1000.0f, new Vector2(0, _swap.Settings.Height / 2.0f)));
+            anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(2000.0f, new Vector2(_swap.Settings.Width / 2.0f, 0)));
+
+            _sprite.Animations.Add(anim);
+            _sprite.Animations.Play("Position");
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)

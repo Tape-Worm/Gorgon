@@ -48,6 +48,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the renderable.
 		/// </summary>
+        [AnimatedProperty()]
 		public virtual Vector2 Position
 		{
 			get;
