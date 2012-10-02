@@ -155,7 +155,9 @@ namespace Test_TextureArray
             anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(0.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
             anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(1000.0f, new Vector2(0, _swap.Settings.Height / 2.0f)));
             anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(2000.0f, new Vector2(_swap.Settings.Width / 2.0f, 0)));
+            anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(3000.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
 
+            anim.IsLooped = true;
             _sprite.Animations.Add(anim);
             _sprite.Animations.Play("Position");
 		}
