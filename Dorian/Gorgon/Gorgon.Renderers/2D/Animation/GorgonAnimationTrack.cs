@@ -309,7 +309,7 @@ namespace GorgonLibrary.Renderers
 			keys = new NearestKeys(this, time);
 
             IKeyFrame key = default(IKeyFrame);
-			GetTweenKey(ref keys, out key, time);
+			GetTweenKey(ref keys, out key, keys.KeyTimeDelta);
 
 			return key;
 		}

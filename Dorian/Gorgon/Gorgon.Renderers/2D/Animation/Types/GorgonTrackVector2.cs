@@ -40,7 +40,7 @@ namespace GorgonLibrary.Renderers
 
 			GorgonKeyVector2 next = (GorgonKeyVector2)keyValues.NextKey;
 			GorgonKeyVector2 prev = (GorgonKeyVector2)keyValues.PreviousKey;
-            key = new GorgonKeyVector2(time, Vector2.Lerp(prev.Value, next.Value, (time / Animation.Length)));
+            key = new GorgonKeyVector2(time, Vector2.Lerp(prev.Value, next.Value, time));
 		}
 
         /// <summary>
@@ -59,7 +59,6 @@ namespace GorgonLibrary.Renderers
 		/// Initializes a new instance of the <see cref="GorgonTrackVector2" /> class.
 		/// </summary>
 		/// <param name="animation">The animation that owns this track.</param>
-		/// <param name="name">The name of the track.</param>
 		/// <param name="property">Property information.</param>
 		internal GorgonTrackVector2(GorgonAnimationClip animation, GorgonAnimationCollection.AnimatedProperty property)
 			: base(animation, property)
