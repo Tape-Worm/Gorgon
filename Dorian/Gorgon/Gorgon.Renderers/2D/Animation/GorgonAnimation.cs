@@ -231,11 +231,14 @@ namespace GorgonLibrary.Renderers
 				throw new KeyNotFoundException("The animation '" + animation.Name + "' was not found in this collection");
 #endif
 
+            // This animation is already playing.
+            if (animation == CurrentAnimation)
+                return;
+
 			// Stop the current animation.
 			if (CurrentAnimation != null)
                 Stop();
 
-            animation.Reset();
             CurrentAnimation = animation;
 		}
 

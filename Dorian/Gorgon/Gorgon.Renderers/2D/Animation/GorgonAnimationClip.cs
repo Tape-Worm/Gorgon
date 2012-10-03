@@ -151,7 +151,7 @@ namespace GorgonLibrary.Renderers
 
                 _time = value;
 
-                if ((IsLooped) && (_time > _length))
+                if ((IsLooped) && ((_time > _length) || (_time < 0)))
                 {
                     // Loop the animation.
                     if ((_loopCount == 0) || (_looped != _loopCount))

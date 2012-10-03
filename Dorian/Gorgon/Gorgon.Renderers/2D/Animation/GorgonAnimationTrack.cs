@@ -35,6 +35,26 @@ using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Renderers
 {
+    /// <summary>
+    /// Interpolation mode for animating between key frames.
+    /// </summary>    
+    [Flags()]
+    public enum TrackInterpolationMode
+    {
+        /// <summary>
+        /// No interpolation.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Linear interpolation.
+        /// </summary>
+        Linear = 1,
+        /// <summary>
+        /// Spline interpolation.
+        /// </summary>
+        Spline = 2
+    }
+
 	/// <summary>
 	/// A track for an animated property on an animated object.
 	/// </summary>
@@ -205,11 +225,49 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-		private MethodInfo _getMethod = null;			// Property get accessor information.
-		private MethodInfo _setMethod = null;			// Property set accessor information.
+		private MethodInfo _getMethod = null;			                                // Property get accessor information.
+		private MethodInfo _setMethod = null;			                                // Property set accessor information.
+        private TrackInterpolationMode _interpolation = TrackInterpolationMode.None;    // Interpolation mode for the track.
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the spline control interface.
+        /// </summary>
+        protected GorgonSpline Spline
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the supported interpolation modes for this track.
+        /// </summary>
+        /// <remarks>This will return one or more of the interpolation modes supported.  The interpolation mode "None" is always supported.</remarks>
+        public abstract TrackInterpolationMode SupportedInterpolation
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the interpolation mode for the track.
+        /// </summary>
+        /// <remarks>This value depends on which interpolation modes are supported for tweening.  If the track does not support interpolation, this value will have no effect.</remarks>
+        public TrackInterpolationMode InterpolationMode
+        {
+            get
+            {
+                return _interpolation;
+            }
+            set
+            {
+                if ((SupportedInterpolation & value) == value)
+                    _interpolation = value;
+                if ((_interpolation == TrackInterpolationMode.Spline) && (KeyFrames.Count > 0) && ((SupportedInterpolation & TrackInterpolationMode.Spline) == TrackInterpolationMode.Spline))
+                    SetupSpline();
+            }
+        }
+
 		/// <summary>
 		/// Property to return the list of key frames for this animation.
 		/// </summary>
@@ -274,13 +332,21 @@ namespace GorgonLibrary.Renderers
 			return expression.Compile();
 		}
 
-		/// <summary>
-		/// Function to update the property value assigned to the track.
-		/// </summary>
-		/// <param name="keyValues">Values to use when updating.</param>
-		/// <param name="key">The key to work on.</param>
-		/// <param name="time">Time to reference.</param>
-		protected abstract void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time);
+        /// <summary>
+        /// Function to set up the spline for the animation.
+        /// </summary>
+        protected internal virtual void SetupSpline()
+        {
+            Spline.Points.Clear();
+        }
+
+        /// <summary>
+        /// Function to update the property value assigned to the track.
+        /// </summary>
+        /// <param name="keyValues">Values to use when updating.</param>
+        /// <param name="key">The key to work on.</param>
+        /// <param name="time">Time to reference.</param>
+        protected abstract void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time);
 
         /// <summary>
         /// Function to apply the key value to the object properties.
@@ -347,6 +413,7 @@ namespace GorgonLibrary.Renderers
 			_setMethod = property.Property.GetSetMethod();
 
 			KeyFrames = new GorgonAnimationKeyFrameCollection(this);
+            Spline = new GorgonSpline();
 		}
 		#endregion
 	}
