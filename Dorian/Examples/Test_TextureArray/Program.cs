@@ -158,6 +158,9 @@ namespace Test_TextureArray
             anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(3000.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
 
             anim.IsLooped = true;
+            anim.Speed = 0.5f;
+            anim.Tracks["Position"].InterpolationMode = TrackInterpolationMode.None;
+            //anim.Time = 3000.0f;
             _sprite.Animations.Add(anim);
             _sprite.Animations.Play("Position");
 		}

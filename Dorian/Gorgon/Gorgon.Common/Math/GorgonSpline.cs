@@ -41,7 +41,7 @@ namespace GorgonLibrary.Math
     {
         #region Variables.
         private Matrix _coefficients = Matrix.Identity;         // Spline coefficients.
-        private IList<Vector4> _tangents = null;                // Tangents.
+        private Vector4[] _tangents = null;                     // Tangents.
         #endregion
 
         #region Properties.
@@ -71,7 +71,6 @@ namespace GorgonLibrary.Math
             Matrix calculations = Matrix.Identity;
 
             GorgonDebug.AssertParamRange(startPointIndex, 0, Points.Count - 1, "startPointIndex");
-            GorgonDebug.AssertParamRange(startPointIndex, 0, _tangents.Count - 1, "startPointIndex");
 
             if (delta == 0.0f)
                 return Points[startPointIndex];
@@ -118,7 +117,7 @@ namespace GorgonLibrary.Math
         /// </summary>
         public void UpdateTangents()
         {
-            bool closed = false;            // Flag to indicate whether the spline is closed or not.
+            bool closed = false;            // Flag to indicate whether the spline is closed or not.            
 
             // Need 2 or more points.
             if (Points.Count < 2)
@@ -128,10 +127,8 @@ namespace GorgonLibrary.Math
             if (Points[0] == Points[Points.Count - 1])
                 closed = true;
 
-            // Pre-create.
-            _tangents.Clear();
-            for (int i = 0; i < Points.Count; i++)
-                _tangents.Add(Vector4.Zero);
+            if (_tangents.Length < Points.Count)
+                _tangents = new Vector4[Points.Count * 2];
 
             // Calculate...
             for (int i = 0; i < Points.Count; i++)
@@ -184,28 +181,13 @@ namespace GorgonLibrary.Math
         /// </summary>
         public GorgonSpline()
         {
-            _coefficients[1, 1] = 2;
-            _coefficients[1, 2] = -2;
-            _coefficients[1, 3] = 1;
-            _coefficients[1, 4] = 1;
+            _coefficients.Row1 = new Vector4(2, -2, 1, 1);
+            _coefficients.Row2 = new Vector4(-3, 3, -2, -1);
+            _coefficients.Row3 = new Vector4(0, 0, 1, 0);
+            _coefficients.Row4 = new Vector4(1, 0, 0, 0);
 
-            _coefficients[2, 1] = -3;
-            _coefficients[2, 2] = 3;
-            _coefficients[2, 3] = -2;
-            _coefficients[2, 4] = -1;
-
-            _coefficients[3, 1] = 0;
-            _coefficients[3, 2] = 0;
-            _coefficients[3, 3] = 1;
-            _coefficients[3, 4] = 0;
-
-            _coefficients[4, 1] = 1;
-            _coefficients[4, 2] = 0;
-            _coefficients[4, 3] = 0;
-            _coefficients[4, 4] = 0;
-
-            Points = new List<Vector4>();
-            _tangents = new List<Vector4>();
+            Points = new List<Vector4>(256);
+            _tangents = new Vector4[256];
         }
         #endregion
     }

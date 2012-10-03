@@ -19,17 +19,42 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Properties.
-		
+        /// <summary>
+        /// Property to return the supported interpolation modes for this track.
+        /// </summary>
+        public override TrackInterpolationMode SupportedInterpolation
+        {
+            get
+            {
+                return TrackInterpolationMode.Spline | TrackInterpolationMode.Linear;
+            }
+        }		
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to update the property value assigned to the track.
-		/// </summary>
-		/// <param name="keyValues">Values to use when updating.</param>
-		/// <param name="key">The key to work on.</param>
-		/// <param name="time">Time to reference, in milliseconds.</param>
-		protected override void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time)
+        /// <summary>
+        /// Function to set up the spline for the animation.
+        /// </summary>
+        protected internal override void SetupSpline()
+        {
+            base.SetupSpline();
+
+            for (int i = 0; i < KeyFrames.Count; i++)
+            {
+                GorgonKeyVector2 key = (GorgonKeyVector2)KeyFrames[i];
+                Spline.Points.Add(new Vector4(key.Value, 0.0f, 1.0f));
+            }
+
+            Spline.UpdateTangents();
+        }
+
+        /// <summary>
+        /// Function to update the property value assigned to the track.
+        /// </summary>
+        /// <param name="keyValues">Values to use when updating.</param>
+        /// <param name="key">The key to work on.</param>
+        /// <param name="time">Time to reference, in milliseconds.</param>
+        protected override void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time)
 		{
 			// Just use the previous key if we're at 0.
 			if (time == 0)
@@ -40,7 +65,18 @@ namespace GorgonLibrary.Renderers
 
 			GorgonKeyVector2 next = (GorgonKeyVector2)keyValues.NextKey;
 			GorgonKeyVector2 prev = (GorgonKeyVector2)keyValues.PreviousKey;
-            key = new GorgonKeyVector2(time, Vector2.Lerp(prev.Value, next.Value, time));
+
+            key = prev;
+
+            switch (InterpolationMode)
+            {
+                case TrackInterpolationMode.Linear:
+                    key = new GorgonKeyVector2(time, Vector2.Lerp(prev.Value, next.Value, time));
+                    break;
+                case TrackInterpolationMode.Spline:
+                    key = new GorgonKeyVector2(time, (Vector2)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time));
+                    break;
+            }
 		}
 
         /// <summary>
@@ -67,6 +103,8 @@ namespace GorgonLibrary.Renderers
 				_getProperty = BuildGetAccessor<Vector2>();
 			if (_setProperty == null)
 				_setProperty = BuildSetAccessor<Vector2>();
+
+            InterpolationMode = TrackInterpolationMode.Linear;
 		}
 		#endregion
 	}
