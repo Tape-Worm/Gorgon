@@ -280,7 +280,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the animation that this track belongs to.
 		/// </summary>
-		public GorgonAnimationClip Animation
+		public GorgonAnimation Animation
 		{
 			get;
 			private set;
@@ -397,7 +397,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="animation">The animation that owns this track.</param>
 		/// <param name="property">The property to animate.</param>
-		protected GorgonAnimationTrack(GorgonAnimationClip animation, GorgonAnimationCollection.AnimatedProperty property)
+		protected GorgonAnimationTrack(GorgonAnimation animation, GorgonAnimationCollection.AnimatedProperty property)
 			: base(property.DisplayName)
 		{
 			Animation = animation;

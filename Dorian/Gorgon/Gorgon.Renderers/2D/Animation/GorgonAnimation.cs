@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, September 3, 2012 7:46:31 PM
+// Created: Monday, September 3, 2012 8:29:35 PM
 // 
 #endregion
 
@@ -28,360 +28,232 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Reflection;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Collections;
-
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// Defines animations for a renderable object.
+	/// An animation clip for an animated object.
 	/// </summary>
-	public class GorgonAnimationCollection
-		: GorgonBaseNamedObjectCollection<GorgonAnimationClip>
+	public class GorgonAnimation
+		: GorgonNamedObject
 	{
-		#region Value Types.
-		/// <summary>
-		/// Animated property type.
-		/// </summary>
-		public struct AnimatedProperty
-		{
-			/// <summary>
-			/// Property information.
-			/// </summary>
-			public PropertyInfo Property;
-			/// <summary>
-			/// Display name for the property.
-			/// </summary>
-			public string DisplayName;
-			/// <summary>
-			/// Type of data in the property.
-			/// </summary>
-			public Type DataType;
-		}
+		#region Variables.
+		private IAnimated _owner = null;                // Object that owns this animation.
+		private float _length = 0;                      // Length of the animation, in milliseconds.
+		private float _time = 0;                        // Current time for the animation, in milliseconds.
+		private int _loopCount = 0;                     // Number of loops for the animation.
+		private int _looped = 0;                        // Number of times the animation has currently looped.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the list of tracks that can be animated on the object.
+		/// Property to set or return the number of times to loop an animation.
 		/// </summary>
-		internal IDictionary<PropertyInfo, AnimatedProperty> AnimatedProperties
+		/// <remarks></remarks>
+		public int LoopCount
 		{
-			get;
-			private set;
+			get
+			{
+				return _loopCount;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+				_loopCount = value;
+			}
 		}
 
 		/// <summary>
-		/// Property to return the currently playing animation.
+		/// Property to set or return the speed of the animation.
 		/// </summary>
-		public GorgonAnimationClip CurrentAnimation
+		/// <remarks>Setting this value to a negative value will make the animation play backwards.</remarks>
+		public float Speed
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
-		/// Property to return the object that this animation is assigned to.
+		/// Property to return whether this animation is currently playing or not.
+		/// </summary>
+		public bool IsPlaying
+		{
+			get
+			{
+				if (_owner == null)
+					return false;
+
+				return _owner.Animations.CurrentAnimation == this;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the length of the animation (in milliseconds).
+		/// </summary>
+		public float Length
+		{
+			get
+			{
+				return _length;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+
+				_length = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the object that owns this animation.
 		/// </summary>
 		public IAnimated Owner
 		{
+			get
+			{
+				return _owner;
+			}
+			internal set
+			{
+				if (_owner == value)
+					return;
+
+				_owner = value;
+				GetTracks(_owner);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether this animation should be looping or not.
+		/// </summary>
+		public bool IsLooped
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current time, in milliseconds, for this animation.
+		/// </summary>
+		public float Time
+		{
+			get
+			{
+				return _time;
+			}
+			set
+			{
+				if ((_time == value) || (_length <= 0))
+					return;
+
+				_time = value;
+
+				if ((IsLooped) && ((_time > _length) || (_time < 0)))
+				{
+					// Loop the animation.
+					if ((_loopCount == 0) || (_looped != _loopCount))
+					{
+						_looped++;
+						_time = _time % _length;
+						if (_time < 0)
+							_time += _length;
+					}
+					else
+					{
+						if (_time <= 0)
+							_time = 0;
+						if (_time >= _length)
+							_time = _length;
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Property to return the list of tracks for the animation.
+		/// </summary>
+		public GorgonAnimationTrackCollection Tracks
+		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the animation at the specified index.
-		/// </summary>
-		public GorgonAnimationClip this[int index]
-		{
-			get
-			{
-				return GetItem(index);
-			}
-			set
-			{
-				if (value == null)
-					return;
-
-				SetItem(value.Name, value);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return an animation by name.
-		/// </summary>
-		public GorgonAnimationClip this[string name]
-		{
-			get
-			{
-				return GetItem(name);
-			}
-			set
-			{
-				if (value == null)
-				{
-					if (Contains(name))
-						RemoveItem(name);
-					return;
-				}
-
-				if (Contains(name))
-					SetItem(name, value);
-				else
-					AddItem(value);
-			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to set an item by its name.
+		/// Function to build the track list for the owner object.
 		/// </summary>
-		/// <param name="name">Name of the item to set.</param>
-		/// <param name="value">Value to set.</param>
-		protected override void SetItem(string name, GorgonAnimationClip value)
+		/// <param name="owner">The object that contains the properties to animate.</param>
+		internal void GetTracks(IAnimated owner)
 		{
-			if (CurrentAnimation == this[name])
-				Stop();
+			if (owner == null)
+				return;
 
-			// Remove the clip from the other 
-			if ((value != null) && (value.Owner != null) && (value.Owner.Animations != this) && (value.Owner.Animations.Contains(value)))
-				value.Owner.Animations.Remove(value);
-
-			this[name].Owner = Owner;
-
-			base.SetItem(name, value);
-		}
-
-		/// <summary>
-		/// Function to add an animation to the collection.
-		/// </summary>
-		/// <param name="value">Animation to add.</param>
-		protected override void AddItem(GorgonAnimationClip value)
-		{
-			if ((value != null) && (value.Owner != null) && (value.Owner.Animations != this) && (value.Owner.Animations.Contains(value)))
-				value.Owner.Animations.Remove(value);
-
-			value.Owner = Owner;
-			base.AddItem(value);
-		}
-
-		/// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="item">Item to remove.</param>
-		protected override void RemoveItem(GorgonAnimationClip item)
-		{
-			if (CurrentAnimation == item)
-				Stop();
-			item.Owner = null;
-			base.RemoveItem(item);
-		}
-
-		/// <summary>
-		/// Function to retrieve a list of the animated properties.
-		/// </summary>
-		internal void GetAnimatedProperties()
-		{
-			var properties = (from property in Owner.GetType().GetProperties()
-							 let attribs = property.GetCustomAttributes(typeof(AnimatedPropertyAttribute), true) as IList<AnimatedPropertyAttribute>
-							 where attribs != null && attribs.Count == 1
-							 select new { Property = property, PropertyAttribute = attribs[0] });
-
-			// Fill our list.
-			foreach (var property in properties)
+			// Enumerate tracks from the owner object animated properties list.
+			foreach (var item in owner.Animations.AnimatedProperties)
 			{
-				AnimatedProperty newProperty = new AnimatedProperty();
-				newProperty.Property = property.Property;
-				newProperty.DisplayName = string.IsNullOrEmpty(property.PropertyAttribute.DisplayName) ? property.Property.Name : property.PropertyAttribute.DisplayName;
-				newProperty.DataType = property.PropertyAttribute.DataType == null ? property.Property.PropertyType : property.PropertyAttribute.DataType;
-				AnimatedProperties[property.Property] = newProperty;
+				if (Tracks.Contains(item.Value.DisplayName))		// Don't add tracks that are already here.
+					continue;
+
+				switch (item.Value.DataType.FullName.ToLower())
+				{
+					case "slimmath.vector2":						
+						Tracks.AddTrack(new GorgonTrackVector2(this, item.Value));
+						break;
+				}
 			}
 		}
 
 		/// <summary>
-		/// Function to update the currently playing animation time and bound properties.
+		/// Function to update the owner of the animation.
 		/// </summary>
-		/// <remarks>This will update the animation time using the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta">ScaledDelta</see>.</remarks>
-		public void Update()
+		internal void UpdateOwner()
 		{
-			if ((Count == 0) || (CurrentAnimation == null))
+			if (_owner == null)
 				return;
 
-			// Push the animation time forward (or backward, depending on the Speed modifier).
-			CurrentAnimation.Time += (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;       // We modify this value by 1000 because delta time is in seconds, and our animation uses milliseconds.
-
-			// Update the bound properties.
-			CurrentAnimation.UpdateOwner();
-		}
-		
-		/// <summary>
-		/// Function to set an animation playing.
-		/// </summary>
-		/// <param name="animation">Animation to play.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
-		public void Play(GorgonAnimationClip animation)
-		{
-			GorgonDebug.AssertNull<GorgonAnimationClip>(animation, "animation");
-
-#if DEBUG
-			if (!Contains(animation))
-				throw new KeyNotFoundException("The animation '" + animation.Name + "' was not found in this collection");
-#endif
-
-			// This animation is already playing.
-			if (animation == CurrentAnimation)
-				return;
-
-			// Stop the current animation.
-			if (CurrentAnimation != null)
-				Stop();
-
-			CurrentAnimation = animation;
+			// Notify each track to update their animation to the current time.
+			foreach (var track in Tracks)
+			{
+				if (track.KeyFrames.Count > 0)
+				{
+					IKeyFrame key = track.GetKeyAtTime(_time);
+					track.ApplyKey(ref key);
+				}
+			}
 		}
 
 		/// <summary>
-		/// Function to set an animation playing.
+		/// Function to reset the animation state.
 		/// </summary>
-		/// <param name="animation">Name of the animation to start playing.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
-		public void Play(string animation)
+		public void Reset()
 		{
-			GorgonDebug.AssertParamString(animation, animation);
-
-#if DEBUG
-			if (!Contains(animation))
-				throw new KeyNotFoundException("The animation '" + animation + "' was not found in this collection");
-#endif            
-			Play(this[animation]);
-		}
-
-		/// <summary>
-		/// Function to set an animation playing.
-		/// </summary>
-		/// <param name="index">Index of the animation to start playing.</param>
-		/// <exception cref="System.IndexOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than (or equal to) the number of animations.</exception>
-		public void Play(int index)
-		{
-			GorgonDebug.AssertParamRange(index, 0, Count, "index");
-			Play(this[index]);
-		}
-
-		/// <summary>
-		/// Function to stop the currently playing animation.
-		/// </summary>
-		public void Stop()
-		{
-			if (CurrentAnimation == null)
-				return;
-			CurrentAnimation = null;
-		}
-
-		/// <summary>
-		/// Function to add a list of animations to the collection.
-		/// </summary>
-		/// <param name="animations">Animations to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animations"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when an animation in the list already exists in this collection.</exception>
-		public void AddRange(IEnumerable<GorgonAnimationClip> animations)
-		{
-			GorgonDebug.AssertNull<IEnumerable<GorgonAnimationClip>>(animations, "animations");
-			
-			if (animations.Count() == 0)
-				return;
-
-			AddItems(animations);
-		}
-
-		/// <summary>
-		/// Function to add an animation to the collection.
-		/// </summary>
-		/// <param name="animation">Animation to add to the collection.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the animation already exists in this collection.</exception>
-		public void Add(GorgonAnimationClip animation)
-		{
-			GorgonDebug.AssertNull<GorgonAnimationClip>(animation, "animation");
-
-			if (Contains(animation.Name))
-				throw new ArgumentException("'" + animation.Name + "' already exists in this collection.", "animation");
-
-			AddItem(animation);
-		}
-
-		/// <summary>
-		/// Function to clear the animation collection.
-		/// </summary>
-		public void Clear()
-		{
-			// Stop the current animation.
-			Stop();
-			
-			foreach (var item in this)
-				item.Owner = null;
-
-			ClearItems();
-		}
-
-		/// <summary>
-		/// Function to remove an animation from the collection.
-		/// </summary>
-		/// <param name="animation">Animation to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
-		public void Remove(GorgonAnimationClip animation)
-		{
-			GorgonDebug.AssertNull<GorgonAnimationClip>(animation, "animation");
-			if (!Contains(animation))
-				throw new KeyNotFoundException("The animation '" + animation.Name + "' was not found in this collection.");
-
-			RemoveItem(animation);
-		}
-
-		/// <summary>
-		/// Function to remove an animation from the collection.
-		/// </summary>
-		/// <param name="animation">Animation to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
-		public void Remove(string animation)
-		{
-			GorgonDebug.AssertParamString(animation, "animation");
-			if (!Contains(animation))
-				throw new KeyNotFoundException("The animation '" + animation + "' was not found in this collection.");
-
-			RemoveItem(this[animation]);
-		}
-
-		/// <summary>
-		/// Function to remove an animation from the collection.
-		/// </summary>
-		/// <param name="index">Index of the animation to remove.</param>
-		/// <exception cref="System.IndexOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than (or equal to) the number of items in the collection.</exception>
-		public void Remove(int index)
-		{
-			GorgonDebug.AssertParamRange(index, 0, Count, "index");
-
-			RemoveItem(this[index]);
+			_time = 0;
+			_looped = 0;
+			UpdateOwner();
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimationCollection" /> class.
+		/// Initializes a new instance of the <see cref="GorgonAnimation" /> class.
 		/// </summary>
-		/// <param name="owner">The object that holds the animations.</param>
-		internal GorgonAnimationCollection(IAnimated owner)
-			: base(false)
+		/// <param name="name">The name.</param>
+		/// <param name="length">The length of the animation, in milliseconds.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
+		internal GorgonAnimation(string name, float length)
+			: base(name)
 		{
-			Owner = owner;
-			AnimatedProperties = new Dictionary<PropertyInfo, AnimatedProperty>();
+			GorgonDebug.AssertParamString(name, "name");
+
+			Tracks = new GorgonAnimationTrackCollection();
+			Length = length;
+			Speed = 1.0f;
 		}
-		#endregion
+		#endregion		
 	}
 }
