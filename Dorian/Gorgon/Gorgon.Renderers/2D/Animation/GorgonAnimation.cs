@@ -200,23 +200,23 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
-        /// <summary>
-        /// Function to update the currently playing animation time and bound properties.
-        /// </summary>
-        /// <remarks>This will update the animation time using the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta">ScaledDelta</see>.</remarks>
-        public void Update()
-        {
-            if ((Count == 0) || (CurrentAnimation == null))
-                return;
+		/// <summary>
+		/// Function to update the currently playing animation time and bound properties.
+		/// </summary>
+		/// <remarks>This will update the animation time using the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta">ScaledDelta</see>.</remarks>
+		public void Update()
+		{
+			if ((Count == 0) || (CurrentAnimation == null))
+				return;
 
-            // Push the animation time forward (or backward, depending on the Speed modifier).
-            CurrentAnimation.Time += (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;       // We modify this value by 1000 because delta time is in seconds, and our animation uses milliseconds.
+			// Push the animation time forward (or backward, depending on the Speed modifier).
+			CurrentAnimation.Time += (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;       // We modify this value by 1000 because delta time is in seconds, and our animation uses milliseconds.
 
-            // Update the bound properties.
-            CurrentAnimation.UpdateOwner();
-        }
-        
-        /// <summary>
+			// Update the bound properties.
+			CurrentAnimation.UpdateOwner();
+		}
+		
+		/// <summary>
 		/// Function to set an animation playing.
 		/// </summary>
 		/// <param name="animation">Animation to play.</param>
@@ -231,15 +231,15 @@ namespace GorgonLibrary.Renderers
 				throw new KeyNotFoundException("The animation '" + animation.Name + "' was not found in this collection");
 #endif
 
-            // This animation is already playing.
-            if (animation == CurrentAnimation)
-                return;
+			// This animation is already playing.
+			if (animation == CurrentAnimation)
+				return;
 
 			// Stop the current animation.
 			if (CurrentAnimation != null)
-                Stop();
+				Stop();
 
-            CurrentAnimation = animation;
+			CurrentAnimation = animation;
 		}
 
 		/// <summary>
