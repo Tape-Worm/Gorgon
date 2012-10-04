@@ -148,7 +148,7 @@ namespace Test_TextureArray
 			_text.Angle = 45.0f;
 			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
 
-            GorgonAnimationClip anim = _sprite.CreateAnimation("Position", 3000.0f);
+            GorgonAnimation anim = _sprite.CreateAnimation("Position", 3000.0f);
 
             _sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
 
