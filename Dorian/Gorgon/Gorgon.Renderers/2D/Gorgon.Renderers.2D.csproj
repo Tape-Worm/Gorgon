@@ -60,8 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation\AnimatedPropertyAttribute.cs" />
+    <Compile Include="Animation\GorgonAnimationCollection.cs" />
     <Compile Include="Animation\GorgonAnimation.cs" />
-    <Compile Include="Animation\GorgonAnimationClip.cs" />
     <Compile Include="Animation\GorgonAnimationKeyFrameCollection.cs" />
     <Compile Include="Animation\GorgonAnimationTrack.cs" />
     <Compile Include="Animation\GorgonAnimationTrackCollection.cs" />

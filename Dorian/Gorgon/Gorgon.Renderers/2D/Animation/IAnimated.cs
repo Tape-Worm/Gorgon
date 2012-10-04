@@ -55,6 +55,6 @@ namespace GorgonLibrary.Renderers
 		/// <returns>The new animation for the object.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		GorgonAnimationClip CreateAnimation(string name, float length);
+		GorgonAnimation CreateAnimation(string name, float length);
 	}
 }

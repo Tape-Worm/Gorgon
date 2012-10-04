@@ -96,7 +96,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="animation">The animation that owns this track.</param>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackVector2(GorgonAnimationClip animation, GorgonAnimationCollection.AnimatedProperty property)
+		internal GorgonTrackVector2(GorgonAnimation animation, GorgonAnimationCollection.AnimatedProperty property)
 			: base(animation, property)
 		{
 			if (_getProperty == null)
