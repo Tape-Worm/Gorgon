@@ -732,6 +732,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the opacity (Alpha channel) of the renderable object.
 		/// </summary>
 		/// <remarks>This will only return the alpha value for the first vertex of the renderable and consequently will set all the vertices to the same alpha value.</remarks>
+		[AnimatedProperty()]
 		public virtual float Opacity
 		{
 			get
@@ -749,6 +750,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
 		/// <remarks>This will only return the color for the first vertex of the renderable and consequently will set all the vertices to the same color.</remarks>
+		[AnimatedProperty()]
 		public virtual GorgonColor Color
 		{
 			get

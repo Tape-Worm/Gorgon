@@ -206,14 +206,24 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>This will update the animation time using the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta">ScaledDelta</see>.</remarks>
 		public void Update()
 		{
+			float increment = 0;
+			float lastTime = 0;
+
 			if ((Count == 0) || (CurrentAnimation == null))
 				return;
 
+			lastTime = CurrentAnimation.Time;
+			increment = (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;       // We modify this value by 1000 because delta time is in seconds, and our animation uses milliseconds.
+
 			// Push the animation time forward (or backward, depending on the Speed modifier).
-			CurrentAnimation.Time += (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;       // We modify this value by 1000 because delta time is in seconds, and our animation uses milliseconds.
+			CurrentAnimation.Time += increment;
 
 			// Update the bound properties.
 			CurrentAnimation.UpdateOwner();
+
+			// If we're not looping, put the animation into a stopped state.
+			if ((!CurrentAnimation.IsLooped) && ((lastTime + increment) > CurrentAnimation.Length))
+				Stop();
 		}
 		
 		/// <summary>
@@ -240,6 +250,9 @@ namespace GorgonLibrary.Renderers
 				Stop();
 
 			CurrentAnimation = animation;
+
+			// Update to the first frame.
+			Update();
 		}
 
 		/// <summary>

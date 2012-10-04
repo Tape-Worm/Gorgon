@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Renderers
 {
@@ -36,7 +37,7 @@ namespace GorgonLibrary.Renderers
 	/// An animation clip for an animated object.
 	/// </summary>
 	public class GorgonAnimation
-		: GorgonNamedObject
+		: GorgonNamedObject, ICloneable<GorgonAnimation>
 	{
 		#region Variables.
 		private IAnimated _owner = null;                // Object that owns this animation.
@@ -160,15 +161,14 @@ namespace GorgonLibrary.Renderers
 						_time = _time % _length;
 						if (_time < 0)
 							_time += _length;
-					}
-					else
-					{
-						if (_time <= 0)
-							_time = 0;
-						if (_time >= _length)
-							_time = _length;
+						return;
 					}
 				}
+
+				if (_time < 0)
+					_time = 0;
+				if (_time > _length)
+					_time = _length;
 			}
 		}
 		
@@ -200,8 +200,44 @@ namespace GorgonLibrary.Renderers
 
 				switch (item.Value.DataType.FullName.ToLower())
 				{
+					case "system.byte":
+						Tracks.AddTrack(new GorgonTrackByte(this, item.Value));
+						break;
+					case "system.sbyte":
+						Tracks.AddTrack(new GorgonTrackSByte(this, item.Value));
+						break;
+					case "system.int16":
+						Tracks.AddTrack(new GorgonTrackInt16(this, item.Value));
+						break;
+					case "system.uint16":
+						Tracks.AddTrack(new GorgonTrackUInt16(this, item.Value));
+						break;
+					case "system.int32":
+						Tracks.AddTrack(new GorgonTrackInt32(this, item.Value));
+						break;
+					case "system.uint32":
+						Tracks.AddTrack(new GorgonTrackUInt32(this, item.Value));
+						break;
+					case "system.int64":
+						Tracks.AddTrack(new GorgonTrackInt64(this, item.Value));
+						break;
+					case "system.uint64":
+						Tracks.AddTrack(new GorgonTrackUInt64(this, item.Value));
+						break;
+					case "system.single":
+						Tracks.AddTrack(new GorgonTrackSingle(this, item.Value));
+						break;
 					case "slimmath.vector2":						
 						Tracks.AddTrack(new GorgonTrackVector2(this, item.Value));
+						break;
+					case "slimmath.vector3":
+						Tracks.AddTrack(new GorgonTrackVector3(this, item.Value));
+						break;
+					case "slimmath.vector4":
+						Tracks.AddTrack(new GorgonTrackVector4(this, item.Value));
+						break;
+					case "gorgonlibrary.graphics.gorgoncolor":
+						Tracks.AddTrack(new GorgonTrackGorgonColor(this, item.Value));
 						break;
 				}
 			}
@@ -255,5 +291,33 @@ namespace GorgonLibrary.Renderers
 			Speed = 1.0f;
 		}
 		#endregion		
+	
+		#region ICloneable<GorgonAnimation> Members
+		/// <summary>
+		/// Function to clone the animation.
+		/// </summary>
+		/// <returns>A clone of the animation.</returns>		
+		public GorgonAnimation Clone()
+		{
+			GorgonAnimation clone = new GorgonAnimation(Name, Length);
+			clone.IsLooped = IsLooped;
+			clone.Length = Length;
+			clone.LoopCount = LoopCount;
+			clone.Speed = Speed;
+			clone.Time = Time;
+			clone.GetTracks(Owner);
+
+			foreach (var track in Tracks)
+			{
+				if (clone.Tracks.Contains(track.Name))
+				{
+					foreach (var key in track.KeyFrames)
+						clone.Tracks[track.Name].KeyFrames.Add(key.Clone());
+				}
+			}
+
+			return clone;
+		}
+		#endregion
 	}
 }

@@ -44,10 +44,11 @@ namespace Test_TextureArray
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Texture Count: " + GorgonRenderStatistics.TextureCount.ToString() + " (" + GorgonRenderStatistics.TextureSize.FormatMemory() + ")", new Vector2(0, 192), Color.Black);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "RT Count: " + GorgonRenderStatistics.RenderTargetCount.ToString() + " (" + GorgonRenderStatistics.RenderTargetSize.FormatMemory() + ")", new Vector2(0, 208), Color.Black);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Depth Count: " + GorgonRenderStatistics.DepthBufferCount.ToString() + " (" + GorgonRenderStatistics.DepthBufferSize.FormatMemory() + ")", new Vector2(0, 224), Color.Black);
+			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Sprite: " + _sprite.Position.ToString(), new Vector2(0, 240), Color.Blue);
 
 			float time = ((GorgonTiming.SecondsSinceStart - _startTime) / 45.0f).Min(1);
 			_angle = 360.0f * time;
-
+						
 			if (_showDecal)
 				_2D.PixelShader.Current = _shader;
 			_sprite.Angle = _angle;			
@@ -75,7 +76,7 @@ namespace Test_TextureArray
 			if (time >= 1.0f)
 				_startTime = GorgonTiming.SecondsSinceStart;
 
-            _sprite.Animations.Update();
+			_sprite.Animations.Update();
 			return true;
 		}
 
@@ -148,21 +149,28 @@ namespace Test_TextureArray
 			_text.Angle = 45.0f;
 			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
 
-            GorgonAnimation anim = _sprite.CreateAnimation("Position", 3000.0f);
+			GorgonAnimation anim = _sprite.CreateAnimation("Position", 3000.0f);
 
-            _sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
+			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
 
-            anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(0.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
-            anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(1000.0f, new Vector2(0, _swap.Settings.Height / 2.0f)));
-            anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(2000.0f, new Vector2(_swap.Settings.Width / 2.0f, 0)));
-            anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(3000.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
+			anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(0.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
+			anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(1000.0f, new Vector2(0, _swap.Settings.Height / 2.0f)));
+			anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(2000.0f, new Vector2(_swap.Settings.Width / 2.0f, 0)));
+			anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(3000.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
+			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(0.0f, GorgonColor.Transparent));
+			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(1500.0f, new GorgonColor(1.0f, 0.0f, 0.0f, 1.0f)));
+			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(2000.0f, new GorgonColor(0.0f, 1.0f, 0.0f, 1.0f)));
+			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(2500.0f, new GorgonColor(0.0f, 0.0f, 1.0f, 1.0f)));
+			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(3000.0f, new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)));
+			anim.Tracks["Color"].InterpolationMode = TrackInterpolationMode.Spline;
 
-            anim.IsLooped = true;
-            anim.Speed = 0.5f;
-            anim.Tracks["Position"].InterpolationMode = TrackInterpolationMode.None;
-            //anim.Time = 3000.0f;
-            _sprite.Animations.Add(anim);
-            _sprite.Animations.Play("Position");
+			anim.IsLooped = true;
+			anim.Speed = 0.5f;
+			//anim.Time = anim.Length;
+			anim.Tracks["Position"].InterpolationMode = TrackInterpolationMode.Linear;
+			//anim.Time = 3000.0f;
+			_sprite.Animations.Add(anim);
+			_sprite.Animations.Play("Position");
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)
@@ -175,6 +183,23 @@ namespace Test_TextureArray
 					_sprite.Texture = _tex;
 				else
 					_sprite.Texture = _noDecal;
+			}
+
+			if (e.KeyCode == Keys.T)
+			{
+				if (_sprite.Animations["Position"].Tracks["Position"].InterpolationMode == TrackInterpolationMode.None)
+					_sprite.Animations["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.Linear;
+				else if (_sprite.Animations["Position"].Tracks["Position"].InterpolationMode == TrackInterpolationMode.Linear)
+					_sprite.Animations["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.Spline;
+				else
+					_sprite.Animations["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.None;
+
+			}
+
+			if (e.KeyCode == Keys.P)
+			{
+				_sprite.Animations["Position"].Reset();
+				_sprite.Animations.Play("Position");
 			}
 		}
 

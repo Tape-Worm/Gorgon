@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, September 23, 2012 11:38:03 AM
+// Created: Wednesday, October 3, 2012 8:55:42 PM
 // 
 #endregion
 
@@ -28,14 +28,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// A key frame that manipulates a Vector2 data type.
+	/// A key frame that manipulates an unsigned 32 bit integer data type.
 	/// </summary>
-	public struct GorgonKeyVector2
+	public struct GorgonKeyUInt32
 		: IKeyFrame
 	{
 		#region Variables.
@@ -44,7 +43,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Value to store in the key frame.
 		/// </summary>
-		public Vector2 Value;
+		public UInt32 Value;
 		/// <summary>
 		/// Time for the key frame in the animation.
 		/// </summary>
@@ -53,14 +52,14 @@ namespace GorgonLibrary.Renderers
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyVector2" /> struct.
+		/// Initializes a new instance of the <see cref="GorgonKeyUInt32" /> struct.
 		/// </summary>
 		/// <param name="time">The time for the key frame.</param>
 		/// <param name="value">The value to apply to the key frame.</param>
-		public GorgonKeyVector2(float time, Vector2 value)
+		public GorgonKeyUInt32(float time, UInt32 value)
 		{
 			Time = time;
-			_dataType = typeof(Vector2);
+			_dataType = typeof(UInt32);
 			Value = value;
 		}
 		#endregion
@@ -82,7 +81,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Type DataType
 		{
-			get 
+			get
 			{
 				return _dataType;
 			}
@@ -94,7 +93,7 @@ namespace GorgonLibrary.Renderers
 		/// <returns>The cloned key.</returns>
 		public ICloneable<IKeyFrame> Clone()
 		{
-			return new GorgonKeyVector2(Time, Value);
+			return new GorgonKeyUInt32(Time, Value);
 		}
 		#endregion
 	}

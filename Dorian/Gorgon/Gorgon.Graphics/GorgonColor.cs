@@ -190,6 +190,24 @@ namespace GorgonLibrary.Graphics
 		/// <param name="start">Starting color.</param>
 		/// <param name="end">Ending color.</param>
 		/// <param name="weight">Value between 0 and 1.0f to indicate weight.</param>
+		public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
+		{
+			GorgonColor outColor = GorgonColor.Transparent;
+
+			outColor.Alpha = start.Alpha + ((end.Alpha - start.Alpha) * weight);
+			outColor.Red = start.Red + ((end.Red - start.Red) * weight);
+			outColor.Green = start.Green + ((end.Green - start.Green) * weight);
+			outColor.Blue = start.Blue + ((end.Blue - start.Blue) * weight);
+
+			return outColor;
+		}
+
+		/// <summary>
+		/// Function to perform linear interpolation between two colors.
+		/// </summary>
+		/// <param name="start">Starting color.</param>
+		/// <param name="end">Ending color.</param>
+		/// <param name="weight">Value between 0 and 1.0f to indicate weight.</param>
 		/// <param name="outColor">The resulting color.</param>
 		public static void Lerp(ref GorgonColor start, ref GorgonColor end, float weight, out GorgonColor outColor)
 		{
