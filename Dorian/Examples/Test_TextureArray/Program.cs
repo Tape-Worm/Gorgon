@@ -9,6 +9,7 @@ using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.Animation;
 
 namespace Test_TextureArray
 {
@@ -149,7 +150,8 @@ namespace Test_TextureArray
 			_text.Angle = 45.0f;
 			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
 
-			GorgonAnimation anim = _sprite.CreateAnimation("Position", 3000.0f);
+			GorgonAnimation anim = new GorgonAnimation("Position", 3000.0f);
+            anim.EnumerateTracks(_sprite);
 
 			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
 
