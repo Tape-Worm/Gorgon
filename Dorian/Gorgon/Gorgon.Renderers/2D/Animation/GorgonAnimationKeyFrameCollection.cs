@@ -69,19 +69,19 @@ namespace GorgonLibrary.Renderers
 				Add(item);
 		}
 
-        /// <summary>
-        /// Function to insert a list of key frames into the collection.
-        /// </summary>
-        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-        /// <param name="keyFrames">The key frames that should be inserted.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than the number of elements in the collection.</exception>
-        public void InsertRange(int index, IEnumerable<IKeyFrame> keyFrames)
-        {
-            GorgonDebug.AssertParamRange(index, 0, Count, "index");
-            _keyFrames.InsertRange(index, keyFrames);
-            if (_track != null)
-                _track.SetupSpline();
-        }
+		/// <summary>
+		/// Function to insert a list of key frames into the collection.
+		/// </summary>
+		/// <param name="index">The zero-based index at which <paramref name="keyFrames" /> should be inserted.</param>
+		/// <param name="keyFrames">The key frames that should be inserted.</param>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than the number of elements in the collection.</exception>
+		public void InsertRange(int index, IEnumerable<IKeyFrame> keyFrames)
+		{
+			GorgonDebug.AssertParamRange(index, 0, Count, "index");
+			_keyFrames.InsertRange(index, keyFrames);
+			if (_track != null)
+				_track.SetupSpline();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -111,8 +111,8 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				_keyFrames[index] = value;
-                if (_track != null)
-                    _track.SetupSpline();
+				if (_track != null)
+					_track.SetupSpline();
 			}
 		}
 		#endregion
@@ -138,9 +138,9 @@ namespace GorgonLibrary.Renderers
 
 		public void Insert(int index, IKeyFrame item)
 		{
-            _keyFrames.Insert(index, item);
-            if (_track != null)
-                _track.SetupSpline();
+			_keyFrames.Insert(index, item);
+			if (_track != null)
+				_track.SetupSpline();
 		}       
 
 		/// <summary>
@@ -151,8 +151,8 @@ namespace GorgonLibrary.Renderers
 		{
 			Times.Remove(_keyFrames[index].Time);
 			_keyFrames.RemoveAt(index);
-            if (_track != null)
-                _track.SetupSpline();
+			if (_track != null)
+				_track.SetupSpline();
 		}
 		#endregion
 		#endregion
@@ -195,8 +195,8 @@ namespace GorgonLibrary.Renderers
 				throw new InvalidCastException("Cannot use a type '" + item.GetType().ToString() + "' in a track with a type of '" + _track.GetType().ToString() + "'.");
 			_keyFrames.Add(item);
 			Times.Add(item.Time, item);
-            if (_track != null)
-                _track.SetupSpline();
+			if (_track != null)
+				_track.SetupSpline();
 		}
 
 		/// <summary>
@@ -206,8 +206,8 @@ namespace GorgonLibrary.Renderers
 		{
 			_keyFrames.Clear();
 			Times.Clear();
-            if (_track != null)
-                _track.SetupSpline();
+			if (_track != null)
+				_track.SetupSpline();
 		}
 
 		/// <summary>
@@ -229,7 +229,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="arrayIndex">Index of the array.</param>
 		public void CopyTo(IKeyFrame[] array, int arrayIndex)
 		{
-            _keyFrames.CopyTo(array, arrayIndex);
+			_keyFrames.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>
@@ -242,8 +242,8 @@ namespace GorgonLibrary.Renderers
 		public bool Remove(IKeyFrame item)
 		{
 			Times.Remove(item.Time);
-            if (_track != null)
-                _track.SetupSpline();
+			if (_track != null)
+				_track.SetupSpline();
 			return _keyFrames.Remove(item);
 		}
 		#endregion

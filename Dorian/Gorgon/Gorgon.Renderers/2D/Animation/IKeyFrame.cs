@@ -35,6 +35,7 @@ namespace GorgonLibrary.Renderers
 	/// An animation key frame.
 	/// </summary>
 	public interface IKeyFrame
+		: ICloneable<IKeyFrame>
 	{
 		#region Properties.
 		/// <summary>

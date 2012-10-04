@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, October 3, 2012 9:12:48 PM
+// Created: Wednesday, October 3, 2012 9:14:34 PM
 // 
 #endregion
 
@@ -34,14 +34,14 @@ using SlimMath;
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// A track that will animate properties with a Vector2 data type.
+	/// A track that will animate properties with a Vector4 data type.
 	/// </summary>
-	class GorgonTrackVector2
+	class GorgonTrackVector4
 		: GorgonAnimationTrack
 	{
 		#region Variables.
-		private static Func<IAnimated, Vector2> _getProperty = null;			// Get property method.
-		private static Action<IAnimated, Vector2> _setProperty = null;			// Set property method.
+		private static Func<IAnimated, Vector4> _getProperty = null;			// Get property method.
+		private static Action<IAnimated, Vector4> _setProperty = null;			// Set property method.
 		#endregion
 
 		#region Properties.
@@ -67,8 +67,8 @@ namespace GorgonLibrary.Renderers
 
 			for (int i = 0; i < KeyFrames.Count; i++)
 			{
-				GorgonKeyVector2 key = (GorgonKeyVector2)KeyFrames[i];
-				Spline.Points.Add(new Vector4(key.Value, 0.0f, 1.0f));
+				GorgonKeyVector4 key = (GorgonKeyVector4)KeyFrames[i];
+				Spline.Points.Add(key.Value);
 			}
 
 			Spline.UpdateTangents();
@@ -89,18 +89,18 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			GorgonKeyVector2 next = (GorgonKeyVector2)keyValues.NextKey;
-			GorgonKeyVector2 prev = (GorgonKeyVector2)keyValues.PreviousKey;
+			GorgonKeyVector4 next = (GorgonKeyVector4)keyValues.NextKey;
+			GorgonKeyVector4 prev = (GorgonKeyVector4)keyValues.PreviousKey;
 
 			key = prev;
 
 			switch (InterpolationMode)
 			{
 				case TrackInterpolationMode.Linear:
-					key = new GorgonKeyVector2(time, Vector2.Lerp(prev.Value, next.Value, time));
+					key = new GorgonKeyVector4(time, Vector4.Lerp(prev.Value, next.Value, time));
 					break;
 				case TrackInterpolationMode.Spline:
-					key = new GorgonKeyVector2(time, (Vector2)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time));
+					key = new GorgonKeyVector4(time, Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time));
 					break;
 			}
 		}
@@ -111,24 +111,24 @@ namespace GorgonLibrary.Renderers
 		/// <param name="key">Key to apply to the properties.</param>
 		protected internal override void ApplyKey(ref IKeyFrame key)
 		{
-			GorgonKeyVector2 value = (GorgonKeyVector2)key;
+			GorgonKeyVector4 value = (GorgonKeyVector4)key;
 			_setProperty(Animation.Owner, value.Value);
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackVector2" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackVector4" /> class.
 		/// </summary>
 		/// <param name="animation">The animation that owns this track.</param>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackVector2(GorgonAnimation animation, GorgonAnimationCollection.AnimatedProperty property)
+		internal GorgonTrackVector4(GorgonAnimation animation, GorgonAnimationCollection.AnimatedProperty property)
 			: base(animation, property)
 		{
 			if (_getProperty == null)
-				_getProperty = BuildGetAccessor<Vector2>();
+				_getProperty = BuildGetAccessor<Vector4>();
 			if (_setProperty == null)
-				_setProperty = BuildSetAccessor<Vector2>();
+				_setProperty = BuildSetAccessor<Vector4>();
 
 			InterpolationMode = TrackInterpolationMode.Linear;
 		}
