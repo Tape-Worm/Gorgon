@@ -32,6 +32,7 @@ using SlimMath;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Animation;
 
 namespace GorgonLibrary.Renderers
 {
@@ -75,7 +76,7 @@ namespace GorgonLibrary.Renderers
 		private bool _horizontalFlip = false;											// Flag to indicate that the sprite is flipped horizontally.
 		private bool _verticalFlip = false;												// Flag to indicate that the sprite is flipped vertically.
 		private Gorgon2DCollider _collider = null;										// Collider for the sprite.
-		private GorgonAnimationCollection _animations = null;							// Animations.
+		private GorgonAnimationController _animations = null;							// Animations.
 		#endregion
 
 		#region Properties.
@@ -426,8 +427,7 @@ namespace GorgonLibrary.Renderers
 				Vector2.Zero, 
 			};
 
-			_animations = new GorgonAnimationCollection(this);
-			_animations.GetAnimatedProperties();
+			_animations = new GorgonAnimationController(this);
 		}
 		#endregion
 
@@ -534,31 +534,12 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the animations for this object.
 		/// </summary>
-		public GorgonAnimationCollection Animations
+		public GorgonAnimationController Animations
 		{
 			get 
 			{
 				return _animations;
 			}
-		}
-
-		/// <summary>
-		/// Function to create an animation for this object.
-		/// </summary>
-		/// <param name="name">Name of the animation.</param>
-		/// <param name="length">Length of the animation, in milliseconds.</param>
-		/// <returns>The new animation for the object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonAnimation CreateAnimation(string name, float length)
-		{
-			GorgonAnimation result = null;
-			GorgonDebug.AssertParamString(name, "name");
-
-			result = new GorgonAnimation(name, length);
-			result.GetTracks(this);
-
-			return result;
 		}
 		#endregion
 	}

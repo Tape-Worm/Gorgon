@@ -9,7 +9,7 @@ namespace GorgonLibrary
 	/// A cloneable object interface.
 	/// </summary>
 	/// <typeparam name="T">Type to clone.</typeparam>
-	public interface ICloneable<T>
+	public interface ICloneable<out T>
 	{
 		/// <summary>
 		/// Function to clone an object.

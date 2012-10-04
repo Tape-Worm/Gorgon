@@ -59,40 +59,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation\AnimatedPropertyAttribute.cs" />
-    <Compile Include="Animation\GorgonAnimationCollection.cs" />
-    <Compile Include="Animation\GorgonAnimation.cs" />
-    <Compile Include="Animation\GorgonAnimationKeyFrameCollection.cs" />
-    <Compile Include="Animation\GorgonAnimationTrack.cs" />
-    <Compile Include="Animation\GorgonAnimationTrackCollection.cs" />
-    <Compile Include="Animation\IAnimated.cs" />
-    <Compile Include="Animation\IKeyFrame.cs" />
-    <Compile Include="Animation\Types\GorgonKeyGorgonColor.cs" />
-    <Compile Include="Animation\Types\GorgonTrackGorgonColor.cs" />
-    <Compile Include="Animation\Types\GorgonKeyVector4.cs" />
-    <Compile Include="Animation\Types\GorgonTrackVector4.cs" />
-    <Compile Include="Animation\Types\GorgonKeyVector3.cs" />
-    <Compile Include="Animation\Types\GorgonTrackVector3.cs" />
-    <Compile Include="Animation\Types\GorgonKeySByte.cs" />
-    <Compile Include="Animation\Types\GorgonTrackSByte.cs" />
-    <Compile Include="Animation\Types\GorgonKeyByte.cs" />
-    <Compile Include="Animation\Types\GorgonTrackByte.cs" />
-    <Compile Include="Animation\Types\GorgonKeySingle.cs" />
-    <Compile Include="Animation\Types\GorgonTrackSingle.cs" />
-    <Compile Include="Animation\Types\GorgonKeyUInt16.cs" />
-    <Compile Include="Animation\Types\GorgonTrackUInt16.cs" />
-    <Compile Include="Animation\Types\GorgonKeyInt64.cs" />
-    <Compile Include="Animation\Types\GorgonTrackInt64.cs" />
-    <Compile Include="Animation\Types\GorgonKeyUInt64.cs" />
-    <Compile Include="Animation\Types\GorgonTrackUInt64.cs" />
-    <Compile Include="Animation\Types\GorgonKeyInt16.cs" />
-    <Compile Include="Animation\Types\GorgonTrackInt16.cs" />
-    <Compile Include="Animation\Types\GorgonTrackUInt32.cs" />
-    <Compile Include="Animation\Types\GorgonKeyUInt32.cs" />
-    <Compile Include="Animation\Types\GorgonKeyInt32.cs" />
-    <Compile Include="Animation\Types\GorgonTrackInt32.cs" />
-    <Compile Include="Animation\Types\GorgonTrackVector2.cs" />
-    <Compile Include="Animation\Types\GorgonKeyVector2.cs" />
     <Compile Include="Cameras\GorgonOrthoCamera.cs" />
     <Compile Include="Cameras\ICamera.cs" />
     <Compile Include="Collision\Gorgon2DAABB.cs" />
@@ -143,6 +109,10 @@
     <None Include="Resources\Icons.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon.Animation\Gorgon.Animation.csproj">
+      <Project>{7EE86743-18E9-4667-9BCB-989D5C926922}</Project>
+      <Name>Gorgon.Animation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Common</Name>
