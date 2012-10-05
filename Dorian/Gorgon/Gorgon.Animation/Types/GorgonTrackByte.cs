@@ -110,8 +110,8 @@ namespace GorgonLibrary.Animation
 		/// <param name="key">Key to apply to the properties.</param>
 		protected internal override void ApplyKey(ref IKeyFrame key)
 		{
-			GorgonKeyByte value = (GorgonKeyByte)key;
-			_setProperty(Animation.Owner, value.Value);
+			GorgonKeyByte value = (GorgonKeyByte)key;            
+			_setProperty(Animation.AnimationController.AnimatedObject, value.Value);
 		}
 		#endregion
 
@@ -120,7 +120,7 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonTrackByte" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackByte(GorgonAnimationController.AnimatedProperty property)
+		internal GorgonTrackByte(GorgonAnimationTrackCollection.AnimatedProperty property)
 			: base(property)
 		{
 			if (_getProperty == null)

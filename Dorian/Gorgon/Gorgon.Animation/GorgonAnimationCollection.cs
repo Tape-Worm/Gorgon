@@ -42,50 +42,20 @@ namespace GorgonLibrary.Animation
 	public class GorgonAnimationController
 		: GorgonBaseNamedObjectCollection<GorgonAnimation>
 	{
-		#region Value Types.
-		/// <summary>
-		/// Animated property type.
-		/// </summary>
-		public struct AnimatedProperty
-		{
-			/// <summary>
-			/// Property information.
-			/// </summary>
-			public PropertyInfo Property;
-			/// <summary>
-			/// Display name for the property.
-			/// </summary>
-			public string DisplayName;
-			/// <summary>
-			/// Type of data in the property.
-			/// </summary>
-			public Type DataType;
-		}
-		#endregion
-
 		#region Properties.
-		/// <summary>
-		/// Property to return the list of tracks that can be animated on the object.
-		/// </summary>
-		internal IDictionary<PropertyInfo, AnimatedProperty> AnimatedProperties
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to set or return the object that is to be animated.
+        /// </summary>
+        internal object AnimatedObject
+        {
+            get;
+            private set;
+        }
 
 		/// <summary>
 		/// Property to return the currently playing animation.
 		/// </summary>
 		public GorgonAnimation CurrentAnimation
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the object that this animation is assigned to.
-		/// </summary>
-		public Object AnimatedObject
 		{
 			get;
 			private set;
@@ -147,10 +117,10 @@ namespace GorgonLibrary.Animation
 				Stop();
 
 			// Remove the clip from the other 
-			if ((value != null) && (value.Owner != null) && (value.Owner.Animations != this) && (value.Owner.Animations.Contains(value)))
-				value.Owner.Animations.Remove(value);
+			if ((value != null) && (value.AnimationController != null) && (value.AnimationController != this) && (value.AnimationController.Contains(value)))
+				value.AnimationController.Remove(value);
 
-			this[name].Owner = AnimatedObject;
+			this[name].AnimationController = this;
 
 			base.SetItem(name, value);
 		}
@@ -161,10 +131,10 @@ namespace GorgonLibrary.Animation
 		/// <param name="value">Animation to add.</param>
 		protected override void AddItem(GorgonAnimation value)
 		{
-			if ((value != null) && (value.Owner != null) && (value.Owner.Animations != this) && (value.Owner.Animations.Contains(value)))
-				value.Owner.Animations.Remove(value);
+			if ((value != null) && (value.AnimationController != null) && (value.AnimationController != this) && (value.AnimationController.Contains(value)))
+				value.AnimationController.Remove(value);
 
-			value.Owner = AnimatedObject;
+			value.AnimationController = this;
 			base.AddItem(value);
 		}
 
@@ -176,29 +146,8 @@ namespace GorgonLibrary.Animation
 		{
 			if (CurrentAnimation == item)
 				Stop();
-			item.Owner = null;
+			item.AnimationController = null;
 			base.RemoveItem(item);
-		}
-
-		/// <summary>
-		/// Function to retrieve a list of the animated properties.
-		/// </summary>
-		public void GetAnimatedProperties()
-		{
-			var properties = (from property in AnimatedObject.GetType().GetProperties()
-							 let attribs = property.GetCustomAttributes(typeof(AnimatedPropertyAttribute), true) as IList<AnimatedPropertyAttribute>
-							 where attribs != null && attribs.Count == 1
-							 select new { Property = property, PropertyAttribute = attribs[0] });
-
-			// Fill our list.
-			foreach (var property in properties)
-			{
-				AnimatedProperty newProperty = new AnimatedProperty();
-				newProperty.Property = property.Property;
-				newProperty.DisplayName = string.IsNullOrEmpty(property.PropertyAttribute.DisplayName) ? property.Property.Name : property.PropertyAttribute.DisplayName;
-				newProperty.DataType = property.PropertyAttribute.DataType == null ? property.Property.PropertyType : property.PropertyAttribute.DataType;
-				AnimatedProperties[property.Property] = newProperty;
-			}
 		}
 
 		/// <summary>
@@ -220,7 +169,7 @@ namespace GorgonLibrary.Animation
 			CurrentAnimation.Time += increment;
 
 			// Update the bound properties.
-			CurrentAnimation.UpdateOwner();
+			CurrentAnimation.UpdateObject();
 
 			// If we're not looping, put the animation into a stopped state.
 			if ((!CurrentAnimation.IsLooped) && ((lastTime + increment) > CurrentAnimation.Length))
@@ -327,6 +276,31 @@ namespace GorgonLibrary.Animation
 			AddItem(animation);
 		}
 
+        /// <summary>
+        /// Function to add an animation to the collection.
+        /// </summary>
+        /// <param name="name">Name of the animation to add.</param>
+        /// <param name="length">Length of the animation, in milliseconds.</param>
+        /// <returns>The newly created animation.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when the animation already exists in this collection.</para></exception>
+        public GorgonAnimation Add(string name, float length)
+        {
+            GorgonAnimation result = null;
+
+            GorgonDebug.AssertParamString(name, "name");
+
+            if (Contains(name))
+                throw new ArgumentException("'" + name + "' already exists in this collection.", "animation");
+
+            result = new GorgonAnimation(this, name, length);
+            AddItem(result);
+
+            return result;
+        }
+
 		/// <summary>
 		/// Function to clear the animation collection.
 		/// </summary>
@@ -336,7 +310,7 @@ namespace GorgonLibrary.Animation
 			Stop();
 			
 			foreach (var item in this)
-				item.Owner = null;
+				item.AnimationController = null;
 
 			ClearItems();
 		}
@@ -395,10 +369,7 @@ namespace GorgonLibrary.Animation
 			: base(false)
 		{
             GorgonDebug.AssertNull<Object>(animatedObject, "animatedObject");
-
 			AnimatedObject = animatedObject;
-			AnimatedProperties = new Dictionary<PropertyInfo, AnimatedProperty>();
-            GetAnimatedProperties();
 		}
 		#endregion
 	}

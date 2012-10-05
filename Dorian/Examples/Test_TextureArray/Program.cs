@@ -27,6 +27,7 @@ namespace Test_TextureArray
 		private static float _startTime = 0;
 		private static bool _showDecal = true;
 		private static float _angle = 0.0f;
+        private static GorgonAnimationController _controller = null;
 
 		private static bool Idle()
 		{
@@ -77,7 +78,7 @@ namespace Test_TextureArray
 			if (time >= 1.0f)
 				_startTime = GorgonTiming.SecondsSinceStart;
 
-			_sprite.Animations.Update();
+			_controller.Update();
 			return true;
 		}
 
@@ -150,8 +151,8 @@ namespace Test_TextureArray
 			_text.Angle = 45.0f;
 			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
 
-			GorgonAnimation anim = new GorgonAnimation("Position", 3000.0f);
-            anim.EnumerateTracks(_sprite);
+            _controller = new GorgonAnimationController(_sprite);
+			GorgonAnimation anim = _controller.Add("Position", 3000.0f);            
 
 			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
 
@@ -170,9 +171,8 @@ namespace Test_TextureArray
 			anim.Speed = 0.5f;
 			//anim.Time = anim.Length;
 			anim.Tracks["Position"].InterpolationMode = TrackInterpolationMode.Linear;
-			//anim.Time = 3000.0f;
-			_sprite.Animations.Add(anim);
-			_sprite.Animations.Play("Position");
+			
+			_controller.Play("Position");
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)
@@ -189,19 +189,19 @@ namespace Test_TextureArray
 
 			if (e.KeyCode == Keys.T)
 			{
-				if (_sprite.Animations["Position"].Tracks["Position"].InterpolationMode == TrackInterpolationMode.None)
-					_sprite.Animations["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.Linear;
-				else if (_sprite.Animations["Position"].Tracks["Position"].InterpolationMode == TrackInterpolationMode.Linear)
-					_sprite.Animations["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.Spline;
+				if (_controller["Position"].Tracks["Position"].InterpolationMode == TrackInterpolationMode.None)
+					_controller["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.Linear;
+				else if (_controller["Position"].Tracks["Position"].InterpolationMode == TrackInterpolationMode.Linear)
+					_controller["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.Spline;
 				else
-					_sprite.Animations["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.None;
+					_controller["Position"].Tracks["Position"].InterpolationMode = TrackInterpolationMode.None;
 
 			}
 
 			if (e.KeyCode == Keys.P)
 			{
-				_sprite.Animations["Position"].Reset();
-				_sprite.Animations.Play("Position");
+				_controller["Position"].Reset();
+				_controller.Play("Position");
 			}
 		}
 

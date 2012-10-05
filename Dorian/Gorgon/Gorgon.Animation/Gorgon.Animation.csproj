@@ -56,6 +56,8 @@
     <Compile Include="GorgonAnimationTrackCollection.cs" />
     <Compile Include="IKeyFrame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\GorgonTrackTexture2D.cs" />
+    <Compile Include="Types\GorgonKeyTexture2D.cs" />
     <Compile Include="Types\GorgonKeyByte.cs" />
     <Compile Include="Types\GorgonKeyGorgonColor.cs" />
     <Compile Include="Types\GorgonKeyInt16.cs" />

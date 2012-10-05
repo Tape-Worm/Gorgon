@@ -38,13 +38,13 @@ namespace GorgonLibrary.Animation
 	/// </summary>
 	public class GorgonAnimation
 		: GorgonNamedObject, ICloneable<GorgonAnimation>
-	{
-		#region Variables.
-        private GorgonAnimationController _controller = null;       // Animation controller that owns this object.
+	{        
+        #region Variables.
 		private float _length = 0;                                  // Length of the animation, in milliseconds.
 		private float _time = 0;                                    // Current time for the animation, in milliseconds.
 		private int _loopCount = 0;                                 // Number of loops for the animation.
 		private int _looped = 0;                                    // Number of times the animation has currently looped.
+        private GorgonAnimationController _controller = null;       // Animation controller.
 		#endregion
 
 		#region Properties.
@@ -63,7 +63,7 @@ namespace GorgonLibrary.Animation
                     return;
 
                 _controller = value;
-                EnumerateTracks(_controller.AnimatedObject);
+                Tracks.EnumerateTracks();
             }
         }
 
@@ -186,9 +186,9 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Function to update the owner of the animation.
 		/// </summary>
-		internal void UpdateOwner()
+		internal void UpdateObject()
 		{
-			if (_owner == null)
+			if (AnimationController == null)
 				return;
 
 			// Notify each track to update their animation to the current time.
@@ -201,67 +201,6 @@ namespace GorgonLibrary.Animation
 				}
 			}
 		}
-
-        /// <summary>
-        /// Function to build the track list for the animated object.
-        /// </summary>
-        /// <param name="animatedObject">The object that contains the properties to animate.</param>
-        /// <remarks>This method will enumerate the properties on an animated object and make a track for each animated property.  To mark a property as animated, assign a <see cref="GorgonLibrary.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> to the property.</remarks>
-        public void EnumerateTracks(Object animatedObject)
-        {
-            if ((animatedObject == null) || (animatedObject.Animations == null))
-                return;
-
-            // Enumerate tracks from the owner object animated properties list.
-            foreach (var item in animatedObject.Animations.AnimatedProperties)
-            {
-                if (Tracks.Contains(item.Value.DisplayName))		// Don't add tracks that are already here.
-                    continue;
-
-                switch (item.Value.DataType.FullName.ToLower())
-                {
-                    case "system.byte":
-                        Tracks.Add(new GorgonTrackByte(item.Value));
-                        break;
-                    case "system.sbyte":
-                        Tracks.Add(new GorgonTrackSByte(item.Value));
-                        break;
-                    case "system.int16":
-                        Tracks.Add(new GorgonTrackInt16(item.Value));
-                        break;
-                    case "system.uint16":
-                        Tracks.Add(new GorgonTrackUInt16(item.Value));
-                        break;
-                    case "system.int32":
-                        Tracks.Add(new GorgonTrackInt32(item.Value));
-                        break;
-                    case "system.uint32":
-                        Tracks.Add(new GorgonTrackUInt32(item.Value));
-                        break;
-                    case "system.int64":
-                        Tracks.Add(new GorgonTrackInt64(item.Value));
-                        break;
-                    case "system.uint64":
-                        Tracks.Add(new GorgonTrackUInt64(item.Value));
-                        break;
-                    case "system.single":
-                        Tracks.Add(new GorgonTrackSingle(item.Value));
-                        break;
-                    case "slimmath.vector2":
-                        Tracks.Add(new GorgonTrackVector2(item.Value));
-                        break;
-                    case "slimmath.vector3":
-                        Tracks.Add(new GorgonTrackVector3(item.Value));
-                        break;
-                    case "slimmath.vector4":
-                        Tracks.Add(new GorgonTrackVector4(item.Value));
-                        break;
-                    case "gorgonlibrary.graphics.gorgoncolor":
-                        Tracks.Add(new GorgonTrackGorgonColor(item.Value));
-                        break;
-                }
-            }
-        }
         
         /// <summary>
 		/// Function to reset the animation state.
@@ -270,7 +209,7 @@ namespace GorgonLibrary.Animation
 		{
 			_time = 0;
 			_looped = 0;
-			UpdateOwner();
+			UpdateObject();
 		}
 		#endregion
 
@@ -278,11 +217,12 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonAnimation" /> class.
 		/// </summary>
+        /// <param name="controller">Animation controller that owns this animation.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="length">The length of the animation, in milliseconds.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		public GorgonAnimation(string name, float length)
+		internal GorgonAnimation(GorgonAnimationController controller, string name, float length)
 			: base(name)
 		{
 			GorgonDebug.AssertParamString(name, "name");
@@ -290,7 +230,9 @@ namespace GorgonLibrary.Animation
 			Tracks = new GorgonAnimationTrackCollection(this);
 			Length = length;
 			Speed = 1.0f;
-		}
+
+            AnimationController = controller;
+        }
 		#endregion		
 	
 		#region ICloneable<GorgonAnimation> Members
@@ -300,13 +242,12 @@ namespace GorgonLibrary.Animation
 		/// <returns>A clone of the animation.</returns>		
 		public GorgonAnimation Clone()
 		{
-			GorgonAnimation clone = new GorgonAnimation(Name, Length);
+			GorgonAnimation clone = new GorgonAnimation(AnimationController, Name, Length);
 			clone.IsLooped = IsLooped;
 			clone.Length = Length;
 			clone.LoopCount = LoopCount;
 			clone.Speed = Speed;
 			clone.Time = Time;
-			clone.EnumerateTracks(Owner);
 
 			foreach (var track in Tracks)
 			{

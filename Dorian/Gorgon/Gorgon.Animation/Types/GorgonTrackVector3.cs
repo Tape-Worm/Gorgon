@@ -112,7 +112,7 @@ namespace GorgonLibrary.Animation
 		protected internal override void ApplyKey(ref IKeyFrame key)
 		{
 			GorgonKeyVector3 value = (GorgonKeyVector3)key;
-			_setProperty(Animation.Owner, value.Value);
+			_setProperty(Animation.AnimationController.AnimatedObject, value.Value);
 		}
 		#endregion
 
@@ -121,7 +121,7 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonTrackVector3" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackVector3(GorgonAnimationController.AnimatedProperty property)
+		internal GorgonTrackVector3(GorgonAnimationTrackCollection.AnimatedProperty property)
 			: base(property)
 		{
 			if (_getProperty == null)
