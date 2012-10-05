@@ -67,7 +67,7 @@ namespace GorgonLibrary.Renderers
 	/// A sprite object.
 	/// </summary>
 	public class GorgonSprite
-		: GorgonMoveable, IDeferredTextureLoad, I2DCollisionObject, IAnimated
+		: GorgonMoveable, IDeferredTextureLoad, I2DCollisionObject
 	{
 		#region Variables.
 		private float[] _corners = new float[4];										// Corners for the sprite.
@@ -154,6 +154,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return a texture for the renderable.
 		/// </summary>
+        [AnimatedProperty()]
 		public override GorgonTexture2D Texture
 		{
 			get
@@ -526,19 +527,6 @@ namespace GorgonLibrary.Renderers
 			get
 			{
 				return this.Vertices;
-			}
-		}
-		#endregion
-
-		#region IAnimated Members
-		/// <summary>
-		/// Property to return the animations for this object.
-		/// </summary>
-		public GorgonAnimationController Animations
-		{
-			get 
-			{
-				return _animations;
 			}
 		}
 		#endregion

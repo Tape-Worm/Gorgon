@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, October 3, 2012 9:12:48 PM
+// Created: Wednesday, October 3, 2012 9:14:34 PM
 // 
 #endregion
 
@@ -29,20 +29,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.Drawing;
 using SlimMath;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Animation
 {
 	/// <summary>
-	/// A track that will animate properties with a Vector2 data type.
+	/// A track that will animate properties with a 2D texture data type.
 	/// </summary>
-	class GorgonTrackVector2
+	class GorgonTrackTexture2D
 		: GorgonAnimationTrack
 	{
 		#region Variables.
-		private static Func<Object, Vector2> _getProperty = null;			// Get property method.
-		private static Action<Object, Vector2> _setProperty = null;			// Set property method.
-		#endregion
+		private static Func<Object, GorgonTexture2D> _getTextureProperty = null;			// Get property method.
+        private static Action<Object, GorgonTexture2D> _setTextureProperty = null;			// Set property method.
+        private static Func<Object, RectangleF> _getTextureRegionProperty = null;			// Get property method.
+        private static Action<Object, RectangleF> _setTextureRegionProperty = null;			// Set property method.
+        #endregion
 
 		#region Properties.
 		/// <summary>
@@ -52,28 +56,12 @@ namespace GorgonLibrary.Animation
 		{
 			get
 			{
-				return TrackInterpolationMode.Spline | TrackInterpolationMode.Linear;
+				return TrackInterpolationMode.None;
 			}
 		}		
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to set up the spline for the animation.
-		/// </summary>
-		protected internal override void SetupSpline()
-		{
-			base.SetupSpline();
-
-			for (int i = 0; i < KeyFrames.Count; i++)
-			{
-				GorgonKeyVector2 key = (GorgonKeyVector2)KeyFrames[i];
-				Spline.Points.Add(new Vector4(key.Value, 0.0f, 1.0f));
-			}
-
-			Spline.UpdateTangents();
-		}
-
 		/// <summary>
 		/// Function to update the property value assigned to the track.
 		/// </summary>
@@ -89,20 +77,8 @@ namespace GorgonLibrary.Animation
 				return;
 			}
 
-			GorgonKeyVector2 next = (GorgonKeyVector2)keyValues.NextKey;
-			GorgonKeyVector2 prev = (GorgonKeyVector2)keyValues.PreviousKey;
-
+            GorgonKeyTexture2D prev = (GorgonKeyTexture2D)keyValues.PreviousKey;
 			key = prev;
-
-			switch (InterpolationMode)
-			{
-				case TrackInterpolationMode.Linear:
-					key = new GorgonKeyVector2(time, Vector2.Lerp(prev.Value, next.Value, time));
-					break;
-				case TrackInterpolationMode.Spline:
-					key = new GorgonKeyVector2(time, (Vector2)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time));
-					break;
-			}
 		}
 
 		/// <summary>
@@ -111,25 +87,34 @@ namespace GorgonLibrary.Animation
 		/// <param name="key">Key to apply to the properties.</param>
 		protected internal override void ApplyKey(ref IKeyFrame key)
 		{
-			GorgonKeyVector2 value = (GorgonKeyVector2)key;
-			_setProperty(Animation.AnimationController.AnimatedObject, value.Value);
+            GorgonKeyTexture2D value = (GorgonKeyTexture2D)key;
+            GorgonTexture2D currentTexture = _getTextureProperty(Animation.AnimationController.AnimatedObject);
+
+            if (currentTexture != value.Value)
+			    _setTextureProperty(Animation.AnimationController.AnimatedObject, value.Value);
+            _setTextureRegionProperty(Animation.AnimationController.AnimatedObject, value.TextureRegion);
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackVector2" /> class.
+        /// Initializes a new instance of the <see cref="GorgonTrackTexture2D" /> class.
 		/// </summary>
-		/// <param name="property">Property information.</param>
-		internal GorgonTrackVector2(GorgonAnimationTrackCollection.AnimatedProperty property)
-			: base(property)
+        /// <param name="textureProperty">Property to alter the texture.</param>
+        /// <param name="regionProperty">Property to alter the region.</param>
+		internal GorgonTrackTexture2D(GorgonAnimationTrackCollection.AnimatedProperty textureProperty, GorgonAnimationTrackCollection.AnimatedProperty regionProperty)
+			: base(textureProperty)
 		{
-			if (_getProperty == null)
-				_getProperty = BuildGetAccessor<Vector2>();
-			if (_setProperty == null)
-				_setProperty = BuildSetAccessor<Vector2>();
+			if (_getTextureProperty == null)
+                _getTextureProperty = BuildGetAccessor<GorgonTexture2D>();
+			if (_setTextureProperty == null)
+                _setTextureProperty = BuildSetAccessor<GorgonTexture2D>();
+            if (_getTextureRegionProperty == null)
+                _getTextureRegionProperty = BuildGetAccessor<RectangleF>(regionProperty.Property.GetGetMethod());
+            if (_setTextureRegionProperty == null)
+                _setTextureRegionProperty = BuildSetAccessor<RectangleF>(regionProperty.Property.GetSetMethod());
 
-			InterpolationMode = TrackInterpolationMode.Linear;
+			InterpolationMode = TrackInterpolationMode.None;
 		}
 		#endregion
 	}

@@ -733,7 +733,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the opacity (Alpha channel) of the renderable object.
 		/// </summary>
 		/// <remarks>This will only return the alpha value for the first vertex of the renderable and consequently will set all the vertices to the same alpha value.</remarks>
-		[AnimatedProperty()]
+        [AnimatedProperty()]
 		public virtual float Opacity
 		{
 			get
@@ -751,7 +751,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
 		/// <remarks>This will only return the color for the first vertex of the renderable and consequently will set all the vertices to the same color.</remarks>
-		[AnimatedProperty()]
+        [AnimatedProperty()]
 		public virtual GorgonColor Color
 		{
 			get
@@ -796,6 +796,7 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>You can use this property to scroll the texture in the renderable.
 		/// <para>This texture value is in texel space (0..1).</para>
 		/// </remarks>
+        [AnimatedProperty()]
 		public virtual Vector2 TextureOffset
 		{
 			get
@@ -816,6 +817,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1).</remarks>
+        [AnimatedProperty()]
 		public virtual Vector2 TextureSize
 		{
 			get
@@ -842,6 +844,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return a texture for the renderable.
 		/// </summary>
+        [AnimatedProperty()]
 		public virtual GorgonTexture2D Texture
 		{
 			get
@@ -870,18 +873,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to provide animation to a property.
-		/// </summary>
-		/// <typeparam name="T">Type of data in the property.</typeparam>
-		/// <param name="propertyName">Name of the property to update.</param>
-		/// <param name="value">Value to assign to the property.</param>
-		/// <remarks>This method is used during an animation, it offsets the overhead of setting a property through reflection (which the previous version of Gorgon did) by using a callback.</remarks>
-		protected virtual void AnimateProperty<T>(string propertyName, T value)
-		{
-			// Nothing needs to be here right now.
-		}
-
 		/// <summary>
 		/// Function to set up any additional information for the renderable.
 		/// </summary>
