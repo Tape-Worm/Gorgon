@@ -51,7 +51,7 @@
     <Compile Include="AnimatedPropertyAttribute.cs" />
     <Compile Include="GorgonAnimatedProperty.cs" />
     <Compile Include="GorgonAnimation.cs" />
-    <Compile Include="GorgonAnimationCollection.cs" />
+    <Compile Include="GorgonAnimationController.cs" />
     <Compile Include="GorgonAnimationKeyFrameCollection.cs" />
     <Compile Include="GorgonAnimationTrack.cs" />
     <Compile Include="GorgonAnimationTrackCollection.cs" />
