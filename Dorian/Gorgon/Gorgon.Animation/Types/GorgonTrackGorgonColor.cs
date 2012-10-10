@@ -41,8 +41,8 @@ namespace GorgonLibrary.Animation
 		: GorgonAnimationTrack
 	{
 		#region Variables.
-		private static Func<Object, GorgonColor> _getProperty = null;			// Get property method.
-		private static Action<Object, GorgonColor> _setProperty = null;			// Set property method.
+		private Func<Object, GorgonColor> _getProperty = null;			// Get property method.
+		private Action<Object, GorgonColor> _setProperty = null;			// Set property method.
 		#endregion
 
 		#region Properties.
@@ -76,33 +76,27 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Function to update the property value assigned to the track.
+		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
-		/// <param name="keyValues">Values to use when updating.</param>
-		/// <param name="key">The key to work on.</param>
-		/// <param name="time">Time to reference, in milliseconds.</param>
-		protected override void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time)
+		/// <param name="keyValues">Nearest previous and next key frames.</param>
+		/// <param name="keyTime">The time to assign to the key.</param>
+		/// <param name="unitTime">The time, expressed in unit time.</param>
+		/// <returns>
+		/// The interpolated key frame containing the interpolated values.
+		/// </returns>
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
 		{
-			// Just use the previous key if we're at 0.
-			if (time == 0)
-			{
-				key = keyValues.PreviousKey;
-				return;
-			}
-
 			GorgonKeyGorgonColor next = (GorgonKeyGorgonColor)keyValues.NextKey;
 			GorgonKeyGorgonColor prev = (GorgonKeyGorgonColor)keyValues.PreviousKey;
-
-			key = prev;
 
 			switch (InterpolationMode)
 			{
 				case TrackInterpolationMode.Linear:
-					key = new GorgonKeyGorgonColor(time, GorgonColor.Lerp(prev.Value, next.Value, time));
-					break;
+					return new GorgonKeyGorgonColor(keyTime, GorgonColor.Lerp(prev.Value, next.Value, unitTime));
 				case TrackInterpolationMode.Spline:
-					key = new GorgonKeyGorgonColor(time, Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time));
-					break;
+					return new GorgonKeyGorgonColor(keyTime, Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, unitTime));
+				default:
+					return prev;
 			}
 		}
 
@@ -122,13 +116,11 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonTrackGorgonColor" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackGorgonColor(GorgonAnimationTrackCollection.AnimatedProperty property)
+		internal GorgonTrackGorgonColor(GorgonAnimatedProperty property)
 			: base(property)
 		{
-			if (_getProperty == null)
-				_getProperty = BuildGetAccessor<GorgonColor>();
-			if (_setProperty == null)
-				_setProperty = BuildSetAccessor<GorgonColor>();
+			_getProperty = BuildGetAccessor<GorgonColor>();
+			_setProperty = BuildSetAccessor<GorgonColor>();
 
 			InterpolationMode = TrackInterpolationMode.Linear;
 		}

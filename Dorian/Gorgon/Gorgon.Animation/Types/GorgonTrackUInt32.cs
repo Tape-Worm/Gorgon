@@ -39,8 +39,8 @@ namespace GorgonLibrary.Animation
 		: GorgonAnimationTrack
 	{
 		#region Variables.
-		private static Func<Object, UInt32> _getProperty = null;			// Get property method.
-		private static Action<Object, UInt32> _setProperty = null;		// Set property method.
+		private Func<Object, UInt32> _getProperty = null;			// Get property method.
+		private Action<Object, UInt32> _setProperty = null;		// Set property method.
 		#endregion
 
 		#region Properties.
@@ -74,40 +74,34 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Function to update the property value assigned to the track.
+		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
-		/// <param name="keyValues">Values to use when updating.</param>
-		/// <param name="key">The key to work on.</param>
-		/// <param name="time">Time to reference, in milliseconds.</param>
-		protected override void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time)
+		/// <param name="keyValues">Nearest previous and next key frames.</param>
+		/// <param name="keyTime">The time to assign to the key.</param>
+		/// <param name="unitTime">The time, expressed in unit time.</param>
+		/// <returns>
+		/// The interpolated key frame containing the interpolated values.
+		/// </returns>
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
 		{
-			// Just use the previous key if we're at 0.
-			if (time == 0)
-			{
-				key = keyValues.PreviousKey;
-				return;
-			}
-
 			GorgonKeyUInt32 next = (GorgonKeyUInt32)keyValues.NextKey;
 			GorgonKeyUInt32 prev = (GorgonKeyUInt32)keyValues.PreviousKey;
-
-			key = prev;
 
 			switch (InterpolationMode)
 			{
 				case TrackInterpolationMode.Linear:
-					key = new GorgonKeyUInt32(time, (UInt32)((float)prev.Value + (float)(next.Value - prev.Value) * time));
-					break;
+					return new GorgonKeyUInt32(keyTime, (UInt32)((float)prev.Value + (float)(next.Value - prev.Value) * unitTime));
 				case TrackInterpolationMode.Spline:
-					key = new GorgonKeyUInt32(time, (UInt32)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time).X);
-					break;
-			}
+					return new GorgonKeyUInt32(keyTime, (UInt32)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, unitTime).X);
+				default:
+					return prev;
+			}			
 		}
 
 		/// <summary>
 		/// Function to apply the key value to the object properties.
 		/// </summary>
-        /// <param name="key">Key to apply to the properties.</param>
+		/// <param name="key">Key to apply to the properties.</param>
 		protected internal override void ApplyKey(ref IKeyFrame key)
 		{
 			GorgonKeyUInt32 value = (GorgonKeyUInt32)key;
@@ -120,13 +114,11 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonTrackUInt32" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackUInt32(GorgonAnimationTrackCollection.AnimatedProperty property)
+		internal GorgonTrackUInt32(GorgonAnimatedProperty property)
 			: base(property)
 		{
-			if (_getProperty == null)
-				_getProperty = BuildGetAccessor<UInt32>();
-			if (_setProperty == null)
-				_setProperty = BuildSetAccessor<UInt32>();
+			_getProperty = BuildGetAccessor<UInt32>();
+			_setProperty = BuildSetAccessor<UInt32>();
 
 			InterpolationMode = TrackInterpolationMode.Linear;
 		}

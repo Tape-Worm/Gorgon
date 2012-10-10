@@ -38,19 +38,19 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// Manages and controls animations for an object.
 	/// </summary>
-    /// <remarks>To animate an object, the object should have a <see cref="GorgonLibrary.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.</remarks>
+	/// <remarks>To animate an object, the object should have a <see cref="GorgonLibrary.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.</remarks>
 	public class GorgonAnimationController
 		: GorgonBaseNamedObjectCollection<GorgonAnimation>
 	{
 		#region Properties.
-        /// <summary>
-        /// Property to set or return the object that is to be animated.
-        /// </summary>
-        internal object AnimatedObject
-        {
-            get;
-            private set;
-        }
+		/// <summary>
+		/// Property to set or return the object that is to be animated.
+		/// </summary>
+		internal object AnimatedObject
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to return the currently playing animation.
@@ -276,30 +276,30 @@ namespace GorgonLibrary.Animation
 			AddItem(animation);
 		}
 
-        /// <summary>
-        /// Function to add an animation to the collection.
-        /// </summary>
-        /// <param name="name">Name of the animation to add.</param>
-        /// <param name="length">Length of the animation, in milliseconds.</param>
-        /// <returns>The newly created animation.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
-        /// <para>-or-</para>
-        /// <para>Thrown when the animation already exists in this collection.</para></exception>
-        public GorgonAnimation Add(string name, float length)
-        {
-            GorgonAnimation result = null;
+		/// <summary>
+		/// Function to add an animation to the collection.
+		/// </summary>
+		/// <param name="name">Name of the animation to add.</param>
+		/// <param name="length">Length of the animation, in milliseconds.</param>
+		/// <returns>The newly created animation.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the animation already exists in this collection.</para></exception>
+		public GorgonAnimation Add(string name, float length)
+		{
+			GorgonAnimation result = null;
 
-            GorgonDebug.AssertParamString(name, "name");
+			GorgonDebug.AssertParamString(name, "name");
 
-            if (Contains(name))
-                throw new ArgumentException("'" + name + "' already exists in this collection.", "animation");
+			if (Contains(name))
+				throw new ArgumentException("'" + name + "' already exists in this collection.", "animation");
 
-            result = new GorgonAnimation(this, name, length);
-            AddItem(result);
+			result = new GorgonAnimation(this, name, length);
+			AddItem(result);
 
-            return result;
-        }
+			return result;
+		}
 
 		/// <summary>
 		/// Function to clear the animation collection.
@@ -364,11 +364,11 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonAnimationController" /> class.
 		/// </summary>
 		/// <param name="animatedObject">The object that holds the animations.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animatedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animatedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public GorgonAnimationController(Object animatedObject)
 			: base(false)
 		{
-            GorgonDebug.AssertNull<Object>(animatedObject, "animatedObject");
+			GorgonDebug.AssertNull<Object>(animatedObject, "animatedObject");
 			AnimatedObject = animatedObject;
 		}
 		#endregion

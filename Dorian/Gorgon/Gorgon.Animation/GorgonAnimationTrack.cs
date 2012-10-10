@@ -58,9 +58,9 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// A track for an animated property on an animated object.
 	/// </summary>
-    /// <remarks>Custom tracks may be built by the user by inheriting from this object.  When a custom track is built, the user will need to add that track to the 
-    /// <see cref="P:GorgonLibrary.Animation.GorgonAnimation.Tracks">GorgonAnimation.Tracks</see> collection.  Please note that when a custom track is built a custom 
-    /// <see cref="GorgonLibrary.Animation.IKeyFrame">key frame</see> type must be built to accompany the track.</remarks>
+	/// <remarks>Custom tracks may be built by the user by inheriting from this object.  When a custom track is built, the user will need to add that track to the 
+	/// <see cref="P:GorgonLibrary.Animation.GorgonAnimation.Tracks">GorgonAnimation.Tracks</see> collection.  Please note that when a custom track is built a custom 
+	/// <see cref="GorgonLibrary.Animation.IKeyFrame">key frame</see> type must be built to accompany the track.</remarks>
 	public abstract class GorgonAnimationTrack
 		: GorgonNamedObject
 	{
@@ -232,14 +232,14 @@ namespace GorgonLibrary.Animation
 		#endregion
 
 		#region Properties.
-        /// <summary>
-        /// Property to return the property that's being animated.
-        /// </summary>
-        protected GorgonAnimationTrackCollection.AnimatedProperty AnimatedProperty
-        {
-            get;
-            private set;
-        }
+		/// <summary>
+		/// Property to return the property that's being animated.
+		/// </summary>
+		protected GorgonAnimatedProperty AnimatedProperty
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to return the spline control interface.
@@ -307,30 +307,30 @@ namespace GorgonLibrary.Animation
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to build a get accessor for the property that will be manipulated by the track.
-        /// </summary>
-        /// <typeparam name="T">Type of output.</typeparam>
-        /// <returns>The get accessor method.</returns>
-        protected Func<Object, T> BuildGetAccessor<T>()
-        {
-            return BuildGetAccessor<T>(AnimatedProperty.Property.GetGetMethod());
-        }
-
-        /// <summary>
-        /// Function to build a set accessor for the property that will be manipulated by the track.
-        /// </summary>
-        /// <typeparam name="T">Type of output.</typeparam>
-        /// <returns>The get accessor method.</returns>
-        protected Action<Object, T> BuildSetAccessor<T>()
-        {
-            return BuildSetAccessor<T>(AnimatedProperty.Property.GetSetMethod());
-        }
-        
-        /// <summary>
+		/// <summary>
 		/// Function to build a get accessor for the property that will be manipulated by the track.
 		/// </summary>
-        /// <param name="getMethod">Method information.</param>
+		/// <typeparam name="T">Type of output.</typeparam>
+		/// <returns>The get accessor method.</returns>
+		protected Func<Object, T> BuildGetAccessor<T>()
+		{
+			return BuildGetAccessor<T>(AnimatedProperty.Property.GetGetMethod());
+		}
+
+		/// <summary>
+		/// Function to build a set accessor for the property that will be manipulated by the track.
+		/// </summary>
+		/// <typeparam name="T">Type of output.</typeparam>
+		/// <returns>The get accessor method.</returns>
+		protected Action<Object, T> BuildSetAccessor<T>()
+		{
+			return BuildSetAccessor<T>(AnimatedProperty.Property.GetSetMethod());
+		}
+		
+		/// <summary>
+		/// Function to build a get accessor for the property that will be manipulated by the track.
+		/// </summary>
+		/// <param name="getMethod">Method information.</param>
 		/// <typeparam name="T">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
 		protected Func<Object, T> BuildGetAccessor<T>(MethodInfo getMethod)
@@ -348,7 +348,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Function to build a set accessor for the property that will be manipulated by the track.
 		/// </summary>
-        /// <param name="setMethod">Method information.</param>
+		/// <param name="setMethod">Method information.</param>
 		/// <typeparam name="T">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
 		protected Action<Object, T> BuildSetAccessor<T>(MethodInfo setMethod)
@@ -376,9 +376,10 @@ namespace GorgonLibrary.Animation
 		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
 		/// <param name="keyValues">Nearest previous and next key frames.</param>
-		/// <param name="key">The new interpolated key frame.</param>
-		/// <param name="time">Time to reference.</param>
-		protected abstract void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time);
+		/// <param name="keyTime">The time to assign to the key.</param>
+		/// <param name="unitTime">The time, expressed in unit time.</param>
+		/// <returns>The interpolated key frame containing the interpolated values.</returns>
+		protected abstract IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime);
 
 		/// <summary>
 		/// Function to apply the key value to the object properties.
@@ -406,10 +407,10 @@ namespace GorgonLibrary.Animation
 
 			keys = new NearestKeys(this, time);
 
-			IKeyFrame key = default(IKeyFrame);
-			GetTweenKey(ref keys, out key, keys.KeyTimeDelta);
+			if (keys.KeyTimeDelta == 0.0f)
+				return keys.PreviousKey;
 
-			return key;
+			return GetTweenKey(ref keys, time, keys.KeyTimeDelta);
 		}
 
 		/// <summary>
@@ -428,7 +429,7 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonAnimationTrack" /> class.
 		/// </summary>
 		/// <param name="property">The property to animate.</param>
-		protected GorgonAnimationTrack(GorgonAnimationTrackCollection.AnimatedProperty property)
+		protected GorgonAnimationTrack(GorgonAnimatedProperty property)
 			: base(property.DisplayName)
 		{
 			Animation = null;
@@ -440,10 +441,10 @@ namespace GorgonLibrary.Animation
 			// to set and return values, while the expression tree took 39 ms, a little over 10-12x the speed.
 			// The animation controller in the previous version of Gorgon was horrifically slow, hopefully
 			// this will remedy that.
-            AnimatedProperty = property;
+			AnimatedProperty = property;
 			KeyFrames = new GorgonAnimationKeyFrameCollection(this);
 			Spline = new GorgonSpline();
 		}
 		#endregion
-    }
+	}
 }

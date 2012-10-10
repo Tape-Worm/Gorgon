@@ -40,8 +40,8 @@ namespace GorgonLibrary.Animation
 		: GorgonAnimationTrack
 	{
 		#region Variables.
-		private static Func<Object, Vector4> _getProperty = null;			// Get property method.
-		private static Action<Object, Vector4> _setProperty = null;			// Set property method.
+		private Func<Object, Vector4> _getProperty = null;			// Get property method.
+		private Action<Object, Vector4> _setProperty = null;			// Set property method.
 		#endregion
 
 		#region Properties.
@@ -75,34 +75,28 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Function to update the property value assigned to the track.
+		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
-		/// <param name="keyValues">Values to use when updating.</param>
-		/// <param name="key">The key to work on.</param>
-		/// <param name="time">Time to reference, in milliseconds.</param>
-		protected override void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time)
+		/// <param name="keyValues">Nearest previous and next key frames.</param>
+		/// <param name="keyTime">The time to assign to the key.</param>
+		/// <param name="unitTime">The time, expressed in unit time.</param>
+		/// <returns>
+		/// The interpolated key frame containing the interpolated values.
+		/// </returns>
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
 		{
-			// Just use the previous key if we're at 0.
-			if (time == 0)
-			{
-				key = keyValues.PreviousKey;
-				return;
-			}
-
 			GorgonKeyVector4 next = (GorgonKeyVector4)keyValues.NextKey;
 			GorgonKeyVector4 prev = (GorgonKeyVector4)keyValues.PreviousKey;
-
-			key = prev;
 
 			switch (InterpolationMode)
 			{
 				case TrackInterpolationMode.Linear:
-					key = new GorgonKeyVector4(time, Vector4.Lerp(prev.Value, next.Value, time));
-					break;
+					return new GorgonKeyVector4(keyTime, Vector4.Lerp(prev.Value, next.Value, unitTime));
 				case TrackInterpolationMode.Spline:
-					key = new GorgonKeyVector4(time, Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time));
-					break;
-			}
+					return new GorgonKeyVector4(keyTime, Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, unitTime));
+				default:
+					return prev;
+			}			
 		}
 
 		/// <summary>
@@ -121,13 +115,11 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonTrackVector4" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackVector4(GorgonAnimationTrackCollection.AnimatedProperty property)
+		internal GorgonTrackVector4(GorgonAnimatedProperty property)
 			: base(property)
 		{
-			if (_getProperty == null)
-				_getProperty = BuildGetAccessor<Vector4>();
-			if (_setProperty == null)
-				_setProperty = BuildSetAccessor<Vector4>();
+			_getProperty = BuildGetAccessor<Vector4>();
+			_setProperty = BuildSetAccessor<Vector4>();
 
 			InterpolationMode = TrackInterpolationMode.Linear;
 		}
