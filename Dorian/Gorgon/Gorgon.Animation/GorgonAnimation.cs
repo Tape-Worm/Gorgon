@@ -39,33 +39,33 @@ namespace GorgonLibrary.Animation
 	public class GorgonAnimation
 		: GorgonNamedObject, ICloneable<GorgonAnimation>
 	{        
-        #region Variables.
+		#region Variables.
 		private float _length = 0;                                  // Length of the animation, in milliseconds.
 		private float _time = 0;                                    // Current time for the animation, in milliseconds.
 		private int _loopCount = 0;                                 // Number of loops for the animation.
 		private int _looped = 0;                                    // Number of times the animation has currently looped.
-        private GorgonAnimationController _controller = null;       // Animation controller.
+		private GorgonAnimationController _controller = null;       // Animation controller.
 		#endregion
 
 		#region Properties.
-        /// <summary>
-        /// Property to return the animation controller that owns this clip.
-        /// </summary>
-        public GorgonAnimationController AnimationController
-        {
-            get
-            {
-                return _controller;
-            }
-            internal set
-            {
-                if (value == _controller)
-                    return;
+		/// <summary>
+		/// Property to return the animation controller that owns this clip.
+		/// </summary>
+		public GorgonAnimationController AnimationController
+		{
+			get
+			{
+				return _controller;
+			}
+			internal set
+			{
+				if (value == _controller)
+					return;
 
-                _controller = value;
-                Tracks.EnumerateTracks();
-            }
-        }
+				_controller = value;
+				Tracks.EnumerateTracks();
+			}
+		}
 
 		/// <summary>
 		/// Property to set or return the number of times to loop an animation.
@@ -102,9 +102,9 @@ namespace GorgonLibrary.Animation
 		{
 			get
 			{
-                if (AnimationController == null)
+				if (AnimationController == null)
 					return false;
-                                
+								
 				return AnimationController.CurrentAnimation == this;
 			}
 		}
@@ -201,8 +201,8 @@ namespace GorgonLibrary.Animation
 				}
 			}
 		}
-        
-        /// <summary>
+		
+		/// <summary>
 		/// Function to reset the animation state.
 		/// </summary>
 		public void Reset()
@@ -217,7 +217,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonAnimation" /> class.
 		/// </summary>
-        /// <param name="controller">Animation controller that owns this animation.</param>
+		/// <param name="controller">Animation controller that owns this animation.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="length">The length of the animation, in milliseconds.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
@@ -231,8 +231,8 @@ namespace GorgonLibrary.Animation
 			Length = length;
 			Speed = 1.0f;
 
-            AnimationController = controller;
-        }
+			AnimationController = controller;
+		}
 		#endregion		
 	
 		#region ICloneable<GorgonAnimation> Members

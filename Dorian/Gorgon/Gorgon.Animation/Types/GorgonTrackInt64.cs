@@ -39,8 +39,8 @@ namespace GorgonLibrary.Animation
 		: GorgonAnimationTrack
 	{
 		#region Variables.
-		private static Func<Object, Int64> _getProperty = null;			// Get property method.
-		private static Action<Object, Int64> _setProperty = null;		// Set property method.
+		private Func<Object, Int64> _getProperty = null;			// Get property method.
+		private Action<Object, Int64> _setProperty = null;		// Set property method.
 		#endregion
 
 		#region Properties.
@@ -74,34 +74,28 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Function to update the property value assigned to the track.
+		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
-		/// <param name="keyValues">Values to use when updating.</param>
-		/// <param name="key">The key to work on.</param>
-		/// <param name="time">Time to reference, in milliseconds.</param>
-		protected override void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time)
+		/// <param name="keyValues">Nearest previous and next key frames.</param>
+		/// <param name="keyTime">The time to assign to the key.</param>
+		/// <param name="unitTime">The time, expressed in unit time.</param>
+		/// <returns>
+		/// The interpolated key frame containing the interpolated values.
+		/// </returns>
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
 		{
-			// Just use the previous key if we're at 0.
-			if (time == 0)
-			{
-				key = keyValues.PreviousKey;
-				return;
-			}
-
 			GorgonKeyInt64 next = (GorgonKeyInt64)keyValues.NextKey;
 			GorgonKeyInt64 prev = (GorgonKeyInt64)keyValues.PreviousKey;
-
-			key = prev;
 
 			switch (InterpolationMode)
 			{
 				case TrackInterpolationMode.Linear:
-					key = new GorgonKeyInt64(time, (Int64)((float)prev.Value + (float)(next.Value - prev.Value) * time));
-					break;
+					return new GorgonKeyInt64(keyTime, (Int64)((float)prev.Value + (float)(next.Value - prev.Value) * unitTime));
 				case TrackInterpolationMode.Spline:
-					key = new GorgonKeyInt64(time, (Int64)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time).X);
-					break;
-			}
+					return new GorgonKeyInt64(keyTime, (Int64)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, unitTime).X);
+				default:
+					return prev;
+			}			
 		}
 
 		/// <summary>
@@ -120,13 +114,11 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonTrackInt64" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackInt64(GorgonAnimationTrackCollection.AnimatedProperty property)
+		internal GorgonTrackInt64(GorgonAnimatedProperty property)
 			: base(property)
 		{
-			if (_getProperty == null)
-				_getProperty = BuildGetAccessor<Int64>();
-			if (_setProperty == null)
-				_setProperty = BuildSetAccessor<Int64>();
+			_getProperty = BuildGetAccessor<Int64>();
+			_setProperty = BuildSetAccessor<Int64>();
 
 			InterpolationMode = TrackInterpolationMode.Linear;
 		}

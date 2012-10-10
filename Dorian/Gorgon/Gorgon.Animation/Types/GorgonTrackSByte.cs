@@ -39,8 +39,8 @@ namespace GorgonLibrary.Animation
 		: GorgonAnimationTrack
 	{
 		#region Variables.
-		private static Func<Object, SByte> _getProperty = null;			// Get property method.
-		private static Action<Object, SByte> _setProperty = null;		// Set property method.
+		private Func<Object, SByte> _getProperty = null;			// Get property method.
+		private Action<Object, SByte> _setProperty = null;		// Set property method.
 		#endregion
 
 		#region Properties.
@@ -74,34 +74,28 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Function to update the property value assigned to the track.
+		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
-		/// <param name="keyValues">Values to use when updating.</param>
-		/// <param name="key">The key to work on.</param>
-		/// <param name="time">Time to reference, in milliseconds.</param>
-		protected override void GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, out IKeyFrame key, float time)
+		/// <param name="keyValues">Nearest previous and next key frames.</param>
+		/// <param name="keyTime">The time to assign to the key.</param>
+		/// <param name="unitTime">The time, expressed in unit time.</param>
+		/// <returns>
+		/// The interpolated key frame containing the interpolated values.
+		/// </returns>
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
 		{
-			// Just use the previous key if we're at 0.
-			if (time == 0)
-			{
-				key = keyValues.PreviousKey;
-				return;
-			}
-
 			GorgonKeySByte next = (GorgonKeySByte)keyValues.NextKey;
 			GorgonKeySByte prev = (GorgonKeySByte)keyValues.PreviousKey;
-
-			key = prev;
 
 			switch (InterpolationMode)
 			{
 				case TrackInterpolationMode.Linear:
-					key = new GorgonKeySByte(time, (SByte)((float)prev.Value + (float)(next.Value - prev.Value) * time));
-					break;
+					return new GorgonKeySByte(keyTime, (SByte)((float)prev.Value + (float)(next.Value - prev.Value) * unitTime));
 				case TrackInterpolationMode.Spline:
-					key = new GorgonKeySByte(time, (SByte)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, time).X);
-					break;
-			}
+					return new GorgonKeySByte(keyTime, (SByte)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, unitTime).X);
+				default:
+					return prev;
+			}			
 		}
 
 		/// <summary>
@@ -120,13 +114,11 @@ namespace GorgonLibrary.Animation
 		/// Initializes a new instance of the <see cref="GorgonTrackSByte" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
-		internal GorgonTrackSByte(GorgonAnimationTrackCollection.AnimatedProperty property)
+		internal GorgonTrackSByte(GorgonAnimatedProperty property)
 			: base(property)
 		{
-			if (_getProperty == null)
-				_getProperty = BuildGetAccessor<SByte>();
-			if (_setProperty == null)
-				_setProperty = BuildSetAccessor<SByte>();
+			_getProperty = BuildGetAccessor<SByte>();
+			_setProperty = BuildSetAccessor<SByte>();
 
 			InterpolationMode = TrackInterpolationMode.Linear;
 		}

@@ -47,10 +47,10 @@ namespace GorgonLibrary.Animation
 		/// Value to store in the key frame.
 		/// </summary>
 		public GorgonTexture2D Value;
-        /// <summary>
-        /// Region on the texture to update.
-        /// </summary>
-        public RectangleF TextureRegion;
+		/// <summary>
+		/// Region on the texture to update.
+		/// </summary>
+		public RectangleF TextureRegion;
 		/// <summary>
 		/// Time for the key frame in the animation.
 		/// </summary>
@@ -63,13 +63,13 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <param name="time">The time for the key frame.</param>
 		/// <param name="value">The value to apply to the key frame.</param>
-        /// <param name="region">Region on the texture to update.</param>
+		/// <param name="region">Region on the texture to update.</param>
 		public GorgonKeyTexture2D(float time, GorgonTexture2D value, RectangleF region)
 		{
 			Time = time;
 			_dataType = typeof(GorgonTexture2D);
 			Value = value;
-            TextureRegion = region;
+			TextureRegion = region;
 		}
 		#endregion
 

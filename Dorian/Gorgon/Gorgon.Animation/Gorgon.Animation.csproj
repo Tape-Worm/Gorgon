@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnimatedPropertyAttribute.cs" />
+    <Compile Include="GorgonAnimatedProperty.cs" />
     <Compile Include="GorgonAnimation.cs" />
     <Compile Include="GorgonAnimationCollection.cs" />
     <Compile Include="GorgonAnimationKeyFrameCollection.cs" />
