@@ -40,6 +40,7 @@ namespace GorgonLibrary.Animation
 	/// <typeparam name="T">Type of object that's being animated.</typeparam>
 	public class GorgonAnimationTrackCollection<T>
 		: GorgonBaseNamedObjectDictionary<GorgonAnimationTrack<T>>
+		where T : class
 	{
 		#region Variables.
 		private GorgonAnimation<T> _animation = null;          // Animation that owns this collection.
@@ -242,7 +243,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimationTrackCollection" /> class.
+		/// Initializes a new instance of the <see cref="GorgonAnimationTrackCollection{T}" /> class.
 		/// </summary>
 		/// <param name="animation">The animation that owns this collection.</param>
 		internal GorgonAnimationTrackCollection(GorgonAnimation<T> animation)

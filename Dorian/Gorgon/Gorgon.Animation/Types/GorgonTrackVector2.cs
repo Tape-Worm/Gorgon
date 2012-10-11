@@ -39,10 +39,11 @@ namespace GorgonLibrary.Animation
 	/// <typeparam name="T">Type of object to be animated.</typeparam>
 	class GorgonTrackVector2<T>
 		: GorgonAnimationTrack<T>
+		where T : class
 	{
 		#region Variables.
-		private Func<Object, Vector2> _getProperty = null;				// Get property method.
-		private Action<Object, Vector2> _setProperty = null;			// Set property method.
+		private Func<T, Vector2> _getProperty = null;				// Get property method.
+		private Action<T, Vector2> _setProperty = null;			// Set property method.
 		#endregion
 
 		#region Properties.

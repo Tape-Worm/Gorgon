@@ -38,10 +38,11 @@ namespace GorgonLibrary.Animation
 	/// <typeparam name="T">Type of object being animated.</typeparam>
 	internal class GorgonTrackSingle<T>
 		: GorgonAnimationTrack<T>
+		where T : class
 	{
 		#region Variables.
-		private Func<Object, Single> _getProperty = null;			// Get property method.
-		private Action<Object, Single> _setProperty = null;		// Set property method.
+		private Func<T, Single> _getProperty = null;			// Get property method.
+		private Action<T, Single> _setProperty = null;		// Set property method.
 		#endregion
 
 		#region Properties.
@@ -112,7 +113,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackSingle" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackSingle{T}" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
 		internal GorgonTrackSingle(GorgonAnimatedProperty property)

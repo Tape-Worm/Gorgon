@@ -66,7 +66,7 @@ namespace Test_TextureArray
 
 			_text.Color = Color.Black;
 			//_text.Angle = _angle;
-			_text.Position = new Vector2(320, 240);
+			//_text.Position = new Vector2(320, 240);
 			_text.Draw();
 			_2D.Drawing.DrawRectangle(_text.Collider.ColliderBoundaries, Color.Cyan);
 			_2D.Drawing.DrawEllipse(_text.Collider.ColliderBoundaries, Color.Red);
@@ -151,6 +151,7 @@ namespace Test_TextureArray
 			_text.Collider = new Gorgon2DBoundingCircle();
 			_text.Angle = 45.0f;
 			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
+			_text.Position = new Vector2(320, 240);
 
 			_controller = new GorgonAnimationController<GorgonSprite>();
 			GorgonAnimation<GorgonSprite> anim = _controller.Add("Position", 3000.0f);            
@@ -174,21 +175,25 @@ namespace Test_TextureArray
 			anim.Tracks["Texture"].InterpolationMode = TrackInterpolationMode.None;
 
 			anim.IsLooped = true;
-			anim.Speed = 0.5f;
+			//anim.Speed = 0.5f;
 			//anim.Time = anim.Length;
 			anim.Tracks["Position"].InterpolationMode = TrackInterpolationMode.Linear;
 			
 			_textController = new GorgonAnimationController<GorgonText>();
 			var tanim = _textController.Add("Rotation", 3000.0f);
 			tanim.Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(0.0f, 0.0f));
-			tanim.Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(3000.0f, 360.0f));
+			tanim.Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(1500.0f, 180.0f));
+			tanim.Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(3000.0f, 0.0f));
 			tanim.Tracks["Angle"].InterpolationMode = TrackInterpolationMode.Spline;
+			tanim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(0, new Vector2(320, 240)));
+			tanim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(1500.0f, new Vector2(320, 240)));
+			tanim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(1980.0f, new Vector2(800, 600)));
+			tanim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(3000.0f, new Vector2(320, 240)));
+			tanim.Tracks["Position"].InterpolationMode = TrackInterpolationMode.Spline;
 			tanim.IsLooped = true;
 
 			_controller.Play(_sprite, "Position");
 			_textController.Play(_text, "Rotation");
-
-			throw new Exception("Change <T> on the animation objects to restrict to reference objects!");
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)

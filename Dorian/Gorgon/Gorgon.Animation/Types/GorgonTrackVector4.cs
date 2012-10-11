@@ -38,10 +38,11 @@ namespace GorgonLibrary.Animation
 	/// </summary>
 	class GorgonTrackVector4<T>
 		: GorgonAnimationTrack<T>
+		where T : class
 	{
 		#region Variables.
-		private Func<Object, Vector4> _getProperty = null;			// Get property method.
-		private Action<Object, Vector4> _setProperty = null;			// Set property method.
+		private Func<T, Vector4> _getProperty = null;			// Get property method.
+		private Action<T, Vector4> _setProperty = null;			// Set property method.
 		#endregion
 
 		#region Properties.

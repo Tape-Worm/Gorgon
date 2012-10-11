@@ -38,6 +38,7 @@ namespace GorgonLibrary.Animation
 	/// </summary>
 	public class GorgonAnimation<T>
 		: GorgonNamedObject, ICloneable<GorgonAnimation<T>>
+		where T : class
 	{        
 		#region Variables.
 		private float _length = 0;                                  // Length of the animation, in milliseconds.
@@ -181,8 +182,8 @@ namespace GorgonLibrary.Animation
 			private set;
 		}
 		#endregion
-		#region Methods.
 
+		#region Methods.
 		/// <summary>
 		/// Function to update the owner of the animation.
 		/// </summary>
@@ -215,13 +216,11 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimation" /> class.
+		/// Initializes a new instance of the <see cref="GorgonAnimation{T}" /> class.
 		/// </summary>
 		/// <param name="controller">Animation controller that owns this animation.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="length">The length of the animation, in milliseconds.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonAnimation(GorgonAnimationController<T> controller, string name, float length)
 			: base(name)
 		{
