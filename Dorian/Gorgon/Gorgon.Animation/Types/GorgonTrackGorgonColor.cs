@@ -37,8 +37,9 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// A track that will animate properties with a GorgonColor data type.
 	/// </summary>
-	class GorgonTrackGorgonColor
-		: GorgonAnimationTrack
+	/// <typeparam name="T">Type of object to be animated.</typeparam>
+	class GorgonTrackGorgonColor<T>
+		: GorgonAnimationTrack<T>
 	{
 		#region Variables.
 		private Func<Object, GorgonColor> _getProperty = null;			// Get property method.
@@ -84,7 +85,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
 		{
 			GorgonKeyGorgonColor next = (GorgonKeyGorgonColor)keyValues.NextKey;
 			GorgonKeyGorgonColor prev = (GorgonKeyGorgonColor)keyValues.PreviousKey;
@@ -113,7 +114,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackGorgonColor" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackGorgonColor{T}" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
 		internal GorgonTrackGorgonColor(GorgonAnimatedProperty property)

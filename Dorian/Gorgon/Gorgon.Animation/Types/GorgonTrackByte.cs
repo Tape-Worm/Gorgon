@@ -35,8 +35,9 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// An animation track for unsigned 8 bit integer values.
 	/// </summary>
-	internal class GorgonTrackByte
-		: GorgonAnimationTrack
+	/// <typeparam name="T">Type of object to be animated.</typeparam>
+	internal class GorgonTrackByte<T>
+		: GorgonAnimationTrack<T>
 	{
 		#region Variables.
 		private Func<Object, Byte> _getProperty = null;			// Get property method.
@@ -82,7 +83,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
 		{
 			GorgonKeyByte next = (GorgonKeyByte)keyValues.NextKey;
 			GorgonKeyByte prev = (GorgonKeyByte)keyValues.PreviousKey;				
@@ -111,9 +112,9 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackByte" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackByte{T}" /> class.
 		/// </summary>
-		/// <param name="property">Property information.</param>
+		/// <param name="property">The property information.</param>
 		internal GorgonTrackByte(GorgonAnimatedProperty property)
 			: base(property)
 		{

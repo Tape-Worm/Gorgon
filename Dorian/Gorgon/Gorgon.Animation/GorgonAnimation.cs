@@ -36,22 +36,22 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// An animation clip for an animated object.
 	/// </summary>
-	public class GorgonAnimation
-		: GorgonNamedObject, ICloneable<GorgonAnimation>
+	public class GorgonAnimation<T>
+		: GorgonNamedObject, ICloneable<GorgonAnimation<T>>
 	{        
 		#region Variables.
 		private float _length = 0;                                  // Length of the animation, in milliseconds.
 		private float _time = 0;                                    // Current time for the animation, in milliseconds.
 		private int _loopCount = 0;                                 // Number of loops for the animation.
 		private int _looped = 0;                                    // Number of times the animation has currently looped.
-		private GorgonAnimationController _controller = null;       // Animation controller.
+		private GorgonAnimationController<T> _controller = null;    // Animation controller.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the animation controller that owns this clip.
 		/// </summary>
-		public GorgonAnimationController AnimationController
+		public GorgonAnimationController<T> AnimationController
 		{
 			get
 			{
@@ -175,7 +175,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Property to return the list of tracks for the animation.
 		/// </summary>
-		public GorgonAnimationTrackCollection Tracks
+		public GorgonAnimationTrackCollection<T> Tracks
 		{
 			get;
 			private set;
@@ -222,12 +222,12 @@ namespace GorgonLibrary.Animation
 		/// <param name="length">The length of the animation, in milliseconds.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		internal GorgonAnimation(GorgonAnimationController controller, string name, float length)
+		internal GorgonAnimation(GorgonAnimationController<T> controller, string name, float length)
 			: base(name)
 		{
 			GorgonDebug.AssertParamString(name, "name");
 
-			Tracks = new GorgonAnimationTrackCollection(this);
+			Tracks = new GorgonAnimationTrackCollection<T>(this);
 			Length = length;
 			Speed = 1.0f;
 
@@ -240,9 +240,9 @@ namespace GorgonLibrary.Animation
 		/// Function to clone the animation.
 		/// </summary>
 		/// <returns>A clone of the animation.</returns>		
-		public GorgonAnimation Clone()
+		public GorgonAnimation<T> Clone()
 		{
-			GorgonAnimation clone = new GorgonAnimation(AnimationController, Name, Length);
+			GorgonAnimation<T> clone = new GorgonAnimation<T>(AnimationController, Name, Length);
 			clone.IsLooped = IsLooped;
 			clone.Length = Length;
 			clone.LoopCount = LoopCount;

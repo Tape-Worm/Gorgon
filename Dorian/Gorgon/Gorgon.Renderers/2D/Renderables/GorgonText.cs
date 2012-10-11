@@ -34,6 +34,7 @@ using GorgonLibrary.UI;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Animation;
 
 namespace GorgonLibrary.Renderers
 {
@@ -115,6 +116,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the offset for the shadow.
 		/// </summary>
 		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is TRUE.</remarks>
+		[AnimatedProperty()]
 		public Vector2 ShadowOffset
 		{
 			get
@@ -157,6 +159,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the shadow opacity.
 		/// </summary>
 		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is TRUE.</remarks>
+		[AnimatedProperty()]
 		public float ShadowOpacity
 		{
 			get
@@ -174,6 +177,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the spacing for the lines.
 		/// </summary>
+		[AnimatedProperty()]
 		public float LineSpacing
 		{
 			get
@@ -1374,6 +1378,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the opacity (Alpha channel) of the renderable object.
 		/// </summary>
+		[AnimatedProperty()]
 		public float Opacity
 		{
 			get
@@ -1390,6 +1395,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
+		[AnimatedProperty()]
 		public GorgonColor Color
 		{
 			get
@@ -1476,6 +1482,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the renderable.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 Position
 		{
 			get
@@ -1495,6 +1502,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for a renderable.
 		/// </summary>
+		[AnimatedProperty()]
 		public float Angle
 		{
 			get
@@ -1514,6 +1522,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the scale of the renderable.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 Scale
 		{
 			get
@@ -1533,6 +1542,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the anchor point of the renderable.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 Anchor
 		{
 			get

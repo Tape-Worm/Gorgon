@@ -35,8 +35,9 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// An animation track for 64 bit integer values.
 	/// </summary>
-	internal class GorgonTrackInt64
-		: GorgonAnimationTrack
+	/// <typeparam name="T">Type of object to be animated.</typeparam>
+	internal class GorgonTrackInt64<T>
+		: GorgonAnimationTrack<T>
 	{
 		#region Variables.
 		private Func<Object, Int64> _getProperty = null;			// Get property method.
@@ -82,7 +83,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
 		{
 			GorgonKeyInt64 next = (GorgonKeyInt64)keyValues.NextKey;
 			GorgonKeyInt64 prev = (GorgonKeyInt64)keyValues.PreviousKey;
@@ -111,9 +112,9 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackInt64" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackInt64{T}" /> class.
 		/// </summary>
-		/// <param name="property">Property information.</param>
+		/// <param name="property">The property information.</param>
 		internal GorgonTrackInt64(GorgonAnimatedProperty property)
 			: base(property)
 		{

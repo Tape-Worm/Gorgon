@@ -19,7 +19,7 @@ This list is not in order.  Please don't get excited.
 * Add multi-threaded support for D3D 11 device contexts.
 * Maybe update Gorgon2D to create a swap chain in its Create2DRenderer method in addition to passing one in. (Done)
 * Update 2D shader code (Not necessary, 2D specific shader types are now gone and integrated via #GorgonInclude in the shader).
-* Add bounding box/circle for renderable objects. (Started, AABB done)
+* Add bounding box/circle for renderable objects. (Done)
 * Add font management code.
 	+ Code for generating (for use in the editor, but will be public) (Done).	
 	+ Loading/saving bitmap fonts. (Done)
@@ -30,7 +30,7 @@ This list is not in order.  Please don't get excited.
 	+ Add shadowing (Done)
 	+ Add global "DrawText" to Drawing property. (Done)
 * Add horizontal/vertical flip to sprites. (Done)
-* Add animation to renderable objects.
+* Add animation to renderable objects. (Done)
 * Add more primitives:
 	+ Line polygon
 	+ Filled polygon (may need to be a separate object because it works quite differently).

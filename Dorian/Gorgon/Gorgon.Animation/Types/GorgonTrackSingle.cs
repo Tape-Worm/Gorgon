@@ -35,8 +35,9 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// An animation track for single precision floating point values.
 	/// </summary>
-	internal class GorgonTrackSingle
-		: GorgonAnimationTrack
+	/// <typeparam name="T">Type of object being animated.</typeparam>
+	internal class GorgonTrackSingle<T>
+		: GorgonAnimationTrack<T>
 	{
 		#region Variables.
 		private Func<Object, Single> _getProperty = null;			// Get property method.
@@ -82,7 +83,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
 		{
 			GorgonKeySingle next = (GorgonKeySingle)keyValues.NextKey;
 			GorgonKeySingle prev = (GorgonKeySingle)keyValues.PreviousKey;

@@ -25,9 +25,10 @@ namespace Test_TextureArray
 		private static GorgonText _text = null;
 		private static GorgonPixelShader _shader = null;
 		private static float _startTime = 0;
-		private static bool _showDecal = true;
+		private static bool _showDecal = false;
 		private static float _angle = 0.0f;
-        private static GorgonAnimationController _controller = null;
+		private static GorgonAnimationController<GorgonSprite> _controller = null;
+		private static GorgonAnimationController<GorgonText> _textController = null;
 
 		private static bool Idle()
 		{
@@ -64,7 +65,7 @@ namespace Test_TextureArray
 			//_2D.Render(false);
 
 			_text.Color = Color.Black;
-			_text.Angle = _angle;
+			//_text.Angle = _angle;
 			_text.Position = new Vector2(320, 240);
 			_text.Draw();
 			_2D.Drawing.DrawRectangle(_text.Collider.ColliderBoundaries, Color.Cyan);
@@ -79,6 +80,7 @@ namespace Test_TextureArray
 				_startTime = GorgonTiming.SecondsSinceStart;
 
 			_controller.Update();
+			_textController.Update();
 			return true;
 		}
 
@@ -103,24 +105,12 @@ namespace Test_TextureArray
 
 			_shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("MyShader", "DualTex", Properties.Resources.Shader, true);
 
-			_noDecal = _graphics.Textures.FromFile<GorgonTexture2D>("Image", @"..\..\..\..\Resources\Images\Ship.png",
+			_noDecal = _graphics.Textures.FromFile<GorgonTexture2D>("Image", @"..\..\..\..\Resources\Images\BallDemo.png",
 				new GorgonTexture2DSettings()
 				{
 					FileFilter = ImageFilters.Point,
 					FileMipFilter = ImageFilters.Point
 				});
-
-			_tex = _graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", new GorgonTexture2DSettings()
-			{
-				Width = _noDecal.Settings.Width,
-				Height = _noDecal.Settings.Height,
-				Format = BufferFormat.R8G8B8A8_UIntNormal,
-				Usage = BufferUsage.Default,
-				ArrayCount = 2,
-				MipCount = 1
-			});
-			_tex.CopySubResource(_noDecal, 0, 1);
-
 
 			GorgonTexture2D image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png",
 				new GorgonTexture2DSettings()
@@ -132,11 +122,22 @@ namespace Test_TextureArray
 					MipCount = 1
 				});
 
+			_tex = _graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", new GorgonTexture2DSettings()
+			{
+				Width = image.Settings.Width,
+				Height = image.Settings.Height,
+				Format = BufferFormat.R8G8B8A8_UIntNormal,
+				Usage = BufferUsage.Default,
+				ArrayCount = 2,
+				MipCount = 1
+			});
+
+			_tex.CopySubResource(_noDecal, 0, 1);
 			_tex.CopySubResource(image, 0, 0);
 
 			image.Dispose();
 
-			_sprite = _2D.Renderables.CreateSprite("Test", _tex.Settings.Size, _tex);
+			_sprite = _2D.Renderables.CreateSprite("Test", new Vector2(64, 64), _noDecal, new RectangleF(0, 0, 0.5f, 0.5f));
 			//_sprite.Collider = new Gorgon2DAABB();
 			//((Gorgon2DAABB)_sprite.Collider).Location = new Vector2(_tex.Settings.Width / 4.0f, _tex.Settings.Height / 4.0f);
 			//((Gorgon2DAABB)_sprite.Collider).Size = new Vector2(0.5f, 0.5f);
@@ -151,8 +152,8 @@ namespace Test_TextureArray
 			_text.Angle = 45.0f;
 			_text.Anchor = new Vector2(_text.Size.X / 2.0f, _text.Size.Y / 2.0f);
 
-            _controller = new GorgonAnimationController(_sprite);
-			GorgonAnimation anim = _controller.Add("Position", 3000.0f);            
+			_controller = new GorgonAnimationController<GorgonSprite>();
+			GorgonAnimation<GorgonSprite> anim = _controller.Add("Position", 3000.0f);            
 
 			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
 
@@ -164,15 +165,30 @@ namespace Test_TextureArray
 			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(1500.0f, new GorgonColor(1.0f, 0.0f, 0.0f, 1.0f)));
 			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(2000.0f, new GorgonColor(0.0f, 1.0f, 0.0f, 1.0f)));
 			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(2500.0f, new GorgonColor(0.0f, 0.0f, 1.0f, 1.0f)));
-			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(3000.0f, new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)));
+			anim.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(3000.0f, new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)));			
 			anim.Tracks["Color"].InterpolationMode = TrackInterpolationMode.Spline;
+			anim.Tracks["Texture"].KeyFrames.Add(new GorgonKeyTexture2D(0.0f, _noDecal, new RectangleF(0, 0, 0.5f, 0.5f)));
+			anim.Tracks["Texture"].KeyFrames.Add(new GorgonKeyTexture2D(1000.0f, _noDecal, new RectangleF(0.5f, 0, 0.5f, 0.5f)));
+			anim.Tracks["Texture"].KeyFrames.Add(new GorgonKeyTexture2D(2000.0f, _noDecal, new RectangleF(0.0f, 0.5f, 0.5f, 0.5f)));
+			anim.Tracks["Texture"].KeyFrames.Add(new GorgonKeyTexture2D(2250.0f, _tex, new RectangleF(0, 0, 1.0f, 1.0f)));
+			anim.Tracks["Texture"].InterpolationMode = TrackInterpolationMode.None;
 
 			anim.IsLooped = true;
 			anim.Speed = 0.5f;
 			//anim.Time = anim.Length;
 			anim.Tracks["Position"].InterpolationMode = TrackInterpolationMode.Linear;
 			
-			_controller.Play("Position");
+			_textController = new GorgonAnimationController<GorgonText>();
+			var tanim = _textController.Add("Rotation", 3000.0f);
+			tanim.Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(0.0f, 0.0f));
+			tanim.Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(3000.0f, 360.0f));
+			tanim.Tracks["Angle"].InterpolationMode = TrackInterpolationMode.Spline;
+			tanim.IsLooped = true;
+
+			_controller.Play(_sprite, "Position");
+			_textController.Play(_text, "Rotation");
+
+			throw new Exception("Change <T> on the animation objects to restrict to reference objects!");
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)
@@ -201,7 +217,7 @@ namespace Test_TextureArray
 			if (e.KeyCode == Keys.P)
 			{
 				_controller["Position"].Reset();
-				_controller.Play("Position");
+				_controller.Play(_sprite, "Position");
 			}
 		}
 
