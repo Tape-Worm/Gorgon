@@ -32,6 +32,7 @@ using System.Drawing;
 using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Animation;
 
 namespace GorgonLibrary.Renderers
 {
@@ -122,6 +123,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the thickness for the line.
 		/// </summary>
 		/// <remarks>This value cannot be less than 1.</remarks>
+		[AnimatedProperty()]
 		public Vector2 LineThickness
 		{
 			get
@@ -147,6 +149,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the color for the start point.
 		/// </summary>
+		[AnimatedProperty()]
 		public GorgonColor StartColor
 		{
 			get
@@ -162,6 +165,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the color for the end point.
 		/// </summary>
+		[AnimatedProperty()]
 		public GorgonColor EndColor
 		{
 			get
@@ -177,6 +181,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the line.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 StartPoint
 		{
 			get
@@ -192,6 +197,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the absolute end point for the line.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 EndPoint
 		{
 			get
@@ -207,6 +213,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the size of the renderable.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 Size
 		{
 			get
@@ -262,6 +269,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
 		/// </summary>
+		[AnimatedProperty()]
 		public override Vector2 TextureOffset
 		{
 			get
@@ -277,6 +285,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
+		[AnimatedProperty()]
 		public override Vector2 TextureSize
 		{
 			get
@@ -293,6 +302,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the texture offset for the start point.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1).</remarks>
+		[AnimatedProperty()]
 		public Vector2 TextureStart
 		{
 			get
@@ -313,6 +323,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the texture offset for the end point.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1) and is an absolute value (i.e. not relative to the starting position).</remarks>
+		[AnimatedProperty()]
 		public Vector2 TextureEnd
 		{
 			get
@@ -341,6 +352,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for the line.
 		/// </summary>
+		[AnimatedProperty()]
 		public float Angle
 		{
 			get;
@@ -665,6 +677,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the anchor point of the line.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 Anchor
 		{
 			get

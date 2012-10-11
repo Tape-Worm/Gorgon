@@ -733,7 +733,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the opacity (Alpha channel) of the renderable object.
 		/// </summary>
 		/// <remarks>This will only return the alpha value for the first vertex of the renderable and consequently will set all the vertices to the same alpha value.</remarks>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual float Opacity
 		{
 			get
@@ -751,7 +751,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
 		/// <remarks>This will only return the color for the first vertex of the renderable and consequently will set all the vertices to the same color.</remarks>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual GorgonColor Color
 		{
 			get
@@ -796,7 +796,7 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>You can use this property to scroll the texture in the renderable.
 		/// <para>This texture value is in texel space (0..1).</para>
 		/// </remarks>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual Vector2 TextureOffset
 		{
 			get
@@ -817,7 +817,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1).</remarks>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual Vector2 TextureSize
 		{
 			get
@@ -844,7 +844,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return a texture for the renderable.
 		/// </summary>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual GorgonTexture2D Texture
 		{
 			get

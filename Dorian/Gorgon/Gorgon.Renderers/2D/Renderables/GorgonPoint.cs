@@ -33,6 +33,7 @@ using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Animation;
 
 namespace GorgonLibrary.Renderers
 {
@@ -64,6 +65,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the size of the point.
 		/// </summary>
 		/// <remarks>This value cannot be less than 1.</remarks>
+		[AnimatedProperty()]
 		public Vector2 PointThickness
 		{
 			get
@@ -357,6 +359,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the opacity (Alpha channel) of the renderable object.
 		/// </summary>
+		[AnimatedProperty()]
 		public float Opacity
 		{
 			get
@@ -372,6 +375,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
+		[AnimatedProperty()]
 		public GorgonColor Color
 		{
 			get
@@ -556,6 +560,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the point.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 Position
 		{
 			get;

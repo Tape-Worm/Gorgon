@@ -36,8 +36,8 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// A track that will animate properties with a Vector4 data type.
 	/// </summary>
-	class GorgonTrackVector4
-		: GorgonAnimationTrack
+	class GorgonTrackVector4<T>
+		: GorgonAnimationTrack<T>
 	{
 		#region Variables.
 		private Func<Object, Vector4> _getProperty = null;			// Get property method.
@@ -83,7 +83,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
 		{
 			GorgonKeyVector4 next = (GorgonKeyVector4)keyValues.NextKey;
 			GorgonKeyVector4 prev = (GorgonKeyVector4)keyValues.PreviousKey;
@@ -112,7 +112,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackVector4" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackVector4{T}" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
 		internal GorgonTrackVector4(GorgonAnimatedProperty property)

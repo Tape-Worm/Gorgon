@@ -33,6 +33,7 @@ using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Animation;
 
 namespace GorgonLibrary.Renderers
 {
@@ -144,8 +145,25 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Property to set or return a texture for the renderable.
+		/// </summary>
+		public override GorgonTexture2D Texture
+		{
+			get
+			{
+				// We override this to remove the animated attribute.
+				return base.Texture;
+			}
+			set
+			{
+				base.Texture = value;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
+		[AnimatedProperty()]
 		public override GorgonColor Color
 		{
 			get
@@ -170,6 +188,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the thickness of the lines for an unfilled triangle.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 LineThickness
 		{
 			get
@@ -498,6 +517,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the anchor point for the triangle.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 Anchor
 		{
 			get
@@ -517,6 +537,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for the triangle.
 		/// </summary>
+		[AnimatedProperty()]
 		public float Angle
 		{
 			get;
@@ -526,6 +547,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the triangle.
 		/// </summary>
+		[AnimatedProperty()]
 		public Vector2 Position
 		{
 			get;
@@ -538,6 +560,7 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>This property uses scalar values to provide a relative scale. 
 		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
 		/// </remarks>
+		[AnimatedProperty()]
 		public Vector2 Scale
 		{
 			get;

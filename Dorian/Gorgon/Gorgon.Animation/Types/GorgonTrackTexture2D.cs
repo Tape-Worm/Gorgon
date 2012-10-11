@@ -38,8 +38,9 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// A track that will animate properties with a 2D texture data type.
 	/// </summary>
-	class GorgonTrackTexture2D
-		: GorgonAnimationTrack
+	/// <typeparam name="T">Type of object to be animated.</typeparam>
+	class GorgonTrackTexture2D<T>
+		: GorgonAnimationTrack<T>
 	{
 		#region Variables.
 		private Func<Object, GorgonTexture2D> _getTextureProperty = null;			// Get property method.
@@ -71,7 +72,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
 		{
 			GorgonKeyTexture2D prev = (GorgonKeyTexture2D)keyValues.PreviousKey;
 
@@ -106,7 +107,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackTexture2D" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackTexture2D{T}" /> class.
 		/// </summary>
 		/// <param name="textureProperty">Property to alter the texture.</param>
 		/// <param name="regionProperty">Property to alter the region.</param>

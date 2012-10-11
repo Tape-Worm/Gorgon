@@ -61,7 +61,8 @@ namespace GorgonLibrary.Animation
 	/// <remarks>Custom tracks may be built by the user by inheriting from this object.  When a custom track is built, the user will need to add that track to the 
 	/// <see cref="P:GorgonLibrary.Animation.GorgonAnimation.Tracks">GorgonAnimation.Tracks</see> collection.  Please note that when a custom track is built a custom 
 	/// <see cref="GorgonLibrary.Animation.IKeyFrame">key frame</see> type must be built to accompany the track.</remarks>
-	public abstract class GorgonAnimationTrack
+	/// <typeparam name="T">The type of object being animated.</typeparam>
+	public abstract class GorgonAnimationTrack<T>
 		: GorgonNamedObject
 	{
 		#region Value Types.
@@ -153,7 +154,7 @@ namespace GorgonLibrary.Animation
 			/// </summary>
 			/// <param name="owner">Owning track.</param>
 			/// <param name="requestedTime">Track time requested.</param>
-			internal NearestKeys(GorgonAnimationTrack owner, float requestedTime)
+			internal NearestKeys(GorgonAnimationTrack<T> owner, float requestedTime)
 			{
 				float animationLength = owner.Animation.Length;     // Animation length.
 				int i = 0;											// Loop.
@@ -281,7 +282,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Property to return the list of key frames for this animation.
 		/// </summary>
-		public GorgonAnimationKeyFrameCollection KeyFrames
+		public GorgonAnimationKeyFrameCollection<T> KeyFrames
 		{
 			get;
 			private set;
@@ -290,7 +291,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Property to return the animation that this track belongs to.
 		/// </summary>
-		public GorgonAnimation Animation
+		public GorgonAnimation<T> Animation
 		{
 			get;
 			internal set;
@@ -310,35 +311,35 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Function to build a get accessor for the property that will be manipulated by the track.
 		/// </summary>
-		/// <typeparam name="T">Type of output.</typeparam>
+		/// <typeparam name="O">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Func<Object, T> BuildGetAccessor<T>()
+		protected Func<Object, O> BuildGetAccessor<O>()
 		{
-			return BuildGetAccessor<T>(AnimatedProperty.Property.GetGetMethod());
+			return BuildGetAccessor<O>(AnimatedProperty.Property.GetGetMethod());
 		}
 
 		/// <summary>
 		/// Function to build a set accessor for the property that will be manipulated by the track.
 		/// </summary>
-		/// <typeparam name="T">Type of output.</typeparam>
+		/// <typeparam name="O">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Action<Object, T> BuildSetAccessor<T>()
+		protected Action<Object, O> BuildSetAccessor<O>()
 		{
-			return BuildSetAccessor<T>(AnimatedProperty.Property.GetSetMethod());
+			return BuildSetAccessor<O>(AnimatedProperty.Property.GetSetMethod());
 		}
 		
 		/// <summary>
 		/// Function to build a get accessor for the property that will be manipulated by the track.
 		/// </summary>
 		/// <param name="getMethod">Method information.</param>
-		/// <typeparam name="T">Type of output.</typeparam>
+		/// <typeparam name="O">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Func<Object, T> BuildGetAccessor<T>(MethodInfo getMethod)
+		protected Func<Object, O> BuildGetAccessor<O>(MethodInfo getMethod)
 		{
 			var instance = Expression.Parameter(typeof(Object), "Inst");
 
-			Expression<Func<Object, T>> expression =
-				Expression.Lambda<Func<Object, T>>(
+			Expression<Func<Object, O>> expression =
+				Expression.Lambda<Func<Object, O>>(
 					Expression.Call(Expression.Convert(instance, getMethod.DeclaringType), getMethod),
 				instance);
 
@@ -349,15 +350,15 @@ namespace GorgonLibrary.Animation
 		/// Function to build a set accessor for the property that will be manipulated by the track.
 		/// </summary>
 		/// <param name="setMethod">Method information.</param>
-		/// <typeparam name="T">Type of output.</typeparam>
+		/// <typeparam name="O">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Action<Object, T> BuildSetAccessor<T>(MethodInfo setMethod)
+		protected Action<Object, O> BuildSetAccessor<O>(MethodInfo setMethod)
 		{
 			var instance = Expression.Parameter(typeof(Object), "Inst");
-			var value = Expression.Parameter(typeof(T));
+			var value = Expression.Parameter(typeof(O));
 
-			Expression<Action<Object, T>> expression =
-				Expression.Lambda<Action<Object, T>>(
+			Expression<Action<Object, O>> expression =
+				Expression.Lambda<Action<Object, O>>(
 					Expression.Call(Expression.Convert(instance, setMethod.DeclaringType), setMethod, value),
 				instance, value);
 
@@ -379,7 +380,7 @@ namespace GorgonLibrary.Animation
 		/// <param name="keyTime">The time to assign to the key.</param>
 		/// <param name="unitTime">The time, expressed in unit time.</param>
 		/// <returns>The interpolated key frame containing the interpolated values.</returns>
-		protected abstract IKeyFrame GetTweenKey(ref GorgonAnimationTrack.NearestKeys keyValues, float keyTime, float unitTime);
+		protected abstract IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime);
 
 		/// <summary>
 		/// Function to apply the key value to the object properties.
@@ -418,7 +419,7 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <param name="time">Time interval to look up.</param>
 		/// <returns>The nearest keys to the interval.</returns>
-		public GorgonAnimationTrack.NearestKeys GetNearestKeys(float time)
+		public GorgonAnimationTrack<T>.NearestKeys GetNearestKeys(float time)
 		{
 			return new NearestKeys(this, time);
 		}
@@ -442,7 +443,7 @@ namespace GorgonLibrary.Animation
 			// The animation controller in the previous version of Gorgon was horrifically slow, hopefully
 			// this will remedy that.
 			AnimatedProperty = property;
-			KeyFrames = new GorgonAnimationKeyFrameCollection(this);
+			KeyFrames = new GorgonAnimationKeyFrameCollection<T>(this);
 			Spline = new GorgonSpline();
 		}
 		#endregion

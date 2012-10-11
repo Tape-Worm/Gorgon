@@ -49,7 +49,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the renderable.
 		/// </summary>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual Vector2 Position
 		{
 			get;
@@ -59,7 +59,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for a renderable.
 		/// </summary>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual float Angle
 		{
 			get;
@@ -72,7 +72,7 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Size">Size</see> property.
 		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
 		/// </remarks>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual Vector2 Scale
 		{
 			get;
@@ -82,7 +82,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the anchor point of the renderable.
 		/// </summary>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual Vector2 Anchor
 		{
 			get
@@ -102,7 +102,6 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the "depth" of the renderable in a depth buffer.
 		/// </summary>
-        [AnimatedProperty()]
 		public virtual float Depth
 		{
 			get;
@@ -112,7 +111,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the size of the renderable.
 		/// </summary>
-        [AnimatedProperty()]
+		[AnimatedProperty()]
 		public virtual Vector2 Size
 		{
 			get

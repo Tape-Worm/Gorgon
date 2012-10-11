@@ -38,15 +38,42 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// Manages and controls animations for an object.
 	/// </summary>
-	/// <remarks>To animate an object, the object should have a <see cref="GorgonLibrary.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.</remarks>
-	public class GorgonAnimationController
-		: GorgonBaseNamedObjectCollection<GorgonAnimation>
+	/// <typeparam name="T">The type of object that this controller will use.</typeparam>
+	/// <remarks>
+	/// A controller will force the object to update its properties over a certain time frame (or continously if looped).  It does this by placing its animated properties into the <see cref="P:GorgonLibrary.Animation.GorgonAnimation.Tracks">Tracks</see> of an 
+	/// <see cref="GorgonLibrary.Animation.GorgonAnimation">Animation</see>.  These tracks will take <see cref="P:GorgonLibrary.Animation.GorgonAnimationTrack.KeyFrames">key frames</see> which correspond to the type of the property.  For example, the Angle property
+	/// of a sprite uses a floating point value, so a <see cref="GorgonLibrary.Animation.GorgonKeySingle">GorgonKeySingle</see>, or floating point key frame should be added to the Angle track.
+	/// <para>To ensure the object will animate, it should have a <see cref="GorgonLibrary.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.  Otherwise, no animations will play.  Currently, Gorgon's graphical objects (e.g. sprites, text, etc...)
+	/// all have appropriate attributes assigned to their properties.</para>
+	/// <para>A user may add a custom track by inheriting from <see cref="GorgonLibrary.Animation.GorgonAnimationTrack">GorgonAnimationTrack</see> and creating a custom key frame type that implements <see cref="Gorgon.Animation.IKeyFrame">IKeyFrame</see>, and then adding a instance of the 
+	/// custom track to the animation (not the controller).</para>
+	/// </remarks>
+	public class GorgonAnimationController<T>
+		: GorgonBaseNamedObjectCollection<GorgonAnimation<T>>
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the list of animated properties for the type specified by the generic parameter.
+		/// </summary>
+		internal IDictionary<string, GorgonAnimatedProperty> AnimatedProperties
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the type of object that this controller will animate.
+		/// </summary>
+		public Type AnimatedObjectType
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to set or return the object that is to be animated.
 		/// </summary>
-		internal object AnimatedObject
+		public T AnimatedObject
 		{
 			get;
 			private set;
@@ -55,7 +82,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Property to return the currently playing animation.
 		/// </summary>
-		public GorgonAnimation CurrentAnimation
+		public GorgonAnimation<T> CurrentAnimation
 		{
 			get;
 			private set;
@@ -64,7 +91,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Property to set or return the animation at the specified index.
 		/// </summary>
-		public GorgonAnimation this[int index]
+		public GorgonAnimation<T> this[int index]
 		{
 			get
 			{
@@ -82,7 +109,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Property to set or return an animation by name.
 		/// </summary>
-		public GorgonAnimation this[string name]
+		public GorgonAnimation<T> this[string name]
 		{
 			get
 			{
@@ -111,7 +138,7 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <param name="name">Name of the item to set.</param>
 		/// <param name="value">Value to set.</param>
-		protected override void SetItem(string name, GorgonAnimation value)
+		protected override void SetItem(string name, GorgonAnimation<T> value)
 		{
 			if (CurrentAnimation == this[name])
 				Stop();
@@ -129,7 +156,7 @@ namespace GorgonLibrary.Animation
 		/// Function to add an animation to the collection.
 		/// </summary>
 		/// <param name="value">Animation to add.</param>
-		protected override void AddItem(GorgonAnimation value)
+		protected override void AddItem(GorgonAnimation<T> value)
 		{
 			if ((value != null) && (value.AnimationController != null) && (value.AnimationController != this) && (value.AnimationController.Contains(value)))
 				value.AnimationController.Remove(value);
@@ -142,7 +169,7 @@ namespace GorgonLibrary.Animation
 		/// Function to remove an item from the collection.
 		/// </summary>
 		/// <param name="item">Item to remove.</param>
-		protected override void RemoveItem(GorgonAnimation item)
+		protected override void RemoveItem(GorgonAnimation<T> item)
 		{
 			if (CurrentAnimation == item)
 				Stop();
@@ -179,12 +206,13 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Function to set an animation playing.
 		/// </summary>
+		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="animation">Animation to play.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
-		public void Play(GorgonAnimation animation)
+		public void Play(T animatedObject, GorgonAnimation<T> animation)
 		{
-			GorgonDebug.AssertNull<GorgonAnimation>(animation, "animation");
+			GorgonDebug.AssertNull<GorgonAnimation<T>>(animation, "animation");
 
 #if DEBUG
 			if (!Contains(animation))
@@ -199,6 +227,7 @@ namespace GorgonLibrary.Animation
 			if (CurrentAnimation != null)
 				Stop();
 
+			AnimatedObject = animatedObject;
 			CurrentAnimation = animation;
 
 			// Update to the first frame.
@@ -208,11 +237,12 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Function to set an animation playing.
 		/// </summary>
+		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="animation">Name of the animation to start playing.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
-		public void Play(string animation)
+		public void Play(T animatedObject, string animation)
 		{
 			GorgonDebug.AssertParamString(animation, animation);
 
@@ -220,18 +250,19 @@ namespace GorgonLibrary.Animation
 			if (!Contains(animation))
 				throw new KeyNotFoundException("The animation '" + animation + "' was not found in this collection");
 #endif            
-			Play(this[animation]);
+			Play(animatedObject, this[animation]);
 		}
 
 		/// <summary>
 		/// Function to set an animation playing.
 		/// </summary>
+		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="index">Index of the animation to start playing.</param>
 		/// <exception cref="System.IndexOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than (or equal to) the number of animations.</exception>
-		public void Play(int index)
+		public void Play(T animatedObject, int index)
 		{
 			GorgonDebug.AssertParamRange(index, 0, Count, "index");
-			Play(this[index]);
+			Play(animatedObject, this[index]);
 		}
 
 		/// <summary>
@@ -241,6 +272,7 @@ namespace GorgonLibrary.Animation
 		{
 			if (CurrentAnimation == null)
 				return;
+			AnimatedObject = default(T);
 			CurrentAnimation = null;
 		}
 
@@ -250,9 +282,9 @@ namespace GorgonLibrary.Animation
 		/// <param name="animations">Animations to add.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animations"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when an animation in the list already exists in this collection.</exception>
-		public void AddRange(IEnumerable<GorgonAnimation> animations)
+		public void AddRange(IEnumerable<GorgonAnimation<T>> animations)
 		{
-			GorgonDebug.AssertNull<IEnumerable<GorgonAnimation>>(animations, "animations");
+			GorgonDebug.AssertNull<IEnumerable<GorgonAnimation<T>>>(animations, "animations");
 			
 			if (animations.Count() == 0)
 				return;
@@ -266,9 +298,9 @@ namespace GorgonLibrary.Animation
 		/// <param name="animation">Animation to add to the collection.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the animation already exists in this collection.</exception>
-		public void Add(GorgonAnimation animation)
+		public void Add(GorgonAnimation<T> animation)
 		{
-			GorgonDebug.AssertNull<GorgonAnimation>(animation, "animation");
+			GorgonDebug.AssertNull<GorgonAnimation<T>>(animation, "animation");
 
 			if (Contains(animation.Name))
 				throw new ArgumentException("'" + animation.Name + "' already exists in this collection.", "animation");
@@ -286,16 +318,16 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the animation already exists in this collection.</para></exception>
-		public GorgonAnimation Add(string name, float length)
+		public GorgonAnimation<T> Add(string name, float length)
 		{
-			GorgonAnimation result = null;
+			GorgonAnimation<T> result = null;
 
 			GorgonDebug.AssertParamString(name, "name");
 
 			if (Contains(name))
 				throw new ArgumentException("'" + name + "' already exists in this collection.", "animation");
 
-			result = new GorgonAnimation(this, name, length);
+			result = new GorgonAnimation<T>(this, name, length);
 			AddItem(result);
 
 			return result;
@@ -321,9 +353,9 @@ namespace GorgonLibrary.Animation
 		/// <param name="animation">Animation to remove.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
-		public void Remove(GorgonAnimation animation)
+		public void Remove(GorgonAnimation<T> animation)
 		{
-			GorgonDebug.AssertNull<GorgonAnimation>(animation, "animation");
+			GorgonDebug.AssertNull<GorgonAnimation<T>>(animation, "animation");
 			if (!Contains(animation))
 				throw new KeyNotFoundException("The animation '" + animation.Name + "' was not found in this collection.");
 
@@ -363,13 +395,20 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonAnimationController" /> class.
 		/// </summary>
-		/// <param name="animatedObject">The object that holds the animations.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animatedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public GorgonAnimationController(Object animatedObject)
+		public GorgonAnimationController()
 			: base(false)
 		{
-			GorgonDebug.AssertNull<Object>(animatedObject, "animatedObject");
-			AnimatedObject = animatedObject;
+			AnimatedObjectType = typeof(T);
+
+			AnimatedProperties = (from property in AnimatedObjectType.GetProperties()
+								  let attribs = property.GetCustomAttributes(typeof(AnimatedPropertyAttribute), true) as IList<AnimatedPropertyAttribute>
+								  where attribs != null && attribs.Count == 1
+								  select new GorgonAnimatedProperty
+								  {
+									  Property = property,
+									  DisplayName = string.IsNullOrEmpty(attribs[0].DisplayName) ? property.Name : attribs[0].DisplayName,
+									  DataType = attribs[0].DataType == null ? property.PropertyType : attribs[0].DataType
+								  }).ToDictionary((key) => key.Property.Name, (value) => value);
 		}
 		#endregion
 	}

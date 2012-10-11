@@ -76,7 +76,6 @@ namespace GorgonLibrary.Renderers
 		private bool _horizontalFlip = false;											// Flag to indicate that the sprite is flipped horizontally.
 		private bool _verticalFlip = false;												// Flag to indicate that the sprite is flipped vertically.
 		private Gorgon2DCollider _collider = null;										// Collider for the sprite.
-		private GorgonAnimationController _animations = null;							// Animations.
 		#endregion
 
 		#region Properties.
@@ -427,8 +426,6 @@ namespace GorgonLibrary.Renderers
 				Vector2.Zero, 
 				Vector2.Zero, 
 			};
-
-			_animations = new GorgonAnimationController(this);
 		}
 		#endregion
 
