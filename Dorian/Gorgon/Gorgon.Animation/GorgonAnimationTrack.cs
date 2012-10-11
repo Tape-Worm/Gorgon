@@ -64,6 +64,7 @@ namespace GorgonLibrary.Animation
 	/// <typeparam name="T">The type of object being animated.</typeparam>
 	public abstract class GorgonAnimationTrack<T>
 		: GorgonNamedObject
+		where T : class
 	{
 		#region Value Types.
 		/// <summary>
@@ -313,7 +314,7 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <typeparam name="O">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Func<Object, O> BuildGetAccessor<O>()
+		protected Func<T, O> BuildGetAccessor<O>()
 		{
 			return BuildGetAccessor<O>(AnimatedProperty.Property.GetGetMethod());
 		}
@@ -323,7 +324,7 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <typeparam name="O">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Action<Object, O> BuildSetAccessor<O>()
+		protected Action<T, O> BuildSetAccessor<O>()
 		{
 			return BuildSetAccessor<O>(AnimatedProperty.Property.GetSetMethod());
 		}
@@ -334,13 +335,13 @@ namespace GorgonLibrary.Animation
 		/// <param name="getMethod">Method information.</param>
 		/// <typeparam name="O">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Func<Object, O> BuildGetAccessor<O>(MethodInfo getMethod)
+		protected Func<T, O> BuildGetAccessor<O>(MethodInfo getMethod)
 		{
-			var instance = Expression.Parameter(typeof(Object), "Inst");
+			var instance = Expression.Parameter(typeof(T), "Inst");
 
-			Expression<Func<Object, O>> expression =
-				Expression.Lambda<Func<Object, O>>(
-					Expression.Call(Expression.Convert(instance, getMethod.DeclaringType), getMethod),
+			Expression<Func<T, O>> expression =
+				Expression.Lambda<Func<T, O>>(
+					Expression.Call(instance, getMethod),
 				instance);
 
 			return expression.Compile();
@@ -352,14 +353,14 @@ namespace GorgonLibrary.Animation
 		/// <param name="setMethod">Method information.</param>
 		/// <typeparam name="O">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Action<Object, O> BuildSetAccessor<O>(MethodInfo setMethod)
+		protected Action<T, O> BuildSetAccessor<O>(MethodInfo setMethod)
 		{
-			var instance = Expression.Parameter(typeof(Object), "Inst");
+			var instance = Expression.Parameter(typeof(T), "Inst");
 			var value = Expression.Parameter(typeof(O));
 
-			Expression<Action<Object, O>> expression =
-				Expression.Lambda<Action<Object, O>>(
-					Expression.Call(Expression.Convert(instance, setMethod.DeclaringType), setMethod, value),
+			Expression<Action<T, O>> expression =
+				Expression.Lambda<Action<T, O>>(
+					Expression.Call(instance, setMethod, value),
 				instance, value);
 
 			return expression.Compile();
@@ -427,7 +428,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimationTrack" /> class.
+		/// Initializes a new instance of the <see cref="GorgonAnimationTrack{T}" /> class.
 		/// </summary>
 		/// <param name="property">The property to animate.</param>
 		protected GorgonAnimationTrack(GorgonAnimatedProperty property)

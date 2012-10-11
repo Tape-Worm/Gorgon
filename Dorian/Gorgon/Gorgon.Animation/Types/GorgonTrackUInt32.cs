@@ -38,10 +38,11 @@ namespace GorgonLibrary.Animation
 	/// <typeparam name="T">Type of object to be animated.</typeparam>
 	internal class GorgonTrackUInt32<T>
 		: GorgonAnimationTrack<T>
+		where T : class
 	{
 		#region Variables.
-		private Func<Object, UInt32> _getProperty = null;			// Get property method.
-		private Action<Object, UInt32> _setProperty = null;		// Set property method.
+		private Func<T, UInt32> _getProperty = null;			// Get property method.
+		private Action<T, UInt32> _setProperty = null;		// Set property method.
 		#endregion
 
 		#region Properties.

@@ -41,12 +41,13 @@ namespace GorgonLibrary.Animation
 	/// <typeparam name="T">Type of object to be animated.</typeparam>
 	class GorgonTrackTexture2D<T>
 		: GorgonAnimationTrack<T>
+		where T : class
 	{
 		#region Variables.
-		private Func<Object, GorgonTexture2D> _getTextureProperty = null;			// Get property method.
-		private Action<Object, GorgonTexture2D> _setTextureProperty = null;			// Set property method.
-		private Func<Object, RectangleF> _getTextureRegionProperty = null;			// Get property method.
-		private Action<Object, RectangleF> _setTextureRegionProperty = null;			// Set property method.
+		private Func<T, GorgonTexture2D> _getTextureProperty = null;			// Get property method.
+		private Action<T, GorgonTexture2D> _setTextureProperty = null;			// Set property method.
+		private Func<T, RectangleF> _getTextureRegionProperty = null;			// Get property method.
+		private Action<T, RectangleF> _setTextureRegionProperty = null;			// Set property method.
 		#endregion
 
 		#region Properties.

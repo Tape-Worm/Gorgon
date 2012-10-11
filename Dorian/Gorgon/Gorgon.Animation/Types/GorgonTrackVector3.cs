@@ -39,10 +39,11 @@ namespace GorgonLibrary.Animation
 	/// <typeparam name="T">Type of object to be animated.</typeparam>
 	class GorgonTrackVector3<T>
 		: GorgonAnimationTrack<T>
+		where T : class
 	{
 		#region Variables.
-		private Func<Object, Vector3> _getProperty = null;			// Get property method.
-		private Action<Object, Vector3> _setProperty = null;			// Set property method.
+		private Func<T, Vector3> _getProperty = null;			// Get property method.
+		private Action<T, Vector3> _setProperty = null;			// Set property method.
 		#endregion
 
 		#region Properties.
@@ -113,7 +114,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackVector3" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTrackVector3{T}" /> class.
 		/// </summary>
 		/// <param name="property">Property information.</param>
 		internal GorgonTrackVector3(GorgonAnimatedProperty property)

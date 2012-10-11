@@ -38,18 +38,19 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// Manages and controls animations for an object.
 	/// </summary>
-	/// <typeparam name="T">The type of object that this controller will use.</typeparam>
+	/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
 	/// <remarks>
 	/// A controller will force the object to update its properties over a certain time frame (or continously if looped).  It does this by placing its animated properties into the <see cref="P:GorgonLibrary.Animation.GorgonAnimation.Tracks">Tracks</see> of an 
-	/// <see cref="GorgonLibrary.Animation.GorgonAnimation">Animation</see>.  These tracks will take <see cref="P:GorgonLibrary.Animation.GorgonAnimationTrack.KeyFrames">key frames</see> which correspond to the type of the property.  For example, the Angle property
+	/// <see cref="GorgonLibrary.Animation.GorgonAnimation{T}">Animation</see>.  These tracks will take <see cref="P:GorgonLibrary.Animation.GorgonAnimationTrack.KeyFrames">key frames</see> which correspond to the type of the property.  For example, the Angle property
 	/// of a sprite uses a floating point value, so a <see cref="GorgonLibrary.Animation.GorgonKeySingle">GorgonKeySingle</see>, or floating point key frame should be added to the Angle track.
 	/// <para>To ensure the object will animate, it should have a <see cref="GorgonLibrary.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.  Otherwise, no animations will play.  Currently, Gorgon's graphical objects (e.g. sprites, text, etc...)
 	/// all have appropriate attributes assigned to their properties.</para>
-	/// <para>A user may add a custom track by inheriting from <see cref="GorgonLibrary.Animation.GorgonAnimationTrack">GorgonAnimationTrack</see> and creating a custom key frame type that implements <see cref="Gorgon.Animation.IKeyFrame">IKeyFrame</see>, and then adding a instance of the 
+	/// <para>A user may add a custom track by inheriting from <see cref="GorgonLibrary.Animation.GorgonAnimationTrack{T}">GorgonAnimationTrack</see> and creating a custom key frame type that implements <see cref="GorgonLibrary.Animation.IKeyFrame">IKeyFrame</see>, and then adding a instance of the 
 	/// custom track to the animation (not the controller).</para>
 	/// </remarks>
 	public class GorgonAnimationController<T>
 		: GorgonBaseNamedObjectCollection<GorgonAnimation<T>>
+		where T : class
 	{
 		#region Properties.
 		/// <summary>
@@ -208,11 +209,12 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="animation">Animation to play.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
 		public void Play(T animatedObject, GorgonAnimation<T> animation)
 		{
 			GorgonDebug.AssertNull<GorgonAnimation<T>>(animation, "animation");
+			GorgonDebug.AssertNull<T>(animatedObject, "animatedObject");
 
 #if DEBUG
 			if (!Contains(animation))
@@ -239,7 +241,7 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="animation">Name of the animation to start playing.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
 		public void Play(T animatedObject, string animation)
@@ -258,6 +260,7 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="index">Index of the animation to start playing.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animatedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.IndexOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than (or equal to) the number of animations.</exception>
 		public void Play(T animatedObject, int index)
 		{
@@ -272,7 +275,7 @@ namespace GorgonLibrary.Animation
 		{
 			if (CurrentAnimation == null)
 				return;
-			AnimatedObject = default(T);
+			AnimatedObject = null;
 			CurrentAnimation = null;
 		}
 
@@ -393,7 +396,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimationController" /> class.
+		/// Initializes a new instance of the <see cref="GorgonAnimationController{T}" /> class.
 		/// </summary>
 		public GorgonAnimationController()
 			: base(false)

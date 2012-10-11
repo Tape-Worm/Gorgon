@@ -39,6 +39,7 @@ namespace GorgonLibrary.Animation
 	/// <typeparam name="T">The type of object being animated.</typeparam>
 	public class GorgonAnimationKeyFrameCollection<T>
 		: IList<IKeyFrame>
+		where T : class
 	{
 		#region Variables.
 		private List<IKeyFrame> _keyFrames = null;			// List of key frames.
@@ -87,7 +88,7 @@ namespace GorgonLibrary.Animation
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimationKeyFrameCollection" /> class.
+		/// Initializes a new instance of the <see cref="GorgonAnimationKeyFrameCollection{T}" /> class.
 		/// </summary>
 		/// <param name="track">Track that owns this collection.</param>
 		internal GorgonAnimationKeyFrameCollection(GorgonAnimationTrack<T> track)			
