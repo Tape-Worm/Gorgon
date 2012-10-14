@@ -95,6 +95,26 @@ namespace GorgonLibrary.Animation
 		{
 			return new GorgonKeyUInt32(Time, Value);
 		}
+
+		/// <summary>
+		/// Function to retrieve key frame data from a binary data reader.
+		/// </summary>
+		/// <param name="reader">Reader used to read the stream.</param>
+		void IKeyFrame.FromStream(IO.GorgonBinaryReader reader)
+		{
+			this.Time = reader.ReadSingle();
+			Value = reader.ReadUInt32();
+		}
+
+		/// <summary>
+		/// Function to send the key frame data to a binary data writer.
+		/// </summary>
+		/// <param name="writer">Writer used to write to the stream.</param>
+		void IKeyFrame.ToStream(IO.GorgonBinaryWriter writer)
+		{
+			writer.Write(Time);
+			writer.Write(Value);
+		}
 		#endregion
 	}
 }

@@ -76,6 +76,15 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
+		/// Function to create the a key with the proper type for this track.
+		/// </summary>
+		/// <returns>The key with the proper type for this track.</returns>
+		protected override IKeyFrame MakeKey()
+		{
+			return new GorgonKeyByte(0, 0);			
+		}
+
+		/// <summary>
 		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
 		/// <param name="keyValues">Nearest previous and next key frames.</param>

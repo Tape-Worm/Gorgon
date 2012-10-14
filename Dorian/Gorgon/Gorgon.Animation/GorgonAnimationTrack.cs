@@ -30,6 +30,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Reflection;
+using System.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 
@@ -375,6 +376,12 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
+		/// Function to create the a key with the proper type for this track.
+		/// </summary>
+		/// <returns>The key with the proper type for this track.</returns>
+		protected abstract IKeyFrame MakeKey();
+
+		/// <summary>
 		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
 		/// <param name="keyValues">Nearest previous and next key frames.</param>
@@ -390,10 +397,41 @@ namespace GorgonLibrary.Animation
 		protected abstract internal void ApplyKey(ref IKeyFrame key);
 
 		/// <summary>
+		/// Function to read the track data from a stream.
+		/// </summary>
+		/// <param name="reader">Reader used to read in the data from the stream.</param>
+		internal void FromStream(GorgonLibrary.IO.GorgonBinaryReader reader)
+		{
+			InterpolationMode = (TrackInterpolationMode)reader.ReadInt32();
+
+			int keyCount = reader.ReadInt32();
+
+			for (int i = 0; i < keyCount; i++)
+			{
+				IKeyFrame key = MakeKey();
+				key.FromStream(reader);
+				KeyFrames.Add(key);
+			}
+		}
+
+		/// <summary>
+		/// Function to write the track data to a stream.
+		/// </summary>
+		/// <param name="writer">Writer used to write the data to the stream.</param>
+		internal void ToStream(GorgonLibrary.IO.GorgonBinaryWriter writer)
+		{
+			writer.Write(Name);
+			writer.Write((int)InterpolationMode);
+			writer.Write(KeyFrames.Count);
+			for (int i = 0; i < KeyFrames.Count; i++)
+				KeyFrames[i].ToStream(writer);
+		}
+
+		/// <summary>
 		/// Function to retrieve a key frame for a given time.
 		/// </summary>
 		/// <param name="time">Time to look up.</param>
-		/// <returns>A keyframe at that time.  Note that this can be a key frame that was interpolated because it doesn't actually exist in the collection.</returns>
+		/// <returns>A keyframe at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="P:GorgonLibrary.Animation.GorgonAnimationTrack.KeyFrames">key frames collection</see>.</returns>
 		public IKeyFrame GetKeyAtTime(float time)
 		{
 			NearestKeys keys = default(NearestKeys);

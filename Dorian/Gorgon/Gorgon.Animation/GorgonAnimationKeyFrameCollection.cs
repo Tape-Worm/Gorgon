@@ -59,9 +59,20 @@ namespace GorgonLibrary.Animation
 
 		#region Methods.
 		/// <summary>
+		/// Function to return whether a key with the specified time exists in the collection.
+		/// </summary>
+		/// <param name="time">Time in the collection to look up.</param>
+		/// <returns>TRUE if found, FALSE if not.</returns>
+		public bool Contains(float time)
+		{
+			return Times.ContainsKey(time);
+		}
+
+		/// <summary>
 		/// Function to add a list of keyframes to the collection.
 		/// </summary>
 		/// <param name="keyFrames">Keyframes to add.</param>
+		/// <exception cref="System.ArgumentException">Thrown when a key frame already exists in the collection with the specified time index.</exception>
 		public void AddRange(IEnumerable<IKeyFrame> keyFrames)
 		{
 			if ((keyFrames == null) || (keyFrames.Count() == 0))
@@ -80,6 +91,15 @@ namespace GorgonLibrary.Animation
 		public void InsertRange(int index, IEnumerable<IKeyFrame> keyFrames)
 		{
 			GorgonDebug.AssertParamRange(index, 0, Count, "index");
+
+			foreach (var key in keyFrames)
+			{
+				if (Contains(key.Time))
+					throw new ArgumentException("There's already a key frame at the time '" + key.Time.ToString("0.0#####") + "'.");
+
+				Times.Add(key.Time, key);
+			}
+
 			_keyFrames.InsertRange(index, keyFrames);
 			if (_track != null)
 				_track.SetupSpline();
@@ -137,10 +157,14 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
 		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-
+		/// <exception cref="System.ArgumentException">Thrown when a key frame already exists in the collection with the specified time index.</exception>
 		public void Insert(int index, IKeyFrame item)
 		{
+			if (Contains(item.Time))
+				throw new ArgumentException("There's already a key frame at the time '" + item.Time.ToString("0.0#####") + "'.");
+
 			_keyFrames.Insert(index, item);
+			Times.Add(item.Time, item);
 			if (_track != null)
 				_track.SetupSpline();
 		}       
@@ -191,10 +215,14 @@ namespace GorgonLibrary.Animation
 		/// Property to add a key frame to the collection.
 		/// </summary>
 		/// <param name="item">Keyframe to add.</param>
+		/// <exception cref="System.ArgumentException">Thrown when a key frame already exists in the collection with the specified time index.</exception>
 		public void Add(IKeyFrame item)
 		{
 			if (item.DataType != _track.DataType)
 				throw new InvalidCastException("Cannot use a type '" + item.GetType().ToString() + "' in a track with a type of '" + _track.GetType().ToString() + "'.");
+			if (Contains(item.Time))
+				throw new ArgumentException("There's already a key frame at the time '" + item.Time.ToString("0.0#####") + "'.");
+
 			_keyFrames.Add(item);
 			Times.Add(item.Time, item);
 			if (_track != null)

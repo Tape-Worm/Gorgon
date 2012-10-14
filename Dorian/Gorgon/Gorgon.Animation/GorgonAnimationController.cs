@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.IO;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections;
 
@@ -52,6 +54,13 @@ namespace GorgonLibrary.Animation
 		: GorgonBaseNamedObjectCollection<GorgonAnimation<T>>
 		where T : class
 	{
+		#region Constants.
+		/// <summary>
+		/// Version header for the animation.
+		/// </summary>
+		public const string AnimationVersion = "GORANM2.0";
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the list of animated properties for the type specified by the generic parameter.
@@ -176,6 +185,90 @@ namespace GorgonLibrary.Animation
 				Stop();
 			item.AnimationController = null;
 			base.RemoveItem(item);
+		}		
+
+		/// <summary>
+		/// Function to load an animation from a stream.
+		/// </summary>
+		/// <param name="stream">Stream to load from.</param>
+		/// <returns>The animation in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the stream parameter does not contain a Gorgon animation file.
+		/// <para>-or-</para>
+		/// <para>Thrown when the name of the animation is already present in the controller animation collection.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when a track type cannot be associated with a property on the object type that the controller was declared with.</para>
+		/// </exception>
+		/// <exception cref="System.InvalidCastException">Thrown when the animation being loaded is for a different type than the controller was declared with.</exception>
+		public GorgonAnimation<T> FromStream(Stream stream)
+		{
+			GorgonAnimation<T> animation = null;
+			GorgonDebug.AssertNull<Stream>(stream, "stream");
+
+			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+			{
+				byte[] headerData = reader.ReadBytes(Encoding.UTF8.GetByteCount(AnimationVersion));
+
+				if (string.Compare(Encoding.UTF8.GetString(headerData), AnimationVersion, true) != 0)
+					throw new ArgumentException("This stream does not contain a Gorgon animation file.", "stream");
+
+				// Get the type of data.
+				string typeString = reader.ReadString();
+
+				if (typeString != AnimatedObjectType.FullName)
+					throw new InvalidCastException("This animation is for type '" + typeString + "' and is not compatible with a controller bound to type '" + AnimatedObjectType.FullName + "'.");
+
+				// Get the name.
+				string animationName = reader.ReadString();
+				if (Contains(animationName))
+					throw new ArgumentException("The animation '" + animationName + "' already exists in this collection.", "stream");
+
+				// Get the length of the animation.
+				float length = reader.ReadSingle();
+
+				animation = new GorgonAnimation<T>(this, animationName, length);
+				animation.IsLooped = reader.ReadBoolean();
+
+				int trackCount = reader.ReadInt32();
+				
+				// Get the tracks.
+				for (int i = 0; i < trackCount; i++)
+				{
+					string trackName = reader.ReadString();				// Get the track name.
+
+					if (!animation.Tracks.Contains(trackName))
+						throw new ArgumentException("There is no track named '" + trackName + "' that matches a property on the type '" + AnimatedObjectType.FullName + "'.", "stream");
+
+					animation.Tracks[trackName].FromStream(reader);
+				}
+			}
+
+			Add(animation);
+
+			return animation;
+		}
+
+		/// <summary>
+		/// Function to load an animation from a file.
+		/// </summary>
+		/// <param name="fileName">Path and file name for the animation file.</param>
+		/// <returns>The loaded animation from the file.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the stream parameter does not contain a Gorgon animation file.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the name of the animation is already present in the controller animation collection.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when a track type cannot be associated with a property on the object type that the controller was declared with.</para>
+		/// </exception>
+		/// <exception cref="System.InvalidCastException">Thrown when the animation being loaded is for a different type than the controller was declared with.</exception>
+		public GorgonAnimation<T> FromFile(string fileName)
+		{
+			GorgonDebug.AssertParamString(fileName, "fileName");
+
+			using (FileStream file = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+				return FromStream(file);
 		}
 
 		/// <summary>

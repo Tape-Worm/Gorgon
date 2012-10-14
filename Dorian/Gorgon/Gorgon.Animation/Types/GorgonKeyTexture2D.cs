@@ -104,6 +104,110 @@ namespace GorgonLibrary.Animation
 		{
 			return new GorgonKeyTexture2D(Time, Value, TextureRegion);
 		}
+
+		/// <summary>
+		/// Function to retrieve key frame data from a binary data reader.
+		/// </summary>
+		/// <param name="reader">Reader used to read the stream.</param>
+		void IKeyFrame.FromStream(IO.GorgonBinaryReader reader)
+		{
+			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
+			string textureName = string.Empty;
+
+			this.Time = reader.ReadSingle();
+			this.Value = null;
+			this.TextureRegion = RectangleF.Empty;
+			if (this.Time > -1)
+			{
+				textureName = reader.ReadString();
+				settings.ArrayCount = reader.ReadInt32();
+				settings.Format = (BufferFormat)reader.ReadInt32();
+				settings.Height = reader.ReadInt32();
+				settings.Width = reader.ReadInt32();
+				settings.IsTextureCube = reader.ReadBoolean();
+				settings.MipCount = reader.ReadInt32();
+				settings.Multisampling = new GorgonMultisampling(reader.ReadInt32(), reader.ReadInt32());
+				settings.Usage = BufferUsage.Default;
+				settings.ViewFormat = BufferFormat.Unknown;
+				TextureRegion = new RectangleF(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+
+				// This is a special case, but we'll need to find the texture we were associated with.
+				// In order to do that, we need to find all graphics objects:
+				var graphics = Gorgon.GetTrackedObjectsOfType<GorgonGraphics>();
+
+				// We have no graphics, then we can't do this anyway, so just throw an exception.
+				if (graphics.Count == 0)
+					throw new ArgumentException("Cannot load a 2D texture key frame without a graphics instance.", "reader");
+
+				// Then, we begin our search by looking at -all- the texture information we have:
+				Value = (from graphicsObject in graphics
+						 from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
+						 where (string.Compare(graphicsTexture.Name, textureName, true) == 0) &&
+						  (graphicsTexture.Settings.ArrayCount == settings.ArrayCount) &&
+						  (graphicsTexture.Settings.Format == settings.Format) &&
+						  (graphicsTexture.Settings.Height == settings.Height) &&
+						  (graphicsTexture.Settings.Width == settings.Width) &&
+						  (graphicsTexture.Settings.IsTextureCube == settings.IsTextureCube) &&
+						  (graphicsTexture.Settings.MipCount == settings.MipCount) &&
+						  (graphicsTexture.Settings.Multisampling == settings.Multisampling)
+						 select graphicsTexture).FirstOrDefault();
+
+				if (Value == null)
+				{
+					// That one failed, so just try and look it up by name, width, height and format.
+					Value = (from graphicsObject in graphics
+							 from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
+							 where (string.Compare(graphicsTexture.Name, textureName, true) == 0) &&
+							  (graphicsTexture.Settings.Format == settings.Format) &&
+							  (graphicsTexture.Settings.Height == settings.Height) &&
+							  (graphicsTexture.Settings.Width == settings.Width)
+							 select graphicsTexture).FirstOrDefault();
+
+					if (Value == null)
+					{
+						// OK, that one failed too, just look by name.
+						Value = (from graphicsObject in graphics
+								 from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
+								 where (string.Compare(graphicsTexture.Name, textureName, true) == 0)
+								 select graphicsTexture).FirstOrDefault();
+
+						// If we -still- can't get the texture, then we need to throw an exception.
+						if (Value == null)
+							throw new ArgumentException("Could not located any 2D texture named '" + textureName + "'.", "reader");
+					}
+				}
+			}
+			else
+				this.Time = -this.Time;
+		}
+
+		/// <summary>
+		/// Function to send the key frame data to a binary data writer.
+		/// </summary>
+		/// <param name="writer">Writer used to write to the stream.</param>
+		void IKeyFrame.ToStream(IO.GorgonBinaryWriter writer)
+		{
+			if (Value == null)
+			{
+				writer.Write(-Time);
+				return;
+			}
+
+			writer.Write(Time);
+			writer.Write(Value.Name);
+			writer.Write(Value.Settings.ArrayCount);
+			writer.Write((int)Value.Settings.Format);
+			writer.Write(Value.Settings.Height);
+			writer.Write(Value.Settings.Width);
+			writer.Write(Value.Settings.IsTextureCube);
+			writer.Write(Value.Settings.MipCount);
+			writer.Write(Value.Settings.Multisampling.Count);
+			writer.Write(Value.Settings.Multisampling.Quality);
+			writer.Write(this.TextureRegion.X);
+			writer.Write(this.TextureRegion.Y);
+			writer.Write(this.TextureRegion.Width);
+			writer.Write(this.TextureRegion.Height);
+		}
 		#endregion
 	}
 }

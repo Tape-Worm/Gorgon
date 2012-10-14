@@ -61,6 +61,15 @@ namespace GorgonLibrary.Animation
 
 		#region Methods.
 		/// <summary>
+		/// Function to create the a key with the proper type for this track.
+		/// </summary>
+		/// <returns>The key with the proper type for this track.</returns>
+		protected override IKeyFrame MakeKey()
+		{
+			return new GorgonKeyVector3(0, Vector3.Zero);
+		}
+
+		/// <summary>
 		/// Function to set up the spline for the animation.
 		/// </summary>
 		protected internal override void SetupSpline()

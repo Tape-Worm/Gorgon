@@ -65,6 +65,15 @@ namespace GorgonLibrary.Animation
 
 		#region Methods.
 		/// <summary>
+		/// Function to create the a key with the proper type for this track.
+		/// </summary>
+		/// <returns>The key with the proper type for this track.</returns>
+		protected override IKeyFrame MakeKey()
+		{
+			return new GorgonKeyTexture2D(0, null, RectangleF.Empty);
+		}
+
+		/// <summary>
 		/// Function to interpolate a new key frame from the nearest previous and next key frames.
 		/// </summary>
 		/// <param name="keyValues">Nearest previous and next key frames.</param>
