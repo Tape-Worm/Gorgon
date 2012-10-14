@@ -109,6 +109,16 @@ namespace GorgonLibrary.Animation
 			GorgonKeyTexture2D value = (GorgonKeyTexture2D)key;
 			GorgonTexture2D currentTexture = _getTextureProperty(Animation.AnimationController.AnimatedObject);
 
+			// If there's no texture on this key, then try to find it.
+			if (value.Value == null)
+			{
+				value.GetTexture();
+
+				// If we couldn't defer load the texture, then re-use the current.
+				if (value.Value == null)
+					value = new GorgonKeyTexture2D(value.Time, currentTexture, value.TextureRegion);
+			}
+
 			if (currentTexture != value.Value)
 				_setTextureProperty(Animation.AnimationController.AnimatedObject, value.Value);
 			_setTextureRegionProperty(Animation.AnimationController.AnimatedObject, value.TextureRegion);

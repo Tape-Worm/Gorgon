@@ -12,6 +12,7 @@ using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.Math;
 
 namespace Tester_Anim
 {
@@ -44,7 +45,18 @@ namespace Tester_Anim
 
 			for (int i = 0; i < _stars.Length; i++)
 			{
-				_stars[i].Sprite.Sprite.Position = _stars[i].Position;
+				if ((_stars[i].Sprite.Sprite == _sprites[4].Sprite) || (_stars[i].Sprite.Sprite == _sprites[5].Sprite))
+				{
+					if ((_stars[i].Sprite.Controller.CurrentAnimation.Time - _stars[i].Sprite.Controller.CurrentAnimation.Tracks["Scale"].KeyFrames[1].Time).Abs() <= 0.5f)
+						_stars[i].Position = new Vector2((float)(_rnd.NextDouble()), (float)(_rnd.NextDouble()));
+				}
+
+				if (_stars[i].Sprite.Sprite == _sprites[3].Sprite)
+				{
+					if ((_stars[i].Sprite.Controller.CurrentAnimation.Time - _stars[i].Sprite.Controller.CurrentAnimation.Tracks["Opacity"].KeyFrames[1].Time).Abs() <= 0.5f)
+						_stars[i].Position = new Vector2((float)(_rnd.NextDouble()), (float)(_rnd.NextDouble()));
+				}
+				_stars[i].Sprite.Sprite.Position = new Vector2(_stars[i].Position.X * _2D.DefaultTarget.Settings.Width, _stars[i].Position.Y * _2D.DefaultTarget.Settings.Height);
 				_stars[i].Sprite.Sprite.Draw();				
 			}
 
@@ -125,7 +137,7 @@ namespace Tester_Anim
 							star.Sprite.TextureRegion = new RectangleF(_texture.ToTexel(new Vector2(11, 9)), _texture.ToTexel(new Vector2(1, 1)));
 							star.Sprite.Size = new Vector2(1, 1);
 							break;
-						case 3:
+						case 5:
 							star.Sprite.TextureRegion = new RectangleF(_texture.ToTexel(new Vector2(0, 13)), _texture.ToTexel(new Vector2(21, 24)));
 							star.Sprite.Size = new Vector2(21, 24);
 							CreateScaler(star.Controller);
@@ -135,7 +147,7 @@ namespace Tester_Anim
 							star.Sprite.Size = new Vector2(10, 12);
 							CreateScaler(star.Controller);
 							break;
-						case 5:
+						case 3:
 							star.Sprite.TextureRegion = new RectangleF(_texture.ToTexel(new Vector2(4, 9)), _texture.ToTexel(new Vector2(1, 1)));
 							star.Sprite.Size = new Vector2(1, 1);
 							CreateFader(star.Controller);
@@ -149,28 +161,20 @@ namespace Tester_Anim
 				}
 
 				//_sprites[0].Controller[0].Save(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\AnimationSave.anim");
-				_sprites[0].Controller.Remove(0);
-				_sprites[0].Controller.FromFile(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\AnimationSave.anim");
-				_sprites[0].Controller.Play(_sprites[0].Sprite, 0);
+				//_sprites[0].Controller.Remove(0);
+				//_sprites[0].Controller.FromFile(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\AnimationSave.anim");
+				//_sprites[0].Controller.Play(_sprites[0].Sprite, 0);
 
 				for (int i = 0; i < _stars.Length; i++)
 				{
 					Star star = new Star();
-					star.Position = new Vector2((float)(_rnd.NextDouble() * _2D.DefaultTarget.Settings.Width), (float)(_rnd.NextDouble() * _2D.DefaultTarget.Settings.Height));
+					star.Position = new Vector2((float)(_rnd.NextDouble()), (float)(_rnd.NextDouble()));
 
 					int sprite = _rnd.Next(0, 256);
-					if (sprite < 43)
-						star.Sprite = _sprites[0];
-					if ((sprite >= 43) && (sprite < 86))
-						star.Sprite = _sprites[1];
-					if ((sprite >= 86) && (sprite < 129))
-						star.Sprite = _sprites[2];
-					if ((sprite >= 129) && (sprite < 253))
-						star.Sprite = _sprites[5];
-					if ((sprite >= 253) && (sprite < 254))
-						star.Sprite = _sprites[4];
-					if ((sprite >= 254) && (sprite < 256))
-						star.Sprite = _sprites[3];
+					if (sprite < 253)
+						star.Sprite = _sprites[_rnd.Next(0, 4)];
+					else
+						star.Sprite = _sprites[_rnd.Next(4, 6)];
 					_stars[i] = star;
 				}
 

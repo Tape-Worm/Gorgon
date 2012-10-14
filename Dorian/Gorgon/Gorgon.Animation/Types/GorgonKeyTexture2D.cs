@@ -42,6 +42,8 @@ namespace GorgonLibrary.Animation
 	{
 		#region Variables.
 		private Type _dataType;								// Type of data for the key frame.
+		private String _textureName;						// Texture name.
+		private GorgonTexture2DSettings _settings;			// Texture settings.
 
 		/// <summary>
 		/// Value to store in the key frame.
@@ -57,85 +59,25 @@ namespace GorgonLibrary.Animation
 		public float Time;
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Methods.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
+		/// Function to retrieve the texture if it's not assigned.
 		/// </summary>
-		/// <param name="time">The time for the key frame.</param>
-		/// <param name="value">The value to apply to the key frame.</param>
-		/// <param name="region">Region on the texture to update.</param>
-		public GorgonKeyTexture2D(float time, GorgonTexture2D value, RectangleF region)
+		internal void GetTexture()
 		{
-			Time = time;
-			_dataType = typeof(GorgonTexture2D);
-			Value = value;
-			TextureRegion = region;
-		}
-		#endregion
-
-		#region IKeyFrame Members
-		/// <summary>
-		/// Property to set or return the time at which the key frame is stored.
-		/// </summary>
-		float IKeyFrame.Time
-		{
-			get
+			if (!string.IsNullOrEmpty(_textureName))
 			{
-				return Time;
-			}
-		}
+				// Copy to local values because LINQ can't seem to work with members
+				// of a struct.
+				string textureName = _textureName;
+				GorgonTexture2DSettings settings = _settings;
 
-		/// <summary>
-		/// Property to return the type of data for this key frame.
-		/// </summary>
-		public Type DataType
-		{
-			get 
-			{
-				return _dataType;
-			}
-		}
-
-		/// <summary>
-		/// Function to clone the key.
-		/// </summary>
-		/// <returns>The cloned key.</returns>
-		public IKeyFrame Clone()
-		{
-			return new GorgonKeyTexture2D(Time, Value, TextureRegion);
-		}
-
-		/// <summary>
-		/// Function to retrieve key frame data from a binary data reader.
-		/// </summary>
-		/// <param name="reader">Reader used to read the stream.</param>
-		void IKeyFrame.FromStream(IO.GorgonBinaryReader reader)
-		{
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
-			string textureName = string.Empty;
-
-			this.Time = reader.ReadSingle();
-			this.Value = null;
-			this.TextureRegion = RectangleF.Empty;
-			if (this.Time > -1)
-			{
-				textureName = reader.ReadString();
-				settings.ArrayCount = reader.ReadInt32();
-				settings.Format = (BufferFormat)reader.ReadInt32();
-				settings.Height = reader.ReadInt32();
-				settings.Width = reader.ReadInt32();
-				settings.IsTextureCube = reader.ReadBoolean();
-				settings.MipCount = reader.ReadInt32();
-				settings.Multisampling = new GorgonMultisampling(reader.ReadInt32(), reader.ReadInt32());
-				settings.Usage = BufferUsage.Default;
-				settings.ViewFormat = BufferFormat.Unknown;
-				TextureRegion = new RectangleF(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-
-				// This is a special case, but we'll need to find the texture we were associated with.
-				// In order to do that, we need to find all graphics objects:
+				// Our texture is deferred, so we need to find it in the graphics object tracked
+				// object list.
+				// In order to do that, we need to find all graphics objects first:
 				var graphics = Gorgon.GetTrackedObjectsOfType<GorgonGraphics>();
 
-				// We have no graphics, then we can't do this anyway, so just throw an exception.
+				// We have no graphics, then we can't do display a texture anyway, so throw an exception.
 				if (graphics.Count == 0)
 					throw new ArgumentException("Cannot load a 2D texture key frame without a graphics instance.", "reader");
 
@@ -171,14 +113,112 @@ namespace GorgonLibrary.Animation
 								 where (string.Compare(graphicsTexture.Name, textureName, true) == 0)
 								 select graphicsTexture).FirstOrDefault();
 
-						// If we -still- can't get the texture, then we need to throw an exception.
-						if (Value == null)
-							throw new ArgumentException("Could not located any 2D texture named '" + textureName + "'.", "reader");
 					}
 				}
 			}
+
+			// We have our texture, stop deferring.
+			if (Value != null)
+				_textureName = string.Empty;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
+		/// </summary>
+		/// <param name="time">The time for the key frame.</param>
+		/// <param name="value">The value to apply to the key frame.</param>
+		/// <param name="region">Region on the texture to update.</param>
+		public GorgonKeyTexture2D(float time, GorgonTexture2D value, RectangleF region)
+		{
+			Time = time;
+			_dataType = typeof(GorgonTexture2D);
+			Value = value;
+			TextureRegion = region;
+			if (value != null)
+			{
+				_textureName = value.Name;
+				_settings = value.Settings;
+			}
 			else
-				this.Time = -this.Time;
+			{
+				// We didn't specify a texture, so don't defer it for later.
+				_textureName = string.Empty;
+				_settings = null;
+			}
+		}
+		#endregion
+
+		#region IKeyFrame Members
+		/// <summary>
+		/// Property to set or return the time at which the key frame is stored.
+		/// </summary>
+		float IKeyFrame.Time
+		{
+			get
+			{
+				return Time;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the type of data for this key frame.
+		/// </summary>
+		public Type DataType
+		{
+			get 
+			{
+				return _dataType;
+			}
+		}		
+
+		/// <summary>
+		/// Function to clone the key.
+		/// </summary>
+		/// <returns>The cloned key.</returns>
+		public IKeyFrame Clone()
+		{
+			return new GorgonKeyTexture2D(Time, Value, TextureRegion);
+		}
+
+		/// <summary>
+		/// Function to retrieve key frame data from a binary data reader.
+		/// </summary>
+		/// <param name="reader">Reader used to read the stream.</param>
+		void IKeyFrame.FromStream(IO.GorgonBinaryReader reader)
+		{
+			bool hasTexture = false;
+
+			Value = null;
+			TextureRegion = RectangleF.Empty;
+
+			Time = reader.ReadSingle();
+			hasTexture = reader.ReadBoolean();
+
+			// Get the texture region we're using.
+			TextureRegion = new RectangleF(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+
+			if (hasTexture)
+			{
+				// Get our texture name.
+				_textureName = reader.ReadString();
+
+				// Read in our texture information.
+				_settings = new GorgonTexture2DSettings();
+				_settings.ArrayCount = reader.ReadInt32();
+				_settings.Format = (BufferFormat)reader.ReadInt32();
+				_settings.Height = reader.ReadInt32();
+				_settings.Width = reader.ReadInt32();
+				_settings.IsTextureCube = reader.ReadBoolean();
+				_settings.MipCount = reader.ReadInt32();
+				_settings.Multisampling = new GorgonMultisampling(reader.ReadInt32(), reader.ReadInt32());
+				_settings.Usage = BufferUsage.Default;
+				_settings.ViewFormat = BufferFormat.Unknown;
+
+				// Defer load the texture.
+				GetTexture();
+			}
 		}
 
 		/// <summary>
@@ -187,26 +227,24 @@ namespace GorgonLibrary.Animation
 		/// <param name="writer">Writer used to write to the stream.</param>
 		void IKeyFrame.ToStream(IO.GorgonBinaryWriter writer)
 		{
-			if (Value == null)
-			{
-				writer.Write(-Time);
-				return;
-			}
-
 			writer.Write(Time);
-			writer.Write(Value.Name);
-			writer.Write(Value.Settings.ArrayCount);
-			writer.Write((int)Value.Settings.Format);
-			writer.Write(Value.Settings.Height);
-			writer.Write(Value.Settings.Width);
-			writer.Write(Value.Settings.IsTextureCube);
-			writer.Write(Value.Settings.MipCount);
-			writer.Write(Value.Settings.Multisampling.Count);
-			writer.Write(Value.Settings.Multisampling.Quality);
+			writer.Write(Value != null);
 			writer.Write(this.TextureRegion.X);
 			writer.Write(this.TextureRegion.Y);
 			writer.Write(this.TextureRegion.Width);
 			writer.Write(this.TextureRegion.Height);
+			if (Value != null)
+			{
+				writer.Write(Value.Name);
+				writer.Write(Value.Settings.ArrayCount);
+				writer.Write((int)Value.Settings.Format);
+				writer.Write(Value.Settings.Height);
+				writer.Write(Value.Settings.Width);
+				writer.Write(Value.Settings.IsTextureCube);
+				writer.Write(Value.Settings.MipCount);
+				writer.Write(Value.Settings.Multisampling.Count);
+				writer.Write(Value.Settings.Multisampling.Quality);
+			}
 		}
 		#endregion
 	}
