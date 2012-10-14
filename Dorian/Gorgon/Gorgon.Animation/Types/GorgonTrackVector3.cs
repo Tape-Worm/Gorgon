@@ -76,11 +76,8 @@ namespace GorgonLibrary.Animation
 		{
 			base.SetupSpline();
 
-			for (int i = 0; i < KeyFrames.Count; i++)
-			{
-				GorgonKeyVector3 key = (GorgonKeyVector3)KeyFrames[i];
-				Spline.Points.Add(new Vector4(key.Value, 1.0f));
-			}
+			foreach (var key in KeyFrames.Times)
+				Spline.Points.Add(new Vector4(((GorgonKeyVector3)key.Value).Value, 1.0f));
 
 			Spline.UpdateTangents();
 		}

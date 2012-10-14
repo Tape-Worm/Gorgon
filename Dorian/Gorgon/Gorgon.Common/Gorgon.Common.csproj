@@ -156,6 +156,7 @@
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
     <Compile Include="GorgonDataStream.cs" />
+    <Compile Include="Math\GorgonRandom.cs" />
     <Compile Include="Math\GorgonSpline.cs" />
     <Compile Include="Native\Win32API.cs">
       <SubType>Code</SubType>
