@@ -38,6 +38,7 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <remarks>Setting the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Count">count</see> and <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">quality</see> values to 1 and 0 respectively, will disable multisampling.</remarks>
 	public struct GorgonMultisampling
+		: IEquatable<GorgonMultisampling>
 	{
 		#region Variables.
 		private int _count;
@@ -74,7 +75,7 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.
+		#region Methods.		
 		/// <summary>
 		/// Function to convert a Gorgon multisampling value to a D3D sample description.
 		/// </summary>
@@ -83,6 +84,76 @@ namespace GorgonLibrary.Graphics
 		internal static GI.SampleDescription Convert(GorgonMultisampling sampling)
 		{
 			return new GI.SampleDescription(sampling.Count, sampling.Quality);
+		}
+
+		/// <summary>
+		/// Function to determine if two instances are equal.
+		/// </summary>
+		/// <param name="left">Left value to compare.</param>
+		/// <param name="right">Right value to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonMultisampling left, ref GorgonMultisampling right)
+		{
+			return left.Count == right.Count && left.Quality == right.Quality;
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		/// </returns>
+		public override bool Equals(object obj)
+		{
+			if (obj is GorgonMultisampling)
+				return Equals((GorgonMultisampling)obj);
+
+			return base.Equals(obj);
+		}
+
+		/// <summary>
+		/// Equality operator.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns></returns>
+		public static bool operator ==(GorgonMultisampling left, GorgonMultisampling right)
+		{
+			return GorgonMultisampling.Equals(ref left, ref right);
+		}
+
+		/// <summary>
+		/// Inequality operator.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns></returns>
+		public static bool operator !=(GorgonMultisampling left, GorgonMultisampling right)
+		{
+			return !GorgonMultisampling.Equals(ref left, ref right);
+		}
+
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// </returns>
+		public override int GetHashCode()
+		{
+			return 281.GenerateHash(Count).GenerateHash(Quality);
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.String" /> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
+		{
+			return "Multisampling count: " + Count.ToString() + ", quality: " + Quality.ToString();
 		}
 		#endregion
 
@@ -101,6 +172,18 @@ namespace GorgonLibrary.Graphics
 
 			_count = count;
 			Quality = quality;
+		}
+		#endregion
+
+		#region IEquatable<GorgonMultisampling> Members
+		/// <summary>
+		/// Function to determine if two instances are equal.
+		/// </summary>
+		/// <param name="other">Other instance for the equality test.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public bool Equals(GorgonMultisampling other)
+		{
+			return GorgonMultisampling.Equals(ref this, ref other);
 		}
 		#endregion
 	}

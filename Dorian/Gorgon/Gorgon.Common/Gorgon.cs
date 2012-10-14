@@ -420,6 +420,19 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to a list of objects being tracked by a type value.
+		/// </summary>
+		/// <typeparam name="T">Type to search for.</typeparam>
+		/// <returns>A list of objects that match the type.</returns>
+		public static IList<T> GetTrackedObjectsOfType<T>()
+			where T : IDisposable
+		{
+			return (from trackedObject in _trackedObjects
+				   where trackedObject is T
+				   select (T)trackedObject).ToArray();
+		}
+
+		/// <summary>
 		/// Method to quit the application.
 		/// </summary>
 		public static void Quit()

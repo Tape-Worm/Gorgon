@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 
@@ -201,6 +203,49 @@ namespace GorgonLibrary.Animation
 					track.ApplyKey(ref key);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Function to save the animation to a stream.
+		/// </summary>
+		/// <param name="stream">Stream to write the animation into.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void Save(Stream stream)
+		{
+			GorgonDebug.AssertNull<Stream>(stream, "stream");
+
+			byte[] header = Encoding.UTF8.GetBytes(GorgonAnimationController<T>.AnimationVersion);
+
+			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+			{
+				writer.Write(header);		// Write the header.
+
+				writer.Write(AnimationController.AnimatedObjectType.FullName);		// Write object type.
+
+				// Write out meta data.
+				writer.Write(Name);
+				writer.Write(Length);
+				writer.Write(IsLooped);
+
+				writer.Write(Tracks.Count);
+
+				foreach (var track in Tracks)
+					track.ToStream(writer);
+			}
+		}
+
+		/// <summary>
+		/// Function to save the animation to a file.
+		/// </summary>
+		/// <param name="fileName">Path and file name of the file to write.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.</exception>
+		public void Save(string fileName)
+		{
+			GorgonDebug.AssertParamString(fileName, "fileName");
+
+			using (FileStream stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+				Save(stream);
 		}
 		
 		/// <summary>
