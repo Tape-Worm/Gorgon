@@ -35,7 +35,6 @@ namespace Tester_Anim
 		private GorgonGraphics _graphics = null;
 		private Gorgon2D _2D = null;
 		private GorgonTexture2D _texture = null;
-		private Random _rnd = new Random();
 
 		private bool Idle()
 		{
@@ -48,13 +47,13 @@ namespace Tester_Anim
 				if ((_stars[i].Sprite.Sprite == _sprites[4].Sprite) || (_stars[i].Sprite.Sprite == _sprites[5].Sprite))
 				{
 					if ((_stars[i].Sprite.Controller.CurrentAnimation.Time - _stars[i].Sprite.Controller.CurrentAnimation.Tracks["Scale"].KeyFrames[1].Time).Abs() <= 0.5f)
-						_stars[i].Position = new Vector2((float)(_rnd.NextDouble()), (float)(_rnd.NextDouble()));
+						_stars[i].Position = new Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
 				}
 
 				if (_stars[i].Sprite.Sprite == _sprites[3].Sprite)
 				{
 					if ((_stars[i].Sprite.Controller.CurrentAnimation.Time - _stars[i].Sprite.Controller.CurrentAnimation.Tracks["Opacity"].KeyFrames[1].Time).Abs() <= 0.5f)
-						_stars[i].Position = new Vector2((float)(_rnd.NextDouble()), (float)(_rnd.NextDouble()));
+						_stars[i].Position = new Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
 				}
 				_stars[i].Sprite.Sprite.Position = new Vector2(_stars[i].Position.X * _2D.DefaultTarget.Settings.Width, _stars[i].Position.Y * _2D.DefaultTarget.Settings.Height);
 				_stars[i].Sprite.Sprite.Draw();				
@@ -69,19 +68,19 @@ namespace Tester_Anim
 		}
 
 		private void CreateScaler(GorgonAnimationController<GorgonSprite> controller)
-		{			
-			controller.Add("Scale", (float)(_rnd.NextDouble() * 5000 + 5000));
+		{
+			controller.Add("Scale", GorgonRandom.RandomSingle(5000, 10000));
 			controller["Scale"].Tracks["Scale"].KeyFrames.Add(new GorgonKeyVector2(0, new Vector2(1, 1)));
-			controller["Scale"].Tracks["Scale"].KeyFrames.Add(new GorgonKeyVector2(controller["Scale"].Length * (float)(_rnd.NextDouble() * 0.25 + 0.25), new Vector2(0.0125f, 0.0125f)));
+			controller["Scale"].Tracks["Scale"].KeyFrames.Add(new GorgonKeyVector2(controller["Scale"].Length * GorgonRandom.RandomSingle(0.25f, 0.5f), new Vector2(0.0125f, 0.0125f)));
 			controller["Scale"].Tracks["Scale"].KeyFrames.Add(new GorgonKeyVector2(controller["Scale"].Length, new Vector2(1, 1)));
 			controller["Scale"].IsLooped = true;
 		}
 
 		private void CreateSpinner(GorgonAnimationController<GorgonSprite> controller)
 		{
-			controller.Add("Spin", (float)(_rnd.NextDouble() * 8000.0f + 8000));
+			controller.Add("Spin", GorgonRandom.RandomSingle(8000, 16000));
 			controller["Spin"].Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(0, 0));
-			controller["Spin"].Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(controller["Spin"].Length * (float)(_rnd.NextDouble() * 0.25 + 0.25), (float)(_rnd.NextDouble() * 360.0f)));
+			controller["Spin"].Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(controller["Spin"].Length * GorgonRandom.RandomSingle(0.25f, 0.5f), GorgonRandom.RandomSingle(360)));
 			controller["Spin"].Tracks["Angle"].KeyFrames.Add(new GorgonKeySingle(controller["Spin"].Length, 0));
 			controller["Spin"].Tracks["Angle"].InterpolationMode = TrackInterpolationMode.Spline;
 			controller["Spin"].IsLooped = true;
@@ -89,9 +88,9 @@ namespace Tester_Anim
 
 		private void CreateFader(GorgonAnimationController<GorgonSprite> controller)
 		{
-			controller.Add("Fader", (float)(_rnd.NextDouble() * 8000.0 + 8000));
+			controller.Add("Fader", GorgonRandom.RandomSingle(8000, 16000));
 			controller["Fader"].Tracks["Opacity"].KeyFrames.Add(new GorgonKeySingle(0, 1.0f));
-			controller["Fader"].Tracks["Opacity"].KeyFrames.Add(new GorgonKeySingle(controller["Fader"].Length * (float)(_rnd.NextDouble() * 0.25 + 0.25) , (float)_rnd.NextDouble() * 0.25f));
+			controller["Fader"].Tracks["Opacity"].KeyFrames.Add(new GorgonKeySingle(controller["Fader"].Length * GorgonRandom.RandomSingle(0.25f, 0.5f), GorgonRandom.RandomSingle(0.25f)));
 			controller["Fader"].Tracks["Opacity"].KeyFrames.Add(new GorgonKeySingle(controller["Fader"].Length, 1.0f));
 			controller["Fader"].Tracks["Opacity"].InterpolationMode = TrackInterpolationMode.Spline;
 			controller["Fader"].IsLooped = true;
@@ -168,13 +167,13 @@ namespace Tester_Anim
 				for (int i = 0; i < _stars.Length; i++)
 				{
 					Star star = new Star();
-					star.Position = new Vector2((float)(_rnd.NextDouble()), (float)(_rnd.NextDouble()));
+					star.Position = new Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
 
-					int sprite = _rnd.Next(0, 256);
+					int sprite = GorgonRandom.RandomInt32(256);
 					if (sprite < 253)
-						star.Sprite = _sprites[_rnd.Next(0, 4)];
+						star.Sprite = _sprites[GorgonRandom.RandomInt32(4)];
 					else
-						star.Sprite = _sprites[_rnd.Next(4, 6)];
+						star.Sprite = _sprites[GorgonRandom.RandomInt32(4, 6)];
 					_stars[i] = star;
 				}
 
