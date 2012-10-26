@@ -826,7 +826,27 @@ namespace GorgonLibrary.Math
 		{
 			return (float)System.Math.Pow(value, power);
 		}
-		#endregion
+
+        /// <summary>
+        /// Function to perform a fast floor operation on a floating point value.
+        /// </summary>
+        /// <param name="value">Floating point value to floor.</param>
+        /// <returns>The floored value.</returns>
+        public static float FastFloor(this float value)
+        {
+            return (value > 0) ? (int)value : ((int)value) - 1;
+        }
+
+        /// <summary>
+        /// Function to perform a fast ceiling operation on a floating point value.
+        /// </summary>
+        /// <param name="value">Floating point value to ceiling.</param>
+        /// <returns>The ceiling value.</returns>
+        public static float FastCeiling(this float value)
+        {
+            return (value < 0) ? (int)value : ((int)value) + 1;
+        }
+        #endregion
 
 		#region Constructor.
 		/// <summary>
