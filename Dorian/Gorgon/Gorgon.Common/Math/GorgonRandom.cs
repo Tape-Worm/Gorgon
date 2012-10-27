@@ -69,7 +69,6 @@ namespace GorgonLibrary.Math
                 49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
                 138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 
               };			
-        private static Vector3[] _gradients = null;			// Gradients for Perlin noise.
 		private static int _seed;
 		private static Random _rnd = null;
 		#endregion
@@ -88,7 +87,32 @@ namespace GorgonLibrary.Math
 			{
 				_seed = value;
 				_rnd = new Random(_seed);
-				CreatePerlinGradients();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the Perlin noise permutation array.
+		/// </summary>
+		public static byte[] PerlinPermutations
+		{
+			get
+			{
+				return _permutations;
+			}
+			set
+			{
+				int length = 0;
+
+				if (value == null)
+					return;
+
+				if (value.Length > _permutations.Length)
+					length = _permutations.Length;
+				else
+					length = value.Length;
+
+				for (int i = 0; i < length; i++)
+					_permutations[i] = value[i];
 			}
 		}
 		#endregion
@@ -116,154 +140,110 @@ namespace GorgonLibrary.Math
         {
             hash = hash & 7;
 
-            if (hash > 4)
+            if (hash >= 4)
                 value = new Vector2(value.Y, value.X);
 
-            return (((hash & 1) != 0) ? -value.X : value.X) + (((hash & 2) != 0) ? -2.0f * value.Y : 2.0f * value.Y);
+            return ((hash & 1) != 0 ? -value.X : value.X) + ((hash & 2) != 0 ? -2.0f * value.Y : 2.0f * value.Y);
         }
+		
+		/// <summary>
+		/// Function to generate 1 dimensional simplex noise.
+		/// </summary>
+		/// <param name="value">The value to use to generate the Perline noise value.</param>
+		/// <returns>The Perlin noise value.</returns>
+		public static float Perlin(float value)
+		{
+			int index0 = (int)value.FastFloor();
+			int index1 = index0 + 1;
+			float x0 = value - index0;
+			float x1 = x0 - 1.0f;
+			float n0, n1;
+			float t0 = 1.0f - x0 * x0;
 
-        /// <summary>
-        /// Function to return the gradient value for the perlin noise generator.
-        /// </summary>
-        /// <param name="hash">Hash value to use.</param>
-        /// <param name="value">Value to retrieve the gradient from.</param>
-        /// <returns>The gradient value.</returns>
-        private static float PerlinGradient(int hash, Vector3 value)
-        {
-            Vector2 uv = Vector2.Zero;
+			t0 *= t0;
+			n0 = t0 * t0 * PerlinGradient(_permutations[index0 & 0xff], x0);
 
-            hash = hash & 15;
+			float t1 = 1.0f - x1 * x1;
+			t1 *= t1;
+			n1 = t1 * t1 * PerlinGradient(_permutations[index1 & 0xff], x1);
 
-            uv.X = 
-        }
+			// The maximum value of this noise is 8*(3/4)^4 = 2.53125
+			// A factor of 0.395 scales to fit exactly within [-1,1]
+			return 0.395f * (n0 + n1);
+		}
 
 		/// <summary>
-		/// Function to create the gradient values for the Perlin noise.
+		/// Function to generate 2 dimensional simplex noise.
 		/// </summary>
-		private static void CreatePerlinGradients()
+		/// <param name="value">The value to use to generate the Perline noise value.</param>
+		/// <returns>The Perlin noise value.</returns>
+		public static float Perlin(Vector2 value)
 		{
-			var values = Enumerable.Range(0, 256).ToList();
-			_permutations = Enumerable.Repeat<int>(-1, 256).ToArray();
-			_gradients = new Vector3[256];
+			const float F2 = 0.366025403f; // F2 = 0.5*(sqrt(3.0)-1.0)
+			const float G2 = 0.211324865f; // G2 = (3.0-Math.sqrt(3.0))/6.0
 
-			// Compute gradients and shuffle permutations.
-			for (int i = 0; i < 256; i++)
+			float n0 = 0.0f;		// Noise contributions from the three corners
+			float n1 = 0.0f;
+			float n2 = 0.0f;
+
+			// Skew the input space to determine which simplex cell we're in
+			float s = (value.X + value.Y) * F2; // Hairy factor for 2D
+			Vector2 values = new Vector2(value.X + s, value.Y + s);
+			int i = (int)values.X.FastFloor();
+			int j = (int)values.Y.FastFloor();
+			float t = (float)(i + j) * G2;
+			Vector2 unskew = new Vector2(i - t, j - t);
+			Vector2 distance = new Vector2(value.X - unskew.X, value.Y - unskew.Y);
+
+			int offset1 = 0;  // upper triangle, YX order: (0,0)->(0,1)->(1,1)
+			int offset2 = 1;
+
+			// For the 2D case, the simplex shape is an equilateral triangle.
+			// Determine which simplex we are in.
+			if (distance.X > distance.Y)
 			{
-				float value = RandomSingle() * 2.0f - 1.0f;
-				float range = (1.0f - (value * value)).Sqrt();
-				float theta = ((float)System.Math.PI) * 2.0f * RandomSingle();
-				int valueIndex = RandomInt32(values.Count);
-
-				_permutations[i] = values[valueIndex];
-				values.RemoveAt(valueIndex);
-
-				_gradients[i].X = range * theta.Cos();
-				_gradients[i].Y = range * theta.Sin();
-				_gradients[i].Z = value;
+				// lower triangle, XY order: (0,0)->(1,0)->(1,1)
+				offset1 = 1;
+				offset2 = 0;
 			}
-		}
 
-		/// <summary>
-		/// Function to look up the random gradient value at the specified coordinates.
-		/// </summary>
-		/// <param name="x">Horizontal position.</param>
-		/// <param name="y">Vertical position.</param>
-		/// <param name="z">Depth position.</param>
-		/// <param name="value">Value to dot with the index value.</param>
-		/// <returns>The randomized value.</returns>
-		private static float PerlinLattice3(int x, int y, int z, Vector3 value)
-		{
-			float result = 0.0f;
-			int index = _permutations[(_permutations[(_permutations[z & 0xFF] + y) & 0xFF] + x) & 0xFF];
+			// A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
+			// a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
+			// c = (3-sqrt(3))/6
+			Vector2 value1 = new Vector2(distance.X - offset1 + G2, distance.Y - offset2 + G2);					// Offsets for middle corner in (x,y) unskewed coords
+			Vector2 value2 = new Vector2(distance.X - 1.0f + 2.0f * G2, distance.Y - 1.0f + 2.0f * G2);			// Offsets for last corner in (x,y) unskewed coords
 
-			Vector3.Dot(ref _gradients[index], ref value, out result);
+			// Wrap the integer indices at 256, to avoid indexing _permutations[] out of bounds
+			int index0 = i % 256;
+			int index1 = j % 256;
 
-			return result;
-		}
+			// Calculate the contribution from the three corners
+			float t0 = 0.5f - distance.X * distance.X - distance.Y * distance.Y;
+			float t1 = 0.5f - value1.X * value1.X - value1.Y * value1.Y;
+			float t2 = 0.5f - value2.X * value2.X - value2.Y * value2.Y;
 
-		/// <summary>
-		/// Function to look up the random gradient value at the specified coordinates.
-		/// </summary>
-		/// <param name="x">Horizontal position.</param>
-		/// <param name="y">Vertical position.</param>
-		/// <param name="value">Value to dot with the index value.</param>
-		/// <returns>The randomized value.</returns>
-		private static float PerlinLattice2(int x, int y, Vector2 value)
-		{
-			float result = 0.0f;
-			int index = _permutations[(_permutations[y & 0xFF] + x) & 0xFF];
+			if (t0 >= 0.0f)
+			{
+				t0 *= t0;
+				n0 = t0 * t0 * PerlinGradient(_permutations[index0 + _permutations[index1]], distance);
+			}
 
-			Vector2 gradient = (Vector2)_gradients[index];
-			Vector2.Dot(ref gradient, ref value, out result);
+			if (t1 >= 0.0f)
+			{
+				t1 *= t1;
+				n1 = t1 * t1 * PerlinGradient(_permutations[index0 + offset1 + _permutations[index1 + offset2]], value1);
+			}
 
-			return result;
-		}
+			if (t2 >= 0.0f)
+			{
+				t2 *= t2;
+				n2 = t2 * t2 * PerlinGradient(_permutations[index0 + 1 + _permutations[index1 + 1]], value2);
+			}
 
-
-		/// <summary>
-		/// Function to retrieve a 2 dimensional Perlin noise value.
-		/// </summary>
-		/// <param name="source">The source value to use to generate the Perline noise value.</param>
-		/// <returns>The Perlin noise value.</returns>
-		public static float Perlin(Vector2 source)
-		{
-			int x = (int)System.Math.Floor(source.X);
-			int y = (int)System.Math.Floor(source.Y);
-			Vector2 diff = new Vector2(x - source.X, y - source.Y);
-			Vector2 neg = new Vector2(diff.X - 1.0f, diff.Y - 1.0f);
-			Vector2 smoothed = new Vector2(diff.X * diff.X * (3 - 2 * diff.X), diff.Y * diff.Y * (3 - 2 * diff.Y));
-
-			Vector2 value1 = Vector2.Zero;
-			Vector2 value2 = Vector2.Zero;
-
-			value1.X = PerlinLattice2(x, y, diff);
-			value2.X = PerlinLattice2(x + 1, y, new Vector2(neg.X, diff.Y));
-			value1.Y = value1.X + (value2.X - value1.X) * smoothed.X;
-
-			value1.X = PerlinLattice2(x, y + 1, new Vector2(diff.X, neg.Y));
-			value2.X = PerlinLattice2(x + 1, y + 1, new Vector2(neg.X, neg.Y));
-			value2.Y = value1.X + (value2.X - value1.X) * smoothed.X;
-
-			return value1.Y + (value2.Y - value1.Y) * smoothed.Y;
-		}
-
-		/// <summary>
-		/// Function to retrieve a 3 dimensional Perlin noise value.
-		/// </summary>
-		/// <param name="source">The source value to use to generate the Perline noise value.</param>
-		/// <returns>The Perlin noise value.</returns>
-		public static float Perlin(Vector3 source)
-		{
-			int x = (int)System.Math.Floor(source.X);
-			int y = (int)System.Math.Floor(source.Y);
-			int z = (int)System.Math.Floor(source.Z);
-			Vector3 diff = new Vector3(x - source.X, y - source.Y, z - source.Z);
-			Vector3 neg = new Vector3(diff.X - 1.0f, diff.Y - 1.0f, diff.Z - 1.0f);
-			Vector3 smoothed = new Vector3(diff.X * diff.X * (3 - 2 * diff.X), diff.Y * diff.Y * (3 - 2 * diff.Y), diff.Z * diff.Z * (3 - 2 * diff.Z));
-
-			Vector3 value1 = Vector3.Zero;
-			Vector3 value2 = Vector3.Zero;
-
-			value1.X = PerlinLattice3(x, y, z, diff);
-			value2.X = PerlinLattice3(x + 1, y, z, new Vector3(neg.X, diff.Y, diff.Z));
-			value1.Y = value1.X + (value2.X - value1.X) * smoothed.X;
-
-			value1.X = PerlinLattice3(x, y + 1, z, new Vector3(diff.X, neg.Y, diff.Z));
-			value2.X = PerlinLattice3(x + 1, y + 1, z, new Vector3(neg.X, neg.Y, diff.Z));
-			value2.Y = value1.X + (value2.X - value1.X) * smoothed.X;
-			value1.Z = value1.Y + (value2.Y - value1.Y) * smoothed.Y;
-
-			value1.X = PerlinLattice3(x, y, z + 1, new Vector3(diff.X, diff.Y, neg.Z));
-			value2.X = PerlinLattice3(x + 1, y, z + 1, new Vector3(neg.X, diff.Y, neg.Z));
-			value1.Y = value1.X + (value2.X - value1.X) * smoothed.X;
-
-			value1.X = PerlinLattice3(x, y + 1, z + 1, new Vector3(diff.X, neg.Y, neg.Z));
-			value2.X = PerlinLattice3(x + 1, y + 1, z + 1, neg);
-			value2.Y = value1.X + (value2.X - value1.X) * smoothed.X;
-
-			value2.Z = value1.Y + (value2.Y - value1.Y) * smoothed.Y;
-
-			return value1.Z + (value2.Z - value1.Z) * smoothed.Z;
+			// Add contributions from each corner to get the final noise value.
+			// The result is scaled to return values in the interval [-1,1].
+			// The scale factor is preliminary!		
+			return 40.0f * (n0 + n1 + n2);
 		}
 
 		/// <summary>

@@ -17,6 +17,7 @@ namespace Test_TextureArray
 	{
 		private static GorgonTexture2D _tex = null;
 		private static GorgonTexture2D _noDecal = null;
+		private static GorgonTexture2D _dyn = null;
 		private static Form1 _form = null;
 		private static GorgonGraphics _graphics = null;
 		private static Gorgon2D _2D = null;
@@ -71,6 +72,7 @@ namespace Test_TextureArray
 			_2D.Drawing.DrawRectangle(_text.Collider.ColliderBoundaries, Color.Cyan);
 			_2D.Drawing.DrawEllipse(_text.Collider.ColliderBoundaries, Color.Red);
 
+			_2D.Drawing.FilledRectangle(new RectangleF(150, 150, 256, 256), GorgonColor.White, _dyn);
 
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, "Draw calls: " + GorgonRenderStatistics.DrawCallCount.ToString(), new Vector2(0, 128), Color.Black);
 			GorgonRenderStatistics.EndFrame();
@@ -194,6 +196,31 @@ namespace Test_TextureArray
 
 			_controller.Play(_sprite, "Position");
 			_textController.Play(_text, "Rotation");
+
+			_dyn = _graphics.Textures.CreateTexture<GorgonTexture2D>("Dynamic", new GorgonTexture2DSettings()
+					{
+						Width = 256,
+						Height = 256,
+						Format = BufferFormat.R8G8B8A8_UIntNormal,
+						ArrayCount = 1,
+						MipCount = 1,
+						Usage = BufferUsage.Dynamic
+					});
+
+			var data = _dyn.Lock<GorgonTexture2DData>(BufferLockFlags.Discard);
+
+			for (int y = 0; y < 256; y++)
+			{
+				for (int x = 0; x < data.RowPitch; x+=4)
+				{
+					float value = (GorgonRandom.Perlin(new Vector2(x / GorgonRandom.RandomSingle(200, 256), y / GorgonRandom.RandomSingle(200, 256))) + 1.0f) * 0.5f;/* *0.7f +
+								(GorgonRandom.Perlin(new Vector2(x / 128.0f, y / 128.0f)) + 1.0f) / 2.0f * 0.2f +
+								(GorgonRandom.Perlin(new Vector2(x / 256.0f, y / 256.0f)) + 1.0f) / 2.0f * 0.1f;*/
+					data.Data.WriteInt32(new GorgonColor(value, value, value, (value * 0.5f) + 0.5f).ToARGB());
+				}
+			}
+
+			_dyn.Unlock();
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)
