@@ -661,8 +661,9 @@ namespace GorgonLibrary.Graphics.Tools
 			if (WindowState == FormWindowState.Normal)
 			{
 				defaultLocation = formMain.Me.Location;
-				defaultLocation.X = (defaultLocation.X / 2) - 350;
-				defaultLocation.Y = (defaultLocation.Y / 2) - 240;
+				// TW - 12082012 - Updated due to window appearing offscreen.
+				defaultLocation.X = formMain.Me.Width / 2 - 350 + defaultLocation.X;
+				defaultLocation.Y = formMain.Me.Height / 2 - 240 + defaultLocation.Y;
 				Left = Convert.ToInt32(Settings.GetSetting("Left", defaultLocation.X.ToString()));
 				Top = Convert.ToInt32(Settings.GetSetting("Top", defaultLocation.Y.ToString()));
 				Width = Convert.ToInt32(Settings.GetSetting("Width", "700"));
