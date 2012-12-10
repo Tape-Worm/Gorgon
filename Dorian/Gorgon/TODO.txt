@@ -5,9 +5,12 @@ This list is not in order.  Please don't get excited.
 	+ Put in map functionality for textures	(Done)
 	+ Add GetSubResourceIndex1/2/3D to the Textures interface (Done, added to texture objects as static member).
 * Add buffers
-	+ Basic GPU/CPU buffer (this would allow for structured buffers to be sent to the shader).
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders.
-	+ Need better understanding of how textures map to structured buffers and other shader types.	
+	+ Add raw buffers
+	+ Add structured buffer (Done)
+		- Add append and counter buffers
+	+ Add type buffer
+	+ Add argument buffer (for DrawIndirect)
 * Finish shader objects in base graphics library.
 	+ Add ability to load/save shaders from text file and compiled form. (Done)
 	+ Maybe consider putting in shader reflection.
@@ -16,6 +19,7 @@ This list is not in order.  Please don't get excited.
 	+ A lightweight effects framework to simplify shaders. (Done)
 	+ Some basic shaders for blurring, color inversion, sharpening, etc... (Done)
 		- Expose these as 'Effect' objects for easier use. (Done)
+	+ Add functionality to allow creation of custom shader resource/unordered views for objects.
 * Add multi-threaded support for D3D 11 device contexts.
 * Maybe update Gorgon2D to create a swap chain in its Create2DRenderer method in addition to passing one in. (Done)
 * Update 2D shader code (Not necessary, 2D specific shader types are now gone and integrated via #GorgonInclude in the shader).
