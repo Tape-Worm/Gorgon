@@ -242,7 +242,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Modify the render target.
-			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DTexture);
+			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DResource);
 			D3DRenderTarget.DebugName = "RenderTarget '" + Name + "' Render Target View";
 
 			Graphics.Output.RenderTargets.ReSeat(this);
@@ -289,7 +289,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will only clear the swap chain.  Any attached depth/stencil buffer will remain untouched.</remarks>
 		public void Clear(GorgonColor color)
 		{
-			Graphics.Context.ClearRenderTargetView(D3DRenderTarget, color.ToColor());
+			Graphics.Context.ClearRenderTargetView(D3DRenderTarget, color.SharpDXColor4);
 		}
 
 		/// <summary>

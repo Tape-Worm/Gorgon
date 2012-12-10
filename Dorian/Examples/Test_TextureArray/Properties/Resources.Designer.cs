@@ -63,14 +63,21 @@ namespace Test_TextureArray.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #GorgonInclude &quot;Gorgon2DShaders&quot;
         ///
+        ///struct tempStruct
+        ///{
+        ///	int value;
+        ///};
+        ///
+        ///StructuredBuffer&lt;tempStruct&gt; mySB : register(c2);
         ///Texture2DArray _textureArray : register(t0);
+        ///
         ///
         ///float4 DualTex(GorgonSpriteVertex vertex) : SV_Target
         ///{
         ///	float4 sample1 = _textureArray.Sample(_gorgonSampler, float3(vertex.uv, 0));
         ///	float4 sample2 = _textureArray.Sample(_gorgonSampler, float3(vertex.uv, 1));
         ///	
-        ///	return saturate((sample1 * sample2) * 2.0f * vertex.color);
+        ///	return saturate((sample1 * sample2) * 2.0f * vertex.color) * mySB[0].value;
         ///}.
         /// </summary>
         internal static string Shader {

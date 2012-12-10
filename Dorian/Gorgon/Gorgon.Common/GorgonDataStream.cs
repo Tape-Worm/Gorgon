@@ -280,6 +280,49 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to marshal an enumerable type of value types into a Gorgon Data Stream.
+		/// </summary>
+		/// <typeparam name="T">Type of value to marshal.</typeparam>
+		/// <param name="value">Values to marshal.</param>
+		/// <returns>A data stream containing the marshalled data.</returns>
+		/// <remarks>Use this to create and initialize a data stream with marshalled data.
+		/// <para>Value types must include the System.Runtime.InteropServices.StructLayout attribute, and must use an explicit layout.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the type of <paramref name="value"/> is not explicitly laid out with the System.Runtime.InteropServices.StructLayout attribute.</exception>
+		public static GorgonDataStream EnumerableValueTypeToStream<T>(IEnumerable<T> value) where T : struct
+		{
+			GorgonDataStream result = null;
+			Type type = typeof(T);
+			int size = 0;
+			int count = value.Count();
+
+			if (value == null)
+				return null;
+
+			if (!type.IsExplicitLayout)
+				throw new ArgumentException("The type '" + type.FullName + "' is not explicitly laid out using the StructLayout attribute.", "value");
+
+			if (type.StructLayoutAttribute.Size <= 0)
+				size = DirectAccess.SizeOf<T>() * count;
+			else
+				size = type.StructLayoutAttribute.Size * count;
+
+			result = new GorgonDataStream(size);
+
+			foreach (T item in value)
+			{
+				if (!UseMarshalling(type))
+					result.Write<T>(item);
+				else
+					result.WriteMarshal<T>(item, false);
+			}
+
+			result.Position = 0;
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to marshal a value type into a Gorgon Data Stream.
 		/// </summary>
 		/// <typeparam name="T">Type of value to marshal.</typeparam>

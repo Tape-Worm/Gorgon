@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Common", "Gorgon.Common\Gorgon.Common.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem", "Gorgon.FileSystem\Gorgon.FileSystem.csproj", "{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}"
@@ -55,6 +55,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Animation", "Gorgon.Animation\Gorgon.Animation.csproj", "{7EE86743-18E9-4667-9BCB-989D5C926922}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_Anim", "..\Examples\Tester_Anim\Tester_Anim.csproj", "{558C7262-93C6-4597-BA9C-58A618911E88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Data", "Gorgon.Data\Gorgon.Data\Gorgon.Data.csproj", "{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Data.UnitTests", "Gorgon.Data\Gorgon.Data.UnitTests\Gorgon.Data.UnitTests.csproj", "{86ADDA37-1469-4489-9EF8-8C57A1C09069}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,6 +154,14 @@ Global
 		{558C7262-93C6-4597-BA9C-58A618911E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{558C7262-93C6-4597-BA9C-58A618911E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{558C7262-93C6-4597-BA9C-58A618911E88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

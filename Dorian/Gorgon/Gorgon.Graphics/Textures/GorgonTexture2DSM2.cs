@@ -89,7 +89,7 @@ namespace GorgonLibrary.Graphics
 				shim.DebugName = "HACK: Fix for broken D3DX. Texture: \"" + Name + "\"";
 
 				// Copy the texture to the temporary texture.
-				Graphics.Context.CopyResource(D3DTexture, shim);
+				Graphics.Context.CopyResource(D3DResource, shim);
 
 				return new GorgonTexture2D(Graphics, shim.DebugName, shim);
 			}
@@ -176,7 +176,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				shim = CreateShim(this);
-				D3D.Resource.ToStream<D3D.Resource>(Graphics.Context, shim != null ? shim.D3DTexture : this.D3DTexture, fileFormat, stream);
+				D3D.Resource.ToStream<D3D.Resource>(Graphics.Context, shim != null ? shim.D3DResource : this.D3DResource, fileFormat, stream);
 			}
 			finally
 			{

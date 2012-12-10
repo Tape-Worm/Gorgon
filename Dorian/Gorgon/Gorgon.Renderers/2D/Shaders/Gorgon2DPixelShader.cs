@@ -82,7 +82,7 @@ namespace GorgonLibrary.Renderers
 					if (value == null)
 					{
 						// If we have a texture in the first slot, then set the proper shader.
-						if (Graphics.Shaders.PixelShader.Textures[0] == null)
+						if (Graphics.Shaders.PixelShader.Resources[0] == null)
 							Graphics.Shaders.PixelShader.Current = DefaultPixelShaderDiffuse;
 						else
 							Graphics.Shaders.PixelShader.Current = DefaultPixelShaderTextured;
@@ -126,11 +126,11 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public override GorgonShaderState<GorgonPixelShader>.ShaderTextures Textures
+		public override GorgonShaderState<GorgonPixelShader>.ShaderResources Resources
 		{
 			get
 			{
-				return Graphics.Shaders.PixelShader.Textures;
+				return Graphics.Shaders.PixelShader.Resources;
 			}
 		}
 		#endregion

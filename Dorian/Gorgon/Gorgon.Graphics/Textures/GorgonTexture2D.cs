@@ -45,6 +45,17 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the type of data in the resource.
+		/// </summary>
+		public override ResourceType ResourceType
+		{
+			get 
+			{
+				return ResourceType.Texture2D;
+			}
+		}
+
+		/// <summary>
 		/// Property to return whether this texture is for a depth/stencil buffer.
 		/// </summary>
 		public bool IsDepthStencil
@@ -117,7 +128,7 @@ namespace GorgonLibrary.Graphics
 		{
 			// We don't use depth for 2D textures.
 			imageInfo.Depth = 0;
-			D3DTexture = D3D.Texture2D.FromMemory<D3D.Texture2D>(Graphics.D3DDevice, imageData, imageInfo);
+			D3DResource = D3D.Texture2D.FromMemory<D3D.Texture2D>(Graphics.D3DDevice, imageData, imageInfo);
 		}
 
 		/// <summary>
@@ -139,9 +150,9 @@ namespace GorgonLibrary.Graphics
 			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
 
 			Gorgon.Log.Print("{0} {1}: Creating 2D D3D 11 render target texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
-			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
+			D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
 
-			CreateResourceView();
+			CreateDefaultResourceView();
 		}
 
 		/// <summary>
@@ -166,11 +177,11 @@ namespace GorgonLibrary.Graphics
 			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
 
 			Gorgon.Log.Print("{0} {1}: Creating D3D 11 depth/stencil texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
-			D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
+			D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
 			IsDepthStencil = true;
 
 			if (isShaderBound)
-				CreateResourceView();
+				CreateDefaultResourceView();
 		}
 
 		/// <summary>
@@ -210,10 +221,10 @@ namespace GorgonLibrary.Graphics
 			if (initialData != null)
 			{
 				dataRects = GorgonTexture2DData.Convert(initialData);
-				D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc, dataRects);
+				D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc, dataRects);
 			}
 			else
-				D3DTexture = new D3D.Texture2D(Graphics.D3DDevice, desc);
+				D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
 		}
 
 		/// <summary>
@@ -397,10 +408,10 @@ namespace GorgonLibrary.Graphics
 					View = null;
 				}
 
-				if (D3DTexture != null)
+				if (D3DResource != null)
 				{
-					D3DTexture.Dispose();
-					D3DTexture = null;
+					D3DResource.Dispose();
+					D3DResource = null;
 				}
 
 				base.Settings = iSettings;
@@ -635,7 +646,7 @@ namespace GorgonLibrary.Graphics
 			if ((format != ImageFileFormat.DDS) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB))
 				throw new ArgumentException("Cannot save the format '" + Settings.Format.ToString() + "' to a " + format.ToString() + " file.  DDS is the only file format that may be used with that texture format.");
 
-			D3D.Resource.ToStream<D3D.Texture2D>(Graphics.Context, (D3D.Texture2D)D3DTexture, fileFormat, stream);
+			D3D.Resource.ToStream<D3D.Texture2D>(Graphics.Context, (D3D.Texture2D)D3DResource, fileFormat, stream);
 		}
 
 		/// <summary>
@@ -686,7 +697,7 @@ namespace GorgonLibrary.Graphics
 				Right = destRect.Right,
 			};
 
-			Graphics.Context.UpdateSubresource(box, D3DTexture, subResource, region);
+			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);
 		}
 		#endregion
 
@@ -700,7 +711,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonTexture2D(GorgonGraphics graphics, string name, D3D.Texture2D texture)
 			: base(graphics, name, null)
 		{
-			D3DTexture = texture;
+			D3DResource = texture;
 			base.Settings = GetTextureInformation();
 		}
 
@@ -711,15 +722,15 @@ namespace GorgonLibrary.Graphics
 		protected GorgonTexture2D(GorgonSwapChain swapChain)
 			: base(swapChain.Graphics, swapChain.Name + "_Internal_Texture_" + Guid.NewGuid().ToString(), null)
 		{
-			D3DTexture = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
-			D3DTexture.DebugName = "Gorgon swap chain texture '" + Name + "'";
+			D3DResource = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
+			D3DResource.DebugName = "Gorgon swap chain texture '" + Name + "'";
 
 			base.Settings = GetTextureInformation();
 
 			RenderTarget = swapChain;
 
 			if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
-				CreateResourceView();
+				CreateDefaultResourceView();
 		}
 
 		/// <summary>

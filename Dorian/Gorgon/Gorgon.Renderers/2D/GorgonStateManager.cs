@@ -247,7 +247,7 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.Texture) == StateChange.Texture)
 			{
-				_texture = _graphics.Shaders.PixelShader.Textures[0] = renderable.Texture;
+				_texture = (GorgonTexture2D)(_graphics.Shaders.PixelShader.Resources[0] = renderable.Texture);
 
 				// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader, otherwise 
 				// switch to the diffuse shader.
@@ -345,7 +345,7 @@ namespace GorgonLibrary.Renderers
 			_rasterState = _graphics.Rasterizer.States;
 			_samplerState = _graphics.Shaders.PixelShader.TextureSamplers[0];
 			_depthState = _graphics.Output.DepthStencilState.States;
-			_texture = _graphics.Shaders.PixelShader.Textures[0];
+			_texture = (GorgonTexture2D)_graphics.Shaders.PixelShader.Resources[0];
 		}
 		#endregion
 

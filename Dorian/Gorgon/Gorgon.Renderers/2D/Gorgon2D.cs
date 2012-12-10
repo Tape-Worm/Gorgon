@@ -231,7 +231,7 @@ namespace GorgonLibrary.Renderers
 				graphics.Output.DepthStencilState.States = DepthStencilState;
 				graphics.Output.DepthStencilState.DepthStencilReference = DepthStencilReference;
 				graphics.Rasterizer.States = RasterStates;
-				graphics.Shaders.PixelShader.Textures[0] = Texture;
+				graphics.Shaders.PixelShader.Resources[0] = Texture;
 				graphics.Shaders.PixelShader.TextureSamplers[0] = SamplerState;
 			}
 
@@ -253,7 +253,7 @@ namespace GorgonLibrary.Renderers
 				BlendSampleMask = graphics.Output.BlendingState.BlendSampleMask;
 				RasterStates = graphics.Rasterizer.States;
 				SamplerState = graphics.Shaders.PixelShader.TextureSamplers[0];
-				Texture = graphics.Shaders.PixelShader.Textures[0];
+				Texture = (GorgonTexture2D)graphics.Shaders.PixelShader.Resources[0];
 				DepthStencilState = graphics.Output.DepthStencilState.States;
 				DepthStencilReference = graphics.Output.DepthStencilState.DepthStencilReference;
 				RasterStates.IsScissorTestingEnabled = false;
@@ -713,14 +713,14 @@ namespace GorgonLibrary.Renderers
 			if (ProjectionViewBuffer == null)
 			{
 				ProjectionViewBuffer = Graphics.Shaders.CreateConstantBuffer(Matrix.SizeInBytes, false);
-				_projectionViewStream = new GorgonDataStream(ProjectionViewBuffer.Size);
+				_projectionViewStream = new GorgonDataStream(ProjectionViewBuffer.SizeInBytes);
 			}
 
 			if (AlphaTestBuffer == null)
 			{
 				AlphaTestBuffer = Graphics.Shaders.CreateConstantBuffer(32, false);
-				AlphaTestStream = new GorgonDataStream(AlphaTestBuffer.Size);
-				AlphaTestStream.Write(new byte[AlphaTestBuffer.Size], 0, AlphaTestBuffer.Size);
+				AlphaTestStream = new GorgonDataStream(AlphaTestBuffer.SizeInBytes);
+				AlphaTestStream.Write(new byte[AlphaTestBuffer.SizeInBytes], 0, AlphaTestBuffer.SizeInBytes);
 				AlphaTestStream.Position = 0;
 				AlphaTestBuffer.Update(AlphaTestStream);
 			}
@@ -1075,7 +1075,7 @@ namespace GorgonLibrary.Renderers
 				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.DefaultStates;
 				sampler.TextureFilter = TextureFilter.Point;				
 				Graphics.Shaders.PixelShader.TextureSamplers[0] = sampler;
-				Graphics.Shaders.PixelShader.Textures[0] = null;
+				Graphics.Shaders.PixelShader.Resources[0] = null;
 			}
 
 			Graphics.Rasterizer.SetViewport(Target.Viewport);

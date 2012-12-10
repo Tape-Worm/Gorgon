@@ -96,6 +96,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return whether the view uses unordered access.
+		/// </summary>
+		bool ViewIsUnordered
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the number of textures there are in a texture array.
 		/// </summary>
 		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
@@ -312,6 +321,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return whether the view uses unordered access.
+		/// </summary>
+		public bool ViewIsUnordered
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the number of textures there are in a texture array.
 		/// </summary>
 		/// <value></value>
@@ -520,6 +538,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return whether the view uses unordered access.
+		/// </summary>
+		public bool ViewIsUnordered
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the number of textures there are in a texture array.
 		/// </summary>
 		/// <value></value>
@@ -701,6 +728,15 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
 		/// <remarks>This changes how the texture is sampled/viewed in a shader.  The default value is Unknown.</remarks>
 		public BufferFormat ViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the view uses unordered access.
+		/// </summary>
+		public bool ViewIsUnordered
 		{
 			get;
 			set;

@@ -40,7 +40,6 @@ namespace GorgonLibrary.Graphics
 		: GorgonBaseBuffer
 	{
 		#region Variables.
-		private bool _disposed = false;											// Flag to indicate that the object was disposed.
 		private DX.DataStream _lockStream = null;								// Stream used when locking.
 		#endregion
 
@@ -53,40 +52,76 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+		
+		/// <summary>
+		/// Property to set or return the view for the resource.
+		/// </summary>
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+		public override GorgonResourceView View
+		{
+			get
+			{
+				return null;
+			}
+			set
+			{
+			}
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to clean up the resource object.
+		/// </summary>
+		protected override void CleanUpResource()
+		{
+			if (Graphics.Input.IndexBuffer == this)
+				Graphics.Input.IndexBuffer = null;
+
+			if (IsLocked)
+				Unlock();
+
+			if (D3DResource != null)
+			{
+				GorgonRenderStatistics.IndexBufferCount--;
+				GorgonRenderStatistics.IndexBufferSize -= D3DBuffer.Description.SizeInBytes;
+
+				D3DResource.Dispose();
+				D3DResource = null;
+			}			
+		}
+
 		/// <summary>
 		/// Function used to initialize the buffer with data.
 		/// </summary>
 		/// <param name="data">Data to write.</param>
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
-		protected internal override void Initialize(GorgonDataStream data)
+		protected override void InitializeImpl(GorgonDataStream data)
 		{
 			D3D11.BufferDescription desc = new D3D11.BufferDescription();
 
 			desc.BindFlags = D3D11.BindFlags.IndexBuffer;
 			desc.CpuAccessFlags = D3DCPUAccessFlags;
 			desc.OptionFlags = D3D11.ResourceOptionFlags.None;
-			desc.SizeInBytes = Size;
+			desc.SizeInBytes = SizeInBytes;
 			desc.StructureByteStride = 0;
 			desc.Usage = D3DUsage;
 
 			if (data == null)
-				D3DBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc);
+				D3DResource = new D3D11.Buffer(Graphics.D3DDevice, desc);
 			else
 			{
 				long position = data.Position;
 
 				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - position, true, true))
-					D3DBuffer = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
+					D3DResource = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
 			}
 
 			GorgonRenderStatistics.IndexBufferCount++;
-			GorgonRenderStatistics.IndexBufferSize += D3DBuffer.Description.SizeInBytes;
+			GorgonRenderStatistics.IndexBufferSize += ((D3D11.Buffer)D3DResource).Description.SizeInBytes;
 
 #if DEBUG
-			D3DBuffer.DebugName = "Gorgon Index Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonIndexBuffer>().Count().ToString(); 
+			D3DResource.DebugName = "Gorgon Index Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonIndexBuffer>().Count().ToString(); 
 #endif
 		}
 
@@ -112,7 +147,7 @@ namespace GorgonLibrary.Graphics
 				mapMode = D3D11.MapMode.WriteDiscard;
 
 			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
-				mapMode = D3D11.MapMode.WriteNoOverwrite;			
+				mapMode = D3D11.MapMode.WriteNoOverwrite;
 
 			Graphics.Context.MapSubresource(D3DBuffer, mapMode, D3D11.MapFlags.None, out _lockStream);
 			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
@@ -142,7 +177,7 @@ namespace GorgonLibrary.Graphics
 					DataPointer = stream.PositionPointer,
 					RowPitch = size
 				},
-				D3DBuffer,
+				D3DResource,
 				0,
 				new D3D11.ResourceRegion()
 				{
@@ -153,36 +188,6 @@ namespace GorgonLibrary.Graphics
 					Front = 0,
 					Back = 1
 				});
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (Graphics.Input.IndexBuffer == this)
-						Graphics.Input.IndexBuffer = null;
-
-					if (IsLocked)
-						Unlock();
-
-					if (D3DBuffer != null)
-					{
-						GorgonRenderStatistics.IndexBufferCount--;
-						GorgonRenderStatistics.IndexBufferSize -= D3DBuffer.Description.SizeInBytes;
-
-						D3DBuffer.Dispose();
-					}
-				}
-
-				D3DBuffer = null;
-				_disposed = true;
-			}
 		}
 
 		/// <summary>

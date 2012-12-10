@@ -102,6 +102,24 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the number of structured buffers allocated.
+		/// </summary>
+		public static int StructuredBufferCount
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
+		/// Property to return the size, in bytes, of all structured buffers allocated.
+		/// </summary>
+		public static int StructuredBufferSize
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
 		/// Property to return the number of textures allocated.
 		/// </summary>
 		public static int TextureCount
@@ -185,6 +203,8 @@ namespace GorgonLibrary.Graphics
 			RenderTargetCount = 0;
 			DepthBufferCount = 0;
 			DepthBufferSize = 0;
+			StructuredBufferCount = 0;
+			StructuredBufferSize = 0;
 		}
 		#endregion
 	}

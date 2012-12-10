@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, January 03, 2012 8:22:34 AM
+// Created: Monday, November 5, 2012 8:58:47 PM
 // 
 #endregion
 
@@ -28,35 +28,47 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
+using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A buffer to hold a set of vertices.
+	/// A buffer for shaders.
 	/// </summary>
-	public class GorgonVertexBuffer
+	/// <remarks>This is a base object for buffers that can be bound to a shader.</remarks>
+	public abstract class GorgonShaderBuffer
 		: GorgonBaseBuffer
 	{
 		#region Variables.
-		private DX.DataStream _lockStream = null;								// Stream used when locking.
+		private DX.DataStream _lockStream = null;							// Lock stream.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the view for the resource.
+		/// Property to return the binding flags for the buffer.
 		/// </summary>
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override GorgonResourceView View
+		internal D3D.BindFlags BindingFlags
 		{
 			get
 			{
-				return null;
+				if (IsUnorderedAccess)
+					return D3D.BindFlags.ShaderResource | D3D.BindFlags.UnorderedAccess;
+				else
+					return D3D.BindFlags.ShaderResource;
 			}
-			set
-			{
-			}
+		}
+
+		/// <summary>
+		/// Property to return whether there's unordered access to this buffer or not.
+		/// </summary>
+		/// <remarks>Unordered access is only available to video devices that support SM5 or better.</remarks>
+		public bool IsUnorderedAccess
+		{
+			get;
+			private set;
 		}
 		#endregion
 
@@ -66,57 +78,30 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CleanUpResource()
 		{
-			int bufferIndex = Graphics.Input.VertexBuffers.IndexOf(this);
-
-			// Unbind this buffer if it's bound.
-			if (bufferIndex != -1)
-				Graphics.Input.VertexBuffers[bufferIndex] = GorgonVertexBufferBinding.Empty;
+			// If we're bound with a pixel or vertex shader, then unbind.
+			Graphics.Shaders.VertexShader.Resources.Unbind(this);
+			Graphics.Shaders.PixelShader.Resources.Unbind(this);
 
 			if (IsLocked)
 				Unlock();
 
+			if (View != null)
+			{
+				View = null;
+			}
+
+			if (DefaultView != null)
+			{
+				Gorgon.Log.Print("Gorgon default resource view {0}: Destroying default resource view.", Diagnostics.LoggingLevel.Verbose, DefaultView.Name); 
+				DefaultView.Dispose();
+				DefaultView = null;
+			}
+
 			if (D3DResource != null)
 			{
-				GorgonRenderStatistics.VertexBufferCount--;
-				GorgonRenderStatistics.VertexBufferSize -= D3DBuffer.Description.SizeInBytes;
-
 				D3DResource.Dispose();
 				D3DResource = null;
 			}
-		}
-
-		/// <summary>
-		/// Function used to initialize the buffer with data.
-		/// </summary>
-		/// <param name="data">Data to write.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
-		protected override void InitializeImpl(GorgonDataStream data)
-		{
-			D3D11.BufferDescription desc = new D3D11.BufferDescription();
-
-			desc.BindFlags = D3D11.BindFlags.VertexBuffer;
-			desc.CpuAccessFlags = D3DCPUAccessFlags;
-			desc.OptionFlags = D3D11.ResourceOptionFlags.None;
-			desc.SizeInBytes = SizeInBytes;
-			desc.StructureByteStride = 0;
-			desc.Usage = D3DUsage;
-
-			if (data == null)
-				D3DResource = new D3D11.Buffer(Graphics.D3DDevice, desc);
-			else
-			{
-				long position = data.Position;
-
-				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - position, true, true))
-					D3DResource = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
-			}
-
-			GorgonRenderStatistics.VertexBufferCount++;
-			GorgonRenderStatistics.VertexBufferSize += ((D3D11.Buffer)D3DResource).Description.SizeInBytes;
-
-#if DEBUG
-			D3DResource.DebugName = "Gorgon Vertex Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonVertexBuffer>().Count().ToString();
-#endif
 		}
 
 		/// <summary>
@@ -128,22 +113,11 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		protected override GorgonDataStream LockImpl(BufferLockFlags lockFlags)
 		{
-			D3D11.MapMode mapMode = D3D11.MapMode.Write;
+			if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard) || ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
+				throw new ArgumentException("A structured buffer must be locked with the Write and Discard flags.", "lockFlags");
 
-			// Read is mutually exclusive.
-			if ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read)
-				throw new ArgumentException("Cannot read a vertex buffer.", "lockFlags");
+			Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out _lockStream);
 
-			if (lockFlags == BufferLockFlags.Write)
-				throw new ArgumentException("Vertex buffer must use nooverwrite or discard when locking.", "lockFlags");
-
-			if ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
-				mapMode = D3D11.MapMode.WriteDiscard;
-
-			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
-				mapMode = D3D11.MapMode.WriteNoOverwrite;
-
-			Graphics.Context.MapSubresource(D3DBuffer, mapMode, D3D11.MapFlags.None, out _lockStream);
 			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
 		}
 
@@ -169,23 +143,29 @@ namespace GorgonLibrary.Graphics
 				new DX.DataBox()
 				{
 					DataPointer = stream.PositionPointer,
-					RowPitch = size
-				},
-				D3DResource,
-				0,
-				new D3D11.ResourceRegion()
-				{
-					Left = offset,
-					Right = offset + size,
-					Top = 0,
-					Bottom = 1,
-					Front = 0,
-					Back = 1
-				});
+					RowPitch = 0,
+					SlicePitch = 0
+				}, 
+				D3DResource);
 		}
 
 		/// <summary>
-		/// Function to update the entire buffer.
+		/// Function to update the buffer.
+		/// </summary>
+		/// <param name="stream">Stream containing the data used to update the buffer.</param>
+		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
+		/// <param name="size">The number of bytes to write.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		///   
+		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+		public new void Update(GorgonDataStream stream, int offset, int size)
+		{
+			base.Update(stream, 0, 0);
+		}
+
+		/// <summary>
+		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
 		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
@@ -197,20 +177,25 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(GorgonDataStream stream)
 		{
-			UpdateImpl(stream, 0, (int)(stream.Length - stream.Position));
+			Update(stream, 0, 0);
 		}
 		#endregion
 
-		#region Constructor.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexBuffer"/> class.
+		/// Initializes a new instance of the <see cref="GorgonShaderBuffer" /> class.
 		/// </summary>
-		/// <param name="graphics">The graphics.</param>
-		/// <param name="usage">The buffer usage</param>
-		/// <param name="size">The size.</param>
-		internal GorgonVertexBuffer(GorgonGraphics graphics, BufferUsage usage, int size)
-			: base(graphics, usage, size)
+		/// <param name="graphics">Graphics interface that owns this buffer.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU write access to the buffer, FALSE to disallow.</param>
+		/// <param name="isUnorderedAccess">TRUE to allow unordered access to the buffer, FALSE to disallow.</param>
+		/// <param name="size">Size of the buffer, in bytes.</param>
+		protected GorgonShaderBuffer(GorgonGraphics graphics, bool allowCPUWrite, bool isUnorderedAccess, int size)
+			: base(graphics, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), size)
 		{
+			if ((isUnorderedAccess) && (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+				throw new ArgumentException("Cannot use unordered access buffers with video devices that are not SM5 or better.", "isUnorderedAccess");
+
+			IsUnorderedAccess = isUnorderedAccess;
 		}
 		#endregion
 	}

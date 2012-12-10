@@ -30,6 +30,7 @@ namespace Test_TextureArray
 		private static float _angle = 0.0f;
 		private static GorgonAnimationController<GorgonSprite> _controller = null;
 		private static GorgonAnimationController<GorgonText> _textController = null;
+		private static GorgonStructuredBuffer _structBuffer = null;
 
 		private static bool Idle()
 		{
@@ -221,6 +222,18 @@ namespace Test_TextureArray
 			}
 
 			_dyn.Unlock();
+
+			_structBuffer = _graphics.Shaders.CreateStructuredBuffer(1, 4, true);
+
+			int structValue = 2;
+			using (var thing = _structBuffer.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))
+			{
+				thing.Write(structValue);
+			}
+			
+			_structBuffer.Unlock();
+
+			_2D.PixelShader.Resources[2] = _structBuffer;
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)

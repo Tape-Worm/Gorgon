@@ -46,6 +46,17 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the type of data in the resource.
+		/// </summary>
+		public override ResourceType ResourceType
+		{
+			get
+			{
+				return ResourceType.Texture1D;
+			}
+		}
+
+		/// <summary>
 		/// Property to return the settings for this texture.
 		/// </summary>
 		public new GorgonTexture1DSettings Settings
@@ -73,7 +84,7 @@ namespace GorgonLibrary.Graphics
 			imageInfo.Depth = 0;
 			imageInfo.Height = 0;
 						
-			D3DTexture = D3D.Texture1D.FromMemory<D3D.Texture1D>(Graphics.D3DDevice, imageData, imageInfo);
+			D3DResource = D3D.Texture1D.FromMemory<D3D.Texture1D>(Graphics.D3DDevice, imageData, imageInfo);
 		}
 
 		/// <summary>
@@ -112,14 +123,14 @@ namespace GorgonLibrary.Graphics
 			if ((initialData != null) && (initialData.Count() > 0))
 			{
 				DX.DataStream[] streams = GorgonTexture1DData.Convert(initialData);
-				D3DTexture = new D3D.Texture1D(Graphics.D3DDevice, desc, streams);
+				D3DResource = new D3D.Texture1D(Graphics.D3DDevice, desc, streams);
 
 				// Clean up.
 				foreach (var stream in streams)
 					stream.Dispose();
 			}
 			else
-				D3DTexture = new D3D.Texture1D(Graphics.D3DDevice, desc);
+				D3DResource = new D3D.Texture1D(Graphics.D3DDevice, desc);
 		}
 
 		/// <summary>
@@ -189,7 +200,7 @@ namespace GorgonLibrary.Graphics
 			if (format != ImageFileFormat.DDS)
 				throw new ArgumentException("The file format for a 1D texture can only be DDS.", "format");
 
-			D3D.Resource.ToStream<D3D.Texture1D>(Graphics.Context, (D3D.Texture1D)D3DTexture, D3D.ImageFileFormat.Dds, stream);
+			D3D.Resource.ToStream<D3D.Texture1D>(Graphics.Context, (D3D.Texture1D)D3DResource, D3D.ImageFileFormat.Dds, stream);
 		}
 
 		/// <summary>
@@ -369,7 +380,7 @@ namespace GorgonLibrary.Graphics
 				Right = destRange.Maximum
 			};
 
-			Graphics.Context.UpdateSubresource(box, D3DTexture, subResource, region);
+			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);
 		}
 		#endregion
 

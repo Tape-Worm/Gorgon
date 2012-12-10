@@ -43,7 +43,7 @@ namespace GorgonLibrary.Graphics
 	/// The base texture object for all textures.
 	/// </summary>
 	public abstract class GorgonTexture
-		: GorgonNamedObject, IDisposable, IShaderResource
+		: GorgonNamedResource
 	{
 		#region Variables.
 		private bool _disposed = false;						// Flag to indicate that the texture was disposed.
@@ -55,24 +55,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the shader resource view for the texture.
-		/// </summary>
-		internal D3D.ShaderResourceView View
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the D3D texture.
-		/// </summary>
-		internal D3D.Resource D3DTexture
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to return the render target that this texture belongs to.
 		/// </summary>
@@ -91,15 +73,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return RenderTarget != null;
 			}
-		}
-
-		/// <summary>
-		/// Property to return the graphics interface that owns this object.
-		/// </summary>
-		public GorgonGraphics Graphics
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
@@ -124,7 +97,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the size of the texture, in bytes.
 		/// </summary>
 		/// <remarks>This will take into account whether the texture is a packed format, or compressed.</remarks>
-		public int SizeInBytes
+		public override int SizeInBytes
 		{
 			get
 			{
@@ -132,12 +105,6 @@ namespace GorgonLibrary.Graphics
 					_size = GetTextureSize();
 
 				return _size;
-			}
-			protected set
-			{
-				if (value < 0)
-					value = 0;
-				_size = value;
 			}
 		}
 
@@ -239,118 +206,63 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create the shader resource view.
+		/// Function to create the resource object.
 		/// </summary>
-		private void CreateShaderResourceView()
+		protected override void CreateDefaultResourceView()
 		{
-			string textureType = GetType().Name;
-			bool isMultisampled = Settings.Multisampling.Count > 1 || Settings.Multisampling.Quality > 0;
-			D3D.ShaderResourceViewDescription desc = default(D3D.ShaderResourceViewDescription);
-
-			if (View != null)
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+			if (Settings.ViewFormat != BufferFormat.Unknown)
 			{
-				View.Dispose();
-				View = null;
+				ViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+			}
+			else
+			{
+				ViewFormatInformation = FormatInformation;
 			}
 
-			// If we're using the same format for the view as the texture, then use the texture format, otherwise
-			// we'll get the information for the view format.
-			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-			if (Settings.ViewFormat == BufferFormat.Unknown)
-				ViewFormatInformation = FormatInformation;
-			else
-				ViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.ViewFormat);
-
-			if (ViewFormatInformation.IsTypeless)
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + Settings.ViewFormat.ToString() + "' is untyped.  A view requires a typed format.");
-
-			// We cannot bind staging resources to the pipeline.
+			// Create the default view for this resource.
 			if (Settings.Usage != BufferUsage.Staging)
 			{
-				if ((Settings.ViewFormat == BufferFormat.Unknown) || (Settings.ViewFormat == Settings.Format))
-					View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture);
-				else
-				{
-					if (string.Compare(ViewFormatInformation.Group, FormatInformation.Group, true) != 0)
-						throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + Settings.Format.ToString() + "' and the view format '" + Settings.ViewFormat.ToString() + "' are not part of the same group.");
-
-					desc.Format = (GI.Format)Settings.ViewFormat;
-
-					// Determine view type.
-					switch (textureType.ToLower())
-					{
-						case "gorgontexture1d":
-							if (Settings.ArrayCount <= 1)
-								desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture1D;
-							else
-								desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture1DArray;
-
-							desc.Texture1DArray = new D3D.ShaderResourceViewDescription.Texture1DArrayResource()
-							{
-								MipLevels = Settings.MipCount,
-								MostDetailedMip = 0,
-								ArraySize = Settings.ArrayCount,
-								FirstArraySlice = 0
-							};
-							break;
-						case "gorgontexture2d":
-							if (isMultisampled)
-							{
-								if (Settings.ArrayCount <= 1)
-									desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DMultisampled;
-								else
-									desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DMultisampledArray;
-
-								desc.Texture2DMSArray = new D3D.ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
-								{
-									ArraySize = Settings.ArrayCount,
-									FirstArraySlice = 0
-								};
-							}
-							else
-							{
-								if (Settings.ArrayCount <= 1)
-									desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2D;
-								else
-									desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DArray;
-
-								desc.Texture2DArray = new D3D.ShaderResourceViewDescription.Texture2DArrayResource()
-								{
-									MipLevels = Settings.MipCount,
-									MostDetailedMip = 0,
-									ArraySize = Settings.ArrayCount,
-									FirstArraySlice = 0
-								};
-							}
-							break;
-						case "gorgontexture3d":
-							desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture3D;
-							desc.Texture3D = new D3D.ShaderResourceViewDescription.Texture3DResource()
-							{
-								MipLevels = Settings.MipCount,
-								MostDetailedMip = 0
-							};
-							break;
-						default:
-							throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a resource view, the texture type '" + textureType + "' is unknown.");
-					}
-
-					try
-					{
-						View = new D3D.ShaderResourceView(Graphics.D3DDevice, D3DTexture, desc);
-					}
-					catch (SharpDX.SharpDXException sDXEx)
-					{
-						if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-							throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + Settings.ViewFormat.ToString() + "' is not compatible or castable to '" + Settings.Format.ToString() + "'.");
-					}
-				}
-
-				View.DebugName = textureType + " '" + Name + "' Shader Resource View";
+				DefaultView = new GorgonResourceView(Graphics, Name + "ResourceView");
+				DefaultView.Resource = this;
+				DefaultView.BuildResourceView();
 
 				// Unbind and rebind us to the pipeline.
-				Graphics.Shaders.Reseat(this);
+				Graphics.Shaders.Reseat(this);	
 			}
+		}
+
+		/// <summary>
+		/// Function to clean up the resource object.
+		/// </summary>
+		protected override void CleanUpResource()
+		{
+			Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", Diagnostics.LoggingLevel.Verbose, Name);
+			Graphics.Shaders.Unbind(this);
+
+			Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", Diagnostics.LoggingLevel.Verbose, Name);
+
+			// Unbind from the view.
+			if (View != null)
+			{
+				View.Resource = null;
+			}
+
+			// Destroy any view attached to this object.
+			if (DefaultView != null)
+			{
+				Gorgon.Log.Print("Gorgon default resource view {0}: Destroying default resource view.", Diagnostics.LoggingLevel.Verbose, DefaultView.Name);
+				DefaultView.Dispose();
+				DefaultView = null;
+			}
+
+			if (D3DResource != null)
+			{
+				GorgonRenderStatistics.TextureCount--;
+				GorgonRenderStatistics.TextureSize -= SizeInBytes;
+				D3DResource.Dispose();
+				D3DResource = null;
+			}			
 		}
 
 		/// <summary>
@@ -367,7 +279,7 @@ namespace GorgonLibrary.Graphics
 
 			if (_texture1D != null)
 			{
-				D3D.Texture1DDescription desc = ((D3D.Texture1D)_texture1D.D3DTexture).Description;
+				D3D.Texture1DDescription desc = ((D3D.Texture1D)_texture1D.D3DResource).Description;
 				newSettings = new GorgonTexture1DSettings();
 				newSettings.Width = desc.Width;
 				newSettings.Height = 1;
@@ -382,7 +294,7 @@ namespace GorgonLibrary.Graphics
 
 			if (_texture2D != null)
 			{
-				D3D.Texture2DDescription desc = ((D3D.Texture2D)_texture2D.D3DTexture).Description;
+				D3D.Texture2DDescription desc = ((D3D.Texture2D)_texture2D.D3DResource).Description;
 				newSettings = new GorgonTexture2DSettings();
 				newSettings.Width = desc.Width;
 				newSettings.Height = desc.Height;
@@ -397,7 +309,7 @@ namespace GorgonLibrary.Graphics
 
 			if (_texture3D != null)
 			{
-				D3D.Texture3DDescription desc = ((D3D.Texture3D)_texture3D.D3DTexture).Description;
+				D3D.Texture3DDescription desc = ((D3D.Texture3D)_texture3D.D3DResource).Description;
 				newSettings = new GorgonTexture3DSettings();
 				newSettings.Width = desc.Width;
 				newSettings.Height = desc.Height;
@@ -414,14 +326,6 @@ namespace GorgonLibrary.Graphics
 			newSettings.ViewFormat = viewFormat;
 
 			return newSettings;
-		}
-
-		/// <summary>
-		/// Function to create a shader resource and optionally, an unordered access view
-		/// </summary>
-		protected void CreateResourceView()
-		{
-			CreateShaderResourceView();
 		}
 
 		/// <summary>
@@ -445,7 +349,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="destination">Destination resource.</param>
 		internal virtual void CopyResourceProxy(GorgonTexture source, GorgonTexture destination)
 		{
-			Graphics.Context.CopyResource(source.D3DTexture, destination.D3DTexture);
+			Graphics.Context.CopyResource(source.D3DResource, destination.D3DResource);
 		}
 
 		/// <summary>
@@ -461,7 +365,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="z">Destination depth coordinate.</param>
 		internal virtual void CopySubResourceProxy(GorgonTexture source, GorgonTexture destination, int srcSubResourceIndex, int destSubResourceIndex, D3D.ResourceRegion? sourceRegion, int x, int y, int z)
 		{
-			Graphics.Context.CopySubresourceRegion(source.D3DTexture, srcSubResourceIndex, sourceRegion, destination.D3DTexture, destSubResourceIndex, x, y, z);
+			Graphics.Context.CopySubresourceRegion(source.D3DResource, srcSubResourceIndex, sourceRegion, destination.D3DResource, destSubResourceIndex, x, y, z);
 		}
 
 		/// <summary>
@@ -475,17 +379,17 @@ namespace GorgonLibrary.Graphics
 			{
 				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 				InitializeImpl(initialData);
-				D3DTexture.DebugName = GetType().Name + " '" + Name + "' D3D texture";
-				CreateResourceView();
+				D3DResource.DebugName = GetType().Name + " '" + Name + "' D3D texture";
+				CreateDefaultResourceView();
 
 				GorgonRenderStatistics.TextureCount++;
 				GorgonRenderStatistics.TextureSize += SizeInBytes;
 			}
 			catch
 			{
-				if (D3DTexture != null)
-					D3DTexture.Dispose();
-				D3DTexture = null;
+				if (D3DResource != null)
+					D3DResource.Dispose();
+				D3DResource = null;
 				throw;
 			}
 		}
@@ -535,19 +439,21 @@ namespace GorgonLibrary.Graphics
 
 				Gorgon.Log.Print("{0} {1}: Loading D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 				InitializeImpl(imageData, imageInfo);
-				D3DTexture.DebugName = GetType().Name + " '" + Name + "' D3D texture";
+				D3DResource.DebugName = GetType().Name + " '" + Name + "' D3D texture";
 
 				Settings = GetTextureInformation();
-				CreateResourceView();
+				CreateDefaultResourceView();
 
 				GorgonRenderStatistics.TextureCount++;
 				GorgonRenderStatistics.TextureSize += SizeInBytes;
 			}
 			catch
 			{
-				if (D3DTexture != null)
-					D3DTexture.Dispose();
-				D3DTexture = null;
+				if (D3DResource != null)
+				{
+					D3DResource.Dispose();
+					D3DResource = null;
+				}
 				throw;
 			}
 		}
@@ -674,7 +580,7 @@ namespace GorgonLibrary.Graphics
 #endif
 
 			// If we have multisampling enabled, then copy the entire sub resource.
-			Graphics.Context.CopyResource(texture.D3DTexture, D3DTexture);
+			Graphics.Context.CopyResource(texture.D3DResource, D3DResource);
 		}
 
 		/// <summary>
@@ -739,7 +645,7 @@ namespace GorgonLibrary.Graphics
 				region.Bottom = Settings.Height;
 			}
 
-			Graphics.Context.UpdateSubresource(box, D3DTexture, subResource, region);
+			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);
 		}
 
 		/// <summary>
@@ -855,7 +761,7 @@ namespace GorgonLibrary.Graphics
 			if ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
 				mapMode = D3D.MapMode.WriteDiscard;
 
-			DX.DataBox box = Graphics.Context.MapSubresource(D3DTexture, subResource, mapMode, D3D.MapFlags.None, out lockStream);
+			DX.DataBox box = Graphics.Context.MapSubresource(D3DResource, subResource, mapMode, D3D.MapFlags.None, out lockStream);
 
 			if (subResource >= _lock.Count)
 				_lock.Add(lockStream);
@@ -888,7 +794,7 @@ namespace GorgonLibrary.Graphics
 			if (!IsLocked(subResource))
 				return;
 
-			Graphics.Context.UnmapSubresource(D3DTexture, subResource);
+			Graphics.Context.UnmapSubresource(D3DResource, subResource);
 			_lock[subResource].Dispose();
 			_lock[subResource] = null;
 		}
@@ -902,71 +808,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name of the texture.</param>
 		/// <param name="settings">Settings for the texture.</param>
 		protected GorgonTexture(GorgonGraphics graphics, string name, ITextureSettings settings)
-			: base(name)
+			: base(graphics, name)
 		{
 			_lock = new List<DX.DataStream>(16);
 			Settings = settings;
-			Graphics = graphics;
 			_texture1D = this as GorgonTexture1D;
 			_texture2D = this as GorgonTexture2D;
-			_texture3D = this as GorgonTexture3D;
-		}
-		#endregion
-
-		#region IShaderResource Members
-		/// <summary>
-		/// Property to return the shader resource view for an object.
-		/// </summary>
-		D3D.ShaderResourceView IShaderResource.D3DResourceView
-		{
-			get
-			{
-				return View;
-			}
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", Diagnostics.LoggingLevel.Verbose, Name);
-					Graphics.Shaders.Unbind(this);
-
-					Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", Diagnostics.LoggingLevel.Verbose, Name);
-					if (D3DTexture != null)
-					{
-						GorgonRenderStatistics.TextureCount--;
-						GorgonRenderStatistics.TextureSize -= SizeInBytes;
-
-						D3DTexture.Dispose();
-					}
-
-					Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 shader resource view.", Diagnostics.LoggingLevel.Verbose, Name);
-					if (View != null)
-						View.Dispose();
-
-					Graphics.RemoveTrackedObject(this);
-				}				
-
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+			_texture3D = this as GorgonTexture3D;			
 		}
 		#endregion
 	}
