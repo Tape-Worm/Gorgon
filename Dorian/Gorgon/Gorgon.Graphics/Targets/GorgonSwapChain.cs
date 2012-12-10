@@ -292,7 +292,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			Texture = GorgonTexture2D.CreateTexture(this);
-			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DTexture);
+			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DResource);
 			D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
 
 			// Set up the default viewport.
@@ -343,7 +343,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ModeStateUpdate()
 		{
-			SharpDX.Result result = SharpDX.Result.Ok;
 			GorgonBeforeStateTransitionEventArgs e = null;
 
 			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode);
@@ -360,7 +359,7 @@ namespace GorgonLibrary.Graphics
 
 					if (!e.Cancel)
 					{
-						result = GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
+						GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
 						_parentForm.Activated += new EventHandler(_parentForm_Activated);
 						_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
 					}
@@ -373,7 +372,7 @@ namespace GorgonLibrary.Graphics
 						BeforeStateTransition(this, new GorgonBeforeStateTransitionEventArgs(false));
 
 					if (!e.Cancel)
-						result = GISwapChain.SetFullscreenState(false, null);
+						GISwapChain.SetFullscreenState(false, null);
 				}
 			}
 			catch (SharpDX.SharpDXException sdEx)
@@ -709,18 +708,26 @@ namespace GorgonLibrary.Graphics
 
 			if (IsInStandBy)
 				flags = GI.PresentFlags.Test;
-			
-			result = GISwapChain.Present(interval, flags);
 
-			if (result != SharpDX.Result.Ok)
+			try
 			{
-				if (result.Success)
-					IsInStandBy = true;
-				else
-					throw new GorgonException(GorgonResult.CannotWrite, "Cannot update the swap chain front buffer.\nAn unrecoverable error has occurred:\n" + D3DErrors.GetError(result.Code).Description + " (" + D3DErrors.GetError(result.Code).Code + ")");
-			}
-			else
 				IsInStandBy = false;
+				GISwapChain.Present(interval, flags);
+			}
+			catch (SharpDX.SharpDXException sdex)
+			{
+				if (sdex.ResultCode != SharpDX.Result.Ok)
+				{
+					if (result.Success)
+					{
+						IsInStandBy = true;
+					}
+					else
+					{
+						throw new GorgonException(GorgonResult.CannotWrite, "Cannot update the swap chain front buffer.\nAn unrecoverable error has occurred:\n" + D3DErrors.GetError(result.Code).Description + " (" + D3DErrors.GetError(result.Code).Code + ")");
+					}
+				}
+			}
 		}
 
 		/// <summary>

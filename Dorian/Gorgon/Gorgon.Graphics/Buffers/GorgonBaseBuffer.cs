@@ -88,10 +88,10 @@ namespace GorgonLibrary.Graphics
 	/// A base buffer object.
 	/// </summary>
 	public abstract class GorgonBaseBuffer
-		: IDisposable
+		: GorgonResource
 	{
 		#region Variables.
-		private bool _disposed = false;			// Flag to indicate that the object was disposed.
+		private int _size = 0;					// Size of the buffer, in bytes.
 		#endregion
 
 		#region Properties.
@@ -114,21 +114,12 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the Direct 3D buffer.
+		/// Property to set or return the D3D buffer object.
 		/// </summary>
 		internal D3D11.Buffer D3DBuffer
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to return the graphics interface that created this buffer.
-		/// </summary>
-		public GorgonGraphics Graphics
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
@@ -143,10 +134,23 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the size of the buffer, in bytes.
 		/// </summary>
-		public int Size
+		public override int SizeInBytes
 		{
-			get;
-			private set;
+			get 
+			{
+				return _size;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the type of data in the resource.
+		/// </summary>
+		public override ResourceType ResourceType
+		{
+			get 
+			{
+				return ResourceType.Buffer;
+			}
 		}
 
 		/// <summary>
@@ -165,7 +169,18 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="data">Data to write.</param>
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
-		protected internal abstract void Initialize(GorgonDataStream data);
+		protected abstract void InitializeImpl(GorgonDataStream data);
+
+		/// <summary>
+		/// Function used to initialize the buffer with data.
+		/// </summary>
+		/// <param name="data">Data to write.</param>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
+		internal void Initialize(GorgonDataStream data)
+		{
+			InitializeImpl(data);
+			D3DBuffer = (D3D11.Buffer)D3DResource;
+		}
 
 		/// <summary>
 		/// Function used to lock the underlying buffer for reading/writing.
@@ -197,13 +212,13 @@ namespace GorgonLibrary.Graphics
 		public void Copy(GorgonBaseBuffer buffer)
 		{
 #if DEBUG
-			if (buffer.Size != Size)
+			if (buffer.SizeInBytes != SizeInBytes)
 				throw new ArgumentException("The size of the buffers do not match.", "buffer");
 
 			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Immutable)
 				throw new InvalidOperationException("This buffer is immutable and this cannot be updated.");
 #endif
-			Graphics.Context.CopyResource(buffer.D3DBuffer, D3DBuffer);
+			Graphics.Context.CopyResource(buffer.D3DResource, D3DResource);
 		}
 
 		/// <summary>
@@ -245,16 +260,16 @@ namespace GorgonLibrary.Graphics
 			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Immutable)
 				throw new InvalidOperationException("This buffer is immutable and this cannot be updated.");
 
-			if ((sourceStartingIndex < 0) || (sourceStartingIndex >= buffer.Size))
+			if ((sourceStartingIndex < 0) || (sourceStartingIndex >= buffer.SizeInBytes))
 				throw new ArgumentOutOfRangeException("sourceStartingIndex", "The start index is outside of the bounds of the buffer.");
 
-			if ((endByteIndex < 0) || (endByteIndex >= buffer.Size))
+			if ((endByteIndex < 0) || (endByteIndex >= buffer.SizeInBytes))
 				throw new ArgumentOutOfRangeException("byteCount", "The byte count is less than 0 or greater than the size of the source buffer.");
 
-			if ((destOffset < 0) || (destOffset + byteCount >= Size))
+			if ((destOffset < 0) || (destOffset + byteCount >= SizeInBytes))
 				throw new ArgumentOutOfRangeException("destOffset", "The destination offset or the number of bytes + the destination offset are greater than the size of the destination buffer.");
 #endif
-			Graphics.Context.CopySubresourceRegion(buffer.D3DBuffer, 0, new D3D11.ResourceRegion()
+			Graphics.Context.CopySubresourceRegion(buffer.D3DResource, 0, new D3D11.ResourceRegion()
 				{
 					Top = 0,
 					Bottom = 1,
@@ -262,7 +277,7 @@ namespace GorgonLibrary.Graphics
 					Right = endByteIndex,
 					Front = 0,
 					Back = 1
-				}, D3DBuffer, 0, destOffset, 0, 0);
+				}, D3DResource, 0, destOffset, 0, 0);
 		}
 
 		/// <summary>
@@ -351,12 +366,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="usage">Usage for this buffer.</param>
 		/// <param name="size">The size of the buffer, in bytes.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected GorgonBaseBuffer(GorgonGraphics graphics, BufferUsage usage, int size)			
+		protected GorgonBaseBuffer(GorgonGraphics graphics, BufferUsage usage, int size)
+			: base(graphics)
 		{
-			GorgonDebug.AssertNull<GorgonGraphics>(graphics, "graphics");
-
-			Size = size;
-			Graphics = graphics;
+			_size = size;
 			BufferUsage = usage;
 
 			D3DUsage = (D3D11.ResourceUsage)usage;
@@ -376,32 +389,6 @@ namespace GorgonLibrary.Graphics
 					break;
 			}			
 
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-					Graphics.RemoveTrackedObject(this);
-
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

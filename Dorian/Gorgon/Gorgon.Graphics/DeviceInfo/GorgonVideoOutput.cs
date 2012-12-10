@@ -73,7 +73,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return GIOutput.Description.DesktopBounds;
+				return new Rectangle(GIOutput.Description.DesktopBounds.Left, GIOutput.Description.DesktopBounds.Top, GIOutput.Description.DesktopBounds.Width, GIOutput.Description.DesktopBounds.Height);
 			}
 		}
 

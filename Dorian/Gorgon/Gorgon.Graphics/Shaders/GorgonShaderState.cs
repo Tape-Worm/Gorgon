@@ -601,13 +601,14 @@ namespace GorgonLibrary.Graphics
 				return GetEnumerator();
 			}
 			#endregion
-		}
+		}			
 
 		/// <summary>
-		/// A list of shader textures.
+		/// A list of shader resources.
 		/// </summary>
-		public class ShaderTextures
-			: IList<GorgonTexture>
+		/// <remarks>A shader resource can be a data structure like a buffer, or a texture.</remarks>
+		public class ShaderResources
+			: IList<GorgonResource>
 		{
 			#region Variables.
 			private GorgonShaderState<T> _shader = null;				// Shader that owns this interface.
@@ -615,91 +616,61 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
-			/// Function to unbind a texture.
+			/// Function to unbind a shader resource.
 			/// </summary>
-			/// <param name="texture">Texture to bind.</param>
-			internal void Unbind(GorgonTexture texture)
+			/// <param name="resource">Resource to bind.</param>
+			internal void Unbind(GorgonResource resource)
 			{
 				for (int i = 0; i < Count; i++)
 				{
-					if (_shader._resources[i] == texture)
+					if (_shader._resources[i] == resource)
 						this[i] = null;
 				}
 			}
 
 			/// <summary>
-			/// Function to re-seat a texture after it's been altered.
+			/// Function to re-seat a resource after it's been altered.
 			/// </summary>
-			/// <param name="texture">Texture to re-seat.</param>
-			internal void ReSeat(GorgonTexture texture)
+			/// <param name="resource">Resource to re-seat.</param>
+			internal void ReSeat(GorgonResource resource)
 			{
-				int index = IndexOf(texture);
+				int index = IndexOf(resource);
 
 				if (index > -1)
 				{
 					this[index] = null;
-					this[index] = texture;
+					this[index] = resource;
 				}
 			}
 
 			/// <summary>
-			/// Function to return the index of a texture in the list by name.
+			/// Function to set a range of resources at one time.
 			/// </summary>
-			/// <param name="name">Name of the texture to look up.</param>
-			/// <returns>The index of the texture if found, -1 if not.</returns>
-			public int IndexOf(string name)
-			{
-				GorgonDebug.AssertParamString(name, "name");
-
-				for (int i = 0; i < Count; i++)
-				{
-					if ((_shader._resources[i] != null) && (string.Compare(_shader._resources[i].Name, name, true) == 0))
-						return i;
-				}
-
-				return -1;
-			}
-
-			/// <summary>
-			/// Function to return whether the list contains a texture by it's name.
-			/// </summary>
-			/// <param name="name">Name of the texture to look up.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
-			public bool Contains(string name)
-			{
-				int index = IndexOf(name);
-
-				return index != -1;
-			}
-
-			/// <summary>
-			/// Function to set a range of textures at one time.
-			/// </summary>
-			/// <param name="slot">Texture slot to start at.</param>
-			/// <param name="textures">List of textures to set.</param>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="textures"/> parameter is NULL (Nothing in VB.Net).</exception>
-			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of texture slots.
+			/// <param name="slot">Resource slot to start at.</param>
+			/// <param name="resources">A list of resources to set.</param>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resources"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource slots.
 			/// <para>-or-</para>
-			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available texture slots.</para>
+			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available resource slots.</para>
 			/// </exception>
-			public void SetRange(int slot, IEnumerable<GorgonTexture> textures)
+			public void SetRange(int slot, IEnumerable<GorgonResource> resources)
 			{
 				int count = 0;
 
-				GorgonDebug.AssertNull<IEnumerable<GorgonTexture>>(textures, "textures");
+				GorgonDebug.AssertNull<IEnumerable<GorgonResource>>(resources, "resources");
 #if DEBUG
-				if ((slot < 0) || (slot >= _shader._resources.Count) || ((slot + textures.Count()) >= _shader._resources.Count))
+				if ((slot < 0) || (slot >= _shader._resources.Count) || ((slot + resources.Count()) >= _shader._resources.Count))
 					throw new ArgumentOutOfRangeException("Cannot have more than " + _shader._resources.Count.ToString() + " slots occupied.");
 #endif
 
-				count = textures.Count();
+				count = resources.Count();
 				for (int i = 0; i < count; i++)
 				{
-					var buffer = textures.ElementAtOrDefault(i);
+					var buffer = resources.ElementAtOrDefault(i);
 
 					_shader._resources[i + slot] = buffer;
-					if (buffer != null)
-						_shader._views[i] = _shader._resources[i + slot].D3DResourceView;
+					if ((buffer != null) && (buffer.View != null))
+						_shader._views[i] = _shader._resources[i + slot].View.D3DResourceView;
 					else
 						_shader._views[i] = null;
 				}
@@ -710,31 +681,31 @@ namespace GorgonLibrary.Graphics
 
 			#region Constructor/Destructor.
 			/// <summary>
-			/// Initializes a new instance of the <see cref="GorgonShaderState&lt;T&gt;.ShaderTextures"/> class.
+			/// Initializes a new instance of the <see cref="GorgonShaderState&lt;T&gt;.ShaderResources"/> class.
 			/// </summary>
 			/// <param name="shader">Shader state that owns this interface.</param>
-			internal ShaderTextures(GorgonShaderState<T> shader)
+			internal ShaderResources(GorgonShaderState<T> shader)
 			{
 				_shader = shader;
 			}
 			#endregion
 
-			#region IList<GorgonTexture> Members
+			#region IList<GorgonResource> Members
 			#region Properties.
 			/// <summary>
-			/// Property to set or return the bound texture.
+			/// Property to set or return the bound shader resource.
 			/// </summary>
-			public GorgonTexture this[int index]
+			public GorgonResource this[int index]
 			{
 				get
 				{
-					return _shader._resources[index] as GorgonTexture;
+					return _shader._resources[index] as GorgonResource;
 				}
 				set
 				{
 					_shader._resources[index] = value;
-					if (value != null)
-						_shader._views[0] = _shader._resources[index].D3DResourceView;
+					if ((value != null) && (value.View != null))
+						_shader._views[0] = _shader._resources[index].View.D3DResourceView;
 					else
 						_shader._views[0] = null;
 
@@ -745,13 +716,13 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
-			/// Function to return the index of the specified texture.
+			/// Function to return the index of the specified shader resource.
 			/// </summary>
-			/// <param name="item">The texture to find the index of.</param>
+			/// <param name="item">The shader resource to find the index of.</param>
 			/// <returns>The index if found, or -1 if not.</returns>
-			public int IndexOf(GorgonTexture item)
+			public int IndexOf(GorgonResource item)
 			{
-				GorgonDebug.AssertNull<GorgonTexture>(item, "item");
+				GorgonDebug.AssertNull<GorgonResource>(item, "item");
 
 				return _shader._resources.IndexOf(item);
 			}
@@ -761,7 +732,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="index">The index.</param>
 			/// <param name="item">The item.</param>
-			void IList<GorgonTexture>.Insert(int index, GorgonTexture item)
+			void IList<GorgonResource>.Insert(int index, GorgonResource item)
 			{
 				throw new NotImplementedException();
 			}
@@ -770,14 +741,14 @@ namespace GorgonLibrary.Graphics
 			/// Removes at.
 			/// </summary>
 			/// <param name="index">The index.</param>
-			void IList<GorgonTexture>.RemoveAt(int index)
+			void IList<GorgonResource>.RemoveAt(int index)
 			{
 				throw new NotImplementedException();
 			}
 			#endregion
 			#endregion
 
-			#region ICollection<GorgonTexture> Members
+			#region ICollection<GorgonResource> Members
 			#region Properties.
 			/// <summary>
 			/// Property to return the number of texture slots.
@@ -807,7 +778,7 @@ namespace GorgonLibrary.Graphics
 			/// Adds the specified item.
 			/// </summary>
 			/// <param name="item">The item.</param>
-			void ICollection<GorgonTexture>.Add(GorgonTexture item)
+			void ICollection<GorgonResource>.Add(GorgonResource item)
 			{
 				throw new NotImplementedException();
 			}
@@ -815,7 +786,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Clears this instance.
 			/// </summary>
-			void ICollection<GorgonTexture>.Clear()
+			void ICollection<GorgonResource>.Clear()
 			{
 				throw new NotImplementedException();
 			}
@@ -825,7 +796,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">Texture to find.</param>
 			/// <returns>TRUE if found, FALSE if not.</returns>
-			public bool Contains(GorgonTexture item)
+			public bool Contains(GorgonResource item)
 			{
 				return _shader._resources.Contains(item);
 			}
@@ -835,14 +806,13 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="array">Array to copy into.</param>
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
-			public void CopyTo(GorgonTexture[] array, int arrayIndex)
+			public void CopyTo(GorgonResource[] array, int arrayIndex)
 			{
-				var textures = from shaderView in _shader._resources
-							   let texture = shaderView as GorgonTexture
-							   where texture != null
-							   select texture;
+				var resources = from shaderView in _shader._resources							   
+							   where shaderView != null
+							   select shaderView;
 
-				foreach (var item in textures)
+				foreach (var item in resources)
 				{
 					array[arrayIndex] = item;
 					arrayIndex++;
@@ -854,22 +824,22 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">The item.</param>
 			/// <returns></returns>
-			bool ICollection<GorgonTexture>.Remove(GorgonTexture item)
+			bool ICollection<GorgonResource>.Remove(GorgonResource item)
 			{
 				throw new NotImplementedException();
 			}
 			#endregion
 			#endregion
 
-			#region IEnumerable<GorgonTexture> Members
+			#region IEnumerable<GorgonResource> Members
 			/// <summary>
 			/// Function to return an enumerator for the list.
 			/// </summary>
 			/// <returns>The enumerator for the list.</returns>
-			public IEnumerator<GorgonTexture> GetEnumerator()
+			public IEnumerator<GorgonResource> GetEnumerator()
 			{
-				foreach (var texture in _shader._resources.Where(item => item is GorgonTexture))
-					yield return (GorgonTexture)texture;
+				foreach (var resource in _shader._resources)
+					yield return resource;
 			}
 			#endregion
 
@@ -882,7 +852,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				throw new NotImplementedException();
+				return GetEnumerator();
 			}
 			#endregion
 		}
@@ -891,7 +861,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private T _current = null;									// Current shader.
 		private D3D.ShaderResourceView[] _views = null;				// Resource views.
-		private IList<IShaderResource> _resources = null;			// List of resources.
+		private IList<GorgonResource> _resources = null;			// List of resources.
 		#endregion
 
 		#region Properties.
@@ -944,11 +914,13 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the list of textures for the shaders.
+		/// Property to return the list of resources for the shaders.
 		/// </summary>
-		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</remarks>
+		/// <remarks>
+		/// A resource may be a raw buffer (with shader binding enabled), <see cref="GorgonLibrary.Graphics.GorgonStructuredBuffer">structured buffer</see>, append/consume buffer, or a <see cref="GorgonLibrary.Graphics.GorgonTexture">texture</see>.
+		/// <para>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</para></remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public virtual ShaderTextures Textures
+		public virtual ShaderResources Resources
 		{
 			get;
 			private set;
@@ -983,7 +955,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count">Number of resources to update.</param>
 		internal void SetResources(int slot, int count)
-		{
+		{			
 			SetResources(slot, count, _views);
 		}
 
@@ -1027,12 +999,12 @@ namespace GorgonLibrary.Graphics
 			}
 
 			_views = new D3D.ShaderResourceView[count];
-			_resources = new IShaderResource[_views.Length];
+			_resources = new GorgonResource[_views.Length];
 
 			Graphics = graphics;			
 			ConstantBuffers = new ShaderConstantBuffers(this);
 			TextureSamplers = new TextureSamplerState(this);
-			Textures = new ShaderTextures(this);
+			Resources = new ShaderResources(this);
 		}
 		#endregion
 	}

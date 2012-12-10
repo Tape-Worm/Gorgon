@@ -566,9 +566,9 @@ namespace GorgonLibrary.Graphics
 #endif
 			GorgonRenderStatistics.DrawCallCount++;
 			if (isIndexed)
-				_graphics.Context.DrawIndexedInstancedIndirect(buffer.D3DBuffer, alignedAyteOffset);
+				_graphics.Context.DrawIndexedInstancedIndirect((D3D.Buffer)buffer.D3DResource, alignedAyteOffset);
 			else
-				_graphics.Context.DrawInstancedIndirect(buffer.D3DBuffer, alignedAyteOffset);
+				_graphics.Context.DrawInstancedIndirect((D3D.Buffer)buffer.D3DResource, alignedAyteOffset);
 		}
 
 		/// <summary>

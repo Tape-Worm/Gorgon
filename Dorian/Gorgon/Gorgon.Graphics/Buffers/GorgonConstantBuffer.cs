@@ -51,8 +51,24 @@ namespace GorgonLibrary.Graphics
 		: GorgonBaseBuffer
 	{
 		#region Variables.
-		private bool _disposed = false;										// Flag to indicate that the buffer was disposed.
 		private DX.DataStream _lockStream = null;							// Lock stream.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the view for the resource.
+		/// </summary>
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+		public override GorgonResourceView View
+		{
+			get
+			{
+				return null;
+			}
+			set
+			{
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -60,17 +76,20 @@ namespace GorgonLibrary.Graphics
 		/// Function to initialize the buffer.
 		/// </summary>
 		/// <param name="value">Value used to initialize the buffer.</param>
-		protected internal override void Initialize(GorgonDataStream value)
+		protected override void InitializeImpl(GorgonDataStream value)
 		{
-			if (D3DBuffer != null)
-				D3DBuffer.Dispose();
+			if (D3DResource != null)
+			{
+				D3DResource.Dispose();
+				D3DResource = null;
+			}
 
 			D3D.BufferDescription desc = new D3D.BufferDescription()
 			{
 				BindFlags = D3D.BindFlags.ConstantBuffer,
 				CpuAccessFlags = D3DCPUAccessFlags,
 				OptionFlags = D3D.ResourceOptionFlags.None,
-				SizeInBytes = Size,
+				SizeInBytes = SizeInBytes,
 				StructureByteStride = 0,
 				Usage = D3DUsage
 			};
@@ -80,16 +99,16 @@ namespace GorgonLibrary.Graphics
 				long position = value.Position;
 
 				using (DX.DataStream dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
-					D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
+					D3DResource = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
 			}
 			else
-				D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, desc);
+				D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
 
 			GorgonRenderStatistics.ConstantBufferCount++;
-			GorgonRenderStatistics.ConstantBufferSize += D3DBuffer.Description.SizeInBytes;
+			GorgonRenderStatistics.ConstantBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
 
 #if DEBUG
-			D3DBuffer.DebugName = "Gorgon Constant Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonConstantBuffer>().Count().ToString(); 
+			D3DResource.DebugName = "Gorgon Constant Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonConstantBuffer>().Count().ToString(); 
 #endif
 		}
 
@@ -111,6 +130,29 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to clean up the resource object.
+		/// </summary>		
+		protected override void CleanUpResource()
+		{
+			// If we're bound with a pixel or vertex shader, then unbind.
+			Graphics.Shaders.VertexShader.ConstantBuffers.Unbind(this);
+			Graphics.Shaders.PixelShader.ConstantBuffers.Unbind(this);
+
+			if (IsLocked)
+				Unlock();
+
+			if (D3DResource != null)
+			{
+				GorgonRenderStatistics.ConstantBufferCount--;
+				GorgonRenderStatistics.ConstantBufferSize -= D3DBuffer.Description.SizeInBytes;
+
+				D3DResource.Dispose();
+				D3DResource = null;
+			}
+
+		}
+
+		/// <summary>
 		/// Function called to unlock the underlying data buffer.
 		/// </summary>
 		protected internal override void UnlockImpl()
@@ -118,39 +160,6 @@ namespace GorgonLibrary.Graphics
 			Graphics.Context.UnmapSubresource(D3DBuffer, 0);
 			_lockStream.Dispose();
 			_lockStream = null;
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					// If we're bound with a pixel or vertex shader, then unbind.
-					Graphics.Shaders.VertexShader.ConstantBuffers.Unbind(this);
-					Graphics.Shaders.PixelShader.ConstantBuffers.Unbind(this);
-
-					if (IsLocked)
-						Unlock();
-
-					if (D3DBuffer != null)
-					{
-						GorgonRenderStatistics.ConstantBufferCount--;
-						GorgonRenderStatistics.ConstantBufferSize -= D3DBuffer.Description.SizeInBytes;
-
-						D3DBuffer.Dispose();
-					}
-				}
-
-				D3DBuffer = null;
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
 		}
 
 		/// <summary>
@@ -168,7 +177,7 @@ namespace GorgonLibrary.Graphics
 					RowPitch = 0,
 					SlicePitch = 0
 				}, 
-				D3DBuffer);
+				D3DResource);
 		}
 
 		/// <summary>
@@ -213,7 +222,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonConstantBuffer(GorgonGraphics graphics, int size, bool allowCPUWrite)
 			: base(graphics, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), size)
 		{
-			if ((Size % 16) != 0)
+			if ((SizeInBytes % 16) != 0)
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the constant buffer.  The buffer size (" + size.ToString() + " bytes) need be evenly divisible by 16.");
 		}
 		#endregion

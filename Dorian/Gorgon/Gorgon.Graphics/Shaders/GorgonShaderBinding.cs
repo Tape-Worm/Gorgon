@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Shaders = SharpDX.D3DCompiler;
+using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
@@ -120,23 +121,23 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to re-seat a texture after it's been altered.
+		/// Function to re-seat a shader resource after it's been altered.
 		/// </summary>
-		/// <param name="texture">Texture to re-seat.</param>
-		internal void Reseat(GorgonTexture texture)
+		/// <param name="resource">Shader resource to re-seat.</param>
+		internal void Reseat(GorgonResource resource)
 		{
-			PixelShader.Textures.ReSeat(texture);
-			VertexShader.Textures.ReSeat(texture);
+			PixelShader.Resources.ReSeat(resource);
+			VertexShader.Resources.ReSeat(resource);
 		}
 
 		/// <summary>
-		/// Function to unbind a texture from all shaders.
+		/// Function to unbind a shader resource from all shaders.
 		/// </summary>
-		/// <param name="texture">Texture to unbind.</param>
-		internal void Unbind(GorgonTexture texture)
+		/// <param name="resource">Shader resource to unbind.</param>
+		internal void Unbind(GorgonResource resource)
 		{
-			PixelShader.Textures.Unbind(texture);
-			VertexShader.Textures.Unbind(texture);
+			PixelShader.Resources.Unbind(resource);
+			VertexShader.Resources.Unbind(resource);
 		}
 
 		/// <summary>
@@ -204,6 +205,90 @@ namespace GorgonLibrary.Graphics
 				_graphics.AddTrackedObject(buffer);
 				return buffer;
 			}
+		}
+
+		/// <summary>
+		/// Function to create a structured buffer and initialize it with data.
+		/// </summary>
+		/// <param name="value">Value to write to the buffer.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <returns>A new structured buffer.</returns>
+		/// <typeparam name="T">Type of data to write.  Must be a value type.</typeparam>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public GorgonStructuredBuffer CreateStructuredBuffer<T>(T[] value, bool allowCPUWrite)
+			where T : struct
+		{
+			GorgonDebug.AssertNull<T[]>(value, "value");
+						
+			using (GorgonDataStream stream = GorgonDataStream.EnumerableValueTypeToStream<T>(value))
+			{
+				return CreateStructuredBuffer(value.Count(), DirectAccess.SizeOf<T>(), allowCPUWrite);
+			}
+		}
+
+		/// <summary>
+		/// Function to create a structured buffer and initialize it with data.
+		/// </summary>
+		/// <param name="value">Value to write to the buffer.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <returns>A new structured buffer.</returns>
+		/// <typeparam name="T">Type of data to write.  Must be a value type.</typeparam>
+		public GorgonStructuredBuffer CreateStructuredBuffer<T>(T value, bool allowCPUWrite)
+			where T : struct
+		{
+			using (GorgonDataStream stream = GorgonDataStream.ValueTypeToStream<T>(value))
+			{
+				return CreateStructuredBuffer(1, DirectAccess.SizeOf<T>(), allowCPUWrite);
+			}			
+		}
+
+		/// <summary>
+		/// Function to create a structured buffer and initialize it with data.
+		/// </summary>
+		/// <param name="elementCount">Number of elements that the buffer will contain.</param>
+		/// <param name="elementSize">Size of an element, in bytes.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to have write access to the buffer, FALSE to disallow.</param>
+		/// <returns>A new structured buffer.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elementCount"/> or <paramref name="elementSize"/> parameters are not greater than 0.
+		/// </exception>
+		public GorgonStructuredBuffer CreateStructuredBuffer(int elementCount, int elementSize, bool allowCPUWrite)
+		{
+			return CreateStructuredBuffer(elementCount, elementSize, allowCPUWrite, null);
+		}
+
+		/// <summary>
+		/// Function to create a structured buffer and initialize it with data.
+		/// </summary>
+		/// <param name="elementCount">Number of elements that the buffer will contain.</param>
+		/// <param name="elementSize">Size of an element, in bytes.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to have write access to the buffer, FALSE to disallow.</param>
+		/// <param name="stream">Stream containing the data used to initialize the buffer.</param>
+		/// <returns>A new structured buffer.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elementCount"/> or <paramref name="elementSize"/> parameters are not greater than 0.
+		/// </exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</exception>
+		public GorgonStructuredBuffer CreateStructuredBuffer(int elementCount, int elementSize, bool allowCPUWrite, GorgonDataStream stream)
+		{
+			GorgonStructuredBuffer result = null;
+
+#if DEBUG
+			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+				throw new InvalidOperationException("Structured buffers are only available for video devices that support SM5 or better.");
+
+			if (elementCount <= 0)
+				throw new ArgumentException("The element count must be greater than 0.", "settings");
+
+			if (elementSize <= 0)
+				throw new ArgumentException("The element size must be greater than 0.", "settings");
+#endif
+
+			// TODO: Update this to allow for unordered access.
+			result = new GorgonStructuredBuffer(_graphics, elementCount, elementSize, false, allowCPUWrite);
+			result.Initialize(stream);
+
+			_graphics.AddTrackedObject(result);
+
+			return result;
 		}
 
 		/// <summary>

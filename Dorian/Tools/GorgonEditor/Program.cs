@@ -155,7 +155,7 @@ namespace GorgonLibrary.GorgonEditor
 		}
 
 		/// <summary>
-		/// Funciton to update the font cache.
+		/// Function to update the font cache.
 		/// </summary>
 		public static void UpdateCachedFonts()
 		{

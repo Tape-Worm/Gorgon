@@ -110,11 +110,11 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public override GorgonShaderState<GorgonVertexShader>.ShaderTextures Textures
+		public override GorgonShaderState<GorgonVertexShader>.ShaderResources Resources
 		{
 			get
 			{
-				return Graphics.Shaders.VertexShader.Textures;
+				return Graphics.Shaders.VertexShader.Resources;
 			}
 		}
 		#endregion
