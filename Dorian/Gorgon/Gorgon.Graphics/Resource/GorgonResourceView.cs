@@ -292,10 +292,24 @@ namespace GorgonLibrary.Graphics
 			Type bufferType = buffer.GetType();
 			D3D.ShaderResourceViewDescription srvDesc = new D3D.ShaderResourceViewDescription();
 			D3D.UnorderedAccessViewDescription uavDesc = new D3D.UnorderedAccessViewDescription();
+			D3D.UnorderedAccessViewBufferFlags uavFlags = D3D.UnorderedAccessViewBufferFlags.None;
 			GorgonStructuredBuffer structuredBuffer = buffer as GorgonStructuredBuffer;
 
 			if (structuredBuffer != null)
 			{
+				switch (structuredBuffer.StructuredBufferType)
+				{
+					case StructuredBufferType.AppendConsume:
+						uavFlags = D3D.UnorderedAccessViewBufferFlags.Append;
+						break;
+					case StructuredBufferType.Counter:
+						uavFlags = D3D.UnorderedAccessViewBufferFlags.Counter;
+						break;
+					default:
+						uavFlags = D3D.UnorderedAccessViewBufferFlags.None;
+						break;
+				}
+
 				srvDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer;
 				srvDesc.BufferEx = new D3D.ShaderResourceViewDescription.ExtendedBufferResource()
 				{
@@ -311,7 +325,7 @@ namespace GorgonLibrary.Graphics
 				{
 					ElementCount = structuredBuffer.ElementCount,
 					FirstElement = 0,
-					Flags = D3D.UnorderedAccessViewBufferFlags.None
+					Flags = uavFlags
 				};
 
 				D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, buffer.D3DResource, srvDesc);

@@ -6,9 +6,9 @@ This list is not in order.  Please don't get excited.
 	+ Add GetSubResourceIndex1/2/3D to the Textures interface (Done, added to texture objects as static member).
 * Add buffers
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders.
-	+ Add raw buffers
+	+ Add raw buffers 
 	+ Add structured buffer (Done)
-		- Add append and counter buffers
+		- Add append and counter buffers (Done)
 	+ Add type buffer
 	+ Add argument buffer (for DrawIndirect)
 * Finish shader objects in base graphics library.

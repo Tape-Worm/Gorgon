@@ -112,6 +112,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return whether this resource can be used as a raw resource in a shader.
+		/// </summary>
+		public bool IsRaw
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
 		/// Property to return the default view for the resource.
 		/// </summary>
 		public GorgonResourceView DefaultView
@@ -145,13 +154,20 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+				if ((value == DefaultView) && (_view != DefaultView))
+				{
+					_view.Resource = null;
+					_view = null;
+					return;
+				}
+
 				if ((value == null) && (_view != null))
 				{
 					_view.Resource = null;					
 				}
 
 				_view = value;
-
+				
 				if (_view != null)
 				{					
 					_view.Resource = this;
@@ -308,6 +324,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		protected GorgonResource(GorgonGraphics graphics)
 		{
+			IsRaw = false;
 			Graphics = graphics;
 		}
 		#endregion
