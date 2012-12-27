@@ -611,6 +611,8 @@ namespace GorgonLibrary.Graphics
 			: IList<GorgonResource>
 		{
 			#region Variables.
+			private D3D.ShaderResourceView[] _views = null;				// Shader resource views.
+			private IList<GorgonResource> _resources = null;			// Shader resources.
 			private GorgonShaderState<T> _shader = null;				// Shader that owns this interface.
 			#endregion
 
@@ -623,8 +625,10 @@ namespace GorgonLibrary.Graphics
 			{
 				for (int i = 0; i < Count; i++)
 				{
-					if (_shader._resources[i] == resource)
+					if (_resources[i] == resource)
+					{
 						this[i] = null;
+					}
 				}
 			}
 
@@ -659,8 +663,8 @@ namespace GorgonLibrary.Graphics
 
 				GorgonDebug.AssertNull<IEnumerable<GorgonResource>>(resources, "resources");
 #if DEBUG
-				if ((slot < 0) || (slot >= _shader._resources.Count) || ((slot + resources.Count()) >= _shader._resources.Count))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + _shader._resources.Count.ToString() + " slots occupied.");
+				if ((slot < 0) || (slot >= _resources.Count) || ((slot + resources.Count()) >= _resources.Count))
+					throw new ArgumentOutOfRangeException("Cannot have more than " + _resources.Count.ToString() + " slots occupied.");
 #endif
 
 				count = resources.Count();
@@ -668,14 +672,23 @@ namespace GorgonLibrary.Graphics
 				{
 					var buffer = resources.ElementAtOrDefault(i);
 
-					_shader._resources[i + slot] = buffer;
+#if DEBUG
+					int bufferIndex = _resources.IndexOf(buffer);
+
+					if ((bufferIndex != i + slot) && (bufferIndex != -1) && (_views[bufferIndex] == buffer.View.D3DResourceView))
+					{
+						throw new ArgumentException("The buffer at index [" + i.ToString() + "] is already bound to a shader with the same resource view.");
+					}
+#endif
+
+					_resources[i + slot] = buffer;
 					if ((buffer != null) && (buffer.View != null))
-						_shader._views[i] = _shader._resources[i + slot].View.D3DResourceView;
+						_views[i + slot] = _resources[i + slot].View.D3DResourceView;
 					else
-						_shader._views[i] = null;
+						_views[i + slot] = null;
 				}
 
-				_shader.SetResources(slot, count);
+				_shader.SetResources(slot, count, _views);
 			}
 			#endregion
 
@@ -687,6 +700,20 @@ namespace GorgonLibrary.Graphics
 			internal ShaderResources(GorgonShaderState<T> shader)
 			{
 				_shader = shader;
+
+				if (_shader.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				{
+					if (_shader is GorgonVertexShaderState)
+					{
+						_views = null;
+						_resources = null;
+					}
+					else
+					{
+						_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
+						_resources = new GorgonResource[_views.Length];							
+					}
+				}
 			}
 			#endregion
 
@@ -699,17 +726,17 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _shader._resources[index] as GorgonResource;
+					return _resources[index];
 				}
 				set
 				{
-					_shader._resources[index] = value;
+					_resources[index] = value;
 					if ((value != null) && (value.View != null))
-						_shader._views[0] = _shader._resources[index].View.D3DResourceView;
+						_views[index] = _resources[index].View.D3DResourceView;
 					else
-						_shader._views[0] = null;
+						_views[index] = null;
 
-					_shader.SetResources(index, 1);
+					_shader.SetResources(index, 1, _views);
 				}
 			}
 			#endregion
@@ -724,7 +751,7 @@ namespace GorgonLibrary.Graphics
 			{
 				GorgonDebug.AssertNull<GorgonResource>(item, "item");
 
-				return _shader._resources.IndexOf(item);
+				return _resources.IndexOf(item);
 			}
 
 			/// <summary>
@@ -757,7 +784,7 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _shader._resources.Count;
+					return _resources.Count;
 				}
 			}
 
@@ -798,7 +825,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>TRUE if found, FALSE if not.</returns>
 			public bool Contains(GorgonResource item)
 			{
-				return _shader._resources.Contains(item);
+				return _resources.Contains(item);
 			}
 
 			/// <summary>
@@ -808,7 +835,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
 			public void CopyTo(GorgonResource[] array, int arrayIndex)
 			{
-				var resources = from shaderView in _shader._resources							   
+				var resources = from shaderView in _resources							   
 							   where shaderView != null
 							   select shaderView;
 
@@ -838,7 +865,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The enumerator for the list.</returns>
 			public IEnumerator<GorgonResource> GetEnumerator()
 			{
-				foreach (var resource in _shader._resources)
+				foreach (var resource in _resources)
 					yield return resource;
 			}
 			#endregion
@@ -860,8 +887,6 @@ namespace GorgonLibrary.Graphics
 
 		#region Variables.
 		private T _current = null;									// Current shader.
-		private D3D.ShaderResourceView[] _views = null;				// Resource views.
-		private IList<GorgonResource> _resources = null;			// List of resources.
 		#endregion
 
 		#region Properties.
@@ -947,17 +972,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count">Number of samplers to update.</param>
 		/// <param name="samplers">Samplers to update.</param>
-		internal abstract void SetSamplers(int slot, int count, D3D.SamplerState[] samplers);		
-
-		/// <summary>
-		/// Function to set resources for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count">Number of resources to update.</param>
-		internal void SetResources(int slot, int count)
-		{			
-			SetResources(slot, count, _views);
-		}
+		protected abstract void SetSamplers(int slot, int count, D3D.SamplerState[] samplers);		
 
 		/// <summary>
 		/// Function to set constant buffers for the shader.
@@ -965,7 +980,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count">Number of constant buffers to update.</param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		internal abstract void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers);
+		protected abstract void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers);
 
 		/// <summary>
 		/// Function to clean up.
@@ -988,19 +1003,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		protected GorgonShaderState(GorgonGraphics graphics)
 		{
-			int count = D3D.CommonShaderStage.InputResourceSlotCount;
-
-			if (graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-			{
-				if (this is GorgonVertexShaderState)
-					count = 0;
-				else
-					count = 8;
-			}
-
-			_views = new D3D.ShaderResourceView[count];
-			_resources = new GorgonResource[_views.Length];
-
 			Graphics = graphics;			
 			ConstantBuffers = new ShaderConstantBuffers(this);
 			TextureSamplers = new TextureSamplerState(this);
@@ -1047,7 +1049,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
-		internal override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
+		protected override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
 		{
 			if (count == 1)
 				Graphics.Context.PixelShader.SetSampler(slot, samplers[0]);
@@ -1061,7 +1063,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		internal override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
+		protected override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
 		{
 			if (count == 1)
 				Graphics.Context.PixelShader.SetConstantBuffer(slot, buffers[0]);
@@ -1128,7 +1130,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		internal override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
+		protected override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
 		{
 #if DEBUG
 			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
@@ -1146,7 +1148,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		internal override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
+		protected override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
 		{
 			if (count == 1)
 				Graphics.Context.VertexShader.SetConstantBuffer(slot, buffers[0]);

@@ -50,7 +50,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the binding flags for the buffer.
 		/// </summary>
-		internal D3D.BindFlags BindingFlags
+		internal virtual D3D.BindFlags BindingFlags
 		{
 			get
 			{
@@ -62,13 +62,35 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return whether there's unordered access to this buffer or not.
+		/// Property to return whether there's unordered access to the default view of the buffer.
 		/// </summary>
 		/// <remarks>Unordered access is only available to video devices that support SM5 or better.</remarks>
 		public bool IsUnorderedAccess
 		{
 			get;
-			private set;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to set or return the view for the resource.
+		/// </summary>
+		public override GorgonResourceView View
+		{
+			get
+			{
+				return base.View;
+			}
+			set
+			{
+				if (BufferUsage != BufferUsage.Staging)
+				{
+					base.View = value;
+				}
+				else
+				{
+					base.View = null;
+				}
+			}
 		}
 		#endregion
 

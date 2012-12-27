@@ -36,6 +36,25 @@ using GorgonLibrary.Diagnostics;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// The type of structured buffer.
+	/// </summary>
+	public enum StructuredBufferType
+	{
+		/// <summary>
+		/// A standard structured buffer.
+		/// </summary>
+		Standard = 0,
+		/// <summary>
+		/// An append/consume buffer.
+		/// </summary>
+		AppendConsume = 1,
+		/// <summary>
+		/// A counter buffer.
+		/// </summary>
+		Counter = 2
+	}
+
+	/// <summary>
 	/// A structured buffer for shaders.
 	/// </summary>
 	/// <remarks>Structured buffers are similar to <see cref="GorgonLibrary.Graphics.GorgonConstantBuffer">constant buffers</see> in that they're used to convey data to 
@@ -46,6 +65,15 @@ namespace GorgonLibrary.Graphics
 		: GorgonShaderBuffer
 	{
 		#region Properties.		
+		/// <summary>
+		/// Property to return the type of structured buffer.
+		/// </summary>
+		public StructuredBufferType StructuredBufferType
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the number of elements that can be stored in this buffer.
 		/// </summary>
@@ -132,20 +160,6 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
 			D3DResource.DebugName = "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count().ToString();
 #endif
-
-			// Create the view.
-			D3D.ShaderResourceViewDescription viewDesc = new D3D.ShaderResourceViewDescription()
-			{
-				Format = SharpDX.DXGI.Format.Unknown,
-				Dimension = DX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer,
-				BufferEx =
-				{
-					ElementCount = ElementCount,
-					FirstElement = 0,
-					Flags = D3D.ShaderResourceViewExtendedBufferFlags.None
-				}
-			};
-
 			CreateDefaultResourceView();
 		}
 		#endregion
@@ -164,6 +178,20 @@ namespace GorgonLibrary.Graphics
 		{
 			ElementCount = elementCount;
 			ElementSize = elementSize;
+			StructuredBufferType = StructuredBufferType.Standard;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonStructuredBuffer" /> class.
+		/// </summary>
+		/// <param name="graphics">Graphics interface that owns this buffer.</param>
+		/// <param name="elementCount">Number of elements that can be contained within this buffer.</param>
+		/// <param name="elementSize">Size of an element, in bytes.</param>
+		/// <param name="bufferType">Type of structured buffer.</param>
+		internal GorgonStructuredBuffer(GorgonGraphics graphics, int elementCount, int elementSize, StructuredBufferType bufferType)
+			: this(graphics, elementCount, elementSize, true, false)
+		{
+			StructuredBufferType = bufferType;
 		}
 		#endregion
 	}
