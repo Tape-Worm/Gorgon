@@ -233,7 +233,7 @@ namespace Test_TextureArray
 			
 			_structBuffer.Unlock();
 
-			_2D.PixelShader.Resources[2] = _structBuffer;
+            _2D.PixelShader.Resources.SetShaderBuffer<GorgonStructuredBuffer>(2, _structBuffer);
 		}
 
 		static void _form_KeyDown(object sender, KeyEventArgs e)
