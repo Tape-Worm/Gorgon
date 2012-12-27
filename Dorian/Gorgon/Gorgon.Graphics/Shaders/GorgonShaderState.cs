@@ -701,18 +701,15 @@ namespace GorgonLibrary.Graphics
 			{
 				_shader = shader;
 
-				if (_shader.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				if ((_shader is GorgonVertexShaderState) && (_shader.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
 				{
-					if (_shader is GorgonVertexShaderState)
-					{
-						_views = null;
-						_resources = null;
-					}
-					else
-					{
-						_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
-						_resources = new GorgonResource[_views.Length];							
-					}
+					_views = null;
+					_resources = null;
+				}
+				else
+				{
+					_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
+					_resources = new GorgonResource[_views.Length];							
 				}
 			}
 			#endregion
