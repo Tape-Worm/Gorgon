@@ -231,7 +231,7 @@ namespace GorgonLibrary.Renderers
 				graphics.Output.DepthStencilState.States = DepthStencilState;
 				graphics.Output.DepthStencilState.DepthStencilReference = DepthStencilReference;
 				graphics.Rasterizer.States = RasterStates;
-				graphics.Shaders.PixelShader.Resources[0] = Texture;
+				graphics.Shaders.PixelShader.Resources.SetTexture(0, Texture);
 				graphics.Shaders.PixelShader.TextureSamplers[0] = SamplerState;
 			}
 
@@ -253,7 +253,7 @@ namespace GorgonLibrary.Renderers
 				BlendSampleMask = graphics.Output.BlendingState.BlendSampleMask;
 				RasterStates = graphics.Rasterizer.States;
 				SamplerState = graphics.Shaders.PixelShader.TextureSamplers[0];
-				Texture = (GorgonTexture2D)graphics.Shaders.PixelShader.Resources[0];
+				Texture = graphics.Shaders.PixelShader.Resources.GetTexture<GorgonTexture2D>(0);
 				DepthStencilState = graphics.Output.DepthStencilState.States;
 				DepthStencilReference = graphics.Output.DepthStencilState.DepthStencilReference;
 				RasterStates.IsScissorTestingEnabled = false;

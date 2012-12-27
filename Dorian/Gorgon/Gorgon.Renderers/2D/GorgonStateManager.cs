@@ -117,11 +117,7 @@ namespace GorgonLibrary.Renderers
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 		private GorgonMinMaxF _alphaTestValue = GorgonMinMaxF.Empty;
 		private bool _alphaTestEnabled = false;
-		private GorgonTexture _texture = null;
-		#endregion
-
-		#region Properties.
-
+		private GorgonResourceView _textureView = null;
 		#endregion
 
 		#region Methods.
@@ -158,8 +154,15 @@ namespace GorgonLibrary.Renderers
 			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
 			GorgonRenderable.BlendState blending = renderable.Blending;
 			GorgonRenderable.TextureSamplerState sampler = renderable.TextureSampler;
+            GorgonResourceView textureView = null;
 
-			if (renderable.Texture != _texture)
+            // Get the current texture view.
+            if (renderable.Texture != null)
+            {
+                textureView = renderable.Texture.DefaultView;
+            }
+
+			if (textureView != _textureView)
 				result |= StateChange.Texture;
 
 			if (_gorgon2D.IsBlendingEnabled != _blendState.RenderTarget0.IsBlendingEnabled)
@@ -247,7 +250,7 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.Texture) == StateChange.Texture)
 			{
-				_texture = (GorgonTexture2D)(_graphics.Shaders.PixelShader.Resources[0] = renderable.Texture);
+                _textureView = _graphics.Shaders.PixelShader.Resources[0] = (renderable.Texture == null ? null : renderable.Texture.DefaultView);
 
 				// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader, otherwise 
 				// switch to the diffuse shader.
@@ -345,7 +348,7 @@ namespace GorgonLibrary.Renderers
 			_rasterState = _graphics.Rasterizer.States;
 			_samplerState = _graphics.Shaders.PixelShader.TextureSamplers[0];
 			_depthState = _graphics.Output.DepthStencilState.States;
-			_texture = (GorgonTexture2D)_graphics.Shaders.PixelShader.Resources[0];
+			_textureView = _graphics.Shaders.PixelShader.Resources[0];
 		}
 		#endregion
 

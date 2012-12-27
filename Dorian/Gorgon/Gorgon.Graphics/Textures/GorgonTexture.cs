@@ -46,7 +46,6 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedResource
 	{
 		#region Variables.
-		private bool _disposed = false;						// Flag to indicate that the texture was disposed.
 		private int _size = 0;								// Size of the texture, in bytes.
 		private GorgonTexture1D _texture1D = null;			// 1D representation of this texture.
 		private GorgonTexture2D _texture2D = null;			// 2D representation of this texture.
