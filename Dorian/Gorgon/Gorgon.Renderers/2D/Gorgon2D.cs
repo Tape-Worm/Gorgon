@@ -178,9 +178,17 @@ namespace GorgonLibrary.Renderers
 			/// </summary>
 			public GorgonTextureSamplerStates SamplerState;
 			/// <summary>
-			/// Textures.
+			/// First pixel shader resource.
 			/// </summary>
-			public GorgonTexture Texture;
+			public GorgonResourceView Resource;
+			/// <summary>
+			/// The vertex shader constant buffers.
+			/// </summary>
+			public IDictionary<int, GorgonConstantBuffer> VSConstantBuffers;
+			/// <summary>
+			/// The pixel shader constant buffers.
+			/// </summary>
+			public IDictionary<int, GorgonConstantBuffer> PSConstantBuffers;
 			/// <summary>
 			/// Default target.
 			/// </summary>
@@ -231,8 +239,19 @@ namespace GorgonLibrary.Renderers
 				graphics.Output.DepthStencilState.States = DepthStencilState;
 				graphics.Output.DepthStencilState.DepthStencilReference = DepthStencilReference;
 				graphics.Rasterizer.States = RasterStates;
-				graphics.Shaders.PixelShader.Resources.SetTexture(0, Texture);
+				graphics.Shaders.PixelShader.Resources[0] = Resource;
 				graphics.Shaders.PixelShader.TextureSamplers[0] = SamplerState;
+
+				// Restore any constant buffers.				
+				foreach (var vsConstant in VSConstantBuffers)
+				{
+					graphics.Shaders.VertexShader.ConstantBuffers[vsConstant.Key] = vsConstant.Value;
+				}
+
+				foreach (var psConstant in PSConstantBuffers)
+				{
+					graphics.Shaders.PixelShader.ConstantBuffers[psConstant.Key] = psConstant.Value;
+				}
 			}
 
 			/// <summary>
@@ -253,10 +272,35 @@ namespace GorgonLibrary.Renderers
 				BlendSampleMask = graphics.Output.BlendingState.BlendSampleMask;
 				RasterStates = graphics.Rasterizer.States;
 				SamplerState = graphics.Shaders.PixelShader.TextureSamplers[0];
-				Texture = graphics.Shaders.PixelShader.Resources.GetTexture<GorgonTexture2D>(0);
+				Resource = graphics.Shaders.PixelShader.Resources[0];
 				DepthStencilState = graphics.Output.DepthStencilState.States;
 				DepthStencilReference = graphics.Output.DepthStencilState.DepthStencilReference;
 				RasterStates.IsScissorTestingEnabled = false;
+
+				VSConstantBuffers = new Dictionary<int, GorgonConstantBuffer>();
+				PSConstantBuffers = new Dictionary<int, GorgonConstantBuffer>();
+
+				// Only store the constant buffers that we were using.
+				// We need to store all the constant buffers because the effects 
+				// make use of multiple constant slots.  Unlike the resource views,
+				// where we know that we're only using the first item (all bets are 
+				// off if a user decides to use another resource view slot), there's no
+				// guarantee that we'll be only using 1 or 2 constant buffer slots.
+				for (int i = 0; i < graphics.Shaders.VertexShader.ConstantBuffers.Count; i++)
+				{
+					if (graphics.Shaders.VertexShader.ConstantBuffers[i] != null)
+					{
+						VSConstantBuffers[i] = graphics.Shaders.VertexShader.ConstantBuffers[i];
+					}
+				}
+
+				for (int i = 0; i < graphics.Shaders.PixelShader.ConstantBuffers.Count; i++)
+				{
+					if (graphics.Shaders.PixelShader.ConstantBuffers[i] != null)
+					{
+						PSConstantBuffers[i] = graphics.Shaders.PixelShader.ConstantBuffers[i];
+					}
+				}
 			}
 		}
 		#endregion
