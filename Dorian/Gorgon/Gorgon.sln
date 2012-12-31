@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallDemo", "..\Examples\Gra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Renderers.2D", "Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj", "{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E656298C-C1C6-4274-87B5-A19C6BA689CB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E656298C-C1C6-4274-87B5-A19C6BA689CB}"
 	ProjectSection(SolutionItems) = preProject
 		TODO.txt = TODO.txt
 	EndProjectSection
@@ -59,6 +59,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Data", "Gorgon.Data\Gorgon.Data\Gorgon.Data.csproj", "{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Data.UnitTests", "Gorgon.Data\Gorgon.Data.UnitTests\Gorgon.Data.UnitTests.csproj", "{86ADDA37-1469-4489-9EF8-8C57A1C09069}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boinger", "..\Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -162,13 +164,19 @@ Global
 		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{0DF9E8D6-336E-46EA-8873-6215ED363B0E} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
 		{92184B11-8908-40DE-A81B-827CE74FE8C7} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
 		{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
 		{CD211613-DE0D-4D09-9D3E-60ACFA893791} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
+		{256CC806-B7DC-4125-A350-F78F520D9742} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
 	EndGlobalSection
 EndGlobal
