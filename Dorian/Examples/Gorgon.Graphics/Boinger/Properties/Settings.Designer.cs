@@ -25,7 +25,7 @@ namespace GorgonLibrary.Graphics.Example.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1280, 800")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1920, 1200")]
         public global::System.Drawing.Size Resolution {
             get {
                 return ((global::System.Drawing.Size)(this["Resolution"]));
@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics.Example.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool IsWindowed {
             get {
                 return ((bool)(this["IsWindowed"]));
