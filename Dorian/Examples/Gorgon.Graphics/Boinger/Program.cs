@@ -264,6 +264,7 @@ namespace GorgonLibrary.Graphics.Example
 				"FPS: " + GorgonTiming.AverageFPS.ToString("0.0")
 				+ "\nDelta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " milliseconds", 
 				new Vector2(3.0f, 0.0f), GorgonColor.White);
+			// Draw our logo because I'm insecure.
 			_2D.Drawing.Blit(_graphics.Textures.GorgonLogo,
 					new RectangleF(
 						_mainForm.ClientSize.Width - _graphics.Textures.GorgonLogo.Settings.Width,
