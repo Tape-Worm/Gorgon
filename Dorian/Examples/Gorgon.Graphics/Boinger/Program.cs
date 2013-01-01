@@ -187,6 +187,16 @@ namespace GorgonLibrary.Graphics.Example
 
 			if ((position.X < -2.3f) || (position.X > 2.3f))
 			{
+				if (position.X < -2.3f)
+				{
+					position.X = -2.3f;
+				}
+
+				if (position.X > 2.3f)
+				{
+					position.X = 2.3f;
+				}
+
 				_bounceH = !_bounceH;				
 			}
 
