@@ -267,12 +267,12 @@ namespace GorgonLibrary.Graphics.Example
 			// Note that we're rendering here but not flipping the buffer (the 'false' parameter).  This just delays the page
 			// flipping until later.  Technically, we don't need to do this here because it's the last thing we're doing, but
 			// if we had more rendering to do after, we'd have to flip manually.
-			_2D.Render();
+			_2D.Render(false);
 			_2D.End2D();
 
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
-			//_swap.Flip();
+			_swap.Flip();
 
 			return true;
 		}
