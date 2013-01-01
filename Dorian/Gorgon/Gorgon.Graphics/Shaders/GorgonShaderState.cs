@@ -406,13 +406,16 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
-					_buffers[index] = value;
-					if (value != null)
-						_d3dBufferArray[0] = value.D3DBuffer;
-					else
-						_d3dBufferArray[0] = null;
+					if (_buffers[index] != value)
+					{
+						_buffers[index] = value;
+						if (value != null)
+							_d3dBufferArray[0] = value.D3DBuffer;
+						else
+							_d3dBufferArray[0] = null;
 
-					_shader.SetConstantBuffers(index, 1, _d3dBufferArray);
+						_shader.SetConstantBuffers(index, 1, _d3dBufferArray);
+					}
 				}
 			}
 			#endregion
@@ -852,24 +855,27 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
+					if (_resources[index] != value)
+					{
 #if DEBUG
-                    if (value != null)
-                    {
-                        int currentIndex = IndexOf(value);
+						if (value != null)
+						{
+							int currentIndex = IndexOf(value);
 
-                        if ((currentIndex != -1) && (currentIndex != index) && (_views[currentIndex] == value.D3DResourceView))
-                        {
-                            throw new ArgumentException("The resource view at index [" + index.ToString() + "] is already bound to a shader with the same resource view.");
-                        }
-                    }
+							if ((currentIndex != -1) && (currentIndex != index) && (_views[currentIndex] == value.D3DResourceView))
+							{
+								throw new ArgumentException("The resource view at index [" + index.ToString() + "] is already bound to a shader with the same resource view.");
+							}
+						}
 #endif
-					_resources[index] = value;
-					if (value != null) 
-						_views[0] = _resources[index].D3DResourceView;
-					else
-						_views[0] = null;
+						_resources[index] = value;
+						if (value != null)
+							_views[0] = _resources[index].D3DResourceView;
+						else
+							_views[0] = null;
 
-					_shader.SetResources(index, 1, _views);
+						_shader.SetResources(index, 1, _views);
+					}
 				}
 			}
 			#endregion
