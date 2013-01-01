@@ -190,7 +190,7 @@ namespace GorgonLibrary.Graphics.Example
 				_bounceH = !_bounceH;				
 			}
 
-			if ((position.Y > 2.0f) || (position.Y < -3.5f))
+			if ((position.Y > 2.0f) || (position.Y < -2.5f))
 			{
 				_bounceV = !_bounceV;
 				if (position.Y > 2.0f)
@@ -200,7 +200,7 @@ namespace GorgonLibrary.Graphics.Example
 				}
 				else
 				{
-					position.Y = -3.5f;
+					position.Y = -2.5f;
 					_dropSpeed = 27f;
 				}
 			}
@@ -389,7 +389,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Set up our view matrix.
 			// Move the camera (view matrix) back 2.2 units.  This will give us enough room to see what's
 			// going on.
-			Matrix.Translation(0, 0, 2.2f, out _viewMatrix);
+			Matrix.Translation(0, 0, 2.2f, out _viewMatrix);			
 
 			// Set up our projection matrix.
 			// This matrix is probably the cause of almost EVERY problem you'll ever run into in 3D programming.
