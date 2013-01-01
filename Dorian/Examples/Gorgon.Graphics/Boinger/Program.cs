@@ -258,12 +258,19 @@ namespace GorgonLibrary.Graphics.Example
 			// Draw our text.
 			// Use this to show how incredibly slow and terrible my 3D code is.
 			_2D.Begin2D();
-			_2D.Drawing.FilledRectangle(new RectangleF(0, 0, _mainForm.ClientSize.Width, 38.0f), Color.FromArgb(128, 0, 0, 0));
+			_2D.Drawing.FilledRectangle(new RectangleF(0, 0, _mainForm.ClientSize.Width - 1.0f, 38.0f), Color.FromArgb(128, 0, 0, 0));
 			_2D.Drawing.DrawRectangle(new RectangleF(0, 0, _mainForm.ClientSize.Width, 38.0f), Color.White);
 			_2D.Drawing.DrawString(_graphics.Fonts.DefaultFont, 
 				"FPS: " + GorgonTiming.AverageFPS.ToString("0.0")
-				+ "\nDelta: " + GorgonTiming.Delta.ToString("0.0##"), 
+				+ "\nDelta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " milliseconds", 
 				new Vector2(3.0f, 0.0f), GorgonColor.White);
+			_2D.Drawing.Blit(_graphics.Textures.GorgonLogo,
+					new RectangleF(
+						_mainForm.ClientSize.Width - _graphics.Textures.GorgonLogo.Settings.Width,
+						_mainForm.ClientSize.Height - _graphics.Textures.GorgonLogo.Settings.Height,
+						_graphics.Textures.GorgonLogo.Settings.Width,
+						_graphics.Textures.GorgonLogo.Settings.Height));
+
 			// Note that we're rendering here but not flipping the buffer (the 'false' parameter).  This just delays the page
 			// flipping until later.  Technically, we don't need to do this here because it's the last thing we're doing, but
 			// if we had more rendering to do after, we'd have to flip manually.
@@ -351,8 +358,7 @@ namespace GorgonLibrary.Graphics.Example
 			_swap.Resized += _swap_Resized;
 
 			// Create the 2D interface for our text.
-			_2D = _graphics.Output.Create2DRenderer(_swap);						
-			_2D.IsLogoVisible = true;
+			_2D = _graphics.Output.Create2DRenderer(_swap);									
 
 			// Turn off the 2D stuff for now.
 			// We do this so we can have a clean slate for our state... *facepalm*.
