@@ -140,7 +140,7 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonDepthStencilStates _depth;					// Depth enabled.
 		private static GorgonDepthStencilStates _noDepth;				// No depth enabled.
 		private static bool _bounceH = false;							// Horizontal bounce.
-		private static bool _bounceV = false;							// Vertical bounce.
+		private static bool _bounceV = true;							// Vertical bounce.
 		private static float _rotate = -45.0f;							// Ball rotation.
 		private static float _rotateSpeed = 1.0f;						// Rotation speed.
 		private static float _dropSpeed = 0.01f;						// Drop speed.
@@ -167,6 +167,15 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			Vector3 position = _sphere.Position;
 
+			if (_bounceV)
+			{
+				_dropSpeed += 9.8f * GorgonTiming.Delta;
+			}
+			else
+			{
+				_dropSpeed -= 9.8f * GorgonTiming.Delta;
+			}
+
 			if (!_bounceH)
 			{
 				position.X -= 4.0f * GorgonTiming.Delta;
@@ -178,57 +187,41 @@ namespace GorgonLibrary.Graphics.Example
 
 			if (!_bounceV)
 			{
-				position.Y += 4.0f * GorgonTiming.Delta * (_dropSpeed / 27f);
+				position.Y += 4.0f * GorgonTiming.Delta * (_dropSpeed / 20f);
 			}
 			else
 			{
-				position.Y -= 4.0f * GorgonTiming.Delta * (_dropSpeed / 27f);
+				position.Y -= 4.0f * GorgonTiming.Delta * (_dropSpeed / 20f);
 			}
 
 			if ((position.X < -2.3f) || (position.X > 2.3f))
 			{
-				if (position.X < -2.3f)
+				_bounceH = !_bounceH;
+				if (_bounceH)
 				{
 					position.X = -2.3f;
 				}
-
-				if (position.X > 2.3f)
+				else
 				{
 					position.X = 2.3f;
-				}
-
-				_bounceH = !_bounceH;				
+				}								
 			}
 
 			if ((position.Y > 2.0f) || (position.Y < -2.5f))
-			{
+			{				
 				_bounceV = !_bounceV;
-				if (position.Y > 2.0f)
-				{
-					position.Y = 2.0f;
-					_dropSpeed = 27f;
-				}
-				else
+				if (!_bounceV)
 				{
 					position.Y = -2.5f;
-					_dropSpeed = 27f;
+					_dropSpeed = 20f;
 				}
-			}
-
-			if (_bounceV)
-			{
-				_dropSpeed += 9.8f * GorgonTiming.Delta;
-			}
-			else
-			{
-				_dropSpeed -= 9.8f * GorgonTiming.Delta;
 			}
 
 			_sphere.Rotation = new Vector3(0, _rotate, -12.0f);
 			_sphere.Position = position;
 
 			_rotate += 90.0f * GorgonTiming.Delta * _rotateSpeed.Sin();
-			_rotateSpeed += GorgonTiming.Delta / 2.0f;
+			_rotateSpeed += GorgonTiming.Delta / 1.25f;
 		}
 
 		/// <summary>
@@ -329,6 +322,9 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create our form.
 			_mainForm = new formMain();			
+
+			// Add a keybinding to switch to full screen or windowed.
+			_mainForm.KeyDown += _mainForm_KeyDown;
 
 			// Create the main graphics interface.
 			_graphics = new GorgonGraphics();
@@ -474,7 +470,6 @@ namespace GorgonLibrary.Graphics.Example
 			// shader.  We should NOT have to do this, but I'm getting weird warnings when I don't send
 			// it.  So, I'm doing this to shut it up.
 			_graphics.Shaders.PixelShader.Current = _pixelShader;
-			_graphics.Shaders.PixelShader.ConstantBuffers[0] = _wvpBuffer;
 			_graphics.Shaders.PixelShader.Resources.SetTexture(0, _texture);
 			_graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;
 
@@ -523,6 +518,20 @@ namespace GorgonLibrary.Graphics.Example
 
 			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
 			// more code and that's even before creating our planes and sphere.
+		}
+
+		/// <summary>
+		/// Handles the KeyDown event of the _mainForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
+		/// <exception cref="System.NotImplementedException"></exception>
+		static void _mainForm_KeyDown(object sender, KeyEventArgs e)
+		{
+			if ((e.Alt) && (e.KeyCode == Keys.Enter))
+			{
+				_swap.UpdateSettings(!_swap.Settings.IsWindowed);
+			}
 		}
 
 		/// <summary>
