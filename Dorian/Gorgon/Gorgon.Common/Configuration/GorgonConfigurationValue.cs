@@ -45,17 +45,13 @@ namespace GorgonLibrary.Configuration
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the value for the configuration value.
+		/// Property to return the value for the configuration value.
 		/// </summary>
 		public string Value
 		{
 			get
 			{
 				return _value;
-			}
-			set
-			{
-				_value = value;
 			}
 		}
 		#endregion

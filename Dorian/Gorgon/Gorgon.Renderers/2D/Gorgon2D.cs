@@ -43,6 +43,11 @@ namespace GorgonLibrary.Renderers
 	/// </summary>		
 	public struct Gorgon2DVertex
 	{
+        /// <summary>
+        /// The size of the vertex, in bytes.
+        /// </summary>
+        public static readonly int SizeInBytes = DirectAccess.SizeOf<Gorgon2DVertex>();
+
 		/// <summary>
 		/// Position of the vertex.
 		/// </summary>
@@ -77,9 +82,7 @@ namespace GorgonLibrary.Renderers
 	/// The renderer for 2D graphics.
 	/// </summary>
 	/// <remarks>This is the interface to handle sprites, primitives like lines, circles, ellipses, etc... and text.  The 2D renderer allows for using sprites in a 3D space.  
-	/// That is, it respects the depth axis so that placing a 2 sprites, one at coordinates (0.1, 0.1, 0.1) and the other at (0.1, 0.1, 1.0), will make the 2nd appear 
-	/// smaller.
-	/// <para>A default render target is required to use this interface, however that render target can be a render target texture or <see cref="M:GorgonLibrary.Graphics.GorgonOutputMerger.CreateSwapChain">swap chain</see>.  
+	/// <para>A developer can initialize this object with any render target as the default render target, or one will be created automatically when this object is initialized.  
 	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Target">Target</see> property.</para>
 	/// </remarks>
 	public class Gorgon2D
@@ -143,7 +146,7 @@ namespace GorgonLibrary.Renderers
 		}
 		#endregion
 
-		#region Value Types.
+		#region Classes.
 		/// <summary>
 		/// The current set of states when the renderer was started.
 		/// </summary>
@@ -307,8 +310,7 @@ namespace GorgonLibrary.Renderers
 
 		#region Variables.
 		private GorgonSwapChain _swapChain = null;													// Swap chain target.
-		private int _baseVertex = 0;																// Base vertex.
-		private int _vertexSize = 0;																// Size, in bytes, of a vertex.
+		private int _baseVertex = 0;																// Base vertex.		
 		private Gorgon2DVertex[] _vertexCache = null;												// List of vertices to cache.
 		private int _cacheStart = 0;																// Starting cache vertex buffer index.
 		private int _renderIndexStart = 0;															// Starting index to render.
@@ -795,7 +797,6 @@ namespace GorgonLibrary.Renderers
 			if (_layout == null)
 			{
 				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Gorgon2DVertex), VertexShader.DefaultVertexShader);
-				_vertexSize = _layout.GetSlotSize(0);
 			}
 
 			if (DefaultIndexBuffer != null)
@@ -803,7 +804,7 @@ namespace GorgonLibrary.Renderers
 			if (DefaultVertexBufferBinding.VertexBuffer != null)
 				DefaultVertexBufferBinding.VertexBuffer.Dispose();
 						
-			int spriteVBSize = _vertexSize * _cacheSize;
+			int spriteVBSize = Gorgon2DVertex.SizeInBytes * _cacheSize;
 			int spriteIBSize = sizeof(int) * _cacheSize * 6;
 
 			// Set up our index buffer.
@@ -826,7 +827,7 @@ namespace GorgonLibrary.Renderers
 			}
 			
 			// Create our empty vertex buffer.
-			DefaultVertexBufferBinding = new GorgonVertexBufferBinding(Graphics.Input.CreateVertexBuffer(spriteVBSize, BufferUsage.Dynamic), _vertexSize);
+			DefaultVertexBufferBinding = new GorgonVertexBufferBinding(Graphics.Input.CreateVertexBuffer(spriteVBSize, BufferUsage.Dynamic), Gorgon2DVertex.SizeInBytes);
 
 			// Create the vertex cache.
 			_vertexCache = new Gorgon2DVertex[VertexCacheSize];
@@ -877,14 +878,14 @@ namespace GorgonLibrary.Renderers
 					case BufferUsage.Dynamic:
 						using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
 						{
-							stream.Position = _cacheStart * _vertexSize;
+							stream.Position = _cacheStart * Gorgon2DVertex.SizeInBytes;
 							stream.WriteRange<Gorgon2DVertex>(_vertexCache, _cacheStart, _cacheWritten);
 							vbBinding.VertexBuffer.Unlock();
 						}
 						break;
 					case BufferUsage.Default:
 						using (GorgonDataStream stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
-							vbBinding.VertexBuffer.Update(stream, _cacheStart * _vertexSize, (int)stream.Length);
+							vbBinding.VertexBuffer.Update(stream, _cacheStart * Gorgon2DVertex.SizeInBytes, (int)stream.Length);
 						break;
 				}
 			}
