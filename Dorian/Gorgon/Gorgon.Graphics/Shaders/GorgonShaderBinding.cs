@@ -145,20 +145,72 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <typeparam name="T">Type of effect to create.</typeparam>
 		/// <param name="name">Name of the effect.</param>
-		/// <param name="passCount">Number of passes in the effect.</param>
+		/// <param name="parameters">Parameters to pass to the shader.</param>
 		/// <returns>The new effect object.</returns>
-		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader.</remarks>
+		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader, similar to the old Direct 3D effects framework.
+		/// <para>The <paramref name="parameters"/> parameter is optional, however some effects may require a specific set of parameters passed upon creation. 
+		/// This is dependent on the effect and may thrown an exception if a parameter is missing.  Parameter names are case sensitive.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="passCount"/> parameter is less than 0.</exception>
-		public T CreateEffect<T>(string name, int passCount)
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <para>-or-</para>
+		/// <para>Thrown when the parameter list does not contain a required parameter.</para>
+		/// </exception>
+		public T CreateEffect<T>(string name, params KeyValuePair<string, object>[] parameters)
 			where T : GorgonEffect
 		{
-			T effect = (T)Activator.CreateInstance(typeof(T), new object[] {_graphics, name, passCount});
+			GorgonDebug.AssertParamString(name, "name");
+
+			T effect = (T)Activator.CreateInstance(typeof(T), new object[] {_graphics, name});
+
+			if ((effect.RequiredParameters.Count > 0) && ((parameters == null) || (parameters.Length == 0)))
+			{
+				throw new ArgumentException("There are required parameters for the effect, but none were passed to the effect.", "parameters");
+			}
+
+			if ((parameters != null) && (parameters.Length > 0))
+			{
+				// Only get parameters where the key name has a value.
+				var validParameters = parameters.Where(item => !string.IsNullOrWhiteSpace(item.Key));
+
+				// Check for predefined required parameters from the effect.
+				foreach (var effectParam in effect.RequiredParameters)
+				{					
+					if (!validParameters.Any(item => item.Key == effectParam))
+					{
+						throw new ArgumentException("The required parameter '" + effectParam + "' was not found in the parameter list.", "parameters");
+					}
+				}
+
+				// Add/update the parameters.
+				foreach (var param in validParameters)
+				{
+					effect.Parameters[param.Key] = param.Value;
+				}
+			}
+
+			// Initialize our effect parameters.
+			effect.InitializeEffectParameters();
 
 			_graphics.AddTrackedObject(effect);
 
 			return effect;
+		}
+
+		/// <summary>
+		/// Function to create an effect object.
+		/// </summary>
+		/// <typeparam name="T">Type of effect to create.</typeparam>
+		/// <param name="name">Name of the effect.</param>
+		/// <returns>The new effect object.</returns>
+		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader, similar to the old Direct 3D effects framework.
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public T CreateEffect<T>(string name)
+			where T : GorgonEffect
+		{
+			return CreateEffect<T>(name, null);
 		}
 
 		/// <summary>

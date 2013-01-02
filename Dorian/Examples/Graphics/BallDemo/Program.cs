@@ -452,10 +452,6 @@ namespace GorgonLibrary.Graphics.Example
 					if (_2D.Effects.GaussianBlur.BlurAmount < 2)
 						_2D.Effects.GaussianBlur.BlurAmount = 2;
 					break;
-				case Keys.S:
-					if (e.Control)
-						_ballTarget.Texture.Save(@"d:\unpak\testSave.png", ImageFileFormat.PNG);
-					break;
 			}
 		}
 

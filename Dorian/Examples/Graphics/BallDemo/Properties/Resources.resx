@@ -130,7 +130,6 @@ Shift + Ctrl + ↑ (up arrow) - Increase the ball count by 1000 balls.
 Shift + Ctrl + ↓ (down arrow) - Decrease the ball count by 1000 balls.
 + - Increase blur.
 - - Decrease blur.
-Alt + Enter - Switch to fullscreen (or windowed).
-ESC - Exit.</value>
+Alt + Enter - Switch to fullscreen (or windowed).</value>
   </data>
 </root>

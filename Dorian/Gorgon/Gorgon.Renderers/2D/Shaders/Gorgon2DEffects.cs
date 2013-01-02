@@ -37,7 +37,18 @@ namespace GorgonLibrary.Renderers
 	public class Gorgon2DEffects
 	{
 		#region Variables.
-		private Gorgon2D _gorgon2D = null;
+		private static readonly object _syncLock = new object();				// Synchronization object for multiple threads.
+		private Gorgon2D _gorgon2D = null;										// Our 2D interface.
+		private Gorgon2D1BitEffect _1bitEffect = null;							// A 1 bit effect.
+		private Gorgon2DBurnDodgeEffect _burnDodgeEffect = null;				// Burn/dodge effect.
+		private Gorgon2DDisplacementEffect _displacementEffect = null;			// Displacement effect.
+		private Gorgon2DGaussianBlurEffect _gaussBlurEffect = null;				// Gaussian blur effect.
+		private Gorgon2DGrayScaleEffect _grayScaleEffect = null;				// Gray scale effect.
+		private Gorgon2DInvertEffect _invertEffect = null;						// Invert effect.
+		private Gorgon2DPosterizedEffect _posterizeEffect = null;				// Posterize effect.
+		private Gorgon2DSharpenEmbossEffect _sharpenEmbossEffect = null;		// Sharpen/emboss effect.
+		private Gorgon2DSobelEdgeDetectEffect _sobelEdgeDetectEffect = null;	// Sobel edge detection effect.
+		private Gorgon2DWaveEffect _waveEffect = null;							// Wave effect.
 		#endregion
 
 		#region Properties.
@@ -46,8 +57,18 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DGrayScaleEffect GrayScale
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_grayScaleEffect == null)
+					{
+						_grayScaleEffect = new Gorgon2DGrayScaleEffect(_gorgon2D);
+					}
+				}
+
+				return _grayScaleEffect;
+			}
 		}
 
 		/// <summary>
@@ -55,8 +76,17 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DWaveEffect Wave
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_waveEffect == null)
+					{
+						_waveEffect = new Gorgon2DWaveEffect(_gorgon2D);
+					}
+				}
+				return _waveEffect;
+			}			
 		}
 
 		/// <summary>
@@ -64,8 +94,17 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2D1BitEffect OneBit
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_1bitEffect == null)
+					{
+						_1bitEffect = new Gorgon2D1BitEffect(_gorgon2D);
+					}					
+				}
+				return _1bitEffect;
+			}			
 		}
 
 		/// <summary>
@@ -73,8 +112,17 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DSharpenEmbossEffect SharpenEmboss
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_sharpenEmbossEffect == null)
+					{
+						_sharpenEmbossEffect = new Gorgon2DSharpenEmbossEffect(_gorgon2D);
+					}
+				}
+				return _sharpenEmbossEffect;
+			}			
 		}
 
 		/// <summary>
@@ -82,8 +130,17 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DInvertEffect Invert
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_invertEffect == null)
+					{
+						_invertEffect = new Gorgon2DInvertEffect(_gorgon2D);
+					}
+				}
+				return _invertEffect;
+			}
 		}
 
 		/// <summary>
@@ -91,8 +148,17 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DGaussianBlurEffect GaussianBlur
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_gaussBlurEffect == null)
+					{
+						_gaussBlurEffect = new Gorgon2DGaussianBlurEffect(_gorgon2D);
+					}
+				}
+				return _gaussBlurEffect;
+			}			
 		}
 
 		/// <summary>
@@ -100,8 +166,17 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DPosterizedEffect Posterize
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_posterizeEffect == null)
+					{
+						_posterizeEffect = new Gorgon2DPosterizedEffect(_gorgon2D);
+					}
+				}
+				return _posterizeEffect;
+			}			
 		}
 
 		/// <summary>
@@ -109,8 +184,18 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DSobelEdgeDetectEffect SobelEdgeDetection
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_sobelEdgeDetectEffect == null)
+					{
+						_sobelEdgeDetectEffect = new Gorgon2DSobelEdgeDetectEffect(_gorgon2D);
+					}
+				}
+
+				return _sobelEdgeDetectEffect;
+			}
 		}
 
 		/// <summary>
@@ -118,8 +203,18 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DBurnDodgeEffect BurnDodge
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_burnDodgeEffect == null)
+					{
+						_burnDodgeEffect = new Gorgon2DBurnDodgeEffect(_gorgon2D);
+					}					
+				}
+
+				return _burnDodgeEffect;
+			}
 		}
 
 		/// <summary>
@@ -127,56 +222,86 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public Gorgon2DDisplacementEffect Displacement
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncLock)
+				{
+					if (_displacementEffect == null)
+					{
+						_displacementEffect = new Gorgon2DDisplacementEffect(_gorgon2D);
+					}
+				}
+
+				return _displacementEffect;
+			}			
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to clean up internal objects.
+		/// Function to release the shaders and the resources allocated to them.
 		/// </summary>
-		internal void CleanUp()
+		public void FreeShaders()
 		{
-			if (Posterize != null)
-				Posterize.Dispose();
+			if (_posterizeEffect != null)
+			{
+				_posterizeEffect.Dispose();
+				_posterizeEffect = null;
+			}
 
-			if (GrayScale != null)
-				GrayScale.Dispose();
+			if (_grayScaleEffect != null)
+			{
+				_grayScaleEffect.Dispose();
+				_grayScaleEffect = null;
+			}
 
-			if (Wave != null)
-				Wave.Dispose();
+			if (_waveEffect != null)
+			{				
+				_waveEffect.Dispose();
+				_waveEffect = null;
+			}
 
-			if (OneBit != null)
-				OneBit.Dispose();
+			if (_1bitEffect != null)
+			{
+				_1bitEffect.Dispose();
+				_1bitEffect = null;
+			}
 
-			if (SharpenEmboss != null)
-				SharpenEmboss.Dispose();
+			if (_sharpenEmbossEffect != null)
+			{
+				_sharpenEmbossEffect.Dispose();
+				_sharpenEmbossEffect = null;
+			}
 
-			if (Invert != null)
-				Invert.Dispose();
+			if (_invertEffect != null)
+			{
+				_invertEffect.Dispose();
+				_invertEffect = null;
+			}
 
-			if (GaussianBlur != null)
-				GaussianBlur.Dispose();
+			if (_gaussBlurEffect != null)
+			{				
+				_gaussBlurEffect.Dispose();
+				_gaussBlurEffect = null;
+			}
 
-			if (SobelEdgeDetection != null)
-				SobelEdgeDetection.Dispose();
+			if (_sobelEdgeDetectEffect != null)
+			{
+				_sobelEdgeDetectEffect.Dispose();
+				_sobelEdgeDetectEffect = null;
+			}
 
-			if (BurnDodge != null)
-				BurnDodge.Dispose();
+			if (_burnDodgeEffect != null)
+			{
+				_burnDodgeEffect.Dispose();
+				_burnDodgeEffect = null;
+			}
 
-			if (Displacement != null)
-				Displacement.Dispose();
-
-			Displacement = null;
-			BurnDodge = null;
-			SobelEdgeDetection = null;
-			Invert = null;
-			SharpenEmboss = null;
-			OneBit = null;
-			Wave = null;
-			GrayScale = null;
-			Posterize = null;
+			if (_displacementEffect != null)
+			{
+				_displacementEffect.Dispose();
+				_displacementEffect = null;
+			}
 		}
 		#endregion
 
@@ -188,16 +313,6 @@ namespace GorgonLibrary.Renderers
 		internal Gorgon2DEffects(Gorgon2D gorgon2D)
 		{
 			_gorgon2D = gorgon2D;
-			GrayScale = new Gorgon2DGrayScaleEffect(_gorgon2D);
-			Wave = new Gorgon2DWaveEffect(_gorgon2D);
-			OneBit = new Gorgon2D1BitEffect(_gorgon2D);
-			SharpenEmboss = new Gorgon2DSharpenEmbossEffect(_gorgon2D);
-			Invert = new Gorgon2DInvertEffect(_gorgon2D);
-			GaussianBlur = new Gorgon2DGaussianBlurEffect(_gorgon2D);
-			Posterize = new Gorgon2DPosterizedEffect(_gorgon2D);
-			SobelEdgeDetection = new Gorgon2DSobelEdgeDetectEffect(_gorgon2D);
-			BurnDodge = new Gorgon2DBurnDodgeEffect(_gorgon2D);
-			Displacement = new Gorgon2DDisplacementEffect(_gorgon2D);
 		}
 		#endregion
 	}

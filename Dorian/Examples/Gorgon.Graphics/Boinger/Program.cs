@@ -465,10 +465,6 @@ namespace GorgonLibrary.Graphics.Example
 			// We also need to bind a sampler to the texture because without it, the shader won't
 			// know how to interpret the texture data (e.g. how will the shader know if the texture
 			// is supposed to be bilinear filtered or point filtered?)
-			// 
-			// Note that we're sending our world/view/projection matrix constant buffer to the pixel 
-			// shader.  We should NOT have to do this, but I'm getting weird warnings when I don't send
-			// it.  So, I'm doing this to shut it up.
 			_graphics.Shaders.PixelShader.Current = _pixelShader;
 			_graphics.Shaders.PixelShader.Resources.SetTexture(0, _texture);
 			_graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;

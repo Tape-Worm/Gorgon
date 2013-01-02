@@ -1320,8 +1320,10 @@ namespace GorgonLibrary.Renderers
 						_layout.Dispose();
 
 					if (Effects != null)
-						Effects.CleanUp();
-					Effects = null;
+					{
+						Effects.FreeShaders();
+						Effects = null;
+					}
 
 					if (VertexShader != null)
 						VertexShader.CleanUp();
