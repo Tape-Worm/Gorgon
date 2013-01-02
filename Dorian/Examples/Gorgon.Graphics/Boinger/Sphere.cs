@@ -88,7 +88,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Calculate number of vertices and indices required for our sphere.
 			vertexCount = (ringCount + 1) * (segmentCount + 1);
-			indexCount = 6 * ringCount * (segmentCount + 1);//(segmentCount + 1) * 2 * ringCount;
+			indexCount = 6 * ringCount * (segmentCount + 1);
 
 			Vertices = new BoingerVertex[vertexCount];
 			Indices = new int[indexCount];
