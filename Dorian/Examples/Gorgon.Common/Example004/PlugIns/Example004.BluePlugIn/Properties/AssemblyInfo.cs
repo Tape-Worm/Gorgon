@@ -37,12 +37,12 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 //
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Common Objects Example #3 [DEBUG VERSION]")]
-[assembly: AssemblyDescription("Example application #3 [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Gorgon Common Objects Example #4 [DEBUG VERSION]")]
+[assembly: AssemblyDescription("Example application #4 [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
-[assembly: AssemblyTitle("Gorgon Common Objects Example #3")]
-[assembly: AssemblyDescription("Example application #3.")]
+[assembly: AssemblyTitle("Gorgon Common Objects Example #4")]
+[assembly: AssemblyDescription("Example application #4.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]

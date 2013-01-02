@@ -63,6 +63,30 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return a list of required parameters for the effect.
+		/// </summary>
+		/// <remarks>These parameters are required upon creation of the effect.  Developers implementing a new effect object 
+		/// requiring data to be sent to a shader at creation should fill in this list with the names of the required 
+		/// parameters.</remarks>
+		protected internal IList<string> RequiredParameters
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return a list of additional parameters for the effect.
+		/// </summary>
+		/// <remarks>These parameters can be passed in via construction of the effect using the <see cref="M:GorgonLibrary.Graphics.GorgonShaderBinding.CreateEffect{T}">CreateEffect</see> method 
+		/// or they may be updated after the object was created.
+		/// </remarks>
+		public IDictionary<string, object> Parameters
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return the graphics interface that created this object.
 		/// </summary>
 		public GorgonGraphics Graphics
@@ -82,6 +106,14 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to initialize the effect parameters.
+		/// </summary>
+		/// <remarks>This method is where the parameter set up for the effect is done.</remarks>
+		protected virtual internal void InitializeEffectParameters()
+		{			
+		}
+
 		/// <summary>
 		/// Function called before rendering begins.
 		/// </summary>
@@ -181,8 +213,10 @@ namespace GorgonLibrary.Graphics
 		protected GorgonEffect(GorgonGraphics graphics, string name, int passCount)
 			: base(name)
 		{
-			GorgonDebug.AssertParamRange(passCount, 0, Int32.MaxValue, false, true, "passCount");
+			GorgonDebug.AssertParamRange(passCount, 1, Int32.MaxValue, false, true, "passCount");
 
+			Parameters = new Dictionary<string, object>();
+			RequiredParameters = new List<string>();
 			Graphics = graphics;
 			PassCount = passCount;
 		}
