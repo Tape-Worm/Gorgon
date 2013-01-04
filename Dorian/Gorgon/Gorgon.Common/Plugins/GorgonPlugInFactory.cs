@@ -370,7 +370,7 @@ namespace GorgonLibrary.PlugIns
 				}
 
 				if (!File.Exists(assemblyPath))
-					throw new FileNotFoundException("Could not find the plug-in '" + Path.GetFileName(assemblyPath) + "' on any of the search paths.", assemblyPath);
+					throw new FileNotFoundException("Could not find the plug-in assembly '" + Path.GetFileName(assemblyPath) + "' on any of the search paths.", assemblyPath);
 			}
 
 			plugInAssemblyName = AssemblyName.GetAssemblyName(assemblyPath);
@@ -378,6 +378,74 @@ namespace GorgonLibrary.PlugIns
 			LoadPlugInAssembly(plugInAssemblyName);
 
 			return plugInAssemblyName;
+		}
+
+		/// <summary>
+		/// Function to determine if an assembly is a plug-in assembly.
+		/// </summary>
+		/// <param name="assemblyPath">Path to the assembly file.</param>
+		/// <returns>TRUE if this is a plug-in assembly, FALSE if it is not.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the assemblyPath parameter is an empty string.</exception>
+		public bool IsPlugInAssembly(string assemblyPath)
+		{
+			if (assemblyPath == null)
+			{
+				throw new ArgumentNullException("assemblyPath");
+			}
+
+			if (string.IsNullOrEmpty(assemblyPath))
+			{
+				throw new ArgumentException("The parameter must not be empty.", "assemblyPath");
+			}
+
+			var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+
+			return IsPlugInAssembly(assemblyName);
+		}
+
+		/// <summary>
+		/// Function to determine if an assembly is a plug-in assembly.
+		/// </summary>
+		/// <param name="assemblyName">Name of the assembly.</param>
+		/// <returns>TRUE if this is a plug-in assembly, FALSE if it is not.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public bool IsPlugInAssembly(AssemblyName assemblyName)
+		{
+			if (assemblyName == null)
+			{
+				throw new ArgumentNullException("assemblyName");
+			}
+
+			var assembly = AssemblyCache.LoadAssembly(assemblyName);
+
+			try
+			{
+				if (assembly != null)
+				{
+					return assembly.GetTypes().Any(item => item.IsSubclassOf(typeof(GorgonPlugIn)) && (!item.IsAbstract));
+				}
+			}
+			catch (ReflectionTypeLoadException rex)
+			{
+#if DEBUG
+				string errorMessage = string.Empty;
+
+				foreach (Exception loaderEx in rex.LoaderExceptions)
+				{
+					if (!string.IsNullOrEmpty(errorMessage))
+					{
+						errorMessage += "\n\r";
+					}
+					errorMessage += loaderEx.Message;
+				}
+
+				// In this case, we'll just return false and log the message.				
+				Gorgon.Log.Print("Exception while determining if assembly is a plug-in assembly:\n\r{0}", LoggingLevel.Verbose, errorMessage);
+#endif
+			}
+
+			return false;
 		}
 
 		/// <summary>

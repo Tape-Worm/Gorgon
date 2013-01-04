@@ -53,7 +53,9 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A device name structure.</returns>
 		private void GetRawInputDeviceInfo(IntPtr deviceHandle, InputDeviceType deviceType, List<GorgonRawInputDeviceInfo> deviceList)
 		{
-			int dataSize = 0;			
+			int dataSize = 0;
+			RegistryKey deviceKey = null;
+			RegistryKey classKey = null;
 
 			if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceName, IntPtr.Zero, ref dataSize) >= 0)
 			{
@@ -65,7 +67,6 @@ namespace GorgonLibrary.Input.Raw
 					{
 						string regPath = Marshal.PtrToStringAnsi(data);
 						string[] regValue = regPath.Split('#');
-						RegistryKey deviceKey = null;
 						string baseName = string.Empty;
 						string className = string.Empty;
 
@@ -83,7 +84,31 @@ namespace GorgonLibrary.Input.Raw
 							string name = string.Empty;
 
 							regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
-							className = deviceKey.GetValue("Class").ToString();
+							if (deviceKey.GetValue("Class") != null)
+							{
+								className = deviceKey.GetValue("Class").ToString();
+							}
+							else
+							{
+								// Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
+								if (deviceKey.GetValue("ClassGUID") != null)
+								{
+									var classGUID = deviceKey.GetValue("ClassGUID").ToString();
+
+									if (!string.IsNullOrWhiteSpace(classGUID))
+									{
+										classKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Control\Class\{0}", classGUID));
+
+										if (classKey != null)
+										{
+											if (classKey.GetValue("Class") != null)
+											{
+												className = classKey.GetValue("Class").ToString();
+											}
+										}
+									}
+								}
+							}
 							name = baseName = regValue[regValue.Length - 1];
 
 							while (deviceList.Find((item) => string.Compare(item.Name, name, true) == 0) != null)
@@ -100,6 +125,16 @@ namespace GorgonLibrary.Input.Raw
 				}
 				finally
 				{
+					if (deviceKey != null)
+					{
+						deviceKey.Dispose();
+					}
+
+					if (classKey != null)
+					{
+						classKey.Dispose();
+					}
+
 					if (data != IntPtr.Zero)
 						Marshal.FreeHGlobal(data);
 				}

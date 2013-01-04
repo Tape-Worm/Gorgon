@@ -172,6 +172,7 @@ namespace GorgonLibrary.Examples
 					Console.ForegroundColor = ConsoleColor.Red;
 					Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", ex.Message, ex.StackTrace);					
 				});
+				Console.ResetColor();
 			}
 		}
 		#endregion
