@@ -411,7 +411,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to return a new input device factory object.
 		/// </summary>
-		/// <param name="plugInType">Type name of the input device factory.</param>
+		/// <param name="plugInType">Type name of the input device factory plug-in.</param>
 		/// <returns>The input device factory object.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty or NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
@@ -440,6 +440,22 @@ namespace GorgonLibrary.Input
 			Gorgon.AddTrackedObject(factory);
 
 			return factory;
+		}
+
+		/// <summary>
+		/// Function to return a new input device factory object.
+		/// </summary>
+		/// <param name="plugInType">Type of the input device factory plug-in.</param>
+		/// <returns>The input device factory object.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty or NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the input device factory plug-in type was not found.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the input device factory plug-in requested is not an input device factory.</para>
+		/// </exception>
+		public static GorgonInputFactory CreateInputFactory(Type plugInType)
+		{
+			return CreateInputFactory(plugInType.FullName);
 		}
 		#endregion
 

@@ -20,32 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, December 30, 2012 9:33:29 AM
+// Created: Tuesday, September 18, 2012 8:01:36 PM
 // 
 #endregion
 
+using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Security.Permissions;
+using System.Runtime.CompilerServices;
 
+//
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+//
 #if DEBUG
-[assembly: AssemblyTitle("Boinger [DEBUG VERSION]")]
-[assembly: AssemblyDescription("An 3D example using just the base graphics library. [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Gorgon Input Factory Example [DEBUG VERSION]")]
+[assembly: AssemblyDescription("An example showing how to use the Input Factory to gain access to various types of input mechanisms. [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 [assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
-[assembly: AssemblyTitle("Boinger")]
-[assembly: AssemblyDescription("An 3D example using just the base graphics library.")]
+[assembly: AssemblyTitle("Gorgon Input Factory Example")]
+[assembly: AssemblyDescription("An example showing how to use the Input Factory to gain access to various types of input mechanisms.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 [assembly: AssemblyProduct("Gorgon")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -53,8 +57,9 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("053f54a1-07b2-4244-b0ba-4ea3af00a16d")]
+[assembly: Guid("DC539171-2198-4C5A-891E-CAD4F6225041")]
 
+//
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
@@ -62,8 +67,8 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Build and Revision Numbers 
+// You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
+
 [assembly: AssemblyVersion("2.0.*")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
