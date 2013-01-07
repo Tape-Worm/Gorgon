@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Reflection;
+
 namespace GorgonLibrary.PlugIns
 {
 	/// <summary>
@@ -34,6 +36,15 @@ namespace GorgonLibrary.PlugIns
 		: INamedObject
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to return the assembly that contains this plug-in.
+		/// </summary>
+		public AssemblyName Assembly
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the path to the plug-in assembly.
 		/// </summary>
@@ -66,6 +77,7 @@ namespace GorgonLibrary.PlugIns
 			else
 				Description = description;
 
+			Assembly = GetType().Assembly.GetName();
 			PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;
 			Name = GetType().FullName;
 		}

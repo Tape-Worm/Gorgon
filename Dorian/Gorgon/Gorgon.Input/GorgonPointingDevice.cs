@@ -341,9 +341,10 @@ namespace GorgonLibrary.Input
 				return;
 			}
 
+			ConstrainData();
+
 			if (PointingDeviceWheelMove != null)
 			{
-				ConstrainData();
 				PointingDeviceEventArgs e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				PointingDeviceWheelMove(this, e);
 			}
@@ -372,9 +373,10 @@ namespace GorgonLibrary.Input
 				return;
 			}
 
+			ConstrainData();
+
 			if (PointingDeviceMove != null)
 			{
-				ConstrainData();
 				PointingDeviceEventArgs e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				PointingDeviceMove(this, e);
 			}
@@ -386,11 +388,12 @@ namespace GorgonLibrary.Input
 		/// <param name="button">Button that's being pressed.</param>
 		protected void OnPointingDeviceDown(PointingDeviceButtons button)
 		{
+			ConstrainData();
+			Button |= button;
+
 			if (PointingDeviceDown != null)
 			{
-				ConstrainData();
 				PointingDeviceEventArgs e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
-				Button |= button;
 				PointingDeviceDown(this, e);			
 			}
 		}
@@ -402,10 +405,11 @@ namespace GorgonLibrary.Input
 		/// <param name="clickCount">Number of full clicks in a timed period.</param>
 		protected void OnPointingDeviceUp(PointingDeviceButtons button, int clickCount)
 		{
+			ConstrainData();
+			Button &= ~button;
+
 			if (PointingDeviceUp != null)
 			{
-				ConstrainData();
-				Button &= ~button;
 				PointingDeviceEventArgs e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
 				PointingDeviceUp(this, e);
 			}

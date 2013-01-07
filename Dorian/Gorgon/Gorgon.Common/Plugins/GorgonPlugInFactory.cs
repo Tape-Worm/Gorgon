@@ -68,6 +68,8 @@ namespace GorgonLibrary.PlugIns
 	{
 		#region Variables.
 		private GorgonPlugInPathCollection _paths = null;	// Search paths for the plug-in assemblies.
+		private AppDomain _discoveryDomain = null;			// An application domain used for plug-in information discovery.
+		private GorgonPlugInVerifier _verifier = null;		// Plug-in verifier.
 		#endregion
 
 		#region Properties.
@@ -122,6 +124,27 @@ namespace GorgonLibrary.PlugIns
 
 		#region Methods.
 		/// <summary>
+		/// Function to create any additional application domains we may need.
+		/// </summary>
+		private void CreateAppDomains()
+		{
+			Type verifierType = null;
+
+			if (_discoveryDomain != null)
+			{
+				return;
+			}
+
+			Evidence evidence = AppDomain.CurrentDomain.Evidence;
+			AppDomainSetup setup = AppDomain.CurrentDomain.SetupInformation;
+
+			// Create our domain.
+			_discoveryDomain = AppDomain.CreateDomain("GorgonLibrary.PlugIns.Discovery", evidence, setup);
+			verifierType = typeof(GorgonPlugInVerifier);
+			_verifier = (GorgonPlugInVerifier)(_discoveryDomain.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
+		}
+
+		/// <summary>
 		/// Function to determine if a plug-in implements <see cref="System.IDisposable">IDisposable</see> and dispose the object if it does.
 		/// </summary>
 		/// <param name="plugIn">Plug-in to check and dispose.</param>
@@ -175,23 +198,52 @@ namespace GorgonLibrary.PlugIns
 		}
 
 		/// <summary>
+		/// Function to enumerate all the plug-in names from an assembly.
+		/// </summary>
+		/// <param name="assemblyFile">File containing the plug-ins.</param>
+		/// <returns></returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the assemblyFile parameter is an empty string.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the assembly file could not be found.</exception>
+		/// <remarks>Unlike the overload of this method, this method will check only the file pointed at by <c>assemblyFile</c>.</remarks>
+		public IList<string> EnumeratePlugIns(string assemblyFile)
+		{
+			GorgonDebug.AssertParamString(assemblyFile, assemblyFile);
+
+			CreateAppDomains();
+
+			// Function to load a list of type names from an assembly.
+			return _verifier.GetPlugInTypes(assemblyFile);
+		}
+
+		/// <summary>
 		/// Function to retrieve the list of plug-ins associated with a specific assembly.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to filter.</param>
 		/// <returns>A read-only list of plug-ins.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>Unlike the overload of this method, this method only enumerates plug-ins from assemblies that are already loaded into memory.</remarks>
 		public GorgonNamedObjectReadOnlyCollection<GorgonPlugIn> EnumeratePlugIns(AssemblyName assemblyName)
 		{
-			List<GorgonPlugIn> plugIns = new List<GorgonPlugIn>();
+			GorgonDebug.AssertNull(assemblyName, "assemblyName");
 
-			foreach (GorgonPlugIn plugIn in this)
-			{
-				Type plugInType = plugIn.GetType();
-
-				if (AssemblyName.ReferenceMatchesDefinition(plugInType.Assembly.GetName(), assemblyName))
-					plugIns.Add(plugIn);
-			}
+			var plugIns = this.Where(item => AssemblyName.ReferenceMatchesDefinition(item.Assembly, assemblyName));
 
 			return new GorgonNamedObjectReadOnlyCollection<GorgonPlugIn>(false, plugIns);
+		}
+
+		/// <summary>
+		/// Function to purge any information gathered about plug-ins and plug-in assemblies before they were loaded.
+		/// </summary>
+		/// <remarks>Gorgon uses a separate application domain to load information about a plug-in assembly.  This can consume 
+		/// quite a bit of memory over time, so this method will purge that application domain.</remarks>
+		public void PurgeCachedPlugInInfo()
+		{
+			if (_discoveryDomain != null)
+			{
+				AppDomain.Unload(_discoveryDomain);
+				_discoveryDomain = null;
+			}
 		}
 
 		/// <summary>
@@ -199,6 +251,8 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		public void UnloadAll()
 		{
+			// Unload our discovery domain.
+			PurgeCachedPlugInInfo();
 			this.ClearItems();
 		}
 
@@ -399,7 +453,15 @@ namespace GorgonLibrary.PlugIns
 				throw new ArgumentException("The parameter must not be empty.", "assemblyPath");
 			}
 
-			var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+			AssemblyName assemblyName = null;
+			try
+			{
+				assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+			}
+			catch (BadImageFormatException)
+			{
+				return false;
+			}
 
 			return IsPlugInAssembly(assemblyName);
 		}
@@ -412,40 +474,32 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public bool IsPlugInAssembly(AssemblyName assemblyName)
 		{
+			bool result = false;
+
 			if (assemblyName == null)
 			{
 				throw new ArgumentNullException("assemblyName");
 			}
 
-			var assembly = AssemblyCache.LoadAssembly(assemblyName);
-
 			try
 			{
-				if (assembly != null)
-				{
-					return assembly.GetTypes().Any(item => item.IsSubclassOf(typeof(GorgonPlugIn)) && (!item.IsAbstract));
-				}
+				CreateAppDomains();
+
+				result = _verifier.IsPlugInAssembly(assemblyName);
 			}
 			catch (ReflectionTypeLoadException rex)
 			{
 #if DEBUG
-				string errorMessage = string.Empty;
-
+				// In this case, we'll just return false and log the message.				
+				Gorgon.Log.Print("Exception while determining if assembly is a plug-in assembly:", LoggingLevel.Verbose);
 				foreach (Exception loaderEx in rex.LoaderExceptions)
 				{
-					if (!string.IsNullOrEmpty(errorMessage))
-					{
-						errorMessage += "\n\r";
-					}
-					errorMessage += loaderEx.Message;
+					Gorgon.Log.Print("{0}", LoggingLevel.Verbose, loaderEx.Message);
 				}
-
-				// In this case, we'll just return false and log the message.				
-				Gorgon.Log.Print("Exception while determining if assembly is a plug-in assembly:\n\r{0}", LoggingLevel.Verbose, errorMessage);
 #endif
 			}
 
-			return false;
+			return result;
 		}
 
 		/// <summary>
