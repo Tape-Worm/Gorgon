@@ -123,12 +123,22 @@ namespace GorgonLibrary.Examples
                 // This is the preferred method of loading a plug-in assembly.
                 // It keeps us from going into DLL hell because it'll contain
                 // version information, public key info, etc...  
-				var name = AssemblyName.GetAssemblyName(file);
+				// We wrap this in this exception handler because if a DLL is
+				// a native DLL, then it'll throw an exception.  And since
+				// we can't load native DLLs as our plug-in, then we should
+				// skip it.
+				AssemblyName name = null;
+				try
+				{
+					name = AssemblyName.GetAssemblyName(file);
+				}
+				catch (BadImageFormatException)
+				{
+					// This happens if we try and load a DLL that's not a .NET assembly.
+					continue;
+				}
 
 				// Skip any assemblies that aren't a plug-in assembly.
-                // Note that this will throw an exception with native (i.e. non-.NET) 
-                // DLLs.  In this case it's OK, because we know there's no native 
-                // DLLs in the default plug-in path.
 				if (!Gorgon.PlugIns.IsPlugInAssembly(name))
 				{
 					continue;
@@ -183,6 +193,7 @@ namespace GorgonLibrary.Examples
 		{
 			try
 			{
+				Console.Clear();				
 				Console.ForegroundColor = ConsoleColor.White;
                 Console.Title = "Gorgon Example - Input Factories.";
 

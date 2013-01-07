@@ -40,7 +40,7 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>GorgonLibrary.Examples.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
