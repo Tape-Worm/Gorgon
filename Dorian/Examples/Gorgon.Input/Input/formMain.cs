@@ -116,6 +116,32 @@ namespace GorgonLibrary.Examples
 			_buffer = _graphicsContext.Allocate(_imageGraphics, new Rectangle(0, 0, _mouseImage.Width, _mouseImage.Height));
 		}
 
+        /// <summary>
+        /// Function to update the mouse information.
+        /// </summary>
+        /// <param name="position">The position of the mouse cursor.</param>
+        /// <param name="button">The current button being held down.</param>
+        private void UpdateMouse(PointF position, PointingDeviceButtons button)
+        {
+            if ((button & PointingDeviceButtons.Button1) == PointingDeviceButtons.Button1)
+            {
+                _currentCursor = Properties.Resources.hand_pointer_icon;
+            }
+            else
+            {
+                _currentCursor = Properties.Resources.hand_icon;
+            }
+
+            _mousePosition = new Point((int)position.X - 16, (int)_mouse.Position.Y - 3);
+
+            labelMouse.Text = string.Format("{0}: {1}x{2} ({3})\nUsing {4}.",
+                                _factory.PointingDevices[0].Name,
+                                position.X.ToString("0.#"),
+                                position.Y.ToString("0.#"),
+                                button.ToString(),
+                                (_usePolling ? "Polling" : "Events"));
+        }
+
 		/// <summary>
 		/// Function to process during application idle time.
 		/// </summary>
@@ -126,18 +152,7 @@ namespace GorgonLibrary.Examples
 			// info in real time during our idle time.
 			if (_usePolling)
 			{
-				if ((_mouse.Button & PointingDeviceButtons.Button1) == PointingDeviceButtons.Button1)
-				{
-					_currentCursor = Properties.Resources.hand_pointer_icon;
-				}
-				else
-				{
-					_currentCursor = Properties.Resources.hand_icon;
-				}
-
-				_mousePosition = new Point((int)_mouse.Position.X - 16, (int)_mouse.Position.Y - 3);
-
-				UpdateMouseLabel(_mouse.Position, _mouse.Button);				
+                UpdateMouse(_mouse.Position, _mouse.Button);
 			}
 
 			// Render our mouse cursor.
@@ -147,21 +162,6 @@ namespace GorgonLibrary.Examples
 			_buffer.Render(_graphics);
 
 			return true;
-		}
-
-		/// <summary>
-		/// Function to update the mouse label.
-		/// </summary>
-		/// <param name="position">Position of the mouse.</param>
-		/// <param name="button">The buttons that are currently pressed.</param>
-		private void UpdateMouseLabel(PointF position, PointingDeviceButtons button)
-		{
-			labelMouse.Text = string.Format("{0}: {1}x{2} ({3})\nUsing {4}.",
-								_factory.PointingDevices[0].Name,
-								position.X.ToString("0.#"),
-								position.Y.ToString("0.#"),
-								button.ToString(),
-								(_usePolling ? "Polling" : "Events"));
 		}
 
 		/// <summary>
@@ -222,10 +222,8 @@ namespace GorgonLibrary.Examples
 		/// <exception cref="System.NotImplementedException"></exception>
 		private void _mouse_PointingDeviceUp(object sender, PointingDeviceEventArgs e)
 		{
-			_currentCursor = Properties.Resources.hand_icon;
-
 			// Update the buttons so that only the buttons we have held down are showing.
-			UpdateMouseLabel(e.Position, e.ShiftButtons & ~e.Buttons);
+            UpdateMouse(e.Position, e.ShiftButtons & ~e.Buttons);
 		}
 
 		/// <summary>
@@ -234,15 +232,10 @@ namespace GorgonLibrary.Examples
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="PointingDeviceEventArgs" /> instance containing the event data.</param>
 		/// <exception cref="System.NotImplementedException"></exception>
-		private void _mouse_PointingDeviceDown(object sender, PointingDeviceEventArgs e)
-		{
-			if ((e.Buttons & PointingDeviceButtons.Left) == PointingDeviceButtons.Left)
-			{
-				_currentCursor = Properties.Resources.hand_pointer_icon;
-			}
-
-			UpdateMouseLabel(e.Position, e.Buttons | e.ShiftButtons);
-		}
+        private void _mouse_PointingDeviceDown(object sender, PointingDeviceEventArgs e)
+        {
+            UpdateMouse(e.Position, e.Buttons | e.ShiftButtons);
+        }
 
 		/// <summary>
 		/// Handles the PointingDeviceMove event of the _mouse control.
@@ -252,12 +245,7 @@ namespace GorgonLibrary.Examples
 		/// <exception cref="System.NotImplementedException"></exception>
 		private void _mouse_PointingDeviceMove(object sender, PointingDeviceEventArgs e)
 		{
-			// The hot spot for the cursors we're using is at 16x3.
-			Point position = new Point((int)e.Position.X - 16, (int)e.Position.Y - 3);
-
-			_mousePosition = position;
-
-			UpdateMouseLabel(e.Position, e.Buttons);			
+            UpdateMouse(e.Position, e.Buttons | e.ShiftButtons);
 		}
 
 		/// <summary>
@@ -297,7 +285,6 @@ namespace GorgonLibrary.Examples
 				}
 			}
 
-			UpdateMouseLabel(_mousePosition, _mouse.Button);
 			UpdateKeyboardLabel(e.Key, e.ModifierKeys);
 		}
 
@@ -394,7 +381,7 @@ namespace GorgonLibrary.Examples
 				_keyboard.KeyUp += _keyboard_KeyUp;
 
 				UpdateKeyboardLabel(KeyboardKeys.None, KeyboardKeys.None);
-				UpdateMouseLabel(_mouse.Position, _mouse.Button);
+                UpdateMouse(_mouse.Position, _mouse.Button);
 			}
 			catch (Exception ex)
 			{
