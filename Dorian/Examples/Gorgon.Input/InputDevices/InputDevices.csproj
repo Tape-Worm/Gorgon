@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MouseCursor.cs" />
+    <Compile Include="Spray.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,7 +100,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <None Include="Resources\keyboard-icon.png" />
+    <None Include="Resources\device_mouse_16x16.png" />
+    <None Include="Resources\device_keyboard_16x16.png" />
+    <None Include="Resources\device_gamepad_16x16.png" />
     <None Include="Resources\hand-pointer-icon.png" />
     <None Include="Resources\hand-icon.png" />
   </ItemGroup>
