@@ -123,7 +123,16 @@ namespace GorgonLibrary.Collections
 		protected virtual void SetItem(string name, T value)
 		{
 			if (string.Compare(name, value.Name, !KeysAreCaseSensitive) == 0)
-				_list[name] = value;
+			{
+				if (KeysAreCaseSensitive)
+				{
+					_list[name] = value;
+				}
+				else
+				{
+					_list[name.ToLower()] = value;
+				}
+			}
 			else
 			{
 				RemoveItem(name);
