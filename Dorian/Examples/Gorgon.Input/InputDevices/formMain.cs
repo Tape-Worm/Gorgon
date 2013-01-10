@@ -70,18 +70,28 @@ namespace GorgonLibrary.Examples
 	/// objects can be polled at any time (e.g. in your Idle loop method).  This way the application can retrieve data from a 
 	/// device like the mouse in real time, that is, as fast as your computer can call the update loop.  
 	/// 
-	/// Joysticks are exposed in the Raw Input plug-in, but use a very basic interface and don't expose any special features like
-	/// force feedback.  And unlike other devices, joysticks don't raise events and must be polled via its Poll() method.  
+	/// To see the difference between polling and events do the following while running the example:
+	/// 1. Hold down the left mouse button while in event mode (default), and move around.  The spray effect updates.
+	/// 2. Stop moving (but keep the left button pressed). The spray effect stops updating.  This is because there are no events
+	///    being fired and the events are the methods that update the spray effect.
+	/// 3. Now change to polling by pressing the "P" key.
+	/// 4. Hold down the left mouse button and notice that the spray keeps updating regardless of whether we're moving.  
+	/// 
+	/// And that is the difference between polling and event driven input data.
+	/// 
+	/// Joysticks are exposed in the Raw Input plug-in, but use a very basic interface and don't expose any special features 
+	/// (e.g. force feedback).  And unlike other devices, joysticks don't raise events and must be polled via its Poll() method.  
 	/// In this example, if a joystick is detected it will be noted on the display panel and pressing the primary button will 
-	/// draw to the display panel.
+	/// draw a spray effect to the display panel.
 	/// </remarks>
 	public partial class formMain : Form
 	{
-		#region Variables.		
+		#region Variables.
 		private BufferedGraphicsContext _graphicsContext = null;		// Buffered graphics context.
 		private BufferedGraphics _buffer = null;						// Buffered graphics page.
 		private Image _mouseImage = null;								// Image to use for double buffering our mouse.
 		private Bitmap _drawingSurface = null;							// Drawing surface for our joystick.
+		private Graphics _drawingGraphics = null;						// Graphics interface for our drawing surface.
 		private Graphics _imageGraphics = null;							// Graphics interface for the mouse double buffer image.
 		private Graphics _graphics = null;								// GDI+ graphics interface.
 		private GorgonInputFactory _factory = null;						// Our input factory.
@@ -121,6 +131,12 @@ namespace GorgonLibrary.Examples
 				_imageGraphics = null;
 			}
 
+			if (_drawingGraphics != null)
+			{
+				_drawingGraphics.Dispose();
+				_drawingGraphics = null;
+			}
+
 			if (_drawingSurface != null)
 			{
 				_drawingSurface.Dispose();
@@ -153,6 +169,7 @@ namespace GorgonLibrary.Examples
 			_drawingSurface = new Bitmap(panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
 			_imageGraphics = Graphics.FromImage(_mouseImage);
+			_drawingGraphics = Graphics.FromImage(_drawingSurface);
 
 			_graphicsContext = BufferedGraphicsManager.Current;
 			_buffer = _graphicsContext.Allocate(_imageGraphics, new Rectangle(0, 0, _mouseImage.Width, _mouseImage.Height));
@@ -167,6 +184,7 @@ namespace GorgonLibrary.Examples
         {
             if ((button & PointingDeviceButtons.Button1) == PointingDeviceButtons.Button1)
             {
+				DrawSpray(Point.Round(position));
                 _currentCursor = Properties.Resources.hand_pointer_icon;
             }
             else
@@ -181,7 +199,7 @@ namespace GorgonLibrary.Examples
                                 position.X.ToString("0.#"),
                                 position.Y.ToString("0.#"),
                                 button.ToString(),
-                                (_usePolling ? "Polling" : "Events"));
+                                (_usePolling ? "Polling" : "Events"));			
         }
 
 		/// <summary>
@@ -190,12 +208,6 @@ namespace GorgonLibrary.Examples
 		/// <param name="stickPoint">The position of the joystick.</param>
 		private void DrawSpray(Point stickPoint)
 		{
-			// Ensure that the joystick is connected and the button is pressed.
-			if ((!_joystick.IsConnected) || (!_joystick.Button[0].IsPressed))
-			{
-				return;
-			}
-
 			// Use random colors.
 			Color color = Color.FromArgb(GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255));
 			// Create a random point using the default axis.
@@ -206,7 +218,10 @@ namespace GorgonLibrary.Examples
 			// Ensure that the random point falls within the range of the image.
 			if (panelDisplay.ClientRectangle.Contains(randomPoint))
 			{
-				_drawingSurface.SetPixel(randomPoint.X, randomPoint.Y, color);
+				using (var brush = new SolidBrush(color))
+				{
+					_drawingGraphics.FillEllipse(brush, new Rectangle(randomPoint, new Size(10, 10)));
+				}
 			}
 		}
 
@@ -225,36 +240,49 @@ namespace GorgonLibrary.Examples
 
 			// Render our mouse cursor.
 			_buffer.Graphics.Clear(panelDisplay.BackColor);
-			
-			if (_joystick != null) 
+			_buffer.Graphics.DrawImage(_drawingSurface, Point.Empty);
+
+			if (_joystick != null)
 			{
+				Point stickPoint = Point.Empty;
+				string joystickText = string.Empty;
+				SizeF textSize = SizeF.Empty;
+
 				// We -must- call poll here or else the joystick will appear to be
 				// disconnected and will not have any current data.
 				_joystick.Poll();
 
-				// Get our joystick data and constrain it.
-				// First get the normalized joystick value.
-				// The stick values are often between a negative value and a positive value.
-				PointF stickNormalized = new PointF(((float)_joystick.X / (float)_joystick.Capabilities.XAxisRange.Range) + 0.5f
-													, ((float)_joystick.Y / (float)_joystick.Capabilities.YAxisRange.Range) + 0.5f);
+				// Ensure that the joystick is connected and the button is pressed.
+				if ((_joystick.IsConnected) && (_joystick.Button[0].IsPressed))
+				{
+					// Get our joystick data and constrain it.
+					// First get the normalized joystick value.
+					// The stick values are often between a negative value and a positive value.
+					PointF stickNormalized = new PointF(((float)_joystick.X / (float)_joystick.Capabilities.XAxisRange.Range) + 0.5f
+														, ((float)_joystick.Y / (float)_joystick.Capabilities.YAxisRange.Range) + 0.5f);
 
-				// Now transform the normalized point into display space.
-				Point stickPoint = new Point((int)(stickNormalized.X * panelDisplay.ClientSize.Width)
-											,panelDisplay.Height - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
+					// Now transform the normalized point into display space.
+					stickPoint = new Point((int)(stickNormalized.X * panelDisplay.ClientSize.Width)
+												, panelDisplay.Height - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
 
-				SizeF textSize = SizeF.Empty;
-				string joystickText = string.Format("{0} {1}\nPosition: {2}x{3} (Raw {5}x{6})\nPrimary button {4}"
-											, _joystick.Name
-											, (_joystick.IsConnected ? "connected." : "not connected.")
-											, stickPoint.X
-											, stickPoint.Y
-											, (_joystick.Button[0].IsPressed ? "pressed" : "not pressed (press it for pixel spray).")
-											, _joystick.X
-											, _joystick.Y);
+					DrawSpray(stickPoint);
+				}
 
-				
-				DrawSpray(stickPoint);
-				_buffer.Graphics.DrawImage(_drawingSurface, Point.Empty);
+				// Display the proper joystick text.
+				if (_joystick.IsConnected)
+				{
+					joystickText = string.Format("{0} connected.\nPosition: {1}x{2} (Raw {4}x{5})\nPrimary button {3}"
+												, _joystick.Name
+												, stickPoint.X
+												, stickPoint.Y
+												, (_joystick.Button[0].IsPressed ? "pressed" : "not pressed (press it for pixel spray).")
+												, _joystick.X
+												, _joystick.Y);
+				}
+				else
+				{
+					joystickText = string.Format("{0} not connected.", _joystick.Name);
+				} 	
 
 				// Display joystick info.
 				textSize = _buffer.Graphics.MeasureString(joystickText, this.Font, panelDisplay.ClientSize.Width);
@@ -262,6 +290,7 @@ namespace GorgonLibrary.Examples
 				_buffer.Graphics.DrawString(joystickText, this.Font, Brushes.Black, PointF.Empty);
 			}
 
+			// Copy our drawing data only.
 			_buffer.Graphics.DrawImage(_currentCursor, _mousePosition);
 			_buffer.Render();
 			_buffer.Render(_graphics);
