@@ -83,17 +83,16 @@ namespace GorgonLibrary.Examples
 	/// (e.g. force feedback).  And unlike other devices, joysticks don't raise events and must be polled via its Poll() method.  
 	/// In this example, if a joystick is detected it will be noted on the display panel and pressing the primary button will 
 	/// draw a spray effect to the display panel.
+    /// 
+    /// Joystick axis infomation usually returns values much larger than the available display area, usually between a negative
+    /// and positive value and with the y-axis flipped.  So when we gather the information, we need to flip the y-axis and 
+    /// transform the coordinates into screen space via the JoystickTransformed property.
 	/// </remarks>
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private BufferedGraphicsContext _graphicsContext = null;		// Buffered graphics context.
-		private BufferedGraphics _buffer = null;						// Buffered graphics page.
-		private Image _mouseImage = null;								// Image to use for double buffering our mouse.
-		private Bitmap _drawingSurface = null;							// Drawing surface for our joystick.
-		private Graphics _drawingGraphics = null;						// Graphics interface for our drawing surface.
-		private Graphics _imageGraphics = null;							// Graphics interface for the mouse double buffer image.
-		private Graphics _graphics = null;								// GDI+ graphics interface.
+        private Spray _spray = null;                                    // The spray effect.
+        private MouseCursor _cursor = null;                             // Our mouse cursor.
 		private GorgonInputFactory _factory = null;						// Our input factory.
 		private GorgonPointingDevice _mouse = null;						// Our mouse interface.
 		private GorgonJoystick _joystick = null;						// A joystick interface.
@@ -104,128 +103,68 @@ namespace GorgonLibrary.Examples
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the joystick primary axis coordinates transformed into screen space.
+        /// </summary>
+        /// <remarks>The joystick axis coordinates can be larger or smaller than screen space, so we 
+        /// need to transform them to the confines of the display area.</remarks>
+        private Point JoystickTransformed
+        {
+            get
+            {
+                Point screenPosition = Point.Empty;
 
+                if (_joystick == null)
+                {
+                    return Point.Empty;
+                }
+
+                // We -must- call poll here or else the joystick will appear to be
+                // disconnected and will not have any current data.
+                _joystick.Poll();
+
+                // Ensure that the joystick is connected and the button is pressed.
+                if ((_joystick.IsConnected) && (_joystick.Button[0].IsPressed))
+                {
+                    // Get our joystick data and constrain it.
+                    // First get the normalized joystick value.
+                    // The stick values are often between a negative value and a positive value.
+                    PointF stickNormalized = new PointF(((float)_joystick.X / (float)_joystick.Capabilities.XAxisRange.Range) + 0.5f
+                                                        , ((float)_joystick.Y / (float)_joystick.Capabilities.YAxisRange.Range) + 0.5f);
+
+                    // Now transform the normalized point into display space.
+                    screenPosition = new Point((int)(stickNormalized.X * panelDisplay.ClientSize.Width)
+                                                , panelDisplay.Height - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
+
+                    // Spray the screen.
+                    _spray.SprayPoint(screenPosition);
+                }
+
+                return screenPosition;
+            }
+        }
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to clean up the double buffering data.
-		/// </summary>
-		private void CleanUpDoubleBuffer()
-		{
-			if (_buffer != null)
-			{
-				_buffer.Dispose();
-				_buffer = null;
-			}
-
-			if (_graphicsContext != null)
-			{
-				_graphicsContext.Dispose();
-				_graphicsContext = null;
-			}
-
-			if (_imageGraphics != null)
-			{
-				_imageGraphics.Dispose();
-				_imageGraphics = null;
-			}
-
-			if (_drawingGraphics != null)
-			{
-				_drawingGraphics.Dispose();
-				_drawingGraphics = null;
-			}
-
-			if (_drawingSurface != null)
-			{
-				_drawingSurface.Dispose();
-				_drawingSurface = null;
-			}
-
-			if (_mouseImage != null)
-			{
-				_mouseImage.Dispose();
-				_mouseImage = null;
-			}
-
-			if (_graphics != null)
-			{
-				_graphics.Dispose();
-				_graphics = null;
-			}
-		}
-
-		/// <summary>
-		/// Function to set up double buffering for our mouse cursor.
-		/// </summary>
-		private void SetupDoubleBuffer()
-		{
-			CleanUpDoubleBuffer();
-
-			_graphics = Graphics.FromHwnd(panelDisplay.Handle);
-
-			_mouseImage = new Bitmap(panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			_drawingSurface = new Bitmap(panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-			_imageGraphics = Graphics.FromImage(_mouseImage);
-			_drawingGraphics = Graphics.FromImage(_drawingSurface);
-
-			_graphicsContext = BufferedGraphicsManager.Current;
-			_buffer = _graphicsContext.Allocate(_imageGraphics, new Rectangle(0, 0, _mouseImage.Width, _mouseImage.Height));
-		}
-
         /// <summary>
-        /// Function to update the mouse information.
+        /// Handles the Paint event of the panelMouse control.
         /// </summary>
-        /// <param name="position">The position of the mouse cursor.</param>
-        /// <param name="button">The current button being held down.</param>
-        private void UpdateMouse(PointF position, PointingDeviceButtons button)
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PaintEventArgs" /> instance containing the event data.</param>
+        private void devicePanelsPaint(object sender, PaintEventArgs e)
         {
-            if ((button & PointingDeviceButtons.Button1) == PointingDeviceButtons.Button1)
-            {
-				DrawSpray(Point.Round(position));
-                _currentCursor = Properties.Resources.hand_pointer_icon;
-            }
-            else
-            {
-                _currentCursor = Properties.Resources.hand_icon;
-            }
+            Control control = sender as Control;
 
-            _mousePosition = new Point((int)position.X - 16, (int)_mouse.Position.Y - 3);
-
-            labelMouse.Text = string.Format("{0}: {1}x{2} ({3})\nUsing {4}.",
-                                _factory.PointingDevices[0].Name,
-                                position.X.ToString("0.#"),
-                                position.Y.ToString("0.#"),
-                                button.ToString(),
-                                (_usePolling ? "Polling" : "Events"));			
+            if (control != null)
+            {
+                using(var pen = new Pen(Color.Black, SystemInformation.BorderSize.Height))
+                {
+                    e.Graphics.DrawLine(pen, new Point(0, 0), new Point(control.Width, 0));
+                }
+            }
         }
-
-		/// <summary>
-		/// Function to draw a spray effect when the joystick button is pressed.
-		/// </summary>
-		/// <param name="stickPoint">The position of the joystick.</param>
-		private void DrawSpray(Point stickPoint)
-		{
-			// Use random colors.
-			Color color = Color.FromArgb(GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255));
-			// Create a random point using the default axis.
-			Point randomPoint = new Point(
-										GorgonRandom.RandomInt32(-10, 10) + stickPoint.X
-										, GorgonRandom.RandomInt32(-10, 10) + stickPoint.Y);
-
-			// Ensure that the random point falls within the range of the image.
-			if (panelDisplay.ClientRectangle.Contains(randomPoint))
-			{
-				using (var brush = new SolidBrush(color))
-				{
-					_drawingGraphics.FillEllipse(brush, new Rectangle(randomPoint, new Size(10, 10)));
-				}
-			}
-		}
-
-		/// <summary>
+        
+        /// <summary>
 		/// Function to process during application idle time.
 		/// </summary>
 		/// <returns>TRUE to continue processing, FALSE to stop.</returns>
@@ -235,68 +174,72 @@ namespace GorgonLibrary.Examples
 			// info in real time during our idle time.
 			if (_usePolling)
 			{
-                UpdateMouse(_mouse.Position, _mouse.Button);
+                UpdateMouseLabel(_mouse.Position, _mouse.Button);
 			}
 
-			// Render our mouse cursor.
-			_buffer.Graphics.Clear(panelDisplay.BackColor);
-			_buffer.Graphics.DrawImage(_drawingSurface, Point.Empty);
+            // Update the joystick information.
+            UpdateJoystickLabel(JoystickTransformed);
 
-			if (_joystick != null)
-			{
-				Point stickPoint = Point.Empty;
-				string joystickText = string.Empty;
-				SizeF textSize = SizeF.Empty;
-
-				// We -must- call poll here or else the joystick will appear to be
-				// disconnected and will not have any current data.
-				_joystick.Poll();
-
-				// Ensure that the joystick is connected and the button is pressed.
-				if ((_joystick.IsConnected) && (_joystick.Button[0].IsPressed))
-				{
-					// Get our joystick data and constrain it.
-					// First get the normalized joystick value.
-					// The stick values are often between a negative value and a positive value.
-					PointF stickNormalized = new PointF(((float)_joystick.X / (float)_joystick.Capabilities.XAxisRange.Range) + 0.5f
-														, ((float)_joystick.Y / (float)_joystick.Capabilities.YAxisRange.Range) + 0.5f);
-
-					// Now transform the normalized point into display space.
-					stickPoint = new Point((int)(stickNormalized.X * panelDisplay.ClientSize.Width)
-												, panelDisplay.Height - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
-
-					DrawSpray(stickPoint);
-				}
-
-				// Display the proper joystick text.
-				if (_joystick.IsConnected)
-				{
-					joystickText = string.Format("{0} connected.\nPosition: {1}x{2} (Raw {4}x{5})\nPrimary button {3}"
-												, _joystick.Name
-												, stickPoint.X
-												, stickPoint.Y
-												, (_joystick.Button[0].IsPressed ? "pressed" : "not pressed (press it for pixel spray).")
-												, _joystick.X
-												, _joystick.Y);
-				}
-				else
-				{
-					joystickText = string.Format("{0} not connected.", _joystick.Name);
-				} 	
-
-				// Display joystick info.
-				textSize = _buffer.Graphics.MeasureString(joystickText, this.Font, panelDisplay.ClientSize.Width);
-				_buffer.Graphics.FillRectangle(Brushes.White, Rectangle.Round(new RectangleF(Point.Empty, textSize)));
-				_buffer.Graphics.DrawString(joystickText, this.Font, Brushes.Black, PointF.Empty);
-			}
-
-			// Copy our drawing data only.
-			_buffer.Graphics.DrawImage(_currentCursor, _mousePosition);
-			_buffer.Render();
-			_buffer.Render(_graphics);
+			// Display the mouse cursor.
+            _cursor.DrawMouseCursor(_mousePosition, _currentCursor, _spray.Surface);
 
 			return true;
 		}
+
+        /// <summary>
+        /// Function to update the joystick label.
+        /// </summary>
+        /// <param name="joystickTransformed">The transformed screen point for the joystick.</param>
+        private void UpdateJoystickLabel(Point joystickTransformed)
+        {
+            if (_joystick == null)
+            {
+                return;
+            }
+
+            // Display the proper joystick text.
+            if (_joystick.IsConnected)
+            {
+                labelJoystick.Text = string.Format("{0} connected.  Position: {1}x{2} (Raw {4}x{5}).  Primary button {3}"
+                                            , _joystick.Name
+                                            , joystickTransformed.X
+                                            , joystickTransformed.Y
+                                            , (_joystick.Button[0].IsPressed ? "pressed" : "not pressed (press the button to spray).")
+                                            , _joystick.X
+                                            , _joystick.Y);
+            }
+            else
+            {
+                labelJoystick.Text = string.Format("{0} not connected.", _joystick.Name);
+            }
+        }
+
+        /// <summary>
+        /// Function to update the mouse information.
+        /// </summary>
+        /// <param name="position">The position of the mouse cursor.</param>
+        /// <param name="button">The current button being held down.</param>
+        private void UpdateMouseLabel(PointF position, PointingDeviceButtons button)
+        {
+            if ((button & PointingDeviceButtons.Button1) == PointingDeviceButtons.Button1)
+            {
+                _spray.SprayPoint(Point.Round(position));
+                _currentCursor = Properties.Resources.hand_pointer_icon;
+            }
+            else
+            {
+                _currentCursor = Properties.Resources.hand_icon;
+            }
+
+            _mousePosition = new Point((int)position.X - 16, (int)_mouse.Position.Y - 3);
+
+            labelMouse.Text = string.Format("{0}: {1}x{2}.  Button: {3}.  Using {4} for data retrieval.",
+                                _factory.PointingDevices[0].Name,
+                                position.X.ToString("0.#"),
+                                position.Y.ToString("0.#"),
+                                button.ToString(),
+                                (_usePolling ? "Polling" : "Events"));
+        }
 
 		/// <summary>
 		/// Function to update the keyboard label.
@@ -343,9 +286,10 @@ namespace GorgonLibrary.Examples
 			}
 
 
-			labelKeyboard.Text = string.Format("Currently pressed key: {0}{1}  (Press 'P' to switch between polling and events for the mouse)"
+			labelKeyboard.Text = string.Format("{2}. Currently pressed key: {0}{1}  (Press 'P' to switch between polling and events for the mouse)"
 												, key.ToString()
-												, ((shiftKey != KeyboardKeys.None) && (shiftKey != key) ? " + " + shiftKey.ToString() : string.Empty));				
+												, ((shiftKey != KeyboardKeys.None) && (shiftKey != key) ? " + " + shiftKey.ToString() : string.Empty)
+                                                , _keyboard.Name);				
 		}
 
 		/// <summary>
@@ -357,7 +301,7 @@ namespace GorgonLibrary.Examples
 		private void _mouse_PointingDeviceUp(object sender, PointingDeviceEventArgs e)
 		{
 			// Update the buttons so that only the buttons we have held down are showing.
-            UpdateMouse(e.Position, e.ShiftButtons & ~e.Buttons);
+            UpdateMouseLabel(e.Position, e.ShiftButtons & ~e.Buttons);
 		}
 
 		/// <summary>
@@ -368,7 +312,7 @@ namespace GorgonLibrary.Examples
 		/// <exception cref="System.NotImplementedException"></exception>
         private void _mouse_PointingDeviceDown(object sender, PointingDeviceEventArgs e)
         {
-            UpdateMouse(e.Position, e.Buttons | e.ShiftButtons);
+            UpdateMouseLabel(e.Position, e.Buttons | e.ShiftButtons);
         }
 
 		/// <summary>
@@ -379,7 +323,7 @@ namespace GorgonLibrary.Examples
 		/// <exception cref="System.NotImplementedException"></exception>
 		private void _mouse_PointingDeviceMove(object sender, PointingDeviceEventArgs e)
 		{
-            UpdateMouse(e.Position, e.Buttons | e.ShiftButtons);
+            UpdateMouseLabel(e.Position, e.Buttons | e.ShiftButtons);
 		}
 
 		/// <summary>
@@ -441,11 +385,78 @@ namespace GorgonLibrary.Examples
 				_mouse.PositionRange = new RectangleF(0, 0, panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height);
 			}
 
-			if (_graphics != null)
-			{
-				SetupDoubleBuffer();
-			}
+            if (_spray != null)
+            {
+                _spray.Resize(panelDisplay.ClientSize);
+            }
 		}
+
+        /// <summary>
+        /// Function to create the mouse device.
+        /// </summary>
+        private void CreateMouse()
+        {
+            // Create the device from the factory.
+            _mouse = _factory.CreatePointingDevice(this);
+
+            // Set up the mouse for use.
+            _mouse.Enabled = true;
+
+            // Set the mouse as exclusively owned by this window.
+            // This way all the mouse input will go to this window when it's got focus.
+            _mouse.Exclusive = true;
+
+            // Assign an event to notify us when the mouse is moving.
+            _mouse.PointingDeviceMove += _mouse_PointingDeviceMove;
+
+            // Assign another event to notify us when a mouse button was clicked.
+            _mouse.PointingDeviceDown += _mouse_PointingDeviceDown;
+            _mouse.PointingDeviceUp += _mouse_PointingDeviceUp;
+
+            // Limit the mouse position to the client area of the window.				
+            _mouse.PositionRange = new RectangleF(0, 0, panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height);
+        }
+
+        /// <summary>
+        /// Function to create the keyboard device.
+        /// </summary>
+        private void CreateKeyboard()
+        {
+            // Create our device.
+            _keyboard = _factory.CreateKeyboard(this);
+
+            // Enable the devices.
+            _keyboard.Enabled = true;
+            // Set up an event handler for our keyboard.
+            _keyboard.KeyDown += _keyboard_KeyDown;
+            _keyboard.KeyUp += _keyboard_KeyUp;
+        }
+
+        /// <summary>
+        /// Function to create the joystick device.
+        /// </summary>
+        private void CreateJoystick()
+        {
+            // If we have a joystick controller, then let's activate it.
+            if (_factory.JoystickDevices.Count > 0)
+            {
+                // Find the first one that's active.
+                var activeDevice = (from joystick in _factory.JoystickDevices
+                                    where joystick.IsConnected
+                                    select joystick).FirstOrDefault();
+
+                if (activeDevice != null)
+                {
+                    // Note that joysticks from Raw Input are always exclusive access,
+                    // so setting _joystick.Exclusive = true; does nothing.
+                    _joystick = _factory.CreateJoystick(this, activeDevice.Name);
+
+                    // Show our joystick information.
+                    labelJoystick.Text = string.Empty;
+                    panelJoystick.Visible = true;
+                }
+            }
+        }
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
@@ -457,15 +468,9 @@ namespace GorgonLibrary.Examples
 
 			try
 			{
-				// Get the graphics interface for this window.
-				SetupDoubleBuffer();
-
 				// Set our default cursor.
 				_currentCursor = Properties.Resources.hand_icon;
 				
-				// Set up our idle method.
-				Gorgon.ApplicationIdleLoopMethod = Idle;
-
 				// Load our raw input plug-in assembly.
 				Gorgon.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");
 
@@ -473,6 +478,8 @@ namespace GorgonLibrary.Examples
 				_factory = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
 
 				// Get our device info.
+                // This function is called when the factory is created.
+                // However, I'm calling it here just to show that it exists.
 				_factory.EnumerateDevices();
 
 				// Validate, even though it's highly unlikely we'll run into these.
@@ -489,53 +496,25 @@ namespace GorgonLibrary.Examples
 				}
 
 				// Get our input devices.				
-				_mouse = _factory.CreatePointingDevice(this);
-				_keyboard = _factory.CreateKeyboard(this);
+                CreateMouse();
+                CreateKeyboard();
+                CreateJoystick();
 
-				// If we have a joystick controller, then let's activate it.
-				if (_factory.JoystickDevices.Count > 0)
-				{
-					// Find the first one that's active.
-					var activeDevice = (from joystick in _factory.JoystickDevices
-										where joystick.IsConnected
-										select joystick).FirstOrDefault();
-
-					if (activeDevice != null)
-					{
-						// Note that joysticks from Raw Input are always exclusive access,
-						// so setting _joystick.Exclusive = true; does nothing.
-						_joystick = _factory.CreateJoystick(this, activeDevice.Name);
-					}
-				}
-
-				// Enable the devices.
-				_mouse.Enabled = true;
-				_keyboard.Enabled = true;
-
-				// Set the mouse as exclusively owned by this window.
-				// This way all the mouse input will go to this window when it's got focus.
-				_mouse.Exclusive = true;
-
-				// Assign an event to notify us when the mouse is moving.
-				_mouse.PointingDeviceMove += _mouse_PointingDeviceMove;
-
-				// Assign another event to notify us when a mouse button was clicked.
-				_mouse.PointingDeviceDown += _mouse_PointingDeviceDown;
-				_mouse.PointingDeviceUp += _mouse_PointingDeviceUp;
-
-				// Set up an event handler for our keyboard.
-				_keyboard.KeyDown += _keyboard_KeyDown;
-				_keyboard.KeyUp += _keyboard_KeyUp;
-
-				// Limit the mouse position to the client area of the window.				
-				_mouse.PositionRange = new RectangleF(0, 0, panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height);
-
-				// When the display area changes size, update the buffers
-				// and the limits for the mouse.
+				// When the display area changes size, update the spray effect
+				// and limit the mouse.
 				panelDisplay.Resize += panelDisplay_Resize;
 
+                // Update the labels for the devices
 				UpdateKeyboardLabel(KeyboardKeys.None, KeyboardKeys.None);
-                UpdateMouse(_mouse.Position, _mouse.Button);
+                UpdateMouseLabel(_mouse.Position, _mouse.Button);
+                UpdateJoystickLabel(JoystickTransformed);
+
+                // Set up our spray object.
+                _spray = new Spray(panelDisplay.ClientSize);
+                _cursor = new MouseCursor(panelDisplay);
+
+                // Set up our idle method.
+                Gorgon.ApplicationIdleLoopMethod = Idle;                
 			}
 			catch (Exception ex)
 			{
@@ -552,7 +531,17 @@ namespace GorgonLibrary.Examples
 		{
 			base.OnFormClosing(e);
 
-			CleanUpDoubleBuffer();
+            if (_cursor != null)
+            {
+                _cursor.Dispose();
+                _cursor = null;
+            }
+
+            if (_spray != null)
+            {
+                _spray.Dispose();
+                _spray = null;
+            }
 		}
 		#endregion
 
