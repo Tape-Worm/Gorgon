@@ -76,7 +76,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Input", "Input", "{E110A495
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputFactory", "..\Examples\Gorgon.Input\InputFactory\InputFactory.csproj", "{26B09EBD-0140-4274-92EF-6E674FBDBB22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputDevices", "..\Examples\Gorgon.Input\Input\InputDevices.csproj", "{12851B09-FCD2-4365-86A8-CBB9B773923E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputDevices", "..\Examples\Gorgon.Input\InputDevices\InputDevices.csproj", "{12851B09-FCD2-4365-86A8-CBB9B773923E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
