@@ -35,6 +35,10 @@ using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Examples
 {
+	/// <summary>
+	/// Example entry point.
+	/// </summary>
+	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
 	static class Program
 	{
 		/// <summary>
