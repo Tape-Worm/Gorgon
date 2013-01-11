@@ -5,6 +5,8 @@ Please note that you will need Visual Studio 2010 in order to compile Gorgon, it
 For assistance go to:
 http://www.tape-worm.net
 
-Gorgon uses the Oxygen icon set.  Available at http://www.oxygen-icons.org/
+Gorgon uses the Oxygen and Onebit 4 icon set.  
+Both are available at http://www.oxygen-icons.org/
 
-Oxygen icons may also be obtained from http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.1.html
+Oxygen icons may be obtained from http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.1.html
+Onebit 4 icons may be obtained from http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html
