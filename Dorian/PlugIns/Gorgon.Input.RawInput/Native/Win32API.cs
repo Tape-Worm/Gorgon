@@ -247,6 +247,7 @@ namespace GorgonLibrary.Native
 		}
 
 		#endregion
+
 		#region Constructor.
 		/// <summary>
 		/// Initializes the <see cref="Win32API"/> class.

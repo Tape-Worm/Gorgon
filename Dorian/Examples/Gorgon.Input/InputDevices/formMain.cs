@@ -124,7 +124,7 @@ namespace GorgonLibrary.Examples
                 _joystick.Poll();
 
                 // Ensure that the joystick is connected and the button is pressed.
-                if ((_joystick.IsConnected) && (_joystick.Button[0].IsPressed))
+                if (_joystick.IsConnected)
                 {
                     // Get our joystick data and constrain it.
                     // First get the normalized joystick value.
@@ -136,8 +136,21 @@ namespace GorgonLibrary.Examples
                     screenPosition = new Point((int)(stickNormalized.X * panelDisplay.ClientSize.Width)
                                                 , panelDisplay.Height - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
 
-                    // Spray the screen.
-                    _spray.SprayPoint(screenPosition);
+					if (_joystick.Button[0].IsPressed)
+					{
+						// Spray the screen.
+						_currentCursor = Properties.Resources.hand_pointer_icon;
+						_mouse.Position = _mousePosition = screenPosition;
+						_spray.SprayPoint(screenPosition);
+					}
+					else
+					{
+						// Turn off the cursor if the mouse button isn't held down.
+						if ((_mouse.Button & PointingDeviceButtons.Button1) != PointingDeviceButtons.Button1)
+						{
+							_currentCursor = Properties.Resources.hand_icon;
+						}
+					}
                 }
 
                 return screenPosition;
@@ -180,7 +193,7 @@ namespace GorgonLibrary.Examples
             // Update the joystick information.
             UpdateJoystickLabel(JoystickTransformed);
 
-			// Display the mouse cursor.
+			// Display the mouse cursor.			
             _cursor.DrawMouseCursor(_mousePosition, _currentCursor, _spray.Surface);
 
 			return true;
@@ -234,7 +247,7 @@ namespace GorgonLibrary.Examples
             _mousePosition = new Point((int)position.X - 16, (int)_mouse.Position.Y - 3);
 
             labelMouse.Text = string.Format("{0}: {1}x{2}.  Button: {3}.  Using {4} for data retrieval.",
-                                _factory.PointingDevices[0].Name,
+                                _mouse.Name,
                                 position.X.ToString("0.#"),
                                 position.Y.ToString("0.#"),
                                 button.ToString(),
