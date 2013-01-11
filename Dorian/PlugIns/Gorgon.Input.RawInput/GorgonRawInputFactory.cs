@@ -340,9 +340,9 @@ namespace GorgonLibrary.Input.Raw
 			RawKeyboard keyboard = null;
 
 			if (keyboardInfo == null)
-				keyboard = new RawKeyboard(this, IntPtr.Zero, window);
+				keyboard = new RawKeyboard(this, "System Keyboard", IntPtr.Zero, window);
 			else
-				keyboard = new RawKeyboard(this, ((GorgonRawInputDeviceInfo)keyboardInfo).Handle, window);
+				keyboard = new RawKeyboard(this, keyboardInfo.Name, ((GorgonRawInputDeviceInfo)keyboardInfo).Handle, window);
 			keyboard.Enabled = true;
 
 			return keyboard;
@@ -362,9 +362,9 @@ namespace GorgonLibrary.Input.Raw
 			RawPointingDevice mouse = null;
 
 			if (pointingDeviceInfo == null)
-				mouse = new RawPointingDevice(this, IntPtr.Zero, window);
+				mouse = new RawPointingDevice(this, "System Mouse", IntPtr.Zero, window);
 			else
-				mouse = new RawPointingDevice(this, ((GorgonRawInputDeviceInfo)pointingDeviceInfo).Handle, window);
+				mouse = new RawPointingDevice(this, pointingDeviceInfo.Name, ((GorgonRawInputDeviceInfo)pointingDeviceInfo).Handle, window);
 			mouse.Enabled = true;
 
 			return mouse;

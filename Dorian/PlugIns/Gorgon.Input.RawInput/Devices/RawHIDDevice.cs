@@ -140,8 +140,8 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="deviceData">The HID device name object.</param>
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		public RawHIDDevice(GorgonInputFactory owner, GorgonRawInputDeviceInfo deviceData, Control boundWindow)
-			: base(owner, "Raw Input HID", boundWindow)
+		internal RawHIDDevice(GorgonInputFactory owner, GorgonRawInputDeviceInfo deviceData, Control boundWindow)
+			: base(owner, deviceData.Name, boundWindow)
 		{
 			Gorgon.Log.Print("Raw input HID interface created for handle 0x{0}.", LoggingLevel.Verbose, deviceData.Handle.FormatHex());
 			_deviceData = deviceData;
