@@ -35,9 +35,22 @@ namespace GorgonLibrary.FileSystem
 	/// <remarks>This object is a pass through to the underlying file system for the operating system.</remarks>
 	internal class GorgonFolderFileSystemProvider
 		: GorgonFileSystemProvider
-	{
-		#region Methods.
-		/// <summary>
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return a description of the file system provider.
+        /// </summary>        
+        public override string Description
+        {
+            get 
+            {
+                return "A provider to mount a directory as a file system.";
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Function to return the virtual file system path from a physical file system path.
 		/// </summary>
 		/// <param name="physicalPath">Physical path to the file/folder.</param>

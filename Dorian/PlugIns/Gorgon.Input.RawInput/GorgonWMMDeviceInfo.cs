@@ -62,9 +62,6 @@ namespace GorgonLibrary.Input.Raw
 				JOYCAPS caps = new JOYCAPS();
 				return Win32API.joyGetDevCaps(JoystickID, ref caps, _joyCapsSize) == 0;
 			}
-			protected set
-			{				
-			}
 		}
 		#endregion
 
@@ -79,7 +76,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
 		public GorgonWMMDeviceInfo(string name, string className, string hidPath, int joystickID)
-			: base(name, InputDeviceType.Joystick, className, hidPath, false)
+			: base(name, InputDeviceType.Joystick, className, hidPath)
 		{
 			JoystickID = joystickID;
 			_joyCapsSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(JOYCAPS));

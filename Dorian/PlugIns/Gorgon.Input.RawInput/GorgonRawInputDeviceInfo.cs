@@ -65,6 +65,17 @@ namespace GorgonLibrary.Input.Raw
 			get;
 			private set;
 		}
+
+        /// <summary>
+        /// Property to return whether the device is connected or not.
+        /// </summary>
+        public override bool IsConnected
+        {
+            get 
+            {
+                return true;
+            }
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -79,7 +90,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
 		public GorgonRawInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath, IntPtr handle)
-			: base(name, deviceType, className, hidPath, false)
+			: base(name, deviceType, className, hidPath)
 		{
 			Handle = handle;
 
@@ -87,7 +98,6 @@ namespace GorgonLibrary.Input.Raw
 			RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
 			Usage = (HIDUsage)deviceInfo.hid.usUsage;
 			UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
-			IsConnected = true;
 		}
 		#endregion
 	}

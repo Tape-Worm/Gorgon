@@ -283,8 +283,22 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerTypeName"/> parameter is an empty string.</exception>
 		public void AddProvider(string providerTypeName)
 		{
+            GorgonDebug.AssertParamString(providerTypeName, "providerTypeName");
+
 			Providers.Add(providerTypeName);
 		}
+
+        /// <summary>
+        /// Function to add a file system provider.
+        /// </summary>
+        /// <param name="providerType">The type of the file system provider.</param>
+        /// <remarks>Use this method to arbitrarily add custom file system provider add-ins to the file system.  If a file system provider is not added and an attempt to mount the target target file system, then the Gorgon file system will not know how to load the data within the external file system.</remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerType"/> parameter is NULL (Nothing in VB.Net).</exception>
+        public void AddProvider(Type providerType)
+        {
+            GorgonDebug.AssertNull<Type>(providerType, "providerType");
+            AddProvider(providerType.FullName);
+        }
 
 		/// <summary>
 		/// Function to search through the plug-in list and add any providers that haven't already been loaded.

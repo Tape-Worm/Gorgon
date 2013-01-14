@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2013 Michael Winsor
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, January 14, 2013 8:24:02 AM
+// Created: Monday, January 14, 2013 8:37:21 AM
 // 
 #endregion
 
@@ -32,18 +32,18 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Input Example [DEBUG VERSION]")]
-[assembly: AssemblyDescription("An example showing how to use the XBox controller. [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Gorgon File System Example [DEBUG VERSION]")]
+[assembly: AssemblyDescription("An example showing how to use the file system providers. [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 [assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
-[assembly: AssemblyTitle("Gorgon Input Example")]
-[assembly: AssemblyDescription("An example showing how to use the XBox controller.")]
+[assembly: AssemblyTitle("Gorgon File System Example")]
+[assembly: AssemblyDescription("An example showing how to use the file system providers.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 [assembly: AssemblyProduct("Gorgon")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2013")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

@@ -71,9 +71,6 @@ namespace GorgonLibrary.Input.XInput
 				GetCaps();
 				return Controller.IsConnected;
 			}
-			protected set
-			{				
-			}
 		}		
 
 		/// <summary>
@@ -121,11 +118,10 @@ namespace GorgonLibrary.Input.XInput
 		/// <param name="index">Index of the controller.</param>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
 		public GorgonXInputDeviceInfo(string name, string hidPath, XI.Controller controller, int index)
-			: base(name, InputDeviceType.Joystick, "disconnected controller", hidPath, false)
+			: base(name, InputDeviceType.Joystick, "disconnected controller", hidPath)
 		{
 			Controller = controller;
 			Index = index;			
-			IsConnected = controller.IsConnected;
 		}
 		#endregion
 	}

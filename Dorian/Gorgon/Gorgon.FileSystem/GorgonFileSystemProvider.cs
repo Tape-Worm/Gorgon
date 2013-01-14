@@ -56,6 +56,14 @@ namespace GorgonLibrary.FileSystem
 			get;
 			protected set;
 		}
+
+        /// <summary>
+        /// Property to return a description of the file system provider.
+        /// </summary>
+        public abstract string Description
+        {
+            get;
+        }
 		#endregion
 
 		#region Methods.
