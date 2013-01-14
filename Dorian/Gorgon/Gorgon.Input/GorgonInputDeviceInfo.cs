@@ -93,10 +93,9 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return whether the device is connected or not.
 		/// </summary>
-		public virtual bool IsConnected
+		public abstract bool IsConnected
 		{
 			get;
-			protected set;
 		}
 
 		/// <summary>
@@ -130,10 +129,9 @@ namespace GorgonLibrary.Input
 		/// <param name="deviceType">The type of device.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
-		/// <param name="connected">TRUE if the device is presently connected and operating, FALSE if it is not.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		protected GorgonInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath, bool connected)
+		protected GorgonInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath)
 			: base(name)
 		{
 			if (string.IsNullOrEmpty(className))
@@ -146,7 +144,6 @@ namespace GorgonLibrary.Input
 			this.ClassName = className;
 			this.HIDPath = hidPath;
 			this.UUID = Guid.NewGuid();
-			this.IsConnected = connected;
 		}
 		#endregion
 	}

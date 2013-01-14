@@ -55,7 +55,7 @@ namespace GorgonLibrary.Examples
 	/// 
 	/// The set up is similar to the other input examples:  Load the plug-in assembly, create the input factory and create
 	/// each joystick as needed.  Then in the idle loop, we poll the joysticks for input.  If no XBox controller is found
-	/// an error dialog appears and the application closes.
+	/// a prompt to plug one in is shown.
 	/// 
 	/// This example also shows how to use vibration and how to make a pressure sensitive trigger on the XBox controllers.
 	/// 
@@ -318,6 +318,18 @@ namespace GorgonLibrary.Examples
 					// Turn off spray for all controllers.
 					_sprayStates[i] = new SprayCan(joystick, i);
 				}
+
+                // Check for connected controllers.
+                while (!_joystick.Any(item => item.IsConnected))
+                {                    
+                    if (MessageBox.Show(this, 
+                                        "There are no XBox controllers connected.\nPlease plug in an XBox controller and click OK.", 
+                                        "No Controllers", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)
+                    {
+                        Gorgon.Quit();
+                        return;
+                    }
+                }
 
 				// Get the graphics interface for our panel.
 				_surface = new DrawingSurface(panelDisplay);

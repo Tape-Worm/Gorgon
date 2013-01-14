@@ -40,7 +40,24 @@ namespace GorgonLibrary.FileSystem.Zip
 	/// </summary>
 	public class GorgonZipProvider
 		: GorgonFileSystemProvider
-	{
+    {
+        #region Variables.
+        private string _description = string.Empty;             // The description of the provider.
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return a description of the file system provider.
+        /// </summary>        
+        public override string Description
+        {
+            get
+            {
+                return _description;
+            }
+        }
+        #endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to enumerate the files and directories for a mount point.
@@ -198,10 +215,12 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// Initializes a new instance of the <see cref="GorgonZipProvider"/> class.
 		/// </summary>
 		/// <param name="fileSystem">File system that owns this provider.</param>
+        /// <param name="description">The description of the provider.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal GorgonZipProvider(GorgonFileSystem fileSystem)			
+		internal GorgonZipProvider(GorgonFileSystem fileSystem, string description)
 			: base(fileSystem)
 		{
+            _description = description;
 			PreferredExtensions = new List<string>() { "Zip files (*.zip)|*.zip" };
 		}
 		#endregion

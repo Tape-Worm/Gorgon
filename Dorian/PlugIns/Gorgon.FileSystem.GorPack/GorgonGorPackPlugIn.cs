@@ -42,14 +42,14 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public override GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem)
 		{
-			return new GorPack.GorgonGorPackProvider(fileSystem);
+			return new GorPack.GorgonGorPackProvider(fileSystem, Description);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGorPackPlugIn"/> class.
 		/// </summary>
 		public GorgonGorPackPlugIn()
-			: base("A provider to read the older Gorgon BZip2 packfile.")
+            : base("A provider to mount a v1.x Gorgon pack file as a file system.")
 		{
 		}
 	}

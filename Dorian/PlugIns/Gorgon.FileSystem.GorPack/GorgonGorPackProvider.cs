@@ -77,11 +77,25 @@ namespace GorgonLibrary.FileSystem.GorPack
 		#endregion
 
 		#region Variables.
+        private string _description = string.Empty;                                         // Description of the provider.
 		private IDictionary<string, CompressedFileEntry> _compressedFiles = null;			// List of compressed files.
 		#endregion
 
-		#region Methods.
-		/// <summary>
+        #region Properties.
+        /// <summary>
+        /// Property to return a description of the file system provider.
+        /// </summary>        
+        public override string Description
+        {
+            get
+            {
+                return _description;
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Function to decompress a data block.
 		/// </summary>
 		/// <param name="data">Data to decompress.</param>
@@ -278,10 +292,13 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// Initializes a new instance of the <see cref="GorgonGorPackProvider"/> class.
 		/// </summary>
 		/// <param name="fileSystem">File system that owns this provider.</param>
+        /// <param name="description">The description of the provider.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal GorgonGorPackProvider(GorgonFileSystem fileSystem)
+		internal GorgonGorPackProvider(GorgonFileSystem fileSystem, string description)
 			: base(fileSystem)
 		{
+            _description = description;
+            PreferredExtensions = new List<string>() { "gorPack files (*.gorPack)|*.gorPack" };
 		}
 		#endregion
 	}

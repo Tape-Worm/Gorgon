@@ -36,9 +36,22 @@ namespace GorgonLibrary.Input.WinForms
 	/// </summary>
 	internal class GorgonWinFormsInputDeviceInfo
 		: GorgonInputDeviceInfo
-	{
-		#region Constructor/Destructor.
-		/// <summary>
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the device is connected or not.
+        /// </summary>
+        public override bool IsConnected
+        {
+            get 
+            {
+                return true;
+            }
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
 		/// Initializes a new instance of the <see cref="GorgonWinFormsInputDeviceInfo"/> class.
 		/// </summary>
 		/// <param name="name">The device name.</param>
@@ -48,7 +61,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
 		public GorgonWinFormsInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath)
-			: base(name, deviceType, className, hidPath, true)
+			: base(name, deviceType, className, hidPath)
 		{
 		}
 		#endregion
