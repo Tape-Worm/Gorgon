@@ -1,7 +1,7 @@
 #region MIT.
 // 
-// Examples.
-// Copyright (C) 2008 Michael Winsor
+// Gorgon.
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,71 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, October 02, 2008 10:46:02 PM
+// Created: Friday, January 11, 2013 8:27:27 AM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using GorgonLibrary;
+using GorgonLibrary.UI;
 
-namespace GorgonLibrary.Example
+namespace GorgonLibrary.Examples
 {
 	/// <summary>
-	/// Main application.
+	/// Example entry point.
 	/// </summary>
+	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
 	static class Program
 	{
+		/// <summary>
+		/// Property to return the path to the plug-ins.
+		/// </summary>
+		public static string PlugInPath
+		{
+			get
+			{
+				string path = Properties.Settings.Default.PlugInLocation;
+
+				if (path.Contains("{0}"))
+				{
+#if DEBUG
+					path = string.Format(path, "Debug");
+#else
+					path = string.Format(path, "Release");					
+#endif
+				}
+
+				if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				{
+					path += Path.DirectorySeparatorChar.ToString();
+				}
+
+				return Path.GetFullPath(path);
+			}
+		}
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
 		static void Main()
 		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			try
+			{
+				Application.EnableVisualStyles();
+				Application.SetCompatibleTextRenderingDefault(false);
+
+				Gorgon.Run(new MainForm());
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
+			}
 		}
 	}
 }

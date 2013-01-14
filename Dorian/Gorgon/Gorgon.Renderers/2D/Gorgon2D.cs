@@ -706,7 +706,7 @@ namespace GorgonLibrary.Renderers
 		{
 			// Remove any previous handler.
 			if (Target != null)
-				Target.Resized -= new EventHandler(target_Resized);
+				Target.Resized -= new EventHandler<GorgonRenderTargetResizedEventArgs>(target_Resized);
 
 			// Find out if the target is a swap chain.
 			_swapChain = Target as GorgonSwapChain;
@@ -732,7 +732,7 @@ namespace GorgonLibrary.Renderers
 
 			// Re-assign the event.
 			if (Target != null)
-				Target.Resized += new EventHandler(target_Resized);
+				Target.Resized += new EventHandler<GorgonRenderTargetResizedEventArgs>(target_Resized);
 		}
 
 		/// <summary>
@@ -740,7 +740,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="sender">Object that sent the event.</param>
 		/// <param name="e">Event parameters.</param>
-		private void target_Resized(object sender, EventArgs e)
+		private void target_Resized(object sender, GorgonRenderTargetResizedEventArgs e)
 		{
 			UpdateTarget();
 		}
@@ -753,7 +753,7 @@ namespace GorgonLibrary.Renderers
 			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
 			
 			// Create the default projection matrix.
-			Target.Resized -= new EventHandler(target_Resized);
+			Target.Resized -= new EventHandler<GorgonRenderTargetResizedEventArgs>(target_Resized);
 
 			// Create constant buffers.
 			if (ProjectionViewBuffer == null)
@@ -1315,7 +1315,7 @@ namespace GorgonLibrary.Renderers
 					TrackedObjects.ReleaseAll();
 
 					if (Target != null)
-						Target.Resized -= new EventHandler(target_Resized);
+						Target.Resized -= new EventHandler<GorgonRenderTargetResizedEventArgs>(target_Resized);
 
 					if (_layout != null)
 						_layout.Dispose();

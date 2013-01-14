@@ -723,7 +723,6 @@ namespace GorgonLibrary.Graphics
 			: base(swapChain.Graphics, swapChain.Name + "_Internal_Texture_" + Guid.NewGuid().ToString(), null)
 		{
 			D3DResource = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
-			D3DResource.DebugName = "Gorgon swap chain texture '" + Name + "'";
 
 			base.Settings = GetTextureInformation();
 

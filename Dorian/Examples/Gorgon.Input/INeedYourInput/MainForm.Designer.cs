@@ -1,7 +1,7 @@
 #region MIT.
 // 
-// Examples.
-// Copyright (C) 2008 Michael Winsor
+// Gorgon.
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, October 02, 2008 10:46:02 PM
+// Created: Sunday, January 13, 2013 6:49:05 PM
 // 
 #endregion
 
-namespace GorgonLibrary.Example
+namespace GorgonLibrary.Examples
 {
 	partial class MainForm
 	{
@@ -65,7 +65,7 @@ namespace GorgonLibrary.Example
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Example - I need your input";
+			this.Text = "I need your input (v1.x Example)";
 			this.ResumeLayout(false);
 
 		}

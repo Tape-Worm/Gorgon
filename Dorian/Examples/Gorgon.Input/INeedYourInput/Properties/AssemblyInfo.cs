@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("I need your input.")]
-[assembly: AssemblyDescription("Example showing how to use the input plug-in.")]
+[assembly: AssemblyDescription("Example showing how to use the input plug-in.  This was a version 1.x example, converted to version 2.x of Gorgon")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon Example.")]
+[assembly: AssemblyProduct("Version 1.x Gorgon Example.")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.1.*")]
-[assembly: AssemblyFileVersion("1.1.4119.34319")]
+[assembly: AssemblyVersion("2.0.*")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
