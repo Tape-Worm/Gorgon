@@ -328,6 +328,25 @@
 		initblk
 		ret
 	}	
+	// Function to initialize memory with zeroes.
+	.method public hidebysig static
+		void FillMemory
+		(
+			native int destination,
+			unsigned int8 fillValue,
+			int32 size
+		) cil managed	
+	{
+		.maxstack 3
+		
+		ldarga.s destination
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldarg.1
+		ldarg.2
+		initblk
+		ret
+	}	
+
 
   .method private hidebysig specialname rtspecialname static 
           void  .cctor() cil managed
