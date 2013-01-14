@@ -38,7 +38,44 @@ namespace GorgonLibrary.Input.XInput
 	internal class GorgonXInputDeviceInfo
 		: GorgonInputDeviceInfo
 	{
+		#region Variables.
+		private XI.Capabilities? _caps = null;						// Device capabilites.
+		#endregion
+
 		#region Properties.
+		/// <summary>
+		/// Property to return the class name of the device.
+		/// </summary>
+		public override string ClassName
+		{
+			get
+			{
+				if ((IsConnected) && (_caps != null))
+				{
+					return _caps.Value.SubType.ToString();
+				}
+				else
+				{
+					return "disconnected device";					
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the device is connected or not.
+		/// </summary>
+		public override bool IsConnected
+		{
+			get
+			{
+				GetCaps();
+				return Controller.IsConnected;
+			}
+			protected set
+			{				
+			}
+		}		
+
 		/// <summary>
 		/// Property to return the handle to the device.
 		/// </summary>
@@ -58,18 +95,33 @@ namespace GorgonLibrary.Input.XInput
 		}
 		#endregion
 
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the device capabilities.
+		/// </summary>
+		private void GetCaps()
+		{
+			if (!Controller.IsConnected)
+			{
+				_caps = null;
+				return;
+			}
+
+			_caps = Controller.GetCapabilities(XI.DeviceQueryType.Any);
+		}
+		#endregion
+
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonXInputDeviceInfo"/> class.
 		/// </summary>
 		/// <param name="name">The device name.</param>
-		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
 		/// <param name="controller">Controller interface.</param>
 		/// <param name="index">Index of the controller.</param>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonXInputDeviceInfo(string name, string className, string hidPath, XI.Controller controller, int index)
-			: base(name, InputDeviceType.Joystick, className, hidPath, false)
+		public GorgonXInputDeviceInfo(string name, string hidPath, XI.Controller controller, int index)
+			: base(name, InputDeviceType.Joystick, "disconnected controller", hidPath, false)
 		{
 			Controller = controller;
 			Index = index;			

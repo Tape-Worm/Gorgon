@@ -40,7 +40,7 @@ namespace GorgonLibrary.Examples
     class MouseCursor
         : IDisposable
     {
-        #region Variables.        
+        #region Variables.
         private bool _disposed = false;                                 // Flag to indicate that the object was disposed.
         private BufferedGraphicsContext _graphicsContext = null;		// Buffered graphics context.
         private BufferedGraphics _buffer = null;						// Buffered graphics page.
@@ -50,8 +50,19 @@ namespace GorgonLibrary.Examples
         private Color _clearColor = Color.White;                        // Color to clear the surface with.
         #endregion
 
-        #region Methods.
-        /// <summary>
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the cursor hot spot.
+		/// </summary>
+		public Point Hotspot
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
         /// Function to clean up any objects that are allocating memory.
         /// </summary>
         private void CleanUp()
@@ -137,7 +148,7 @@ namespace GorgonLibrary.Examples
                 _buffer.Graphics.DrawImage(additionalBuffer, Point.Empty);
             }
 
-            _buffer.Graphics.DrawImage(cursor, position);
+            _buffer.Graphics.DrawImage(cursor, new Point(position.X + Hotspot.X, position.Y + Hotspot.Y));
             _buffer.Render();
             _buffer.Render(_graphics);
         }
