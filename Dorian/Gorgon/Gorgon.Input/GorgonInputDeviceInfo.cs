@@ -84,7 +84,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the class name of the device.
 		/// </summary>
-		public string ClassName
+		public virtual string ClassName
 		{
 			get;
 			private set;

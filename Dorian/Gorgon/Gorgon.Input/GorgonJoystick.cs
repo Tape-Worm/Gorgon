@@ -434,7 +434,7 @@ namespace GorgonLibrary.Input
 				if (range == GorgonMinMax.Empty)
 					return 0;
 
-				return range.Minimum + (range.Range / 2);
+				return (range.Range / 2) - range.Maximum;
 			}
 			#endregion
 

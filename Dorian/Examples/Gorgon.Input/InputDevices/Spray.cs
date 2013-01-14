@@ -40,7 +40,7 @@ namespace GorgonLibrary.Examples
     class Spray
         : IDisposable
     {
-        #region Variables.        
+        #region Variables.
         private bool _disposed = false;             // Flag to indicate that the object was disposed.
         private Graphics _graphics = null;          // Graphics interface.
         #endregion

@@ -77,19 +77,11 @@ namespace GorgonLibrary.Input.XInput
 			// Enumerate all controllers.
 			for (int i = 0; i < controllerIndex.Length; i++)
 			{
-				XI.Capabilities caps = default(XI.Capabilities);
-
-				controllers[i] = new XI.Controller(controllerIndex[i]);
-				if (controllers[i].IsConnected)
+				if (controllerIndex[i] != XI.UserIndex.Any)
 				{
-					if (controllerIndex[i] != XI.UserIndex.Any)
-					{
-						caps = controllers[i].GetCapabilities(XI.DeviceQueryType.Any);
-						devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput " + caps.SubType.ToString() + " Controller", caps.SubType.ToString(), "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
-					}
+					controllers[i] = new XI.Controller(controllerIndex[i]);
+					devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput Controller", "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
 				}
-				else
-					devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput Disconnected Controller ", "Disconnected Controller", "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
 			}
 
 			return devices.OrderBy((item) => item.Name);

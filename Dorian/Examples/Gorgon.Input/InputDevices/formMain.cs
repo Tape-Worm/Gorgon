@@ -128,20 +128,24 @@ namespace GorgonLibrary.Examples
                 {
                     // Get our joystick data and constrain it.
                     // First get the normalized joystick value.
-                    // The stick values are often between a negative value and a positive value.
-                    PointF stickNormalized = new PointF(((float)_joystick.X / (float)_joystick.Capabilities.XAxisRange.Range) + 0.5f
-                                                        , ((float)_joystick.Y / (float)_joystick.Capabilities.YAxisRange.Range) + 0.5f);
+                    // Do this by first shifting the coordinates to the minimum range value.
+					PointF stickNormalized = new PointF((float)_joystick.X - (float)_joystick.Capabilities.XAxisRange.Minimum,
+														(float)_joystick.Y - (float)_joystick.Capabilities.YAxisRange.Minimum);
+					// Then normalize.
+                    stickNormalized = new PointF(stickNormalized.X / (float)(_joystick.Capabilities.XAxisRange.Range + 1), 
+												stickNormalized.Y / (float)(_joystick.Capabilities.YAxisRange.Range + 1));
 
                     // Now transform the normalized point into display space.
-                    screenPosition = new Point((int)(stickNormalized.X * panelDisplay.ClientSize.Width)
-                                                , panelDisplay.Height - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
+                    screenPosition = new Point((int)(stickNormalized.X * (panelDisplay.ClientSize.Width - 1)) 
+                                                , (panelDisplay.ClientSize.Height - 1) - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
 
+					
 					if (_joystick.Button[0].IsPressed)
 					{
 						// Spray the screen.
 						_currentCursor = Properties.Resources.hand_pointer_icon;
-						_mouse.Position = _mousePosition = screenPosition;
-						_spray.SprayPoint(screenPosition);
+						_mouse.Position = _mousePosition = screenPosition;	
+						_spray.SprayPoint(_mousePosition);
 					}
 					else
 					{
@@ -244,7 +248,7 @@ namespace GorgonLibrary.Examples
                 _currentCursor = Properties.Resources.hand_icon;
             }
 
-            _mousePosition = new Point((int)position.X - 16, (int)_mouse.Position.Y - 3);
+            _mousePosition = new Point((int)position.X, (int)_mouse.Position.Y);
 
             labelMouse.Text = string.Format("{0}: {1}x{2}.  Button: {3}.  Using {4} for data retrieval.",
                                 _mouse.Name,
@@ -428,6 +432,8 @@ namespace GorgonLibrary.Examples
 
             // Limit the mouse position to the client area of the window.				
             _mouse.PositionRange = new RectangleF(0, 0, panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height);
+
+			UpdateMouseLabel(_mouse.Position, PointingDeviceButtons.None);			
         }
 
         /// <summary>
@@ -443,6 +449,8 @@ namespace GorgonLibrary.Examples
             // Set up an event handler for our keyboard.
             _keyboard.KeyDown += _keyboard_KeyDown;
             _keyboard.KeyUp += _keyboard_KeyUp;
+
+			UpdateKeyboardLabel(KeyboardKeys.None, KeyboardKeys.None);
         }
 
         /// <summary>
@@ -467,6 +475,8 @@ namespace GorgonLibrary.Examples
                     // Show our joystick information.
                     labelJoystick.Text = string.Empty;
                     panelJoystick.Visible = true;
+
+					UpdateJoystickLabel(JoystickTransformed);
                 }
             }
         }
@@ -517,20 +527,21 @@ namespace GorgonLibrary.Examples
 				// and limit the mouse.
 				panelDisplay.Resize += panelDisplay_Resize;
 
-                // Update the labels for the devices
-				UpdateKeyboardLabel(KeyboardKeys.None, KeyboardKeys.None);
-                UpdateMouseLabel(_mouse.Position, _mouse.Button);
-                UpdateJoystickLabel(JoystickTransformed);
+				// Set the initial range of the mouse cursor.
+				_mouse.PositionRange = Rectangle.Round(panelDisplay.ClientRectangle);
 
                 // Set up our spray object.
                 _spray = new Spray(panelDisplay.ClientSize);
                 _cursor = new MouseCursor(panelDisplay);
-
-                // Set up our idle method.
+				_cursor.Hotspot = new Point(-16, -3);
+				
+				// Set up our idle method.
                 Gorgon.ApplicationIdleLoopMethod = Idle;                
 			}
 			catch (Exception ex)
 			{
+				// We do this here instead of just calling the dialog because this
+				// function will send the exception to the Gorgon log file.
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
 				Gorgon.Quit();
 			}

@@ -271,6 +271,13 @@ namespace GorgonLibrary.Diagnostics
 				delta = 0;
 
 			Delta = (float)delta / 1000.0f;
+
+			// If the delta is 0, then put in the smallest possible positive value.
+			if (Delta == 0.0f)
+			{
+				Delta = 0.000001f;
+			}
+
 			ScaledDelta = Delta * TimeScale;
 
 			_lastTimerValue = theTime;

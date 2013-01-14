@@ -270,9 +270,19 @@ namespace GorgonLibrary.Input.XInput
 			{
 				// If we weren't connected before, then get the caps for the device.
 				if (!IsConnected)
-				{					
+				{
+					var previousDeadZone = DeadZone;
+
 					Initialize();					
 					IsConnected = true;
+
+					// Restore the dead zone.
+					DeadZone.Rudder = new GorgonMinMax(previousDeadZone.Rudder);
+					DeadZone.Throttle = new GorgonMinMax(previousDeadZone.Throttle);
+					DeadZone.X = new GorgonMinMax(previousDeadZone.X);
+					DeadZone.Y = new GorgonMinMax(previousDeadZone.Y);
+					DeadZone.SecondaryX = new GorgonMinMax(previousDeadZone.SecondaryX);
+					DeadZone.SecondaryY = new GorgonMinMax(previousDeadZone.SecondaryY);
 #if DEBUG
 					XI.Capabilities caps = _controller.GetCapabilities(XI.DeviceQueryType.Any);
 					Gorgon.Log.Print("XInput Controller {0} (ID:{1}) re-connected.", LoggingLevel.Verbose, caps.SubType.ToString(), _controllerID);

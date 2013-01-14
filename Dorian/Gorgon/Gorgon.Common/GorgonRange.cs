@@ -387,6 +387,15 @@ namespace GorgonLibrary
 
 		#region Constructor.
 		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonMinMaxD" /> struct.
+		/// </summary>
+		/// <param name="minMax">The min max value to copy.</param>
+		public GorgonMinMaxD(GorgonMinMaxD minMax)
+			: this(minMax.Minimum, minMax.Maximum)
+		{		
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonMinMaxD"/> struct.
 		/// </summary>
 		/// <param name="min">The minimum value.</param>
@@ -916,6 +925,15 @@ namespace GorgonLibrary
 
 		#region Constructor.
 		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonMinMaxF" /> struct.
+		/// </summary>
+		/// <param name="minMax">The min max value to copy.</param>
+		public GorgonMinMaxF(GorgonMinMaxF minMax)
+			: this(minMax.Minimum, minMax.Maximum)
+		{		
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonMinMaxF"/> struct.
 		/// </summary>
 		/// <param name="min">The minimum value.</param>
@@ -1444,6 +1462,15 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonMinMax" /> struct.
+		/// </summary>
+		/// <param name="minMax">The min max value to copy.</param>
+		public GorgonMinMax(GorgonMinMax minMax)
+			: this(minMax.Minimum, minMax.Maximum)
+		{		
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonMinMax"/> struct.
 		/// </summary>
