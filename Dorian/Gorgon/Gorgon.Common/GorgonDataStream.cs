@@ -146,6 +146,7 @@ namespace GorgonLibrary
 		/// <exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception>
 		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the value is less than zero or greater than <see cref="P:System.Int32.MaxValue">Int32.MaxValue</see>.</exception>
 		public override long Position
 		{
 			get
@@ -163,10 +164,10 @@ namespace GorgonLibrary
 				
 #if DEBUG
 				// Limit to the bounds of an integer.
-				if (value > Int32.MaxValue)
-					value = Int32.MaxValue;
-				if (value < 0)
-					value = 0;
+				if ((value > Int32.MaxValue) || (value < 0))
+				{
+					throw new ArgumentOutOfRangeException("The property cannot be less than 0 or greater than " + Int32.MaxValue.ToString());
+				}
 #endif
 				
 				_pointerPosition = (int)value;
@@ -1177,6 +1178,26 @@ namespace GorgonLibrary
 			_pointerOffset.CopyFrom<T>(buffer, offset, actualCount);
 			
 			Position += actualCount;
+		}
+
+		/// <summary>
+		/// Function to fill the stream with the specified value.
+		/// </summary>
+		/// <param name="value">Value to fill with.</param>
+		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
+		public void Fill(byte value)
+		{			
+			DirectAccess.FillMemory(BasePointer, value, (int)Length);
+			Position = Length;
+		}
+
+		/// <summary>
+		/// Function to fill the stream with zeroes.
+		/// </summary>
+		public void Zero()			
+		{
+			DirectAccess.ZeroMemory(BasePointer, (int)Length);
+			Position = Length;
 		}
 
 		/// <summary>

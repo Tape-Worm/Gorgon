@@ -28,11 +28,51 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
+	/// <summary>
+	/// Render target resized event arguments.
+	/// </summary>
+	public class GorgonRenderTargetResizedEventArgs
+		: EventArgs
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the new width of the target.
+		/// </summary>
+		public int Width
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the new height of the target.
+		/// </summary>
+		public int Height
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderTargetResizedEventArgs" /> class.
+		/// </summary>
+		/// <param name="target">Render target that was resized.</param>
+		public GorgonRenderTargetResizedEventArgs(GorgonRenderTarget target)
+		{
+			Width = target.Settings.Width;
+			Height = target.Settings.Height;
+		}
+		#endregion
+	}
+
 	/// <summary>
 	/// A texture render target.
 	/// </summary>
@@ -42,9 +82,9 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Events.
 		/// <summary>
-		/// Event called after the swap chain has been resized.
+		/// Event called after the render target has been resized.
 		/// </summary>
-		public event EventHandler Resized;
+		public event EventHandler<GorgonRenderTargetResizedEventArgs> Resized;
 		#endregion
 
 		#region Variables.
@@ -136,10 +176,13 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function called when the target is resized.
 		/// </summary>
-		protected virtual void OnTargetResize()
+		/// <param name="args">Resize event arguments.</param>
+		protected virtual void OnTargetResize(GorgonRenderTargetResizedEventArgs args)
 		{
 			if (Resized != null)
-				Resized(this, EventArgs.Empty);
+			{
+				Resized(this, args);
+			}
 		}
 
 		/// <summary>
@@ -358,7 +401,7 @@ namespace GorgonLibrary.Graphics
 			Graphics.Output.RenderTargets.ReSeat(this);
 
 			if (sizeChanged)
-				OnTargetResize();
+				OnTargetResize(new GorgonRenderTargetResizedEventArgs(this));
 		}
 		#endregion
 

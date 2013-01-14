@@ -70,6 +70,36 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
+	/// Event parameters for a swap chain resize event.
+	/// </summary>
+	public class GorgonSwapChainResizedEventArgs
+		: GorgonRenderTargetResizedEventArgs
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to return whether the swap chain is in full screen or windowed mode.
+		/// </summary>
+		public bool IsWindowed
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonSwapChainResizedEventArgs" /> class.
+		/// </summary>
+		/// <param name="swapChain">The swap chain that's being resized..</param>
+		public GorgonSwapChainResizedEventArgs(GorgonSwapChain swapChain)
+			: base(swapChain)
+		{
+			IsWindowed = swapChain.Settings.IsWindowed;
+		}
+		#endregion
+	}
+
+	/// <summary>
 	/// A swap chain used to display graphics to a window.
 	/// </summary>
 	/// <remarks>The swap chain is used to display data to the <see cref="GorgonLibrary.Graphics.GorgonVideoOutput">video output</see>, or it can be used as a shader input.
@@ -103,7 +133,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Event called after the swap chain transiitons to full screen or windowed mode.
 		/// </summary>
-		public event EventHandler AfterStateTransition;
+		public event EventHandler<GorgonSwapChainResizedEventArgs> AfterStateTransition;
 		#endregion
 
 		#region Properties.
@@ -316,7 +346,7 @@ namespace GorgonLibrary.Graphics
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
 			CreateResources();
 
-			OnTargetResize();
+			OnTargetResize(new GorgonSwapChainResizedEventArgs(this));
 		}
 
 		/// <summary>
@@ -393,7 +423,9 @@ namespace GorgonLibrary.Graphics
 			ResizeBuffers();
 
 			if ((!e.Cancel) && (AfterStateTransition != null))
-				AfterStateTransition(this, EventArgs.Empty);
+			{
+				AfterStateTransition(this, new GorgonSwapChainResizedEventArgs(this));
+			}
 		}
 
 		/// <summary>

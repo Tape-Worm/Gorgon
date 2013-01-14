@@ -59,7 +59,7 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
 				if (value != null)
 				{
-					value.DebugName = Name;
+					value.DebugName = this.GetType().Name + " " + Name;
 				}
 #endif
 				base.D3DResource = value;

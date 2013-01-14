@@ -402,6 +402,18 @@ namespace GorgonLibrary.Native
 		}
 
 		/// <summary>
+		/// Function to fill with a specific
+		/// </summary>
+		/// <param name="destination">Desintaiont pointer to zero out.</param>
+		/// <param name="fillValue">Value to fill the memory with.</param>
+		/// <param name="size">Amount of memory to fill.</param>
+		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
+		public static void FillMemory<T>(this IntPtr destination, byte fillValue, int size)
+		{
+			DirectAccess.FillMemory(destination, fillValue, size);
+		}
+
+		/// <summary>
 		/// Function to marshal an object or value type into unmanaged memory.
 		/// </summary>
 		/// <param name="destination">Pointer to marhsal the data into.</param>

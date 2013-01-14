@@ -378,7 +378,6 @@ namespace GorgonLibrary.Graphics
 			{
 				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 				InitializeImpl(initialData);
-				D3DResource.DebugName = GetType().Name + " '" + Name + "' D3D texture";
 				CreateDefaultResourceView();
 
 				GorgonRenderStatistics.TextureCount++;
@@ -438,7 +437,6 @@ namespace GorgonLibrary.Graphics
 
 				Gorgon.Log.Print("{0} {1}: Loading D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 				InitializeImpl(imageData, imageInfo);
-				D3DResource.DebugName = GetType().Name + " '" + Name + "' D3D texture";
 
 				Settings = GetTextureInformation();
 				CreateDefaultResourceView();
@@ -527,7 +525,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to copy a another texture into this texture.
+		/// Function to copy another texture into this texture.
 		/// </summary>
 		/// <param name="texture">Source texture to copy.</param>
 		/// <remarks>
