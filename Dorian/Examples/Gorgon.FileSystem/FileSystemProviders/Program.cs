@@ -38,7 +38,28 @@ namespace GorgonLibrary.Examples
 	/// <summary>
 	/// Example entry point.
 	/// </summary>
-	/// <remarks></remarks>
+	/// <remarks>
+	/// Gorgon is capable of making use of Virtual File Systems.  This is quite different from the file system type that was in the
+	/// first version of Gorgon which was really nothing more than a compressed file reader/writer (even though it could mount 
+	/// folders).
+	/// 
+	/// Virtual File Systems take a directory, or some packed data file and mount it as a root directory.  Any subsequent directories
+	/// and files inside of the directory (or file) are mapped to be relative to the root point on the file system.  For example,
+	/// mounting the D:\DataDirectory\ path as a VFS will make the path D:\DataDirectory\SubDirectory map to /SubDirectory in the
+	/// virtual file system.  This has to advantage of making it so your application can't go higher than the directory (or file) 
+	/// that was mounted as the root of the VFS.  This allows for a certain level of security to keep users from writing or reading
+	/// areas outside of the intended directory structure.  
+	/// 
+	/// Gorgon's VFS system is modeled after the PhysFS project (http://icculus.org/physfs/).
+	/// 
+	/// The VFS object in Gorgon comes with the ability to mount a directory as a root of a VFS.  However, it's possible to mount a
+	/// zip file, or the old Gorgon BZip2 Pack file format as a VFS.  This is done through file system providers.  Similar to the
+	/// input factories, these providers are plug-ins and can be loaded into a file system object to give access to these types of 
+	/// files.  A provider plug-in can be written to pull data from a SQL server, or a network stream or any access point that can
+	/// stream data.
+	/// 
+	/// In this example, we'll show how to load some of these providers into a file system object.
+	/// </remarks>
 	static class Program
     {
         #region Variables.
@@ -152,40 +173,70 @@ namespace GorgonLibrary.Examples
             try
             {
                 // Create a new file system.
-                _fileSystem = new GorgonFileSystem();                
+				// The file system must be created first and given access to the various
+				// data sources via the provider plug-ins.
+				// For example, this will allow us to create a file system that can read
+				// a RAR file, while another file system would only cater to Zip files.
+				// By default, every file system comes with a folder file system provider
+				// that can mount a directory from the hard drive as a VFS root.
+                _fileSystem = new GorgonFileSystem();
 
-                // Get our file system providers.
-                Console.ForegroundColor = ConsoleColor.White;
+				Console.WriteLine("Gorgon is capable of mounting virtual file systems for file access.  A virtual");
+				Console.WriteLine("filesystem root can be a folder on a harddrive, a zip file, or any data store");
+				Console.WriteLine("(assuming there's a provider for it).\n");
+				Console.WriteLine("In Gorgon, the types of data that can be mounted as a virtual file system is");
+				Console.WriteLine("managed by plug-ins called providers. By default, the file system has a folder");
+				Console.WriteLine("provider.  This allows a folder to be mounted as the root of a virtual file\nsystem.\n");
+				Console.WriteLine("This example will show how to load extra providers into a file system.\n");
+				
+				Console.ForegroundColor = ConsoleColor.White;
+
+                // Get our file system providers.                
                 Console.WriteLine("Found {0} external file system plug-ins.\n", LoadFileSystemProviders());
 
-                // Loop through each provider.
+                // Loop through each provider and print some info.
                 for (int i = 0; i < _fileSystem.Providers.Count; i++)
                 {
                     var provider = _fileSystem.Providers[i];
 
                     // Print some info about the file system provider.
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine("{0}. {1}", (i + 1), provider.Name);
 
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine("    Description: {0}", provider.Description);
                     
-                    IList<string> extensions = new List<string>();
+                    IList<string> extensionList = new List<string>();
 
                     // Gather the preferred extensions.
+					// File system providers that use a file (like a Zip file) as its root
+					// have a list of file extensions that are preferred.  For example, the
+					// Zip provider, expects to find *.zip files.  These are merely here 
+					// for the convenience of the developer and are formatted like a common
+					// dialog file mask so they can be easily dropped into that control.
+					// In this case, we're going to just strip out the relevant part and 
+					// concatenate each preferred extension description into a single string.  
+					//
+					// Note that a provider may have multiple preferred extensions.
                     foreach(var preferred in provider.PreferredExtensions)
                     {
                         var splitString = preferred.Split(new char[] {'|'});
 
                         if (splitString.Length > 0)
                         {
-                            extensions.Add(splitString[0]);
+                            extensionList.Add(splitString[0]);
                         }
                     }
 
-                    Console.WriteLine("    Preferred Extensions: {0}", string.Join(", ", extensions));
+					string extensions = string.Join(", ", extensionList);
+					if (!string.IsNullOrEmpty(extensions))
+					{
+						Console.WriteLine("    Preferred Extensions: {0}", string.Join(", ", extensionList));
+					}
                 }
 
+				Console.ResetColor();
+				Console.WriteLine("\nPress any key to close.");
                 Console.ReadKey();
             }
             catch (Exception ex)
