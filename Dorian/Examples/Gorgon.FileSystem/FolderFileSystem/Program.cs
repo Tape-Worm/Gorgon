@@ -122,7 +122,7 @@ namespace GorgonLibrary.Examples
 				var physicalPath = GetResourcePath(@"FolderSystem\");
 				_fileSystem.Mount(physicalPath);
 
-				Console.WriteLine("Mounted:\n\"{0}\"\nas\n\"/\" on the Virtual File System.\n", physicalPath);
+				Console.WriteLine("Mounted:\n\"{0}\"\nas\n\"/\" on the Virtual File System.\n", physicalPath.Ellipses(Console.WindowWidth - 3, true));
 
 				var directoryCount = _fileSystem.FindDirectories("*", true).Count();
 				var fileCount = _fileSystem.FindFiles("*", true).Count();
