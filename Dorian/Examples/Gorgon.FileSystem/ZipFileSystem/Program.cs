@@ -52,9 +52,9 @@ namespace GorgonLibrary.Examples
 	/// 
 	/// Gorgon's VFS is modeled after the PhysFS project (http://icculus.org/physfs/).
 	/// 
-    /// In this example, we'll mount a physical file system directory as the root of the virtual file system.  All sub directories
-    /// and files under the root directory will become accessible from the virtual file system.  The program will enumerate the 
-    /// directories and files and list them in the console window with relevant file information.
+    /// In this example, we'll mount a zip file as the root of the virtual file system.  All sub directories and files under the root 
+    /// directory will become accessible from the virtual file system.  The program will enumerate the directories and files and list 
+    /// them in the console window with relevant file information.
 	/// </remarks>
 	static class Program
     {
@@ -62,8 +62,37 @@ namespace GorgonLibrary.Examples
         private static GorgonFileSystem _fileSystem = null;         // File system.
         #endregion
 
-        #region Methods.
+        #region Properties.
         /// <summary>
+        /// Property to return the path to the plug-ins.
+        /// </summary>
+        public static string PlugInPath
+        {
+            get
+            {
+                string path = Properties.Settings.Default.PlugInLocation;
+
+                if (path.Contains("{0}"))
+                {
+#if DEBUG
+                    path = string.Format(path, "Debug");
+#else
+					path = string.Format(path, "Release");					
+#endif
+                }
+
+                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                {
+                    path += Path.DirectorySeparatorChar.ToString();
+                }
+
+                return Path.GetFullPath(path);
+            }
+        }
+        #endregion
+
+        #region Methods.
+		/// <summary>
 		/// Property to return the path to the resources for the example.
 		/// </summary>
 		/// <param name="resourceItem">The directory or file to use as a resource.</param>
@@ -100,6 +129,62 @@ namespace GorgonLibrary.Examples
 		}
 
         /// <summary>
+        /// Function to load the zip file provider plug-in.
+        /// </summary>
+        /// <returns>TRUE if successfully loaded, FALSE if not.</returns>
+        static bool LoadZipProviderPlugIn()
+        {
+            string zipProviderPath = PlugInPath + "Gorgon.FileSystem.Zip.dll";
+            string plugInName = "GorgonLibrary.FileSystem.GorgonZipPlugIn";
+
+            if (!File.Exists(zipProviderPath))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Could not find the plug-in assembly file:\n'{0}'.", zipProviderPath);
+                Console.ResetColor();
+#if DEBUG
+                Console.ReadKey();
+#endif
+                return false;
+            }
+
+            // Load the plug-in assembly.
+            AssemblyName assembly = AssemblyName.GetAssemblyName(zipProviderPath);
+            Gorgon.PlugIns.LoadPlugInAssembly(assembly);
+
+            // Add the provider.
+            if (!Gorgon.PlugIns.Contains(plugInName))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("The plug-in assembly file:\n'{0}' does not contain a file system plug in named '{1}'.", zipProviderPath, plugInName);
+                Console.ResetColor();
+#if DEBUG
+                Console.ReadKey();
+#endif
+                return false;
+            }
+
+            // Ensure this plug in is a file system provider.
+            GorgonFileSystemProviderPlugIn plugIn = Gorgon.PlugIns[plugInName] as GorgonFileSystemProviderPlugIn;
+
+            if (plugIn == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("The plug in: '{0}'\nis not a file system provider plug-in.", plugInName);
+                Console.ResetColor();
+#if DEBUG
+                Console.ReadKey();
+#endif
+                return false;
+            }
+
+            _fileSystem.AddProvider(plugInName);
+
+            Console.WriteLine("\nThe zip file file system provider was loaded successfully.");
+            return true;
+        }
+
+        /// <summary>
 		/// The main entry point for the application.
 		/// </summary>
         /// <param name="args">Command line arguments.</param>
@@ -107,35 +192,41 @@ namespace GorgonLibrary.Examples
 		{
             try
             {
-                Console.WindowHeight = 26;
-                Console.BufferHeight = Console.WindowHeight;
+                Console.WindowHeight = 28;
+                Console.BufferHeight = Console.WindowHeight;                
 
                 // Create a new file system.
-                _fileSystem = new GorgonFileSystem();
+                _fileSystem = new GorgonFileSystem();               
 
-				// Set the following directory as root on the virtual file system.
-				// To mount a directory we need to put in the trailing slash.  
-				//
-				// If we wanted to, we could mount a directory as a sub directory of
-				// the root of the virtual file system.  For example, mounting the
-				// directory D:\Dir with Mount(@"D:\Dir", "/VFSDir"); would mount the
-				// contents of the D:\Dir directory under /VFSDir.
-				//
-				// It's also important to point out that the old Gorgon "file system"
-				// would load files from the system into memory when mounting a 
-				// directory.  While this version only loads directory and file 
-				// information when mounting.  This is considerably more efficient.
-				var physicalPath = GetResourcePath(@"FolderSystem\");
-				_fileSystem.Mount(physicalPath);
-                                
                 Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("This example will mount a zip file as the root of a virtual file system.  The");
+                Console.WriteLine("virtual file system is capable of mounting various types of data such as a zip,");
+                Console.WriteLine("a file system folder, etc... as the root or a sub directory.  You can even");
+                Console.WriteLine("mount a zip file as the root, and a physical file system directory as a virtual");
+                Console.WriteLine("sub directory in the same virtual file system and access them as a single");
+                Console.WriteLine("unified file system.");
 
-                Console.WriteLine("This example will mount a physical file system directory as the root of a");
-                Console.WriteLine("virtual file system.  The virtual file system is capable of mounting various");
-                Console.WriteLine("types of data such as a zip file, a file system folder, etc... as the root or a");
-                Console.WriteLine("sub directory.  You can even mount a zip file as the root, and a physical file");
-                Console.WriteLine("system directory as a virtual sub directory in the same virtual file system and");
-                Console.WriteLine("access them as a single unified file system.");
+                // Unlike the folder file system example, we need to load
+                // a provider to handle zip files before trying to mount
+                // one.
+                if (!LoadZipProviderPlugIn())
+                {
+                    return;                    
+                }               
+
+                // Set the following zip file as root on the virtual file system.
+                //
+                // If we wanted to, we could mount a zip file as a sub directory of
+                // the root of the virtual file system.  For example, mounting the
+                // directory D:\Dir\zipFile.zip with Mount(@"D:\Dir", "/VFSDir"); would mount 
+                // the contents of the D:\Dir\zipFile.zip directory under /VFSDir.
+                //
+                // It's also important to point out that the old Gorgon "file system"
+                // would load files from the system into memory when mounting a 
+                // directory.  While this version only loads directory and file 
+                // information when mounting.  This is considerably more efficient.
+                var physicalPath = GetResourcePath(@"FileSystem.zip");
+                _fileSystem.Mount(physicalPath);                
                                 
                 Console.Write("\nMounted: ");
                 Console.ForegroundColor = ConsoleColor.Cyan;

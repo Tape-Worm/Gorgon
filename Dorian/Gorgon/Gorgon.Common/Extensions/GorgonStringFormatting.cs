@@ -206,11 +206,10 @@ namespace GorgonLibrary
         /// <remarks>This overload will output a shorted version of <paramref name="theString"/> and will prefix an ellipses '...' to it. 
         /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing. 
         /// This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxwidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
         /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.</para>
-        /// <para>Specifying TRUE for <paramref name="prefix"/> will put the ellipses on the beginning of the string, FALSE will put it on the end.</para>
         /// </remarks>        
         public static string Ellipses(this string theString, int maxWidth)
         {
@@ -227,11 +226,10 @@ namespace GorgonLibrary
         /// <remarks>This overload will output a shorted version of <paramref name="theString"/> and will prefix an ellipses '...' to it. 
         /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
         /// and will replace variable values. This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxwidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
         /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.</para>
-        /// <para>Specifying TRUE for <paramref name="prefix"/> will put the ellipses on the beginning of the string, FALSE will put it on the end.</para>
         /// </remarks>        
         public static string Ellipses(this string theString, int maxWidth, params object[] values)
         {
@@ -248,7 +246,7 @@ namespace GorgonLibrary
         /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
         /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing. 
         /// This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxwidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
         /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.</para>
@@ -270,7 +268,7 @@ namespace GorgonLibrary
         /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
         /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
         /// and will replace variable values. This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxwidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
         /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.</para>
@@ -292,7 +290,7 @@ namespace GorgonLibrary
         /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
         /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing.  
         /// This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxwidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
         /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.</para>
@@ -315,7 +313,7 @@ namespace GorgonLibrary
         /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
         /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
         /// and will replace variable values. This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxwidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
         /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.</para>
