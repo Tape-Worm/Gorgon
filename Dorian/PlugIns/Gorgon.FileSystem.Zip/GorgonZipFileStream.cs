@@ -439,6 +439,7 @@ namespace GorgonLibrary.FileSystem.Zip
 		public override void Close()
 		{
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 

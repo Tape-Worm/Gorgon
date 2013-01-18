@@ -609,8 +609,7 @@ namespace GorgonLibrary.Graphics
 		void IDisposable.Dispose()
 		{
 			Dispose(true);
-			if (Graphics == null)
-				GC.SuppressFinalize(this);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 
