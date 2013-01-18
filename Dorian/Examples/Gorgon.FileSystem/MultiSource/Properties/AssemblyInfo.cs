@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, January 17, 2013 11:07:16 PM
+// Created: Thursday, January 17, 2013 11:04:44 PM
 // 
 #endregion
 
@@ -33,12 +33,12 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 #if DEBUG
 [assembly: AssemblyTitle("Gorgon File System Example [DEBUG VERSION]")]
-[assembly: AssemblyDescription("An example showing how to use the zip file system provider. [DEBUG VERSION]")]
+[assembly: AssemblyDescription("An example showing how to use the multiple system providers to mount multiple sources. [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 [assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
 [assembly: AssemblyTitle("Gorgon File System Example")]
-[assembly: AssemblyDescription("An example showing how to use the zip file system provider.")]
+[assembly: AssemblyDescription("An example showing how to use the multiple system providers to mount multiple sources.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 [assembly: AssemblyProduct("Gorgon")]
 #endif

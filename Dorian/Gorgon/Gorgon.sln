@@ -72,7 +72,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004.BluePlugIn", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004.GreenAndPurplePlugIn", "..\Examples\Gorgon.Common\Example004\PlugIns\Example004.GreenAndPurplePlugIn\Example004.GreenAndPurplePlugIn.csproj", "{2E14312F-4E7E-45AD-945A-D91DC5E254CD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Input", "Input", "{E110A495-36C7-44AB-9748-A8C29EFA276C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Input", "Gorgon.Input", "{E110A495-36C7-44AB-9748-A8C29EFA276C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputFactory", "..\Examples\Gorgon.Input\InputFactory\InputFactory.csproj", "{26B09EBD-0140-4274-92EF-6E674FBDBB22}"
 EndProject
@@ -89,6 +89,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderFileSystem", "..\Examples\Gorgon.FileSystem\FolderFileSystem\FolderFileSystem.csproj", "{AE98FD31-06D6-43DB-9B33-EF94BA310B50}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipFileSystem", "..\Examples\Gorgon.FileSystem\ZipFileSystem\ZipFileSystem.csproj", "{13E8A005-B842-44C9-B5F5-EE2BA50ADB8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiSource", "..\Examples\Gorgon.FileSystem\MultiSource\MultiSource.csproj", "{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -236,6 +238,10 @@ Global
 		{13E8A005-B842-44C9-B5F5-EE2BA50ADB8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13E8A005-B842-44C9-B5F5-EE2BA50ADB8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13E8A005-B842-44C9-B5F5-EE2BA50ADB8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -260,5 +266,6 @@ Global
 		{2C5FD932-2228-4C1E-92DC-B0956D6D5957} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 		{AE98FD31-06D6-43DB-9B33-EF94BA310B50} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 		{13E8A005-B842-44C9-B5F5-EE2BA50ADB8D} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
+		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 	EndGlobalSection
 EndGlobal
