@@ -92,6 +92,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipFileSystem", "..\Example
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiSource", "..\Examples\Gorgon.FileSystem\MultiSource\MultiSource.csproj", "{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Writing", "..\Examples\Gorgon.FileSystem\Writing\Writing.csproj", "{DF5B8F28-1A1B-45CF-91B1-BE53E6B3C063}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -242,6 +244,10 @@ Global
 		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF5B8F28-1A1B-45CF-91B1-BE53E6B3C063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF5B8F28-1A1B-45CF-91B1-BE53E6B3C063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF5B8F28-1A1B-45CF-91B1-BE53E6B3C063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF5B8F28-1A1B-45CF-91B1-BE53E6B3C063}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -267,5 +273,6 @@ Global
 		{AE98FD31-06D6-43DB-9B33-EF94BA310B50} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 		{13E8A005-B842-44C9-B5F5-EE2BA50ADB8D} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
+		{DF5B8F28-1A1B-45CF-91B1-BE53E6B3C063} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 	EndGlobalSection
 EndGlobal

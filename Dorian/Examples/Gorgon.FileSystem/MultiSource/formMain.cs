@@ -40,6 +40,26 @@ namespace GorgonLibrary.Examples
 	/// Main application interface.
 	/// </summary>
 	/// <remarks>
+    /// In this example we will mount two different data sources into a virtual file system.  
+    /// 
+    /// The file system is able to mount different data sources into the same file system which will allow for access
+    /// to multiple sets of files as a unified file system.  Here we mount a physical file system folder as the root
+    /// of the file system and a zip file as a virtual subdirectory in the virtual file system.  Accessing these
+    /// files is just a matter of getting the file entry and loading the data as a stream.  
+    /// 
+    /// You may mount multiple data sources into the same virtual directory (i.e. the root, or a sub directory) and the
+    /// files from each data source will be merged.  However, the caveat here is the order in which the file systems
+    /// are mounted.  If 2 or more data sources contain the same file names, then the data source that was mounted
+    /// last will take precedence over the previous file systems.  For example, if D:\directory\filename.txt exists in
+    /// the virtual root as "/filename.txt" and we mount a zip file that has filename.txt in the root of the zip file,
+    /// then when we open filename.txt from the virtual file system we will be opening the file from the zip file.
+    /// 
+    /// We begin the example by loading the file system provider for zip files, and then mounting the physical folder
+    /// and then the zip file into a virtual subdirectory.  From there we enumerate the files and virtual sub directories
+    /// into the tree view.  Opening a file can be done either from the file entry as shown in the example, or it can be
+    /// opened via the file system interface (allowing the user to pass a full path to the file).  Files can be returned
+    /// as a stream (OpenStream) or an array of bytes (ReadFile).  Please note that writing to these file systems is not
+    /// supported and can only be done when a write directory is set.  This will be covered in another example.
 	/// </remarks>
 	public partial class formMain : Form
 	{
@@ -69,7 +89,7 @@ namespace GorgonLibrary.Examples
 			}
 
 			try
-			{
+			{                
 				if ((e.Node == null) || (!(e.Node.Tag is GorgonFileSystemFileEntry)))
 				{
 					splitFileSystem.Panel2.Controls.Add(_instructions);
